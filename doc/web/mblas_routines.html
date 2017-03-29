@@ -1,0 +1,750 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML lang="en">
+<HEAD>
+        <LINK REV="MADE" HREF="mailto:maho@riken.jp">
+        <LINK REL="NEXT" HREF="index.html">
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE>MPACK (MBLAS/MLAPACK) Example</TITLE>
+</HEAD>
+<BODY>
+
+Following routines are very well tested.
+
+<DIV ALIGN="CENTER"><h1>MBLAS LEVEL 1 Routines</h1></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLPADDING=2 CELLSPACING=2>
+<TR VALIGN=TOP>
+<TD WIDTH="25%"><p>Routine name</p></TD>
+<TD WIDTH="25%"><p>Description</p></TD>
+<TD WIDTH="25%"><p>Example</p></TD>
+<TD WIDTH="25%"><P>BLAS corresopndant</P>
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Crotg.cpp">Crotg</a>                </P> </TD>
+<TD WIDTH="25%">	<P>Determines a double complex Givens rotation.</P> </TD>
+<TD WIDTH="25%"> 	<P> &nbsp; </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/crotg.f">crotg</a>,
+                   <a href="http://www.netlib.org/blas/zrotg.f">zrotg</a></P> </TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Cscal.cpp">Cscal</a>    </P> </TD>
+<TD WIDTH="25%">	<P>scales a vector by a constant</P> </TD>
+<TD WIDTH="25%"> 	<P>    &nbsp;              </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/cscal.f">cscal</a>,
+                   <a href="http://www.netlib.org/blas/zscal.f">zscal</a></P> </TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rrotg.cpp">Rrotg</a> </P> </TD>
+<TD WIDTH="25%">	<P>Construct givens plane rotation.</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/srotg.f">srotg</a>,
+                   <a href="http://www.netlib.org/blas/drotg.f">drotg</a></P> </TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rrot.cpp">Rrot</a> </P> </TD>
+<TD WIDTH="25%">	<P>applies a plane rotation.</P> </TD>
+<TD WIDTH="25%"> 	<P>      &nbsp;              </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/srot.f">srot</a>,
+                   <a href="http://www.netlib.org/blas/drot.f">drot</a></P> </TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rrotm.cpp">Rrotm</a> </P> </TD>
+<TD WIDTH="25%">	<P>apply the modified givens transformation.</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/srotm.f">srotm</a>,
+                   <a href="http://www.netlib.org/blas/drotm.f">drotm</a></P> </TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/CRrot.cpp">CRrot</a> </P> </TD>
+<TD WIDTH="25%">	<P>applies a plane rotation.</P> </TD>
+<TD WIDTH="25%"> 	<P>       &nbsp;            </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/csrot.f">csrot</a>,
+                   <a href="http://www.netlib.org/blas/zdrot.f">zdrot</a></P> </TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Cswap.cpp">Cswap</a> </P> </TD>
+<TD WIDTH="25%">	<P>interchanges two vectors.</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/cswap.f">cswap</a>,
+                   <a href="http://www.netlib.org/blas/zswap.f">zswap</a></P> </TD>
+</TR>
+
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rswap.cpp">Rswap</a> </P> </TD>
+<TD WIDTH="25%">	<P>interchanges two vectors.</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/sswap.f">sswap</a>,
+                   <a href="http://www.netlib.org/blas/dswap.f">dswap</a></P> </TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/CRscal.cpp">CRscal</a> </P> </TD>
+<TD WIDTH="25%">	<P>scales a complex vector by a real constant.</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/csscal.f">csscal</a>,
+                   <a href="http://www.netlib.org/blas/zdscal.f">zdscal</a></P> </TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rscal.cpp">Rscal</a> </P> </TD>
+<TD WIDTH="25%">	<P>scales a vector by a constant.</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/sscal.f">sscal</a>,
+                   <a href="http://www.netlib.org/blas/dscal.f">dscal</a></P> </TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Ccopy.cpp">Ccopy</a> </P> </TD>
+<TD WIDTH="25%">	<P>copies a vector x to a vector y.</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/ccopy.f">ccopy</a>,
+                   <a href="http://www.netlib.org/blas/zcopy.f">zcopy</a></P> </TD>
+</TR>
+
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rcopy.cpp">Rcopy</a> </P> </TD>
+<TD WIDTH="25%">	<P>copies a vector x to a vector y.</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/scopy.f">scopy</a>,
+                   <a href="http://www.netlib.org/blas/dcopy.f">dcopy</a></P> </TD>
+</TR>
+
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Caxpy.cpp">Caxpy</a> </P> </TD>
+<TD WIDTH="25%">	<P>constant times a vector plus a vector.</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/caxpy.f">caxpy</a>,
+                   <a href="http://www.netlib.org/blas/zaxpy.f">zaxpy</a></P> </TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Raxpy.cpp">Raxpy</a> </P> </TD>
+<TD WIDTH="25%">	<P>constant times a vector plus a vector.</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/saxpy.f">saxpy</a>,
+                   <a href="http://www.netlib.org/blas/daxpy.f">daxpy</a></P> </TD>
+</TR>
+
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rdot.cpp">Rdot</a> </P> </TD>
+<TD WIDTH="25%">	<P>forms the dot product of two vectors</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/sdot.f">sdot</a>,
+                   <a href="http://www.netlib.org/blas/ddot.f">ddot</a></P> </TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Cdotc.cpp">Cdotc</a> </P> </TD>
+<TD WIDTH="25%">	<P>forms the dot product of two vectors</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/cdotc.f">cdotc</a>,
+                   <a href="http://www.netlib.org/blas/zdotc.f">zdotc</a></P> </TD>
+</TR>
+
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Cdotu.cpp">Cdotu</a> </P> </TD>
+<TD WIDTH="25%">	<P>forms the dot product of two vectors</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/cdotu.f">cdotu</a>,
+                   <a href="http://www.netlib.org/blas/zdotu.f">zdotu</a></P> </TD>
+</TR>
+
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/RCnrm2.cpp">RCnrm2</a> </P> </TD>
+<TD WIDTH="25%">	<P>the euclidean norm of a vector</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/scnrm2.f">scnrm2</a>,
+                   <a href="http://www.netlib.org/blas/dznrm2.f">dznrm2</a></P> </TD>
+</TR>
+
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rnrm2.cpp">Rnrm2</a> </P> </TD>
+<TD WIDTH="25%">	<P>the euclidean norm of a vector</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/snrm2.f">snrm2</a>,
+                   <a href="http://www.netlib.org/blas/dnrm2.f">dnrm2</a></P> </TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/RCasum.cpp">RCasum</a> </P> </TD>
+<TD WIDTH="25%">	<P>takes the sum of the absolute values of a complex vector and returns real result.</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/scasum.f">scasum</a>,
+                   <a href="http://www.netlib.org/blas/dzasum.f">dzasum</a></P> </TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rasum.cpp">Rasum</a> </P> </TD>
+<TD WIDTH="25%">	<P>takes the sum of the absolute values</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/sasum.f">sasum</a>,
+                   <a href="http://www.netlib.org/blas/dasum.f">dasum</a></P> </TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/iCasum.cpp">iCasum</a> </P> </TD>
+<TD WIDTH="25%">	<P>finds the index of element having max. absolute value.</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/icamax.f">icamax</a>,
+                   <a href="http://www.netlib.org/blas/izamax.f">izamax</a></P> </TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/iRamax.cpp">iRamax</a> </P> </TD>
+<TD WIDTH="25%">	<P>finds the index of element having max. absolute value.</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/isamax.f">isamax</a>,
+                   <a href="http://www.netlib.org/blas/idamax.f">idamax</a></P> </TD>
+</TR>
+
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/RCabs1.cpp">RCabs1</a> </P> </TD>
+<TD WIDTH="25%">	<P>computes absolute value of a complex number</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/scabs1.f">scabs1</a>,
+                   <a href="http://www.netlib.org/blas/dzabs1.f">dzabs1</a></P> </TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Mlsame.cpp">Mlsame</a> </P> </TD>
+<TD WIDTH="25%">	<P> returns TRUE when two characteres are the same</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/lsame.f">lsame</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Mxerbla.cpp">Mxerbla</a> </P> </TD>
+<TD WIDTH="25%">	<P> an error handler for the MPACK routines.</P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/xerbla.f">xerbla</a></p>
+</TR>
+
+
+</TABLE>
+
+<h1><center>MBLAS LEVEL 2 Routines</center></h1>
+<TABLE WIDTH=100% BORDER=1 CELLPADDING=2 CELLSPACING=2>
+<TR VALIGN=TOP>
+<TD WIDTH="25%">
+	<p>Routine name</p>
+</TD>
+<TD WIDTH="25%">
+	<p>Description</p>
+</TD>
+<TD WIDTH="25%">
+	<p>Example</p>
+</TD>
+<TD WIDTH="25%">
+	<P>BLAS corresopndant</P>
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Cgemv.cpp">Cgemv</a> </P> </TD>
+<TD WIDTH="25%">	<P> y := alpha*A*x + beta*y, y := alpha*A'*x + beta*y, or y := alpha*conjg( A' )*x + beta*y </P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/cgemv.f">cgemv</a>,
+<a href="http://www.netlib.org/blas/zgemv.f">zgemv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rgemv.cpp">Rgemv</a> </P> </TD>
+<TD WIDTH="25%">	<P> y := alpha*A*x + beta*y, y := alpha*A'*x + beta*y </P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/sgemv.f">sgemv</a>,
+<a href="http://www.netlib.org/blas/dgemv.f">dgemv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Cgbmv.cpp">Cgbmv</a> </P> </TD>
+<TD WIDTH="25%">	<P> (Banded version) y := alpha*A*x + beta*y, y := alpha*A'*x + beta*y, or y := alpha*conjg( A' )*x + beta*y </P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/cgbmv.f">cgbmv</a>,
+<a href="http://www.netlib.org/blas/zgbmv.f">zgbmv</a></p>
+</TR>
+
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rgbmv.cpp">Rgbmv</a> </P> </TD>
+<TD WIDTH="25%">	<P> (Banded version) y := alpha*A*x + beta*y, y := alpha*A'*x + beta*y </P> </TD> 
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/sgbmv.f">sgbmv</a>,
+<a href="http://www.netlib.org/blas/dgbmv.f">dgbmv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Chemv.cpp">Chemv</a> </P> </TD>
+<TD WIDTH="25%">	<P> y := alpha*A*x + beta*y, where A is an hermitian </P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/chemv.f">chemv</a>,
+<a href="http://www.netlib.org/blas/zhemv.f">zhemv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Chbmv.cpp">Chbmv</a> </P> </TD>
+<TD WIDTH="25%">	<P> (Banded version)y := alpha*A*x + beta*y, where A is an hermitian </P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/chbmv.f">chbmv</a>,
+<a href="http://www.netlib.org/blas/zhbmv.f">zhbmv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Chpmv.cpp">Chpmv</a> </P> </TD>
+<TD WIDTH="25%">	<P> (Packed version)y := alpha*A*x + beta*y, where A is an hermitian </P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/chpmv.f">chpmv</a>,
+<a href="http://www.netlib.org/blas/zhpmv.f">zhpmv</a></p>
+</TR>
+
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rsymv.cpp">Rsymv</a> </P> </TD>
+<TD WIDTH="25%">	<P> y := alpha*A*x + beta*y, where A is a symmetric </P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/ssymv.f">ssymv</a>,
+<a href="http://www.netlib.org/blas/dsymv.f">dsymv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rsbmv.cpp">Rsbmv</a> </P> </TD>
+<TD WIDTH="25%">	<P> (Banded version)y := alpha*A*x + beta*y, where A is a symmetric </P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/ssbmv.f">ssbmv</a>,
+<a href="http://www.netlib.org/blas/ssbmv.f">ssbmv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rspmv.cpp">Rspmv</a> </P> </TD>
+<TD WIDTH="25%">	<P> (Packed version)y := alpha*A*x + beta*y, where A is a symmetric </P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/sspmv.f">sspmv</a>,
+<a href="http://www.netlib.org/blas/dspmv.f">dspmv</a></p>
+</TR>
+
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">	<P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Ctrmv.cpp">Ctrmv</a> </P> </TD>
+<TD WIDTH="25%">	<P> x := A*x, or x := A'*x, or x := conjg( A' )*x </P> </TD>
+<TD WIDTH="25%"> 	<P>                     </P> </TD>
+<TD WIDTH="25%">	<P><a href="http://www.netlib.org/blas/ctrmv.f">ctrmv</a>,
+<a href="http://www.netlib.org/blas/ztrmv.f">ztrmv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Cgemv.cpp">Cgemv</a> </P> </TD>
+<TD WIDTH="25%">  <P> y := alpha*A*x + beta*y,   or   y := alpha*A'*x + beta*y,   or y := alpha*conjg( A' )*x + beta*y </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/cgemv.f">cgemv</a>,
+<a href="http://www.netlib.org/blas/zgemv.f">zgemv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Cgemv.cpp">Cgemv</a> </P> </TD>
+<TD WIDTH="25%">  <P> y := alpha*A*x + beta*y,   or   y := alpha*A'*x + beta*y,   or y := alpha*conjg( A' )*x + beta*y </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/cgemv.f">cgemv</a>,
+<a href="http://www.netlib.org/blas/zgemv.f">zgemv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rgemv.cpp">Rgemv</a> </P> </TD>
+<TD WIDTH="25%">  <P> y := alpha*A*x + beta*y,   or   y := alpha*A'*x + beta*y</P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/sgemv.f">sgemv</a>,
+<a href="http://www.netlib.org/blas/dgemv.f">dgemv</a></p>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Cgbmv.cpp">Cgbmv</a> </P> </TD>
+<TD WIDTH="25%">  <P> (Banded version)y := alpha*A*x + beta*y,   or   y := alpha*A'*x + beta*y,   or  y := alpha*conjg( A' )*x + beta*y, </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/cgbmv.f">cgbmv</a>,
+<a href="http://www.netlib.org/blas/zgbmv.f">zgbmv</a></p>
+</TR>
+
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rgbmv.cpp">Rgbmv</a> </P> </TD>
+<TD WIDTH="25%">  <P> (Banded version) y := alpha*A*x + beta*y,   or   y := alpha*A'*x + beta*y, </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/sgbmv.f">sgbmv</a>,
+<a href="http://www.netlib.org/blas/dgbmv.f">dgbmv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Chemv.cpp">Chemv</a> </P> </TD>
+<TD WIDTH="25%">  <P> y := alpha*A*x + beta*y A is an Hermitian </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/chemv.f">chemv</a>,
+<a href="http://www.netlib.org/blas/zhemv.f">zhemv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Chbmv.cpp">Chbmv</a> </P> </TD>
+<TD WIDTH="25%">  <P> (Banded version)y := alpha*A*x + beta*y A is an Hermitian </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/chbmv.f">chbmv</a>,
+<a href="http://www.netlib.org/blas/zhbmv.f">zhbmv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Chpmv.cpp">Chpmv</a> </P> </TD>
+<TD WIDTH="25%">  <P> (Packed) y := alpha*A*x + beta*y, A is an hermitian </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/chpmv.f">chpmv</a>,
+<a href="http://www.netlib.org/blas/zhpmv.f">zhpmv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rsymv.cpp">Rsymv</a> </P> </TD>
+<TD WIDTH="25%">  <P> y := alpha*A*x + beta*y, A is a symmetric </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/ssymv.f">ssymv</a>,
+<a href="http://www.netlib.org/blas/dsymv.f">dsymv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rsbmv.cpp">Rsbmv</a> </P> </TD>
+<TD WIDTH="25%">  <P> (Banded version)y := alpha*A*x + beta*y, A is symmetric</P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/ssbmv.f">ssbmv</a>,
+<a href="http://www.netlib.org/blas/dsbmv.f">dsbmv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rspmv.cpp">Rspmv</a> </P> </TD>
+<TD WIDTH="25%">  <P> (Packed)y := alpha*A*x + beta*y, A is a symmetric</p> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/sspmv.f">sspmv</a>,
+<a href="http://www.netlib.org/blas/dspmv.f">dspmv</a></p>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Ctrmv.cpp">Ctrmv</a> </P> </TD>
+<TD WIDTH="25%">  <P> x := A*x,   or   x := A'*x,   or   x := conjg( A' )*x </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/ctrmv.f">ctrmv</a>,
+<a href="http://www.netlib.org/blas/ztrmv.f">ztrmv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rtrmv.cpp">Rtrmv</a> </P> </TD>
+<TD WIDTH="25%">  <P>x := A*x,   or   x := A'*x </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/strmv.f">strmv</a>,
+<a href="http://www.netlib.org/blas/dtrmv.f">dtrmv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Ctbmv.cpp">Ctbmv</a> </P> </TD>
+<TD WIDTH="25%">  <P> (Banded version) x := A*x,   or   x := A'*x,   or   x := conjg( A' )*x, A is a triangular matrix </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/ctbmv.f">ctbmv</a>,
+<a href="http://www.netlib.org/blas/ztbmv.f">ztbmv</a></p>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Ctpmv.cpp">Ctpmv</a> </P> </TD>
+<TD WIDTH="25%">  <P>  (Packed version) x := A*x,   or   x := A'*x,   or   x := conjg( A' )*x,
+ </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/ctpmv.f">ctpmv</a>,
+<a href="http://www.netlib.org/blas/ztpmv.f">ztpmv</a></p>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rtpmv.cpp">Rtpmv</a> </P> </TD>
+<TD WIDTH="25%">  <P> (Packed version) x := A*x,   or   x := A'*x, where A is a triangular matrix
+ </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/stpmv.f">stpmv</a>,
+<a href="http://www.netlib.org/blas/dtpmv.f">dtpmv</a></p>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rtpmv.cpp">Rtpmv</a> </P> </TD>
+<TD WIDTH="25%">  <P> (Packed version)x := A*x,   or   x := A'*x, where A is a triangular matrix </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/stpmv.f">stpmv</a>,
+<a href="http://www.netlib.org/blas/dtpmv.f">dtpmv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Ctrsv.cpp">Ctrsv</a> </P> </TD>
+<TD WIDTH="25%">  <P>solves  A*x = b, or A'*x = b, or conjg( A' )*x = b , where A is a triangular</P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/ctrsv.f">ctrsv</a>,
+<a href="http://www.netlib.org/blas/ztrsv.f">ztrsv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rtrsv.cpp">Rtrsv</a> </P> </TD>
+<TD WIDTH="25%">  <P>solves  A*x = b, or A'*x = b, where A is a triangular</P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/strsv.f">strsv</a>,
+<a href="http://www.netlib.org/blas/dtrsv.f">dtrsv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Ctbsv.cpp">Ctbsv</a> </P> </TD>
+<TD WIDTH="25%">  <P>(Banded version)solves A*x = b, or A'*x = b,  or  conjg( A' )*x = b, where A is a trianglar</P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/ctbsv.f">ctbsv</a>,
+<a href="http://www.netlib.org/blas/ztbsv.f">ztbsv</a></p>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rtbsv.cpp">Rtbsv</a> </P> </TD>
+<TD WIDTH="25%">  <P>(Banded version)solves A*x = b, or A'*x = b, where A is a trianglar</P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/stbsv.f">stbsv</a>,
+<a href="http://www.netlib.org/blas/dtbsv.f">dtbsv</a></p>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Ctpsv.cpp">Ctpsv</a> </P> </TD>
+<TD WIDTH="25%">  <P> (Packed version) x := A*x, or x := A'*x, conjg( A' )*x =  where A is a triangular</P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/ctpsv.f">ctpsv</a>,
+<a href="http://www.netlib.org/blas/ztpsv.f">ztpsv</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rtpsv.cpp">Rtpsv</a> </P> </TD>
+<TD WIDTH="25%">  <P> (Packed version) x := A*x, or x := A'*x where A is a triangular</P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/stpsv.f">stpsv</a>,
+<a href="http://www.netlib.org/blas/dtpsv.f">dtpsv</a></p>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rger.cpp">Rger</a> </P> </TD>
+<TD WIDTH="25%">  <P>  A := alpha*x*y' + A </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/sger.f">sger</a>,
+<a href="http://www.netlib.org/blas/dger.f">dger</a></p>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Cgeru.cpp">Cgeru</a> </P> </TD>
+<TD WIDTH="25%">  <P> A := alpha*x*y' + A </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/cgeru.f">cgeru</a>,
+<a href="http://www.netlib.org/blas/zgeru.f">zgeru</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Cgerc.cpp">Cgerc</a> </P> </TD>
+<TD WIDTH="25%">  <P> A := alpha*x*conjg( y' ) + A </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/cgerc.f">cgerc</a>,
+<a href="http://www.netlib.org/blas/zgerc.f">zgerc</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Cher.cpp">Cher</a> </P> </TD>
+<TD WIDTH="25%">  <P> A := alpha*x*conjg( x' ) + A, where A is a hermitian </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/cher.f">cher</a>,
+<a href="http://www.netlib.org/blas/zher.f">zher</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Chpr.cpp">Chpr</a> </P> </TD>
+<TD WIDTH="25%">  <P> (Packed version) A := alpha*x*conjg( x' ) + A, A is a hermitian </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/chpr.f">chpr</a>,
+<a href="http://www.netlib.org/blas/zhpr.f">zhpr</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Cher2.cpp">Cher2</a> </P> </TD>
+<TD WIDTH="25%">  <P>  A := alpha*x*conjg( y' ) + conjg( alpha )*y*conjg( x' ) + A,where A is a hermitian </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/cher2.f">cher2</a>,
+<a href="http://www.netlib.org/blas/zher2.f">zher2</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Chpr2.cpp">Chpr2</a> </P> </TD>
+<TD WIDTH="25%">  <P> (Packed version) A := alpha*x*conjg( y' ) + conjg( alpha )*y*conjg( x' ) + A,where A is a hermitian </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/chpr2.f">chpr2</a>,
+<a href="http://www.netlib.org/blas/zhpr2.f">zhpr2</a></p>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rsyr.cpp">Rsyr</a> </P> </TD>
+<TD WIDTH="25%">  <P> A := alpha*x*x' + A, A is a symmetric</P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/ssyr.f">ssyr</a>,
+<a href="http://www.netlib.org/blas/dsyr.f">dsyr</a></p>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rspr.cpp">Rspr</a> </P> </TD>
+<TD WIDTH="25%">  <P> (Packed version)A := alpha*x*x' + A, A is a symmetric</P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/sspr.f">sspr</a>,
+<a href="http://www.netlib.org/blas/dspr.f">dspr</a></p>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rsyr2.cpp">Rsyr2</a> </P> </TD>
+<TD WIDTH="25%">  <P> A := alpha*x*y' + alpha*y*x' + A, where A is a symmetric </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/ssyr2.f">ssyr2</a>,
+<a href="http://www.netlib.org/blas/dsyr2.f">dsyr2</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rspr2.cpp">Rspr2</a> </P> </TD>
+<TD WIDTH="25%">  <P> (Packed version) A := alpha*x*y' + alpha*y*x' + A, is a symmetric </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/sspr2.f">sspr2</a>,
+<a href="http://www.netlib.org/blas/dspr2.f">dspr2</a></p>
+</TR>
+
+</TABLE>
+
+<h1><center>MBLAS LEVEL 3 Routines</center></h1>
+<TABLE WIDTH=100% BORDER=1 CELLPADDING=2 CELLSPACING=2>
+<TR VALIGN=TOP>
+<TD WIDTH="25%">
+	<p>Routine name</p>
+</TD>
+<TD WIDTH="25%">
+	<p>Description</p>
+</TD>
+<TD WIDTH="25%">
+	<p>Example</p>
+</TD>
+<TD WIDTH="25%">
+	<P>BLAS corresopndant</P>
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Cgemm.cpp">Cgemm</a> </P> </TD>
+<TD WIDTH="25%">  <P>  C := alpha*op( A )*op( B ) + beta*C </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/cgemm.f">cgemm</a>,
+<a href="http://www.netlib.org/blas/zgemm.f">zgemm</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rgemm.cpp">Rgemm</a> </P> </TD>
+<TD WIDTH="25%">  <P> C := alpha*op( A )*op( B ) + beta*C </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/sgemm.f">sgemm</a>,
+<a href="http://www.netlib.org/blas/dgemm.f">dgemm</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Csymm.cpp">Csymm</a> </P> </TD>
+<TD WIDTH="25%">  <P>C := alpha*A*B + beta*C,  or C := alpha*B*A + beta*C, A is a symmetric </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/csymm.f">csymm</a>,
+<a href="http://www.netlib.org/blas/zsymm.f">zsymm</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rsymm.cpp">Rsymm</a> </P> </TD>
+<TD WIDTH="25%">  <P>C := alpha*A*B + beta*C,  or C := alpha*B*A + beta*C, A is a symmetric </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/ssymm.f">ssymm</a>,
+<a href="http://www.netlib.org/blas/dsymm.f">dsymm</a></p>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Chemm.cpp">Chemm</a> </P> </TD>
+<TD WIDTH="25%">  <P>C := alpha*A*B + beta*C,  or C := alpha*B*A + beta*C, A is an hermitian</P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/chemm.f">chemm</a>,
+<a href="http://www.netlib.org/blas/zhemm.f">zhemm</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Csyrk.cpp">Csyrk</a> </P> </TD>
+<TD WIDTH="25%">  <P>C := alpha*A*A' + beta*C, or C := alpha*A'*A + beta*C, C is a symmetric</P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/csyrk.f">csyrk</a>,
+<a href="http://www.netlib.org/blas/zsyrk.f">zsyrk</a></p>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rsyrk.cpp">Rsyrk</a> </P> </TD>
+<TD WIDTH="25%">  <P>C := alpha*A*A' + beta*C, or C := alpha*A'*A + beta*C, C is a symmetric</P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/ssyrk.f">ssyrk</a>,
+<a href="http://www.netlib.org/blas/dsyrk.f">dsyrk</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Cherk.cpp">Cherk</a> </P> </TD>
+<TD WIDTH="25%">  <P>  C := alpha*A*conjg( A' ) + beta*C, or C := alpha*conjg( A' )*A + beta*C, C is an hermitian</P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/cherk.f">cherk</a>,
+<a href="http://www.netlib.org/blas/zherk.f">zherk</a></p>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Csyr2k.cpp">Csyr2k</a> </P> </TD>
+<TD WIDTH="25%">  <P> C := alpha*A*B' + alpha*B*A' + beta*C, or C := alpha*A'*B + alpha*B'*A + beta*C, where C is a symmetric</p> </td>
+<td width="25%">  <p>                     </p> </td>
+<td width="25%">  <p><a href="http://www.netlib.org/blas/csyr2k.f">csyr2k</a>,
+<a href="http://www.netlib.org/blas/zsyr2k.f">zsyr2k</a></p>
+</tr>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rsyr2k.cpp">Rsyr2k</a> </P> </TD>
+<TD WIDTH="25%">  <P> C := alpha*A*B' + alpha*B*A' + beta*C, or C := alpha*A'*B + alpha*B'*A + beta*C, where C is a symmetric</p> </td>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/ssyr2k.f">ssyr2k</a>,
+<a href="http://www.netlib.org/blas/dsyr2k.f">dsyr2k</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Cher2k.cpp">Cher2k</a> </P> </TD>
+<TD WIDTH="25%">  <P> C := alpha*A*B' + alpha*B*A' + beta*C, or C := alpha*A'*B + alpha*B'*A + beta*C, where C is an hermitian</p> </td>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/cher2k.f">cher2k</a>,
+<a href="http://www.netlib.org/blas/zher2k.f">zher2k</a></p>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Ctrmm.cpp">Ctrmm</a> </P> </TD>
+<TD WIDTH="25%">  <P>B := alpha*op( A )*B, or B := alpha*B*op(A) </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/ctrmm.f">ctrmm</a>,
+<a href="http://www.netlib.org/blas/ztrmm.f">ztrmm</a></p>
+</TR>
+
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rtrmm.cpp">Rtrmm</a> </P> </TD>
+<TD WIDTH="25%">  <P>B := alpha*op( A )*B, or B := alpha*B*op(A) </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/strmm.f">strmm</a>,
+<a href="http://www.netlib.org/blas/dtrmm.f">dtrmm</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Ctrsm.cpp">Ctrsm</a> </P> </TD>
+<TD WIDTH="25%">  <P> op( A )*X = alpha*B,   or   X*op( A ) = alpha*B </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/ctrsm.f">ctrsm</a>,
+<a href="http://www.netlib.org/blas/ztrsm.f">ztrsm</a></p>
+</TR>
+
+<TR VALIGN=TOP>
+<TD WIDTH="25%">  <P><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/Rtrsm.cpp">Rtrsm</a> </P> </TD>
+<TD WIDTH="25%">  <P> op( A )*X = alpha*B,   or   X*op( A ) = alpha*B </P> </TD>
+<TD WIDTH="25%">  <P>                     </P> </TD>
+<TD WIDTH="25%">  <P><a href="http://www.netlib.org/blas/strsm.f">strsm</a>,
+<a href="http://www.netlib.org/blas/dtrsm.f">dtrsm</a></p>
+</TR>
+</TABLE>
+<hr>
+<pre>$Id: mblas_routines.html,v 1.3 2009/12/22 09:15:41 nakatamaho Exp $</pre>
+</BODY>
+</HTML>

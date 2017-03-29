@@ -1,0 +1,191 @@
+
+diff -ur work.org/f2c/src/expr.c work/f2c/src/expr.c
+--- work.org/f2c/src/expr.c	2008-10-14 14:55:57.000000000 +0900
++++ work/f2c/src/expr.c	2008-10-14 14:44:36.813002000 +0900
+@@ -813,16 +813,16 @@
+ 		break;
+ 
+ 	case OPSLASH:
++/*
+ 		if( ISCOMPLEX(rtype) )
+ 		{
+ 			p = (Exprp) call2(ptype,
+ 
+-/* Handle double precision complex variables */
+-
+ 			    (char*)(ptype == TYCOMPLEX ? "c_div" : "z_div"),
+ 			    mkconv(ptype, lp), mkconv(ptype, rp) );
+ 			break;
+ 		}
++*/
+ 	case OPPLUS:
+ 	case OPMINUS:
+ 	case OPSTAR:
+@@ -3372,7 +3372,8 @@
+ 			break;
+ 		case TYCOMPLEX:
+ 		case TYDCOMPLEX:
+-			zdiv((dcomplex*)cp, (dcomplex*)ad, (dcomplex*)bd);
++			cp->cd[0] = ad[0] / bd[0];
++/*			zdiv((dcomplex*)cp, (dcomplex*)ad, (dcomplex*)bd);*/
+ 			break;
+ 		}
+ 		break;
+diff -ur work.org/f2c/src/putpcc.c work/f2c/src/putpcc.c
+--- work.org/f2c/src/putpcc.c	2008-10-14 14:55:57.000000000 +0900
++++ work/f2c/src/putpcc.c	2008-10-14 15:20:22.000000000 +0900
+@@ -236,9 +236,10 @@
+ 		{
+ 		case OPCALL:
+ 		case OPCCALL:
++/*
+ 			if( ISCOMPLEX(p->exprblock.vtype) )
+ 				p = putcxop(p);
+-			else	p = putcall(p, (Addrp *)NULL);
++			else */	p = putcall(p, (Addrp *)NULL);
+ 			break;
+ 
+ 		case OPMIN:
+@@ -248,11 +249,11 @@
+ 
+ 
+ 		case OPASSIGN:
+-			if(ISCOMPLEX(p->exprblock.leftp->headblock.vtype)
++/*			if(ISCOMPLEX(p->exprblock.leftp->headblock.vtype)
+ 			    || ISCOMPLEX(p->exprblock.rightp->headblock.vtype)) {
+ 				(void) putcxeq(p);
+ 				p = ENULL;
+-			} else if( ISCHAR(p) )
++			} else */ if( ISCHAR(p) )
+ 				p = putcheq(p);
+ 			else
+ 				goto putopp;
+@@ -260,12 +261,14 @@
+ 
+ 		case OPEQ:
+ 		case OPNE:
++/*
+ 			if( ISCOMPLEX(p->exprblock.leftp->headblock.vtype) ||
+ 			    ISCOMPLEX(p->exprblock.rightp->headblock.vtype) )
+ 			{
+ 				p = putcxcmp(p);
+ 				break;
+ 			}
++*/
+ 		case OPLT:
+ 		case OPLE:
+ 		case OPGT:
+@@ -292,7 +295,9 @@
+ 				p->exprblock.rightp = ICON(k);
+ 				goto putopp;
+ 			}
+-			if (krparens && ISREAL(p->exprblock.vtype))
++//			if (krparens && ISREAL(p->exprblock.vtype))
++//				return krput(p);
++			if (krparens)
+ 				return krput(p);
+ 
+ 		case OPMOD:
+@@ -306,20 +311,20 @@
+ 		case OPNEG1:
+ 		case OPABS:
+ 		case OPDABS:
+-			if( ISCOMPLEX(p->exprblock.vtype) )
++/*			if( ISCOMPLEX(p->exprblock.vtype) )
+ 				p = putcxop(p);
+-			else	goto putopp;
++			else */	goto putopp;
+ 			break;
+ 
+ 		case OPCONV:
+-			if( ISCOMPLEX(p->exprblock.vtype) )
++/*			if( ISCOMPLEX(p->exprblock.vtype) )
+ 				p = putcxop(p);
+ 			else if( ISCOMPLEX(p->exprblock.leftp->headblock.vtype) )
+ 			{
+ 				p = putx( mkconv(p->exprblock.vtype,
+ 				    (expptr)realpart(putcx1(p->exprblock.leftp))));
+ 			}
+-			else	goto putopp;
++			else */	goto putopp;
+ 			break;
+ 
+ 		case OPNOT:
+@@ -408,31 +413,37 @@
+ 		    ( (ISREAL(pt)&&ONEOF(lt,MSKREAL|MSKCOMPLEX)) ||
+ 		    (INT(pt)&&(ONEOF(lt,MSKINT|MSKADDR|MSKCHAR|M(TYSUBR)))) ))
+ 		{
+-			if(pt==TYDREAL && lt==TYREAL)
++			if(pt==TYDREAL)
+ 			{
+ 				if(lp->tag==TEXPR
+ 				&& lp->exprblock.opcode == OPCONV) {
+ 				    lt1 = lp->exprblock.leftp->headblock.vtype;
+-				    if (lt1 == TYDREAL) {
++				    if (lt1 == TYDREAL || lt1 == TYDCOMPLEX) {
+ 					lp->exprblock.leftp =
+ 						putx(lp->exprblock.leftp);
+ 					return p;
+ 					}
++/*
+ 				    if (lt1 == TYDCOMPLEX) {
+ 					lp->exprblock.leftp = putx(
+ 						(expptr)realpart(
+ 						putcx1(lp->exprblock.leftp)));
+ 					return p;
+ 					}
++*/
+ 				    }
+ 				break;
+ 			}
++/*
+ 			else if (ISREAL(pt) && ISCOMPLEX(lt)) {
++
+ 				p->exprblock.leftp = putx(mkconv(pt,
+ 					(expptr)realpart(
+ 						putcx1(p->exprblock.leftp))));
+ 				break;
++
+ 				}
++*/
+ 			if(lt==TYCHAR && lp->tag==TEXPR &&
+ 			    lp->exprblock.opcode==OPCALL)
+ 			{
+@@ -624,11 +635,12 @@
+ 	rp = putcx1(p->exprblock.rightp);
+ 	code = putassign ( (expptr)realpart(lp), (expptr)realpart(rp));
+ 
+-	if( ISCOMPLEX(p->exprblock.vtype) )
++/*	if( ISCOMPLEX(p->exprblock.vtype) )
+ 	{
+ 		code = mkexpr (OPCOMMA, code, putassign
+ 			(imagpart(lp), imagpart(rp)));
+ 	}
++*/
+ 	putout (code);
+ 	frexpr((expptr)rp);
+ 	free ((charptr) p);
+@@ -1839,8 +1851,8 @@
+ 			goto make_copy;
+ 		cp->datap = (char *)putaddr(q);
+ 		}
+-	else if( ISCOMPLEX(q->headblock.vtype) )
+-	    cp -> datap = (char *) putx (fixtype(putcxop(q)));
++//	else if( ISCOMPLEX(q->headblock.vtype) )
++//	    cp -> datap = (char *) putx (fixtype(putcxop(q)));
+ 	else if (ISCHAR(q) )
+ 	    cp -> datap = (char *) putx (fixtype((expptr)putchop(q)));
+ 	else if( ! ISERROR(q) )
+@@ -1848,8 +1860,10 @@
+ 	    if(byvalue) {
+ 		if (q->tag == TEXPR && q->exprblock.opcode == OPCONV) {
+ 			if (ISCOMPLEX(q->exprblock.leftp->headblock.vtype)
+-			 && q->exprblock.leftp->tag == TEXPR)
+-				q->exprblock.leftp = putcxop(q->exprblock.leftp);
++			    && q->exprblock.leftp->tag == TEXPR) {
++//				q->exprblock.leftp = putcxop(q->exprblock.leftp);
++				q->exprblock.leftp = putx(q->exprblock.leftp);
++			    }
+ 			else
+ 				q->exprblock.leftp = putx(q->exprblock.leftp);
+ 			}

@@ -1,0 +1,13 @@
+--- include/qd/inline.h	2008-07-22 09:17:03.000000000 +0900
++++ include/qd/inline.h	2012-12-12 10:06:23.647937740 +0900
+@@ -31,6 +31,10 @@
+ static const double _d_nan = std::numeric_limits<double>::quiet_NaN();
+ static const double _d_inf = std::numeric_limits<double>::infinity();
+ 
++#if defined(__INTEL_COMPILER)
++#pragma optimize("", off)
++#endif
++
+ /*********** Basic Functions ************/
+ /* Computes fl(a+b) and err(a+b).  Assumes |a| >= |b|. */
+ inline double quick_two_sum(double a, double b, double &err) {

@@ -1,0 +1,40 @@
+# Sample Makefile
+# by Nakata Maho
+CXX=g++44
+MPACKDIR=/work/MPACK
+CXXFLAGS= -I$(MPACKDIR)/include -I$(MPACKDIR)/include/mpack -I$(MPACKDIR)/include/qd
+OPTFLAGS= -O2
+LIBFLAGS=-L$(MPACKDIR)/lib
+MPFRLIBS=-lmblas_mpfr -lmpfrcxx -lmpfr -lmpc -lgmp
+GMPLIBS=-lmblas_gmp -lgmpxx -lgmp 
+QDLIBS=-lmblas_qd -lqd
+DDLIBS=-lmblas_dd -lqd
+__FLOAT128LIBS=-lmblas___float128 -lquadmath
+BLAS=
+LAPACK=
+FLIBS=
+
+programs=Rgemm_mpfr Rgemm_gmp Rgemm_qd Rgemm_dd
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
+
+Rgemm_mpfr: Rgemm_mpfr.o
+	$(CXX) -static -o Rgemm_mpfr Rgemm_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rgemm_gmp: Rgemm_gmp.o
+	$(CXX) -static -o Rgemm_gmp Rgemm_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rgemm_qd: Rgemm_qd.o
+	$(CXX) -static -o Rgemm_qd Rgemm_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rgemm_dd: Rgemm_dd.o
+	$(CXX) -static -o Rgemm_dd Rgemm_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgemm___float128: Rgemm___float128.o
+	$(CXX) -static -o Rgemm___float128 Rgemm___float128.o $(LIBFLAGS) $(__FLOAT128LIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak

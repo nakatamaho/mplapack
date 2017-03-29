@@ -1,0 +1,18 @@
+--- src/fpu.cpp	2008-05-10 08:25:19.000000000 +0900
++++ src/fpu.cpp	2012-06-08 14:50:46.276453256 +0900
+@@ -14,6 +14,15 @@
+ #include "config.h"
+ #include <qd/fpu.h>
+ 
++#ifdef  __cplusplus
++extern "C" {
++#endif
++unsigned int _controlfp (unsigned int unNew, unsigned int unMask);
++unsigned int _control87 (unsigned int unNew, unsigned int unMask);
++#ifdef  __cplusplus
++}
++#endif
++
+ #ifdef X86
+ #ifdef  _WIN32
+ #include <float.h>

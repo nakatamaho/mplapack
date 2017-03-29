@@ -1,0 +1,38 @@
+bench_PROGRAMS += \
+Rpotrf.dd Rpotrf.dd_ref \
+Rpotf2.dd Rpotf2.dd_ref \
+Rgetrf.dd Rgetrf.dd_ref
+
+if ENABLE_CUDA
+include Makefile.dd.cuda.am
+endif
+
+ddcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_DD___
+ddreflapack_libdepends = -L$(top_builddir)/mlapack/reference -lmlapack_dd_ref
+ddoptlapack_libdepends = -L$(top_builddir)/mlapack/optimized/dd -lmlapack_dd
+ddref_libdepends = $(ddreflapack_libdepends) -L$(top_builddir)/mlapack/reference -lmlapack_dd_ref -L$(top_builddir)/mblas/reference -lmblas_dd_ref -L$(top_srcdir)/$(QD_LIBDIR) -lqd $(DYLD)
+ddopt_libdepends = $(ddoptlapack_libdepends) -L$(top_builddir)/mlapack/optimized/dd -lmlapack_dd -L$(top_builddir)/mblas/optimized/dd -lmblas_dd -L$(top_srcdir)/$(QD_LIBDIR) -lqd $(DYLD)
+
+Rpotrf_dd_ref_SOURCES= Rpotrf.cpp
+Rpotrf_dd_ref_CXXFLAGS= $(ddcxxflags)
+Rpotrf_dd_ref_LDFLAGS= $(ddref_libdepends)
+
+Rpotrf_dd_SOURCES= Rpotrf.cpp
+Rpotrf_dd_CXXFLAGS= $(ddcxxflags)
+Rpotrf_dd_LDFLAGS= $(ddopt_libdepends)
+
+Rpotf2_dd_ref_SOURCES= Rpotf2.cpp
+Rpotf2_dd_ref_CXXFLAGS= $(ddcxxflags)
+Rpotf2_dd_ref_LDFLAGS= $(ddref_libdepends)
+
+Rpotf2_dd_SOURCES= Rpotf2.cpp
+Rpotf2_dd_CXXFLAGS= $(ddcxxflags)
+Rpotf2_dd_LDFLAGS= $(ddopt_libdepends)
+
+Rgetrf_dd_ref_SOURCES= Rgetrf.cpp
+Rgetrf_dd_ref_CXXFLAGS= $(ddcxxflags)
+Rgetrf_dd_ref_LDFLAGS= $(ddref_libdepends)
+
+Rgetrf_dd_SOURCES= Rgetrf.cpp
+Rgetrf_dd_CXXFLAGS= $(ddcxxflags)
+Rgetrf_dd_LDFLAGS= $(ddopt_libdepends)

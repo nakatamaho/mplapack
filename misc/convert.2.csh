@@ -1,0 +1,260 @@
+foreach lapack ( *.f )
+  ../../f2c_hacked/src/f2c $lapack
+  gindent -di4 -i4 -l180 $lapack:r.c
+  sed -i bak -e '1,11d' \
+             -e 's/static//g'             \
+             -e "s/d\([a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9]\)_(/R\1(/g" \
+             -e "s/d\([a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9]\)_(/R\1(/g" \
+             -e "s/d\([a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9]\)_(/R\1(/g" \
+             -e "s/d\([a-z0-9][a-z0-9][a-z0-9][a-z0-9]\)_(/R\1(/g" \
+             -e "s/d\([a-z0-9][a-z0-9][a-z0-9]\)_(/R\1(/g" \
+             -e "s/d\([a-z0-9][a-z0-9]\)_(/R\1(/g" \
+             -e "s/d\([a-z0-9]\)_(/R\1(/g" \
+             -e "s/z\([a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9]\)_(/C\1(/g" \
+             -e "s/z\([a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9]\)_(/C\1(/g" \
+             -e "s/z\([a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9]\)_(/C\1(/g" \
+             -e "s/z\([a-z0-9][a-z0-9][a-z0-9][a-z0-9]\)_(/C\1(/g" \
+             -e "s/z\([a-z0-9][a-z0-9][a-z0-9]\)_(/C\1(/g" \
+             -e "s/z\([a-z0-9][a-z0-9]\)_(/C\1(/g" \
+             -e "s/z\([a-z0-9]\)_(/C\1(/g" \
+             -e 's/lsame_/Mlsame/g'                 \
+             -e 's/integer/INTEGER/g'                \
+             -e 's/return 0/return/g'                   \
+             -e 's/doublereal/REAL/g'             \
+             -e 's/doublecomplex/COMPLEX/g'  \
+             -e 's/extern double dlamch_(char \*, ftnlen)//g'  \
+             -e "s/, ftnlen [a-z]*_len//g" \
+             -e 's/, (ftnlen) [0-9]//g'                  \
+             -e 's/, (ftnlen) [0-9][0-9]//g'                  \
+             -e 's/, ftnlen//g'                  \
+             -e 's/d_sign/Msign/g'                  \
+             -e 's/TRUE_/MTRUE/g'                  \
+             -e 's/FALSE_/MFALSE/g'                  \
+             -e 's/, &c__65/, 65/g'                         \
+             -e 's/, &c__1/, 1/g'                         \
+             -e 's/, &c_n1/, -1/g'                         \
+             -e 's/, &c__0/, 0/g'                         \
+             -e 's/, &c__9/, 9/g'                         \
+             -e 's/j = 1/ j = 0/g'                         \
+             -e 's/i = 1/ i = 0/g'                         \
+             -e 's/k = 1/ k = 0/g'                         \
+             -e 's/l = 1/ l = 0/g'                         \
+             -e 's/i = 2/ i = 1/g'                         \
+             -e 's/r__/r/g'                         \
+             -e 's/z__/z/g'                         \
+             -e 's/c__/c/g'                         \
+             -e 's/d__/d/g'                         \
+             -e 's/i__/i/g'                         \
+             -e 's/h__/h/g'                         \
+             -e 's/++j/j++/g'                         \
+             -e 's/++i/i++/g'                         \
+             -e 's/++k/k++/g'                         \
+             -e 's/++l/l++/g'                         \
+             -e 's/++m/m++/g'                         \
+             -e 's/--j/j--/g'                         \
+             -e 's/--i/i--/g'                         \
+             -e 's/--k/k--/g'                         \
+             -e 's/--l/l--/g'                         \
+             -e 's/--m/m--/g'                         \
+             -e 's/dmin__/dmin/g'                         \
+             -e 's/type__/type/g'                         \
+             -e 's/u2_offset/0/g'                         \
+             -e 's/q2_offset/0/g'                         \
+             -e 's/vr_offset/0/g'                         \
+             -e 's/c1_offset/0/g'                         \
+             -e 's/c2_offset/0/g'                         \
+             -e 's/[a-z]_offset/0/g'                         \
+             -e 's/work_offset/0/g'                         \
+             -e 's/xerbla_/Mxerbla/g'               \
+             -e 's/\*m/m/g'                         \
+             -e 's/\*n/n/g'                         \
+             -e 's/\*k/k/g'                         \
+             -e 's/\*lda/lda/'                     \
+             -e 's/\*ldb/ldb/'                     \
+             -e 's/\*ldc/ldc/'                     \
+             -e 's/\*ldq/ldq/'                     \
+             -e 's/\*ldv/ldv/'                     \
+             -e 's/\*ldz/ldz/'                     \
+             -e 's/\*ldx/ldx/'                     \
+             -e 's/\*ldab/ldab/'                     \
+             -e 's/\*ldaf/ldaf/g'                     \
+             -e 's/a_dim1/lda/g'                    \
+             -e 's/u2_dim1/ldu2/g'                    \
+             -e 's/vt2_dim1/ldvt2/g'                    \
+             -e 's/s_dim1/lds/g'                    \
+             -e 's/p_dim1/ldp/g'                    \
+             -e 's/e_dim1/lde/g'                    \
+             -e 's/w_dim1/ldw/g'                    \
+             -e 's/difr_dim1/lddifr/g'                    \
+             -e 's/difl_dim1/lddifl/g'                    \
+             -e 's/f_dim1/ldf/g'                    \
+             -e 's/d_dim1/ldd/g'                    \
+             -e 's/work_dim1/ldwork/g'                    \
+             -e 's/q2_dim1/ldq2/g'                    \
+             -e 's/h_dim1/ldh/g'                    \
+             -e 's/z_dim1/ldz/g'                    \
+             -e 's/vs_dim1/ldvs/g'                    \
+             -e 's/vsr_dim1/ldvsr/g'                    \
+             -e 's/vsl_dim1/ldvsl/g'                    \
+             -e 's/vl_dim1/ldvl/g'                    \
+             -e 's/vr_dim1/ldvr/g'                    \
+             -e 's/tl_dim1/ldtl/g'                    \
+             -e 's/tr_dim1/ldtr/g'                    \
+             -e 's/c_dim1/ldc/g'                    \
+             -e 's/y_dim1/ldy/g'                    \
+             -e 's/q_dim1/ldq/g'                    \
+             -e 's/t_dim1/ldt/g'                    \
+             -e 's/v_dim1/ldv/g'                    \
+             -e 's/u_dim1/ldu/g'                    \
+             -e 's/z3\.r/z3_r/g'                    \
+             -e 's/z2\.r/z2_r/g'                    \
+             -e 's/z1\.r/z1_r/g'                    \
+             -e 's/z3\.i/z3_i/g'                    \
+             -e 's/z2\.i/z2_i/g'                    \
+             -e 's/z1\.i/z1_i/g'                    \
+             -e 's/\*ldx/ldx/g'                     \
+             -e 's/\*ldu/ldu/g'                     \
+             -e 's/x_dim1/ldx/g'                    \
+             -e 's/\*ldb/ldb/g'                     \
+             -e 's/b_dim1/ldb/g'                    \
+             -e 's/char \*jobu/const char \*jobu/g' \
+             -e 's/char \*jobv/const char \*jobv/g' \
+             -e 's/char \*jobq/const char \*jobq/g' \
+             -e 's/char \*job,/const char \*job,/g' \
+             -e 's/char \*howmny/const char \*howmny/g' \
+             -e 's/char \*jobz/const char \*jobz/g' \
+             -e 's/char \*side/const char \*side/g' \
+             -e 's/char \*pivot/const char \*pivot/g' \
+             -e 's/char \*uplo/const char \*uplo/g' \
+             -e 's/char \*trans/const char \*trans/g' \
+             -e 's/char \*direct/const char \*direct/g' \
+             -e 's/char \*diag/const char \*diag/g' \
+             -e 's/char \*norm/const char \*norm/g' \
+             -e 's/char \*fact/const char \*fact/g' \
+             -e 's/char \*equed/const char \*equed/g' \
+             -e 's/char \*range/const char \*range/g' \
+             -e 's/extern logical Mlsame(char \*, char \*, ftnlen, ftnlen);//g' \
+             -e 's/extern \/\* Subroutine \*\/ int Mxerbla(char \*, int \*, ftnlen);//g' \
+             -e 's/, Mxerbla(char \*, int \*, ftnlen);//g' \
+             -e 's/Mxerbla(char \*, int \*, ftnlen),//g' \
+             -e 's/Mxerbla(char \*, int \*, ftnlen);//g' \
+             -e 's/&c_false/MFALSE/g' \
+             -e 's/&c_true/MTRUE/g' \
+             -e 's/\/\* Subroutine \*\///g' \
+             -e 's/(d\([0-9]\) = \(.*\)\(\[.*\]\), abs(d\(\1\)))/abs(\2\3)/g' \
+             -e 's/(z\([0-9]\) = \(.*\)\(\[.*\]\), abs(z\(\1\)))/abs(\2\3)/g' \
+             -e 's/d_cnjg(&...../conjg(/g' \
+             -e 's/d_cnjg(&z1, &/conjg(/g' \
+             -e 's/d_cnjg(&z2, &/conjg(/g' \
+             -e 's/dlamch_/Rlamch/g' $lapack:r.c
+  gindent -di4 -i4 -l180 $lapack:r.c
+  sed -i bak -e 's/, (ftnlen) [0-9]//g'                  \
+             -e 's/, (ftnlen) [0-9][0-9]//g'                  \
+             -e 's/, (ftnlen)//g'                  \
+             -e 's/&c65/65/g'                         \
+             -e 's/&c1/1/g'                         \
+             -e 's/&c2/2/g'                         \
+             -e 's/&c3/3/g'                         \
+             -e 's/&c_n1/-1/g'                         \
+             -e 's/&c0/0/g'                         \
+             -e 's/for (i = 0; i <= /for (i = 0; i < /g'                  \
+             -e 's/for (i = 1; i <= /for (i = 0; i < /g'                  \
+             -e 's/for (i = 2; i <= /for (i = 1; i < /g'                  \
+             -e 's/for (j = 0; j <= /for (j = 0; j < /g'                  \
+             -e 's/for (k = 0; k <= /for (k = 0; k < /g'                  \
+             -e 's/for (l = 0; l <= /for (l = 0; l < /g'                  \
+             -e 's/\* m/m/g'                     \
+             -e 's/\* n/n/g'                     \
+             -e 's/\* k/k/g'                     \
+             -e 's/\* p/p/g'                     \
+             -e 's/\* lda/lda/g'                     \
+             -e 's/\* ldb/ldb/g'                     \
+             -e 's/\* ldq/ldq/g'                     \
+             -e 's/\* ldv/ldv/g'                     \
+             -e 's/\&d\[1\]/\&d\[0\]/g'                         \
+             -e 's/\&d\[1\]/\&d\[0\]/g'                         \
+             -e 's/\&u\[1\]/\&u\[0\]/g'                         \
+             -e 's/\&e\[1\]/\&e\[0\]/g'                         \
+             -e 's/\&x\[1\]/\&x\[0\]/g'                         \
+             -e 's/\&y\[1\]/\&y\[0\]/g'                         \
+             -e 's/\&work\[1\]/\&work\[0\]/g'                         \
+             -e 's/x\[1\]/x\[0\]/g'                         \
+             -e 's/y\[1\]/y\[0\]/g'                         \
+             -e 's/\/\* L[1-9]0: \*\///g'                         \
+             -e 's/\/\* L[1-9][0-9]0: \*\///g'                         \
+             -e 's/static int c_n1 = -1;//g'          \
+             -e 's/static int c1 = 1;//g'             \
+             -e 's/static int c0 = 0;//g'             \
+             -e 's/static int c9 = 9;//g'             \
+             -e 's/static int c65 = 65;//g'             \
+             -e 's/ab\[/AB\[/g'             \
+             -e 's/a\[/A\[/g'             \
+             -e 's/b\[/B\[/g'             \
+             -e 's/extern.*//g' \
+             -e 's/i1 = -(\*info);//g' \
+             -e 's/i2 = -(\*info);//g' \
+             -e 's/coffset/0/g' \
+             -e 's/Mxerbla("D\(.*\)&i1);/Mxerbla("R\1-(*info));/g' \
+             -e 's/Mxerbla("D\(.*\)&i2);/Mxerbla("R\1-(*info));/g' \
+             -e 's/Mxerbla("Z\(.*\)&i1);/Mxerbla("C\1-(*info));/g' \
+             -e 's/Mxerbla("Z\(.*\)&i2);/Mxerbla("C\1-(*info));/g' \
+             -e 's/\*(unsigned char \*)//g' \
+             -e 's/#include "f2c.h"//g' \
+             -e 's/zRscal/CRscal/g' \
+             -e 's/zRotc/Cdotc/g' \
+             -e 's/zRrot/CRrot/g' \
+	     -e 's/aldb/ldab/g' \
+	     -e 's/info2/info/g' \
+	     -e 's/\*incx/incx/g' \
+	     -e 's/\*incy/incy/g' \
+	     -e 's/\*incv/incv/g' \
+             -e 's/static const char \*norm\[1\];/char norm/g' \
+             -e 's/static const char \*normin\[1\];/char normin/g' \
+             -e 's/static const char \*trans\[1\];/char trans/g' \
+             -e 's/static const char \*transt\[1\];/char transt/g' \
+             -e 's/static const char \*transn\[1\];/char transn/g' \
+             -e 's/static const char \*vect\[1\];/char vect/g' \
+             -e 's/z_abs/abs/g'                         \
+             -e 's/0\./Zero/g'                         \
+             -e 's/1\./One/g'                         \
+             -e 's/2\./Two/g'                         \
+             -e 's/4\./Four/g'                         \
+             -e 's/8\./Eight/g'                         \
+             -e 's/z1_r/z1.re/g'                    \
+             -e 's/z2_r/z2.re/g'                    \
+             -e 's/z3_r/z3.re/g'                    \
+             -e 's/z1_i/z1.im/g'                    \
+             -e 's/z2_i/z2.im/g'                    \
+             -e 's/z3_i/z3.im/g'                    \
+             -e 's/, ftnlen//g'                  $lapack:r.c 
+
+  sed -i bak -e 's/\* lda + 1/\* lda/g'                  \
+             -e 's/logical/LOGICAL/g'             \
+             -e 's/max(1, n)/max((INTEGER)1, n)/g'             \
+             -e 's/max(1, m)/max((INTEGER)1, m)/g'             \
+             -e 's/abs(&/abs(/g'             \
+             -e 's/Rznrm2/RCnrm2/g'             \
+             -e 's/static INTEGER c_n1 = -1;//g'          \
+             -e 's/static INTEGER c1 = 1;//g'             \
+             -e 's/static INTEGER c0 = 0;//g'             \
+             -e 's/static INTEGER c9 = 9;//g'             \
+             -e 's/static INTEGER c65 = 65;//g'             \
+             -e 's/a0/0/g'                     \
+             -e 's/v0/0/g'                     \
+             -e 's/vs0/0/g'                     \
+             -e 's/af0/0/g'                     \
+             -e 's/afldb/ldafb/g'                     \
+             -e 's/alphA/alpha/g'                     \
+             -e 's/betA/beta/g'                     \
+             -e 's/afB/afb/g'                     \
+             -e 's/vldt/ldvt/g'                     \
+             -e 's/max(d1, d2)/max(mtemp1, mtemp2)/g'                     \
+             -e 's/min(d1, d2)/min(mtemp1, mtemp2)/g'                     \
+             -e 's/ilaenv_/iMlaenv/g'                     \
+              $lapack:r.c 
+  rm $lapack:r.cbak
+end
+
+#             -e "s/(d[0-9] = \([a-z]\[[a-z]*\]\), abs(d[0-9])/abs(\1)/g" \
+# d_cnjg(&z1, &tau[i]);
+

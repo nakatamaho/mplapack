@@ -1,0 +1,666 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML lang="en">
+<HEAD>
+        <LINK REV="MADE" HREF="mailto:maho@riken.jp">
+        <LINK REL="NEXT" HREF="index.html">
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE>LIST OF MLAPACK ROUTINES and LAPACK correspondence</TITLE>
+</HEAD>
+<BODY>
+
+<DIV ALIGN="CENTER"><h1>MLAPACK driver/computational routines</h1></DIV>
+
+<DIV ALIGN="CENTER">
+<a href="http://www.netlib.org/lapack/lug/node142.html">List for LAPACK driver/computational routines</a><br>
+Driver routines are listed in bold type, for example <STRONG>Rgbsv</STRONG> and <STRONG>Cgbsv</STRONG>.
+<TABLE CELLPADDING=3 BORDER="1" SUMMARY="MLAPACK DRIVER and COMPUTATIONAL routines">
+<TR>
+<TD ALIGN="CENTER" COLSPAN=2>MLAPACK Routine</TD>
+<TD ALIGN="CENTER" COLSPAN=2>LAPACK correspondence</TD>
+<TD ALIGN="CENTER" COLSPAN=1 WIDTH=324>Description</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT">real</TD>
+<TD ALIGN="LEFT">complex</TD>
+<TD ALIGN="LEFT">real</TD>
+<TD ALIGN="LEFT">complex</TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rsteqr.cpp">Rsteqr</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Csteqr.cpp">Csteqr</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dsteqr.f">dsteqr</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zsteqr.f">zsteqr</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Computes all eigenvalues and eigenvectors of a real symmetric tridiagonal matrix, using the implicit QL or QR algorithm.
+<font color="#ff0000">NOT CHECKED FOR EXTREME CASES and "I"</font>
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rsterf.cpp">Rsterf</a></TD>
+<TD ALIGN="LEFT">
+&nbsp;
+</TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dsterf.f">dsterf</a></TD>
+<TD ALIGN="LEFT">
+&nbsp;
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Computes all eigenvalues of a real symmetric tridiagonal matrix, using a root-free variant of the QL or QR algorithm.
+<font color="#ff0000">NOT CHECKED FOR EXTREME CASES and "I"</font>
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT">
+<a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rorgqr.cpp">Rorgqr</a></TD>
+<TD ALIGN="LEFT">
+<a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Cungqr.cpp">Cungqr</a></TD>
+</TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dorgqr.f">dorgqr</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zungqr.f">zungqr</a></TD>
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Generates all or part of the orthogonal/unitary matrix Q from a QR factorization determined by Rgeqrf/Cgeqrf.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT">
+<a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rorgql.cpp">Rorgql</a></TD>
+<TD ALIGN="LEFT">
+<a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Cungql.cpp">Cungql</a></TD>
+</TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dorgql.f">dorgql</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zungql.f">zungql</a></TD>
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Generates all or part of the orthogonal/unitary matrix Q from a QL factorization determined by Rgeqlf/Cgeqlf.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT">
+<a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rsytrd.cpp">Rsytrd</a></TD>
+<TD ALIGN="LEFT">
+<a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Chetrd.cpp">Chetrd</a></TD>
+</TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dsytrd.f">dsytrd</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zhetrd.f">zhetrd</a></TD>
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Reduces a symmetric/Hermitian matrix to real symmetric tridiagonal form by an orthogonal/unitary similarity transformation.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT">
+<a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rorgtr.cpp">Rorgtr</a></TD>
+<TD ALIGN="LEFT">
+<a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Cungtr.cpp">Cungtr</a></TD>
+</TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dorgtr.f">dorgtr</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zungtr.f">zungtr</a></TD>
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Generates the orthogonal/unitary transformation matrix from a reduction to tridiagonal form determined by Rsytrd/Chetrd.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT">
+<a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rsyev.cpp"><strong>Rsyev</strong></a></TD>
+<TD ALIGN="LEFT">
+<a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Cheev.cpp"><strong>Cheev</strong></a></TD>
+</TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dsyev.f"><strong>dsyev</strong></a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zheev.f"><strong>zheev</strong></a></TD>
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Computes all eigenvalues and, optionally, eigenvectors of a symmetric/Hermitian matrix.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT">
+<a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rpotrf.cpp">Rpotrf</a></TD>
+<TD ALIGN="LEFT">
+<a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Cpotrf.cpp">Cpotrf</a></TD>
+</TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dpotrf.f">dpotrf</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zpotrf.f">zpotrf</a></TD>
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Computes the Cholesky factorization of a symmetric/Hermitian positive definite matrix.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT">
+<a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rtrtri.cpp">Rtrtri</a></TD>
+<TD ALIGN="LEFT">
+<a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Ctrtri.cpp">Ctrtri</a></TD>
+</TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dtrtri.f">dtrtri</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/ztrtri.f">ztrtri</a></TD>
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Computes the inverse of a triangular matrix.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rgetrf.cpp">Rgetrf</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Cgetrf.cpp">Cgetrf</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dgetrf.f">dgetrf</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zgetrf.f">zgetrf</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Computes an LU factorization of a general matrix, using partial pivoting with row interchanges.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rgetri.cpp">Rgetri</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Cgetri.cpp">Cgetri</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dgetri.f">dgetri</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zgetri.f">zgetri</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Computes the inverse of a general matrix, using the LU factorization computed by Rgetrf/Cgetrf.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rgetrs.cpp">Rgetrs</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Cgetrs.cpp">Cgetrs</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dgetrs.f">dgetrs</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zgetrs.f">zgetrs</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Solves a general system of linear equations AX=B, A^T X=B or A^H X=B, using the LU factorization computed by Rgetrf/Cgetrf.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rgesv.cpp"><strong>Rgesv</strong></a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Cgesv.cpp"><strong>Cgesv</strong></a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dgesv.f"><strong>dgesv</strong></a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zgesv.f"><strong>zgesv</strong></a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Solves a general system of linear equations AX=B.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rtrtrs.cpp">Rtrtrs</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Ctrtrs.cpp">Ctrtrs</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dtrtrs.f">dtrtrs</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/ztrtrs.f">ztrtrs</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Solves a triangular system of linear equations A X=B, A^T X=B or A^H X=B.
+</TD>
+</TR>
+
+
+
+</TABLE>
+</DIV>
+
+<DIV ALIGN="CENTER"><h1>MLAPACK auxiliary routines</h1></DIV>
+<DIV ALIGN="CENTER">
+<a href="http://www.netlib.org/lapack/lug/node144.html">List for LAPACK auxliary routines</a>
+<TABLE CELLPADDING=3 BORDER="1" SUMMARY="MLAPACK auxiliary routines">
+<TR>
+<TD ALIGN="CENTER" COLSPAN=2>MLAPACK Routine</TD>
+<TD ALIGN="CENTER" COLSPAN=2>LAPACK correspondence</TD>
+<TD ALIGN="CENTER" COLSPAN=1 WIDTH=324>Description</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT">real</TD>
+<TD ALIGN="LEFT">complex</TD>
+<TD ALIGN="LEFT">real</TD>
+<TD ALIGN="LEFT">complex</TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlae2.cpp">Rlae2</a></TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlae2.f">dlae2</a></TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">Computes the eigenvalues of a 2-by-2 symmetric matrix.</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlamch.cpp">Rlamch</a></TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/INSTALL/dlamch.f">dlamch</a></TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">Determines machine parameters for floating-point arithmetic.</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlaev2.cpp">Rlaev2</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Claev2.cpp">Claev2</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlaev2.f">dlaev2</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlaev2.f">zlaev2</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">Computes the eigenvalues and eigenvectors of a 2-by-2 symmetric/Hermitian matrix.</TD>
+</TR>
+
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlassq.cpp">Rlassq</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Classq.cpp">Classq</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlassq.f">dlassq</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlassq.f">zlassq</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">Updates a sum of squares represented in scaled form.</TD>
+</TR>
+
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlanst.cpp">Rlanst</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Clanht.cpp">Clanht</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlanst.f">dlanst</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlanht.f">zlanht</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">Returns the value of the 1-norm, Frobenius norm, infinity-norm, or the largest absolute value of any element, of a symmetric/Hermitian tridiagonal matrix.</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlansy.cpp">Rlansy</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Clansy.cpp">Clansy</a>
+<a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Clanhe.cpp">Clanhe</a>
+</TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlansy.f">dlansy</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlansy.f">zlansy</a>,<a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlanhe.f">zlanhe</a>
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">Returns the value of the 1-norm, Frobenius norm, infinity-norm, or the largest absolute value of any element, of a symmetric/Hermitian tridiagonal matrix.</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlapy2.cpp">Rlapy2</a></TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlapy2.f">dlapy2</a></TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">Returns sqrt(x^2 + y^2), avoiding unnecessary overflow or harmful underflow.</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlapy3.cpp">Rlapy3</a></TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlapy3.f">dlapy3</a></TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">Returns sqrt(x^2 + y^2 + z^2), avoiding unnecessary overflow or harmful underflow.</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rladiv.cpp">Rladiv</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Cladiv.cpp">Cladiv</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dladiv.f">dladiv</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zladiv.f">zladiv</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Performs complex division in real arithmetic, avoiding unnecessary overflow.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlarfg.cpp">Rlarfg</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Clarfg.cpp">Clarfg</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlarfg.f">dlarfg</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlarfg.f">zlarfg</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">Generates an elementary reflector (Householder matrix).<font color="#ff0000">NOT CHECKED FOR EXTREME CASES</font>
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlartg.cpp">Rlartg</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Clartg.cpp">Clartg</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlartg.f">dlartg</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlartg.f">zlartg</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">Generates a plane rotation with real cosine and real/complex sine.<font color="#ff0000">NOT CHECKED FOR EXTREME CASES</font>
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlaset.cpp">Rlaset</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Claset.cpp">Claset</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlaset.f">dlaset</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlaset.f">zlaset</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Initializes the off-diagonal elements of a matrix to alpha and the diagonal elements to beta.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlasr.cpp">Rlasr</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Clasr.cpp">Clasr</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlasr.f">dlasr</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlasr.f">zlasr</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Applies a sequence of plane rotations to a general rectangular matrix.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Clacgv.cpp">Clacgv</a></TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlacgv.f">zlacgv</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Conjugates a complex vector.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rpotf2.cpp">Rpotf2</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Cpotf2.cpp">Cpotf2</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dpotf2.f">dpotf2</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zpotf2.f">zpotf2</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Computes the Cholesky factorization of a symmetric/Hermitian positive definite matrix (unblocked algorithm).
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlascl.cpp">Rlascl</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Clascl.cpp">Clascl</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlascl.f">dlascl</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlascl.f">zlascl</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Multiplies a general rectangular matrix by a real scalar defined as cto/cfrom.
+<font color="#ff0000">NOT CHECKED FOR EXTREME CASES</font>
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlasrt.cpp">Rlasrt</a></TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlasrt.f">dlasrt</a></TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Sorts numbers in increasing or decreasing order using Quick Sort.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rsytd2.cpp">Rsytd2</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Chetd2.cpp">Chetd2</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dsytd2.f">dsytd2</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zhetd2.f">zhetd2</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Reduces a symmetric/Hermitian matrix to real symmetric tridiagonal form by an orthogonal/unitary similarity transformation (unblocked algorithm).
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlarf.cpp">Rlarf</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Clarf.cpp">Clarf</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlarf.f">dlarf</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlarf.f">zlarf</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Applies an elementary reflector to a general rectangular matrix.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rorg2l.cpp">Rorg2l</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Cung2l.cpp">Cung2l</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dorg2l.f">dorg2l</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zung2l.f">zung2l</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Generates all or part of the orthogonal/unitary matrix Q from a QL factorization determined by Rgeqlf/Cgeqlf (unblocked algorithm).
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rorg2r.cpp">Rorg2r</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Cung2r.cpp">Cung2r</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dorg2r.f">dorg2r</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zung2r.f">zung2r</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Generates all or part of the orthogonal/unitary matrix Q from a QR factorization determined by Rgeqrf/Cgeqrf (unblocked algorithm).
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlarft.cpp">Rlarft</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Clarft.cpp">Clarft</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlarft.f">dlarft</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlarft.f">zlarft</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Forms the triangular factor T of a block reflector H = I - V^T V^H.
+<font color="#ff0000">NOT CHECKED FOR TAU[i]=0 for some CASES</font>
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlarfb.cpp">Rlarfb</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Clarfb.cpp">Clarfb</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlarfb.f">dlarfb</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlarfb.f">zlarfb</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Applies a block reflector or its transpose/conjugate-transpose to a general rectangular matrix.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlatrd.cpp">Rlatrd</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Clatrd.cpp">Clatrd</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlatrd.f">dlatrd</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlatrd.f">zlatrd</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Reduces the first nb rows and columns of a symmetric/Hermitian matrix A to real tridiagonal form by an orthogonal/unitary similarity transformation, and returns auxiliary matrices which are needed to apply the transformation to the unreduced part of A.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rtrti2.cpp">Rtrti2</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Ctrti2.cpp">Ctrti2</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dtrti2.f">dtrti2</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/ztrti2.f">ztrti2</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Computes the inverse of a triangular matrix (unblocked algorithm).
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rgetf2.cpp">Rgetf2</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Cgetf2.cpp">Cgetf2</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dgetf2.f">dgetf2</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zgetf2.f">zgetf2</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Computes the inverse of a triangular matrix (unblocked algorithm).
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlaswp.cpp">Rlaswp</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Claswp.cpp">Claswp</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlaswp.f">dlaswp</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlaswp.f">zlaswp</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Computes the inverse of a triangular matrix (unblocked algorithm).
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlasyf.cpp">Rlasyf</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Clasyf.cpp">Clasyf</a>, <a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Clahef.cpp">Clahef</a>
+</TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlasyf.f">dlasyf</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlasyf.f">zlasyf</a>, <a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlahef.f">zlahef</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Computes a partial factorization of a real symmetric/complex symmetric/complex Hermitian indefinite matrix, using the diagonal pivoting method.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Clacrm.cpp">Clacrm</a>
+</TD>
+<TD ALIGN="LEFT">&nbsp;</td>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlacrm.f">zlacrm</a>
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Performs the transformation ... where c, s, x, and y are complex.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Claesy.cpp">Claesy</a>
+</TD>
+<TD ALIGN="LEFT">&nbsp;</td>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlaesy.f">zlaesy</a>
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Computes the eigenvalues and eigenvectors of a 2-by-2 complex symmetric matrix, and checks that the norm of the matrix of eigenvectors is larger than a threshold value.<font color="#ff0000">NOT CHECKED FOR EXTREME CASES"</font>
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Crot.cpp">Crot</a>
+</TD>
+<TD ALIGN="LEFT">&nbsp;</td>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zrot.f">zrot</a>
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Applies a plane rotation with real cosine and complex sine to a pair of complex vectors.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Cspmv.cpp">Cspmv</a>
+</TD>
+<TD ALIGN="LEFT">&nbsp;</td>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zspmv.f">zspmv</a>
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Computes the matrix-vector product y = alpha Ax + beta y, where alpha and beta are complex scalars, x and y are complex vectors and A is a complex symmetric matrix in packed storage.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Cspr.cpp">Cspr</a>
+</TD>
+<TD ALIGN="LEFT">&nbsp;</td>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zspr.f">zspr</a>
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Performs the symmetric rank-1 update A = alpha x x^T + A, where alpha is a complex scalar, x is a complex vector and A is a complex symmetric matrix in packed storage.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Csymv.cpp">Csymv</a>
+</TD>
+<TD ALIGN="LEFT">&nbsp;</td>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zsymv.f">zsymv</a>
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Computes the matrix-vector product y = alpha Ax + beta y, where alpha and beta are complex scalars, x and y are complex vectors and A is a complex symmetric matrix.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Csyr.cpp">Csyr</a>
+</TD>
+<TD ALIGN="LEFT">&nbsp;</td>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zsyr.f">zsyr</a>
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Performs the symmetric rank-1 update A = alpha x x^T + A, where alpha is a complex scalar, x is a complex vector and A is a complex symmetric matrix.
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/iCmax1.cpp">iCmax1</a>
+</TD>
+<TD ALIGN="LEFT">&nbsp;</td>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/izmax1.f">izmax1</a>
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Finds the index of the element whose real part has maximum absolute value (similar to the Level 1 MBLAS iCamax, but using the absolute value of the real part).
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/RCsum1.cpp">RCsum1</a>
+</TD>
+<TD ALIGN="LEFT">&nbsp;</td>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dzsum1.f">dzsum1</a>
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Forms the 1-norm of a complex vector (similar to the Level 1 MBLAS RCasum, but using the true absolute value).
+</TD>
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rpotrs.cpp">Rpotrs</a></TD>
+<TD ALIGN="LEFT"></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dpotrs.f">dpotrs</a></TD>
+<TD ALIGN="LEFT"> - </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Rpotrs solves a system of linear equations A*X = B with a symmetric positive definite matrix A
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rposv.cpp">Rposv</a></TD>
+<TD ALIGN="LEFT"></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dposv.f">dposv</a></TD>
+<TD ALIGN="LEFT"> - </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Rposv computes the solution to a real system of linear equations A * X = B.
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rgeequ.cpp">Rgeequ</a></TD>
+<TD ALIGN="LEFT"></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dgeequ.f">dgeequ</a></TD>
+<TD ALIGN="LEFT"> - </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Rgeequ computes row and column scalings intended to equilibrate an M-by-N matrix A and reduce its condition number.
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlatrs.cpp">Rlatrs</a></TD>
+<TD ALIGN="LEFT"></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlatrs.f">dlatrs</a></TD>
+<TD ALIGN="LEFT"> - </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Rlatrs solves one of the triangular systems A *x = s*b  or  A'*x = s*b with scaling to prevent overflow.
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rlacn2.cpp">Rlacn2</a></TD>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Clacn2.cpp">Clacn2</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dlacn2.f">dlacn2</a></TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/zlacn2.f">zlacn2</a></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Estimates the 1-norm of a square matrix, using reverse communication for evaluating matrix-vector products. These routinese are thread safe version of Rlacon/Clacon.
+</TR>
+
+<TR>
+<TD ALIGN="LEFT"><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mlapack/library/Rgecon.cpp">Rgecon</a></TD>
+<TD ALIGN="LEFT"> -- </TD>
+<TD ALIGN="LEFT"><a href="http://www.netlib.org/lapack/lapack-3.1.1/SRC/dgecon.f">dgecon</a></TD>
+<TD ALIGN="LEFT">- </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+Rgecon estimates the reciprocal of the condition number of a general real matrix A, in either the 1-norm or the infinity-norm
+</TR>
+
+</TABLE>
+</DIV>
+
+<hr>
+<pre>$Id: mlapack_routines.html,v 1.16 2010/08/13 03:50:41 nakatamaho Exp $</pre>
+</BODY>
+</HTML>

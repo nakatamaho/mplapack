@@ -1,0 +1,40 @@
+About Example files          NAKATA, Maho 2009/9/24
+
+This directory contains some examples.
+
+You must manually adjust compiler name, installation directory of mpack.
+CXX...compiler name.
+MPACKDIR...where you installed MPACK
+          ./configure --prefix=/work/MPACK in this case
+LIBFLAGS...where you installed mpack. in this case /work/MPACK/lib
+GMPLIBS...complete flag to link against GMP version of mblas, mlapack
+and gmp libs.
+QDLIBS...complete flag to link against QD version of mblas, mlapack
+and QD libs.
+DDLIBS...complete flag to link against DD version of mblas, mlapack
+and QD libs.
+
+mpack/examples/mlapack contains:
+
+1. Inversion of matrix by dd, qd, and GMP
+inv_mat_qd.cpp
+inv_mat_dd.cpp
+inv_mat_gmp.cpp
+
+2. Inversion of Hilbert matrix by dd, qd, GMP and IEEE754 double.
+hilbert_dd.cpp
+hilbert_qd.cpp
+hilbert_gmp.cpp
+hilbert.cpp (this is just for test blas.h and lapack.h from C compiler)
+
+3. Obtain Eigenvalues and Eigenvectors of a symmetric matrix
+via Rsyev.
+eigenvalue_dd.cpp
+eigenvalue_qd.cpp
+eigenvalue_gmp.cpp
+
+mpack/examples/mblas contains:
+1. matrix-matrix operation example via Rgemm (dgemm)
+Rgemm_dd.cpp
+Rgemm_gmp.cpp
+Rgemm_qd.cpp

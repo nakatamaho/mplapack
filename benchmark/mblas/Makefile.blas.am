@@ -1,0 +1,72 @@
+bench_PROGRAMS+=\
+daxpy_ref \
+dcopy_ref \
+ddot_ref  \
+dgemm_ref \
+dgemv_ref
+
+if HAVE_EXTERNAL_BLAS
+bench_PROGRAMS+=\
+daxpy \
+dcopy \
+ddot  \
+dgemm \
+dgemv
+endif
+
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
+
+if HAVE_EXTERNAL_BLAS
+opt_libdepends = $(BLAS) $(FCLIBS)
+endif
+ref_libdepends = -L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
+
+daxpy_ref_SOURCES= daxpy.cpp
+daxpy_ref_CXXFLAGS= $(cxxflags)
+daxpy_ref_LDFLAGS= $(ref_libdepends)
+
+if HAVE_EXTERNAL_BLAS
+daxpy_SOURCES= daxpy.cpp
+daxpy_CXXFLAGS= $(cxxflags)
+daxpy_LDFLAGS= $(opt_libdepends)
+endif
+
+dcopy_ref_SOURCES= dcopy.cpp
+dcopy_ref_CXXFLAGS= $(cxxflags)
+dcopy_ref_LDFLAGS= $(ref_libdepends)
+
+if HAVE_EXTERNAL_BLAS
+dcopy_SOURCES= dcopy.cpp
+dcopy_CXXFLAGS= $(cxxflags)
+dcopy_LDFLAGS= $(opt_libdepends)
+endif
+
+ddot_ref_SOURCES= ddot.cpp
+ddot_ref_CXXFLAGS= $(cxxflags)
+ddot_ref_LDFLAGS= $(ref_libdepends)
+
+if HAVE_EXTERNAL_BLAS
+ddot_SOURCES= ddot.cpp
+ddot_CXXFLAGS= $(cxxflags)
+ddot_LDFLAGS= $(opt_libdepends)
+endif
+
+dgemm_ref_SOURCES= dgemm.cpp
+dgemm_ref_CXXFLAGS= $(cxxflags)
+dgemm_ref_LDFLAGS= $(ref_libdepends)
+
+if HAVE_EXTERNAL_BLAS
+dgemm_SOURCES= dgemm.cpp
+dgemm_CXXFLAGS= $(cxxflags)
+dgemm_LDFLAGS= $(opt_libdepends)
+endif
+
+dgemv_ref_SOURCES= dgemv.cpp
+dgemv_ref_CXXFLAGS= $(cxxflags)
+dgemv_ref_LDFLAGS= $(ref_libdepends)
+
+if HAVE_EXTERNAL_BLAS
+dgemv_SOURCES= dgemv.cpp
+dgemv_CXXFLAGS= $(cxxflags)
+dgemv_LDFLAGS= $(opt_libdepends)
+endif

@@ -1,0 +1,510 @@
+--- Makefile	2011-11-12 06:08:04.000000000 +0900
++++ Makefile	2012-06-08 15:40:59.000000000 +0900
+@@ -14,8 +14,8 @@
+ clean: cleanlib cleantesting cleanblas_testing 
+ 
+ lapack_install:
+-	( cd INSTALL; $(MAKE); ./testlsame; ./testslamch; ./testdlamch; \
+-	./testsecond; ./testdsecnd; ./testieee; ./testversion )
++	( cd INSTALL; $(MAKE); wine ./testlsame; wine ./testslamch; wine ./testdlamch; \
++	wine ./testsecond; wine ./testdsecnd; wine ./testieee; wine ./testversion )
+ 
+ blaslib:
+ 	( cd BLAS/SRC; $(MAKE) )
+@@ -49,20 +49,20 @@
+ 		
+ blas_testing:
+ 	( cd BLAS/TESTING; $(MAKE) -f Makeblat1 )
+-	( cd BLAS; ./xblat1s > sblat1.out    ; \
+-	           ./xblat1d > dblat1.out    ; \
+-	           ./xblat1c > cblat1.out    ; \
+-	           ./xblat1z > zblat1.out    ) 
++	( cd BLAS; wine ./xblat1s > sblat1.out    ; \
++	           wine ./xblat1d > dblat1.out    ; \
++	           wine ./xblat1c > cblat1.out    ; \
++	           wine ./xblat1z > zblat1.out    ) 
+ 	( cd BLAS/TESTING; $(MAKE) -f Makeblat2 )
+-	( cd BLAS; ./xblat2s < sblat2.in     ; \
+-	           ./xblat2d < dblat2.in     ; \
+-	           ./xblat2c < cblat2.in     ; \
+-	           ./xblat2z < zblat2.in     )
++	( cd BLAS; wine ./xblat2s < sblat2.in     ; \
++	           wine ./xblat2d < dblat2.in     ; \
++	           wine ./xblat2c < cblat2.in     ; \
++	           wine ./xblat2z < zblat2.in     )
+ 	( cd BLAS/TESTING; $(MAKE) -f Makeblat3 )
+-	( cd BLAS; ./xblat3s < sblat3.in     ; \
+-	           ./xblat3d < dblat3.in     ; \
+-	           ./xblat3c < cblat3.in     ; \
+-	           ./xblat3z < zblat3.in     ) 
++	( cd BLAS; wine ./xblat3s < sblat3.in     ; \
++	           wine ./xblat3d < dblat3.in     ; \
++	           wine ./xblat3c < cblat3.in     ; \
++	           wine ./xblat3z < zblat3.in     ) 
+ html:
+ 	@echo "LAPACK HTML PAGES GENRATION with Doxygen"
+ 	doxygen DOCS/Doxyfile
+--- TESTING/Makefile	2010-11-04 11:11:45.000000000 +0900
++++ TESTING/Makefile	2012-06-09 16:47:38.000000000 +0900
+@@ -155,61 +155,61 @@
+ 
+ stest.out: stest.in xlintsts
+ 	@echo Testing REAL LAPACK linear equation routines
+-	./xlintsts < stest.in > $@ 2>&1
++	wine ./xlintsts < stest.in > $@ 
+ #
+ # ======== COMPLEX LIN TESTS ==========================
+ 
+ ctest.out: ctest.in xlintstc
+ 	@echo Testing COMPLEX LAPACK linear equation routines
+-	./xlintstc < ctest.in > $@ 2>&1
++	wine ./xlintstc < ctest.in > $@ 
+ #
+ # ======== DOUBLE LIN TESTS ===========================
+ 
+ dtest.out: dtest.in xlintstd
+ 	@echo Testing DOUBLE PRECISION LAPACK linear equation routines
+-	./xlintstd < dtest.in > $@ 2>&1
++	wine ./xlintstd < dtest.in > $@ 
+ #
+ # ======== COMPLEX16 LIN TESTS ========================
+ 
+ ztest.out: ztest.in xlintstz
+ 	@echo Testing COMPLEX16 LAPACK linear equation routines
+-	./xlintstz < ztest.in > $@ 2>&1
++	wine ./xlintstz < ztest.in > $@ 
+ #
+ # ======== SINGLE-DOUBLE PROTO LIN TESTS ==============
+ 
+ dstest.out: dstest.in xlintstds
+ 	@echo Testing SINGLE-DOUBLE PRECISION LAPACK prototype linear equation routines
+-	./xlintstds < dstest.in > $@ 2>&1
++	wine ./xlintstds < dstest.in > $@ 
+ #
+ # ======== COMPLEX-COMPLEX16 LIN TESTS ========================
+ 
+ zctest.out: zctest.in xlintstzc
+ 	@echo Testing COMPLEX-COMPLEX16 LAPACK protoype linear equation routines
+-	./xlintstzc < zctest.in > $@ 2>&1
++	wine ./xlintstzc < zctest.in > $@ 
+ #
+ # ======== SINGLE RFP LIN TESTS ========================
+ 
+ stest_rfp.out: stest_rfp.in xlintstrfs
+ 	@echo Testing REAL LAPACK RFP protoype linear equation routines
+-	./xlintstrfs < stest_rfp.in > $@ 2>&1
++	wine ./xlintstrfs < stest_rfp.in > $@ 
+ #
+ # ======== COMPLEX16 RFP LIN TESTS ========================
+ 
+ dtest_rfp.out: dtest_rfp.in xlintstrfd
+ 	@echo Testing DOUBLE PRECISION LAPACK RFP protoype linear equation routines
+-	./xlintstrfd < dtest_rfp.in > $@ 2>&1
++	wine ./xlintstrfd < dtest_rfp.in > $@ 
+ #
+ # ======== COMPLEX16 RFP LIN TESTS ========================
+ 
+ ctest_rfp.out: ctest_rfp.in xlintstrfc
+ 	@echo Testing COMPLEX LAPACK RFP protoype linear equation routines
+-	./xlintstrfc < ctest_rfp.in > $@ 2>&1
++	wine ./xlintstrfc < ctest_rfp.in > $@ 
+ #
+ # ======== COMPLEX16 RFP LIN TESTS ========================
+ 
+ ztest_rfp.out: ztest_rfp.in xlintstrfz
+ 	@echo Testing COMPLEX16 LAPACK RFP protoype linear equation routines
+-	./xlintstrfz < ztest_rfp.in > $@ 2>&1
++	wine ./xlintstrfz < ztest_rfp.in > $@ 
+ #
+ #
+ # ======== SINGLE EIG TESTS ===========================
+@@ -217,313 +217,313 @@
+ 
+ snep.out: nep.in xeigtsts
+ 	@echo NEP: Testing Nonsymmetric Eigenvalue Problem routines
+-	./xeigtsts < nep.in > $@ 2>&1
++	wine ./xeigtsts < nep.in > $@ 
+ 
+ ssep.out: sep.in xeigtsts
+ 	@echo SEP: Testing Symmetric Eigenvalue Problem routines
+-	./xeigtsts < sep.in > $@ 2>&1
++	wine ./xeigtsts < sep.in > $@ 
+ 
+ ssvd.out: svd.in xeigtsts
+ 	@echo SVD: Testing Singular Value Decomposition routines
+-	./xeigtsts < svd.in > $@ 2>&1
++	wine ./xeigtsts < svd.in > $@ 
+ 
+ sec.out: sec.in xeigtsts
+ 	@echo SEC: Testing REAL Eigen Condition Routines
+-	./xeigtsts < sec.in > $@ 2>&1
++	wine ./xeigtsts < sec.in > $@ 
+ 
+ sed.out: sed.in xeigtsts
+ 	@echo SEV: Testing REAL Nonsymmetric Eigenvalue Driver
+-	./xeigtsts < sed.in > $@ 2>&1
++	wine ./xeigtsts < sed.in > $@ 
+ 
+ sgg.out: sgg.in xeigtsts
+ 	@echo SGG: Testing REAL Nonsymmetric Generalized Eigenvalue Problem routines
+-	./xeigtsts < sgg.in > $@ 2>&1
++	wine ./xeigtsts < sgg.in > $@ 
+ 
+ sgd.out: sgd.in xeigtsts
+ 	@echo SGD: Testing REAL Nonsymmetric Generalized Eigenvalue Problem driver routines
+-	./xeigtsts < sgd.in > $@ 2>&1
++	wine ./xeigtsts < sgd.in > $@ 
+ 
+ ssb.out: ssb.in xeigtsts
+ 	@echo SSB: Testing REAL Symmetric Eigenvalue Problem routines
+-	./xeigtsts < ssb.in > $@ 2>&1
++	wine ./xeigtsts < ssb.in > $@ 
+ 
+ ssg.out: ssg.in xeigtsts
+ 	@echo SSG: Testing REAL Symmetric Generalized Eigenvalue Problem routines
+-	./xeigtsts < ssg.in > $@ 2>&1
++	wine ./xeigtsts < ssg.in > $@ 
+ 
+ sbal.out: sbal.in xeigtsts
+ 	@echo SGEBAL: Testing the balancing of a REAL general matrix
+-	./xeigtsts < sbal.in > $@ 2>&1
++	wine ./xeigtsts < sbal.in > $@ 
+ 
+ sbak.out: sbak.in xeigtsts
+ 	@echo SGEBAK: Testing the back transformation of a REAL balanced matrix
+-	./xeigtsts < sbak.in > $@ 2>&1
++	wine ./xeigtsts < sbak.in > $@ 
+ 
+ sgbal.out: sgbal.in xeigtsts
+ 	@echo SGGBAL: Testing the balancing of a pair of REAL general matrices
+-	./xeigtsts < sgbal.in > $@ 2>&1
++	wine ./xeigtsts < sgbal.in > $@ 
+ 
+ sgbak.out: sgbak.in xeigtsts
+ 	@echo SGGBAK: Testing the back transformation of a pair of REAL balanced matrices
+-	./xeigtsts < sgbak.in > $@ 2>&1
++	wine ./xeigtsts < sgbak.in > $@ 
+ 
+ sbb.out: sbb.in xeigtsts
+ 	@echo SBB:  Testing banded Singular Value Decomposition routines
+-	./xeigtsts < sbb.in > $@ 2>&1
++	wine ./xeigtsts < sbb.in > $@ 
+ 
+ sglm.out: glm.in xeigtsts
+ 	@echo GLM: Testing Generalized Linear Regression Model routines
+-	./xeigtsts < glm.in > $@ 2>&1
++	wine ./xeigtsts < glm.in > $@ 
+ 
+ sgqr.out: gqr.in xeigtsts
+ 	@echo GQR: Testing Generalized QR and RQ factorization routines
+-	./xeigtsts < gqr.in > $@ 2>&1
++	wine ./xeigtsts < gqr.in > $@ 
+ 
+ sgsv.out: gsv.in xeigtsts
+ 	@echo GSV: Testing Generalized Singular Value Decomposition routines
+-	./xeigtsts < gsv.in > $@ 2>&1
++	wine ./xeigtsts < gsv.in > $@ 
+ 
+ scsd.out: csd.in xeigtsts
+ 	@echo CSD: Testing CS Decomposition routines
+-	./xeigtsts < csd.in > $@ 2>&1
++	wine ./xeigtsts < csd.in > $@ 
+ 
+ slse.out: lse.in xeigtsts
+ 	@echo LSE: Testing Constrained Linear Least Squares routines
+-	./xeigtsts < lse.in > $@ 2>&1
++	wine ./xeigtsts < lse.in > $@ 
+ #
+ # ======== COMPLEX EIG TESTS ===========================
+ 
+ cnep.out: nep.in xeigtstc
+ 	@echo NEP: Testing Nonsymmetric Eigenvalue Problem routines
+-	./xeigtstc < nep.in > $@ 2>&1
++	wine ./xeigtstc < nep.in > $@ 
+ 
+ csep.out: sep.in xeigtstc
+ 	@echo SEP: Testing Symmetric Eigenvalue Problem routines
+-	./xeigtstc < sep.in > $@ 2>&1
++	wine ./xeigtstc < sep.in > $@ 
+ 
+ csvd.out: svd.in xeigtstc
+ 	@echo SVD: Testing Singular Value Decomposition routines
+-	./xeigtstc < svd.in > $@ 2>&1
++	wine ./xeigtstc < svd.in > $@ 
+ 
+ cec.out: cec.in xeigtstc
+ 	@echo CEC: Testing COMPLEX Eigen Condition Routines
+-	./xeigtstc < cec.in > $@ 2>&1
++	wine ./xeigtstc < cec.in > $@ 
+ 
+ ced.out: ced.in xeigtstc
+ 	@echo CES: Testing COMPLEX Nonsymmetric Schur Form Driver
+-	./xeigtstc < ced.in > $@ 2>&1
++	wine ./xeigtstc < ced.in > $@ 
+ 
+ cgg.out: cgg.in xeigtstc
+ 	@echo CGG: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem routines
+-	./xeigtstc < cgg.in > $@ 2>&1
++	wine ./xeigtstc < cgg.in > $@ 
+ 
+ cgd.out: cgd.in xeigtstc
+ 	@echo CGD: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem driver routines
+-	./xeigtstc < cgd.in > $@ 2>&1
++	wine ./xeigtstc < cgd.in > $@ 
+ 
+ csb.out: csb.in xeigtstc
+ 	@echo CHB: Testing Hermitian Eigenvalue Problem routines
+-	./xeigtstc < csb.in > $@ 2>&1
++	wine ./xeigtstc < csb.in > $@ 
+ 
+ csg.out: csg.in xeigtstc
+ 	@echo CSG: Testing Symmetric Generalized Eigenvalue Problem routines
+-	./xeigtstc < csg.in > $@ 2>&1
++	wine ./xeigtstc < csg.in > $@ 
+ 
+ cbal.out: cbal.in xeigtstc
+ 	@echo CGEBAL: Testing the balancing of a COMPLEX general matrix
+-	./xeigtstc < cbal.in > $@ 2>&1
++	wine ./xeigtstc < cbal.in > $@ 
+ 
+ cbak.out: cbak.in xeigtstc
+ 	@echo CGEBAK: Testing the back transformation of a COMPLEX balanced matrix
+-	./xeigtstc < cbak.in > $@ 2>&1
++	wine ./xeigtstc < cbak.in > $@ 
+ 
+ cgbal.out: cgbal.in xeigtstc
+ 	@echo CGGBAL: Testing the balancing of a pair of COMPLEX general matrices
+-	./xeigtstc < cgbal.in > $@ 2>&1
++	wine ./xeigtstc < cgbal.in > $@ 
+ 
+ cgbak.out: cgbak.in xeigtstc
+ 	@echo CGGBAK: Testing the back transformation of a pair of COMPLEX balanced matrices
+-	./xeigtstc < cgbak.in > $@ 2>&1
++	wine ./xeigtstc < cgbak.in > $@ 
+ 
+ cbb.out: cbb.in xeigtstc
+ 	@echo CBB:  Testing banded Singular Value Decomposition routines
+-	./xeigtstc < cbb.in > $@ 2>&1
++	wine ./xeigtstc < cbb.in > $@ 
+ 
+ cglm.out: glm.in xeigtstc
+ 	@echo GLM: Testing Generalized Linear Regression Model routines
+-	./xeigtstc < glm.in > $@ 2>&1
++	wine ./xeigtstc < glm.in > $@ 
+ 
+ cgqr.out: gqr.in xeigtstc
+ 	@echo GQR: Testing Generalized QR and RQ factorization routines
+-	./xeigtstc < gqr.in > $@ 2>&1
++	wine ./xeigtstc < gqr.in > $@ 
+ 
+ cgsv.out: gsv.in xeigtstc
+ 	@echo GSV: Testing Generalized Singular Value Decomposition routines
+-	./xeigtstc < gsv.in > $@ 2>&1
++	wine ./xeigtstc < gsv.in > $@ 
+ 
+ ccsd.out: csd.in xeigtstc
+ 	@echo CSD: Testing CS Decomposition routines
+-	./xeigtstc < csd.in > $@ 2>&1
++	wine ./xeigtstc < csd.in > $@ 
+ 
+ clse.out: lse.in xeigtstc
+ 	@echo LSE: Testing Constrained Linear Least Squares routines
+-	./xeigtstc < lse.in > $@ 2>&1
++	wine ./xeigtstc < lse.in > $@ 
+ #
+ # ======== DOUBLE EIG TESTS ===========================
+ 
+ dnep.out: nep.in xeigtstd
+ 	@echo NEP: Testing Nonsymmetric Eigenvalue Problem routines
+-	./xeigtstd < nep.in > $@ 2>&1
++	wine ./xeigtstd < nep.in > $@ 
+ 
+ dsep.out: sep.in xeigtstd
+ 	@echo SEP: Testing Symmetric Eigenvalue Problem routines
+-	./xeigtstd < sep.in > $@ 2>&1
++	wine ./xeigtstd < sep.in > $@ 
+ 
+ dsvd.out: svd.in xeigtstd
+ 	@echo SVD: Testing Singular Value Decomposition routines
+-	./xeigtstd < svd.in > $@ 2>&1
++	wine ./xeigtstd < svd.in > $@ 
+ 
+ dec.out: dec.in xeigtstd
+ 	@echo DEC: Testing DOUBLE PRECISION Eigen Condition Routines
+-	./xeigtstd < dec.in > $@ 2>&1
++	wine ./xeigtstd < dec.in > $@ 
+ 
+ ded.out: ded.in xeigtstd
+ 	@echo DEV: Testing DOUBLE PRECISION Nonsymmetric Eigenvalue Driver
+-	./xeigtstd < ded.in > $@ 2>&1
++	wine ./xeigtstd < ded.in > $@ 
+ 
+ dgg.out: dgg.in xeigtstd
+ 	@echo DGG: Testing DOUBLE PRECISION Nonsymmetric Generalized Eigenvalue Problem routines
+-	./xeigtstd < dgg.in > $@ 2>&1
++	wine ./xeigtstd < dgg.in > $@ 
+ 
+ dgd.out: dgd.in xeigtstd
+ 	@echo DGD: Testing DOUBLE PRECISION Nonsymmetric Generalized Eigenvalue Problem driver routines
+-	./xeigtstd < dgd.in > $@ 2>&1
++	wine ./xeigtstd < dgd.in > $@ 
+ 
+ dsb.out: dsb.in xeigtstd
+ 	@echo DSB: Testing DOUBLE PRECISION Symmetric Eigenvalue Problem routines
+-	./xeigtstd < dsb.in > $@ 2>&1
++	wine ./xeigtstd < dsb.in > $@ 
+ 
+ dsg.out: dsg.in xeigtstd
+ 	@echo DSG: Testing DOUBLE PRECISION Symmetric Generalized Eigenvalue Problem routines
+-	./xeigtstd < dsg.in > $@ 2>&1
++	wine ./xeigtstd < dsg.in > $@ 
+ 
+ dbal.out: dbal.in xeigtstd
+ 	@echo DGEBAL: Testing the balancing of a DOUBLE PRECISION general matrix
+-	./xeigtstd < dbal.in > $@ 2>&1
++	wine ./xeigtstd < dbal.in > $@ 
+ 
+ dbak.out: dbak.in xeigtstd
+ 	@echo DGEBAK:  Testing the back transformation of a DOUBLE PRECISION balanced matrix
+-	./xeigtstd < dbak.in > $@ 2>&1
++	wine ./xeigtstd < dbak.in > $@ 
+ 
+ dgbal.out: dgbal.in xeigtstd
+ 	@echo DGGBAL: Testing the balancing of a pair of DOUBLE PRECISION general matrices
+-	./xeigtstd < dgbal.in > $@ 2>&1
++	wine ./xeigtstd < dgbal.in > $@ 
+ 
+ dgbak.out: dgbak.in xeigtstd
+ 	@echo DGGBAK: Testing the back transformation of a pair of DOUBLE PRECISION balanced matrices
+-	./xeigtstd < dgbak.in > $@ 2>&1
++	wine ./xeigtstd < dgbak.in > $@ 
+ 
+ dbb.out: dbb.in xeigtstd
+ 	@echo DBB:  Testing banded Singular Value Decomposition routines
+-	./xeigtstd < dbb.in > $@ 2>&1
++	wine ./xeigtstd < dbb.in > $@ 
+ 
+ dglm.out: glm.in xeigtstd
+ 	@echo GLM: Testing Generalized Linear Regression Model routines
+-	./xeigtstd < glm.in > $@ 2>&1
++	wine ./xeigtstd < glm.in > $@ 
+ 
+ dgqr.out: gqr.in xeigtstd
+ 	@echo GQR: Testing Generalized QR and RQ factorization routines
+-	./xeigtstd < gqr.in > $@ 2>&1
++	wine ./xeigtstd < gqr.in > $@ 
+ 
+ dgsv.out: gsv.in xeigtstd
+ 	@echo GSV: Testing Generalized Singular Value Decomposition routines
+-	./xeigtstd < gsv.in > $@ 2>&1
++	wine ./xeigtstd < gsv.in > $@ 
+ 
+ dcsd.out: csd.in xeigtstd
+ 	@echo CSD: Testing CS Decomposition routines
+-	./xeigtstd < csd.in > $@ 2>&1
++	wine ./xeigtstd < csd.in > $@ 
+ 
+ dlse.out: lse.in xeigtstd
+ 	@echo LSE: Testing Constrained Linear Least Squares routines
+-	./xeigtstd < lse.in > $@ 2>&1
++	wine ./xeigtstd < lse.in > $@ 
+ #
+ # ======== COMPLEX16 EIG TESTS ===========================
+ 
+ znep.out: nep.in xeigtstz
+ 	@echo NEP: Testing Nonsymmetric Eigenvalue Problem routines
+-	./xeigtstz < nep.in > $@ 2>&1
++	wine ./xeigtstz < nep.in > $@ 
+ 
+ zsep.out: sep.in xeigtstz
+ 	@echo SEP: Testing Symmetric Eigenvalue Problem routines
+-	./xeigtstz < sep.in > $@ 2>&1
++	wine ./xeigtstz < sep.in > $@ 
+ 
+ zsvd.out: svd.in xeigtstz
+ 	@echo SVD: Testing Singular Value Decomposition routines
+-	./xeigtstz < svd.in > $@ 2>&1
++	wine ./xeigtstz < svd.in > $@ 
+ 
+ zec.out: zec.in xeigtstz
+ 	@echo ZEC: Testing COMPLEX16 Eigen Condition Routines
+-	./xeigtstz < zec.in > $@ 2>&1
++	wine ./xeigtstz < zec.in > $@ 
+ 
+ zed.out: zed.in xeigtstz
+ 	@echo ZES: Testing COMPLEX16 Nonsymmetric Schur Form Driver
+-	./xeigtstz < zed.in > $@ 2>&1
++	wine ./xeigtstz < zed.in > $@ 
+ 
+ zgg.out: zgg.in xeigtstz
+ 	@echo ZGG: Testing COMPLEX16 Nonsymmetric Generalized Eigenvalue Problem routines
+-	./xeigtstz < zgg.in > $@ 2>&1
++	wine ./xeigtstz < zgg.in > $@ 
+ 
+ zgd.out: zgd.in xeigtstz
+ 	@echo ZGD: Testing COMPLEX16 Nonsymmetric Generalized Eigenvalue Problem driver routines
+-	./xeigtstz < zgd.in > $@ 2>&1
++	wine ./xeigtstz < zgd.in > $@ 
+ 
+ zsb.out: zsb.in xeigtstz
+ 	@echo ZHB: Testing Hermitian Eigenvalue Problem routines
+-	./xeigtstz < zsb.in > $@ 2>&1
++	wine ./xeigtstz < zsb.in > $@ 
+ 
+ zsg.out: zsg.in xeigtstz
+ 	@echo ZSG: Testing Symmetric Generalized Eigenvalue Problem routines
+-	./xeigtstz < zsg.in > $@ 2>&1
++	wine ./xeigtstz < zsg.in > $@ 
+ 
+ zbal.out: zbal.in xeigtstz
+ 	@echo ZGEBAL: Testing the balancing of a COMPLEX16 general matrix
+-	./xeigtstz < zbal.in > $@ 2>&1
++	wine ./xeigtstz < zbal.in > $@ 
+ 
+ zbak.out: zbak.in xeigtstz
+ 	@echo ZGEBAK: Testing the back transformation of a COMPLEX16 balanced matrix
+-	./xeigtstz < zbak.in > $@ 2>&1
++	wine ./xeigtstz < zbak.in > $@ 
+ 
+ zgbal.out: zgbal.in xeigtstz
+ 	@echo ZGGBAL: Testing the balancing of a pair of COMPLEX general matrices
+-	./xeigtstz < zgbal.in > $@ 2>&1
++	wine ./xeigtstz < zgbal.in > $@ 
+ 
+ zgbak.out: zgbak.in xeigtstz
+ 	@echo ZGGBAK: Testing the back transformation of a pair of COMPLEX16 balanced matrices
+-	./xeigtstz < zgbak.in > $@ 2>&1
++	wine ./xeigtstz < zgbak.in > $@ 
+ 
+ zbb.out: zbb.in xeigtstz
+ 	@echo ZBB: Testing banded Singular Value Decomposition routines
+-	./xeigtstz < zbb.in > $@ 2>&1
++	wine ./xeigtstz < zbb.in > $@ 
+ 
+ zglm.out: glm.in xeigtstz
+ 	@echo GLM: Testing Generalized Linear Regression Model routines
+-	./xeigtstz < glm.in > $@ 2>&1
++	wine ./xeigtstz < glm.in > $@ 
+ 
+ zgqr.out: gqr.in xeigtstz
+ 	@echo GQR: Testing Generalized QR and RQ factorization routines
+-	./xeigtstz < gqr.in > $@ 2>&1
++	wine ./xeigtstz < gqr.in > $@ 
+ 
+ zgsv.out: gsv.in xeigtstz
+ 	@echo GSV: Testing Generalized Singular Value Decomposition routines
+-	./xeigtstz < gsv.in > $@ 2>&1
++	wine ./xeigtstz < gsv.in > $@ 
+ 
+ zcsd.out: csd.in xeigtstz
+ 	@echo CSD: Testing CS Decomposition routines
+-	./xeigtstz < csd.in > $@ 2>&1
++	wine ./xeigtstz < csd.in > $@ 
+ 
+ zlse.out: lse.in xeigtstz
+ 	@echo LSE: Testing Constrained Linear Least Squares routines
+-	./xeigtstz < lse.in > $@ 2>&1
++	wine ./xeigtstz < lse.in > $@ 
+ # ==============================================================================
+ 
+ xlintsts:	../$(LAPACKLIB) ../$(TMGLIB) $(FRCLIN) $(FRC)
