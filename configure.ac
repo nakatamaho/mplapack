@@ -8,7 +8,7 @@ AC_PROG_CC
 AC_PROG_CXX
 
 AC_PROG_LIBTOOL
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_MACRO_DIR([m4])
 
 dnl OpenMP Compiler flags.
