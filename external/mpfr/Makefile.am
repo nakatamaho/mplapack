@@ -1,4 +1,4 @@
-MPFRVERSION=3.1.1
+MPFRVERSION=3.1.5
 MAKEFLAGS =
 
 GMPINCLUDEDIR=$(abs_builddir)/../i/GMP/include/
