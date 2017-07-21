@@ -84,7 +84,7 @@ inline std::complex<__float128> sqrt(const std::complex<__float128> &a) {
    std::complex<__float128> c;
    __real__(b) = (a.real()); __imag__(b) = (a.imag());
    tmp = csqrtq (b);
-   c.real() = __real__(tmp); c.imag() = __imag__(tmp);
+   c.real( __real__(tmp)); c.imag(__imag__(tmp));
    return c;
 }
 
@@ -93,7 +93,7 @@ inline std::complex<__float128> exp(const std::complex<__float128> &a) {
    std::complex<__float128> c;
    __real__(b) = (a.real()); __imag__(b) = (a.imag());
    tmp = cexpq (b);
-   c.real() = __real__(tmp); c.imag() = __imag__(tmp);
+   c.real(__real__(tmp)); c.imag(__imag__(tmp));
    return c;
 }
 
@@ -102,7 +102,7 @@ inline std::complex<__float128> log(const std::complex<__float128> &a) {
    std::complex<__float128> c;
    __real__(b) = (a.real()); __imag__(b) = (a.imag());
    tmp = clogq (b);
-   c.real() = __real__(tmp); c.imag() = __imag__(tmp);
+   c.real(__real__(tmp)); c.imag(__imag__(tmp));
    return c;
 }
 
@@ -152,8 +152,8 @@ inline long nint(__float128 a)
 inline std::complex<__float128> Real2Complex(__float128 a, __float128 b)
 {
     std::complex<__float128> ret;
-    ret.real() = a;
-    ret.imag() = b;
+    ret.real(a);
+    ret.imag(b);
     return ret;
 }
 

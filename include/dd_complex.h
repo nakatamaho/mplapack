@@ -81,13 +81,13 @@ class dd_complex {
     {
 	return im;
     }
-    dd_real & real()
+    void real(const dd_real r)
     {
-	return re;
+	this->re = r;
     }
-    dd_real & imag()
+    void imag(const dd_real r)
     {
-	return im;
+	this->im = r;
     }
 
 //comparison
@@ -396,8 +396,8 @@ inline dd_complex & dd_complex::operator/=(const dd_real & b)
 inline dd_complex::operator std::complex<double> () const
 {
   std::complex<double> p;
-  p.real() = re.x[0];
-  p.imag() = im.x[0];
+  p.real(re.x[0]);
+  p.imag(im.x[0]);
   return p;
 }
 
@@ -410,8 +410,8 @@ inline const dd_complex operator/(const dd_complex & a, const dd_complex & b)
 inline const dd_complex operator/(const dd_complex & a, const dd_real & b)
 {
    dd_complex tmp;
-   tmp.real() = a.real() / b;
-   tmp.imag() = a.imag() / b;
+   tmp.real(a.real() / b);
+   tmp.imag(a.imag() / b);
    return tmp;
 }
 inline const dd_complex operator/(const dd_real & a, const dd_complex & b)
@@ -424,30 +424,30 @@ inline const dd_complex operator/(const dd_real & a, const dd_complex & b)
 inline const dd_complex operator*(const dd_complex & a, const dd_real & b)
 {
   dd_complex p;
-  p.real() =  a.real() * b;
-  p.imag() =  a.imag() * b;
+  p.real(a.real() * b);
+  p.imag(a.imag() * b);
   return p;
 }
 inline const dd_complex operator*(const dd_real & a, const dd_complex & b)
 {
   dd_complex p;
-  p.real() =  a * b.real();
-  p.imag() =  a * b.imag();
+  p.real(a * b.real());
+  p.imag(a * b.imag());
   return p;
 }
 
 inline const dd_complex operator-(const dd_complex & a, const dd_real & b)
 {
   dd_complex p;
-  p.real() = a.real() - b;
-  p.imag() = a.imag();
+  p.real(a.real() - b);
+  p.imag(a.imag());
   return p;
 }
 inline const dd_complex operator-(const dd_real & a, const dd_complex & b)
 {
   dd_complex p;
-  p.real() = a - b.real();
-  p.imag() = -b.imag();
+  p.real(a - b.real());
+  p.imag(-b.imag());
   return p;
 }
 
@@ -464,15 +464,15 @@ inline dd_complex sqrt(dd_complex z)
 
     mag = abs(z);
     if (abs(mag) == 0.0) {
-	r.real() = 0.0, r.imag() = 0.0;
+	r.real(0.0), r.imag(0.0);
     } else if (z.real() > 0.0) {
-	r.real() = sqrt(0.5 * (mag + z.real()));
-	r.imag() = z.imag() / (2.0 * r.real());
+	r.real(sqrt(0.5 * (mag + z.real())));
+	r.imag(z.imag() / (2.0 * r.real()));
     } else {
-	r.imag() = sqrt(0.5 * (mag - z.real()));
+	r.imag(sqrt(0.5 * (mag - z.real())));
 	if (z.imag() < 0.0)
-	    r.imag() = -r.imag();
-	r.real() = z.imag() / (2.0 * r.imag());
+	    r.imag(-r.imag());
+	r.real(z.imag() / (2.0 * r.imag()));
     }
     return r;
 }
@@ -480,8 +480,8 @@ inline dd_complex sqrt(dd_complex z)
 inline dd_complex conj(dd_complex ctmp)
 {
     dd_complex ctmp2;
-    ctmp2.real() = ctmp.real();
-    ctmp2.imag() = -ctmp.imag();
+    ctmp2.real(ctmp.real());
+    ctmp2.imag(-ctmp.imag());
     return ctmp2;
 }
 

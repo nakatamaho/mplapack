@@ -69,8 +69,8 @@ inline long __qd_nint(qd_real a)
 inline qd_complex Real2Complex(qd_real a, qd_real b)
 {
     qd_complex ret;
-    ret.real() = a;
-    ret.imag() = b;
+    ret.real(a);
+    ret.imag(b);
     return ret;
 }
 

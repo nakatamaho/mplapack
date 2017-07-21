@@ -57,14 +57,15 @@ class mpc_class {
     {
 	return im;
     }
-    mpf_class & real()
+    void real(const mpf_class r)
     {
-	return re;
+	this->re = r;
     }
-    mpf_class & imag()
+    void imag(const mpf_class r)
     {
-	return im;
+	this->im = r;
     }
+
 //comparison
     friend bool operator==(const mpc_class & a, const mpc_class & b);
     friend bool operator==(const mpc_class & a, const mpf_class & b);
@@ -330,8 +331,8 @@ inline const mpc_class operator*(const mpc_class & a, const mpc_class & b)
 inline const mpc_class operator*(const mpf_class & a, const mpc_class & b)
 {
     mpc_class tmp;
-    tmp.real() = a * b.real();
-    tmp.imag() = a * b.imag();
+    tmp.real(a * b.real());
+    tmp.imag(a * b.imag());
     return tmp;
 }
 
@@ -339,8 +340,8 @@ inline const mpc_class operator*(const mpc_class & a, const mpf_class & b)
 {
     mpc_class tmp;
 
-    tmp.real() = a.real() * b;
-    tmp.imag() = a.imag() * b;
+    tmp.real(a.real() * b);
+    tmp.imag(a.imag() * b);
     return tmp;
 }
 
@@ -371,8 +372,8 @@ inline const mpc_class operator/(const mpc_class & a, const mpc_class & b)
 inline const mpc_class operator/(const mpc_class & a, const mpf_class & b)
 {
     mpc_class tmp;
-    tmp.real() = a.real() / b;
-    tmp.imag() = a.imag() / b;
+    tmp.real(a.real() / b);
+    tmp.imag(a.imag() / b);
     return tmp;
 
 }
@@ -381,8 +382,8 @@ inline const mpc_class operator/(const mpf_class & a, const mpc_class & b)
 {
     mpc_class tmp;
 
-    tmp.real() =  (a * b.real()) / (b.real() * b.real() + b.imag() * b.imag());
-    tmp.imag() = -(a * b.imag()) / (b.real() * b.real() + b.imag() * b.imag());
+    tmp.real((a * b.real()) / (b.real() * b.real() + b.imag() * b.imag()));
+    tmp.imag(-(a * b.imag()) / (b.real() * b.real() + b.imag() * b.imag()));
     return tmp;
 }
 
@@ -400,15 +401,15 @@ inline mpc_class sqrt(mpc_class z)
 
     mag = abs(z);
     if (abs(mag) == 0.0) {
-	r.real() = 0.0, r.imag() = 0.0;
+	r.real(0.0), r.imag(0.0);
     } else if (z.real() > 0.0) {
-	r.real() = sqrt(0.5 * (mag + z.real()));
-	r.imag() = z.imag() / (2.0 * r.real());
+	r.real(sqrt(0.5 * (mag + z.real())));
+	r.imag(z.imag() / (2.0 * r.real()));
     } else {
-	r.imag() = sqrt(0.5 * (mag - z.real()));
+	r.imag(sqrt(0.5 * (mag - z.real())));
 	if (z.imag() < 0.0)
-	    r.imag() = -r.imag();
-	r.real() = z.imag() / (2.0 * r.imag());
+	    r.imag(-r.imag());
+	r.real(z.imag() / (2.0 * r.imag()));
     }
     return r;
 }
@@ -417,8 +418,8 @@ inline mpc_class conj(mpc_class ctmp)
 {
     mpc_class ctmp2;
 
-    ctmp2.real() = ctmp.real();
-    ctmp2.imag() = -ctmp.imag();
+    ctmp2.real(ctmp.real());
+    ctmp2.imag(-ctmp.imag());
     return ctmp2;
 }
 

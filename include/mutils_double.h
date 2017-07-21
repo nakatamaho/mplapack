@@ -77,8 +77,8 @@ inline long nint(double a)
 inline std::complex<double> Real2Complex(double a, double b)
 {
     std::complex<double> ret;
-    ret.real() = a;
-    ret.imag() = b;
+    ret.real(a);
+    ret.imag(b);
     return ret;
 }
 
