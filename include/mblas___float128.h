@@ -29,8 +29,8 @@
 #ifndef _MBLAS___FLOAT128_H_
 #define _MBLAS___FLOAT128_H_
 
-#include <mutils___float128.h>
-#include <mpack_config.h>
+#include "mutils___float128.h"
+#include "mpack_config.h"
 
 #if !defined __MPACK_ERRNO__
 #define _MPACK_EXTERN_ extern

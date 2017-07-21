@@ -144,7 +144,7 @@ inline long nint(__float128 a)
     long i;
     __float128 tmp;
     a = a + 0.5;
-    tmp = floor(a);
+    tmp = floorq(a);
     i = (long)tmp;
     return i;
 }

@@ -31,12 +31,12 @@
 #ifndef _MBLAS_QD_H_
 #define _MBLAS_QD_H_
 
-#include <mpack_config.h>
+#include "mpack_config.h"
 
-#include <qd/qd_real.h>
+#include "qd/qd_real.h"
 
-#include <qd_complex.h>
-#include <mutils_qd.h>
+#include "qd_complex.h"
+#include "mutils_qd.h"
 
 #if !defined __MPACK_ERRNO__
 #define _MPACK_EXTERN_ extern

@@ -31,10 +31,10 @@
 #ifndef _MBLAS_GMP_H_
 #define _MBLAS_GMP_H_
 
-#include <mpack_config.h>
+#include "mpack_config.h"
 #include "gmpxx.h"
 #include "mpc_class.h"
-#include <mutils_gmp.h>
+#include "mutils_gmp.h"
 #if !defined __MPACK_ERRNO__
 #define _MPACK_EXTERN_ extern
 #else
