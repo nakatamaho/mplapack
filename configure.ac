@@ -4,6 +4,9 @@ dnl
 
 AC_INIT(mpack, 0.8.0)
 AC_CONFIG_HEADER(include/config.h) 
+
+AC_CONFIG_FILES([ Makefile mpack.pc ])
+
 AC_PROG_CC
 AC_PROG_CXX
 
@@ -626,4 +629,5 @@ examples/mblas/Makefile
 examples/mlapack/Makefile
 ])
 
-AC_OUTPUT(Makefile)
+AC_OUTPUT
+

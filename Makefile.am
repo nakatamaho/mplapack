@@ -5,6 +5,9 @@ mpack_includedir = $(includedir)/mpack
 mpack_include_HEADERS = include/dd_complex.h include/mblas_dd.h include/mblas_gmp.h include/mblas_qd.h include/mblas_mpfr.h include/mblas_double.h include/mlapack_gmp.h include/mlapack_mpfr.h include/mlapack_qd.h include/mlapack_dd.h include/mlapack_double.h include/mpack_config.h include/mpc_class.h include/mutils_dd.h include/mutils_gmp.h include/mutils_mpfr.h include/mutils_qd.h include/mutils_double.h include/qd_complex.h include/mblas___float128.h include/mpfr___float128.h include/mlapack___float128.h include/mutils___float128.h include/blas.h include/lapack.h include/blaswrapper.h mpfrc++/mpcomplex.h mpfrc++/mpreal.h
 noinst_HEADERS = include/mpack_debug.h include/mutils.h include/mblas.h include/mlapack.h include/mlapack_generic.h include/mpack_benchmark.h include/mpack_benchmark___float128.h include/mpack_benchmark_dd.h include/mpack_benchmark_double.h include/mpack_benchmark_gmp.h include/mpack_benchmark_mpfr.h include/mpack_benchmark_qd.h
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = mpack.pc
+
 EXTRA_DIST = \
 misc/cudalt.py \
 misc/build_mpack_for_mic.sh \
