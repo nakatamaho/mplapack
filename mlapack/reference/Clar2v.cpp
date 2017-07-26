@@ -103,8 +103,8 @@ void Clar2v(INTEGER n, COMPLEX * x, COMPLEX * y, COMPLEX * z, INTEGER incx, REAL
 	t6 = ci * yi - t1r;
 	x[ix] = ci * t5 + (sir * t4.real() + sii * t4.imag());
 	y[ix] = ci * t6 - (sir * t3.real() - sii * t3.imag());
-	mtemp1.real() = t6;
-	mtemp1.imag() = t1i;
+	mtemp1.real(t6);
+	mtemp1.imag(t1i);
 	z[ix] = ci * t3 + conj(si) * mtemp1;
 	ix = ix + incx;
 	ic = ic + incc;

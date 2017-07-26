@@ -31,11 +31,11 @@
 #ifndef _MBLAS_DD_H_
 #define _MBLAS_DD_H_
 
-#include <mpack_config.h>
-#include <qd/dd_real.h>
+#include "mpack_config.h"
+#include "qd/dd_real.h"
 
-#include <dd_complex.h>
-#include <mutils_dd.h>
+#include "dd_complex.h"
+#include "mutils_dd.h"
 
 #if !defined __MPACK_ERRNO__
 #define _MPACK_EXTERN_ extern

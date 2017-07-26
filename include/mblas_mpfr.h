@@ -31,11 +31,11 @@
 #ifndef _MBLAS_MPFR_H_
 #define _MBLAS_MPFR_H_
 
-#include <mpack_config.h>
-#include <mpreal.h>
-#include <mpcomplex.h>
+#include "mpack_config.h"
+#include "mpreal.h"
+#include "mpcomplex.h"
 using namespace mpfr;
-#include <mutils_mpfr.h>
+#include "mutils_mpfr.h"
 #if !defined __MPACK_ERRNO__
 #define _MPACK_EXTERN_ extern
 #else

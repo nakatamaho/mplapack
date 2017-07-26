@@ -81,8 +81,8 @@ void Crotg(COMPLEX * ca, COMPLEX cb, REAL * c, COMPLEX * s)
 
     if (abs(*ca) == 0.0) {
 	*c = 0.0;
-	(*s).real() = 1.0;
-	(*s).imag() = 0.0;
+         s->real(1.0);
+         s->imag(0.0);
 	*ca = cb;
 	return;
     }

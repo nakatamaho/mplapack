@@ -137,8 +137,8 @@ COMPLEX exp(COMPLEX x)
     c = cos(x.imag());
     s = sin(x.imag());
 #endif
-    ans.real() = ex * c;
-    ans.imag() = ex * s;
+    ans.real(ex * c);
+    ans.imag(ex * s);
     return ans;
 }
 

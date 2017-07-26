@@ -103,8 +103,8 @@ void Clarnv(INTEGER idist, INTEGER * iseed, INTEGER n, COMPLEX * x)
 //Convert generated numbers to complex numbers uniformly
 //distributed on the unit disk
 	    for (i = 0; i < il; i++) {
-		ztmp.real() = Zero;
-		ztmp.imag() = TWOPI * u[(i * 2)];
+		ztmp.real(Zero);
+		ztmp.imag(TWOPI * u[(i * 2)]);
         tmp = sqrt(u[(i * 2) - 2]);
 		x[iv + i - 1] = tmp * exp(ztmp);
 	    }
@@ -112,8 +112,8 @@ void Clarnv(INTEGER idist, INTEGER * iseed, INTEGER n, COMPLEX * x)
 //Convert generated numbers to complex numbers uniformly
 //distributed on the unit circle
 	    for (i = 0; i < il; i++) {
-		ztmp.real() = Zero;
-		ztmp.imag() = TWOPI * u[(i * 2)];
+		ztmp.real(Zero);
+		ztmp.imag(TWOPI * u[(i * 2)]);
 		x[iv + i - 1] = exp(ztmp);
 	    }
 	}

@@ -75,8 +75,8 @@ inline long nint(mpf_class a)
 inline mpc_class Real2Complex(mpf_class a, mpf_class b)
 {
     mpc_class ret;
-    ret.real() = a;
-    ret.imag() = b;
+    ret.real(a);
+    ret.imag(b);
     return ret;
 }
 

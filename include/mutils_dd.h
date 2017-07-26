@@ -69,8 +69,8 @@ inline long __dd_nint(dd_real a)
 inline dd_complex Real2Complex(dd_real a, dd_real b)
 {
     dd_complex ret;
-    ret.real() = a;
-    ret.imag() = b;
+    ret.real(a);
+    ret.imag(b);
     return ret;
 }
 

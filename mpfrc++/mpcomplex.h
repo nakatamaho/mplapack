@@ -138,17 +138,19 @@ class mpcomplex {
     friend const mpcomplex urandom_c (gmp_randstate_t& state);
 
 //extraction of real and imaginary parts
-    mpreal real()
+    void real(const mpreal r)
     {
         mpreal tmp;
         tmp = mpc_realref(mpc);
-        return tmp;
+        tmp = r;
+        //return tmp;
     }
-    mpreal imag()
+    void imag(const mpreal r)
     {
         mpreal tmp;
         tmp = mpc_imagref(mpc);
-        return tmp;
+        tmp = r;
+        //return tmp;
     }
 
     const mpreal real() const
@@ -843,8 +845,8 @@ inline mpcomplex::operator std::complex<double>() const
   std::complex<double> tmp;
   re = (*this).real();
   im = (*this).imag();
-  tmp.real() = mpfr_get_d(re,MPC_RND_RE(default_rnd));
-  tmp.imag() = mpfr_get_d(im,MPC_RND_IM(default_rnd));
+  tmp.real(mpfr_get_d(re,MPC_RND_RE(default_rnd)));
+  tmp.imag(mpfr_get_d(im,MPC_RND_IM(default_rnd)));
   return tmp;
 }
 
