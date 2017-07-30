@@ -1,6 +1,6 @@
 lib_LTLIBRARIES = libmlapack_qd.la
 
-libmlapack_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -g -I$(top_srcdir)/include -I$(top_srcdir)/$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_QD___
+libmlapack_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -g -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_QD___
 libmlapack_qd_la_SOURCES = ../../reference/Mutils.cpp \
 ../../reference/Rlae2.cpp  ../../reference/Rlamch.cpp ../../reference/Rlaev2.cpp ../../reference/Rlassq.cpp ../../reference/Rlanst.cpp \
 ../../reference/Rlansy.cpp ../../reference/Rlapy2.cpp ../../reference/Rlarfg.cpp ../../reference/Rlartg.cpp ../../reference/Rlaset.cpp \

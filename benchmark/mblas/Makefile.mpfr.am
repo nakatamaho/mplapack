@@ -5,10 +5,10 @@ Rdot.mpfr  Rdot.mpfr_ref \
 Rgemm.mpfr Rgemm.mpfr_ref \
 Rgemv.mpfr Rgemv.mpfr_ref
 
-mpfrcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(top_srcdir)/$(GMP_INCLUDEDIR) -I$(top_srcdir)/$(MPFR_INCLUDEDIR) -I$(top_srcdir)/$(MPC_INCLUDEDIR) -D___MPACK_BUILD_WITH_MPFR___
+mpfrcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -D___MPACK_BUILD_WITH_MPFR___
 mpfrlapack_libdepends = -L$(top_builddir)/mlapack/reference -lmlapack_mpfr_ref
-mpfrref_libdepends = $(mpfrlapack_libdepends) -L$(top_builddir)/mblas/reference -lmblas_mpfr_ref -L$(top_srcdir)/$(MPC_LIBDIR) -L$(top_srcdir)/$(MPFR_LIBDIR) -L$(top_srcdir)/$(GMP_LIBDIR) -L$(top_builddir)/mpfrc++ -lmpfrcxx -lmpfr -lmpc -lgmp $(DYLD)
-mpfropt_libdepends = $(mpfrlapack_libdepends) -L$(top_builddir)/mblas/optimized/mpfr -lmblas_mpfr -L$(top_srcdir)/$(MPC_LIBDIR) -L$(top_srcdir)/$(MPFR_LIBDIR) -L$(top_srcdir)/$(GMP_LIBDIR) -L$(top_builddir)/mpfrc++ -lmpfrcxx -lmpfr -lmpc -lgmp $(DYLD)
+mpfrref_libdepends = $(mpfrlapack_libdepends) -L$(top_builddir)/mblas/reference -lmblas_mpfr_ref -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -L$(top_builddir)/mpfrc++ -lmpfrcxx -lmpfr -lmpc -lgmp $(DYLD)
+mpfropt_libdepends = $(mpfrlapack_libdepends) -L$(top_builddir)/mblas/optimized/mpfr -lmblas_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -L$(top_builddir)/mpfrc++ -lmpfrcxx -lmpfr -lmpc -lgmp $(DYLD)
 
 Raxpy_mpfr_ref_SOURCES= Raxpy.cpp
 Raxpy_mpfr_ref_CXXFLAGS= $(mpfrcxxflags)

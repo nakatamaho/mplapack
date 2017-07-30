@@ -1,6 +1,6 @@
 lib_LTLIBRARIES = libmblas_qd.la
 
-libmblas_qd_la_CPPFLAGS = -g -I. -I$(top_srcdir)/include -I$(top_srcdir)/$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPACK_BUILD_WITH_QD___ -finline-functions 
+libmblas_qd_la_CPPFLAGS = -g -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPACK_BUILD_WITH_QD___ -finline-functions 
 libmblas_qd_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \

@@ -107,11 +107,11 @@ Rpocon.debug_dd_ref Rpocon.debug_dd Rpocon.test_dd_ref  Rpocon.test_dd
 mlapack_dd_testdir = $(prefix)/share/mpack/debug/dd
 ref_libdepends = -L$(top_builddir)/mlapack/reference -lmlapack_dd_ref -lmlapack_mpfr_ref -L$(top_builddir)/mblas/reference -lmblas_dd_ref -lmblas_mpfr_ref
 opt_libdepends = -L$(top_builddir)/mlapack/optimized/dd -lmlapack_dd  -L$(top_builddir)/mblas/optimized/dd -lmblas_dd -L$(top_builddir)/mlapack/reference -lmlapack_mpfr_ref -L$(top_builddir)/mblas/reference -lmblas_mpfr_ref
-mplibs=-L$(top_srcdir)/$(MPC_LIBDIR) -L$(top_srcdir)/$(MPFR_LIBDIR) -L$(top_srcdir)/$(QD_LIBDIR) -L$(top_builddir)/mpfrc++ -lmpfrcxx -lmpc -lmpfr -lgmpxx -lgmp -L$(top_srcdir)/$(QD_LIBDIR) -lqd
+mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(QD_LIBDIR) -L$(top_builddir)/mpfrc++ -lmpfrcxx -lmpc -lmpfr -lgmpxx -lgmp -lqd
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 reflapack=-L$(top_builddir)/external/i/LAPACK/lib -llapack $(FCLIBS)
 
-debug_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/$(GMP_INCLUDEDIR) -I$(top_srcdir)/$(MPFR_INCLUDEDIR) -I$(top_srcdir)/$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -I$(top_srcdir)/$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_DD___
+debug_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -I$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_DD___
 debug_libdepends = $(mplibs) $(reflapack) $(refblas)
 AM_FFLAGS = -x f77-cpp-input -g
 

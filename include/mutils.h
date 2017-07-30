@@ -50,6 +50,10 @@
 #include <mutils_double.h>
 #endif
 
+#if defined ___MPACK_BUILD_WITH_LONGDOUBLE___
+#include <mutils_longdouble.h>
+#endif
+
 #if defined ___MPACK_BUILD_WITH___FLOAT128___
 #include <mutils___float128.h>
 #endif

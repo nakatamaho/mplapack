@@ -6,10 +6,10 @@ Rgemm.gmp Rgemm.gmp_ref \
 Rgemv.gmp Rgemv.gmp_ref
 
 #lapack is needed for Rlange
-gmpcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/$(GMP_INCLUDEDIR) -D___MPACK_BUILD_WITH_GMP___
+gmpcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPACK_BUILD_WITH_GMP___
 gmplapack_libdepends = -L$(top_builddir)/mlapack/reference -lmlapack_gmp_ref
-gmpref_libdepends = $(gmplapack_libdepends) -L$(top_builddir)/mblas/reference -lmblas_gmp_ref -L$(top_srcdir)/$(GMP_LIBDIR) -lgmpxx -lgmp $(DYLD)
-gmpopt_libdepends = $(gmplapack_libdepends) -L$(top_builddir)/mblas/optimized/gmp -lmblas_gmp -L$(top_srcdir)/$(GMP_LIBDIR) -lgmpxx -lgmp $(DYLD)
+gmpref_libdepends = $(gmplapack_libdepends) -L$(top_builddir)/mblas/reference -lmblas_gmp_ref -L$(GMP_LIBDIR) -lgmpxx -lgmp $(DYLD)
+gmpopt_libdepends = $(gmplapack_libdepends) -L$(top_builddir)/mblas/optimized/gmp -lmblas_gmp -L$(GMP_LIBDIR) -lgmpxx -lgmp $(DYLD)
 
 Raxpy_gmp_ref_SOURCES= Raxpy.cpp
 Raxpy_gmp_ref_CXXFLAGS= $(gmpcxxflags)

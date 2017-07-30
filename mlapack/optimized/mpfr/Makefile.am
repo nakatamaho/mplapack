@@ -1,6 +1,6 @@
 lib_LTLIBRARIES = libmlapack_mpfr.la
 
-libmlapack_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -g -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(top_srcdir)/$(GMP_INCLUDEDIR) -I$(top_srcdir)/$(MPFR_INCLUDEDIR) -I$(top_srcdir)/$(MPC_INCLUDEDIR)  -D___MPACK_BUILD_WITH_MPFR___
+libmlapack_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -g -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)  -D___MPACK_BUILD_WITH_MPFR___
 libmlapack_mpfr_la_SOURCES = ../../reference/Mutils.cpp \
 ../../reference/Rlae2.cpp  ../../reference/Rlamch.cpp ../../reference/Rlaev2.cpp ../../reference/Rlassq.cpp ../../reference/Rlanst.cpp \
 ../../reference/Rlansy.cpp ../../reference/Rlapy2.cpp ../../reference/Rlarfg.cpp ../../reference/Rlartg.cpp ../../reference/Rlaset.cpp \

@@ -1,6 +1,6 @@
 lib_LTLIBRARIES = libmblas_gmp.la
 
-libmblas_gmp_la_CPPFLAGS = -g -I$(top_srcdir)/include $(OPENMP_CXXFLAGS) -I$(top_srcdir)/$(GMP_INCLUDEDIR) -D___MPACK_BUILD_WITH_GMP___  -finline-functions 
+libmblas_gmp_la_CPPFLAGS = -g -I$(top_srcdir)/include $(OPENMP_CXXFLAGS) -I$(GMP_INCLUDEDIR) -D___MPACK_BUILD_WITH_GMP___  -finline-functions 
 libmblas_gmp_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \

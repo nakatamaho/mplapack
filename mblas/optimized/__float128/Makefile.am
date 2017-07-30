@@ -1,6 +1,6 @@
 lib_LTLIBRARIES = libmblas___float128.la
 
-libmblas___float128_la_CPPFLAGS = -g -I. -I$(top_srcdir)/include -I$(top_srcdir)/$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPACK_BUILD_WITH___FLOAT128___ -finline-functions 
+libmblas___float128_la_CPPFLAGS = -g -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPACK_BUILD_WITH___FLOAT128___ -finline-functions 
 libmblas___float128_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \

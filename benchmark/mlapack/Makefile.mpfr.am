@@ -3,11 +3,11 @@ Rpotrf.mpfr Rpotrf.mpfr_ref \
 Rpotf2.mpfr Rpotf2.mpfr_ref \
 Rgetrf.mpfr Rgetrf.mpfr_ref
 
-mpfrcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(top_srcdir)/$(GMP_INCLUDEDIR) -I$(top_srcdir)/$(MPFR_INCLUDEDIR) -I$(top_srcdir)/$(MPC_INCLUDEDIR) -D___MPACK_BUILD_WITH_MPFR___
+mpfrcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -D___MPACK_BUILD_WITH_MPFR___
 mpfrreflapack_libdepends = -L$(top_builddir)/mlapack/reference -lmlapack_mpfr_ref
 mpfroptlapack_libdepends = -L$(top_builddir)/mlapack/optimized/mpfr -lmlapack_mpfr
-mpfrref_libdepends = $(mpfrreflapack_libdepends) -L$(top_builddir)/mblas/reference -lmblas_mpfr_ref -L$(top_srcdir)/$(MPC_LIBDIR) -L$(top_srcdir)/$(MPFR_LIBDIR) -L$(top_srcdir)/$(GMP_LIBDIR) -L$(top_builddir)/mpfrc++ -lmpfrcxx -lmpfr -lmpc -lgmp $(DYLD)
-mpfropt_libdepends = $(mpfroptlapack_libdepends) -L$(top_builddir)/mblas/optimized/mpfr -lmblas_mpfr -L$(top_srcdir)/$(MPC_LIBDIR) -L$(top_srcdir)/$(MPFR_LIBDIR) -L$(top_srcdir)/$(GMP_LIBDIR) -L$(top_builddir)/mpfrc++ -lmpfrcxx -lmpfr -lmpc -lgmp $(DYLD)
+mpfrref_libdepends = $(mpfrreflapack_libdepends) -L$(top_builddir)/mblas/reference -lmblas_mpfr_ref -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -L$(top_builddir)/mpfrc++ -lmpfrcxx -lmpfr -lmpc -lgmp $(DYLD)
+mpfropt_libdepends = $(mpfroptlapack_libdepends) -L$(top_builddir)/mblas/optimized/mpfr -lmblas_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -L$(top_builddir)/mpfrc++ -lmpfrcxx -lmpfr -lmpc -lgmp $(DYLD)
 
 Rpotrf_mpfr_ref_SOURCES= Rpotrf.cpp
 Rpotrf_mpfr_ref_CXXFLAGS= $(mpfrcxxflags)

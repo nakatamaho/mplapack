@@ -39,22 +39,22 @@ BLASWRAPPER_SOURCES = zaxpy.cpp ../reference/mpackinit.cpp
 #dset.cpp lsame.cpp xerbla.cpp
 
 if ENABLE_GMP
-libblaswrapper_gmp_la_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/$(GMP_INCLUDEDIR) -D___MPACK_BUILD_WITH_GMP___
+libblaswrapper_gmp_la_CPPFLAGS = -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPACK_BUILD_WITH_GMP___
 libblaswrapper_gmp_la_SOURCES = $(BLASWRAPPER_SOURCES)
 endif
 
 if ENABLE_MPFR
-libblaswrapper_mpfr_la_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/$(GMP_INCLUDEDIR) -I$(top_srcdir)/$(MPFR_INCLUDEDIR) -I$(top_srcdir)/$(MPC_INCLUDEDIR) -D___MPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mpfrc++
+libblaswrapper_mpfr_la_CPPFLAGS = -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -D___MPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mpfrc++
 libblaswrapper_mpfr_la_SOURCES = $(BLASWRAPPER_SOURCES)
 endif
 
 if ENABLE_QD
-libblaswrapper_qd_la_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_QD___
+libblaswrapper_qd_la_CPPFLAGS = -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_QD___
 libblaswrapper_qd_la_SOURCES = $(BLASWRAPPER_SOURCES)
 endif
 
 if ENABLE_DD
-libblaswrapper_dd_la_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_DD___
+libblaswrapper_dd_la_CPPFLAGS = -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_DD___
 libblaswrapper_dd_la_SOURCES = $(BLASWRAPPER_SOURCES)
 endif
 

@@ -34,6 +34,10 @@
 #include <float.h>
 #endif
 
+#if defined ___MPACK_BUILD_WITH_LONGDOUBLE___
+#include <float.h>
+#endif
+
 #if defined ___MPACK_BUILD_WITH___FLOAT128___
 #include <quadmath.h>
 #endif
@@ -814,6 +818,157 @@ double Rlamch_double(const char *cmach)
     return RlamchZ_double();
 }
 #endif
+
+#if defined ___MPACK_BUILD_WITH_LONGDOUBLE___
+//"E" denots we always calculate relative machine precision (e).
+//where 1+e = 1, minimum of e.
+long double RlamchE_longdouble(void)
+{
+    static long double eps;
+    static int called = 0;
+    if (called)
+        return eps;
+    eps = 1.0;
+//long double is the 80-bit extended precision format with 64bit significant digits
+    for (int i = 0; i < LDBL_MANT_DIG; i++) {
+        eps = eps / 2.0;
+    }
+    called = 1;
+    return eps;
+}
+
+//"S" denots we always calculate `safe minimum, such that 1/sfmin does not overflow'.
+//cf.http://www.netlib.org/blas/dlamch.f
+long double RlamchS_longdouble(void)
+{
+    return LDBL_MIN;
+
+    static long double eps;
+    static int called = 0;
+    if (called)
+        return eps;
+    eps = 1.0;
+/* We all know double is the long double 80 bit format has 64bit significant digits and 15 for the exponent (2^15)/2 - 1 = 16383 */
+    for (int i = 0; i < 16383; i++) {
+        eps = eps / 2.0;
+    }
+    called = 1;
+    return eps;
+}
+
+//"B" base  = base of the machine
+//cf.http://www.netlib.org/blas/dlamch.f
+long double RlamchB_longdouble(void)
+{
+    long double two;
+    two = 2.0;
+    return two;
+}
+
+//"P" prec = eps*base
+//cf.http://www.netlib.org/blas/dlamch.f
+long double RlamchP_longdouble(void)
+{
+    long double base, eps, prec;
+
+    base = RlamchB_longdouble();
+    eps = RlamchE_longdouble();
+    prec = eps * base;
+    return prec;
+}
+
+//"N" t = number of digits in mantissa
+//cf.http://www.netlib.org/blas/dlamch.f
+long double RlamchN_longdouble(void)
+{
+// long double with 80 bits has 64 bit significant digits
+    return (long double) LDBL_MANT_DIG;
+}
+
+//"R" rnd   = 1.0 when rounding occurs in addition, 0.0 otherwise
+//cf.http://www.netlib.org/blas/dlamch.f
+long double RlamchR_longdouble(void)
+{
+    long double mtmp;
+    mtmp = 1.0;
+    return mtmp;
+}
+
+//"M"
+//cf.http://www.netlib.org/blas/dlamch.f
+long double RlamchM_longdouble(void)
+{
+    return (long double) LDBL_MIN_EXP;
+}
+
+//"U"
+//cf.http://www.netlib.org/blas/dlamch.f
+long double RlamchU_longdouble(void)
+{
+    return LDBL_MIN;
+
+    static double eps;
+    static int called = 0;
+    if (called)
+        return eps;
+    eps = 1.0;
+/* We all know double is the long double 80 bit format has 64bit significant digits and 15 for the exponent (2^15)/2 - 1 = 16383 */
+    for (int i = 0; i < 16383; i++) {
+        eps = eps / 2.0;
+    }
+    called = 1;
+    return eps;
+}
+
+//"L"
+//cf.http://www.netlib.org/blas/dlamch.f
+long double RlamchL_longdouble(void)
+{
+    return LDBL_MAX_EXP;
+}
+
+//"O"
+//cf.http://www.netlib.org/blas/dlamch.f
+long double RlamchO_longdouble(void)
+{
+    return LDBL_MAX;
+}
+
+//"Z" :dummy
+//cf.http://www.netlib.org/blas/dlamch.f
+long double RlamchZ_longdouble(void)
+{
+    long double mtemp = 0.0;
+    return mtemp;
+}
+
+long double Rlamch_longdouble(const char *cmach)
+{
+    if (Mlsame(cmach, "E"))
+        return RlamchE_longdouble();
+    if (Mlsame(cmach, "S"))
+        return RlamchS_longdouble();
+    if (Mlsame(cmach, "B"))
+        return RlamchB_longdouble();
+    if (Mlsame(cmach, "P"))
+        return RlamchP_longdouble();
+    if (Mlsame(cmach, "N"))
+        return RlamchN_longdouble();
+    if (Mlsame(cmach, "R"))
+        return RlamchR_longdouble();
+    if (Mlsame(cmach, "M"))
+        return RlamchM_longdouble();
+    if (Mlsame(cmach, "U"))
+        return RlamchU_longdouble();
+    if (Mlsame(cmach, "L"))
+        return RlamchL_longdouble();
+    if (Mlsame(cmach, "O"))
+        return RlamchO_longdouble();
+    Mxerbla("Rlamch", 1);
+    return RlamchZ_longdouble();
+}
+#endif
+
 
 #if defined ___MPACK_BUILD_WITH___FLOAT128___
 //"E" denots we always calculate relative machine precision (e).

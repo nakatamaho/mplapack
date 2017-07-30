@@ -1,6 +1,6 @@
 lib_LTLIBRARIES = libmblas_mpfr.la
 
-libmblas_mpfr_la_CPPFLAGS = -g -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(top_srcdir)/$(GMP_INCLUDEDIR) -I$(top_srcdir)/$(MPFR_INCLUDEDIR) -I$(top_srcdir)/$(MPC_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPACK_BUILD_WITH_MPFR___ -finline-functions
+libmblas_mpfr_la_CPPFLAGS = -g -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPACK_BUILD_WITH_MPFR___ -finline-functions
 
 libmblas_mpfr_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \

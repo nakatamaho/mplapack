@@ -7,11 +7,11 @@ if ENABLE_CUDA
 include Makefile.dd.cuda.am
 endif
 
-ddcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_DD___
+ddcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_DD___
 ddreflapack_libdepends = -L$(top_builddir)/mlapack/reference -lmlapack_dd_ref
 ddoptlapack_libdepends = -L$(top_builddir)/mlapack/optimized/dd -lmlapack_dd
-ddref_libdepends = $(ddreflapack_libdepends) -L$(top_builddir)/mlapack/reference -lmlapack_dd_ref -L$(top_builddir)/mblas/reference -lmblas_dd_ref -L$(top_srcdir)/$(QD_LIBDIR) -lqd $(DYLD)
-ddopt_libdepends = $(ddoptlapack_libdepends) -L$(top_builddir)/mlapack/optimized/dd -lmlapack_dd -L$(top_builddir)/mblas/optimized/dd -lmblas_dd -L$(top_srcdir)/$(QD_LIBDIR) -lqd $(DYLD)
+ddref_libdepends = $(ddreflapack_libdepends) -L$(top_builddir)/mlapack/reference -lmlapack_dd_ref -L$(top_builddir)/mblas/reference -lmblas_dd_ref -L$(QD_LIBDIR) -lqd $(DYLD)
+ddopt_libdepends = $(ddoptlapack_libdepends) -L$(top_builddir)/mlapack/optimized/dd -lmlapack_dd -L$(top_builddir)/mblas/optimized/dd -lmblas_dd -L$(QD_LIBDIR) -lqd $(DYLD)
 
 Rpotrf_dd_ref_SOURCES= Rpotrf.cpp
 Rpotrf_dd_ref_CXXFLAGS= $(ddcxxflags)

@@ -254,16 +254,44 @@ CFLAGS="$SAVE_CFLAGS"
 
 AM_CONDITIONAL(ENABLE___FLOAT128, test x$enable___float128 = xyes)
 
+AC_ARG_ENABLE(longdouble,
+[  --enable-longdouble    Enable long double version],
+[case "${enableval}" in
+    yes) enable_longdouble=yes ;;
+    no)  enable_longdouble=no  ;;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-longdouble) ;;
+        esac],[enable_longdouble=no])
+
+AM_CONDITIONAL(ENABLE_LONGDOUBLE, test x$enable_longdouble = xyes)
+
+highest_abs_top_srcdir=`cd "$srcdir" && pwd` 
+
 dnl GMP library start
 AC_ARG_WITH(system-gmp,
-[  --with-system-gmp      Use GMP library already on system
-],,with_system_gmp="no")
+AC_HELP_STRING(
+	    [--with-system-gmp=PREFIX],
+	    [ ="yes" if it is at the default location (/usr/local/lib), or alternative prefix path to gmp library]
+	  ),
+	  GMP_PATHSET=1,
+	  GMP_PATHSET=0;
+	  with_system_gmp="no";
+	  )
 GMP_INCLUDEDIR=.
 GMP_LIBDIR=.
+if test  $GMP_PATHSET = 1 ; then
+	if test $with_system_gmp != "yes"; then
+		GMP_INCLUDEDIR="$with_system_gmp/include"
+		GMP_LIBDIR="$with_system_gmp/lib"
+	fi
+fi
+
 if test x$enable_gmp = x"yes" -o x$enable_mpfr = x"yes" -o x$enable_debug = x"yes"; then
-    if test x$with_system_gmp = x"yes"; then
+    if test x$with_system_gmp != x"no"; then
         HAVE_GMP=""
+        save_CXXFLAGS=$CXXFLAGS
+        CXXFLAGS="$CXXFLAGS -I$GMP_INCLUDEDIR"
         AC_CHECK_HEADER(gmp.h, HAVE_GMP_HEADER=yes)
+        CXXFLAGS=$save_CXXFLAGS
         if test x$HAVE_GMP_HEADER = xyes; then
             save_LDFLAGS="$LDFLAGS"
             LDFLAGS="$LDFLAGS -L$GMP_LIBDIR"
@@ -278,8 +306,8 @@ if test x$enable_gmp = x"yes" -o x$enable_mpfr = x"yes" -o x$enable_debug = x"ye
         fi
     else
         AC_MSG_RESULT([Using GMP library comes with MPACK])
-        GMP_INCLUDEDIR=external/i/GMP/include/
-        GMP_LIBDIR=external/i/GMP/lib/
+        GMP_INCLUDEDIR=$highest_abs_top_srcdir/external/i/GMP/include/
+        GMP_LIBDIR=$highest_abs_top_srcdir/external/i/GMP/lib/
     fi
 fi
 AM_CONDITIONAL(SYSTEM_GMP, test x$SYSTEM_GMP = xyes)
@@ -289,17 +317,31 @@ dnl GMP library end
 
 dnl MPFR library start
 AC_ARG_WITH(system-mpfr,
-[  --with-system-mpfr      Use MPFR library already on system
-],,with_system_mpfr="no")
+AC_HELP_STRING(
+	    [--with-system-mpfr=PREFIX],
+	    [ ="yes" if it is at the default location (/usr/local/lib), or alternative prefix path to mpfr library]
+	  ),
+	  MPFR_PATHSET=1,
+	  MPFR_PATHSET=0;
+	  with_system_mpfr="no";
+	  )
 MPFR_INCLUDEDIR=.
 MPFR_LIBDIR=.
+if test  $MPFR_PATHSET = 1 ; then
+	if test $with_system_mpfr != "yes"; then
+		MPFR_INCLUDEDIR="$with_system_mpfr/include"
+		MPFR_LIBDIR="$with_system_mpfr/lib"
+	fi
+fi
 if test x$enable_mpfr = x"yes" -o x$enable_debug = x"yes"; then
-    if test x$with_system_mpfr = x"yes"; then
+    if test x$with_system_mpfr != x"no"; then
         HAVE_MPFR=""
+        save_CFLAGS=$CFLAGS
+        CFLAGS="$CFLAGS -I$MPFR_INCLUDEDIR -I$GMP_INCLUDEDIR"
         AC_CHECK_HEADER(mpfr.h, HAVE_MPFR_HEADER=yes)
         if test x$HAVE_MPFR_HEADER = xyes; then
             save_LDFLAGS="$LDFLAGS"
-            LDFLAGS="$LDFLAGS -L$MPFR_LIBDIR"
+            LDFLAGS="$LDFLAGS -L$MPFR_LIBDIR -L$GMP_LIBDIR"
             AC_CHECK_LIB(mpfr, mpfr_init, [MPFR_LIBS="-lmpfr -lgmp"; HAVE_MPFR=yes])
             LDFLAGS=$save_LDFLAGS
         fi
@@ -309,10 +351,11 @@ if test x$enable_mpfr = x"yes" -o x$enable_debug = x"yes"; then
             AC_MSG_RESULT([MPFR found: using MPFR comes with the system])
             SYSTEM_MPFR=yes
         fi
+        CFLAGS=$save_CFLAGS
     else
         AC_MSG_RESULT([Using MPFR comes with MPACK])
-        MPFR_INCLUDEDIR=external/i/MPFR/include/
-        MPFR_LIBDIR=external/i/MPFR/lib/
+        MPFR_INCLUDEDIR=$highest_abs_top_srcdir/external/i/MPFR/include/
+        MPFR_LIBDIR=$highest_abs_top_srcdir/external/i/MPFR/lib/
     fi
 fi
 AM_CONDITIONAL(SYSTEM_MPFR, test x$SYSTEM_MPFR = xyes)
@@ -322,17 +365,31 @@ dnl MPFR library end
 
 dnl MPC library start
 AC_ARG_WITH(system-mpc,
-[  --with-system-mpc      Use MPC library already on system
-],,with_system_mpc="no")
+AC_HELP_STRING(
+	    [--with-system-mpc=PREFIX],
+	    [ ="yes" if it is at the default location (/usr/local/lib), or alternative prefix path to mpc library]
+	  ),
+	  MPC_PATHSET=1,
+	  MPC_PATHSET=0;
+	  with_system_mpc="no";
+	  )
 MPC_INCLUDEDIR=.
 MPC_LIBDIR=.
+if test  $MPC_PATHSET = 1 ; then
+	if test $with_system_mpc != "yes"; then
+		MPC_INCLUDEDIR="$with_system_mpc/include"
+		MPC_LIBDIR="$with_system_mpc/lib"
+	fi
+fi
 if test x$enable_mpfr = x"yes" -o x$enable_debug = x"yes"; then
-    if test x$with_system_mpc = x"yes"; then
+    if test x$with_system_mpc != x"no"; then
         HAVE_MPC=""
+        save_CFLAGS=$CFLAGS
+        CFLAGS="$CFLAGS -I$MPC_INCLUDEDIR -I$MPFR_INCLUDEDIR -I$GMP_INCLUDEDIR"
         AC_CHECK_HEADER(mpc.h, HAVE_MPC_HEADER=yes)
         if test x$HAVE_MPC_HEADER = xyes; then
             save_LDFLAGS="$LDFLAGS"
-            LDFLAGS="$LDFLAGS -L$MPC_LIBDIR"
+            LDFLAGS="$LDFLAGS -L$MPC_LIBDIR -L$MPFR_LIBDIR -L$GMP_LIBDIR"
             AC_CHECK_LIB(mpc, mpc_init2, [MPC_LIBS="-lmpc -lmpfr -lgmp"; HAVE_MPC=yes])
             LDFLAGS=$save_LDFLAGS
         fi
@@ -341,13 +398,12 @@ if test x$enable_mpfr = x"yes" -o x$enable_debug = x"yes"; then
         else
             AC_MSG_RESULT([MPC library found: using MPC library comes with the system])
             SYSTEM_MPC=yes
-	    MPC_INCLUDEDIR=.
-	    MPC_LIBDIR=.
         fi
+        CFLAGS=$save_CFLAGS
     else
 	AC_MSG_RESULT([Using MPC library comes with MPACK])
-        MPC_INCLUDEDIR=external/i/MPC/include/
-        MPC_LIBDIR=external/i/MPC/lib/
+        MPC_INCLUDEDIR=$highest_abs_top_srcdir/external/i/MPC/include/
+        MPC_LIBDIR=$highest_abs_top_srcdir/external/i/MPC/lib/
     fi
 fi
 AM_CONDITIONAL(SYSTEM_MPC, test x$SYSTEM_MPC = xyes)
@@ -357,15 +413,30 @@ dnl MPC library end
 
 dnl QD library start
 AC_ARG_WITH(system-qd,
-[  --with-system-qd      Use QD library already on system
-],,with_system_qd="no")
+AC_HELP_STRING(
+	    [--with-system-qd=PREFIX],
+	    [ ="yes" if it is at the default location (/usr/local/lib), or alternative prefix path to qd library]
+	  ),
+	  QD_PATHSET=1,
+	  QD_PATHSET=0;
+	  with_system_qd="no";
+	  )
 QD_INCLUDEDIR=.
 QD_LIBDIR=.
+if test  $QD_PATHSET = 1 ; then
+	if test $with_system_qd != "yes"; then
+		QD_INCLUDEDIR="$with_system_qd/include"
+		QD_LIBDIR="$with_system_qd/lib"
+	fi
+fi
 if test x$enable_qd = x"yes" -o x$enable_dd = x"yes" -o x$enable_debug = x"yes"; then
-    if test x$with_system_qd = x"yes"; then
+    if test x$with_system_qd != x"no"; then
         HAVE_QD=""
+        save_CXXFLAGS=$CXXFLAGS
+        CXXFLAGS="$CXXFLAGS -I$QD_INCLUDEDIR"
         AC_LANG_PUSH([C++])
         AC_CHECK_HEADER(qd/qd_real.h, HAVE_QD_HEADER=yes)
+        CXXFLAGS=$save_CXXFLAGS
         if test x$HAVE_QD_HEADER = xyes; then
             save_LDFLAGS="$LDFLAGS"
             LDFLAGS="$LDFLAGS -L$QD_LIBDIR"
@@ -377,14 +448,12 @@ if test x$enable_qd = x"yes" -o x$enable_dd = x"yes" -o x$enable_debug = x"yes";
         else
               AC_MSG_RESULT([QD library found: using QD library comes with the system])
               SYSTEM_QD=yes
-	      QD_INCLUDEDIR=.
-	      QD_LIBDIR=.
         fi
         AC_LANG_POP([C++])
     else
         AC_MSG_RESULT([Using QD library comes with MPACK])
-        QD_INCLUDEDIR=external/i/QD/include/
-        QD_LIBDIR=external/i/QD/lib/
+        QD_INCLUDEDIR=$highest_abs_top_srcdir/external/i/QD/include/
+        QD_LIBDIR=$highest_abs_top_srcdir/external/i/QD/lib/
     fi   
 fi
 AM_CONDITIONAL(SYSTEM_QD, test x$SYSTEM_QD = xyes)
@@ -465,6 +534,11 @@ if test x$enable_double = x"yes"; then
 AC_MSG_RESULT([Enable double version])
 else
 AC_MSG_RESULT([Disable double version])
+fi
+if test x$enable_longdouble = x"yes"; then
+AC_MSG_RESULT([Enable long double version])
+else
+AC_MSG_RESULT([Disable long double version])
 fi
 if test x$enable___float128 = x"yes"; then
 AC_MSG_RESULT([Enable __float128 version])
@@ -586,6 +660,7 @@ mblas/optimized/qd/Makefile
 mblas/optimized/dd/Makefile
 mblas/optimized/dd/cuda/Makefile
 mblas/optimized/double/Makefile
+mblas/optimized/longdouble/Makefile
 mblas/optimized/__float128/Makefile
 mblas/blaswrapper/Makefile
 mblas/fortranwrapper/Makefile
@@ -595,6 +670,7 @@ mblas/debug/mpfr/Makefile
 mblas/debug/qd/Makefile
 mblas/debug/dd/Makefile
 mblas/debug/double/Makefile
+mblas/debug/longdouble/Makefile
 mblas/debug/__float128/Makefile
 mblas/Makefile
 mlapack/reference/Makefile
@@ -604,6 +680,7 @@ mlapack/debug/mpfr/Makefile
 mlapack/debug/qd/Makefile
 mlapack/debug/dd/Makefile
 mlapack/debug/double/Makefile
+mlapack/debug/longdouble/Makefile
 mlapack/debug/__float128/Makefile
 mlapack/optimized/Makefile
 mlapack/optimized/gmp/Makefile
@@ -611,6 +688,7 @@ mlapack/optimized/mpfr/Makefile
 mlapack/optimized/qd/Makefile
 mlapack/optimized/dd/Makefile
 mlapack/optimized/double/Makefile
+mlapack/optimized/longdouble/Makefile
 mlapack/optimized/__float128/Makefile
 mlapack/lapackwrapper/Makefile
 mlapack/fortranwrapper/Makefile

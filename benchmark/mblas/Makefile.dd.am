@@ -10,10 +10,10 @@ include Makefile.dd.cuda.am
 endif
 
 #lapack is needed for Rlange
-ddcxxflags = -Wall $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_DD___
+ddcxxflags = -Wall $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_DD___
 ddlapack_libdepends = -L$(top_builddir)/mlapack/reference -lmlapack_dd_ref
-ddref_libdepends = $(ddlapack_libdepends) -L$(top_builddir)/mblas/reference -lmblas_dd_ref -L$(top_srcdir)/$(QD_LIBDIR) -lqd $(DYLD)
-ddopt_libdepends = $(ddlapack_libdepends) -L$(top_builddir)/mblas/optimized/dd -lmblas_dd -L$(top_srcdir)/$(QD_LIBDIR) -lqd $(DYLD)
+ddref_libdepends = $(ddlapack_libdepends) -L$(top_builddir)/mblas/reference -lmblas_dd_ref -L$(QD_LIBDIR) -lqd $(DYLD)
+ddopt_libdepends = $(ddlapack_libdepends) -L$(top_builddir)/mblas/optimized/dd -lmblas_dd -L$(QD_LIBDIR) -lqd $(DYLD)
 
 Raxpy_dd_ref_SOURCES= Raxpy.cpp
 Raxpy_dd_ref_CXXFLAGS= $(ddcxxflags)

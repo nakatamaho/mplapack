@@ -108,11 +108,11 @@ Rpocon.debug_mpfr_ref Rpocon.debug_mpfr Rpocon.test_mpfr_ref  Rpocon.test_mpfr
 mlapack_mpfr_testdir = $(prefix)/share/mpack/debug/mpfr
 ref_libdepends = -L$(top_builddir)/mlapack/reference -lmlapack_mpfr_ref -L$(top_builddir)/mblas/reference -lmblas_mpfr_ref
 opt_libdepends = -L$(top_builddir)/mlapack/optimized/mpfr -lmlapack_mpfr -L$(top_builddir)/mblas/optimized/mpfr -lmblas_mpfr
-mplibs=-L$(top_srcdir)/$(MPC_LIBDIR) -L$(top_srcdir)/$(MPFR_LIBDIR) -L$(top_srcdir)/$(GMP_LIBDIR) -L$(top_builddir)/mpfrc++ -lmpfrcxx -lmpc -lmpfr -lgmpxx -lgmp -lm
+mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -L$(top_builddir)/mpfrc++ -lmpfrcxx -lmpc -lmpfr -lgmpxx -lgmp -lm
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 reflapack=-L$(top_builddir)/external/i/LAPACK/lib -llapack $(FCLIBS)
 
-debug_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/$(GMP_INCLUDEDIR) -I$(top_srcdir)/$(MPFR_INCLUDEDIR) -I$(top_srcdir)/$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPACK_BUILD_WITH_MPFR___
+debug_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPACK_BUILD_WITH_MPFR___
 debug_libdepends = $(mplibs) $(reflapack) $(refblas)
 AM_FFLAGS = -x f77-cpp-input -g
 

@@ -97,6 +97,19 @@ typedef std::complex<double> COMPLEX;
 #define iMlaenv  iMlaenv_double
 #endif
 
+#if defined ___MPACK_BUILD_WITH_LONGDOUBLE___
+#include <mlapack_longdouble.h>
+typedef mpackint INTEGER;
+typedef mpacklogical LOGICAL;
+typedef long double REAL;
+typedef std::complex<long double> COMPLEX;
+#define Mlsame   Mlsame_longdouble
+#define Mxerbla  Mxerbla_longdouble
+#define Rlamch   Rlamch_longdouble
+#define iMlaenv  iMlaenv_longdouble
+#endif
+
+
 #if defined ___MPACK_BUILD_WITH___FLOAT128___
 #include <mlapack___float128.h>
 typedef mpackint INTEGER;

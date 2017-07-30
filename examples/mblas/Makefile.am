@@ -2,8 +2,8 @@ blasexamples_PROGRAMS =
 
 if ENABLE_GMP
 blasexamples_PROGRAMS += Rgemm.gmp
-gmpcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/$(GMP_INCLUDEDIR) 
-gmp_libdepends = -L$(top_builddir)/mblas/optimized/gmp -lmblas_gmp -L$(top_srcdir)/$(GMP_LIBDIR) -lgmpxx -lgmp
+gmpcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) 
+gmp_libdepends = -L$(top_builddir)/mblas/optimized/gmp -lmblas_gmp -L$(GMP_LIBDIR) -lgmpxx -lgmp
 Rgemm_gmp_SOURCES= Rgemm_gmp.cpp
 Rgemm_gmp_CXXFLAGS= $(gmpcxxflags)
 Rgemm_gmp_LDFLAGS= $(gmp_libdepends)
@@ -11,8 +11,8 @@ endif
 
 if ENABLE_MPFR
 blasexamples_PROGRAMS += Rgemm.mpfr
-mpfrcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(top_srcdir)/$(GMP_INCLUDEDIR) -I$(top_srcdir)/$(MPFR_INCLUDEDIR) -I$(top_srcdir)/$(MPC_INCLUDEDIR)
-mpfr_libdepends = -L$(top_builddir)/mblas/optimized/mpfr -lmblas_mpfr -L$(top_builddir)/mpfrc++ -lmpfrcxx -L$(top_srcdir)/$(MPC_LIBDIR) -L$(top_srcdir)/$(MPFR_LIBDIR) -L$(top_srcdir)/$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
+mpfrcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
+mpfr_libdepends = -L$(top_builddir)/mblas/optimized/mpfr -lmblas_mpfr -L$(top_builddir)/mpfrc++ -lmpfrcxx -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 Rgemm_mpfr_SOURCES= Rgemm_mpfr.cpp
 Rgemm_mpfr_CXXFLAGS= $(mpfrcxxflags)
 Rgemm_mpfr_LDFLAGS= $(mpfr_libdepends)
@@ -20,8 +20,8 @@ endif
 
 if ENABLE_QD
 blasexamples_PROGRAMS += Rgemm.qd
-qdcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/$(QD_INCLUDEDIR) 
-qd_libdepends = -L$(top_builddir)/mblas/optimized/qd -lmblas_qd -L$(top_srcdir)/$(QD_LIBDIR) -lqd
+qdcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) 
+qd_libdepends = -L$(top_builddir)/mblas/optimized/qd -lmblas_qd -L$(QD_LIBDIR) -lqd
 Rgemm_qd_SOURCES= Rgemm_qd.cpp
 Rgemm_qd_CXXFLAGS= $(qdcxxflags)
 Rgemm_qd_LDFLAGS= $(qd_libdepends)
@@ -29,8 +29,8 @@ endif
 
 if ENABLE_DD
 blasexamples_PROGRAMS += Rgemm.dd
-ddcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/$(QD_INCLUDEDIR) 
-dd_libdepends = -L$(top_builddir)/mblas/optimized/dd -lmblas_dd -L$(top_srcdir)/$(QD_LIBDIR) -lqd
+ddcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) 
+dd_libdepends = -L$(top_builddir)/mblas/optimized/dd -lmblas_dd -L$(QD_LIBDIR) -lqd
 Rgemm_dd_SOURCES= Rgemm_dd.cpp
 Rgemm_dd_CXXFLAGS= $(ddcxxflags)
 Rgemm_dd_LDFLAGS= $(dd_libdepends)

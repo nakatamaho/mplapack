@@ -83,10 +83,10 @@ Rtrsv.debug.mpfr_ref  Rtrsv.debug.mpfr
 mblas_mpfr_testdir = $(prefix)/share/mpack/testing/mpfr
 ref_libdepends = -L$(top_builddir)/mblas/reference -lmblas_mpfr_ref
 opt_libdepends = -L$(top_builddir)/mblas/optimized/mpfr -lmblas_mpfr
-mplibs=-L$(top_builddir)/mpfrc++ -lmpfrcxx -L$(top_srcdir)/$(MPC_LIBDIR) -L$(top_srcdir)/$(MPFR_LIBDIR) -L$(top_srcdir)/$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
+mplibs=-L$(top_builddir)/mpfrc++ -lmpfrcxx -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 
-debug_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(top_srcdir)/$(GMP_INCLUDEDIR) -I$(top_srcdir)/$(MPFR_INCLUDEDIR) -I$(top_srcdir)/$(MPC_INCLUDEDIR) -D___MPACK_BUILD_WITH_MPFR___
+debug_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -D___MPACK_BUILD_WITH_MPFR___
 
 if !IS_MACOSX
 debug_srcdepends = ../common/xerbla.cpp ../common/mpack.debug.cpp ../common/Mxerbla.override.cpp

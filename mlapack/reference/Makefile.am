@@ -20,12 +20,16 @@ if ENABLE_DOUBLE
 lib_LTLIBRARIES += libmlapack_double_ref.la
 endif
 
+if ENABLE_LONGDOUBLE
+lib_LTLIBRARIES += libmlapack_longdouble_ref.la
+endif
+
 if ENABLE___FLOAT128
 lib_LTLIBRARIES += libmlapack___float128_ref.la
 endif
 
 if ENABLE_GMP
-libmlapack_gmp_ref_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/$(GMP_INCLUDEDIR) -D___MPACK_BUILD_WITH_GMP___
+libmlapack_gmp_ref_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPACK_BUILD_WITH_GMP___
 libmlapack_gmp_ref_la_SOURCES = $(MLAPACK_SOURCES)
 if IS_MACOSX
 libmlapack_gmp_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -33,7 +37,7 @@ endif
 endif
 
 if ENABLE_MPFR
-libmlapack_mpfr_ref_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/$(GMP_INCLUDEDIR) -I$(top_srcdir)/$(MPFR_INCLUDEDIR)  -I$(top_srcdir)/$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPACK_BUILD_WITH_MPFR___
+libmlapack_mpfr_ref_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPACK_BUILD_WITH_MPFR___
 libmlapack_mpfr_ref_la_SOURCES = $(MLAPACK_SOURCES)
 if IS_MACOSX
 libmlapack_mpfr_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -41,7 +45,7 @@ endif
 endif
 
 if ENABLE_QD
-libmlapack_qd_ref_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_QD___
+libmlapack_qd_ref_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_QD___
 libmlapack_qd_ref_la_SOURCES = $(MLAPACK_SOURCES)
 if IS_MACOSX
 libmlapack_qd_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -49,7 +53,7 @@ endif
 endif
 
 if ENABLE_DD
-libmlapack_dd_ref_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_DD___
+libmlapack_dd_ref_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_DD___
 libmlapack_dd_ref_la_SOURCES = $(MLAPACK_SOURCES)
 if IS_MACOSX
 libmlapack_dd_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -61,6 +65,14 @@ libmlapack_double_ref_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -
 libmlapack_double_ref_la_SOURCES = $(MLAPACK_SOURCES)
 if IS_MACOSX
 libmlapack_double_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+endif
+endif
+
+if ENABLE_LONGDOUBLE
+libmlapack_longdouble_ref_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPACK_BUILD_WITH_LONGDOUBLE___
+libmlapack_longdouble_ref_la_SOURCES = $(MLAPACK_SOURCES)
+if IS_MACOSX
+libmlapack_longdouble_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 

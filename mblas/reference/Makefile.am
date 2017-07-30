@@ -20,6 +20,10 @@ if ENABLE_DOUBLE
 lib_LTLIBRARIES += libmblas_double_ref.la
 endif
 
+if ENABLE_LONGDOUBLE
+lib_LTLIBRARIES += libmblas_longdouble_ref.la
+endif
+
 if ENABLE___FLOAT128
 lib_LTLIBRARIES += libmblas___float128_ref.la
 endif
@@ -38,7 +42,7 @@ Rtrmv.cpp Rtrsm.cpp Rtrsv.cpp iCamax.cpp iRamax.cpp \
 Rset.cpp Mlsame.cpp Mxerbla.cpp mpackinit.cpp
 
 if ENABLE_GMP
-libmblas_gmp_ref_la_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/$(GMP_INCLUDEDIR) -D___MPACK_BUILD_WITH_GMP___
+libmblas_gmp_ref_la_CPPFLAGS = -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPACK_BUILD_WITH_GMP___
 libmblas_gmp_ref_la_SOURCES = $(MBLAS_SOURCES)
 if IS_MACOSX
 libmblas_gmp_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -46,7 +50,7 @@ endif
 endif
 
 if ENABLE_MPFR
-libmblas_mpfr_ref_la_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/$(GMP_INCLUDEDIR) -I$(top_srcdir)/$(MPFR_INCLUDEDIR) -I$(top_srcdir)/$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPACK_BUILD_WITH_MPFR___
+libmblas_mpfr_ref_la_CPPFLAGS = -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPACK_BUILD_WITH_MPFR___
 libmblas_mpfr_ref_la_SOURCES = $(MBLAS_SOURCES)
 if IS_MACOSX
 libmblas_mpfr_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -54,7 +58,7 @@ endif
 endif
 
 if ENABLE_QD
-libmblas_qd_ref_la_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_QD___
+libmblas_qd_ref_la_CPPFLAGS = -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_QD___
 libmblas_qd_ref_la_SOURCES = $(MBLAS_SOURCES)
 if IS_MACOSX
 libmblas_qd_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -62,7 +66,7 @@ endif
 endif
 
 if ENABLE_DD
-libmblas_dd_ref_la_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_DD___
+libmblas_dd_ref_la_CPPFLAGS = -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_DD___
 libmblas_dd_ref_la_SOURCES = $(MBLAS_SOURCES)
 if IS_MACOSX
 libmblas_dd_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -74,6 +78,14 @@ libmblas_double_ref_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPACK_BUILD_WITH_
 libmblas_double_ref_la_SOURCES = $(MBLAS_SOURCES)
 if IS_MACOSX
 libmblas_double_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+endif
+endif
+
+if ENABLE_LONGDOUBLE
+libmblas_longdouble_ref_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPACK_BUILD_WITH_LONGDOUBLE___
+libmblas_longdouble_ref_la_SOURCES = $(MBLAS_SOURCES)
+if IS_MACOSX
+libmblas_longdouble_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 

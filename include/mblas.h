@@ -78,6 +78,16 @@ typedef std::complex<double> COMPLEX;
 #define Mxerbla  Mxerbla_double
 #endif
 
+#if defined ___MPACK_BUILD_WITH_LONGDOUBLE___
+#include <mblas_longdouble.h>
+typedef mpackint INTEGER;
+typedef long double REAL;
+typedef std::complex<long double> COMPLEX;
+#define Mlsame   Mlsame_longdouble
+#define Mxerbla  Mxerbla_longdouble
+#endif
+
+
 #if defined ___MPACK_BUILD_WITH___FLOAT128___
 #include <mblas___float128.h>
 typedef mpackint INTEGER;
@@ -87,6 +97,8 @@ typedef std::complex<__float128> COMPLEX;
 #define Mxerbla  Mxerbla___float128
 #endif
 
+#include <algorithm>    // std::max
+#include <math.h> // sqrt
 #include <cstdlib>
 using std::max;
 using std::min;

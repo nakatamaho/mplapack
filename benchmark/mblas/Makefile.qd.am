@@ -6,10 +6,10 @@ Rgemm.qd Rgemm.qd_ref \
 Rgemv.qd Rgemv.qd_ref
 
 #lapack is needed for Rlange
-qdcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_QD___
+qdcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPACK_BUILD_WITH_QD___
 qdlapack_libdepends = -L$(top_builddir)/mlapack/reference -lmlapack_qd_ref
-qdref_libdepends = $(qdlapack_libdepends) -L$(top_builddir)/mblas/reference -lmblas_qd_ref -L$(top_srcdir)/$(QD_LIBDIR) -lqd $(DYLD)
-qdopt_libdepends = $(qdlapack_libdepends) -L$(top_builddir)/mblas/optimized/qd -lmblas_qd -L$(top_srcdir)/$(QD_LIBDIR) -lqd $(DYLD)
+qdref_libdepends = $(qdlapack_libdepends) -L$(top_builddir)/mblas/reference -lmblas_qd_ref -L$(QD_LIBDIR) -lqd $(DYLD)
+qdopt_libdepends = $(qdlapack_libdepends) -L$(top_builddir)/mblas/optimized/qd -lmblas_qd -L$(QD_LIBDIR) -lqd $(DYLD)
 
 Raxpy_qd_ref_SOURCES= Raxpy.cpp
 Raxpy_qd_ref_CXXFLAGS= $(qdcxxflags)

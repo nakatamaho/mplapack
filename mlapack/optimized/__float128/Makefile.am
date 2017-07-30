@@ -1,6 +1,6 @@
 lib_LTLIBRARIES = libmlapack___float128.la
 
-libmlapack___float128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -g -I$(top_srcdir)/include -I$(top_srcdir)/__float128c++ -I$(top_srcdir)/$(GMP_INCLUDEDIR) -I$(top_srcdir)/$(__FLOAT128_INCLUDEDIR) -I$(top_srcdir)/$(MPC_INCLUDEDIR)  -D___MPACK_BUILD_WITH___FLOAT128___
+libmlapack___float128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -g -I$(top_srcdir)/include -I$(top_srcdir)/__float128c++ -I$(GMP_INCLUDEDIR) -I$(top_srcdir)/$(__FLOAT128_INCLUDEDIR) -I$(MPC_INCLUDEDIR)  -D___MPACK_BUILD_WITH___FLOAT128___
 libmlapack___float128_la_SOURCES = ../../reference/Mutils.cpp \
 ../../reference/Rlae2.cpp  ../../reference/Rlamch.cpp ../../reference/Rlaev2.cpp ../../reference/Rlassq.cpp ../../reference/Rlanst.cpp \
 ../../reference/Rlansy.cpp ../../reference/Rlapy2.cpp ../../reference/Rlarfg.cpp ../../reference/Rlartg.cpp ../../reference/Rlaset.cpp \

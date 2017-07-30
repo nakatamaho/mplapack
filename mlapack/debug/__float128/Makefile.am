@@ -107,11 +107,11 @@ Rpocon.debug___float128_ref Rpocon.debug___float128 Rpocon.test___float128_ref  
 mlapack___float128_testdir = $(prefix)/share/mpack/debug/__float128
 ref_libdepends = -L$(top_builddir)/mlapack/reference -lmlapack___float128_ref -lmlapack_mpfr_ref -L$(top_builddir)/mblas/reference -lmblas___float128_ref -lmblas_mpfr_ref
 opt_libdepends = -L$(top_builddir)/mlapack/optimized/__float128 -lmlapack___float128 -L$(top_builddir)/mblas/optimized/__float128 -L$(top_builddir)/mlapack/reference -lmlapack_mpfr_ref -lmblas___float128 -L$(top_builddir)/mblas/reference -lmblas_mpfr_ref
-mplibs=-L$(top_srcdir)/$(MPC_LIBDIR) -L$(top_srcdir)/$(MPFR_LIBDIR) -L$(top_builddir)/mpfrc++ -lmpfrcxx -lmpc -lmpfr -lgmpxx -lgmp -lquadmath
+mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(top_builddir)/mpfrc++ -lmpfrcxx -lmpc -lmpfr -lgmpxx -lgmp -lquadmath
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 reflapack=-L$(top_builddir)/external/i/LAPACK/lib -llapack $(FCLIBS)
 
-debug_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/$(GMP_INCLUDEDIR) -I$(top_srcdir)/$(MPFR_INCLUDEDIR) -I$(top_srcdir)/$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPACK_BUILD_WITH___FLOAT128___
+debug_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPACK_BUILD_WITH___FLOAT128___
 debug_libdepends = $(mplibs) $(reflapack) $(refblas)
 AM_FFLAGS = -x f77-cpp-input -g
 

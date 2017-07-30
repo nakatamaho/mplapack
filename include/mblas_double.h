@@ -31,8 +31,8 @@
 #ifndef _MBLAS_DOUBLE_H_
 #define _MBLAS_DOUBLE_H_
 
-#include <mpack_config.h>
-#include <mutils_double.h>
+#include "mpack_config.h"
+#include "mutils_double.h"
 #if !defined __MPACK_ERRNO__
 #define _MPACK_EXTERN_ extern
 #else
