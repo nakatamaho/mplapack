@@ -3,6 +3,7 @@ dnl Configure for MPACK
 dnl
 
 AC_INIT(mpack, 0.8.0)
+AC_SUBST([PACKAGE_DESCRIPTION], "A multiple precision version of BLAS and LAPACK")
 AC_CONFIG_HEADER(include/config.h) 
 
 AC_CONFIG_FILES([ Makefile mpack.pc ])
@@ -649,6 +650,49 @@ if test x"$enable_optimization" = x"yes"; then
     AC_SUBST(CXXFLAGS)
     AC_SUBST(FCFLAGS)
 fi
+
+
+############ select created libraries for the pkg-config ###############
+
+PACKAGE_CREATED_LIBS=""
+qd_required=0
+if test x$enable_dd = x"yes"; then
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_dd -lmlapack_dd"
+  qd_required=1
+fi
+if test x$enable_qd = x"yes"; then
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_qd -lmlapack_qd"
+  qd_required=1
+fi
+if test $qd_required = 1; then
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lqd"
+fi
+
+if test x$enable_gmp = x"yes"; then
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_gmp -lmlapack_gmp -lgmp"
+fi
+if test x$enable_mpfr = x"yes"; then
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_mpfr -lmlapack_mpfr -lmpfr -lmpfrcxx"
+fi
+if test x$enable_mpc = x"yes"; then
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_mpc -lmlapack_mpc"
+fi
+if test x$enable___float128 = x"yes"; then
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas___float128 -lmlapack___float128 -lquadmath"
+fi
+if test x$enable_double = x"yes"; then
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_double -lmlapack_double"
+fi
+if test x$enable_longdouble = x"yes"; then
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_longdouble -lmlapack_longdouble"
+fi
+
+PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" ${OPENMP_CXXFLAGS}"
+
+AC_SUBST([PACKAGE_CREATED_LIBS])
+
+########################################################################
+
 
 AC_CONFIG_FILES([
 mpfrc++/Makefile

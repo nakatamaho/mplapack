@@ -13,5 +13,5 @@ Name: @PACKAGE_NAME@
 Description: @PACKAGE_DESCRIPTION@
 Version: @PACKAGE_VERSION@
 Requires:
-Libs: -L${libdir} -lmlapack_gmp -lmblas_gmp -lgmp -lmlapack_qd -lmblas_qd -lqd -lmlapack_mpfr -lmblas_mpfr -lmpfr -lmpfrcxx -lmlapack___float128 -lmblas___float128 -lquadmath -fopenmp -lmpc -lmblas_double -lmlapack_double
+Libs: -L${libdir} @PACKAGE_CREATED_LIBS@
 Cflags: -I${includedir} @CPPFLAGS@
