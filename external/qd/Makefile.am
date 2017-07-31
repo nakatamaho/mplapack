@@ -1,12 +1,12 @@
-QDVERSION=2.3.7
+QDVERSION=2.3.17
 MAKEFLAGS =
 
 if IS_MACOSX
 CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/QD/ --host=$(host) $(QDLIB_FLAGS)
 CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) $(QDLIB_FLAGS)
 else
-CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/QD/ --host=$(host) --disable-shared $(QDLIB_FLAGS)
-CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) --disable-shared $(QDLIB_FLAGS)
+CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/QD/ --host=$(host) --enable-shared $(QDLIB_FLAGS)
+CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) --enable-shared $(QDLIB_FLAGS)
 endif
 
 EXTRACT_STAMP=.qd_extract_done
