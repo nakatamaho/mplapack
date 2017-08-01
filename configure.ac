@@ -655,24 +655,17 @@ fi
 ############ select created libraries for the pkg-config ###############
 
 PACKAGE_CREATED_LIBS=""
-qd_required=0
 if test x$enable_dd = x"yes"; then
   PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_dd -lmlapack_dd"
-  qd_required=1
 fi
 if test x$enable_qd = x"yes"; then
   PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_qd -lmlapack_qd"
-  qd_required=1
 fi
-if test $qd_required = 1; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lqd"
-fi
-
 if test x$enable_gmp = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_gmp -lmlapack_gmp -lgmp"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_gmp -lmlapack_gmp"
 fi
 if test x$enable_mpfr = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_mpfr -lmlapack_mpfr -lmpfr -lmpfrcxx"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_mpfr -lmlapack_mpfr -lmpfrcxx"
 fi
 if test x$enable_mpc = x"yes"; then
   PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_mpc -lmlapack_mpc"
@@ -685,6 +678,20 @@ if test x$enable_double = x"yes"; then
 fi
 if test x$enable_longdouble = x"yes"; then
   PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_longdouble -lmlapack_longdouble"
+fi
+
+# add external libraries only if they will be installed with the package
+if test x$need_internal_gmplib = xyes; then
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lgmp -gmpxx"
+fi
+if test x$need_internal_qdlib = xyes; then
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lqd"
+fi
+if test x$need_internal_mpfrlib = xyes; then
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmpfr"
+fi
+if test x$need_internal_mpclib = xyes; then
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmpc"
 fi
 
 PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" ${OPENMP_CXXFLAGS}"
