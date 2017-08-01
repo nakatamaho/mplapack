@@ -31,6 +31,8 @@
 #ifndef _MLAPACK_LONGDOUBLE_H_
 #define _MLAPACK_LONGDOUBLE_H_
 
+#include "mpack_config.h"
+
 /* MLAPACK prototypes */
 
 /* MLAPACK driver routines */

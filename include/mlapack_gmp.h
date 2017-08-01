@@ -31,6 +31,10 @@
 #ifndef _MLAPACK_GMP_H_
 #define _MLAPACK_GMP_H_
 
+#include "mpack_config.h"
+#include "gmpxx.h"
+#include "mpc_class.h"
+
 /* MLAPACK prototypes */
 
 /* MLAPACK driver routines */

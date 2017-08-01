@@ -31,6 +31,10 @@
 #ifndef _MLAPACK_DD_H_
 #define _MLAPACK_DD_H_
 
+#include "mpack_config.h"
+#include "qd/dd_real.h"
+#include "dd_complex.h"
+
 /* MLAPACK prototypes */
 
 /* MLAPACK driver routines */

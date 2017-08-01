@@ -31,6 +31,9 @@
 #ifndef _MLAPACK___FLOAT128_H_
 #define _MLAPACK___FLOAT128_H_
 
+#include "mpack_config.h"
+#include "quadmath.h"
+
 /* MLAPACK prototypes */
 
 /* MLAPACK driver routines */

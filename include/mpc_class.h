@@ -35,6 +35,7 @@ Complex class declare for the GMP.
 #define _MPC_CLASS_H_
 
 #include <complex>
+#include "gmpxx.h"
 
 class mpc_class {
   private:

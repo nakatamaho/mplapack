@@ -31,6 +31,10 @@
 #ifndef _MLAPACK_QD_H_
 #define _MLAPACK_QD_H_
 
+#include "mpack_config.h"
+#include "qd/qd_real.h"
+#include "qd_complex.h"
+
 /* MLAPACK prototypes */
 
 /* MLAPACK driver routines */

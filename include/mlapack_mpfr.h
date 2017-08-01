@@ -31,6 +31,14 @@
 #ifndef _MLAPACK_MPFR_H_
 #define _MLAPACK_MPFR_H_
 
+#include "mpack_config.h"
+#include "mpc_class.h"
+#include "gmpxx.h"
+#include "mpreal.h"
+#include "mpcomplex.h"
+
+using namespace mpfr;
+
 /* MLAPACK prototypes */
 
 /* MLAPACK driver routines */

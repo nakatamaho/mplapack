@@ -31,6 +31,8 @@
 #ifndef _MLAPACK_DOUBLE_H_
 #define _MLAPACK_DOUBLE_H_
 
+#include "mpack_config.h"
+
 /* MLAPACK prototypes */
 
 /* MLAPACK driver routines */
