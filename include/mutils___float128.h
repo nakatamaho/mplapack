@@ -38,9 +38,12 @@ extern "C" {
 #endif
 
 namespace std {
+#ifndef _GLIBCXX_BITS_STD_ABS_H
 inline __float128 abs(const __float128 &a) {
    return fabsq(a);
 }
+#endif
+
 inline __float128 sqrt(const __float128 &a) {
    return sqrtq(a);
 }
@@ -75,9 +78,11 @@ inline __float128 log10(const __float128 &a) {
 #include <complex>
 
 namespace std {
+
 inline __float128 abs(const std::complex<__float128> &a) {
   return sqrtq(a.real() * a.real() + a.imag() * a.imag());
 }
+
 
 inline std::complex<__float128> sqrt(const std::complex<__float128> &a) {
    __complex128 b,tmp;
