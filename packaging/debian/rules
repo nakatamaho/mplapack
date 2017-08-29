@@ -1,0 +1,20 @@
+#!/usr/bin/make -f
+export DH_VERBOSE=1
+
+PACKAGE = $(shell dh_listpackages) 
+# for more than one package use: PACKAGE = $(firstword $(shell dh_listpackages))
+TMP     = $(CURDIR)/debian/$(PACKAGE)
+
+BUILDOPTS= --enable-gmp --enable-mpfr --enable-qd --enable-dd --enable-double --enable-__float128 --enable-longdouble --enable-optimization --with-system-gmp --with-system-mpfr --with-system-mpc --with-system-qd
+
+%:
+	dh $@ --parallel
+
+override_dh_auto_configure:
+	dh_auto_configure --  $(BUILDOPTS)
+
+override_dh_install:
+# do not deliver .la files
+	find $(strip $(TMP))/usr/lib/ -name '*.la' -delete
+	dh_install
+

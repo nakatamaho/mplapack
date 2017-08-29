@@ -1,0 +1,113 @@
+# mpack.spec
+#
+#
+##%if 0%{?suse_version} || 0%{?fedora} || 0%{?rhel_version} || 0%{?centos_version}
+%{!?_pkgdocdir: %global _pkgdocdir %%{_docdir}/%{name}}
+##%else
+##%{!?_pkgdocdir: %global _pkgdocdir %{buildroot}%{_docdir}/%{name}-%{version}}
+##%endif
+
+Name:           mpack
+Version:        @PACKAGE_VERSION@
+Release:        1%{?dist}
+Summary:        Multiple precision linear algebra package.
+
+Vendor:         Maho Nakata <maho@riken.jp>
+Packager:       Gregor Entzian <entzian@tbi.univie.ac.at>
+
+Group:          -
+License:        The MPACK is a free software (2-clause BSD style license with original license by LAPACK)
+URL:            https://github.com/nakatamaho/mpack
+Source0:        mpack-%{version}.tar.gz
+BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  rpm-devel
+
+BuildRequires:  libstdc++-devel libquadmath-devel gmp-devel mpfr-devel libmpc-devel qd-devel
+BuildRequires:  gcc gcc-c++ glibc-devel
+
+Requires:       libstdc++
+
+%description
+The MPACK is a multipricision linear algebra package based on BLAS and LAPACK.
+This package is rewritten in C++, and supports several high precision
+libraries like GMP, MPFR and QD etc so that users can choose for user's
+convinience. The MPACK is a free software (2-clause BSD style license with
+original license by LAPACK).
+
+%package devel
+Summary:  Library and header files for mpack libraries
+Group:    Development/Libraries
+
+Provides: libmblas_dd_ref.so = %{version}-%{release}
+Provides: libmblas_dd.so = %{version}-%{release}
+Provides: libmblas_double_ref.so = %{version}-%{release}
+Provides: libmblas_double.so = %{version}-%{release}
+Provides: libmblas___float128_ref.so = %{version}-%{release}
+Provides: libmblas___float128.so = %{version}-%{release}
+Provides: libmblas_gmp_ref.so = %{version}-%{release}
+Provides: libmblas_gmp.so = %{version}-%{release}
+Provides: libmblas_longdouble_ref.so = %{version}-%{release}
+Provides: libmblas_longdouble.so = %{version}-%{release}
+Provides: libmblas_mpfr_ref.so = %{version}-%{release}
+Provides: libmblas_mpfr.so = %{version}-%{release}
+Provides: libmblas_qd_ref.so = %{version}-%{release}
+Provides: libmblas_qd.so = %{version}-%{release}
+Provides: libmlapack_dd_ref.so = %{version}-%{release}
+Provides: libmlapack_dd.so = %{version}-%{release}
+Provides: libmlapack_double_ref.so = %{version}-%{release}
+Provides: libmlapack_double.so = %{version}-%{release}
+Provides: libmlapack___float128_ref.so = %{version}-%{release}
+Provides: libmlapack___float128.so = %{version}-%{release}
+Provides: libmlapack_gmp_ref.so = %{version}-%{release}
+Provides: libmlapack_gmp.so = %{version}-%{release}
+Provides: libmlapack_longdouble_ref.so = %{version}-%{release}
+Provides: libmlapack_longdouble.so = %{version}-%{release}
+Provides: libmlapack_mpfr_ref.so = %{version}-%{release}
+Provides: libmlapack_mpfr.so = %{version}-%{release}
+Provides: libmlapack_qd_ref.so = %{version}-%{release}
+Provides: libmlapack_qd.so = %{version}-%{release}
+Provides: libmpfrcxx.so = %{version}-%{release}
+
+Requires: %{name} = %{version}-%{release}
+Requires: libstdc++-devel libquadmath-devel gmp-devel mpfr-devel libmpc-devel qd-devel
+Requires: pkgconfig
+
+%description devel
+The MPACK is a multipricision linear algebra package based on BLAS and LAPACK.
+This package is rewritten in C++, and supports several high precision
+libraries like GMP, MPFR and QD etc so that users can choose for user's
+convenience. The MPACK is a free software (2-clause BSD style license with
+original license by LAPACK).
+
+%prep
+%setup -n mpack-%{version} -q
+
+%build
+%configure --docdir=%{_pkgdocdir} --enable-gmp --enable-mpfr --enable-qd --enable-dd --enable-double --enable-__float128 --enable-longdouble --enable-optimization --with-system-gmp --with-system-mpfr --with-system-mpc --with-system-qd
+make %{?_smp_mflags}
+
+
+%install
+rm -rf $RPM_BUILD_ROOT
+
+%{__make} install DESTDIR=$RPM_BUILD_ROOT
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-,root,root,-)
+%{_datadir}/mpack/
+
+%files devel
+%defattr(-,root,root,-)
+%{_libdir}/*
+
+
+%{_includedir}/mpack
+%{_libdir}/pkgconfig/mpack.pc
+
+
