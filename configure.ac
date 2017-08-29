@@ -7,6 +7,7 @@ AC_SUBST([PACKAGE_DESCRIPTION], "A multiple precision version of BLAS and LAPACK
 AC_CONFIG_HEADER(include/config.h) 
 
 AC_CONFIG_FILES([ Makefile mpack.pc ])
+AC_CONFIG_FILES([packaging/PKGBUILD packaging/mpack.spec])
 
 AC_PROG_CC
 AC_PROG_CXX
@@ -656,33 +657,33 @@ fi
 
 PACKAGE_CREATED_LIBS=""
 if test x$enable_dd = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_dd -lmlapack_dd"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmlapack_dd -lmblas_dd"
 fi
 if test x$enable_qd = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_qd -lmlapack_qd"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmlapack_qd -lmblas_qd"
 fi
 if test x$enable_gmp = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_gmp -lmlapack_gmp"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmlapack_gmp -lmblas_gmp"
 fi
 if test x$enable_mpfr = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_mpfr -lmlapack_mpfr -lmpfrcxx"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmlapack_mpfr -lmblas_mpfr -lmpfrcxx"
 fi
 if test x$enable_mpc = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_mpc -lmlapack_mpc"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmlapack_mpc -lmblas_mpc"
 fi
 if test x$enable___float128 = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas___float128 -lmlapack___float128 -lquadmath"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmlapack___float128 -lmblas___float128 -lquadmath"
 fi
 if test x$enable_double = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_double -lmlapack_double"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmlapack_double -lmblas_double"
 fi
 if test x$enable_longdouble = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmblas_longdouble -lmlapack_longdouble"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmlapack_longdouble -lmblas_longdouble"
 fi
 
 # add external libraries only if they will be installed with the package
 if test x$need_internal_gmplib = xyes; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lgmp -gmpxx"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lgmpxx -lgmp"
 fi
 if test x$need_internal_qdlib = xyes; then
   PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lqd"
