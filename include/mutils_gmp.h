@@ -31,6 +31,9 @@
 #ifndef _MUTILS_GMP_H_
 #define _MUTILS_GMP_H_
 
+#include <gmpxx.h>
+#include "mpc_class.h"
+
 mpf_class log(mpf_class x);
 mpf_class log2(mpf_class x);
 mpf_class log10(mpf_class x);

@@ -31,6 +31,11 @@
 #ifndef _MUTILS_MPFR_H_
 #define _MUTILS_MPFR_H_
 
+#include "mpreal.h"
+#include "mpcomplex.h"
+
+using namespace mpfr;
+
 mpreal pi(mpreal dummy);
 mpreal sign(mpreal a, mpreal b);
 double cast2double(mpreal a);
