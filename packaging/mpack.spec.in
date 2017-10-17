@@ -25,8 +25,25 @@ BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  rpm-devel
 
-BuildRequires:  libstdc++-devel libquadmath-devel gmp-devel mpfr-devel libmpc-devel qd-devel
+BuildRequires:  libstdc++-devel gmp-devel mpfr-devel
 BuildRequires:  gcc gcc-c++ glibc-devel
+
+%if 0%{?suse_version}
+BuildRequires:  gcc-fortran libquadmath0 libmpc3 libmpc-devel libqd0
+%else
+
+%if 0%{?rhel_version}
+BuildRequires:  gcc-gfortran libmpc libmpc-devel qd qd-devel
+%else
+
+%if 0%{?scientificlinux_version}
+BuildRequires:  libquadmath-devel libmpc-devel qd qd-devel
+%else
+
+BuildRequires:  libquadmath-devel libmpc-devel qd-devel
+%endif
+%endif
+%endif
 
 Requires:       libstdc++
 
@@ -71,8 +88,26 @@ Provides: libmlapack_qd_ref.so = %{version}-%{release}
 Provides: libmlapack_qd.so = %{version}-%{release}
 Provides: libmpfrcxx.so = %{version}-%{release}
 
-Requires: %{name} = %{version}-%{release}
-Requires: libstdc++-devel libquadmath-devel gmp-devel mpfr-devel libmpc-devel qd-devel
+#Requires: %{name} = %{version}-%{release}
+Requires: libstdc++-devel gmp-devel mpfr-devel
+
+%if 0%{?suse_version}
+Requires:  gcc-fortran libquadmath0 libmpc3 libmpc-devel libqd0
+%else
+
+%if 0%{?rhel_version}
+Requires:  gcc-gfortran libmpc libmpc-devel qd qd-devel
+%else
+
+%if 0%{?scientificlinux_version}
+Requires:  libquadmath-devel libmpc-devel qd qd-devel
+%else
+
+Requires:  libquadmath-devel libmpc-devel qd-devel
+%endif
+%endif
+%endif
+
 Requires: pkgconfig
 
 %description devel
@@ -95,6 +130,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %{__make} install DESTDIR=$RPM_BUILD_ROOT
 
+find %{buildroot} -type f -name '*.la' -delete
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -104,8 +141,10 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %defattr(-,root,root,-)
-%{_libdir}/*
-
+%{_libdir}/*.a
+%{_libdir}/*.so
+%{_libdir}/*.so.0
+%{_libdir}/*.so.*.*.*
 
 %{_includedir}/mpack
 %{_libdir}/pkgconfig/mpack.pc
