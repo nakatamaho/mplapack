@@ -148,21 +148,23 @@ REAL pi(REAL dummy)
     REAL mtemp1;
     mtemp1 = M_PI;
     return mtemp1;
-#endif
-#if defined ___MPACK_BUILD_WITH_QD___
+
+#elif defined ___MPACK_BUILD_WITH_QD___
     return qd_real::_pi;
-#endif
-#if defined ___MPACK_BUILD_WITH_DD___
+
+#elif defined ___MPACK_BUILD_WITH_DD___
     return dd_real::_pi;
-#endif
-#if defined ___MPACK_BUILD_WITH_MPFR___
+
+#elif defined ___MPACK_BUILD_WITH_MPFR___
     mpfr_free_cache();
     return const_pi();
-#endif
-#if defined ___MPACK_BUILD_WITH_DOUBLE___
+
+#elif defined ___MPACK_BUILD_WITH_DOUBLE___
     return M_PI;
-#endif
-#if defined ___MPACK_BUILD_WITH___FLOAT128___
+
+#elif defined ___MPACK_BUILD_WITH___FLOAT128___
     return M_PIq;
+#else
+return dummy;
 #endif
 }

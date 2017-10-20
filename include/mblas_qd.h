@@ -33,7 +33,7 @@
 
 #include "mpack_config.h"
 
-#include "qd/qd_real.h"
+#include <qd/qd_real.h>
 
 #include "qd_complex.h"
 #include "mutils_qd.h"
