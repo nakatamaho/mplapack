@@ -1,4 +1,11 @@
-SUBDIRS = external mpfrc++ mblas mlapack benchmark examples
+SUBDIRS = external mpfrc++ mblas mlapack 
+if !DISABLE_BENCHMARK
+SUBDIRS += benchmark 
+endif
+if !DISABLE_EXAMPLES
+SUBDIRS += examples
+endif
+
 ACLOCAL_AMFLAGS= -I m4
 
 mpack_includedir = $(includedir)/mpack
@@ -32,6 +39,13 @@ external/lapack/Makefile.in \
 external/lapack/download/*.tgz \
 external/lapack/patches/patch-mingw \
 external/lapack/patches/patch-mic \
+mpfrc++/copying.lib mpfrc++/copying mpfrc++/makefile.org \
+mpfrc++/org/copying mpfrc++/org/copying.lib mpfrc++/org/example.cpp \
+mpfrc++/org/makefile  mpfrc++/org/mpfrc++.tar.gz \
+mpfrc++/org/mpreal.cpp  mpfrc++/org/mpreal.h
+
+if !DISABLE_EXAMPLES
+EXTRA_DIST += \
 examples/mblas/Makefile.mingw \
 examples/mblas/Makefile.freebsd \
 examples/mblas/Makefile.linux \
@@ -39,8 +53,6 @@ examples/mblas/Makefile.macosx \
 examples/mlapack/Makefile.mingw \
 examples/mlapack/Makefile.freebsd \
 examples/mlapack/Makefile.linux \
-examples/mlapack/Makefile.macosx \
-mpfrc++/copying.lib mpfrc++/copying mpfrc++/makefile.org \
-mpfrc++/org/copying mpfrc++/org/copying.lib mpfrc++/org/example.cpp \
-mpfrc++/org/makefile  mpfrc++/org/mpfrc++.tar.gz \
-mpfrc++/org/mpreal.cpp  mpfrc++/org/mpreal.h
+examples/mlapack/Makefile.macosx
+endif
+

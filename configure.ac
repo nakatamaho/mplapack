@@ -63,16 +63,11 @@ dnl enable debug; compare with reference LAPACK and BLAS.
 dnl when enable this flag, we perform full build;
 dnl all mp versions of mlapack and mblas, etc.
 AC_ARG_ENABLE(debug,
-[  --enable-debug    Enable debug],
-[case "${enableval}" in
-    yes) enable_debug=yes ;;
-    no)  enable_debug=no  ;;
-    *) AC_MSG_ERROR(bad value ${enableval} for --enable-debug) ;;
-        esac],[enable_debug=no])
+[  --enable-debug    Enable debug])
 AM_CONDITIONAL(ENABLE_DEBUG, test x$enable_debug = xyes)
 
 AC_ARG_ENABLE(optimization,
-[  --enable-optimization    Enable compiler level optimization],
+AS_HELP_STRING([--enable-optimization], [Enable compiler level optimization]),
 [case "${enableval}" in
     yes) enable_optimization=yes ;;
     no)  enable_optimization=no  ;;
@@ -80,16 +75,11 @@ AC_ARG_ENABLE(optimization,
         esac],[enable_optimization=yes])
 
 AC_ARG_ENABLE(cuda,
-[  --enable-cuda    Enable compiler level cuda],
-[case "${enableval}" in
-    yes) enable_cuda=yes ;;
-    no)  enable_cuda=no  ;;
-    *) AC_MSG_ERROR(bad value ${enableval} for --enable-cuda) ;;
-        esac],[enable_cuda=no])
+[  --enable-cuda    Enable compiler level cuda])
 AM_CONDITIONAL(ENABLE_CUDA, test x$enable_cuda = xyes)
 
 AC_ARG_WITH(cudatoolkithome,
-[  --with-cudatoolkithome     Specify path to CUDA Toolkit (default: /usr/local/cuda)],
+AS_HELP_STRING([--with-cudatoolkithome], [Specify path to CUDA Toolkit (default: /usr/local/cuda)]),
 [ CUDATOOLKITHOME="$withval"], 
 [ CUDATOOLKITHOME=/usr/local/cuda]
 )
@@ -128,41 +118,38 @@ AC_SUBST(NVCC)
 
 dnl enable FORTRAN warpper
 AC_ARG_ENABLE(fortranwrapper,
-[  --enable-fortranwrapper    Enable fortranwrapper],
-[case "${enableval}" in
-    yes) enable_fortranwrapper=yes ;;
-    no)  enable_fortranwrapper=no  ;;
-    *) AC_MSG_ERROR(bad value ${enableval} for --enable-fortranwrapper) ;;
-        esac],[enable_fortranwrapper=no])
-AM_CONDITIONAL(ENABLE_FORTRANWRAPPER, test x$enable_fortranwrapper = xyes)
+AS_HELP_STRING([--enable-fortranwrapper], [Enable fortranwrapper])
+AM_CONDITIONAL(ENABLE_FORTRANWRAPPER, test x$enable_fortranwrapper = xyes))
 
 AC_ARG_ENABLE(wrapper,
-[  --enable-wrapper    Enable wrapper for BLAS and LAPACK. xBLAS like approach],
-[case "${enableval}" in
-    yes) with_wrapper=yes ;;
-    no)  with_wrapper=no  ;;
-    *) AC_MSG_ERROR(bad value ${enableval} for --enable-wrapper) ;;
-        esac],[with_wrapper=no])
-AM_CONDITIONAL(ENABLE_WRAPPER, test x$with_wrapper = xyes)
+AS_HELP_STRING([--enable-wrapper], [Enable wrapper for BLAS and LAPACK. xBLAS like approach]))
+AM_CONDITIONAL(ENABLE_WRAPPER, test x$enable_wrapper = xyes)
+
+
+dnl disable benchmark
+AC_ARG_ENABLE(benchmark,
+AS_HELP_STRING([--disable-benchmark], [Disable benchmark]))
+AM_CONDITIONAL(DISABLE_BENCHMARK, test x$enable_benchmark = xno)
+
+dnl disable examples
+AC_ARG_ENABLE(examples, 
+AS_HELP_STRING([--disable-examples], [Disable examples]))
+AM_CONDITIONAL(DISABLE_EXAMPLES, test x$enable_examples = xno)
+
+dnl disable reference
+AC_ARG_ENABLE(reference,
+AS_HELP_STRING([--disable-reference], [Build without reference libraries]))
+AM_CONDITIONAL(DISABLE_REFERENCE, test x$enable_reference = xno)
+
 
 dnl enable GMP version of MPACK.
 AC_ARG_ENABLE(gmp,
-[  --enable-gmp    Enable GMP version],
-[case "${enableval}" in
-    yes) enable_gmp=yes ;;
-    no)  enable_gmp=no  ;;
-    *) AC_MSG_ERROR(bad value ${enableval} for --enable-gmp) ;;
-        esac],[enable_gmp=yes])
+AS_HELP_STRING([--enable-gmp], [Enable GMP version]))
 AM_CONDITIONAL(ENABLE_GMP, test x$enable_gmp = xyes)
 
 dnl enable MPFR version of MPACK.
 AC_ARG_ENABLE(mpfr,
-[  --enable-mpfr    Enable MPFR version],
-[case "${enableval}" in
-    yes) enable_mpfr=yes ;;
-    no)  enable_mpfr=no  ;;
-    *) AC_MSG_ERROR(bad value ${enableval} for --enable-mpfr) ;;
-        esac],[enable_mpfr=no])
+AS_HELP_STRING([--enable-mpfr], [Enable MPFR version]))
 
 dnl We use MPFR version as reference
 dnl so if debug is turned on, 
@@ -173,23 +160,18 @@ AM_CONDITIONAL(ENABLE_MPFR, test x$enable_mpfr = xyes)
 
 dnl enable QD version of MPACK.
 AC_ARG_ENABLE(qd,
-[  --enable-qd    Enable QD version],
-[case "${enableval}" in
-    yes) enable_qd=yes ;;
-    no)  enable_qd=no  ;;
-    *) AC_MSG_ERROR(bad value ${enableval} for --enable-qd) ;;
-        esac],[enable_qd=no])
+AS_HELP_STRING([--enable-qd], [Enable QD version]))
 AM_CONDITIONAL(ENABLE_QD, test x$enable_qd = xyes)
 
 AC_ARG_WITH(qdlib-flags,
-[  --with-qdlib-flags      passing flag to internal qd library
-],,with_qdlib_flags="")
+AS_HELP_STRING([--with-qdlib-flags], [passing flag to internal qd library])
+,,with_qdlib_flags="")
 QDLIB_FLAGS=$with_qdlib_flags;
 AC_SUBST(QDLIB_FLAGS)
 
 dnl enable DD version of MPACK.
 AC_ARG_ENABLE(dd,
-[  --enable-dd    Enable DD version],
+AS_HELP_STRING([--enable-dd], [Enable DD version]),
 [case "${enableval}" in
     yes) enable_dd=yes ;;
     no)  enable_dd=no  ;;
@@ -205,7 +187,7 @@ AM_CONDITIONAL(ENABLE_DD, test x$enable_dd = xyes)
 
 dnl enable double
 AC_ARG_ENABLE(double,
-[  --enable-double    Enable double version],
+AS_HELP_STRING([--enable-double], [Enable double version]),
 [case "${enableval}" in
     yes) enable_double=yes ;;
     no)  enable_double=no  ;;
@@ -214,7 +196,7 @@ AC_ARG_ENABLE(double,
 AM_CONDITIONAL(ENABLE_DOUBLE, test x$enable_double = xyes)
 
 AC_ARG_ENABLE(__float128,
-[  --enable-__float128    Enable __float128 version using non standard extension of gcc and icc],
+AS_HELP_STRING([--enable-__float128], [Enable __float128 version using non standard extension of gcc and icc]),
 [case "${enableval}" in
     yes) enable___float128=yes ;;
     no)  enable___float128=no  ;;
@@ -222,7 +204,7 @@ AC_ARG_ENABLE(__float128,
         esac],[enable___float128=no])
 
 AC_ARG_WITH(gccname,
-[  --with-gccname     Specify path to gcc for libquadmath (only for Intel Composer) ],
+AS_HELP_STRING([--with-gccname], [Specify path to gcc for libquadmath (only for Intel Composer)]),
 [ GCCNAME="$withval"]
 )
 
@@ -257,7 +239,7 @@ CFLAGS="$SAVE_CFLAGS"
 AM_CONDITIONAL(ENABLE___FLOAT128, test x$enable___float128 = xyes)
 
 AC_ARG_ENABLE(longdouble,
-[  --enable-longdouble    Enable long double version],
+AS_HELP_STRING([--enable-longdouble], [Enable long double version]),
 [case "${enableval}" in
     yes) enable_longdouble=yes ;;
     no)  enable_longdouble=no  ;;
@@ -270,8 +252,7 @@ highest_abs_top_srcdir=`cd "$srcdir" && pwd`
 
 dnl GMP library start
 AC_ARG_WITH(system-gmp,
-AC_HELP_STRING(
-	    [--with-system-gmp=PREFIX],
+AS_HELP_STRING([--with-system-gmp=PREFIX],
 	    [ ="yes" if it is at the default location (/usr/local/lib), or alternative prefix path to gmp library]
 	  ),
 	  GMP_PATHSET=1,
@@ -319,8 +300,7 @@ dnl GMP library end
 
 dnl MPFR library start
 AC_ARG_WITH(system-mpfr,
-AC_HELP_STRING(
-	    [--with-system-mpfr=PREFIX],
+AS_HELP_STRING([--with-system-mpfr=PREFIX],
 	    [ ="yes" if it is at the default location (/usr/local/lib), or alternative prefix path to mpfr library]
 	  ),
 	  MPFR_PATHSET=1,
@@ -367,8 +347,7 @@ dnl MPFR library end
 
 dnl MPC library start
 AC_ARG_WITH(system-mpc,
-AC_HELP_STRING(
-	    [--with-system-mpc=PREFIX],
+AS_HELP_STRING([--with-system-mpc=PREFIX],
 	    [ ="yes" if it is at the default location (/usr/local/lib), or alternative prefix path to mpc library]
 	  ),
 	  MPC_PATHSET=1,
@@ -415,8 +394,7 @@ dnl MPC library end
 
 dnl QD library start
 AC_ARG_WITH(system-qd,
-AC_HELP_STRING(
-	    [--with-system-qd=PREFIX],
+AS_HELP_STRING([--with-system-qd=PREFIX],
 	    [ ="yes" if it is at the default location (/usr/local/lib), or alternative prefix path to qd library]
 	  ),
 	  QD_PATHSET=1,
@@ -561,12 +539,10 @@ fi
 dnl print status...end
 
 AC_ARG_WITH(external-blas,
-[  --with-external-blas           Specify location of external BLAS e.g. "-L/usr/local/lib -lblas". It is used for benchmark only.
-],,)
+AS_HELP_STRING([--with-external-blas], [Specify location of external BLAS e.g. "-L/usr/local/lib -lblas". It is used for benchmark only.]))
 
 AC_ARG_WITH(external-lapack,
-[  --with-external-lapack         Specify how to link against external LAPACK e.g. "-L/usr/local/lib -llapack". It is used for benchmark only.
-],,)
+AS_HELP_STRING([--with-external-lapack], [Specify how to link against external LAPACK e.g. "-L/usr/local/lib -llapack". It is used for benchmark only.]))
 
 dnl First we check Fotran 90 compiler stuffs.
 
@@ -704,7 +680,6 @@ AC_SUBST([PACKAGE_CREATED_LIBS])
 
 AC_CONFIG_FILES([
 mpfrc++/Makefile
-mblas/reference/Makefile
 mblas/optimized/Makefile
 mblas/optimized/gmp/Makefile
 mblas/optimized/mpfr/Makefile
@@ -725,7 +700,6 @@ mblas/debug/double/Makefile
 mblas/debug/longdouble/Makefile
 mblas/debug/__float128/Makefile
 mblas/Makefile
-mlapack/reference/Makefile
 mlapack/debug/Makefile
 mlapack/debug/gmp/Makefile
 mlapack/debug/mpfr/Makefile
@@ -745,19 +719,34 @@ mlapack/optimized/__float128/Makefile
 mlapack/lapackwrapper/Makefile
 mlapack/fortranwrapper/Makefile
 mlapack/Makefile
-benchmark/Makefile
-benchmark/mblas/Makefile
-benchmark/mlapack/Makefile
 external/Makefile
 external/gmp/Makefile
 external/mpfr/Makefile
 external/mpc/Makefile
 external/qd/Makefile
 external/lapack/Makefile
+])
+
+if test x$enable_benchmark = xyes; then
+AC_CONFIG_FILES([
+benchmark/Makefile
+benchmark/mblas/Makefile
+benchmark/mlapack/Makefile
+])
+fi
+if test x$enable_examples = xyes; then
+AC_CONFIG_FILES([
 examples/Makefile
 examples/mblas/Makefile
 examples/mlapack/Makefile
 ])
+fi
+if test x$enable_reference = xyes; then
+AC_CONFIG_FILES([
+mblas/reference/Makefile
+mlapack/reference/Makefile
+])
+fi
 
 AC_OUTPUT
 
