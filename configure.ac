@@ -727,21 +727,21 @@ external/qd/Makefile
 external/lapack/Makefile
 ])
 
-if test x$enable_benchmark = xyes; then
+if test x$enable_benchmark != xno; then
 AC_CONFIG_FILES([
 benchmark/Makefile
 benchmark/mblas/Makefile
 benchmark/mlapack/Makefile
 ])
 fi
-if test x$enable_examples = xyes; then
+if test x$enable_examples != xno; then
 AC_CONFIG_FILES([
 examples/Makefile
 examples/mblas/Makefile
 examples/mlapack/Makefile
 ])
 fi
-if test x$enable_reference = xyes; then
+if test x$enable_reference != xno; then
 AC_CONFIG_FILES([
 mblas/reference/Makefile
 mlapack/reference/Makefile
