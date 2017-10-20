@@ -118,8 +118,8 @@ AC_SUBST(NVCC)
 
 dnl enable FORTRAN warpper
 AC_ARG_ENABLE(fortranwrapper,
-AS_HELP_STRING([--enable-fortranwrapper], [Enable fortranwrapper])
-AM_CONDITIONAL(ENABLE_FORTRANWRAPPER, test x$enable_fortranwrapper = xyes))
+AS_HELP_STRING([--enable-fortranwrapper], [Enable fortranwrapper]))
+AM_CONDITIONAL(ENABLE_FORTRANWRAPPER, test x$enable_fortranwrapper = xyes)
 
 AC_ARG_ENABLE(wrapper,
 AS_HELP_STRING([--enable-wrapper], [Enable wrapper for BLAS and LAPACK. xBLAS like approach]))
