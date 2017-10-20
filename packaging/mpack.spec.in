@@ -1,22 +1,17 @@
 # mpack.spec
-#
-#
-##%if 0%{?suse_version} || 0%{?fedora} || 0%{?rhel_version} || 0%{?centos_version}
+
 %{!?_pkgdocdir: %global _pkgdocdir %%{_docdir}/%{name}}
-##%else
-##%{!?_pkgdocdir: %global _pkgdocdir %{buildroot}%{_docdir}/%{name}-%{version}}
-##%endif
 
 Name:           mpack
 Version:        @PACKAGE_VERSION@
 Release:        1%{?dist}
-Summary:        Multiple precision linear algebra package.
+Summary:        Multiple precision linear algebra package
 
 Vendor:         Maho Nakata <maho@riken.jp>
-Packager:       Gregor Entzian <entzian@tbi.univie.ac.at>
+#Packager:       Gregor Entzian <entzian@tbi.univie.ac.at>
 
 Group:          -
-License:        The MPACK is a free software (2-clause BSD style license with original license by LAPACK)
+License:        The MPACK is a free software (BSD-2-Clause style license with original license by LAPACK)
 URL:            https://github.com/nakatamaho/mpack
 Source0:        mpack-%{version}.tar.gz
 BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
@@ -29,7 +24,7 @@ BuildRequires:  libstdc++-devel gmp-devel mpfr-devel
 BuildRequires:  gcc gcc-c++ glibc-devel
 
 %if 0%{?suse_version}
-BuildRequires:  gcc-fortran libquadmath0 libmpc3 libmpc-devel libqd0
+BuildRequires:  gcc-fortran libquadmath0 libmpc3 mpc-devel qd-devel
 %else
 
 %if 0%{?rhel_version}
@@ -40,19 +35,23 @@ BuildRequires:  gcc-gfortran libmpc libmpc-devel qd qd-devel
 BuildRequires:  libquadmath-devel libmpc-devel qd qd-devel
 %else
 
+%if 0%{?ubuntu_version}
+BuildRequires:  libquadmath-dev libmpc-dev libqd-dev
+%else
+
 BuildRequires:  libquadmath-devel libmpc-devel qd-devel
 %endif
 %endif
 %endif
+%endif
 
-Requires:       libstdc++
 
 %description
 The MPACK is a multiprecision linear algebra package based on BLAS and LAPACK.
 This package is rewritten in C++, and supports several high precision
 libraries like GMP, MPFR and QD etc so that users can choose for user's
-convenience. The MPACK is a free software (2-clause BSD style license with
-original license by LAPACK).
+convenience. The MPACK is a free software (BSD-2-Clause style license with
+original license by LAPACK)
 
 %package devel
 Summary:  Library and header files for mpack libraries
@@ -92,7 +91,7 @@ Provides: libmpfrcxx.so = %{version}-%{release}
 Requires: libstdc++-devel gmp-devel mpfr-devel
 
 %if 0%{?suse_version}
-Requires:  gcc-fortran libquadmath0 libmpc3 libmpc-devel libqd0
+Requires:  gcc-fortran libquadmath0 libmpc3 mpc-devel qd-devel
 %else
 
 %if 0%{?rhel_version}
@@ -103,7 +102,12 @@ Requires:  gcc-gfortran libmpc libmpc-devel qd qd-devel
 Requires:  libquadmath-devel libmpc-devel qd qd-devel
 %else
 
+%if 0%{?ubuntu_version}
+Requires:  libquadmath-dev libmpc-dev libqd-dev
+%else
+
 Requires:  libquadmath-devel libmpc-devel qd-devel
+%endif
 %endif
 %endif
 %endif
@@ -111,17 +115,17 @@ Requires:  libquadmath-devel libmpc-devel qd-devel
 Requires: pkgconfig
 
 %description devel
-The MPACK is a multipricision linear algebra package based on BLAS and LAPACK.
+The MPACK is a multiprecision linear algebra package based on BLAS and LAPACK.
 This package is rewritten in C++, and supports several high precision
 libraries like GMP, MPFR and QD etc so that users can choose for user's
-convenience. The MPACK is a free software (2-clause BSD style license with
-original license by LAPACK).
+convenience. The MPACK is a free software (BSD-2-Clause style license with
+original license by LAPACK)
 
 %prep
 %setup -n mpack-%{version} -q
 
 %build
-%configure --docdir=%{_pkgdocdir} --enable-gmp --enable-mpfr --enable-qd --enable-dd --enable-double --enable-__float128 --enable-longdouble --enable-optimization --with-system-gmp --with-system-mpfr --with-system-mpc --with-system-qd
+%configure --docdir=%{_pkgdocdir} --enable-gmp --enable-mpfr --enable-qd --enable-dd --enable-double --enable-__float128 --enable-longdouble --enable-optimization --with-system-gmp --with-system-mpfr --with-system-mpc --with-system-qd --disable-benchmark --disable-examples --disable-reference
 make %{?_smp_mflags}
 
 
@@ -131,13 +135,19 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install DESTDIR=$RPM_BUILD_ROOT
 
 find %{buildroot} -type f -name '*.la' -delete
+#find %{buildroot} -type d -name 'bench' -exec rm -rf {} +
+#find %{buildroot} -type d -name 'examples' -exec rm -rf {} +
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%post -n mpack-devel -p /sbin/ldconfig
+%postun -n mpack-devel -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root,-)
-%{_datadir}/mpack/
+# datadir is the folder share
+#%{_datadir}/mpack/
 
 %files devel
 %defattr(-,root,root,-)
