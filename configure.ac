@@ -259,8 +259,8 @@ AS_HELP_STRING([--with-system-gmp=PREFIX],
 	  GMP_PATHSET=0;
 	  with_system_gmp="no";
 	  )
-GMP_INCLUDEDIR=.
-GMP_LIBDIR=.
+GMP_INCLUDEDIR=$highest_abs_top_srcdir/external/i/GMP/include/
+GMP_LIBDIR=$highest_abs_top_srcdir/external/i/GMP/lib/
 if test  $GMP_PATHSET = 1 ; then
 	if test $with_system_gmp != "yes"; then
 		GMP_INCLUDEDIR="$with_system_gmp/include"
@@ -294,8 +294,8 @@ if test x$enable_gmp = x"yes" -o x$enable_mpfr = x"yes" -o x$enable_debug = x"ye
     fi
 fi
 AM_CONDITIONAL(SYSTEM_GMP, test x$SYSTEM_GMP = xyes)
-AC_SUBST(GMP_INCLUDEDIR)
-AC_SUBST(GMP_LIBDIR)
+AC_SUBST(GMP_INCLUDEDIR, [$GMP_INCLUDEDIR])
+AC_SUBST(GMP_LIBDIR, [$GMP_INCLUDEDIR])
 dnl GMP library end
 
 dnl MPFR library start
@@ -307,8 +307,8 @@ AS_HELP_STRING([--with-system-mpfr=PREFIX],
 	  MPFR_PATHSET=0;
 	  with_system_mpfr="no";
 	  )
-MPFR_INCLUDEDIR=.
-MPFR_LIBDIR=.
+MPFR_INCLUDEDIR=$highest_abs_top_srcdir/external/i/MPFR/include/
+MPFR_LIBDIR=$highest_abs_top_srcdir/external/i/MPFR/lib/
 if test  $MPFR_PATHSET = 1 ; then
 	if test $with_system_mpfr != "yes"; then
 		MPFR_INCLUDEDIR="$with_system_mpfr/include"
@@ -341,8 +341,8 @@ if test x$enable_mpfr = x"yes" -o x$enable_debug = x"yes"; then
     fi
 fi
 AM_CONDITIONAL(SYSTEM_MPFR, test x$SYSTEM_MPFR = xyes)
-AC_SUBST(MPFR_INCLUDEDIR)
-AC_SUBST(MPFR_LIBDIR)
+AC_SUBST(MPFR_INCLUDEDIR, [$MPFR_INCLUDEDIR])
+AC_SUBST(MPFR_LIBDIR, [$MPFR_LIBDIR])
 dnl MPFR library end
 
 dnl MPC library start
@@ -354,8 +354,8 @@ AS_HELP_STRING([--with-system-mpc=PREFIX],
 	  MPC_PATHSET=0;
 	  with_system_mpc="no";
 	  )
-MPC_INCLUDEDIR=.
-MPC_LIBDIR=.
+MPC_INCLUDEDIR=$highest_abs_top_srcdir/external/i/MPC/include/
+MPC_LIBDIR=$highest_abs_top_srcdir/external/i/MPC/lib/
 if test  $MPC_PATHSET = 1 ; then
 	if test $with_system_mpc != "yes"; then
 		MPC_INCLUDEDIR="$with_system_mpc/include"
@@ -388,8 +388,8 @@ if test x$enable_mpfr = x"yes" -o x$enable_debug = x"yes"; then
     fi
 fi
 AM_CONDITIONAL(SYSTEM_MPC, test x$SYSTEM_MPC = xyes)
-AC_SUBST(MPC_INCLUDEDIR)
-AC_SUBST(MPC_LIBDIR)
+AC_SUBST(MPC_INCLUDEDIR, [$MPC_INCLUDEDIR])
+AC_SUBST(MPC_LIBDIR, [$MPC_LIBDIR])
 dnl MPC library end
 
 dnl QD library start
@@ -401,8 +401,8 @@ AS_HELP_STRING([--with-system-qd=PREFIX],
 	  QD_PATHSET=0;
 	  with_system_qd="no";
 	  )
-QD_INCLUDEDIR=.
-QD_LIBDIR=.
+QD_INCLUDEDIR=$highest_abs_top_srcdir/external/i/QD/include/
+QD_LIBDIR=$highest_abs_top_srcdir/external/i/QD/lib/
 if test  $QD_PATHSET = 1 ; then
 	if test $with_system_qd != "yes"; then
 		QD_INCLUDEDIR="$with_system_qd/include"
@@ -437,35 +437,39 @@ if test x$enable_qd = x"yes" -o x$enable_dd = x"yes" -o x$enable_debug = x"yes";
     fi   
 fi
 AM_CONDITIONAL(SYSTEM_QD, test x$SYSTEM_QD = xyes)
-AC_SUBST(QD_INCLUDEDIR)
-AC_SUBST(QD_LIBDIR)
+AC_SUBST(QD_INCLUDEDIR, [$QD_INCLUDEDIR])
+AC_SUBST(QD_LIBDIR, [$QD_LIBDIR])
 dnl QD library end
 
 need_internal_gmplib=no
 if test x$enable_gmp = x"yes" && test x$SYSTEM_GMP != x"yes"; then
     need_internal_gmplib=yes
+    AC_SUBST(GMP_DIR, [gmp])
 fi
-AM_CONDITIONAL(NEED_INTERNAL_GMPLIB, test x$need_internal_gmplib = xyes)
+#AM_CONDITIONAL(NEED_INTERNAL_GMPLIB, test x$need_internal_gmplib = xyes)
 
 need_internal_qdlib=no
 if test x$enable_qd = x"yes" || test x$enable_dd = x"yes"; then
     if test x$SYSTEM_QD != x"yes"; then
        need_internal_qdlib=yes
+       AC_SUBST(QD_DIR, [qd])
     fi
 fi
-AM_CONDITIONAL(NEED_INTERNAL_QDLIB, test x$need_internal_qdlib = xyes)
+#AM_CONDITIONAL(NEED_INTERNAL_QDLIB, test x$need_internal_qdlib = xyes)
 
 need_internal_mpfrlib=no
 if test x$enable_mpfr = x"yes" && test x$SYSTEM_MPFR != x"yes"; then
     need_internal_mpfrlib=yes
+    AC_SUBST(MPFR_DIR, [mpfr])
 fi
-AM_CONDITIONAL(NEED_INTERNAL_MPFRLIB, test x$need_internal_mpfrlib = xyes)
+#AM_CONDITIONAL(NEED_INTERNAL_MPFRLIB, test x$need_internal_mpfrlib = xyes)
 
 need_internal_mpclib=no
 if test x$enable_mpfr = x"yes" && test x$SYSTEM_MPC != x"yes"; then
     need_internal_mpclib=yes
+    AC_SUBST(MPC_DIR, [mpc])
 fi
-AM_CONDITIONAL(NEED_INTERNAL_MPCLIB, test x$need_internal_mpclib = xyes)
+#AM_CONDITIONAL(NEED_INTERNAL_MPCLIB, test x$need_internal_mpclib = xyes)
 
 dnl print status...start
 if test x$enable_gmp = x"yes"; then
@@ -527,6 +531,7 @@ AC_MSG_RESULT([Disable __float128 version])
 fi
 if test x$enable_debug = x"yes"; then
 AC_MSG_RESULT([Enable debug])
+AC_SUBST(LAPACK_DIR, [lapack])
 else
 AC_MSG_RESULT([Disable debug])
 fi

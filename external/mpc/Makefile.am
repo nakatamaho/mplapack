@@ -1,14 +1,14 @@
 MPCVERSION=1.0.3
 MAKEFLAGS =
 
-GMPINCLUDEDIR=$(abs_builddir)/../i/GMP/include/
-GMPLIBDIR=$(abs_builddir)/../i/GMP/lib/
-MPFRINCLUDEDIR=$(abs_builddir)/../i/MPFR/include/
-MPFRLIBDIR=$(abs_builddir)/../i/MPFR/lib/
-MPLIBRARY_PATH=$(GMPLIBDIR):$(MPFRLIBDIR)
+#GMPINCLUDEDIR=$(abs_builddir)/../i/GMP/include/
+#GMPLIBDIR=$(abs_builddir)/../i/GMP/lib/
+#MPFRINCLUDEDIR=$(abs_builddir)/../i/MPFR/include/
+#MPFRLIBDIR=$(abs_builddir)/../i/MPFR/lib/
+MPLIBRARY_PATH=@GMP_LIBDIR@:@MPFR_LIBDIR@
 
-CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/MPC/ --host=$(host) --with-gmp-include=$(GMPINCLUDEDIR) --with-gmp-lib=$(GMPLIBDIR) --with-mpfr-include=$(MPFRINCLUDEDIR) --with-mpfr-lib=$(MPFRLIBDIR)
-CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) --with-gmp-include=$(GMPINCLUDEDIR) --with-gmp-lib=$(GMPLIBDIR) --with-mpfr-include=$(MPFRINCLUDEDIR) --with-mpfr-lib=$(MPFRLIBDIR)
+CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/MPC/ --host=$(host) --with-gmp-include=@GMP_INCLUDEDIR@ --with-gmp-lib=@GMP_LIBDIR@ --with-mpfr-include=@MPFR_INCLUDEDIR@ --with-mpfr-lib=@MPFR_LIBDIR@
+CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) --with-gmp-include=@GMP_INCLUDEDIR@ --with-gmp-lib=@GMP_LIBDIR@ --with-mpfr-include=@MPFR_INCLUDEDIR@ --with-mpfr-lib=@MPFR_LIBDIR@
 
 EXTRACT_STAMP=.mpc_extract_done
 PATCH_STAMP=.mpc_patch_done

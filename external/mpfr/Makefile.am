@@ -1,11 +1,11 @@
 MPFRVERSION=3.1.5
 MAKEFLAGS =
 
-GMPINCLUDEDIR=$(abs_builddir)/../i/GMP/include/
-GMPLIBDIR=$(abs_builddir)/../i/GMP/lib/
+#GMPINCLUDEDIR=$(abs_builddir)/../i/GMP/include/
+#GMPLIBDIR=$(abs_builddir)/../i/GMP/lib/
 
-CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/MPFR/ --host=$(host) --with-gmp-include=$(GMPINCLUDEDIR) --with-gmp-lib=$(GMPLIBDIR)
-CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) --with-gmp-include=$(GMPINCLUDEDIR) --with-gmp-lib=$(GMPLIBDIR)
+CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/MPFR/ --host=$(host) --with-gmp-include=@GMP_INCLUDEDIR@ --with-gmp-lib=@GMP_LIBDIR@
+CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) --with-gmp-include=@GMP_INCLUDEDIR@ --with-gmp-lib=@GMP_LIBDIR@
 
 EXTRACT_STAMP=.mpfr_extract_done
 PATCH_STAMP=.mpfr_patch_done
