@@ -295,7 +295,7 @@ if test x$enable_gmp = x"yes" -o x$enable_mpfr = x"yes" -o x$enable_debug = x"ye
 fi
 AM_CONDITIONAL(SYSTEM_GMP, test x$SYSTEM_GMP = xyes)
 AC_SUBST(GMP_INCLUDEDIR, [$GMP_INCLUDEDIR])
-AC_SUBST(GMP_LIBDIR, [$GMP_INCLUDEDIR])
+AC_SUBST(GMP_LIBDIR, [$GMP_LIBDIR])
 dnl GMP library end
 
 dnl MPFR library start
