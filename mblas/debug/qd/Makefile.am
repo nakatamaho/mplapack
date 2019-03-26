@@ -83,7 +83,7 @@ Rtrsv.debug.qd_ref  Rtrsv.debug.qd
 mblas_qd_testdir = $(prefix)/share/mpack/testing/qd
 ref_libdepends = -L$(top_builddir)/mblas/reference -L$(top_builddir)/mblas/reference -lmblas_qd_ref -lmblas_mpfr_ref
 opt_libdepends = -L$(top_builddir)/mblas/reference -L$(top_builddir)/mblas/optimized/qd -lmblas_qd -lmblas_mpfr_ref
-mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -L$(top_builddir)/mpfrc++ -lmpfrcxx -lmpc -lmpfr -lgmpxx -lgmp -L(QD_LIBDIR) -lqd
+mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -L$(top_builddir)/mpfrc++ -lmpfrcxx -lmpc -lmpfr -lgmpxx -lgmp -L$(QD_LIBDIR) -lqd
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 
 debug_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(QD_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPACK_BUILD_WITH_QD___

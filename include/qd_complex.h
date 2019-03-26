@@ -73,19 +73,27 @@ class qd_complex {
     qd_complex(const std::complex<double> & a);
 
 //extraction of real and imaginary parts
-    const qd_real & real() const
+    inline qd_real & real()
     {
 	return re;
     }
-    const qd_real & imag() const
+    inline const qd_real & real() const
+    {
+	return re;
+    }
+    inline qd_real & imag()
     {
 	return im;
     }
-    void real(const qd_real r)
+    inline const qd_real & imag() const
+    {
+	return im;
+    }
+    inline void real(const qd_real r)
     {
 	this->re = r;
     }
-    void imag(const qd_real r)
+    inline void imag(const qd_real r)
     {
 	this->im = r;
     }

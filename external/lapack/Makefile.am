@@ -12,7 +12,7 @@ all: extract config build check install_internal
 
 work/$(EXTRACT_STAMP):
 	rm -rf work ; mkdir -p work/internal
-	cd $(abs_builddir)/work/internal; tar xvfz ../../download/lapack-$(LAPACKVERSION).tgz
+	cd $(abs_builddir)/work/internal; tar xvfz ../../download/lapack-$(LAPACKVERSION).tar.gz
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)

@@ -137,35 +137,40 @@ class mpcomplex {
     //random
     friend const mpcomplex urandom_c (gmp_randstate_t& state);
 
-//extraction of real and imaginary parts
-    void real(const mpreal r)
-    {
-        mpreal tmp;
-        tmp = mpc_realref(mpc);
-        tmp = r;
-        //return tmp;
-    }
-    void imag(const mpreal r)
-    {
-        mpreal tmp;
-        tmp = mpc_imagref(mpc);
-        tmp = r;
-        //return tmp;
-    }
-
-    const mpreal real() const
+    inline mpreal real() //this should not be call by reference, as mpreal is a class contains only pointers.
     {
         mpreal tmp;
         tmp = mpc_realref(mpc);
         return tmp;
     }
-    const mpreal imag() const
+    inline const mpreal real() const //this should not be call by reference, as mpreal is a class contains only pointers. 
+    {
+        mpreal tmp;
+        tmp = mpc_realref(mpc);
+        return tmp;
+    }
+    inline mpreal imag() //this should not be call by reference, as mpreal is a class contains only pointers. 
     {
         mpreal tmp;
         tmp = mpc_imagref(mpc);
         return tmp;
     }
-
+    inline const mpreal imag() const //this should not be call by reference, as mpreal is a class contains only pointers. 
+    {
+        mpreal tmp;
+        tmp = mpc_imagref(mpc);
+        return tmp;
+    }
+    inline void real(const mpreal r) //constructor
+    {
+        mpreal tmp(r);  //required as r is const.
+        mpc_real(mpfr_ptr(tmp), mpc, mpreal::default_rnd);
+    }
+    inline void imag(const mpreal r) //constructor
+    {
+        mpreal tmp(r);
+        mpc_imag(mpfr_ptr(tmp), mpc, mpreal::default_rnd);
+    }
     //other functions
     friend const mpreal abs(const mpcomplex& a, mpfr_rnd_t mode = mpreal::default_rnd);
     friend const mpreal norm(const mpcomplex& a, mpfr_rnd_t mode = mpreal::default_rnd);
@@ -208,22 +213,23 @@ class mpcomplex {
 
 #if defined ___MPACK_BUILD_WITH_GMP___
 mpcomplex(const mpc_class& a);
-operator mpc_class() const;
+mpcomplex& operator=(const mpc_class& a);
 #endif
 #if defined ___MPACK_BUILD_WITH_QD___
 mpcomplex(const qd_complex& a);
-operator qd_complex() const;
 mpcomplex& operator=(const qd_complex& a);
 #endif
 #if defined ___MPACK_BUILD_WITH_DD___
 mpcomplex(const dd_complex& a);
-operator dd_complex() const;
 mpcomplex& operator=(const dd_complex& a);
 #endif
 #if defined ___MPACK_BUILD_WITH___FLOAT128___
 mpcomplex(const std::complex<__float128>& a);
-operator __float128() const;
 mpcomplex& operator=(const std::complex<__float128>& a);
+#endif
+#if defined ___MPACK_BUILD_WITH___DOUBLE___
+mpcomplex(const std::complex<double>& a);
+mpcomplex& operator=(const std::complex<double>& a);
 #endif
 };
 
@@ -1038,31 +1044,32 @@ inline mpcomplex::mpcomplex(const mpc_class& a)
 
 inline const mpcomplex operator-(const mpcomplex& a, const mpc_class& b)
 {
-   mpcomplex tmp(b);
-   return mpcomplex(a) -= b;
+   return mpcomplex(b) -= a;
 }
 
 inline const mpcomplex operator-(const mpc_class& a, const mpcomplex& b)
 {
-   mpcomplex tmp(a);
-   mpcomplex tmp2(b);
    return -(mpcomplex(a) -= b);
 }
 
 inline mpc_class cast2mpc_class(const mpcomplex &b)
 {
 //mpcomplex -> mpfr, mpfr -> mpf, mpf -> mpc_class
+//I have to rewrite soon.
   mpf_t  tmpre, tmpim;
   mpfr_t tmpre2, tmpim2;
   mpcomplex a(b);
+  mpreal are, aim;
   mp_prec_t pr, pi;
 
   pr = a.get_prec_re();
   pi = a.get_prec_im();
-  
+  are=a.real();
+  aim=a.imag();
+
   mpfr_init2(tmpre2, pr); mpfr_init2(tmpim2, pi);
-  mpfr_set(tmpre2, (mpfr_ptr)a.real(), MPC_RND_RE(mpcomplex::default_rnd));
-  mpfr_set(tmpim2, (mpfr_ptr)a.imag(), MPC_RND_IM(mpcomplex::default_rnd));
+  mpfr_set(tmpre2, (mpfr_ptr)are, MPC_RND_RE(mpcomplex::default_rnd));
+  mpfr_set(tmpim2, (mpfr_ptr)aim, MPC_RND_IM(mpcomplex::default_rnd));
 
   mpf_init2 (tmpre, pr); mpf_init2 (tmpim, pr);
   mpfr_get_f(tmpre, tmpre2, MPC_RND_RE(mpcomplex::default_rnd));  mpfr_get_f(tmpim, tmpim2, MPC_RND_IM(mpcomplex::default_rnd));
@@ -1076,6 +1083,12 @@ inline mpc_class cast2mpc_class(const mpcomplex &b)
   mpfr_clear(tmpim2);
   return tmp;
 }     
+inline mpcomplex& mpcomplex::operator=(const mpc_class& a)
+{
+   mpcomplex tmp(a);
+   *this = tmp; 
+   return *this;
+}
 
 #endif
 

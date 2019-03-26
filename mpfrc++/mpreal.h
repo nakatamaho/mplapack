@@ -2232,7 +2232,11 @@ inline const mpreal cbrt(const mpreal& v, mp_rnd_t rnd_mode)
 inline const mpreal root(const mpreal& v, unsigned long int k, mp_rnd_t rnd_mode)
 {
 	mpreal x(v);
-	mpfr_root(x.mp,x.mp,k,rnd_mode);
+        #if(MPFR_VERSION_MAJOR < 4) 
+	    mpfr_root(x.mp,x.mp,k,rnd_mode);
+        #else
+	    mpfr_rootn_ui(x.mp,x.mp,k,rnd_mode);
+        #endif
 	return x;
 }
 

@@ -50,19 +50,28 @@ class mpc_class {
     mpc_class(const mpf_t a, const mpf_t b);
 
 //extraction of real and imaginary parts
-    const mpf_class & real() const
+    inline mpf_class & real()
     {
 	return re;
     }
-    const mpf_class & imag() const
+    inline const mpf_class & real() const
+    {
+	return re;
+    }
+    inline mpf_class & imag()
     {
 	return im;
     }
-    void real(const mpf_class r)
+    inline const mpf_class & imag() const
+    {
+	return im;
+    }
+//assignment of real part
+    inline void real(const mpf_class r)
     {
 	this->re = r;
     }
-    void imag(const mpf_class r)
+    inline void imag(const mpf_class r)
     {
 	this->im = r;
     }

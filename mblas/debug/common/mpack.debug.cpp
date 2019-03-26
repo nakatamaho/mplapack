@@ -69,7 +69,10 @@ void printnum(mpreal rtmp)
 
 void printnum(mpcomplex ctmp)
 {
-    mpfr_printf(MPFR_P_FORMAT MPFR_P_FORMAT "i", mpfr_ptr(ctmp.real()), mpfr_ptr(ctmp.imag()));
+    mpreal cre, cim;
+    cre = ctmp.real();
+    cim = ctmp.imag();
+    mpfr_printf(MPFR_P_FORMAT MPFR_P_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
     return;
 }
 
@@ -81,7 +84,10 @@ void sprintnum(char *buf, mpreal rtmp)
 
 void sprintnum(char *buf, mpcomplex ctmp)
 {
-    mpfr_snprintf(buf, BUFLEN, MPFR_P_FORMAT MPFR_P_FORMAT "i", mpfr_ptr(ctmp.real()), mpfr_ptr(ctmp.imag()));
+    mpreal cre, cim;
+    cre = ctmp.real();
+    cim = ctmp.imag();
+    mpfr_snprintf(buf, BUFLEN, MPFR_P_FORMAT MPFR_P_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
     return;
 }
 
@@ -181,8 +187,8 @@ mpc_class mpc_randomnumber(mpc_class dummy)
     mtmp2 = uniformrandomstate_gmp->get_f();
     mtmp2 = 2.0 * mtmp2 - 1.0;
 
-    ctmp.real() = mtmp1;
-    ctmp.imag() = mtmp2;
+    ctmp.real(mtmp1);
+    ctmp.imag(mtmp2);
     return ctmp;
 }
 

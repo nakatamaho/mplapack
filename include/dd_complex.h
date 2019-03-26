@@ -73,19 +73,27 @@ class dd_complex {
     dd_complex(const std::complex<double> & a);
 
 //extraction of real and imaginary parts
-    const dd_real & real() const
+    inline dd_real & real()
     {
 	return re;
     }
-    const dd_real & imag() const
+    inline const dd_real & real() const
+    {
+	return re;
+    }
+    inline dd_real & imag()
     {
 	return im;
     }
-    void real(const dd_real r)
+    inline const dd_real & imag() const
+    {
+	return im;
+    }
+    inline void real(const dd_real r)
     {
 	this->re = r;
     }
-    void imag(const dd_real r)
+    inline void imag(const dd_real r)
     {
 	this->im = r;
     }
