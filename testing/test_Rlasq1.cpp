@@ -34,8 +34,9 @@ int main ()
   std::ifstream ifs ("test_Rlasq1.txt");
   std::string str;
   while (getline (ifs, str)) {
+      if (str.empty()) exit(1);
       int n = std::stoi(str);
-      printf("%d \n",n);
+      printf("#length of n is %d \n",n);
       mpackint info;
       mpreal *d = new mpreal[n];
       mpreal *e = new mpreal[n - 1];
@@ -51,9 +52,13 @@ int main ()
       int i=0;
       while (i<n) {
           getline (ifs, str);
-          printf("%lf\n",std::stod(str));
    	  d[i] = dd[i] = std::stod(str);
-          if ( i<n-1 ) e[i] = ed[i] = std::stod(str);
+          i++;
+      }
+      i=0;
+      while (i<n-1) {
+          getline (ifs, str);
+	  e[i] = ed[i] = std::stod(str);
           i++;
       }
       printf ("d ="); printvec (n, d);
