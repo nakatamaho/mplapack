@@ -19,7 +19,7 @@ all: test_$(TESTROUTINE)
 
 test_$(TESTROUTINE): $(MPTESTLIB) test_$(TESTROUTINE).cpp ${MPLAPACKTOP}/mblas/debug/common/mpack.debug.cpp
 	$(CPP) -D___MPACK_BUILD_WITH_MPFR___ $(MPINCLUDEFLAGS) -o mpack.debug.o $(CPPFLAGS) -c ${MPLAPACKTOP}/mblas/debug/common/mpack.debug.cpp
-	$(CPP) -D___MPACK_BUILD_WITH_MPFR___ $(MPINCLUDEFLAGS) -o test_$(TESTROUTINE).o $(CPPFLAGS) -c test_$(TESTROUTINE).cpp
+	$(CPP) -std=c++11 -D___MPACK_BUILD_WITH_MPFR___ $(MPINCLUDEFLAGS) -o test_$(TESTROUTINE).o $(CPPFLAGS) -c test_$(TESTROUTINE).cpp
 	$(CPP) -fopenmp -o $@ test_$(TESTROUTINE).o -L. -lmplapack_mpfr_test -Wl,-rpath=. $(MPLDFLAGS) mpack.debug.o -lmlapack_mpfr -lmblas_mpfr -lmpfrcxx -lmpc -lmpfr -lgmp -llapack -lblas
 
 .f.o:
