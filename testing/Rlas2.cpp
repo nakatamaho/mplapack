@@ -79,15 +79,20 @@ void Rlas2(REAL f, REAL g, REAL h, REAL * ssmin, REAL * ssmax)
     fhmn = min(fa, ha);
     fhmx = max(fa, ha);
     if (fhmn == Zero) {
+        printf("check1");
 	*ssmin = Zero;
 	if (fhmx == Zero) {
 	    *ssmax = ga;
+        printf("check2");
 	} else {
 	    d1 = min(fhmx, ga) / max(fhmx, ga);
 	    *ssmax = max(fhmx, ga) * sqrt(d1 * d1 + One);
+        printf("check3");
 	}
     } else {
+        printf("check4");
 	if (ga < fhmx) {
+        printf("check5");
 	    as = fhmn / fhmx + One;
 	    at = (fhmx - fhmn) / fhmx;
 	    d1 = ga / fhmx;
@@ -96,15 +101,17 @@ void Rlas2(REAL f, REAL g, REAL h, REAL * ssmin, REAL * ssmax)
 	    *ssmin = fhmn * c;
 	    *ssmax = fhmx / c;
 	} else {
+        printf("check6");
 	    au = fhmx / ga;
 	    if (au == Zero) {
-
+        printf("check7");
 //Avoid possible harmful underflow if exponent range
 //asymmetric (true SSMIN may not underflow even if
 //AU underflows)
 		*ssmin = fhmn * fhmx / ga;
 		*ssmax = ga;
 	    } else {
+        printf("check8");
 		as = fhmn / fhmx + One;
 		at = (fhmx - fhmn) / fhmx;
 		c = One / (sqrt(as * au * as * au + One) + sqrt(at * au * at * au + One));

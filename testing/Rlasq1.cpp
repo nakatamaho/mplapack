@@ -88,54 +88,12 @@ void Rlasq1(INTEGER n, REAL * d, REAL * e, REAL * work, INTEGER * info)
     } else if (n == 0) {
 	return;
     } else if (n == 1) {
-	d[1] = abs(d[1]);
+	d[0] = abs(d[0]);
 	return;
     } else if (n == 2) {
-	Rlas2(d[1], e[1], d[2], &sigmn, &sigmx);
-	d[1] = sigmx;
-	d[2] = sigmn;
+	Rlas2(d[0], e[0], d[1], &sigmn, &sigmx);
+	d[0] = sigmx;
+	d[1] = sigmn;
 	return;
     }
-//Estimate the largest singular value.
-    sigmx = Zero;
-    for (i = 0; i < n - 1; i++) {
-	d[i] = abs(d[i]);
-	mtemp1 = sigmx;
-	mtemp2 = abs(e[i]);
-	sigmx = max(mtemp1, mtemp2);
-
-    }
-    d[n] = abs(d[n]);
-//Early return if SIGMX is zero (matrix is already diagonal).
-    if (sigmx == Zero) {
-	Rlasrt("D", n, &d[0], &iinfo);
-	return;
-    }
-    for (i = 0; i < n; i++) {
-	mtemp1 = sigmx;
-	mtemp2 = d[i];
-	sigmx = max(mtemp1, mtemp2);
-    }
-//Copy D and E into WORK (in the Z format) and scale (squaring the
-//input data makes scaling by a power of the radix pointless).
-    eps = Rlamch("P");
-    safmin = Rlamch("S");
-    scale = sqrt(eps / safmin);
-    Rcopy(n, &d[0], 1, &work[0], 2);
-    Rcopy(n - 1, &e[0], 1, &work[2], 2);
-    Rlascl("G", 0, 0, sigmx, scale, n * 2 - 1, 1, &work[0], n * 2 - 1, &iinfo);
-//Compute the q's and e's.
-    for (i = 0; i < n * 2 - 1; i++) {
-	work[i] = work[i] * work[i];
-    }
-    work[n * 2] = Zero;
-    Rlasq2(n, &work[0], info);
-    if (*info == 0) {
-	for (i = 0; i < n; i++) {
-	    d[i] = sqrt(work[i]);
-
-	}
-	Rlascl("G", 0, 0, scale, sigmx, n, 1, &d[0], n, &iinfo);
-    }
-    return;
 }
