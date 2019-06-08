@@ -73,7 +73,7 @@ int main ()
       printvec (n, dd);  printf ("\n");
 
       double diff = infnorm (dd, d, n, 1);
-      if (diff > EPSILON) { printf ("error: %lf", diff); printf ("\n"); }
+      if (diff > EPSILON) { printf ("error: %lf", diff); printf ("\n"); exit(1); }
       else { printf ("ok: %lf", diff); printf ("\n"); }
 //
       delete[]workd;

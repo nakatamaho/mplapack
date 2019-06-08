@@ -94,7 +94,6 @@ void Rlasq2(INTEGER n, REAL * z, INTEGER * info)
     REAL Zero = 0.0, Half = 0.5, One = 1.0, Two = 2.0, Four = 4.0, Hundrd = 100.0;
     REAL Cbias = 1.5;
     REAL mtemp1, mtemp2;
-
 //Test the input arguments.
 //(in case DLASQ2 is not called by DLASQ1)
     *info = 0;

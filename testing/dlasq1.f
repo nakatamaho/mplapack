@@ -197,6 +197,8 @@
    30 CONTINUE
       WORK( 2*N ) = ZERO
 *
+      PRINT *, "CHECK LA 01"
+      RETURN
       CALL DLASQ2( N, WORK, INFO )
 *
       IF( INFO.EQ.0 ) THEN

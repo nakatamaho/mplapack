@@ -96,4 +96,52 @@ void Rlasq1(INTEGER n, REAL * d, REAL * e, REAL * work, INTEGER * info)
 	d[1] = sigmn;
 	return;
     }
+    printf("check10\n");
+//Estimate the largest singular value.
+    sigmx = Zero;
+    for (i = 0; i < n - 1; i++) {
+	d[i] = abs(d[i]);
+	mtemp1 = sigmx;
+	mtemp2 = abs(e[i]);
+	sigmx = max(mtemp1, mtemp2);
+    }
+    d[n-1] = abs(d[n-1]);
+    printf("check11\n");
+//Early return if SIGMX is zero (matrix is already diagonal).
+    if (sigmx == Zero) {
+	Rlasrt("D", n, &d[0], &iinfo);
+	return;
+    }
+    printf("check12\n");
+    for (i = 0; i < n; i++) {
+	mtemp1 = sigmx;
+	mtemp2 = d[i];
+	sigmx = max(mtemp1, mtemp2);
+    }
+//Copy D and E into WORK (in the Z format) and scale (squaring the
+//input data makes scaling by a power of the radix pointless).
+    eps = Rlamch("P");
+    safmin = Rlamch("S");
+    scale = sqrt(eps / safmin);
+    Rcopy(n, &d[0], 1, &work[0], 2);
+    Rcopy(n - 1, &e[0], 1, &work[2], 2);
+    Rlascl("G", 0, 0, sigmx, scale, n * 2 - 1, 1, &work[0], n * 2 - 1, &iinfo);
+    printf("check12\n");
+//Compute the q's and e's.
+    for (i = 0; i < n * 2 - 1; i++) {
+	work[i] = work[i] * work[i];
+    }
+    work[n * 2] = Zero;
+    printf("check13\n");
+    return;
+    Rlasq2(n, &work[0], info);
+    printf("check14\n");
+    if (*info == 0) {
+	for (i = 0; i < n; i++) {
+	    d[i] = sqrt(work[i]);
+	}
+	Rlascl("G", 0, 0, scale, sigmx, n, 1, &d[0], n, &iinfo);
+    }
+    printf("check14\n");
+    return;
 }
