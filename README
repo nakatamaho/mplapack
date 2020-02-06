@@ -4,6 +4,11 @@ libraries like GMP, MPFR and QD etc so that users can choose for user's
 convenience. The MPACK is a free software (2-clause BSD style license with
 original license by LAPACK).
 
+How to build:
+$ git clone https://github.com/nakatamaho/mplapack/
+$ cd mplapack ; autoreconf --force --install ; aclocal ; autoconf ; automake;autoreconf --force --install
+$ ./configure --enable-gmp --enable-__float128 --enable-dd --enable-mpfr
+
 Acknowledgement:
 
 This work has been supported by:
