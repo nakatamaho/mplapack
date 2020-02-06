@@ -289,8 +289,6 @@ if test x$enable_gmp = x"yes" -o x$enable_mpfr = x"yes" -o x$enable_debug = x"ye
         fi
     else
         AC_MSG_RESULT([Using GMP library comes with MPACK])
-        mkdir -p $highest_abs_top_srcdir/external/i/GMP/include/
-        mkdir -p $highest_abs_top_srcdir/external/i/GMP/lib/
         GMP_INCLUDEDIR=$highest_abs_top_srcdir/external/i/GMP/include/
         GMP_LIBDIR=$highest_abs_top_srcdir/external/i/GMP/lib/
     fi
@@ -444,7 +442,7 @@ AC_SUBST(QD_LIBDIR, [$QD_LIBDIR])
 dnl QD library end
 
 need_internal_gmplib=no
-if test x$enable_gmp = x"yes" && test x$SYSTEM_GMP != x"yes"; then
+if [ x$enable_gmp = x"yes" && test x$SYSTEM_GMP != x"yes"] || [ x$enable_mpfr = x"yes" && test x$SYSTEM_GMP != x"yes"]; then
     need_internal_gmplib=yes
     AC_SUBST(GMP_DIR, [gmp])
 fi
