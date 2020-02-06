@@ -442,7 +442,7 @@ AC_SUBST(QD_LIBDIR, [$QD_LIBDIR])
 dnl QD library end
 
 need_internal_gmplib=no
-if [ x$enable_gmp = x"yes" -o x$enable_mpfr = x"yes" ] && [ x$with_system_gmp != x"yes" ]; then
+if test x$enable_gmp = x"yes" || test x$enable_mpfr = x"yes" && test x$SYSTEM_GMP != x"yes"; then
     need_internal_gmplib=yes
     AC_SUBST(GMP_DIR, [gmp])
 fi
