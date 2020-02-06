@@ -289,6 +289,8 @@ if test x$enable_gmp = x"yes" -o x$enable_mpfr = x"yes" -o x$enable_debug = x"ye
         fi
     else
         AC_MSG_RESULT([Using GMP library comes with MPACK])
+        mkdir -p $highest_abs_top_srcdir/external/i/GMP/include/
+        mkdir -p $highest_abs_top_srcdir/external/i/GMP/lib/
         GMP_INCLUDEDIR=$highest_abs_top_srcdir/external/i/GMP/include/
         GMP_LIBDIR=$highest_abs_top_srcdir/external/i/GMP/lib/
     fi
