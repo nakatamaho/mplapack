@@ -5,7 +5,7 @@ CC="gcc-9" ; export CC
 FC="gfortran-9"; export FC
 F77="gfortran-9"; export F77
 
-aclocal ; autoconf ; automake
+aclocal ; autoconf ; automake --add-missing
 autoreconf --force --install
 
 #CXXFLAGS="-O2 -Wall -Werror -pedantic-errors" ; export CXXFLAGS
