@@ -12,5 +12,6 @@ autoreconf --force --install
 #CPPFLAGS="-O2 -Wall -Werror -pedantic-errors" ; export CPPFLAGS  
 #CFLAGS="-O2 -Wall -Werror -pedantic-errors" ; export CFLAGS  
 
-./configure --prefix=$HOME/MPACK
+./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-__float128=yes
+
 
