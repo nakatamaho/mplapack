@@ -42,4 +42,10 @@ RUN source ${WORK}/build36/setpaths.sh && cd ${WORK}/build36 && make && cd ${WOR
 RUN cd ${WORK} && echo "source /home/docker/miniconda2/etc/profile.d/conda.sh" >> .bashrc
 RUN cd ${WORK} && echo "conda activate fable36" >> .bashrc
 RUN cd ${WORK} && echo "source /home/docker/build36/setpaths.sh" >> .bashrc
+RUN echo -e "\n\
+        PROGRAM HELLO\n\
+        PRINT *, 'HELLO, WORLD!'\n\
+        END PROGRAM\n\
+" >> ${WORK}/sample.f
+
 
