@@ -6,7 +6,7 @@ original license by LAPACK).
 
 How to build:
 $ git clone https://github.com/nakatamaho/mplapack/
-$ cd mplapack ; autoreconf --force --install ; aclocal ; autoconf ; automake;autoreconf --force --install
+$ cd mplapack ; autoreconf --force --install ; aclocal ; autoconf ; automake; autoreconf --force --install
 $ ./configure --enable-gmp --enable-__float128 --enable-dd --enable-mpfr
 
 do not worry about a lot of warnings in the second commands.
