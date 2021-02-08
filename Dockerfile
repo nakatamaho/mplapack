@@ -23,3 +23,4 @@ ARG DOCKER_PASSWORD=docker
 USER ${DOCKER_USER}
 RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git
 RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.ubuntu20.04.sh ; make
+COPY ~/.gitconfig /home/$DOCKER_USER
