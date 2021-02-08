@@ -1,0 +1,14 @@
+#!/usr/bin/expect -f
+spawn ./Miniconda2-4.5.11-Linux-x86_64.sh
+set timeout -1
+expect ">>>"
+send "\n"
+expect "More"
+send "   "
+expect ">>>"
+send "yes\n"
+expect ">>>"
+send "/home/docker/miniconda2\n"
+expect ">>>"
+send "no\n"
+
