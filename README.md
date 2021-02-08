@@ -1,7 +1,7 @@
-#  The MPACK is a multiprecision linear algebra package based on BLAS and LAPACK.
+# The MPLAPACK is a multiprecision linear algebra package based on BLAS and LAPACK.
 This package is rewritten in C++, and supports several high precision
 libraries like GMP, MPFR and QD etc so that users can choose for user's
-convenience. The MPACK is a free software (2-clause BSD style license with
+convenience. The MPLAPACK is a free software (2-clause BSD style license with
 original license by LAPACK).
 
 # How to build and install
@@ -38,4 +38,3 @@ Please refer userman.pdf for details. Please enjoy!
 
 # contact
 NAKATA Maho <maho@riken.jp>
-
