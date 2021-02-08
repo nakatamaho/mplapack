@@ -15,7 +15,7 @@ do not worry about a lot of warnings in the second commands.
 # Docker build (not working yet)
 
 ```
-$ docker image build -t maho/mplapack:latest .```
+$ docker image build -t maho/mplapack:latest .
 $ docker run -it maho/mplapack:latest
 ```
 
