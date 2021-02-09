@@ -201,15 +201,14 @@ class mpcomplex {
 // Type Conversion operators
     operator std::complex<double>() const;
     operator std::string() const;
-    std::string to_string(size_t n = 0, int b = default_base, mpc_rnd_t mode) const;
-
+    std::string to_string(size_t n = 0, int b = default_base, mpc_rnd_t mode = default_rnd) const;
 // Set/Get instance properties
    static void	set_default_prec(mp_prec_t prec);
    mp_prec_t get_prec() const;
    mp_prec_t get_prec_re() const;
    mp_prec_t get_prec_im() const;
-   void set_prec(mp_prec_t prec, mpc_rnd_t rnd_mode = default_rnd);
-   void set_prec2(mp_prec_t pr, mp_prec_t pi, mpc_rnd_t rnd_mode = default_rnd);
+   void set_prec(mp_prec_t prec, mpc_rnd_t rnd_mode);
+   void set_prec2(mp_prec_t pr, mp_prec_t pi, mpc_rnd_t rnd_mode);
 
 #if defined ___MPACK_BUILD_WITH_GMP___
 mpcomplex(const mpc_class& a);
@@ -291,7 +290,6 @@ inline mp_prec_t mpcomplex::get_prec_re() const
       mpc_get_prec2(&pr, &pi, mpc);
       return pr;
 }
-
 inline mp_prec_t mpcomplex::get_prec_im() const
 {
       mp_prec_t pr, pi;
@@ -531,7 +529,7 @@ inline const mpcomplex operator+(const mpcomplex& a, const mpcomplex& b)
       else {tmp=b; tmp += a; return tmp;} 
   } else {
     tmp=a;
-    tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec_re()), std::max(a.get_prec_im(), b.get_prec_im()));
+    tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec_re()), std::max(a.get_prec_im(), b.get_prec_im()), mpcomplex::default_rnd);
     return tmp += b;
   }
 }
@@ -560,14 +558,14 @@ inline const mpcomplex operator+(const char *a, const mpcomplex& b)
 inline const mpcomplex operator+(const mpcomplex& a, const mpreal b)
 {
   mpcomplex tmp(a);
-  tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec()), a.get_prec_im());
+  tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec()), a.get_prec_im(), mpcomplex::default_rnd);
   return tmp += b;
 }
 
 inline const mpcomplex operator+(const mpreal a, const mpcomplex& b)
 {
   mpcomplex tmp(b);
-  tmp.set_prec2(std::max(b.get_prec_re(), a.get_prec()), b.get_prec_im());
+  tmp.set_prec2(std::max(b.get_prec_re(), a.get_prec()), b.get_prec_im(), mpcomplex::default_rnd);
   return tmp += a;
 }
 
@@ -648,7 +646,7 @@ inline const mpcomplex operator-(const mpcomplex& a, const mpcomplex& b)
     else return -(mpcomplex(b) -= a);
   } else {
     mpcomplex tmp(a);
-    tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec_re()), std::max(a.get_prec_im(), b.get_prec_im()));
+    tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec_re()), std::max(a.get_prec_im(), b.get_prec_im()), mpcomplex::default_rnd);
     return tmp -= b;
   }
 }
@@ -680,7 +678,7 @@ inline const mpcomplex operator-(const mpcomplex& a, const mpreal b)
     else return -(mpcomplex(b) -= a);
   } else {
     mpcomplex tmp(a);
-    tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec()), a.get_prec_im());
+    tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec()), a.get_prec_im(), mpcomplex::default_rnd);
     return tmp -= b;
   }
 }
@@ -755,7 +753,7 @@ inline const mpcomplex operator*(const mpcomplex& a, const mpcomplex& b)
     else return mpcomplex(b) *= a;
   } else {
     mpcomplex tmp(a);
-    tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec_re()), std::max(a.get_prec_im(), b.get_prec_im()));
+    tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec_re()), std::max(a.get_prec_im(), b.get_prec_im()), mpcomplex::default_rnd);
     return tmp *= b;
   }
 }
@@ -763,14 +761,14 @@ inline const mpcomplex operator*(const mpcomplex& a, const mpcomplex& b)
 inline const mpcomplex operator*(const mpcomplex& a, const mpreal& b)
 {
    mpcomplex tmp(a);
-   tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec()), a.get_prec_im());
+   tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec()), a.get_prec_im(), mpcomplex::default_rnd);
    return tmp *= mpcomplex(b);
 }
 
 inline const mpcomplex operator*(const mpreal& a, const mpcomplex& b)
 {
    mpcomplex tmp(a);
-   tmp.set_prec2(std::max(b.get_prec_re(), a.get_prec()), b.get_prec_im());
+   tmp.set_prec2(std::max(b.get_prec_re(), a.get_prec()), b.get_prec_im(), mpcomplex::default_rnd);
    return tmp *= b;
 }
 
@@ -859,21 +857,21 @@ inline mpcomplex::operator std::complex<double>() const
 inline const mpcomplex operator/(const mpcomplex& a, const mpcomplex& b)
 {
   mpcomplex tmp(a);
-  tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec_re()), std::max(a.get_prec_im(), b.get_prec_im()));
+  tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec_re()), std::max(a.get_prec_im(), b.get_prec_im()), mpcomplex::default_rnd);
   return tmp /= b;
 }
 
 inline const mpcomplex operator/(const mpreal& a, const mpcomplex& b)
 {
   mpcomplex tmp(a);
-  tmp.set_prec2(std::max(a.get_prec(), b.get_prec_re()), std::max(a.get_prec(), b.get_prec_im()));
+  tmp.set_prec2(std::max(a.get_prec(), b.get_prec_re()), std::max(a.get_prec(), b.get_prec_im()), mpcomplex::default_rnd);
   return tmp /= b;
 }
 
 inline const mpcomplex operator/(const mpcomplex& a, const mpreal& b)
 {
   mpcomplex tmp(a);
-  tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec()), std::max(a.get_prec_im(), b.get_prec()));
+  tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec()), std::max(a.get_prec_im(), b.get_prec()), mpcomplex::default_rnd);
   return tmp /= b;
 }
 
