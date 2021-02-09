@@ -157,7 +157,7 @@ REAL pi(REAL dummy)
 
 #elif defined ___MPACK_BUILD_WITH_MPFR___
     mpfr_free_cache();
-    return const_pi();
+    return const_pi(mpfr_get_default_prec());
 
 #elif defined ___MPACK_BUILD_WITH_DOUBLE___
     return M_PI;

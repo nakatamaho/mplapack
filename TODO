@@ -1,2 +1,7 @@
-Clean up and unified treatment for complex values.
+* Understand MPFR C++ interface more and write a test cases
+  ** REAL version
+  ** COMPLEX version
+* rename MBLAS to MPBLAS
+* rename MLAPACK to MLAPACK
+* Clean up and unified treatment for complex values.
 
