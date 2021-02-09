@@ -15,8 +15,9 @@ RUN echo "${TZ}" > /etc/timezone \
   && ln -s /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
   && dpkg-reconfigure -f noninteractive tzdata
 
-RUN apt install -y build-essential
+RUN apt install -y build-essential gfortran-9
 RUN apt install -y autotools-dev automake libtool
+RUN apt install -y git
 RUN apt install -y ng-common ng-cjk
 
 ARG DOCKER_UID=1000
