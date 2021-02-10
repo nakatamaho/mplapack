@@ -875,7 +875,7 @@ inline const mpcomplex operator/(const mpcomplex& a, const mpreal& b)
   return tmp /= b;
 }
 
-inline const mpreal abs(const mpcomplex& a, mpfr_rnd_t rnd_mode)
+inline const mpreal abs(const mpcomplex& a, mpfr_rnd_t rnd_mode = mpreal::default_rnd)
 {
         mpreal x;
         mpcomplex y(a);
@@ -883,7 +883,7 @@ inline const mpreal abs(const mpcomplex& a, mpfr_rnd_t rnd_mode)
 	return x;
 }
 
-inline const mpreal norm(const mpcomplex& a, mpfr_rnd_t rnd_mode)
+inline const mpreal norm(const mpcomplex& a, mpfr_rnd_t rnd_mode = mpreal::default_rnd)
 {
         mpreal x;
         mpcomplex y(a);
@@ -891,14 +891,14 @@ inline const mpreal norm(const mpcomplex& a, mpfr_rnd_t rnd_mode)
 	return x;
 }
 
-inline const mpcomplex conj(const mpcomplex& a, mpc_rnd_t rnd_mode)
+inline const mpcomplex conj(const mpcomplex& a, mpc_rnd_t rnd_mode = mpcomplex::default_rnd)
 {
         mpcomplex y(a);
 	mpc_conj(y.mpc, y.mpc, rnd_mode);
 	return y;
 }
 
-inline const mpreal arg(const mpcomplex& a, mpfr_rnd_t rnd_mode)
+inline const mpreal arg(const mpcomplex& a, mpfr_rnd_t rnd_mode = mpreal::default_rnd)
 {
         mpreal x(a.real());
         mpcomplex y(a);
@@ -906,119 +906,119 @@ inline const mpreal arg(const mpcomplex& a, mpfr_rnd_t rnd_mode)
 	return x;
 }
 
-inline const mpcomplex proj(const mpcomplex& a, mpc_rnd_t rnd_mode)
+inline const mpcomplex proj(const mpcomplex& a, mpc_rnd_t rnd_mode = mpcomplex::default_rnd)
 {
         mpcomplex y(a);
 	mpc_proj(y.mpc, y.mpc, rnd_mode);
 	return y;
 }
 
-inline const mpcomplex sqrt(const mpcomplex& a, mpc_rnd_t rnd_mode)
+inline const mpcomplex sqrt(const mpcomplex& a, mpc_rnd_t rnd_mode = mpcomplex::default_rnd)
 {
 	mpcomplex x(a);
 	mpc_sqrt(x.mpc, x.mpc, rnd_mode);
 	return x;
 }
 
-inline const mpcomplex pow(const mpcomplex& a, const mpcomplex& b, mpc_rnd_t rnd_mode)
+inline const mpcomplex pow(const mpcomplex& a, const mpcomplex& b, mpc_rnd_t rnd_mode = mpcomplex::default_rnd)
 {
 	mpcomplex x(a);
 	mpc_pow(x.mpc, x.mpc, b.mpc, rnd_mode);
 	return x;
 }
 
-inline const mpcomplex exp(const mpcomplex& a, mpc_rnd_t rnd_mode)
+inline const mpcomplex exp(const mpcomplex& a, mpc_rnd_t rnd_mode = mpcomplex::default_rnd)
 {
 	mpcomplex x(a);
 	mpc_exp(x.mpc, a.mpc, rnd_mode);
 	return x;
 }
 
-inline const mpcomplex log(const mpcomplex& a, mpc_rnd_t rnd_mode)
+inline const mpcomplex log(const mpcomplex& a, mpc_rnd_t rnd_mode = mpcomplex::default_rnd)
 {
 	mpcomplex x(a);
 	mpc_log(x.mpc, a.mpc, rnd_mode);
 	return x;
 }
 
-inline const mpcomplex sin(const mpcomplex& a, mpc_rnd_t rnd_mode)
+inline const mpcomplex sin(const mpcomplex& a, mpc_rnd_t rnd_mode = mpcomplex::default_rnd)
 {
 	mpcomplex x(a);
 	mpc_sin(x.mpc, a.mpc, rnd_mode);
 	return x;
 }
 
-inline const mpcomplex cos(const mpcomplex& a, mpc_rnd_t rnd_mode)
+inline const mpcomplex cos(const mpcomplex& a, mpc_rnd_t rnd_mode = mpcomplex::default_rnd)
 {
 	mpcomplex x(a);
 	mpc_cos(x.mpc, a.mpc, rnd_mode);
 	return x;
 }
 
-inline const mpcomplex tan(const mpcomplex& a, mpc_rnd_t rnd_mode)
+inline const mpcomplex tan(const mpcomplex& a, mpc_rnd_t rnd_mode = mpcomplex::default_rnd)
 {
 	mpcomplex x(a);
 	mpc_tan(x.mpc, a.mpc, rnd_mode);
 	return x;
 }
 
-inline const mpcomplex sinh(const mpcomplex& a, mpc_rnd_t rnd_mode)
+inline const mpcomplex sinh(const mpcomplex& a, mpc_rnd_t rnd_mode = mpcomplex::default_rnd)
 {
 	mpcomplex x(a);
 	mpc_sinh(x.mpc, a.mpc, rnd_mode);
 	return x;
 }
 
-inline const mpcomplex cosh(const mpcomplex& a, mpc_rnd_t rnd_mode)
+inline const mpcomplex cosh(const mpcomplex& a, mpc_rnd_t rnd_mode = mpcomplex::default_rnd)
 {
 	mpcomplex x(a);
 	mpc_cosh(x.mpc, a.mpc, rnd_mode);
 	return x;
 }
 
-inline const mpcomplex tanh(const mpcomplex& a, mpc_rnd_t rnd_mode)
+inline const mpcomplex tanh(const mpcomplex& a, mpc_rnd_t rnd_mode = mpcomplex::default_rnd)
 {
 	mpcomplex x(a);
 	mpc_tanh(x.mpc, a.mpc, rnd_mode);
 	return x;
 }
 
-inline const mpcomplex asin(const mpcomplex& a, mpc_rnd_t rnd_mode)
+inline const mpcomplex asin(const mpcomplex& a, mpc_rnd_t rnd_mode = mpcomplex::default_rnd)
 {
 	mpcomplex x(a);
 	mpc_asin(x.mpc, a.mpc, rnd_mode);
 	return x;
 }
 
-inline const mpcomplex acos(const mpcomplex& a, mpc_rnd_t rnd_mode)
+inline const mpcomplex acos(const mpcomplex& a, mpc_rnd_t rnd_mode = mpcomplex::default_rnd)
 {
 	mpcomplex x(a);
 	mpc_acos(x.mpc, a.mpc, rnd_mode);
 	return x;
 }
 
-inline const mpcomplex atan(const mpcomplex& a, mpc_rnd_t rnd_mode)
+inline const mpcomplex atan(const mpcomplex& a, mpc_rnd_t rnd_mode = mpcomplex::default_rnd)
 {
 	mpcomplex x(a);
 	mpc_atan(x.mpc, a.mpc, rnd_mode);
 	return x;
 }
 
-inline const mpcomplex asinh(const mpcomplex& a, mpc_rnd_t rnd_mode)
+inline const mpcomplex asinh(const mpcomplex& a, mpc_rnd_t rnd_mode = mpcomplex::default_rnd)
 {
 	mpcomplex x(a);
 	mpc_asinh(x.mpc, a.mpc, rnd_mode);
 	return x;
 }
 
-inline const mpcomplex acosh(const mpcomplex& a, mpc_rnd_t rnd_mode)
+inline const mpcomplex acosh(const mpcomplex& a, mpc_rnd_t rnd_mode = mpcomplex::default_rnd)
 {
 	mpcomplex x(a);
 	mpc_acosh(x.mpc, a.mpc, rnd_mode);
 	return x;
 }
 
-inline const mpcomplex atanh(const mpcomplex& a, mpc_rnd_t rnd_mode)
+inline const mpcomplex atanh(const mpcomplex& a, mpc_rnd_t rnd_mode = mpcomplex::default_rnd)
 {
 	mpcomplex x(a);
 	mpc_atanh(x.mpc, a.mpc, rnd_mode);
