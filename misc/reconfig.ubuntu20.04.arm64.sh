@@ -12,7 +12,8 @@ autoreconf --force --install
 #CPPFLAGS="-O2 -Wall -Werror -pedantic-errors" ; export CPPFLAGS  
 #CFLAGS="-O2 -Wall -Werror -pedantic-errors" ; export CFLAGS  
 
-./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-__float128=no
+#currently __float128 is not supported by gcc9 and 10. dd builds but not give a correct answer.
+./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-__float128=no --enable-dd=no
 
 
 
