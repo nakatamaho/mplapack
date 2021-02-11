@@ -63,6 +63,7 @@ RUN echo -e "\n\
         email = ${GIT_EMAIL}\n\
         name = ${GIT_NAME}\n\
 " > /home/$DOCKER_USER/.gitconfig
+RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git
 RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.ubuntu18.04.sh
 RUN cd /home/$DOCKER_USER/mplapack && make -j4
 
