@@ -48,4 +48,22 @@ RUN echo -e "\n\
         END PROGRAM\n\
 " >> ${WORK}/sample.f
 
+ARG GIT_EMAIL="maho.nakata@gmail.com"
+ARG GIT_NAME="NAKATA Maho"
+
+USER root
+RUN apt install -y build-essential
+RUN apt install -y autotools-dev automake libtool
+RUN apt install -y git
+RUN apt install -y ng-common ng-cjk emacs-nox
+
+USER docker
+RUN echo -e "\n\
+[user]\n\
+        email = ${GIT_EMAIL}\n\
+        name = ${GIT_NAME}\n\
+" > /home/$DOCKER_USER/.gitconfig
+RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.ubuntu18.04.sh
+RUN cd /home/$DOCKER_USER/mplapack && make -j4
+
 
