@@ -33,5 +33,5 @@ RUN echo "\n\
 " > /home/$DOCKER_USER/.gitconfig
 RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.ubuntu20.04.sh
 RUN cd /home/$DOCKER_USER/mplapack && make -j4
-RUN git branch mplapackrename
-RUN git checkout mplapackrename
+RUN cd /home/$DOCKER_USER/mplapack && git branch mplapackrename
+RUN cd /home/$DOCKER_USER/mplapack && git checkout mplapackrename
