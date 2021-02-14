@@ -19,18 +19,19 @@ $ docker image build -t mplapack:latest -f Dockerfile_ubuntu20.04 .
 $ docker run -it mplapack:latest
 ```
 
-# Docker build + fable (fortran to c converter)
+# Docker build + FABLE (Automatic Fortran to C++ converter)
+
 https://github.com/cctbx/cctbx_project/tree/master/fable
 FABLE: Automatic Fortran to C++ conversion (https://doi.org/10.1186/1751-0473-7-5).
 
 ## How to build
 ```
-docker image build -t mplapack:f2c_fable -f Dockerfile_fable .
+$ docker image build -t mplapack:fable -f Dockerfile_fable .
 ```
 
 ## How to convert a sample fortran to C++
 ```
-$ docker run -it mplapack:f2c_fable
+$ docker run -it mplapack:fable
 $ cd ; fable.cout sample.f
 ```
 
@@ -38,7 +39,7 @@ $ cd ; fable.cout sample.f
 
 ## How to build
 ```
-docker image build -t mplapack:rename2mplapack -f Dockerfile_rename2mplapack .
+$ docker image build -t mplapack:rename2mplapack -f Dockerfile_rename2mplapack .
 ```
 
 # Acknowledgement:
