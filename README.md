@@ -25,13 +25,20 @@ FABLE: Automatic Fortran to C++ conversion (https://doi.org/10.1186/1751-0473-7-
 
 ## How to build
 ```
-docker image build -t f2c_fable:latest -f Dockerfile_fable .
+docker image build -t mplapack:f2c_fable -f Dockerfile_fable .
 ```
 
 ## How to convert a sample fortran to C++
 ```
-$ docker run -it f2c_fable:latest
+$ docker run -it mplapack:f2c_fable
 $ cd ; fable.cout sample.f
+```
+
+# Docker build for rename2 mplapack branch
+
+## How to build
+```
+docker image build -t mplapack:rename2mplapack -f Dockerfile_rename2mplapack .
 ```
 
 # Acknowledgement:
