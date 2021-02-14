@@ -15,6 +15,8 @@ do not worry about a lot of warnings in the second commands.
 # Docker build
 
 ```
+$ git clone https://github.com/nakatamaho/mplapack/
+$ cd mplapack
 $ docker image build -t mplapack:latest -f Dockerfile_ubuntu20.04 .
 $ docker run -it mplapack:latest
 ```
@@ -26,10 +28,12 @@ FABLE: Automatic Fortran to C++ conversion (https://doi.org/10.1186/1751-0473-7-
 
 ## How to build
 ```
+$ git clone https://github.com/nakatamaho/mplapack/
+$ cd mplapack
 $ docker image build -t mplapack:fable -f Dockerfile_fable .
 ```
 
-## How to convert a sample fortran to C++
+## How to convert a sample Fortran to C++
 ```
 $ docker run -it mplapack:fable
 $ cd ; fable.cout sample.f
