@@ -35,7 +35,7 @@ $ docker run -it mplapack:fable
 $ cd ; fable.cout sample.f
 ```
 
-# Docker build for rename2 mplapack branch
+# Docker build for rename2mplapack branch
 
 ## How to build
 ```
