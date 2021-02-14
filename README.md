@@ -12,13 +12,27 @@ $ ./configure --enable-gmp --enable-__float128 --enable-dd --enable-mpfr
 ```
 do not worry about a lot of warnings in the second commands.
 
-# Docker build (not working yet)
+# Docker build
 
 ```
-$ docker image build -t maho/mplapack:latest .
-$ docker run -it maho/mplapack:latest
+$ docker image build -t mplapack:latest -f Dockerfile_ubuntu20.04 .
+$ docker run -it mplapack:latest
 ```
 
+# Docker build + fable (fortran to c converter)
+https://github.com/cctbx/cctbx_project/tree/master/fable
+FABLE: Automatic Fortran to C++ conversion (https://doi.org/10.1186/1751-0473-7-5).
+
+## How to build
+```
+docker image build -t f2c_fable:latest -f Dockerfile_fable .
+```
+
+## How to convert a sample fortran to C++
+```
+$ docker run -it f2c_fable:latest
+$ cd ; fable.cout sample.f
+```
 
 # Acknowledgement:
 
