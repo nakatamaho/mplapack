@@ -8,10 +8,6 @@ F77="gfortran-9"; export F77
 aclocal ; autoconf ; automake --add-missing
 autoreconf --force --install
 
-#CXXFLAGS="-O2 -Wall -Werror -pedantic-errors" ; export CXXFLAGS
-#CPPFLAGS="-O2 -Wall -Werror -pedantic-errors" ; export CPPFLAGS  
-#CFLAGS="-O2 -Wall -Werror -pedantic-errors" ; export CFLAGS  
-
-./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-__float128=yes
+./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-__float128=yes --enable-debug=yes
 
 

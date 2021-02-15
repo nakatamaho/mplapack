@@ -43,6 +43,8 @@ $ cd ; fable.cout sample.f
 
 ## How to build
 ```
+$ git clone https://github.com/nakatamaho/mplapack/
+$ cd mplapack
 $ docker image build -t mplapack:rename2mplapack -f Dockerfile_rename2mplapack .
 ```
 

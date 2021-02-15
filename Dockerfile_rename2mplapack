@@ -25,13 +25,15 @@ ARG DOCKER_USER=docker
 ARG DOCKER_PASSWORD=docker
 RUN useradd -u $DOCKER_UID -m $DOCKER_USER --shell /bin/bash && echo "$DOCKER_USER:$DOCKER_PASSWORD" | chpasswd && echo "$DOCKER_USER ALL=(ALL) ALL" >> /etc/sudoers
 USER ${DOCKER_USER}
-RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git
 RUN echo "\n\
 [user]\n\
         email = ${GIT_EMAIL}\n\
         name = ${GIT_NAME}\n\
 " > /home/$DOCKER_USER/.gitconfig
-RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.ubuntu20.04.sh
-RUN cd /home/$DOCKER_USER/mplapack && make -j4
-RUN cd /home/$DOCKER_USER/mplapack && git branch mplapackrename
-RUN cd /home/$DOCKER_USER/mplapack && git checkout mplapackrename
+RUN cd /home/${DOCKER_USER} && echo "cd /home/${DOCKER_USER}" >> .bashrc
+RUN cd /home/$DOCKER_USER && mkdir WORK_RENAME
+RUN cd /home/$DOCKER_USER/WORK_RENAME && git clone https://github.com/nakatamaho/mplapack.git
+RUN cd /home/$DOCKER_USER//WORK_RENAME/mplapack && bash -x misc/reconfig.ubuntu20.04.sh
+RUN cd /home/$DOCKER_USER/WORK_RENAME/mplapack && git branch mplapackrename
+RUN cd /home/$DOCKER_USER/WORK_RENAME/mplapack && git checkout mplapackrename
+RUN cd /home/$DOCKER_USER/WORK_RENAME/mplapack && make -j4
