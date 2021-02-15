@@ -30,10 +30,9 @@ RUN echo "\n\
         email = ${GIT_EMAIL}\n\
         name = ${GIT_NAME}\n\
 " > /home/$DOCKER_USER/.gitconfig
-RUN cd /home/${DOCKER_USER} && echo "cd /home/${DOCKER_USER}" >> .bashrc
-RUN cd /home/$DOCKER_USER && mkdir WORK_RENAME
-RUN cd /home/$DOCKER_USER/WORK_RENAME && git clone https://github.com/nakatamaho/mplapack.git
-RUN cd /home/$DOCKER_USER//WORK_RENAME/mplapack && bash -x misc/reconfig.ubuntu20.04.sh
-RUN cd /home/$DOCKER_USER/WORK_RENAME/mplapack && git branch mplapackrename
-RUN cd /home/$DOCKER_USER/WORK_RENAME/mplapack && git checkout mplapackrename
-RUN cd /home/$DOCKER_USER/WORK_RENAME/mplapack && make -j4
+RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
+RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git
+RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.ubuntu20.04.sh
+RUN cd /home/$DOCKER_USER/mplapack && git branch mplapackrename
+RUN cd /home/$DOCKER_USER/mplapack && git checkout mplapackrename
+RUN cd /home/$DOCKER_USER/mplapack && make -j4
