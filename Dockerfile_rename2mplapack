@@ -15,10 +15,11 @@ RUN echo "${TZ}" > /etc/timezone \
   && ln -s /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
   && dpkg-reconfigure -f noninteractive tzdata
 
-RUN apt install -y build-essential gfortran-9
+RUN apt install -y build-essential gfortran-9 python3
 RUN apt install -y autotools-dev automake libtool
 RUN apt install -y git
 RUN apt install -y ng-common ng-cjk emacs-nox
+RUN sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
 ARG DOCKER_UID=1000
 ARG DOCKER_USER=docker
@@ -30,10 +31,9 @@ RUN echo "\n\
         email = ${GIT_EMAIL}\n\
         name = ${GIT_NAME}\n\
 " > /home/$DOCKER_USER/.gitconfig
-RUN cd /home/${DOCKER_USER} && echo "cd /home/${DOCKER_USER}" >> .bashrc
-RUN cd /home/$DOCKER_USER && mkdir WORK_RENAME
-RUN cd /home/$DOCKER_USER/WORK_RENAME && git clone https://github.com/nakatamaho/mplapack.git
-RUN cd /home/$DOCKER_USER//WORK_RENAME/mplapack && bash -x misc/reconfig.ubuntu20.04.sh
-RUN cd /home/$DOCKER_USER/WORK_RENAME/mplapack && git branch mplapackrename
-RUN cd /home/$DOCKER_USER/WORK_RENAME/mplapack && git checkout mplapackrename
-RUN cd /home/$DOCKER_USER/WORK_RENAME/mplapack && make -j4
+RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
+RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git
+RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.ubuntu20.04.sh
+RUN cd /home/$DOCKER_USER/mplapack && git branch mplapackrename
+RUN cd /home/$DOCKER_USER/mplapack && git checkout mplapackrename
+RUN cd /home/$DOCKER_USER/mplapack && make -j4
