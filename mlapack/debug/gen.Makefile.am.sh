@@ -16,7 +16,7 @@ for _mplib in $MPLIBS; do
     done
     FILES=`cat _tmpfilelist_test`
     for _file in $FILES; do
-        echo "${_file}_${_mplib}_ref ${_file}_${_mplib} \\" | sed 's/\.cpp//g' >> ${_mplib}/_filelist_test
+        echo "${_file}_${_mplib}_ref ${_file}_${_mplib} \\" | sed 's/\.cpp//g' >> ${_mplib}/_filelist_debug
     done
 
     sed -i -e "$ s/\\\//g" ${_mplib}/_filelist_debug
@@ -24,14 +24,14 @@ for _mplib in $MPLIBS; do
     sed -i -e "s/%%insert here1%%//g" ${_mplib}/Makefile.am.part.2nd
 
     rm -f ${_mplib}/Makefile.am.part.3rd
-    FILES=`cat _tmpfilelist_debug`
+    FILES=`cat _tmpfilelist_debug | grep -v Mutils`
     for _file in $FILES; do
-        _function=`echo $_file | grep -v Mutils | sed -e "s/\./ /g" | awk '{print $1}'`
+        _function=`echo $_file | sed -e "s/\./ /g" | awk '{print $1}'`
         grep %%FUNCTION%% ${_mplib}/Makefile.am.part.2nd | sed "s/%%FUNCTION%%/$_function/g" >> ${_mplib}/Makefile.am.part.3rd 
         echo "" >> ${_mplib}/Makefile.am.part.3rd
     done
 
-    FILES=`cat _tmpfilelist_test`
+    FILES=`cat _tmpfilelist_test | grep -v Mutils`
     for _file in $FILES; do
         _test=`echo $_file | grep -v Mutils | sed -e "s/\./ /g" | awk '{print $1}'`
         grep %%TEST%% ${_mplib}/Makefile.am.part.2nd | sed "s/%%TEST%%/$_test/g" >> ${_mplib}/Makefile.am.part.3rd
@@ -40,7 +40,7 @@ for _mplib in $MPLIBS; do
 
     sed -e "/%%insert here2%%/e cat ${_mplib}/Makefile.am.part.3rd" ${_mplib}/Makefile.am.part.2nd | grep -v %%FUNCTION%% | grep -v %%TEST%% > ${_mplib}/Makefile.am
     sed -i -e "s/%%insert here2%%//g" gmp/Makefile.am
-    rm ${_mplib}/Makefile.am.part.* ${_mplib}/_filelist_debug ${_mplib}/_filelist_test
+    rm ${_mplib}/Makefile.am.part.* ${_mplib}/_filelist_debug
 done
 
 rm -f _tmpfilelist_debug _tmpfilelist_test 
