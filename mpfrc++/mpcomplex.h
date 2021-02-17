@@ -1231,8 +1231,8 @@ inline std::complex<__float128> cast2complex__float128(const mpcomplex &b)
   mpreal re_tmp, im_tmp; 
   re_tmp = b.real();
   im_tmp = b.imag();
-  q.real() = mpfr_get_float128((mpfr_ptr)(re_tmp));
-  q.imag() = mpfr_get_float128((mpfr_ptr)(im_tmp));
+  q.real(mpfr_get_float128((mpfr_ptr)(re_tmp)));
+  q.imag(mpfr_get_float128((mpfr_ptr)(im_tmp)));
   return q;
 }     
 inline const mpcomplex operator-(const mpcomplex& a, const std::complex<__float128>& b)
