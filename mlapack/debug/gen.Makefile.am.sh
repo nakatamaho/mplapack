@@ -39,7 +39,7 @@ for _mplib in $MPLIBS; do
     done
 
     sed -e "/%%insert here2%%/e cat ${_mplib}/Makefile.am.part.3rd" ${_mplib}/Makefile.am.part.2nd | grep -v %%FUNCTION%% | grep -v %%TEST%% > ${_mplib}/Makefile.am
-    sed -i -e "s/%%insert here2%%//g" gmp/Makefile.am
+    sed -i -e "s/%%insert here2%%//g" ${_mplib}/Makefile.am
     rm ${_mplib}/Makefile.am.part.* ${_mplib}/_filelist_debug
 done
 
