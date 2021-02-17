@@ -1,4 +1,4 @@
-check_PROGRAMS= $(mlapack_gmp_test_PROGRAMS)
+check_PROGRAMS = $(mlapack_gmp_test_PROGRAMS)
 TESTS = $(check_PROGRAMS)
 mlapack_gmp_test_PROGRAMS = \
 %%insert here1%%
