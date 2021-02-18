@@ -178,12 +178,16 @@ complex < double >mpc_randomnumber(complex < double >);
 
 void printnum(mpreal rtmp);
 void printnum(mpcomplex ctmp);
-void printnum(complex < double >ctmp);
 void printnum(double rtmp);
+void printnum(complex < double >ctmp);
+void printnum(long double rtmp);
+void printnum(complex <long double> ctmp);
 void sprintnum(char *buf, mpreal rtmp);
 void sprintnum(char *buf, mpcomplex rtmp);
 void sprintnum(char *buf, double rtmp);
+void sprintnum(char *buf, long double rtmp);
 void sprintnum(char *buf, complex <double> rtmp);
+void sprintnum(char *buf, complex <long double> rtmp);
 
 void set_random_number(double &a, mpreal & b);
 void set_random_number(complex < double >&a, mpcomplex & b);
@@ -267,6 +271,13 @@ void set_random_number(mpreal & a, double &b);
 void set_random_number(mpcomplex & a, std::complex < double >&b);
 void set_random_number1to2(mpreal & a, double &b);
 void set_random_number1to2(mpcomplex & a, std::complex < double >&b);
+#endif
+
+#if defined ___MPACK_BUILD_WITH_LONGDOUBLE___
+void set_random_number(mpreal & a, long double &b);
+void set_random_number(mpcomplex & a, std::complex < long double >&b);
+void set_random_number1to2(mpreal & a, long double &b);
+void set_random_number1to2(mpcomplex & a, std::complex < long double >&b);
 #endif
 
 #if defined ___MPACK_BUILD_WITH___FLOAT128___

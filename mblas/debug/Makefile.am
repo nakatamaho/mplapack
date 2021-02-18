@@ -24,8 +24,8 @@ if ENABLE___FLOAT128
 SUBDIRS += __float128
 endif
 
-if ENABLE_LONGDOUBLE
-SUBDIRS += longdouble
-endif
+#if ENABLE_LONGDOUBLE
+#SUBDIRS += longdouble
+#endif
 
 

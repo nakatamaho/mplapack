@@ -458,8 +458,8 @@ double mpf_randomnumber(double dummy)
 complex < double >mpc_randomnumber(complex < double >)
 {
     std::complex < double >ctmp;
-    ctmp.real() = drand48();
-    ctmp.imag() = drand48();
+    ctmp.real(drand48());
+    ctmp.imag(drand48());
     return ctmp;
 }
 

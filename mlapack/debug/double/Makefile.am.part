@@ -36,6 +36,7 @@ Mutils_debug_double_ref_SOURCES  = ../common/Mutils.debug.cpp $(debug_srcdepends
 Mutils_debug_double_ref_LDFLAGS    = $(ref_libdepends) $(debug_libdepends)
 Mutils_debug_double_ref_CXXFLAGS = $(debug_cxxflags)  
 
+%%insert here2%%
 %%FUNCTION%%_debug_double_SOURCES  = ../common/%%FUNCTION%%.debug.cpp $(debug_srcdepends)
 %%FUNCTION%%_debug_double_LDFLAGS    = $(opt_libdepends) $(debug_libdepends)
 %%FUNCTION%%_debug_double_CXXFLAGS = $(debug_cxxflags)  

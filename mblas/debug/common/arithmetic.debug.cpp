@@ -49,6 +49,8 @@ void subst_test1()
   tmp1 = strtoflt128(buf1, NULL);
 #elif defined ___MPACK_BUILD_WITH_DOUBLE___
   sscanf(buf1, "%lf", &tmp1);
+#elif defined ___MPACK_BUILD_WITH_LONGDOUBLE___
+  sscanf(buf1, "%Lf", &tmp1);
 #else
   tmp1 = buf1;
 #endif

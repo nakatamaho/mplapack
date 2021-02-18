@@ -432,6 +432,9 @@ mpreal(const dd_real & a);
 mpreal(const __float128 & a);
 mpreal& operator=(const __float128 & a); //Why we need it?
 #endif
+#if defined ___MPACK_BUILD_WITH_LONGDOUBLE___
+mpreal(const long double & a);
+#endif  
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -792,7 +795,7 @@ inline mpreal& mpreal::operator+=(const mpq_t u)
 
 inline mpreal& mpreal::operator+= (const long double u)
 {
-	return *this += mpreal(u);	
+        return *this += mpreal(u,default_rnd);	
 }
 
 inline mpreal& mpreal::operator+= (const double u)
@@ -990,7 +993,7 @@ inline mpreal& mpreal::operator-=(const mpq_t v)
 
 inline mpreal& mpreal::operator-=(const long double v)
 {
-	return *this -= mpreal(v);	
+        return *this -= mpreal(v,default_rnd);	
 }
 
 inline mpreal& mpreal::operator-=(const double v)
@@ -1167,7 +1170,7 @@ inline mpreal& mpreal::operator*=(const mpq_t v)
 
 inline mpreal& mpreal::operator*=(const long double v)
 {
-	return *this *= mpreal(v);	
+        return *this *= mpreal(v,default_rnd);	
 }
 
 inline mpreal& mpreal::operator*=(const double v)
@@ -1313,7 +1316,7 @@ inline mpreal& mpreal::operator/=(const mpq_t v)
 
 inline mpreal& mpreal::operator/=(const long double v)
 {
-	return *this /= mpreal(v);	
+        return *this /= mpreal(v,default_rnd);	
 }
 
 inline mpreal& mpreal::operator/=(const double v)
@@ -1434,7 +1437,7 @@ inline const mpreal operator/(const int b, const mpreal& a)
 
 inline const mpreal operator/(const long double b, const mpreal& a)
 {
-	mpreal x(b);
+	mpreal x(b,mpreal::default_rnd);
 	return x/a;
 }
 
@@ -3301,6 +3304,42 @@ inline __float128 cast2__float128(const mpreal &b)
   __float128 q;
   mpreal a(b);
   q = mpfr_get_float128((mpfr_ptr)a);
+  return q;
+}     
+
+#endif
+
+#if defined ___MPACK_BUILD_WITH_LONGDOUBLE___
+inline mpreal& mpreal::operator=(const long double & a)
+{
+    mpfr_init2 (mp, default_prec);
+	mpfr_set_float128(&mp,a);
+	return *this;
+}
+
+inline mpreal::mpreal(const long double & a)
+{
+   mpfr_init2 (mp, default_prec);
+   mpfr_set_float128(&mp, a);
+}
+
+inline const mpreal operator-(const long double a, const mpreal b)
+{
+  return mpreal(a) -= b;
+}
+
+inline const mpreal operator-(const mpreal& a, const long double& b)
+{
+   mpreal tmp(b);
+   return -(mpreal(b) -= a);
+}
+
+inline long double cast2longdouble(const mpreal &b)
+{
+//mpreal -> mpfr -> long double
+  long double q;
+  mpreal a(b);
+  q = mpfr_get_ld((mpfr_ptr)a);
   return q;
 }     
 
