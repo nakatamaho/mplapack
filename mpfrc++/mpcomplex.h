@@ -1097,12 +1097,10 @@ inline const mpcomplex urandom_c (gmp_randstate_t& state)
 }
 
 #if defined ___MPACK_BUILD_WITH_GMP___
-inline mpcomplex::mpcomplex(const mpc_class& a)
+inline mpcomplex::mpcomplex(const mpc_class& a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode)
 {
-   mp_prec_t pr, pi;
-   pr = mpf_get_prec(a.real().get_mpf_t());  pi = mpf_get_prec(a.imag().get_mpf_t());
    mpc_init3(mpc, pr, pi);
-   mpc_set_f_f(mpc, a.real().get_mpf_t(), a.imag().get_mpf_t(), default_rnd);
+   mpc_set_f_f(mpc, a.real().get_mpf_t(), a.imag().get_mpf_t(), mode);
 }
 
 inline const mpcomplex operator-(const mpcomplex& a, const mpc_class& b)
@@ -1156,18 +1154,18 @@ inline mpcomplex& mpcomplex::operator=(const mpc_class& a)
 #endif
 
 #if defined ___MPACK_BUILD_WITH_QD___
-inline mpcomplex::mpcomplex(const qd_complex& a)
+inline mpcomplex::mpcomplex(const qd_complex& a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode)
 {
    mpfr_t mp_real, mp_imag;
-   mpc_init3(mpc, default_real_prec, default_imag_prec);
+   mpc_init3(mpc, pr, pi);
 
-   mpfr_init2(mp_real, default_real_prec);
+   mpfr_init2(mp_real, pr);
    mpfr_set_d (mp_real, a.real().x[0],  MPC_RND_RE(default_rnd));
    mpfr_add_d (mp_real, mp_real, a.real().x[1], MPC_RND_RE(default_rnd));
    mpfr_add_d (mp_real, mp_real, a.real().x[2], MPC_RND_RE(default_rnd));
    mpfr_add_d (mp_real, mp_real, a.real().x[3], MPC_RND_RE(default_rnd));
 
-   mpfr_init2(mp_imag, default_imag_prec);
+   mpfr_init2(mp_imag, pi);
    mpfr_set_d (mp_imag, a.imag().x[0], MPC_RND_IM(default_rnd));
    mpfr_add_d (mp_imag, mp_imag, a.imag().x[1], MPC_RND_IM(default_rnd));
    mpfr_add_d (mp_imag, mp_imag, a.imag().x[2], MPC_RND_IM(default_rnd));
@@ -1221,20 +1219,20 @@ inline mpcomplex& mpcomplex::operator=(const qd_complex& a)
 #endif
 
 #if defined ___MPACK_BUILD_WITH_DD___
-inline mpcomplex::mpcomplex(const dd_complex& a)
+inline mpcomplex::mpcomplex(const dd_complex& a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode)
 {
    mpfr_t mp_real, mp_imag;
-   mpc_init3(mpc, default_real_prec, default_imag_prec);
+   mpc_init3(mpc, pr, pi);
 
-   mpfr_init2(mp_real, default_real_prec);
-   mpfr_set_d (mp_real, a.real().x[0],  MPC_RND_RE(default_rnd));
-   mpfr_add_d (mp_real, mp_real, a.real().x[1], MPC_RND_RE(default_rnd));
+   mpfr_init2(mp_real, pr);
+   mpfr_set_d (mp_real, a.real().x[0],  MPC_RND_RE(mode));
+   mpfr_add_d (mp_real, mp_real, a.real().x[1], MPC_RND_RE(mode));
 
-   mpfr_init2(mp_imag, default_imag_prec);
-   mpfr_set_d (mp_imag, a.imag().x[0], MPC_RND_IM(default_rnd));
-   mpfr_add_d (mp_imag, mp_imag, a.imag().x[1], MPC_RND_IM(default_rnd));
+   mpfr_init2(mp_imag, pi);
+   mpfr_set_d (mp_imag, a.imag().x[0], MPC_RND_IM(mode));
+   mpfr_add_d (mp_imag, mp_imag, a.imag().x[1], MPC_RND_IM(mode));
    
-   mpc_set_fr_fr(mpc, mp_real, mp_imag, default_rnd);
+   mpc_set_fr_fr(mpc, mp_real, mp_imag, mode);
    mpfr_clear(mp_imag);
    mpfr_clear(mp_real);
 }
@@ -1275,18 +1273,18 @@ inline mpcomplex& mpcomplex::operator=(const dd_complex& a)
 #endif
 
 #if defined ___MPACK_BUILD_WITH___FLOAT128___
-inline mpcomplex::mpcomplex(const std::complex<__float128>& a)
+inline mpcomplex::mpcomplex(const std::complex<__float128>& a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode)
 {
    mpfr_t mp_real, mp_imag;
-   mpc_init3(mpc, default_real_prec, default_imag_prec);
+   mpc_init3(mpc, pr, pi);
 
-   mpfr_init2(mp_real, default_real_prec);
-   mpfr_set_float128 (&mp_real, a.real());
+   mpfr_init2(mp_real, pr);
+   mpfr_set_float128 ((mpfr_ptr)mp_real, a.real(), mpreal::default_rnd);
 
-   mpfr_init2(mp_imag, default_imag_prec);
-   mpfr_set_float128 (&mp_imag, a.imag());
+   mpfr_init2(mp_imag, pi);
+   mpfr_set_float128 ((mpfr_ptr)mp_imag, a.imag(), mpreal::default_rnd);
    
-   mpc_set_fr_fr(mpc, mp_real, mp_imag, default_rnd);
+   mpc_set_fr_fr(mpc, mp_real, mp_imag, mode);
    mpfr_clear(mp_imag);
    mpfr_clear(mp_real);
 }
@@ -1296,8 +1294,8 @@ inline std::complex<__float128> cast2complex__float128(const mpcomplex &b)
   mpreal re_tmp, im_tmp; 
   re_tmp = b.real();
   im_tmp = b.imag();
-  q.real(mpfr_get_float128((mpfr_ptr)(re_tmp)));
-  q.imag(mpfr_get_float128((mpfr_ptr)(im_tmp)));
+  q.real(mpfr_get_float128((mpfr_ptr)(re_tmp), mpreal::default_rnd));
+  q.imag(mpfr_get_float128((mpfr_ptr)(im_tmp), mpreal::default_rnd));
   return q;
 }     
 inline const mpcomplex operator-(const mpcomplex& a, const std::complex<__float128>& b)

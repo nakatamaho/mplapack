@@ -65,7 +65,6 @@ endif
 if ENABLE___FLOAT128
 mpack_include_HEADERS += \
     include/mblas___float128.h \
-    include/mpfr___float128.h \
     include/mlapack___float128.h \
     include/mutils___float128.h
 endif
