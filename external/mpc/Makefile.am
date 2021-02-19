@@ -1,4 +1,4 @@
-MPCVERSION=1.1.0
+MPCVERSION=1.2.1
 MAKEFLAGS =
 
 #GMPINCLUDEDIR=$(abs_builddir)/../i/GMP/include/
