@@ -37,6 +37,8 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+
+
 #include <cfloat>
 #include <cmath>
 
@@ -51,7 +53,6 @@
 #if defined ___MPACK_BUILD_WITH_DD___
 #include "qd/dd_real.h"
 #endif
-
 #if defined ___MPACK_BUILD_WITH___FLOAT128___
 #ifdef __cplusplus
 extern "C" {
@@ -87,8 +88,8 @@ private:
 public:
 	static mp_rnd_t		default_rnd;	
 	static mp_prec_t	default_prec;	
-	static int			default_base;
-	static int			double_bits;
+	static int		default_base;
+	static int		double_bits;
 
 public:
 	// Constructors && type conversion
@@ -101,7 +102,7 @@ public:
 	mpreal(const mpz_t u, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);	
 	mpreal(const mpq_t u, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);	
 	mpreal(const double u, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
-	mpreal(const long double u, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
+  	mpreal(const long double u, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
 	mpreal(const unsigned long int u, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
 	mpreal(const unsigned int u, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
 	mpreal(const long int u, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
@@ -385,14 +386,14 @@ public:
 	inline bool fits_in_bits(double x, int n);
 
 	// Set/Get global properties
-	static void			set_default_prec(mp_prec_t prec);
+	static void		set_default_prec(mp_prec_t prec);
 	static mp_prec_t	get_default_prec();
-	static void			set_default_base(int base);
-	static int			get_default_base();
-	static void			set_double_bits(int dbits);
-	static int			get_double_bits();
-	static void			set_default_rnd(mp_rnd_t rnd_mode);
-	static mp_rnd_t		get_default_rnd();
+        static void	        set_default_base(int base);
+	static int	        get_default_base();
+	static void	        set_double_bits(int dbits);
+	static int	        get_double_bits();
+	static void	        set_default_rnd(mp_rnd_t rnd_mode);
+	static mp_rnd_t	get_default_rnd();
 	static mp_exp_t get_emin (void);
 	static mp_exp_t get_emax (void);
 	static mp_exp_t get_emin_min (void);
@@ -420,21 +421,18 @@ public:
 		friend const mpreal min(const mpreal& x, const mpreal& y);
 	#endif
 #if defined ___MPACK_BUILD_WITH_GMP___
-mpreal(const mpf_class & a);
+mpreal(const mpf_class & a, mp_prec_t prec, mp_rnd_t mode);
 #endif
 #if defined ___MPACK_BUILD_WITH_QD___
-mpreal(const qd_real & a);
+mpreal(const qd_real & a,mp_prec_t prec, mp_rnd_t mode);
 #endif
 #if defined ___MPACK_BUILD_WITH_DD___
-mpreal(const dd_real & a);
+mpreal(const dd_real & a, mp_prec_t prec, mp_rnd_t mode);
 #endif
 #if defined ___MPACK_BUILD_WITH___FLOAT128___
-mpreal(const __float128 & a);
-mpreal& operator=(const __float128 & a); //Why we need it?
+mpreal(const __float128 & a,  mp_prec_t prec, mp_rnd_t mode);
+mpreal& operator=(const __float128 & a);
 #endif
-#if defined ___MPACK_BUILD_WITH_LONGDOUBLE___
-mpreal(const long double & a);
-#endif  
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -3281,10 +3279,10 @@ inline mpreal& mpreal::operator=(const __float128 & a)
 	return *this;
 }
 
-inline mpreal::mpreal(const __float128 & a)
+inline mpreal::mpreal(const __float128 & a, mp_prec_t prec, mp_rnd_t mode)
 {
-   mpfr_init2 (mp, default_prec);
-   mpfr_set_float128(&mp, a);
+   mpfr_init2 (mp, prec);
+   mpfr_set_float128(&mp, a, mode);
 }
 
 inline const mpreal operator-(const __float128 a, const mpreal b)
@@ -3310,39 +3308,14 @@ inline __float128 cast2__float128(const mpreal &b)
 #endif
 
 #if defined ___MPACK_BUILD_WITH_LONGDOUBLE___
-inline mpreal& mpreal::operator=(const long double & a)
-{
-    mpfr_init2 (mp, default_prec);
-	mpfr_set_float128(&mp,a);
-	return *this;
-}
-
-inline mpreal::mpreal(const long double & a)
-{
-   mpfr_init2 (mp, default_prec);
-   mpfr_set_float128(&mp, a);
-}
-
-inline const mpreal operator-(const long double a, const mpreal b)
-{
-  return mpreal(a) -= b;
-}
-
-inline const mpreal operator-(const mpreal& a, const long double& b)
-{
-   mpreal tmp(b);
-   return -(mpreal(b) -= a);
-}
-
 inline long double cast2longdouble(const mpreal &b)
 {
 //mpreal -> mpfr -> long double
   long double q;
   mpreal a(b);
-  q = mpfr_get_ld((mpfr_ptr)a);
+  q = mpfr_get_ld((mpfr_ptr)a, mpreal::default_rnd);
   return q;
 }     
-
 #endif
 
 }

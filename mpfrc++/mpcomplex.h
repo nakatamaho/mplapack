@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2012
+ * Copyright (c) 2010-2021
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -67,6 +67,7 @@ class mpcomplex {
     mpcomplex(const char *s, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex(const mpcomplex& a);
     mpcomplex(const std::complex<double>& a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
+    mpcomplex(const std::complex<long double>& a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);  
     mpcomplex(const mpreal& a, const mpreal& b);
     mpcomplex(const double& a, const double& b, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex(const char *s, const char *t, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
@@ -80,6 +81,7 @@ class mpcomplex {
     mpcomplex& operator=(const mpcomplex& a);
     mpcomplex& operator=(const mpc_t a);
     mpcomplex& operator=(const std::complex<double> a);
+    mpcomplex& operator=(const std::complex<long double> a);
     mpcomplex& operator=(const char* s);
 
     mpcomplex& operator=(const mpreal& a);
@@ -90,6 +92,7 @@ class mpcomplex {
     mpcomplex& operator+=(const mpcomplex& a);
     mpcomplex& operator+=(const mpc_t a);
     mpcomplex& operator+=(const std::complex<double> a);
+    mpcomplex& operator+=(const std::complex<long double> a);
 
     mpcomplex& operator+=(const mpreal& a);
     mpcomplex& operator+=(const mpfr_t a);
@@ -102,6 +105,7 @@ class mpcomplex {
     mpcomplex& operator-=(const mpcomplex& a);
     mpcomplex& operator-=(const mpc_t a);
     mpcomplex& operator-=(const std::complex<double> a);
+    mpcomplex& operator-=(const std::complex<long double> a);
 
     mpcomplex& operator-=(const mpreal& a);
     mpcomplex& operator-=(const mpfr_t a);
@@ -114,6 +118,7 @@ class mpcomplex {
     mpcomplex& operator*=(const mpcomplex& a);
     mpcomplex& operator*=(const mpc_t a);
     mpcomplex& operator*=(const std::complex<double> a);
+    mpcomplex& operator*=(const std::complex<long double> a);
     mpcomplex& operator*=(const mpreal& a);
     mpcomplex& operator*=(const mpfr_t a);
     mpcomplex& operator*=(const double a);
@@ -122,6 +127,7 @@ class mpcomplex {
     mpcomplex& operator/=(const mpcomplex& a);
     mpcomplex& operator/=(const mpc_t a);
     mpcomplex& operator/=(const std::complex<double> a);
+    mpcomplex& operator/=(const std::complex<long double> a);
     mpcomplex& operator/=(const mpreal& a);
     mpcomplex& operator/=(const mpfr_t a);
     mpcomplex& operator/=(const double a);
@@ -200,6 +206,7 @@ class mpcomplex {
 
 // Type Conversion operators
     operator std::complex<double>() const;
+    operator std::complex<long double>() const;  
     operator std::string() const;
     std::string to_string(size_t n = 0, int b = default_base, mpc_rnd_t mode = default_rnd) const;
 // Set/Get instance properties
@@ -211,33 +218,31 @@ class mpcomplex {
    void set_prec2(mp_prec_t pr, mp_prec_t pi, mpc_rnd_t rnd_mode);
 
 #if defined ___MPACK_BUILD_WITH_GMP___
-mpcomplex(const mpc_class& a);
+mpcomplex(const mpc_class& a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
 mpcomplex& operator=(const mpc_class& a);
 #endif
 #if defined ___MPACK_BUILD_WITH_QD___
-mpcomplex(const qd_complex& a);
+mpcomplex(const qd_complex& a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
 mpcomplex& operator=(const qd_complex& a);
 #endif
 #if defined ___MPACK_BUILD_WITH_DD___
-mpcomplex(const dd_complex& a);
+mpcomplex(const dd_complex& a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
 mpcomplex& operator=(const dd_complex& a);
 #endif
 #if defined ___MPACK_BUILD_WITH___FLOAT128___
-mpcomplex(const std::complex<__float128>& a);
+mpcomplex(const std::complex<__float128>& a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
 mpcomplex& operator=(const std::complex<__float128>& a);
-#endif
-#if defined ___MPACK_BUILD_WITH___DOUBLE___
-mpcomplex(const std::complex<double>& a);
-mpcomplex& operator=(const std::complex<double>& a);
 #endif
 };
 
 //+ addition
 const mpcomplex operator+(const mpcomplex& a, const mpcomplex& b);
 const mpcomplex operator+(const mpcomplex& a, const std::complex<double> b);
+const mpcomplex operator+(const mpcomplex& a, const std::complex<long double> b);  
 const mpcomplex operator+(const mpcomplex& a, const char* b);
 
 const mpcomplex operator+(const std::complex<double> a, const mpcomplex& b);
+const mpcomplex operator+(const std::complex<long double> a, const mpcomplex& b);  
 const mpcomplex operator+(const char* a, const mpcomplex& b);
 
 const mpcomplex operator+(const mpcomplex& a, const mpreal b);
@@ -250,9 +255,11 @@ const mpcomplex operator+(const int a, const mpcomplex& b);
 //- subtraction
 const mpcomplex operator-(const mpcomplex& a, const mpcomplex& b);
 const mpcomplex operator-(const mpcomplex& a, const std::complex<double>& b);
+const mpcomplex operator-(const mpcomplex& a, const std::complex<long double>& b);  
 const mpcomplex operator-(const mpcomplex& a, const char* b);
 
 const mpcomplex operator-(const std::complex<double>& a, const mpcomplex& b);
+const mpcomplex operator-(const std::complex<long double>& a, const mpcomplex& b);
 const mpcomplex operator-(const char* a, const mpcomplex& b);
 
 const mpcomplex operator-(const mpcomplex& a, const mpreal b);
@@ -261,6 +268,7 @@ const mpcomplex operator-(const mpcomplex& a, const int b);
 
 const mpcomplex operator-(const mpreal a, const mpcomplex& b);
 const mpcomplex operator-(const double a, const mpcomplex& b);
+const mpcomplex operator-(const long double a, const mpcomplex& b);  
 const mpcomplex operator-(const int a, const mpcomplex& b);
 
 //* multiplication
@@ -362,6 +370,12 @@ inline mpcomplex::mpcomplex(const std::complex<double>& a, mp_prec_t pr, mp_prec
    mpc_set_d_d(mpc, a.real(), a.imag(), default_rnd);
 }
 
+inline mpcomplex::mpcomplex(const std::complex<long double>& a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode)
+{
+   mpc_init3(mpc, pr, pi);
+   mpc_set_ld_ld(mpc, a.real(), a.imag(), default_rnd);
+}
+
 inline mpcomplex::mpcomplex(const mpreal& a, const mpreal& b)
 {
    mp_prec_t pr, pi;
@@ -440,6 +454,12 @@ inline mpcomplex& mpcomplex::operator=(const std::complex<double> a)
     return *this;
 }
 
+inline mpcomplex& mpcomplex::operator=(const std::complex<long double> a)
+{
+    mpc_set_ld_ld(mpc, a.real(), a.imag(), default_rnd);
+    return *this;
+}
+
 inline mpcomplex& mpcomplex::operator=(const char* s)
 {
      mpc_init3(mpc, default_real_prec, default_imag_prec);
@@ -478,6 +498,11 @@ inline mpcomplex& mpcomplex::operator+=(const mpc_t a)
 }
 
 inline mpcomplex& mpcomplex::operator+=(const std::complex<double> a)
+{
+	return *this += mpcomplex(a);	
+}
+
+inline mpcomplex& mpcomplex::operator+=(const std::complex<long double> a)
 {
 	return *this += mpcomplex(a);	
 }
@@ -539,12 +564,22 @@ inline const mpcomplex operator+(const mpcomplex& a, const std::complex<double> 
   return mpcomplex(a) += b;
 }
 
+inline const mpcomplex operator+(const mpcomplex& a, const std::complex<long double> b)
+{
+  return mpcomplex(a) += b;
+}
+
 inline const mpcomplex operator+(const mpcomplex& a, const char *b)
 {
   return mpcomplex(b) += a;
 }
 
 inline const mpcomplex operator+(const std::complex<double> a, const mpcomplex& b)
+{
+  return mpcomplex(b) += a;
+}
+
+inline const mpcomplex operator+(const std::complex<long double> a, const mpcomplex& b)
 {
   return mpcomplex(b) += a;
 }
@@ -599,6 +634,11 @@ inline mpcomplex& mpcomplex::operator-=(const std::complex<double> a)
 	return *this -= mpcomplex(a);	
 }
 
+inline mpcomplex& mpcomplex::operator-=(const std::complex<long double> a)
+{
+	return *this -= mpcomplex(a);	
+}
+
 inline mpcomplex& mpcomplex::operator-=(const mpreal& a)
 {
      mpc_sub_fr(mpc, mpc, (mpfr_ptr)(&a), default_rnd);
@@ -610,7 +650,6 @@ inline mpcomplex& mpcomplex::operator-=(const mpfr_t a)
      mpc_sub_fr(mpc, mpc, a, default_rnd);
      return *this;
 }
-
 
 inline mpcomplex& mpcomplex::operator-=(const double a)
 {
@@ -656,12 +695,22 @@ inline const mpcomplex operator-(const mpcomplex& a, const std::complex<double>&
     return -(mpcomplex(b) -= a);
 }
 
+inline const mpcomplex operator-(const mpcomplex& a, const std::complex<long double>& b)
+{
+    return -(mpcomplex(b) -= a);
+}
+
 inline const mpcomplex operator-(const mpcomplex& a, const char* b)
 {
        return a-mpcomplex(b);
 }
 
 inline const mpcomplex operator-(const std::complex<double>& a, const mpcomplex& b)
+{
+    return mpcomplex(a) -= b;
+}
+
+inline const mpcomplex operator-(const std::complex<long double>& a, const mpcomplex& b)
 {
     return mpcomplex(a) -= b;
 }
@@ -722,6 +771,11 @@ inline mpcomplex& mpcomplex::operator*=(const mpc_t a)
 }
 
 inline mpcomplex& mpcomplex::operator*=(const std::complex<double> a)
+{
+	return *this *= mpcomplex(a);	
+}
+
+inline mpcomplex& mpcomplex::operator*=(const std::complex<long double> a)
 {
 	return *this *= mpcomplex(a);	
 }
@@ -851,6 +905,17 @@ inline mpcomplex::operator std::complex<double>() const
   im = (*this).imag();
   tmp.real(mpfr_get_d(re,MPC_RND_RE(default_rnd)));
   tmp.imag(mpfr_get_d(im,MPC_RND_IM(default_rnd)));
+  return tmp;
+}
+
+inline mpcomplex::operator std::complex<long double>() const
+{
+  mpreal re, im;
+  std::complex<long double> tmp;
+  re = (*this).real();
+  im = (*this).imag();
+  tmp.real(mpfr_get_ld(re,MPC_RND_RE(default_rnd)));
+  tmp.imag(mpfr_get_ld(im,MPC_RND_IM(default_rnd)));
   return tmp;
 }
 

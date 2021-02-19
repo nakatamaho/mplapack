@@ -55,7 +55,6 @@ void subst_test1()
   tmp1 = buf1;
 #endif
 
-//tmp2 = tmp1;
   tmp2 = tmp1;
 
   sprintnum(buf2, tmp1);
@@ -109,6 +108,8 @@ void subst_test2()
   tmp1 = cast2qd_real(tmp2);
 #elif defined ___MPACK_BUILD_WITH_DOUBLE___
   tmp1 = cast2double(tmp2);
+#elif defined ___MPACK_BUILD_WITH_LONGDOUBLE___
+  tmp1 = cast2longdouble(tmp2);  
 #elif defined ___MPACK_BUILD_WITH___FLOAT128___
   tmp1 = cast2__float128(tmp2);
 #endif
@@ -130,7 +131,9 @@ void subst_test2()
 #elif defined ___MPACK_BUILD_WITH_QD___
   if (strncmp(buf1, buf2, 66)==0 && strncmp(buf2, buf3, 66)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
 #elif defined ___MPACK_BUILD_WITH_DOUBLE___
-  if (strncmp(buf1, buf2, 19)==0 && strncmp(buf2, buf3, 19)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
+  if (strncmp(buf1, buf2, 19)==0 && strncmp(buf2, buf3, 19)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);}
+#elif defined ___MPACK_BUILD_WITH_LONGDOUBLE___
+  if (strncmp(buf1, buf2, 19)==0 && strncmp(buf2, buf3, 19)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);}
 #elif defined ___MPACK_BUILD_WITH___FLOAT128___
   if (strncmp(buf1, buf2, 36)==0 && strncmp(buf2, buf3, 36)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
 #endif

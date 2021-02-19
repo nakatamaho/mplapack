@@ -99,6 +99,20 @@ void mpack_finalize_double(void)
 }
 #endif
 
+#if defined ___MPACK_BUILD_WITH_LONGDOUBLE___
+void __attribute__ ((constructor)) mpack_initialize_longdouble(void);
+void __attribute__ ((destructor)) mpack_finalize_longdouble(void);
+void mpack_initialize_longdouble(void)
+{
+    //no initializization needed
+}
+
+void mpack_finalize_longdouble(void)
+{
+    //no finalization needed
+}
+#endif
+
 #if defined ___MPACK_BUILD_WITH___FLOAT128___
 void __attribute__ ((constructor)) mpack_initialize_binary128(void);
 void __attribute__ ((destructor)) mpack_finalize_binary128(void);

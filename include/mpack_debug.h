@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2012
+ * Copyright (c) 2008-2021
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -117,6 +117,17 @@ using namespace mpfr;
 #define EPSILON10  1e-7
 #define EPSILON11  1e-7
 #define EPSILON12  1e-6
+#elif defined ___MPACK_BUILD_WITH_LONGDOUBLE___
+#define EPSILON    1e-12
+#define EPSILON2   1e-10
+#define EPSILON3   1e-9
+#define EPSILON4   1e-8
+#define EPSILON6   1e-7
+#define EPSILON7   1e-7
+#define EPSILON8   1e-7
+#define EPSILON10  1e-7
+#define EPSILON11  1e-7
+#define EPSILON12  1e-6
 #endif
 
 #define TRUE     1
@@ -129,6 +140,7 @@ using namespace mpfr;
 //#define GMP_P_FORMAT  "%+21.16Fe"
 //#define MPFR_P_FORMAT "%+21.16Re"
 #define P_FORMAT      "%+21.16e"
+#define LP_FORMAT      "%+21.16Le"
 #define QD_PRECISION  64
 #define DD_PRECISION  32
 #define BUFLEN 1024
@@ -151,7 +163,7 @@ inline double drand48()
 #define _MPACK_DEBUG_EXTERN_ extern
 #endif
 
-#if defined (___MPACK_BUILD_WITH_GMP___) || defined (___MPACK_BUILD_WITH_QD___) || defined (___MPACK_BUILD_WITH_DD___) || defined (___MPACK_BUILD_WITH_DOUBLE___) || defined (___MPACK_BUILD_WITH___FLOAT128___)
+#if defined (___MPACK_BUILD_WITH_GMP___) || defined (___MPACK_BUILD_WITH_QD___) || defined (___MPACK_BUILD_WITH_DD___) || defined (___MPACK_BUILD_WITH_DOUBLE___) || defined (___MPACK_BUILD_WITH_LONGDOUBLE___) || defined (___MPACK_BUILD_WITH___FLOAT128___)
 #include <mblas_mpfr.h>
 #include <mlapack_mpfr.h>
 #endif
@@ -189,12 +201,16 @@ void sprintnum(char *buf, long double rtmp);
 void sprintnum(char *buf, complex <double> rtmp);
 void sprintnum(char *buf, complex <long double> rtmp);
 
+//bootstrapping functions; double to mpreal.
+//usually we need only mpreal -> double or __float128 etc.
+//mpcomplex -> complex<double> or dd_complex etc.
+//but following cases, we treat binary64 BLAS and LAPACK as correct ones and compare to mpreal version of BLAS and LAPACK
 void set_random_number(double &a, mpreal & b);
-void set_random_number(complex < double >&a, mpcomplex & b);
+void set_random_number(complex <double>&a, mpcomplex & b);
 void set_random_number(INTEGER_REF & a, INTEGER & b);
 
 void set_random_number1to2(double &a, mpreal & b);
-void set_random_number1to2(complex < double >&a, mpcomplex & b);
+void set_random_number1to2(complex <double>&a, mpcomplex & b);
 void set_random_number1to2(INTEGER_REF & a, INTEGER & b);
 
 REAL_REF infnorm(COMPLEX_REF * vec_ref, COMPLEX * vec, int len, int inc);
@@ -268,29 +284,35 @@ void set_random_number1to2(mpcomplex & a, dd_complex & b);
 #endif
 #if defined ___MPACK_BUILD_WITH_DOUBLE___
 void set_random_number(mpreal & a, double &b);
-void set_random_number(mpcomplex & a, std::complex < double >&b);
+void set_random_number(mpcomplex & a, complex < double >&b);
 void set_random_number1to2(mpreal & a, double &b);
-void set_random_number1to2(mpcomplex & a, std::complex < double >&b);
+void set_random_number1to2(mpcomplex & a, complex < double >&b);
 #endif
 
 #if defined ___MPACK_BUILD_WITH_LONGDOUBLE___
+void printnum(long double rtmp);
+void printnum(complex<long double> rtmp);
+void sprintnum(char *buf, long double rtmp);
+void sprintnum(char *buf, complex<long double> rtmp);
+long double mpf_randomnumber(long double dummy);
+complex<long double> mpc_randomnumber(complex<long double> dummy);
 void set_random_number(mpreal & a, long double &b);
-void set_random_number(mpcomplex & a, std::complex < long double >&b);
+void set_random_number(mpcomplex & a, complex<long double> &b);
 void set_random_number1to2(mpreal & a, long double &b);
-void set_random_number1to2(mpcomplex & a, std::complex < long double >&b);
+void set_random_number1to2(mpcomplex & a, complex<long double>&b);
 #endif
 
 #if defined ___MPACK_BUILD_WITH___FLOAT128___
 void printnum(__float128 rtmp);
-void printnum(std::complex < __float128 > rtmp);
+void printnum(complex < __float128 > rtmp);
 void sprintnum(char *buf, __float128 rtmp);
-void sprintnum(char *buf, std::complex < __float128 > rtmp);
+void sprintnum(char *buf, complex < __float128 > rtmp);
 __float128 mpf_randomnumber(__float128 dummy);
-std::complex < __float128 > mpc_randomnumber(std::complex < __float128 > dummy);
+complex < __float128 > mpc_randomnumber(complex < __float128 > dummy);
 void set_random_number(mpreal & a, __float128 &b);
-void set_random_number(mpcomplex & a, std::complex < __float128 >&b);
+void set_random_number(mpcomplex & a, complex < __float128 >&b);
 void set_random_number1to2(mpreal & a, __float128 &b);
-void set_random_number1to2(mpcomplex & a, std::complex < __float128 >&b);
+void set_random_number1to2(mpcomplex & a, complex < __float128 >&b);
 #endif
 
 template < class X > void printmat(int N, int M, X * A, int LDA)
@@ -410,6 +432,8 @@ template < class X_REF, class X > void set_random_symmmat_cond(X_REF * p_ref, X 
 	    p[i + j * ldp] = cast2dd_real(tmpmat3_mpreal[i + j * ldp]);
 #elif defined (___MPACK_BUILD_WITH_DOUBLE___)
 	    p[i + j * ldp] = (double) (tmpmat3_mpreal[i + j * ldp]);
+#elif defined (___MPACK_BUILD_WITH_DOUBLE___)
+	    p[i + j * ldp] = (long double) (tmpmat3_mpreal[i + j * ldp]);	    
 #elif defined (___MPACK_BUILD_WITH___FLOAT128___)
 	    p[i + j * ldp] = cast2__float128(tmpmat3_mpreal[i + j * ldp]);
 #endif

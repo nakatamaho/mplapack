@@ -498,6 +498,56 @@ void set_random_number1to2(mpcomplex & a, complex<double> &b)
 
 #endif
 
+#if defined ___MPACK_BUILD_WITH_LONGDOUBLE___
+long double mpf_randomnumber(long double dummy)
+{
+    long double mtmp = drand48();
+    return mtmp;
+}
+
+complex < long double >mpc_randomnumber(complex < long double >)
+{
+    std::complex < long double >ctmp;
+    ctmp.real(drand48());
+    ctmp.imag(drand48());
+    return ctmp;
+}
+
+void set_random_number(mpreal &a, long double & b)
+{
+    mpreal dummy;
+    a = mpf_randomnumber(dummy);
+    b = a;
+}
+
+void set_random_number(mpcomplex & a, complex<long double> &b)
+{
+    mpcomplex dummy;
+    a = mpc_randomnumber(dummy);
+    b = a;
+}
+
+void set_random_number1to2(mpreal &a, long double & b)
+{
+    mpreal dummy;
+    a = mpf_randomnumber(dummy);
+    if (a > 0.0) a = a + 1.0; else a = a - 1.0;
+    b = a;
+}
+
+void set_random_number1to2(mpcomplex & a, complex<long double> &b)
+{
+    mpcomplex dummy;
+    double p, q;
+    a = mpc_randomnumber(dummy);
+    if (a.real() > 0.0) p = 1.0; else p = -1.0;
+    if (a.imag() > 0.0) q = 1.0; else q = -1.0;
+    a = a + complex<double>(p, q);
+    b = a;
+}
+
+#endif
+
 #if defined ___MPACK_BUILD_WITH___FLOAT128___
 void printnum(__float128 rtmp)
 {
@@ -626,6 +676,30 @@ void sprintnum(char *buf, double rtmp)
 void sprintnum(char *buf, complex < double >ctmp)
 {
     snprintf(buf, BUFLEN, P_FORMAT P_FORMAT "i", ctmp.real(), ctmp.imag());
+    return;
+}
+
+void printnum(complex < long double >ctmp)
+{
+    printf(LP_FORMAT LP_FORMAT "i", ctmp.real(), ctmp.imag());
+    return;
+}
+
+void printnum(long double rtmp)
+{
+    printf(LP_FORMAT, rtmp);
+    return;
+}
+
+void sprintnum(char *buf, long double rtmp)
+{
+    snprintf(buf, BUFLEN, LP_FORMAT, rtmp);
+    return;
+}
+
+void sprintnum(char *buf, complex < long double >ctmp)
+{
+    snprintf(buf, BUFLEN, LP_FORMAT LP_FORMAT "i", ctmp.real(), ctmp.imag());
     return;
 }
 
