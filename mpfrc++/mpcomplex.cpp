@@ -26,19 +26,19 @@
  *
  */
 
-#include <mpreal.h>
-#include <mpcomplex.h>
 #include <complex>
 #include <mpc.h>
+#include <mpcomplex.h>
+#include <mpreal.h>
 
-namespace mpfr{
+namespace mpfr {
 #if MPC_VERSION_MAJOR > 0
-  mpc_rnd_t  mpcomplex::default_rnd = MPC_RND(mpfr_get_default_rounding_mode(), mpfr_get_default_rounding_mode());
+mpc_rnd_t mpcomplex::default_rnd = MPC_RND(mpfr_get_default_rounding_mode(), mpfr_get_default_rounding_mode());
 #else
-  mpc_rnd_t  mpcomplex::default_rnd = RNDC(mpfr_get_default_rounding_mode(), mpfr_get_default_rounding_mode());
+mpc_rnd_t mpcomplex::default_rnd = RNDC(mpfr_get_default_rounding_mode(), mpfr_get_default_rounding_mode());
 #endif
-  mp_prec_t  mpcomplex::default_real_prec = mpfr_get_default_prec();	
-  mp_prec_t  mpcomplex::default_imag_prec = mpfr_get_default_prec();	
-  int        mpcomplex::default_base = 10;
-  int        mpcomplex::double_bits = -1;
-}
+mp_prec_t mpcomplex::default_real_prec = mpfr_get_default_prec();
+mp_prec_t mpcomplex::default_imag_prec = mpfr_get_default_prec();
+int mpcomplex::default_base = 10;
+int mpcomplex::double_bits = -1;
+} // namespace mpfr
