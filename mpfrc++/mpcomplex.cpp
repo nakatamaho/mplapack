@@ -42,4 +42,3 @@ namespace mpfr{
   int        mpcomplex::default_base = 10;
   int        mpcomplex::double_bits = -1;
 }
-
