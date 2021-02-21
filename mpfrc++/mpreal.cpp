@@ -42,9 +42,4 @@ using std::ws;
 
 namespace mpfr {
 
-mp_rnd_t mpreal::default_rnd = mpfr_get_default_rounding_mode();
-mp_prec_t mpreal::default_prec = mpfr_get_default_prec();
-int mpreal::default_base = 10;
-int mpreal::double_bits = -1;
-
 } // namespace mpfr
