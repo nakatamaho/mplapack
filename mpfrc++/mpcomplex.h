@@ -53,19 +53,31 @@ class mpcomplex {
     mpc_t mpc;
 
   public:
-    static mpc_rnd_t default_rnd;
-    static mp_prec_t default_real_prec;
-    static mp_prec_t default_imag_prec;
-    static int default_base;
-    static int double_bits;
+    inline static mpc_rnd_t default_rnd = MPC_RND(mpfr_get_default_rounding_mode(), mpfr_get_default_rounding_mode());
 
-    inline static mpc_rnd_t _default_rnd() { return RNDC(mpfr_get_default_rounding_mode(), mpfr_get_default_rounding_mode()); }
+    inline static mpc_rnd_t default_real_rnd = mpfr_get_default_rounding_mode();
+    inline static mpc_rnd_t get_default_real_rnd() { return default_real_rnd; } 
+    inline static void set_default_real_rnd(mpfr_rnd_t rnd_mode) { default_real_rnd = rnd_mode; }
+
+    inline static mp_rnd_t default_imag_rnd = mpfr_get_default_rounding_mode();
+    inline static mp_rnd_t get_default_imag_rnd() { return default_imag_rnd; } 
+    inline static void set_default_imag_rnd(mpfr_rnd_t rnd_mode) { default_imag_rnd = rnd_mode; }
+
+    inline static mp_prec_t default_real_prec = mpfr_get_default_prec();
+    inline static mp_prec_t get_default_real_prec() {return default_real_prec; }
+    inline static void set_default_real_prec(mp_prec_t prec) { default_real_prec = prec; }
+
+    inline static mp_prec_t default_imag_prec = mpfr_get_default_prec();
+    inline static mp_prec_t get_default_imag_prec() {return default_imag_prec; }
+    inline static void set_default_imag_prec(mp_prec_t prec) { default_imag_prec = prec; }
+
+    inline static int default_base = 10;
     // constructor & deconstructor
     mpcomplex();
     mpcomplex(const mpc_t a);
     mpcomplex(const mpfr_t a, const mpfr_t b);
     mpcomplex(const mpf_t a, const mpf_t b);
-    mpcomplex(const char *s, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = _default_rnd());
+    mpcomplex(const char *s, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex(const mpcomplex &a);
     mpcomplex(const std::complex<double> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex(const std::complex<long double> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
