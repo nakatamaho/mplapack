@@ -48,7 +48,7 @@ void rump_example(int prec) {
 }
 
 int main(int argc, char *argv[]) {
-
+    cout << "Rump's example\n";
     rump_example(24);
     rump_example(53);
     rump_example(116);
