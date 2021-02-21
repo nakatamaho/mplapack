@@ -684,7 +684,6 @@ AC_SUBST([PACKAGE_CREATED_LIBS])
 
 
 AC_CONFIG_FILES([
-mpfrc++/Makefile
 mblas/optimized/Makefile
 mblas/optimized/gmp/Makefile
 mblas/optimized/mpfr/Makefile
