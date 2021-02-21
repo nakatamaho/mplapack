@@ -12,7 +12,7 @@ endif
 if ENABLE_MPFR
 blasexamples_PROGRAMS += Rgemm.mpfr
 mpfrcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
-mpfr_libdepends = -L$(top_builddir)/mblas/optimized/mpfr -lmblas_mpfr -L$(top_builddir)/mpfrc++ -lmpfrcxx -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
+mpfr_libdepends = -L$(top_builddir)/mblas/optimized/mpfr -lmblas_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 Rgemm_mpfr_SOURCES= Rgemm_mpfr.cpp
 Rgemm_mpfr_CXXFLAGS= $(mpfrcxxflags)
 Rgemm_mpfr_LDFLAGS= $(mpfr_libdepends)

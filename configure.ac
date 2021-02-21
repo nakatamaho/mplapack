@@ -647,7 +647,7 @@ if test x$enable_gmp = x"yes"; then
   PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmlapack_gmp -lmblas_gmp"
 fi
 if test x$enable_mpfr = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmlapack_mpfr -lmblas_mpfr -lmpfrcxx"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmlapack_mpfr -lmblas_mpfr"
 fi
 if test x$enable_mpc = x"yes"; then
   PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmlapack_mpc -lmblas_mpc"

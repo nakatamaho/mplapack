@@ -33,7 +33,7 @@ if ENABLE_MPFR
 lapackexamples_PROGRAMS += eigenvalue_mpfr inv_mat_mpfr \
 			hilbert_mpfr condition_num_mpfr
 mpfrcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
-mpfr_libdepends =  -L$(top_builddir)/mlapack/optimized/mpfr -lmlapack_mpfr -L$(top_builddir)/mblas/optimized/mpfr -lmblas_mpfr -L$(top_builddir)/mpfrc++ -lmpfrcxx -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
+mpfr_libdepends =  -L$(top_builddir)/mlapack/optimized/mpfr -lmlapack_mpfr -L$(top_builddir)/mblas/optimized/mpfr -lmblas_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 
 eigenvalue_mpfr_SOURCES= eigenvalue_mpfr.cpp
 eigenvalue_mpfr_CXXFLAGS= $(mpfrcxxflags)

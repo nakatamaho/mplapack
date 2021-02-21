@@ -6,7 +6,7 @@ mlapack_longdouble_test_PROGRAMS = \
 mlapack_longdouble_testdir = $(prefix)/share/mpack/debug/longdouble
 ref_libdepends = -L$(top_builddir)/mlapack/reference -lmlapack_longdouble_ref -lmlapack_mpfr_ref -L$(top_builddir)/mblas/reference -lmblas_longdouble_ref -lmblas_mpfr_ref
 opt_libdepends = -L$(top_builddir)/mlapack/optimized/longdouble -lmlapack_longdouble -L$(top_builddir)/mblas/optimized/longdouble -L$(top_builddir)/mlapack/reference -lmlapack_mpfr_ref -lmblas_longdouble -L$(top_builddir)/mblas/reference -lmblas_mpfr_ref
-mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(top_builddir)/mpfrc++ -lmpfrcxx -lmpc -lmpfr -lgmpxx -lgmp -lquadmath
+mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lquadmath
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 reflapack=-L$(top_builddir)/external/i/LAPACK/lib -llapack $(FCLIBS)
 

@@ -1,4 +1,4 @@
-SUBDIRS = external mpfrc++ mblas mlapack 
+SUBDIRS = external mblas mlapack
 if !DISABLE_BENCHMARK
 SUBDIRS += benchmark 
 endif
