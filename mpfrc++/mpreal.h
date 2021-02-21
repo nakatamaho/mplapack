@@ -2440,7 +2440,7 @@ inline std::istream &operator>>(std::istream &is, mpreal &v) {
         if (s.size() != 0) {
             // Protect current value from alternation in case of input error
             // so some error handling(roll back) procedure can be used
-            if (0 == mpfr_init_set_str(t, s.c_str(), default_base, mpreal::default_rnd)) {
+	  if (0 == mpfr_init_set_str(t, s.c_str(), mpreal::default_base, mpreal::default_rnd)) {
                 mpfr_set(v.mp, t, mpreal::default_rnd);
                 mpfr_clear(t);
 
