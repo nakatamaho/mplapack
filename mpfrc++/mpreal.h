@@ -96,11 +96,11 @@ class mpreal {
     mpreal(const mpf_t u);
 
     inline static mp_rnd_t default_rnd = mpfr_get_default_rounding_mode();
-    inline static mp_rnd_t get_default_rnd() { return default_rnd; } 
+    inline static mp_rnd_t get_default_rnd() { return default_rnd; }
     inline static void set_default_rnd(mpfr_rnd_t rnd_mode) { default_rnd = rnd_mode; }
 
     inline static mp_prec_t default_prec = mpfr_get_default_prec();
-    inline static mp_prec_t get_default_prec() {return default_prec; }
+    inline static mp_prec_t get_default_prec() { return default_prec; }
     inline static void set_default_prec(mp_prec_t prec) { default_prec = prec; }
 
     inline static int default_base = 10;
