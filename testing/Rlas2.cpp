@@ -65,8 +65,8 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 */
 
-#include <mblas.h>
-#include <mlapack.h>
+#include <mpblas.h>
+#include <mplapack.h>
 
 void Rlas2(REAL f, REAL g, REAL h, REAL * ssmin, REAL * ssmax)
 {

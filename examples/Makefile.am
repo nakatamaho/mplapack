@@ -1,1 +1,1 @@
-SUBDIRS=mblas mlapack
+SUBDIRS=mpblas mplapack

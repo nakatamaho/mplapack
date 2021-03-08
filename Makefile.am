@@ -1,4 +1,4 @@
-SUBDIRS = external mpfrc++ mblas mlapack 
+SUBDIRS = external mpblas mplapack
 if !DISABLE_BENCHMARK
 SUBDIRS += benchmark 
 endif
@@ -8,78 +8,77 @@ endif
 
 ACLOCAL_AMFLAGS= -I m4
 
-mpack_includedir = $(includedir)/mpack
-mpack_include_HEADERS = \
-    include/mpack_config.h \
+mplapack_includedir = $(includedir)/mplapack
+mplapack_include_HEADERS = \
+    include/mplapack_config.h \
     include/blas.h \
     include/lapack.h \
     include/blaswrapper.h
 
 if ENABLE_DD
-mpack_include_HEADERS += \
+mplapack_include_HEADERS += \
     include/dd_complex.h \
-    include/mblas_dd.h \
-    include/mlapack_dd.h \
+    include/mpblas_dd.h \
+    include/mplapack_dd.h \
     include/mutils_dd.h 
 endif
 
 if ENABLE_GMP
-mpack_include_HEADERS += \
-    include/mblas_gmp.h \
-    include/mlapack_gmp.h \
+mplapack_include_HEADERS += \
+    include/mpblas_gmp.h \
+    include/mplapack_gmp.h \
     include/mutils_gmp.h \
     include/mpc_class.h
 endif
 
 if ENABLE_QD
-mpack_include_HEADERS += \
-    include/mblas_qd.h \
-    include/mlapack_qd.h \
+mplapack_include_HEADERS += \
+    include/mpblas_qd.h \
+    include/mplapack_qd.h \
     include/mutils_qd.h \
     include/qd_complex.h
 endif
 
 if ENABLE_MPFR
-mpack_include_HEADERS += \
-    include/mblas_mpfr.h \
-    include/mlapack_mpfr.h \
+mplapack_include_HEADERS += \
+    include/mpblas_mpfr.h \
+    include/mplapack_mpfr.h \
     include/mutils_mpfr.h \
     mpfrc++/mpcomplex.h \
     mpfrc++/mpreal.h
 endif
 
 if ENABLE_DOUBLE
-mpack_include_HEADERS += \
-    include/mblas_double.h \
-    include/mlapack_double.h \
+mplapack_include_HEADERS += \
+    include/mpblas_double.h \
+    include/mplapack_double.h \
     include/mutils_double.h
 endif
 
 if ENABLE_LONGDOUBLE
-mpack_include_HEADERS += \
-     include/mblas_longdouble.h \
-     include/mlapack_longdouble.h \
+mplapack_include_HEADERS += \
+     include/mpblas_longdouble.h \
+     include/mplapack_longdouble.h \
      include/mutils_longdouble.h
 endif
 
 if ENABLE___FLOAT128
-mpack_include_HEADERS += \
-    include/mblas___float128.h \
-    include/mpfr___float128.h \
-    include/mlapack___float128.h \
+mplapack_include_HEADERS += \
+    include/mpblas___float128.h \
+    include/mplapack___float128.h \
     include/mutils___float128.h
 endif
 
-noinst_HEADERS = include/mpack_debug.h include/mutils.h include/mblas.h include/mlapack.h include/mlapack_generic.h include/mpack_benchmark.h include/mpack_benchmark___float128.h include/mpack_benchmark_dd.h include/mpack_benchmark_double.h include/mpack_benchmark_gmp.h include/mpack_benchmark_mpfr.h include/mpack_benchmark_qd.h
+noinst_HEADERS = include/mplapack_debug.h include/mutils.h include/mpblas.h include/mplapack.h include/mplapack_generic.h include/mplapack_benchmark.h include/mplapack_benchmark___float128.h include/mplapack_benchmark_dd.h include/mplapack_benchmark_double.h include/mplapack_benchmark_gmp.h include/mplapack_benchmark_mpfr.h include/mplapack_benchmark_qd.h
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = mpack.pc
+pkgconfig_DATA = mplapack.pc
 
 EXTRA_DIST = \
 misc/cudalt.py \
-misc/build_mpack_for_mic.sh \
-misc/prepare_mpacklibs_for_mic.sh \
-mblas/optimized/dd/cuda/dd_real_cuda.h \
+misc/build_mplapack_for_mic.sh \
+misc/prepare_mplapacklibs_for_mic.sh \
+mpblas/optimized/dd/cuda/dd_real_cuda.h \
 external/gmp/download/*.tar.bz2 \
 external/gmp/Makefile.am \
 external/gmp/Makefile.in \
@@ -106,13 +105,13 @@ mpfrc++/org/mpreal.cpp  mpfrc++/org/mpreal.h
 
 if !DISABLE_EXAMPLES
 EXTRA_DIST += \
-examples/mblas/Makefile.mingw \
-examples/mblas/Makefile.freebsd \
-examples/mblas/Makefile.linux \
-examples/mblas/Makefile.macosx \
-examples/mlapack/Makefile.mingw \
-examples/mlapack/Makefile.freebsd \
-examples/mlapack/Makefile.linux \
-examples/mlapack/Makefile.macosx
+examples/mpblas/Makefile.mingw \
+examples/mpblas/Makefile.freebsd \
+examples/mpblas/Makefile.linux \
+examples/mpblas/Makefile.macosx \
+examples/mplapack/Makefile.mingw \
+examples/mplapack/Makefile.freebsd \
+examples/mplapack/Makefile.linux \
+examples/mplapack/Makefile.macosx
 endif
 

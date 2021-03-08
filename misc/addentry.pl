@@ -15,7 +15,7 @@ $SNAME = "s" . "$MIDDLE";
 }
 
 print "<TR VALIGN=TOP>\n";
-print "<TD WIDTH=25%>  <P><a href=\"http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/mblas/reference/$MPNAME.cpp\">$MPNAME</a> </P> </TD>\n";
+print "<TD WIDTH=25%>  <P><a href=\"http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mplapack/mpblas/reference/$MPNAME.cpp\">$MPNAME</a> </P> </TD>\n";
 
 print "<TD WIDTH=25%>  <P> x := A*x, or x := A'*x </P> </TD>\n";
 print "<TD WIDTH=25%>  <P>                     </P> </TD>\n";

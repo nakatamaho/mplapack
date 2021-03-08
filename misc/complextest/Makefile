@@ -2,16 +2,16 @@
 # by Nakata Maho
 CXX=/usr/local/bin/g++
 
-#MPACKDIR=/work/research/mpack/
-#MPACKEXTDIR=/work/research/mpack/external/
+#MPLAPACKDIR=/work/research/mplapack/
+#MPLAPACKEXTDIR=/work/research/mplapack/external/
 
-MPACKDIR=/home/maho/work/mpack/trunk_daily_work/
-MPACKEXTDIR=/home/maho/work/mpack/trunk_daily_work/external/i/
-CXXFLAGS=-I$(MPACKDIR)/include -I$(MPACKEXTDIR)/GMP/include -I$(MPACKEXTDIR)/MPFR/include -I$(MPACKEXTDIR)/MPC/include -I$(MPACKDIR)/mpfrc++ -I. -fopenmp
-LIBFLAGS=-L$(MPACKDIR)/lib -L$(MPACKEXTDIR)/GMP/lib -L$(MPACKEXTDIR)/MPFR/lib -L$(MPACKEXTDIR)/MPC/lib -fopenmp
+MPLAPACKDIR=/home/maho/work/mplapack/trunk_daily_work/
+MPLAPACKEXTDIR=/home/maho/work/mplapack/trunk_daily_work/external/i/
+CXXFLAGS=-I$(MPLAPACKDIR)/include -I$(MPLAPACKEXTDIR)/GMP/include -I$(MPLAPACKEXTDIR)/MPFR/include -I$(MPLAPACKEXTDIR)/MPC/include -I$(MPLAPACKDIR)/mpfrc++ -I. -fopenmp
+LIBFLAGS=-L$(MPLAPACKDIR)/lib -L$(MPLAPACKEXTDIR)/GMP/lib -L$(MPLAPACKEXTDIR)/MPFR/lib -L$(MPLAPACKEXTDIR)/MPC/lib -fopenmp
 OPTFLAGS= -O2
-GMPLIBS=-lmblas_gmp -lgmpxx -lgmp
-MP=$(MPACKDIR)/mpfrc++/mpreal.cpp $(MPACKDIR)/mpfrc++/mpcomplex.cpp
+GMPLIBS=-lmpblas_gmp -lgmpxx -lgmp
+MP=$(MPLAPACKDIR)/mpfrc++/mpreal.cpp $(MPLAPACKDIR)/mpfrc++/mpcomplex.cpp
 MPOBJ=mpreal.o mpcomplex.o
 BLAS=-L/usr/local/lib -lblas
 

@@ -1,5 +1,5 @@
-#include <mlapack.h>
-#include <mpack_debug.h>
+#include <mplapack.h>
+#include <mplapack_debug.h>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -37,7 +37,7 @@ int main ()
       if (str.empty()) exit(1);
       int n = std::stoi(str);
       printf("#length of n is %d \n",n);
-      mpackint info;
+      mplapackint info;
       mpreal *d = new mpreal[n];
       mpreal *e = new mpreal[n - 1];
       mpreal *work = new mpreal[4 * n];

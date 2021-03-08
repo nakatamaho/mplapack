@@ -1,0 +1,73 @@
+# Sample Makefile for mingw32 platform
+# by Nakata Maho 2010/1/13
+CXX=g++
+CC=cc
+MPLAPACKDIR=/Users/maho/mplapack-work/MPLAPACK
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
+OPTFLAGS= -O2
+LIBFLAGS= -L$(MPLAPACKDIR)/lib
+MPFRLIBS=-lmplapack_mpfr -lmpblas_mpfr -lmpfrcxx -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lmpblas_gmp -lgmpxx -lgmp 
+QDLIBS=-lmplapack_qd -lmpblas_qd -lqd
+DDLIBS=-lmplapack_dd -lmpblas_dd -lqd
+BLAS=
+LAPACK=
+FCLIBS=-framework vecLib
+
+programs=\
+inv_mat_mpfr \
+inv_mat_gmp \
+inv_mat_qd \
+inv_mat_dd \
+hilbert_mpfr \
+hilbert_gmp \
+hilbert_qd \
+hilbert_dd \
+eigenvalue_mpfr \
+eigenvalue_gmp \
+eigenvalue_qd \
+eigenvalue_dd
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
+
+inv_mat_mpfr: inv_mat_mpfr.o
+	$(CXX) -o inv_mat_mpfr inv_mat_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+inv_mat_gmp: inv_mat_gmp.o
+	$(CXX) -o inv_mat_gmp inv_mat_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+inv_mat_qd: inv_mat_qd.o
+	$(CXX) -o inv_mat_qd inv_mat_qd.o $(LIBFLAGS) $(QDLIBS)
+
+inv_mat_dd: inv_mat_dd.o
+	$(CXX) -o inv_mat_dd inv_mat_dd.o $(LIBFLAGS) $(DDLIBS)
+
+hilbert_mpfr: hilbert_mpfr.o
+	$(CXX) -o hilbert_mpfr hilbert_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+hilbert_gmp: hilbert_gmp.o
+	$(CXX) -o hilbert_gmp hilbert_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+hilbert_qd: hilbert_qd.o
+	$(CXX) -o hilbert_qd hilbert_qd.o $(LIBFLAGS) $(QDLIBS)
+
+hilbert_dd: hilbert_dd.o
+	$(CXX) -o hilbert_dd hilbert_dd.o $(LIBFLAGS) $(DDLIBS)
+
+eigenvalue_mpfr: eigenvalue_mpfr.o
+	$(CXX) -o eigenvalue_mpfr eigenvalue_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+eigenvalue_gmp: eigenvalue_gmp.o
+	$(CXX) -o eigenvalue_gmp eigenvalue_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+eigenvalue_qd: eigenvalue_qd.o
+	$(CXX) -o eigenvalue_qd eigenvalue_qd.o $(LIBFLAGS) $(QDLIBS)
+
+eigenvalue_dd: eigenvalue_dd.o
+	$(CXX) -o eigenvalue_dd eigenvalue_dd.o $(LIBFLAGS) $(DDLIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak

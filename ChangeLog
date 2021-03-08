@@ -1,3 +1,8 @@
+2021/3/8    Nakata Maho <maho@riken.jp> 0.9.0(alpha)
+            * rename from MPACK to MPLAPACK
+            * rename from MBLAS to MPBLAS
+            * rename from MPLAPACK to MPLAPACK
+
 2012/12/18  Nakata Maho <maho@riken.jp> 0.8.0.
 	    * Intel Xeon Phi support 
 		This build is supported by

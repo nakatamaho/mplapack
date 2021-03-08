@@ -31,9 +31,9 @@
 
 #include <cstdlib>
 
-inline mpackint veclen (mpackint n, mpackint inc)
+inline mplapackint veclen (mplapackint n, mplapackint inc)
 {
-    return max( (mpackint)1, (1+(std::abs(n)-1)*std::abs(inc)) );
+    return max( (mplapackint)1, (1+(std::abs(n)-1)*std::abs(inc)) );
 } 
 
 #endif

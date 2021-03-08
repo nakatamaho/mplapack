@@ -1,0 +1,25 @@
+bench_PROGRAMS += \
+Rgemm.dd_cuda_total \
+Rgemm.dd_cuda_kernel \
+Rsyrk.dd_cuda_total \
+Rsyrk.dd_cuda_kernel
+
+dd_cuda_libdepends = $(ddlapack_libdepends) -L$(top_builddir)/mpblas/optimized/dd/cuda -lmpblas_dd_cuda $(CUDA_LDFLAGS) -lcudart -L$(top_builddir)/mpblas/optimized/dd -lmpblas_dd -L$(top_srcdir)/$(QD_LIBDIR) -lqd $(DYLD)
+dd_cuda_cxxflags = -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(CUDA_CFLAGS) -D___MPLAPACK_BUILD_WITH_DD___
+dd_cuda_link = $(LIBTOOL) --mode=link $(CXX) -o $@ $(CUDA_LDFLAGS) $(CUDA_LIBS) $(dd_cuda_libdepends) $(OPENMP_CXXFLAGS)
+
+Rgemm_dd_cuda_total_SOURCES = Rgemm.cpp
+Rgemm_dd_cuda_total_LINK = $(dd_cuda_link)
+Rgemm_dd_cuda_total_CXXFLAGS = $(dd_cuda_cxxflags)
+
+Rgemm_dd_cuda_kernel_SOURCES = Rgemm_dd_cuda_kernel.cpp
+Rgemm_dd_cuda_kernel_LINK = $(dd_cuda_link)
+Rgemm_dd_cuda_kernel_CXXFLAGS = $(dd_cuda_cxxflags)
+
+Rsyrk_dd_cuda_total_SOURCES = Rsyrk.cpp
+Rsyrk_dd_cuda_total_LINK = $(dd_cuda_link)
+Rsyrk_dd_cuda_total_CXXFLAGS = $(dd_cuda_cxxflags)
+
+Rsyrk_dd_cuda_kernel_SOURCES = Rsyrk_dd_cuda_kernel.cpp
+Rsyrk_dd_cuda_kernel_LINK = $(dd_cuda_link)
+Rsyrk_dd_cuda_kernel_CXXFLAGS = $(dd_cuda_cxxflags)
