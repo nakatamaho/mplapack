@@ -2,19 +2,19 @@ About Example files          NAKATA, Maho 2009/9/24
 
 This directory contains some examples.
 
-You must manually adjust compiler name, installation directory of mpack.
+You must manually adjust compiler name, installation directory of mplapack.
 CXX...compiler name.
-MPACKDIR...where you installed MPACK
-          ./configure --prefix=/work/MPACK in this case
-LIBFLAGS...where you installed mpack. in this case /work/MPACK/lib
-GMPLIBS...complete flag to link against GMP version of mblas, mlapack
+MPLAPACKDIR...where you installed MPLAPACK
+          ./configure --prefix=/work/MPLAPACK in this case
+LIBFLAGS...where you installed mplapack. in this case /work/MPLAPACK/lib
+GMPLIBS...complete flag to link against GMP version of mpblas, mplapack
 and gmp libs.
-QDLIBS...complete flag to link against QD version of mblas, mlapack
+QDLIBS...complete flag to link against QD version of mpblas, mplapack
 and QD libs.
-DDLIBS...complete flag to link against DD version of mblas, mlapack
+DDLIBS...complete flag to link against DD version of mpblas, mplapack
 and QD libs.
 
-mpack/examples/mlapack contains:
+mplapack/examples/mplapack contains:
 
 1. Inversion of matrix by dd, qd, and GMP
 inv_mat_qd.cpp
@@ -33,7 +33,7 @@ eigenvalue_dd.cpp
 eigenvalue_qd.cpp
 eigenvalue_gmp.cpp
 
-mpack/examples/mblas contains:
+mplapack/examples/mpblas contains:
 1. matrix-matrix operation example via Rgemm (dgemm)
 Rgemm_dd.cpp
 Rgemm_gmp.cpp

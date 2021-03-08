@@ -30,31 +30,31 @@
 
 #ifndef _MUTILS_H_
 
-#if defined ___MPACK_BUILD_WITH_MPFR___
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
 #include <mutils_mpfr.h>
 #endif
 
-#if defined ___MPACK_BUILD_WITH_GMP___
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
 #include <mutils_gmp.h>
 #endif
 
-#if defined ___MPACK_BUILD_WITH_QD___
+#if defined ___MPLAPACK_BUILD_WITH_QD___
 #include <mutils_qd.h>
 #endif
 
-#if defined ___MPACK_BUILD_WITH_DD___
+#if defined ___MPLAPACK_BUILD_WITH_DD___
 #include <mutils_dd.h>
 #endif
 
-#if defined ___MPACK_BUILD_WITH_DOUBLE___
+#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
 #include <mutils_double.h>
 #endif
 
-#if defined ___MPACK_BUILD_WITH_LONGDOUBLE___
+#if defined ___MPLAPACK_BUILD_WITH_LONGDOUBLE___
 #include <mutils_longdouble.h>
 #endif
 
-#if defined ___MPACK_BUILD_WITH___FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
 #include <mutils___float128.h>
 #endif
 

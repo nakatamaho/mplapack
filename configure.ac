@@ -1,13 +1,13 @@
 dnl
-dnl Configure for MPACK
+dnl Configure for MPLAPACK
 dnl
 
-AC_INIT(mpack, 0.8.0)
+AC_INIT(mplapack, 0.8.0)
 AC_SUBST([PACKAGE_DESCRIPTION], "A multiple precision version of BLAS and LAPACK")
 AC_CONFIG_HEADER(include/config.h) 
 
-AC_CONFIG_FILES([ Makefile mpack.pc ])
-AC_CONFIG_FILES([packaging/PKGBUILD packaging/mpack.spec])
+AC_CONFIG_FILES([ Makefile mplapack.pc ])
+AC_CONFIG_FILES([packaging/PKGBUILD packaging/mplapack.spec])
 
 AC_PROG_CC
 AC_PROG_CXX
@@ -61,7 +61,7 @@ AM_CONDITIONAL(IS_MIC, test x$IS_MIC = x1)
 
 dnl enable debug; compare with reference LAPACK and BLAS. 
 dnl when enable this flag, we perform full build;
-dnl all mp versions of mlapack and mblas, etc.
+dnl all mp versions of mplapack and mpblas, etc.
 AC_ARG_ENABLE(debug,
 [  --enable-debug    Enable debug])
 AM_CONDITIONAL(ENABLE_DEBUG, test x$enable_debug = xyes)
@@ -142,12 +142,12 @@ AS_HELP_STRING([--disable-reference], [Build without reference libraries]))
 AM_CONDITIONAL(DISABLE_REFERENCE, test x$enable_reference = xno)
 
 
-dnl enable GMP version of MPACK.
+dnl enable GMP version of MPLAPACK.
 AC_ARG_ENABLE(gmp,
 AS_HELP_STRING([--enable-gmp], [Enable GMP version]))
 AM_CONDITIONAL(ENABLE_GMP, test x$enable_gmp = xyes)
 
-dnl enable MPFR version of MPACK.
+dnl enable MPFR version of MPLAPACK.
 AC_ARG_ENABLE(mpfr,
 AS_HELP_STRING([--enable-mpfr], [Enable MPFR version]))
 
@@ -158,7 +158,7 @@ if test x$enable_debug = x"yes"; then
 fi
 AM_CONDITIONAL(ENABLE_MPFR, test x$enable_mpfr = xyes)
 
-dnl enable QD version of MPACK.
+dnl enable QD version of MPLAPACK.
 AC_ARG_ENABLE(qd,
 AS_HELP_STRING([--enable-qd], [Enable QD version]))
 AM_CONDITIONAL(ENABLE_QD, test x$enable_qd = xyes)
@@ -169,7 +169,7 @@ AS_HELP_STRING([--with-qdlib-flags], [passing flag to internal qd library])
 QDLIB_FLAGS=$with_qdlib_flags;
 AC_SUBST(QDLIB_FLAGS)
 
-dnl enable DD version of MPACK.
+dnl enable DD version of MPLAPACK.
 AC_ARG_ENABLE(dd,
 AS_HELP_STRING([--enable-dd], [Enable DD version]),
 [case "${enableval}" in
@@ -288,7 +288,7 @@ if test x$enable_gmp = x"yes" -o x$enable_mpfr = x"yes" -o x$enable_debug = x"ye
             SYSTEM_GMP=yes
         fi
     else
-        AC_MSG_RESULT([Using GMP library comes with MPACK])
+        AC_MSG_RESULT([Using GMP library comes with MPLAPACK])
         GMP_INCLUDEDIR=$highest_abs_top_srcdir/external/i/GMP/include/
         GMP_LIBDIR=$highest_abs_top_srcdir/external/i/GMP/lib/
     fi
@@ -335,7 +335,7 @@ if test x$enable_mpfr = x"yes" -o x$enable_debug = x"yes"; then
         fi
         CFLAGS=$save_CFLAGS
     else
-        AC_MSG_RESULT([Using MPFR comes with MPACK])
+        AC_MSG_RESULT([Using MPFR comes with MPLAPACK])
         MPFR_INCLUDEDIR=$highest_abs_top_srcdir/external/i/MPFR/include/
         MPFR_LIBDIR=$highest_abs_top_srcdir/external/i/MPFR/lib/
     fi
@@ -382,7 +382,7 @@ if test x$enable_mpfr = x"yes" -o x$enable_debug = x"yes"; then
         fi
         CFLAGS=$save_CFLAGS
     else
-	AC_MSG_RESULT([Using MPC library comes with MPACK])
+	AC_MSG_RESULT([Using MPC library comes with MPLAPACK])
         MPC_INCLUDEDIR=$highest_abs_top_srcdir/external/i/MPC/include/
         MPC_LIBDIR=$highest_abs_top_srcdir/external/i/MPC/lib/
     fi
@@ -431,7 +431,7 @@ if test x$enable_qd = x"yes" -o x$enable_dd = x"yes" -o x$enable_debug = x"yes";
         fi
         AC_LANG_POP([C++])
     else
-        AC_MSG_RESULT([Using QD library comes with MPACK])
+        AC_MSG_RESULT([Using QD library comes with MPLAPACK])
         QD_INCLUDEDIR=$highest_abs_top_srcdir/external/i/QD/include/
         QD_LIBDIR=$highest_abs_top_srcdir/external/i/QD/lib/
     fi   
@@ -490,8 +490,8 @@ AC_MSG_RESULT([Disable CUDA version])
 fi
 
 if test x"$IS_MINGW" = x"1" && test x$enable_dd = x"yes"; then
-#it builds fine but we have to explicitly call mpack_initialize_qd(void);
-#when we start dd calculation and call mpack_finalize_qd(void)
+#it builds fine but we have to explicitly call mplapack_initialize_qd(void);
+#when we start dd calculation and call mplapack_finalize_qd(void)
 #at the end of calculation
     AC_MSG_ERROR([dd is not supported on this platform; constructor issue])
 fi
@@ -503,8 +503,8 @@ AC_MSG_RESULT([Disable QD version])
 fi
 
 if test x"$IS_MINGW" = x"1" && test x$enable_qd = x"yes"; then
-#it builds fine but we have to explicitly call mpack_initialize_qd(void);
-#when we start dd calculation and call mpack_finalize_qd(void)
+#it builds fine but we have to explicitly call mplapack_initialize_qd(void);
+#when we start dd calculation and call mplapack_finalize_qd(void)
 #at the end of calculation
     AC_MSG_ERROR([qd is not supported on this platform; constructor issue])
 fi
@@ -638,28 +638,28 @@ fi
 
 PACKAGE_CREATED_LIBS=""
 if test x$enable_dd = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmlapack_dd -lmblas_dd"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_dd -lmpblas_dd"
 fi
 if test x$enable_qd = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmlapack_qd -lmblas_qd"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_qd -lmpblas_qd"
 fi
 if test x$enable_gmp = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmlapack_gmp -lmblas_gmp"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_gmp -lmpblas_gmp"
 fi
 if test x$enable_mpfr = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmlapack_mpfr -lmblas_mpfr"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_mpfr -lmpblas_mpfr"
 fi
 if test x$enable_mpc = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmlapack_mpc -lmblas_mpc"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_mpc -lmpblas_mpc"
 fi
 if test x$enable___float128 = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmlapack___float128 -lmblas___float128 -lquadmath"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack___float128 -lmpblas___float128 -lquadmath"
 fi
 if test x$enable_double = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmlapack_double -lmblas_double"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_double -lmpblas_double"
 fi
 if test x$enable_longdouble = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmlapack_longdouble -lmblas_longdouble"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_longdouble -lmpblas_longdouble"
 fi
 
 # add external libraries only if they will be installed with the package
@@ -684,45 +684,45 @@ AC_SUBST([PACKAGE_CREATED_LIBS])
 
 
 AC_CONFIG_FILES([
-mblas/optimized/Makefile
-mblas/optimized/gmp/Makefile
-mblas/optimized/mpfr/Makefile
-mblas/optimized/qd/Makefile
-mblas/optimized/dd/Makefile
-mblas/optimized/dd/cuda/Makefile
-mblas/optimized/double/Makefile
-mblas/optimized/longdouble/Makefile
-mblas/optimized/__float128/Makefile
-mblas/blaswrapper/Makefile
-mblas/fortranwrapper/Makefile
-mblas/debug/Makefile
-mblas/debug/gmp/Makefile
-mblas/debug/mpfr/Makefile
-mblas/debug/qd/Makefile
-mblas/debug/dd/Makefile
-mblas/debug/double/Makefile
-mblas/debug/longdouble/Makefile
-mblas/debug/__float128/Makefile
-mblas/Makefile
-mlapack/debug/Makefile
-mlapack/debug/gmp/Makefile
-mlapack/debug/mpfr/Makefile
-mlapack/debug/qd/Makefile
-mlapack/debug/dd/Makefile
-mlapack/debug/double/Makefile
-mlapack/debug/longdouble/Makefile
-mlapack/debug/__float128/Makefile
-mlapack/optimized/Makefile
-mlapack/optimized/gmp/Makefile
-mlapack/optimized/mpfr/Makefile
-mlapack/optimized/qd/Makefile
-mlapack/optimized/dd/Makefile
-mlapack/optimized/double/Makefile
-mlapack/optimized/longdouble/Makefile
-mlapack/optimized/__float128/Makefile
-mlapack/lapackwrapper/Makefile
-mlapack/fortranwrapper/Makefile
-mlapack/Makefile
+mpblas/optimized/Makefile
+mpblas/optimized/gmp/Makefile
+mpblas/optimized/mpfr/Makefile
+mpblas/optimized/qd/Makefile
+mpblas/optimized/dd/Makefile
+mpblas/optimized/dd/cuda/Makefile
+mpblas/optimized/double/Makefile
+mpblas/optimized/longdouble/Makefile
+mpblas/optimized/__float128/Makefile
+mpblas/blaswrapper/Makefile
+mpblas/fortranwrapper/Makefile
+mpblas/debug/Makefile
+mpblas/debug/gmp/Makefile
+mpblas/debug/mpfr/Makefile
+mpblas/debug/qd/Makefile
+mpblas/debug/dd/Makefile
+mpblas/debug/double/Makefile
+mpblas/debug/longdouble/Makefile
+mpblas/debug/__float128/Makefile
+mpblas/Makefile
+mplapack/debug/Makefile
+mplapack/debug/gmp/Makefile
+mplapack/debug/mpfr/Makefile
+mplapack/debug/qd/Makefile
+mplapack/debug/dd/Makefile
+mplapack/debug/double/Makefile
+mplapack/debug/longdouble/Makefile
+mplapack/debug/__float128/Makefile
+mplapack/optimized/Makefile
+mplapack/optimized/gmp/Makefile
+mplapack/optimized/mpfr/Makefile
+mplapack/optimized/qd/Makefile
+mplapack/optimized/dd/Makefile
+mplapack/optimized/double/Makefile
+mplapack/optimized/longdouble/Makefile
+mplapack/optimized/__float128/Makefile
+mplapack/lapackwrapper/Makefile
+mplapack/fortranwrapper/Makefile
+mplapack/Makefile
 external/Makefile
 external/gmp/Makefile
 external/mpfr/Makefile
@@ -734,21 +734,21 @@ external/lapack/Makefile
 if test x$enable_benchmark != xno; then
 AC_CONFIG_FILES([
 benchmark/Makefile
-benchmark/mblas/Makefile
-benchmark/mlapack/Makefile
+benchmark/mpblas/Makefile
+benchmark/mplapack/Makefile
 ])
 fi
 if test x$enable_examples != xno; then
 AC_CONFIG_FILES([
 examples/Makefile
-examples/mblas/Makefile
-examples/mlapack/Makefile
+examples/mpblas/Makefile
+examples/mplapack/Makefile
 ])
 fi
 if test x$enable_reference != xno; then
 AC_CONFIG_FILES([
-mblas/reference/Makefile
-mlapack/reference/Makefile
+mpblas/reference/Makefile
+mplapack/reference/Makefile
 ])
 fi
 

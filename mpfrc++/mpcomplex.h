@@ -36,14 +36,14 @@ Complex class declare for the MPFR
 #include "mpreal.h"
 #include <complex>
 
-#if defined ___MPACK_BUILD_WITH_GMP___
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
 #include "gmpxx.h"
 #include "mpc_class.h"
 #endif
-#if defined ___MPACK_BUILD_WITH_QD___
+#if defined ___MPLAPACK_BUILD_WITH_QD___
 #include "qd_complex.h"
 #endif
-#if defined ___MPACK_BUILD_WITH_DD___
+#if defined ___MPLAPACK_BUILD_WITH_DD___
 #include "dd_complex.h"
 #endif
 
@@ -230,19 +230,19 @@ class mpcomplex {
     void set_prec(mp_prec_t prec, mpc_rnd_t rnd_mode);
     void set_prec2(mp_prec_t pr, mp_prec_t pi, mpc_rnd_t rnd_mode);
 
-#if defined ___MPACK_BUILD_WITH_GMP___
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
     mpcomplex(const mpc_class &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex &operator=(const mpc_class &a);
 #endif
-#if defined ___MPACK_BUILD_WITH_QD___
+#if defined ___MPLAPACK_BUILD_WITH_QD___
     mpcomplex(const qd_complex &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex &operator=(const qd_complex &a);
 #endif
-#if defined ___MPACK_BUILD_WITH_DD___
+#if defined ___MPLAPACK_BUILD_WITH_DD___
     mpcomplex(const dd_complex &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex &operator=(const dd_complex &a);
 #endif
-#if defined ___MPACK_BUILD_WITH___FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
     mpcomplex(const std::complex<__float128> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex &operator=(const std::complex<__float128> &a);
 #endif
@@ -944,7 +944,7 @@ inline const mpcomplex urandom_c(gmp_randstate_t &state) {
     return x;
 }
 
-#if defined ___MPACK_BUILD_WITH_GMP___
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
 inline mpcomplex::mpcomplex(const mpc_class &a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
     mpc_init3(mpc, pr, pi);
     mpc_set_f_f(mpc, a.real().get_mpf_t(), a.imag().get_mpf_t(), mode);
@@ -995,7 +995,7 @@ inline mpcomplex &mpcomplex::operator=(const mpc_class &a) {
 
 #endif
 
-#if defined ___MPACK_BUILD_WITH_QD___
+#if defined ___MPLAPACK_BUILD_WITH_QD___
 inline mpcomplex::mpcomplex(const qd_complex &a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
     mpfr_t mp_real, mp_imag;
     mpc_init3(mpc, pr, pi);
@@ -1051,7 +1051,7 @@ inline mpcomplex &mpcomplex::operator=(const qd_complex &a) {
 
 #endif
 
-#if defined ___MPACK_BUILD_WITH_DD___
+#if defined ___MPLAPACK_BUILD_WITH_DD___
 inline mpcomplex::mpcomplex(const dd_complex &a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
     mpfr_t mp_real, mp_imag;
     mpc_init3(mpc, pr, pi);
@@ -1096,7 +1096,7 @@ inline mpcomplex &mpcomplex::operator=(const dd_complex &a) {
 
 #endif
 
-#if defined ___MPACK_BUILD_WITH___FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
 inline mpcomplex::mpcomplex(const std::complex<__float128> &a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
     mpfr_t mp_real, mp_imag;
     mpc_init3(mpc, pr, pi);

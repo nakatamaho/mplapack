@@ -1,4 +1,4 @@
-Source: mpack
+Source: mplapack
 Maintainer: Maho Nakata <maho@riken.jp>
 Uploaders: Gregor Entzian <entzian@tbi.univie.ac.at>
 Section: science
@@ -6,16 +6,16 @@ Priority: optional
 Standards-Version: 3.9.8
 Build-Depends: debhelper (>=8.0.0), autotools-dev, libgomp1, libquadmath0, libgmp-dev, libmpfr-dev, libmpc-dev, libqd-dev
 
-Package: mpack-dev
-Provides: mpack-dev
-Conflicts: mpack-dev
+Package: mplapack-dev
+Provides: mplapack-dev
+Conflicts: mplapack-dev
 Section: devel
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libgomp1, libquadmath0, libgmp-dev, libmpfr-dev, libmpc-dev, libqd-dev
-Description: mpack - mpack development files
- The MPACK is a multiprecision linear algebra package based on BLAS and LAPACK.
+Description: mplapack - mplapack development files
+ The MPLAPACK is a multiprecision linear algebra package based on BLAS and LAPACK.
  This package is rewritten in C++, and supports several high precision
  libraries like GMP, MPFR and QD etc so that users can choose for user's
- convenience. The MPACK is a free software (2-clause BSD style license with
+ convenience. The MPLAPACK is a free software (2-clause BSD style license with
  original license by LAPACK).
 

@@ -1,4 +1,4 @@
 #!/bin/sh
 
-./configure --prefix=$HOME/mpack-work/MPACK
+./configure --prefix=$HOME/mplapack-work/MPLAPACK
 

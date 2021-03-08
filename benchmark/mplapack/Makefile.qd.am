@@ -1,0 +1,35 @@
+bench_PROGRAMS += \
+Rpotrf.qd Rpotrf.qd_ref \
+Rpotf2.qd Rpotf2.qd_ref \
+Rgetrf.qd Rgetrf.qd_ref
+
+qdcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___
+qdreflapack_libdepends = -L$(top_builqdir)/mplapack/reference -lmplapack_qd_ref
+qdoptlapack_libdepends = -L$(top_builqdir)/mplapack/optimized/qd -lmplapack_qd
+qdref_libdepends = $(qdreflapack_libdepends) -L$(top_builddir)/mplapack/reference -lmplapack_qd_ref -L$(top_builddir)/mpblas/reference -lmpblas_qd_ref -L$(QD_LIBDIR) -lqd $(DYLD)
+qdopt_libdepends = $(qdoptlapack_libdepends) -L$(top_builddir)/mplapack/optimized/qd -lmplapack_qd -L$(top_builddir)/mpblas/optimized/qd -lmpblas_qd -L$(QD_LIBDIR) -lqd $(DYLD)
+
+Rpotrf_qd_ref_SOURCES= Rpotrf.cpp
+Rpotrf_qd_ref_CXXFLAGS= $(qdcxxflags)
+Rpotrf_qd_ref_LDFLAGS= $(qdref_libdepends)
+
+Rpotrf_qd_SOURCES= Rpotrf.cpp
+Rpotrf_qd_CXXFLAGS= $(qdcxxflags)
+Rpotrf_qd_LDFLAGS= $(qdopt_libdepends)
+
+Rpotf2_qd_ref_SOURCES= Rpotf2.cpp
+Rpotf2_qd_ref_CXXFLAGS= $(qdcxxflags)
+Rpotf2_qd_ref_LDFLAGS= $(qdref_libdepends)
+
+Rpotf2_qd_SOURCES= Rpotf2.cpp
+Rpotf2_qd_CXXFLAGS= $(qdcxxflags)
+Rpotf2_qd_LDFLAGS= $(qdopt_libdepends)
+
+Rgetrf_qd_ref_SOURCES= Rgetrf.cpp
+Rgetrf_qd_ref_CXXFLAGS= $(qdcxxflags)
+Rgetrf_qd_ref_LDFLAGS= $(qdref_libdepends)
+
+Rgetrf_qd_SOURCES= Rgetrf.cpp
+Rgetrf_qd_CXXFLAGS= $(qdcxxflags)
+Rgetrf_qd_LDFLAGS= $(qdopt_libdepends)
+

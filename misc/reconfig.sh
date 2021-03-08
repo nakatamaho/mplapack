@@ -11,5 +11,5 @@ autoreconf --force --install
 #CPPFLAGS="-O2 -Wall -Werror -pedantic-errors" ; export CPPFLAGS  
 #CFLAGS="-O2 -Wall -Werror -pedantic-errors" ; export CFLAGS  
 
-./configure --prefix=$HOME/MPACK --enable-cypress
+./configure --prefix=$HOME/MPLAPACK --enable-cypress
 

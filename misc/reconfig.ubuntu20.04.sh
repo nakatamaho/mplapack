@@ -5,7 +5,7 @@ CC="gcc-9" ; export CC
 FC="gfortran-9"; export FC
 F77="gfortran-9"; export F77
 
-pushd mlapack/debug ; bash gen.Makefile.am.sh ; popd
+pushd mplapack/debug ; bash gen.Makefile.am.sh ; popd
 
 aclocal ; autoconf ; automake --add-missing
 autoreconf --force --install

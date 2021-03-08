@@ -8,5 +8,5 @@ CXXFLAGS="-O2 -I/usr/local/include" ; export CXXFLAGS
 CPPFLAGS="-O2 -I/usr/local/include" ; export CPPFLAGS  
 CFLAGS="-O2 -I/usr/local/include" ; export CFLAGS  
 LDFLAGS="-L/usr/local/lib -Wl,-rpath=/usr/local/lib/gcc46"; export LDFLAGS
-./configure --prefix=$HOME/mpack-work-full/MPACK --with-system-gmp=yes --with-system-mpfr=yes --with-system-mpc=yes --with-system-qd=yes --enable-debug=yes --enable-mpfr=yes --enable-qd=yes --enable-double=yes --enable-__float128=yes
+./configure --prefix=$HOME/mplapack-work-full/MPLAPACK --with-system-gmp=yes --with-system-mpfr=yes --with-system-mpc=yes --with-system-qd=yes --enable-debug=yes --enable-mpfr=yes --enable-qd=yes --enable-double=yes --enable-__float128=yes
 

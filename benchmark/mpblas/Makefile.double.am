@@ -1,0 +1,54 @@
+bench_PROGRAMS += \
+Raxpy.double Raxpy.double_ref \
+Rcopy.double Rcopy.double_ref \
+Rdot.double  Rdot.double_ref \
+Rgemm.double Rgemm.double_ref \
+Rgemv.double Rgemv.double_ref
+
+#lapack is needed for Rlange
+doublecxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_DOUBLE___
+doublelapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_double_ref
+doubleref_libdepends = $(doublelapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_double_ref $(DYLD)
+doubleopt_libdepends = $(doublelapack_libdepends) -L$(top_builddir)/mpblas/optimized/double -lmpblas_double $(DYLD)
+
+Raxpy_double_ref_SOURCES= Raxpy.cpp
+Raxpy_double_ref_CXXFLAGS= $(doublecxxflags)
+Raxpy_double_ref_LDFLAGS= $(doubleref_libdepends)
+
+Raxpy_double_SOURCES= Raxpy.cpp
+Raxpy_double_CXXFLAGS= $(doublecxxflags)
+Raxpy_double_LDFLAGS= $(doubleopt_libdepends)
+
+Rcopy_double_ref_SOURCES= Rcopy.cpp
+Rcopy_double_ref_CXXFLAGS= $(doublecxxflags)
+Rcopy_double_ref_LDFLAGS= $(doubleref_libdepends)
+
+Rcopy_double_SOURCES= Rcopy.cpp
+Rcopy_double_CXXFLAGS= $(doublecxxflags)
+Rcopy_double_LDFLAGS= $(doubleopt_libdepends)
+
+Rdot_double_ref_SOURCES= Rdot.cpp
+Rdot_double_ref_CXXFLAGS= $(doublecxxflags)
+Rdot_double_ref_LDFLAGS= $(doubleref_libdepends)
+
+Rdot_double_SOURCES= Rdot.cpp
+Rdot_double_CXXFLAGS= $(doublecxxflags)
+Rdot_double_LDFLAGS= $(doubleopt_libdepends)
+
+Rgemm_double_ref_SOURCES= Rgemm.cpp
+Rgemm_double_ref_CXXFLAGS= $(doublecxxflags)
+Rgemm_double_ref_LDFLAGS= $(doubleref_libdepends)
+
+Rgemm_double_SOURCES= Rgemm.cpp
+Rgemm_double_CXXFLAGS= $(doublecxxflags)
+Rgemm_double_LDFLAGS= $(doubleopt_libdepends)
+
+Rgemv_double_ref_SOURCES= Rgemv.cpp
+Rgemv_double_ref_CXXFLAGS= $(doublecxxflags)
+Rgemv_double_ref_LDFLAGS= $(doubleref_libdepends)
+
+Rgemv_double_SOURCES= Rgemv.cpp
+Rgemv_double_CXXFLAGS= $(doublecxxflags)
+Rgemv_double_LDFLAGS= $(doubleopt_libdepends)
+
+

@@ -7,17 +7,17 @@
 #User maho
 #Port 2002
 
-MPACK_VER=0.6.7
+MPLAPACK_VER=0.6.7
 HOST=tesla
-WORKDIR=mpack-work-tesla
-MPACK_CONFIG_SH=configlinux.sh
+WORKDIR=mplapack-work-tesla
+MPLAPACK_CONFIG_SH=configlinux.sh
 
-MPACK_DIST_DIR=mpack-$MPACK_VER
-MPACK_DIST=mpack-$MPACK_VER.tar.gz
+MPLAPACK_DIST_DIR=mplapack-$MPLAPACK_VER
+MPLAPACK_DIST=mplapack-$MPLAPACK_VER.tar.gz
 
-#install mpack
+#install mplapack
 ssh $HOST "rm -rf $WORKDIR"
 ssh $HOST "mkdir $WORKDIR"
-scp $MPACK_DIST $HOST:$WORKDIR
-scp misc/$MPACK_CONFIG_SH $HOST:$WORKDIR
-ssh $HOST "cd $WORKDIR ; md5sum $MPACK_DIST ; tar xvfz $MPACK_DIST ; cd $MPACK_DIST_DIR ; (sh ../$MPACK_CONFIG_SH ; make -j4 ; make install) 2>&1 | tee log.linux" | tee log.linux_tesla
+scp $MPLAPACK_DIST $HOST:$WORKDIR
+scp misc/$MPLAPACK_CONFIG_SH $HOST:$WORKDIR
+ssh $HOST "cd $WORKDIR ; md5sum $MPLAPACK_DIST ; tar xvfz $MPLAPACK_DIST ; cd $MPLAPACK_DIST_DIR ; (sh ../$MPLAPACK_CONFIG_SH ; make -j4 ; make install) 2>&1 | tee log.linux" | tee log.linux_tesla

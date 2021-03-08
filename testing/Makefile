@@ -17,16 +17,16 @@ MPLDFLAGS=-L${MPLAPACKTOP}/lib/ -Wl,-rpath=${MPLAPACKTOP}/lib/
 
 all: test_$(TESTROUTINE)
 
-test_$(TESTROUTINE): $(MPTESTLIB) $(OBJS) test_$(TESTROUTINE).cpp ${MPLAPACKTOP}/mblas/debug/common/mpack.debug.cpp
-	$(CPP) -D___MPACK_BUILD_WITH_MPFR___ $(MPINCLUDEFLAGS) -o mpack.debug.o $(CPPFLAGS) -c ${MPLAPACKTOP}/mblas/debug/common/mpack.debug.cpp
-	$(CPP) -std=c++11 -D___MPACK_BUILD_WITH_MPFR___ $(MPINCLUDEFLAGS) -o test_$(TESTROUTINE).o $(CPPFLAGS) -c test_$(TESTROUTINE).cpp
-	$(CPP) -fopenmp -o $@ test_$(TESTROUTINE).o $(OBJS) -L. -lmplapack_mpfr_test -Wl,-rpath=. $(MPLDFLAGS) mpack.debug.o -lmlapack_mpfr -lmblas_mpfr -lmpfrcxx -lmpc -lmpfr -lgmp -llapack -lblas -lgfortran
+test_$(TESTROUTINE): $(MPTESTLIB) $(OBJS) test_$(TESTROUTINE).cpp ${MPLAPACKTOP}/mpblas/debug/common/mplapack.debug.cpp
+	$(CPP) -D___MPLAPACK_BUILD_WITH_MPFR___ $(MPINCLUDEFLAGS) -o mplapack.debug.o $(CPPFLAGS) -c ${MPLAPACKTOP}/mpblas/debug/common/mplapack.debug.cpp
+	$(CPP) -std=c++11 -D___MPLAPACK_BUILD_WITH_MPFR___ $(MPINCLUDEFLAGS) -o test_$(TESTROUTINE).o $(CPPFLAGS) -c test_$(TESTROUTINE).cpp
+	$(CPP) -fopenmp -o $@ test_$(TESTROUTINE).o $(OBJS) -L. -lmplapack_mpfr_test -Wl,-rpath=. $(MPLDFLAGS) mplapack.debug.o -lmplapack_mpfr -lmpblas_mpfr -lmpfrcxx -lmpc -lmpfr -lgmp -llapack -lblas -lgfortran
 
 .f.o:
 	$(FC) -o $@ $(FCFLAGS) -c $<
 
 .cpp.o:
-	$(CPP) -fPIC -DPIC -shared -D___MPACK_BUILD_WITH_MPFR___ $(MPINCLUDEFLAGS) -o $@ $(CPPFLAGS) -c $<
+	$(CPP) -fPIC -DPIC -shared -D___MPLAPACK_BUILD_WITH_MPFR___ $(MPINCLUDEFLAGS) -o $@ $(CPPFLAGS) -c $<
 
 
 $(MPTESTLIB): $(MPOBJS)

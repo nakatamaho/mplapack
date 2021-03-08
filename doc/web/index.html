@@ -5,15 +5,15 @@
 <LINK REL="NEXT" HREF="index.html">
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-2022-JP">
 <meta http-equiv="Content-Style-Type" content="text/css">
-<title>Multiple precision arithmetic BLAS and LAPACK (MPACK) </title>
+<title>Multiple precision arithmetic BLAS and LAPACK (MPLAPACK) </title>
 </head>
 <body>
 
-<h1> The MPACK; Multiple precision arithmetic BLAS (MBLAS) and LAPACK (MLAPACK)</h1>
+<h1> The MPLAPACK; Multiple precision arithmetic BLAS (MPBLAS) and LAPACK (MPLAPACK)</h1>
 
 <h2>Menu</h2>
 <ul>
-<li> What is the MPACK?
+<li> What is the MPLAPACK?
 <li> Introduction
 <li> News
 <li> Where to use?
@@ -31,28 +31,28 @@
 <li> License
 <li> Correspondence
 <li> Citation
-<li> Papers citing MPACK
+<li> Papers citing MPLAPACK
 <li> Support
 <li> Acknowledgment
 </ul>
 
 <hr>
-<h2>What is the mpack?</h2>
+<h2>What is the mplapack?</h2>
 
-The MPACK is a free library for arbitrary/higher precision linear algebra. It consists of MBLAS and MLAPACK, multiple precision arithmetic versions of BLAS and LAPACK, respectively. It supports various multiple precision arithmetic libraries like GMP, MPFR, and QD, as well as IEEE 754 binary128 (via gcc's extension __float128)
+The MPLAPACK is a free library for arbitrary/higher precision linear algebra. It consists of MPBLAS and MPLAPACK, multiple precision arithmetic versions of BLAS and LAPACK, respectively. It supports various multiple precision arithmetic libraries like GMP, MPFR, and QD, as well as IEEE 754 binary128 (via gcc's extension __float128)
 
 <h2>Introduction</h2>
 
 Accuracy to linear algebla is very important. However, there were very small number of libraries for linear algebra calculation in multiple precision arithmetic.
-This is the reason that I developed the MPACK, Multiple precision arithmetic BLAS (MBLAS) and LAPACK (MLAPACK).<br>
+This is the reason that I developed the MPLAPACK, Multiple precision arithmetic BLAS (MPBLAS) and LAPACK (MPLAPACK).<br>
 
 The <a href="http://www.netlib.org/blas/">BLAS</a> and <a href="http://www.netlib.org/lapack/">LAPACK</a> 
 are widely used FORTRAN77 routines and many optimized implementations are available, like <a href="http://math-atlas.sourceforge.net/">ATLAS</a> and <a href="http://www.tacc.utexas.edu/resources/software/">GotoBLAS</a>.
-Therefore, API of MBLAS and MLAPACK is very similar to BLAS and LAPACK.
+Therefore, API of MPBLAS and MPLAPACK is very similar to BLAS and LAPACK.
 
-Like BLAS and LAPACK, MPACK must be a free software. Thus, the MPACK is distributed under GNU Lesser General Public License.
+Like BLAS and LAPACK, MPLAPACK must be a free software. Thus, the MPLAPACK is distributed under GNU Lesser General Public License.
 
-The MLAPACK is a subset of the LAPACK, not all routines will be provided. <br>
+The MPLAPACK is a subset of the LAPACK, not all routines will be provided. <br>
 
 For multiple precision arithmetic, I use the <a href="http://gmplib.org/">GMP library</a>, and <a href="http//www.cs.berkeley.edu/~yozo/">QD library</a>. The authors of GMP library states "the fastest bignum library on the planet!", and QD/DD are much faster than GMP if you don't need more precision.
 
@@ -71,71 +71,71 @@ solver using the <a href="http://gmplib.org/">GMP library</a>.
 The complete list of the news has been found at <a href="history.html">history</a> page.
 <ul> 
 
-<li> 2012/12/25: <a href="https://sourceforge.net/projects/mplapack/files/mpack/mpack%200.8.0/mpack-0.8.0.tar.gz/download"><em>MPACK 0.8.0</em></a> NVIDIA C2050 support for Rgemm in double-double, and preliminary support for Intel Xeon Phi. <a href="https://sourceforge.net/mailarchive/message.php?msg_id=30269338">ANNOUNCE</a>
+<li> 2012/12/25: <a href="https://sourceforge.net/projects/mplapack/files/mplapack/mplapack%200.8.0/mplapack-0.8.0.tar.gz/download"><em>MPLAPACK 0.8.0</em></a> NVIDIA C2050 support for Rgemm in double-double, and preliminary support for Intel Xeon Phi. <a href="https://sourceforge.net/mailarchive/message.php?msg_id=30269338">ANNOUNCE</a>
 
-<li> 2012/12/20: <a href="https://sourceforge.net/projects/mplapack/files/mpack/mpack%200.8.0/mpack-0.8.0-RC2.tar.gz/download"><em>MPACK 0.8.0-RC2</em></a> Build fixes on various platforms.
+<li> 2012/12/20: <a href="https://sourceforge.net/projects/mplapack/files/mplapack/mplapack%200.8.0/mplapack-0.8.0-RC2.tar.gz/download"><em>MPLAPACK 0.8.0-RC2</em></a> Build fixes on various platforms.
 
 <li> 2012/12/05: Our Rgemm dd paper "<a href="http://mplapack.svn.sourceforge.net/viewvc/mplapack/branches/Rgemm_C2050/Rgemm_on_GPU.pdf">A Fast implementation of matrix-matrix product in double-double precision on NVIDIA C2050 and application to semidefinite programming</a>" is selected as <a href="http://www.ic-nc.org/best_papers">the Best Papers</a> of <a href="http://www.ic-nc.org/">The Third International Conference on Networking and Computing</a>. Slide is <a href="http://www.slideshare.net/NakataMaho/a-fast-implementation-of-matrixmatrix-product-in-doubledouble-precision-on-nvidia-c2050-and-application-to-semidefinite-programming">here.</a>
 
-<li> 2012/11/29: <a href="http://sourceforge.net/projects/mplapack/files/mpack/mpack 0.8.0/mpack-0.8.0-RC1.tar.gz/download"><em>MPACK 0.8.0-RC1</em></a> CUDA version of Rgemm in double-double precision is integrated.
+<li> 2012/11/29: <a href="http://sourceforge.net/projects/mplapack/files/mplapack/mplapack 0.8.0/mplapack-0.8.0-RC1.tar.gz/download"><em>MPLAPACK 0.8.0-RC1</em></a> CUDA version of Rgemm in double-double precision is integrated.
 
-<li> 2012/10/13: CUDA 4.2 or later version of accelarated Rgemm in double-double precision on <a href="//sourceforge.net/projects/mplapack/files/mpack/Rgemm_C2050.20121011.tar.gz/download"><em>NVIDIA C2050 GPU is now available</em></a>. Note it does not work on CUDA 4.1. Origial release announce <a href="http://sourceforge.net/mailarchive/message.php?msg_id=29960156">is here.</a>, and preprint is available <a href="http://mplapack.svn.sourceforge.net/viewvc/mplapack/branches/Rgemm_C2050/Rgemm_on_GPU.pdf?revision=245">from here</a>, and <a href="http://www.ic-nc.org/program">it will be presented at  The Third International Conference on Networking and Computing Okinawa, Japan, December 5-7, 2012 </a>.
+<li> 2012/10/13: CUDA 4.2 or later version of accelarated Rgemm in double-double precision on <a href="//sourceforge.net/projects/mplapack/files/mplapack/Rgemm_C2050.20121011.tar.gz/download"><em>NVIDIA C2050 GPU is now available</em></a>. Note it does not work on CUDA 4.1. Origial release announce <a href="http://sourceforge.net/mailarchive/message.php?msg_id=29960156">is here.</a>, and preprint is available <a href="http://mplapack.svn.sourceforge.net/viewvc/mplapack/branches/Rgemm_C2050/Rgemm_on_GPU.pdf?revision=245">from here</a>, and <a href="http://www.ic-nc.org/program">it will be presented at  The Third International Conference on Networking and Computing Okinawa, Japan, December 5-7, 2012 </a>.
 
-<li> 2012/06/16: <a href="http://sourceforge.net/projects/mplapack/files/mpack/mpack%200.7.0/mpack-0.7.0.tar.gz/download"><em>MPACK 0.7.0!</em></a> 
+<li> 2012/06/16: <a href="http://sourceforge.net/projects/mplapack/files/mplapack/mplapack%200.7.0/mplapack-0.7.0.tar.gz/download"><em>MPLAPACK 0.7.0!</em></a> 
 <a href="https://sourceforge.net/mailarchive/forum.php?thread_name=20120616.174035.1909163024557972199.maho%40riken.jp&forum_name=mplapack-devel">Announcement</a>
 
 <li> 2012/06/16: Development has been migrated to <a href="http://mplapack.svn.sourceforge.net/viewvc/mplapack/">SVN repository.</a>
 
 <li> 2011/10/28: Rgemm accleration in double-double precision on
-<a href="http://sourceforge.net/projects/mplapack/files/mpack/Rgemm_C2050_20111026.tar.gz/download"> NVIDIA C2050 GPU is now available</a>. Even though papers are not published, you can just try by "make". Note that only CUDA 3.2 is supported. Origial release announce <a href="http://sourceforge.net/mailarchive/forum.php?thread_name=20111028.094551.857710717416457311.maho%40riken.jp&forum_name=mplapack-devel">is here.</a> 
+<a href="http://sourceforge.net/projects/mplapack/files/mplapack/Rgemm_C2050_20111026.tar.gz/download"> NVIDIA C2050 GPU is now available</a>. Even though papers are not published, you can just try by "make". Note that only CUDA 3.2 is supported. Origial release announce <a href="http://sourceforge.net/mailarchive/forum.php?thread_name=20111028.094551.857710717416457311.maho%40riken.jp&forum_name=mplapack-devel">is here.</a> 
 
 <li> 2011/08/24: Rgemm accleration on NVIDIA C2050 GPU is coming. Unforutnately paper are rejected, so please wait... <a href="http://accc.riken.jp/maho/Rgemm_dd_on_c2050.pdf">Here is a pdf slide.</a>
 
-<li> 2010/08/20: <a href="http://sourceforge.net/projects/mplapack/files/mpack/mpack%200.6.7/mpack-0.6.7.tar.gz/download"><em>MPACK 0.6.7!</em></a> Includes condition number estimators; Rgecon and Rpocon. Now 100 MLAPACK routines, and license has been changed to 2-caluse BSD style license. No longer use LGPLv3.
+<li> 2010/08/20: <a href="http://sourceforge.net/projects/mplapack/files/mplapack/mplapack%200.6.7/mplapack-0.6.7.tar.gz/download"><em>MPLAPACK 0.6.7!</em></a> Includes condition number estimators; Rgecon and Rpocon. Now 100 MPLAPACK routines, and license has been changed to 2-caluse BSD style license. No longer use LGPLv3.
 
-<li> 2010/08/6: <a href="http://sourceforge.net/projects/mplapack/files/mpack/mpack%200.6.6/mpack-0.6.6.tar.gz/download"><em>MPACK 0.6.6!</em></a> Build fix release. Tested on various Linux distributions.
+<li> 2010/08/6: <a href="http://sourceforge.net/projects/mplapack/files/mplapack/mplapack%200.6.6/mplapack-0.6.6.tar.gz/download"><em>MPLAPACK 0.6.6!</em></a> Build fix release. Tested on various Linux distributions.
 
-<li> 2010/05/31: <a href="http://accc.riken.jp/maho/slides/mpack-0.6.4.pdf">A paper for MPACK (0.6.4) in Japanese has been uploaded.</a>
+<li> 2010/05/31: <a href="http://accc.riken.jp/maho/slides/mplapack-0.6.4.pdf">A paper for MPLAPACK (0.6.4) in Japanese has been uploaded.</a>
 
-<li> 2010/05/21: <font size="5" color="#ff0000"><a href="http://sourceforge.net/projects/mplapack/files/mpack/mpack%200.6.5/mpack-0.6.5.tar.gz/download"><em>MPACK 0.6.5!</em></a></font> MPFR support, and MBLAS license has been changed to BSD style. Still MLAPACK part is LGPLv3. I'll replace hopefully soon.
+<li> 2010/05/21: <font size="5" color="#ff0000"><a href="http://sourceforge.net/projects/mplapack/files/mplapack/mplapack%200.6.5/mplapack-0.6.5.tar.gz/download"><em>MPLAPACK 0.6.5!</em></a></font> MPFR support, and MPBLAS license has been changed to BSD style. Still MPLAPACK part is LGPLv3. I'll replace hopefully soon.
 
-<li> 2010/01/13: <font size="5" color="#ff0000"><a href="http://sourceforge.net/projects/mplapack/files/mpack/mpack%200.6.4/mpack-0.6.4.tar.gz/download"><em>MPACK 0.6.4!</em></a></font> <font size="5" color="#ff0000">BUILD FIX RELEASE! PLEASE CHECK ON YOUR ENVIRONMET! THANKS! ALSO WINDOWS IS SUPPORTED!</font>
+<li> 2010/01/13: <font size="5" color="#ff0000"><a href="http://sourceforge.net/projects/mplapack/files/mplapack/mplapack%200.6.4/mplapack-0.6.4.tar.gz/download"><em>MPLAPACK 0.6.4!</em></a></font> <font size="5" color="#ff0000">BUILD FIX RELEASE! PLEASE CHECK ON YOUR ENVIRONMET! THANKS! ALSO WINDOWS IS SUPPORTED!</font>
 
-<li> 2009/12/18: POSTER and SLIDE ARE UPLOADED; <a href="http://accc.riken.jp/maho/slides/MPACK.HPCS.20091207.pdf">MPACK (MBLAS/MLAPACK) poster</a> at <a href="http://www.hpcc.jp/hpcs/">HPCS2010</a> in English, and slide in Japanese, and I did two seminars about MPACK (MBLAS/MLAPACK) @NII and @Tokyo Univ; here is the <a href="http://accc.riken.jp/maho/slides/mpack.20091211.pdf">slide</a>.
+<li> 2009/12/18: POSTER and SLIDE ARE UPLOADED; <a href="http://accc.riken.jp/maho/slides/MPLAPACK.HPCS.20091207.pdf">MPLAPACK (MPBLAS/MPLAPACK) poster</a> at <a href="http://www.hpcc.jp/hpcs/">HPCS2010</a> in English, and slide in Japanese, and I did two seminars about MPLAPACK (MPBLAS/MPLAPACK) @NII and @Tokyo Univ; here is the <a href="http://accc.riken.jp/maho/slides/mplapack.20091211.pdf">slide</a>.
 
-<li> 2009/11/24: <font size="5" color="#ff0000"><a href="http://sourceforge.net/projects/mplapack/files/mpack/mpack%200.6.0/mpack-0.6.0.tar.gz/download"><em>MPACK 0.6.0!</em></a></font>
+<li> 2009/11/24: <font size="5" color="#ff0000"><a href="http://sourceforge.net/projects/mplapack/files/mplapack/mplapack%200.6.0/mplapack-0.6.0.tar.gz/download"><em>MPLAPACK 0.6.0!</em></a></font>
 <li> 2009/11/7: Add <a href="examples.html">example page</a>.
-<li> 2009/10/9: <a href="http://sourceforge.net/projects/mplapack/files/mpack/mpack%200.5.2/mpack-0.5.2.tar.gz/download">MPACK 0.5.2</a>, build fix on Intel Mac.
+<li> 2009/10/9: <a href="http://sourceforge.net/projects/mplapack/files/mplapack/mplapack%200.5.2/mplapack-0.5.2.tar.gz/download">MPLAPACK 0.5.2</a>, build fix on Intel Mac.
 <li> 2009/10/6: The cvs version has faster Raxpy using OpenMP parallelism.
-<li> 2009/10/5: <a href="http://sourceforge.net/projects/mplapack/files/mpack/mpack%200.5.1/mpack-0.5.1.tar.gz/download">MPACK 0.5.1</a>, just minor updates.
-<li> 2009/9/24: <font size="5" color="#ff0000"><a href="http://sourceforge.net/projects/mplapack/files/mpack/mpack%200.5.0/mpack-0.5.0.tar.gz/download"><em>MPACK 0.5.0!</em></a></font>
-<li> 2009/9/17: GMP/QD/DD integration is going very well; now builds the mlapack part as well.
-<li> 2009/9/11: Now CVS version of MBLAS supports QD and DD. I abandoned "explicit generation of instances" for bad performance.
+<li> 2009/10/5: <a href="http://sourceforge.net/projects/mplapack/files/mplapack/mplapack%200.5.1/mplapack-0.5.1.tar.gz/download">MPLAPACK 0.5.1</a>, just minor updates.
+<li> 2009/9/24: <font size="5" color="#ff0000"><a href="http://sourceforge.net/projects/mplapack/files/mplapack/mplapack%200.5.0/mplapack-0.5.0.tar.gz/download"><em>MPLAPACK 0.5.0!</em></a></font>
+<li> 2009/9/17: GMP/QD/DD integration is going very well; now builds the mplapack part as well.
+<li> 2009/9/11: Now CVS version of MPBLAS supports QD and DD. I abandoned "explicit generation of instances" for bad performance.
 <li> 2009/5/25: Now I switched to template programming so that the library will be most portable. We automatically generate GMP, QD and DD versions via "explicit generation of instances".  For real calculations, source code level compatibility is retained and also we can made some optimized version as well, whereas complex code we need a small changes. Typically 2-3 percent performance loss have been observed.
-<li> 2009/3/21: <a href="http://sdpa.indsys.chuo-u.ac.jp/sdpa/">QD and DD version of SDPA (SDPA-QD, DD) have been uploaded</a>. These packages include some part of MPACK in QD and DD.
-<li> 2009/2/10: <a href="https://sourceforge.net/mailarchive/forum.php?forum_name=mplapack-devel">mpack-devel ML</a> has been launched.
-<li> 2009/2/10: <a href="https://sourceforge.net/project/showfiles.php?group_id=249684">mpack-0.0.9.tar.gz</a>.
-<li> 2009/2/5: <a href="http://sdpa.indsys.chuo-u.ac.jp/sdpa/">SDPA-GMP 7.1.2 has been released now is supported by MPACK (MBLAS/MLAPACK!)</a>
-<li> 2009/1/8: <a href="https://sourceforge.net/project/showfiles.php?group_id=249684">mpack-0.0.8.tar.gz</a>. Moved to <a href="http://mplapack.sourceforge.net/">souceforge.net</a>.
+<li> 2009/3/21: <a href="http://sdpa.indsys.chuo-u.ac.jp/sdpa/">QD and DD version of SDPA (SDPA-QD, DD) have been uploaded</a>. These packages include some part of MPLAPACK in QD and DD.
+<li> 2009/2/10: <a href="https://sourceforge.net/mailarchive/forum.php?forum_name=mplapack-devel">mplapack-devel ML</a> has been launched.
+<li> 2009/2/10: <a href="https://sourceforge.net/project/showfiles.php?group_id=249684">mplapack-0.0.9.tar.gz</a>.
+<li> 2009/2/5: <a href="http://sdpa.indsys.chuo-u.ac.jp/sdpa/">SDPA-GMP 7.1.2 has been released now is supported by MPLAPACK (MPBLAS/MPLAPACK!)</a>
+<li> 2009/1/8: <a href="https://sourceforge.net/project/showfiles.php?group_id=249684">mplapack-0.0.8.tar.gz</a>. Moved to <a href="http://mplapack.sourceforge.net/">souceforge.net</a>.
 <li> 2008/6/24: This page has been created.
 </ul>
 
 <h2>Current status (0.7.0)</h2>
 <ul>
 <li> 64bit clean.
-<li> <a href="http://mplapack.cvs.sourceforge.net/viewvc/mplapack/mpack/examples/">examples</a>. Contains inversion of matrix, diagonalization and matrix manipulations. You can invert <a href="http://en.wikipedia.org/wiki/Hilbert_matrix">Hilbert matrix</a> using MPFR, GMP, QD, DD, double and IEEE 754 binary128.
-<li> <a href="mblas_routines.html">Total 75  BLAS routines, all are tested</a>.
-<li> <a href="mlapack_routines.html">Total 674 LAPACK routines, 666 are implemented, 100 are tested, and 14 not to be implemented.<a>
+<li> <a href="http://mplapack.cvs.sourceforge.net/viewvc/mplapack/mplapack/examples/">examples</a>. Contains inversion of matrix, diagonalization and matrix manipulations. You can invert <a href="http://en.wikipedia.org/wiki/Hilbert_matrix">Hilbert matrix</a> using MPFR, GMP, QD, DD, double and IEEE 754 binary128.
+<li> <a href="mpblas_routines.html">Total 75  BLAS routines, all are tested</a>.
+<li> <a href="mplapack_routines.html">Total 674 LAPACK routines, 666 are implemented, 100 are tested, and 14 not to be implemented.<a>
 <li> <a href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=4610935">IEEE 754 2008</a>, binary128 support! This is the true "quadruple precision".
 <li> <a href="http://www.mpfr.org/">MPFR</a> (and complex part is supported by <a href="http://www.multiprecision.org/">MPC)</a>, <a href="http://gmplib.org/">GMP</a> and <a href="http://www.eecs.berkeley.edu/~yozo/">QD</a>, are supported as multiple precision arithmetic libraries.
 <li> MacOSX Leopard, MacOSX Tiger, Linux (Cent OS, Ubuntu), Windows (mingw) and FreeBSD are supported.
-<li> Clean <a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/include/blas.h">blas.h</a> and <a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/include/lapack.h">lapack.h</a> for C/C++.
+<li> Clean <a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mplapack/include/blas.h">blas.h</a> and <a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mplapack/include/lapack.h">lapack.h</a> for C/C++.
 </ul>
 
 <h2>Download packages and development</h2>
 Currently only distributed as source code.
 <ul>
-<li> <a href="https://sourceforge.net/project/showfiles.php?group_id=249684">Download MPACK packages</a>.
+<li> <a href="https://sourceforge.net/project/showfiles.php?group_id=249684">Download MPLAPACK packages</a>.
 <li> <a href="http://mplapack.svn.sourceforge.net/viewvc/mplapack/">On going development at SVN</a>.
 </ul>
 
@@ -146,8 +146,8 @@ Currently only distributed as source code.
 
 <h2>Available Routines</h2>
 <ul>
-<li> <a href="mblas_routines.html">MBLAS routines</a>
-<li> <a href="mlapack_routines.html">MLAPACK routines</a>
+<li> <a href="mpblas_routines.html">MPBLAS routines</a>
+<li> <a href="mplapack_routines.html">MPLAPACK routines</a>
 </ul>
 
 <h2>Mailing list</h2>
@@ -156,8 +156,8 @@ Currently only distributed as source code.
 <h2>BLAS/LAPACK C header</h2>
 These "blas.h" and "lapack.h" based on LAPACK 3.1 can be used for when you want to link LAPACK and BLAS routines from your C/C++ programs. 
 <ul>
-<li><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/include/blas.h">blas.h</a>.
-<li><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mpack/include/lapack.h">lapack.h</a>.
+<li><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mplapack/include/blas.h">blas.h</a>.
+<li><a href="http://mplapack.cvs.sourceforge.net/viewvc/*checkout*/mplapack/mplapack/include/lapack.h">lapack.h</a>.
 </ul>
 You should also define if you are using GNU FORTRAN:
 <pre>
@@ -172,8 +172,8 @@ etc. Easist way to (implicitly) add this by using "AC_F77_WRAPPERS" via configur
 <h2>Slides, posters etc.</h2>
 
 <ul>
-<li> <a href="http://accc.riken.jp/maho/slides/MPACK.HPCS.20091207.pdf">MPACK (MBLAS/MLAPACK) poster</a> at <a href="http://www.hpcc.jp/hpcs/">HPCS2010</a>.
-<li> <a href="http://accc.riken.jp/maho/slides/mpack.20091211.pdf">MPACK 0.6.0: Slide</a>
+<li> <a href="http://accc.riken.jp/maho/slides/MPLAPACK.HPCS.20091207.pdf">MPLAPACK (MPBLAS/MPLAPACK) poster</a> at <a href="http://www.hpcc.jp/hpcs/">HPCS2010</a>.
+<li> <a href="http://accc.riken.jp/maho/slides/mplapack.20091211.pdf">MPLAPACK 0.6.0: Slide</a>
  <a href="http://www.cs.tsukuba.ac.jp/~sakurai/ag_workshop8.html">2009/11/26@NII</a> and <a href="http://nla.na.cse.nagoya-u.ac.jp/">2009/12/11@Tokyo U</a>. (in Japanese)
 </ul>
 
@@ -250,7 +250,7 @@ $ make install
 </ul>
 
 <h2> License </h2>
-MPACK is licensed under 2-caluse BSD style license. Since version 0.6.7, we no longer use LGPLv3.
+MPLAPACK is licensed under 2-caluse BSD style license. Since version 0.6.7, we no longer use LGPLv3.
 
 <h2>Correspondence</h2>
 中田真秀 (NAKATA Maho)<br>
@@ -270,13 +270,13 @@ Compting and Communication, RIKEN</a>
 <h2>Citation</h2>
 <ul>
 <li> author: Nakata, Maho
-<li> title: The MPACK (MBLAS/MLAPACK); a multiple precision arithmetic version of BLAS and LAPACK
+<li> title: The MPLAPACK (MPBLAS/MPLAPACK); a multiple precision arithmetic version of BLAS and LAPACK
 <li> version: 0.6.7
 <li> date: 2010/08/24
 <li> URL: http://mplapack.sourceforge.net/
 </ul>
 
-<h2>Papers citing MPACK</h2>
+<h2>Papers citing MPLAPACK</h2>
 <ul>
 <li> <a href="http://link.aip.org/link/doi/10.1063/1.3603451">
 "Accurate explicitly correlated wave functions for two electrons in a square",

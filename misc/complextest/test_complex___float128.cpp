@@ -1,4 +1,4 @@
-#define ___MPACK_BUILD_WITH_BINARY128___
+#define ___MPLAPACK_BUILD_WITH_BINARY128___
 
 #include <stdio.h>
 #include <mpcomplex.h>

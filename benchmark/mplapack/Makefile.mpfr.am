@@ -1,0 +1,34 @@
+bench_PROGRAMS += \
+Rpotrf.mpfr Rpotrf.mpfr_ref \
+Rpotf2.mpfr Rpotf2.mpfr_ref \
+Rgetrf.mpfr Rgetrf.mpfr_ref
+
+mpfrcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_MPFR___
+mpfrreflapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_mpfr_ref
+mpfroptlapack_libdepends = -L$(top_builddir)/mplapack/optimized/mpfr -lmplapack_mpfr
+mpfrref_libdepends = $(mpfrreflapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_mpfr_ref -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp $(DYLD)
+mpfropt_libdepends = $(mpfroptlapack_libdepends) -L$(top_builddir)/mpblas/optimized/mpfr -lmpblas_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp $(DYLD)
+
+Rpotrf_mpfr_ref_SOURCES= Rpotrf.cpp
+Rpotrf_mpfr_ref_CXXFLAGS= $(mpfrcxxflags)
+Rpotrf_mpfr_ref_LDFLAGS= $(mpfrref_libdepends)
+
+Rpotrf_mpfr_SOURCES= Rpotrf.cpp
+Rpotrf_mpfr_CXXFLAGS= $(mpfrcxxflags)
+Rpotrf_mpfr_LDFLAGS= $(mpfropt_libdepends)
+
+Rpotf2_mpfr_ref_SOURCES= Rpotf2.cpp
+Rpotf2_mpfr_ref_CXXFLAGS= $(mpfrcxxflags)
+Rpotf2_mpfr_ref_LDFLAGS= $(mpfrref_libdepends)
+
+Rpotf2_mpfr_SOURCES= Rpotf2.cpp
+Rpotf2_mpfr_CXXFLAGS= $(mpfrcxxflags)
+Rpotf2_mpfr_LDFLAGS= $(mpfropt_libdepends)
+
+Rgetrf_mpfr_ref_SOURCES= Rgetrf.cpp
+Rgetrf_mpfr_ref_CXXFLAGS= $(mpfrcxxflags)
+Rgetrf_mpfr_ref_LDFLAGS= $(mpfrref_libdepends)
+
+Rgetrf_mpfr_SOURCES= Rgetrf.cpp
+Rgetrf_mpfr_CXXFLAGS= $(mpfrcxxflags)
+Rgetrf_mpfr_LDFLAGS= $(mpfropt_libdepends)

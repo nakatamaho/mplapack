@@ -1,51 +1,51 @@
 # Maintainer: Maho Nakata <maho at riken dot jp>
 # Packager: Gregor Entzian <entzian at tbi dot univie dot ac dot at>
 
-pkgbase=mpack
-pkgname=('mpack')
+pkgbase=mplapack
+pkgname=('mplapack')
 pkgver=@VERSION@
 pkgrel=1
 pkgdesc="Multiple precision linear algebra package"
 arch=('x86_64' 'i686')
 license=('Custom')
 url="@PACKAGE_URL@"
-groups=('mpack')
+groups=('mplapack')
 makedepends=( 'qd'
               'gmp'
               'mpfr'
               'libmpc'
               'libtool'
               'check')
-source=(mpack-${pkgver}.tar.gz)
+source=(mplapack-${pkgver}.tar.gz)
 
-#create this sum with the command "sha256sum mpack-${pkgver}.tar.gz" before each build of the package
+#create this sum with the command "sha256sum mplapack-${pkgver}.tar.gz" before each build of the package
 sha256sums=('5a211622838db5e954355840423c232010335cf1690d5224076f212663de4c84')
 
 build() {
-  cd "${srcdir}/mpack-${pkgver}"
+  cd "${srcdir}/mplapack-${pkgver}"
   ./configure --prefix=/usr --enable-gmp --enable-mpfr --enable-qd --enable-dd --enable-double --enable-__float128 --enable-longdouble --enable-optimization --with-system-gmp --with-system-mpfr --with-system-mpc --with-system-qd --disable-benchmark --disable-examples --disable-reference
   make
 }
 
 check() {
-  cd "$srcdir/mpack-${pkgver}"
+  cd "$srcdir/mplapack-${pkgver}"
   make check
 }
 
-package_mpack() {
+package_mplapack() {
   depends=('qd'
            'gmp'
            'mpfr'
            'libmpc')
-  provides=("mpack=${pkgver}")
+  provides=("mplapack=${pkgver}")
 
 
   # install library and header files
-  cd "${srcdir}/mpack-${pkgver}"
+  cd "${srcdir}/mplapack-${pkgver}"
   make DESTDIR="${pkgdir}" install
 
   # install pkg-config file
-  install -Dm644 mpack.pc "$pkgdir/usr/lib/pkgconfig/mpack.pc"
+  install -Dm644 mplapack.pc "$pkgdir/usr/lib/pkgconfig/mplapack.pc"
 
   install -Dm644 COPYING "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
   cd ../..

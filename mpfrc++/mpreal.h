@@ -42,22 +42,22 @@
 #include <cfloat>
 #include <cmath>
 
-#if defined ___MPACK_BUILD_WITH___FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
 #define MPFR_WANT_FLOAT128
 #endif
 
 #include "mpfr.h"
 
-#if defined ___MPACK_BUILD_WITH_GMP___
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
 #include "gmpxx.h"
 #endif
-#if defined ___MPACK_BUILD_WITH_QD___
+#if defined ___MPLAPACK_BUILD_WITH_QD___
 #include "qd/qd_real.h"
 #endif
-#if defined ___MPACK_BUILD_WITH_DD___
+#if defined ___MPLAPACK_BUILD_WITH_DD___
 #include "qd/dd_real.h"
 #endif
-#if defined ___MPACK_BUILD_WITH___FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -406,16 +406,16 @@ class mpreal {
     friend const mpreal min(const mpreal &x, const mpreal &y);
 #endif
 
-#if defined ___MPACK_BUILD_WITH_GMP___
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
     mpreal(const mpf_class &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
 #endif
-#if defined ___MPACK_BUILD_WITH_QD___
+#if defined ___MPLAPACK_BUILD_WITH_QD___
     mpreal(const qd_real &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
 #endif
-#if defined ___MPACK_BUILD_WITH_DD___
+#if defined ___MPLAPACK_BUILD_WITH_DD___
     mpreal(const dd_real &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
 #endif
-#if defined ___MPACK_BUILD_WITH___FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
     mpreal(const __float128 &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
     mpreal &operator=(const __float128 &a);
 #endif
@@ -2454,7 +2454,7 @@ inline std::istream &operator>>(std::istream &is, mpreal &v) {
     return is;
 }
 
-#if defined ___MPACK_BUILD_WITH_GMP___
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
 inline mpreal::mpreal(const mpf_class &a, mp_prec_t prec, mp_rnd_t mode) {
     mpfr_init2(mp, prec);
     mpfr_set_f(mp, a.get_mpf_t(), mode);
@@ -2490,7 +2490,7 @@ inline mpf_class cast2mpf_class(const mpreal &b) {
 
 #endif
 
-#if defined ___MPACK_BUILD_WITH_QD___
+#if defined ___MPLAPACK_BUILD_WITH_QD___
 inline mpreal::mpreal(const qd_real &a, mp_prec_t prec, mp_rnd_t mode) {
     mpfr_init_set_d(mp, a.x[0], mode);
     mpfr_add_d(mp, mp, a.x[1], mode);
@@ -2527,7 +2527,7 @@ inline qd_real cast2qd_real(const mpreal &b) {
 
 #endif
 
-#if defined ___MPACK_BUILD_WITH_DD___
+#if defined ___MPLAPACK_BUILD_WITH_DD___
 inline mpreal::mpreal(const dd_real &a, mp_prec_t prec, mp_rnd_t mode) {
     mpfr_init_set_d(mp, a.x[0], mode);
     mpfr_add_d(mp, mp, a.x[1], mode);
@@ -2555,7 +2555,7 @@ inline dd_real cast2dd_real(const mpreal &b) {
 }
 #endif
 
-#if defined ___MPACK_BUILD_WITH___FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
 inline mpreal &mpreal::operator=(const __float128 &a) {
     mpfr_init2((mpfr_ptr)mp, default_prec);
     mpfr_set_float128((mpfr_ptr)mp, a, default_rnd);
@@ -2584,7 +2584,7 @@ inline __float128 cast2__float128(const mpreal &b) {
 
 #endif
 
-#if defined ___MPACK_BUILD_WITH_LONGDOUBLE___
+#if defined ___MPLAPACK_BUILD_WITH_LONGDOUBLE___
 inline long double cast2longdouble(const mpreal &b) {
     // mpreal -> mpfr -> long double
     long double q;
