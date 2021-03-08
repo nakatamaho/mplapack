@@ -1,0 +1,36 @@
+bench_PROGRAMS += \
+Rpotrf.binary128 Rpotrf.binary128_ref \
+Rpotf2.binary128 Rpotf2.binary128_ref \
+Rgetrf.binary128 Rgetrf.binary128_ref
+
+binary128cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY128___
+binary128reflapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_binary128_ref
+binary128optlapack_libdepends = -L$(top_builddir)/mplapack/optimized/binary128 -lmplapack_binary128
+binary128ref_libdepends = $(binary128reflapack_libdepends) -L$(top_builddir)/mplapack/reference -lmplapack_binary128_ref -L$(top_builddir)/mpblas/reference -lmpblas_binary128_ref -lquadmath $(DYLD)
+binary128opt_libdepends = $(binary128optlapack_libdepends) -L$(top_builddir)/mplapack/optimized/binary128 -lmplapack_binary128 -L$(top_builddir)/mpblas/optimized/binary128 -lmpblas_binary128 -lquadmath $(DYLD)
+
+Rpotrf_binary128_ref_SOURCES= Rpotrf.cpp
+Rpotrf_binary128_ref_CXXFLAGS= $(binary128cxxflags)
+Rpotrf_binary128_ref_LDFLAGS= $(binary128ref_libdepends)
+
+Rpotrf_binary128_SOURCES= Rpotrf.cpp
+Rpotrf_binary128_CXXFLAGS= $(binary128cxxflags)
+Rpotrf_binary128_LDFLAGS= $(binary128opt_libdepends)
+
+Rpotf2_binary128_ref_SOURCES= Rpotf2.cpp
+Rpotf2_binary128_ref_CXXFLAGS= $(binary128cxxflags)
+Rpotf2_binary128_ref_LDFLAGS= $(binary128ref_libdepends)
+
+Rpotf2_binary128_SOURCES= Rpotf2.cpp
+Rpotf2_binary128_CXXFLAGS= $(binary128cxxflags)
+Rpotf2_binary128_LDFLAGS= $(binary128opt_libdepends)
+
+Rgetrf_binary128_ref_SOURCES= Rgetrf.cpp
+Rgetrf_binary128_ref_CXXFLAGS= $(binary128cxxflags)
+Rgetrf_binary128_ref_LDFLAGS= $(binary128ref_libdepends)
+
+Rgetrf_binary128_SOURCES= Rgetrf.cpp
+Rgetrf_binary128_CXXFLAGS= $(binary128cxxflags)
+Rgetrf_binary128_LDFLAGS= $(binary128opt_libdepends)
+
+

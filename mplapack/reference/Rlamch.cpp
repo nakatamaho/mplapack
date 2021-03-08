@@ -38,7 +38,7 @@
 #include <float.h>
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
 #include <quadmath.h>
 #endif
 
@@ -970,23 +970,23 @@ long double Rlamch_longdouble(const char *cmach)
 #endif
 
 
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
 //"E" denots we always calculate relative machine precision (e).
 //where 1+e = 1, minimum of e.
-__float128 RlamchE___float128(void)
+binary128 RlamchE_binary128(void)
 {
     return FLT128_EPSILON;
 }
 
 //"S" denots we always calculate `safe minimum, such that 1/sfmin does not overflow'.
 //cf.http://www.netlib.org/blas/dlamch.f
-__float128 RlamchS___float128(void)
+binary128 RlamchS_binary128(void)
 {
     //IEEE 754 2008 binary128: emin = -16382
     //2^{-16382} = 3.36210314311209350626267781732175260e-4932Q
     return FLT128_MIN;
 
-    static __float128 eps;
+    static binary128 eps;
     static int called = 0;
     if (called)
 	return eps;
@@ -1000,44 +1000,44 @@ __float128 RlamchS___float128(void)
 
 //"B" base  = base of the machine
 //cf.http://www.netlib.org/blas/dlamch.f
-__float128 RlamchB___float128(void)
+binary128 RlamchB_binary128(void)
 {
-    __float128 two;
+    binary128 two;
     two = 2.0;
     return two;
 }
 
 //"P" prec = eps*base
 //cf.http://www.netlib.org/blas/dlamch.f
-__float128 RlamchP___float128(void)
+binary128 RlamchP_binary128(void)
 {
-    __float128 base, eps, prec;
+    binary128 base, eps, prec;
 
-    base = RlamchB___float128();
-    eps = RlamchE___float128();
+    base = RlamchB_binary128();
+    eps = RlamchE_binary128();
     prec = eps * base;
     return prec;
 }
 
 //"N" t = number of digits in mantissa
 //cf.http://www.netlib.org/blas/dlamch.f
-__float128 RlamchN___float128(void)
+binary128 RlamchN_binary128(void)
 {
-    return (__float128) FLT128_MANT_DIG;	//113
+    return (binary128) FLT128_MANT_DIG;	//113
 }
 
 //"R" rnd   = 1.0 when rounding occurs in addition, 0.0 otherwise
 //cf.http://www.netlib.org/blas/dlamch.f
-__float128 RlamchR___float128(void)
+binary128 RlamchR_binary128(void)
 {
-    __float128 mtmp;
+    binary128 mtmp;
     mtmp = 1.0;
     return mtmp;
 }
 
 //"M"
 //cf.http://www.netlib.org/blas/dlamch.f
-__float128 RlamchM___float128(void)
+binary128 RlamchM_binary128(void)
 {
 //the exponent of IEEE 754 2008 binary64 is -16382.
 //then -16382 + 1 = -16381
@@ -1046,7 +1046,7 @@ __float128 RlamchM___float128(void)
 
 //"U"
 //cf.http://www.netlib.org/blas/dlamch.f
-__float128 RlamchU___float128(void)
+binary128 RlamchU_binary128(void)
 {
     return FLT128_MIN;
 
@@ -1067,7 +1067,7 @@ __float128 RlamchU___float128(void)
 
 //"L"
 //cf.http://www.netlib.org/blas/dlamch.f
-__float128 RlamchL___float128(void)
+binary128 RlamchL_binary128(void)
 {
 //+16383 in IEEE 754 2008 binary128
 //then 16383 + 1 = 16384
@@ -1076,7 +1076,7 @@ __float128 RlamchL___float128(void)
 
 //"O"
 //cf.http://www.netlib.org/blas/dlamch.f
-__float128 RlamchO___float128(void)
+binary128 RlamchO_binary128(void)
 {
 // 1.18973149535723176508575932662800702e4932Q in IEEE 754 2008 binary128.
     return FLT128_MAX;
@@ -1084,37 +1084,37 @@ __float128 RlamchO___float128(void)
 
 //"Z" :dummy
 //cf.http://www.netlib.org/blas/dlamch.f
-__float128 RlamchZ___float128(void)
+binary128 RlamchZ_binary128(void)
 {
-    __float128 mtemp = 0.0;
+    binary128 mtemp = 0.0;
     return mtemp;
 }
 
-__float128 Rlamch___float128(const char *cmach)
+binary128 Rlamch_binary128(const char *cmach)
 {
     if (Mlsame(cmach, "E"))
-	return RlamchE___float128();
+	return RlamchE_binary128();
     if (Mlsame(cmach, "S"))
-	return RlamchS___float128();
+	return RlamchS_binary128();
     if (Mlsame(cmach, "B"))
-	return RlamchB___float128();
+	return RlamchB_binary128();
     if (Mlsame(cmach, "P"))
-	return RlamchP___float128();
+	return RlamchP_binary128();
     if (Mlsame(cmach, "N"))
-	return RlamchN___float128();
+	return RlamchN_binary128();
     if (Mlsame(cmach, "R"))
-	return RlamchR___float128();
+	return RlamchR_binary128();
     if (Mlsame(cmach, "M"))
-	return RlamchM___float128();
+	return RlamchM_binary128();
     if (Mlsame(cmach, "U"))
-	return RlamchU___float128();
+	return RlamchU_binary128();
     if (Mlsame(cmach, "L"))
-	return RlamchL___float128();
+	return RlamchL_binary128();
     if (Mlsame(cmach, "O"))
-	return RlamchO___float128();
+	return RlamchO_binary128();
 
     Mxerbla("Rlamch", 1);
-    return RlamchZ___float128();
+    return RlamchZ_binary128();
 }
 #endif
 

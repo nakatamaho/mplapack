@@ -1,14 +1,14 @@
-// Get inverse of Matrix A via Rgetri, using __float128
+// Get inverse of Matrix A via Rgetri, using binary128
 // This file is freely usable.
 // written by Nakata Maho, 2012/5/30.
 
-#include <mpblas___float128.h>
-#include <mplapack___float128.h>
+#include <mpblas_binary128.h>
+#include <mplapack_binary128.h>
 #include <stdio.h>
 
 #define BUFLEN 1024
 
-void printnum(__float128 rtmp)
+void printnum(binary128 rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
@@ -19,9 +19,9 @@ void printnum(__float128 rtmp)
 }
 
 //Matlab/Octave format
-void printmat(int N, int M, __float128 *A, int LDA)
+void printmat(int N, int M, binary128 *A, int LDA)
 {
-    __float128 mtmp;
+    binary128 mtmp;
 
     printf("[ ");
     for (int i = 0; i < N; i++) {
@@ -48,7 +48,7 @@ int main()
     mplapackint n = 3;
     mplapackint lwork, info;
 
-    __float128 *A = new __float128[n * n];
+    binary128 *A = new binary128[n * n];
     mplapackint *ipiv = new mplapackint[n];
 
 //setting A matrix
@@ -61,12 +61,12 @@ int main()
     printf("\n");
 //work space query
     lwork = -1;
-    __float128 *work = new __float128[1];
+    binary128 *work = new binary128[1];
 
     Rgetri(n, A, n, ipiv, work, lwork, &info);
     lwork = int (work[0]);
     delete[]work;
-    work = new __float128[std::max(1, (int) lwork)];
+    work = new binary128[std::max(1, (int) lwork)];
 //inverse matrix
     Rgetrf(n, n, A, n, ipiv, &info);
     Rgetri(n, A, n, ipiv, work, lwork, &info);

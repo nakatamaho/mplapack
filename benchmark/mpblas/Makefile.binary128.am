@@ -1,0 +1,54 @@
+bench_PROGRAMS += \
+Raxpy.binary128 Raxpy.binary128_ref \
+Rcopy.binary128 Rcopy.binary128_ref \
+Rdot.binary128  Rdot.binary128_ref \
+Rgemm.binary128 Rgemm.binary128_ref \
+Rgemv.binary128 Rgemv.binary128_ref
+
+#lapack is needed for Rlange
+binary128cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY128___
+binary128lapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_binary128_ref
+binary128ref_libdepends = $(binary128lapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_binary128_ref -lquadmath $(DYLD)
+binary128opt_libdepends = $(binary128lapack_libdepends) -L$(top_builddir)/mpblas/optimized/binary128 -lmpblas_binary128 -lquadmath $(DYLD)
+
+Raxpy_binary128_ref_SOURCES= Raxpy.cpp
+Raxpy_binary128_ref_CXXFLAGS= $(binary128cxxflags)
+Raxpy_binary128_ref_LDFLAGS= $(binary128ref_libdepends)
+
+Raxpy_binary128_SOURCES= Raxpy.cpp
+Raxpy_binary128_CXXFLAGS= $(binary128cxxflags)
+Raxpy_binary128_LDFLAGS= $(binary128opt_libdepends)
+
+Rcopy_binary128_ref_SOURCES= Rcopy.cpp
+Rcopy_binary128_ref_CXXFLAGS= $(binary128cxxflags)
+Rcopy_binary128_ref_LDFLAGS= $(binary128ref_libdepends)
+
+Rcopy_binary128_SOURCES= Rcopy.cpp
+Rcopy_binary128_CXXFLAGS= $(binary128cxxflags)
+Rcopy_binary128_LDFLAGS= $(binary128opt_libdepends)
+
+Rdot_binary128_ref_SOURCES= Rdot.cpp
+Rdot_binary128_ref_CXXFLAGS= $(binary128cxxflags)
+Rdot_binary128_ref_LDFLAGS= $(binary128ref_libdepends)
+
+Rdot_binary128_SOURCES= Rdot.cpp
+Rdot_binary128_CXXFLAGS= $(binary128cxxflags)
+Rdot_binary128_LDFLAGS= $(binary128opt_libdepends)
+
+Rgemm_binary128_ref_SOURCES= Rgemm.cpp
+Rgemm_binary128_ref_CXXFLAGS= $(binary128cxxflags)
+Rgemm_binary128_ref_LDFLAGS= $(binary128ref_libdepends)
+
+Rgemm_binary128_SOURCES= Rgemm.cpp
+Rgemm_binary128_CXXFLAGS= $(binary128cxxflags)
+Rgemm_binary128_LDFLAGS= $(binary128opt_libdepends)
+
+Rgemv_binary128_ref_SOURCES= Rgemv.cpp
+Rgemv_binary128_ref_CXXFLAGS= $(binary128cxxflags)
+Rgemv_binary128_ref_LDFLAGS= $(binary128ref_libdepends)
+
+Rgemv_binary128_SOURCES= Rgemv.cpp
+Rgemv_binary128_CXXFLAGS= $(binary128cxxflags)
+Rgemv_binary128_LDFLAGS= $(binary128opt_libdepends)
+
+

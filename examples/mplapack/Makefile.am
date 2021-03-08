@@ -122,27 +122,27 @@ condition_num_double_LDFLAGS= $(double_libdepends)
 
 endif
 
-if ENABLE___FLOAT128
-lapackexamples_PROGRAMS += eigenvalue___float128 inv_mat___float128 \
-			hilbert___float128 condition_num___float128
-__float128cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
-__float128_libdepends = -L$(top_builddir)/mplapack/optimized/__float128 -lmplapack___float128 -L$(top_builddir)/mpblas/optimized/__float128 -lmpblas___float128 -lquadmath
+if ENABLE_BINARY128
+lapackexamples_PROGRAMS += eigenvalue_binary128 inv_mat_binary128 \
+			hilbert_binary128 condition_num_binary128
+binary128cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
+binary128_libdepends = -L$(top_builddir)/mplapack/optimized/binary128 -lmplapack_binary128 -L$(top_builddir)/mpblas/optimized/binary128 -lmpblas_binary128 -lquadmath
 
-eigenvalue___float128_SOURCES= eigenvalue___float128.cpp
-eigenvalue___float128_CXXFLAGS= $(__float128cxxflags)
-eigenvalue___float128_LDFLAGS= $(__float128_libdepends)
+eigenvalue_binary128_SOURCES= eigenvalue_binary128.cpp
+eigenvalue_binary128_CXXFLAGS= $(binary128cxxflags)
+eigenvalue_binary128_LDFLAGS= $(binary128_libdepends)
 
-inv_mat___float128_SOURCES= inv_mat___float128.cpp
-inv_mat___float128_CXXFLAGS= $(__float128cxxflags)
-inv_mat___float128_LDFLAGS= $(__float128_libdepends)
+inv_mat_binary128_SOURCES= inv_mat_binary128.cpp
+inv_mat_binary128_CXXFLAGS= $(binary128cxxflags)
+inv_mat_binary128_LDFLAGS= $(binary128_libdepends)
 
-hilbert___float128_SOURCES= hilbert___float128.cpp
-hilbert___float128_CXXFLAGS= $(__float128cxxflags)
-hilbert___float128_LDFLAGS= $(__float128_libdepends)
+hilbert_binary128_SOURCES= hilbert_binary128.cpp
+hilbert_binary128_CXXFLAGS= $(binary128cxxflags)
+hilbert_binary128_LDFLAGS= $(binary128_libdepends)
 
-condition_num___float128_SOURCES= condition_num___float128.cpp
-condition_num___float128_CXXFLAGS= $(__float128cxxflags)
-condition_num___float128_LDFLAGS= $(__float128_libdepends)
+condition_num_binary128_SOURCES= condition_num_binary128.cpp
+condition_num_binary128_CXXFLAGS= $(binary128cxxflags)
+condition_num_binary128_LDFLAGS= $(binary128_libdepends)
 
 endif
 

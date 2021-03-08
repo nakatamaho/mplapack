@@ -1,12 +1,12 @@
 // Get condition number of Hibert matrix via Rgecon
 // written by Nakata Maho, 2012/5/30.
 
-#include <mpblas___float128.h>
-#include <mplapack___float128.h>
+#include <mpblas_binary128.h>
+#include <mplapack_binary128.h>
 #include <stdio.h>
 #define BUFLEN 1024
 
-void printnum(__float128 rtmp)
+void printnum(binary128 rtmp)
 {   
     int width = 42;
     char buf[BUFLEN];
@@ -17,9 +17,9 @@ void printnum(__float128 rtmp)
 }
 
 //Matlab/Octave format
-void printmat(int N, int M, __float128 *A, int LDA)
+void printmat(int N, int M, binary128 *A, int LDA)
 {
-    __float128 mtmp;
+    binary128 mtmp;
 
     printf("[ ");
     for (int i = 0; i < N; i++) {
@@ -41,19 +41,19 @@ void printmat(int N, int M, __float128 *A, int LDA)
     printf("]");
 }
 
-void getAinv(mplapackint n, mplapackint lda, __float128 *A)
+void getAinv(mplapackint n, mplapackint lda, binary128 *A)
 {
     mplapackint info;
     mplapackint lwork;
     /* pivot vector allocation */
     mplapackint *ipiv = new mplapackint[n];
     lwork = -1;
-    __float128 *work = new __float128[1];
+    binary128 *work = new binary128[1];
     /* query work space */
     Rgetri(n, A, lda, ipiv, work, lwork, &info);
     lwork = (int) (work[0]);
     delete[]work;
-    work = new __float128[std::max((mplapackint) 1, lwork)];
+    work = new binary128[std::max((mplapackint) 1, lwork)];
     /* do inversion */
     Rgetrf(n, n, A, lda, ipiv, &info);
     Rgetri(n, A, lda, ipiv, work, lwork, &info);
@@ -69,10 +69,10 @@ void getAinv(mplapackint n, mplapackint lda, __float128 *A)
     exit(1);
 }
 
-__float128 get_estimated_condition_num(const char *norm, mplapackint n, mplapackint lda, __float128 *A)
+binary128 get_estimated_condition_num(const char *norm, mplapackint n, mplapackint lda, binary128 *A)
 {
-    __float128 anorm, cond, rcond;
-    __float128 *work = new __float128[std::max((mplapackint) 1, n * 4)];
+    binary128 anorm, cond, rcond;
+    binary128 *work = new binary128[std::max((mplapackint) 1, n * 4)];
     mplapackint *iwork = new mplapackint[std::max((mplapackint) 1, n)];
     mplapackint info;
 
@@ -90,11 +90,11 @@ __float128 get_estimated_condition_num(const char *norm, mplapackint n, mplapack
     return cond;
 }
 
-__float128 get_exact_condition_num(const char *norm, mplapackint n, mplapackint lda, __float128 *A)
+binary128 get_exact_condition_num(const char *norm, mplapackint n, mplapackint lda, binary128 *A)
 {
-    __float128 *Ainv = new __float128[n * n];
-    __float128 *work = new __float128[std::max((mplapackint) 1, n)];
-    __float128 anorm, ainvnorm, cond;
+    binary128 *Ainv = new binary128[n * n];
+    binary128 *work = new binary128[std::max((mplapackint) 1, n)];
+    binary128 anorm, ainvnorm, cond;
 //save A matrix
     for (int i = 0; i < n; i++) {
 	for (int j = 0; j < n; j++) {
@@ -117,9 +117,9 @@ __float128 get_exact_condition_num(const char *norm, mplapackint n, mplapackint 
 void condition_number_demo(mplapackint n)
 {
     mplapackint lwork, info;
-    __float128 *A = new __float128[n * n];
-    __float128 mtmp;
-    __float128 cond_est, cond;
+    binary128 *A = new binary128[n * n];
+    binary128 mtmp;
+    binary128 cond_est, cond;
 
 //setting Hilbert matrix in A.
     for (int i = 0; i < n; i++) {

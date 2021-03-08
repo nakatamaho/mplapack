@@ -113,15 +113,15 @@ void mplapack_finalize_longdouble(void)
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
 void __attribute__ ((constructor)) mplapack_initialize_binary128(void);
 void __attribute__ ((destructor)) mplapack_finalize_binary128(void);
-void mplapack_initialize___float128(void)
+void mplapack_initialize_binary128(void)
 {
     //no initializization needed
 }
 
-void mplapack_finalize___float128(void)
+void mplapack_finalize_binary128(void)
 {
     //no finalization needed
 }

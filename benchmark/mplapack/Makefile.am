@@ -21,8 +21,8 @@ if ENABLE_DOUBLE
 include Makefile.double.am
 endif
 
-if ENABLE___FLOAT128
-include Makefile.__float128.am
+if ENABLE_BINARY128
+include Makefile.binary128.am
 endif
 
 if DO_LAPACKBENCH

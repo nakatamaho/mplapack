@@ -26,8 +26,8 @@
  *
  */
 
-#ifndef _MUTILS___FLOAT128_H_
-#define _MUTILS___FLOAT128_H_
+#ifndef _MUTILS_BINARY128_H_
+#define _MUTILS_BINARY128_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,37 +39,37 @@ extern "C" {
 
 namespace std {
 #ifndef _GLIBCXX_BITS_STD_ABS_H
-inline __float128 abs(const __float128 &a) {
+inline binary128 abs(const binary128 &a) {
    return fabsq(a);
 }
 #endif
 
-inline __float128 sqrt(const __float128 &a) {
+inline binary128 sqrt(const binary128 &a) {
    return sqrtq(a);
 }
-inline __float128 log(const __float128 &a) {
+inline binary128 log(const binary128 &a) {
    return logq(a);
 }
-inline __float128 log2(const __float128 &a) {
+inline binary128 log2(const binary128 &a) {
    return log2q(a);
 }
-inline __float128 pow(const __float128 &a, const __float128 &b) {
+inline binary128 pow(const binary128 &a, const binary128 &b) {
    return powq(a, b);
 }
 
-inline __float128 exp(const __float128 &a) {
+inline binary128 exp(const binary128 &a) {
    return expq(a);
 }
 
-inline __float128 sin(const __float128 &a) {
+inline binary128 sin(const binary128 &a) {
    return sinq(a);
 }
 
-inline __float128 cos(const __float128 &a) {
+inline binary128 cos(const binary128 &a) {
    return cosq(a);
 }
 
-inline __float128 log10(const __float128 &a) {
+inline binary128 log10(const binary128 &a) {
    return log10q(a);
 }
 
@@ -79,32 +79,32 @@ inline __float128 log10(const __float128 &a) {
 
 namespace std {
 
-inline __float128 abs(const std::complex<__float128> &a) {
+inline binary128 abs(const std::complex<binary128> &a) {
   return sqrtq(a.real() * a.real() + a.imag() * a.imag());
 }
 
 
-inline std::complex<__float128> sqrt(const std::complex<__float128> &a) {
+inline std::complex<binary128> sqrt(const std::complex<binary128> &a) {
    __complex128 b,tmp;
-   std::complex<__float128> c;
+   std::complex<binary128> c;
    __real__(b) = (a.real()); __imag__(b) = (a.imag());
    tmp = csqrtq (b);
    c.real( __real__(tmp)); c.imag(__imag__(tmp));
    return c;
 }
 
-inline std::complex<__float128> exp(const std::complex<__float128> &a) {
+inline std::complex<binary128> exp(const std::complex<binary128> &a) {
    __complex128 b,tmp;
-   std::complex<__float128> c;
+   std::complex<binary128> c;
    __real__(b) = (a.real()); __imag__(b) = (a.imag());
    tmp = cexpq (b);
    c.real(__real__(tmp)); c.imag(__imag__(tmp));
    return c;
 }
 
-inline std::complex<__float128> log(const std::complex<__float128> &a) {
+inline std::complex<binary128> log(const std::complex<binary128> &a) {
    __complex128 b,tmp;
-   std::complex<__float128> c;
+   std::complex<binary128> c;
    __real__(b) = (a.real()); __imag__(b) = (a.imag());
    tmp = clogq (b);
    c.real(__real__(tmp)); c.imag(__imag__(tmp));
@@ -114,23 +114,23 @@ inline std::complex<__float128> log(const std::complex<__float128> &a) {
 }
 
 #if !(_XOPEN_SOURCE >= 600) && !(_ISOC99_SOURCE)
-inline __float128 log2(__float128 x)
+inline binary128 log2(binary128 x)
 {
    return log(x) / log(2.0);
 }
 #endif
 
-__float128 pi(__float128 dummy);
-__float128 sign(__float128 a, __float128 b);
-double cast2double(__float128 a);
-long nint(__float128 a);
-std::complex<__float128> Real2Complex(__float128 a, __float128 b);
-__float128 Cabs1(std::complex<__float128> zdum);
+binary128 pi(binary128 dummy);
+binary128 sign(binary128 a, binary128 b);
+double cast2double(binary128 a);
+long nint(binary128 a);
+std::complex<binary128> Real2Complex(binary128 a, binary128 b);
+binary128 Cabs1(std::complex<binary128> zdum);
 
 //implementation of sign transfer function.
-inline __float128 sign(__float128 a, __float128 b)
+inline binary128 sign(binary128 a, binary128 b)
 {
-  __float128 mtmp;
+  binary128 mtmp;
   mtmp=std::abs(a);
   if (b<0.0) {
     mtmp=-mtmp;
@@ -139,32 +139,32 @@ inline __float128 sign(__float128 a, __float128 b)
 }
 
 inline double
-cast2double(__float128 a)
+cast2double(binary128 a)
 {
     return (double)a;
 }
 
-inline long nint(__float128 a)
+inline long nint(binary128 a)
 {
     long i;
-    __float128 tmp;
+    binary128 tmp;
     a = a + 0.5;
     tmp = floorq(a);
     i = (long)tmp;
     return i;
 }
 
-inline std::complex<__float128> Real2Complex(__float128 a, __float128 b)
+inline std::complex<binary128> Real2Complex(binary128 a, binary128 b)
 {
-    std::complex<__float128> ret;
+    std::complex<binary128> ret;
     ret.real(a);
     ret.imag(b);
     return ret;
 }
 
-inline __float128 Cabs1(std::complex<__float128> zdum)
+inline binary128 Cabs1(std::complex<binary128> zdum)
 {
-    __float128 ret;
+    binary128 ret;
     ret = std::abs(zdum.real()) + std::abs(zdum.imag());
     return ret;
 }

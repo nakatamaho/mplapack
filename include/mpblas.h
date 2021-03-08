@@ -88,13 +88,13 @@ typedef std::complex<long double> COMPLEX;
 #endif
 
 
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
-#include <mpblas___float128.h>
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#include <mpblas_binary128.h>
 typedef mplapackint INTEGER;
-typedef __float128 REAL;
-typedef std::complex<__float128> COMPLEX;
-#define Mlsame   Mlsame___float128
-#define Mxerbla  Mxerbla___float128
+typedef binary128 REAL;
+typedef std::complex<binary128> COMPLEX;
+#define Mlsame   Mlsame_binary128
+#define Mxerbla  Mxerbla_binary128
 #endif
 
 #include <algorithm>    // std::max

@@ -195,20 +195,20 @@ AS_HELP_STRING([--enable-double], [Enable double version]),
         esac],[enable_double=no])
 AM_CONDITIONAL(ENABLE_DOUBLE, test x$enable_double = xyes)
 
-AC_ARG_ENABLE(__float128,
-AS_HELP_STRING([--enable-__float128], [Enable __float128 version using non standard extension of gcc and icc]),
+AC_ARG_ENABLE(binary128,
+AS_HELP_STRING([--enable-binary128], [Enable binary128 version using non standard extension of gcc and icc]),
 [case "${enableval}" in
-    yes) enable___float128=yes ;;
-    no)  enable___float128=no  ;;
-    *) AC_MSG_ERROR(bad value ${enableval} for --enable-__float128) ;;
-        esac],[enable___float128=no])
+    yes) enable_binary128=yes ;;
+    no)  enable_binary128=no  ;;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-binary128) ;;
+        esac],[enable_binary128=no])
 
 AC_ARG_WITH(gccname,
 AS_HELP_STRING([--with-gccname], [Specify path to gcc for libquadmath (only for Intel Composer)]),
 [ GCCNAME="$withval"]
 )
 
-if test x$enable___float128 = x"yes"; then
+if test x$enable_binary128 = x"yes"; then
 
 __ICC=`basename $CC`
 if test x$__ICC = x"icc"; then
@@ -223,20 +223,20 @@ fi
 
 SAVE_CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS $_GCC_FLOAT128_FLAGS"
-AC_MSG_CHECKING([whether __float128 is supported])
+AC_MSG_CHECKING([whether binary128 is supported])
 AC_TRY_COMPILE([
 #include <quadmath.h>
-],[__float128 a = 0.0Q; return 0;], have___float128=yes, have___float128=no)
+],[binary128 a = 0.0Q; return 0;], have_binary128=yes, have_binary128=no)
 
-if test "$have___float128" = "no"; then
-    AC_MSG_ERROR([__float128 is not supported on this platform])
+if test "$have_binary128" = "no"; then
+    AC_MSG_ERROR([binary128 is not supported on this platform])
 else
-    AC_MSG_RESULT([__float128 is supported])
+    AC_MSG_RESULT([binary128 is supported])
 fi
 fi
 CFLAGS="$SAVE_CFLAGS"
 
-AM_CONDITIONAL(ENABLE___FLOAT128, test x$enable___float128 = xyes)
+AM_CONDITIONAL(ENABLE_BINARY128, test x$enable_binary128 = xyes)
 
 AC_ARG_ENABLE(longdouble,
 AS_HELP_STRING([--enable-longdouble], [Enable long double version]),
@@ -524,10 +524,10 @@ AC_MSG_RESULT([Enable long double version])
 else
 AC_MSG_RESULT([Disable long double version])
 fi
-if test x$enable___float128 = x"yes"; then
-AC_MSG_RESULT([Enable __float128 version])
+if test x$enable_binary128 = x"yes"; then
+AC_MSG_RESULT([Enable binary128 version])
 else
-AC_MSG_RESULT([Disable __float128 version])
+AC_MSG_RESULT([Disable binary128 version])
 fi
 if test x$enable_debug = x"yes"; then
 AC_MSG_RESULT([Enable debug])
@@ -612,7 +612,7 @@ DO_LAPACKBENCH=yes
 fi
 AM_CONDITIONAL(DO_LAPACKBENCH, test x$DO_LAPACKBENCH = xyes)
 
-dnl __float128 support part II.
+dnl binary128 support part II.
 if test x$__ICC = x"icc"; then
 CFLAGS="$CFLAGS $_GCC_FLOAT128_FLAGS"
 CXXFLAGS="$CXXFLAGS $_GCC_FLOAT128_FLAGS"
@@ -652,8 +652,8 @@ fi
 if test x$enable_mpc = x"yes"; then
   PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_mpc -lmpblas_mpc"
 fi
-if test x$enable___float128 = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack___float128 -lmpblas___float128 -lquadmath"
+if test x$enable_binary128 = x"yes"; then
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_binary128 -lmpblas_binary128 -lquadmath"
 fi
 if test x$enable_double = x"yes"; then
   PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_double -lmpblas_double"
@@ -692,7 +692,7 @@ mpblas/optimized/dd/Makefile
 mpblas/optimized/dd/cuda/Makefile
 mpblas/optimized/double/Makefile
 mpblas/optimized/longdouble/Makefile
-mpblas/optimized/__float128/Makefile
+mpblas/optimized/binary128/Makefile
 mpblas/blaswrapper/Makefile
 mpblas/fortranwrapper/Makefile
 mpblas/debug/Makefile
@@ -702,7 +702,7 @@ mpblas/debug/qd/Makefile
 mpblas/debug/dd/Makefile
 mpblas/debug/double/Makefile
 mpblas/debug/longdouble/Makefile
-mpblas/debug/__float128/Makefile
+mpblas/debug/binary128/Makefile
 mpblas/Makefile
 mplapack/debug/Makefile
 mplapack/debug/gmp/Makefile
@@ -711,7 +711,7 @@ mplapack/debug/qd/Makefile
 mplapack/debug/dd/Makefile
 mplapack/debug/double/Makefile
 mplapack/debug/longdouble/Makefile
-mplapack/debug/__float128/Makefile
+mplapack/debug/binary128/Makefile
 mplapack/optimized/Makefile
 mplapack/optimized/gmp/Makefile
 mplapack/optimized/mpfr/Makefile
@@ -719,7 +719,7 @@ mplapack/optimized/qd/Makefile
 mplapack/optimized/dd/Makefile
 mplapack/optimized/double/Makefile
 mplapack/optimized/longdouble/Makefile
-mplapack/optimized/__float128/Makefile
+mplapack/optimized/binary128/Makefile
 mplapack/lapackwrapper/Makefile
 mplapack/fortranwrapper/Makefile
 mplapack/Makefile
