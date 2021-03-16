@@ -223,6 +223,8 @@ if test x$enable__Float128 = x"yes"; then
     ], [have__Float128=yes, want_libquadmath=no], [_have__Float128=no])
 
     if test "$_have__Float128" = "no"; then
+        save_LDFLAGS="$LDFLAGS"
+        LDFLAGS="$LDFLAGS -lquadmath"
         AC_LINK_IFELSE([
             AC_LANG_SOURCE([[
                 #include<quadmath.h>
@@ -238,6 +240,7 @@ if test x$enable__Float128 = x"yes"; then
         if test "$have__Float128" = "no"; then
             AC_MSG_ERROR([_Float128 is not supported on this platform])
         fi
+        LDFLAGS="$save_LDFLAGS"
     fi
 
     if test "$want_libquadmath" = "yes"; then
