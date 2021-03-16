@@ -19,9 +19,9 @@ for _mplib in $MPLIBS; do
         echo "${_file}_${_mplib}_ref ${_file}_${_mplib} \\" | sed 's/\.cpp//g' >> ${_mplib}/_filelist_debug
     done
 
-    sed -i -e "$ s/\\\//g" ${_mplib}/_filelist_debug
+    sed -i.bak -e "$ s/\\\//g" ${_mplib}/_filelist_debug
     sed -e "/%%insert here1%%/e cat ${_mplib}/_filelist_debug" ${_mplib}/Makefile.am.part.${_mplib} > ${_mplib}/Makefile.am.part.2nd
-    sed -i -e "s/%%insert here1%%//g" ${_mplib}/Makefile.am.part.2nd
+    sed -i.bak -e "s/%%insert here1%%//g" ${_mplib}/Makefile.am.part.2nd
 
     rm -f ${_mplib}/Makefile.am.part.3rd
     FILES=`cat _tmpfilelist_debug | grep -v Mutils`
@@ -39,7 +39,7 @@ for _mplib in $MPLIBS; do
     done
 
     sed -e "/%%insert here2%%/e cat ${_mplib}/Makefile.am.part.3rd" ${_mplib}/Makefile.am.part.2nd | grep -v %%FUNCTION%% | grep -v %%TEST%% > ${_mplib}/Makefile.am
-    sed -i -e "s/%%insert here2%%//g" ${_mplib}/Makefile.am
+    sed -i.bak -e "s/%%insert here2%%//g" ${_mplib}/Makefile.am
     rm ${_mplib}/Makefile.am.part.* ${_mplib}/_filelist_debug
 done
 
