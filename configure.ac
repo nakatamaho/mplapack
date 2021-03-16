@@ -198,7 +198,7 @@ AS_HELP_STRING([--enable-double], [Enable double version]),
 AM_CONDITIONAL(ENABLE_DOUBLE, test x$enable_double = xyes)
 
 AC_ARG_ENABLE(_Float128,
-AS_HELP_STRING([--enable-_Float128], [Enable _Float128 version using non standard extension of gcc and icc]),
+AS_HELP_STRING([--enable-_Float128], [Enable _Float128 version using TS 18661-3]),
 [case "${enableval}" in
     yes) enable__Float128=yes ;;
     no)  enable__Float128=no  ;;
@@ -226,9 +226,19 @@ fi
 SAVE_CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS $_GCC_FLOAT128_FLAGS"
 AC_MSG_CHECKING([whether _Float128 is supported])
-AC_TRY_COMPILE([
-#include <quadmath.h>
-],[_Float128 a = 0.0Q; return 0;], have__Float128=yes, have__Float128=no)
+AC_COMPILE_IFELSE([
+   AC_LANG_SOURCE([[
+   #define __STDC_WANT_IEC_60559_TYPES_EXT__
+   #include <stdio.h>
+   #include <math.h>
+   #include <stdlib.h>
+   int main() {_Float128 a, b, c; b = 1.0q; c=1.0q; a = b + c;
+   char buf[1024];
+   strfromf128(buf, sizeof(buf), "%.40g", a);
+   printf("fp128 %s\n",buf);
+   }
+  ]])
+], [have__Float128=yes], [have__Float128=no])
 
 if test "$have__Float128" = "no"; then
     AC_MSG_ERROR([_Float128 is not supported on this platform])
