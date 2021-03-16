@@ -1,16 +1,16 @@
-// Get inverse of Hilbert matrix via Rgetri, using __float128
+// Get inverse of Hilbert matrix via Rgetri, using _Float128
 // Very difficult to calculate the inverse due to very large
 // condition number.
 // For details, see http://en.wikipedia.org/wiki/Hilbert_matrix
 // This file is freely usable.
 // written by Nakata Maho, 2012/5/30.
 
-#include <mpblas___float128.h>
-#include <mplapack___float128.h>
+#include <mpblas__Float128.h>
+#include <mplapack__Float128.h>
 #include <stdio.h>
 #define BUFLEN 1024
 
-void printnum(__float128 rtmp)
+void printnum(_Float128 rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
@@ -21,9 +21,9 @@ void printnum(__float128 rtmp)
 }
 
 //Matlab/Octave format
-void printmat(int N, int M, __float128 *A, int LDA)
+void printmat(int N, int M, _Float128 *A, int LDA)
 {
-    __float128 mtmp;
+    _Float128 mtmp;
     printf("[ ");
     for (int i = 0; i < N; i++) {
 	printf("[ ");
@@ -47,11 +47,11 @@ void printmat(int N, int M, __float128 *A, int LDA)
 void inv_hilbert_matrix(int n)
 {
     mplapackint lwork, info;
-    __float128 *A = new __float128[n * n];	//A is overwritten
-    __float128 *Aorg = new __float128[n * n];
-    __float128 *C = new __float128[n * n];
+    _Float128 *A = new _Float128[n * n];	//A is overwritten
+    _Float128 *Aorg = new _Float128[n * n];
+    _Float128 *C = new _Float128[n * n];
     mplapackint *ipiv = new mplapackint[n];
-    __float128 One = 1.0, Zero = 0.0, mtmp;
+    _Float128 One = 1.0, Zero = 0.0, mtmp;
 
 //setting A matrix
     for (int i = 0; i < n; i++) {
@@ -67,12 +67,12 @@ void inv_hilbert_matrix(int n)
     printf("\n");
 //work space query
     lwork = -1;
-    __float128 *work = new __float128[1];
+    _Float128 *work = new _Float128[1];
 
     Rgetri(n, A, n, ipiv, work, lwork, &info);
     lwork = int (work[0]);
     delete[]work;
-    work = new __float128[std::max(1, (int) lwork)];
+    work = new _Float128[std::max(1, (int) lwork)];
 //inverse matrix
     Rgetrf(n, n, A, n, ipiv, &info);
     Rgetri(n, A, n, ipiv, work, lwork, &info);

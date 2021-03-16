@@ -54,8 +54,8 @@
 #include <mutils_longdouble.h>
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
-#include <mutils___float128.h>
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+#include <mutils__Float128.h>
 #endif
 
 #endif

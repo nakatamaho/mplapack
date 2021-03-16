@@ -5,7 +5,7 @@ cp "$NAME"_mpfr.cpp "$NAME"_gmp.cpp
 cp "$NAME"_mpfr.cpp "$NAME"_dd.cpp
 cp "$NAME"_mpfr.cpp "$NAME"_qd.cpp
 cp "$NAME"_mpfr.cpp "$NAME"_double.cpp
-cp "$NAME"_mpfr.cpp "$NAME"___float128.cpp
+cp "$NAME"_mpfr.cpp "$NAME"__Float128.cpp
 
 sed -ibak 's/mpreal/dd_real/g' "$NAME"_dd.cpp
 sed -ibak 's/MPFR/DD/g' "$NAME"_dd.cpp
@@ -22,10 +22,10 @@ sed -ibak 's/MPFR/QD/g' "$NAME"_qd.cpp
 sed -ibak 's/mpfr/qd/g' "$NAME"_qd.cpp
 sed -ibak 's/___MPLAPACK_BUILD_WITH_MPFR___/___MPLAPACK_BUILD_WITH_QD___/g' "$NAME"_qd.cpp
 
-sed -ibak 's/mpreal/__float128/g' "$NAME"___float128.cpp
-sed -ibak 's/MPFR/__FLOAT128/g' "$NAME"___float128.cpp
-sed -ibak 's/mpfr/__float128/g' "$NAME"___float128.cpp
-sed -ibak 's/___MPLAPACK_BUILD_WITH_MPFR___/___MPLAPACK_BUILD_WITH___FLOAT128___/g' "$NAME"___float128.cpp
+sed -ibak 's/mpreal/_Float128/g' "$NAME"__Float128.cpp
+sed -ibak 's/MPFR/_FLOAT128/g' "$NAME"__Float128.cpp
+sed -ibak 's/mpfr/_Float128/g' "$NAME"__Float128.cpp
+sed -ibak 's/___MPLAPACK_BUILD_WITH_MPFR___/___MPLAPACK_BUILD_WITH__FLOAT128___/g' "$NAME"__Float128.cpp
 
 sed -ibak 's/mpreal/double/g' "$NAME"_double.cpp
 sed -ibak 's/MPFR/DOUBLE/g' "$NAME"_double.cpp

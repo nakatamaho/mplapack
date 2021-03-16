@@ -1,54 +1,54 @@
 bench_PROGRAMS += \
-Raxpy.__float128 Raxpy.__float128_ref \
-Rcopy.__float128 Rcopy.__float128_ref \
-Rdot.__float128  Rdot.__float128_ref \
-Rgemm.__float128 Rgemm.__float128_ref \
-Rgemv.__float128 Rgemv.__float128_ref
+Raxpy._Float128 Raxpy._Float128_ref \
+Rcopy._Float128 Rcopy._Float128_ref \
+Rdot._Float128  Rdot._Float128_ref \
+Rgemm._Float128 Rgemm._Float128_ref \
+Rgemv._Float128 Rgemv._Float128_ref
 
 #lapack is needed for Rlange
-__float128cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH___FLOAT128___
-__float128lapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack___float128_ref
-__float128ref_libdepends = $(__float128lapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas___float128_ref -lquadmath $(DYLD)
-__float128opt_libdepends = $(__float128lapack_libdepends) -L$(top_builddir)/mpblas/optimized/__float128 -lmpblas___float128 -lquadmath $(DYLD)
+_Float128cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT128___
+_Float128lapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float128_ref
+_Float128ref_libdepends = $(_Float128lapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas__Float128_ref -lquadmath $(DYLD)
+_Float128opt_libdepends = $(_Float128lapack_libdepends) -L$(top_builddir)/mpblas/optimized/_Float128 -lmpblas__Float128 -lquadmath $(DYLD)
 
-Raxpy___float128_ref_SOURCES= Raxpy.cpp
-Raxpy___float128_ref_CXXFLAGS= $(__float128cxxflags)
-Raxpy___float128_ref_LDFLAGS= $(__float128ref_libdepends)
+Raxpy__Float128_ref_SOURCES= Raxpy.cpp
+Raxpy__Float128_ref_CXXFLAGS= $(_Float128cxxflags)
+Raxpy__Float128_ref_LDFLAGS= $(_Float128ref_libdepends)
 
-Raxpy___float128_SOURCES= Raxpy.cpp
-Raxpy___float128_CXXFLAGS= $(__float128cxxflags)
-Raxpy___float128_LDFLAGS= $(__float128opt_libdepends)
+Raxpy__Float128_SOURCES= Raxpy.cpp
+Raxpy__Float128_CXXFLAGS= $(_Float128cxxflags)
+Raxpy__Float128_LDFLAGS= $(_Float128opt_libdepends)
 
-Rcopy___float128_ref_SOURCES= Rcopy.cpp
-Rcopy___float128_ref_CXXFLAGS= $(__float128cxxflags)
-Rcopy___float128_ref_LDFLAGS= $(__float128ref_libdepends)
+Rcopy__Float128_ref_SOURCES= Rcopy.cpp
+Rcopy__Float128_ref_CXXFLAGS= $(_Float128cxxflags)
+Rcopy__Float128_ref_LDFLAGS= $(_Float128ref_libdepends)
 
-Rcopy___float128_SOURCES= Rcopy.cpp
-Rcopy___float128_CXXFLAGS= $(__float128cxxflags)
-Rcopy___float128_LDFLAGS= $(__float128opt_libdepends)
+Rcopy__Float128_SOURCES= Rcopy.cpp
+Rcopy__Float128_CXXFLAGS= $(_Float128cxxflags)
+Rcopy__Float128_LDFLAGS= $(_Float128opt_libdepends)
 
-Rdot___float128_ref_SOURCES= Rdot.cpp
-Rdot___float128_ref_CXXFLAGS= $(__float128cxxflags)
-Rdot___float128_ref_LDFLAGS= $(__float128ref_libdepends)
+Rdot__Float128_ref_SOURCES= Rdot.cpp
+Rdot__Float128_ref_CXXFLAGS= $(_Float128cxxflags)
+Rdot__Float128_ref_LDFLAGS= $(_Float128ref_libdepends)
 
-Rdot___float128_SOURCES= Rdot.cpp
-Rdot___float128_CXXFLAGS= $(__float128cxxflags)
-Rdot___float128_LDFLAGS= $(__float128opt_libdepends)
+Rdot__Float128_SOURCES= Rdot.cpp
+Rdot__Float128_CXXFLAGS= $(_Float128cxxflags)
+Rdot__Float128_LDFLAGS= $(_Float128opt_libdepends)
 
-Rgemm___float128_ref_SOURCES= Rgemm.cpp
-Rgemm___float128_ref_CXXFLAGS= $(__float128cxxflags)
-Rgemm___float128_ref_LDFLAGS= $(__float128ref_libdepends)
+Rgemm__Float128_ref_SOURCES= Rgemm.cpp
+Rgemm__Float128_ref_CXXFLAGS= $(_Float128cxxflags)
+Rgemm__Float128_ref_LDFLAGS= $(_Float128ref_libdepends)
 
-Rgemm___float128_SOURCES= Rgemm.cpp
-Rgemm___float128_CXXFLAGS= $(__float128cxxflags)
-Rgemm___float128_LDFLAGS= $(__float128opt_libdepends)
+Rgemm__Float128_SOURCES= Rgemm.cpp
+Rgemm__Float128_CXXFLAGS= $(_Float128cxxflags)
+Rgemm__Float128_LDFLAGS= $(_Float128opt_libdepends)
 
-Rgemv___float128_ref_SOURCES= Rgemv.cpp
-Rgemv___float128_ref_CXXFLAGS= $(__float128cxxflags)
-Rgemv___float128_ref_LDFLAGS= $(__float128ref_libdepends)
+Rgemv__Float128_ref_SOURCES= Rgemv.cpp
+Rgemv__Float128_ref_CXXFLAGS= $(_Float128cxxflags)
+Rgemv__Float128_ref_LDFLAGS= $(_Float128ref_libdepends)
 
-Rgemv___float128_SOURCES= Rgemv.cpp
-Rgemv___float128_CXXFLAGS= $(__float128cxxflags)
-Rgemv___float128_LDFLAGS= $(__float128opt_libdepends)
+Rgemv__Float128_SOURCES= Rgemv.cpp
+Rgemv__Float128_CXXFLAGS= $(_Float128cxxflags)
+Rgemv__Float128_LDFLAGS= $(_Float128opt_libdepends)
 
 

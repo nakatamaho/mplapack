@@ -28,26 +28,26 @@
  *
  */
 
-#include <mpblas___float128.h>
+#include <mpblas__Float128.h>
 
-void Rgemm_NN(mplapackint m, mplapackint n, mplapackint k, __float128 alpha, __float128 * A, mplapackint lda, __float128 * B, mplapackint ldb,
-	      __float128 beta, __float128 * C, mplapackint ldc);
-void Rgemm_TN(mplapackint m, mplapackint n, mplapackint k, __float128 alpha, __float128 * A, mplapackint lda, __float128 * B, mplapackint ldb,
-	      __float128 beta, __float128 * C, mplapackint ldc);
-void Rgemm_NT(mplapackint m, mplapackint n, mplapackint k, __float128 alpha, __float128 * A, mplapackint lda, __float128 * B, mplapackint ldb,
-	      __float128 beta, __float128 * C, mplapackint ldc);
-void Rgemm_TT(mplapackint m, mplapackint n, mplapackint k, __float128 alpha, __float128 * A, mplapackint lda, __float128 * B, mplapackint ldb,
-	      __float128 beta, __float128 * C, mplapackint ldc);
+void Rgemm_NN(mplapackint m, mplapackint n, mplapackint k, _Float128 alpha, _Float128 * A, mplapackint lda, _Float128 * B, mplapackint ldb,
+	      _Float128 beta, _Float128 * C, mplapackint ldc);
+void Rgemm_TN(mplapackint m, mplapackint n, mplapackint k, _Float128 alpha, _Float128 * A, mplapackint lda, _Float128 * B, mplapackint ldb,
+	      _Float128 beta, _Float128 * C, mplapackint ldc);
+void Rgemm_NT(mplapackint m, mplapackint n, mplapackint k, _Float128 alpha, _Float128 * A, mplapackint lda, _Float128 * B, mplapackint ldb,
+	      _Float128 beta, _Float128 * C, mplapackint ldc);
+void Rgemm_TT(mplapackint m, mplapackint n, mplapackint k, _Float128 alpha, _Float128 * A, mplapackint lda, _Float128 * B, mplapackint ldb,
+	      _Float128 beta, _Float128 * C, mplapackint ldc);
 
-void Rgemm(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, __float128 alpha, __float128 * A,
-	   mplapackint lda, __float128 * B, mplapackint ldb, __float128 beta, __float128 * C, mplapackint ldc)
+void Rgemm(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, _Float128 alpha, _Float128 * A,
+	   mplapackint lda, _Float128 * B, mplapackint ldb, _Float128 beta, _Float128 * C, mplapackint ldc)
 {
     mplapackint i, j, l, nota, notb, nrowa, ncola, nrowb, info;
-    __float128 temp;
-    __float128 Zero = 0.0, One = 1.0;
+    _Float128 temp;
+    _Float128 Zero = 0.0, One = 1.0;
 
-    nota = Mlsame___float128(transa, "N");
-    notb = Mlsame___float128(transb, "N");
+    nota = Mlsame__Float128(transa, "N");
+    notb = Mlsame__Float128(transb, "N");
     if (nota) {
 	nrowa = m;
 	ncola = k;
@@ -62,9 +62,9 @@ void Rgemm(const char *transa, const char *transb, mplapackint m, mplapackint n,
     }
 //Test the input parameters.
     info = 0;
-    if (!nota && (!Mlsame___float128(transa, "C")) && (!Mlsame___float128(transa, "T")))
+    if (!nota && (!Mlsame__Float128(transa, "C")) && (!Mlsame__Float128(transa, "T")))
 	info = 1;
-    else if (!notb && (!Mlsame___float128(transb, "C")) && (!Mlsame___float128(transb, "T")))
+    else if (!notb && (!Mlsame__Float128(transb, "C")) && (!Mlsame__Float128(transb, "T")))
 	info = 2;
     else if (m < 0)
 	info = 3;
@@ -79,7 +79,7 @@ void Rgemm(const char *transa, const char *transb, mplapackint m, mplapackint n,
     else if (ldc < std::max((mplapackint) 1, m))
 	info = 13;
     if (info != 0) {
-	Mxerbla___float128("Rgemm ", info);
+	Mxerbla__Float128("Rgemm ", info);
 	return;
     }
 //Quick return if possible.

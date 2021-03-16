@@ -131,8 +131,8 @@ void Rlatrs_test2(const char *uplo, const char *trans, const char *diag, const c
                     x[p] = cast2dd_real(y_ref[p]);
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
                     x[p] = cast2double(y_ref[p]);
-#elif defined ___MPLAPACK_BUILD_WITH___FLOAT128___
-                    x[p] = cast2__float128(y_ref[p]);
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+                    x[p] = cast2_Float128(y_ref[p]);
 #endif
 		}
 //printf("y_ref"); printvec(y_ref, veclen(n, 1)); printf("\n");

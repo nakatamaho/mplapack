@@ -162,7 +162,7 @@ REAL pi(REAL dummy)
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
     return M_PI;
 
-#elif defined ___MPLAPACK_BUILD_WITH___FLOAT128___
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
     return M_PIq;
 #else
 return dummy;

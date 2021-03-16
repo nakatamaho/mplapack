@@ -28,14 +28,14 @@
  *
  */
 
-#include <mpblas___float128.h>
+#include <mpblas__Float128.h>
 
-__float128 Rdot_ref(mplapackint n, __float128 * dx, mplapackint incx, __float128 * dy, mplapackint incy);
-__float128 Rdot_omp(mplapackint n, __float128 * dx, mplapackint incx, __float128 * dy, mplapackint incy);
+_Float128 Rdot_ref(mplapackint n, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy);
+_Float128 Rdot_omp(mplapackint n, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy);
 
 #define SINGLEOROMP 1000
 
-__float128 Rdot(mplapackint n, __float128 * dx, mplapackint incx, __float128 * dy, mplapackint incy)
+_Float128 Rdot(mplapackint n, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy)
 {
     mplapackint ix = 0;
     mplapackint iy = 0;

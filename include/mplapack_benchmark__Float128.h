@@ -28,9 +28,9 @@
  *
  */
 
-__float128 randomnumber(__float128 dummy)
+_Float128 randomnumber(_Float128 dummy)
 {
-    __float128 mtmp;
+    _Float128 mtmp;
     mtmp = lrand48();           //uniform random between [0,1] via lrand48
     mtmp += lrand48()*1e-16;    //uniform random between [0,1] via lrand48
     mtmp += lrand48()*1e-32;    //uniform random between [0,1] via lrand48
@@ -38,8 +38,8 @@ __float128 randomnumber(__float128 dummy)
     return mtmp;
 }
 
-#define MPLAPACK_REF_LIB    "libmplapack___float128_ref"
-#define MPBLAS_REF_LIB      "libmpblas___float128_ref"
+#define MPLAPACK_REF_LIB    "libmplapack__Float128_ref"
+#define MPBLAS_REF_LIB      "libmpblas__Float128_ref"
 
 //mpblas symbols
 #define SYMBOL_GCC_CRROT		"_Z5CRrotlPSt7complexIgElS1_lgg"
@@ -77,8 +77,8 @@ __float128 randomnumber(__float128 dummy)
 #define SYMBOL_GCC_CTRMV		"_Z5CtrmvPKcS0_S0_lPSt7complexIgElS3_l"
 #define SYMBOL_GCC_CTRSM		"_Z5CtrsmPKcS0_S0_S0_llSt7complexIgEPS2_lS3_l"
 #define SYMBOL_GCC_CTRSV		"_Z5CtrsvPKcS0_S0_lPSt7complexIgElS3_l"
-#define SYMBOL_GCC_MLSAME		"_Z17Mlsame___float128PKcS0_"
-#define SYMBOL_GCC_MXERBLA		"_Z18Mxerbla___float128PKci"
+#define SYMBOL_GCC_MLSAME		"_Z17Mlsame__Float128PKcS0_"
+#define SYMBOL_GCC_MXERBLA		"_Z18Mxerbla__Float128PKci"
 #define SYMBOL_GCC_RCABS1		"_Z6RCabs1St7complexIgE"
 #define SYMBOL_GCC_RCASUM		"_Z6RCasumlPSt7complexIgEl"
 #define SYMBOL_GCC_RCNRM2		"_Z6RCnrm2lPSt7complexIgEl"

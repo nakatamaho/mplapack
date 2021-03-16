@@ -62,14 +62,14 @@ mplapack_include_HEADERS += \
      include/mutils_longdouble.h
 endif
 
-if ENABLE___FLOAT128
+if ENABLE__FLOAT128
 mplapack_include_HEADERS += \
-    include/mpblas___float128.h \
-    include/mplapack___float128.h \
-    include/mutils___float128.h
+    include/mpblas__Float128.h \
+    include/mplapack__Float128.h \
+    include/mutils__Float128.h
 endif
 
-noinst_HEADERS = include/mplapack_debug.h include/mutils.h include/mpblas.h include/mplapack.h include/mplapack_generic.h include/mplapack_benchmark.h include/mplapack_benchmark___float128.h include/mplapack_benchmark_dd.h include/mplapack_benchmark_double.h include/mplapack_benchmark_gmp.h include/mplapack_benchmark_mpfr.h include/mplapack_benchmark_qd.h
+noinst_HEADERS = include/mplapack_debug.h include/mutils.h include/mpblas.h include/mplapack.h include/mplapack_generic.h include/mplapack_benchmark.h include/mplapack_benchmark__Float128.h include/mplapack_benchmark_dd.h include/mplapack_benchmark_double.h include/mplapack_benchmark_gmp.h include/mplapack_benchmark_mpfr.h include/mplapack_benchmark_qd.h
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = mplapack.pc

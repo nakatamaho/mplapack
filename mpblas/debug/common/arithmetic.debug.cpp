@@ -45,7 +45,7 @@ void subst_test1()
   strcpy (buf1, "-1.234567890123456789012345678901234567890123456789012345678901234567890e+01");
 
 //tmp1 = buf1;
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
   tmp1 = strtoflt128(buf1, NULL);
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
   sscanf(buf1, "%lf", &tmp1);
@@ -76,7 +76,7 @@ void subst_test1()
   if (strncmp(buf1, buf2, 66)==0 && strncmp(buf2, buf3, 66)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
   if (strncmp(buf1, buf2, 19)==0 && strncmp(buf2, buf3, 19)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
-#elif defined ___MPLAPACK_BUILD_WITH___FLOAT128___
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
   if (strncmp(buf1, buf2, 37)==0 && strncmp(buf2, buf3, 37)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
 #endif
   printf("*** Substitution test 1 successful ***\n");
@@ -110,8 +110,8 @@ void subst_test2()
   tmp1 = cast2double(tmp2);
 #elif defined ___MPLAPACK_BUILD_WITH_LONGDOUBLE___
   tmp1 = cast2longdouble(tmp2);  
-#elif defined ___MPLAPACK_BUILD_WITH___FLOAT128___
-  tmp1 = cast2__float128(tmp2);
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+  tmp1 = cast2_Float128(tmp2);
 #endif
 
   sprintnum(buf2, tmp2);
@@ -134,7 +134,7 @@ void subst_test2()
   if (strncmp(buf1, buf2, 19)==0 && strncmp(buf2, buf3, 19)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);}
 #elif defined ___MPLAPACK_BUILD_WITH_LONGDOUBLE___
   if (strncmp(buf1, buf2, 19)==0 && strncmp(buf2, buf3, 19)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);}
-#elif defined ___MPLAPACK_BUILD_WITH___FLOAT128___
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
   if (strncmp(buf1, buf2, 36)==0 && strncmp(buf2, buf3, 36)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
 #endif
   printf("*** Substitution test 2 successful ***\n");

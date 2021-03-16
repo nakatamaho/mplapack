@@ -4,7 +4,7 @@ rm -f _tmpfilelist
 pushd common ; ls *debug.cpp > ../_tmpfilelist_debug ; popd
 pushd common ; ls *test.cpp  > ../_tmpfilelist_test ; popd
 
-MPLIBS="gmp mpfr __float128 dd qd double longdouble"
+MPLIBS="gmp mpfr _Float128 dd qd double longdouble"
 
 for _mplib in $MPLIBS; do
     rm -f $_mplib/Makefile.am

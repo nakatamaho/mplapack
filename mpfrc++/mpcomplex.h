@@ -242,9 +242,9 @@ class mpcomplex {
     mpcomplex(const dd_complex &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex &operator=(const dd_complex &a);
 #endif
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
-    mpcomplex(const std::complex<__float128> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
-    mpcomplex &operator=(const std::complex<__float128> &a);
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+    mpcomplex(const std::complex<_Float128> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
+    mpcomplex &operator=(const std::complex<_Float128> &a);
 #endif
 };
 
@@ -1096,8 +1096,8 @@ inline mpcomplex &mpcomplex::operator=(const dd_complex &a) {
 
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
-inline mpcomplex::mpcomplex(const std::complex<__float128> &a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+inline mpcomplex::mpcomplex(const std::complex<_Float128> &a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
     mpfr_t mp_real, mp_imag;
     mpc_init3(mpc, pr, pi);
 
@@ -1111,8 +1111,8 @@ inline mpcomplex::mpcomplex(const std::complex<__float128> &a, mp_prec_t pr, mp_
     mpfr_clear(mp_imag);
     mpfr_clear(mp_real);
 }
-inline std::complex<__float128> cast2complex__float128(const mpcomplex &b) {
-    std::complex<__float128> q;
+inline std::complex<_Float128> cast2complex_Float128(const mpcomplex &b) {
+    std::complex<_Float128> q;
     mpreal re_tmp, im_tmp;
     re_tmp = b.real();
     im_tmp = b.imag();
@@ -1120,11 +1120,11 @@ inline std::complex<__float128> cast2complex__float128(const mpcomplex &b) {
     q.imag(mpfr_get_float128((mpfr_ptr)(im_tmp), mpreal::default_rnd));
     return q;
 }
-inline const mpcomplex operator-(const mpcomplex &a, const std::complex<__float128> &b) { return mpcomplex(b) -= a; }
+inline const mpcomplex operator-(const mpcomplex &a, const std::complex<_Float128> &b) { return mpcomplex(b) -= a; }
 
-inline const mpcomplex operator-(const std::complex<__float128> &a, const mpcomplex &b) { return -(mpcomplex(a) -= b); }
+inline const mpcomplex operator-(const std::complex<_Float128> &a, const mpcomplex &b) { return -(mpcomplex(a) -= b); }
 
-inline mpcomplex &mpcomplex::operator=(const std::complex<__float128> &a) {
+inline mpcomplex &mpcomplex::operator=(const std::complex<_Float128> &a) {
     mpcomplex tmp(a);
     *this = tmp;
     return *this;

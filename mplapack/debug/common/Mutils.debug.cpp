@@ -125,7 +125,7 @@ void Mutils_test_log2()
         a = abs(a);
 
 	b_ref = log2(a_ref);
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
         b = std::log2(a);
 #else
         b = log2(a);

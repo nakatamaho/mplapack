@@ -13,7 +13,7 @@ void test_assignment10()
 {
   cout << "testing assignment\n";
   mpreal  b, c;
-  __float128 bb, cc;
+  _Float128 bb, cc;
   b = 5.0;
   bb = 2.0;
   cc = 3.0;

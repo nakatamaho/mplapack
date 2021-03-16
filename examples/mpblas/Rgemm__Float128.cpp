@@ -1,12 +1,12 @@
-// Rgemm demo using __float128
+// Rgemm demo using _Float128
 // This file is freely usable.
 // written by Nakata Maho, 2012/5/30.
 
-#include <mpblas___float128.h>
+#include <mpblas__Float128.h>
 #include <stdio.h>
 #define BUFLEN 1024
 
-void printnum(__float128 rtmp)
+void printnum(_Float128 rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
@@ -17,9 +17,9 @@ void printnum(__float128 rtmp)
 }
 
 //Matlab/Octave format
-void printmat(int N, int M, __float128 * A, int LDA)
+void printmat(int N, int M, _Float128 * A, int LDA)
 {
-    __float128 mtmp;
+    _Float128 mtmp;
 
     printf("[ ");
     for (int i = 0; i < N; i++) {
@@ -45,10 +45,10 @@ int main()
 {
     mplapackint n = 3;
 
-    __float128 *A = new __float128[n * n];
-    __float128 *B = new __float128[n * n];
-    __float128 *C = new __float128[n * n];
-    __float128 alpha, beta;
+    _Float128 *A = new _Float128[n * n];
+    _Float128 *B = new _Float128[n * n];
+    _Float128 *C = new _Float128[n * n];
+    _Float128 alpha, beta;
 
 //setting A matrix
     A[0 + 0 * n] = 1;    A[0 + 1 * n] = 8;    A[0 + 2 * n] = 3;

@@ -10,7 +10,7 @@ pushd mplapack/debug ; bash gen.Makefile.am.sh ; popd
 aclocal ; autoconf ; automake --add-missing
 autoreconf --force --install
 
-#currently __float128 is not supported by gcc9 and 10. moreover dd builds but not give a correct answer.
+#currently _Float128 is not supported by gcc9 and 10. moreover dd builds but not give a correct answer.
 
 ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-longdouble=yes --enable-debug=yes
 

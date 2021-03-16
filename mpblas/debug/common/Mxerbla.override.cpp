@@ -40,7 +40,7 @@ Mxerbla is an error handler for the Mplapack routines.
 
 int mplapack_errno;
 
-void Mxerbla___float128(const char *srname, int info)
+void Mxerbla__Float128(const char *srname, int info)
 {
     mplapack_errno = info;
     return;

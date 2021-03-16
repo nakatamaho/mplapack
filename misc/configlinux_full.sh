@@ -1,3 +1,3 @@
 #!/bin/sh
-./configure --prefix=$HOME/mplapack-work-full/MPLAPACK -enable-debug=yes --enable-mpfr=yes --enable-qd=yes --enable-double=yes --enable-__float128=yes --prefix=$HOME/MPLAPACK
+./configure --prefix=$HOME/mplapack-work-full/MPLAPACK -enable-debug=yes --enable-mpfr=yes --enable-qd=yes --enable-double=yes --enable-_Float128=yes --prefix=$HOME/MPLAPACK
 

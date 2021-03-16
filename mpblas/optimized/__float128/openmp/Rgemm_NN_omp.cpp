@@ -28,16 +28,16 @@
  *
  */
 
-#include <mpblas___float128.h>
+#include <mpblas__Float128.h>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
 
-void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, __float128 alpha, __float128 * A, mplapackint lda, __float128 * B, mplapackint ldb,
-		  __float128 beta, __float128 * C, mplapackint ldc)
+void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, _Float128 alpha, _Float128 * A, mplapackint lda, _Float128 * B, mplapackint ldb,
+		  _Float128 beta, _Float128 * C, mplapackint ldc)
 {
     mplapackint i, j, l;
-    __float128 temp;
+    _Float128 temp;
 
 //Form C := alpha*A*B + beta*C.
     for (j = 0; j < n; j++) {

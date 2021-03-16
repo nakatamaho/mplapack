@@ -5,7 +5,7 @@ PACKAGE = $(shell dh_listpackages)
 # for more than one package use: PACKAGE = $(firstword $(shell dh_listpackages))
 TMP     = $(CURDIR)/debian/$(PACKAGE)
 
-BUILDOPTS= --enable-gmp --enable-mpfr --enable-qd --enable-dd --enable-double --enable-__float128 --enable-longdouble --enable-optimization --with-system-gmp --with-system-mpfr --with-system-mpc --with-system-qd --disable-benchmark --disable-examples --disable-reference
+BUILDOPTS= --enable-gmp --enable-mpfr --enable-qd --enable-dd --enable-double --enable-_Float128 --enable-longdouble --enable-optimization --with-system-gmp --with-system-mpfr --with-system-mpc --with-system-qd --disable-benchmark --disable-examples --disable-reference
 
 %:
 	dh $@ --parallel

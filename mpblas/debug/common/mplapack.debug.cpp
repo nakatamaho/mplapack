@@ -548,8 +548,8 @@ void set_random_number1to2(mpcomplex & a, complex<long double> &b)
 
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
-void printnum(__float128 rtmp)
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+void printnum(_Float128 rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
@@ -559,7 +559,7 @@ void printnum(__float128 rtmp)
     return;
 }
 
-void printnum(std::complex<__float128> rtmp)
+void printnum(std::complex<_Float128> rtmp)
 {
     int width = 42, n;
     char buf[BUFLEN], buf2[BUFLEN];
@@ -573,23 +573,23 @@ void printnum(std::complex<__float128> rtmp)
     return;
 }
 
-void sprintnum(char *buf, __float128 rtmp)
+void sprintnum(char *buf, _Float128 rtmp)
 {
     int width = 42;
     quadmath_snprintf (buf, BUFLEN, "%+-#*.35Qe", width, rtmp);
     return;
 }
 
-void sprintnum(char *buf, std::complex<__float128> rtmp)
+void sprintnum(char *buf, std::complex<_Float128> rtmp)
 {
     int width = 42;
     quadmath_snprintf (buf, BUFLEN, "%+-#*.35Qe" "%+-#*.35Qe", width, rtmp.real(), rtmp.imag());
     return;
 }
 
-__float128 mpf_randomnumber(__float128 dummy)
+_Float128 mpf_randomnumber(_Float128 dummy)
 {
-    __float128 mtmp;
+    _Float128 mtmp;
     mtmp = lrand48();		//uniform random between [0,1] via lrand48
     mtmp += lrand48()*1e-16;	//uniform random between [0,1] via lrand48
     mtmp += lrand48()*1e-32;	//uniform random between [0,1] via lrand48
@@ -597,11 +597,11 @@ __float128 mpf_randomnumber(__float128 dummy)
     return mtmp;
 }
 
-std::complex<__float128> mpc_randomnumber(std::complex<__float128> dummy)
+std::complex<_Float128> mpc_randomnumber(std::complex<_Float128> dummy)
 {
-    complex<__float128> ctmp;
-    __float128 mtmp1;
-    __float128 mtmp2;
+    complex<_Float128> ctmp;
+    _Float128 mtmp1;
+    _Float128 mtmp2;
 
     mtmp1 = lrand48();		//uniform random between [0,1] via lrand48
     mtmp1 += lrand48()*1e-16;	//uniform random between [0,1] via lrand48
@@ -618,39 +618,39 @@ std::complex<__float128> mpc_randomnumber(std::complex<__float128> dummy)
     return ctmp;
 }
 
-void set_random_number(mpreal &a, __float128 & b)
+void set_random_number(mpreal &a, _Float128 & b)
 {
     mpreal dummy;
     a = mpf_randomnumber(dummy);
-    b = cast2__float128(a);
+    b = cast2_Float128(a);
 }
 
-void set_random_number(mpcomplex & a, std::complex<__float128> &b)
+void set_random_number(mpcomplex & a, std::complex<_Float128> &b)
 {
     mpcomplex dummy;
     a = mpc_randomnumber(dummy);
-    b.real(cast2__float128(a.real()));
-    b.imag(cast2__float128(a.imag()));
+    b.real(cast2_Float128(a.real()));
+    b.imag(cast2_Float128(a.imag()));
 }
 
-void set_random_number1to2(mpreal &a, __float128 & b)
+void set_random_number1to2(mpreal &a, _Float128 & b)
 {
     mpreal dummy;
     a = mpf_randomnumber(dummy);
     if (a > 0.0) a = a + 1.0; else a = a - 1.0;
-    b = cast2__float128(a);
+    b = cast2_Float128(a);
 }
 
-void set_random_number1to2(mpcomplex & a, std::complex<__float128> &b)
+void set_random_number1to2(mpcomplex & a, std::complex<_Float128> &b)
 {
     mpcomplex dummy;
-    __float128 p, q;
+    _Float128 p, q;
     a = mpc_randomnumber(dummy);
     if (a.real() > 0.0) p = 1.0; else p = -1.0;
     if (a.imag() > 0.0) q = 1.0; else q = -1.0;
-    a = a + std::complex<__float128>(p, q);
-    b.real(cast2__float128(a.real()));
-    b.imag(cast2__float128(a.imag()));
+    a = a + std::complex<_Float128>(p, q);
+    b.real(cast2_Float128(a.real()));
+    b.imag(cast2_Float128(a.imag()));
 }
 #endif
 

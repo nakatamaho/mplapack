@@ -20,8 +20,8 @@ if ENABLE_DOUBLE
 SUBDIRS += double
 endif
 
-if ENABLE___FLOAT128
-SUBDIRS += __float128
+if ENABLE__FLOAT128
+SUBDIRS += _Float128
 endif
 
 #if ENABLE_LONGDOUBLE

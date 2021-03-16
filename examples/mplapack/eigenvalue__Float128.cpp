@@ -1,15 +1,15 @@
 // Get eigenvalues and eigenvecs
-// of Matrix A via Rsyev, using __float128.
+// of Matrix A via Rsyev, using _Float128.
 // This file is freely usable.
 // written by Nakata Maho, 2012/5/30.
 
-#include <mpblas___float128.h>
-#include <mplapack___float128.h>
+#include <mpblas__Float128.h>
+#include <mplapack__Float128.h>
 #include <stdio.h>
 
 #define BUFLEN 1024
 
-void printnum(__float128 rtmp)
+void printnum(_Float128 rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
@@ -20,9 +20,9 @@ void printnum(__float128 rtmp)
 }
 
 //Matlab/Octave format
-void printmat(int N, int M, __float128 *A, int LDA)
+void printmat(int N, int M, _Float128 *A, int LDA)
 {
-    __float128 mtmp;
+    _Float128 mtmp;
 
     printf("[ ");
     for (int i = 0; i < N; i++) {
@@ -49,8 +49,8 @@ int main()
     mplapackint n = 3;
     mplapackint lwork, info;
 
-    __float128 *A = new __float128[n * n];
-    __float128 *w = new __float128[n];
+    _Float128 *A = new _Float128[n * n];
+    _Float128 *w = new _Float128[n];
 
 //setting A matrix
     A[0 + 0 * n] = 1;    A[0 + 1 * n] = 2;    A[0 + 2 * n] = 3;
@@ -62,12 +62,12 @@ int main()
     printf("\n");
 //work space query
     lwork = -1;
-    __float128 *work = new __float128[1];
+    _Float128 *work = new _Float128[1];
 
     Rsyev("V", "U", n, A, n, w, work, lwork, &info);
     lwork = (int) work[0];
     delete[]work;
-    work = new __float128[std::max((mplapackint) 1, lwork)];
+    work = new _Float128[std::max((mplapackint) 1, lwork)];
 //inverse matrix
     Rsyev("V", "U", n, A, n, w, work, lwork, &info);
 //print out some results.

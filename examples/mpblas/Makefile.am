@@ -45,13 +45,13 @@ Rgemm_double_CXXFLAGS= $(doublecxxflags)
 Rgemm_double_LDFLAGS= $(double_libdepends)
 endif
 
-if ENABLE___FLOAT128
-blasexamples_PROGRAMS += Rgemm.__float128
-__float128cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
-__float128_libdepends = -L$(top_builddir)/mpblas/optimized/__float128 -lmpblas___float128 -lquadmath
-Rgemm___float128_SOURCES= Rgemm___float128.cpp
-Rgemm___float128_CXXFLAGS= $(__float128cxxflags)
-Rgemm___float128_LDFLAGS= $(__float128_libdepends)
+if ENABLE__FLOAT128
+blasexamples_PROGRAMS += Rgemm._Float128
+_Float128cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
+_Float128_libdepends = -L$(top_builddir)/mpblas/optimized/_Float128 -lmpblas__Float128 -lquadmath
+Rgemm__Float128_SOURCES= Rgemm__Float128.cpp
+Rgemm__Float128_CXXFLAGS= $(_Float128cxxflags)
+Rgemm__Float128_LDFLAGS= $(_Float128_libdepends)
 endif
 
 blasexamplesdir=$(prefix)/share/mplapack/examples

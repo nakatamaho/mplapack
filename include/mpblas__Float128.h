@@ -26,10 +26,10 @@
  *
  */
 
-#ifndef _MPBLAS___FLOAT128_H_
-#define _MPBLAS___FLOAT128_H_
+#ifndef _MPBLAS__FLOAT128_H_
+#define _MPBLAS__FLOAT128_H_
 
-#include "mutils___float128.h"
+#include "mutils__Float128.h"
 #include "mplapack_config.h"
 
 #if !defined __MPLAPACK_ERRNO__
@@ -40,112 +40,112 @@
 _MPLAPACK_EXTERN_ int mplapack_errno;
 
 /* LEVEL 1 MPBLAS */
-void Rrot(mplapackint n, __float128 * dx, mplapackint incx, __float128 * dy, mplapackint incy, __float128 c, __float128 s);
-void Rrotm(mplapackint n, __float128 * x, mplapackint incx, __float128 * y, mplapackint incy, __float128 * dparam);
-void CRrot(mplapackint n, std::complex<__float128> * cx, mplapackint incx, std::complex<__float128> * cy, mplapackint incy, __float128 c, __float128 s);
-void Cswap(mplapackint n, std::complex<__float128> * cx, mplapackint incx, std::complex<__float128> * cy, mplapackint incy);
-void Rswap(mplapackint n, __float128 * dx, mplapackint incx, __float128 * dy, mplapackint incy);
-void Cscal(mplapackint n, std::complex<__float128> ca, std::complex<__float128> * cx, mplapackint incx);
-void CRscal(mplapackint n, __float128 sa, std::complex<__float128> * cx, mplapackint incx);
-void Rscal(mplapackint n, __float128 ca, __float128 * cx, mplapackint incx);
-void Ccopy(mplapackint n, std::complex<__float128> * cx, mplapackint incx, std::complex<__float128> * cy, mplapackint incy);
-void Crotg(std::complex<__float128> * ca, std::complex<__float128> cb, __float128 * c, std::complex<__float128> * s);
-void Rrotg(__float128 * da, __float128 * db, __float128 * c, __float128 * s);
-void Rcopy(mplapackint n, __float128 * dx, mplapackint incx, __float128 * dy, mplapackint incy);
-void Raxpy(mplapackint n, __float128 da, __float128 * dx, mplapackint incx, __float128 * dy, mplapackint incy);
-void Caxpy(mplapackint n, std::complex<__float128> ca, std::complex<__float128> * cx, mplapackint incx, std::complex<__float128> * cy, mplapackint incy);
-__float128 Rdot(mplapackint n, __float128 * dx, mplapackint incx, __float128 * dy, mplapackint incy);
-std::complex<__float128> Cdotc(mplapackint n, std::complex<__float128> * cx, mplapackint incx, std::complex<__float128> * cy, mplapackint incy);
-std::complex<__float128> Cdotu(mplapackint n, std::complex<__float128> * cx, mplapackint incx, std::complex<__float128> * cy, mplapackint incy);
-__float128 RCnrm2(mplapackint n, std::complex<__float128> * x, mplapackint incx);
-__float128 Rnrm2(mplapackint n, __float128 * x, mplapackint incx);
-__float128 RCasum(mplapackint n, std::complex<__float128> * zx, mplapackint incx);
-__float128 Rasum(mplapackint n, __float128 * dx, mplapackint incx);
-mplapackint iCamax(mplapackint n, std::complex<__float128> * dx, mplapackint incx);
-mplapackint iRamax(mplapackint n, __float128 * dx, mplapackint incx);
-__float128 RCabs1(std::complex<__float128> z);
-mplapackint Mlsame___float128(const char *a, const char *b);
-void Mxerbla___float128(const char *srname, int info);
+void Rrot(mplapackint n, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy, _Float128 c, _Float128 s);
+void Rrotm(mplapackint n, _Float128 * x, mplapackint incx, _Float128 * y, mplapackint incy, _Float128 * dparam);
+void CRrot(mplapackint n, std::complex<_Float128> * cx, mplapackint incx, std::complex<_Float128> * cy, mplapackint incy, _Float128 c, _Float128 s);
+void Cswap(mplapackint n, std::complex<_Float128> * cx, mplapackint incx, std::complex<_Float128> * cy, mplapackint incy);
+void Rswap(mplapackint n, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy);
+void Cscal(mplapackint n, std::complex<_Float128> ca, std::complex<_Float128> * cx, mplapackint incx);
+void CRscal(mplapackint n, _Float128 sa, std::complex<_Float128> * cx, mplapackint incx);
+void Rscal(mplapackint n, _Float128 ca, _Float128 * cx, mplapackint incx);
+void Ccopy(mplapackint n, std::complex<_Float128> * cx, mplapackint incx, std::complex<_Float128> * cy, mplapackint incy);
+void Crotg(std::complex<_Float128> * ca, std::complex<_Float128> cb, _Float128 * c, std::complex<_Float128> * s);
+void Rrotg(_Float128 * da, _Float128 * db, _Float128 * c, _Float128 * s);
+void Rcopy(mplapackint n, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy);
+void Raxpy(mplapackint n, _Float128 da, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy);
+void Caxpy(mplapackint n, std::complex<_Float128> ca, std::complex<_Float128> * cx, mplapackint incx, std::complex<_Float128> * cy, mplapackint incy);
+_Float128 Rdot(mplapackint n, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy);
+std::complex<_Float128> Cdotc(mplapackint n, std::complex<_Float128> * cx, mplapackint incx, std::complex<_Float128> * cy, mplapackint incy);
+std::complex<_Float128> Cdotu(mplapackint n, std::complex<_Float128> * cx, mplapackint incx, std::complex<_Float128> * cy, mplapackint incy);
+_Float128 RCnrm2(mplapackint n, std::complex<_Float128> * x, mplapackint incx);
+_Float128 Rnrm2(mplapackint n, _Float128 * x, mplapackint incx);
+_Float128 RCasum(mplapackint n, std::complex<_Float128> * zx, mplapackint incx);
+_Float128 Rasum(mplapackint n, _Float128 * dx, mplapackint incx);
+mplapackint iCamax(mplapackint n, std::complex<_Float128> * dx, mplapackint incx);
+mplapackint iRamax(mplapackint n, _Float128 * dx, mplapackint incx);
+_Float128 RCabs1(std::complex<_Float128> z);
+mplapackint Mlsame__Float128(const char *a, const char *b);
+void Mxerbla__Float128(const char *srname, int info);
 
 /* LEVEL 2 MPBLAS */
-void Cgemv(const char *trans, mplapackint m, mplapackint n, std::complex<__float128> alpha,
-	   std::complex<__float128> * A, mplapackint lda, std::complex<__float128> * x, mplapackint incx, std::complex<__float128> beta, std::complex<__float128> * y, mplapackint incy);
-void Rgemv(const char *trans, mplapackint m, mplapackint n, __float128 alpha,
-	   __float128 * A, mplapackint lda, __float128 * x, mplapackint incx, __float128 beta, __float128 * y, mplapackint incy);
+void Cgemv(const char *trans, mplapackint m, mplapackint n, std::complex<_Float128> alpha,
+	   std::complex<_Float128> * A, mplapackint lda, std::complex<_Float128> * x, mplapackint incx, std::complex<_Float128> beta, std::complex<_Float128> * y, mplapackint incy);
+void Rgemv(const char *trans, mplapackint m, mplapackint n, _Float128 alpha,
+	   _Float128 * A, mplapackint lda, _Float128 * x, mplapackint incx, _Float128 beta, _Float128 * y, mplapackint incy);
 void Cgbmv(const char *trans, mplapackint m, mplapackint n, mplapackint kl, mplapackint ku,
-	   std::complex<__float128> alpha, std::complex<__float128> * A, mplapackint lda, std::complex<__float128> * x, mplapackint incx, std::complex<__float128> beta, std::complex<__float128> * y, mplapackint incy);
+	   std::complex<_Float128> alpha, std::complex<_Float128> * A, mplapackint lda, std::complex<_Float128> * x, mplapackint incx, std::complex<_Float128> beta, std::complex<_Float128> * y, mplapackint incy);
 void Rgbmv(const char *trans, mplapackint m, mplapackint n, mplapackint kl, mplapackint ku,
-	   __float128 alpha, __float128 * A, mplapackint lda, __float128 * x, mplapackint incx, __float128 beta, __float128 * y, mplapackint incy);
-void Chemv(const char *uplo, mplapackint n, std::complex<__float128> alpha, std::complex<__float128> * A,
-	   mplapackint lda, std::complex<__float128> * x, mplapackint incx, std::complex<__float128> beta, std::complex<__float128> * y, mplapackint incy);
-void Chbmv(const char *uplo, mplapackint n, mplapackint k, std::complex<__float128> alpha,
-	   std::complex<__float128> * A, mplapackint lda, std::complex<__float128> * x, mplapackint incx, std::complex<__float128> beta, std::complex<__float128> * y, mplapackint incy);
-void Chpmv(const char *uplo, mplapackint n, std::complex<__float128> alpha, std::complex<__float128> * AP,
-	   std::complex<__float128> * x, mplapackint incx, std::complex<__float128> beta, std::complex<__float128> * y, mplapackint incy);
-void Rsymv(const char *uplo, mplapackint n, __float128 alpha, __float128 * A,
-	   mplapackint lda, __float128 * x, mplapackint incx, __float128 beta, __float128 * y, mplapackint incy);
-void Rsbmv(const char *uplo, mplapackint n, mplapackint k, __float128 alpha,
-	   __float128 * A, mplapackint lda, __float128 * x, mplapackint incx, __float128 beta, __float128 * y, mplapackint incy);
-void Rspmv(const char *uplo, mplapackint n, __float128 alpha, __float128 * AP, __float128 * x, mplapackint incx, __float128 beta, __float128 * y, mplapackint incy);
-void Ctrmv(const char *uplo, const char *trans, const char *diag, mplapackint n, std::complex<__float128> * A, mplapackint lda, std::complex<__float128> * x, mplapackint incx);
-void Rtrmv(const char *uplo, const char *trans, const char *diag, mplapackint n, __float128 * A, mplapackint lda, __float128 * x, mplapackint incx);
+	   _Float128 alpha, _Float128 * A, mplapackint lda, _Float128 * x, mplapackint incx, _Float128 beta, _Float128 * y, mplapackint incy);
+void Chemv(const char *uplo, mplapackint n, std::complex<_Float128> alpha, std::complex<_Float128> * A,
+	   mplapackint lda, std::complex<_Float128> * x, mplapackint incx, std::complex<_Float128> beta, std::complex<_Float128> * y, mplapackint incy);
+void Chbmv(const char *uplo, mplapackint n, mplapackint k, std::complex<_Float128> alpha,
+	   std::complex<_Float128> * A, mplapackint lda, std::complex<_Float128> * x, mplapackint incx, std::complex<_Float128> beta, std::complex<_Float128> * y, mplapackint incy);
+void Chpmv(const char *uplo, mplapackint n, std::complex<_Float128> alpha, std::complex<_Float128> * AP,
+	   std::complex<_Float128> * x, mplapackint incx, std::complex<_Float128> beta, std::complex<_Float128> * y, mplapackint incy);
+void Rsymv(const char *uplo, mplapackint n, _Float128 alpha, _Float128 * A,
+	   mplapackint lda, _Float128 * x, mplapackint incx, _Float128 beta, _Float128 * y, mplapackint incy);
+void Rsbmv(const char *uplo, mplapackint n, mplapackint k, _Float128 alpha,
+	   _Float128 * A, mplapackint lda, _Float128 * x, mplapackint incx, _Float128 beta, _Float128 * y, mplapackint incy);
+void Rspmv(const char *uplo, mplapackint n, _Float128 alpha, _Float128 * AP, _Float128 * x, mplapackint incx, _Float128 beta, _Float128 * y, mplapackint incy);
+void Ctrmv(const char *uplo, const char *trans, const char *diag, mplapackint n, std::complex<_Float128> * A, mplapackint lda, std::complex<_Float128> * x, mplapackint incx);
+void Rtrmv(const char *uplo, const char *trans, const char *diag, mplapackint n, _Float128 * A, mplapackint lda, _Float128 * x, mplapackint incx);
 void Ctbmv(const char *uplo, const char *trans, const char *diag, mplapackint n,
-	   mplapackint k, std::complex<__float128> * A, mplapackint lda, std::complex<__float128> * x, mplapackint incx);
+	   mplapackint k, std::complex<_Float128> * A, mplapackint lda, std::complex<_Float128> * x, mplapackint incx);
 void Rtbmv(const char *uplo, const char *trans, const char *diag, mplapackint n,
-	   mplapackint k, __float128 * A, mplapackint lda, __float128 * x, mplapackint incx);
-void Ctpmv(const char *uplo, const char *trans, const char *diag, mplapackint n, std::complex<__float128> * AP, std::complex<__float128> * x, mplapackint incx);
-void Rtpmv(const char *uplo, const char *trans, const char *diag, mplapackint n, __float128 * AP, __float128 * x, mplapackint incx);
-void Ctrsv(const char *uplo, const char *trans, const char *diag, mplapackint n, std::complex<__float128> * A, mplapackint lda, std::complex<__float128> * x, mplapackint incx);
-void Rtrsv(const char *uplo, const char *trans, const char *diag, mplapackint n, __float128 * A, mplapackint lda, __float128 * x, mplapackint incx);
+	   mplapackint k, _Float128 * A, mplapackint lda, _Float128 * x, mplapackint incx);
+void Ctpmv(const char *uplo, const char *trans, const char *diag, mplapackint n, std::complex<_Float128> * AP, std::complex<_Float128> * x, mplapackint incx);
+void Rtpmv(const char *uplo, const char *trans, const char *diag, mplapackint n, _Float128 * AP, _Float128 * x, mplapackint incx);
+void Ctrsv(const char *uplo, const char *trans, const char *diag, mplapackint n, std::complex<_Float128> * A, mplapackint lda, std::complex<_Float128> * x, mplapackint incx);
+void Rtrsv(const char *uplo, const char *trans, const char *diag, mplapackint n, _Float128 * A, mplapackint lda, _Float128 * x, mplapackint incx);
 void Ctbsv(const char *uplo, const char *trans, const char *diag, mplapackint n,
-	   mplapackint k, std::complex<__float128> * A, mplapackint lda, std::complex<__float128> * x, mplapackint incx);
+	   mplapackint k, std::complex<_Float128> * A, mplapackint lda, std::complex<_Float128> * x, mplapackint incx);
 void Rtbsv(const char *uplo, const char *trans, const char *diag, mplapackint n,
-	   mplapackint k, __float128 * A, mplapackint lda, __float128 * x, mplapackint incx);
-void Ctpsv(const char *uplo, const char *trans, const char *diag, mplapackint n, std::complex<__float128> * AP, std::complex<__float128> * x, mplapackint incx);
-void Rtpsv(const char *uplo, const char *trans, const char *diag, mplapackint n, __float128 * AP, __float128 * x, mplapackint incx);
-void Rger(mplapackint m, mplapackint n, __float128 alpha, __float128 * x, mplapackint incx, __float128 * y, mplapackint incy, __float128 * A, mplapackint lda);
-void Cgeru(mplapackint m, mplapackint n, std::complex<__float128> alpha, std::complex<__float128> * x, mplapackint incx, std::complex<__float128> * y, mplapackint incy, std::complex<__float128> * A, mplapackint lda);
-void Cgerc(mplapackint m, mplapackint n, std::complex<__float128> alpha, std::complex<__float128> * x, mplapackint incx, std::complex<__float128> * y, mplapackint incy, std::complex<__float128> * A, mplapackint lda);
-void Cher(const char *uplo, mplapackint n, __float128 alpha, std::complex<__float128> * x, mplapackint incx, std::complex<__float128> * A, mplapackint lda);
-void Chpr(const char *uplo, mplapackint n, __float128 alpha, std::complex<__float128> * x, mplapackint incx, std::complex<__float128> * AP);
-void Cher2(const char *uplo, mplapackint n, std::complex<__float128> alpha, std::complex<__float128> * x,
-	   mplapackint incx, std::complex<__float128> * y, mplapackint incy, std::complex<__float128> * A, mplapackint lda);
-void Chpr2(const char *uplo, mplapackint n, std::complex<__float128> alpha, std::complex<__float128> * x, mplapackint incx, std::complex<__float128> * y, mplapackint incy, std::complex<__float128> * AP);
-void Rsyr(const char *uplo, mplapackint n, __float128 alpha, __float128 * x, mplapackint incx, __float128 * A, mplapackint lda);
-void Rspr(const char *uplo, mplapackint n, __float128 alpha, __float128 * x, mplapackint incx, __float128 * AP);
-void Rsyr2(const char *uplo, mplapackint n, __float128 alpha, __float128 * x, mplapackint incx, __float128 * y, mplapackint incy, __float128 * A, mplapackint lda);
-void Rspr2(const char *uplo, mplapackint n, __float128 alpha, __float128 * x, mplapackint incx, __float128 * y, mplapackint incy, __float128 * AP);
+	   mplapackint k, _Float128 * A, mplapackint lda, _Float128 * x, mplapackint incx);
+void Ctpsv(const char *uplo, const char *trans, const char *diag, mplapackint n, std::complex<_Float128> * AP, std::complex<_Float128> * x, mplapackint incx);
+void Rtpsv(const char *uplo, const char *trans, const char *diag, mplapackint n, _Float128 * AP, _Float128 * x, mplapackint incx);
+void Rger(mplapackint m, mplapackint n, _Float128 alpha, _Float128 * x, mplapackint incx, _Float128 * y, mplapackint incy, _Float128 * A, mplapackint lda);
+void Cgeru(mplapackint m, mplapackint n, std::complex<_Float128> alpha, std::complex<_Float128> * x, mplapackint incx, std::complex<_Float128> * y, mplapackint incy, std::complex<_Float128> * A, mplapackint lda);
+void Cgerc(mplapackint m, mplapackint n, std::complex<_Float128> alpha, std::complex<_Float128> * x, mplapackint incx, std::complex<_Float128> * y, mplapackint incy, std::complex<_Float128> * A, mplapackint lda);
+void Cher(const char *uplo, mplapackint n, _Float128 alpha, std::complex<_Float128> * x, mplapackint incx, std::complex<_Float128> * A, mplapackint lda);
+void Chpr(const char *uplo, mplapackint n, _Float128 alpha, std::complex<_Float128> * x, mplapackint incx, std::complex<_Float128> * AP);
+void Cher2(const char *uplo, mplapackint n, std::complex<_Float128> alpha, std::complex<_Float128> * x,
+	   mplapackint incx, std::complex<_Float128> * y, mplapackint incy, std::complex<_Float128> * A, mplapackint lda);
+void Chpr2(const char *uplo, mplapackint n, std::complex<_Float128> alpha, std::complex<_Float128> * x, mplapackint incx, std::complex<_Float128> * y, mplapackint incy, std::complex<_Float128> * AP);
+void Rsyr(const char *uplo, mplapackint n, _Float128 alpha, _Float128 * x, mplapackint incx, _Float128 * A, mplapackint lda);
+void Rspr(const char *uplo, mplapackint n, _Float128 alpha, _Float128 * x, mplapackint incx, _Float128 * AP);
+void Rsyr2(const char *uplo, mplapackint n, _Float128 alpha, _Float128 * x, mplapackint incx, _Float128 * y, mplapackint incy, _Float128 * A, mplapackint lda);
+void Rspr2(const char *uplo, mplapackint n, _Float128 alpha, _Float128 * x, mplapackint incx, _Float128 * y, mplapackint incy, _Float128 * AP);
 
 /* LEVEL 3 MPBLAS */
 void Cgemm(const char *transa, const char *transb, mplapackint m, mplapackint n,
-	   mplapackint k, std::complex<__float128> alpha, std::complex<__float128> * A, mplapackint lda, std::complex<__float128> * B, mplapackint ldb, std::complex<__float128> beta, std::complex<__float128> * C, mplapackint ldc);
+	   mplapackint k, std::complex<_Float128> alpha, std::complex<_Float128> * A, mplapackint lda, std::complex<_Float128> * B, mplapackint ldb, std::complex<_Float128> beta, std::complex<_Float128> * C, mplapackint ldc);
 void Rgemm(const char *transa, const char *transb, mplapackint m, mplapackint n,
-	   mplapackint k, __float128 alpha, __float128 * A, mplapackint lda, __float128 * B, mplapackint ldb, __float128 beta, __float128 * C, mplapackint ldc);
+	   mplapackint k, _Float128 alpha, _Float128 * A, mplapackint lda, _Float128 * B, mplapackint ldb, _Float128 beta, _Float128 * C, mplapackint ldc);
 void Csymm(const char *side, const char *uplo, mplapackint m, mplapackint n,
-	   std::complex<__float128> alpha, std::complex<__float128> * A, mplapackint lda, std::complex<__float128> * B, mplapackint ldb, std::complex<__float128> beta, std::complex<__float128> * C, mplapackint ldc);
+	   std::complex<_Float128> alpha, std::complex<_Float128> * A, mplapackint lda, std::complex<_Float128> * B, mplapackint ldb, std::complex<_Float128> beta, std::complex<_Float128> * C, mplapackint ldc);
 void Rsymm(const char *side, const char *uplo, mplapackint m, mplapackint n,
-	   __float128 alpha, __float128 * A, mplapackint lda, __float128 * B, mplapackint ldb, __float128 beta, __float128 * C, mplapackint ldc);
+	   _Float128 alpha, _Float128 * A, mplapackint lda, _Float128 * B, mplapackint ldb, _Float128 beta, _Float128 * C, mplapackint ldc);
 void Chemm(const char *side, const char *uplo, mplapackint m, mplapackint n,
-	   std::complex<__float128> alpha, std::complex<__float128> * A, mplapackint lda, std::complex<__float128> * B, mplapackint ldb, std::complex<__float128> beta, std::complex<__float128> * C, mplapackint ldc);
+	   std::complex<_Float128> alpha, std::complex<_Float128> * A, mplapackint lda, std::complex<_Float128> * B, mplapackint ldb, std::complex<_Float128> beta, std::complex<_Float128> * C, mplapackint ldc);
 void Csyrk(const char *uplo, const char *trans, mplapackint n, mplapackint k,
-	   std::complex<__float128> alpha, std::complex<__float128> * A, mplapackint lda, std::complex<__float128> beta, std::complex<__float128> * C, mplapackint ldc);
+	   std::complex<_Float128> alpha, std::complex<_Float128> * A, mplapackint lda, std::complex<_Float128> beta, std::complex<_Float128> * C, mplapackint ldc);
 void Rsyrk(const char *uplo, const char *trans, mplapackint n, mplapackint k,
-	   __float128 alpha, __float128 * A, mplapackint lda, __float128 beta, __float128 * C, mplapackint ldc);
+	   _Float128 alpha, _Float128 * A, mplapackint lda, _Float128 beta, _Float128 * C, mplapackint ldc);
 void Cherk(const char *uplo, const char *trans, mplapackint n, mplapackint k,
-	   __float128 alpha, std::complex<__float128> * A, mplapackint lda, __float128 beta, std::complex<__float128> * C, mplapackint ldc);
+	   _Float128 alpha, std::complex<_Float128> * A, mplapackint lda, _Float128 beta, std::complex<_Float128> * C, mplapackint ldc);
 void Csyr2k(const char *uplo, const char *trans, mplapackint n, mplapackint k,
-	    std::complex<__float128> alpha, std::complex<__float128> * A, mplapackint lda, std::complex<__float128> * B, mplapackint ldb, std::complex<__float128> beta, std::complex<__float128> * C, mplapackint ldc);
+	    std::complex<_Float128> alpha, std::complex<_Float128> * A, mplapackint lda, std::complex<_Float128> * B, mplapackint ldb, std::complex<_Float128> beta, std::complex<_Float128> * C, mplapackint ldc);
 void Rsyr2k(const char *uplo, const char *trans, mplapackint n, mplapackint k,
-	    __float128 alpha, __float128 * A, mplapackint lda, __float128 * B, mplapackint ldb, __float128 beta, __float128 * C, mplapackint ldc);
+	    _Float128 alpha, _Float128 * A, mplapackint lda, _Float128 * B, mplapackint ldb, _Float128 beta, _Float128 * C, mplapackint ldc);
 void Cher2k(const char *uplo, const char *trans, mplapackint n, mplapackint k,
-	    std::complex<__float128> alpha, std::complex<__float128> * A, mplapackint lda, std::complex<__float128> * B, mplapackint ldb, __float128 beta, std::complex<__float128> * C, mplapackint ldc);
+	    std::complex<_Float128> alpha, std::complex<_Float128> * A, mplapackint lda, std::complex<_Float128> * B, mplapackint ldb, _Float128 beta, std::complex<_Float128> * C, mplapackint ldc);
 void Ctrmm(const char *side, const char *uplo, const char *transa,
-	   const char *diag, mplapackint m, mplapackint n, std::complex<__float128> alpha, std::complex<__float128> * A, mplapackint lda, std::complex<__float128> * B, mplapackint ldb);
+	   const char *diag, mplapackint m, mplapackint n, std::complex<_Float128> alpha, std::complex<_Float128> * A, mplapackint lda, std::complex<_Float128> * B, mplapackint ldb);
 void Rtrmm(const char *side, const char *uplo, const char *transa,
-	   const char *diag, mplapackint m, mplapackint n, __float128 alpha, __float128 * A, mplapackint lda, __float128 * B, mplapackint ldb);
+	   const char *diag, mplapackint m, mplapackint n, _Float128 alpha, _Float128 * A, mplapackint lda, _Float128 * B, mplapackint ldb);
 void Ctrsm(const char *side, const char *uplo, const char *transa,
-	   const char *diag, mplapackint m, mplapackint n, std::complex<__float128> alpha, std::complex<__float128> * A, mplapackint lda, std::complex<__float128> * B, mplapackint ldb);
+	   const char *diag, mplapackint m, mplapackint n, std::complex<_Float128> alpha, std::complex<_Float128> * A, mplapackint lda, std::complex<_Float128> * B, mplapackint ldb);
 void Rtrsm(const char *side, const char *uplo, const char *transa,
-	   const char *diag, mplapackint m, mplapackint n, __float128 alpha, __float128 * A, mplapackint lda, __float128 * B, mplapackint ldb);
+	   const char *diag, mplapackint m, mplapackint n, _Float128 alpha, _Float128 * A, mplapackint lda, _Float128 * B, mplapackint ldb);
 
 #endif

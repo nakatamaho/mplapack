@@ -27,14 +27,14 @@
  * SUCH DAMAGE.
  *
  */
-#include <mpblas___float128.h>
+#include <mpblas__Float128.h>
 
-void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, __float128 alpha, __float128 * A, mplapackint lda, __float128 * B, mplapackint ldb,
-		  __float128 beta, __float128 * C, mplapackint ldc)
+void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, _Float128 alpha, _Float128 * A, mplapackint lda, _Float128 * B, mplapackint ldb,
+		  _Float128 beta, _Float128 * C, mplapackint ldc)
 {
 //Form  C := alpha*A*B' + beta*C.
     mplapackint i, j, l;
-    __float128 temp;
+    _Float128 temp;
     for (j = 0; j < n; j++) {
 	if (beta == 0.0) {
 	    for (i = 0; i < m; i++) {

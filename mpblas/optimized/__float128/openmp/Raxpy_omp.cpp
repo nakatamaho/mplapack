@@ -71,14 +71,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Based on http://www.netlib.org/blas/daxpy.f
 */
 
-#include <mpblas___float128.h>
+#include <mpblas__Float128.h>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
 
-void Raxpy_omp(mplapackint n, __float128 da, __float128 * dx, mplapackint incx, __float128 * dy, mplapackint incy)
+void Raxpy_omp(mplapackint n, _Float128 da, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy)
 {
-    __float128 Zero = 0.0;
+    _Float128 Zero = 0.0;
     mplapackint i;
 
     if (n <= 0)

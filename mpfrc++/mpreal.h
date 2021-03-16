@@ -42,7 +42,7 @@
 #include <cfloat>
 #include <cmath>
 
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
 #define MPFR_WANT_FLOAT128
 #endif
 
@@ -57,7 +57,7 @@
 #if defined ___MPLAPACK_BUILD_WITH_DD___
 #include "qd/dd_real.h"
 #endif
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -415,9 +415,9 @@ class mpreal {
 #if defined ___MPLAPACK_BUILD_WITH_DD___
     mpreal(const dd_real &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
 #endif
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
-    mpreal(const __float128 &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
-    mpreal &operator=(const __float128 &a);
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+    mpreal(const _Float128 &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
+    mpreal &operator=(const _Float128 &a);
 #endif
 };
 
@@ -2555,28 +2555,28 @@ inline dd_real cast2dd_real(const mpreal &b) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
-inline mpreal &mpreal::operator=(const __float128 &a) {
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+inline mpreal &mpreal::operator=(const _Float128 &a) {
     mpfr_init2((mpfr_ptr)mp, default_prec);
     mpfr_set_float128((mpfr_ptr)mp, a, default_rnd);
     return *this;
 }
 
-inline mpreal::mpreal(const __float128 &a, mp_prec_t prec, mp_rnd_t mode) {
+inline mpreal::mpreal(const _Float128 &a, mp_prec_t prec, mp_rnd_t mode) {
     mpfr_init2(mp, prec);
     mpfr_set_float128(mp, a, mode);
 }
 
-inline const mpreal operator-(const __float128 a, const mpreal b) { return mpreal(a) -= b; }
+inline const mpreal operator-(const _Float128 a, const mpreal b) { return mpreal(a) -= b; }
 
-inline const mpreal operator-(const mpreal &a, const __float128 &b) {
+inline const mpreal operator-(const mpreal &a, const _Float128 &b) {
     mpreal tmp(b);
     return -(mpreal(b) -= a);
 }
 
-inline __float128 cast2__float128(const mpreal &b) {
-    // mpreal -> mpfr -> __float128
-    __float128 q;
+inline _Float128 cast2_Float128(const mpreal &b) {
+    // mpreal -> mpfr -> _Float128
+    _Float128 q;
     mpreal a(b);
     q = mpfr_get_float128((mpfr_ptr)a, mpreal::default_rnd);
     return q;

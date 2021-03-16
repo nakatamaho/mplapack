@@ -20,8 +20,8 @@ if ENABLE_DOUBLE
 lib_LTLIBRARIES += libblaswrapper_double.la
 endif
 
-if ENABLE___FLOAT128
-lib_LTLIBRARIES += libblaswrapper___float128.la
+if ENABLE__FLOAT128
+lib_LTLIBRARIES += libblaswrapper__Float128.la
 endif
 
 BLASWRAPPER_SOURCES = zaxpy.cpp ../reference/mplapackinit.cpp
@@ -63,7 +63,7 @@ libblaswrapper_double_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_
 libblaswrapper_double_la_SOURCES = $(BLASWRAPPER_SOURCES)
 endif
 
-if ENABLE___FLOAT128
-libblaswrapper___float128_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH___FLOAT128___
-libblaswrapper___float128_la_SOURCES = $(BLASWRAPPER_SOURCES)
+if ENABLE__FLOAT128
+libblaswrapper__Float128_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT128___
+libblaswrapper__Float128_la_SOURCES = $(BLASWRAPPER_SOURCES)
 endif

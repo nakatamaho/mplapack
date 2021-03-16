@@ -32,7 +32,7 @@ cd mplapack-$MPLAPACKVER
 
 perl -p -i -e 's/\@IS_MIC_TRUE\@//g' external/lapack/Makefile.in
 
-LDFLAGS="-L$HOSTDUMMYLIBS_HOME/lib" ./configure --with-system-gmp --with-system-mpfr --with-system-mpc --with-system-qd --enable-debug=yes --enable-optimization=yes --enable-mpfr=yes --enable-__float128=yes --with-gccname=/usr/linux-k1om-4.7/bin/x86_64-k1om-linux-gcc --enable-qd=yes --enable-double=yes --prefix=$MPLAPACKINSTALL_HOME --with-external-blas="-mkl" --with-external-lapack="-mkl"
+LDFLAGS="-L$HOSTDUMMYLIBS_HOME/lib" ./configure --with-system-gmp --with-system-mpfr --with-system-mpc --with-system-qd --enable-debug=yes --enable-optimization=yes --enable-mpfr=yes --enable-_Float128=yes --with-gccname=/usr/linux-k1om-4.7/bin/x86_64-k1om-linux-gcc --enable-qd=yes --enable-double=yes --prefix=$MPLAPACKINSTALL_HOME --with-external-blas="-mkl" --with-external-lapack="-mkl"
 
 files=$(find ./* -name Makefile)
 perl -p -i -e 's/-DMMIC/-mmic/g' $files

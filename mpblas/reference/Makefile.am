@@ -24,8 +24,8 @@ if ENABLE_LONGDOUBLE
 lib_LTLIBRARIES += libmpblas_longdouble_ref.la
 endif
 
-if ENABLE___FLOAT128
-lib_LTLIBRARIES += libmpblas___float128_ref.la
+if ENABLE__FLOAT128
+lib_LTLIBRARIES += libmpblas__Float128_ref.la
 endif
 
 MPBLAS_SOURCES = Caxpy.cpp Ccopy.cpp Cdotc.cpp Cdotu.cpp Cgbmv.cpp \
@@ -89,10 +89,10 @@ libmpblas_longdouble_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_loo
 endif
 endif
 
-if ENABLE___FLOAT128
-libmpblas___float128_ref_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH___FLOAT128___
-libmpblas___float128_ref_la_SOURCES = $(MPBLAS_SOURCES)
+if ENABLE__FLOAT128
+libmpblas__Float128_ref_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT128___
+libmpblas__Float128_ref_la_SOURCES = $(MPBLAS_SOURCES)
 if IS_MACOSX
-libmpblas___float128_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmpblas__Float128_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif

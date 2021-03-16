@@ -72,14 +72,14 @@ Based on http://www.netlib.org/blas/dcopy.f
 Rcopy copies a vector, x, to a vector, y.
 */
 
-#include <mpblas___float128.h>
+#include <mpblas__Float128.h>
 
-void Rcopy_ref(mplapackint n, __float128 * dx, mplapackint incx, __float128 * dy, mplapackint incy);
-void Rcopy_omp(mplapackint n, __float128 * dx, mplapackint incx, __float128 * dy, mplapackint incy);
+void Rcopy_ref(mplapackint n, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy);
+void Rcopy_omp(mplapackint n, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy);
 
 #define SINGLEOROMP 1000
 
-void Rcopy(mplapackint n, __float128 * dx, mplapackint incx, __float128 * dy, mplapackint incy)
+void Rcopy(mplapackint n, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy)
 {
     mplapackint ix = 0;
     mplapackint iy = 0;

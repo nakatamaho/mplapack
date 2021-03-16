@@ -299,7 +299,7 @@ void Rgecon_test(void)
     Rgecon_test2("O", 100);
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_GMP___ || defined ___MPLAPACK_BUILD_WITH_QD___ || defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH___FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH_GMP___ || defined ___MPLAPACK_BUILD_WITH_QD___ || defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH__FLOAT128___
     Rgecon_test2("1", 30);
     Rgecon_test2("I", 30);
     Rgecon_test2("O", 30);

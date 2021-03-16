@@ -72,17 +72,17 @@ Based on http://www.netlib.org/blas/ddot.f
 Rdot forms the dot product of two vectors.
 */
 
-#include <mpblas___float128.h>
+#include <mpblas__Float128.h>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
 
-__float128 Rdot_omp(mplapackint n, __float128 * dx, mplapackint incx, __float128 * dy, mplapackint incy)
+_Float128 Rdot_omp(mplapackint n, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy)
 {
     mplapackint ix = 0;
     mplapackint iy = 0;
     mplapackint i;
-    __float128 temp, templ;
+    _Float128 temp, templ;
 
     temp = 0.0;
 
