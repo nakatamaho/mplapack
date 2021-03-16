@@ -127,7 +127,6 @@ AC_ARG_ENABLE(wrapper,
 AS_HELP_STRING([--enable-wrapper], [Enable wrapper for BLAS and LAPACK. xBLAS like approach]))
 AM_CONDITIONAL(ENABLE_WRAPPER, test x$enable_wrapper = xyes)
 
-
 dnl disable benchmark
 AC_ARG_ENABLE(benchmark,
 AS_HELP_STRING([--disable-benchmark], [Disable benchmark]))
@@ -205,46 +204,47 @@ AS_HELP_STRING([--enable-_Float128], [Enable _Float128 version using TS 18661-3]
     *) AC_MSG_ERROR(bad value ${enableval} for --enable-_Float128) ;;
         esac],[enable__Float128=no])
 
-AC_ARG_WITH(gccname,
-AS_HELP_STRING([--with-gccname], [Specify path to gcc for libquadmath (only for Intel Composer)]),
-[ GCCNAME="$withval"]
-)
-
 if test x$enable__Float128 = x"yes"; then
+    SAVE_CFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS"
+    AC_MSG_CHECKING([whether _Float128 is supported])
+    AC_COMPILE_IFELSE([
+       AC_LANG_SOURCE([[
+       #define __STDC_WANT_IEC_60559_TYPES_EXT__
+       #include <stdio.h>
+       #include <math.h>
+       #include <stdlib.h>
+       int main() {_Float128 a, b, c; b = 1.0q; c=1.0q; a = b + c;
+       char buf[1024];
+       strfromf128(buf, sizeof(buf), "%.40g", a);
+       printf("fp128 %s\n",buf);
+       }
+      ]])
+    ], [have__Float128=yes, want_libquadmath=no], [_have__Float128=no])
 
-__ICC=`basename $CC`
-if test x$__ICC = x"icc"; then
-AC_MSG_RESULT([Note: your compiler is Intel Composer, so you need -lquadmath, thus -gcc-name])
-if test x$GCCNAME != x"" ; then
-    _GCC_FLOAT128_FLAGS="-gcc-name=$GCCNAME"
-else
-__GCC=`which gcc`
-    _GCC_FLOAT128_FLAGS="-gcc-name=$__GCC"
-fi
-fi
+    if test "$_have__Float128" = "no"; then
+        AC_COMPILE_IFELSE([
+            AC_LANG_SOURCE([[
+                #include<quadmath.h>
+                #include<stdio.h>
+                int main(){
+                char buf[1024];
+                _Float128 a, b, c; b = 1.0q; c= 2.0q; a = b + c;
+                quadmath_snprintf(buf,128,"%.40Qf",a);
+               printf("%s",buf);
+               }
+           ]])
+        ], [have__Float128=yes, want_libquadmath=yes], [have__Float128=no])
+        if test "$have__Float128" = "no"; then
+            AC_MSG_ERROR([_Float128 is not supported on this platform])
+        fi
+    fi
 
-SAVE_CFLAGS="$CFLAGS"
-CFLAGS="$CFLAGS $_GCC_FLOAT128_FLAGS"
-AC_MSG_CHECKING([whether _Float128 is supported])
-AC_COMPILE_IFELSE([
-   AC_LANG_SOURCE([[
-   #define __STDC_WANT_IEC_60559_TYPES_EXT__
-   #include <stdio.h>
-   #include <math.h>
-   #include <stdlib.h>
-   int main() {_Float128 a, b, c; b = 1.0q; c=1.0q; a = b + c;
-   char buf[1024];
-   strfromf128(buf, sizeof(buf), "%.40g", a);
-   printf("fp128 %s\n",buf);
-   }
-  ]])
-], [have__Float128=yes], [have__Float128=no])
-
-if test "$have__Float128" = "no"; then
-    AC_MSG_ERROR([_Float128 is not supported on this platform])
-else
-    AC_MSG_RESULT([_Float128 is supported])
-fi
+    if test "$want_libquadmath" = "yes"; then
+        AC_MSG_RESULT([_Float128 is supported via libquadmath])
+    else
+        AC_MSG_RESULT([_Float128 is supported via native libc])
+    fi
 fi
 CFLAGS="$SAVE_CFLAGS"
 
@@ -537,7 +537,11 @@ else
 AC_MSG_RESULT([Disable long double version])
 fi
 if test x$enable__Float128 = x"yes"; then
-AC_MSG_RESULT([Enable _Float128 version])
+    if test "$want_libquadmath" = "yes"; then
+        AC_MSG_RESULT([_Float128 is supported via libquadmath])
+    else
+        AC_MSG_RESULT([_Float128 is supported via native libc])
+    fi
 else
 AC_MSG_RESULT([Disable _Float128 version])
 fi
@@ -624,13 +628,6 @@ DO_LAPACKBENCH=yes
 fi
 AM_CONDITIONAL(DO_LAPACKBENCH, test x$DO_LAPACKBENCH = xyes)
 
-dnl _Float128 support part II.
-if test x$__ICC = x"icc"; then
-CFLAGS="$CFLAGS $_GCC_FLOAT128_FLAGS"
-CXXFLAGS="$CXXFLAGS $_GCC_FLOAT128_FLAGS"
-FCFLAGS="$FCFLAGS $_GCC_FLOAT128_FLAGS"
-fi
-
 if test x"$enable_optimization" = x"yes"; then
     CFLAGS="$CFLAGS -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
     CXXFLAGS="$CXXFLAGS -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
@@ -665,7 +662,11 @@ if test x$enable_mpc = x"yes"; then
   PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_mpc -lmpblas_mpc"
 fi
 if test x$enable__Float128 = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack__Float128 -lmpblas__Float128 -lquadmath"
+    if test "$want_libquadmath" = "yes"; then
+        PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack__Float128 -lmpblas__Float128 -lquadmath"
+    else
+        PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack__Float128 -lmpblas__Float128"
+    fi
 fi
 if test x$enable_double = x"yes"; then
   PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_double -lmpblas_double"
