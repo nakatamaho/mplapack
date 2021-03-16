@@ -29,6 +29,8 @@
 #ifndef _MUTILS__FLOAT128_H_
 #define _MUTILS__FLOAT128_H_
 
+%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%
+
 #ifdef __cplusplus
 extern "C" {
 #endif
