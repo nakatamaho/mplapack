@@ -2,7 +2,7 @@ dnl
 dnl Configure for MPLAPACK
 dnl
 
-AC_INIT(mplapack, 0.8.0)
+AC_INIT(mplapack, 0.9.0)
 AC_SUBST([PACKAGE_DESCRIPTION], "A multiple precision version of BLAS and LAPACK")
 AC_CONFIG_HEADER(include/config.h) 
 
@@ -21,6 +21,8 @@ AC_OPENMP
 AC_LANG_PUSH([C++])
 AC_OPENMP
 AC_LANG_POP
+
+AX_CXX_COMPILE_STDCXX_17([noext], [mandatory])
 
 dnl Checking host name
 AC_CANONICAL_HOST
