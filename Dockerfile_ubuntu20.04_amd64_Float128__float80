@@ -1,0 +1,46 @@
+FROM ubuntu:20.04
+
+# change following two lines
+ARG GIT_EMAIL="maho.nakata@gmail.com"
+ARG GIT_NAME="NAKATA Maho"
+
+RUN apt update
+RUN apt -y upgrade
+RUN apt install -y sudo 
+RUN apt install -y tzdata
+# set your timezone
+ENV TZ Asia/Tokyo
+RUN echo "${TZ}" > /etc/timezone \
+  && rm /etc/localtime \
+  && ln -s /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
+  && dpkg-reconfigure -f noninteractive tzdata
+
+RUN apt install -y build-essential gfortran-9 python3
+RUN apt install -y autotools-dev automake libtool
+RUN apt install -y git wget
+RUN apt install -y ng-common ng-cjk emacs-nox
+RUN sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+RUN wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+RUN apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+RUN echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+RUN apt update
+RUN apt install -y intel-basekit
+RUN apt install -y intel-hpckit
+
+ARG DOCKER_UID=1000
+ARG DOCKER_USER=docker
+ARG DOCKER_PASSWORD=docker
+RUN useradd -u $DOCKER_UID -m $DOCKER_USER --shell /bin/bash && echo "$DOCKER_USER:$DOCKER_PASSWORD" | chpasswd && echo "$DOCKER_USER ALL=(ALL) ALL" >> /etc/sudoers
+USER ${DOCKER_USER}
+RUN echo "\n\
+[user]\n\
+        email = ${GIT_EMAIL}\n\
+        name = ${GIT_NAME}\n\
+" > /home/$DOCKER_USER/.gitconfig
+
+RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
+RUN cd /home/$DOCKER_USER && echo "source /opt/intel/oneapi/setvars.sh" >> /home/$DOCKER_USER/.bashrc
+RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git
+RUN cd /home/$DOCKER_USER && git checkout _Float128__float80
+#RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.ubuntu20.04.sh
+#RUN cd /home/$DOCKER_USER/mplapack && make -j4
