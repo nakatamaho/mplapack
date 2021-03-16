@@ -225,6 +225,7 @@ if test x$enable__Float128 = x"yes"; then
             AC_LANG_SOURCE([[
                 #include<quadmath.h>
                 #include<stdio.h>
+                typedef __float128 _Float128;
                 int main(){
                 char buf[1024];
                 _Float128 a, b, c; b = 1.0q; c= 3.0q; a = b / c;
