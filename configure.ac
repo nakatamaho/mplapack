@@ -208,7 +208,7 @@ if test x$enable__Float128 = x"yes"; then
     SAVE_CFLAGS="$CFLAGS"
     CFLAGS="$CFLAGS"
     AC_MSG_CHECKING([whether _Float128 is supported])
-    AC_COMPILE_IFELSE([
+    AC_LINK_IFELSE([
        AC_LANG_SOURCE([[
        #define __STDC_WANT_IEC_60559_TYPES_EXT__
        #include <stdio.h>
@@ -223,7 +223,7 @@ if test x$enable__Float128 = x"yes"; then
     ], [have__Float128=yes, want_libquadmath=no], [_have__Float128=no])
 
     if test "$_have__Float128" = "no"; then
-        AC_COMPILE_IFELSE([
+        AC_LINK_IFELSE([
             AC_LANG_SOURCE([[
                 #include<quadmath.h>
                 #include<stdio.h>
