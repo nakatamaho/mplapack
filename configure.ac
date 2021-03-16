@@ -17,12 +17,10 @@ AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_MACRO_DIR([m4])
 
 dnl OpenMP Compiler flags.
+AC_LANG([C++])
 AC_OPENMP
-AC_LANG_PUSH([C++])
-AC_OPENMP
-AC_LANG_POP
 
-AX_CXX_COMPILE_STDCXX_17([noext], [mandatory])
+AX_CXX_COMPILE_STDCXX_17([ext], [mandatory])
 
 dnl Checking host name
 AC_CANONICAL_HOST
@@ -205,16 +203,14 @@ AS_HELP_STRING([--enable-_Float128], [Enable _Float128 version using TS 18661-3]
         esac],[enable__Float128=no])
 
 if test x$enable__Float128 = x"yes"; then
-    SAVE_CFLAGS="$CFLAGS"
-    CFLAGS="$CFLAGS"
+    SAVE_CXXFLAGS="$CXXFLAGS"
     AC_MSG_CHECKING([whether _Float128 is supported])
     AC_LINK_IFELSE([
        AC_LANG_SOURCE([[
-       #define __STDC_WANT_IEC_60559_TYPES_EXT__
        #include <stdio.h>
        #include <math.h>
        #include <stdlib.h>
-       int main() {_Float128 a, b, c; b = 1.0q; c=1.0q; a = b + c;
+       int main() {_Float128 a, b, c; b = 1.0q; c=3.0q; a = b / c;
        char buf[1024];
        strfromf128(buf, sizeof(buf), "%.40g", a);
        printf("fp128 %s\n",buf);
@@ -231,7 +227,7 @@ if test x$enable__Float128 = x"yes"; then
                 #include<stdio.h>
                 int main(){
                 char buf[1024];
-                _Float128 a, b, c; b = 1.0q; c= 2.0q; a = b + c;
+                _Float128 a, b, c; b = 1.0q; c= 3.0q; a = b / c;
                 quadmath_snprintf(buf,128,"%.40Qf",a);
                printf("%s",buf);
                }
@@ -252,7 +248,7 @@ if test x$enable__Float128 = x"yes"; then
     fi
 
 fi
-CFLAGS="$SAVE_CFLAGS"
+CXXFLAGS="$SAVE_CXXFLAGS"
 
 AM_CONDITIONAL(ENABLE__FLOAT128, test x$enable__Float128 = xyes)
 
@@ -432,7 +428,6 @@ if test x$enable_qd = x"yes" -o x$enable_dd = x"yes" -o x$enable_debug = x"yes";
         HAVE_QD=""
         save_CXXFLAGS=$CXXFLAGS
         CXXFLAGS="$CXXFLAGS -I$QD_INCLUDEDIR"
-        AC_LANG_PUSH([C++])
         AC_CHECK_HEADER(qd/qd_real.h, HAVE_QD_HEADER=yes)
         CXXFLAGS=$save_CXXFLAGS
         if test x$HAVE_QD_HEADER = xyes; then
@@ -447,7 +442,6 @@ if test x$enable_qd = x"yes" -o x$enable_dd = x"yes" -o x$enable_debug = x"yes";
               AC_MSG_RESULT([QD library found: using QD library comes with the system])
               SYSTEM_QD=yes
         fi
-        AC_LANG_POP([C++])
     else
         AC_MSG_RESULT([Using QD library comes with MPLAPACK])
         QD_INCLUDEDIR=$highest_abs_top_srcdir/external/i/QD/include/
