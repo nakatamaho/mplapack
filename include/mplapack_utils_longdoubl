@@ -3,7 +3,7 @@
  *	Nakata, Maho
  * 	All rights reserved.
  *
- * $Id: mutils_gmp.h,v 1.10 2010/08/07 03:15:46 nakatamaho Exp $
+ * $Id: mplapack_utils_long double.h,v 1.11 2010/08/07 03:15:46 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,65 +28,58 @@
  *
  */
 
-#ifndef _MUTILS_GMP_H_
-#define _MUTILS_GMP_H_
+#ifndef _MUTILS_LONGDOUBLE_H_
+#define _MUTILS_LONGDOUBLE_H_
 
-#include <gmpxx.h>
-#include "mpc_class.h"
 
-mpf_class log(mpf_class x);
-mpf_class log2(mpf_class x);
-mpf_class log10(mpf_class x);
-mpf_class pow(mpf_class x, mpf_class y);
-mpf_class cos(mpf_class x);
-mpf_class sin(mpf_class x);
-mpf_class exp(mpf_class x);
-mpc_class exp(mpc_class x);
-mpf_class pi(mpf_class dummy);
+#include <complex>
+long double pi(long double dummy);
 
-mpf_class sign(mpf_class a, mpf_class b);
-double cast2double(mpf_class a);
-long nint(mpf_class a);
-mpc_class Real2Complex(mpf_class a, mpf_class b);
-mpf_class Cabs1(mpc_class zdum);
+long double sign(long double a, long double b);
+double cast2double(long double a);
+long nint(long double a);
+std::complex<long double> Real2Complex(long double a, long double b);
+long double Cabs1(std::complex<long double> zdum);
 
-inline mpf_class sign(mpf_class a, mpf_class b)
+//implementation of sign transfer function.
+inline long double sign(long double a, long double b)
 {
-    mpf_class mtmp;
-    mpf_abs(mtmp.get_mpf_t(), a.get_mpf_t());
-    if (b != 0.0) {
-	mtmp = mpf_sgn(b.get_mpf_t()) * mtmp;
-    }
-    return mtmp;
+  long double mtmp;
+  mtmp=std::abs(a);
+  if (b<0.0) {
+    mtmp=-mtmp;
+  }
+  return mtmp;
 }
 
-inline double cast2double(mpf_class a)
+inline double
+cast2double(long double a)
 {
-    return a.get_d();
+    return (double)a;
 }
 
-inline long nint(mpf_class a)
+inline long nint(long double a)
 {
     long i;
-    mpf_class tmp;
+    long double tmp;
     a = a + 0.5;
-    mpf_floor(tmp.get_mpf_t(), a.get_mpf_t());
-    i = mpf_get_si(tmp.get_mpf_t());
+    tmp = floor(a);
+    i = (long)tmp;
     return i;
 }
 
-inline mpc_class Real2Complex(mpf_class a, mpf_class b)
+inline std::complex<long double> Real2Complex(long double a, long double b)
 {
-    mpc_class ret;
+    std::complex<long double> ret;
     ret.real(a);
     ret.imag(b);
     return ret;
 }
 
-inline mpf_class Cabs1(mpc_class zdum)
+inline long double Cabs1(std::complex<long double> zdum)
 {
-    mpf_class ret;
-    ret = abs(zdum.real()) + abs(zdum.imag());
+    long double ret;
+    ret = std::abs(zdum.real()) + std::abs(zdum.imag());
     return ret;
 }
 

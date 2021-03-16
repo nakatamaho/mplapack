@@ -29,7 +29,7 @@
 #ifndef _MPBLAS__FLOAT128_H_
 #define _MPBLAS__FLOAT128_H_
 
-#include "mutils__Float128.h"
+#include "mplapack_utils__Float128.h"
 #include "mplapack_config.h"
 
 #if !defined __MPLAPACK_ERRNO__

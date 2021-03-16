@@ -29,7 +29,7 @@
 #ifndef _MPBLAS_LONGDOUBLE_H_
 #define _MPBLAS_LONGDOUBLE_H_
 
-#include "mutils_longdouble.h"
+#include "mplapack_utils_longdouble.h"
 #include "mplapack_config.h"
 
 #if !defined __MPLAPACK_ERRNO__

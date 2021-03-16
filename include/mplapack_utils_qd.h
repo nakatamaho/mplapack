@@ -3,7 +3,7 @@
  *	Nakata, Maho
  * 	All rights reserved.
  *
- * $Id: mutils_long double.h,v 1.11 2010/08/07 03:15:46 nakatamaho Exp $
+ * $Id: mplapack_utils_qd.h,v 1.12 2010/08/07 03:15:46 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,58 +28,56 @@
  *
  */
 
-#ifndef _MUTILS_LONGDOUBLE_H_
-#define _MUTILS_LONGDOUBLE_H_
+#ifndef _MUTILS_QD_H_
+#define _MUTILS_QD_H_
 
+qd_real log2(qd_real x);
+qd_complex exp(qd_complex x);
+qd_real pi(qd_real dummy);
 
-#include <complex>
-long double pi(long double dummy);
-
-long double sign(long double a, long double b);
-double cast2double(long double a);
-long nint(long double a);
-std::complex<long double> Real2Complex(long double a, long double b);
-long double Cabs1(std::complex<long double> zdum);
+qd_real sign(qd_real a, qd_real b);
+double cast2double(qd_real a);
+qd_complex Real2Complex(qd_real a, qd_real b);
+qd_real Cabs1(qd_complex zdum);
 
 //implementation of sign transfer function.
-inline long double sign(long double a, long double b)
+inline qd_real sign(qd_real a, qd_real b)
 {
-  long double mtmp;
-  mtmp=std::abs(a);
+  qd_real mtmp;
+  mtmp=abs(a);
   if (b<0.0) {
     mtmp=-mtmp;
   }
   return mtmp;
 }
 
-inline double
-cast2double(long double a)
+inline double cast2double(qd_real a)
 {
-    return (double)a;
+    return a.x[0];
 }
 
-inline long nint(long double a)
+inline long __qd_nint(qd_real a)
 {
     long i;
-    long double tmp;
+    qd_real tmp;
     a = a + 0.5;
     tmp = floor(a);
-    i = (long)tmp;
+    i = (long)tmp.x[0];
     return i;
 }
 
-inline std::complex<long double> Real2Complex(long double a, long double b)
+inline qd_complex Real2Complex(qd_real a, qd_real b)
 {
-    std::complex<long double> ret;
+    qd_complex ret;
     ret.real(a);
     ret.imag(b);
     return ret;
 }
 
-inline long double Cabs1(std::complex<long double> zdum)
+inline qd_real Cabs1(qd_complex zdum)
 {
-    long double ret;
-    ret = std::abs(zdum.real()) + std::abs(zdum.imag());
+    qd_real ret;
+    ret = abs(zdum.real()) + abs(zdum.imag());
     return ret;
 }
 

@@ -242,7 +242,7 @@ if test x$enable__Float128 = x"yes"; then
 
     if test "$want_libquadmath" = "yes"; then
         AC_MSG_RESULT([_Float128 is supported via __float128 and libquadmath])
-        sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%/#define _MPLAPACK_WANT_LIBQUADMTH_\ntypedef __float128 _Float128;/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
+        sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%/#define _MPLAPACK_WANT_LIBQUADMATH_\ntypedef __float128 _Float128;/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
     else
         AC_MSG_RESULT([_Float128 is supported via native libc])
         sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%//g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h

@@ -3,7 +3,7 @@
  *	Nakata, Maho
  * 	All rights reserved.
  *
- * $Id: mutils_qd.h,v 1.12 2010/08/07 03:15:46 nakatamaho Exp $
+ * $Id: mplapack_utils_gmp.h,v 1.10 2010/08/07 03:15:46 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,55 +28,64 @@
  *
  */
 
-#ifndef _MUTILS_QD_H_
-#define _MUTILS_QD_H_
+#ifndef _MUTILS_GMP_H_
+#define _MUTILS_GMP_H_
 
-qd_real log2(qd_real x);
-qd_complex exp(qd_complex x);
-qd_real pi(qd_real dummy);
+#include <gmpxx.h>
+#include "mpc_class.h"
 
-qd_real sign(qd_real a, qd_real b);
-double cast2double(qd_real a);
-qd_complex Real2Complex(qd_real a, qd_real b);
-qd_real Cabs1(qd_complex zdum);
+mpf_class log(mpf_class x);
+mpf_class log2(mpf_class x);
+mpf_class log10(mpf_class x);
+mpf_class pow(mpf_class x, mpf_class y);
+mpf_class cos(mpf_class x);
+mpf_class sin(mpf_class x);
+mpf_class exp(mpf_class x);
+mpc_class exp(mpc_class x);
+mpf_class pi(mpf_class dummy);
 
-//implementation of sign transfer function.
-inline qd_real sign(qd_real a, qd_real b)
+mpf_class sign(mpf_class a, mpf_class b);
+double cast2double(mpf_class a);
+long nint(mpf_class a);
+mpc_class Real2Complex(mpf_class a, mpf_class b);
+mpf_class Cabs1(mpc_class zdum);
+
+inline mpf_class sign(mpf_class a, mpf_class b)
 {
-  qd_real mtmp;
-  mtmp=abs(a);
-  if (b<0.0) {
-    mtmp=-mtmp;
-  }
-  return mtmp;
+    mpf_class mtmp;
+    mpf_abs(mtmp.get_mpf_t(), a.get_mpf_t());
+    if (b != 0.0) {
+	mtmp = mpf_sgn(b.get_mpf_t()) * mtmp;
+    }
+    return mtmp;
 }
 
-inline double cast2double(qd_real a)
+inline double cast2double(mpf_class a)
 {
-    return a.x[0];
+    return a.get_d();
 }
 
-inline long __qd_nint(qd_real a)
+inline long nint(mpf_class a)
 {
     long i;
-    qd_real tmp;
+    mpf_class tmp;
     a = a + 0.5;
-    tmp = floor(a);
-    i = (long)tmp.x[0];
+    mpf_floor(tmp.get_mpf_t(), a.get_mpf_t());
+    i = mpf_get_si(tmp.get_mpf_t());
     return i;
 }
 
-inline qd_complex Real2Complex(qd_real a, qd_real b)
+inline mpc_class Real2Complex(mpf_class a, mpf_class b)
 {
-    qd_complex ret;
+    mpc_class ret;
     ret.real(a);
     ret.imag(b);
     return ret;
 }
 
-inline qd_real Cabs1(qd_complex zdum)
+inline mpf_class Cabs1(mpc_class zdum)
 {
-    qd_real ret;
+    mpf_class ret;
     ret = abs(zdum.real()) + abs(zdum.imag());
     return ret;
 }

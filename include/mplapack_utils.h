@@ -3,7 +3,7 @@
  *	Nakata, Maho
  * 	All rights reserved.
  *
- * $Id: mutils.h,v 1.6 2010/08/07 03:15:46 nakatamaho Exp $
+ * $Id: mplapack_utils.h,v 1.6 2010/08/07 03:15:46 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,31 +31,31 @@
 #ifndef _MUTILS_H_
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-#include <mutils_mpfr.h>
+#include <mplapack_utils_mpfr.h>
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-#include <mutils_gmp.h>
+#include <mplapack_utils_gmp.h>
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_QD___
-#include <mutils_qd.h>
+#include <mplapack_utils_qd.h>
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DD___
-#include <mutils_dd.h>
+#include <mplapack_utils_dd.h>
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
-#include <mutils_double.h>
+#include <mplapack_utils_double.h>
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_LONGDOUBLE___
-#include <mutils_longdouble.h>
+#include <mplapack_utils_longdouble.h>
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-#include <mutils__Float128.h>
+#include <mplapack_utils__Float128.h>
 #endif
 
 #endif
