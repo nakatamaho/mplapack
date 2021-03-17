@@ -195,7 +195,7 @@ AS_HELP_STRING([--enable-double], [Enable double version]),
 AM_CONDITIONAL(ENABLE_DOUBLE, test x$enable_double = xyes)
 
 AC_ARG_ENABLE(_Float128,
-AS_HELP_STRING([--enable-_Float128], [Enable _Float128 version using TS 18661-3]),
+AS_HELP_STRING([--enable-_Float128], [Enable _Float128 version (TS 18661-3 like gcc extension) ]),
 [case "${enableval}" in
     yes) enable__Float128=yes ;;
     no)  enable__Float128=no  ;;
@@ -229,11 +229,12 @@ if test x$enable__Float128 = x"yes"; then
                 int main(){
                 char buf[1024];
                 _Float128 a, b, c; b = 1.0q; c= 3.0q; a = b / c;
-                quadmath_snprintf(buf,128,"%.40Qf",a);
-               printf("%s",buf);
-               }
+                quadmath_snprintf(buf,128,"%.40Qf\n",a);
+                printf("%s",buf);
+                }
            ]])
         ], [have__Float128=yes, want_libquadmath=yes], [have__Float128=no])
+
         if test "$have__Float128" = "no"; then
             AC_MSG_ERROR([_Float128 is not supported on this platform])
         fi
@@ -243,9 +244,11 @@ if test x$enable__Float128 = x"yes"; then
     if test "$want_libquadmath" = "yes"; then
         AC_MSG_RESULT([_Float128 is supported via __float128 and libquadmath])
         sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%/#define _MPLAPACK_WANT_LIBQUADMATH_\ntypedef __float128 _Float128;/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
+        AM_CONDITIONAL(IS__FLOAT128, 1)
     else
         AC_MSG_RESULT([_Float128 is supported via native libc])
         sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%//g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
+        AM_CONDITIONAL(IS__FLOAT128, 0)
     fi
 
 fi
@@ -253,15 +256,15 @@ CXXFLAGS="$SAVE_CXXFLAGS"
 
 AM_CONDITIONAL(ENABLE__FLOAT128, test x$enable__Float128 = xyes)
 
-AC_ARG_ENABLE(longdouble,
-AS_HELP_STRING([--enable-longdouble], [Enable long double version]),
+AC_ARG_ENABLE(_Float64x,
+AS_HELP_STRING([--enable-_Float64x], [Enable _Float64x (aka __float80) version]),
 [case "${enableval}" in
-    yes) enable_longdouble=yes ;;
-    no)  enable_longdouble=no  ;;
-    *) AC_MSG_ERROR(bad value ${enableval} for --enable-longdouble) ;;
-        esac],[enable_longdouble=no])
+    yes) enable__Float64x=yes ;;
+    no)  enable__Float64x=no  ;;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-_Float64x) ;;
+        esac],[enable__Float64x=no])
 
-AM_CONDITIONAL(ENABLE_LONGDOUBLE, test x$enable_longdouble = xyes)
+AM_CONDITIONAL(ENABLE__FLOAT64X, test x$enable__Float64x = xyes)
 
 highest_abs_top_srcdir=`cd "$srcdir" && pwd` 
 
@@ -532,10 +535,10 @@ AC_MSG_RESULT([Enable double version])
 else
 AC_MSG_RESULT([Disable double version])
 fi
-if test x$enable_longdouble = x"yes"; then
-AC_MSG_RESULT([Enable long double version])
+if test x$enable__Float64x = x"yes"; then
+AC_MSG_RESULT([Enable _Float64x version])
 else
-AC_MSG_RESULT([Disable long double version])
+AC_MSG_RESULT([Disable _Float64x version])
 fi
 if test x$enable__Float128 = x"yes"; then
     if test "$want_libquadmath" = "yes"; then
@@ -672,8 +675,8 @@ fi
 if test x$enable_double = x"yes"; then
   PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_double -lmpblas_double"
 fi
-if test x$enable_longdouble = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_longdouble -lmpblas_longdouble"
+if test x$enable__Float64x = x"yes"; then
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack__Float64x -lmpblas__Float64x"
 fi
 
 # add external libraries only if they will be installed with the package
@@ -705,7 +708,7 @@ mpblas/optimized/qd/Makefile
 mpblas/optimized/dd/Makefile
 mpblas/optimized/dd/cuda/Makefile
 mpblas/optimized/double/Makefile
-mpblas/optimized/longdouble/Makefile
+mpblas/optimized/_Float64x/Makefile
 mpblas/optimized/_Float128/Makefile
 mpblas/blaswrapper/Makefile
 mpblas/fortranwrapper/Makefile
@@ -715,7 +718,7 @@ mpblas/debug/mpfr/Makefile
 mpblas/debug/qd/Makefile
 mpblas/debug/dd/Makefile
 mpblas/debug/double/Makefile
-mpblas/debug/longdouble/Makefile
+mpblas/debug/_Float64x/Makefile
 mpblas/debug/_Float128/Makefile
 mpblas/Makefile
 mplapack/debug/Makefile
@@ -724,7 +727,7 @@ mplapack/debug/mpfr/Makefile
 mplapack/debug/qd/Makefile
 mplapack/debug/dd/Makefile
 mplapack/debug/double/Makefile
-mplapack/debug/longdouble/Makefile
+mplapack/debug/_Float64x/Makefile
 mplapack/debug/_Float128/Makefile
 mplapack/optimized/Makefile
 mplapack/optimized/gmp/Makefile
@@ -732,7 +735,7 @@ mplapack/optimized/mpfr/Makefile
 mplapack/optimized/qd/Makefile
 mplapack/optimized/dd/Makefile
 mplapack/optimized/double/Makefile
-mplapack/optimized/longdouble/Makefile
+mplapack/optimized/_Float64x/Makefile
 mplapack/optimized/_Float128/Makefile
 mplapack/lapackwrapper/Makefile
 mplapack/fortranwrapper/Makefile
