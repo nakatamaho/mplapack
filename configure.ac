@@ -244,11 +244,11 @@ if test x$enable__Float128 = x"yes"; then
     if test "$want_libquadmath" = "yes"; then
         AC_MSG_RESULT([_Float128 is supported via __float128 and libquadmath])
         sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%/#define _MPLAPACK_WANT_LIBQUADMATH_\ntypedef __float128 _Float128;/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
-        AM_CONDITIONAL(IS__FLOAT128, 1)
+        AM_CONDITIONAL(IS__FLOAT128, test x$want_libquadmath = xyes)
     else
         AC_MSG_RESULT([_Float128 is supported via native libc])
         sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%//g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
-        AM_CONDITIONAL(IS__FLOAT128, 0)
+        AM_CONDITIONAL(IS__FLOAT128, test x$want_libquadmath = xyes)
     fi
 fi
 CXXFLAGS="$SAVE_CXXFLAGS"
@@ -299,11 +299,11 @@ if test x$enable__Float64x = x"yes"; then
     if test "$want___float80" = "yes"; then
         AC_MSG_RESULT([_Float64x is supported via __float80])
         sed 's/%%MPLAPACK_FLOAT64X___FLOAT80_%%/#define _MPLAPACK_WANT_LIBQUADMATH_\ntypedef __float80 _Float64x;/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
-        AM_CONDITIONAL(_FLOAT64X_IS___FLOAT80, 1)
+        AM_CONDITIONAL(_FLOAT64X_IS___FLOAT80, test x$want___float80 = xyes)
     else
         AC_MSG_RESULT([_Float64x is supported natively])
         sed 's/%%MPLAPACK_FLOAT64X___FLOAT80_%%//g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
-        AM_CONDITIONAL(_FLOAT64X_IS___FLOAT80, 0)
+        AM_CONDITIONAL(_FLOAT64X_IS___FLOAT80, test x$want___float80 = xyes)
     fi
 fi
 CXXFLAGS="$SAVE_CXXFLAGS"
@@ -585,6 +585,7 @@ if test x$enable__Float64x = x"yes"; then
     else
         AC_MSG_RESULT([Enable native _Float64x version ])
     fi
+else
     AC_MSG_RESULT([Disable _Float64x version])
 fi
 if test x$enable__Float128 = x"yes"; then
@@ -594,7 +595,7 @@ if test x$enable__Float128 = x"yes"; then
         AC_MSG_RESULT([_Float128 is supported via native libc])
     fi
 else
-AC_MSG_RESULT([Disable _Float128 version])
+    AC_MSG_RESULT([Disable _Float128 version])
 fi
 if test x$enable_debug = x"yes"; then
 AC_MSG_RESULT([Enable debug])

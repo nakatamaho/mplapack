@@ -6,7 +6,7 @@ mplapack__Float128_test_PROGRAMS = \
 mplapack__Float128_testdir = $(prefix)/share/mplapack/debug/_Float128
 ref_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float128_ref -lmplapack_mpfr_ref -L$(top_builddir)/mpblas/reference -lmpblas__Float128_ref -lmpblas_mpfr_ref
 opt_libdepends = -L$(top_builddir)/mplapack/optimized/_Float128 -lmplapack__Float128 -L$(top_builddir)/mpblas/optimized/_Float128 -L$(top_builddir)/mplapack/reference -lmplapack_mpfr_ref -lmpblas__Float128 -L$(top_builddir)/mpblas/reference -lmpblas_mpfr_ref
-mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lquadmath
+mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 reflapack=-L$(top_builddir)/external/i/LAPACK/lib -llapack $(FCLIBS)
 
