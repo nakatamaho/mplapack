@@ -72,7 +72,7 @@ Based on http://www.netlib.org/blas/ddot.f
 Rdot forms the dot product of two vectors.
 */
 
-#include <mpblas__Float64x.h.h>
+#include <mpblas__Float64x.h>
 #ifdef _OPENMP
 #include <omp.h>
 #endif

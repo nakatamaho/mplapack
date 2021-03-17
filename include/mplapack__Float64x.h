@@ -68,8 +68,8 @@ void Ctrtrs ( const char *uplo, const char *trans, const char *diag, mplapackint
 
 /* MPLAPACK Auxiliary routines */
 _Float64x Rlamc3 ( _Float64x a, _Float64x b );
-_Float64x Rlamch_longdouble(const char *cmach);
-mplapackint iMlaenv_longdouble(mplapackint ispec, const char *name, const char *opts, mplapackint n1, mplapackint n2,  mplapackint n3, mplapackint n4);
+_Float64x Rlamch__Float64x(const char *cmach);
+mplapackint iMlaenv__Float64x(mplapackint ispec, const char *name, const char *opts, mplapackint n1, mplapackint n2,  mplapackint n3, mplapackint n4);
 void Rlae2 ( _Float64x a, _Float64x b, _Float64x c, _Float64x * rt1, _Float64x * rt2 );
 void Rlaev2 ( _Float64x a, _Float64x b, _Float64x c, _Float64x * rt1, _Float64x * rt2, _Float64x * cs1, _Float64x * sn1 );
 void Claev2 ( std::complex<_Float64x> a, std::complex<_Float64x> b, std::complex<_Float64x> c, _Float64x * rt1, _Float64x * rt2, _Float64x * cs1, std::complex<_Float64x> * sn1 );

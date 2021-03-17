@@ -28,7 +28,7 @@
  *
  */
 
-#include <mpblas__Float64x.h.h>
+#include <mpblas__Float64x.h>
 
 void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, _Float64x alpha, _Float64x * A, mplapackint lda, _Float64x * B, mplapackint ldb, _Float64x beta, _Float64x * C, mplapackint ldc);
 void Rgemm_TN_omp(mplapackint m, mplapackint n, mplapackint k, _Float64x alpha, _Float64x * A, mplapackint lda, _Float64x * B, mplapackint ldb, _Float64x beta, _Float64x * C, mplapackint ldc);
@@ -44,8 +44,8 @@ void Rgemm(const char *transa, const char *transb, mplapackint m, mplapackint n,
     _Float64x temp;
     _Float64x Zero = 0.0, One = 1.0;
 
-    nota = Mlsame_longdouble(transa, "N");
-    notb = Mlsame_longdouble(transb, "N");
+    nota = Mlsame__Float64x(transa, "N");
+    notb = Mlsame__Float64x(transb, "N");
     if (nota) {
 	nrowa = m;
 	ncola = k;
@@ -60,9 +60,9 @@ void Rgemm(const char *transa, const char *transb, mplapackint m, mplapackint n,
     }
 //Test the input parameters.
     info = 0;
-    if (!nota && (!Mlsame_longdouble(transa, "C")) && (!Mlsame_longdouble(transa, "T")))
+    if (!nota && (!Mlsame__Float64x(transa, "C")) && (!Mlsame__Float64x(transa, "T")))
 	info = 1;
-    else if (!notb && (!Mlsame_longdouble(transb, "C")) && (!Mlsame_longdouble(transb, "T")))
+    else if (!notb && (!Mlsame__Float64x(transb, "C")) && (!Mlsame__Float64x(transb, "T")))
 	info = 2;
     else if (m < 0)
 	info = 3;
@@ -77,7 +77,7 @@ void Rgemm(const char *transa, const char *transb, mplapackint m, mplapackint n,
     else if (ldc < std::max((mplapackint) 1, m))
 	info = 13;
     if (info != 0) {
-	Mxerbla_longdouble("Rgemm ", info);
+	Mxerbla__Float64x("Rgemm ", info);
 	return;
     }
 //Quick return if possible.

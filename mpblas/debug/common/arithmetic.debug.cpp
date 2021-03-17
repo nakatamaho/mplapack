@@ -109,7 +109,7 @@ void subst_test2()
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
   tmp1 = cast2double(tmp2);
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-  tmp1 = cast2longdouble(tmp2);  
+  tmp1 = cast2_Float64x(tmp2);  
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
   tmp1 = cast2_Float128(tmp2);
 #endif

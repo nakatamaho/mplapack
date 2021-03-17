@@ -51,7 +51,7 @@
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-#include <mplapack_utils_longdouble.h>
+#include <mplapack_utils__Float64x.h>
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___

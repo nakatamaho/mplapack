@@ -1,7 +1,7 @@
-lib_LTLIBRARIES = libmplapack_longdouble.la
+lib_LTLIBRARIES = libmplapack__Float64x.la
 
-libmplapack_longdouble_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -g -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___
-libmplapack_longdouble_la_SOURCES = ../../reference/Mutils.cpp \
+libmplapack__Float64x_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -g -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___
+libmplapack__Float64x_la_SOURCES = ../../reference/Mutils.cpp \
 ../../reference/Rlae2.cpp  ../../reference/Rlamch.cpp ../../reference/Rlaev2.cpp ../../reference/Rlassq.cpp ../../reference/Rlanst.cpp \
 ../../reference/Rlansy.cpp ../../reference/Rlapy2.cpp ../../reference/Rlarfg.cpp ../../reference/Rlartg.cpp ../../reference/Rlaset.cpp \
 ../../reference/Rlasr.cpp  ../../reference/Rpotf2.cpp ../../reference/Rsteqr.cpp ../../reference/Rsterf.cpp ../../reference/Rlasrt.cpp \
@@ -138,5 +138,5 @@ libmplapack_longdouble_la_SOURCES = ../../reference/Mutils.cpp \
 ../../reference/Cgesdd.cpp ../../reference/Rgesvd.cpp ../../reference/Cgesvd.cpp
 
 if IS_MACOSX
-libmplapack_longdouble_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmplapack__Float64x_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif

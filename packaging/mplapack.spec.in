@@ -79,8 +79,8 @@ Provides: libmplapack__Float128_ref.so = %{version}-%{release}
 Provides: libmplapack__Float128.so = %{version}-%{release}
 Provides: libmplapack_gmp_ref.so = %{version}-%{release}
 Provides: libmplapack_gmp.so = %{version}-%{release}
-Provides: libmplapack_longdouble_ref.so = %{version}-%{release}
-Provides: libmplapack_longdouble.so = %{version}-%{release}
+Provides: libmplapack__Float64x_ref.so = %{version}-%{release}
+Provides: libmplapack__Float64x.so = %{version}-%{release}
 Provides: libmplapack_mpfr_ref.so = %{version}-%{release}
 Provides: libmplapack_mpfr.so = %{version}-%{release}
 Provides: libmplapack_qd_ref.so = %{version}-%{release}
@@ -125,7 +125,7 @@ original license by LAPACK)
 %setup -n mplapack-%{version} -q
 
 %build
-%configure --docdir=%{_pkgdocdir} --enable-gmp --enable-mpfr --enable-qd --enable-dd --enable-double --enable-_Float128 --enable-longdouble --enable-optimization --with-system-gmp --with-system-mpfr --with-system-mpc --with-system-qd --disable-benchmark --disable-examples --disable-reference
+%configure --docdir=%{_pkgdocdir} --enable-gmp --enable-mpfr --enable-qd --enable-dd --enable-double --enable-_Float128 --enable-_Float64x --enable-optimization --with-system-gmp --with-system-mpfr --with-system-mpc --with-system-qd --disable-benchmark --disable-examples --disable-reference
 make %{?_smp_mflags}
 
 

@@ -2585,7 +2585,7 @@ inline _Float128 cast2_Float128(const mpreal &b) {
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-inline _Float64x cast2longdouble(const mpreal &b) {
+inline _Float64x cast2_Float64x(const mpreal &b) {
     // mpreal -> mpfr -> _Float64x
     _Float64x q;
     mpreal a(b);

@@ -38,7 +38,7 @@ _Float64x randomnumber(_Float64x dummy)
     return mtmp;
 }
 
-#define MPLAPACK_REF_LIB    "libmplapack_longdouble_ref"
+#define MPLAPACK_REF_LIB    "libmplapack__Float64x_ref"
 #define MPBLAS_REF_LIB      "libmpblas__Float64x.h_ref"
 
 //mpblas symbols
@@ -77,8 +77,8 @@ _Float64x randomnumber(_Float64x dummy)
 #define SYMBOL_GCC_CTRMV		"_Z5CtrmvPKcS0_S0_lPSt7complexIgElS3_l"
 #define SYMBOL_GCC_CTRSM		"_Z5CtrsmPKcS0_S0_S0_llSt7complexIgEPS2_lS3_l"
 #define SYMBOL_GCC_CTRSV		"_Z5CtrsvPKcS0_S0_lPSt7complexIgElS3_l"
-#define SYMBOL_GCC_MLSAME		"_Z17Mlsame_longdoublePKcS0_"
-#define SYMBOL_GCC_MXERBLA		"_Z18Mxerbla_longdoublePKci"
+#define SYMBOL_GCC_MLSAME		"_Z17Mlsame__Float64xPKcS0_"
+#define SYMBOL_GCC_MXERBLA		"_Z18Mxerbla__Float64xPKci"
 #define SYMBOL_GCC_RCABS1		"_Z6RCabs1St7complexIgE"
 #define SYMBOL_GCC_RCASUM		"_Z6RCasumlPSt7complexIgEl"
 #define SYMBOL_GCC_RCNRM2		"_Z6RCnrm2lPSt7complexIgEl"

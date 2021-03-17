@@ -822,7 +822,7 @@ double Rlamch_double(const char *cmach)
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
 //"E" denots we always calculate relative machine precision (e).
 //where 1+e = 1, minimum of e.
-_Float64x RlamchE_longdouble(void)
+_Float64x RlamchE__Float64x(void)
 {
     static _Float64x eps;
     static int called = 0;
@@ -839,7 +839,7 @@ _Float64x RlamchE_longdouble(void)
 
 //"S" denots we always calculate `safe minimum, such that 1/sfmin does not overflow'.
 //cf.http://www.netlib.org/blas/dlamch.f
-_Float64x RlamchS_longdouble(void)
+_Float64x RlamchS__Float64x(void)
 {
     return LDBL_MIN;
 
@@ -858,7 +858,7 @@ _Float64x RlamchS_longdouble(void)
 
 //"B" base  = base of the machine
 //cf.http://www.netlib.org/blas/dlamch.f
-_Float64x RlamchB_longdouble(void)
+_Float64x RlamchB__Float64x(void)
 {
     _Float64x two;
     two = 2.0;
@@ -867,19 +867,19 @@ _Float64x RlamchB_longdouble(void)
 
 //"P" prec = eps*base
 //cf.http://www.netlib.org/blas/dlamch.f
-_Float64x RlamchP_longdouble(void)
+_Float64x RlamchP__Float64x(void)
 {
     _Float64x base, eps, prec;
 
-    base = RlamchB_longdouble();
-    eps = RlamchE_longdouble();
+    base = RlamchB__Float64x();
+    eps = RlamchE__Float64x();
     prec = eps * base;
     return prec;
 }
 
 //"N" t = number of digits in mantissa
 //cf.http://www.netlib.org/blas/dlamch.f
-_Float64x RlamchN_longdouble(void)
+_Float64x RlamchN__Float64x(void)
 {
 // _Float64x with 80 bits has 64 bit significant digits
     return (_Float64x) LDBL_MANT_DIG;
@@ -887,7 +887,7 @@ _Float64x RlamchN_longdouble(void)
 
 //"R" rnd   = 1.0 when rounding occurs in addition, 0.0 otherwise
 //cf.http://www.netlib.org/blas/dlamch.f
-_Float64x RlamchR_longdouble(void)
+_Float64x RlamchR__Float64x(void)
 {
     _Float64x mtmp;
     mtmp = 1.0;
@@ -896,14 +896,14 @@ _Float64x RlamchR_longdouble(void)
 
 //"M"
 //cf.http://www.netlib.org/blas/dlamch.f
-_Float64x RlamchM_longdouble(void)
+_Float64x RlamchM__Float64x(void)
 {
     return (_Float64x) LDBL_MIN_EXP;
 }
 
 //"U"
 //cf.http://www.netlib.org/blas/dlamch.f
-_Float64x RlamchU_longdouble(void)
+_Float64x RlamchU__Float64x(void)
 {
     return LDBL_MIN;
 
@@ -922,50 +922,50 @@ _Float64x RlamchU_longdouble(void)
 
 //"L"
 //cf.http://www.netlib.org/blas/dlamch.f
-_Float64x RlamchL_longdouble(void)
+_Float64x RlamchL__Float64x(void)
 {
     return LDBL_MAX_EXP;
 }
 
 //"O"
 //cf.http://www.netlib.org/blas/dlamch.f
-_Float64x RlamchO_longdouble(void)
+_Float64x RlamchO__Float64x(void)
 {
     return LDBL_MAX;
 }
 
 //"Z" :dummy
 //cf.http://www.netlib.org/blas/dlamch.f
-_Float64x RlamchZ_longdouble(void)
+_Float64x RlamchZ__Float64x(void)
 {
     _Float64x mtemp = 0.0;
     return mtemp;
 }
 
-_Float64x Rlamch_longdouble(const char *cmach)
+_Float64x Rlamch__Float64x(const char *cmach)
 {
     if (Mlsame(cmach, "E"))
-        return RlamchE_longdouble();
+        return RlamchE__Float64x();
     if (Mlsame(cmach, "S"))
-        return RlamchS_longdouble();
+        return RlamchS__Float64x();
     if (Mlsame(cmach, "B"))
-        return RlamchB_longdouble();
+        return RlamchB__Float64x();
     if (Mlsame(cmach, "P"))
-        return RlamchP_longdouble();
+        return RlamchP__Float64x();
     if (Mlsame(cmach, "N"))
-        return RlamchN_longdouble();
+        return RlamchN__Float64x();
     if (Mlsame(cmach, "R"))
-        return RlamchR_longdouble();
+        return RlamchR__Float64x();
     if (Mlsame(cmach, "M"))
-        return RlamchM_longdouble();
+        return RlamchM__Float64x();
     if (Mlsame(cmach, "U"))
-        return RlamchU_longdouble();
+        return RlamchU__Float64x();
     if (Mlsame(cmach, "L"))
-        return RlamchL_longdouble();
+        return RlamchL__Float64x();
     if (Mlsame(cmach, "O"))
-        return RlamchO_longdouble();
+        return RlamchO__Float64x();
     Mxerbla("Rlamch", 1);
-    return RlamchZ_longdouble();
+    return RlamchZ__Float64x();
 }
 #endif
 

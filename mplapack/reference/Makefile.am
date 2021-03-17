@@ -21,7 +21,7 @@ lib_LTLIBRARIES += libmplapack_double_ref.la
 endif
 
 if ENABLE__FLOAT64X
-lib_LTLIBRARIES += libmplapack_longdouble_ref.la
+lib_LTLIBRARIES += libmplapack__Float64x_ref.la
 endif
 
 if ENABLE__FLOAT128
@@ -69,10 +69,10 @@ endif
 endif
 
 if ENABLE__FLOAT64X
-libmplapack_longdouble_ref_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___
-libmplapack_longdouble_ref_la_SOURCES = $(MPLAPACK_SOURCES)
+libmplapack__Float64x_ref_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___
+libmplapack__Float64x_ref_la_SOURCES = $(MPLAPACK_SOURCES)
 if IS_MACOSX
-libmplapack_longdouble_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmplapack__Float64x_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 

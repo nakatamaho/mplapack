@@ -98,15 +98,15 @@ typedef std::complex<double> COMPLEX;
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-#include <mplapack_longdouble.h>
+#include <mplapack__Float64x.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
 typedef _Float64x REAL;
 typedef std::complex<_Float64x> COMPLEX;
-#define Mlsame   Mlsame_longdouble
-#define Mxerbla  Mxerbla_longdouble
-#define Rlamch   Rlamch_longdouble
-#define iMlaenv  iMlaenv_longdouble
+#define Mlsame   Mlsame__Float64x
+#define Mxerbla  Mxerbla__Float64x
+#define Rlamch   Rlamch__Float64x
+#define iMlaenv  iMlaenv__Float64x
 #endif
 
 
