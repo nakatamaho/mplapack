@@ -202,8 +202,8 @@ AS_HELP_STRING([--enable-_Float128], [Enable _Float128 version (TS 18661-3 like 
     *) AC_MSG_ERROR(bad value ${enableval} for --enable-_Float128) ;;
         esac],[enable__Float128=no])
 
+SAVE_CXXFLAGS="$CXXFLAGS"
 if test x$enable__Float128 = x"yes"; then
-    SAVE_CXXFLAGS="$CXXFLAGS"
     AC_MSG_CHECKING([whether _Float128 is supported])
     AC_LINK_IFELSE([
        AC_LANG_SOURCE([[
@@ -250,19 +250,63 @@ if test x$enable__Float128 = x"yes"; then
         sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%//g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
         AM_CONDITIONAL(IS__FLOAT128, 0)
     fi
-
 fi
 CXXFLAGS="$SAVE_CXXFLAGS"
 
 AM_CONDITIONAL(ENABLE__FLOAT128, test x$enable__Float128 = xyes)
 
 AC_ARG_ENABLE(_Float64x,
-AS_HELP_STRING([--enable-_Float64x], [Enable _Float64x (aka __float80) version]),
+AS_HELP_STRING([--enable-_Float64x], [Enable _Float64x (aka __float80 or long double) version]),
 [case "${enableval}" in
     yes) enable__Float64x=yes ;;
     no)  enable__Float64x=no  ;;
     *) AC_MSG_ERROR(bad value ${enableval} for --enable-_Float64x) ;;
         esac],[enable__Float64x=no])
+
+SAVE_CXXFLAGS="$CXXFLAGS"
+if test x$enable__Float64x = x"yes"; then
+    AC_MSG_CHECKING([whether _Float64x is supported])
+    AC_LINK_IFELSE([
+       AC_LANG_SOURCE([[
+       #include <stdio.h>
+       #include <math.h>
+       #include <stdlib.h>
+       int main() {_Float64x a, b, c; b = 1.0w; c=3.0w; a = b / c;
+       printf("_Float64x %Lf\n", a);
+       }
+      ]])
+    ], [have__Float64x=yes, want___float80=no], [_have__Float64x=no])
+
+    if test "$_have__Float64x" = "no"; then
+        AC_LINK_IFELSE([
+            AC_LANG_SOURCE([[
+                #include<stdio.h>
+                typedef _Float64x __float80;
+                int main(){
+                char buf[1024];
+                _Float64x a, b, c; b = 1.0w; c= 3.0w; a = b / c;
+                printf("_Float64x %Lf",a);
+                }
+           ]])
+        ], [have__Float64x=yes, want___float80=yes], [have__Float64x=no])
+
+        if test "$have__Float64x" = "no"; then
+            AC_MSG_ERROR([_Float64x is not supported on this platform])
+        fi
+        LDFLAGS="$save_LDFLAGS"
+    fi
+
+    if test "$want___float80" = "yes"; then
+        AC_MSG_RESULT([_Float64x is supported via __float80])
+        sed 's/%%MPLAPACK_FLOAT64X___FLOAT80_%%/#define _MPLAPACK_WANT_LIBQUADMATH_\ntypedef __float80 _Float64x;/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
+        AM_CONDITIONAL(_FLOAT64X_IS___FLOAT80, 1)
+    else
+        AC_MSG_RESULT([_Float64x is supported natively])
+        sed 's/%%MPLAPACK_FLOAT64X___FLOAT80_%%//g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
+        AM_CONDITIONAL(_FLOAT64X_IS___FLOAT80, 0)
+    fi
+fi
+CXXFLAGS="$SAVE_CXXFLAGS"
 
 AM_CONDITIONAL(ENABLE__FLOAT64X, test x$enable__Float64x = xyes)
 
@@ -536,9 +580,12 @@ else
 AC_MSG_RESULT([Disable double version])
 fi
 if test x$enable__Float64x = x"yes"; then
-AC_MSG_RESULT([Enable _Float64x version])
-else
-AC_MSG_RESULT([Disable _Float64x version])
+    if test "$want___float80" = "yes"; then
+        AC_MSG_RESULT([Enable _Float64x version via __float80])
+    else
+        AC_MSG_RESULT([Enable native _Float64x version ])
+    fi
+    AC_MSG_RESULT([Disable _Float64x version])
 fi
 if test x$enable__Float128 = x"yes"; then
     if test "$want_libquadmath" = "yes"; then
