@@ -1,7 +1,7 @@
-lib_LTLIBRARIES = libmpblas__Float64x.h.la
+lib_LTLIBRARIES = libmpblas__Float64x.la
 
-libmpblas__Float64x.h_la_CPPFLAGS = -g -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPLAPACK_BUILD_WITH__FLOAT64X___ -finline-functions 
-libmpblas__Float64x.h_la_SOURCES = \
+libmpblas__Float64x_la_CPPFLAGS = -g -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPLAPACK_BUILD_WITH__FLOAT64X___ -finline-functions 
+libmpblas__Float64x_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \
 Rgemm.cpp Rgemm_ref.cpp openmp/Rgemm_NN_omp.cpp openmp/Rgemm_NT_omp.cpp openmp/Rgemm_TN_omp.cpp openmp/Rgemm_TT_omp.cpp \
@@ -81,5 +81,5 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../../reference/mplapackinit.cpp
 
 if IS_MACOSX
-libmpblas__Float64x.h_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmpblas__Float64x_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
