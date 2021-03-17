@@ -72,7 +72,7 @@ Based on http://www.netlib.org/blas/dcopy.f
 Rcopy copies a vector, x, to a vector, y.
 */
 
-#include <mpblas_longdouble.h>
+#include <mpblas__Float64x.h.h>
 
 void Rcopy_ref(mplapackint n, _Float64x * dx, mplapackint incx, _Float64x * dy, mplapackint incy);
 void Rcopy_omp(mplapackint n, _Float64x * dx, mplapackint incx, _Float64x * dy, mplapackint incy);

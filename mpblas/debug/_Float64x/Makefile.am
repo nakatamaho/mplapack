@@ -1,8 +1,8 @@
 #CTBSV, CTPSV might have bugs or intrinsically inaccurate
 #Rnrm2 should be checked more
-check_PROGRAMS = $(mpblas_longdouble_test_PROGRAMS) 
+check_PROGRAMS = $(mpblas__Float64x.h_test_PROGRAMS) 
 TESTS = $(check_PROGRAMS)
-mpblas_longdouble_test_PROGRAMS = \
+mpblas__Float64x.h_test_PROGRAMS = \
 arithmetic.debug_longdouble \
 complex.debug_longdouble \
 iCamax.debug.longdouble_ref iCamax.debug.longdouble   \
@@ -80,9 +80,9 @@ Rtrmv.debug.longdouble_ref  Rtrmv.debug.longdouble	\
 Rtrsm.debug.longdouble_ref  Rtrsm.debug.longdouble	\
 Rtrsv.debug.longdouble_ref  Rtrsv.debug.longdouble
 
-mpblas_longdouble_testdir = $(prefix)/share/mplapack/testing/longdouble
-ref_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_longdouble_ref -lmpblas_mpfr_ref
-opt_libdepends = -L$(top_builddir)/mpblas/optimized/longdouble -lmpblas_longdouble -L$(top_builddir)/mpblas/reference -lmpblas_mpfr_ref
+mpblas__Float64x.h_testdir = $(prefix)/share/mplapack/testing/longdouble
+ref_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas__Float64x.h_ref -lmpblas_mpfr_ref
+opt_libdepends = -L$(top_builddir)/mpblas/optimized/longdouble -lmpblas__Float64x.h -L$(top_builddir)/mpblas/reference -lmpblas_mpfr_ref
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp -lquadmath
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 

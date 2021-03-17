@@ -39,7 +39,7 @@ _Float64x randomnumber(_Float64x dummy)
 }
 
 #define MPLAPACK_REF_LIB    "libmplapack_longdouble_ref"
-#define MPBLAS_REF_LIB      "libmpblas_longdouble_ref"
+#define MPBLAS_REF_LIB      "libmpblas__Float64x.h_ref"
 
 //mpblas symbols
 #define SYMBOL_GCC_CRROT		"_Z5CRrotlPSt7complexIgElS1_lgg"

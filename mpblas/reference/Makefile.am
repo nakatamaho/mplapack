@@ -21,7 +21,7 @@ lib_LTLIBRARIES += libmpblas_double_ref.la
 endif
 
 if ENABLE__FLOAT64X
-lib_LTLIBRARIES += libmpblas_longdouble_ref.la
+lib_LTLIBRARIES += libmpblas__Float64x.h_ref.la
 endif
 
 if ENABLE__FLOAT128
@@ -82,10 +82,10 @@ endif
 endif
 
 if ENABLE__FLOAT64X
-libmpblas_longdouble_ref_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___
-libmpblas_longdouble_ref_la_SOURCES = $(MPBLAS_SOURCES)
+libmpblas__Float64x.h_ref_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___
+libmpblas__Float64x.h_ref_la_SOURCES = $(MPBLAS_SOURCES)
 if IS_MACOSX
-libmpblas_longdouble_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmpblas__Float64x.h_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 

@@ -28,7 +28,7 @@
  *
  */
 
-#include <mpblas_longdouble.h>
+#include <mpblas__Float64x.h.h>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
