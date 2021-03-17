@@ -55,11 +55,11 @@ mplapack_include_HEADERS += \
     include/mutils_double.h
 endif
 
-if ENABLE_LONGDOUBLE
+if ENABLE__FLOAT64X
 mplapack_include_HEADERS += \
-     include/mpblas_longdouble.h \
-     include/mplapack_longdouble.h \
-     include/mutils_longdouble.h
+     include/mpblas__Float64x.h \
+     include/mplapack__Float64x.h \
+     include/mutils__Float64x.h
 endif
 
 if ENABLE__FLOAT128

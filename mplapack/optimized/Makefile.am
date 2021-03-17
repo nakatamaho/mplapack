@@ -24,6 +24,6 @@ if ENABLE__FLOAT128
 SUBDIRS += _Float128
 endif
 
-if ENABLE_LONGDOUBLE
+if ENABLE__FLOAT64X
 SUBDIRS += longdouble
 endif

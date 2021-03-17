@@ -498,36 +498,36 @@ void set_random_number1to2(mpcomplex & a, complex<double> &b)
 
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_LONGDOUBLE___
-long double mpf_randomnumber(long double dummy)
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
+_Float64x mpf_randomnumber(_Float64x dummy)
 {
-    long double mtmp = drand48();
+    _Float64x mtmp = drand48();
     return mtmp;
 }
 
-complex < long double >mpc_randomnumber(complex < long double >)
+complex < _Float64x >mpc_randomnumber(complex < _Float64x >)
 {
-    std::complex < long double >ctmp;
+    std::complex < _Float64x >ctmp;
     ctmp.real(drand48());
     ctmp.imag(drand48());
     return ctmp;
 }
 
-void set_random_number(mpreal &a, long double & b)
+void set_random_number(mpreal &a, _Float64x & b)
 {
     mpreal dummy;
     a = mpf_randomnumber(dummy);
     b = a;
 }
 
-void set_random_number(mpcomplex & a, complex<long double> &b)
+void set_random_number(mpcomplex & a, complex<_Float64x> &b)
 {
     mpcomplex dummy;
     a = mpc_randomnumber(dummy);
     b = a;
 }
 
-void set_random_number1to2(mpreal &a, long double & b)
+void set_random_number1to2(mpreal &a, _Float64x & b)
 {
     mpreal dummy;
     a = mpf_randomnumber(dummy);
@@ -535,7 +535,7 @@ void set_random_number1to2(mpreal &a, long double & b)
     b = a;
 }
 
-void set_random_number1to2(mpcomplex & a, complex<long double> &b)
+void set_random_number1to2(mpcomplex & a, complex<_Float64x> &b)
 {
     mpcomplex dummy;
     double p, q;
@@ -679,25 +679,25 @@ void sprintnum(char *buf, complex < double >ctmp)
     return;
 }
 
-void printnum(complex < long double >ctmp)
+void printnum(complex < _Float64x >ctmp)
 {
     printf(LP_FORMAT LP_FORMAT "i", ctmp.real(), ctmp.imag());
     return;
 }
 
-void printnum(long double rtmp)
+void printnum(_Float64x rtmp)
 {
     printf(LP_FORMAT, rtmp);
     return;
 }
 
-void sprintnum(char *buf, long double rtmp)
+void sprintnum(char *buf, _Float64x rtmp)
 {
     snprintf(buf, BUFLEN, LP_FORMAT, rtmp);
     return;
 }
 
-void sprintnum(char *buf, complex < long double >ctmp)
+void sprintnum(char *buf, complex < _Float64x >ctmp)
 {
     snprintf(buf, BUFLEN, LP_FORMAT LP_FORMAT "i", ctmp.real(), ctmp.imag());
     return;

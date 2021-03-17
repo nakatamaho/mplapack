@@ -30,21 +30,21 @@
 
 #include <mpblas_longdouble.h>
 
-void Rgemm_NN(mplapackint m, mplapackint n, mplapackint k, long double alpha, long double * A, mplapackint lda, long double * B, mplapackint ldb,
-	      long double beta, long double * C, mplapackint ldc);
-void Rgemm_TN(mplapackint m, mplapackint n, mplapackint k, long double alpha, long double * A, mplapackint lda, long double * B, mplapackint ldb,
-	      long double beta, long double * C, mplapackint ldc);
-void Rgemm_NT(mplapackint m, mplapackint n, mplapackint k, long double alpha, long double * A, mplapackint lda, long double * B, mplapackint ldb,
-	      long double beta, long double * C, mplapackint ldc);
-void Rgemm_TT(mplapackint m, mplapackint n, mplapackint k, long double alpha, long double * A, mplapackint lda, long double * B, mplapackint ldb,
-	      long double beta, long double * C, mplapackint ldc);
+void Rgemm_NN(mplapackint m, mplapackint n, mplapackint k, _Float64x alpha, _Float64x * A, mplapackint lda, _Float64x * B, mplapackint ldb,
+	      _Float64x beta, _Float64x * C, mplapackint ldc);
+void Rgemm_TN(mplapackint m, mplapackint n, mplapackint k, _Float64x alpha, _Float64x * A, mplapackint lda, _Float64x * B, mplapackint ldb,
+	      _Float64x beta, _Float64x * C, mplapackint ldc);
+void Rgemm_NT(mplapackint m, mplapackint n, mplapackint k, _Float64x alpha, _Float64x * A, mplapackint lda, _Float64x * B, mplapackint ldb,
+	      _Float64x beta, _Float64x * C, mplapackint ldc);
+void Rgemm_TT(mplapackint m, mplapackint n, mplapackint k, _Float64x alpha, _Float64x * A, mplapackint lda, _Float64x * B, mplapackint ldb,
+	      _Float64x beta, _Float64x * C, mplapackint ldc);
 
-void Rgemm(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, long double alpha, long double * A,
-	   mplapackint lda, long double * B, mplapackint ldb, long double beta, long double * C, mplapackint ldc)
+void Rgemm(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, _Float64x alpha, _Float64x * A,
+	   mplapackint lda, _Float64x * B, mplapackint ldb, _Float64x beta, _Float64x * C, mplapackint ldc)
 {
     mplapackint i, j, l, nota, notb, nrowa, ncola, nrowb, info;
-    long double temp;
-    long double Zero = 0.0, One = 1.0;
+    _Float64x temp;
+    _Float64x Zero = 0.0, One = 1.0;
 
     nota = Mlsame_longdouble(transa, "N");
     notb = Mlsame_longdouble(transb, "N");
@@ -79,7 +79,7 @@ void Rgemm(const char *transa, const char *transb, mplapackint m, mplapackint n,
     else if (ldc < std::max((mplapackint) 1, m))
 	info = 13;
     if (info != 0) {
-	Mxerbla_long double("Rgemm ", info);
+	Mxerbla__Float64x("Rgemm ", info);
 	return;
     }
 //Quick return if possible.

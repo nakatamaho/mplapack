@@ -1,6 +1,6 @@
 lib_LTLIBRARIES = libmplapack_longdouble.la
 
-libmplapack_longdouble_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -g -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_LONGDOUBLE___
+libmplapack_longdouble_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -g -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___
 libmplapack_longdouble_la_SOURCES = ../../reference/Mutils.cpp \
 ../../reference/Rlae2.cpp  ../../reference/Rlamch.cpp ../../reference/Rlaev2.cpp ../../reference/Rlassq.cpp ../../reference/Rlanst.cpp \
 ../../reference/Rlansy.cpp ../../reference/Rlapy2.cpp ../../reference/Rlarfg.cpp ../../reference/Rlartg.cpp ../../reference/Rlaset.cpp \

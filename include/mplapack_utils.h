@@ -50,7 +50,7 @@
 #include <mplapack_utils_double.h>
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_LONGDOUBLE___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
 #include <mplapack_utils_longdouble.h>
 #endif
 

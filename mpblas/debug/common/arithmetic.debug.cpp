@@ -49,7 +49,7 @@ void subst_test1()
   tmp1 = strtoflt128(buf1, NULL);
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
   sscanf(buf1, "%lf", &tmp1);
-#elif defined ___MPLAPACK_BUILD_WITH_LONGDOUBLE___
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
   sscanf(buf1, "%Lf", &tmp1);
 #else
   tmp1 = buf1;
@@ -108,7 +108,7 @@ void subst_test2()
   tmp1 = cast2qd_real(tmp2);
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
   tmp1 = cast2double(tmp2);
-#elif defined ___MPLAPACK_BUILD_WITH_LONGDOUBLE___
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
   tmp1 = cast2longdouble(tmp2);  
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
   tmp1 = cast2_Float128(tmp2);
@@ -132,7 +132,7 @@ void subst_test2()
   if (strncmp(buf1, buf2, 66)==0 && strncmp(buf2, buf3, 66)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
   if (strncmp(buf1, buf2, 19)==0 && strncmp(buf2, buf3, 19)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);}
-#elif defined ___MPLAPACK_BUILD_WITH_LONGDOUBLE___
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
   if (strncmp(buf1, buf2, 19)==0 && strncmp(buf2, buf3, 19)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);}
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
   if (strncmp(buf1, buf2, 36)==0 && strncmp(buf2, buf3, 36)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 

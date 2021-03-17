@@ -30,12 +30,12 @@
 
 #include <mpblas_longdouble.h>
 
-long double Rdot_ref(mplapackint n, long double * dx, mplapackint incx, long double * dy, mplapackint incy);
-long double Rdot_omp(mplapackint n, long double * dx, mplapackint incx, long double * dy, mplapackint incy);
+_Float64x Rdot_ref(mplapackint n, _Float64x * dx, mplapackint incx, _Float64x * dy, mplapackint incy);
+_Float64x Rdot_omp(mplapackint n, _Float64x * dx, mplapackint incx, _Float64x * dy, mplapackint incy);
 
 #define SINGLEOROMP 1000
 
-long double Rdot(mplapackint n, long double * dx, mplapackint incx, long double * dy, mplapackint incy)
+_Float64x Rdot(mplapackint n, _Float64x * dx, mplapackint incx, _Float64x * dy, mplapackint incy)
 {
     mplapackint ix = 0;
     mplapackint iy = 0;

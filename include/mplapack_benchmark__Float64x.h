@@ -28,9 +28,9 @@
  *
  */
 
-long double randomnumber(long double dummy)
+_Float64x randomnumber(_Float64x dummy)
 {
-    long double mtmp;
+    _Float64x mtmp;
     mtmp = lrand48();           //uniform random between [0,1] via lrand48
     mtmp += lrand48()*1e-16;    //uniform random between [0,1] via lrand48
     mtmp += lrand48()*1e-32;    //uniform random between [0,1] via lrand48

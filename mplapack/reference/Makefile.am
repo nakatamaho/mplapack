@@ -20,7 +20,7 @@ if ENABLE_DOUBLE
 lib_LTLIBRARIES += libmplapack_double_ref.la
 endif
 
-if ENABLE_LONGDOUBLE
+if ENABLE__FLOAT64X
 lib_LTLIBRARIES += libmplapack_longdouble_ref.la
 endif
 
@@ -68,8 +68,8 @@ libmplapack_double_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_looku
 endif
 endif
 
-if ENABLE_LONGDOUBLE
-libmplapack_longdouble_ref_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_LONGDOUBLE___
+if ENABLE__FLOAT64X
+libmplapack_longdouble_ref_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___
 libmplapack_longdouble_ref_la_SOURCES = $(MPLAPACK_SOURCES)
 if IS_MACOSX
 libmplapack_longdouble_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup

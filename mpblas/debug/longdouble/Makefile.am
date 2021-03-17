@@ -86,7 +86,7 @@ opt_libdepends = -L$(top_builddir)/mpblas/optimized/longdouble -lmpblas_longdoub
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp -lquadmath
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 
-debug_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_LONGDOUBLE___
+debug_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH__FLOAT64X___
 
 if !IS_MACOSX
 debug_srcdepends = ../common/xerbla.cpp ../common/mplapack.debug.cpp ../common/Mxerbla.override.cpp
@@ -94,7 +94,7 @@ endif
 
 if IS_MACOSX
 lib_LTLIBRARIES = libmxerbla_override.la
-libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_LONGDOUBLE___
+libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___
 libmxerbla_override_la_SOURCES =  ../common/Mxerbla.override.cpp
 libmxerbla_override_la_LDFLAGS= -Wl,-flat_namespace,-undefined,dynamic_lookup
 debug_srcdepends = ../common/xerbla.cpp ../common/mplapack.debug.cpp

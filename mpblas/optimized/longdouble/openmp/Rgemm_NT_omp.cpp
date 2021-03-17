@@ -29,12 +29,12 @@
  */
 #include <mpblas_longdouble.h>
 
-void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, long double alpha, long double * A, mplapackint lda, long double * B, mplapackint ldb,
-		  long double beta, long double * C, mplapackint ldc)
+void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, _Float64x alpha, _Float64x * A, mplapackint lda, _Float64x * B, mplapackint ldb,
+		  _Float64x beta, _Float64x * C, mplapackint ldc)
 {
 //Form  C := alpha*A*B' + beta*C.
     mplapackint i, j, l;
-    long double temp;
+    _Float64x temp;
     for (j = 0; j < n; j++) {
 	if (beta == 0.0) {
 	    for (i = 0; i < m; i++) {

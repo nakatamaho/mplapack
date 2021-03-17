@@ -78,11 +78,11 @@ typedef std::complex<double> COMPLEX;
 #define Mxerbla  Mxerbla_double
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_LONGDOUBLE___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
 #include <mpblas_longdouble.h>
 typedef mplapackint INTEGER;
-typedef long double REAL;
-typedef std::complex<long double> COMPLEX;
+typedef _Float64x REAL;
+typedef std::complex<_Float64x> COMPLEX;
 #define Mlsame   Mlsame_longdouble
 #define Mxerbla  Mxerbla_longdouble
 #endif

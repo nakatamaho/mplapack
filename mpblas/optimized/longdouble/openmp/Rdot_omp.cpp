@@ -77,12 +77,12 @@ Rdot forms the dot product of two vectors.
 #include <omp.h>
 #endif
 
-long double Rdot_omp(mplapackint n, long double * dx, mplapackint incx, long double * dy, mplapackint incy)
+_Float64x Rdot_omp(mplapackint n, _Float64x * dx, mplapackint incx, _Float64x * dy, mplapackint incy)
 {
     mplapackint ix = 0;
     mplapackint iy = 0;
     mplapackint i;
-    long double temp, templ;
+    _Float64x temp, templ;
 
     temp = 0.0;
 

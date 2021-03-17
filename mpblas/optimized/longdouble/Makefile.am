@@ -1,6 +1,6 @@
 lib_LTLIBRARIES = libmpblas_longdouble.la
 
-libmpblas_longdouble_la_CPPFLAGS = -g -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPLAPACK_BUILD_WITH_LONGDOUBLE___ -finline-functions 
+libmpblas_longdouble_la_CPPFLAGS = -g -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPLAPACK_BUILD_WITH__FLOAT64X___ -finline-functions 
 libmpblas_longdouble_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \
