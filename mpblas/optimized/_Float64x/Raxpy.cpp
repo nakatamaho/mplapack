@@ -28,7 +28,7 @@
  *
  */
 
-#include <mpblas__Float64x.h.h>
+#include <mpblas__Float64x.h>
 
 void Raxpy_omp(mplapackint n, _Float64x da, _Float64x * dx, mplapackint incx, _Float64x * dy, mplapackint incy);
 void Raxpy_ref(mplapackint n, _Float64x da, _Float64x * dx, mplapackint incx, _Float64x * dy, mplapackint incy);

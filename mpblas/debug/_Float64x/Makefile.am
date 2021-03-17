@@ -1,8 +1,8 @@
 #CTBSV, CTPSV might have bugs or intrinsically inaccurate
 #Rnrm2 should be checked more
-check_PROGRAMS = $(mpblas__Float64x.h_test_PROGRAMS) 
+check_PROGRAMS = $(mpblas__Float64x_test_PROGRAMS) 
 TESTS = $(check_PROGRAMS)
-mpblas__Float64x.h_test_PROGRAMS = \
+mpblas__Float64x_test_PROGRAMS = \
 arithmetic.debug__Float64x \
 complex.debug__Float64x \
 iCamax.debug._Float64x_ref iCamax.debug._Float64x   \
@@ -80,9 +80,9 @@ Rtrmv.debug._Float64x_ref  Rtrmv.debug._Float64x	\
 Rtrsm.debug._Float64x_ref  Rtrsm.debug._Float64x	\
 Rtrsv.debug._Float64x_ref  Rtrsv.debug._Float64x
 
-mpblas__Float64x.h_testdir = $(prefix)/share/mplapack/testing/_Float64x
-ref_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas__Float64x.h_ref -lmpblas_mpfr_ref
-opt_libdepends = -L$(top_builddir)/mpblas/optimized/_Float64x -lmpblas__Float64x.h -L$(top_builddir)/mpblas/reference -lmpblas_mpfr_ref
+mpblas__Float64x_testdir = $(prefix)/share/mplapack/testing/_Float64x
+ref_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas__Float64x_ref -lmpblas_mpfr_ref
+opt_libdepends = -L$(top_builddir)/mpblas/optimized/_Float64x -lmpblas__Float64x -L$(top_builddir)/mpblas/reference -lmpblas_mpfr_ref
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp -lquadmath
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 

@@ -71,7 +71,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Based on http://www.netlib.org/blas/daxpy.f
 */
 
-#include <mpblas__Float64x.h.h>
+#include <mpblas__Float64x.h>
 #ifdef _OPENMP
 #include <omp.h>
 #endif

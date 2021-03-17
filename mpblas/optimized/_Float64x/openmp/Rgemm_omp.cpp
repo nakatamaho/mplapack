@@ -28,7 +28,7 @@
  *
  */
 
-#include <mpblas__Float64x.h.h>
+#include <mpblas__Float64x.h>
 
 void Rgemm_NN(mplapackint m, mplapackint n, mplapackint k, _Float64x alpha, _Float64x * A, mplapackint lda, _Float64x * B, mplapackint ldb,
 	      _Float64x beta, _Float64x * C, mplapackint ldc);
