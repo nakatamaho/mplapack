@@ -7,6 +7,7 @@ F77="ifort"; export F77
 
 _GCC="gcc-9"; export _GCC
 _GXX="g++-9"; export _GXX
+_GFC="gfortran-9"; export _GFC
 
 pushd mplapack/debug ; bash gen.Makefile.am.sh ; popd
 

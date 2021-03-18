@@ -33,6 +33,12 @@ if test x"$_GXX" = x""; then
 fi
 AC_SUBST(_GXX)
 
+_GFC=`echo $_GFC`
+if test x"$_GFC" = x""; then
+    _GFC=$FC
+fi
+AC_SUBST(_GFC)
+
 AX_CXX_COMPILE_STDCXX_17([ext], [mandatory])
 
 dnl Checking host name
