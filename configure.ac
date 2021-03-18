@@ -20,6 +20,19 @@ dnl OpenMP Compiler flags.
 AC_LANG([C++])
 AC_OPENMP
 
+# workaround for icc and icpc when they have bugs.
+_GCC=`echo $_GCC`
+if test x"$_GCC" = x""; then
+    _GCC=$CC
+fi
+AC_SUBST(_GCC)
+
+_GXX=`echo $_GXX`
+if test x"$_GXX" = x""; then
+    _GXX=$CXX
+fi
+AC_SUBST(_GXX)
+
 AX_CXX_COMPILE_STDCXX_17([ext], [mandatory])
 
 dnl Checking host name
