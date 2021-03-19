@@ -222,6 +222,7 @@ AS_HELP_STRING([--enable-_Float128], [Enable _Float128 version (TS 18661-3 like 
         esac],[enable__Float128=no])
 
 SAVE_CXXFLAGS="$CXXFLAGS"
+AM_CONDITIONAL(IS___FLOAT128, test x$enable__Float128 = xno)
 if test x$enable__Float128 = x"yes"; then
     AC_MSG_CHECKING([whether _Float128 is supported])
     AC_LINK_IFELSE([
@@ -263,11 +264,11 @@ if test x$enable__Float128 = x"yes"; then
     if test "$want_libquadmath" = "yes"; then
         AC_MSG_RESULT([_Float128 is supported via __float128 and libquadmath])
         sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%/#define _MPLAPACK_WANT_LIBQUADMATH_\ntypedef __float128 _Float128;/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
-        AM_CONDITIONAL(IS__FLOAT128, test x$want_libquadmath = xyes)
+        AM_CONDITIONAL(IS___FLOAT128, test x$want_libquadmath = xyes)
     else
         AC_MSG_RESULT([_Float128 is supported via native libc])
         sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%//g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
-        AM_CONDITIONAL(IS__FLOAT128, test x$want_libquadmath = xyes)
+        AM_CONDITIONAL(IS___FLOAT128, test x$want_libquadmath = xyes)
     fi
 fi
 CXXFLAGS="$SAVE_CXXFLAGS"
@@ -283,6 +284,7 @@ AS_HELP_STRING([--enable-_Float64x], [Enable _Float64x (aka __float80 or long do
         esac],[enable__Float64x=no])
 
 SAVE_CXXFLAGS="$CXXFLAGS"
+AM_CONDITIONAL(IS___FLOAT80, test x$enable__Float64x = xno)
 if test x$enable__Float64x = x"yes"; then
     AC_MSG_CHECKING([whether _Float64x is supported])
     AC_LINK_IFELSE([
@@ -314,15 +316,14 @@ if test x$enable__Float64x = x"yes"; then
         fi
         LDFLAGS="$save_LDFLAGS"
     fi
-
     if test "$want___float80" = "yes"; then
         AC_MSG_RESULT([_Float64x is supported via __float80])
         sed 's/%%MPLAPACK_FLOAT64X___FLOAT80_%%/#define _MPLAPACK_WANT_LIBQUADMATH_\ntypedef __float80 _Float64x;/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
-        AM_CONDITIONAL(_FLOAT64X_IS___FLOAT80, test x$want___float80 = xyes)
+        AM_CONDITIONAL(IS___FLOAT80, test x$want___float80 = xyes)
     else
         AC_MSG_RESULT([_Float64x is supported natively])
         sed 's/%%MPLAPACK_FLOAT64X___FLOAT80_%%//g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
-        AM_CONDITIONAL(_FLOAT64X_IS___FLOAT80, test x$want___float80 = xyes)
+        AM_CONDITIONAL(IS___FLOAT80, test x$want___float80 = xyes)
     fi
 fi
 CXXFLAGS="$SAVE_CXXFLAGS"
