@@ -163,6 +163,9 @@ inline _Float128 log10(const _Float128 &a) {
 
 
 namespace std {
+
+#if !defined _MPLAPACK__FLOAT128_IS_LONGDOUBLE_
+
 inline _Float128 abs(const std::complex<_Float128> &a) {
   return sqrtf128(a.real() * a.real() + a.imag() * a.imag());
 }
@@ -188,6 +191,8 @@ inline std::complex<_Float128> log(const std::complex<_Float128> &a) {
    c.real(__real__(tmp)); c.imag(__imag__(tmp));
    return c;
 }
+#endif
+
 }
 #endif //_MPLAPACK_WANT_LIBQUADMATH_
 

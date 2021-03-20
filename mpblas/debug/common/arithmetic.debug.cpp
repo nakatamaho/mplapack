@@ -45,8 +45,12 @@ void subst_test1()
   strcpy (buf1, "-1.234567890123456789012345678901234567890123456789012345678901234567890e+01");
 
 //tmp1 = buf1;
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ 
+  #if defined _MPLAPACK_WANT_LIBQUADMATH_
   tmp1 = strtoflt128(buf1, NULL);
+  #else
+  tmp1 = strtof128(buf1, NULL);
+  #endif
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
   sscanf(buf1, "%lf", &tmp1);
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___

@@ -83,7 +83,7 @@ Rtrsv.debug._Float64x_ref  Rtrsv.debug._Float64x
 mpblas__Float64x_testdir = $(prefix)/share/mplapack/testing/_Float64x
 ref_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas__Float64x_ref -lmpblas_mpfr_ref
 opt_libdepends = -L$(top_builddir)/mpblas/optimized/_Float64x -lmpblas__Float64x -L$(top_builddir)/mpblas/reference -lmpblas_mpfr_ref
-mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp -lquadmath
+mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 
 debug_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH__FLOAT64X___
