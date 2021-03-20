@@ -236,7 +236,7 @@ if test x$enable__Float128 = x"yes"; then
        printf("fp128 %s\n",buf);
        }
       ]])
-    ], [have__Float128=yes want_libquadmath=no], [_have__Float128=no])
+    ], [have__Float128=yes want_libquadmath=no], [have__Float128=no])
 
     if test x"$have__Float128" = x"yes"; then    
         AC_RUN_IFELSE([
@@ -262,7 +262,7 @@ if test x$enable__Float128 = x"yes"; then
         fi
     fi
 
-    if test x"$_have__Float128" = x"no"; then
+    if test x"$have__Float128" = x"no"; then
         save_LDFLAGS="$LDFLAGS"
         LDFLAGS="$LDFLAGS -lquadmath"
         AC_LINK_IFELSE([
