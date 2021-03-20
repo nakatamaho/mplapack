@@ -30,6 +30,7 @@
 #define _MUTILS__FLOAT128_H_
 
 %%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%
+#if defined _MPLAPACK_WANT_LIBQUADMATH_
 
 #ifdef __cplusplus
 extern "C" {
@@ -85,7 +86,6 @@ inline _Float128 abs(const std::complex<_Float128> &a) {
   return sqrtq(a.real() * a.real() + a.imag() * a.imag());
 }
 
-
 inline std::complex<_Float128> sqrt(const std::complex<_Float128> &a) {
    __complex128 b,tmp;
    std::complex<_Float128> c;
@@ -122,6 +122,91 @@ inline _Float128 log2(_Float128 x)
 }
 #endif
 
+#else //_MPLAPACK_WANT_LIBQUADMATH_
+//#define __STDC_WANT_IEC_60559_TYPES_EXT__ somehow not needed (since g++?)
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <math.h>
+#include <complex.h>
+#ifdef __cplusplus
+}
+#endif
+
+#if !defined _MPLAPACK__FLOAT128_IS_LONGDOUBLE_
+inline _Float128 abs(const _Float128 &a) {
+   return fabsf128(a);
+}
+
+inline _Float128 sqrt(const _Float128 &a) {
+   return sqrtf128(a);
+}
+#endif
+
+inline _Float128 log(const _Float128 &a) {
+   return logf128(a);
+}
+inline _Float128 log2(const _Float128 &a) {
+   return log2f128(a);
+}
+inline _Float128 pow(const _Float128 &a, const _Float128 &b) {
+   return powf128(a, b);
+}
+
+inline _Float128 exp(const _Float128 &a) {
+   return expf128(a);
+}
+
+inline _Float128 sin(const _Float128 &a) {
+   return sinf128(a);
+}
+
+inline _Float128 cos(const _Float128 &a) {
+   return cosf128(a);
+}
+
+inline _Float128 log10(const _Float128 &a) {
+   return log10f128(a);
+}
+
+#include <complex>
+
+namespace std {
+
+inline _Float128 abs(const std::complex<_Float128> &a) {
+  return sqrtf128(a.real() * a.real() + a.imag() * a.imag());
+}
+
+inline std::complex<_Float128> sqrt(const std::complex<_Float128> &a) {
+   _Float128 _Complex b,tmp;
+   std::complex<_Float128> c;
+   __real__(b) = (a.real()); __imag__(b) = (a.imag());
+   tmp = csqrtf128 (b);
+   c.real( __real__(tmp)); c.imag(__imag__(tmp));
+   return c;
+}
+
+inline std::complex<_Float128> exp(const std::complex<_Float128> &a) {
+   _Float128 _Complex b,tmp;
+   std::complex<_Float128> c;
+   __real__(b) = (a.real()); __imag__(b) = (a.imag());
+   tmp = cexpf128 (b);
+   c.real(__real__(tmp)); c.imag(__imag__(tmp));
+   return c;
+}
+
+inline std::complex<_Float128> log(const std::complex<_Float128> &a) {
+   _Float128 _Complex b,tmp;
+   std::complex<_Float128> c;
+   __real__(b) = (a.real()); __imag__(b) = (a.imag());
+   tmp = clogf128 (b);
+   c.real(__real__(tmp)); c.imag(__imag__(tmp));
+   return c;
+}
+}
+#endif //_MPLAPACK_WANT_LIBQUADMATH_
+
+
 _Float128 pi(_Float128 dummy);
 _Float128 sign(_Float128 a, _Float128 b);
 double cast2double(_Float128 a);
@@ -151,7 +236,11 @@ inline long nint(_Float128 a)
     long i;
     _Float128 tmp;
     a = a + 0.5;
+#if defined _MPLAPACK_WANT_LIBQUADMATH_
     tmp = floorq(a);
+#else
+    tmp = floorf128(a);
+#endif
     i = (long)tmp;
     return i;
 }

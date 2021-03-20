@@ -57,7 +57,7 @@
 #if defined ___MPLAPACK_BUILD_WITH_DD___
 #include "qd/dd_real.h"
 #endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined _MPLAPACK_WANT_LIBQUADMATH_
 #ifdef __cplusplus
 extern "C" {
 #endif

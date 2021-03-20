@@ -236,9 +236,33 @@ if test x$enable__Float128 = x"yes"; then
        printf("fp128 %s\n",buf);
        }
       ]])
-    ], [have__Float128=yes, want_libquadmath=no], [_have__Float128=no])
+    ], [have__Float128=yes want_libquadmath=no], [_have__Float128=no])
 
-    if test "$_have__Float128" = "no"; then
+    if test x"$have__Float128" = x"yes"; then    
+        AC_RUN_IFELSE([
+        AC_LANG_SOURCE([[
+           #include <stdio.h>
+           #include <math.h>
+           #include <stdlib.h>
+           #include <typeinfo>
+           int main() {
+               if (typeid(long double) == typeid(_Float128))
+                   return 0;
+               else
+                   return 1;
+           }
+        ]]) 
+        ], [float128islongdouble=yes], [float128islongdouble=no])
+
+        AC_CHECK_TYPE(_Float128, long double)
+             if test "$float128islongdouble" = "yes"; then 
+             AC_MSG_RESULT([_Float128 is long double])
+        else
+             AC_MSG_RESULT([_Float128 is not long double])
+        fi
+    fi
+
+    if test x"$_have__Float128" = x"no"; then
         save_LDFLAGS="$LDFLAGS"
         LDFLAGS="$LDFLAGS -lquadmath"
         AC_LINK_IFELSE([
@@ -253,7 +277,7 @@ if test x$enable__Float128 = x"yes"; then
                 printf("%s",buf);
                 }
            ]])
-        ], [have__Float128=yes, want_libquadmath=yes], [have__Float128=no])
+        ], [have__Float128=yes want_libquadmath=yes], [have__Float128=no])
 
         if test "$have__Float128" = "no"; then
             AC_MSG_ERROR([_Float128 is not supported on this platform])
@@ -267,13 +291,18 @@ if test x$enable__Float128 = x"yes"; then
         AM_CONDITIONAL(IS___FLOAT128, test x$want_libquadmath = xyes)
     else
         AC_MSG_RESULT([_Float128 is supported via native libc])
-        sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%//g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
+        if test "$float128islongdouble" = "yes"; then 
+            sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%/#define _MPLAPACK__FLOAT128_IS_LONGDOUBLE_/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
+        else
+            sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%//g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
+        fi
         AM_CONDITIONAL(IS___FLOAT128, test x$want_libquadmath = xyes)
     fi
 fi
-CXXFLAGS="$SAVE_CXXFLAGS"
-
 AM_CONDITIONAL(ENABLE__FLOAT128, test x$enable__Float128 = xyes)
+AM_CONDITIONAL(IS__FLOAT128_LONGDOUBLE, test x$float128islongdouble = xyes)
+
+CXXFLAGS="$SAVE_CXXFLAGS"
 
 AC_ARG_ENABLE(_Float64x,
 AS_HELP_STRING([--enable-_Float64x], [Enable _Float64x (aka __float80 or long double) version]),
