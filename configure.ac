@@ -313,7 +313,6 @@ AS_HELP_STRING([--enable-_Float64x], [Enable _Float64x (aka __float80 or long do
         esac],[enable__Float64x=no])
 
 SAVE_CXXFLAGS="$CXXFLAGS"
-AM_CONDITIONAL(IS___FLOAT80, test x$enable__Float64x = xno)
 if test x$enable__Float64x = x"yes"; then
     AC_MSG_CHECKING([whether _Float64x is supported])
     AC_LINK_IFELSE([
@@ -325,7 +324,7 @@ if test x$enable__Float64x = x"yes"; then
        printf("_Float64x %Lf\n", a);
        }
       ]])
-    ], [have__Float64x=yes, want___float80=no], [_have__Float64x=no])
+    ], [have__Float64x=yes want___float80=no], [_have__Float64x=no])
 
     if test "$_have__Float64x" = "no"; then
         AC_LINK_IFELSE([
@@ -338,7 +337,7 @@ if test x$enable__Float64x = x"yes"; then
                 printf("_Float64x %Lf",a);
                 }
            ]])
-        ], [have__Float64x=yes, want___float80=yes], [have__Float64x=no])
+        ], [have__Float64x=yes want___float80=yes], [have__Float64x=no])
 
         if test "$have__Float64x" = "no"; then
             AC_MSG_ERROR([_Float64x is not supported on this platform])
@@ -348,16 +347,15 @@ if test x$enable__Float64x = x"yes"; then
     if test "$want___float80" = "yes"; then
         AC_MSG_RESULT([_Float64x is supported via __float80])
         sed 's/%%MPLAPACK_FLOAT64X___FLOAT80_%%/#define _MPLAPACK_WANT_LIBQUADMATH_\ntypedef __float80 _Float64x;/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
-        AM_CONDITIONAL(IS___FLOAT80, test x$want___float80 = xyes)
     else
         AC_MSG_RESULT([_Float64x is supported natively])
         sed 's/%%MPLAPACK_FLOAT64X___FLOAT80_%%//g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
-        AM_CONDITIONAL(IS___FLOAT80, test x$want___float80 = xyes)
     fi
 fi
 CXXFLAGS="$SAVE_CXXFLAGS"
 
 AM_CONDITIONAL(ENABLE__FLOAT64X, test x$enable__Float64x = xyes)
+AM_CONDITIONAL(IS___FLOAT80, test x$want___float80 = xyes)
 
 highest_abs_top_srcdir=`cd "$srcdir" && pwd` 
 
