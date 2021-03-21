@@ -91,8 +91,8 @@ void inv_hilbert_matrix(int n)
     mtmp = 0.0;
     for (int i = 0; i < n; i++) {
 	for (int j = 0; j < n; j++) {
-	    if (mtmp < fabs(C[i + j * n] - ((i == j) ? 1.0 : 0.0)))
-		mtmp = fabs(C[i + j * n] - ((i == j) ? 1.0 : 0.0));
+	    if (mtmp < abs(C[i + j * n] - ((i == j) ? 1.0 : 0.0)))
+		mtmp = abs(C[i + j * n] - ((i == j) ? 1.0 : 0.0));
 	}
     }
     printf("%.16e\n", (double)mtmp);

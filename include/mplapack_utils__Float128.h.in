@@ -29,6 +29,7 @@
 #ifndef _MUTILS__FLOAT128_H_
 #define _MUTILS__FLOAT128_H_
 
+
 %%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%
 #if defined _MPLAPACK_WANT_LIBQUADMATH_
 
@@ -133,6 +134,10 @@ extern "C" {
 }
 #endif
 
+inline _Float128 sqrt(const _Float128 &a) {
+   return sqrtf128(a);
+}
+
 inline _Float128 log(const _Float128 &a) {
    return logf128(a);
 }
@@ -161,17 +166,25 @@ inline _Float128 log10(const _Float128 &a) {
 
 #include <complex>
 
+#if !defined _MPLAPACK__FLOAT128_IS_LONGDOUBLE_
 
 namespace std {
 
-#if !defined _MPLAPACK__FLOAT128_IS_LONGDOUBLE_
+inline _Float128 sqrt(const _Float128 &a) {
+   return sqrtf128(a);
+}
+
+inline std::complex<_Float128> sqrt(const std::complex<_Float128> &a) {
+   _Float128 _Complex b,tmp;
+   std::complex<_Float128> c;
+   __real__(b) = (a.real()); __imag__(b) = (a.imag());
+   tmp = csqrtf128 (b);
+   c.real( __real__(tmp)); c.imag(__imag__(tmp));
+   return c;
+}
 
 inline _Float128 abs(const std::complex<_Float128> &a) {
   return sqrtf128(a.real() * a.real() + a.imag() * a.imag());
-}
-
-inline _Float128 sqrt(const _Float128 &a) {
-   return sqrtf128(a);
 }
 
 inline std::complex<_Float128> exp(const std::complex<_Float128> &a) {
@@ -191,9 +204,11 @@ inline std::complex<_Float128> log(const std::complex<_Float128> &a) {
    c.real(__real__(tmp)); c.imag(__imag__(tmp));
    return c;
 }
-#endif
 
 }
+
+#endif
+
 #endif //_MPLAPACK_WANT_LIBQUADMATH_
 
 

@@ -102,7 +102,5 @@ typedef std::complex<_Float128> COMPLEX;
 #include <cstdlib>
 using std::max;
 using std::min;
-using std::abs;
-using std::sqrt;
 
 #endif
