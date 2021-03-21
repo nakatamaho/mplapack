@@ -330,7 +330,7 @@ if test x$enable__Float64x = x"yes"; then
         AC_LINK_IFELSE([
             AC_LANG_SOURCE([[
                 #include<stdio.h>
-                typedef _Float64x __float80;
+                typedef __float80 _Float64x;
                 int main(){
                 char buf[1024];
                 _Float64x a, b, c; b = 1.0w; c= 3.0w; a = b / c;
@@ -346,7 +346,7 @@ if test x$enable__Float64x = x"yes"; then
     fi
     if test "$want___float80" = "yes"; then
         AC_MSG_RESULT([_Float64x is supported via __float80])
-        sed 's/%%MPLAPACK_FLOAT64X___FLOAT80_%%/#define _MPLAPACK_WANT_LIBQUADMATH_\ntypedef __float80 _Float64x;/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
+        sed 's/%%MPLAPACK_FLOAT64X___FLOAT80_%%/typedef __float80 _Float64x;/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
     else
         AC_MSG_RESULT([_Float64x is supported natively])
         sed 's/%%MPLAPACK_FLOAT64X___FLOAT80_%%//g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
@@ -637,9 +637,9 @@ else
 fi
 if test x$enable__Float128 = x"yes"; then
     if test "$want_libquadmath" = "yes"; then
-        AC_MSG_RESULT([_Float128 is supported via __float128 and libquadmath])
+        AC_MSG_RESULT([Enable _Float128 version via __float128 and libquadmath])
     else
-        AC_MSG_RESULT([_Float128 is supported via native libc])
+        AC_MSG_RESULT([Enable native _Float128 version via native libc])
     fi
 else
     AC_MSG_RESULT([Disable _Float128 version])
