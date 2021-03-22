@@ -548,9 +548,7 @@ void set_random_number1to2(mpcomplex & a, complex<_Float64x> &b)
 
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-
-#if defined _MPLAPACK_WANT_LIBQUADMATH_
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined _MPLAPACK_WANT_LIBQUADMATH_
 void printnum(_Float128 rtmp)
 {
     int width = 42;
@@ -588,7 +586,10 @@ void sprintnum(char *buf, std::complex<_Float128> rtmp)
     quadmath_snprintf (buf, BUFLEN, "%+-#*.35Qe" "%+-#*.35Qe", width, rtmp.real(), rtmp.imag());
     return;
 }
-#else
+#endif
+
+//native support of _Float128.
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined _MPLAPACK__FLOAT128_IS_LONGDOUBLE_
 void printnum(_Float128 rtmp)
 {
     int width = 42;
@@ -627,7 +628,6 @@ void sprintnum(char *buf, std::complex<_Float128> rtmp)
     strncat(buf, buf2, n);
     return;
 }
-#endif
 
 _Float128 mpf_randomnumber(_Float128 dummy)
 {
