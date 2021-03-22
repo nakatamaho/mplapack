@@ -33,8 +33,8 @@ endif
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
-	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; env "CC=$(_GCC)" "CXX=$(_GXX)" "CPPFLAGS=$(CPPFLAGS)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS) --enable-fortran=no
-	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ;  env "CC=$(_GCC)" "CXX=$(_GXX)" "CPPFLAGS=$(CPPFLAGS)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2) --enable-fortran=no
+	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; env "CC=$(_GCC)" "CXX=$(_GXX)" "CPPFLAGS=$(CPPFLAGS)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS) --enable-fortran=no --enable-shared=yes
+	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ;  env "CC=$(_GCC)" "CXX=$(_GXX)" "CPPFLAGS=$(CPPFLAGS)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2) --enable-fortran=no --enable-shared=yes
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
