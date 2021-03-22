@@ -230,26 +230,24 @@ if test x$enable__Float128 = x"yes"; then
        #include <stdio.h>
        #include <math.h>
        #include <stdlib.h>
-       int main() {_Float128 a, b, c; b = 1.0q; c=3.0q; a = b / c;
-       char buf[1024];
-       strfromf128(buf, sizeof(buf), "%.40g", a);
-       printf("fp128 %s\n",buf);
+       int main() {
+           _Float128 a, b, c; b = 1.0q; c=3.0q; a = b / c;
+           char buf[1024];
+           strfromf128(buf, sizeof(buf), "%.40g", a);
+           printf("fp128 %s\n",buf);
        }
       ]])
     ], [have__Float128=yes want_libquadmath=no], [have__Float128=no])
 
     if test x"$have__Float128" = x"yes"; then    
-        AC_RUN_IFELSE([
+        AC_COMPILE_IFELSE([
         AC_LANG_SOURCE([[
            #include <stdio.h>
            #include <math.h>
            #include <stdlib.h>
-           #include <typeinfo>
            int main() {
-               if (typeid(long double) == typeid(_Float128))
-                   return 0;
-               else
-                   return 1;
+               long double *x;
+               _Float128 *y = x;
            }
         ]]) 
         ], [float128islongdouble=yes], [float128islongdouble=no])
@@ -266,14 +264,13 @@ if test x$enable__Float128 = x"yes"; then
         LDFLAGS="$LDFLAGS -lquadmath"
         AC_LINK_IFELSE([
             AC_LANG_SOURCE([[
-                #include<quadmath.h>
-                #include<stdio.h>
-                typedef __float128 _Float128;
+                #include <quadmath.h>
+                #include <stdio.h>
                 int main(){
-                char buf[1024];
-                _Float128 a, b, c; b = 1.0q; c= 3.0q; a = b / c;
-                quadmath_snprintf(buf,128,"%.40Qf\n",a);
-                printf("%s",buf);
+                    char buf[1024];
+                    __float128 a, b, c; b = 1.0q; c= 3.0q; a = b / c;
+                    quadmath_snprintf(buf,128,"%.40Qf\n",a);
+                    printf("%s",buf);
                 }
            ]])
         ], [have__Float128=yes want_libquadmath=yes], [have__Float128=no])
@@ -319,8 +316,9 @@ if test x$enable__Float64x = x"yes"; then
        #include <stdio.h>
        #include <math.h>
        #include <stdlib.h>
-       int main() {_Float64x a, b, c; b = 1.0w; c=3.0w; a = b / c;
-       printf("_Float64x %Lf\n", a);
+       int main() {
+           _Float64x a, b, c; b = 1.0w; c=3.0w; a = b / c;
+           printf("_Float64x %Lf\n", a);
        }
       ]])
     ], [have__Float64x=yes want___float80=no], [_have__Float64x=no])
@@ -328,12 +326,13 @@ if test x$enable__Float64x = x"yes"; then
     if test "$_have__Float64x" = "no"; then
         AC_LINK_IFELSE([
             AC_LANG_SOURCE([[
-                #include<stdio.h>
-                typedef __float80 _Float64x;
+                #include <stdio.h>
+                #include <math.h>
+                #include <stdlib.h>
                 int main(){
-                char buf[1024];
-                _Float64x a, b, c; b = 1.0w; c= 3.0w; a = b / c;
-                printf("_Float64x %Lf",a);
+                    char buf[1024];
+                    __float80 a, b, c; b = 1.0w; c= 3.0w; a = b / c;
+                    printf("__float80 %Lf",a);
                 }
            ]])
         ], [have__Float64x=yes want___float80=yes], [have__Float64x=no])
@@ -346,34 +345,28 @@ if test x$enable__Float64x = x"yes"; then
 
     if test x"$have__Float64x" = x"yes" && test x"$want___float80" = x"no" ; then    
         AC_MSG_RESULT([_Float64x is supported natively])
-        AC_RUN_IFELSE([
+        AC_COMPILE_IFELSE([
         AC_LANG_SOURCE([[
            #include <stdio.h>
            #include <math.h>
            #include <stdlib.h>
-           #include <typeinfo>
            int main() {
-               if (typeid(long double) == typeid(_Float64x))
-                   return 0;
-               else
-                   return 1;
+               long double *x;
+               _Float64x *y = x;
            }
         ]]) 
         ], [float64xislongdouble=yes], [float64islongdouble=no])
     fi
     if test x"$have__Float64x" = x"yes" && test x"$want___float80" = x"yes" ; then    
         AC_MSG_RESULT([_Float64x is supported via __float80])
-        AC_RUN_IFELSE([
+        AC_COMPILE_IFELSE([
         AC_LANG_SOURCE([[
            #include <stdio.h>
            #include <math.h>
            #include <stdlib.h>
-           #include <typeinfo>
            int main() {
-               if (typeid(long double) == typeid(__float80))
-                   return 0;
-               else
-                   return 1;
+               long double *x;
+               __float80 *y = x;
            }
         ]]) 
         ], [float64xislongdouble=yes], [float64islongdouble=no])
