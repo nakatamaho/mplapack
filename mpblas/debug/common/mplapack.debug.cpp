@@ -721,25 +721,25 @@ void sprintnum(char *buf, complex < double >ctmp)
     return;
 }
 
-void printnum(complex < _Float64x >ctmp)
+void printnum(complex < long double >ctmp)
 {
     printf(LP_FORMAT LP_FORMAT "i", ctmp.real(), ctmp.imag());
     return;
 }
 
-void printnum(_Float64x rtmp)
+void printnum(long double rtmp)
 {
     printf(LP_FORMAT, rtmp);
     return;
 }
 
-void sprintnum(char *buf, _Float64x rtmp)
+void sprintnum(char *buf, long double rtmp)
 {
     snprintf(buf, BUFLEN, LP_FORMAT, rtmp);
     return;
 }
 
-void sprintnum(char *buf, complex < _Float64x >ctmp)
+void sprintnum(char *buf, complex < long double >ctmp)
 {
     snprintf(buf, BUFLEN, LP_FORMAT LP_FORMAT "i", ctmp.real(), ctmp.imag());
     return;

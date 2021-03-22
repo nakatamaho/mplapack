@@ -192,14 +192,14 @@ void printnum(mpreal rtmp);
 void printnum(mpcomplex ctmp);
 void printnum(double rtmp);
 void printnum(complex < double >ctmp);
-void printnum(_Float64x rtmp);
-void printnum(complex <_Float64x> ctmp);
+void printnum(long double rtmp);
+void printnum(complex <long double> ctmp);
 void sprintnum(char *buf, mpreal rtmp);
 void sprintnum(char *buf, mpcomplex rtmp);
 void sprintnum(char *buf, double rtmp);
-void sprintnum(char *buf, _Float64x rtmp);
+void sprintnum(char *buf, long double rtmp);
 void sprintnum(char *buf, complex <double> rtmp);
-void sprintnum(char *buf, complex <_Float64x> rtmp);
+void sprintnum(char *buf, complex <long double> rtmp);
 
 //bootstrapping functions; double to mpreal.
 //usually we need only mpreal -> double or _Float128 etc.

@@ -2607,7 +2607,7 @@ inline const mpreal operator-(const mpreal &a, const _Float64x &b) {
     return -(mpreal(b) -= a);
 }
   */
-inline _Float64 cast2_Float64x(const mpreal &b) {
+inline _Float64x cast2_Float64x(const mpreal &b) {
     // mpreal -> mpfr -> long double
     long double q;
     mpreal a(b);
