@@ -329,7 +329,7 @@ if test x$enable__Float64x = x"yes"; then
         AC_LINK_IFELSE([
             AC_LANG_SOURCE([[
                 #include<stdio.h>
-                typedef _Float64x __float80;
+                typedef __float80 _Float64x;
                 int main(){
                 char buf[1024];
                 _Float64x a, b, c; b = 1.0w; c= 3.0w; a = b / c;
@@ -690,9 +690,9 @@ fi
 
 if test x$enable__Float128 = x"yes"; then
     if test "$want_libquadmath" = "yes"; then
-        AC_MSG_RESULT([_Float128 is supported via __float128 and libquadmath])
+        AC_MSG_RESULT([Enable _Float128 version via __float128 and libquadmath])
     else
-        AC_MSG_RESULT([_Float128 is supported via native libc])
+        AC_MSG_RESULT([Enable native _Float128 version via native libc])
     fi
 else
     AC_MSG_RESULT([Disable _Float128 version])
