@@ -254,8 +254,7 @@ if test x$enable__Float128 = x"yes"; then
         ]]) 
         ], [float128islongdouble=yes], [float128islongdouble=no])
 
-        AC_CHECK_TYPE(_Float128, long double)
-             if test "$float128islongdouble" = "yes"; then 
+        if test "$float128islongdouble" = "yes"; then 
              AC_MSG_RESULT([_Float128 is long double])
         else
              AC_MSG_RESULT([_Float128 is not long double])
@@ -344,17 +343,63 @@ if test x$enable__Float64x = x"yes"; then
         fi
         LDFLAGS="$save_LDFLAGS"
     fi
-    if test "$want___float80" = "yes"; then
-        AC_MSG_RESULT([_Float64x is supported via __float80])
-        sed 's/%%MPLAPACK_FLOAT64X___FLOAT80_%%/#define _MPLAPACK_WANT_LIBQUADMATH_\ntypedef __float80 _Float64x;/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
-    else
+
+    if test x"$have__Float64x" = x"yes" && test x"$want___float80" = x"no" ; then    
         AC_MSG_RESULT([_Float64x is supported natively])
-        sed 's/%%MPLAPACK_FLOAT64X___FLOAT80_%%//g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
+        AC_RUN_IFELSE([
+        AC_LANG_SOURCE([[
+           #include <stdio.h>
+           #include <math.h>
+           #include <stdlib.h>
+           #include <typeinfo>
+           int main() {
+               if (typeid(long double) == typeid(_Float64x))
+                   return 0;
+               else
+                   return 1;
+           }
+        ]]) 
+        ], [float64xislongdouble=yes], [float64islongdouble=no])
+    fi
+    if test x"$have__Float64x" = x"yes" && test x"$want___float80" = x"yes" ; then    
+        AC_MSG_RESULT([_Float64x is supported via __float80])
+        AC_RUN_IFELSE([
+        AC_LANG_SOURCE([[
+           #include <stdio.h>
+           #include <math.h>
+           #include <stdlib.h>
+           #include <typeinfo>
+           int main() {
+               if (typeid(long double) == typeid(__float80))
+                   return 0;
+               else
+                   return 1;
+           }
+        ]]) 
+        ], [float64xislongdouble=yes], [float64islongdouble=no])
+    fi
+    if test "$float64xislongdouble" = "yes"; then 
+         AC_MSG_RESULT([_Float64x is long double])
+    else
+         AC_MSG_RESULT([_Float64x is not long double])
+    fi
+    if test "$want___float80" = "yes" && test "$float64xislongdouble" = "yes" ; then
+        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80_%%/typedef __float80 _Float64x;\n#define ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
+    fi
+    if test "$want___float80" = "yes" && test "$float64xislongdouble" = "no" ; then
+        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80_%%/typedef __float80 _Float64x;/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
+    fi
+    if test "$want___float80" = "no" && test "$float64xislongdouble" = "yes" ; then
+        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80_%%/#define ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
+    fi
+    if test "$want___float80" = "no" && test "$float64xislongdouble" = "no" ; then
+        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80_%%//g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
     fi
 fi
 CXXFLAGS="$SAVE_CXXFLAGS"
 
 AM_CONDITIONAL(ENABLE__FLOAT64X, test x$enable__Float64x = xyes)
+AM_CONDITIONAL(IS__FLOAT64X_LONGDOUBLE, test x$float64xislongdouble = xyes)
 AM_CONDITIONAL(IS___FLOAT80, test x$want___float80 = xyes)
 
 highest_abs_top_srcdir=`cd "$srcdir" && pwd` 
@@ -635,6 +680,14 @@ if test x$enable__Float64x = x"yes"; then
 else
     AC_MSG_RESULT([Disable _Float64x version])
 fi
+if test x$enable__Float64x = x"yes"; then
+    if test "$float64xislongdouble" = "yes"; then
+        AC_MSG_RESULT([_Float64x is long double])
+    else
+        AC_MSG_RESULT([_Float64x is not long double])
+    fi
+fi
+
 if test x$enable__Float128 = x"yes"; then
     if test "$want_libquadmath" = "yes"; then
         AC_MSG_RESULT([_Float128 is supported via __float128 and libquadmath])
