@@ -30,6 +30,10 @@ if IS_MINGW
 	cd $(abs_builddir)/work/internal/qd-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-mingw
 	cd $(abs_builddir)/work/install/qd-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-mingw
 endif
+	cd $(abs_builddir)/work/install/qd-$(QDVERSION); cp $(abs_builddir)/patches/config.sub config
+	cd $(abs_builddir)/work/install/qd-$(QDVERSION); cp $(abs_builddir)/patches/config.guess config
+	cd $(abs_builddir)/work/internal/qd-$(QDVERSION); cp $(abs_builddir)/patches/config.sub config
+	cd $(abs_builddir)/work/internal/qd-$(QDVERSION); cp $(abs_builddir)/patches/config.guess config
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
