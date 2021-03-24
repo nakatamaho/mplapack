@@ -588,7 +588,6 @@ void sprintnum(char *buf, std::complex<_Float128> rtmp)
 }
 #endif
 
-//native support of _Float128.
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined _MPLAPACK__FLOAT128_IS_LONGDOUBLE_
 void printnum(_Float128 rtmp)
 {
@@ -694,6 +693,74 @@ void set_random_number1to2(mpcomplex & a, std::complex<_Float128> &b)
     b.real(cast2_Float128(a.real()));
     b.imag(cast2_Float128(a.imag()));
 }
+#endif
+
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined _MPLAPACK__FLOAT128_IS_LONGDOUBLE_
+void set_random_number(mpreal &a, long double & b)
+{
+    mpreal dummy;
+    a = mpf_randomnumber(dummy);
+    b = (long double)a;
+}
+
+void set_random_number(mpcomplex & a, std::complex<long double> &b)
+{
+    mpcomplex dummy;
+    a = mpc_randomnumber(dummy);
+    b.real((long double)(a.real()));
+    b.imag((long double)(a.imag()));
+}
+
+long double mpf_randomnumber(long double dummy)
+{
+    long double mtmp;
+    mtmp = lrand48();		//uniform random between [0,1] via lrand48
+    mtmp += lrand48()*1e-16;	//uniform random between [0,1] via lrand48
+    mtmp += lrand48()*1e-32;	//uniform random between [0,1] via lrand48
+    mtmp = 2.0 * mtmp - 1.0;
+    return mtmp;
+}
+
+std::complex<long double> mpc_randomnumber(std::complex<long double> dummy)
+{
+    complex<long double> ctmp;
+    long double mtmp1;
+    long double mtmp2;
+
+    mtmp1 = lrand48();		//uniform random between [0,1] via lrand48
+    mtmp1 += lrand48()*1e-16;	//uniform random between [0,1] via lrand48
+    mtmp1 += lrand48()*1e-32;	//uniform random between [0,1] via lrand48
+    mtmp1 = 2.0 * mtmp1 - 1.0;
+
+    mtmp2 = lrand48();		//uniform random between [0,1] via lrand48
+    mtmp2 += lrand48()*1e-16;	//uniform random between [0,1] via lrand48
+    mtmp2 += lrand48()*1e-32;	//uniform random between [0,1] via lrand48
+    mtmp2 = 2.0 * mtmp2 - 1.0;
+
+    ctmp.real(mtmp1);
+    ctmp.imag(mtmp2);
+    return ctmp;
+}
+
+void set_random_number1to2(mpreal &a, long double & b)
+{
+    mpreal dummy;
+    a = mpf_randomnumber(dummy);
+    if (a > 0.0) a = a + 1.0; else a = a - 1.0;
+    b = a;
+}
+
+void set_random_number1to2(mpcomplex & a, complex<long double> &b)
+{
+    mpcomplex dummy;
+    long double p, q;
+    a = mpc_randomnumber(dummy);
+    if (a.real() > 0.0) p = 1.0; else p = -1.0;
+    if (a.imag() > 0.0) q = 1.0; else q = -1.0;
+    a = a + complex<long double>(p, q);
+    b = a;
+}
+
 #endif
 
 //not depend on any mp libs.

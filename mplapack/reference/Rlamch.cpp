@@ -38,8 +38,10 @@
 #include <float.h>
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined _MPLAPACK_WANT_LIBQUADMATH_
 #include <quadmath.h>
+else
+#include <float.h>
 #endif
 
 #include <stdio.h>
@@ -975,7 +977,11 @@ _Float64x Rlamch__Float64x(const char *cmach)
 //where 1+e = 1, minimum of e.
 _Float128 RlamchE__Float128(void)
 {
+    #if defined _MPLAPACK_WANT_LIBQUADMATH_
     return FLT128_EPSILON;
+    #else //XXX
+    return 1.92592994438723585305597794258492732e-34Q;
+    #endif
 }
 
 //"S" denots we always calculate `safe minimum, such that 1/sfmin does not overflow'.
@@ -984,7 +990,11 @@ _Float128 RlamchS__Float128(void)
 {
     //IEEE 754 2008 binary128: emin = -16382
     //2^{-16382} = 3.36210314311209350626267781732175260e-4932Q
+    #if defined _MPLAPACK_WANT_LIBQUADMATH_
     return FLT128_MIN;
+    #else //XXX
+    return 3.36210314311209350626267781732175260e-4932Q;
+    #endif
 
     static _Float128 eps;
     static int called = 0;
@@ -1023,7 +1033,11 @@ _Float128 RlamchP__Float128(void)
 //cf.http://www.netlib.org/blas/dlamch.f
 _Float128 RlamchN__Float128(void)
 {
+    #if defined _MPLAPACK_WANT_LIBQUADMATH_
     return (_Float128) FLT128_MANT_DIG;	//113
+    #else
+    return (_Float128) 113;
+    #endif
 }
 
 //"R" rnd   = 1.0 when rounding occurs in addition, 0.0 otherwise
@@ -1041,14 +1055,22 @@ _Float128 RlamchM__Float128(void)
 {
 //the exponent of IEEE 754 2008 binary64 is -16382.
 //then -16382 + 1 = -16381
+    #if defined _MPLAPACK_WANT_LIBQUADMATH_
     return FLT128_MIN_EXP;
+    #else
+    return (-16381);
+    #endif
 }
 
 //"U"
 //cf.http://www.netlib.org/blas/dlamch.f
 _Float128 RlamchU__Float128(void)
 {
+    #if defined _MPLAPACK_WANT_LIBQUADMATH_
     return FLT128_MIN;
+    #else
+    return 3.36210314311209350626267781732175260e-4932Q;
+    #endif
 
 //2^{-16382+1} minimum exponent
     static double eps;
@@ -1071,7 +1093,11 @@ _Float128 RlamchL__Float128(void)
 {
 //+16383 in IEEE 754 2008 binary128
 //then 16383 + 1 = 16384
+    #if defined _MPLAPACK_WANT_LIBQUADMATH_
     return FLT128_MAX_EXP;
+    #else
+    return 16384;
+    #endif
 }
 
 //"O"
@@ -1079,7 +1105,12 @@ _Float128 RlamchL__Float128(void)
 _Float128 RlamchO__Float128(void)
 {
 // 1.18973149535723176508575932662800702e4932Q in IEEE 754 2008 binary128.
+    #if defined _MPLAPACK_WANT_LIBQUADMATH_
     return FLT128_MAX;
+    #else
+    return 1.18973149535723176508575932662800702e4932Q;
+    #endif
+
 }
 
 //"Z" :dummy

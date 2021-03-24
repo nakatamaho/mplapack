@@ -32,7 +32,10 @@
 #define _MPLAPACK__FLOAT128_H_
 
 #include "mplapack_config.h"
+
+#if defined _MPLAPACK_WANT_LIBQUADMATH_
 #include "quadmath.h"
+#endif
 
 /* MPLAPACK prototypes */
 

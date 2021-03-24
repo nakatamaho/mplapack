@@ -145,12 +145,6 @@ inline _Float128 log(const _Float128 &a) {
 inline _Float128 log2(const _Float128 &a) {
    return log2f128(a);
 }
-#endif
-
-inline _Float128 pow(const _Float128 &a, const _Float128 &b) {
-   return powf128(a, b);
-}
-
 inline _Float128 exp(const _Float128 &a) {
    return expf128(a);
 }
@@ -162,6 +156,12 @@ inline _Float128 sin(const _Float128 &a) {
 inline _Float128 cos(const _Float128 &a) {
    return cosf128(a);
 }
+
+inline _Float128 pow(const _Float128 &a, const _Float128 &b) {
+   return powf128(a, b);
+}
+
+#endif
 
 inline _Float128 log10(const _Float128 &a) {
    return log10f128(a);
