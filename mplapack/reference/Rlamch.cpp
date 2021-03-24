@@ -40,7 +40,7 @@
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined _MPLAPACK_WANT_LIBQUADMATH_
 #include <quadmath.h>
-else
+#else
 #include <float.h>
 #endif
 
