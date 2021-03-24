@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012
+ * Copyright (c) 2012-2021
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -28,7 +28,6 @@
 
 #ifndef _MUTILS__FLOAT128_H_
 #define _MUTILS__FLOAT128_H_
-
 
 %%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%
 
@@ -165,10 +164,6 @@ inline _Float128 pow(const _Float128 &a, const _Float128 &b) {
 
 inline _Float128 log10(const _Float128 &a) {
    return log10f128(a);
-}
-
-inline _Float128 sqrt(const _Float128 &a) {
-   return sqrtf128(a);
 }
 
 inline std::complex<_Float128> sqrt(const std::complex<_Float128> &a) {
