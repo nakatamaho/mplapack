@@ -31,6 +31,7 @@
 
 
 %%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%
+
 #if defined _MPLAPACK_WANT_LIBQUADMATH_
 
 #ifdef __cplusplus
@@ -130,6 +131,7 @@ extern "C" {
 #endif
 #include <math.h>
 #include <complex.h>
+#include <complex>
 #ifdef __cplusplus
 }
 #endif
@@ -161,17 +163,9 @@ inline _Float128 pow(const _Float128 &a, const _Float128 &b) {
    return powf128(a, b);
 }
 
-#endif
-
 inline _Float128 log10(const _Float128 &a) {
    return log10f128(a);
 }
-
-#include <complex>
-
-#if !defined _MPLAPACK__FLOAT128_IS_LONGDOUBLE_
-
-namespace std {
 
 inline _Float128 sqrt(const _Float128 &a) {
    return sqrtf128(a);
@@ -208,11 +202,17 @@ inline std::complex<_Float128> log(const std::complex<_Float128> &a) {
    return c;
 }
 
-}
+#endif
+
+#if defined _MPLAPACK__FLOAT128_IS_LONGDOUBLE_
+
+//inline _Float128 pow(const _Float128 &a, const _Float128 &b) {
+//   return powf128(a, b);
+//}
 
 #endif
 
-#endif //_MPLAPACK_WANT_LIBQUADMATH_
+#endif
 
 
 _Float128 pi(_Float128 dummy);
