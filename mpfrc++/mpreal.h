@@ -237,6 +237,7 @@ class mpreal {
     friend const mpreal pow(const mpreal &a, const mpz_t b, mp_rnd_t rnd_mode);
     friend const mpreal pow(const mpreal &a, const unsigned long int b, mp_rnd_t rnd_mode);
     friend const mpreal pow(const mpreal &a, const long int b, mp_rnd_t rnd_mode);
+    friend const mpreal pow(const unsigned long int a, const mpreal& b, mp_rnd_t rnd_mode);
     friend const mpreal fabs(const mpreal &v, mp_rnd_t rnd_mode);
     friend const mpreal abs(const mpreal &v, mp_rnd_t rnd_mode);
     friend const mpreal dim(const mpreal &a, const mpreal &b, mp_rnd_t rnd_mode);

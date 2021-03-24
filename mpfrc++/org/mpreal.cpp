@@ -89,7 +89,7 @@ mpreal::mpreal(const double u, mp_prec_t prec, mp_rnd_t mode)
         throw conversion_overflow();
 }
 
-mpreal::mpreal(const _Float64x u, mp_prec_t prec, mp_rnd_t mode)
+mpreal::mpreal(const long double u, mp_prec_t prec, mp_rnd_t mode)
 { 
     mpfr_init2(mp,prec);
 	mpfr_set_ld(mp,u,mode);
