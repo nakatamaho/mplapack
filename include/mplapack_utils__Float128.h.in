@@ -135,6 +135,10 @@ extern "C" {
 }
 #endif
 
+#if defined(__INTEL_COMPILER)
+#define _Float128 __float128
+#endif
+
 #if !defined _MPLAPACK__FLOAT128_IS_LONGDOUBLE_
 inline _Float128 sqrt(const _Float128 &a) {
    return sqrtf128(a);
