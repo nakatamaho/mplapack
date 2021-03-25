@@ -48,7 +48,11 @@ endif
 if ENABLE__FLOAT128
 blasexamples_PROGRAMS += Rgemm._Float128
 _Float128cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
+if WANT_QUADMATH
 _Float128_libdepends = -L$(top_builddir)/mpblas/optimized/_Float128 -lmpblas__Float128 -lquadmath
+else
+_Float128_libdepends = -L$(top_builddir)/mpblas/optimized/_Float128 -lmpblas__Float128
+endif
 Rgemm__Float128_SOURCES= Rgemm__Float128.cpp
 Rgemm__Float128_CXXFLAGS= $(_Float128cxxflags)
 Rgemm__Float128_LDFLAGS= $(_Float128_libdepends)

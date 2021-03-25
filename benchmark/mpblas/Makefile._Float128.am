@@ -8,8 +8,13 @@ Rgemv._Float128 Rgemv._Float128_ref
 #lapack is needed for Rlange
 _Float128cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT128___
 _Float128lapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float128_ref
+if WANT_QUADMATH
 _Float128ref_libdepends = $(_Float128lapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas__Float128_ref -lquadmath $(DYLD)
 _Float128opt_libdepends = $(_Float128lapack_libdepends) -L$(top_builddir)/mpblas/optimized/_Float128 -lmpblas__Float128 -lquadmath $(DYLD)
+else
+_Float128ref_libdepends = $(_Float128lapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas__Float128_ref $(DYLD)
+_Float128opt_libdepends = $(_Float128lapack_libdepends) -L$(top_builddir)/mpblas/optimized/_Float128 -lmpblas__Float128 $(DYLD)
+endif
 
 Raxpy__Float128_ref_SOURCES= Raxpy.cpp
 Raxpy__Float128_ref_CXXFLAGS= $(_Float128cxxflags)
