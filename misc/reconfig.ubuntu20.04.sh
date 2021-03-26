@@ -7,6 +7,7 @@ CXX="ccache g++-9" ; export CXX
 CC="ccache gcc-9" ; export CC
 FC="gfortran-9"; export FC
 F77="gfortran-9"; export F77
+ccache -M 10G
 else
 CXX="g++-9" ; export CXX
 CC="gcc-9" ; export CC
