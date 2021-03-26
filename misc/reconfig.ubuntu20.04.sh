@@ -2,7 +2,7 @@
 
 USE_CCACHE=yes
 
-if [ x$USE_CCACHE = x"yes" ] ; then
+if [ x"$USE_CCACHE" = x"yes" ] ; then
 CXX="ccache g++-9" ; export CXX
 CC="ccache gcc-9" ; export CC
 FC="gfortran-9"; export FC
