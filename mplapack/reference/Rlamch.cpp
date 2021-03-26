@@ -34,12 +34,14 @@
 #include <float.h>
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_LONGDOUBLE___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
 #include <float.h>
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined _MPLAPACK_WANT_LIBQUADMATH_
 #include <quadmath.h>
+#else
+#include <float.h>
 #endif
 
 #include <stdio.h>
@@ -819,17 +821,17 @@ double Rlamch_double(const char *cmach)
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_LONGDOUBLE___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
 //"E" denots we always calculate relative machine precision (e).
 //where 1+e = 1, minimum of e.
-long double RlamchE_longdouble(void)
+_Float64x RlamchE__Float64x(void)
 {
-    static long double eps;
+    static _Float64x eps;
     static int called = 0;
     if (called)
         return eps;
     eps = 1.0;
-//long double is the 80-bit extended precision format with 64bit significant digits
+//_Float64x is the 80-bit extended precision format with 64bit significant digits
     for (int i = 0; i < LDBL_MANT_DIG; i++) {
         eps = eps / 2.0;
     }
@@ -839,16 +841,16 @@ long double RlamchE_longdouble(void)
 
 //"S" denots we always calculate `safe minimum, such that 1/sfmin does not overflow'.
 //cf.http://www.netlib.org/blas/dlamch.f
-long double RlamchS_longdouble(void)
+_Float64x RlamchS__Float64x(void)
 {
     return LDBL_MIN;
 
-    static long double eps;
+    static _Float64x eps;
     static int called = 0;
     if (called)
         return eps;
     eps = 1.0;
-/* We all know double is the long double 80 bit format has 64bit significant digits and 15 for the exponent (2^15)/2 - 1 = 16383 */
+/* We all know double is the _Float64x 80 bit format has 64bit significant digits and 15 for the exponent (2^15)/2 - 1 = 16383 */
     for (int i = 0; i < 16383; i++) {
         eps = eps / 2.0;
     }
@@ -858,52 +860,52 @@ long double RlamchS_longdouble(void)
 
 //"B" base  = base of the machine
 //cf.http://www.netlib.org/blas/dlamch.f
-long double RlamchB_longdouble(void)
+_Float64x RlamchB__Float64x(void)
 {
-    long double two;
+    _Float64x two;
     two = 2.0;
     return two;
 }
 
 //"P" prec = eps*base
 //cf.http://www.netlib.org/blas/dlamch.f
-long double RlamchP_longdouble(void)
+_Float64x RlamchP__Float64x(void)
 {
-    long double base, eps, prec;
+    _Float64x base, eps, prec;
 
-    base = RlamchB_longdouble();
-    eps = RlamchE_longdouble();
+    base = RlamchB__Float64x();
+    eps = RlamchE__Float64x();
     prec = eps * base;
     return prec;
 }
 
 //"N" t = number of digits in mantissa
 //cf.http://www.netlib.org/blas/dlamch.f
-long double RlamchN_longdouble(void)
+_Float64x RlamchN__Float64x(void)
 {
-// long double with 80 bits has 64 bit significant digits
-    return (long double) LDBL_MANT_DIG;
+// _Float64x with 80 bits has 64 bit significant digits
+    return (_Float64x) LDBL_MANT_DIG;
 }
 
 //"R" rnd   = 1.0 when rounding occurs in addition, 0.0 otherwise
 //cf.http://www.netlib.org/blas/dlamch.f
-long double RlamchR_longdouble(void)
+_Float64x RlamchR__Float64x(void)
 {
-    long double mtmp;
+    _Float64x mtmp;
     mtmp = 1.0;
     return mtmp;
 }
 
 //"M"
 //cf.http://www.netlib.org/blas/dlamch.f
-long double RlamchM_longdouble(void)
+_Float64x RlamchM__Float64x(void)
 {
-    return (long double) LDBL_MIN_EXP;
+    return (_Float64x) LDBL_MIN_EXP;
 }
 
 //"U"
 //cf.http://www.netlib.org/blas/dlamch.f
-long double RlamchU_longdouble(void)
+_Float64x RlamchU__Float64x(void)
 {
     return LDBL_MIN;
 
@@ -912,7 +914,7 @@ long double RlamchU_longdouble(void)
     if (called)
         return eps;
     eps = 1.0;
-/* We all know double is the long double 80 bit format has 64bit significant digits and 15 for the exponent (2^15)/2 - 1 = 16383 */
+/* We all know double is the _Float64x 80 bit format has 64bit significant digits and 15 for the exponent (2^15)/2 - 1 = 16383 */
     for (int i = 0; i < 16383; i++) {
         eps = eps / 2.0;
     }
@@ -922,71 +924,79 @@ long double RlamchU_longdouble(void)
 
 //"L"
 //cf.http://www.netlib.org/blas/dlamch.f
-long double RlamchL_longdouble(void)
+_Float64x RlamchL__Float64x(void)
 {
     return LDBL_MAX_EXP;
 }
 
 //"O"
 //cf.http://www.netlib.org/blas/dlamch.f
-long double RlamchO_longdouble(void)
+_Float64x RlamchO__Float64x(void)
 {
     return LDBL_MAX;
 }
 
 //"Z" :dummy
 //cf.http://www.netlib.org/blas/dlamch.f
-long double RlamchZ_longdouble(void)
+_Float64x RlamchZ__Float64x(void)
 {
-    long double mtemp = 0.0;
+    _Float64x mtemp = 0.0;
     return mtemp;
 }
 
-long double Rlamch_longdouble(const char *cmach)
+_Float64x Rlamch__Float64x(const char *cmach)
 {
     if (Mlsame(cmach, "E"))
-        return RlamchE_longdouble();
+        return RlamchE__Float64x();
     if (Mlsame(cmach, "S"))
-        return RlamchS_longdouble();
+        return RlamchS__Float64x();
     if (Mlsame(cmach, "B"))
-        return RlamchB_longdouble();
+        return RlamchB__Float64x();
     if (Mlsame(cmach, "P"))
-        return RlamchP_longdouble();
+        return RlamchP__Float64x();
     if (Mlsame(cmach, "N"))
-        return RlamchN_longdouble();
+        return RlamchN__Float64x();
     if (Mlsame(cmach, "R"))
-        return RlamchR_longdouble();
+        return RlamchR__Float64x();
     if (Mlsame(cmach, "M"))
-        return RlamchM_longdouble();
+        return RlamchM__Float64x();
     if (Mlsame(cmach, "U"))
-        return RlamchU_longdouble();
+        return RlamchU__Float64x();
     if (Mlsame(cmach, "L"))
-        return RlamchL_longdouble();
+        return RlamchL__Float64x();
     if (Mlsame(cmach, "O"))
-        return RlamchO_longdouble();
+        return RlamchO__Float64x();
     Mxerbla("Rlamch", 1);
-    return RlamchZ_longdouble();
+    return RlamchZ__Float64x();
 }
 #endif
 
 
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
 //"E" denots we always calculate relative machine precision (e).
 //where 1+e = 1, minimum of e.
-__float128 RlamchE___float128(void)
+_Float128 RlamchE__Float128(void)
 {
+    #if defined _MPLAPACK_WANT_LIBQUADMATH_
     return FLT128_EPSILON;
+    #else //XXX
+    return 1.92592994438723585305597794258492732e-34Q;
+    #endif
 }
 
 //"S" denots we always calculate `safe minimum, such that 1/sfmin does not overflow'.
 //cf.http://www.netlib.org/blas/dlamch.f
-__float128 RlamchS___float128(void)
+_Float128 RlamchS__Float128(void)
 {
     //IEEE 754 2008 binary128: emin = -16382
     //2^{-16382} = 3.36210314311209350626267781732175260e-4932Q
+    #if defined _MPLAPACK_WANT_LIBQUADMATH_
     return FLT128_MIN;
+    #else //XXX
+    return 3.36210314311209350626267781732175260e-4932Q;
+    #endif
 
-    static __float128 eps;
+    static _Float128 eps;
     static int called = 0;
     if (called)
 	return eps;
@@ -1000,55 +1010,67 @@ __float128 RlamchS___float128(void)
 
 //"B" base  = base of the machine
 //cf.http://www.netlib.org/blas/dlamch.f
-__float128 RlamchB___float128(void)
+_Float128 RlamchB__Float128(void)
 {
-    __float128 two;
+    _Float128 two;
     two = 2.0;
     return two;
 }
 
 //"P" prec = eps*base
 //cf.http://www.netlib.org/blas/dlamch.f
-__float128 RlamchP___float128(void)
+_Float128 RlamchP__Float128(void)
 {
-    __float128 base, eps, prec;
+    _Float128 base, eps, prec;
 
-    base = RlamchB___float128();
-    eps = RlamchE___float128();
+    base = RlamchB__Float128();
+    eps = RlamchE__Float128();
     prec = eps * base;
     return prec;
 }
 
 //"N" t = number of digits in mantissa
 //cf.http://www.netlib.org/blas/dlamch.f
-__float128 RlamchN___float128(void)
+_Float128 RlamchN__Float128(void)
 {
-    return (__float128) FLT128_MANT_DIG;	//113
+    #if defined _MPLAPACK_WANT_LIBQUADMATH_
+    return (_Float128) FLT128_MANT_DIG;	//113
+    #else
+    return (_Float128) 113;
+    #endif
 }
 
 //"R" rnd   = 1.0 when rounding occurs in addition, 0.0 otherwise
 //cf.http://www.netlib.org/blas/dlamch.f
-__float128 RlamchR___float128(void)
+_Float128 RlamchR__Float128(void)
 {
-    __float128 mtmp;
+    _Float128 mtmp;
     mtmp = 1.0;
     return mtmp;
 }
 
 //"M"
 //cf.http://www.netlib.org/blas/dlamch.f
-__float128 RlamchM___float128(void)
+_Float128 RlamchM__Float128(void)
 {
 //the exponent of IEEE 754 2008 binary64 is -16382.
 //then -16382 + 1 = -16381
+    #if defined _MPLAPACK_WANT_LIBQUADMATH_
     return FLT128_MIN_EXP;
+    #else
+    return (-16381);
+    #endif
 }
 
 //"U"
 //cf.http://www.netlib.org/blas/dlamch.f
-__float128 RlamchU___float128(void)
+_Float128 RlamchU__Float128(void)
 {
+    #if defined _MPLAPACK_WANT_LIBQUADMATH_
     return FLT128_MIN;
+    #else
+    return 3.36210314311209350626267781732175260e-4932Q;
+    #endif
 
 //2^{-16382+1} minimum exponent
     static double eps;
@@ -1067,54 +1089,63 @@ __float128 RlamchU___float128(void)
 
 //"L"
 //cf.http://www.netlib.org/blas/dlamch.f
-__float128 RlamchL___float128(void)
+_Float128 RlamchL__Float128(void)
 {
 //+16383 in IEEE 754 2008 binary128
 //then 16383 + 1 = 16384
+    #if defined _MPLAPACK_WANT_LIBQUADMATH_
     return FLT128_MAX_EXP;
+    #else
+    return 16384;
+    #endif
 }
 
 //"O"
 //cf.http://www.netlib.org/blas/dlamch.f
-__float128 RlamchO___float128(void)
+_Float128 RlamchO__Float128(void)
 {
 // 1.18973149535723176508575932662800702e4932Q in IEEE 754 2008 binary128.
+    #if defined _MPLAPACK_WANT_LIBQUADMATH_
     return FLT128_MAX;
+    #else
+    return 1.18973149535723176508575932662800702e4932Q;
+    #endif
+
 }
 
 //"Z" :dummy
 //cf.http://www.netlib.org/blas/dlamch.f
-__float128 RlamchZ___float128(void)
+_Float128 RlamchZ__Float128(void)
 {
-    __float128 mtemp = 0.0;
+    _Float128 mtemp = 0.0;
     return mtemp;
 }
 
-__float128 Rlamch___float128(const char *cmach)
+_Float128 Rlamch__Float128(const char *cmach)
 {
     if (Mlsame(cmach, "E"))
-	return RlamchE___float128();
+	return RlamchE__Float128();
     if (Mlsame(cmach, "S"))
-	return RlamchS___float128();
+	return RlamchS__Float128();
     if (Mlsame(cmach, "B"))
-	return RlamchB___float128();
+	return RlamchB__Float128();
     if (Mlsame(cmach, "P"))
-	return RlamchP___float128();
+	return RlamchP__Float128();
     if (Mlsame(cmach, "N"))
-	return RlamchN___float128();
+	return RlamchN__Float128();
     if (Mlsame(cmach, "R"))
-	return RlamchR___float128();
+	return RlamchR__Float128();
     if (Mlsame(cmach, "M"))
-	return RlamchM___float128();
+	return RlamchM__Float128();
     if (Mlsame(cmach, "U"))
-	return RlamchU___float128();
+	return RlamchU__Float128();
     if (Mlsame(cmach, "L"))
-	return RlamchL___float128();
+	return RlamchL__Float128();
     if (Mlsame(cmach, "O"))
-	return RlamchO___float128();
+	return RlamchO__Float128();
 
     Mxerbla("Rlamch", 1);
-    return RlamchZ___float128();
+    return RlamchZ__Float128();
 }
 #endif
 

@@ -34,7 +34,7 @@
 #include "mplapack_config.h"
 #include "gmpxx.h"
 #include "mpc_class.h"
-#include "mutils_gmp.h"
+#include "mplapack_utils_gmp.h"
 #if !defined __MPLAPACK_ERRNO__
 #define _MPLAPACK_EXTERN_ extern
 #else

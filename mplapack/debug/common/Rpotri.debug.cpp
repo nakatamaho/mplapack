@@ -84,8 +84,8 @@ void Rpotri_test2(const char *uplo)
 		 A[p] = cast2dd_real(A_ref[p]);
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
 		 A[p] = cast2double(A_ref[p]);
-#elif defined ___MPLAPACK_BUILD_WITH___FLOAT128___
-		 A[p] = cast2__float128(A_ref[p]);
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+		 A[p] = cast2_Float128(A_ref[p]);
 #endif
 	      }
 //doing inversion twice.

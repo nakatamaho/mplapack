@@ -22,10 +22,11 @@ endif
 if IS_MIC
 	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/patch-mic
 endif
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/patch-dbal.in
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
-	echo "FORTRAN = $(FC)"      > $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "FORTRAN = $(FC)"       > $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "OPTS = -O0"           >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo 'DRVOPTS = $(OPTS)'    >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "NOOPT = -O0"          >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc

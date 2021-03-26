@@ -9,7 +9,7 @@ MPFRLIBS=-lmpblas_mpfr -lmpfrcxx -lmpfr -lmpc -lgmp
 GMPLIBS=-lmpblas_gmp -lgmpxx -lgmp 
 QDLIBS=-lmpblas_qd -lqd
 DDLIBS=-lmpblas_dd -lqd
-__FLOAT128LIBS=-lmpblas___float128 -lquadmath
+_FLOAT128LIBS=-lmpblas__Float128 -lquadmath
 BLAS=
 LAPACK=
 FLIBS=
@@ -33,8 +33,8 @@ Rgemm_qd.exe: Rgemm_qd.o
 Rgemm_dd.exe: Rgemm_dd.o
 	$(CXX) -static -o Rgemm_dd.exe Rgemm_dd.o $(LIBFLAGS) $(DDLIBS)
 
-Rgemm___float128: Rgemm___float128.o
-	$(CXX) -static -o Rgemm___float128 Rgemm___float128.o $(LIBFLAGS) $(__FLOAT128LIBS)
+Rgemm__Float128: Rgemm__Float128.o
+	$(CXX) -static -o Rgemm__Float128 Rgemm__Float128.o $(LIBFLAGS) $(_FLOAT128LIBS)
 
 clean:
 	rm -rf *.o *~ $(programs) *bak

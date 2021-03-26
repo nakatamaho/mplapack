@@ -23,7 +23,7 @@ sha256sums=('5a211622838db5e954355840423c232010335cf1690d5224076f212663de4c84')
 
 build() {
   cd "${srcdir}/mplapack-${pkgver}"
-  ./configure --prefix=/usr --enable-gmp --enable-mpfr --enable-qd --enable-dd --enable-double --enable-__float128 --enable-longdouble --enable-optimization --with-system-gmp --with-system-mpfr --with-system-mpc --with-system-qd --disable-benchmark --disable-examples --disable-reference
+  ./configure --prefix=/usr --enable-gmp --enable-mpfr --enable-qd --enable-dd --enable-double --enable-_Float128 --enable-_Float64x --enable-optimization --with-system-gmp --with-system-mpfr --with-system-mpc --with-system-qd --disable-benchmark --disable-examples --disable-reference
   make
 }
 

@@ -61,12 +61,12 @@ Provides: libmpblas_dd_ref.so = %{version}-%{release}
 Provides: libmpblas_dd.so = %{version}-%{release}
 Provides: libmpblas_double_ref.so = %{version}-%{release}
 Provides: libmpblas_double.so = %{version}-%{release}
-Provides: libmpblas___float128_ref.so = %{version}-%{release}
-Provides: libmpblas___float128.so = %{version}-%{release}
+Provides: libmpblas__Float128_ref.so = %{version}-%{release}
+Provides: libmpblas__Float128.so = %{version}-%{release}
 Provides: libmpblas_gmp_ref.so = %{version}-%{release}
 Provides: libmpblas_gmp.so = %{version}-%{release}
-Provides: libmpblas_longdouble_ref.so = %{version}-%{release}
-Provides: libmpblas_longdouble.so = %{version}-%{release}
+Provides: libmpblas__Float64x.h_ref.so = %{version}-%{release}
+Provides: libmpblas__Float64x.h.so = %{version}-%{release}
 Provides: libmpblas_mpfr_ref.so = %{version}-%{release}
 Provides: libmpblas_mpfr.so = %{version}-%{release}
 Provides: libmpblas_qd_ref.so = %{version}-%{release}
@@ -75,12 +75,12 @@ Provides: libmplapack_dd_ref.so = %{version}-%{release}
 Provides: libmplapack_dd.so = %{version}-%{release}
 Provides: libmplapack_double_ref.so = %{version}-%{release}
 Provides: libmplapack_double.so = %{version}-%{release}
-Provides: libmplapack___float128_ref.so = %{version}-%{release}
-Provides: libmplapack___float128.so = %{version}-%{release}
+Provides: libmplapack__Float128_ref.so = %{version}-%{release}
+Provides: libmplapack__Float128.so = %{version}-%{release}
 Provides: libmplapack_gmp_ref.so = %{version}-%{release}
 Provides: libmplapack_gmp.so = %{version}-%{release}
-Provides: libmplapack_longdouble_ref.so = %{version}-%{release}
-Provides: libmplapack_longdouble.so = %{version}-%{release}
+Provides: libmplapack__Float64x_ref.so = %{version}-%{release}
+Provides: libmplapack__Float64x.so = %{version}-%{release}
 Provides: libmplapack_mpfr_ref.so = %{version}-%{release}
 Provides: libmplapack_mpfr.so = %{version}-%{release}
 Provides: libmplapack_qd_ref.so = %{version}-%{release}
@@ -125,7 +125,7 @@ original license by LAPACK)
 %setup -n mplapack-%{version} -q
 
 %build
-%configure --docdir=%{_pkgdocdir} --enable-gmp --enable-mpfr --enable-qd --enable-dd --enable-double --enable-__float128 --enable-longdouble --enable-optimization --with-system-gmp --with-system-mpfr --with-system-mpc --with-system-qd --disable-benchmark --disable-examples --disable-reference
+%configure --docdir=%{_pkgdocdir} --enable-gmp --enable-mpfr --enable-qd --enable-dd --enable-double --enable-_Float128 --enable-_Float64x --enable-optimization --with-system-gmp --with-system-mpfr --with-system-mpc --with-system-qd --disable-benchmark --disable-examples --disable-reference
 make %{?_smp_mflags}
 
 

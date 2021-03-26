@@ -9,5 +9,5 @@ export AR=mingw32-ar
 
 ./configure --prefix=$HOME/mplapack-mingw-work-full/MPLAPACK --enable-debug=yes --enable-mpfr=yes --enable-double=yes --host=i386-pc-mingw32
 
-##--enable-__float128=yes --enable-qd=yes --enable-dd=yes
+##--enable-_Float128=yes --enable-qd=yes --enable-dd=yes
 

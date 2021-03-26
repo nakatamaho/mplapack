@@ -15,7 +15,7 @@ MP=$(MPLAPACKDIR)/mpfrc++/mpreal.cpp $(MPLAPACKDIR)/mpfrc++/mpcomplex.cpp
 MPOBJ=mpreal.o mpcomplex.o
 BLAS=-L/usr/local/lib -lblas
 
-programs=test_complex___float128 test_complex_mpfr #test_complex_mpfr1 #test_complex_gmp 
+programs=test_complex__Float128 test_complex_mpfr #test_complex_mpfr1 #test_complex_gmp 
 
 all: $(programs)
 
@@ -30,7 +30,7 @@ test_complex_gmp: test_complex_gmp.o $(MPOBJ)
 test_complex_mpfr: test_complex_mpfr.o
 	$(CXX) -o test_complex_mpfr test_complex_mpfr.o $(CXXFLAGS) $(LIBFLAGS) $(MP) -lmpc -lmpfr -lgmpxx -lgmp
 
-test_complex___float128: test_complex___float128.o
-	$(CXX) -o test_complex___float128 test_complex___float128.o $(CXXFLAGS) $(LIBFLAGS) $(MP) -lmpc -lmpfr -lgmpxx -lgmp -lquadmath
+test_complex__Float128: test_complex__Float128.o
+	$(CXX) -o test_complex__Float128 test_complex__Float128.o $(CXXFLAGS) $(LIBFLAGS) $(MP) -lmpc -lmpfr -lgmpxx -lgmp -lquadmath
 
 

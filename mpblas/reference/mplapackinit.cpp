@@ -99,29 +99,29 @@ void mplapack_finalize_double(void)
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_LONGDOUBLE___
-void __attribute__ ((constructor)) mplapack_initialize_longdouble(void);
-void __attribute__ ((destructor)) mplapack_finalize_longdouble(void);
-void mplapack_initialize_longdouble(void)
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
+void __attribute__ ((constructor)) mplapack_initialize__Float64x(void);
+void __attribute__ ((destructor)) mplapack_finalize__Float64x(void);
+void mplapack_initialize__Float64x(void)
 {
     //no initializization needed
 }
 
-void mplapack_finalize_longdouble(void)
+void mplapack_finalize__Float64x(void)
 {
     //no finalization needed
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
 void __attribute__ ((constructor)) mplapack_initialize_binary128(void);
 void __attribute__ ((destructor)) mplapack_finalize_binary128(void);
-void mplapack_initialize___float128(void)
+void mplapack_initialize__Float128(void)
 {
     //no initializization needed
 }
 
-void mplapack_finalize___float128(void)
+void mplapack_finalize__Float128(void)
 {
     //no finalization needed
 }

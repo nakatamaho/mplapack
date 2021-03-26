@@ -70,8 +70,8 @@
 #define ___MPLAPACK_INITIALIZE___ 
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
-#include "mplapack_benchmark___float128.h"
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+#include "mplapack_benchmark__Float128.h"
 #define ___MPLAPACK_INITIALIZE___ 
 #endif
 

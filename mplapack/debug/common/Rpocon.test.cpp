@@ -281,7 +281,7 @@ void Rpocon_test(void)
     Rpocon_test2("L", 100);
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_GMP___ || defined ___MPLAPACK_BUILD_WITH_QD___ || defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH___FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH_GMP___ || defined ___MPLAPACK_BUILD_WITH_QD___ || defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH__FLOAT128___
     Rpocon_test2("U", 30);
     Rpocon_test2("L", 30);
 #endif

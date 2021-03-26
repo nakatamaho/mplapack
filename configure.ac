@@ -2,7 +2,7 @@ dnl
 dnl Configure for MPLAPACK
 dnl
 
-AC_INIT(mplapack, 0.8.0)
+AC_INIT(mplapack, 0.9.0)
 AC_SUBST([PACKAGE_DESCRIPTION], "A multiple precision version of BLAS and LAPACK")
 AC_CONFIG_HEADER(include/config.h) 
 
@@ -17,10 +17,29 @@ AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_MACRO_DIR([m4])
 
 dnl OpenMP Compiler flags.
+AC_LANG([C++])
 AC_OPENMP
-AC_LANG_PUSH([C++])
-AC_OPENMP
-AC_LANG_POP
+
+# workaround for icc and icpc when they have bugs.
+_GCC=`echo $_GCC`
+if test x"$_GCC" = x""; then
+    _GCC=$CC
+fi
+AC_SUBST(_GCC)
+
+_GXX=`echo $_GXX`
+if test x"$_GXX" = x""; then
+    _GXX=$CXX
+fi
+AC_SUBST(_GXX)
+
+_GFC=`echo $_GFC`
+if test x"$_GFC" = x""; then
+    _GFC=$FC
+fi
+AC_SUBST(_GFC)
+
+AX_CXX_COMPILE_STDCXX_17([ext], [mandatory])
 
 dnl Checking host name
 AC_CANONICAL_HOST
@@ -125,7 +144,6 @@ AC_ARG_ENABLE(wrapper,
 AS_HELP_STRING([--enable-wrapper], [Enable wrapper for BLAS and LAPACK. xBLAS like approach]))
 AM_CONDITIONAL(ENABLE_WRAPPER, test x$enable_wrapper = xyes)
 
-
 dnl disable benchmark
 AC_ARG_ENABLE(benchmark,
 AS_HELP_STRING([--disable-benchmark], [Disable benchmark]))
@@ -195,58 +213,187 @@ AS_HELP_STRING([--enable-double], [Enable double version]),
         esac],[enable_double=no])
 AM_CONDITIONAL(ENABLE_DOUBLE, test x$enable_double = xyes)
 
-AC_ARG_ENABLE(__float128,
-AS_HELP_STRING([--enable-__float128], [Enable __float128 version using non standard extension of gcc and icc]),
+AC_ARG_ENABLE(_Float128,
+AS_HELP_STRING([--enable-_Float128], [Enable _Float128 version (TS 18661-3 like gcc extension) ]),
 [case "${enableval}" in
-    yes) enable___float128=yes ;;
-    no)  enable___float128=no  ;;
-    *) AC_MSG_ERROR(bad value ${enableval} for --enable-__float128) ;;
-        esac],[enable___float128=no])
+    yes) enable__Float128=yes ;;
+    no)  enable__Float128=no  ;;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-_Float128) ;;
+        esac],[enable__Float128=no])
 
-AC_ARG_WITH(gccname,
-AS_HELP_STRING([--with-gccname], [Specify path to gcc for libquadmath (only for Intel Composer)]),
-[ GCCNAME="$withval"]
-)
+SAVE_CXXFLAGS="$CXXFLAGS"
+AM_CONDITIONAL(WANT_QUADMATH, test x$enable__Float128 = xno)
+if test x$enable__Float128 = x"yes"; then
+    AC_MSG_CHECKING([whether _Float128 is supported])
+    AC_LINK_IFELSE([
+       AC_LANG_SOURCE([[
+       #include <stdio.h>
+       #include <math.h>
+       #include <stdlib.h>
+       int main() {
+           _Float128 a, b, c; b = 1.0q; c=3.0q; a = b / c;
+           char buf[1024];
+           strfromf128(buf, sizeof(buf), "%.40g", a);
+           printf("fp128 %s\n",buf);
+       }
+      ]])
+    ], [have__Float128=yes want_libquadmath=no], [have__Float128=no])
 
-if test x$enable___float128 = x"yes"; then
+    if test x"$have__Float128" = x"yes"; then    
+        AC_COMPILE_IFELSE([
+        AC_LANG_SOURCE([[
+           #include <stdio.h>
+           #include <math.h>
+           #include <stdlib.h>
+           int main() {
+               long double *x;
+               _Float128 *y = x;
+           }
+        ]]) 
+        ], [float128islongdouble=yes], [float128islongdouble=no])
 
-__ICC=`basename $CC`
-if test x$__ICC = x"icc"; then
-AC_MSG_RESULT([Note: your compiler is Intel Composer, so you need -lquadmath, thus -gcc-name])
-if test x$GCCNAME != x"" ; then
-    _GCC_FLOAT128_FLAGS="-gcc-name=$GCCNAME"
-else
-__GCC=`which gcc`
-    _GCC_FLOAT128_FLAGS="-gcc-name=$__GCC"
+        if test "$float128islongdouble" = "yes"; then 
+             AC_MSG_RESULT([_Float128 is long double])
+        else
+             AC_MSG_RESULT([_Float128 is not long double])
+        fi
+    fi
+
+    if test x"$have__Float128" = x"no"; then
+        save_LDFLAGS="$LDFLAGS"
+        LDFLAGS="$LDFLAGS -lquadmath"
+        AC_LINK_IFELSE([
+            AC_LANG_SOURCE([[
+                #include <quadmath.h>
+                #include <stdio.h>
+                int main(){
+                    char buf[1024];
+                    __float128 a, b, c; b = 1.0q; c= 3.0q; a = b / c;
+                    quadmath_snprintf(buf,128,"%.40Qf\n",a);
+                    printf("%s",buf);
+                }
+           ]])
+        ], [have__Float128=yes want_libquadmath=yes], [have__Float128=no])
+
+        if test "$have__Float128" = "no"; then
+            AC_MSG_ERROR([_Float128 is not supported on this platform])
+        fi
+        LDFLAGS="$save_LDFLAGS"
+    fi
+
+    if test "$want_libquadmath" = "yes"; then
+        AC_MSG_RESULT([_Float128 is supported via __float128 and libquadmath])
+        sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%/#define _MPLAPACK_WANT_LIBQUADMATH_\ntypedef __float128 _Float128;/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
+        AM_CONDITIONAL(WANT_QUADMATH, test x$want_libquadmath = xyes)
+    else
+        AC_MSG_RESULT([_Float128 is supported via native libc])
+        if test "$float128islongdouble" = "yes"; then 
+            sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%/#define _MPLAPACK__FLOAT128_IS_LONGDOUBLE_/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
+        else
+            sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%//g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
+        fi
+        AM_CONDITIONAL(WANT_QUADMATH, test x$want_libquadmath = xyes)
+    fi
 fi
-fi
+AM_CONDITIONAL(ENABLE__FLOAT128, test x$enable__Float128 = xyes)
+AM_CONDITIONAL(IS__FLOAT128_LONGDOUBLE, test x$float128islongdouble = xyes)
 
-SAVE_CFLAGS="$CFLAGS"
-CFLAGS="$CFLAGS $_GCC_FLOAT128_FLAGS"
-AC_MSG_CHECKING([whether __float128 is supported])
-AC_TRY_COMPILE([
-#include <quadmath.h>
-],[__float128 a = 0.0Q; return 0;], have___float128=yes, have___float128=no)
+CXXFLAGS="$SAVE_CXXFLAGS"
 
-if test "$have___float128" = "no"; then
-    AC_MSG_ERROR([__float128 is not supported on this platform])
-else
-    AC_MSG_RESULT([__float128 is supported])
-fi
-fi
-CFLAGS="$SAVE_CFLAGS"
-
-AM_CONDITIONAL(ENABLE___FLOAT128, test x$enable___float128 = xyes)
-
-AC_ARG_ENABLE(longdouble,
-AS_HELP_STRING([--enable-longdouble], [Enable long double version]),
+AC_ARG_ENABLE(_Float64x,
+AS_HELP_STRING([--enable-_Float64x], [Enable _Float64x (aka __float80 or long double) version]),
 [case "${enableval}" in
-    yes) enable_longdouble=yes ;;
-    no)  enable_longdouble=no  ;;
-    *) AC_MSG_ERROR(bad value ${enableval} for --enable-longdouble) ;;
-        esac],[enable_longdouble=no])
+    yes) enable__Float64x=yes ;;
+    no)  enable__Float64x=no  ;;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-_Float64x) ;;
+        esac],[enable__Float64x=no])
 
-AM_CONDITIONAL(ENABLE_LONGDOUBLE, test x$enable_longdouble = xyes)
+SAVE_CXXFLAGS="$CXXFLAGS"
+if test x$enable__Float64x = x"yes"; then
+    AC_MSG_CHECKING([whether _Float64x is supported])
+    AC_LINK_IFELSE([
+       AC_LANG_SOURCE([[
+       #include <stdio.h>
+       #include <math.h>
+       #include <stdlib.h>
+       int main() {
+           _Float64x a, b, c; b = 1.0w; c=3.0w; a = b / c;
+           printf("_Float64x %Lf\n", a);
+       }
+      ]])
+    ], [have__Float64x=yes want___float80=no], [_have__Float64x=no])
+
+    if test "$_have__Float64x" = "no"; then
+        AC_LINK_IFELSE([
+            AC_LANG_SOURCE([[
+                #include <stdio.h>
+                #include <math.h>
+                #include <stdlib.h>
+                int main(){
+                    char buf[1024];
+                    __float80 a, b, c; b = 1.0w; c= 3.0w; a = b / c;
+                    printf("__float80 %Lf",a);
+                }
+           ]])
+        ], [have__Float64x=yes want___float80=yes], [have__Float64x=no])
+
+        if test "$have__Float64x" = "no"; then
+            AC_MSG_ERROR([_Float64x is not supported on this platform])
+        fi
+        LDFLAGS="$save_LDFLAGS"
+    fi
+
+    if test x"$have__Float64x" = x"yes" && test x"$want___float80" = x"no" ; then    
+        AC_MSG_RESULT([_Float64x is supported natively])
+        AC_COMPILE_IFELSE([
+        AC_LANG_SOURCE([[
+           #include <stdio.h>
+           #include <math.h>
+           #include <stdlib.h>
+           int main() {
+               long double *x;
+               _Float64x *y = x;
+           }
+        ]]) 
+        ], [float64xislongdouble=yes], [float64islongdouble=no])
+    fi
+    if test x"$have__Float64x" = x"yes" && test x"$want___float80" = x"yes" ; then    
+        AC_MSG_RESULT([_Float64x is supported via __float80])
+        AC_COMPILE_IFELSE([
+        AC_LANG_SOURCE([[
+           #include <stdio.h>
+           #include <math.h>
+           #include <stdlib.h>
+           int main() {
+               long double *x;
+               __float80 *y = x;
+           }
+        ]]) 
+        ], [float64xislongdouble=yes], [float64islongdouble=no])
+    fi
+    if test "$float64xislongdouble" = "yes"; then 
+         AC_MSG_RESULT([_Float64x is long double])
+    else
+         AC_MSG_RESULT([_Float64x is not long double])
+    fi
+    if test "$want___float80" = "yes" && test "$float64xislongdouble" = "yes" ; then
+        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80_%%/typedef __float80 _Float64x;\n#define ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
+    fi
+    if test "$want___float80" = "yes" && test "$float64xislongdouble" = "no" ; then
+        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80_%%/typedef __float80 _Float64x;/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
+    fi
+    if test "$want___float80" = "no" && test "$float64xislongdouble" = "yes" ; then
+        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80_%%/#define ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
+    fi
+    if test "$want___float80" = "no" && test "$float64xislongdouble" = "no" ; then
+        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80_%%//g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
+    fi
+fi
+CXXFLAGS="$SAVE_CXXFLAGS"
+
+AM_CONDITIONAL(ENABLE__FLOAT64X, test x$enable__Float64x = xyes)
+AM_CONDITIONAL(IS__FLOAT64X_LONGDOUBLE, test x$float64xislongdouble = xyes)
+AM_CONDITIONAL(IS___FLOAT80, test x$want___float80 = xyes)
 
 highest_abs_top_srcdir=`cd "$srcdir" && pwd` 
 
@@ -414,7 +561,6 @@ if test x$enable_qd = x"yes" -o x$enable_dd = x"yes" -o x$enable_debug = x"yes";
         HAVE_QD=""
         save_CXXFLAGS=$CXXFLAGS
         CXXFLAGS="$CXXFLAGS -I$QD_INCLUDEDIR"
-        AC_LANG_PUSH([C++])
         AC_CHECK_HEADER(qd/qd_real.h, HAVE_QD_HEADER=yes)
         CXXFLAGS=$save_CXXFLAGS
         if test x$HAVE_QD_HEADER = xyes; then
@@ -429,7 +575,6 @@ if test x$enable_qd = x"yes" -o x$enable_dd = x"yes" -o x$enable_debug = x"yes";
               AC_MSG_RESULT([QD library found: using QD library comes with the system])
               SYSTEM_QD=yes
         fi
-        AC_LANG_POP([C++])
     else
         AC_MSG_RESULT([Using QD library comes with MPLAPACK])
         QD_INCLUDEDIR=$highest_abs_top_srcdir/external/i/QD/include/
@@ -519,15 +664,31 @@ AC_MSG_RESULT([Enable double version])
 else
 AC_MSG_RESULT([Disable double version])
 fi
-if test x$enable_longdouble = x"yes"; then
-AC_MSG_RESULT([Enable long double version])
+if test x$enable__Float64x = x"yes"; then
+    if test "$want___float80" = "yes"; then
+        AC_MSG_RESULT([Enable _Float64x version via __float80])
+    else
+        AC_MSG_RESULT([Enable native _Float64x version ])
+    fi
 else
-AC_MSG_RESULT([Disable long double version])
+    AC_MSG_RESULT([Disable _Float64x version])
 fi
-if test x$enable___float128 = x"yes"; then
-AC_MSG_RESULT([Enable __float128 version])
+if test x$enable__Float64x = x"yes"; then
+    if test "$float64xislongdouble" = "yes"; then
+        AC_MSG_RESULT([_Float64x is long double])
+    else
+        AC_MSG_RESULT([_Float64x is not long double])
+    fi
+fi
+
+if test x$enable__Float128 = x"yes"; then
+    if test "$want_libquadmath" = "yes"; then
+        AC_MSG_RESULT([Enable _Float128 version via __float128 and libquadmath])
+    else
+        AC_MSG_RESULT([Enable native _Float128 version via native libc])
+    fi
 else
-AC_MSG_RESULT([Disable __float128 version])
+    AC_MSG_RESULT([Disable _Float128 version])
 fi
 if test x$enable_debug = x"yes"; then
 AC_MSG_RESULT([Enable debug])
@@ -612,13 +773,6 @@ DO_LAPACKBENCH=yes
 fi
 AM_CONDITIONAL(DO_LAPACKBENCH, test x$DO_LAPACKBENCH = xyes)
 
-dnl __float128 support part II.
-if test x$__ICC = x"icc"; then
-CFLAGS="$CFLAGS $_GCC_FLOAT128_FLAGS"
-CXXFLAGS="$CXXFLAGS $_GCC_FLOAT128_FLAGS"
-FCFLAGS="$FCFLAGS $_GCC_FLOAT128_FLAGS"
-fi
-
 if test x"$enable_optimization" = x"yes"; then
     CFLAGS="$CFLAGS -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
     CXXFLAGS="$CXXFLAGS -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
@@ -652,14 +806,18 @@ fi
 if test x$enable_mpc = x"yes"; then
   PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_mpc -lmpblas_mpc"
 fi
-if test x$enable___float128 = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack___float128 -lmpblas___float128 -lquadmath"
+if test x$enable__Float128 = x"yes"; then
+    if test "$want_libquadmath" = "yes"; then
+        PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack__Float128 -lmpblas__Float128 -lquadmath"
+    else
+        PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack__Float128 -lmpblas__Float128"
+    fi
 fi
 if test x$enable_double = x"yes"; then
   PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_double -lmpblas_double"
 fi
-if test x$enable_longdouble = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_longdouble -lmpblas_longdouble"
+if test x$enable__Float64x = x"yes"; then
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack__Float64x -lmpblas__Float64x"
 fi
 
 # add external libraries only if they will be installed with the package
@@ -691,8 +849,8 @@ mpblas/optimized/qd/Makefile
 mpblas/optimized/dd/Makefile
 mpblas/optimized/dd/cuda/Makefile
 mpblas/optimized/double/Makefile
-mpblas/optimized/longdouble/Makefile
-mpblas/optimized/__float128/Makefile
+mpblas/optimized/_Float64x/Makefile
+mpblas/optimized/_Float128/Makefile
 mpblas/blaswrapper/Makefile
 mpblas/fortranwrapper/Makefile
 mpblas/debug/Makefile
@@ -701,8 +859,8 @@ mpblas/debug/mpfr/Makefile
 mpblas/debug/qd/Makefile
 mpblas/debug/dd/Makefile
 mpblas/debug/double/Makefile
-mpblas/debug/longdouble/Makefile
-mpblas/debug/__float128/Makefile
+mpblas/debug/_Float64x/Makefile
+mpblas/debug/_Float128/Makefile
 mpblas/Makefile
 mplapack/debug/Makefile
 mplapack/debug/gmp/Makefile
@@ -710,16 +868,16 @@ mplapack/debug/mpfr/Makefile
 mplapack/debug/qd/Makefile
 mplapack/debug/dd/Makefile
 mplapack/debug/double/Makefile
-mplapack/debug/longdouble/Makefile
-mplapack/debug/__float128/Makefile
+mplapack/debug/_Float64x/Makefile
+mplapack/debug/_Float128/Makefile
 mplapack/optimized/Makefile
 mplapack/optimized/gmp/Makefile
 mplapack/optimized/mpfr/Makefile
 mplapack/optimized/qd/Makefile
 mplapack/optimized/dd/Makefile
 mplapack/optimized/double/Makefile
-mplapack/optimized/longdouble/Makefile
-mplapack/optimized/__float128/Makefile
+mplapack/optimized/_Float64x/Makefile
+mplapack/optimized/_Float128/Makefile
 mplapack/lapackwrapper/Makefile
 mplapack/fortranwrapper/Makefile
 mplapack/Makefile

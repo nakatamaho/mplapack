@@ -20,12 +20,12 @@ if ENABLE_DOUBLE
 lib_LTLIBRARIES += libmplapack_double_ref.la
 endif
 
-if ENABLE_LONGDOUBLE
-lib_LTLIBRARIES += libmplapack_longdouble_ref.la
+if ENABLE__FLOAT64X
+lib_LTLIBRARIES += libmplapack__Float64x_ref.la
 endif
 
-if ENABLE___FLOAT128
-lib_LTLIBRARIES += libmplapack___float128_ref.la
+if ENABLE__FLOAT128
+lib_LTLIBRARIES += libmplapack__Float128_ref.la
 endif
 
 if ENABLE_GMP
@@ -68,19 +68,19 @@ libmplapack_double_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_looku
 endif
 endif
 
-if ENABLE_LONGDOUBLE
-libmplapack_longdouble_ref_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_LONGDOUBLE___
-libmplapack_longdouble_ref_la_SOURCES = $(MPLAPACK_SOURCES)
+if ENABLE__FLOAT64X
+libmplapack__Float64x_ref_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___
+libmplapack__Float64x_ref_la_SOURCES = $(MPLAPACK_SOURCES)
 if IS_MACOSX
-libmplapack_longdouble_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmplapack__Float64x_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
-if ENABLE___FLOAT128
-libmplapack___float128_ref_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH___FLOAT128___
-libmplapack___float128_ref_la_SOURCES = $(MPLAPACK_SOURCES)
+if ENABLE__FLOAT128
+libmplapack__Float128_ref_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT128___
+libmplapack__Float128_ref_la_SOURCES = $(MPLAPACK_SOURCES)
 if IS_MACOSX
-libmplapack___float128_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmplapack__Float128_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 

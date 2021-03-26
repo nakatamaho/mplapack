@@ -1,9 +1,9 @@
 #!/bin/bash
-#this script generates include/mplapack_benchmark_gmp.h, include/mplapack_benchmark___float128.h
+#this script generates include/mplapack_benchmark_gmp.h, include/mplapack_benchmark__Float128.h
 #include/mplapack_benchmark_mpfr.h, include/mplapack_benchmark_dd.h, include/mplapack_benchmark_qd.h
 #include/mplapack_benchmark_double.h
 
-for p in gmp mpfr __float128 double dd qd
+for p in gmp mpfr _Float128 double dd qd
 do
 rm $p.h
 for n in libmpblas_"$p"_ref*.o

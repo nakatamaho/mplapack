@@ -384,51 +384,51 @@ void Rlamch_double_test()
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
-void Rlamch___float128_test()
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+void Rlamch__Float128_test()
 {
-    __float128 tmp;
-    tmp = Rlamch___float128("E");
+    _Float128 tmp;
+    tmp = Rlamch__Float128("E");
 /*
     if (1.0Q + tmp > 1.0Q) {printf("rlamche f128 ok\n");} else {printf("rlamche f128 Error\n");}
     if (1.0Q + tmp/2.0Q > 1.0Q) {printf("rlamche f128 error\n");} else {printf("rlamche f128 ok\n");}
     if (1.0Q + tmp/2.0Q == 1.0Q) {printf("rlamche f128 ok\n");} else {printf("rlamche f128 error\n");}
 */
 #if defined VERBOSE_TEST
-    printf("Rlamch E: Epsilon                      "); printnum(Rlamch___float128("E")); printf("\n");
+    printf("Rlamch E: Epsilon                      "); printnum(Rlamch__Float128("E")); printf("\n");
 #endif
-    tmp = Rlamch___float128("S");
+    tmp = Rlamch__Float128("S");
     printf("Rlamch S: Safe minimum                 "); printnum(tmp); printf("\n");
 
-    tmp = Rlamch___float128("B");
+    tmp = Rlamch__Float128("B");
     printf("Rlamch B: Base                         "); printnum(tmp); printf("\n");
 
-    tmp = Rlamch___float128("P");
+    tmp = Rlamch__Float128("P");
     printf("Rlamch P: Precision                    "); printnum(tmp); printf("\n");
 
-    tmp = Rlamch___float128("N");
+    tmp = Rlamch__Float128("N");
     printf("Rlamch N: Number of digits in mantissa "); printnum(tmp); printf("\n");
 
-    tmp = Rlamch___float128("R");
+    tmp = Rlamch__Float128("R");
     printf("Rlamch R: Rounding mode                "); printnum(tmp); printf("\n");
 
-    tmp = Rlamch___float128("M");
+    tmp = Rlamch__Float128("M");
     printf("Rlamch M: Minimum exponent:            "); printnum(tmp); printf("\n");
 
-    tmp = Rlamch___float128("U");
+    tmp = Rlamch__Float128("U");
     printf("Rlamch U: Underflow threshold          "); printnum(tmp); printf("\n");
 
-    tmp = Rlamch___float128("L");
+    tmp = Rlamch__Float128("L");
     printf("Rlamch L: Largest exponent             "); printnum(tmp); printf("\n");
 
-    tmp = Rlamch___float128("O");
+    tmp = Rlamch__Float128("O");
     printf("Rlamch O: Overflow threshold           "); printnum(tmp); printf("\n");
 
-    tmp = Rlamch___float128("S");
+    tmp = Rlamch__Float128("S");
     tmp = 1.0 / tmp;
     printf("Rlamch -: Reciprocal of safe minimum   "); printnum(tmp); printf("\n");
 
-    tmp = Rlamch___float128("Z");
+    tmp = Rlamch__Float128("Z");
     printf("Rlamch Z: dummy (error)                "); printnum(tmp); printf("\n");
 }
 #endif
@@ -451,8 +451,8 @@ int main(int argc, char *argv[])
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
     Rlamch_double_test();
 #endif
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
-    Rlamch___float128_test();
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+    Rlamch__Float128_test();
 #endif
     printf("*** Testing Rlamch successful ***\n");
     return(0);

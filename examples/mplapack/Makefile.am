@@ -122,27 +122,31 @@ condition_num_double_LDFLAGS= $(double_libdepends)
 
 endif
 
-if ENABLE___FLOAT128
-lapackexamples_PROGRAMS += eigenvalue___float128 inv_mat___float128 \
-			hilbert___float128 condition_num___float128
-__float128cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
-__float128_libdepends = -L$(top_builddir)/mplapack/optimized/__float128 -lmplapack___float128 -L$(top_builddir)/mpblas/optimized/__float128 -lmpblas___float128 -lquadmath
+if ENABLE__FLOAT128
+lapackexamples_PROGRAMS += eigenvalue__Float128 inv_mat__Float128 \
+			hilbert__Float128 condition_num__Float128
+_Float128cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
+if WANT_QUADMATH
+_Float128_libdepends = -L$(top_builddir)/mplapack/optimized/_Float128 -lmplapack__Float128 -L$(top_builddir)/mpblas/optimized/_Float128 -lmpblas__Float128 -lquadmath
+else
+_Float128_libdepends = -L$(top_builddir)/mplapack/optimized/_Float128 -lmplapack__Float128 -L$(top_builddir)/mpblas/optimized/_Float128 -lmpblas__Float128
+endif
 
-eigenvalue___float128_SOURCES= eigenvalue___float128.cpp
-eigenvalue___float128_CXXFLAGS= $(__float128cxxflags)
-eigenvalue___float128_LDFLAGS= $(__float128_libdepends)
+eigenvalue__Float128_SOURCES= eigenvalue__Float128.cpp
+eigenvalue__Float128_CXXFLAGS= $(_Float128cxxflags)
+eigenvalue__Float128_LDFLAGS= $(_Float128_libdepends)
 
-inv_mat___float128_SOURCES= inv_mat___float128.cpp
-inv_mat___float128_CXXFLAGS= $(__float128cxxflags)
-inv_mat___float128_LDFLAGS= $(__float128_libdepends)
+inv_mat__Float128_SOURCES= inv_mat__Float128.cpp
+inv_mat__Float128_CXXFLAGS= $(_Float128cxxflags)
+inv_mat__Float128_LDFLAGS= $(_Float128_libdepends)
 
-hilbert___float128_SOURCES= hilbert___float128.cpp
-hilbert___float128_CXXFLAGS= $(__float128cxxflags)
-hilbert___float128_LDFLAGS= $(__float128_libdepends)
+hilbert__Float128_SOURCES= hilbert__Float128.cpp
+hilbert__Float128_CXXFLAGS= $(_Float128cxxflags)
+hilbert__Float128_LDFLAGS= $(_Float128_libdepends)
 
-condition_num___float128_SOURCES= condition_num___float128.cpp
-condition_num___float128_CXXFLAGS= $(__float128cxxflags)
-condition_num___float128_LDFLAGS= $(__float128_libdepends)
+condition_num__Float128_SOURCES= condition_num__Float128.cpp
+condition_num__Float128_CXXFLAGS= $(_Float128cxxflags)
+condition_num__Float128_LDFLAGS= $(_Float128_libdepends)
 
 endif
 

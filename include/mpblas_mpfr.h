@@ -35,7 +35,7 @@
 #include "mpreal.h"
 #include "mpcomplex.h"
 using namespace mpfr;
-#include "mutils_mpfr.h"
+#include "mplapack_utils_mpfr.h"
 #if !defined __MPLAPACK_ERRNO__
 #define _MPLAPACK_EXTERN_ extern
 #else

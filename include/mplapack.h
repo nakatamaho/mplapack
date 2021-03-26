@@ -97,29 +97,29 @@ typedef std::complex<double> COMPLEX;
 #define iMlaenv  iMlaenv_double
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_LONGDOUBLE___
-#include <mplapack_longdouble.h>
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
+#include <mplapack__Float64x.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
-typedef long double REAL;
-typedef std::complex<long double> COMPLEX;
-#define Mlsame   Mlsame_longdouble
-#define Mxerbla  Mxerbla_longdouble
-#define Rlamch   Rlamch_longdouble
-#define iMlaenv  iMlaenv_longdouble
+typedef _Float64x REAL;
+typedef std::complex<_Float64x> COMPLEX;
+#define Mlsame   Mlsame__Float64x
+#define Mxerbla  Mxerbla__Float64x
+#define Rlamch   Rlamch__Float64x
+#define iMlaenv  iMlaenv__Float64x
 #endif
 
 
-#if defined ___MPLAPACK_BUILD_WITH___FLOAT128___
-#include <mplapack___float128.h>
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+#include <mplapack__Float128.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
-typedef __float128 REAL;
-typedef std::complex<__float128> COMPLEX;
-#define Mlsame   Mlsame___float128
-#define Mxerbla  Mxerbla___float128
-#define Rlamch   Rlamch___float128
-#define iMlaenv  iMlaenv___float128
+typedef _Float128 REAL;
+typedef std::complex<_Float128> COMPLEX;
+#define Mlsame   Mlsame__Float128
+#define Mxerbla  Mxerbla__Float128
+#define Rlamch   Rlamch__Float128
+#define iMlaenv  iMlaenv__Float128
 #endif
 
 #endif

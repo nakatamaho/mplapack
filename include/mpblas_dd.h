@@ -35,7 +35,7 @@
 #include "qd/dd_real.h"
 
 #include "dd_complex.h"
-#include "mutils_dd.h"
+#include "mplapack_utils_dd.h"
 
 #if !defined __MPLAPACK_ERRNO__
 #define _MPLAPACK_EXTERN_ extern

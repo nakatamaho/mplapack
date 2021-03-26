@@ -32,7 +32,7 @@
 #define _MPBLAS_DOUBLE_H_
 
 #include "mplapack_config.h"
-#include "mutils_double.h"
+#include "mplapack_utils_double.h"
 #if !defined __MPLAPACK_ERRNO__
 #define _MPLAPACK_EXTERN_ extern
 #else

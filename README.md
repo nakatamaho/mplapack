@@ -8,7 +8,7 @@ original license by LAPACK).
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack ; autoreconf --force --install ; aclocal ; autoconf ; automake; autoreconf --force --install
-$ ./configure --enable-gmp --enable-__float128 --enable-dd --enable-mpfr
+$ ./configure --enable-gmp --enable-_Float128 --enable-dd --enable-mpfr
 ```
 do not worry about a lot of warnings in the second commands.
 
