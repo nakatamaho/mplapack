@@ -31,7 +31,7 @@
 
 %%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%
 
-#if defined _MPLAPACK_WANT_LIBQUADMATH_
+#if defined ___MPLAPACK_WANT_LIBQUADMATH___
 
 #ifdef __cplusplus
 extern "C" {
@@ -123,7 +123,7 @@ inline _Float128 log2(_Float128 x)
 }
 #endif
 
-#else //_MPLAPACK_WANT_LIBQUADMATH_
+#else //___MPLAPACK_WANT_LIBQUADMATH___
 //#define __STDC_WANT_IEC_60559_TYPES_EXT__ somehow not needed (since g++?)
 #ifdef __cplusplus
 extern "C" {
@@ -139,7 +139,7 @@ extern "C" {
 #define _Float128 __float128
 #endif
 
-#if !defined _MPLAPACK__FLOAT128_IS_LONGDOUBLE_
+#if !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___
 inline _Float128 sqrt(const _Float128 &a) {
    return sqrtf128(a);
 }
@@ -203,7 +203,7 @@ inline std::complex<_Float128> log(const std::complex<_Float128> &a) {
 
 #endif
 
-#if defined _MPLAPACK__FLOAT128_IS_LONGDOUBLE_
+#if defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___
 
 //inline _Float128 pow(const _Float128 &a, const _Float128 &b) {
 //   return powf128(a, b);
@@ -243,7 +243,7 @@ inline long nint(_Float128 a)
     long i;
     _Float128 tmp;
     a = a + 0.5;
-#if defined _MPLAPACK_WANT_LIBQUADMATH_
+#if defined ___MPLAPACK_WANT_LIBQUADMATH___
     tmp = floorq(a);
 #else
     tmp = floorf128(a);

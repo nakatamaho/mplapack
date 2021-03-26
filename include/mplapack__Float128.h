@@ -33,7 +33,7 @@
 
 #include "mplapack_config.h"
 
-#if defined _MPLAPACK_WANT_LIBQUADMATH_
+#if defined ___MPLAPACK_WANT_LIBQUADMATH___
 #include "quadmath.h"
 #endif
 

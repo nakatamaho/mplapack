@@ -46,7 +46,7 @@ void subst_test1()
 
 //tmp1 = buf1;
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ 
-  #if defined _MPLAPACK_WANT_LIBQUADMATH_
+  #if defined ___MPLAPACK_WANT_LIBQUADMATH___
   tmp1 = strtoflt128(buf1, NULL);
   #else
   tmp1 = strtof128(buf1, NULL);

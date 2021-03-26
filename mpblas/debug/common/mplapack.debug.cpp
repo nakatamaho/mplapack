@@ -548,7 +548,7 @@ void set_random_number1to2(mpcomplex & a, complex<_Float64x> &b)
 
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined _MPLAPACK_WANT_LIBQUADMATH_
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK_WANT_LIBQUADMATH___
 void printnum(_Float128 rtmp)
 {
     int width = 42;
@@ -588,7 +588,7 @@ void sprintnum(char *buf, std::complex<_Float128> rtmp)
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined _MPLAPACK__FLOAT128_IS_LONGDOUBLE_ && !defined _MPLAPACK_WANT_LIBQUADMATH_
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_WANT_LIBQUADMATH___
 void printnum(_Float128 rtmp)
 {
     int width = 42;
@@ -695,7 +695,7 @@ void set_random_number1to2(mpcomplex & a, std::complex<_Float128> &b)
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined _MPLAPACK__FLOAT128_IS_LONGDOUBLE_ && !defined _MPLAPACK_WANT_LIBQUADMATH_
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_WANT_LIBQUADMATH___
 void set_random_number(mpreal &a, long double & b)
 {
     mpreal dummy;
