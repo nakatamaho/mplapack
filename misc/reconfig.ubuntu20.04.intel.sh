@@ -7,7 +7,7 @@ CXX="ccache icpc" ; export CXX
 CC="ccache icc" ; export CC
 FC="ifort"; export FC
 F77="ifort"; export F77
-ccache -M 10G
+ccache -M 20G
 else
 CXX="icpc" ; export CXX
 CC="icc" ; export CC
