@@ -283,12 +283,12 @@ if test x$enable__Float128 = x"yes"; then
 
     if test "$want_libquadmath" = "yes"; then
         AC_MSG_RESULT([_Float128 is supported via __float128 and libquadmath])
-        sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%/#define _MPLAPACK_WANT_LIBQUADMATH_\ntypedef __float128 _Float128;/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
+        sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%/#define ___MPLAPACK_WANT_LIBQUADMATH___\ntypedef __float128 _Float128;/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
         AM_CONDITIONAL(WANT_QUADMATH, test x$want_libquadmath = xyes)
     else
         AC_MSG_RESULT([_Float128 is supported via native libc])
         if test "$float128islongdouble" = "yes"; then 
-            sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%/#define _MPLAPACK__FLOAT128_IS_LONGDOUBLE_/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
+            sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%/#define ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
         else
             sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%//g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
         fi

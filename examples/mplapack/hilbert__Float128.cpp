@@ -14,7 +14,7 @@ void printnum(_Float128 rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
-#if defined _MPLAPACK_WANT_LIBQUADMATH_
+#if defined ___MPLAPACK_WANT_LIBQUADMATH___
     int n = quadmath_snprintf (buf, sizeof buf, "%+-#*.35Qe", width, rtmp);
     if ((size_t) n < sizeof buf)
 #else

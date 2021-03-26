@@ -161,9 +161,9 @@ REAL pi(REAL dummy)
 
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
     return M_PI;
-#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined _MPLAPACK_WANT_LIBQUADMATH_
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK_WANT_LIBQUADMATH___
     return M_PIq;
-#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined _MPLAPACK_WANT_LIBQUADMATH_
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK_WANT_LIBQUADMATH___
     return M_PIf128;
 #else
 return dummy;
