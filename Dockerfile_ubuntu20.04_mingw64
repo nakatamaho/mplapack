@@ -15,8 +15,10 @@ RUN echo "${TZ}" > /etc/timezone \
   && ln -s /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
   && dpkg-reconfigure -f noninteractive tzdata
 
-RUN apt install -y build-essential gfortran-9 python3
+RUN apt install -y build-essential mingw-w64 gfortran-mingw-w64 python3
 RUN apt install -y autotools-dev automake libtool
+RUN apt install -y wine64
+RUN dpkg --add-architecture i386 && apt update -y && apt install -y wine32
 RUN apt install -y git wget ccache
 RUN apt install -y ng-common ng-cjk emacs-nox
 RUN sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
