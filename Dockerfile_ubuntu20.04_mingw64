@@ -36,6 +36,6 @@ RUN echo "\n\
 
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
 RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git
-RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.mingw64.sh
-RUN cd /home/$DOCKER_USER/mplapack && make -j4
-RUN cd /home/$DOCKER_USER/mplapack && make install
+RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.ubuntu20.04.mingw64.sh
+#RUN cd /home/$DOCKER_USER/mplapack && make -j4
+#RUN cd /home/$DOCKER_USER/mplapack && make install
