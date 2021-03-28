@@ -1,6 +1,8 @@
 bench_PROGRAMS =
 benchdir=$(prefix)/share/mplapack/bench
 
+if !IS_MINGW
+
 if ENABLE_MPFR
 include Makefile.mpfr.am
 endif
@@ -28,3 +30,7 @@ endif
 if DO_BLASBENCH
 include Makefile.blas.am
 endif
+
+endif
+
+

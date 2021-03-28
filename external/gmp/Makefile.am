@@ -5,8 +5,13 @@ if IS_MACOSX
 CONFIGURE_ARGS=--enable-cxx --prefix=$(abs_builddir)/../i/GMP/
 CONFIGURE_ARGS2=--enable-cxx --prefix=$(prefix)
 else
+if IS_MINGW
+CONFIGURE_ARGS=--enable-cxx --prefix=$(abs_builddir)/../i/GMP/ --build=x86_64-linux-gnu --host=$(host) --enable-shared --disable-static
+CONFIGURE_ARGS2=--enable-cxx --prefix=$(prefix) --build=x86_64-linux-gnu --host=$(host) --enable-shared --disable-static
+else
 CONFIGURE_ARGS=--enable-cxx --prefix=$(abs_builddir)/../i/GMP/ --host=$(host)
 CONFIGURE_ARGS2=--enable-cxx --prefix=$(prefix) --host=$(host)
+endif
 endif
 
 EXTRACT_STAMP=.gmp_extract_done
@@ -29,8 +34,14 @@ work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
+#https://gmplib.org/list-archives/gmp-bugs/2020-January/004718.html
+if IS_MINGW
+	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; env "CC_FOR_BUILD=x86_64-linux-gnu-gcc" "CC=$(CC)" "CXX=$(CXX)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS) ; sed -i 's/#define HAVE_VSNPRINTF 1//g' config.h
+	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION) ; env "CC_FOR_BUILD=x86_64-linux-gnu-gcc" "CC=$(CC)" "CXX=$(CXX)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2) ; sed -i 's/#define HAVE_VSNPRINTF 1//g' config.h
+else
 	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; env "CC=$(_GCC)" "CXX=$(_GXX)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
 	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION) ; env "CC=$(_GCC)" "CXX=$(_GXX)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
+endif
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
@@ -41,9 +52,10 @@ work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
 	touch $(abs_builddir)/work/$(CHECK_STAMP)
 if IS_MINGW
-#	somehow it fails
-#	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; TESTS_ENVIRONMENT=wine ${MAKE} check
-#	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION) ; TESTS_ENVIRONMENT=wine ${MAKE} check
+#https://gmplib.org/list-archives/gmp-bugs/2020-January/004720.html
+#https://gmplib.org/list-archives/gmp-bugs/2020-January/004721.html
+	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; ${MAKE} check LOG_COMPILER=wine64
+	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION) ; ${MAKE} check LOG_COMPILER=wine64
 else
 	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; ${MAKE} check
 	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION) ; ${MAKE} check

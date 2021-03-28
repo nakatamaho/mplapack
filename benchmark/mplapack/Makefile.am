@@ -1,6 +1,8 @@
 bench_PROGRAMS =
 benchdir=$(prefix)/share/mplapack/bench
 
+if !IS_MINGW
+
 if ENABLE_MPFR
 include Makefile.mpfr.am
 endif
@@ -27,4 +29,6 @@ endif
 
 if DO_LAPACKBENCH
 include Makefile.lapack.am
+endif
+
 endif

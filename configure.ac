@@ -260,8 +260,8 @@ if test x$enable__Float128 = x"yes"; then
     fi
 
     if test x"$have__Float128" = x"no"; then
-        save_LDFLAGS="$LDFLAGS"
-        LDFLAGS="$LDFLAGS -lquadmath"
+        save_LIBS="$LIBS"
+        LIBS="-lquadmath $LIBS"
         AC_LINK_IFELSE([
             AC_LANG_SOURCE([[
                 #include <quadmath.h>
@@ -278,7 +278,7 @@ if test x$enable__Float128 = x"yes"; then
         if test "$have__Float128" = "no"; then
             AC_MSG_ERROR([_Float128 is not supported on this platform])
         fi
-        LDFLAGS="$save_LDFLAGS"
+        LIBS="$save_LIBS"
     fi
 
     if test "$want_libquadmath" = "yes"; then
@@ -634,24 +634,10 @@ else
 AC_MSG_RESULT([Disable CUDA version])
 fi
 
-if test x"$IS_MINGW" = x"1" && test x$enable_dd = x"yes"; then
-#it builds fine but we have to explicitly call mplapack_initialize_qd(void);
-#when we start dd calculation and call mplapack_finalize_qd(void)
-#at the end of calculation
-    AC_MSG_ERROR([dd is not supported on this platform; constructor issue])
-fi
-
 if test x$enable_qd = x"yes"; then
 AC_MSG_RESULT([Enable QD version])
 else
 AC_MSG_RESULT([Disable QD version])
-fi
-
-if test x"$IS_MINGW" = x"1" && test x$enable_qd = x"yes"; then
-#it builds fine but we have to explicitly call mplapack_initialize_qd(void);
-#when we start dd calculation and call mplapack_finalize_qd(void)
-#at the end of calculation
-    AC_MSG_ERROR([qd is not supported on this platform; constructor issue])
 fi
 
 if test x$enable_mpfr = x"yes"; then

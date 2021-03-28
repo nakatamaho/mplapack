@@ -50,8 +50,8 @@ work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; TESTS_ENVIRONMENT=wine ${MAKE} check
-	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ;  TESTS_ENVIRONMENT=wine ${MAKE} check
+	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; TESTS_ENVIRONMENT=wine64 ${MAKE} check
+	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ;  TESTS_ENVIRONMENT=wine64 ${MAKE} check
 else
 	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; ${MAKE} check
 	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ; ${MAKE} check
