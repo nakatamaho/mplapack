@@ -41,8 +41,8 @@ work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} check LOG_COMPILER=wine64
-	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION)  ; ${MAKE} check LOG_COMPILER=wine64
+	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) #; ${MAKE} check LOG_COMPILER=wine64
+	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION)  #; ${MAKE} check LOG_COMPILER=wine64
 else
 	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; env "LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(MPLIBRARY_PATH)" ${MAKE} check
 	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; env "LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(MPLIBRARY_PATH)" ${MAKE} check
