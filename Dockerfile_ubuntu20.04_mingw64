@@ -19,7 +19,7 @@ RUN apt install -y build-essential mingw-w64 gfortran-mingw-w64 python3
 RUN apt install -y autotools-dev automake libtool
 RUN apt install -y wine64
 RUN dpkg --add-architecture i386 && apt update -y && apt install -y wine32
-RUN apt install -y git wget ccache
+RUN apt install -y git wget ccache time
 RUN apt install -y ng-common ng-cjk emacs-nox
 RUN sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
@@ -35,7 +35,8 @@ RUN echo "\n\
 " > /home/$DOCKER_USER/.gitconfig
 
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
+RUN cd /home/$DOCKER_USER && echo "export WINEPATH=\"/usr/x86_64-w64-mingw32/lib;/usr/lib/gcc/x86_64-w64-mingw32/9.3-posix;/home/docker/MPLAPACK/bin;/home/docker/MPLAPACK/lib\"" >> .bashrc
 RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git
 RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.ubuntu20.04.mingw64.sh
-RUN cd /home/$DOCKER_USER/mplapack && export WINEPATH="/usr/x86_64-w64-mingw32/lib;/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32" && make -j4
+RUN cd /home/$DOCKER_USER/mplapack && make -j4
 RUN cd /home/$DOCKER_USER/mplapack && make install

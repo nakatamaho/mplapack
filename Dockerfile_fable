@@ -8,7 +8,7 @@ ENV TZ Asia/Tokyo
 RUN apt install -y python3 sudo expect
 RUN apt install -y build-essential gfortran
 RUN apt install -y autotools-dev automake libtool
-RUN apt install -y git wget ccache
+RUN apt install -y git wget ccache time
 RUN apt install -y ng-common ng-cjk emacs-nox
 
 ARG DOCKER_UID=1000
