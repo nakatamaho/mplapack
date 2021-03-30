@@ -46,8 +46,8 @@ work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
 	touch $(abs_builddir)/work/$(CHECK_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) #; ${MAKE} check LOG_COMPILER=wine64 somehow randomly fail
-	cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION)  #; ${MAKE} check LOG_COMPILER=wine64 somehow randomly fail
+	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; ${MAKE} check LOG_COMPILER=wine64 somehow randomly fail
+	cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION)  ; ${MAKE} check LOG_COMPILER=wine64 somehow randomly fail
 else
 	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; ${MAKE} check
 	cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; ${MAKE} check
