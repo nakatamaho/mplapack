@@ -63,6 +63,7 @@ RUN echo -e "\n\
 " >> /home/$DOCKER_USER/.gitconfig
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
 RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git
+RUN cd /home/$DOCKER_USER && git log -1
 RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.ubuntu18.04.sh
 RUN cd /home/$DOCKER_USER/mplapack && make -j4
 
