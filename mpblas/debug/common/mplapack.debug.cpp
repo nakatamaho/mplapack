@@ -589,9 +589,9 @@ void sprintnum(char *buf, std::complex<_Float128> rtmp)
 _Float128 mpf_randomnumber(_Float128 dummy)
 {
     _Float128 mtmp;
-    mtmp = lrand48();		//uniform random between [0,1] via lrand48
-    mtmp += lrand48()*1e-16;	//uniform random between [0,1] via lrand48
-    mtmp += lrand48()*1e-32;	//uniform random between [0,1] via lrand48
+    mtmp = drand48();		//uniform random between [0,1] via drand48
+    mtmp += drand48()*1e-16;	//uniform random between [0,1] via drand48
+    mtmp += drand48()*1e-32;	//uniform random between [0,1] via drand48
     mtmp = 2.0 * mtmp - 1.0;
     return mtmp;
 }
@@ -602,9 +602,9 @@ std::complex<_Float128> mpc_randomnumber(std::complex<_Float128> dummy)
     _Float128 mtmp1;
     _Float128 mtmp2;
 
-    mtmp1 = lrand48();		//uniform random between [0,1] via lrand48
-    mtmp1 += lrand48()*1e-16;	//uniform random between [0,1] via lrand48
-    mtmp1 += lrand48()*1e-32;	//uniform random between [0,1] via lrand48
+    mtmp1 = drand48();		//uniform random between [0,1] via drand48
+    mtmp1 += drand48()*1e-16;	//uniform random between [0,1] via drand48
+    mtmp1 += drand48()*1e-32;	//uniform random between [0,1] via drand48
     mtmp1 = 2.0 * mtmp1 - 1.0;
 
     mtmp2 = lrand48();		//uniform random between [0,1] via lrand48
