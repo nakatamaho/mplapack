@@ -51,6 +51,6 @@ RUN cd /home/$DOCKER_USER && echo "export WINEPATH=\"/usr/x86_64-w64-mingw32/lib
 ARG WINEPATH="/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-posix"
 RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git
 RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.ubuntu20.04.mingw64.sh
-RUN cd /home/$DOCKER_USER && git log -1
+RUN cd /home/$DOCKER_USER/mplapack && git log -1
 RUN cd /home/$DOCKER_USER/mplapack && make -j4
 RUN cd /home/$DOCKER_USER/mplapack && make install
