@@ -54,8 +54,8 @@ work/$(CHECK_STAMP): work/$(BUILD_STAMP)
 if IS_MINGW
 #https://gmplib.org/list-archives/gmp-bugs/2020-January/004720.html
 #https://gmplib.org/list-archives/gmp-bugs/2020-January/004721.html
-	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) #; ${MAKE} check LOG_COMPILER=wine64
-	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION) #; ${MAKE} check LOG_COMPILER=wine64
+	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; ${MAKE} check LOG_COMPILER=wine64
+	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION)  ; ${MAKE} check LOG_COMPILER=wine64
 else
 	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; ${MAKE} check
 	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION) ; ${MAKE} check

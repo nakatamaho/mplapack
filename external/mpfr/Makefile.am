@@ -46,8 +46,8 @@ work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
 	touch $(abs_builddir)/work/$(CHECK_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; #VERBOSE=1 ${MAKE} check LOG_COMPILER=wine64 #fails at tsprintf.exe
-	cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION)  ; #VERBOSE=1 ${MAKE} check LOG_COMPILER=wine64
+	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; VERBOSE=1 ${MAKE} check LOG_COMPILER=wine64
+	cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION)  ; VERBOSE=1 ${MAKE} check LOG_COMPILER=wine64
 else
 	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; ${MAKE} check
 	cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; ${MAKE} check
