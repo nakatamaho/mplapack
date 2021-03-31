@@ -11,8 +11,13 @@ refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 reflapack=-L$(top_builddir)/external/i/LAPACK/lib -llapack $(FCLIBS)
 
 debug_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___
-debug_libdepends = $(mplibs) $(reflapack) $(refblas)
 AM_FFLAGS = -x f77-cpp-input -g
+
+if IS_MINGW
+debug_libdepends = $(mplibs) $(reflapack) $(refblas) -Wl,--allow-multiple-definition
+else
+debug_libdepends = $(mplibs) $(reflapack) $(refblas)
+endif
 
 if !IS_MACOSX
 debug_srcdepends = ../../../mpblas/debug/common/xerbla.cpp ../../../mpblas/debug/common/mplapack.debug.cpp ../../../mpblas/debug/common/Mxerbla.override.cpp
