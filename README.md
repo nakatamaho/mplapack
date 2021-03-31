@@ -17,7 +17,7 @@ original license by LAPACK).
 * GMP https://gmplib.org/
 * double (binary64)
 * DD, QD (https://www.davidhbailey.com/dhbsoftware/)
-* _Float128 (binary128)
+* _Float128 (binary128; via glibc or libquadmath; automatically detected)
 * _Float64x (extended precision of double; Intel CPU only)
 
 We use MPFR + MPC as the primary arithmetic class.
@@ -28,7 +28,6 @@ Ubuntu 20.04 (amd64, AArch64)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ 
 $ /usr/bin/time docker build -t mplapack:ubuntu2004 -f Dockerfile_ubuntu20.04 . 2>&1 | tee log.ubuntu2004
 ```
 
