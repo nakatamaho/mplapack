@@ -43,7 +43,6 @@ Ubuntu 20.04 (using Intel oneAPI)
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
 $ /usr/bin/time docker build -t mplapack:ubuntu2004intel -f Dockerfile_ubuntu20.04_intel . 2>&1 | tee log.ubuntu2004.intel
-
 ```
 
 Windows 64bit (using cross compiler on Ubuntu) 
@@ -85,7 +84,7 @@ $ cd ; fable.cout sample.f
 ```
 
 # History
-## 2021/4/1  0.9.0 release. Rename to mplapack. You must rename include files, etc. Recompilation required.
+* 2021/4/1  0.9.0 release. Rename to mplapack. You must rename include files, etc. Rewrite and recompilation required.
 
 # Acknowledgement:
 
