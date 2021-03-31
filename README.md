@@ -22,12 +22,13 @@ original license by LAPACK).
 
 We use MPFR + MPC as the primary arithmetic class.
 
-# How to build on Linux and Win (using Docker)
+# How to build on Linux and Win (using Docker; recommended)
 
 Ubuntu 20.04 (amd64, AArch64)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
+$ 
 $ /usr/bin/time docker build -t mplapack:ubuntu2004 -f Dockerfile_ubuntu20.04 . 2>&1 | tee log.ubuntu2004
 ```
 
