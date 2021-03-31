@@ -607,9 +607,9 @@ std::complex<_Float128> mpc_randomnumber(std::complex<_Float128> dummy)
     mtmp1 += drand48()*1e-32;	//uniform random between [0,1] via drand48
     mtmp1 = 2.0 * mtmp1 - 1.0;
 
-    mtmp2 = lrand48();		//uniform random between [0,1] via lrand48
-    mtmp2 += lrand48()*1e-16;	//uniform random between [0,1] via lrand48
-    mtmp2 += lrand48()*1e-32;	//uniform random between [0,1] via lrand48
+    mtmp2 = drand48();		//uniform random between [0,1] via lrand48
+    mtmp2 += drand48()*1e-16;	//uniform random between [0,1] via lrand48
+    mtmp2 += drand48()*1e-32;	//uniform random between [0,1] via lrand48
     mtmp2 = 2.0 * mtmp2 - 1.0;
 
     ctmp.real(mtmp1);
