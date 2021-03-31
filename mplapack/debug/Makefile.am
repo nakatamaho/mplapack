@@ -24,8 +24,8 @@ if ENABLE__FLOAT128
 SUBDIRS += _Float128
 endif
 
-#if ENABLE__FLOAT64X
-#SUBDIRS += _Float64x
-#endif
+if ENABLE__FLOAT64X
+SUBDIRS += _Float64x
+endif
 
 
