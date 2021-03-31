@@ -8,7 +8,7 @@ original license by LAPACK).
 
 * Ubuntu 20.04, 18.04 (amd64, AArch64)
 * Ubuntu 20.04 (amd64) + Intel oneAPI
-* macOS (Intel) + macports
+* macOS (Intel) + macports (you may use homebrew instead, small modification of build script req'ed)
 * Windows (64bit; mingw64 and tested on Ubuntu, wine64)
 
 # Supported multiple precision libraries and floating point formats
