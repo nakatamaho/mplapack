@@ -6,19 +6,19 @@ original license by LAPACK).
 
 # Supported platforms
 
-## Ubuntu 20.04, 18.04 (amd64, AArch64)
-## Ubuntu 20.04 (amd64) + Intel oneAPI
-## macOS (Intel) + macports
-## Windows (64bit)
+* Ubuntu 20.04, 18.04 (amd64, AArch64)
+* Ubuntu 20.04 (amd64) + Intel oneAPI
+* macOS (Intel) + macports
+* Windows (64bit)
 
 # Supported multiple precision libraries and floating point formats
 
-## MPFR + MPC https://www.mpfr.org/ and http://www.multiprecision.org/mpc/
-## GMP https://gmplib.org/
-## double (binary64)
-## DD, QD (https://www.davidhbailey.com/dhbsoftware/)
-## _Float128 (binary128)
-## _Float64x (extended precision of double; Intel CPU only)
+* MPFR + MPC https://www.mpfr.org/ and http://www.multiprecision.org/mpc/
+* GMP https://gmplib.org/
+* double (binary64)
+* DD, QD (https://www.davidhbailey.com/dhbsoftware/)
+* _Float128 (binary128)
+* _Float64x (extended precision of double; Intel CPU only)
 
 We use MPFR + MPC as the primary arithmetic class.
 
