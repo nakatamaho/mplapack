@@ -10,7 +10,35 @@ AC_CONFIG_FILES([ Makefile mplapack.pc ])
 AC_CONFIG_FILES([packaging/PKGBUILD packaging/mplapack.spec])
 
 AC_PROG_CC
+IS_INTELCC=0
+AC_COMPILE_IFELSE([
+    AC_LANG_SOURCE([[
+    #if !defined __INTEL_COMPILER
+    #error
+    #endif
+    #include <stdio.h>
+    int main() {
+        return 0;    
+    }
+   ]]) 
+], [is_intelcc=1])
+AM_CONDITIONAL(IS_INTELCC, test x$is_intelcc = x1)
+
 AC_PROG_CXX
+AC_LANG([C++])
+IS_INTELCXX=0
+AC_COMPILE_IFELSE([
+    AC_LANG_SOURCE([[
+    #if !defined __INTEL_COMPILER
+    #error
+    #endif
+    #include <stdio.h>
+    int main() {
+        return 0;    
+    }
+   ]]) 
+], [is_intelcxx=1])
+AM_CONDITIONAL(IS_INTELCXX, test x$is_intelcxx = x1)
 
 AC_PROG_LIBTOOL
 AM_INIT_AUTOMAKE([subdir-objects])
@@ -19,25 +47,6 @@ AC_CONFIG_MACRO_DIR([m4])
 dnl OpenMP Compiler flags.
 AC_LANG([C++])
 AC_OPENMP
-
-# workaround for icc and icpc when they have bugs.
-_GCC=`echo $_GCC`
-if test x"$_GCC" = x""; then
-    _GCC=$CC
-fi
-AC_SUBST(_GCC)
-
-_GXX=`echo $_GXX`
-if test x"$_GXX" = x""; then
-    _GXX=$CXX
-fi
-AC_SUBST(_GXX)
-
-_GFC=`echo $_GFC`
-if test x"$_GFC" = x""; then
-    _GFC=$FC
-fi
-AC_SUBST(_GFC)
 
 AX_CXX_COMPILE_STDCXX_17([ext], [mandatory])
 
