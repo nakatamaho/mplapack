@@ -39,9 +39,14 @@ endif
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
-	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; env "CC=$(_GCC)" "CXX=$(_GXX)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS) --enable-fortran=no --enable-shared=yes
-	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ;  env "CC=$(_GCC)" "CXX=$(_GXX)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2) --enable-fortran=no --enable-shared=yes
+if IS_INTELCC
+	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; env "CC=$(CC) -fp-model precise" "CXX=$(CXX) -fp-model precise" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
+	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ; env "CC=$(CC) -fp-model precise" "CXX=$(CXX) -fp-model precise" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
+else
+	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS) --enable-fortran=no --enable-shared=yes
+	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ;  env "CC=$(CC)" "CXX=$(CXX)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2) --enable-fortran=no --enable-shared=yes
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
+endif
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
 	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; ${MAKE}
