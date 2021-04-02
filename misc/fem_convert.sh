@@ -3,6 +3,7 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
+cp /home/docker/mplapack/misc/cout.py /home/docker/modules/cctbx_project/fable/cout.py
 __output=${1%.*}.cpp
 output=`basename $__output`
 _output=${output}_
