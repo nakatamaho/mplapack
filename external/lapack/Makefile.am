@@ -1,4 +1,4 @@
-LAPACKVERSION=3.9.0
+LAPACKVERSION=3.9.1
 MAKEFLAGS =
 
 EXTRACT_STAMP=.lapack_extract_done
@@ -22,8 +22,6 @@ endif
 if IS_MIC
 	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/patch-mic
 endif
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/patch-dbal.in
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/patch-frecursive
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
