@@ -1,4 +1,4 @@
-LAPACKVERSION=3.8.0
+LAPACKVERSION=3.9.0
 MAKEFLAGS =
 
 EXTRACT_STAMP=.lapack_extract_done
@@ -23,25 +23,27 @@ if IS_MIC
 	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/patch-mic
 endif
 	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/patch-dbal.in
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/patch-frecursive
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
-	echo "FORTRAN = $(FC)"       > $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "OPTS = -O0"           >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo 'DRVOPTS = $(OPTS)'    >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "NOOPT = -O0"          >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "LOADER = $(FC)"       >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "LOADOPTS = -O0"       >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "SHELL = /bin/sh"      >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "CC = $(CC)"           >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "CFLAGS = -O0"         >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "FC = $(FC)"           >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "FFLAGS = -O2 -frecursive" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "FFLAGS_DRV = \$$(FFLAGS)" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "FFLAGS_NOOPT = -O0 -frecursive" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "LDFLAGS ="       >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "AR = $(AR)"         >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "ARFLAGS = cr"      >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "RANLIB = $(RANLIB)"   >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "ARCH = $(AR)"         >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "ARCHFLAGS = -ru"      >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "TIMER = NONE"         >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "LAPACKLIB = liblapack.a" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "BLASLIB = $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/BLAS/SRC/libblas.a" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "TMGLIB = libtmg.a"    >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "EIGSRCLIB = libeigsrc.a" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "LINSRCLIB = liblinsrc.a" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "TIMER = INT_ETIME"      >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "TOPSRCDIR = $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "BLASLIB      = \$$(TOPSRCDIR)/libblas.a"     >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "CBLASLIB     = \$$(TOPSRCDIR)/libcblas.a"    >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "LAPACKLIB    = \$$(TOPSRCDIR)/liblapack.a"   >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "TMGLIB       = \$$(TOPSRCDIR)/libtmglib.a"   >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
@@ -56,7 +58,7 @@ work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
 	rm -rf $(abs_builddir)/../i/LAPACK
 	mkdir -p $(abs_builddir)/../i/LAPACK/lib
 	cp $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/liblapack.* $(abs_builddir)/../i/LAPACK/lib 
-	cp $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/BLAS/SRC/libblas.* $(abs_builddir)/../i/LAPACK/lib 
+	cp $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/libblas.*   $(abs_builddir)/../i/LAPACK/lib 
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
 extract: work/$(EXTRACT_STAMP)

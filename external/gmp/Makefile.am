@@ -39,8 +39,14 @@ if IS_MINGW
 	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; env "CC_FOR_BUILD=x86_64-linux-gnu-gcc" "CC=$(CC) -D__USE_MINGW_ANSI_STDIO" "CXX=$(CXX)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS) #; sed -i 's/#define HAVE_VSNPRINTF 1//g' config.h
 	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION) ; env "CC_FOR_BUILD=x86_64-linux-gnu-gcc" "CC=$(CC) -D__USE_MINGW_ANSI_STDIO" "CXX=$(CXX)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2) #; sed -i 's/#define HAVE_VSNPRINTF 1//g' config.h
 else
-	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; env "CC=$(_GCC)" "CXX=$(_GXX)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
-	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION) ; env "CC=$(_GCC)" "CXX=$(_GXX)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
+#https://gmplib.org/list-archives/gmp-bugs/2014-September/003526.html
+if IS_INTELCC
+	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; env "CC=$(CC) -fp-model precise" "CXX=$(CXX) -fp-model precise" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
+	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION) ; env "CC=$(CC) -fp-model precise" "CXX=$(CXX) -fp-model precise" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
+else
+	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
+	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
+endif
 endif
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
