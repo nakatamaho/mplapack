@@ -1,13 +1,8 @@
 QDVERSION=2.3.22
 MAKEFLAGS =
 
-if IS_MACOSX
-CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/QD/ --host=$(host) $(QDLIB_FLAGS)
-CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) $(QDLIB_FLAGS)
-else
 CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/QD/ --host=$(host) --enable-shared $(QDLIB_FLAGS)
 CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) --enable-shared $(QDLIB_FLAGS)
-endif
 
 EXTRACT_STAMP=.qd_extract_done
 PATCH_STAMP=.qd_patch_done
@@ -39,9 +34,14 @@ endif
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
-	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; env "CC=$(_GCC)" "CXX=$(_GXX)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS) --enable-fortran=no --enable-shared=yes
-	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ;  env "CC=$(_GCC)" "CXX=$(_GXX)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2) --enable-fortran=no --enable-shared=yes
+if IS_INTELCC
+	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; env "CC=$(CC) -fp-model precise" "CXX=$(CXX) -fp-model precise" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
+	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ; env "CC=$(CC) -fp-model precise" "CXX=$(CXX) -fp-model precise" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
+else
+	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
+	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ;  env "CC=$(CC)" "CXX=$(CXX)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
+endif
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
 	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; ${MAKE}

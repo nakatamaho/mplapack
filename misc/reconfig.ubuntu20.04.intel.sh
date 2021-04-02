@@ -2,6 +2,7 @@
 
 USE_CCACHE=yes
 
+#https://gmplib.org/list-archives/gmp-bugs/2014-September/003526.html
 if [ x$USE_CCACHE = x"yes" ] ; then
 CXX="ccache icpc" ; export CXX
 CC="ccache icc" ; export CC
@@ -14,10 +15,6 @@ CC="icc" ; export CC
 FC="ifort"; export FC
 F77="ifort"; export F77
 fi
-
-_GCC="gcc-9"; export _GCC
-_GXX="g++-9"; export _GXX
-_GFC="gfortran-9"; export _GFC
 
 pushd mplapack/debug ; bash gen.Makefile.am.sh ; popd
 
