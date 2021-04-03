@@ -593,7 +593,9 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
               ed =")-1]"
             final = op + a.strip() + ed
           else:
-            if (len(aa)==2): # two dimensional array with i,j
+            aa0=aa[0].split()
+            aa1=aa[1].split()
+            if (len(aa)==2 and len(aa0) ==1 and len(aa1)==1): # two dimensional array with i,j
               op = "["
               ed ="]"
               aaa="(" + aa[0].strip() + "-1)"
@@ -605,34 +607,20 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
               __final = _final.replace(remove1,'')
               rapp(__final)
               continue
-            else:
+            else: # two dimensional array with some tokens.
+              print("homa", aa) 
               op = "["
-              ed ="]"
-              aaa="("
-              bbb=""
-              for p in range(len(aa)):
-                print(p, aa[p])
-                if (',' in aa[p]):
-                   break
-              print("loop ", p)
-              if p>0:
-                aaa = aaa + "("
-                aaaa = ")"
+              ed = "]"
+              if len(aa0)!=1:
+                aaaa = "(" + aa[0] + ")"
               else:
-                aaaa = ""
-              for q in range(p+1):
-                aaa = aaa + aa[q].replace(',', "")
-              r = 0
-              for r in range(p+1,len(aa)):
-                bbb = bbb + aa[r]
-                print("bbb", bbb , r)
-              if q+1 != r:
-                bbbb = "("
-                bbbbb = ")"
-              else:                 
-                bbbb = ""
-                bbbbb = ""
-              final =op + aaa + aaaa + "-1)" + "+" + "(" + bbbb + bbb  + bbbbb + "-1)*ld" + prev_tok.value + ed
+                aaaa = aa[0]
+              if len(aa1)!=1:
+                bbbb = "(" + aa[1].strip() + ")"
+              else:
+                bbbb = aa[1].strip()
+                
+              final =op + "(" + aaaa + "-1)" + "+" + "(" + bbbb + "-1)*ld" + prev_tok.value + ed
               remove0= "+(1-1)*ld" + prev_tok.value
               remove1= "(1-1)+"
               _final = final.replace(remove0,'')
