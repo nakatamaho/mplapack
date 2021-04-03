@@ -581,21 +581,23 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
         else:
           op = "(cmn"
       else:
-        if (prev_tok.is_identifier() and prev_tok.value != "min" and  prev_tok.value != "max" and prev_tok.value != "abs"  and prev_tok.value != "sqrt" and prev_tok.value != "log2" and prev_tok.value != "pow2" and prev_tok.value != "dlamch" and prev_tok.value != "lsame" and prev_tok.value != "ddot" ):
-          print("homa0", prev_tok.value)
-          print("homa1", tok.value)
+        if (prev_tok is not None and prev_tok.is_identifier() and prev_tok.value != "min" and  prev_tok.value != "max" and prev_tok.value != "abs"  and prev_tok.value != "sqrt" and prev_tok.value != "log2" and prev_tok.value != "pow2" and prev_tok.value != "dlamch" and prev_tok.value != "lsame" and prev_tok.value != "ddot" and prev_tok.value != "pow2" and prev_tok.value != "disnan" ):
           a=convert_tokens(conv_info=conv_info,tokens=tok.value,commas=True)
-          aa=a.split()
+          aa = a.split(',')
           if (len(aa)==1):  # one dimensional array
-            op = "[("
-            ed =")-1]"
+            if(len(aa[0].split(" "))==1):
+              op = "["
+              ed ="-1]"
+            else:
+              op = "[("
+              ed =")-1]"
+            final = op + a.strip() + ed
           else:
-            print("homa 2dim", aa)
             if (len(aa)==2): # two dimensional array with i,j
               op = "["
               ed ="]"
-              aaa="(" + aa[0].replace(',', "" ) + "-1)"
-              bbb="(" + aa[1] + "-1)*ld" + prev_tok.value
+              aaa="(" + aa[0].strip() + "-1)"
+              bbb="(" + aa[1].strip() + "-1)*ld" + prev_tok.value
               remove0= "+(1-1)*ld" + prev_tok.value
               remove1= "(1-1)+"
               final = op + aaa + "+" + bbb + ed
@@ -995,10 +997,10 @@ def convert_to_fem_do(conv_info, parent_scope, i_tok, fls_tokens):
   if (len(fls_tokens) == 3):
     s = convert_tokens(conv_info=conv_info, tokens=fls_tokens[2].value)
     return parent_scope.open_nested_scope(
-      opening_text=["FEM_DOSTEP(%s, %s, %s, %s) {" % (i, f, l, s)])
+      opening_text=["for(%s=%s; %s<=%s; %s=%s+%s) {" % (i, f, i, l, i, i, s)])
   if (conv_info.fem_do_safe):
     return parent_scope.open_nested_scope(
-      opening_text=["FEM_DO_SAFE(%s, %s, %s) {" % (i, f, l)])
+      opening_text=["for(%s=%s; %s<=%s; %s=%s+1) {" % (i, f, i, l, i, i)])
   if (is_simple_do_last(tokens=fls_tokens[1].value)):
     return parent_scope.open_nested_scope(
       opening_text=["FEM_DO(%s, %s, %s) {" % (i, f, l)])
