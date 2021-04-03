@@ -618,14 +618,11 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                 bbbb = "(" + aa[1].strip() + ")"
               else:
                 bbbb = aa[1].strip()
-                
               final =op + "(" + aaaa + "-1)" + "+" + "(" + bbbb + "-1)*ld" + prev_tok.value + ed
               remove0= "+(1-1)*ld" + prev_tok.value
               remove1= "(1-1)+"
               _final = final.replace(remove0,'')
               __final = _final.replace(remove1,'')
-              print('org', final)
-              print('repl', __final)
               rapp(__final)
               continue
         else: # not an array
