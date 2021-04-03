@@ -608,7 +608,6 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
               rapp(__final)
               continue
             else: # two dimensional array with some tokens.
-              print("homa", aa) 
               op = "["
               ed = "]"
               if len(aa0)!=1:
