@@ -42,12 +42,16 @@ class mpc_class {
     mpf_class re, im;
 
   public:
-//constructor
+//constructor and deconstructor
     mpc_class();
     mpc_class(const mpc_class & a);
     mpc_class(const mpf_class & a, const mpf_class & b);
     mpc_class(const mpf_class & a);
     mpc_class(const mpf_t a, const mpf_t b);
+    mpc_class(const std::complex<double> &a);
+    mpc_class(const double &a, const double &b);
+    mpc_class(const double &a);
+    ~mpc_class();
 
 //extraction of real and imaginary parts
     inline mpf_class & real()
@@ -164,6 +168,26 @@ inline mpc_class::mpc_class(const mpf_t a, const mpf_t b)
    mpf_class tmpr(a), tmpi(b);
    re = tmpr; im = tmpi;
 }
+
+inline mpc_class::mpc_class(const std::complex<double>& a)
+{
+   mpf_class tmpr(a.real()), tmpi(a.imag());
+   re = tmpr; im = tmpi;
+}
+
+inline mpc_class::mpc_class(const double& a, const double & b)
+{
+   mpf_class tmpr(a), tmpi(b);
+   re = tmpr; im = tmpi;
+}
+
+inline mpc_class::mpc_class(const double& a)
+{
+   mpf_class tmp(a);
+   re = tmp; im = 0.0;
+}
+
+inline mpc_class::~mpc_class() { }
 
 //comparison
 inline bool operator==(const mpc_class & a, const mpc_class & b)
@@ -396,7 +420,6 @@ inline const mpc_class operator/(const mpf_class & a, const mpc_class & b)
     tmp.imag(-(a * b.imag()) / (b.real() * b.real() + b.imag() * b.imag()));
     return tmp;
 }
-
 
 //not so bad as overflow might not occur with GMP; exponet range is extraordinarly large.
 inline mpf_class abs(mpc_class ctmp)

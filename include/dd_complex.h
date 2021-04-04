@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2012
+ * Copyright (c) 2008-2021
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -65,14 +65,17 @@ class dd_complex {
     dd_real re, im;
 
   public:
-//constructor
+//constructor and destructor
     dd_complex();
     dd_complex(const dd_complex & a);
     dd_complex(const dd_real & a, const dd_real & b);
     dd_complex(const dd_real & a);
     dd_complex(const std::complex<double> & a);
-
-//extraction of real and imaginary parts
+    dd_complex(const double & a, const double &b);
+    dd_complex(const double & a);
+    
+    ~dd_complex();
+    //extraction of real and imaginary parts
     inline dd_real & real()
     {
 	return re;
@@ -184,11 +187,25 @@ inline dd_complex::dd_complex(const dd_real & a)
     im = 0.0;
 }
 
+inline dd_complex::dd_complex(const double& a, const double &b )
+{
+    re = a;
+    im = b;
+}
+
+inline dd_complex::dd_complex(const double& a)
+{
+    re = a;
+    im = 0.0;
+}
+
 inline dd_complex::dd_complex(const std::complex<double>& a)
 {
     re = a.real();
     im = a.imag();
 }
+
+inline dd_complex::~dd_complex() { }
 
 //comparison
 inline bool operator==(const dd_complex & a, const dd_complex & b)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2021
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -65,13 +65,16 @@ class qd_complex {
     qd_real re, im;
 
   public:
-//constructor
+//constructor and deconstructor
     qd_complex();
     qd_complex(const qd_complex & a);
     qd_complex(const qd_real & a, const qd_real & b);
     qd_complex(const qd_real & a);
     qd_complex(const std::complex<double> & a);
+    qd_complex(const double & a, const double & b);
+    qd_complex(const double & a);
 
+    ~qd_complex();
 //extraction of real and imaginary parts
     inline qd_real & real()
     {
@@ -184,11 +187,25 @@ inline qd_complex::qd_complex(const qd_real & a)
     im = 0.0;
 }
 
+inline qd_complex::qd_complex(const double& a, const double &b)
+{
+    re = a;
+    im = b;
+}
+
+inline qd_complex::qd_complex(const double& a)
+{
+    re = a;
+    im = 0.0;
+}
+
 inline qd_complex::qd_complex(const std::complex<double>& a)
 {
     re = a.real();
     im = a.imag();
 }
+
+inline qd_complex::~qd_complex() { }
 
 //comparison
 inline bool operator==(const qd_complex & a, const qd_complex & b)

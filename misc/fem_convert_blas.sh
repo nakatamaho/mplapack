@@ -15,6 +15,3 @@ cat ${output} | sed -e 's/lsame/Mlsame/g' -e 's/xerbla/Mxerbla/g' > ${output}_
 cat /home/docker/mplapack/misc/header_blas ${output}_ | sed '/namespace placeholder_please_replace/d' > ${output}
 clang-format -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" ${output} > ${output}_
 mv ${output}_ ${output}
-
-
-
