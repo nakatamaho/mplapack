@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Clarfg.cpp,v 1.8 2010/08/07 04:48:32 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,102 +25,100 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clarfg(INTEGER n, COMPLEX * alpha, COMPLEX * x, INTEGER incx, COMPLEX * tau)
-{
-    INTEGER j, knt;
-    REAL beta, alphi, alphr;
-    REAL xnorm;
-    REAL safmin;
-    REAL rsafmn;
-    REAL One = 1.0, Zero = 0.0;
-
+void Clarfg(INTEGER const &n, COMPLEX &alpha, COMPLEX *x, INTEGER const &incx, COMPLEX &tau) {
+    const REAL zero = 0.0;
+    REAL xnorm = 0.0;
+    REAL alphr = 0.0;
+    REAL alphi = 0.0;
+    REAL beta = 0.0;
+    REAL safmin = 0.0;
+    const REAL one = 1.0;
+    REAL rsafmn = 0.0;
+    INTEGER knt = 0;
+    INTEGER j = 0;
+    //
+    //  -- LAPACK auxiliary routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Executable Statements ..
+    //
     if (n <= 0) {
-	*tau = Zero;
-	return;
+        tau = zero;
+        return;
     }
-    xnorm = RCnrm2(n - 1, &x[0], incx);
-    alphr = alpha->real();
-    alphi = alpha->imag();
-    if (xnorm == Zero && alphi == Zero) {
-//H  =  I
-	*tau = Zero;
+    //
+    xnorm = RCnrm2[((n - 1) - 1) + (x - 1) * ldRCnrm2];
+    alphr = alpha.real();
+    alphi = alpha.imag();
+    //
+    if (xnorm == zero && alphi == zero) {
+        //
+        //        H  =  I
+        //
+        tau = zero;
     } else {
-//general case
-	beta = -sign(Rlapy3(alphr, alphi, xnorm), alphr);
-	safmin = Rlamch("S") / Rlamch("E");
-	rsafmn = One / safmin;
-	if (abs(beta) < safmin) {
-//XNORM, BETA may be inaccurate; scale X and recompute them
-	    knt = 0;
-	    while (1) {
-		knt++;
-		CRscal(n - 1, rsafmn, &x[0], incx);
-		beta = beta * rsafmn;
-		alphi = alphi * rsafmn;
-		alphr = alphr * rsafmn;
-		if (abs(beta) < safmin)
-		    continue;
-		break;
-	    }
-//New BETA is at most 1, at least SAFMIN
-	    xnorm = RCnrm2(n - 1, &x[0], incx);
-	    *alpha = alphr;
-	    beta = -sign(Rlapy3(alphr, alphi, xnorm), alphr);
-	    *tau = COMPLEX((beta - alphr) / beta, -alphi / beta);
-	    *alpha = Cladiv(One, *alpha - beta);
-	    Cscal(n - 1, *alpha, &x[0], incx);
-//If ALPHA is subnormal, it may lose relative accuracy
-	    *alpha = beta;
-	    for (j = 0; j < knt; j++) {
-		*alpha = *alpha * safmin;
-	    }
-	} else {
-	    *tau = COMPLEX ((beta - alphr) / beta, -alphi / beta);
-	    *alpha = Cladiv((COMPLEX) One, *alpha - beta);
-	    Cscal(n - 1, *alpha, &x[0], incx);
-	    *alpha = beta;
-	}
+        //
+        //        general case
+        //
+        beta = -sign[(Rlapy3[(alphr - 1) + (alphi - 1) * ldRlapy3] - 1) + (alphr - 1) * ldsign];
+        safmin = dlamch("S") / dlamch("E");
+        rsafmn = one / safmin;
+        //
+        knt = 0;
+        if (abs(beta) < safmin) {
+        //
+        //           XNORM, BETA may be inaccurate; scale X and recompute them
+        //
+        statement_10:
+            knt++;
+            CRscal(n - 1, rsafmn, x, incx);
+            beta = beta * rsafmn;
+            alphi = alphi * rsafmn;
+            alphr = alphr * rsafmn;
+            if ((abs(beta) < safmin) && (knt < 20)) {
+                goto statement_10;
+            }
+            //
+            //           New BETA is at most 1, at least SAFMIN
+            //
+            xnorm = RCnrm2[((n - 1) - 1) + (x - 1) * ldRCnrm2];
+            alpha = COMPLEX(alphr, alphi);
+            beta = -sign[(Rlapy3[(alphr - 1) + (alphi - 1) * ldRlapy3] - 1) + (alphr - 1) * ldsign];
+        }
+        tau = COMPLEX((beta - alphr) / beta, -alphi / beta);
+        alpha = Cladiv[(COMPLEX(one) - 1) + ((alpha - beta) - 1) * ldCladiv];
+        Cscal(n - 1, alpha, x, incx);
+        //
+        //        If ALPHA is subnormal, it may lose relative accuracy
+        //
+        for (j = 1; j <= knt; j = j + 1) {
+            beta = beta * safmin;
+        }
+        alpha = beta;
     }
-    return;
+    //
+    //     End of Clarfg
+    //
 }

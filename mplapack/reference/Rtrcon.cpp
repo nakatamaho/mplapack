@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Rtrcon.cpp,v 1.8 2010/08/07 04:48:33 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,130 +25,141 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
-void Rtrcon(const char *norm, const char *uplo, const char *diag, INTEGER n, REAL * A, INTEGER lda, REAL * rcond, REAL * work, INTEGER * iwork, INTEGER * info)
-{
-    INTEGER ix, kase, kase1;
-    REAL scale;
-    INTEGER isave[3];
-    REAL anorm;
-    INTEGER upper;
-    REAL xnorm;
-    REAL ainvnm;
-    INTEGER onenrm;
-    char normin;
-    REAL smlnum;
-    INTEGER nounit;
-    REAL One = 1.0, Zero = 0.0;
 
-    *info = 0;
+void Rtrcon(const char *norm, const char *uplo, const char *diag, INTEGER const &n, REAL *a, INTEGER const &lda, REAL &rcond, REAL *work, INTEGER *iwork, INTEGER &info) {
+    bool upper = false;
+    bool onenrm = false;
+    bool nounit = false;
+    const REAL one = 1.0;
+    const REAL zero = 0.0;
+    REAL smlnum = 0.0;
+    REAL anorm = 0.0;
+    REAL ainvnm = 0.0;
+    str<1> normin = char0;
+    INTEGER kase1 = 0;
+    INTEGER kase = 0;
+    arr_1d<3, INTEGER> isave(fill0);
+    REAL scale = 0.0;
+    INTEGER ix = 0;
+    REAL xnorm = 0.0;
+    //
+    //  -- LAPACK computational routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. Local Arrays ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    //     Test the input parameters.
+    //
+    info = 0;
     upper = Mlsame(uplo, "U");
-    onenrm = Mlsame(norm, "1") || Mlsame(norm, "O");
+    onenrm = norm == "1" || Mlsame(norm, "O");
     nounit = Mlsame(diag, "N");
-
+    //
     if (!onenrm && !Mlsame(norm, "I")) {
-	*info = -1;
+        info = -1;
     } else if (!upper && !Mlsame(uplo, "L")) {
-	*info = -2;
+        info = -2;
     } else if (!nounit && !Mlsame(diag, "U")) {
-	*info = -3;
+        info = -3;
     } else if (n < 0) {
-	*info = -4;
-    } else if (lda < max((INTEGER) 1, n)) {
-	*info = -6;
+        info = -4;
+    } else if (lda < max((INTEGER)1, n)) {
+        info = -6;
     }
-    if (*info != 0) {
-	Mxerbla("Rtrcon", -(*info));
-	return;
+    if (info != 0) {
+        Mxerbla("Rtrcon", -info);
+        return;
     }
-//Quick return if possible
+    //
+    //     Quick return if possible
+    //
     if (n == 0) {
-	*rcond = One;
-	return;
+        rcond = one;
+        return;
     }
-    *rcond = Zero;
-    smlnum = Rlamch("Safe minimum") * max((INTEGER) 1, n);
-
-//Compute the norm of the triangular matrix A.
-    anorm = Rlantr(norm, uplo, diag, n, n, &A[0], lda, &work[0]);
-
-//Continue only if ANORM > Zero
-    if (anorm > Zero) {
-//Estimate the norm of the inverse of A.
-	ainvnm = Zero;
-	normin = 'N';
-	if (onenrm) {
-	    kase1 = 1;
-	} else {
-	    kase1 = 2;
-	}
-	kase = 0;
-	while (1) {
-	    Rlacn2(n, &work[n + 1], &work[0], &iwork[1], &ainvnm, &kase, isave);
-	    if (kase != 0) {
-		if (kase == kase1) {
-//Multiply by inv(A).
-		    Rlatrs(uplo, "No transpose", diag, &normin, n, &A[0], lda, &work[0], &scale, &work[(n << 1) + 1], info);
-		} else {
-//Multiply by inv(A').
-		    Rlatrs(uplo, "Transpose", diag, &normin, n, &A[0], lda, &work[0], &scale, &work[(n << 1) + 1], info);
-		}
-		normin = 'Y';
-
-//Multiply by 1/SCALE if doing so will not cause overflow.
-		if (scale != One) {
-		    ix = iRamax(n, &work[0], 1);
-		    xnorm = abs(work[ix]);
-		    if (scale < xnorm * smlnum || scale == Zero) {
-			return;
-		    }
-		    Rrscl(n, scale, &work[0], 1);
-		}
-	    }
-	}
-//Compute the estimate of the reciprocal condition number.
-	if (ainvnm != Zero) {
-	    *rcond = One / anorm / ainvnm;
-	}
+    //
+    rcond = zero;
+    smlnum = dlamch("Safe minimum") * (max((INTEGER)1, n)).real();
+    //
+    //     Compute the norm of the triangular matrix A.
+    //
+    anorm = Rlantr[(norm - 1) + (uplo - 1) * ldRlantr];
+    //
+    //     Continue only if ANORM > 0.
+    //
+    if (anorm > zero) {
+        //
+        //        Estimate the norm of the inverse of A.
+        //
+        ainvnm = zero;
+        normin = "N";
+        if (onenrm) {
+            kase1 = 1;
+        } else {
+            kase1 = 2;
+        }
+        kase = 0;
+    statement_10:
+        Rlacn2(n, work[(n + 1) - 1], work, iwork, ainvnm, kase, isave);
+        if (kase != 0) {
+            if (kase == kase1) {
+                //
+                //              Multiply by inv(A).
+                //
+                Rlatrs(uplo, "No transpose", diag, normin, n, a, lda, work, scale, work[(2 * n + 1) - 1], info);
+            } else {
+                //
+                //              Multiply by inv(A**T).
+                //
+                Rlatrs(uplo, "Transpose", diag, normin, n, a, lda, work, scale, work[(2 * n + 1) - 1], info);
+            }
+            normin = "Y";
+            //
+            //           Multiply by 1/SCALE if doing so will not cause overflow.
+            //
+            if (scale != one) {
+                ix = iRamax[(n - 1) + (work - 1) * ldiRamax];
+                xnorm = abs(work[ix - 1]);
+                if (scale < xnorm * smlnum || scale == zero) {
+                    goto statement_20;
+                }
+                Rrscl(n, scale, work, 1);
+            }
+            goto statement_10;
+        }
+        //
+        //        Compute the estimate of the reciprocal condition number.
+        //
+        if (ainvnm != zero) {
+            rcond = (one / anorm) / ainvnm;
+        }
     }
-    return;
+//
+statement_20:;
+    //
+    //     End of Rtrcon
+    //
 }

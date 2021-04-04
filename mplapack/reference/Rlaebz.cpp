@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Rlaebz.cpp,v 1.8 2010/08/07 04:48:32 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,288 +25,340 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-void
-Rlaebz(INTEGER ijob, INTEGER nitmax, INTEGER n, INTEGER mmax, INTEGER minp, INTEGER nbmin,
-       REAL abstol, REAL reltol, REAL pivmin, REAL * d,
-       REAL * e, REAL * e2, INTEGER * nval, REAL * AB, REAL * c, INTEGER * mout, INTEGER * nab, REAL * work, INTEGER * iwork, INTEGER * info)
-{
-    INTEGER j, kf, ji, kl, jp, jit;
-    REAL tmp1, tmp2;
-    INTEGER itmp1, itmp2, kfnew, klnew;
-    REAL Half = 0.5, Zero = 0.0;
-    REAL mtemp1, mtemp2;
-
-    *info = 0;
+void Rlaebz(INTEGER const &ijob, INTEGER const &nitmax, INTEGER const &n, INTEGER const &mmax, INTEGER const &minp, INTEGER const &nbmin, REAL const &abstol, REAL const &reltol, REAL const &pivmin, REAL *d, REAL * /* e */, REAL *e2, arr_ref<INTEGER> nval, REAL *ab, REAL *c, INTEGER &mout, arr_ref<INTEGER, 2> nab, REAL *work, arr_ref<INTEGER> iwork, INTEGER &info) {
+    INTEGER ji = 0;
+    INTEGER jp = 0;
+    REAL tmp1 = 0.0;
+    const REAL zero = 0.0;
+    INTEGER j = 0;
+    INTEGER kf = 0;
+    INTEGER kl = 0;
+    const REAL two = 2.0;
+    const REAL half = 1.0 / two;
+    INTEGER jit = 0;
+    INTEGER klnew = 0;
+    REAL tmp2 = 0.0;
+    INTEGER itmp1 = 0;
+    INTEGER kfnew = 0;
+    INTEGER itmp2 = 0;
+    //
+    //  -- LAPACK auxiliary routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    //     Check for Errors
+    //
+    info = 0;
     if (ijob < 1 || ijob > 3) {
-	*info = -1;
-	return;
+        info = -1;
+        return;
     }
-//Initialize NAB
+    //
+    //     Initialize NAB
+    //
     if (ijob == 1) {
-//Compute the number of eigenvalues in the initial intervals.
-	mout = 0;
-	for (ji = 0; ji <= minp; ji++) {
-	    for (jp = 1; jp <= 2; jp++) {
-		tmp1 = d[1] - AB[ji + jp * mmax];
-		if (abs(tmp1) < pivmin) {
-		    tmp1 = -(pivmin);
-		}
-		nab[ji + jp * mmax] = 0;
-		if (tmp1 <= Zero) {
-		    nab[ji + jp * mmax] = 1;
-		}
-		for (j = 2; j <= n; j++) {
-		    tmp1 = d[j] - e2[j - 1] / tmp1 - AB[ji + jp * mmax];
-		    if (abs(tmp1) < pivmin) {
-			tmp1 = -(pivmin);
-		    }
-		    if (tmp1 <= Zero) {
-			++nab[ji + jp * mmax];
-		    }
-		}
-	    }
-	    mout = mout + nab[ji + (mmax << 1)] - nab[ji + mmax];
-	}
-	return;
+        //
+        //        Compute the number of eigenvalues in the initial INTEGERervals.
+        //
+        mout = 0;
+        for (ji = 1; ji <= minp; ji = ji + 1) {
+            for (jp = 1; jp <= 2; jp = jp + 1) {
+                tmp1 = d[1 - 1] - ab[(ji - 1) + (jp - 1) * ldab];
+                if (abs(tmp1) < pivmin) {
+                    tmp1 = -pivmin;
+                }
+                nab[(ji - 1) + (jp - 1) * ldnab] = 0;
+                if (tmp1 <= zero) {
+                    nab[(ji - 1) + (jp - 1) * ldnab] = 1;
+                }
+                //
+                for (j = 2; j <= n; j = j + 1) {
+                    tmp1 = d[j - 1] - e2[(j - 1) - 1] / tmp1 - ab[(ji - 1) + (jp - 1) * ldab];
+                    if (abs(tmp1) < pivmin) {
+                        tmp1 = -pivmin;
+                    }
+                    if (tmp1 <= zero) {
+                        nab[(ji - 1) + (jp - 1) * ldnab]++;
+                    }
+                }
+            }
+            mout += nab[(ji - 1) + (2 - 1) * ldnab] - nab[(ji - 1)];
+        }
+        return;
     }
-//Initialize for loop
-//KF and KL have the following meaning:
-//   Intervals 1,...,KF-1 have converged.
-//   Intervals KF,...,KL  still need to be refined.
+    //
+    //     Initialize for loop
+    //
+    //     KF and KL have the following meaning:
+    //        Intervals 1,...,KF-1 have converged.
+    //        Intervals KF,...,KL  still need to be refined.
+    //
     kf = 1;
     kl = minp;
-//If IJOB=2, initialize C.
-//If IJOB=3, use the user-supplied starting point.
+    //
+    //     If IJOB=2, initialize C.
+    //     If IJOB=3, use the user-supplied starting poINTEGER.
+    //
     if (ijob == 2) {
-	for (ji = 0; ji <= minp; ji++) {
-	    c[ji] = (AB[ji + mmax] + AB[ji + (mmax << 1)]) * Half;
-	}
+        for (ji = 1; ji <= minp; ji = ji + 1) {
+            c[ji - 1] = half * (ab[(ji - 1)] + ab[(ji - 1) + (2 - 1) * ldab]);
+        }
     }
-//Iteration loop
-    for (jit = 1; jit <= nitmax; jit++) {
-//Loop over intervals
-	if (kl - kf + 1 >= nbmin && nbmin > 0) {
-//Begin of Parallel Version of the loop
-	    for (ji = kf; ji <= kl; ji++) {
-//Compute N(c), the number of eigenvalues less than c
-		work[ji] = d[1] - c[ji];
-		iwork[ji] = 0;
-		if (work[ji] <= pivmin) {
-		    iwork[ji] = 1;
-		    mtemp1 = work[ji], mtemp2 = -(pivmin);
-		    work[ji] = min(mtemp1, mtemp2);
-		}
-		for (j = 2; j <= n; j++) {
-		    work[ji] = d[j] - e2[j - 1] / work[ji] - c[ji];
-		    if (work[ji] <= pivmin) {
-			iwork[ji]++;
-			mtemp1 = work[ji], mtemp2 = -(pivmin);
-			work[ji] = min(mtemp1, mtemp2);
-		    }
-		}
-	    }
-	    if (ijob <= 2) {
-//IJOB=2: Choose all intervals containing eigenvalues.
-		klnew = kl;
-		for (ji = kf; ji <= kl; ji++) {
-//Insure that N(w) is monotone
-		    iwork[ji] = min(nab[ji + (mmax << 1)], max(nab[ji + mmax], iwork[ji]));
-//Update the Queue -- add intervals if both halves
-//contain eigenvalues.
-		    if (iwork[ji] == nab[ji + (mmax << 1)]) {
-//No eigenvalue in the upper interval:
-//just use the lower interval.
-			AB[ji + (mmax << 1)] = c[ji];
-		    } else if (iwork[ji] == nab[ji + mmax]) {
-//No eigenvalue in the lower interval:
-//just use the upper interval.
-			AB[ji + mmax] = c[ji];
-		    } else {
-			klnew++;
-			if (klnew <= mmax) {
-//Eigenvalue in both intervals -- add upper to
-//queue.
-			    AB[klnew + (mmax << 1)] = AB[ji + (mmax << 1)];
-			    nab[klnew + (mmax << 1)] = nab[ji + (mmax << 1)];
-			    AB[klnew + mmax] = c[ji];
-			    nab[klnew + mmax] = iwork[ji];
-			    AB[ji + (mmax << 1)] = c[ji];
-			    nab[ji + (mmax << 1)] = iwork[ji];
-			} else {
-			    *info = mmax + 1;
-			}
-		    }
-		}
-		if (*info != 0) {
-		    return;
-		}
-		kl = klnew;
-	    } else {
-//IJOB=3: Binary search.  Keep only the interval containing
-//        w   s.t. N(w) = NVAL
-		for (ji = kf; ji <= kl; ji++) {
-		    if (iwork[ji] <= nval[ji]) {
-			AB[ji + mmax] = c[ji];
-			nab[ji + mmax] = iwork[ji];
-		    }
-		    if (iwork[ji] >= nval[ji]) {
-			AB[ji + (mmax << 1)] = c[ji];
-			nab[ji + (mmax << 1)] = iwork[ji];
-		    }
-
-		}
-	    }
-	} else {
-//End of Parallel Version of the loop
-//Begin of Serial Version of the loop
-	    klnew = kl;
-	    for (ji = kf; ji <= kl; ji++) {
-//Compute N(w), the number of eigenvalues less than w
-		tmp1 = c[ji];
-		tmp2 = d[1] - tmp1;
-		itmp1 = 0;
-		if (tmp2 <= pivmin) {
-		    itmp1 = 1;
-		    mtemp1 = tmp2, mtemp2 = -(pivmin);
-		    tmp2 = min(mtemp1, mtemp2);
-		}
-		for (j = 2; j <= n; j++) {
-		    tmp2 = d[j] - e2[j - 1] / tmp2 - tmp1;
-		    if (tmp2 <= pivmin) {
-			itmp1++;
-			mtemp1 = tmp2, mtemp2 = -(pivmin);
-			tmp2 = min(mtemp1, mtemp2);
-		    }
-		}
-		if (ijob <= 2) {
-//IJOB=2: Choose all intervals containing eigenvalues.
-//Insure that N(w) is monotone
-		    itmp1 = min(nab[ji + (mmax << 1)], max(nab[ji + mmax], itmp1));
-//Update the Queue -- add intervals if both halves
-//contain eigenvalues.
-		    if (itmp1 == nab[ji + (mmax << 1)]) {
-//No eigenvalue in the upper interval:
-//just use the lower interval.
-			AB[ji + (mmax << 1)] = tmp1;
-		    } else if (itmp1 == nab[ji + mmax]) {
-//No eigenvalue in the lower interval:
-//just use the upper interval.
-			AB[ji + mmax] = tmp1;
-		    } else if (klnew < mmax) {
-//Eigenvalue in both intervals -- add upper to queue.
-			klnew++;
-			AB[klnew + (mmax << 1)] = AB[ji + (mmax << 1)];
-			nab[klnew + (mmax << 1)] = nab[ji + (mmax << 1)];
-			AB[klnew + mmax] = tmp1;
-			nab[klnew + mmax] = itmp1;
-			AB[ji + (mmax << 1)] = tmp1;
-			nab[ji + (mmax << 1)] = itmp1;
-		    } else {
-			*info = mmax + 1;
-			return;
-		    }
-		} else {
-//IJOB=3: Binary search.  Keep only the interval
-//        containing  w  s.t. N(w) = NVAL
-		    if (itmp1 <= nval[ji]) {
-			AB[ji + mmax] = tmp1;
-			nab[ji + mmax] = itmp1;
-		    }
-		    if (itmp1 >= nval[ji]) {
-			AB[ji + (mmax << 1)] = tmp1;
-			nab[ji + (mmax << 1)] = itmp1;
-		    }
-		}
-	    }
-	    kl = klnew;
-//End of Serial Version of the loop
-	}
-//Check for convergence
-	kfnew = kf;
-	for (ji = kf; ji <= kl; ji++) {
-	    tmp1 = abs(AB[ji + 2 * mmax] - AB[ji + mmax]);
-	    tmp2 = max(abs(AB[ji + 2 * mmax]), abs(AB[ji + mmax]));
-	    mtemp1 = max(abstol, pivmin), mtemp2 = reltol * tmp2;
-	    if (tmp1 < max(mtemp1, mtemp2)
-		|| nab[ji + mmax] >= nab[ji + (mmax << 1)]) {
-//Converged -- Swap with position KFNEW,
-//             then increment KFNEW
-		if (ji > kfnew) {
-		    tmp1 = AB[ji + mmax];
-		    tmp2 = AB[ji + (mmax << 1)];
-		    itmp1 = nab[ji + mmax];
-		    itmp2 = nab[ji + (mmax << 1)];
-		    AB[ji + mmax] = AB[kfnew + mmax];
-		    AB[ji + (mmax << 1)] = AB[kfnew + (mmax << 1)];
-		    nab[ji + mmax] = nab[kfnew + mmax];
-		    nab[ji + (mmax << 1)] = nab[kfnew + (mmax << 1)];
-		    AB[kfnew + mmax] = tmp1;
-		    AB[kfnew + (mmax << 1)] = tmp2;
-		    nab[kfnew + mmax] = itmp1;
-		    nab[kfnew + (mmax << 1)] = itmp2;
-		    if (ijob == 3) {
-			itmp1 = nval[ji];
-			nval[ji] = nval[kfnew];
-			nval[kfnew] = itmp1;
-		    }
-		}
-		kfnew++;
-	    }
-	}
-	kf = kfnew;
-//Choose Midpoints
-	for (ji = kf; ji <= kl; ji++) {
-	    c[ji] = (AB[ji + mmax] + AB[ji + (mmax << 1)]) * Half;
-	}
-//If no more intervals to refine, quit.
-	if (kf > kl) {
-	    goto L140;
-	}
+    //
+    //     Iteration loop
+    //
+    for (jit = 1; jit <= nitmax; jit = jit + 1) {
+        //
+        //        Loop over INTEGERervals
+        //
+        if (kl - kf + 1 >= nbmin && nbmin > 0) {
+            //
+            //           Begin of Parallel Version of the loop
+            //
+            for (ji = kf; ji <= kl; ji = ji + 1) {
+                //
+                //              Compute N(c), the number of eigenvalues less than c
+                //
+                work[ji - 1] = d[1 - 1] - c[ji - 1];
+                iwork[ji - 1] = 0;
+                if (work[ji - 1] <= pivmin) {
+                    iwork[ji - 1] = 1;
+                    work[ji - 1] = min(work[ji - 1], -pivmin);
+                }
+                //
+                for (j = 2; j <= n; j = j + 1) {
+                    work[ji - 1] = d[j - 1] - e2[(j - 1) - 1] / work[ji - 1] - c[ji - 1];
+                    if (work[ji - 1] <= pivmin) {
+                        iwork[ji - 1]++;
+                        work[ji - 1] = min(work[ji - 1], -pivmin);
+                    }
+                }
+            }
+            //
+            if (ijob <= 2) {
+                //
+                //              IJOB=2: Choose all INTEGERervals containing eigenvalues.
+                //
+                klnew = kl;
+                for (ji = kf; ji <= kl; ji = ji + 1) {
+                    //
+                    //                 Insure that N(w) is monotone
+                    //
+                    iwork[ji - 1] = min(nab[(ji - 1) + (2 - 1) * ldnab], max(nab[(ji - 1)], iwork[ji - 1]));
+                    //
+                    //                 Update the Queue -- add INTEGERervals if both halves
+                    //                 contain eigenvalues.
+                    //
+                    if (iwork[ji - 1] == nab[(ji - 1) + (2 - 1) * ldnab]) {
+                        //
+                        //                    No eigenvalue in the upper INTEGERerval:
+                        //                    just use the lower INTEGERerval.
+                        //
+                        ab[(ji - 1) + (2 - 1) * ldab] = c[ji - 1];
+                        //
+                    } else if (iwork[ji - 1] == nab[(ji - 1)]) {
+                        //
+                        //                    No eigenvalue in the lower INTEGERerval:
+                        //                    just use the upper INTEGERerval.
+                        //
+                        ab[(ji - 1)] = c[ji - 1];
+                    } else {
+                        klnew++;
+                        if (klnew <= mmax) {
+                            //
+                            //                       Eigenvalue in both INTEGERervals -- add upper to
+                            //                       queue.
+                            //
+                            ab[(klnew - 1) + (2 - 1) * ldab] = ab[(ji - 1) + (2 - 1) * ldab];
+                            nab[(klnew - 1) + (2 - 1) * ldnab] = nab[(ji - 1) + (2 - 1) * ldnab];
+                            ab[(klnew - 1)] = c[ji - 1];
+                            nab[(klnew - 1)] = iwork[ji - 1];
+                            ab[(ji - 1) + (2 - 1) * ldab] = c[ji - 1];
+                            nab[(ji - 1) + (2 - 1) * ldnab] = iwork[ji - 1];
+                        } else {
+                            info = mmax + 1;
+                        }
+                    }
+                }
+                if (info != 0) {
+                    return;
+                }
+                kl = klnew;
+            } else {
+                //
+                //              IJOB=3: Binary search.  Keep only the INTEGERerval containing
+                //                      w   s.t. N(w) = NVAL
+                //
+                for (ji = kf; ji <= kl; ji = ji + 1) {
+                    if (iwork[ji - 1] <= nval[ji - 1]) {
+                        ab[(ji - 1)] = c[ji - 1];
+                        nab[(ji - 1)] = iwork[ji - 1];
+                    }
+                    if (iwork[ji - 1] >= nval[ji - 1]) {
+                        ab[(ji - 1) + (2 - 1) * ldab] = c[ji - 1];
+                        nab[(ji - 1) + (2 - 1) * ldnab] = iwork[ji - 1];
+                    }
+                }
+            }
+            //
+        } else {
+            //
+            //           End of Parallel Version of the loop
+            //
+            //           Begin of Serial Version of the loop
+            //
+            klnew = kl;
+            for (ji = kf; ji <= kl; ji = ji + 1) {
+                //
+                //              Compute N(w), the number of eigenvalues less than w
+                //
+                tmp1 = c[ji - 1];
+                tmp2 = d[1 - 1] - tmp1;
+                itmp1 = 0;
+                if (tmp2 <= pivmin) {
+                    itmp1 = 1;
+                    tmp2 = min(tmp2, -pivmin);
+                }
+                //
+                for (j = 2; j <= n; j = j + 1) {
+                    tmp2 = d[j - 1] - e2[(j - 1) - 1] / tmp2 - tmp1;
+                    if (tmp2 <= pivmin) {
+                        itmp1++;
+                        tmp2 = min(tmp2, -pivmin);
+                    }
+                }
+                //
+                if (ijob <= 2) {
+                    //
+                    //                 IJOB=2: Choose all INTEGERervals containing eigenvalues.
+                    //
+                    //                 Insure that N(w) is monotone
+                    //
+                    itmp1 = min(nab[(ji - 1) + (2 - 1) * ldnab], max(nab[(ji - 1)], itmp1));
+                    //
+                    //                 Update the Queue -- add INTEGERervals if both halves
+                    //                 contain eigenvalues.
+                    //
+                    if (itmp1 == nab[(ji - 1) + (2 - 1) * ldnab]) {
+                        //
+                        //                    No eigenvalue in the upper INTEGERerval:
+                        //                    just use the lower INTEGERerval.
+                        //
+                        ab[(ji - 1) + (2 - 1) * ldab] = tmp1;
+                        //
+                    } else if (itmp1 == nab[(ji - 1)]) {
+                        //
+                        //                    No eigenvalue in the lower INTEGERerval:
+                        //                    just use the upper INTEGERerval.
+                        //
+                        ab[(ji - 1)] = tmp1;
+                    } else if (klnew < mmax) {
+                        //
+                        //                    Eigenvalue in both INTEGERervals -- add upper to queue.
+                        //
+                        klnew++;
+                        ab[(klnew - 1) + (2 - 1) * ldab] = ab[(ji - 1) + (2 - 1) * ldab];
+                        nab[(klnew - 1) + (2 - 1) * ldnab] = nab[(ji - 1) + (2 - 1) * ldnab];
+                        ab[(klnew - 1)] = tmp1;
+                        nab[(klnew - 1)] = itmp1;
+                        ab[(ji - 1) + (2 - 1) * ldab] = tmp1;
+                        nab[(ji - 1) + (2 - 1) * ldnab] = itmp1;
+                    } else {
+                        info = mmax + 1;
+                        return;
+                    }
+                } else {
+                    //
+                    //                 IJOB=3: Binary search.  Keep only the INTEGERerval
+                    //                         containing  w  s.t. N(w) = NVAL
+                    //
+                    if (itmp1 <= nval[ji - 1]) {
+                        ab[(ji - 1)] = tmp1;
+                        nab[(ji - 1)] = itmp1;
+                    }
+                    if (itmp1 >= nval[ji - 1]) {
+                        ab[(ji - 1) + (2 - 1) * ldab] = tmp1;
+                        nab[(ji - 1) + (2 - 1) * ldnab] = itmp1;
+                    }
+                }
+            }
+            kl = klnew;
+            //
+        }
+        //
+        //        Check for convergence
+        //
+        kfnew = kf;
+        for (ji = kf; ji <= kl; ji = ji + 1) {
+            tmp1 = abs(ab[(ji - 1) + (2 - 1) * ldab] - ab[(ji - 1)]);
+            tmp2 = max(abs(ab[(ji - 1) + (2 - 1) * ldab]), abs(ab[(ji - 1)]));
+            if (tmp1 < max(abstol, pivmin, reltol * tmp2) || nab[(ji - 1)] >= nab[(ji - 1) + (2 - 1) * ldnab]) {
+                //
+                //              Converged -- Swap with position KFNEW,
+                //                           then increment KFNEW
+                //
+                if (ji > kfnew) {
+                    tmp1 = ab[(ji - 1)];
+                    tmp2 = ab[(ji - 1) + (2 - 1) * ldab];
+                    itmp1 = nab[(ji - 1)];
+                    itmp2 = nab[(ji - 1) + (2 - 1) * ldnab];
+                    ab[(ji - 1)] = ab[(kfnew - 1)];
+                    ab[(ji - 1) + (2 - 1) * ldab] = ab[(kfnew - 1) + (2 - 1) * ldab];
+                    nab[(ji - 1)] = nab[(kfnew - 1)];
+                    nab[(ji - 1) + (2 - 1) * ldnab] = nab[(kfnew - 1) + (2 - 1) * ldnab];
+                    ab[(kfnew - 1)] = tmp1;
+                    ab[(kfnew - 1) + (2 - 1) * ldab] = tmp2;
+                    nab[(kfnew - 1)] = itmp1;
+                    nab[(kfnew - 1) + (2 - 1) * ldnab] = itmp2;
+                    if (ijob == 3) {
+                        itmp1 = nval[ji - 1];
+                        nval[ji - 1] = nval[kfnew - 1];
+                        nval[kfnew - 1] = itmp1;
+                    }
+                }
+                kfnew++;
+            }
+        }
+        kf = kfnew;
+        //
+        //        Choose MidpoINTEGERs
+        //
+        for (ji = kf; ji <= kl; ji = ji + 1) {
+            c[ji - 1] = half * (ab[(ji - 1)] + ab[(ji - 1) + (2 - 1) * ldab]);
+        }
+        //
+        //        If no more INTEGERervals to refine, quit.
+        //
+        if (kf > kl) {
+            goto statement_140;
+        }
     }
-//Converged
-  L140:
-    *info = max(kl + 1 - kf, (INTEGER) 0);
-    *mout = kl;
-    return;
+//
+//     Converged
+//
+statement_140:
+    info = max(kl + 1 - kf, 0);
+    mout = kl;
+    //
+    //     End of Rlaebz
+    //
 }

@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Rlasq1.cpp,v 1.7 2010/08/07 04:48:33 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,116 +25,114 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlasq1(INTEGER n, REAL * d, REAL * e, REAL * work, INTEGER * info)
-{
-    INTEGER i;
-    REAL eps;
-    REAL scale;
-    INTEGER iinfo;
-    REAL sigmn;
-    REAL sigmx;
-    REAL safmin;
-    REAL Zero = 0.0;
-    REAL mtemp1, mtemp2;
-
-    *info = 0;
+void Rlasq1(INTEGER const &n, REAL *d, REAL *e, REAL *work, INTEGER &info) {
+    //
+    //  -- LAPACK computational routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    info = 0;
+    REAL sigmn = 0.0;
+    REAL sigmx = 0.0;
     if (n < 0) {
-	*info = -2;
-	Mxerbla("Rlasq1", -(*info));
-	return;
+        info = -1;
+        Mxerbla("Rlasq1", -info);
+        return;
     } else if (n == 0) {
-	return;
+        return;
     } else if (n == 1) {
-	d[1] = abs(d[1]);
-	return;
+        d[1 - 1] = abs(d[1 - 1]);
+        return;
     } else if (n == 2) {
-	Rlas2(d[0], e[0], d[2], &sigmn, &sigmx);
-	d[1] = sigmx;
-	d[2] = sigmn;
-	return;
+        Rlas2(d[1 - 1], e[1 - 1], d[2 - 1], sigmn, sigmx);
+        d[1 - 1] = sigmx;
+        d[2 - 1] = sigmn;
+        return;
     }
-//Estimate the largest singular value.
-    sigmx = Zero;
-    for (i = 0; i < n - 1; i++) {
-	d[i] = abs(d[i]);
-	mtemp1 = sigmx;
-	mtemp2 = abs(e[i]);
-	sigmx = max(mtemp1, mtemp2);
-
+    //
+    //     Estimate the largest singular value.
+    //
+    const REAL zero = 0.0;
+    sigmx = zero;
+    INTEGER i = 0;
+    for (i = 1; i <= n - 1; i = i + 1) {
+        d[i - 1] = abs(d[i - 1]);
+        sigmx = max(sigmx, abs(e[i - 1]));
     }
-    d[n] = abs(d[n]);
-//Early return if SIGMX is zero (matrix is already diagonal).
-    if (sigmx == Zero) {
-	Rlasrt("D", n, &d[0], &iinfo);
-	return;
+    d[n - 1] = abs(d[n - 1]);
+    //
+    //     Early return if SIGMX is zero (matrix is already diagonal).
+    //
+    INTEGER iinfo = 0;
+    if (sigmx == zero) {
+        Rlasrt("D", n, d, iinfo);
+        return;
     }
-    for (i = 0; i < n; i++) {
-	mtemp1 = sigmx;
-	mtemp2 = d[i];
-	sigmx = max(mtemp1, mtemp2);
+    //
+    for (i = 1; i <= n; i = i + 1) {
+        sigmx = max(sigmx, d[i - 1]);
     }
-//Copy D and E into WORK (in the Z format) and scale (squaring the
-//input data makes scaling by a power of the radix pointless).
-    eps = Rlamch("P");
-    safmin = Rlamch("S");
-    scale = sqrt(eps / safmin);
-    Rcopy(n, &d[0], 1, &work[0], 2);
-    Rcopy(n - 1, &e[0], 1, &work[2], 2);
-    Rlascl("G", 0, 0, sigmx, scale, n * 2 - 1, 1, &work[0], n * 2 - 1, &iinfo);
-
-//Compute the q's and e's.
-    for (i = 0; i < n * 2 - 1; i++) {
-	work[i] = work[i] * work[i];
+    //
+    //     Copy D and E INTEGERo WORK (in the Z format) and scale (squaring the
+    //     input data makes scaling by a power of the radix poINTEGERless).
+    //
+    REAL eps = dlamch("Precision");
+    REAL safmin = dlamch("Safe minimum");
+    REAL scale = sqrt(eps / safmin);
+    Rcopy(n, d, 1, work[1 - 1], 2);
+    Rcopy(n - 1, e, 1, work[2 - 1], 2);
+    Rlascl("G", 0, 0, sigmx, scale, 2 * n - 1, 1, work, 2 * n - 1, iinfo);
+    //
+    //     Compute the q's and e's.
+    //
+    for (i = 1; i <= 2 * n - 1; i = i + 1) {
+        work[i - 1] = pow2(work[i - 1]);
     }
-    work[n * 2] = Zero;
-    Rlasq2(n, &work[0], info);
-    if (*info == 0) {
-	for (i = 0; i < n; i++) {
-	    d[i] = sqrt(work[i]);
-
-	}
-	Rlascl("G", 0, 0, scale, sigmx, n, 1, &d[0], n, &iinfo);
+    work[(2 * n) - 1] = zero;
+    //
+    Rlasq2(n, work, info);
+    //
+    if (info == 0) {
+        for (i = 1; i <= n; i = i + 1) {
+            d[i - 1] = sqrt(work[i - 1]);
+        }
+        Rlascl("G", 0, 0, scale, sigmx, n, 1, d, n, iinfo);
+    } else if (info == 2) {
+        //
+        //     Maximum number of iterations exceeded.  Move data from WORK
+        //     INTEGERo D and E so the calling subroutine can try to finish
+        //
+        for (i = 1; i <= n; i = i + 1) {
+            d[i - 1] = sqrt(work[(2 * i - 1) - 1]);
+            e[i - 1] = sqrt(work[(2 * i) - 1]);
+        }
+        Rlascl("G", 0, 0, scale, sigmx, n, 1, d, n, iinfo);
+        Rlascl("G", 0, 0, scale, sigmx, n, 1, e, n, iinfo);
     }
-    return;
+    //
+    //     End of Rlasq1
+    //
 }

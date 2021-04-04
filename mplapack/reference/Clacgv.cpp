@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Clacgv.cpp,v 1.6 2010/08/07 04:48:32 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,64 +25,46 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clacgv(INTEGER n, COMPLEX * x, INTEGER incx)
-{
-    INTEGER i, ioff;
-
+void Clacgv(INTEGER const &n, COMPLEX *x, INTEGER const &incx) {
+    //
+    //  -- LAPACK auxiliary routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    // =====================================================================
+    //
+    //     .. Local Scalars ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    INTEGER i = 0;
+    INTEGER ioff = 0;
     if (incx == 1) {
-	for (i = 0; i < n; i++) {
-	    x[i] = conj(x[i]);
-	}
+        for (i = 1; i <= n; i = i + 1) {
+            x[i - 1] = conj(x[i - 1]);
+        }
     } else {
-	ioff = 0;
-	if (incx < 0) {
-	    ioff = -(n - 1) * incx;
-	}
-	for (i = 0; i < n; i++) {
-	    x[ioff] = conj(x[ioff]);
-	    ioff = ioff + incx;
-	}
+        ioff = 1;
+        if (incx < 0) {
+            ioff = 1 - (n - 1) * incx;
+        }
+        for (i = 1; i <= n; i = i + 1) {
+            x[ioff - 1] = conj(x[ioff - 1]);
+            ioff += incx;
+        }
     }
-    return;
+    //
+    //     End of Clacgv
+    //
 }

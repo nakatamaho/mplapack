@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Clals0.cpp,v 1.9 2010/08/07 04:48:32 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,252 +25,262 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-void
-Clals0(INTEGER icompq, INTEGER nl, INTEGER nr, INTEGER sqre, INTEGER nrhs, COMPLEX * B, INTEGER ldb,
-       COMPLEX * bx, INTEGER ldbx, INTEGER * perm, INTEGER givptr, INTEGER * givcol, INTEGER ldgcol,
-       REAL * givnum, INTEGER ldgnum, REAL * poles, REAL * difl, REAL * difr, REAL * z, INTEGER k, REAL c, REAL s, REAL * rwork, INTEGER * info)
-{
-    INTEGER i, j, m, n;
-    REAL dj;
-    INTEGER nlp1, jcol;
-    REAL temp;
-    INTEGER jrow;
-    REAL diflj, difrj = 0.0, dsigj;
-    REAL dsigjp = 0.0;
-    REAL One = 1.0, Zero = 0.0;
-
-    *info = 0;
-    if (icompq < 0 || icompq > 1) {
-	*info = -1;
+void Clals0(INTEGER const &icompq, INTEGER const &nl, INTEGER const &nr, INTEGER const &sqre, INTEGER const &nrhs, COMPLEX *b, INTEGER const &ldb, COMPLEX *bx, INTEGER const &ldbx, INTEGER *perm, INTEGER const &givptr, arr_cref<INTEGER, 2> givcol, INTEGER const &ldgcol, REAL *givnum, INTEGER const &ldgnum, REAL *poles, REAL *difl, REAL *difr, REAL *z, INTEGER const &k, REAL const &c, REAL const &s, REAL *rwork, INTEGER &info) {
+    //
+    //  -- LAPACK computational routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    //     Test the input parameters.
+    //
+    info = 0;
+    INTEGER n = nl + nr + 1;
+    //
+    if ((icompq < 0) || (icompq > 1)) {
+        info = -1;
     } else if (nl < 1) {
-	*info = -2;
+        info = -2;
     } else if (nr < 1) {
-	*info = -3;
-    } else if (sqre < 0 || sqre > 1) {
-	*info = -4;
-    }
-
-    n = nl + nr + 1;
-    if (nrhs < 1) {
-	*info = -5;
+        info = -3;
+    } else if ((sqre < 0) || (sqre > 1)) {
+        info = -4;
+    } else if (nrhs < 1) {
+        info = -5;
     } else if (ldb < n) {
-	*info = -7;
+        info = -7;
     } else if (ldbx < n) {
-	*info = -9;
+        info = -9;
     } else if (givptr < 0) {
-	*info = -11;
+        info = -11;
     } else if (ldgcol < n) {
-	*info = -13;
+        info = -13;
     } else if (ldgnum < n) {
-	*info = -15;
+        info = -15;
     } else if (k < 1) {
-	*info = -20;
+        info = -20;
     }
-    if (*info != 0) {
-	Mxerbla("Clals0", -(*info));
-	return;
+    if (info != 0) {
+        Mxerbla("Clals0", -info);
+        return;
     }
-
-    m = n + sqre;
-    nlp1 = nl + 1;
-
+    //
+    INTEGER m = n + sqre;
+    INTEGER nlp1 = nl + 1;
+    //
+    INTEGER i = 0;
+    const REAL zero = 0.0;
+    const REAL negone = -1.0;
+    INTEGER j = 0;
+    REAL diflj = 0.0;
+    REAL dj = 0.0;
+    REAL dsigj = 0.0;
+    REAL difrj = 0.0;
+    REAL dsigjp = 0.0;
+    REAL temp = 0.0;
+    INTEGER jcol = 0;
+    INTEGER jrow = 0;
+    const REAL one = 1.0;
     if (icompq == 0) {
-//Apply back orthogonal transformations from the left.
-//Step (1L): apply back the Givens rotations performed.
-	for (i = 0; i < givptr; i++) {
-	    CRrot(nrhs, &B[givcol[i + (ldgcol * 2)] + ldb], ldb, &B[givcol[i + ldgcol] + ldb], ldb, givnum[i + (ldgnum * 2)], givnum[i + ldgnum]);
-	}
-//Step (2L): permute rows of B.
-	Ccopy(nrhs, &B[nlp1 + ldb], ldb, &bx[ldbx + 1], ldbx);
-	for (i = 1; i < n; i++) {
-	    Ccopy(nrhs, &B[perm[i] + ldb], ldb, &bx[i + ldbx], ldbx);
-	}
-//Step (3L): apply the inverse of the left singular vector
-//matrix to BX.
-	if (k == 1) {
-	    Ccopy(nrhs, &bx[0], ldbx, &B[0], ldb);
-	    if (z[1] < Zero) {
-		CRscal(nrhs, -One, &B[0], ldb);
-	    }
-	} else {
-	    for (j = 0; j < k; j++) {
-		diflj = difl[j];
-		dj = poles[j + ldgnum];
-		dsigj = -poles[j + (ldgnum * 2)];
-		if (j < k) {
-		    difrj = -difr[j + ldgnum];
-		    dsigjp = -poles[j + 1 + (ldgnum * 2)];
-		}
-		if (z[j] == Zero || poles[j + (ldgnum * 2)] == Zero) {
-		    rwork[j] = Zero;
-		} else {
-		    rwork[j] = -poles[j + (ldgnum * 2)] * z[j] / diflj / (poles[j + (ldgnum * 2)] + dj);
-		}
-		for (i = 0; i < j - 1; i++) {
-		    if (z[i] == Zero || poles[i + (ldgnum * 2)] == Zero) {
-			rwork[i] = Zero;
-		    } else {
-			rwork[i] = poles[i + (ldgnum * 2)] * z[i]
-			    / (Rlamc3(poles[i + (ldgnum * 2)], dsigj) - diflj) / (poles[i + (ldgnum * 2)] + dj);
-		    }
-
-		}
-		for (i = j + 1; i <= k; i++) {
-		    if (z[i] == Zero || poles[i + (ldgnum * 2)] == Zero) {
-			rwork[i] = Zero;
-		    } else {
-			rwork[i] = poles[i + (ldgnum * 2)] * z[i] / (Rlamc3(poles[i + (ldgnum * 2)], dsigjp) + difrj) / (poles[i + (ldgnum * 2)] + dj);
-		    }
-
-		}
-		rwork[1] = -One;
-		temp = Rnrm2(k, &rwork[1], 1);
-//Since B and BX are complex, the following call to DGEMV
-//is performed in two steps (real and imaginary parts).
-//CALL DGEMV( 'T', K, NRHS, ONE, BX, LDBX, WORK, 1, ZERO,
-//            B( J, 1 ), LDB )
-		i = k + (nrhs * 2);
-		for (jcol = 0; jcol <= nrhs; jcol++) {
-		    for (jrow = 1; jrow <= k; jrow++) {
-			i++;
-			rwork[i] = bx[jrow + jcol * ldbx].real();
-		    }
-		}
-		Rgemv("T", k, nrhs, One, &rwork[k + 1 + (nrhs * 2)], k, &rwork[1], 1, Zero, &rwork[k + 1], 1);
-		i = k + (nrhs * 2);
-		for (jcol = 0; jcol <= nrhs; jcol++) {
-		    for (jrow = 1; jrow <= k; jrow++) {
-			i++;
-			rwork[i] = bx[jrow + jcol * ldbx].imag();
-		    }
-		}
-		Rgemv("T", k, nrhs, One, &rwork[k + 1 + (nrhs * 2)], k, &rwork[1], 1, Zero, &rwork[k + 1 + nrhs], 1);
-		for (jcol = 0; jcol <= nrhs; jcol++) {
-		    B[j + jcol * ldb] = rwork[jcol + k];
-		}
-		Clascl("G", 0, 0, temp, One, 1, nrhs, &B[j + ldb], ldb, info);
-	    }
-	}
-//Move the deflated rows of BX to B also.
-	if (k < max(m, n)) {
-	    Clacpy("A", n - k, nrhs, &bx[k + 1 + ldbx], ldbx, &B[k + 1 + ldb], ldb);
-	}
+        //
+        //        Apply back orthogonal transformations from the left.
+        //
+        //        Step (1L): apply back the Givens rotations performed.
+        //
+        for (i = 1; i <= givptr; i = i + 1) {
+            CRrot(nrhs, b[(givcol[(i - 1) + (2 - 1) * ldgivcol] - 1)], ldb, b[(givcol[(i - 1)] - 1)], ldb, givnum[(i - 1) + (2 - 1) * ldgivnum], givnum[(i - 1)]);
+        }
+        //
+        //        Step (2L): permute rows of B.
+        //
+        Ccopy(nrhs, b[(nlp1 - 1)], ldb, bx[(1 - 1)], ldbx);
+        for (i = 2; i <= n; i = i + 1) {
+            Ccopy(nrhs, b[(perm[i - 1] - 1)], ldb, bx[(i - 1)], ldbx);
+        }
+        //
+        //        Step (3L): apply the inverse of the left singular vector
+        //        matrix to BX.
+        //
+        if (k == 1) {
+            Ccopy(nrhs, bx, ldbx, b, ldb);
+            if (z[1 - 1] < zero) {
+                CRscal(nrhs, negone, b, ldb);
+            }
+        } else {
+            for (j = 1; j <= k; j = j + 1) {
+                diflj = difl[j - 1];
+                dj = poles[(j - 1)];
+                dsigj = -poles[(j - 1) + (2 - 1) * ldpoles];
+                if (j < k) {
+                    difrj = -difr[(j - 1)];
+                    dsigjp = -poles[((j + 1) - 1) + (2 - 1) * ldpoles];
+                }
+                if ((z[j - 1] == zero) || (poles[(j - 1) + (2 - 1) * ldpoles] == zero)) {
+                    rwork[j - 1] = zero;
+                } else {
+                    rwork[j - 1] = -poles[(j - 1) + (2 - 1) * ldpoles] * z[j - 1] / diflj / (poles[(j - 1) + (2 - 1) * ldpoles] + dj);
+                }
+                for (i = 1; i <= j - 1; i = i + 1) {
+                    if ((z[i - 1] == zero) || (poles[(i - 1) + (2 - 1) * ldpoles] == zero)) {
+                        rwork[i - 1] = zero;
+                    } else {
+                        rwork[i - 1] = poles[(i - 1) + (2 - 1) * ldpoles] * z[i - 1] / (dlamc3[(poles[(i - 1) + (2 - 1) * ldpoles] - 1) + (dsigj - 1) * lddlamc3] - diflj) / (poles[(i - 1) + (2 - 1) * ldpoles] + dj);
+                    }
+                }
+                for (i = j + 1; i <= k; i = i + 1) {
+                    if ((z[i - 1] == zero) || (poles[(i - 1) + (2 - 1) * ldpoles] == zero)) {
+                        rwork[i - 1] = zero;
+                    } else {
+                        rwork[i - 1] = poles[(i - 1) + (2 - 1) * ldpoles] * z[i - 1] / (dlamc3[(poles[(i - 1) + (2 - 1) * ldpoles] - 1) + (dsigjp - 1) * lddlamc3] + difrj) / (poles[(i - 1) + (2 - 1) * ldpoles] + dj);
+                    }
+                }
+                rwork[1 - 1] = negone;
+                temp = Rnrm2[(k - 1) + (rwork - 1) * ldRnrm2];
+                //
+                //              Since B and BX are complex, the following call to Rgemv
+                //              is performed in two steps (real and imaginary parts).
+                //
+                //              CALL Rgemv( 'T', K, NRHS, ONE, BX, LDBX, WORK, 1, ZERO,
+                //    $                     B( J, 1 ), LDB )
+                //
+                i = k + nrhs * 2;
+                for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
+                    for (jrow = 1; jrow <= k; jrow = jrow + 1) {
+                        i++;
+                        rwork[i - 1] = bx[(jrow - 1) + (jcol - 1) * ldbx].real();
+                    }
+                }
+                Rgemv("T", k, nrhs, one, rwork[(1 + k + nrhs * 2) - 1], k, rwork[1 - 1], 1, zero, rwork[(1 + k) - 1], 1);
+                i = k + nrhs * 2;
+                for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
+                    for (jrow = 1; jrow <= k; jrow = jrow + 1) {
+                        i++;
+                        rwork[i - 1] = bx[(jrow - 1) + (jcol - 1) * ldbx].imag();
+                    }
+                }
+                Rgemv("T", k, nrhs, one, rwork[(1 + k + nrhs * 2) - 1], k, rwork[1 - 1], 1, zero, rwork[(1 + k + nrhs) - 1], 1);
+                for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
+                    b[(j - 1) + (jcol - 1) * ldb] = COMPLEX(rwork[(jcol + k) - 1], rwork[(jcol + k + nrhs) - 1]);
+                }
+                Clascl("G", 0, 0, temp, one, 1, nrhs, b[(j - 1)], ldb, info);
+            }
+        }
+        //
+        //        Move the deflated rows of BX to B also.
+        //
+        if (k < max(m, n)) {
+            Clacpy("A", n - k, nrhs, bx[((k + 1) - 1)], ldbx, b[((k + 1) - 1)], ldb);
+        }
     } else {
-//Apply back the right orthogonal transformations.
-//Step (1R): apply back the new right singular vector matrix
-//to B.
-	if (k == 1) {
-	    Ccopy(nrhs, &B[0], ldb, &bx[0], ldbx);
-	} else {
-	    for (j = 0; j < k; j++) {
-		dsigj = poles[j + (ldgnum * 2)];
-		if (z[j] == Zero) {
-		    rwork[j] = Zero;
-		} else {
-		    rwork[j] = -z[j] / difl[j] / (dsigj + poles[j + ldgnum]) / difr[j + (ldgnum * 2)];
-		}
-		for (i = 0; i < j - 1; i++) {
-		    if (z[j] == Zero) {
-			rwork[i] = Zero;
-		    } else {
-			rwork[i] = z[j] / (Rlamc3(dsigj, -poles[i + 1 + (ldgnum * 2)]) - difr[i + ldgnum]) / (dsigj + poles[i + ldgnum]) / difr[i + (ldgnum * 2)];
-		    }
-
-		}
-		for (i = j + 1; i <= k; i++) {
-		    if (z[j] == Zero) {
-			rwork[i] = Zero;
-		    } else {
-			rwork[i] = z[j] / (Rlamc3(dsigj, -poles[i + (ldgnum * 2)]) - difl[i]) / (dsigj + poles[i + ldgnum]) / difr[i + (ldgnum * 2)];
-		    }
-		}
-//Since B and BX are complex, the following call to DGEMV
-//is performed in two steps (real and imaginary parts).
-//CALL DGEMV( 'T', K, NRHS, ONE, B, LDB, WORK, 1, ZERO,
-//            BX( J, 1 ), LDBX )
-		i = k + (nrhs * 2);
-		for (jcol = 0; jcol <= nrhs; jcol++) {
-		    for (jrow = 1; jrow <= k; jrow++) {
-			i++;
-			rwork[i] = (REAL) B[jrow + jcol * ldb].real();
-		    }
-		}
-		Rgemv("T", k, nrhs, One, &rwork[k + 1 + (nrhs * 2)], k, &rwork[1], 1, Zero, &rwork[k + 1], 1);
-		i = k + (nrhs * 2);
-		for (jcol = 0; jcol <= nrhs; jcol++) {
-		    for (jrow = 1; jrow <= k; jrow++) {
-			i++;
-			rwork[i] = B[jrow + jcol * ldb].imag();
-		    }
-		}
-		Rgemv("T", k, nrhs, One, &rwork[k + 1 + (nrhs * 2)], k, &rwork[1], 1, Zero, &rwork[k + 1 + nrhs], 1);
-		for (jcol = 0; jcol <= nrhs; jcol++) {
-		    bx[j + jcol * ldbx] = rwork[jcol + k];
-		}
-	    }
-	}
-//Step (2R): if SQRE = 1, apply back the rotation that is
-//related to the right null space of the subproblem.
-	if (sqre == 1) {
-	    Ccopy(nrhs, &B[m + ldb], ldb, &bx[m + ldbx], ldbx);
-	    CRrot(nrhs, &bx[ldbx + 1], ldbx, &bx[m + ldbx], ldbx, c, s);
-	}
-	if (k < max(m, n)) {
-	    Clacpy("A", n - k, nrhs, &B[k + 1 + ldb], ldb, &bx[k + 1 + ldbx], ldbx);
-	}
-//Step (3R): permute rows of B.
-	Ccopy(nrhs, &bx[ldbx + 1], ldbx, &B[nlp1 + ldb], ldb);
-	if (sqre == 1) {
-	    Ccopy(nrhs, &bx[m + ldbx], ldbx, &B[m + ldb], ldb);
-	}
-	for (i = 1; i < n; i++) {
-	    Ccopy(nrhs, &bx[i + ldbx], ldbx, &B[perm[i] + ldb], ldb);
-	}
-//Step (4R): apply back the Givens rotations performed.
-	for (i = givptr; i >= 1; i--) {
-	    CRrot(nrhs, &B[givcol[i + (ldgcol * 2)] + ldb], ldb, &B[givcol[i + ldgcol] + ldb], ldb, givnum[i + (ldgnum * 2)], -givnum[i + ldgnum]);
-	}
+        //
+        //        Apply back the right orthogonal transformations.
+        //
+        //        Step (1R): apply back the new right singular vector matrix
+        //        to B.
+        //
+        if (k == 1) {
+            Ccopy(nrhs, b, ldb, bx, ldbx);
+        } else {
+            for (j = 1; j <= k; j = j + 1) {
+                dsigj = poles[(j - 1) + (2 - 1) * ldpoles];
+                if (z[j - 1] == zero) {
+                    rwork[j - 1] = zero;
+                } else {
+                    rwork[j - 1] = -z[j - 1] / difl[j - 1] / (dsigj + poles[(j - 1)]) / difr[(j - 1) + (2 - 1) * lddifr];
+                }
+                for (i = 1; i <= j - 1; i = i + 1) {
+                    if (z[j - 1] == zero) {
+                        rwork[i - 1] = zero;
+                    } else {
+                        rwork[i - 1] = z[j - 1] / (dlamc3[(dsigj - 1) + ((-poles[((i + 1) - 1) + (2 - 1) * ldpoles]) - 1) * lddlamc3] - difr[(i - 1)]) / (dsigj + poles[(i - 1)]) / difr[(i - 1) + (2 - 1) * lddifr];
+                    }
+                }
+                for (i = j + 1; i <= k; i = i + 1) {
+                    if (z[j - 1] == zero) {
+                        rwork[i - 1] = zero;
+                    } else {
+                        rwork[i - 1] = z[j - 1] / (dlamc3[(dsigj - 1) + (-poles[(i - 1) + (2 - 1) * ldpoles] - 1) * lddlamc3] - difl[i - 1]) / (dsigj + poles[(i - 1)]) / difr[(i - 1) + (2 - 1) * lddifr];
+                    }
+                }
+                //
+                //              Since B and BX are complex, the following call to Rgemv
+                //              is performed in two steps (real and imaginary parts).
+                //
+                //              CALL Rgemv( 'T', K, NRHS, ONE, B, LDB, WORK, 1, ZERO,
+                //    $                     BX( J, 1 ), LDBX )
+                //
+                i = k + nrhs * 2;
+                for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
+                    for (jrow = 1; jrow <= k; jrow = jrow + 1) {
+                        i++;
+                        rwork[i - 1] = b[(jrow - 1) + (jcol - 1) * ldb].real();
+                    }
+                }
+                Rgemv("T", k, nrhs, one, rwork[(1 + k + nrhs * 2) - 1], k, rwork[1 - 1], 1, zero, rwork[(1 + k) - 1], 1);
+                i = k + nrhs * 2;
+                for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
+                    for (jrow = 1; jrow <= k; jrow = jrow + 1) {
+                        i++;
+                        rwork[i - 1] = b[(jrow - 1) + (jcol - 1) * ldb].imag();
+                    }
+                }
+                Rgemv("T", k, nrhs, one, rwork[(1 + k + nrhs * 2) - 1], k, rwork[1 - 1], 1, zero, rwork[(1 + k + nrhs) - 1], 1);
+                for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
+                    bx[(j - 1) + (jcol - 1) * ldbx] = COMPLEX(rwork[(jcol + k) - 1], rwork[(jcol + k + nrhs) - 1]);
+                }
+            }
+        }
+        //
+        //        Step (2R): if SQRE = 1, apply back the rotation that is
+        //        related to the right null space of the subproblem.
+        //
+        if (sqre == 1) {
+            Ccopy(nrhs, b[(m - 1)], ldb, bx[(m - 1)], ldbx);
+            CRrot(nrhs, bx[(1 - 1)], ldbx, bx[(m - 1)], ldbx, c, s);
+        }
+        if (k < max(m, n)) {
+            Clacpy("A", n - k, nrhs, b[((k + 1) - 1)], ldb, bx[((k + 1) - 1)], ldbx);
+        }
+        //
+        //        Step (3R): permute rows of B.
+        //
+        Ccopy(nrhs, bx[(1 - 1)], ldbx, b[(nlp1 - 1)], ldb);
+        if (sqre == 1) {
+            Ccopy(nrhs, bx[(m - 1)], ldbx, b[(m - 1)], ldb);
+        }
+        for (i = 2; i <= n; i = i + 1) {
+            Ccopy(nrhs, bx[(i - 1)], ldbx, b[(perm[i - 1] - 1)], ldb);
+        }
+        //
+        //        Step (4R): apply back the Givens rotations performed.
+        //
+        for (i = givptr; i >= 1; i = i - 1) {
+            CRrot(nrhs, b[(givcol[(i - 1) + (2 - 1) * ldgivcol] - 1)], ldb, b[(givcol[(i - 1)] - 1)], ldb, givnum[(i - 1) + (2 - 1) * ldgivnum], -givnum[(i - 1)]);
+        }
     }
-    return;
+    //
+    //     End of Clals0
+    //
 }

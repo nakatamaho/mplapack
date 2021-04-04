@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Rlatrz.cpp,v 1.4 2010/08/07 04:48:33 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,70 +25,59 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlatrz(INTEGER m, INTEGER n, INTEGER l, REAL * A, INTEGER lda, REAL * tau, REAL * work)
-{
-    INTEGER i;
-    REAL Zero = 0.0;
-
-//Test the input arguments
-//Quick return if possible
+void Rlatrz(INTEGER const &m, INTEGER const &n, INTEGER const &l, REAL *a, INTEGER const &lda, REAL *tau, REAL *work) {
+    //
+    //  -- LAPACK computational routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    //     Test the input arguments
+    //
+    //     Quick return if possible
+    //
+    INTEGER i = 0;
+    const REAL zero = 0.0;
     if (m == 0) {
-	return;
+        return;
     } else if (m == n) {
-	for (i = 0; i < n; i++) {
-	    tau[i] = Zero;
-	}
-	return;
+        for (i = 1; i <= n; i = i + 1) {
+            tau[i - 1] = zero;
+        }
+        return;
     }
-
-    for (i = m - 1; i >= 0; i--) {
-//Generate elementary reflector H(i) to annihilate
-//[ A(i,i) A(i,n-l+1:n) ]
-	Rlarfg(l + 1, &A[i + i * lda], &A[i + (n - l + 1) * lda], lda, &tau[i]);
-
-//Apply H(i) to A(1:i-1,i:n) from the right
-	Rlarz("Right", i - 1, n - i + 1, l, &A[i + (n - l + 1) * lda], lda, tau[i], &A[i * lda + 1], lda, &work[0]);
+    //
+    for (i = m; i >= 1; i = i - 1) {
+        //
+        //        Generate elementary reflector H(i) to annihilate
+        //        [ A(i,i) A(i,n-l+1:n) ]
+        //
+        Rlarfg(l + 1, a[(i - 1) + (i - 1) * lda], a[(i - 1) + ((n - l + 1) - 1) * lda], lda, tau[i - 1]);
+        //
+        //        Apply H(i) to A(1:i-1,i:n) from the right
+        //
+        Rlarz("Right", i - 1, n - i + 1, l, a[(i - 1) + ((n - l + 1) - 1) * lda], lda, tau[i - 1], a[(i - 1) * lda], lda, work);
+        //
     }
-    return;
+    //
+    //     End of Rlatrz
+    //
 }

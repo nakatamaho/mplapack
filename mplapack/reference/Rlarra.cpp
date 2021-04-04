@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Rlarra.cpp,v 1.7 2010/08/07 04:48:32 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,81 +25,72 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarra(INTEGER n, REAL * d, REAL * e, REAL * e2, REAL spltol, REAL tnrm, INTEGER * nsplit, INTEGER * isplit, INTEGER * info)
-{
-    INTEGER i;
-    REAL tmp1, eabs;
-    REAL Zero = 0.0;
-
-    *info = 0;
-//Compute splitting points
-    *nsplit = 1;
-    if (spltol < Zero) {
-//Criterion based on absolute off-diagonal value
-	tmp1 = abs(spltol) * tnrm;
-	for (i = 0; i < n - 1; i++) {
-	    eabs = abs(e[i]);
-	    if (eabs <= tmp1) {
-		e[i] = Zero;
-		e2[i] = Zero;
-		isplit[*nsplit] = i;
-		++(*nsplit);
-	    }
-	}
-    } else {
-//Criterion that guarantees relative accuracy
-	for (i = 0; i < n - 1; i++) {
-	    eabs = abs(e[i]);
-	    if (eabs <= spltol * sqrt(abs(d[i])) * sqrt(abs(d[i + 1]))) {
-		e[i] = Zero;
-		e2[i] = Zero;
-		isplit[*nsplit] = i;
-		++(*nsplit);
-	    }
-
-	}
+void Rlarra(INTEGER const &n, REAL *d, REAL *e, REAL *e2, REAL const &spltol, REAL const &tnrm, INTEGER &nsplit, arr_ref<INTEGER> isplit, INTEGER &info) {
+    //
+    //  -- LAPACK auxiliary routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    info = 0;
+    //
+    //     Quick return if possible
+    //
+    if (n <= 0) {
+        return;
     }
-    isplit[*nsplit] = n;
-    return;
+    //
+    //     Compute splitting poINTEGERs
+    nsplit = 1;
+    const REAL zero = 0.0;
+    REAL tmp1 = 0.0;
+    INTEGER i = 0;
+    REAL eabs = 0.0;
+    if (spltol < zero) {
+        //        Criterion based on absolute off-diagonal value
+        tmp1 = abs(spltol) * tnrm;
+        for (i = 1; i <= n - 1; i = i + 1) {
+            eabs = abs(e[i - 1]);
+            if (eabs <= tmp1) {
+                e[i - 1] = zero;
+                e2[i - 1] = zero;
+                isplit[nsplit - 1] = i;
+                nsplit++;
+            }
+        }
+    } else {
+        //        Criterion that guarantees relative accuracy
+        for (i = 1; i <= n - 1; i = i + 1) {
+            eabs = abs(e[i - 1]);
+            if (eabs <= spltol * sqrt(abs(d[i - 1])) * sqrt(abs(d[(i + 1) - 1]))) {
+                e[i - 1] = zero;
+                e2[i - 1] = zero;
+                isplit[nsplit - 1] = i;
+                nsplit++;
+            }
+        }
+    }
+    isplit[nsplit - 1] = n;
+    //
+    //     End of Rlarra
+    //
 }

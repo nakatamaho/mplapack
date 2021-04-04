@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Claed8.cpp,v 1.9 2010/08/07 04:48:32 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,234 +25,266 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-void
-Claed8(INTEGER * k, INTEGER n, INTEGER qsiz, COMPLEX * q, INTEGER ldq, REAL * d,
-       REAL * rho, INTEGER cutpnt, REAL * z, REAL * dlamda,
-       COMPLEX * q2, INTEGER ldq2, REAL * w, INTEGER * indxp, INTEGER * indx, INTEGER * indxq, INTEGER * perm, INTEGER * givptr, INTEGER * givcol, REAL * givnum, INTEGER * info)
-{
-    REAL c;
-    INTEGER i, j;
-    REAL s, t;
-    INTEGER k2, n1, n2, jp, n1p1;
-    REAL eps, tau, tol;
-    INTEGER jlam = 0, imax, jmax;
-    REAL mtemp1;
-    REAL Zero = 0.0, One = 1.0, Two = 2.0, Eight = 8.0;
-
-    *info = 0;
+void Claed8(INTEGER &k, INTEGER const &n, INTEGER const &qsiz, COMPLEX *q, INTEGER const &ldq, REAL *d, REAL &rho, INTEGER const &cutpnt, REAL *z, REAL *dlamda, COMPLEX *q2, INTEGER const &ldq2, REAL *w, arr_ref<INTEGER> indxp, arr_ref<INTEGER> indx, arr_ref<INTEGER> indxq, arr_ref<INTEGER> perm, INTEGER &givptr, arr_ref<INTEGER, 2> givcol, REAL *givnum, INTEGER &info) {
+    INTEGER n1 = 0;
+    INTEGER n2 = 0;
+    INTEGER n1p1 = 0;
+    const REAL zero = 0.0;
+    const REAL mone = -1.0;
+    const REAL one = 1.0;
+    const REAL two = 2.0;
+    REAL t = 0.0;
+    INTEGER j = 0;
+    INTEGER i = 0;
+    INTEGER imax = 0;
+    INTEGER jmax = 0;
+    REAL eps = 0.0;
+    const REAL eight = 8.0;
+    REAL tol = 0.0;
+    INTEGER k2 = 0;
+    INTEGER jlam = 0;
+    REAL s = 0.0;
+    REAL c = 0.0;
+    REAL tau = 0.0;
+    INTEGER jp = 0;
+    //
+    //  -- LAPACK computational routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    //     Test the input parameters.
+    //
+    info = 0;
+    //
     if (n < 0) {
-	*info = -2;
+        info = -2;
     } else if (qsiz < n) {
-	*info = -3;
-    } else if (ldq < max((INTEGER) 1, n)) {
-	*info = -5;
-    } else if (cutpnt < max((INTEGER) 1, n) || cutpnt > n) {
-	*info = -8;
-    } else if (ldq2 < max((INTEGER) 1, n)) {
-	*info = -12;
+        info = -3;
+    } else if (ldq < max((INTEGER)1, n)) {
+        info = -5;
+    } else if (cutpnt < min(1, n) || cutpnt > n) {
+        info = -8;
+    } else if (ldq2 < max((INTEGER)1, n)) {
+        info = -12;
     }
-    if (*info != 0) {
-	Mxerbla("Claed8", -(*info));
-	return;
+    if (info != 0) {
+        Mxerbla("Claed8", -info);
+        return;
     }
-//Quick return if possible
+    //
+    //     Need to initialize GIVPTR to O here in case of quick exit
+    //     to prevent an unspecified code behavior (usually sigfault)
+    //     when IWORK array on entry to *stedc is not zeroed
+    //     (or at least some IWORK entries which used in *laed7 for GIVPTR).
+    //
+    givptr = 0;
+    //
+    //     Quick return if possible
+    //
     if (n == 0) {
-	return;
+        return;
     }
+    //
     n1 = cutpnt;
     n2 = n - n1;
     n1p1 = n1 + 1;
-    if (*rho < Zero) {
-	Rscal(n2, -One, &z[n1p1], 1);
+    //
+    if (rho < zero) {
+        Rscal(n2, mone, z[n1p1 - 1], 1);
     }
-//Normalize z so that norm(z) = 1
-    t = One / sqrt(Two);
-    for (j = 0; j < n; j++) {
-	indx[j] = j;
+    //
+    //     Normalize z so that norm(z) = 1
+    //
+    t = one / sqrt(two);
+    for (j = 1; j <= n; j = j + 1) {
+        indx[j - 1] = j;
     }
-    Rscal(n, t, &z[1], 1);
-    mtemp1 = *rho * Two;
-    *rho = abs(mtemp1);
-//Sort the eigenvalues into increasing order
-    for (i = cutpnt + 1; i <= n; i++) {
-	indxq[i] += cutpnt;
+    Rscal(n, t, z, 1);
+    rho = abs(two * rho);
+    //
+    //     Sort the eigenvalues INTEGERo increasing order
+    //
+    for (i = cutpnt + 1; i <= n; i = i + 1) {
+        indxq[i - 1] += cutpnt;
     }
-    for (i = 0; i < n; i++) {
-	dlamda[i] = d[indxq[i]];
-	w[i] = z[indxq[i]];
-
+    for (i = 1; i <= n; i = i + 1) {
+        dlamda[i - 1] = d[indxq[i - 1] - 1];
+        w[i - 1] = z[indxq[i - 1] - 1];
     }
     i = 1;
     j = cutpnt + 1;
-    Rlamrg(n1, n2, &dlamda[0], 1, 1, &indx[0]);
-    for (i = 0; i < n; i++) {
-	d[i] = dlamda[indx[i]];
-	z[i] = w[indx[i]];
-
+    Rlamrg(n1, n2, dlamda, 1, 1, indx);
+    for (i = 1; i <= n; i = i + 1) {
+        d[i - 1] = dlamda[indx[i - 1] - 1];
+        z[i - 1] = w[indx[i - 1] - 1];
     }
-//Calculate the allowable deflation tolerance
-    imax = iRamax(n, &z[1], 1);
-    jmax = iRamax(n, &d[0], 1);
-    eps = Rlamch("Epsilon");
-    tol = eps * Eight * abs(d[jmax]);
-//If the rank-1 modifier is small enough, no more needs to be done
-//-- except to reorganize Q so that its columns correspond with the
-//elements in D.
-    if (*rho * abs(z[imax]) <= tol) {
-	k = 0;
-	for (j = 0; j < n; j++) {
-	    perm[j] = indxq[indx[j]];
-	    Ccopy(qsiz, &q[perm[j] * ldq + 1], 1, &q2[j * ldq2 + 1], 1);
-
-	}
-	Clacpy("A", qsiz, n, &q2[ldq2 + 1], ldq2, &q[ldq + 1], ldq);
-	return;
+    //
+    //     Calculate the allowable deflation tolerance
+    //
+    imax = iRamax[(n - 1) + (z - 1) * ldiRamax];
+    jmax = iRamax[(n - 1) + (d - 1) * ldiRamax];
+    eps = dlamch("Epsilon");
+    tol = eight * eps * abs(d[jmax - 1]);
+    //
+    //     If the rank-1 modifier is small enough, no more needs to be done
+    //     -- except to reorganize Q so that its columns correspond with the
+    //     elements in D.
+    //
+    if (rho * abs(z[imax - 1]) <= tol) {
+        k = 0;
+        for (j = 1; j <= n; j = j + 1) {
+            perm[j - 1] = indxq[indx[j - 1] - 1];
+            Ccopy(qsiz, q[(perm[j - 1] - 1) * ldq], 1, q2[(j - 1) * ldq2], 1);
+        }
+        Clacpy("A", qsiz, n, q2[(1 - 1)], ldq2, q[(1 - 1)], ldq);
+        return;
     }
-//If there are multiple eigenvalues then the problem deflates.  Here 
-//the number of equal eigenvalues are found.  As each equal
-//eigenvalue is found, an elementary reflector is computed to rotate
-//the corresponding eigensubspace so that the corresponding
-//components of Z are zero in this new basis.
+    //
+    //     If there are multiple eigenvalues then the problem deflates.  Here
+    //     the number of equal eigenvalues are found.  As each equal
+    //     eigenvalue is found, an elementary reflector is computed to rotate
+    //     the corresponding eigensubspace so that the corresponding
+    //     components of Z are zero in this new basis.
+    //
     k = 0;
-    *givptr = 0;
     k2 = n + 1;
-    for (j = 0; j < n; j++) {
-	if (*rho * abs(z[j]) <= tol) {
-//Deflate due to small z component.
-	    k2--;
-	    indxp[k2] = j;
-	    if (j == n) {
-		goto L100;
-	    }
-	} else {
-	    jlam = j;
-	    goto L70;
-	}
-
+    for (j = 1; j <= n; j = j + 1) {
+        if (rho * abs(z[j - 1]) <= tol) {
+            //
+            //           Deflate due to small z component.
+            //
+            k2 = k2 - 1;
+            indxp[k2 - 1] = j;
+            if (j == n) {
+                goto statement_100;
+            }
+        } else {
+            jlam = j;
+            goto statement_70;
+        }
     }
-  L70:
+statement_70:
     j++;
     if (j > n) {
-	goto L90;
+        goto statement_90;
     }
-    if (*rho * abs(z[j]) <= tol) {
-//Deflate due to small z component.
-	k2--;
-	indxp[k2] = j;
+    if (rho * abs(z[j - 1]) <= tol) {
+        //
+        //        Deflate due to small z component.
+        //
+        k2 = k2 - 1;
+        indxp[k2 - 1] = j;
     } else {
-//Check if eigenvalues are close enough to allow deflation.
-	s = z[jlam];
-	c = z[j];
-//Find sqrt(a**2+b**2) without overflow or
-//destructive underflow.
-	tau = Rlapy2(c, s);
-	t = d[j] - d[jlam];
-	c /= tau;
-	s = -s / tau;
-	if (abs(t * c * s) <= tol) {
-//Deflation is possible.
-	    z[j] = tau;
-	    z[jlam] = Zero;
-//Record the appropriate Givens rotation
-	    ++(*givptr);
-	    givcol[(*givptr << 1) + 1] = indxq[indx[jlam]];
-	    givcol[(*givptr << 1) + 2] = indxq[indx[j]];
-	    givnum[(*givptr << 1) + 1] = c;
-	    givnum[(*givptr << 1) + 2] = s;
-	    CRrot(qsiz, &q[indxq[indx[jlam]] * ldq + 1], 1, &q[indxq[indx[j]] * ldq + 1], 1, c, s);
-	    t = d[jlam] * c * c + d[j] * s * s;
-	    d[j] = d[jlam] * s * s + d[j] * c * c;
-	    d[jlam] = t;
-	    k2--;
-	    i = 1;
-	  L80:
-	    if (k2 + i <= n) {
-		if (d[jlam] < d[indxp[k2 + i]]) {
-		    indxp[k2 + i - 1] = indxp[k2 + i];
-		    indxp[k2 + i] = jlam;
-		    i++;
-		    goto L80;
-		} else {
-		    indxp[k2 + i - 1] = jlam;
-		}
-	    } else {
-		indxp[k2 + i - 1] = jlam;
-	    }
-	    jlam = j;
-	} else {
-	    ++(*k);
-	    w[*k] = z[jlam];
-	    dlamda[*k] = d[jlam];
-	    indxp[*k] = jlam;
-	    jlam = j;
-	}
+        //
+        //        Check if eigenvalues are close enough to allow deflation.
+        //
+        s = z[jlam - 1];
+        c = z[j - 1];
+        //
+        //        Find sqrt(a**2+b**2) without overflow or
+        //        destructive underflow.
+        //
+        tau = Rlapy2[(c - 1) + (s - 1) * ldRlapy2];
+        t = d[j - 1] - d[jlam - 1];
+        c = c / tau;
+        s = -s / tau;
+        if (abs(t * c * s) <= tol) {
+            //
+            //           Deflation is possible.
+            //
+            z[j - 1] = tau;
+            z[jlam - 1] = zero;
+            //
+            //           Record the appropriate Givens rotation
+            //
+            givptr++;
+            givcol[(givptr - 1) * ldgivcol] = indxq[indx[jlam - 1] - 1];
+            givcol[(2 - 1) + (givptr - 1) * ldgivcol] = indxq[indx[j - 1] - 1];
+            givnum[(givptr - 1) * ldgivnum] = c;
+            givnum[(2 - 1) + (givptr - 1) * ldgivnum] = s;
+            CRrot(qsiz, q[(indxq[indx[jlam - 1] - 1] - 1) * ldq], 1, q[(indxq[indx[j - 1] - 1] - 1) * ldq], 1, c, s);
+            t = d[jlam - 1] * c * c + d[j - 1] * s * s;
+            d[j - 1] = d[jlam - 1] * s * s + d[j - 1] * c * c;
+            d[jlam - 1] = t;
+            k2 = k2 - 1;
+            i = 1;
+        statement_80:
+            if (k2 + i <= n) {
+                if (d[jlam - 1] < d[(indxp[(k2 + i) - 1]) - 1]) {
+                    indxp[(k2 + i - 1) - 1] = indxp[(k2 + i) - 1];
+                    indxp[(k2 + i) - 1] = jlam;
+                    i++;
+                    goto statement_80;
+                } else {
+                    indxp[(k2 + i - 1) - 1] = jlam;
+                }
+            } else {
+                indxp[(k2 + i - 1) - 1] = jlam;
+            }
+            jlam = j;
+        } else {
+            k++;
+            w[k - 1] = z[jlam - 1];
+            dlamda[k - 1] = d[jlam - 1];
+            indxp[k - 1] = jlam;
+            jlam = j;
+        }
     }
-    goto L70;
-  L90:
-//Record the last eigenvalue.
-    ++(*k);
-    w[*k] = z[jlam];
-    dlamda[*k] = d[jlam];
-    indxp[*k] = jlam;
-
-  L100:
-//Sort the eigenvalues and corresponding eigenvectors into DLAMDA
-//and Q2 respectively.  The eigenvalues/vectors which were not
-//deflated go into the first K slots of DLAMDA and Q2 respectively,
-//while those which were deflated go into the last N - K slots.
-    for (j = 0; j < n; j++) {
-	jp = indxp[j];
-	dlamda[j] = d[jp];
-	perm[j] = indxq[indx[jp]];
-	Ccopy(qsiz, &q[perm[j] * ldq + 1], 1, &q2[j * ldq2 + 1], 1);
-
+    goto statement_70;
+statement_90:
+    //
+    //     Record the last eigenvalue.
+    //
+    k++;
+    w[k - 1] = z[jlam - 1];
+    dlamda[k - 1] = d[jlam - 1];
+    indxp[k - 1] = jlam;
+//
+statement_100:
+    //
+    //     Sort the eigenvalues and corresponding eigenvectors INTEGERo DLAMDA
+    //     and Q2 respectively.  The eigenvalues/vectors which were not
+    //     deflated go INTEGERo the first K slots of DLAMDA and Q2 respectively,
+    //     while those which were deflated go INTEGERo the last N - K slots.
+    //
+    for (j = 1; j <= n; j = j + 1) {
+        jp = indxp[j - 1];
+        dlamda[j - 1] = d[jp - 1];
+        perm[j - 1] = indxq[indx[jp - 1] - 1];
+        Ccopy(qsiz, q[(perm[j - 1] - 1) * ldq], 1, q2[(j - 1) * ldq2], 1);
     }
-//The deflated eigenvalues and their corresponding vectors go back
-//into the last N - K slots of D and Q respectively.
-    if (*k < n) {
-	Rcopy(n - *k, &dlamda[*k + 1], 1, &d[*k + 1], 1);
-	Clacpy("A", qsiz, n - *k, &q2[(*k + 1) * ldq2 + 1], ldq2, &q[(*k + 1) * ldq + 1], ldq);
+    //
+    //     The deflated eigenvalues and their corresponding vectors go back
+    //     INTEGERo the last N - K slots of D and Q respectively.
+    //
+    if (k < n) {
+        Rcopy(n - k, dlamda[(k + 1) - 1], 1, d[(k + 1) - 1], 1);
+        Clacpy("A", qsiz, n - k, q2[((k + 1) - 1) * ldq2], ldq2, q[((k + 1) - 1) * ldq], ldq);
     }
-    return;
+    //
+    //     End of Claed8
+    //
 }

@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Rlasrt.cpp,v 1.9 2010/08/07 04:48:33 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,48 +28,227 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
-#include <stdlib.h>
 
-int compare_mpf_gt(const REAL * a, const REAL * b)
-{
-    if (*a > *b)
-	return 1;
-    if (*a == *b)
-	return 0;
-    if (*a < *b)
-	return -1;
-    return 0;			//never occurs
-}
-
-int compare_mpf_lt(const REAL * a, const REAL * b)
-{
-    if (*a > *b)
-	return -1;
-    if (*a == *b)
-	return 0;
-    if (*a < *b)
-	return 1;
-    return 0;			//never occurs
-}
-
-void Rlasrt(const char *id, INTEGER n, REAL * d, INTEGER * info)
-{
-    //Error check
-    if (!Mlsame(id, "I") && !Mlsame(id, "D")) {
-	*info = -1;
-	Mxerbla("Rlasrt", -(*info));
-	return;
+void Rlasrt(const char *id, INTEGER const &n, REAL *d, INTEGER &info) {
+    INTEGER dir = 0;
+    INTEGER stkpnt = 0;
+    arr_2d<2, 32, INTEGER> stack(fill0);
+    INTEGER start = 0;
+    INTEGER endd = 0;
+    const INTEGER select = 20;
+    INTEGER i = 0;
+    INTEGER j = 0;
+    REAL dmnmx = 0.0;
+    REAL d1 = 0.0;
+    REAL d2 = 0.0;
+    REAL d3 = 0.0;
+    REAL tmp = 0.0;
+    //
+    //  -- LAPACK computational routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. Local Arrays ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    //     Test the input parameters.
+    //
+    info = 0;
+    dir = -1;
+    if (Mlsame(id, "D")) {
+        dir = 0;
+    } else if (Mlsame(id, "I")) {
+        dir = 1;
     }
-    if (n < 0) {
-	*info = -2;
-	Mxerbla("Rlasrt", -(*info));
-	return;
+    if (dir == -1) {
+        info = -1;
+    } else if (n < 0) {
+        info = -2;
     }
-    if (Mlsame(id, "I")) {
-	qsort(d, n, sizeof(REAL), (int (*)(const void *, const void *)) compare_mpf_gt);
+    if (info != 0) {
+        Mxerbla("Rlasrt", -info);
+        return;
     }
-    if (Mlsame(id, "d")) {
-	qsort(d, n, sizeof(REAL), (int (*)(const void *, const void *)) compare_mpf_lt);
+    //
+    //     Quick return if possible
+    //
+    if (n <= 1) {
+        return;
     }
-    *info = 0;
+    //
+    stkpnt = 1;
+    stack[(1 - 1)] = 1;
+    stack[(2 - 1)] = n;
+statement_10:
+    start = stack[(stkpnt - 1) * ldstack];
+    endd = stack[(2 - 1) + (stkpnt - 1) * ldstack];
+    stkpnt = stkpnt - 1;
+    if (endd - start <= select && endd - start > 0) {
+        //
+        //        Do Insertion sort on D( START:ENDD )
+        //
+        if (dir == 0) {
+            //
+            //           Sort INTEGERo decreasing order
+            //
+            for (i = start + 1; i <= endd; i = i + 1) {
+                for (j = i; j >= start + 1; j = j - 1) {
+                    if (d[j - 1] > d[(j - 1) - 1]) {
+                        dmnmx = d[j - 1];
+                        d[j - 1] = d[(j - 1) - 1];
+                        d[(j - 1) - 1] = dmnmx;
+                    } else {
+                        goto statement_30;
+                    }
+                }
+            statement_30:;
+            }
+            //
+        } else {
+            //
+            //           Sort INTEGERo increasing order
+            //
+            for (i = start + 1; i <= endd; i = i + 1) {
+                for (j = i; j >= start + 1; j = j - 1) {
+                    if (d[j - 1] < d[(j - 1) - 1]) {
+                        dmnmx = d[j - 1];
+                        d[j - 1] = d[(j - 1) - 1];
+                        d[(j - 1) - 1] = dmnmx;
+                    } else {
+                        goto statement_50;
+                    }
+                }
+            statement_50:;
+            }
+            //
+        }
+        //
+    } else if (endd - start > select) {
+        //
+        //        Partition D( START:ENDD ) and stack parts, largest one first
+        //
+        //        Choose partition entry as median of 3
+        //
+        d1 = d[start - 1];
+        d2 = d[endd - 1];
+        i = (start + endd) / 2;
+        d3 = d[i - 1];
+        if (d1 < d2) {
+            if (d3 < d1) {
+                dmnmx = d1;
+            } else if (d3 < d2) {
+                dmnmx = d3;
+            } else {
+                dmnmx = d2;
+            }
+        } else {
+            if (d3 < d2) {
+                dmnmx = d2;
+            } else if (d3 < d1) {
+                dmnmx = d3;
+            } else {
+                dmnmx = d1;
+            }
+        }
+        //
+        if (dir == 0) {
+            //
+            //           Sort INTEGERo decreasing order
+            //
+            i = start - 1;
+            j = endd + 1;
+        statement_60:
+        statement_70:
+            j = j - 1;
+            if (d[j - 1] < dmnmx) {
+                goto statement_70;
+            }
+        statement_80:
+            i++;
+            if (d[i - 1] > dmnmx) {
+                goto statement_80;
+            }
+            if (i < j) {
+                tmp = d[i - 1];
+                d[i - 1] = d[j - 1];
+                d[j - 1] = tmp;
+                goto statement_60;
+            }
+            if (j - start > endd - j - 1) {
+                stkpnt++;
+                stack[(stkpnt - 1) * ldstack] = start;
+                stack[(2 - 1) + (stkpnt - 1) * ldstack] = j;
+                stkpnt++;
+                stack[(stkpnt - 1) * ldstack] = j + 1;
+                stack[(2 - 1) + (stkpnt - 1) * ldstack] = endd;
+            } else {
+                stkpnt++;
+                stack[(stkpnt - 1) * ldstack] = j + 1;
+                stack[(2 - 1) + (stkpnt - 1) * ldstack] = endd;
+                stkpnt++;
+                stack[(stkpnt - 1) * ldstack] = start;
+                stack[(2 - 1) + (stkpnt - 1) * ldstack] = j;
+            }
+        } else {
+            //
+            //           Sort INTEGERo increasing order
+            //
+            i = start - 1;
+            j = endd + 1;
+        statement_90:
+        statement_100:
+            j = j - 1;
+            if (d[j - 1] > dmnmx) {
+                goto statement_100;
+            }
+        statement_110:
+            i++;
+            if (d[i - 1] < dmnmx) {
+                goto statement_110;
+            }
+            if (i < j) {
+                tmp = d[i - 1];
+                d[i - 1] = d[j - 1];
+                d[j - 1] = tmp;
+                goto statement_90;
+            }
+            if (j - start > endd - j - 1) {
+                stkpnt++;
+                stack[(stkpnt - 1) * ldstack] = start;
+                stack[(2 - 1) + (stkpnt - 1) * ldstack] = j;
+                stkpnt++;
+                stack[(stkpnt - 1) * ldstack] = j + 1;
+                stack[(2 - 1) + (stkpnt - 1) * ldstack] = endd;
+            } else {
+                stkpnt++;
+                stack[(stkpnt - 1) * ldstack] = j + 1;
+                stack[(2 - 1) + (stkpnt - 1) * ldstack] = endd;
+                stkpnt++;
+                stack[(stkpnt - 1) * ldstack] = start;
+                stack[(2 - 1) + (stkpnt - 1) * ldstack] = j;
+            }
+        }
+    }
+    if (stkpnt > 0) {
+        goto statement_10;
+    }
+    //
+    //     End of Rlasrt
+    //
 }

@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Cgebal.cpp,v 1.6 2010/08/07 04:48:32 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,248 +25,273 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-#define MTRUE 1
-#define MFALSE 0
-
-void Cgebal(const char *job, INTEGER n, COMPLEX * A, INTEGER lda, INTEGER * ilo, INTEGER * ihi, REAL * scale, INTEGER * info)
-{
-    REAL c, f, g;
-    INTEGER i, j, k, l, m;
-    REAL r, s, ca, ra;
-    INTEGER ica, ira, iexc;
-    REAL sfmin1, sfmin2, sfmax1, sfmax2;
-    INTEGER noconv;
-    REAL Zero = 0.0, One = 1.0, Two = 2.0;
-    REAL mtemp1, mtemp2;
-
-//Test the input parameters
-    *info = 0;
-    if (!Mlsame(job, "N") && !Mlsame(job, "P") && !Mlsame(job, "S")
-	&& !Mlsame(job, "B")) {
-	*info = -1;
+void Cgebal(const char *job, INTEGER const &n, COMPLEX *a, INTEGER const &lda, INTEGER &ilo, INTEGER &ihi, REAL *scale, INTEGER &info) {
+    INTEGER k = 0;
+    INTEGER l = 0;
+    INTEGER i = 0;
+    const REAL one = 1.0;
+    INTEGER m = 0;
+    INTEGER j = 0;
+    INTEGER iexc = 0;
+    const REAL zero = 0.0;
+    REAL sfmin1 = 0.0;
+    REAL sfmax1 = 0.0;
+    const REAL sclfac = 2.0e+0;
+    REAL sfmin2 = 0.0;
+    REAL sfmax2 = 0.0;
+    bool noconv = false;
+    REAL c = 0.0;
+    REAL r = 0.0;
+    INTEGER ica = 0;
+    REAL ca = 0.0;
+    INTEGER ira = 0;
+    REAL ra = 0.0;
+    REAL g = 0.0;
+    REAL f = 0.0;
+    REAL s = 0.0;
+    const REAL factor = 0.95e+0;
+    //
+    //  -- LAPACK computational routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //
+    //     Test the input parameters
+    //
+    info = 0;
+    if (!Mlsame(job, "N") && !Mlsame(job, "P") && !Mlsame(job, "S") && !Mlsame(job, "B")) {
+        info = -1;
     } else if (n < 0) {
-	*info = -2;
-    } else if (lda < max((INTEGER) 1, n)) {
-	*info = -4;
+        info = -2;
+    } else if (lda < max((INTEGER)1, n)) {
+        info = -4;
     }
-    if (*info != 0) {
-	Mxerbla("Cgebal", -(*info));
-	return;
+    if (info != 0) {
+        Mxerbla("Cgebal", -info);
+        return;
     }
-    k = 0;
+    //
+    k = 1;
     l = n;
+    //
     if (n == 0) {
-	goto L210;
+        goto statement_210;
     }
+    //
     if (Mlsame(job, "N")) {
-	for (i = 0; i < n; i++) {
-	    scale[i] = One;
-	}
-	goto L210;
+        for (i = 1; i <= n; i = i + 1) {
+            scale[i - 1] = one;
+        }
+        goto statement_210;
     }
+    //
     if (Mlsame(job, "S")) {
-	goto L120;
+        goto statement_120;
     }
-//Permutation to isolate eigenvalues if possible
-    goto L50;
-//Row and column exchange.
-  L20:
-    scale[m] = (double) j;
+    //
+    //     Permutation to isolate eigenvalues if possible
+    //
+    goto statement_50;
+//
+//     Row and column exchange.
+//
+statement_20:
+    scale[m - 1] = j;
     if (j == m) {
-	goto L30;
+        goto statement_30;
     }
-    Cswap(l, &A[j * lda], 1, &A[m * lda], 1);
-    Cswap(n - k + 1, &A[j + k * lda], lda, &A[m + k * lda], lda);
-  L30:
+    //
+    Cswap(l, a[(j - 1) * lda], 1, a[(m - 1) * lda], 1);
+    Cswap(n - k + 1, a[(j - 1) + (k - 1) * lda], lda, a[(m - 1) + (k - 1) * lda], lda);
+//
+statement_30:
     switch (iexc) {
     case 1:
-	goto L40;
+        goto statement_40;
     case 2:
-	goto L80;
+        goto statement_80;
+    default:
+        break;
     }
-//Search for rows isolating an eigenvalue and push them down.
-  L40:
+//
+//     Search for rows isolating an eigenvalue and push them down.
+//
+statement_40:
     if (l == 1) {
-	goto L210;
+        goto statement_210;
     }
-    l--;
-  L50:
-    for (j = l; j >= 1; j--) {
-	for (i = 0; i < l; i++) {
-	    if (i == j) {
-		goto L60;
-	    }
-	    if (A[j + i * lda].real() != Zero || A[j + i * lda].imag() != Zero) {
-		goto L70;
-	    }
-	  L60:
-	    ;
-	}
-	m = l;
-	iexc = 1;
-	goto L20;
-      L70:
-	;
+    l = l - 1;
+//
+statement_50:
+    for (j = l; j >= 1; j = j - 1) {
+        //
+        for (i = 1; i <= l; i = i + 1) {
+            if (i == j) {
+                goto statement_60;
+            }
+            if (a[(j - 1) + (i - 1) * lda].real() != zero || a[(j - 1) + (i - 1) * lda].imag() != zero) {
+                goto statement_70;
+            }
+        statement_60:;
+        }
+        //
+        m = l;
+        iexc = 1;
+        goto statement_20;
+    statement_70:;
     }
-    goto L90;
-//Search for columns isolating an eigenvalue and push them left.
-  L80:
+    //
+    goto statement_90;
+//
+//     Search for columns isolating an eigenvalue and push them left.
+//
+statement_80:
     k++;
-  L90:
-    for (j = k; j <= l; j++) {
-	for (i = k; i <= l; i++) {
-	    if (i == j) {
-		goto L100;
-	    }
-	    if (A[i + j * lda].real() != Zero || A[i + j * lda].imag() != Zero) {
-		goto L110;
-	    }
-	  L100:
-	    ;
-	}
-	m = k;
-	iexc = 2;
-	goto L20;
-      L110:
-	;
+//
+statement_90:
+    for (j = k; j <= l; j = j + 1) {
+        //
+        for (i = k; i <= l; i = i + 1) {
+            if (i == j) {
+                goto statement_100;
+            }
+            if (a[(i - 1) + (j - 1) * lda].real() != zero || a[(i - 1) + (j - 1) * lda].imag() != zero) {
+                goto statement_110;
+            }
+        statement_100:;
+        }
+        //
+        m = k;
+        iexc = 2;
+        goto statement_20;
+    statement_110:;
     }
-  L120:
-    for (i = k; i <= l; i++) {
-	scale[i] = One;
+//
+statement_120:
+    for (i = k; i <= l; i = i + 1) {
+        scale[i - 1] = one;
     }
+    //
     if (Mlsame(job, "P")) {
-	goto L210;
+        goto statement_210;
     }
-//Balance the submatrix in rows K to L.
-//Iterative loop for norm reduction
-    sfmin1 = Rlamch("S") / Rlamch("P");
-    sfmax1 = One / sfmin1;
-    sfmin2 = sfmin1 * Two;
-    sfmax2 = One / sfmin2;
-  L140:
-    noconv = MFALSE;
-
-    for (i = k; i <= l; i++) {
-	c = Zero;
-	r = Zero;
-	for (j = k; j <= l; j++) {
-	    if (j == i) {
-		goto L150;
-	    }
-	    c = c + abs(A[j + i * lda].real()) + abs(A[j + i * lda].imag());
-	    r = r + abs(A[i + j * lda].real()) + abs(A[i + j * lda].imag());
-	  L150:
-	    ;
-	}
-	ica = iCamax(l, &A[i * lda], 1);
-	ca = abs(A[ica + i * lda]);
-	ira = iCamax(n - k + 1, &A[i + k * lda], lda);
-	ra = abs(A[i + (ira + k - 1) * lda]);
-//Guard against zero C or R due to underflow.
-	if (c == Zero || r == Zero) {
-	    goto L200;
-	}
-	g = r / Two;
-	f = One;
-	s = c + r;
-      L160:
-	mtemp1 = max(f, c);
-	mtemp2 = min(r, g);
-	if (c >= g || max(mtemp1, ca) >= sfmax2 || min(mtemp2, ra) <= sfmin2) {
-	    goto L170;
-	}
-	f = f * Two;
-	c = c * Two;
-	ca = ca * Two;
-	r = r / Two;
-	g = g / Two;
-	ra = ra / Two;
-	goto L160;
-
-      L170:
-	g = c / Two;
-      L180:
-	mtemp1 = min(f, c);
-	mtemp2 = min(mtemp1, g);
-	if (g < r || max(r, ra) >= sfmax2 || min(mtemp1, ca) <= sfmin2) {
-	    goto L190;
-	}
-	f = f / Two;
-	c = c / Two;
-	g = g / Two;
-	ca = ca / Two;
-	r = r * Two;
-	ra = ra * Two;
-	goto L180;
-//Now balance.
-      L190:
-	if (c + r >= s * .95) {
-	    goto L200;
-	}
-	if (f < One && scale[i] < One) {
-	    if (f * scale[i] <= sfmin1) {
-		goto L200;
-	    }
-	}
-	if (f > One && scale[i] > One) {
-	    if (scale[i] >= sfmax1 / f) {
-		goto L200;
-	    }
-	}
-	g = One / f;
-	scale[i] = scale[i] * f;
-	noconv = MTRUE;
-	CRscal(n - k + 1, g, &A[i + k * lda], lda);
-	CRscal(l, f, &A[i * lda], 1);
-      L200:
-	;
+    //
+    //     Balance the submatrix in rows K to L.
+    //
+    //     Iterative loop for norm reduction
+    //
+    sfmin1 = dlamch("S") / dlamch("P");
+    sfmax1 = one / sfmin1;
+    sfmin2 = sfmin1 * sclfac;
+    sfmax2 = one / sfmin2;
+statement_140:
+    noconv = false;
+    //
+    for (i = k; i <= l; i = i + 1) {
+        //
+        c = RCnrm2[((l - k + 1) - 1) + (a[(k - 1) + (i - 1) * lda] - 1) * ldRCnrm2];
+        r = RCnrm2[((l - k + 1) - 1) + (a[(i - 1) + (k - 1) * lda] - 1) * ldRCnrm2];
+        ica = iCamax[(l - 1) + (a[(i - 1) * lda] - 1) * ldiCamax];
+        ca = abs(a[(ica - 1) + (i - 1) * lda]);
+        ira = iCamax[((n - k + 1) - 1) + (a[(i - 1) + (k - 1) * lda] - 1) * ldiCamax];
+        ra = abs(a[(i - 1) + ((ira + k - 1) - 1) * lda]);
+        //
+        //        Guard against zero C or R due to underflow.
+        //
+        if (c == zero || r == zero) {
+            goto statement_200;
+        }
+        g = r / sclfac;
+        f = one;
+        s = c + r;
+    statement_160:
+        if (c >= g || max(f, c, ca) >= sfmax2 || min(r, g, ra) <= sfmin2) {
+            goto statement_170;
+        }
+        if (Risnan(c + f + ca + r + g + ra)) {
+            //
+            //           Exit if NaN to avoid infinite loop
+            //
+            info = -3;
+            Mxerbla("Cgebal", -info);
+            return;
+        }
+        f = f * sclfac;
+        c = c * sclfac;
+        ca = ca * sclfac;
+        r = r / sclfac;
+        g = g / sclfac;
+        ra = ra / sclfac;
+        goto statement_160;
+    //
+    statement_170:
+        g = c / sclfac;
+    statement_180:
+        if (g < r || max(r, ra) >= sfmax2 || min(f, c, g, ca) <= sfmin2) {
+            goto statement_190;
+        }
+        f = f / sclfac;
+        c = c / sclfac;
+        g = g / sclfac;
+        ca = ca / sclfac;
+        r = r * sclfac;
+        ra = ra * sclfac;
+        goto statement_180;
+    //
+    //        Now balance.
+    //
+    statement_190:
+        if ((c + r) >= factor * s) {
+            goto statement_200;
+        }
+        if (f < one && scale[i - 1] < one) {
+            if (f * scale[i - 1] <= sfmin1) {
+                goto statement_200;
+            }
+        }
+        if (f > one && scale[i - 1] > one) {
+            if (scale[i - 1] >= sfmax1 / f) {
+                goto statement_200;
+            }
+        }
+        g = one / f;
+        scale[i - 1] = scale[i - 1] * f;
+        noconv = true;
+        //
+        CRscal(n - k + 1, g, a[(i - 1) + (k - 1) * lda], lda);
+        CRscal(l, f, a[(i - 1) * lda], 1);
+    //
+    statement_200:;
     }
+    //
     if (noconv) {
-	goto L140;
+        goto statement_140;
     }
-  L210:
-    *ilo = k;
-    *ihi = l;
-    return;
+//
+statement_210:
+    ilo = k;
+    ihi = l;
+    //
+    //     End of Cgebal
+    //
 }

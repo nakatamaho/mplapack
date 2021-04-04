@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Cstedc.cpp,v 1.4 2010/08/07 04:48:32 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,246 +25,276 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cstedc(const char *compz, INTEGER n, REAL * d, REAL * e, COMPLEX * z, INTEGER ldz, COMPLEX * work, INTEGER lwork, REAL * rwork,
-	    INTEGER lrwork, INTEGER * iwork, INTEGER liwork, INTEGER * info)
-{
-    INTEGER i, j, k, m;
-    REAL p;
-    INTEGER ii, ll, lgn;
-    REAL eps, tiny;
-    INTEGER lwmin, start;
-    INTEGER finish;
-    INTEGER liwmin, icompz;
-    REAL orgnrm;
-    INTEGER lrwmin;
-    INTEGER lquery;
-    INTEGER smlsiz;
-    REAL Two = 2.0, One = 1.0, Zero = 0.0;
-//Test the input parameters.
-    *info = 0;
-    lquery = lwork == -1 || lrwork == -1 || liwork == -1;
+void Cstedc(const char *compz, INTEGER const &n, REAL *d, REAL *e, COMPLEX *z, INTEGER const &ldz, COMPLEX *work, INTEGER const &lwork, REAL *rwork, INTEGER const &lrwork, arr_ref<INTEGER> iwork, INTEGER const &liwork, INTEGER &info) {
+    bool lquery = false;
+    INTEGER icompz = 0;
+    INTEGER smlsiz = 0;
+    INTEGER lwmin = 0;
+    INTEGER liwmin = 0;
+    INTEGER lrwmin = 0;
+    const REAL two = 2.0;
+    INTEGER lgn = 0;
+    const REAL one = 1.0;
+    const REAL zero = 0.0;
+    INTEGER ll = 0;
+    INTEGER j = 0;
+    INTEGER i = 0;
+    REAL orgnrm = 0.0;
+    REAL eps = 0.0;
+    INTEGER start = 0;
+    INTEGER finish = 0;
+    REAL tiny = 0.0;
+    INTEGER m = 0;
+    INTEGER ii = 0;
+    INTEGER k = 0;
+    REAL p = 0.0;
+    //
+    //  -- LAPACK computational routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    //     Test the input parameters.
+    //
+    info = 0;
+    lquery = (lwork == -1 || lrwork == -1 || liwork == -1);
+    //
     if (Mlsame(compz, "N")) {
-	icompz = 0;
+        icompz = 0;
     } else if (Mlsame(compz, "V")) {
-	icompz = 1;
+        icompz = 1;
     } else if (Mlsame(compz, "I")) {
-	icompz = 2;
+        icompz = 2;
     } else {
-	icompz = -1;
+        icompz = -1;
     }
     if (icompz < 0) {
-	*info = -1;
+        info = -1;
     } else if (n < 0) {
-	*info = -2;
-    } else if (ldz < 1 || (icompz > 0 && ldz < max((INTEGER) 1, n))) {
-	*info = -6;
+        info = -2;
+    } else if ((ldz < 1) || (icompz > 0 && ldz < max((INTEGER)1, n))) {
+        info = -6;
     }
-
-    if (*info == 0) {
-//Compute the workspace requirements
-	smlsiz = iMlaenv(9, "Cstedc", " ", 0, 0, 0, 0);
-	if (n <= 1 || icompz == 0) {
-	    lwmin = 1;
-	    liwmin = 1;
-	    lrwmin = 1;
-	} else if (n <= smlsiz) {
-	    lwmin = 1;
-	    liwmin = 1;
-	    lrwmin = (n - 1) * 2;
-	} else if (icompz == 1) {
-	    lgn = (INTEGER) cast2double(log((double) (n)) / log(Two));
-	    if ((2 ^ (lgn)) < n) {
-		lgn++;
-	    }
-	    if ((2 ^ (lgn)) < n) {
-		lgn++;
-	    }
-	    lwmin = n * n;
-	    lrwmin = n * 3 + 1 + (n * 2) * lgn + n * n * 3;
-	    liwmin = n * 6 + 6 + n * 5 * lgn;
-	} else if (icompz == 2) {
-	    lwmin = 1;
-	    lrwmin = (n * 4) + 1 + (n * n * 2);
-	    liwmin = n * 5 + 3;
-	}
-	work[1] = lwmin;
-	rwork[1] = (double) lrwmin;
-	iwork[1] = liwmin;
-
-	if (lwork < lwmin && !lquery) {
-	    *info = -8;
-	} else if (lrwork < lrwmin && !lquery) {
-	    *info = -10;
-	} else if (liwork < liwmin && !lquery) {
-	    *info = -12;
-	}
+    //
+    if (info == 0) {
+        //
+        //        Compute the workspace requirements
+        //
+        smlsiz = iMlaenv[(9 - 1) + ("Cstedc" - 1) * ldiMlaenv];
+        if (n <= 1 || icompz == 0) {
+            lwmin = 1;
+            liwmin = 1;
+            lrwmin = 1;
+        } else if (n <= smlsiz) {
+            lwmin = 1;
+            liwmin = 1;
+            lrwmin = 2 * (n - 1);
+        } else if (icompz == 1) {
+            lgn = INTEGER(log[n.real() - 1] / log[two - 1]);
+            if (pow(2, lgn) < n) {
+                lgn++;
+            }
+            if (pow(2, lgn) < n) {
+                lgn++;
+            }
+            lwmin = n * n;
+            lrwmin = 1 + 3 * n + 2 * n * lgn + 4 * pow2(n);
+            liwmin = 6 + 6 * n + 5 * n * lgn;
+        } else if (icompz == 2) {
+            lwmin = 1;
+            lrwmin = 1 + 4 * n + 2 * pow2(n);
+            liwmin = 3 + 5 * n;
+        }
+        work[1 - 1] = lwmin;
+        rwork[1 - 1] = lrwmin;
+        iwork[1 - 1] = liwmin;
+        //
+        if (lwork < lwmin && !lquery) {
+            info = -8;
+        } else if (lrwork < lrwmin && !lquery) {
+            info = -10;
+        } else if (liwork < liwmin && !lquery) {
+            info = -12;
+        }
     }
-    if (*info != 0) {
-	Mxerbla("Cstedc", -(*info));
-	return;
+    //
+    if (info != 0) {
+        Mxerbla("Cstedc", -info);
+        return;
     } else if (lquery) {
-	return;
+        return;
     }
-//Quick return if possible
+    //
+    //     Quick return if possible
+    //
     if (n == 0) {
-	return;
+        return;
     }
     if (n == 1) {
-	if (icompz != 0) {
-	    z[ldz + 1] = One;
-	}
-	return;
+        if (icompz != 0) {
+            z[(1 - 1)] = one;
+        }
+        return;
     }
-//If the following conditional clause is removed, then the routine
-//will use the Divide and Conquer routine to compute only the
-//eigenvalues, which requires (3N + 3N**2) real workspace and
-//(2 + 5N + 2N lg(N)) INTEGER workspace.
-//Since on many architectures DSTERF is much faster than any other
-//algorithm for finding eigenvalues only, it is used here
-//as the default. If the conditional clause is removed, then
-//information on the size of workspace needs to be changed.
-//If COMPZ = 'N', use DSTERF to compute the eigenvalues.
+    //
+    //     If the following conditional clause is removed, then the routine
+    //     will use the Divide and Conquer routine to compute only the
+    //     eigenvalues, which requires (3N + 3N**2) real workspace and
+    //     (2 + 5N + 2N lg(N)) INTEGEReger workspace.
+    //     Since on many architectures Rsterf is much faster than any other
+    //     algorithm for finding eigenvalues only, it is used here
+    //     as the default. If the conditional clause is removed, then
+    //     information on the size of workspace needs to be changed.
+    //
+    //     If COMPZ = 'N', use Rsterf to compute the eigenvalues.
+    //
     if (icompz == 0) {
-	Rsterf(n, &d[0], &e[0], info);
-	goto L70;
+        Rsterf(n, d, e, info);
+        goto statement_70;
     }
-//If N is smaller than the minimum divide size (SMLSIZ+1), then
-//solve the problem with another solver.
+    //
+    //     If N is smaller than the minimum divide size (SMLSIZ+1), then
+    //     solve the problem with another solver.
+    //
     if (n <= smlsiz) {
-	Csteqr(compz, n, &d[0], &e[0], &z[0], ldz, &rwork[1], info);
+        //
+        Csteqr(compz, n, d, e, z, ldz, rwork, info);
+        //
     } else {
-//If COMPZ = 'I', we simply call DSTEDC instead.
-	if (icompz == 2) {
-	    Rlaset("Full", n, n, Zero, One, &rwork[1], n);
-	    ll = n * n + 1;
-	    Rstedc("I", n, &d[0], &e[0], &rwork[1], n, &rwork[ll], lrwork - ll + 1, &iwork[1], liwork, info);
-	    for (j = 0; j < n; j++) {
-		for (i = 0; i < n; i++) {
-		    z[i + j * ldz] = rwork[(j - 1) * n + i];
-		}
-	    }
-	    goto L70;
-	}
-//From now on, only option left to be handled is COMPZ = 'V',
-//i.e. ICOMPZ = One
-//Scale.
-	orgnrm = Rlanst("M", n, &d[0], &e[0]);
-	if (orgnrm == Zero) {
-	    goto L70;
-	}
-	eps = Rlamch("Epsilon");
-	start = 1;
-      L30:
-	if (start <= n) {
-//Let FINISH be the position of the next subdiagonal entry
-//such that E( FINISH ) <= TINY or FINISH = N if no such
-//subdiagonal exists.  The matrix identified by the elements
-//between START and FINISH constitutes an independent
-//sub-problem.
-	    finish = start;
-	  L40:
-	    if (finish < n) {
-		tiny = eps * sqrt(abs(d[finish])) * sqrt(abs(d[finish + 1]));
-		if (abs(e[finish]) > tiny) {
-		    ++finish;
-		    goto L40;
-		}
-	    }
-//(Sub) Problem determined.  Compute its size and solve it.
-	    m = finish - start + 1;
-	    if (m > smlsiz) {
-//Scale.
-		orgnrm = Rlanst("M", m, &d[start], &e[start]);
-		Rlascl("G", 0, 0, orgnrm, One, m, 1, &d[start], m, info);
-		Rlascl("G", 0, 0, orgnrm, One, m - 1, 1, &e[start], m - 1, info);
-		Claed0(n, m, &d[start], &e[start], &z[start * ldz + 1], ldz, &work[0], n, &rwork[1], &iwork[1], info);
-		if (*info > 0) {
-		    *info = (*info / (m + 1) + start - 1) * (n + 1) + *info % (m + 1) + start - 1;
-		    goto L70;
-		}
-//Scale back.
-		Rlascl("G", 0, 0, One, orgnrm, m, 1, &d[start], m, info);
-	    } else {
-		Rsteqr("I", m, &d[start], &e[start], &rwork[1], m, &rwork[m * m + 1], info);
-		Clacrm(n, m, &z[start * ldz + 1], ldz, &rwork[1], m, &work[0], n, &rwork[m * m + 1]);
-		Clacpy("A", n, m, &work[0], n, &z[start * ldz + 1], ldz);
-		if (*info > 0) {
-		    *info = start * (n + 1) + finish;
-		    goto L70;
-		}
-	    }
-	    start = finish + 1;
-	    goto L30;
-	}
-//endwhile
-//If the problem split any number of times, then the eigenvalues
-//will not be properly ordered.  Here we permute the eigenvalues
-//(and the associated eigenvectors) INTEGERo ascending order.
-	if (m != n) {
-//Use Selection Sort to minimize swaps of eigenvectors
-	    for (ii = 1; ii <= n; ii++) {
-		i = ii - 1;
-		k = i;
-		p = d[i];
-		for (j = ii; j <= n; j++) {
-		    if (d[j] < p) {
-			k = j;
-			p = d[j];
-		    }
-		}
-		if (k != i) {
-		    d[k] = d[i];
-		    d[i] = p;
-		    Cswap(n, &z[i * ldz + 1], 1, &z[k * ldz + 1], 1);
-		}
-	    }
-	}
+        //
+        //        If COMPZ = 'I', we simply call Rstedc instead.
+        //
+        if (icompz == 2) {
+            Rlaset("Full", n, n, zero, one, rwork, n);
+            ll = n * n + 1;
+            Rstedc("I", n, d, e, rwork, n, rwork[ll - 1], lrwork - ll + 1, iwork, liwork, info);
+            for (j = 1; j <= n; j = j + 1) {
+                for (i = 1; i <= n; i = i + 1) {
+                    z[(i - 1) + (j - 1) * ldz] = rwork[((j - 1) * n + i) - 1];
+                }
+            }
+            goto statement_70;
+        }
+        //
+        //        From now on, only option left to be handled is COMPZ = 'V',
+        //        i.e. ICOMPZ = 1.
+        //
+        //        Scale.
+        //
+        orgnrm = Rlanst[("M" - 1) + (n - 1) * ldRlanst];
+        if (orgnrm == zero) {
+            goto statement_70;
+        }
+        //
+        eps = dlamch("Epsilon");
+        //
+        start = 1;
+    //
+    //        while ( START <= N )
+    //
+    statement_30:
+        if (start <= n) {
+            //
+            //           Let FINISH be the position of the next subdiagonal entry
+            //           such that E( FINISH ) <= TINY or FINISH = N if no such
+            //           subdiagonal exists.  The matrix identified by the elements
+            //           between START and FINISH constitutes an independent
+            //           sub-problem.
+            //
+            finish = start;
+        statement_40:
+            if (finish < n) {
+                tiny = eps * sqrt(abs(d[finish - 1])) * sqrt(abs(d[(finish + 1) - 1]));
+                if (abs(e[finish - 1]) > tiny) {
+                    finish++;
+                    goto statement_40;
+                }
+            }
+            //
+            //           (Sub) Problem determined.  Compute its size and solve it.
+            //
+            m = finish - start + 1;
+            if (m > smlsiz) {
+                //
+                //              Scale.
+                //
+                orgnrm = Rlanst[("M" - 1) + (m - 1) * ldRlanst];
+                Rlascl("G", 0, 0, orgnrm, one, m, 1, d[start - 1], m, info);
+                Rlascl("G", 0, 0, orgnrm, one, m - 1, 1, e[start - 1], m - 1, info);
+                //
+                Claed0(n, m, d[start - 1], e[start - 1], z[(start - 1) * ldz], ldz, work, n, rwork, iwork, info);
+                if (info > 0) {
+                    info = (info / (m + 1) + start - 1) * (n + 1) + mod(info, (m + 1)) + start - 1;
+                    goto statement_70;
+                }
+                //
+                //              Scale back.
+                //
+                Rlascl("G", 0, 0, one, orgnrm, m, 1, d[start - 1], m, info);
+                //
+            } else {
+                Rsteqr("I", m, d[start - 1], e[start - 1], rwork, m, rwork[(m * m + 1) - 1], info);
+                Clacrm(n, m, z[(start - 1) * ldz], ldz, rwork, m, work, n, rwork[(m * m + 1) - 1]);
+                Clacpy("A", n, m, work, n, z[(start - 1) * ldz], ldz);
+                if (info > 0) {
+                    info = start * (n + 1) + finish;
+                    goto statement_70;
+                }
+            }
+            //
+            start = finish + 1;
+            goto statement_30;
+        }
+        //
+        //        endwhile
+        //
+        //        Use Selection Sort to minimize swaps of eigenvectors
+        //
+        for (ii = 2; ii <= n; ii = ii + 1) {
+            i = ii - 1;
+            k = i;
+            p = d[i - 1];
+            for (j = ii; j <= n; j = j + 1) {
+                if (d[j - 1] < p) {
+                    k = j;
+                    p = d[j - 1];
+                }
+            }
+            if (k != i) {
+                d[k - 1] = d[i - 1];
+                d[i - 1] = p;
+                Cswap(n, z[(i - 1) * ldz], 1, z[(k - 1) * ldz], 1);
+            }
+        }
     }
-
-  L70:
-    work[1] = lwmin;
-    rwork[1] = (double) lrwmin;
-    iwork[1] = liwmin;
-    return;
+//
+statement_70:
+    work[1 - 1] = lwmin;
+    rwork[1 - 1] = lrwmin;
+    iwork[1 - 1] = liwmin;
+    //
+    //     End of Cstedc
+    //
 }

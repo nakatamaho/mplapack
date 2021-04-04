@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Cgeequ.cpp,v 1.8 2010/08/07 04:48:32 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,153 +25,168 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgeequ(INTEGER m, INTEGER n, COMPLEX * A, INTEGER lda, REAL * r, REAL * c, REAL * rowcnd, REAL * colcnd, REAL * amax, INTEGER * info)
-{
-    INTEGER i, j;
-    REAL rcmin, rcmax;
-    REAL bignum, smlnum;
-    REAL mtemp1, mtemp2;
-    REAL Zero = 0.0, One = 1.0;
-
-//Test the input parameters.
-    *info = 0;
+void Cgeequ(INTEGER const &m, INTEGER const &n, COMPLEX *a, INTEGER const &lda, REAL *r, REAL *c, REAL &rowcnd, REAL &colcnd, REAL &amax, INTEGER &info) {
+    //
+    //  -- LAPACK computational routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Statement Functions ..
+    //     ..
+    //     .. Statement Function definitions ..
+    COMPLEX zdum = 0.0;
+    abs1[zdum - 1] = abs(zdum.real()) + abs(zdum.imag());
+    //     ..
+    //     .. Executable Statements ..
+    //
+    //     Test the input parameters.
+    //
+    info = 0;
     if (m < 0) {
-	*info = -1;
+        info = -1;
     } else if (n < 0) {
-	*info = -2;
-    } else if (lda < max((INTEGER) 1, m)) {
-	*info = -4;
+        info = -2;
+    } else if (lda < max((INTEGER)1, m)) {
+        info = -4;
     }
-    if (*info != 0) {
-	Mxerbla("Cgeequ", -(*info));
-	return;
+    if (info != 0) {
+        Mxerbla("Cgeequ", -info);
+        return;
     }
-//Quick return if possible
+    //
+    //     Quick return if possible
+    //
+    const REAL one = 1.0;
+    const REAL zero = 0.0;
     if (m == 0 || n == 0) {
-	*rowcnd = One;
-	*colcnd = One;
-	*amax = Zero;
-	return;
+        rowcnd = one;
+        colcnd = one;
+        amax = zero;
+        return;
     }
-//Get machine constants.
-    smlnum = Rlamch("S");
-    bignum = One / smlnum;
-//Compute row scale factors.
-    for (i = 0; i < m; i++) {
-	r[i] = Zero;
+    //
+    //     Get machine constants.
+    //
+    REAL smlnum = dlamch("S");
+    REAL bignum = one / smlnum;
+    //
+    //     Compute row scale factors.
+    //
+    INTEGER i = 0;
+    for (i = 1; i <= m; i = i + 1) {
+        r[i - 1] = zero;
     }
-//Find the maximum element in each row.
-    for (j = 0; j < n; j++) {
-	for (i = 0; i < m; i++) {
-	    mtemp1 = r[i], mtemp2 = Cabs1(A[i + j * lda]);
-	    r[i] = max(mtemp1, mtemp2);
-	}
+    //
+    //     Find the maximum element in each row.
+    //
+    INTEGER j = 0;
+    for (j = 1; j <= n; j = j + 1) {
+        for (i = 1; i <= m; i = i + 1) {
+            r[i - 1] = max(r[i - 1], abs1[a[(i - 1) + (j - 1) * lda] - 1]);
+        }
     }
-//Find the maximum and minimum scale factors.
-    rcmin = bignum;
-    rcmax = Zero;
-    for (i = 0; i < m; i++) {
-	mtemp1 = rcmax, mtemp2 = r[i];
-	rcmax = max(mtemp1, mtemp2);
-	mtemp1 = rcmin, mtemp2 = r[i];
-	rcmin = min(mtemp1, mtemp2);
+    //
+    //     Find the maximum and minimum scale factors.
+    //
+    REAL rcmin = bignum;
+    REAL rcmax = zero;
+    for (i = 1; i <= m; i = i + 1) {
+        rcmax = max(rcmax, r[i - 1]);
+        rcmin = min(rcmin, r[i - 1]);
     }
-    *amax = rcmax;
-    if (rcmin == Zero) {
-//Find the first zero scale factor and return an error code.
-	for (i = 0; i < m; i++) {
-	    if (r[i] == Zero) {
-		*info = i;
-		return;
-	    }
-	}
+    amax = rcmax;
+    //
+    if (rcmin == zero) {
+        //
+        //        Find the first zero scale factor and return an error code.
+        //
+        for (i = 1; i <= m; i = i + 1) {
+            if (r[i - 1] == zero) {
+                info = i;
+                return;
+            }
+        }
     } else {
-//Invert the scale factors.
-	for (i = 0; i < m; i++) {
-	    mtemp1 = max(r[i], smlnum);
-	    r[i] = One / min(mtemp1, bignum);
-	}
-//Compute ROWCND = min(R(I)) / max(R(I))
-	*rowcnd = max(rcmin, smlnum) / min(rcmax, bignum);
+        //
+        //        Invert the scale factors.
+        //
+        for (i = 1; i <= m; i = i + 1) {
+            r[i - 1] = one / min(max(r[i - 1], smlnum), bignum);
+        }
+        //
+        //        Compute ROWCND = min(R(I)) / max(R(I))
+        //
+        rowcnd = max(rcmin, smlnum) / min(rcmax, bignum);
     }
-//Compute column scale factors
-    for (j = 0; j < n; j++) {
-	c[j] = Zero;
+    //
+    //     Compute column scale factors
+    //
+    for (j = 1; j <= n; j = j + 1) {
+        c[j - 1] = zero;
     }
-//Find the maximum element in each column,
-//assuming the row scaling computed above.
-    for (j = 0; j < n; j++) {
-	for (i = 0; i < m; i++) {
-	    mtemp1 = c[j], mtemp2 = Cabs1(A[i + j * lda]);
-	    c[j] = max(mtemp1, mtemp2);
-	}
+    //
+    //     Find the maximum element in each column,
+    //     assuming the row scaling computed above.
+    //
+    for (j = 1; j <= n; j = j + 1) {
+        for (i = 1; i <= m; i = i + 1) {
+            c[j - 1] = max(c[j - 1], abs1[a[(i - 1) + (j - 1) * lda] - 1] * r[i - 1]);
+        }
     }
-//Find the maximum and minimum scale factors.
+    //
+    //     Find the maximum and minimum scale factors.
+    //
     rcmin = bignum;
-    rcmax = Zero;
-    for (j = 0; j < n; j++) {
-	mtemp1 = rcmin, mtemp2 = c[j];
-	rcmin = min(mtemp1, mtemp2);
-	mtemp1 = rcmax, mtemp2 = c[j];
-	rcmax = max(mtemp1, mtemp2);
+    rcmax = zero;
+    for (j = 1; j <= n; j = j + 1) {
+        rcmin = min(rcmin, c[j - 1]);
+        rcmax = max(rcmax, c[j - 1]);
     }
-    if (rcmin == Zero) {
-//Find the first zero scale factor and return an error code.
-	for (j = 0; j < n; j++) {
-	    if (c[j] == Zero) {
-		*info = m + j;
-		return;
-	    }
-	}
+    //
+    if (rcmin == zero) {
+        //
+        //        Find the first zero scale factor and return an error code.
+        //
+        for (j = 1; j <= n; j = j + 1) {
+            if (c[j - 1] == zero) {
+                info = m + j;
+                return;
+            }
+        }
     } else {
-//Invert the scale factors.
-	for (j = 0; j < n; j++) {
-	    mtemp1 = max(c[j], smlnum);
-	    c[j] = One / min(mtemp1, bignum);
-	}
-//Compute COLCND = min(C(J)) / max(C(J))
-	*colcnd = max(rcmin, smlnum) / min(rcmax, bignum);
+        //
+        //        Invert the scale factors.
+        //
+        for (j = 1; j <= n; j = j + 1) {
+            c[j - 1] = one / min(max(c[j - 1], smlnum), bignum);
+        }
+        //
+        //        Compute COLCND = min(C(J)) / max(C(J))
+        //
+        colcnd = max(rcmin, smlnum) / min(rcmax, bignum);
     }
-    return;
+    //
+    //     End of Cgeequ
+    //
 }

@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Rrscl.cpp,v 1.4 2010/08/07 04:48:33 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,94 +25,95 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-#define MTRUE 1
-#define MFALSE 0
-
-void Rrscl(INTEGER n, REAL sa, REAL * sx, INTEGER incx)
-{
-    REAL smlnum, bignum, cden, cden1, cnum, cnum1, mul;
-    REAL One = 1.0, Zero = 0.0;
-    INTEGER done = MFALSE;
-
-//Quick return if possible
-    if (n <= 0)
-	return;
-
-//Get machine parameters
-
-    smlnum = Rlamch("S");
-    bignum = One / smlnum;
-
-//Initialize the denominator to SA and the numerator to One
-
-    cden = sa;
-    cnum = One;
-
-    while (!done) {
-	cden1 = cden * smlnum;
-	cnum1 = cnum / bignum;
-	if (abs(cden1) > abs(cnum) && cnum != Zero) {
-
-//Pre-multiply X by SMLNUM if CDEN is large compared to CNUM.
-
-	    mul = smlnum;
-	    done = MFALSE;
-	    cden = cden1;
-	} else if (abs(cnum1) > abs(cden)) {
-//Pre-multiply X by BIGNUM if CDEN is small compared to CNUM.
-	    mul = bignum;
-	    done = MFALSE;
-	    cnum = cnum1;
-	} else {
-
-//Multiply X by CNUM / CDEN and return.
-	    mul = cnum / cden;
-	    done = MTRUE;
-	}
-
-//Scale the vector X by MUL
-	Rscal(n, mul, &sx[0], incx);
+void Rrscl(INTEGER const &n, REAL const &sa, REAL *sx, INTEGER const &incx) {
+    REAL smlnum = 0.0;
+    const REAL one = 1.0;
+    REAL bignum = 0.0;
+    REAL cden = 0.0;
+    REAL cnum = 0.0;
+    REAL cden1 = 0.0;
+    REAL cnum1 = 0.0;
+    const REAL zero = 0.0;
+    REAL mul = 0.0;
+    bool done = false;
+    //
+    //  -- LAPACK auxiliary routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    // =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    //     Quick return if possible
+    //
+    if (n <= 0) {
+        return;
     }
-    return;
+    //
+    //     Get machine parameters
+    //
+    smlnum = dlamch("S");
+    bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
+    //
+    //     Initialize the denominator to SA and the numerator to 1.
+    //
+    cden = sa;
+    cnum = one;
+//
+statement_10:
+    cden1 = cden * smlnum;
+    cnum1 = cnum / bignum;
+    if (abs(cden1) > abs(cnum) && cnum != zero) {
+        //
+        //        Pre-multiply X by SMLNUM if CDEN is large compared to CNUM.
+        //
+        mul = smlnum;
+        done = false;
+        cden = cden1;
+    } else if (abs(cnum1) > abs(cden)) {
+        //
+        //        Pre-multiply X by BIGNUM if CDEN is small compared to CNUM.
+        //
+        mul = bignum;
+        done = false;
+        cnum = cnum1;
+    } else {
+        //
+        //        Multiply X by CNUM / CDEN and return.
+        //
+        mul = cnum / cden;
+        done = true;
+    }
+    //
+    //     Scale the vector X by MUL
+    //
+    Rscal(n, mul, sx, incx);
+    //
+    if (!done) {
+        goto statement_10;
+    }
+    //
+    //     End of Rrscl
+    //
 }

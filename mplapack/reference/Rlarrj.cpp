@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Rlarrj.cpp,v 1.4 2010/08/07 04:48:33 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,225 +25,244 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarrj(INTEGER n, REAL * d, REAL * e2,
-	    INTEGER ifirst, INTEGER ilast, REAL rtol, INTEGER offset, REAL * w, REAL * werr, REAL * work, INTEGER * iwork, REAL pivmin, REAL spdiam, INTEGER * info)
-{
-    INTEGER i, j, k, p;
-    REAL s;
-    INTEGER i1, i2, ii;
-    REAL fac, mid;
-    INTEGER cnt;
-    REAL tmp, left;
-    INTEGER iter, nint, prev, next, savi1;
-    REAL right, width, dplus;
-    INTEGER olnint, maxitr;
-    REAL Zero = 0.0, Half = 0.5, One = 1.0, Two = 2.0;
-    REAL mtemp1, mtemp2;
-
-    *info = 0;
-    maxitr = (INTEGER) cast2double((log(spdiam + pivmin) - log(pivmin)) / log(Two)) + 2;
-//Initialize unconverged intervals in [ WORK(2*I-1), WORK(2*I) ].
-//The Sturm Count, Count( WORK(2*I-1) ) is arranged to be I-1, while
-//Count( WORK(2*I) ) is stored in IWORK( 2*I ). The int IWORK( 2*I-1 )
-//for an unconverged interval is set to the index of the next unconverged
-//interval, and is -1 or 0 for a converged interval. Thus a linked
-//list of unconverged intervals is set up.
+void Rlarrj(INTEGER const &n, REAL *d, REAL *e2, INTEGER const &ifirst, INTEGER const &ilast, REAL const &rtol, INTEGER const &offset, REAL *w, REAL *werr, REAL *work, arr_ref<INTEGER> iwork, REAL const &pivmin, REAL const &spdiam, INTEGER &info) {
+    const REAL two = 2.0;
+    INTEGER maxitr = 0;
+    INTEGER i1 = 0;
+    INTEGER i2 = 0;
+    INTEGER nINTEGER = 0;
+    INTEGER prev = 0;
+    INTEGER i = 0;
+    INTEGER k = 0;
+    INTEGER ii = 0;
+    REAL left = 0.0;
+    REAL mid = 0.0;
+    REAL right = 0.0;
+    REAL width = 0.0;
+    REAL tmp = 0.0;
+    const REAL one = 1.0;
+    REAL fac = 0.0;
+    INTEGER cnt = 0;
+    REAL s = 0.0;
+    REAL dplus = 0.0;
+    const REAL zero = 0.0;
+    INTEGER j = 0;
+    INTEGER savi1 = 0;
+    INTEGER iter = 0;
+    INTEGER olnINTEGER = 0;
+    INTEGER p = 0;
+    INTEGER next = 0;
+    const REAL half = 0.5e0;
+    //
+    //  -- LAPACK auxiliary routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    info = 0;
+    //
+    //     Quick return if possible
+    //
+    if (n <= 0) {
+        return;
+    }
+    //
+    maxitr = INTEGER((log[(spdiam + pivmin) - 1] - log[pivmin - 1]) / log[two - 1]) + 2;
+    //
+    //     Initialize unconverged INTEGERervals in [ WORK(2*I-1), WORK(2*I) ].
+    //     The Sturm Count, Count( WORK(2*I-1) ) is arranged to be I-1, while
+    //     Count( WORK(2*I) ) is stored in IWORK( 2*I ). The INTEGEReger IWORK( 2*I-1 )
+    //     for an unconverged INTEGERerval is set to the index of the next unconverged
+    //     INTEGERerval, and is -1 or 0 for a converged INTEGERerval. Thus a linked
+    //     list of unconverged INTEGERervals is set up.
+    //
     i1 = ifirst;
     i2 = ilast;
-//The number of unconverged intervals
-    nint = 0;
-//The last unconverged interval found
+    //     The number of unconverged INTEGERervals
+    nINTEGER = 0;
+    //     The last unconverged INTEGERerval found
     prev = 0;
-    for (i = i1; i <= i2; i++) {
-	k = i * 2;
-	ii = i - offset;
-	left = w[ii] - werr[ii];
-	mid = w[ii];
-	right = w[ii] + werr[ii];
-	width = right - mid;
-	mtemp1 = abs(left), mtemp2 = abs(right);
-	tmp = max(mtemp1, mtemp2);
-//The following test prevents the test of converged intervals
-	if (width < rtol * tmp) {
-//This interval has already converged and does not need refinement.
-//(Note that the gaps might change through refining the
-// eigenvalues, however, they can only get bigger.)
-//Remove it from the list.
-	    iwork[k - 1] = -1;
-//Make sure that I1 always points to the first unconverged interval
-	    if (i == i1 && i < i2) {
-		i1 = i + 1;
-	    }
-	    if (prev >= i1 && i <= i2) {
-		iwork[(prev * 2) - 1] = i + 1;
-	    }
-	} else {
-//unconverged interval found
-	    prev = i;
-//Make sure that [LEFT,RIGHT] contains the desired eigenvalue
-//Do while( CNT(LEFT).GT.I-1 )
-	    fac = One;
-	  L20:
-	    cnt = 0;
-	    s = left;
-	    dplus = d[1] - s;
-	    if (dplus < Zero) {
-		++cnt;
-	    }
-	    for (j = 2; j <= n; j++) {
-		dplus = d[j] - s - e2[j - 1] / dplus;
-		if (dplus < Zero) {
-		    ++cnt;
-		}
-	    }
-	    if (cnt > i - 1) {
-		left = left - werr[ii] * fac;
-		fac = fac * Two;
-		goto L20;
-	    }
-//Do while( CNT(RIGHT).LT.I )
-	    fac = One;
-	  L50:
-	    cnt = 0;
-	    s = right;
-	    dplus = d[1] - s;
-	    if (dplus < Zero) {
-		++cnt;
-	    }
-	    for (j = 2; j <= n; j++) {
-		dplus = d[j] - s - e2[j - 1] / dplus;
-		if (dplus < Zero) {
-		    ++cnt;
-		}
-	    }
-	    if (cnt < i) {
-		right = right + werr[ii] * fac;
-		fac = fac * Two;
-		goto L50;
-	    }
-	    ++nint;
-	    iwork[k - 1] = i + 1;
-	    iwork[k] = cnt;
-	}
-	work[k - 1] = left;
-	work[k] = right;
+    for (i = i1; i <= i2; i = i + 1) {
+        k = 2 * i;
+        ii = i - offset;
+        left = w[ii - 1] - werr[ii - 1];
+        mid = w[ii - 1];
+        right = w[ii - 1] + werr[ii - 1];
+        width = right - mid;
+        tmp = max(abs(left), abs(right));
+        //
+        //        The following test prevents the test of converged INTEGERervals
+        if (width < rtol * tmp) {
+            //           This INTEGERerval has already converged and does not need refinement.
+            //           (Note that the gaps might change through refining the
+            //            eigenvalues, however, they can only get bigger.)
+            //           Remove it from the list.
+            iwork[(k - 1) - 1] = -1;
+            //           Make sure that I1 always poINTEGERs to the first unconverged INTEGERerval
+            if ((i == i1) && (i < i2)) {
+                i1 = i + 1;
+            }
+            if ((prev >= i1) && (i <= i2)) {
+                iwork[(2 * prev - 1) - 1] = i + 1;
+            }
+        } else {
+            //           unconverged INTEGERerval found
+            prev = i;
+            //           Make sure that [LEFT,RIGHT] contains the desired eigenvalue
+            //
+            //           Do while( CNT(LEFT).GT.I-1 )
+            //
+            fac = one;
+        statement_20:
+            cnt = 0;
+            s = left;
+            dplus = d[1 - 1] - s;
+            if (dplus < zero) {
+                cnt++;
+            }
+            for (j = 2; j <= n; j = j + 1) {
+                dplus = d[j - 1] - s - e2[(j - 1) - 1] / dplus;
+                if (dplus < zero) {
+                    cnt++;
+                }
+            }
+            if (cnt > i - 1) {
+                left = left - werr[ii - 1] * fac;
+                fac = two * fac;
+                goto statement_20;
+            }
+            //
+            //           Do while( CNT(RIGHT).LT.I )
+            //
+            fac = one;
+        statement_50:
+            cnt = 0;
+            s = right;
+            dplus = d[1 - 1] - s;
+            if (dplus < zero) {
+                cnt++;
+            }
+            for (j = 2; j <= n; j = j + 1) {
+                dplus = d[j - 1] - s - e2[(j - 1) - 1] / dplus;
+                if (dplus < zero) {
+                    cnt++;
+                }
+            }
+            if (cnt < i) {
+                right += werr[ii - 1] * fac;
+                fac = two * fac;
+                goto statement_50;
+            }
+            nINTEGER++;
+            iwork[(k - 1) - 1] = i + 1;
+            iwork[k - 1] = cnt;
+        }
+        work[(k - 1) - 1] = left;
+        work[k - 1] = right;
     }
+    //
     savi1 = i1;
-//Do while( NINT.GT.0 ), i.e. there are still unconverged intervals
-//and while (ITER.LT.MAXITR)
+    //
+    //     Do while( NINT.GT.0 ), i.e. there are still unconverged INTEGERervals
+    //     and while (ITER.LT.MAXITR)
+    //
     iter = 0;
-  L80:
+statement_80:
     prev = i1 - 1;
     i = i1;
-    olnint = nint;
-    for (p = 1; p <= olnint; ++p) {
-	k = i * 2;
-	ii = i - offset;
-	next = iwork[k - 1];
-	left = work[k - 1];
-	right = work[k];
-	mid = (left + right) * Half;
-//semiwidth of interval
-	width = right - mid;
-	mtemp1 = abs(left), mtemp2 = abs(right);
-	tmp = max(mtemp1, mtemp2);
-	if (width < rtol * tmp || iter == maxitr) {
-//reduce number of unconverged intervals
-	    --nint;
-//Mark interval as converged.
-	    iwork[k - 1] = 0;
-	    if (i1 == i) {
-		i1 = next;
-	    } else {
-//Prev holds the last unconverged interval previously examined
-		if (prev >= i1) {
-		    iwork[(prev << 1) - 1] = next;
-		}
-	    }
-	    i = next;
-	    goto L100;
-	}
-	prev = i;
-//Perform one bisection step
-	cnt = 0;
-	s = mid;
-	dplus = d[1] - s;
-	if (dplus < Zero) {
-	    ++cnt;
-	}
-	for (j = 2; j <= n; j++) {
-	    dplus = d[j] - s - e2[j - 1] / dplus;
-	    if (dplus < Zero) {
-		++cnt;
-	    }
-	}
-	if (cnt <= i - 1) {
-	    work[k - 1] = mid;
-	} else {
-	    work[k] = mid;
-	}
-	i = next;
-      L100:
-	;
+    olnINTEGER = nINTEGER;
+    //
+    for (p = 1; p <= olnINTEGER; p = p + 1) {
+        k = 2 * i;
+        ii = i - offset;
+        next = iwork[(k - 1) - 1];
+        left = work[(k - 1) - 1];
+        right = work[k - 1];
+        mid = half * (left + right);
+        //
+        //        semiwidth of INTEGERerval
+        width = right - mid;
+        tmp = max(abs(left), abs(right));
+        //
+        if ((width < rtol * tmp) || (iter == maxitr)) {
+            //           reduce number of unconverged INTEGERervals
+            nINTEGER = nINTEGER - 1;
+            //           Mark INTEGERerval as converged.
+            iwork[(k - 1) - 1] = 0;
+            if (i1 == i) {
+                i1 = next;
+            } else {
+                //              Prev holds the last unconverged INTEGERerval previously examined
+                if (prev >= i1) {
+                    iwork[(2 * prev - 1) - 1] = next;
+                }
+            }
+            i = next;
+            goto statement_100;
+        }
+        prev = i;
+        //
+        //        Perform one bisection step
+        //
+        cnt = 0;
+        s = mid;
+        dplus = d[1 - 1] - s;
+        if (dplus < zero) {
+            cnt++;
+        }
+        for (j = 2; j <= n; j = j + 1) {
+            dplus = d[j - 1] - s - e2[(j - 1) - 1] / dplus;
+            if (dplus < zero) {
+                cnt++;
+            }
+        }
+        if (cnt <= i - 1) {
+            work[(k - 1) - 1] = mid;
+        } else {
+            work[k - 1] = mid;
+        }
+        i = next;
+    //
+    statement_100:;
     }
     iter++;
-//do another loop if there are still unconverged intervals
-//However, in the last iteration, all intervals are accepted
-//since this is the best we can do.
-    if (nint > 0 && iter <= maxitr) {
-	goto L80;
+    //     do another loop if there are still unconverged INTEGERervals
+    //     However, in the last iteration, all INTEGERervals are accepted
+    //     since this is the best we can do.
+    if ((nINTEGER > 0) && (iter <= maxitr)) {
+        goto statement_80;
     }
-//At this point, all the intervals have converged
-    for (i = savi1; i <= ilast; i++) {
-	k = i << 1;
-	ii = i - offset;
-//All intervals marked by '0' have been refined.
-	if (iwork[k - 1] == 0) {
-	    w[ii] = (work[k - 1] + work[k]) * Half;
-	    werr[ii] = work[k] - w[ii];
-	}
-
+    //
+    //     At this poINTEGER, all the INTEGERervals have converged
+    for (i = savi1; i <= ilast; i = i + 1) {
+        k = 2 * i;
+        ii = i - offset;
+        //        All INTEGERervals marked by '0' have been refined.
+        if (iwork[(k - 1) - 1] == 0) {
+            w[ii - 1] = half * (work[(k - 1) - 1] + work[k - 1]);
+            werr[ii - 1] = work[k - 1] - w[ii - 1];
+        }
     }
-    return;
+    //
+    //     End of Rlarrj
+    //
 }

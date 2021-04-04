@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Cunmqr.cpp,v 1.10 2010/08/07 04:48:32 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,167 +25,174 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-void
-Cunmqr(const char *side, const char *trans, INTEGER m, INTEGER n, INTEGER k, COMPLEX * A,
-       INTEGER lda, COMPLEX * tau, COMPLEX * c, INTEGER ldc, COMPLEX * work, INTEGER lwork, INTEGER * info)
-{
-    INTEGER i;
-    COMPLEX t[4160];
-    INTEGER i1, i2, i3, ib, ic, jc, nb, mi = 0, ni = 0, nq, nw, iws;
-    INTEGER left;
-    INTEGER nbmin, iinfo;
-    INTEGER notran;
-    INTEGER ldwork;
-    INTEGER lwkopt;
-    INTEGER lquery;
-    char ch[3];
-
-//Test the input arguments
-    *info = 0;
-    left = Mlsame(side, "L");
-    notran = Mlsame(trans, "N");
-    lquery = lwork == -1;
-//NQ is the order of Q and NW is the minimum dimension of WORK
+void Cunmqr(const char *side, const char *trans, INTEGER const &m, INTEGER const &n, INTEGER const &k, COMPLEX *a, INTEGER const &lda, COMPLEX *tau, COMPLEX *c, INTEGER const &ldc, COMPLEX *work, INTEGER const &lwork, INTEGER &info) {
+    //
+    //  -- LAPACK computational routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    //     Test the input arguments
+    //
+    info = 0;
+    bool left = Mlsame(side, "L");
+    bool notran = Mlsame(trans, "N");
+    bool lquery = (lwork == -1);
+    //
+    //
+    INTEGER nq = 0;
+    INTEGER nw = 0;
     if (left) {
-	nq = m;
-	nw = n;
+        nq = m;
+        nw = n;
     } else {
-	nq = n;
-	nw = m;
+        nq = n;
+        nw = m;
     }
     if (!left && !Mlsame(side, "R")) {
-	*info = -1;
+        info = -1;
     } else if (!notran && !Mlsame(trans, "C")) {
-	*info = -2;
+        info = -2;
     } else if (m < 0) {
-	*info = -3;
+        info = -3;
     } else if (n < 0) {
-	*info = -4;
+        info = -4;
     } else if (k < 0 || k > nq) {
-	*info = -5;
-    } else if (lda < max((INTEGER) 1, nq)) {
-	*info = -7;
-    } else if (ldc < max((INTEGER) 1, m)) {
-	*info = -10;
-    } else if (lwork < max((INTEGER) 1, nw) && !lquery) {
-	*info = -12;
+        info = -5;
+    } else if (lda < max((INTEGER)1, nq)) {
+        info = -7;
+    } else if (ldc < max((INTEGER)1, m)) {
+        info = -10;
+    } else if (lwork < max((INTEGER)1, nw) && !lquery) {
+        info = -12;
     }
-    if (*info == 0) {
-//Determine the block size.  NB may be at most NBMAX, where NBMAX
-//is used to define the local array T.
-/* Writing concatenation */
-	ch[0] = (*side);
-	ch[1] = (*trans);
-	ch[2] = '\0';
-	nb = max((INTEGER) 64, iMlaenv(1, "Cunmqr", ch, m, n, k, -1));
-	lwkopt = max((INTEGER) 1, nw) * nb;
-	work[1] = lwkopt;
+    //
+    const INTEGER nbmax = 64;
+    INTEGER nb = 0;
+    const INTEGER ldt = nbmax + 1;
+    const INTEGER tsize = ldt * nbmax;
+    INTEGER lwkopt = 0;
+    if (info == 0) {
+        //
+        //        Compute the workspace requirements
+        //
+        nb = min(nbmax, iMlaenv[("Cunmqr" - 1) * ldiMlaenv]);
+        lwkopt = max((INTEGER)1, nw) * nb + tsize;
+        work[1 - 1] = lwkopt;
     }
-    if (*info != 0) {
-	Mxerbla("CUNMQR", -(*info));
-	return;
+    //
+    if (info != 0) {
+        Mxerbla("Cunmqr", -info);
+        return;
     } else if (lquery) {
-	return;
+        return;
     }
-//Quick return if possible
+    //
+    //     Quick return if possible
+    //
     if (m == 0 || n == 0 || k == 0) {
-	work[1] = 1;
-	return;
+        work[1 - 1] = 1;
+        return;
     }
-    nbmin = 2;
-    ldwork = nw;
+    //
+    INTEGER nbmin = 2;
+    INTEGER ldwork = nw;
     if (nb > 1 && nb < k) {
-	iws = nw * nb;
-	if (lwork < iws) {
-	    nb = lwork / ldwork;
-	    ch[0] = (*side);
-	    ch[1] = (*trans);
-	    ch[2] = '\0';
-	    nbmin = max((INTEGER) 2, iMlaenv(2, "Cunmqr", ch, m, n, k, -1));
-	}
-    } else {
-	iws = nw;
+        if (lwork < nw * nb + tsize) {
+            nb = (lwork - tsize) / ldwork;
+            nbmin = max(2, iMlaenv[(2 - 1) + ("Cunmqr" - 1) * ldiMlaenv]);
+        }
     }
+    //
+    INTEGER iinfo = 0;
+    INTEGER iwt = 0;
+    INTEGER i1 = 0;
+    INTEGER i2 = 0;
+    INTEGER i3 = 0;
+    INTEGER ni = 0;
+    INTEGER jc = 0;
+    INTEGER mi = 0;
+    INTEGER ic = 0;
+    INTEGER i = 0;
+    INTEGER ib = 0;
     if (nb < nbmin || nb >= k) {
-//Use unblocked code
-	Cunm2r(side, trans, m, n, k, A, lda, tau, c, ldc, work, &iinfo);
+        //
+        //        Use unblocked code
+        //
+        Cunm2r(side, trans, m, n, k, a, lda, tau, c, ldc, work, iinfo);
     } else {
-//Use blocked code
-	if ((left && !notran) || (!left && notran)) {
-	    i1 = 1;
-	    i2 = k;
-	    i3 = nb;
-	} else {
-	    i1 = (k - 1) / nb * nb + 1;
-	    i2 = 1;
-	    i3 = -nb;
-	}
-	if (left) {
-	    ni = n;
-	    jc = 1;
-	} else {
-	    mi = m;
-	    ic = 1;
-	}
-	for (i = i1; i <= i2; i = i + i3) {
-	    ib = min(nb, k - i + 1);
-//Form the triangular factor of the block reflector
-//H = H(i) H(i+1) . . . H(i+ib-1)
-	    Clarft("Forward", "Columnwise", nq - i + 1, ib, &A[i + i * lda], lda, &tau[i], t, 650);
-	    if (left) {
-//H or H' is applied to C(i:m,1:n)
-		mi = m - i + 1;
-		ic = i;
-	    } else {
-//H or H' is applied to C(1:m,i:n)
-		ni = n - i + 1;
-		jc = i;
-	    }
-//Apply H or H'
-	    Clarfb(side, trans, "Forward", "Columnwise", mi, ni, ib, &A[i + i * lda], lda, t, 65, &c[ic + jc * ldc], ldc, work, ldwork);
-	}
+        //
+        //        Use blocked code
+        //
+        iwt = 1 + nw * nb;
+        if ((left && !notran) || (!left && notran)) {
+            i1 = 1;
+            i2 = k;
+            i3 = nb;
+        } else {
+            i1 = ((k - 1) / nb) * nb + 1;
+            i2 = 1;
+            i3 = -nb;
+        }
+        //
+        if (left) {
+            ni = n;
+            jc = 1;
+        } else {
+            mi = m;
+            ic = 1;
+        }
+        //
+        for (i = i1; i <= i2; i = i + i3) {
+            ib = min(nb, k - i + 1);
+            //
+            //           Form the triangular factor of the block reflector
+            //           H = H(i) H(i+1) . . . H(i+ib-1)
+            //
+            Clarft("Forward", "Columnwise", nq - i + 1, ib, a[(i - 1) + (i - 1) * lda], lda, tau[i - 1], work[iwt - 1], ldt);
+            if (left) {
+                //
+                //              H or H**H is applied to C(i:m,1:n)
+                //
+                mi = m - i + 1;
+                ic = i;
+            } else {
+                //
+                //              H or H**H is applied to C(1:m,i:n)
+                //
+                ni = n - i + 1;
+                jc = i;
+            }
+            //
+            //           Apply H or H**H
+            //
+            Clarfb(side, trans, "Forward", "Columnwise", mi, ni, ib, a[(i - 1) + (i - 1) * lda], lda, work[iwt - 1], ldt, c[(ic - 1) + (jc - 1) * ldc], ldc, work, ldwork);
+        }
     }
-    work[1] = lwkopt;
-    return;
+    work[1 - 1] = lwkopt;
+    //
+    //     End of Cunmqr
+    //
 }

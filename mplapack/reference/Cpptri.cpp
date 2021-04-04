@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Cpptri.cpp,v 1.8 2010/08/07 04:48:32 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,99 +25,97 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cpptri(const char *uplo, INTEGER n, COMPLEX * ap, INTEGER * info)
-{
-    INTEGER j, jc, jj;
-    REAL ajj;
-    INTEGER jjn;
-    INTEGER upper;
-    REAL One = 1.0;
-
-//Test the input parameters.
-    *info = 0;
-    upper = Mlsame(uplo, "U");
+void Cpptri(const char *uplo, INTEGER const &n, COMPLEX *ap, INTEGER &info) {
+    //
+    //  -- LAPACK computational routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    //     Test the input parameters.
+    //
+    info = 0;
+    bool upper = Mlsame(uplo, "U");
     if (!upper && !Mlsame(uplo, "L")) {
-	*info = -1;
+        info = -1;
     } else if (n < 0) {
-	*info = -2;
+        info = -2;
     }
-    if (*info != 0) {
-	Mxerbla("Cpptri", -(*info));
-	return;
+    if (info != 0) {
+        Mxerbla("Cpptri", -info);
+        return;
     }
-//Quick return if possible
+    //
+    //     Quick return if possible
+    //
     if (n == 0) {
-	return;
+        return;
     }
-//Invert the triangular Cholesky factor U or L.
-    Ctptri(uplo, "Non-unit", n, &ap[0], info);
-    if (*info > 0)
-	return;
-
+    //
+    //     Invert the triangular Cholesky factor U or L.
+    //
+    Ctptri(uplo, "Non-unit", n, ap, info);
+    if (info > 0) {
+        return;
+    }
+    INTEGER jj = 0;
+    INTEGER j = 0;
+    INTEGER jc = 0;
+    const REAL one = 1.0;
+    REAL ajj = 0.0;
+    INTEGER jjn = 0;
     if (upper) {
-//Compute the product inv(U) * inv(U)'.
-	jj = 0;
-	for (j = 0; j < n; j++) {
-	    jc = jj + 1;
-	    jj += j;
-	    if (j > 1) {
-		Chpr("Upper", j - 1, One, &ap[jc], 1, &ap[1]);
-	    }
-	    ajj = ap[jj].real();
-	    CRscal(j, ajj, &ap[jc], 1);
-	}
+        //
+        //        Compute the product inv(U) * inv(U)**H.
+        //
+        jj = 0;
+        for (j = 1; j <= n; j = j + 1) {
+            jc = jj + 1;
+            jj += j;
+            if (j > 1) {
+                Chpr("Upper", j - 1, one, ap[jc - 1], 1, ap);
+            }
+            ajj = ap[jj - 1];
+            CRscal(j, ajj, ap[jc - 1], 1);
+        }
+        //
     } else {
-//Compute the product inv(L)' * inv(L).
-	jj = 0;
-	for (j = 0; j < n; j++) {
-	    jjn = jj + n - j + 1;
-	    ap[jj] = Cdotc(n - j + 1, &ap[jj], 1, &ap[jj], 1).real();
-	    if (j < n) {
-		Ctpmv("Lower", "Transpose", "Non-unit", n - j, &ap[jjn], &ap[jj + 1], 1);
-	    }
-	    jj = jjn;
-	}
+        //
+        //        Compute the product inv(L)**H * inv(L).
+        //
+        jj = 1;
+        for (j = 1; j <= n; j = j + 1) {
+            jjn = jj + n - j + 1;
+            ap[jj - 1] = Cdotc[((n - j + 1) - 1) + (ap[jj - 1] - 1) * ldCdotc].real();
+            if (j < n) {
+                Ctpmv("Lower", "Conjugate transpose", "Non-unit", n - j, ap[jjn - 1], ap[(jj + 1) - 1], 1);
+            }
+            jj = jjn;
+        }
     }
-    return;
+    //
+    //     End of Cpptri
+    //
 }

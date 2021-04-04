@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Rlapmt.cpp,v 1.4 2010/08/07 04:48:32 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,113 +25,107 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlapmt(INTEGER * forwrd, INTEGER m, INTEGER n, REAL * X, INTEGER ldx, INTEGER * k)
-{
-    INTEGER i, j, ii, in;
-    REAL temp;
-
-    if (n <= 1)
-	return;
-
-    for (i = 0; i < n; i++) {
-	k[i] = -k[i];
+void Rlapmt(bool const &forwrd, INTEGER const &m, INTEGER const &n, REAL *x, INTEGER const &ldx, arr_ref<INTEGER> k) {
+    INTEGER i = 0;
+    INTEGER j = 0;
+    INTEGER in = 0;
+    INTEGER ii = 0;
+    REAL temp = 0.0;
+    //
+    //  -- LAPACK auxiliary routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Local Scalars ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    if (n <= 1) {
+        return;
     }
-
-    if (*forwrd) {
-//Forward permutation
-	for (i = 0; i < n; i++) {
-	    if (k[i] > 0) {
-		continue;
-	    }
-
-	    j = i;
-	    k[j] = -k[j];
-	    in = k[j];
-
-	    while (1) {
-		if (k[in] > 0) {
-		    continue;
-		}
-		for (ii = 0; ii < m; i++) {
-		    temp = X[ii + j * ldx];
-		    X[ii + j * ldx] = X[ii + in * ldx];
-		    X[ii + in * ldx] = temp;
-
-		}
-		k[in] = -k[in];
-		j = in;
-		in = k[in];
-	    }
-	}
-
+    //
+    for (i = 1; i <= n; i = i + 1) {
+        k[i - 1] = -k[i - 1];
+    }
+    //
+    if (forwrd) {
+        //
+        //        Forward permutation
+        //
+        for (i = 1; i <= n; i = i + 1) {
+            //
+            if (k[i - 1] > 0) {
+                goto statement_40;
+            }
+            //
+            j = i;
+            k[j - 1] = -k[j - 1];
+            in = k[j - 1];
+        //
+        statement_20:
+            if (k[in - 1] > 0) {
+                goto statement_40;
+            }
+            //
+            for (ii = 1; ii <= m; ii = ii + 1) {
+                temp = x[(ii - 1) + (j - 1) * ldx];
+                x[(ii - 1) + (j - 1) * ldx] = x[(ii - 1) + (in - 1) * ldx];
+                x[(ii - 1) + (in - 1) * ldx] = temp;
+            }
+            //
+            k[in - 1] = -k[in - 1];
+            j = in;
+            in = k[in - 1];
+            goto statement_20;
+        //
+        statement_40:;
+            //
+        }
+        //
     } else {
-
-//Backward permutation
-	for (i = 0; i < n; i++) {
-
-	    if (k[i] > 0) {
-		continue;
-	    }
-
-	    k[i] = -k[i];
-	    j = k[i];
-	    while (1) {
-		if (j == i) {
-		    continue;
-		}
-		for (ii = 0; ii < m; i++) {
-		    temp = X[ii + i * ldx];
-		    X[ii + i * ldx] = X[ii + j * ldx];
-		    X[ii + j * ldx] = temp;
-
-		}
-
-		k[j] = -k[j];
-		j = k[j];
-	    }
-	}
-
+        //
+        //        Backward permutation
+        //
+        for (i = 1; i <= n; i = i + 1) {
+            //
+            if (k[i - 1] > 0) {
+                goto statement_80;
+            }
+            //
+            k[i - 1] = -k[i - 1];
+            j = k[i - 1];
+        statement_60:
+            if (j == i) {
+                goto statement_80;
+            }
+            //
+            for (ii = 1; ii <= m; ii = ii + 1) {
+                temp = x[(ii - 1) + (i - 1) * ldx];
+                x[(ii - 1) + (i - 1) * ldx] = x[(ii - 1) + (j - 1) * ldx];
+                x[(ii - 1) + (j - 1) * ldx] = temp;
+            }
+            //
+            k[j - 1] = -k[j - 1];
+            j = k[j - 1];
+            goto statement_60;
+        //
+        statement_80:;
+            //
+        }
+        //
     }
-    return;
+    //
+    //     End of Rlapmt
+    //
 }

@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Rlarrc.cpp,v 1.7 2010/08/07 04:48:33 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,122 +25,114 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarrc(const char *jobt, INTEGER n, REAL vl, REAL vu, REAL * d, REAL * e, REAL pivmin, INTEGER * eigcnt, INTEGER * lcnt, INTEGER * rcnt, INTEGER * info)
-{
-    INTEGER i;
-    REAL sl, su, tmp, tmp2;
-    INTEGER matt;
-    REAL lpivot, rpivot;
-    REAL Zero = 0.0;
-
-    *info = 0;
-    lcnt = 0;
-    *rcnt = 0;
-    *eigcnt = 0;
-    matt = Mlsame(jobt, "T");
-    if (matt) {
-
-//Sturm sequence count on T
-	lpivot = d[0] - vl;
-	rpivot = d[0] - vu;
-	if (lpivot <= Zero) {
-	    ++(lcnt);
-	}
-	if (rpivot <= Zero) {
-	    ++(*rcnt);
-	}
-	for (i = 0; i < n - 1; i++) {
-	    tmp = e[i] * e[i];
-	    lpivot = d[i + 1] - vl - tmp / lpivot;
-	    rpivot = d[i + 1] - vu - tmp / rpivot;
-	    if (lpivot <= Zero) {
-		++(lcnt);
-	    }
-	    if (rpivot <= Zero) {
-		++(*rcnt);
-	    }
-
-	}
-    } else {
-//Sturm sequence count on L D L^T
-	sl = -vl;
-	su = -vu;
-	for (i = 0; i < n - 1; i++) {
-	    lpivot = d[i] + sl;
-	    rpivot = d[i] + su;
-	    if (lpivot <= Zero) {
-		++(lcnt);
-	    }
-	    if (rpivot <= Zero) {
-		++(*rcnt);
-	    }
-	    tmp = e[i] * d[i] * e[i];
-
-	    tmp2 = tmp / lpivot;
-	    if (tmp2 == Zero) {
-		sl = tmp - vl;
-	    } else {
-		sl = sl * tmp2 - vl;
-	    }
-
-	    tmp2 = tmp / rpivot;
-	    if (tmp2 == Zero) {
-		su = tmp - vu;
-	    } else {
-		su = su * tmp2 - vu;
-	    }
-
-	}
-	lpivot = d[n] + sl;
-	rpivot = d[n] + su;
-	if (lpivot <= Zero) {
-	    ++(lcnt);
-	}
-	if (rpivot <= Zero) {
-	    ++(*rcnt);
-	}
+void Rlarrc(const char *jobt, INTEGER const &n, REAL const &vl, REAL const &vu, REAL *d, REAL *e, REAL const & /* pivmin */, INTEGER &eigcnt, INTEGER &lcnt, INTEGER &rcnt, INTEGER &info) {
+    //
+    //  -- LAPACK auxiliary routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    info = 0;
+    //
+    //     Quick return if possible
+    //
+    if (n <= 0) {
+        return;
     }
-    *eigcnt = *rcnt - *lcnt;
-    return;
+    //
+    lcnt = 0;
+    rcnt = 0;
+    eigcnt = 0;
+    bool matt = Mlsame(jobt, "T");
+    //
+    REAL lpivot = 0.0;
+    REAL rpivot = 0.0;
+    const REAL zero = 0.0;
+    INTEGER i = 0;
+    REAL tmp = 0.0;
+    REAL sl = 0.0;
+    REAL su = 0.0;
+    REAL tmp2 = 0.0;
+    if (matt) {
+        //        Sturm sequence count on T
+        lpivot = d[1 - 1] - vl;
+        rpivot = d[1 - 1] - vu;
+        if (lpivot <= zero) {
+            lcnt++;
+        }
+        if (rpivot <= zero) {
+            rcnt++;
+        }
+        for (i = 1; i <= n - 1; i = i + 1) {
+            tmp = pow2(e[i - 1]);
+            lpivot = (d[(i + 1) - 1] - vl) - tmp / lpivot;
+            rpivot = (d[(i + 1) - 1] - vu) - tmp / rpivot;
+            if (lpivot <= zero) {
+                lcnt++;
+            }
+            if (rpivot <= zero) {
+                rcnt++;
+            }
+        }
+    } else {
+        //        Sturm sequence count on L D L^T
+        sl = -vl;
+        su = -vu;
+        for (i = 1; i <= n - 1; i = i + 1) {
+            lpivot = d[i - 1] + sl;
+            rpivot = d[i - 1] + su;
+            if (lpivot <= zero) {
+                lcnt++;
+            }
+            if (rpivot <= zero) {
+                rcnt++;
+            }
+            tmp = e[i - 1] * d[i - 1] * e[i - 1];
+            //
+            tmp2 = tmp / lpivot;
+            if (tmp2 == zero) {
+                sl = tmp - vl;
+            } else {
+                sl = sl * tmp2 - vl;
+            }
+            //
+            tmp2 = tmp / rpivot;
+            if (tmp2 == zero) {
+                su = tmp - vu;
+            } else {
+                su = su * tmp2 - vu;
+            }
+        }
+        lpivot = d[n - 1] + sl;
+        rpivot = d[n - 1] + su;
+        if (lpivot <= zero) {
+            lcnt++;
+        }
+        if (rpivot <= zero) {
+            rcnt++;
+        }
+    }
+    eigcnt = rcnt - lcnt;
+    //
+    //     end of Rlarrc
+    //
 }

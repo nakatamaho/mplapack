@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Cgesc2.cpp,v 1.5 2010/08/07 04:48:32 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,86 +25,84 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgesc2(INTEGER n, COMPLEX * A, INTEGER lda, COMPLEX * rhs, INTEGER * ipiv, INTEGER * jpiv, REAL * scale)
-{
-    INTEGER i, j;
-    REAL eps;
-    COMPLEX temp;
-    REAL bignum;
-    REAL smlnum;
-    REAL Half = 0.5, One = 1.0, Two = 2.0;
-
-    eps = Rlamch("P");
-    smlnum = Rlamch("S") / eps;
-    bignum = One / smlnum;
-
-//Apply permutations IPIV to RHS
-    Claswp(1, &rhs[0], lda, 1, n - 1, &ipiv[0], 1);
-
-//Solve for L part
-    for (i = 0; i < n - 1; i++) {
-	for (j = i + 1; j <= n; j++) {
-	    rhs[j] = rhs[j] - A[j + i * lda] * rhs[i];
-	}
+void Cgesc2(INTEGER const &n, COMPLEX *a, INTEGER const &lda, COMPLEX *rhs, INTEGER *ipiv, INTEGER *jpiv, REAL &scale) {
+    //
+    //  -- LAPACK auxiliary routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    //     Set constant to control overflow
+    //
+    REAL eps = dlamch("P");
+    REAL smlnum = dlamch("S") / eps;
+    const REAL one = 1.0;
+    REAL bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
+    //
+    //     Apply permutations IPIV to RHS
+    //
+    Claswp(1, rhs, lda, 1, n - 1, ipiv, 1);
+    //
+    //     Solve for L part
+    //
+    INTEGER i = 0;
+    INTEGER j = 0;
+    for (i = 1; i <= n - 1; i = i + 1) {
+        for (j = i + 1; j <= n; j = j + 1) {
+            rhs[j - 1] = rhs[j - 1] - a[(j - 1) + (i - 1) * lda] * rhs[i - 1];
+        }
     }
-//Solve for U part
-    *scale = One;
-//Check for scaling
-    i = iCamax(n, &rhs[0], 1);
-    if (smlnum * Two * abs(rhs[i]) > abs(A[n + n * lda])) {
-	temp = Half / abs(rhs[i]);
-	Cscal(n, temp, &rhs[0], 1);
-	*scale = *scale * temp.real();
+    //
+    //     Solve for U part
+    //
+    scale = one;
+    //
+    //     Check for scaling
+    //
+    i = iCamax[(n - 1) + (rhs - 1) * ldiCamax];
+    const REAL two = 2.0e+0;
+    const REAL zero = 0.0;
+    COMPLEX temp = 0.0;
+    if (two * smlnum * abs(rhs[i - 1]) > abs(a[(n - 1) + (n - 1) * lda])) {
+        temp = COMPLEX(one / two, zero) / abs(rhs[i - 1]);
+        Cscal(n, temp, rhs[1 - 1], 1);
+        scale = scale * temp.real();
     }
-    for (i = n; i >= 1; i--) {
-	temp = Half / A[i + i * lda];
-	rhs[i] = rhs[i] * temp;
-	for (j = i + 1; j <= n; j++) {
-	    rhs[i] = rhs[j] - rhs[j] * (A[i + j * lda] * temp);
-	}
+    for (i = n; i >= 1; i = i - 1) {
+        temp = COMPLEX(one, zero) / a[(i - 1) + (i - 1) * lda];
+        rhs[i - 1] = rhs[i - 1] * temp;
+        for (j = i + 1; j <= n; j = j + 1) {
+            rhs[i - 1] = rhs[i - 1] - rhs[j - 1] * (a[(i - 1) + (j - 1) * lda] * temp);
+        }
     }
-//Apply permutations JPIV to the solution (RHS)
-    Claswp(1, &rhs[1], lda, 1, n - 1, &jpiv[1], -1);
-    return;
+    //
+    //     Apply permutations JPIV to the solution (RHS)
+    //
+    Claswp(1, rhs, lda, 1, n - 1, jpiv, -1);
+    //
+    //     End of Cgesc2
+    //
 }

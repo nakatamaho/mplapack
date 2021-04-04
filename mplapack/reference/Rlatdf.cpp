@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Rlatdf.cpp,v 1.6 2010/08/07 04:48:33 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,134 +25,158 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlatdf(INTEGER ijob, INTEGER n, REAL * z, INTEGER ldz, REAL * rhs, REAL * rdsum, REAL * rdscal, INTEGER * ipiv, INTEGER * jpiv)
-{
-    INTEGER i, j, k;
-    REAL bm, bp, xm[8], xp[8];
-    INTEGER info;
-    REAL temp, work[32];
-    REAL pmone;
-    REAL sminu;
-    INTEGER iwork[8];
-    REAL splus;
-    REAL One = 1.0, Zero = 0.0;
-
+void Rlatdf(INTEGER const &ijob, INTEGER const &n, REAL *z, INTEGER const &ldz, REAL *rhs, REAL const &rdsum, REAL const &rRscal, INTEGER *ipiv, INTEGER *jpiv) {
+    //
+    //  -- LAPACK auxiliary routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. Local Arrays ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    const REAL one = 1.0;
+    REAL pmone = 0.0;
+    INTEGER j = 0;
+    REAL bp = 0.0;
+    REAL bm = 0.0;
+    REAL splus = 0.0;
+    REAL sminu = 0.0;
+    REAL temp = 0.0;
+    const INTEGER maxdim = 8;
+    arr_1d<maxdim, REAL> xp(fill0);
+    const REAL zero = 0.0;
+    INTEGER i = 0;
+    INTEGER k = 0;
+    arr_1d<4 * maxdim, REAL> work(fill0);
+    arr_1d<maxdim, INTEGER> iwork(fill0);
+    INTEGER info = 0;
+    arr_1d<maxdim, REAL> xm(fill0);
     if (ijob != 2) {
-//Apply permutations IPIV to RHS
-	Rlaswp(1, &rhs[1], ldz, 1, n - 1, &ipiv[1], 1);
-//Solve for L-part choosing RHS either to +1 or -One
-	pmone = -One;
-	for (j = 0; j < n - 1; j++) {
-	    bp = rhs[j] + One;
-	    bm = rhs[j] - One;
-	    splus = One;
-//Look-ahead for L-part RHS(1:N-1) = + or -1, SPLUS and
-//SMIN computed more efficiently than in BSOLVE [1].
-	    splus = splus + Rdot(n - j, &z[j + 1 + j * ldz], 1, &z[j + 1 + j * ldz], 1);
-	    sminu = Rdot(n - j, &z[j + 1 + j * ldz], 1, &rhs[j + 1], 1);
-	    splus = splus * rhs[j];
-	    if (splus > sminu) {
-		rhs[j] = bp;
-	    } else if (sminu > splus) {
-		rhs[j] = bm;
-	    } else {
-//In this case the updating sums are equal and we can
-//choose RHS(J) +1 or -One The first time this happens
-//we choose -1, thereafter +One This is a simple way to
-//get good estimates of matrices like Byers well-known
-//example (see [1]). (Not done in BSOLVE.)
-		rhs[j] = rhs[j] + pmone;
-		pmone = One;
-	    }
-//Compute the remaining r.h.s.
-	    Raxpy(n - j, -rhs[j], &z[j + 1 + j * ldz], 1, &rhs[j + 1], 1);
-	}
-//Solve for U-part, look-ahead for RHS(N) = +-One This is not done
-//in BSOLVE and will hopefully give us a better estimate because
-//any ill-conditioning of the original matrix is transfered to U
-//and not to L. U(N, N) is an approximation to sigma_min(LU).
-	Rcopy(n - 1, &rhs[1], 1, xp, 1);
-	xp[n - 1] = rhs[n] + One;
-	rhs[n] = rhs[n] - One;
-	splus = Zero;
-	sminu = Zero;
-	for (i = n; i >= 1; i--) {
-	    temp = One / z[i + i * ldz];
-	    xp[i - 1] = xp[i - 1] * temp;
-	    rhs[i] = rhs[i] * temp;
-	    for (k = i + 1; k <= n; k++) {
-		xp[i - 1] = xp[i - 1] - xp[k - 1] * (z[i + k * ldz] * temp);
-		rhs[i] = rhs[i] - rhs[k] * (z[i + k * ldz] * temp);
-	    }
-	    splus = splus + abs(xp[i - 1]);
-	    sminu = sminu + abs(rhs[i]);
-	}
-	if (splus > sminu) {
-	    Rcopy(n, xp, 1, &rhs[1], 1);
-	}
-//Apply the permutations JPIV to the computed solution (RHS)
-	Rlaswp(1, &rhs[1], ldz, 1, n - 1, &jpiv[1], -1);
-//Compute the sum of squares
-	Rlassq(n, &rhs[1], 1, rdscal, rdsum);
+        //
+        //        Apply permutations IPIV to RHS
+        //
+        Rlaswp(1, rhs, ldz, 1, n - 1, ipiv, 1);
+        //
+        //        Solve for L-part choosing RHS either to +1 or -1.
+        //
+        pmone = -one;
+        //
+        for (j = 1; j <= n - 1; j = j + 1) {
+            bp = rhs[j - 1] + one;
+            bm = rhs[j - 1] - one;
+            splus = one;
+            //
+            //           Look-ahead for L-part RHS(1:N-1) = + or -1, SPLUS and
+            //           SMIN computed more efficiently than in BSOLVE [1].
+            //
+            splus += Rdot(n - j, z[((j + 1) - 1) + (j - 1) * ldz], 1, z[((j + 1) - 1) + (j - 1) * ldz], 1);
+            sminu = Rdot(n - j, z[((j + 1) - 1) + (j - 1) * ldz], 1, rhs[(j + 1) - 1], 1);
+            splus = splus * rhs[j - 1];
+            if (splus > sminu) {
+                rhs[j - 1] = bp;
+            } else if (sminu > splus) {
+                rhs[j - 1] = bm;
+            } else {
+                //
+                //              In this case the updating sums are equal and we can
+                //              choose RHS(J) +1 or -1. The first time this happens
+                //              we choose -1, thereafter +1. This is a simple way to
+                //              get good estimates of matrices like Byers well-known
+                //              example (see [1]). (Not done in BSOLVE.)
+                //
+                rhs[j - 1] += pmone;
+                pmone = one;
+            }
+            //
+            //           Compute the remaining r.h.s.
+            //
+            temp = -rhs[j - 1];
+            Raxpy(n - j, temp, z[((j + 1) - 1) + (j - 1) * ldz], 1, rhs[(j + 1) - 1], 1);
+            //
+        }
+        //
+        //        Solve for U-part, look-ahead for RHS(N) = +-1. This is not done
+        //        in BSOLVE and will hopefully give us a better estimate because
+        //        any ill-conditioning of the original matrix is transferred to U
+        //        and not to L. U(N, N) is an approximation to sigma_min(LU).
+        //
+        Rcopy(n - 1, rhs, 1, xp, 1);
+        xp[n - 1] = rhs[n - 1] + one;
+        rhs[n - 1] = rhs[n - 1] - one;
+        splus = zero;
+        sminu = zero;
+        for (i = n; i >= 1; i = i - 1) {
+            temp = one / z[(i - 1) + (i - 1) * ldz];
+            xp[i - 1] = xp[i - 1] * temp;
+            rhs[i - 1] = rhs[i - 1] * temp;
+            for (k = i + 1; k <= n; k = k + 1) {
+                xp[i - 1] = xp[i - 1] - xp[k - 1] * (z[(i - 1) + (k - 1) * ldz] * temp);
+                rhs[i - 1] = rhs[i - 1] - rhs[k - 1] * (z[(i - 1) + (k - 1) * ldz] * temp);
+            }
+            splus += abs(xp[i - 1]);
+            sminu += abs(rhs[i - 1]);
+        }
+        if (splus > sminu) {
+            Rcopy(n, xp, 1, rhs, 1);
+        }
+        //
+        //        Apply the permutations JPIV to the computed solution (RHS)
+        //
+        Rlaswp(1, rhs, ldz, 1, n - 1, jpiv, -1);
+        //
+        //        Compute the sum of squares
+        //
+        Rlassq(n, rhs, 1, rRscal, rdsum);
+        //
     } else {
-//IJOB = 2, Compute approximate nullvector XM of Z
-	Rgecon("I", n, &z[0], ldz, One, &temp, work, iwork, &info);
-	Rcopy(n, &work[n], 1, xm, 1);
-//Compute RHS
-	Rlaswp(1, xm, ldz, 1, n - 1, &ipiv[1], -1);
-	temp = One / sqrt(Rdot(n, xm, 1, xm, 1));
-	Rscal(n, temp, xm, 1);
-	Rcopy(n, xm, 1, xp, 1);
-	Raxpy(n, One, &rhs[1], 1, xp, 1);
-	Raxpy(n, -One, xm, 1, &rhs[1], 1);
-	Rgesc2(n, &z[0], ldz, &rhs[1], &ipiv[1], &jpiv[1], &temp);
-	Rgesc2(n, &z[0], ldz, xp, &ipiv[1], &jpiv[1], &temp);
-	if (Rasum(n, xp, 1) > Rasum(n, &rhs[1], 1)) {
-	    Rcopy(n, xp, 1, &rhs[1], 1);
-	}
-//Compute the sum of squares
-	Rlassq(n, &rhs[1], 1, rdscal, rdsum);
+        //
+        //        IJOB = 2, Compute approximate nullvector XM of Z
+        //
+        Rgecon("I", n, z, ldz, one, temp, work, iwork, info);
+        Rcopy(n, work[(n + 1) - 1], 1, xm, 1);
+        //
+        //        Compute RHS
+        //
+        Rlaswp(1, xm, ldz, 1, n - 1, ipiv, -1);
+        temp = one / sqrt(Rdot(n, xm, 1, xm, 1));
+        Rscal(n, temp, xm, 1);
+        Rcopy(n, xm, 1, xp, 1);
+        Raxpy(n, one, rhs, 1, xp, 1);
+        Raxpy(n, -one, xm, 1, rhs, 1);
+        Rgesc2(n, z, ldz, rhs, ipiv, jpiv, temp);
+        Rgesc2(n, z, ldz, xp, ipiv, jpiv, temp);
+        if (Rasum[(n - 1) + (xp - 1) * ldRasum] > Rasum[(n - 1) + (rhs - 1) * ldRasum]) {
+            Rcopy(n, xp, 1, rhs, 1);
+        }
+        //
+        //        Compute the sum of squares
+        //
+        Rlassq(n, rhs, 1, rRscal, rdsum);
+        //
     }
-    return;
+    //
+    //     End of Rlatdf
+    //
 }

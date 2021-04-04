@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Rgttrf.cpp,v 1.7 2010/08/07 04:48:32 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,116 +25,113 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgttrf(INTEGER n, REAL * dl, REAL * d, REAL * du, REAL * du2, INTEGER * ipiv, INTEGER * info)
-{
-    INTEGER i;
-    REAL fact, temp;
-    REAL Zero = 0.0;
-
-    *info = 0;
+void Rgttrf(INTEGER const &n, REAL *dl, REAL *d, REAL *du, REAL *du2, arr_ref<INTEGER> ipiv, INTEGER &info) {
+    INTEGER i = 0;
+    const REAL zero = 0.0;
+    REAL fact = 0.0;
+    REAL temp = 0.0;
+    //
+    //  -- LAPACK computational routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    info = 0;
     if (n < 0) {
-	*info = -1;
-	Mxerbla("Rgttrf", -(*info));
-	return;
+        info = -1;
+        Mxerbla("Rgttrf", -info);
+        return;
     }
-//Quick return if possible
-    if (n == 0)
-	return;
-//Initialize IPIV(i) = i and DU2(I) = 0
-    for (i = 0; i < n; i++) {
-	ipiv[i] = i;
-
+    //
+    //     Quick return if possible
+    //
+    if (n == 0) {
+        return;
     }
-    for (i = 0; i < n - 2; i++) {
-	du2[i] = Zero;
+    //
+    //     Initialize IPIV(i) = i and DU2(I) = 0
+    //
+    for (i = 1; i <= n; i = i + 1) {
+        ipiv[i - 1] = i;
     }
-    for (i = 0; i < n - 2; i++) {
-	if (abs(d[i]) >= abs(dl[i])) {
-//No row interchange required, eliminate DL(I)
-	    if (d[i] != Zero) {
-		fact = dl[i] / d[i];
-		dl[i] = fact;
-		d[i + 1] -= fact * du[i];
-	    }
-	} else {
-//Interchange rows I and I+1, eliminate DL(I)
-	    fact = d[i] / dl[i];
-	    d[i] = dl[i];
-	    dl[i] = fact;
-	    temp = du[i];
-	    du[i] = d[i + 1];
-	    d[i + 1] = temp - fact * d[i + 1];
-	    du2[i] = du[i + 1];
-	    du[i + 1] = -fact * du[i + 1];
-	    ipiv[i] = i + 1;
-	}
-
+    for (i = 1; i <= n - 2; i = i + 1) {
+        du2[i - 1] = zero;
+    }
+    //
+    for (i = 1; i <= n - 2; i = i + 1) {
+        if (abs(d[i - 1]) >= abs(dl[i - 1])) {
+            //
+            //           No row INTEGERerchange required, eliminate DL(I)
+            //
+            if (d[i - 1] != zero) {
+                fact = dl[i - 1] / d[i - 1];
+                dl[i - 1] = fact;
+                d[(i + 1) - 1] = d[(i + 1) - 1] - fact * du[i - 1];
+            }
+        } else {
+            //
+            //           Interchange rows I and I+1, eliminate DL(I)
+            //
+            fact = d[i - 1] / dl[i - 1];
+            d[i - 1] = dl[i - 1];
+            dl[i - 1] = fact;
+            temp = du[i - 1];
+            du[i - 1] = d[(i + 1) - 1];
+            d[(i + 1) - 1] = temp - fact * d[(i + 1) - 1];
+            du2[i - 1] = du[(i + 1) - 1];
+            du[(i + 1) - 1] = -fact * du[(i + 1) - 1];
+            ipiv[i - 1] = i + 1;
+        }
     }
     if (n > 1) {
-	i = n - 1;
-	if (abs(d[i]) >= abs(dl[i])) {
-	    if (d[i] != Zero) {
-		fact = dl[i] / d[i];
-		dl[i] = fact;
-		d[i + 1] -= fact * du[i];
-	    }
-	} else {
-	    fact = d[i] / dl[i];
-	    d[i] = dl[i];
-	    dl[i] = fact;
-	    temp = du[i];
-	    du[i] = d[i + 1];
-	    d[i + 1] = temp - fact * d[i + 1];
-	    ipiv[i] = i + 1;
-	}
+        i = n - 1;
+        if (abs(d[i - 1]) >= abs(dl[i - 1])) {
+            if (d[i - 1] != zero) {
+                fact = dl[i - 1] / d[i - 1];
+                dl[i - 1] = fact;
+                d[(i + 1) - 1] = d[(i + 1) - 1] - fact * du[i - 1];
+            }
+        } else {
+            fact = d[i - 1] / dl[i - 1];
+            d[i - 1] = dl[i - 1];
+            dl[i - 1] = fact;
+            temp = du[i - 1];
+            du[i - 1] = d[(i + 1) - 1];
+            d[(i + 1) - 1] = temp - fact * d[(i + 1) - 1];
+            ipiv[i - 1] = i + 1;
+        }
     }
-//Check for a zero on the diagonal of U.
-    for (i = 0; i < n; i++) {
-	if (d[i] == Zero) {
-	    *info = i;
-	    return;
-	}
+    //
+    //     Check for a zero on the diagonal of U.
+    //
+    for (i = 1; i <= n; i = i + 1) {
+        if (d[i - 1] == zero) {
+            info = i;
+            goto statement_50;
+        }
     }
-    return;
+statement_50:;
+    //
+    //     End of Rgttrf
+    //
 }

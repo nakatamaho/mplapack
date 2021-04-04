@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Rlassq.cpp,v 1.4 2010/08/07 04:48:33 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,66 +25,50 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-//http://www.netlib.org/lapack/double/dlassq.f
-void Rlassq(INTEGER n, REAL * x, INTEGER incx, REAL * scale, REAL * sumsq)
-{
-    INTEGER ix;
-    REAL Zero = 0.0, One = 1.0;
-    REAL absxi;
-
+void Rlassq(INTEGER const &n, REAL *x, INTEGER const &incx, REAL &scale, REAL &sumsq) {
+    //
+    //  -- LAPACK auxiliary routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    // =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    INTEGER ix = 0;
+    REAL absxi = 0.0;
+    const REAL zero = 0.0;
     if (n > 0) {
-	for (ix = 0; ix <= (n - 1) * incx; ix += incx) {
-	    if (x[ix] != Zero) {
-		absxi = abs(x[ix]);
-		if ((*scale) < absxi) {
-		    (*sumsq) = One + (*sumsq) * ((*scale) / absxi) * ((*scale) / absxi);
-		    (*scale) = absxi;
-		} else {
-		    (*sumsq) = (*sumsq) + (absxi / (*scale)) * (absxi / (*scale));
-		}
-	    }
-	}
+        for (ix = 1; ix <= 1 + (n - 1) * incx; ix = ix + incx) {
+            absxi = abs(x[ix - 1]);
+            if (absxi > zero || Risnan(absxi)) {
+                if (scale < absxi) {
+                    sumsq = 1 + sumsq * pow2((scale / absxi));
+                    scale = absxi;
+                } else {
+                    sumsq += pow2((absxi / scale));
+                }
+            }
+        }
     }
-    return;
+    //
+    //     End of Rlassq
+    //
 }

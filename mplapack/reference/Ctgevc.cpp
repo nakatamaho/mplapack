@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Ctgevc.cpp,v 1.5 2010/08/07 04:48:32 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,479 +25,538 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-#define MTRUE 1
-#define MFALSE 0
-
-void Ctgevc(const char *side, const char *howmny, LOGICAL * select,
-	    INTEGER n, COMPLEX * s, INTEGER lds, COMPLEX * p, INTEGER ldp, COMPLEX * vl, INTEGER ldvl, COMPLEX * vr, INTEGER ldvr,
-	    INTEGER mm, INTEGER * m, COMPLEX * work, REAL * rwork, INTEGER * info)
-{
-    COMPLEX d;
-    INTEGER i, j;
-    COMPLEX ca, cb;
-    INTEGER je, im, jr;
-    REAL big;
-    LOGICAL lsa, lsb;
-    REAL ulp;
-    COMPLEX sum;
-    INTEGER ibeg, ieig, iend;
-    REAL dmin;
-    INTEGER isrc;
-    REAL temp;
-    COMPLEX suma, sumb;
-    REAL xmax, scale;
-    LOGICAL ilall = 0;
-    INTEGER iside;
-    REAL sbeta;
-    REAL small;
-    LOGICAL compll;
-    REAL anorm, bnorm;
-    LOGICAL compr;
-    LOGICAL ilbbad;
-    REAL acoefa, bcoefa, acoeff;
-    COMPLEX bcoeff;
-    LOGICAL ilback = 0;
-    REAL ascale, bscale;
-    COMPLEX salpha;
-    REAL safmin;
-    REAL bignum;
-    LOGICAL ilcomp;
-    INTEGER ihwmny;
-    REAL Zero = 0.0, One = 1.0;
-    REAL mtemp1, mtemp2, mtemp3, mtemp4;
-
-//Decode and Test the input parameters
+void Ctgevc(const char *side, const char *howmny, arr_cref<bool> select, INTEGER const &n, COMPLEX *s, INTEGER const &lds, COMPLEX *p, INTEGER const &ldp, COMPLEX *vl, INTEGER const &ldvl, COMPLEX *vr, INTEGER const &ldvr, INTEGER const &mm, INTEGER &m, COMPLEX *work, REAL *rwork, INTEGER &info) {
+    COMPLEX x = 0.0;
+    INTEGER ihwmny = 0;
+    bool ilall = false;
+    bool ilback = false;
+    INTEGER iside = 0;
+    bool identifier_compl = false;
+    bool compr = false;
+    INTEGER im = 0;
+    INTEGER j = 0;
+    bool ilbbad = false;
+    const REAL zero = 0.0;
+    REAL safmin = 0.0;
+    const REAL one = 1.0;
+    REAL big = 0.0;
+    REAL ulp = 0.0;
+    REAL small = 0.0;
+    REAL bignum = 0.0;
+    REAL anorm = 0.0;
+    REAL bnorm = 0.0;
+    INTEGER i = 0;
+    REAL ascale = 0.0;
+    REAL bscale = 0.0;
+    INTEGER ieig = 0;
+    INTEGER je = 0;
+    bool ilcomp = false;
+    INTEGER jr = 0;
+    const COMPLEX czero = (0.0, 0.0);
+    const COMPLEX cone = (1.0, 0.0);
+    REAL temp = 0.0;
+    COMPLEX salpha = 0.0;
+    REAL sbeta = 0.0;
+    REAL acoeff = 0.0;
+    COMPLEX bcoeff = 0.0;
+    bool lsa = false;
+    bool lsb = false;
+    REAL scale = 0.0;
+    REAL acoefa = 0.0;
+    REAL bcoefa = 0.0;
+    REAL xmax = 0.0;
+    REAL dmin = 0.0;
+    COMPLEX suma = 0.0;
+    COMPLEX sumb = 0.0;
+    COMPLEX sum = 0.0;
+    COMPLEX d = 0.0;
+    INTEGER isrc = 0;
+    INTEGER ibeg = 0;
+    COMPLEX ca = 0.0;
+    COMPLEX cb = 0.0;
+    INTEGER iend = 0;
+    //
+    //  -- LAPACK computational routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Statement Functions ..
+    //     ..
+    //     .. Statement Function definitions ..
+    abs1[x - 1] = abs(x.real()) + abs(x.imag());
+    //     ..
+    //     .. Executable Statements ..
+    //
+    //     Decode and Test the input parameters
+    //
     if (Mlsame(howmny, "A")) {
-	ihwmny = 1;
-	ilall = MTRUE;
-	ilback = MFALSE;
+        ihwmny = 1;
+        ilall = true;
+        ilback = false;
     } else if (Mlsame(howmny, "S")) {
-	ihwmny = 2;
-	ilall = MFALSE;
-	ilback = MFALSE;
+        ihwmny = 2;
+        ilall = false;
+        ilback = false;
     } else if (Mlsame(howmny, "B")) {
-	ihwmny = 3;
-	ilall = MTRUE;
-	ilback = MTRUE;
+        ihwmny = 3;
+        ilall = true;
+        ilback = true;
     } else {
-	ihwmny = -1;
+        ihwmny = -1;
     }
+    //
     if (Mlsame(side, "R")) {
-	iside = 1;
-	compll = MFALSE;
-	compr = MTRUE;
+        iside = 1;
+        identifier_compl = false;
+        compr = true;
     } else if (Mlsame(side, "L")) {
-	iside = 2;
-	compll = MTRUE;
-	compr = MFALSE;
+        iside = 2;
+        identifier_compl = true;
+        compr = false;
     } else if (Mlsame(side, "B")) {
-	iside = 3;
-	compll = MTRUE;
-	compr = MTRUE;
+        iside = 3;
+        identifier_compl = true;
+        compr = true;
     } else {
-	iside = -1;
+        iside = -1;
     }
-    *info = 0;
+    //
+    info = 0;
     if (iside < 0) {
-	*info = -1;
+        info = -1;
     } else if (ihwmny < 0) {
-	*info = -2;
+        info = -2;
     } else if (n < 0) {
-	*info = -4;
-    } else if (lds < max((INTEGER) 1, n)) {
-	*info = -6;
-    } else if (ldp < max((INTEGER) 1, n)) {
-	*info = -8;
+        info = -4;
+    } else if (lds < max((INTEGER)1, n)) {
+        info = -6;
+    } else if (ldp < max((INTEGER)1, n)) {
+        info = -8;
     }
-    if (*info != 0) {
-	Mxerbla("Ctgevc", -(*info));
-	return;
+    if (info != 0) {
+        Mxerbla("Ctgevc", -info);
+        return;
     }
-//Count the number of eigenvectors
+    //
+    //     Count the number of eigenvectors
+    //
     if (!ilall) {
-	im = 0;
-	for (j = 0; j < n; j++) {
-	    if (select[j]) {
-		im++;
-	    }
-	}
+        im = 0;
+        for (j = 1; j <= n; j = j + 1) {
+            if (select[j - 1]) {
+                im++;
+            }
+        }
     } else {
-	im = n;
+        im = n;
     }
-//Check diagonal of B
-    ilbbad = MFALSE;
-    for (j = 0; j < n; j++) {
-	if (p[j + j * ldp].imag() != Zero) {
-	    ilbbad = MTRUE;
-	}
+    //
+    //     Check diagonal of B
+    //
+    ilbbad = false;
+    for (j = 1; j <= n; j = j + 1) {
+        if (p[(j - 1) + (j - 1) * ldp].imag() != zero) {
+            ilbbad = true;
+        }
     }
+    //
     if (ilbbad) {
-	*info = -7;
-    } else if ((compll && ldvl < n) || ldvl < 1) {
-	*info = -10;
-    } else if ((compr && ldvr < n) || ldvr < 1) {
-	*info = -12;
+        info = -7;
+    } else if (identifier_compl && ldvl < n || ldvl < 1) {
+        info = -10;
+    } else if (compr && ldvr < n || ldvr < 1) {
+        info = -12;
     } else if (mm < im) {
-	*info = -13;
+        info = -13;
     }
-    if (*info != 0) {
-	Mxerbla("Ctgevc", -(*info));
-	return;
+    if (info != 0) {
+        Mxerbla("Ctgevc", -info);
+        return;
     }
-//Quick return if possible
-    (*m) = im;
+    //
+    //     Quick return if possible
+    //
+    m = im;
     if (n == 0) {
-	return;
+        return;
     }
-//Machine Constants
-    safmin = Rlamch("Safe minimum");
-    big = One / safmin;
-    //Rlabad(&safmin, &big);
-    ulp = Rlamch("Epsilon") * Rlamch("Base");
+    //
+    //     Machine Constants
+    //
+    safmin = dlamch("Safe minimum");
+    big = one / safmin;
+    Rlabad(safmin, big);
+    ulp = dlamch("Epsilon") * dlamch("Base");
     small = safmin * n / ulp;
-    big = One / small;
-    bignum = One / (safmin * n);
-//Compute the 1-norm of each column of the strictly upper triangular
-//part of A and B to check for possible overflow in the triangular
-//solver.
-    anorm = Cabs1(s[lds + 1]);
-    bnorm = Cabs1(p[ldp + 1]);
-    rwork[1] = Zero;
-    rwork[n + 1] = Zero;
-    for (j = 2; j <= n; j++) {
-	rwork[j] = Zero;
-	rwork[n + j] = Zero;
-	for (i = 0; i < j - 1; i++) {
-	    rwork[j] = rwork[j] + Cabs1(s[i + j * lds]);
-	    rwork[n + j] = rwork[n + j] + Cabs1(p[i + j * ldp]);
-	}
-	mtemp1 = anorm, mtemp2 = rwork[j] + Cabs1(s[j + j * lds]);
-	anorm = max(mtemp1, mtemp2);
-	mtemp1 = bnorm, mtemp2 = rwork[n + j] + Cabs1(p[j + j * ldp]);
-	bnorm = max(mtemp1, mtemp2);
+    big = one / small;
+    bignum = one / (safmin * n);
+    //
+    //     Compute the 1-norm of each column of the strictly upper triangular
+    //     part of A and B to check for possible overflow in the triangular
+    //     solver.
+    //
+    anorm = abs1[s[(1 - 1)] - 1];
+    bnorm = abs1[p[(1 - 1)] - 1];
+    rwork[1 - 1] = zero;
+    rwork[(n + 1) - 1] = zero;
+    for (j = 2; j <= n; j = j + 1) {
+        rwork[j - 1] = zero;
+        rwork[(n + j) - 1] = zero;
+        for (i = 1; i <= j - 1; i = i + 1) {
+            rwork[j - 1] += abs1[s[(i - 1) + (j - 1) * lds] - 1];
+            rwork[(n + j) - 1] += abs1[p[(i - 1) + (j - 1) * ldp] - 1];
+        }
+        anorm = max(anorm, rwork[j - 1] + abs1[s[(j - 1) + (j - 1) * lds] - 1]);
+        bnorm = max(bnorm, rwork[(n + j) - 1] + abs1[p[(j - 1) + (j - 1) * ldp] - 1]);
     }
-    ascale = One / max(anorm, safmin);
-    bscale = One / max(bnorm, safmin);
-//Left eigenvectors
-    if (compll) {
-	ieig = 0;
-//Main loop over eigenvalues
-	for (je = 1; je <= n; je++) {
-	    if (ilall) {
-		ilcomp = MTRUE;
-	    } else {
-		ilcomp = select[je];
-	    }
-	    if (ilcomp) {
-		ieig++;
-		if (Cabs1(s[je + je * lds]) <= safmin && abs(p[je + je * ldp].real()) <= safmin) {
-//Singular matrix pencil -- return unit eigenvector
-		    for (jr = 1; jr <= n; jr++) {
-			vl[jr + ieig * ldvl] = Zero;
-		    }
-		    vl[ieig + ieig * ldvl] = One;
-		    goto L140;
-		}
-//Non-singular eigenvalue:
-//Compute coefficients  a  and  b  in
-//     H
-//   y  ( a A - b B ) = 0
-		mtemp1 = Cabs1(s[je + je * lds]) * ascale, mtemp2 = Cabs1(p[je + je * ldp]) * bscale;
-		mtemp3 = max(mtemp1, mtemp2);
-		temp = One / max(mtemp3, safmin);
-		salpha = temp * s[je + je * lds] * ascale;
-		sbeta = temp * p[je + je * ldp].real() * bscale;
-		acoeff = sbeta * ascale;
-		bcoeff = salpha * bscale;
-//Scale to avoid underflow
-		lsa = abs(sbeta) >= safmin && abs(acoeff) < small;
-		lsb = Cabs1(salpha) >= safmin && Cabs1(bcoeff) < small;
-		scale = One;
-		if (lsa) {
-		    scale = small / abs(sbeta) * min(anorm, big);
-		}
-		if (lsb) {
-		    mtemp1 = scale, mtemp2 = small / Cabs1(salpha) * min(bnorm, big);
-		    scale = max(mtemp1, mtemp2);
-		}
-		if (lsa || lsb) {
-		    mtemp3 = One, mtemp4 = abs(acoeff), mtemp1 = max(mtemp3, mtemp4), mtemp2 = Cabs1(bcoeff);
-		    mtemp3 = scale, mtemp4 = One / (safmin * max(mtemp1, mtemp2));
-		    scale = min(mtemp3, mtemp4);
-		    if (lsa) {
-			acoeff = ascale * (scale * sbeta);
-		    } else {
-			acoeff = scale * acoeff;
-		    }
-		    if (lsb) {
-			bcoeff = bscale * (scale * salpha);
-		    } else {
-			bcoeff = scale * bcoeff;
-		    }
-		}
-		acoefa = abs(acoeff);
-		bcoefa = Cabs1(bcoeff);
-		xmax = One;
-		for (jr = 1; jr <= n; jr++) {
-		    work[jr] = Zero;
-		}
-		work[je] = One;
-		mtemp1 = ulp * acoefa * anorm, mtemp2 = ulp * bcoefa * bnorm;
-		mtemp3 = max(mtemp1, mtemp2);
-		dmin = max(mtemp3, safmin);
-//                                H
-//Triangular solve of  (a A - b B)  y = 0
-//                        H
-//(rowwise in  (a A - b B) , or columnwise in a A - b B)
-		for (j = je + 1; j <= n; j++) {
-//   Compute
-//         j-1
-//   SUM = sum  conjg( a*S(k,j) - b*P(k,j) )*x(k)
-//         k=je
-//   (Scale if necessary)
-		    temp = One / xmax;
-		    if (acoefa * rwork[j] + bcoefa * rwork[n + j] > bignum * temp) {
-			for (jr = je; jr <= j - 1; jr++) {
-			    work[jr] = temp * work[jr];
-			}
-			xmax = One;
-		    }
-		    suma = Zero;
-		    sumb = Zero;
-		    for (jr = je; jr <= j - 1; jr++) {
-			suma = suma + conj(s[jr + j * lds]) * work[jr];
-			sumb = sumb + conj(p[jr + j * ldp]) * work[jr];
-		    }
-		    sum = acoeff * suma - conj(bcoeff) * sumb;
-//Form x(j) = - SUM / conjg( a*S(j,j) - b*P(j,j) )
-//with scaling and perturbation of the denominator
-		    d = conj(acoeff * s[j + j * lds] - bcoeff * p[j + j * ldp]);
-		    if (Cabs1(d) <= dmin) {
-			d = dmin;
-		    }
-		    if (Cabs1(d) < One) {
-			if (Cabs1(sum) >= bignum * Cabs1(d)) {
-			    temp = One / Cabs1(sum);
-			    for (jr = je; jr <= j - 1; jr++) {
-				work[jr] = temp * work[jr];
-			    }
-			    xmax = temp * xmax;
-			    sum = temp * sum;
-			}
-		    }
-		    work[j] = Cladiv(-sum, d);
-		    mtemp1 = xmax, mtemp2 = Cabs1(work[j]);
-		    xmax = max(mtemp1, mtemp2);
-		}
-//Back transform eigenvector if HOWMNY='B'.
-		if (ilback) {
-		    Cgemv("N", n, n + 1 - je, One, &vl[je * ldvl + 1], ldvl, &work[je], 1, Zero, &work[n + 1], 1);
-		    isrc = 2;
-		    ibeg = 1;
-		} else {
-		    isrc = 1;
-		    ibeg = je;
-		}
-//Copy and scale eigenvector into column of VL
-		xmax = Zero;
-		for (jr = ibeg; jr <= n; jr++) {
-		    mtemp1 = xmax, mtemp2 = Cabs1(work[(isrc - 1) * n + jr]);
-		    xmax = max(mtemp1, mtemp2);
-		}
-		if (xmax > safmin) {
-		    temp = One / xmax;
-		    for (jr = ibeg; jr <= n; jr++) {
-			vl[jr + ieig * ldvl] = temp * work[(isrc - 1) * n + jr];
-		    }
-		} else {
-		    ibeg = n + 1;
-		}
-		for (jr = 1; jr <= ibeg - 1; jr++) {
-		    vl[jr + ieig * ldvl] = Zero;
-		}
-	    }
-	  L140:
-	    ;
-	}
+    //
+    ascale = one / max(anorm, safmin);
+    bscale = one / max(bnorm, safmin);
+    //
+    //     Left eigenvectors
+    //
+    if (identifier_compl) {
+        ieig = 0;
+        //
+        //        Main loop over eigenvalues
+        //
+        for (je = 1; je <= n; je = je + 1) {
+            if (ilall) {
+                ilcomp = true;
+            } else {
+                ilcomp = select[je - 1];
+            }
+            if (ilcomp) {
+                ieig++;
+                //
+                if (abs1[s[(je - 1) + (je - 1) * lds] - 1] <= safmin && abs(p[(je - 1) + (je - 1) * ldp].real()) <= safmin) {
+                    //
+                    //                 Singular matrix pencil -- return unit eigenvector
+                    //
+                    for (jr = 1; jr <= n; jr = jr + 1) {
+                        vl[(jr - 1) + (ieig - 1) * ldvl] = czero;
+                    }
+                    vl[(ieig - 1) + (ieig - 1) * ldvl] = cone;
+                    goto statement_140;
+                }
+                //
+                //              Non-singular eigenvalue:
+                //              Compute coefficients  a  and  b  in
+                //                   H
+                //                 y  ( a A - b B ) = 0
+                //
+                temp = one / max(abs1[s[(je - 1) + (je - 1) * lds] - 1] * ascale, abs(p[(je - 1) + (je - 1) * ldp].real()) * bscale, safmin);
+                salpha = (temp * s[(je - 1) + (je - 1) * lds]) * ascale;
+                sbeta = (temp * p[(je - 1) + (je - 1) * ldp].real()) * bscale;
+                acoeff = sbeta * ascale;
+                bcoeff = salpha * bscale;
+                //
+                //              Scale to avoid underflow
+                //
+                lsa = abs(sbeta) >= safmin && abs(acoeff) < small;
+                lsb = abs1[salpha - 1] >= safmin && abs1[bcoeff - 1] < small;
+                //
+                scale = one;
+                if (lsa) {
+                    scale = (small / abs(sbeta)) * min(anorm, big);
+                }
+                if (lsb) {
+                    scale = max(scale, (small / abs1[salpha - 1]) * min(bnorm, big));
+                }
+                if (lsa || lsb) {
+                    scale = min(scale, one / (safmin * max(one, abs(acoeff), abs1[bcoeff - 1])));
+                    if (lsa) {
+                        acoeff = ascale * (scale * sbeta);
+                    } else {
+                        acoeff = scale * acoeff;
+                    }
+                    if (lsb) {
+                        bcoeff = bscale * (scale * salpha);
+                    } else {
+                        bcoeff = scale * bcoeff;
+                    }
+                }
+                //
+                acoefa = abs(acoeff);
+                bcoefa = abs1[bcoeff - 1];
+                xmax = one;
+                for (jr = 1; jr <= n; jr = jr + 1) {
+                    work[jr - 1] = czero;
+                }
+                work[je - 1] = cone;
+                dmin = max(ulp * acoefa * anorm, ulp * bcoefa * bnorm, safmin);
+                //
+                //                                              H
+                //              Triangular solve of  (a A - b B)  y = 0
+                //
+                //                                      H
+                //              (rowwise in  (a A - b B) , or columnwise in a A - b B)
+                //
+                for (j = je + 1; j <= n; j = j + 1) {
+                    //
+                    //                 Compute
+                    //                       j-1
+                    //                 SUM = sum  conjg( a*S(k,j) - b*P(k,j) )*x(k)
+                    //                       k=je
+                    //                 (Scale if necessary)
+                    //
+                    temp = one / xmax;
+                    if (acoefa * rwork[j - 1] + bcoefa * rwork[(n + j) - 1] > bignum * temp) {
+                        for (jr = je; jr <= j - 1; jr = jr + 1) {
+                            work[jr - 1] = temp * work[jr - 1];
+                        }
+                        xmax = one;
+                    }
+                    suma = czero;
+                    sumb = czero;
+                    //
+                    for (jr = je; jr <= j - 1; jr = jr + 1) {
+                        suma += conj(s[(jr - 1) + (j - 1) * lds]) * work[jr - 1];
+                        sumb += conj(p[(jr - 1) + (j - 1) * ldp]) * work[jr - 1];
+                    }
+                    sum = acoeff * suma - conj(bcoeff) * sumb;
+                    //
+                    //                 Form x(j) = - SUM / conjg( a*S(j,j) - b*P(j,j) )
+                    //
+                    //                 with scaling and perturbation of the denominator
+                    //
+                    d = conj(acoeff * s[(j - 1) + (j - 1) * lds] - bcoeff * p[(j - 1) + (j - 1) * ldp]);
+                    if (abs1[d - 1] <= dmin) {
+                        d = COMPLEX(dmin);
+                    }
+                    //
+                    if (abs1[d - 1] < one) {
+                        if (abs1[sum - 1] >= bignum * abs1[d - 1]) {
+                            temp = one / abs1[sum - 1];
+                            for (jr = je; jr <= j - 1; jr = jr + 1) {
+                                work[jr - 1] = temp * work[jr - 1];
+                            }
+                            xmax = temp * xmax;
+                            sum = temp * sum;
+                        }
+                    }
+                    work[j - 1] = Cladiv[(-sum - 1) + (d - 1) * ldCladiv];
+                    xmax = max(xmax, abs1[work[j - 1] - 1]);
+                }
+                //
+                //              Back transform eigenvector if HOWMNY='B'.
+                //
+                if (ilback) {
+                    Cgemv("N", n, n + 1 - je, cone, vl[(je - 1) * ldvl], ldvl, work[je - 1], 1, czero, work[(n + 1) - 1], 1);
+                    isrc = 2;
+                    ibeg = 1;
+                } else {
+                    isrc = 1;
+                    ibeg = je;
+                }
+                //
+                //              Copy and scale eigenvector INTEGERo column of VL
+                //
+                xmax = zero;
+                for (jr = ibeg; jr <= n; jr = jr + 1) {
+                    xmax = max(xmax, abs1[(work[((isrc - 1) * n + jr) - 1]) - 1]);
+                }
+                //
+                if (xmax > safmin) {
+                    temp = one / xmax;
+                    for (jr = ibeg; jr <= n; jr = jr + 1) {
+                        vl[(jr - 1) + (ieig - 1) * ldvl] = temp * work[((isrc - 1) * n + jr) - 1];
+                    }
+                } else {
+                    ibeg = n + 1;
+                }
+                //
+                for (jr = 1; jr <= ibeg - 1; jr = jr + 1) {
+                    vl[(jr - 1) + (ieig - 1) * ldvl] = czero;
+                }
+                //
+            }
+        statement_140:;
+        }
     }
-//Right eigenvectors
+    //
+    //     Right eigenvectors
+    //
     if (compr) {
-	ieig = im + 1;
-//Main loop over eigenvalues
-	for (je = n; je >= 1; je--) {
-	    if (ilall) {
-		ilcomp = MTRUE;
-	    } else {
-		ilcomp = select[je];
-	    }
-	    if (ilcomp) {
-		ieig--;
-		if (Cabs1(s[je + je * lds]) <= safmin && abs(p[je + je * ldp].real()) <= safmin) {
-//Singular matrix pencil -- return unit eigenvector
-		    for (jr = 1; jr <= n; jr++) {
-			vr[jr + ieig * ldvr] = Zero;
-		    }
-		    vr[ieig + ieig * ldvr] = One;
-		    goto L250;
-		}
-//Non-singular eigenvalue:
-//Compute coefficients  a  and  b  in
-//( a A - b B ) x  = 0
-		mtemp1 = Cabs1(s[je + je * lds]), mtemp2 = abs(p[je + je * ldp].real()) * bscale;
-		mtemp3 = max(mtemp1, mtemp2);
-		temp = One / max(mtemp3, safmin);
-		salpha = temp * s[je + je * lds] * ascale;
-		sbeta = temp * p[je + je * ldp].real() * bscale;
-		acoeff = sbeta * ascale;
-		bcoeff = salpha * bscale;
-//Scale to avoid underflow
-		lsa = abs(sbeta) >= safmin && abs(acoeff) < small;
-		lsb = Cabs1(salpha) >= safmin && Cabs1(bcoeff) < small;
-		scale = One;
-		if (lsa) {
-		    scale = small / abs(sbeta) * min(anorm, big);
-		}
-		if (lsb) {
-		    mtemp1 = scale, mtemp2 = small / Cabs1(salpha) * min(bnorm, big);
-		    scale = max(mtemp1, mtemp2);
-		}
-		if (lsa || lsb) {
-		    mtemp1 = One, mtemp2 = abs(acoeff);
-		    mtemp3 = max(mtemp1, mtemp2), mtemp4 = Cabs1(bcoeff);
-		    mtemp1 = scale, mtemp2 = One / (safmin * max(mtemp3, mtemp4));
-		    scale = min(mtemp1, mtemp2);
-		    if (lsa) {
-			acoeff = ascale * (scale * sbeta);
-		    } else {
-			acoeff = scale * acoeff;
-		    }
-		    if (lsb) {
-			bcoeff = bscale * (scale * salpha);
-		    } else {
-			bcoeff = scale * bcoeff;
-		    }
-		}
-		acoefa = abs(acoeff);
-		bcoefa = Cabs1(bcoeff);
-		xmax = One;
-		for (jr = 1; jr <= n; jr++) {
-		    work[jr] = Zero;
-		}
-		work[je] = One;
-		mtemp1 = ulp * acoefa * anorm, mtemp2 = ulp * bcoefa * bnorm;
-		mtemp3 = max(mtemp1, mtemp2);
-		dmin = max(mtemp3, safmin);
-//Triangular solve of  (a A - b B) x = 0  (columnwise)
-//WORK(1:j-1) contains sums w,
-//WORK(j+1:JE) contains x
-		for (jr = 1; jr <= je - 1; jr++) {
-		    work[jr] = acoeff * s[jr + je * lds] - bcoeff * p[jr + je * ldp];
-		}
-		work[je] = One;
-		for (j = je - 1; j >= 1; j--) {
-//Form x(j) := - w(j) / d
-//with scaling and perturbation of the denominator
-		    d = acoeff * s[j + j * lds] - bcoeff * p[j + j * ldp];
-		    if (Cabs1(d) <= dmin) {
-			d = dmin;
-		    }
-		    if (Cabs1(d) < One) {
-			if (Cabs1(work[j]) >= bignum * Cabs1(d)) {
-			    temp = One / Cabs1(work[j]);
-			    for (jr = 1; jr <= je; jr++) {
-				work[jr] = temp * work[jr];
-			    }
-			}
-		    }
-		    work[j] = Cladiv(-work[j], d);
-		    if (j > 1) {
-//w = w + x(j)*(a S(*,j) - b P(*,j) ) with scaling
-			if (Cabs1(work[j]) > One) {
-			    temp = One / Cabs1(work[j]);
-			    if (acoefa * rwork[j] + bcoefa * rwork[n + j] >= bignum * temp) {
-				for (jr = 1; jr <= je; jr++) {
-				    work[jr] = temp * work[jr];
-				}
-			    }
-			}
-			ca = acoeff * work[j];
-			cb = bcoeff * work[j];
-			for (jr = 1; jr <= j - 1; jr++) {
-			    work[jr] = work[jr] + ca * s[jr + j * lds] - cb * p[jr + j * ldp];
-			}
-		    }
-		}
-//Back transform eigenvector if HOWMNY='B'.
-		if (ilback) {
-		    Cgemv("N", n, je, One, &vr[0], ldvr, &work[0], 1, Zero, &work[n + 1], 1);
-		    isrc = 2;
-		    iend = n;
-		} else {
-		    isrc = 1;
-		    iend = je;
-		}
-//Copy and scale eigenvector into column of VR
-		xmax = Zero;
-		for (jr = 1; jr <= iend; jr++) {
-		    mtemp1 = xmax, mtemp2 = Cabs1(work[(isrc - 1) * n + jr]);
-		    xmax = max(mtemp1, mtemp2);
-		}
-		if (xmax > safmin) {
-		    temp = One / xmax;
-		    for (jr = 1; jr <= iend; jr++) {
-			vr[jr + ieig * ldvr] = temp * work[(isrc - 1) * n + jr];
-		    }
-		} else {
-		    iend = 0;
-		}
-		for (jr = iend + 1; jr <= n; jr++) {
-		    vr[jr + ieig * ldvr] = Zero;
-		}
-	    }
-	  L250:
-	    ;
-	}
+        ieig = im + 1;
+        //
+        //        Main loop over eigenvalues
+        //
+        for (je = n; je >= 1; je = je - 1) {
+            if (ilall) {
+                ilcomp = true;
+            } else {
+                ilcomp = select[je - 1];
+            }
+            if (ilcomp) {
+                ieig = ieig - 1;
+                //
+                if (abs1[s[(je - 1) + (je - 1) * lds] - 1] <= safmin && abs(p[(je - 1) + (je - 1) * ldp].real()) <= safmin) {
+                    //
+                    //                 Singular matrix pencil -- return unit eigenvector
+                    //
+                    for (jr = 1; jr <= n; jr = jr + 1) {
+                        vr[(jr - 1) + (ieig - 1) * ldvr] = czero;
+                    }
+                    vr[(ieig - 1) + (ieig - 1) * ldvr] = cone;
+                    goto statement_250;
+                }
+                //
+                //              Non-singular eigenvalue:
+                //              Compute coefficients  a  and  b  in
+                //
+                //              ( a A - b B ) x  = 0
+                //
+                temp = one / max(abs1[s[(je - 1) + (je - 1) * lds] - 1] * ascale, abs(p[(je - 1) + (je - 1) * ldp].real()) * bscale, safmin);
+                salpha = (temp * s[(je - 1) + (je - 1) * lds]) * ascale;
+                sbeta = (temp * p[(je - 1) + (je - 1) * ldp].real()) * bscale;
+                acoeff = sbeta * ascale;
+                bcoeff = salpha * bscale;
+                //
+                //              Scale to avoid underflow
+                //
+                lsa = abs(sbeta) >= safmin && abs(acoeff) < small;
+                lsb = abs1[salpha - 1] >= safmin && abs1[bcoeff - 1] < small;
+                //
+                scale = one;
+                if (lsa) {
+                    scale = (small / abs(sbeta)) * min(anorm, big);
+                }
+                if (lsb) {
+                    scale = max(scale, (small / abs1[salpha - 1]) * min(bnorm, big));
+                }
+                if (lsa || lsb) {
+                    scale = min(scale, one / (safmin * max(one, abs(acoeff), abs1[bcoeff - 1])));
+                    if (lsa) {
+                        acoeff = ascale * (scale * sbeta);
+                    } else {
+                        acoeff = scale * acoeff;
+                    }
+                    if (lsb) {
+                        bcoeff = bscale * (scale * salpha);
+                    } else {
+                        bcoeff = scale * bcoeff;
+                    }
+                }
+                //
+                acoefa = abs(acoeff);
+                bcoefa = abs1[bcoeff - 1];
+                xmax = one;
+                for (jr = 1; jr <= n; jr = jr + 1) {
+                    work[jr - 1] = czero;
+                }
+                work[je - 1] = cone;
+                dmin = max(ulp * acoefa * anorm, ulp * bcoefa * bnorm, safmin);
+                //
+                //              Triangular solve of  (a A - b B) x = 0  (columnwise)
+                //
+                //              WORK(1:j-1) contains sums w,
+                //              WORK(j+1:JE) contains x
+                //
+                for (jr = 1; jr <= je - 1; jr = jr + 1) {
+                    work[jr - 1] = acoeff * s[(jr - 1) + (je - 1) * lds] - bcoeff * p[(jr - 1) + (je - 1) * ldp];
+                }
+                work[je - 1] = cone;
+                //
+                for (j = je - 1; j >= 1; j = j - 1) {
+                    //
+                    //                 Form x(j) := - w(j) / d
+                    //                 with scaling and perturbation of the denominator
+                    //
+                    d = acoeff * s[(j - 1) + (j - 1) * lds] - bcoeff * p[(j - 1) + (j - 1) * ldp];
+                    if (abs1[d - 1] <= dmin) {
+                        d = COMPLEX(dmin);
+                    }
+                    //
+                    if (abs1[d - 1] < one) {
+                        if (abs1[work[j - 1] - 1] >= bignum * abs1[d - 1]) {
+                            temp = one / abs1[work[j - 1] - 1];
+                            for (jr = 1; jr <= je; jr = jr + 1) {
+                                work[jr - 1] = temp * work[jr - 1];
+                            }
+                        }
+                    }
+                    //
+                    work[j - 1] = Cladiv[(-work[j - 1] - 1) + (d - 1) * ldCladiv];
+                    //
+                    if (j > 1) {
+                        //
+                        //                    w = w + x(j)*(a S(*,j) - b P(*,j) ) with scaling
+                        //
+                        if (abs1[work[j - 1] - 1] > one) {
+                            temp = one / abs1[work[j - 1] - 1];
+                            if (acoefa * rwork[j - 1] + bcoefa * rwork[(n + j) - 1] >= bignum * temp) {
+                                for (jr = 1; jr <= je; jr = jr + 1) {
+                                    work[jr - 1] = temp * work[jr - 1];
+                                }
+                            }
+                        }
+                        //
+                        ca = acoeff * work[j - 1];
+                        cb = bcoeff * work[j - 1];
+                        for (jr = 1; jr <= j - 1; jr = jr + 1) {
+                            work[jr - 1] += ca * s[(jr - 1) + (j - 1) * lds] - cb * p[(jr - 1) + (j - 1) * ldp];
+                        }
+                    }
+                }
+                //
+                //              Back transform eigenvector if HOWMNY='B'.
+                //
+                if (ilback) {
+                    Cgemv("N", n, je, cone, vr, ldvr, work, 1, czero, work[(n + 1) - 1], 1);
+                    isrc = 2;
+                    iend = n;
+                } else {
+                    isrc = 1;
+                    iend = je;
+                }
+                //
+                //              Copy and scale eigenvector INTEGERo column of VR
+                //
+                xmax = zero;
+                for (jr = 1; jr <= iend; jr = jr + 1) {
+                    xmax = max(xmax, abs1[(work[((isrc - 1) * n + jr) - 1]) - 1]);
+                }
+                //
+                if (xmax > safmin) {
+                    temp = one / xmax;
+                    for (jr = 1; jr <= iend; jr = jr + 1) {
+                        vr[(jr - 1) + (ieig - 1) * ldvr] = temp * work[((isrc - 1) * n + jr) - 1];
+                    }
+                } else {
+                    iend = 0;
+                }
+                //
+                for (jr = iend + 1; jr <= n; jr = jr + 1) {
+                    vr[(jr - 1) + (ieig - 1) * ldvr] = czero;
+                }
+                //
+            }
+        statement_250:;
+        }
     }
-    return;
+    //
+    //     End of Ctgevc
+    //
 }

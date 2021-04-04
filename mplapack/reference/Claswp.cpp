@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Claswp.cpp,v 1.5 2010/08/07 04:48:32 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,77 +25,87 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Claswp(INTEGER n, COMPLEX * A, INTEGER lda, INTEGER k1, INTEGER k2, INTEGER * ipiv, INTEGER incx)
-{
-    INTEGER i, k, i1, i2, ip, ix, ix0, inc;
-    COMPLEX temp;
-
+void Claswp(INTEGER const &n, COMPLEX *a, INTEGER const &lda, INTEGER const &k1, INTEGER const &k2, INTEGER *ipiv, INTEGER const &incx) {
+    //
+    //  -- LAPACK auxiliary routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    // =====================================================================
+    //
+    //     .. Local Scalars ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    //     Interchange row I with row IPIV(K1+(I-K1)*abs(INCX)) for each of rows
+    //     K1 through K2.
+    //
+    INTEGER ix0 = 0;
+    INTEGER i1 = 0;
+    INTEGER i2 = 0;
+    INTEGER inc = 0;
     if (incx > 0) {
-	ix0 = k1;
-	i1 = k1;
-	i2 = k2;
-	inc = 1;
+        ix0 = k1;
+        i1 = k1;
+        i2 = k2;
+        inc = 1;
     } else if (incx < 0) {
-	ix0 = 1 + (1 - k2) * incx;
-	i1 = k2;
-	i2 = k1;
-	inc = -1;
+        ix0 = k1 + (k1 - k2) * incx;
+        i1 = k2;
+        i2 = k1;
+        inc = -1;
     } else {
-	return;
+        return;
     }
-
-    ix = ix0;
-    for (i = i1; inc > 0 ? i <= i2 : i >= i2; i = i + inc) {
-	ip = ipiv[ix - 1];
-	if (ip != i) {
-	    for (k = 1; k <= n; k++) {
-		temp = A[(i - 1) + (k - 1) * lda];
-		A[(i - 1) + (k - 1) * lda] = A[(ip - 1) + (k - 1) * lda];
-		A[(ip - 1) + (k - 1) * lda] = temp;
-	    }
-	}
-	ix = ix + incx;
+    //
+    INTEGER n32 = (n / 32) * 32;
+    INTEGER j = 0;
+    INTEGER ix = 0;
+    INTEGER i = 0;
+    INTEGER ip = 0;
+    INTEGER k = 0;
+    COMPLEX temp = 0.0;
+    if (n32 != 0) {
+        for (j = 1; j <= n32; j = j + 32) {
+            ix = ix0;
+            for (i = i1; i <= i2; i = i + inc) {
+                ip = ipiv[ix - 1];
+                if (ip != i) {
+                    for (k = j; k <= j + 31; k = k + 1) {
+                        temp = a[(i - 1) + (k - 1) * lda];
+                        a[(i - 1) + (k - 1) * lda] = a[(ip - 1) + (k - 1) * lda];
+                        a[(ip - 1) + (k - 1) * lda] = temp;
+                    }
+                }
+                ix += incx;
+            }
+        }
     }
-    return;
+    if (n32 != n) {
+        n32++;
+        ix = ix0;
+        for (i = i1; i <= i2; i = i + inc) {
+            ip = ipiv[ix - 1];
+            if (ip != i) {
+                for (k = n32; k <= n; k = k + 1) {
+                    temp = a[(i - 1) + (k - 1) * lda];
+                    a[(i - 1) + (k - 1) * lda] = a[(ip - 1) + (k - 1) * lda];
+                    a[(ip - 1) + (k - 1) * lda] = temp;
+                }
+            }
+            ix += incx;
+        }
+    }
+    //
+    //     End of Claswp
+    //
 }

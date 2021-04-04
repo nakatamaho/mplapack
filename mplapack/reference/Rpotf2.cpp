@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Rposv.cpp,v 1.9 2010/08/07 04:48:33 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,13 +33,12 @@ void Rpotf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INT
     bool upper = false;
     INTEGER j = 0;
     REAL ajj = 0.0;
-    const REAL zero = 0.0e+0;
-    const REAL one = 1.0e+0;
+    const REAL zero = 0.0;
+    const REAL one = 1.0;
     //
-    //  -- LAPACK computational routine (version 3.7.0) --
+    //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
     //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //     December 2016
     //
     //     .. Scalar Arguments ..
     //     ..
@@ -70,7 +67,7 @@ void Rpotf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INT
         info = -1;
     } else if (n < 0) {
         info = -2;
-    } else if (lda < max(1, n)) {
+    } else if (lda < max((INTEGER)1, n)) {
         info = -4;
     }
     if (info != 0) {
@@ -92,7 +89,7 @@ void Rpotf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INT
             //
             //           Compute U(J,J) and test for non-positive-definiteness.
             //
-            ajj = a[(j - 1) + (j - 1) * lda] - Rdot(j - 1, &a[(j - 1) * lda], 1, &a[(j - 1) * lda], 1);
+            ajj = a[(j - 1) + (j - 1) * lda] - Rdot(j - 1, a[(j - 1) * lda], 1, a[(j - 1) * lda], 1);
             if (ajj <= zero || Risnan(ajj)) {
                 a[(j - 1) + (j - 1) * lda] = ajj;
                 goto statement_30;
@@ -103,8 +100,8 @@ void Rpotf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INT
             //           Compute elements J+1:N of row J.
             //
             if (j < n) {
-                Rgemv("Transpose", j - 1, n - j, -one, &a[((j + 1) - 1) * lda], lda, &a[(j - 1) * lda], 1, one, &a[(j - 1) + ((j + 1) - 1) * lda], lda);
-                Rscal(n - j, one / ajj, &a[(j - 1) + ((j + 1) - 1) * lda], lda);
+                Rgemv("Transpose", j - 1, n - j, -one, a[((j + 1) - 1) * lda], lda, a[(j - 1) * lda], 1, one, a[(j - 1) + ((j + 1) - 1) * lda], lda);
+                Rscal(n - j, one / ajj, a[(j - 1) + ((j + 1) - 1) * lda], lda);
             }
         }
     } else {
@@ -115,7 +112,7 @@ void Rpotf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INT
             //
             //           Compute L(J,J) and test for non-positive-definiteness.
             //
-            ajj = a[(j - 1) + (j - 1) * lda] - Rdot(j - 1, &a[(j - 1)], lda, &a[(j - 1)], lda);
+            ajj = a[(j - 1) + (j - 1) * lda] - Rdot(j - 1, a[(j - 1)], lda, a[(j - 1)], lda);
             if (ajj <= zero || Risnan(ajj)) {
                 a[(j - 1) + (j - 1) * lda] = ajj;
                 goto statement_30;
@@ -126,8 +123,8 @@ void Rpotf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INT
             //           Compute elements J+1:N of column J.
             //
             if (j < n) {
-                Rgemv("No transpose", n - j, j - 1, -one, &a[((j + 1) - 1)], lda, &a[(j - 1)], lda, one, &a[((j + 1) - 1) + (j - 1) * lda], 1);
-                Rscal(n - j, one / ajj, &a[((j + 1) - 1) + (j - 1) * lda], 1);
+                Rgemv("No transpose", n - j, j - 1, -one, a[((j + 1) - 1)], lda, a[(j - 1)], lda, one, a[((j + 1) - 1) + (j - 1) * lda], 1);
+                Rscal(n - j, one / ajj, a[((j + 1) - 1) + (j - 1) * lda], 1);
             }
         }
     }

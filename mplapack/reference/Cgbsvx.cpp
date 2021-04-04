@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Cgbsvx.cpp,v 1.5 2010/08/07 04:48:32 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,261 +25,270 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-#define MTRUE 1
-#define MFALSE 0
-
-void Cgbsvx(const char *fact, const char *trans, INTEGER n, INTEGER kl,
-	    INTEGER ku, INTEGER nrhs, COMPLEX * AB, INTEGER ldab,
-	    COMPLEX * afb, INTEGER ldafb, INTEGER * ipiv, char *equed,
-	    REAL * r, REAL * c, COMPLEX * B, INTEGER ldb, COMPLEX * x, INTEGER ldx, REAL * rcond, REAL * ferr, REAL * berr, COMPLEX * work, REAL * rwork, INTEGER * info)
-{
-    INTEGER i, j, j1, j2;
-    REAL amax;
-    char norm;
-    REAL rcmin, rcmax, anorm;
-    LOGICAL equil;
-    REAL colcnd;
-    LOGICAL nofact;
-    REAL bignum = 0.0;
-    INTEGER infequ;
-    LOGICAL colequ;
-    REAL rowcnd;
-    LOGICAL notran;
+void Cgbsvx(const char *fact, const char *trans, INTEGER const &n, INTEGER const &kl, INTEGER const &ku, INTEGER const &nrhs, COMPLEX *ab, INTEGER const &ldab, COMPLEX *afb, INTEGER const &ldafb, INTEGER *ipiv, str_ref equed, REAL *r, REAL *c, COMPLEX *b, INTEGER const &ldb, COMPLEX *x, INTEGER const &ldx, REAL &rcond, REAL *ferr, REAL *berr, COMPLEX *work, REAL *rwork, INTEGER &info) {
+    //
+    //  -- LAPACK driver routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //  Moved setting of INFO = N+1 so INFO does not subsequently get
+    //  overwritten.  Sven, 17 Mar 05.
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    info = 0;
+    bool nofact = Mlsame(fact, "N");
+    bool equil = Mlsame(fact, "E");
+    bool notran = Mlsame(trans, "N");
+    bool rowequ = false;
+    bool colequ = false;
     REAL smlnum = 0.0;
-    LOGICAL rowequ;
-    REAL rpvgrw;
-    REAL Zero = 0.0, One = 1.0;
-    REAL mtemp1, mtemp2;
-    COMPLEX mtemp3;
-    *info = 0;
-    nofact = Mlsame(fact, "N");
-    equil = Mlsame(fact, "E");
-    notran = Mlsame(trans, "N");
+    const REAL one = 1.0;
+    REAL bignum = 0.0;
     if (nofact || equil) {
-	*equed = 'N';
-	rowequ = MFALSE;
-	colequ = MFALSE;
+        equed = "N";
+        rowequ = false;
+        colequ = false;
     } else {
-	rowequ = Mlsame(equed, "R") || Mlsame(equed, "B");
-	colequ = Mlsame(equed, "C") || Mlsame(equed, "B");
-	smlnum = Rlamch("Safe minimum");
-	bignum = One / smlnum;
+        rowequ = Mlsame(equed, "R") || Mlsame(equed, "B");
+        colequ = Mlsame(equed, "C") || Mlsame(equed, "B");
+        smlnum = dlamch("Safe minimum");
+        bignum = one / smlnum;
     }
-//Test the input parameters.
+    //
+    //     Test the input parameters.
+    //
+    REAL rcmin = 0.0;
+    const REAL zero = 0.0;
+    REAL rcmax = 0.0;
+    INTEGER j = 0;
+    REAL rowcnd = 0.0;
+    REAL colcnd = 0.0;
     if (!nofact && !equil && !Mlsame(fact, "F")) {
-	*info = -1;
+        info = -1;
     } else if (!notran && !Mlsame(trans, "T") && !Mlsame(trans, "C")) {
-	*info = -2;
+        info = -2;
     } else if (n < 0) {
-	*info = -3;
+        info = -3;
     } else if (kl < 0) {
-	*info = -4;
+        info = -4;
     } else if (ku < 0) {
-	*info = -5;
+        info = -5;
     } else if (nrhs < 0) {
-	*info = -6;
+        info = -6;
     } else if (ldab < kl + ku + 1) {
-	*info = -8;
-    } else if (ldafb < (kl << 1) + ku + 1) {
-	*info = -10;
+        info = -8;
+    } else if (ldafb < 2 * kl + ku + 1) {
+        info = -10;
     } else if (Mlsame(fact, "F") && !(rowequ || colequ || Mlsame(equed, "N"))) {
-	*info = -12;
+        info = -12;
     } else {
-	if (rowequ) {
-	    rcmin = bignum;
-	    rcmax = Zero;
-	    for (j = 0; j < n; j++) {
-		mtemp1 = rcmin, mtemp2 = r[j];
-		rcmin = min(mtemp1, mtemp2);
-		mtemp1 = rcmax, mtemp2 = r[j];
-		rcmax = max(mtemp1, mtemp2);
-	    }
-	    if (rcmin <= Zero) {
-		*info = -13;
-	    } else if (n > 0) {
-		rowcnd = max(rcmin, smlnum) / min(rcmax, bignum);
-	    } else {
-		rowcnd = One;
-	    }
-	}
-	if (colequ && *info == 0) {
-	    rcmin = bignum;
-	    rcmax = Zero;
-	    for (j = 0; j < n; j++) {
-		mtemp1 = rcmin, mtemp2 = c[j];
-		rcmin = min(mtemp1, mtemp2);
-		mtemp1 = rcmax, mtemp2 = c[j];
-		rcmax = max(mtemp1, mtemp2);
-	    }
-	    if (rcmin <= Zero) {
-		*info = -14;
-	    } else if (n > 0) {
-		colcnd = max(rcmin, smlnum) / min(rcmax, bignum);
-	    } else {
-		colcnd = One;
-	    }
-	}
-	if (*info == 0) {
-	    if (ldb < max((INTEGER) 1, n)) {
-		*info = -16;
-	    } else if (ldx < max((INTEGER) 1, n)) {
-		*info = -18;
-	    }
-	}
+        if (rowequ) {
+            rcmin = bignum;
+            rcmax = zero;
+            for (j = 1; j <= n; j = j + 1) {
+                rcmin = min(rcmin, r[j - 1]);
+                rcmax = max(rcmax, r[j - 1]);
+            }
+            if (rcmin <= zero) {
+                info = -13;
+            } else if (n > 0) {
+                rowcnd = max(rcmin, smlnum) / min(rcmax, bignum);
+            } else {
+                rowcnd = one;
+            }
+        }
+        if (colequ && info == 0) {
+            rcmin = bignum;
+            rcmax = zero;
+            for (j = 1; j <= n; j = j + 1) {
+                rcmin = min(rcmin, c[j - 1]);
+                rcmax = max(rcmax, c[j - 1]);
+            }
+            if (rcmin <= zero) {
+                info = -14;
+            } else if (n > 0) {
+                colcnd = max(rcmin, smlnum) / min(rcmax, bignum);
+            } else {
+                colcnd = one;
+            }
+        }
+        if (info == 0) {
+            if (ldb < max((INTEGER)1, n)) {
+                info = -16;
+            } else if (ldx < max((INTEGER)1, n)) {
+                info = -18;
+            }
+        }
     }
-    if (*info != 0) {
-	Mxerbla("Cgbsvx", -(*info));
-	return;
+    //
+    if (info != 0) {
+        Mxerbla("Cgbsvx", -info);
+        return;
     }
+    //
+    REAL amax = 0.0;
+    INTEGER infequ = 0;
     if (equil) {
-//Compute row and column scalings to equilibrate the matrix A.
-	Cgbequ(n, n, kl, ku, &AB[0], ldab, &r[1], &c[1], &rowcnd, &colcnd, &amax, &infequ);
-	if (infequ == 0) {
-//Equilibrate the matrix.
-	    Claqgb(n, n, kl, ku, &AB[0], ldab, &r[1], &c[1], rowcnd, colcnd, amax, equed);
-	    rowequ = Mlsame(equed, "R") || Mlsame(equed, "B");
-	    colequ = Mlsame(equed, "C") || Mlsame(equed, "B");
-	}
+        //
+        //        Compute row and column scalings to equilibrate the matrix A.
+        //
+        Cgbequ(n, n, kl, ku, ab, ldab, r, c, rowcnd, colcnd, amax, infequ);
+        if (infequ == 0) {
+            //
+            //           Equilibrate the matrix.
+            //
+            Claqgb(n, n, kl, ku, ab, ldab, r, c, rowcnd, colcnd, amax, equed);
+            rowequ = Mlsame(equed, "R") || Mlsame(equed, "B");
+            colequ = Mlsame(equed, "C") || Mlsame(equed, "B");
+        }
     }
-//Scale the right hand side.
+    //
+    //     Scale the right hand side.
+    //
+    INTEGER i = 0;
     if (notran) {
-	if (rowequ) {
-	    for (j = 0; j < nrhs; j++) {
-		for (i = 0; i < n; i++) {
-		    B[i + j * ldb] = r[i] * B[i + j * ldb];
-		}
-	    }
-	}
+        if (rowequ) {
+            for (j = 1; j <= nrhs; j = j + 1) {
+                for (i = 1; i <= n; i = i + 1) {
+                    b[(i - 1) + (j - 1) * ldb] = r[i - 1] * b[(i - 1) + (j - 1) * ldb];
+                }
+            }
+        }
     } else if (colequ) {
-	for (j = 0; j < nrhs; j++) {
-	    for (i = 0; i < n; i++) {
-		B[i + j * ldb] = c[i] * B[i + j * ldb];
-	    }
-	}
+        for (j = 1; j <= nrhs; j = j + 1) {
+            for (i = 1; i <= n; i = i + 1) {
+                b[(i - 1) + (j - 1) * ldb] = c[i - 1] * b[(i - 1) + (j - 1) * ldb];
+            }
+        }
     }
+    //
+    INTEGER j1 = 0;
+    INTEGER j2 = 0;
+    REAL anorm = 0.0;
+    REAL rpvgrw = 0.0;
     if (nofact || equil) {
-//Compute the LU factorization of the band matrix A.
-	for (j = 0; j < n; j++) {
-	    j1 = max(j - ku, (INTEGER) 1);
-	    j2 = min(j + kl, n);
-	    Ccopy(j2 - j1 + 1, &AB[ku + 1 - j + j1 + j * ldab], 1, &afb[kl + ku + 1 - j + j1 + j * ldafb], 1);
-	}
-	Cgbtrf(n, n, kl, ku, &afb[0], ldafb, &ipiv[1], info);
-//Return if INFO is non-zero.
-	if (*info > 0) {
-//Compute the reciprocal pivot growth factor of the
-//leading rank-deficient INFO columns of A.
-	    anorm = Zero;
-	    for (j = 0; j < *info; j++) {
-		for (i = max(ku + 2 - j, (INTEGER) 1); i <= min(n + ku + 1 - j, kl + ku + 1); i++) {
-		    mtemp1 = anorm, mtemp2 = abs(AB[i + j * ldab]);
-		    anorm = max(mtemp1, mtemp2);
-		}
-	    }
-	    mtemp3 = Clantb("M", "U", "N", *info, min(*info - 1, kl + ku), &afb[max((INTEGER) 1, kl + ku + 2 - *info) + ldafb], ldafb, &rwork[1]);
-	    rpvgrw = mtemp3.real();
-	    if (rpvgrw == Zero) {
-		rpvgrw = One;
-	    } else {
-		rpvgrw = anorm / rpvgrw;
-	    }
-	    rwork[1] = rpvgrw;
-	    *rcond = Zero;
-	    return;
-	}
+        //
+        //        Compute the LU factorization of the band matrix A.
+        //
+        for (j = 1; j <= n; j = j + 1) {
+            j1 = max(j - ku, 1);
+            j2 = min(j + kl, n);
+            Ccopy(j2 - j1 + 1, ab[((ku + 1 - j + j1) - 1) + (j - 1) * ldab], 1, afb[((kl + ku + 1 - j + j1) - 1) + (j - 1) * ldafb], 1);
+        }
+        //
+        Cgbtrf(n, n, kl, ku, afb, ldafb, ipiv, info);
+        //
+        //        Return if INFO is non-zero.
+        //
+        if (info > 0) {
+            //
+            //           Compute the reciprocal pivot growth factor of the
+            //           leading rank-deficient INFO columns of A.
+            //
+            anorm = zero;
+            for (j = 1; j <= info; j = j + 1) {
+                for (i = max(ku + 2 - j, 1); i <= min(n + ku + 1 - j, kl + ku + 1); i = i + 1) {
+                    anorm = max(anorm, abs(ab[(i - 1) + (j - 1) * ldab]));
+                }
+            }
+            rpvgrw = Clantb[("M" - 1) + ("U" - 1) * ldClantb];
+            if (rpvgrw == zero) {
+                rpvgrw = one;
+            } else {
+                rpvgrw = anorm / rpvgrw;
+            }
+            rwork[1 - 1] = rpvgrw;
+            rcond = zero;
+            return;
+        }
     }
-//Compute the norm of the matrix A and the
-//reciprocal pivot growth factor RPVGRW.
+    //
+    //     Compute the norm of the matrix A and the
+    //     reciprocal pivot growth factor RPVGRW.
+    //
+    str<1> norm = char0;
     if (notran) {
-	norm = '1';
+        norm = "1";
     } else {
-	norm = 'I';
+        norm = "I";
     }
-    anorm = Clangb((const char *) norm, n, kl, ku, &AB[0], ldab, &rwork[1]);
-    mtemp3 = Clantb("M", "U", "N", n, kl + ku, &afb[0], ldafb, &rwork[1]);
-    rpvgrw = mtemp3.real();
-
-    if (rpvgrw == Zero) {
-	rpvgrw = One;
+    anorm = Clangb[(norm - 1) + (n - 1) * ldClangb];
+    rpvgrw = Clantb[("M" - 1) + ("U" - 1) * ldClantb];
+    if (rpvgrw == zero) {
+        rpvgrw = one;
     } else {
-	rpvgrw = Clangb("M", n, kl, ku, &AB[0], ldab, &rwork[1]) / rpvgrw;
+        rpvgrw = Clangb[("M" - 1) + (n - 1) * ldClangb] / rpvgrw;
     }
-//Compute the reciprocal of the condition number of A.
-    Cgbcon((const char *) norm, n, kl, ku, &afb[0], ldafb, &ipiv[1], anorm, rcond, &work[0], &rwork[1], info);
-//Compute the solution matrix X.
-    Clacpy("Full", n, nrhs, &B[0], ldb, &x[0], ldx);
-    Cgbtrs(trans, n, kl, ku, nrhs, &afb[0], ldafb, &ipiv[1], &x[0], ldx, info);
-//Use iterative refinement to improve the computed solution and
-//compute error bounds and backward error estimates for it.
-    Cgbrfs(trans, n, kl, ku, nrhs, &AB[0], ldab, &afb[0], ldafb, &ipiv[1], &B[0], ldb, &x[0], ldx, &ferr[1], &berr[1], &work[0], &rwork[1], info);
-//Transform the solution matrix X to a solution of the original
-//system.
+    //
+    //     Compute the reciprocal of the condition number of A.
+    //
+    Cgbcon(norm, n, kl, ku, afb, ldafb, ipiv, anorm, rcond, work, rwork, info);
+    //
+    //     Compute the solution matrix X.
+    //
+    Clacpy("Full", n, nrhs, b, ldb, x, ldx);
+    Cgbtrs(trans, n, kl, ku, nrhs, afb, ldafb, ipiv, x, ldx, info);
+    //
+    //     Use iterative refinement to improve the computed solution and
+    //     compute error bounds and backward error estimates for it.
+    //
+    Cgbrfs(trans, n, kl, ku, nrhs, ab, ldab, afb, ldafb, ipiv, b, ldb, x, ldx, ferr, berr, work, rwork, info);
+    //
+    //     Transform the solution matrix X to a solution of the original
+    //     system.
+    //
     if (notran) {
-	if (colequ) {
-	    for (j = 0; j < nrhs; j++) {
-		for (i = 0; i < n; i++) {
-		    x[i + j * ldx] = c[i] * x[i + j * ldx];
-		}
-	    }
-	    for (j = 0; j < nrhs; j++) {
-		ferr[j] = ferr[j] / colcnd;
-	    }
-	}
+        if (colequ) {
+            for (j = 1; j <= nrhs; j = j + 1) {
+                for (i = 1; i <= n; i = i + 1) {
+                    x[(i - 1) + (j - 1) * ldx] = c[i - 1] * x[(i - 1) + (j - 1) * ldx];
+                }
+            }
+            for (j = 1; j <= nrhs; j = j + 1) {
+                ferr[j - 1] = ferr[j - 1] / colcnd;
+            }
+        }
     } else if (rowequ) {
-	for (j = 0; j < nrhs; j++) {
-	    for (i = 0; i < n; i++) {
-		x[i + j * ldx] = r[i] * x[i + j * ldx];
-	    }
-	}
-	for (j = 0; j < nrhs; j++) {
-	    ferr[j] = ferr[j] / rowcnd;
-	}
+        for (j = 1; j <= nrhs; j = j + 1) {
+            for (i = 1; i <= n; i = i + 1) {
+                x[(i - 1) + (j - 1) * ldx] = r[i - 1] * x[(i - 1) + (j - 1) * ldx];
+            }
+        }
+        for (j = 1; j <= nrhs; j = j + 1) {
+            ferr[j - 1] = ferr[j - 1] / rowcnd;
+        }
     }
-//Set INFO = N+1 if the matrix is singular to working precision.
-    if (*rcond < Rlamch("Epsilon")) {
-	*info = n + 1;
+    //
+    //     Set INFO = N+1 if the matrix is singular to working precision.
+    //
+    if (rcond < dlamch("Epsilon")) {
+        info = n + 1;
     }
-    rwork[1] = rpvgrw;
-    return;
+    //
+    rwork[1 - 1] = rpvgrw;
+    //
+    //     End of Cgbsvx
+    //
 }

@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Rlagtm.cpp,v 1.5 2010/08/07 04:48:32 nakatamaho Exp $ 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,129 +25,121 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlagtm(const char *trans, INTEGER n, INTEGER nrhs, REAL alpha, REAL * dl, REAL * d, REAL * du, REAL * x, INTEGER ldx, REAL * beta, REAL * B, INTEGER ldb)
-{
-    INTEGER i, j;
-    REAL One = 1.0, Zero = 0.0;
-
+void Rlagtm(const char *trans, INTEGER const &n, INTEGER const &nrhs, REAL const &alpha, REAL *dl, REAL *d, REAL *du, REAL *x, INTEGER const &ldx, REAL const &beta, REAL *b, INTEGER const &ldb) {
+    //
+    //  -- LAPACK auxiliary routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. Executable Statements ..
+    //
     if (n == 0) {
-	return;
+        return;
     }
-//Multiply B by BETA if BETA!=1
-
-    if (*beta == Zero) {
-	for (j = 0; j < nrhs; j++) {
-	    for (i = 0; i < n; i++) {
-		B[i + j * ldb] = Zero;
-	    }
-	}
-    } else if (*beta == -One) {
-	for (j = 0; j < nrhs; j++) {
-	    for (i = 0; i < n; i++) {
-		B[i + j * ldb] = -B[i + j * ldb];
-	    }
-	}
+    //
+    //     Multiply B by BETA if BETA.NE.1.
+    //
+    const REAL zero = 0.0;
+    INTEGER j = 0;
+    INTEGER i = 0;
+    const REAL one = 1.0;
+    if (beta == zero) {
+        for (j = 1; j <= nrhs; j = j + 1) {
+            for (i = 1; i <= n; i = i + 1) {
+                b[(i - 1) + (j - 1) * ldb] = zero;
+            }
+        }
+    } else if (beta == -one) {
+        for (j = 1; j <= nrhs; j = j + 1) {
+            for (i = 1; i <= n; i = i + 1) {
+                b[(i - 1) + (j - 1) * ldb] = -b[(i - 1) + (j - 1) * ldb];
+            }
+        }
     }
-    if (alpha == One) {
-	if (Mlsame(trans, "N")) {
-//Compute B := B + A*X
-	    for (j = 0; j < nrhs; j++) {
-		if (n == 1) {
-		    B[j * ldb + 1] += d[1] * x[j * ldx + 1];
-		} else {
-		    B[j * ldb + 1] = B[j * ldb + 1] + d[1] * x[j * ldx + 1] + du[1] * x[j * ldx + 2];
-		    B[n + j * ldb] = B[n + j * ldb] + dl[n - 1] * x[n - 1 + j * ldx] + d[n] * x[n + j * ldx];
-		    for (i = 1; i < n - 1; i++) {
-			B[i + j * ldb] = B[i + j * ldb] + dl[i - 1] * x[i - 1 + j * ldx] + d[i] * x[i + j * ldx] + du[i] * x[i + 1 + j * ldx];
-		    }
-		}
-	    }
-	} else {
-//Compute B := B + A'*X
-	    for (j = 0; j < nrhs; j++) {
-		if (n == 1) {
-		    B[j * ldb + 1] += d[1] * x[j * ldx + 1];
-		} else {
-		    B[j * ldb + 1] = B[j * ldb + 1] + d[1] * x[j * ldx + 1] + dl[1] * x[j * ldx + 2];
-		    B[n + j * ldb] = B[n + j * ldb] + du[n - 1] * x[n - 1 + j * ldx] + d[n] * x[n + j * ldx];
-		    for (i = 1; i < n - 1; i++) {
-			B[i + j * ldb] = B[i + j * ldb] + du[i - 1] * x[i - 1 + j * ldx] + d[i] * x[i + j * ldx] + dl[i] * x[i + 1 + j * ldx];
-
-		    }
-		}
-	    }
-	}
-    } else if (alpha == -One) {
-	if (Mlsame(trans, "N")) {
-//Compute B := B - A*X
-	    for (j = 0; j < nrhs; j++) {
-		if (n == 1) {
-		    B[j * ldb + 1] -= d[1] * x[j * ldx + 1];
-		} else {
-		    B[j * ldb + 1] = B[j * ldb + 1] - d[1] * x[j * ldx + 1] - du[1] * x[j * ldx + 2];
-		    B[n + j * ldb] = B[n + j * ldb] - dl[n - 1] * x[n - 1 + j * ldx] - d[n] * x[n + j * ldx];
-		    for (i = 1; i < n - 1; i++) {
-			B[i + j * ldb] = B[i + j * ldb] - dl[i - 1] * x[i - 1 + j * ldx] - d[i] * x[i + j * ldx] - du[i] * x[i + 1 + j * ldx];
-
-		    }
-		}
-	    }
-	} else {
-//Compute B := B - A'*X
-	    for (j = 0; j < nrhs; j++) {
-		if (n == 1) {
-		    B[j * ldb + 1] -= d[1] * x[j * ldx + 1];
-		} else {
-		    B[j * ldb + 1] = B[j * ldb + 1] - d[1] * x[j * ldx + 1] - dl[1] * x[j * ldx + 2];
-		    B[n + j * ldb] = B[n + j * ldb] - du[n - 1] * x[n - 1 + j * ldx] - d[n] * x[n + j * ldx];
-		    for (i = 1; i < n - 1; i++) {
-			B[i + j * ldb] = B[i + j * ldb] - du[i - 1] * x[i - 1 + j * ldx] - d[i] * x[i + j * ldx] - dl[i] * x[i + 1 + j * ldx];
-
-		    }
-		}
-	    }
-	}
+    //
+    if (alpha == one) {
+        if (Mlsame(trans, "N")) {
+            //
+            //           Compute B := B + A*X
+            //
+            for (j = 1; j <= nrhs; j = j + 1) {
+                if (n == 1) {
+                    b[(j - 1) * ldb] += d[1 - 1] * x[(j - 1) * ldx];
+                } else {
+                    b[(j - 1) * ldb] += d[1 - 1] * x[(j - 1) * ldx] + du[1 - 1] * x[(2 - 1) + (j - 1) * ldx];
+                    b[(n - 1) + (j - 1) * ldb] += dl[(n - 1) - 1] * x[((n - 1) - 1) + (j - 1) * ldx] + d[n - 1] * x[(n - 1) + (j - 1) * ldx];
+                    for (i = 2; i <= n - 1; i = i + 1) {
+                        b[(i - 1) + (j - 1) * ldb] += dl[(i - 1) - 1] * x[((i - 1) - 1) + (j - 1) * ldx] + d[i - 1] * x[(i - 1) + (j - 1) * ldx] + du[i - 1] * x[((i + 1) - 1) + (j - 1) * ldx];
+                    }
+                }
+            }
+        } else {
+            //
+            //           Compute B := B + A**T*X
+            //
+            for (j = 1; j <= nrhs; j = j + 1) {
+                if (n == 1) {
+                    b[(j - 1) * ldb] += d[1 - 1] * x[(j - 1) * ldx];
+                } else {
+                    b[(j - 1) * ldb] += d[1 - 1] * x[(j - 1) * ldx] + dl[1 - 1] * x[(2 - 1) + (j - 1) * ldx];
+                    b[(n - 1) + (j - 1) * ldb] += du[(n - 1) - 1] * x[((n - 1) - 1) + (j - 1) * ldx] + d[n - 1] * x[(n - 1) + (j - 1) * ldx];
+                    for (i = 2; i <= n - 1; i = i + 1) {
+                        b[(i - 1) + (j - 1) * ldb] += du[(i - 1) - 1] * x[((i - 1) - 1) + (j - 1) * ldx] + d[i - 1] * x[(i - 1) + (j - 1) * ldx] + dl[i - 1] * x[((i + 1) - 1) + (j - 1) * ldx];
+                    }
+                }
+            }
+        }
+    } else if (alpha == -one) {
+        if (Mlsame(trans, "N")) {
+            //
+            //           Compute B := B - A*X
+            //
+            for (j = 1; j <= nrhs; j = j + 1) {
+                if (n == 1) {
+                    b[(j - 1) * ldb] = b[(j - 1) * ldb] - d[1 - 1] * x[(j - 1) * ldx];
+                } else {
+                    b[(j - 1) * ldb] = b[(j - 1) * ldb] - d[1 - 1] * x[(j - 1) * ldx] - du[1 - 1] * x[(2 - 1) + (j - 1) * ldx];
+                    b[(n - 1) + (j - 1) * ldb] = b[(n - 1) + (j - 1) * ldb] - dl[(n - 1) - 1] * x[((n - 1) - 1) + (j - 1) * ldx] - d[n - 1] * x[(n - 1) + (j - 1) * ldx];
+                    for (i = 2; i <= n - 1; i = i + 1) {
+                        b[(i - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb] - dl[(i - 1) - 1] * x[((i - 1) - 1) + (j - 1) * ldx] - d[i - 1] * x[(i - 1) + (j - 1) * ldx] - du[i - 1] * x[((i + 1) - 1) + (j - 1) * ldx];
+                    }
+                }
+            }
+        } else {
+            //
+            //           Compute B := B - A**T*X
+            //
+            for (j = 1; j <= nrhs; j = j + 1) {
+                if (n == 1) {
+                    b[(j - 1) * ldb] = b[(j - 1) * ldb] - d[1 - 1] * x[(j - 1) * ldx];
+                } else {
+                    b[(j - 1) * ldb] = b[(j - 1) * ldb] - d[1 - 1] * x[(j - 1) * ldx] - dl[1 - 1] * x[(2 - 1) + (j - 1) * ldx];
+                    b[(n - 1) + (j - 1) * ldb] = b[(n - 1) + (j - 1) * ldb] - du[(n - 1) - 1] * x[((n - 1) - 1) + (j - 1) * ldx] - d[n - 1] * x[(n - 1) + (j - 1) * ldx];
+                    for (i = 2; i <= n - 1; i = i + 1) {
+                        b[(i - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb] - du[(i - 1) - 1] * x[((i - 1) - 1) + (j - 1) * ldx] - d[i - 1] * x[(i - 1) + (j - 1) * ldx] - dl[i - 1] * x[((i + 1) - 1) + (j - 1) * ldx];
+                    }
+                }
+            }
+        }
     }
-    return;
+    //
+    //     End of Rlagtm
+    //
 }
