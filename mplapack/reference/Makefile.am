@@ -84,178 +84,1019 @@ libmplapack__Float128_ref_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lo
 endif
 endif
 
-#done...90 (do not count Mulits.cpp)
-MPLAPACK_SOURCES = Mutils.cpp \
-iMlaenv.cpp Rlae2.cpp  Rlamch.cpp Rlaev2.cpp Claev2.cpp\
-Rlassq.cpp Classq.cpp Rlanst.cpp Clanht.cpp Rlansy.cpp \
-Clansy.cpp Clanhe.cpp Rlapy2.cpp Rlarfg.cpp Rlapy3.cpp \
-Rladiv.cpp Cladiv.cpp Clarfg.cpp Rlartg.cpp Clartg.cpp \
-Rlaset.cpp Claset.cpp Rlasr.cpp  Clasr.cpp  Rpotf2.cpp \
-Clacgv.cpp Cpotf2.cpp Rlascl.cpp Clascl.cpp Rlasrt.cpp \
-Rsteqr.cpp Csteqr.cpp Rsterf.cpp Rsytd2.cpp Chetd2.cpp \
-Rlatrd.cpp Clatrd.cpp Rsytrd.cpp Chetrd.cpp Rlarf.cpp  \
-Clarf.cpp  Rorg2l.cpp Cung2l.cpp Rorg2r.cpp Cung2r.cpp \
-Rlarft.cpp Clarft.cpp Rlarfb.cpp Clarfb.cpp Rorgqr.cpp \
-Cungqr.cpp Rorgql.cpp Cungql.cpp Rorgtr.cpp Cungtr.cpp \
-Rsyev.cpp  Cheev.cpp  Rpotrf.cpp Cpotrf.cpp Clacrm.cpp \
-Rtrti2.cpp Ctrti2.cpp Rtrtri.cpp Ctrtri.cpp Rgetf2.cpp \
-Cgetf2.cpp Rlaswp.cpp Claswp.cpp Rgetrf.cpp Cgetrf.cpp \
-Rgetri.cpp Cgetri.cpp Rgetrs.cpp Cgetrs.cpp Rgesv.cpp  \
-Cgesv.cpp  Rtrtrs.cpp Ctrtrs.cpp Rlasyf.cpp Clasyf.cpp \
-Clahef.cpp Clacrt.cpp Claesy.cpp Crot.cpp   Cspmv.cpp  \
-Cspr.cpp   Csymv.cpp  Csyr.cpp   iCmax1.cpp RCsum1.cpp
-
-#QA work in progress...4
-MPLAPACK_SOURCES += Rlacn2.cpp Clacn2.cpp Rlatrs.cpp Clatrs.cpp
-
-#nothing done yet, auxiliary routines...221
-MPLAPACK_SOURCES += \
-Rgbtf2.cpp Cgbtf2.cpp Rgebd2.cpp Cgebd2.cpp Rgehd2.cpp \
-Cgehd2.cpp Rgelq2.cpp Cgelq2.cpp Rgeql2.cpp Cgeql2.cpp \
-Rgeqr2.cpp Cgeqr2.cpp Rgerq2.cpp Cgerq2.cpp Rgesc2.cpp \
-Cgesc2.cpp Rgetc2.cpp Cgetc2.cpp Rgtts2.cpp Cgtts2.cpp \
-Rlabrd.cpp Clabrd.cpp Rlacpy.cpp Clacpy.cpp Clarcm.cpp \
-Rlaebz.cpp Rlaed0.cpp Claed0.cpp Rlaed1.cpp Rlaed2.cpp \
-Rlaed3.cpp Rlaed4.cpp Rlaed5.cpp Rlaed6.cpp Rlaed7.cpp \
-Claed7.cpp Rlaed8.cpp Claed8.cpp Rlaed9.cpp Rlaeda.cpp \
-Rlaein.cpp Claein.cpp Rlaexc.cpp Rlag2.cpp  Rlags2.cpp \
-Clags2.cpp Rlagtf.cpp Rlagtm.cpp Clagtm.cpp Rlagts.cpp \
-Rlagv2.cpp Rlahqr.cpp Clahqr.cpp Rlahr2.cpp Clahr2.cpp \
-Rlahrd.cpp Clahrd.cpp Rlaic1.cpp Claic1.cpp Rlaln2.cpp \
-Rlals0.cpp Clals0.cpp Rlalsa.cpp Clalsa.cpp Rlalsd.cpp \
-Clalsd.cpp Rlamrg.cpp Rlangb.cpp Clangb.cpp Rlange.cpp \
-Clange.cpp Rlangt.cpp Clangt.cpp Rlanhs.cpp Clanhs.cpp \
-Rlansb.cpp Clansb.cpp Clanhb.cpp Rlansp.cpp Clansp.cpp \
-Clanhp.cpp Rlantb.cpp Clantb.cpp Rlantp.cpp Clantp.cpp \
-Rlantr.cpp Clantr.cpp Rlanv2.cpp Rlapll.cpp Clapll.cpp \
-Rlapmt.cpp Clapmt.cpp Rlaqgb.cpp Claqgb.cpp Rlaqge.cpp \
-Claqge.cpp Rlaqp2.cpp Claqp2.cpp Rlaqps.cpp Claqps.cpp \
-Rlaqsb.cpp Claqsb.cpp Claqhb.cpp Rlaqsp.cpp Claqsp.cpp \
-Claqhp.cpp Rlaqsy.cpp Claqsy.cpp Claqhe.cpp Rlaqtr.cpp \
-Rlar1v.cpp Clar1v.cpp Rlar2v.cpp Clar2v.cpp Rlarfx.cpp \
-Clarfx.cpp Rlargv.cpp Clargv.cpp Rlarnv.cpp Clarnv.cpp \
-Rlaneg.cpp Rlarra.cpp Rlarrb.cpp Rlarrc.cpp Rlarrd.cpp \
-Rlarre.cpp Rlarrf.cpp Rlarrj.cpp Rlarrk.cpp Rlarrr.cpp \
-Rlartv.cpp Clartv.cpp Rlarrv.cpp Clarrv.cpp Rlaruv.cpp \
-Rlarz.cpp  Clarz.cpp  Rlarzb.cpp Clarzb.cpp Rlarzt.cpp \
-Clarzt.cpp Rlas2.cpp  Rlasd0.cpp Rlasd1.cpp Rlasd2.cpp \
-Rlasd3.cpp Rlasd4.cpp Rlasd5.cpp Rlasd6.cpp Rlasd7.cpp \
-Rlasd8.cpp Rlasda.cpp Rlasdq.cpp Rlasdt.cpp Rlasq1.cpp \
-Rlasq2.cpp Rlasq3.cpp Rlasq4.cpp Rlasq5.cpp Rlasq6.cpp \
-Rlasv2.cpp Rlasy2.cpp Rlatbs.cpp Clatbs.cpp Rlatdf.cpp \
-Clatdf.cpp Rlatps.cpp Clatps.cpp Rlauu2.cpp Clauu2.cpp \
-Rlauum.cpp Clauum.cpp Rlatrz.cpp Clatrz.cpp Rorgl2.cpp \
-Cungl2.cpp Rorgr2.cpp Cungr2.cpp Rorm2l.cpp Cunm2l.cpp \
-Rorm2r.cpp Cunm2r.cpp Rorml2.cpp Cunml2.cpp Rormr2.cpp \
-Cunmr2.cpp Rormr3.cpp Cunmr3.cpp Rpbtf2.cpp Cpbtf2.cpp \
-Rptts2.cpp Cptts2.cpp Rrscl.cpp  CRrscl.cpp Rsygs2.cpp \
-Chegs2.cpp Rsytf2.cpp Csytf2.cpp Chetf2.cpp Rtgex2.cpp \
-Ctgex2.cpp Rtgsy2.cpp Ctgsy2.cpp Rlazq3.cpp Rlazq4.cpp \
-Rlaqr0.cpp Claqr0.cpp Rlaqr1.cpp Claqr1.cpp Rlaqr2.cpp \
-Claqr2.cpp Rlaqr3.cpp Claqr3.cpp Rlaqr4.cpp Claqr4.cpp \
-Rlaqr5.cpp Claqr5.cpp Rlatzm.cpp Clatzm.cpp Clacp2.cpp \
-Risnan.cpp
-
-#not yet done, driver and computational routines...351
-MPLAPACK_SOURCES += \
-Rbdsdc.cpp Rbdsqr.cpp Cbdsqr.cpp Rdisna.cpp Rgbbrd.cpp \
-Cgbbrd.cpp Rgbcon.cpp Cgbcon.cpp Rgbequ.cpp Cgbequ.cpp \
-Rgbrfs.cpp Cgbrfs.cpp Rgbsv.cpp  Cgbsv.cpp  Rgbsvx.cpp \
-Cgbsvx.cpp Rgbtrf.cpp Cgbtrf.cpp Rgbtrs.cpp Cgbtrs.cpp \
-Rgebak.cpp Cgebak.cpp Rgebal.cpp Cgebal.cpp Rgebrd.cpp \
-Cgebrd.cpp Rgecon.cpp Cgecon.cpp Rgeequ.cpp Cgeequ.cpp \
-Rgees.cpp  Cgees.cpp  Rgeesx.cpp Cgeesx.cpp Rgeev.cpp  \
-Cgeev.cpp  Rgeevx.cpp Cgeevx.cpp Cgehrd.cpp Rgehrd.cpp \
-Rgelqf.cpp Cgelqf.cpp Rgels.cpp  Cgels.cpp  Rgelsx.cpp \
-Cgelsx.cpp Rgelsd.cpp Cgelsd.cpp Rgelss.cpp Cgelss.cpp \
-Rgelsy.cpp Cgelsy.cpp Rgeqlf.cpp Cgeqlf.cpp Rgeqpf.cpp \
-Cgeqpf.cpp Rgeqp3.cpp Cgeqp3.cpp Rgeqrf.cpp Cgeqrf.cpp \
-Rgerfs.cpp Cgerfs.cpp Rgerqf.cpp Cgerqf.cpp Rgesdd.cpp \
-Cgesdd.cpp Rgesvd.cpp Cgesvd.cpp Rgesvx.cpp Cgesvx.cpp \
-Rggbak.cpp Cggbak.cpp Rggbal.cpp Cggbal.cpp Rgges.cpp  \
-Cgges.cpp  Rgegs.cpp  Cgegs.cpp  Rggesx.cpp Cggesx.cpp \
-Rggev.cpp  Cggev.cpp  Rgegv.cpp  Cgegv.cpp  Rggevx.cpp \
-Cggevx.cpp Rggglm.cpp Cggglm.cpp Rgghrd.cpp Cgghrd.cpp \
-Rgglse.cpp Cgglse.cpp Rggqrf.cpp Cggqrf.cpp Rggrqf.cpp \
-Cggrqf.cpp Rggsvd.cpp Cggsvd.cpp Rggsvp.cpp Cggsvp.cpp \
-Rgtcon.cpp Cgtcon.cpp Rgtrfs.cpp Cgtrfs.cpp Rgtsv.cpp  \
-Cgtsv.cpp  Rgtsvx.cpp Cgtsvx.cpp Rgttrf.cpp Cgttrf.cpp \
-Rgttrs.cpp Cgttrs.cpp Rhgeqz.cpp Chgeqz.cpp Rhsein.cpp \
-Chsein.cpp Rhseqr.cpp Chseqr.cpp Ropgtr.cpp Cupgtr.cpp \
-Ropmtr.cpp Cupmtr.cpp Rorgbr.cpp Cungbr.cpp Rorghr.cpp \
-Cunghr.cpp Rorglq.cpp Cunglq.cpp Rorgrq.cpp Cungrq.cpp \
-Rormbr.cpp Cunmbr.cpp Rormhr.cpp Cunmhr.cpp Rormlq.cpp \
-Cunmlq.cpp Rormql.cpp Cunmql.cpp Rormqr.cpp Cunmqr.cpp \
-Rormrq.cpp Cunmrq.cpp Rormrz.cpp Cunmrz.cpp Rormtr.cpp \
-Cunmtr.cpp Rpbcon.cpp Cpbcon.cpp Rpbequ.cpp Cpbequ.cpp \
-Rpbrfs.cpp Cpbrfs.cpp Rpbstf.cpp Cpbstf.cpp Rpbsv.cpp  \
-Cpbsv.cpp  Rpbsvx.cpp Cpbsvx.cpp Rpbtrf.cpp Cpbtrf.cpp \
-Rpbtrs.cpp Cpbtrs.cpp Rpocon.cpp Cpocon.cpp Rpoequ.cpp \
-Cpoequ.cpp Rporfs.cpp Cporfs.cpp Rposv.cpp  Cposv.cpp  \
-Rposvx.cpp Cposvx.cpp Rpotri.cpp Cpotri.cpp Rpotrs.cpp \
-Cpotrs.cpp Rppcon.cpp Cppcon.cpp Rppequ.cpp Cppequ.cpp \
-Rpptrf.cpp Cpptrf.cpp Rpptri.cpp Cpptri.cpp Rpptrs.cpp \
-Cpptrs.cpp Rpprfs.cpp Cpprfs.cpp Rppsv.cpp  Cppsv.cpp  \
-Rppsvx.cpp Cppsvx.cpp Rptcon.cpp Cptcon.cpp Rpteqr.cpp \
-Cpteqr.cpp Rptrfs.cpp Cptrfs.cpp Rptsv.cpp  Cptsv.cpp  \
-Rptsvx.cpp Cptsvx.cpp Rpttrf.cpp Cpttrf.cpp Rpttrs.cpp \
-Cpttrs.cpp Rsbev.cpp  Chbev.cpp  Rsbevd.cpp Chbevd.cpp \
-Rsbevx.cpp Chbevx.cpp Rsbgst.cpp Chbgst.cpp Rsbgv.cpp  \
-Chbgv.cpp  Rsbgvd.cpp Chbgvd.cpp Rsbgvx.cpp Chbgvx.cpp \
-Rsbtrd.cpp Chbtrd.cpp Rspcon.cpp Cspcon.cpp Chpcon.cpp \
-Rspev.cpp  Chpev.cpp  Rspevd.cpp Chpevd.cpp Rspevx.cpp \
-Chpevx.cpp Rspgst.cpp Chpgst.cpp Rspgv.cpp  Chpgv.cpp  \
-Rspgvd.cpp Chpgvd.cpp Rspgvx.cpp Chpgvx.cpp Rsprfs.cpp \
-Csprfs.cpp Chprfs.cpp Rspsv.cpp  Cspsv.cpp  Chpsv.cpp  \
-Rspsvx.cpp Cspsvx.cpp Chpsvx.cpp Rsptrd.cpp Chptrd.cpp \
-Rsptrf.cpp Csptrf.cpp Chptrf.cpp Rsptri.cpp Csptri.cpp \
-Chptri.cpp Rsptrs.cpp Csptrs.cpp Chptrs.cpp Rstebz.cpp \
-Rstedc.cpp Cstedc.cpp Rstegr.cpp Cstegr.cpp Rstein.cpp \
-Cstein.cpp Rstev.cpp  Rstevd.cpp Rstevr.cpp Rstevx.cpp \
-Rstemr.cpp Cstemr.cpp Rsycon.cpp Csycon.cpp Checon.cpp \
-Rsyevd.cpp Cheevd.cpp Rsyevr.cpp Cheevr.cpp Rsyevx.cpp \
-Cheevx.cpp Rsygst.cpp Chegst.cpp Rsygv.cpp  Chegv.cpp  \
-Rsygvd.cpp Chegvd.cpp Rsygvx.cpp Chegvx.cpp Rsyrfs.cpp \
-Csyrfs.cpp Cherfs.cpp Rsysv.cpp  Csysv.cpp  Chesv.cpp  \
-Rsysvx.cpp Csysvx.cpp Chesvx.cpp Rsytrf.cpp Csytrf.cpp \
-Chetrf.cpp Rsytri.cpp Csytri.cpp Chetri.cpp Rsytrs.cpp \
-Csytrs.cpp Chetrs.cpp Rtbcon.cpp Ctbcon.cpp Rtbrfs.cpp \
-Ctbrfs.cpp Rtbtrs.cpp Ctbtrs.cpp Rtgevc.cpp Ctgevc.cpp \
-Rtgexc.cpp Ctgexc.cpp Rtgsen.cpp Ctgsen.cpp Rtgsja.cpp \
-Ctgsja.cpp Rtgsna.cpp Ctgsna.cpp Rtgsyl.cpp Ctgsyl.cpp \
-Rtpcon.cpp Ctpcon.cpp Rtprfs.cpp Ctprfs.cpp Rtptri.cpp \
-Ctptri.cpp Rtptrs.cpp Ctptrs.cpp Rtrcon.cpp Ctrcon.cpp \
-Rtrevc.cpp Ctrevc.cpp Rtrexc.cpp Ctrexc.cpp Rtrrfs.cpp \
-Ctrrfs.cpp Rtrsen.cpp Ctrsen.cpp Rtrsna.cpp Ctrsna.cpp \
-Rtrsyl.cpp Ctrsyl.cpp Rtzrzf.cpp Ctzrzf.cpp Rtzrqf.cpp \
-Ctzrqf.cpp 
-
-# # of MPLAPACK routines = 666.
-# LAPACK 3.1.1 d*f, z*f, izmax1, ilaenv, dlamch = 674
-# not implemented 8
-# 674 - 8 = 666
-#not to be implemtented
-#1.Rlag2s.cpp : convert double prec. to single prec.
-#2.Clag2c.cpp : convert double prec. to single prec.
-#3.Rsgesv.cpp : single prec. i/o, internal double prec.
-#4.Czgesv.cpp : single prec. i/o, internal double prec.
-#5.Rlabad.cpp : Clay specific?
-#6.Rlaisnan.cpp : use Risnan.cpp without optimization (?)
-#7.Rlacon.cpp: use Rlacn2.
-#8:Clacon.cpp: use Clacn2.
-
-#will be removed 
-#Rgegs.cpp:  deprecated by Rgges.cpp
-#Rgegv.cpp:  deprecated by Rggev.cpp
-#Rgelsx.cpp: deprecated by Rgelsy.cpp.
-#Rgeqpf.cpp: deprecated by Rgeqp3.cpp
-#Rlahrd.cpp: deprecated
-#Rlatzm.cpp: deprecated by Rormrz.cpp
-#Rtzrqf.cpp: deprecated by Rtzrzf.cpp
-#Cgegs.cpp:  deprecated by Cgges.cpp
-#Cgegv.cpp:  deprecated by Cggev.cpp
-#Cgelsx.cpp: deprecated by Cgelsy.cpp
-#Cgeqpf.cpp: deprecated by Cgeqp3.cpp
-#Clahrd.cpp: deprecated
-#Clatzm.cpp: deprecated by Cunmrz.cpp
-#Ctzrqf.cpp: deprecated by Ctzrzf.cpp
+MPLAPACK_SOURCES =  \
+CRrscl.cpp \
+Cbbcsd.cpp \
+Cbdsqr.cpp \
+Ccgesv.cpp \
+Ccposv.cpp \
+Cdrscl.cpp \
+Cgbbrd.cpp \
+Cgbcon.cpp \
+Cgbequ.cpp \
+Cgbequb.cpp \
+Cgbrfs.cpp \
+Cgbrfsx.cpp \
+Cgbsv.cpp \
+Cgbsvx.cpp \
+Cgbsvxx.cpp \
+Cgbtf2.cpp \
+Cgbtrf.cpp \
+Cgbtrs.cpp \
+Cgebak.cpp \
+Cgebal.cpp \
+Cgebd2.cpp \
+Cgebrd.cpp \
+Cgecon.cpp \
+Cgeequ.cpp \
+Cgeequb.cpp \
+Cgees.cpp \
+Cgeesx.cpp \
+Cgeev.cpp \
+Cgeevx.cpp \
+Cgegs.cpp \
+Cgegv.cpp \
+Cgehd2.cpp \
+Cgehrd.cpp \
+Cgejsv.cpp \
+Cgelq.cpp \
+Cgelq2.cpp \
+Cgelqf.cpp \
+Cgelqt.cpp \
+Cgelqt3.cpp \
+Cgels.cpp \
+Cgelsd.cpp \
+Cgelss.cpp \
+Cgelsx.cpp \
+Cgelsy.cpp \
+Cgemlq.cpp \
+Cgemlqt.cpp \
+Cgemqr.cpp \
+Cgemqrt.cpp \
+Cgeql2.cpp \
+Cgeqlf.cpp \
+Cgeqp3.cpp \
+Cgeqpf.cpp \
+Cgeqr.cpp \
+Cgeqr2.cpp \
+Cgeqr2p.cpp \
+Cgeqrf.cpp \
+Cgeqrfp.cpp \
+Cgeqrt.cpp \
+Cgeqrt2.cpp \
+Cgeqrt3.cpp \
+Cgerfs.cpp \
+Cgerfsx.cpp \
+Cgerq2.cpp \
+Cgerqf.cpp \
+Cgesc2.cpp \
+Cgesdd.cpp \
+Cgesv.cpp \
+Cgesvd.cpp \
+Cgesvdq.cpp \
+Cgesvdx.cpp \
+Cgesvj.cpp \
+Cgesvx.cpp \
+Cgesvxx.cpp \
+Cgetc2.cpp \
+Cgetf2.cpp \
+Cgetrf.cpp \
+Cgetrf2.cpp \
+Cgetri.cpp \
+Cgetrs.cpp \
+Cgetsls.cpp \
+Cgetsqrhrt.cpp \
+Cggbak.cpp \
+Cggbal.cpp \
+Cgges.cpp \
+Cgges3.cpp \
+Cggesx.cpp \
+Cggev.cpp \
+Cggev3.cpp \
+Cggevx.cpp \
+Cggglm.cpp \
+Cgghd3.cpp \
+Cgghrd.cpp \
+Cgglse.cpp \
+Cggqrf.cpp \
+Cggrqf.cpp \
+Cggsvd.cpp \
+Cggsvd3.cpp \
+Cggsvp.cpp \
+Cggsvp3.cpp \
+Cgsvj0.cpp \
+Cgsvj1.cpp \
+Cgtcon.cpp \
+Cgtrfs.cpp \
+Cgtsv.cpp \
+Cgtsvx.cpp \
+Cgttrf.cpp \
+Cgttrs.cpp \
+Cgtts2.cpp \
+Chb2st_kernels.cpp \
+Chbev.cpp \
+Chbev_2stage.cpp \
+Chbevd.cpp \
+Chbevd_2stage.cpp \
+Chbevx.cpp \
+Chbevx_2stage.cpp \
+Chbgst.cpp \
+Chbgv.cpp \
+Chbgvd.cpp \
+Chbgvx.cpp \
+Chbtrd.cpp \
+Checon.cpp \
+Checon_3.cpp \
+Checon_rook.cpp \
+Cheequb.cpp \
+Cheev.cpp \
+Cheev_2stage.cpp \
+Cheevd.cpp \
+Cheevd_2stage.cpp \
+Cheevr.cpp \
+Cheevr_2stage.cpp \
+Cheevx.cpp \
+Cheevx_2stage.cpp \
+Chegs2.cpp \
+Chegst.cpp \
+Chegv.cpp \
+Chegv_2stage.cpp \
+Chegvd.cpp \
+Chegvx.cpp \
+Cherfs.cpp \
+Cherfsx.cpp \
+Chesv.cpp \
+Chesv_aa.cpp \
+Chesv_aa_2stage.cpp \
+Chesv_rk.cpp \
+Chesv_rook.cpp \
+Chesvx.cpp \
+Chesvxx.cpp \
+Cheswapr.cpp \
+Chetd2.cpp \
+Chetf2.cpp \
+Chetf2_rk.cpp \
+Chetf2_rook.cpp \
+Chetrd.cpp \
+Chetrd_2stage.cpp \
+Chetrd_he2hb.cpp \
+Chetrf.cpp \
+Chetrf_aa.cpp \
+Chetrf_aa_2stage.cpp \
+Chetrf_rk.cpp \
+Chetrf_rook.cpp \
+Chetri.cpp \
+Chetri2.cpp \
+Chetri2x.cpp \
+Chetri_3.cpp \
+Chetri_3x.cpp \
+Chetri_rook.cpp \
+Chetrs.cpp \
+Chetrs2.cpp \
+Chetrs_3.cpp \
+Chetrs_aa.cpp \
+Chetrs_aa_2stage.cpp \
+Chetrs_rook.cpp \
+Chfrk.cpp \
+Chgeqz.cpp \
+Chpcon.cpp \
+Chpev.cpp \
+Chpevd.cpp \
+Chpevx.cpp \
+Chpgst.cpp \
+Chpgv.cpp \
+Chpgvd.cpp \
+Chpgvx.cpp \
+Chprfs.cpp \
+Chpsv.cpp \
+Chpsvx.cpp \
+Chptrd.cpp \
+Chptrf.cpp \
+Chptri.cpp \
+Chptrs.cpp \
+Chsein.cpp \
+Chseqr.cpp \
+Cla_gbamv.cpp \
+Cla_gbrcond_c.cpp \
+Cla_gbrcond_x.cpp \
+Cla_gbrfsx_extended.cpp \
+Cla_gbrpvgrw.cpp \
+Cla_geamv.cpp \
+Cla_gercond_c.cpp \
+Cla_gercond_x.cpp \
+Cla_gerfsx_extended.cpp \
+Cla_gerpvgrw.cpp \
+Cla_heamv.cpp \
+Cla_hercond_c.cpp \
+Cla_hercond_x.cpp \
+Cla_herfsx_extended.cpp \
+Cla_herpvgrw.cpp \
+Cla_lin_berr.cpp \
+Cla_porcond_c.cpp \
+Cla_porcond_x.cpp \
+Cla_porfsx_extended.cpp \
+Cla_porpvgrw.cpp \
+Cla_syamv.cpp \
+Cla_syrcond_c.cpp \
+Cla_syrcond_x.cpp \
+Cla_syrfsx_extended.cpp \
+Cla_syrpvgrw.cpp \
+Cla_wwaddw.cpp \
+Clabrd.cpp \
+Clacgv.cpp \
+Clacn2.cpp \
+Clacon.cpp \
+Clacp2.cpp \
+Clacpy.cpp \
+Clacrm.cpp \
+Clacrt.cpp \
+Cladiv.cpp \
+Claed0.cpp \
+Claed7.cpp \
+Claed8.cpp \
+Claein.cpp \
+Claesy.cpp \
+Claev2.cpp \
+Clag2c.cpp \
+Clags2.cpp \
+Clagtm.cpp \
+Clahef.cpp \
+Clahef_aa.cpp \
+Clahef_rk.cpp \
+Clahef_rook.cpp \
+Clahqr.cpp \
+Clahr2.cpp \
+Clahrd.cpp \
+Claic1.cpp \
+Clals0.cpp \
+Clalsa.cpp \
+Clalsd.cpp \
+Clamswlq.cpp \
+Clamtsqr.cpp \
+Clangb.cpp \
+Clange.cpp \
+Clangt.cpp \
+Clanhb.cpp \
+Clanhe.cpp \
+Clanhf.cpp \
+Clanhp.cpp \
+Clanhs.cpp \
+Clanht.cpp \
+Clansb.cpp \
+Clansp.cpp \
+Clansy.cpp \
+Clantb.cpp \
+Clantp.cpp \
+Clantr.cpp \
+Clapll.cpp \
+Clapmr.cpp \
+Clapmt.cpp \
+Claqgb.cpp \
+Claqge.cpp \
+Claqhb.cpp \
+Claqhe.cpp \
+Claqhp.cpp \
+Claqp2.cpp \
+Claqps.cpp \
+Claqr0.cpp \
+Claqr1.cpp \
+Claqr2.cpp \
+Claqr3.cpp \
+Claqr4.cpp \
+Claqr5.cpp \
+Claqsb.cpp \
+Claqsp.cpp \
+Claqsy.cpp \
+Clar1v.cpp \
+Clar2v.cpp \
+Clarcm.cpp \
+Clarf.cpp \
+Clarfb.cpp \
+Clarfb_gett.cpp \
+Clarfg.cpp \
+Clarfgp.cpp \
+Clarft.cpp \
+Clarfx.cpp \
+Clarfy.cpp \
+Clargv.cpp \
+Clarnv.cpp \
+Clarrv.cpp \
+Clarscl2.cpp \
+Clartg.cpp \
+Clartv.cpp \
+Clarz.cpp \
+Clarzb.cpp \
+Clarzt.cpp \
+Clascl.cpp \
+Clascl2.cpp \
+Claset.cpp \
+Clasr.cpp \
+Classq.cpp \
+Claswlq.cpp \
+Claswp.cpp \
+Clasyf.cpp \
+Clasyf_aa.cpp \
+Clasyf_rk.cpp \
+Clasyf_rook.cpp \
+Clat2c.cpp \
+Clatbs.cpp \
+Clatdf.cpp \
+Clatps.cpp \
+Clatrd.cpp \
+Clatrs.cpp \
+Clatrz.cpp \
+Clatsqr.cpp \
+Clatzm.cpp \
+Claunhr_col_getrfnp.cpp \
+Claunhr_col_getrfnp2.cpp \
+Clauu2.cpp \
+Clauum.cpp \
+Cpbcon.cpp \
+Cpbequ.cpp \
+Cpbrfs.cpp \
+Cpbstf.cpp \
+Cpbsv.cpp \
+Cpbsvx.cpp \
+Cpbtf2.cpp \
+Cpbtrf.cpp \
+Cpbtrs.cpp \
+Cpftrf.cpp \
+Cpftri.cpp \
+Cpftrs.cpp \
+Cpocon.cpp \
+Cpoequ.cpp \
+Cpoequb.cpp \
+Cporfs.cpp \
+Cporfsx.cpp \
+Cposv.cpp \
+Cposvx.cpp \
+Cposvxx.cpp \
+Cpotf2.cpp \
+Cpotrf.cpp \
+Cpotrf2.cpp \
+Cpotri.cpp \
+Cpotrs.cpp \
+Cppcon.cpp \
+Cppequ.cpp \
+Cpprfs.cpp \
+Cppsv.cpp \
+Cppsvx.cpp \
+Cpptrf.cpp \
+Cpptri.cpp \
+Cpptrs.cpp \
+Cpstf2.cpp \
+Cpstrf.cpp \
+Cptcon.cpp \
+Cpteqr.cpp \
+Cptrfs.cpp \
+Cptsv.cpp \
+Cptsvx.cpp \
+Cpttrf.cpp \
+Cpttrs.cpp \
+Cptts2.cpp \
+Crot.cpp \
+Cspcon.cpp \
+Cspmv.cpp \
+Cspr.cpp \
+Csprfs.cpp \
+Cspsv.cpp \
+Cspsvx.cpp \
+Csptrf.cpp \
+Csptri.cpp \
+Csptrs.cpp \
+Cstedc.cpp \
+Cstegr.cpp \
+Cstein.cpp \
+Cstemr.cpp \
+Csteqr.cpp \
+Csycon.cpp \
+Csycon_3.cpp \
+Csycon_rook.cpp \
+Csyconv.cpp \
+Csyconvf.cpp \
+Csyconvf_rook.cpp \
+Csyequb.cpp \
+Csymv.cpp \
+Csyr.cpp \
+Csyrfs.cpp \
+Csyrfsx.cpp \
+Csysv.cpp \
+Csysv_aa.cpp \
+Csysv_aa_2stage.cpp \
+Csysv_rk.cpp \
+Csysv_rook.cpp \
+Csysvx.cpp \
+Csysvxx.cpp \
+Csyswapr.cpp \
+Csytf2.cpp \
+Csytf2_rk.cpp \
+Csytf2_rook.cpp \
+Csytrf.cpp \
+Csytrf_aa.cpp \
+Csytrf_aa_2stage.cpp \
+Csytrf_rk.cpp \
+Csytrf_rook.cpp \
+Csytri.cpp \
+Csytri2.cpp \
+Csytri2x.cpp \
+Csytri_3.cpp \
+Csytri_3x.cpp \
+Csytri_rook.cpp \
+Csytrs.cpp \
+Csytrs2.cpp \
+Csytrs_3.cpp \
+Csytrs_aa.cpp \
+Csytrs_aa_2stage.cpp \
+Csytrs_rook.cpp \
+Ctbcon.cpp \
+Ctbrfs.cpp \
+Ctbtrs.cpp \
+Ctfsm.cpp \
+Ctftri.cpp \
+Ctfttp.cpp \
+Ctfttr.cpp \
+Ctgevc.cpp \
+Ctgex2.cpp \
+Ctgexc.cpp \
+Ctgsen.cpp \
+Ctgsja.cpp \
+Ctgsna.cpp \
+Ctgsy2.cpp \
+Ctgsyl.cpp \
+Ctpcon.cpp \
+Ctplqt.cpp \
+Ctplqt2.cpp \
+Ctpmlqt.cpp \
+Ctpmqrt.cpp \
+Ctpqrt.cpp \
+Ctpqrt2.cpp \
+Ctprfb.cpp \
+Ctprfs.cpp \
+Ctptri.cpp \
+Ctptrs.cpp \
+Ctpttf.cpp \
+Ctpttr.cpp \
+Ctrcon.cpp \
+Ctrevc.cpp \
+Ctrevc3.cpp \
+Ctrexc.cpp \
+Ctrrfs.cpp \
+Ctrsen.cpp \
+Ctrsna.cpp \
+Ctrsyl.cpp \
+Ctrti2.cpp \
+Ctrtri.cpp \
+Ctrtrs.cpp \
+Ctrttf.cpp \
+Ctrttp.cpp \
+Ctzrqf.cpp \
+Ctzrzf.cpp \
+Cunbdb.cpp \
+Cunbdb1.cpp \
+Cunbdb2.cpp \
+Cunbdb3.cpp \
+Cunbdb4.cpp \
+Cunbdb5.cpp \
+Cunbdb6.cpp \
+Cuncsd.cpp \
+Cuncsd2by1.cpp \
+Cung2l.cpp \
+Cung2r.cpp \
+Cungbr.cpp \
+Cunghr.cpp \
+Cungl2.cpp \
+Cunglq.cpp \
+Cungql.cpp \
+Cungqr.cpp \
+Cungr2.cpp \
+Cungrq.cpp \
+Cungtr.cpp \
+Cungtsqr.cpp \
+Cungtsqr_row.cpp \
+Cunhr_col.cpp \
+Cunm22.cpp \
+Cunm2l.cpp \
+Cunm2r.cpp \
+Cunmbr.cpp \
+Cunmhr.cpp \
+Cunml2.cpp \
+Cunmlq.cpp \
+Cunmql.cpp \
+Cunmqr.cpp \
+Cunmr2.cpp \
+Cunmr3.cpp \
+Cunmrq.cpp \
+Cunmrz.cpp \
+Cunmtr.cpp \
+Cupgtr.cpp \
+Cupmtr.cpp \
+Mutils.cpp \
+RCsum1.cpp \
+Rbbcsd.cpp \
+Rbdsdc.cpp \
+Rbdsqr.cpp \
+Rbdsvdx.cpp \
+Rcombssq.cpp \
+Rdisna.cpp \
+Rgbbrd.cpp \
+Rgbcon.cpp \
+Rgbequ.cpp \
+Rgbequb.cpp \
+Rgbrfs.cpp \
+Rgbrfsx.cpp \
+Rgbsv.cpp \
+Rgbsvx.cpp \
+Rgbsvxx.cpp \
+Rgbtf2.cpp \
+Rgbtrf.cpp \
+Rgbtrs.cpp \
+Rgebak.cpp \
+Rgebal.cpp \
+Rgebd2.cpp \
+Rgebrd.cpp \
+Rgecon.cpp \
+Rgeequ.cpp \
+Rgeequb.cpp \
+Rgees.cpp \
+Rgeesx.cpp \
+Rgeev.cpp \
+Rgeevx.cpp \
+Rgegs.cpp \
+Rgegv.cpp \
+Rgehd2.cpp \
+Rgehrd.cpp \
+Rgejsv.cpp \
+Rgelq.cpp \
+Rgelq2.cpp \
+Rgelqf.cpp \
+Rgelqt.cpp \
+Rgelqt3.cpp \
+Rgels.cpp \
+Rgelsd.cpp \
+Rgelss.cpp \
+Rgelsx.cpp \
+Rgelsy.cpp \
+Rgemlq.cpp \
+Rgemlqt.cpp \
+Rgemqr.cpp \
+Rgemqrt.cpp \
+Rgeql2.cpp \
+Rgeqlf.cpp \
+Rgeqp3.cpp \
+Rgeqpf.cpp \
+Rgeqr.cpp \
+Rgeqr2.cpp \
+Rgeqr2p.cpp \
+Rgeqrf.cpp \
+Rgeqrfp.cpp \
+Rgeqrt.cpp \
+Rgeqrt2.cpp \
+Rgeqrt3.cpp \
+Rgerfs.cpp \
+Rgerfsx.cpp \
+Rgerq2.cpp \
+Rgerqf.cpp \
+Rgesc2.cpp \
+Rgesdd.cpp \
+Rgesv.cpp \
+Rgesvd.cpp \
+Rgesvdq.cpp \
+Rgesvdx.cpp \
+Rgesvj.cpp \
+Rgesvx.cpp \
+Rgesvxx.cpp \
+Rgetc2.cpp \
+Rgetf2.cpp \
+Rgetrf.cpp \
+Rgetrf2.cpp \
+Rgetri.cpp \
+Rgetrs.cpp \
+Rgetsls.cpp \
+Rgetsqrhrt.cpp \
+Rggbak.cpp \
+Rggbal.cpp \
+Rgges.cpp \
+Rgges3.cpp \
+Rggesx.cpp \
+Rggev.cpp \
+Rggev3.cpp \
+Rggevx.cpp \
+Rggglm.cpp \
+Rgghd3.cpp \
+Rgghrd.cpp \
+Rgglse.cpp \
+Rggqrf.cpp \
+Rggrqf.cpp \
+Rggsvd.cpp \
+Rggsvd3.cpp \
+Rggsvp.cpp \
+Rggsvp3.cpp \
+Rgsvj0.cpp \
+Rgsvj1.cpp \
+Rgtcon.cpp \
+Rgtrfs.cpp \
+Rgtsv.cpp \
+Rgtsvx.cpp \
+Rgttrf.cpp \
+Rgttrs.cpp \
+Rgtts2.cpp \
+Rhgeqz.cpp \
+Rhsein.cpp \
+Rhseqr.cpp \
+Risnan.cpp \
+Rla_gbamv.cpp \
+Rla_gbrcond.cpp \
+Rla_gbrfsx_extended.cpp \
+Rla_gbrpvgrw.cpp \
+Rla_geamv.cpp \
+Rla_gercond.cpp \
+Rla_gerfsx_extended.cpp \
+Rla_gerpvgrw.cpp \
+Rla_lin_berr.cpp \
+Rla_porcond.cpp \
+Rla_porfsx_extended.cpp \
+Rla_porpvgrw.cpp \
+Rla_syamv.cpp \
+Rla_syrcond.cpp \
+Rla_syrfsx_extended.cpp \
+Rla_syrpvgrw.cpp \
+Rla_wwaddw.cpp \
+Rlabad.cpp \
+Rlabrd.cpp \
+Rlacn2.cpp \
+Rlacon.cpp \
+Rlacpy.cpp \
+Rladiv.cpp \
+Rlae2.cpp \
+Rlaebz.cpp \
+Rlaed0.cpp \
+Rlaed1.cpp \
+Rlaed2.cpp \
+Rlaed3.cpp \
+Rlaed4.cpp \
+Rlaed5.cpp \
+Rlaed6.cpp \
+Rlaed7.cpp \
+Rlaed8.cpp \
+Rlaed9.cpp \
+Rlaeda.cpp \
+Rlaein.cpp \
+Rlaev2.cpp \
+Rlaexc.cpp \
+Rlag2.cpp \
+Rlag2s.cpp \
+Rlags2.cpp \
+Rlagtf.cpp \
+Rlagtm.cpp \
+Rlagts.cpp \
+Rlagv2.cpp \
+Rlahqr.cpp \
+Rlahr2.cpp \
+Rlahrd.cpp \
+Rlaic1.cpp \
+Rlaisnan.cpp \
+Rlaln2.cpp \
+Rlals0.cpp \
+Rlalsa.cpp \
+Rlalsd.cpp \
+Rlamch.cpp \
+Rlamrg.cpp \
+Rlamswlq.cpp \
+Rlamtsqr.cpp \
+Rlaneg.cpp \
+Rlangb.cpp \
+Rlange.cpp \
+Rlangt.cpp \
+Rlanhs.cpp \
+Rlansb.cpp \
+Rlansf.cpp \
+Rlansp.cpp \
+Rlanst.cpp \
+Rlansy.cpp \
+Rlantb.cpp \
+Rlantp.cpp \
+Rlantr.cpp \
+Rlanv2.cpp \
+Rlaorhr_col_getrfnp.cpp \
+Rlaorhr_col_getrfnp2.cpp \
+Rlapll.cpp \
+Rlapmr.cpp \
+Rlapmt.cpp \
+Rlapy2.cpp \
+Rlapy3.cpp \
+Rlaqgb.cpp \
+Rlaqge.cpp \
+Rlaqp2.cpp \
+Rlaqps.cpp \
+Rlaqr0.cpp \
+Rlaqr1.cpp \
+Rlaqr2.cpp \
+Rlaqr3.cpp \
+Rlaqr4.cpp \
+Rlaqr5.cpp \
+Rlaqsb.cpp \
+Rlaqsp.cpp \
+Rlaqsy.cpp \
+Rlaqtr.cpp \
+Rlar1v.cpp \
+Rlar2v.cpp \
+Rlarf.cpp \
+Rlarfb.cpp \
+Rlarfb_gett.cpp \
+Rlarfg.cpp \
+Rlarfgp.cpp \
+Rlarft.cpp \
+Rlarfx.cpp \
+Rlarfy.cpp \
+Rlargv.cpp \
+Rlarnv.cpp \
+Rlarra.cpp \
+Rlarrb.cpp \
+Rlarrc.cpp \
+Rlarrd.cpp \
+Rlarre.cpp \
+Rlarrf.cpp \
+Rlarrj.cpp \
+Rlarrk.cpp \
+Rlarrr.cpp \
+Rlarrv.cpp \
+Rlarscl2.cpp \
+Rlartg.cpp \
+Rlartgp.cpp \
+Rlartgs.cpp \
+Rlartv.cpp \
+Rlaruv.cpp \
+Rlarz.cpp \
+Rlarzb.cpp \
+Rlarzt.cpp \
+Rlas2.cpp \
+Rlascl.cpp \
+Rlascl2.cpp \
+Rlasd0.cpp \
+Rlasd1.cpp \
+Rlasd2.cpp \
+Rlasd3.cpp \
+Rlasd4.cpp \
+Rlasd5.cpp \
+Rlasd6.cpp \
+Rlasd7.cpp \
+Rlasd8.cpp \
+Rlasda.cpp \
+Rlasdq.cpp \
+Rlasdt.cpp \
+Rlaset.cpp \
+Rlasq1.cpp \
+Rlasq2.cpp \
+Rlasq3.cpp \
+Rlasq4.cpp \
+Rlasq5.cpp \
+Rlasq6.cpp \
+Rlasr.cpp \
+Rlasrt.cpp \
+Rlassq.cpp \
+Rlasv2.cpp \
+Rlaswlq.cpp \
+Rlaswp.cpp \
+Rlasy2.cpp \
+Rlasyf.cpp \
+Rlasyf_aa.cpp \
+Rlasyf_rk.cpp \
+Rlasyf_rook.cpp \
+Rlat2s.cpp \
+Rlatbs.cpp \
+Rlatdf.cpp \
+Rlatps.cpp \
+Rlatrd.cpp \
+Rlatrs.cpp \
+Rlatrz.cpp \
+Rlatsqr.cpp \
+Rlatzm.cpp \
+Rlauu2.cpp \
+Rlauum.cpp \
+Rlazq3.cpp \
+Rlazq4.cpp \
+Ropgtr.cpp \
+Ropmtr.cpp \
+Rorbdb.cpp \
+Rorbdb1.cpp \
+Rorbdb2.cpp \
+Rorbdb3.cpp \
+Rorbdb4.cpp \
+Rorbdb5.cpp \
+Rorbdb6.cpp \
+Rorcsd.cpp \
+Rorcsd2by1.cpp \
+Rorg2l.cpp \
+Rorg2r.cpp \
+Rorgbr.cpp \
+Rorghr.cpp \
+Rorgl2.cpp \
+Rorglq.cpp \
+Rorgql.cpp \
+Rorgqr.cpp \
+Rorgr2.cpp \
+Rorgrq.cpp \
+Rorgtr.cpp \
+Rorgtsqr.cpp \
+Rorgtsqr_row.cpp \
+Rorhr_col.cpp \
+Rorm22.cpp \
+Rorm2l.cpp \
+Rorm2r.cpp \
+Rormbr.cpp \
+Rormhr.cpp \
+Rorml2.cpp \
+Rormlq.cpp \
+Rormql.cpp \
+Rormqr.cpp \
+Rormr2.cpp \
+Rormr3.cpp \
+Rormrq.cpp \
+Rormrz.cpp \
+Rormtr.cpp \
+Rpbcon.cpp \
+Rpbequ.cpp \
+Rpbrfs.cpp \
+Rpbstf.cpp \
+Rpbsv.cpp \
+Rpbsvx.cpp \
+Rpbtf2.cpp \
+Rpbtrf.cpp \
+Rpbtrs.cpp \
+Rpftrf.cpp \
+Rpftri.cpp \
+Rpftrs.cpp \
+Rpocon.cpp \
+Rpoequ.cpp \
+Rpoequb.cpp \
+Rporfs.cpp \
+Rporfsx.cpp \
+Rposv.cpp \
+Rposvx.cpp \
+Rposvxx.cpp \
+Rpotf2.cpp \
+Rpotrf.cpp \
+Rpotrf2.cpp \
+Rpotri.cpp \
+Rpotrs.cpp \
+Rppcon.cpp \
+Rppequ.cpp \
+Rpprfs.cpp \
+Rppsv.cpp \
+Rppsvx.cpp \
+Rpptrf.cpp \
+Rpptri.cpp \
+Rpptrs.cpp \
+Rpstf2.cpp \
+Rpstrf.cpp \
+Rptcon.cpp \
+Rpteqr.cpp \
+Rptrfs.cpp \
+Rptsv.cpp \
+Rptsvx.cpp \
+Rpttrf.cpp \
+Rpttrs.cpp \
+Rptts2.cpp \
+Rrscl.cpp \
+Rsb2st_kernels.cpp \
+Rsbev.cpp \
+Rsbev_2stage.cpp \
+Rsbevd.cpp \
+Rsbevd_2stage.cpp \
+Rsbevx.cpp \
+Rsbevx_2stage.cpp \
+Rsbgst.cpp \
+Rsbgv.cpp \
+Rsbgvd.cpp \
+Rsbgvx.cpp \
+Rsbtrd.cpp \
+Rsfrk.cpp \
+Rsgesv.cpp \
+Rspcon.cpp \
+Rspev.cpp \
+Rspevd.cpp \
+Rspevx.cpp \
+Rspgst.cpp \
+Rspgv.cpp \
+Rspgvd.cpp \
+Rspgvx.cpp \
+Rsposv.cpp \
+Rsprfs.cpp \
+Rspsv.cpp \
+Rspsvx.cpp \
+Rsptrd.cpp \
+Rsptrf.cpp \
+Rsptri.cpp \
+Rsptrs.cpp \
+Rstebz.cpp \
+Rstedc.cpp \
+Rstegr.cpp \
+Rstein.cpp \
+Rstemr.cpp \
+Rsteqr.cpp \
+Rsterf.cpp \
+Rstev.cpp \
+Rstevd.cpp \
+Rstevr.cpp \
+Rstevx.cpp \
+Rsycon.cpp \
+Rsycon_3.cpp \
+Rsycon_rook.cpp \
+Rsyconv.cpp \
+Rsyconvf.cpp \
+Rsyconvf_rook.cpp \
+Rsyequb.cpp \
+Rsyev.cpp \
+Rsyev_2stage.cpp \
+Rsyevd.cpp \
+Rsyevd_2stage.cpp \
+Rsyevr.cpp \
+Rsyevr_2stage.cpp \
+Rsyevx.cpp \
+Rsyevx_2stage.cpp \
+Rsygs2.cpp \
+Rsygst.cpp \
+Rsygv.cpp \
+Rsygv_2stage.cpp \
+Rsygvd.cpp \
+Rsygvx.cpp \
+Rsyrfs.cpp \
+Rsyrfsx.cpp \
+Rsysv.cpp \
+Rsysv_aa.cpp \
+Rsysv_aa_2stage.cpp \
+Rsysv_rk.cpp \
+Rsysv_rook.cpp \
+Rsysvx.cpp \
+Rsysvxx.cpp \
+Rsyswapr.cpp \
+Rsytd2.cpp \
+Rsytf2.cpp \
+Rsytf2_rk.cpp \
+Rsytf2_rook.cpp \
+Rsytrd.cpp \
+Rsytrd_2stage.cpp \
+Rsytrd_sy2sb.cpp \
+Rsytrf.cpp \
+Rsytrf_aa.cpp \
+Rsytrf_aa_2stage.cpp \
+Rsytrf_rk.cpp \
+Rsytrf_rook.cpp \
+Rsytri.cpp \
+Rsytri2.cpp \
+Rsytri2x.cpp \
+Rsytri_3.cpp \
+Rsytri_3x.cpp \
+Rsytri_rook.cpp \
+Rsytrs.cpp \
+Rsytrs2.cpp \
+Rsytrs_3.cpp \
+Rsytrs_aa.cpp \
+Rsytrs_aa_2stage.cpp \
+Rsytrs_rook.cpp \
+Rtbcon.cpp \
+Rtbrfs.cpp \
+Rtbtrs.cpp \
+Rtfsm.cpp \
+Rtftri.cpp \
+Rtfttp.cpp \
+Rtfttr.cpp \
+Rtgevc.cpp \
+Rtgex2.cpp \
+Rtgexc.cpp \
+Rtgsen.cpp \
+Rtgsja.cpp \
+Rtgsna.cpp \
+Rtgsy2.cpp \
+Rtgsyl.cpp \
+Rtpcon.cpp \
+Rtplqt.cpp \
+Rtplqt2.cpp \
+Rtpmlqt.cpp \
+Rtpmqrt.cpp \
+Rtpqrt.cpp \
+Rtpqrt2.cpp \
+Rtprfb.cpp \
+Rtprfs.cpp \
+Rtptri.cpp \
+Rtptrs.cpp \
+Rtpttf.cpp \
+Rtpttr.cpp \
+Rtrcon.cpp \
+Rtrevc.cpp \
+Rtrevc3.cpp \
+Rtrexc.cpp \
+Rtrrfs.cpp \
+Rtrsen.cpp \
+Rtrsna.cpp \
+Rtrsyl.cpp \
+Rtrti2.cpp \
+Rtrtri.cpp \
+Rtrtrs.cpp \
+Rtrttf.cpp \
+Rtrttp.cpp \
+Rtzrqf.cpp \
+Rtzrzf.cpp \
+Rzsum1.cpp \
+iCmax1.cpp \
+iMlaenv.cpp
