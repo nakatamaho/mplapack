@@ -11,3 +11,22 @@
  *     ..
  *
        DFLAG = DPARAM(1)
+--- BLAS/SRC/drotmg.f.org	2021-04-04 14:20:13.604905848 +0900
++++ BLAS/SRC/drotmg.f	2021-04-04 14:20:54.446869203 +0900
+@@ -108,10 +108,13 @@
+ *     .. Intrinsic Functions ..
+       INTRINSIC DABS
+ *     ..
+-*     .. Data statements ..
+ *
+-      DATA ZERO,ONE,TWO/0.D0,1.D0,2.D0/
+-      DATA GAM,GAMSQ,RGAMSQ/4096.D0,16777216.D0,5.9604645D-8/
++      ZERO=0.D0
++      ONE=1.D0
++      TWO=2.D0
++      GAM=4096.D0
++      GAMSQ=16777216.D0
++      RGAMSQ=5.9604645D-8
+ *     ..
+ 
+       IF (DD1.LT.ZERO) THEN
