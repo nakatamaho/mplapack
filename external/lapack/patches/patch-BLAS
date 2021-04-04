@@ -1,0 +1,13 @@
+--- BLAS/SRC/drotm.f.org	2021-04-04 14:16:22.978848287 +0900
++++ BLAS/SRC/drotm.f	2021-04-04 14:16:42.143691933 +0900
+@@ -111,8 +111,8 @@
+       DOUBLE PRECISION DFLAG,DH11,DH12,DH21,DH22,TWO,W,Z,ZERO
+       INTEGER I,KX,KY,NSTEPS
+ *     ..
+-*     .. Data statements ..
+-      DATA ZERO,TWO/0.D0,2.D0/
++      ZERO = 0.0D0
++      TWO = 2.0D0
+ *     ..
+ *
+       DFLAG = DPARAM(1)
