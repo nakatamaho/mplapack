@@ -78,7 +78,6 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../../reference/Mxerbla.cpp \
 ../../reference/iCamax.cpp  \
 ../../reference/iRamax.cpp \
-../../reference/Rset.cpp \
 ../../reference/mplapackinit.cpp
 
 if IS_MACOSX
