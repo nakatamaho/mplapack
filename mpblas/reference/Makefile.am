@@ -1,8 +1,8 @@
 lib_LTLIBRARIES =
 
-#if ENABLE_GMP
-#lib_LTLIBRARIES += libmpblas_gmp_ref.la
-#endif
+if ENABLE_GMP
+lib_LTLIBRARIES += libmpblas_gmp_ref.la
+endif
 
 if ENABLE_MPFR
 lib_LTLIBRARIES += libmpblas_mpfr_ref.la
