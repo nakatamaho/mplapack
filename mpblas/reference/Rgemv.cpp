@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
- *	Nakata, Maho
- * 	All rights reserved.
- *
- * $Id: Rgemv.cpp,v 1.5 2010/08/07 05:50:10 nakatamaho Exp $
+ * Copyright (c) 2008-2021
+ *      Nakata, Maho
+ *      All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,149 +25,180 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
- *
- * $Id: Rgemv.cpp,v 1.5 2010/08/07 05:50:10 nakatamaho Exp $
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
-
-/*
-Based on http://www.netlib.org/blas/dgemv.f
-Rgemv performs one of the matrix-vector operations
-y := alpha*A*x + beta*y, or y := alpha*A'*x + beta*y,
-where alpha and beta are scalars, x and y are vectors and A is an
-m by n matrix.
-*/
 
 #include <mpblas.h>
 
-void Rgemv(const char *trans, INTEGER m, INTEGER n, REAL alpha, REAL * A, INTEGER lda, REAL * x, INTEGER incx, REAL beta, REAL * y,
-	   INTEGER incy)
-{
-    INTEGER lenx, leny, i, ix, jx, kx, iy, j, jy, ky;
+void Rgemv(const char *trans, INTEGER const &m, INTEGER const &n, REAL const &alpha, REAL *a, INTEGER const &lda, REAL *x, INTEGER const &incx, REAL const &beta, REAL *y, INTEGER const &incy) {
+    //
+    //  -- Reference BLAS level2 routine --
+    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //
+    //     Test the input parameters.
+    //
     INTEGER info = 0;
-    REAL Zero = 0.0, One = 1.0;
-    REAL temp;
-
-//Test the input parameters.
-    if (!Mlsame(trans, "N") && !Mlsame(trans, "T") && !Mlsame(trans, "C"))
-	info = 1;
-    else if (m < 0)
-	info = 2;
-    else if (n < 0)
-	info = 3;
-    else if (lda < max((INTEGER) 1, m))
-	info = 6;
-    else if (incx == 0)
-	info = 8;
-    else if (incy == 0)
-	info = 11;
+    if (!Mlsame(trans, "N") && !Mlsame(trans, "T") && !Mlsame(trans, "C")) {
+        info = 1;
+    } else if (m < 0) {
+        info = 2;
+    } else if (n < 0) {
+        info = 3;
+    } else if (lda < max((INTEGER)1, m)) {
+        info = 6;
+    } else if (incx == 0) {
+        info = 8;
+    } else if (incy == 0) {
+        info = 11;
+    }
     if (info != 0) {
-	Mxerbla("Rgemv ", info);
-	return;
+        Mxerbla("Rgemv ", info);
+        return;
     }
-//Quick return if possible.
-    if ((m == 0) || (n == 0) || ((alpha == Zero) && (beta == One)))
-	return;
-
-//Set lenx and leny, the lengths of the vectors x and y, and set
-//up the start points in x and y.
+    //
+    //     Quick return if possible.
+    //
+    const REAL zero = 0.0;
+    const REAL one = 1.0;
+    if ((m == 0) || (n == 0) || ((alpha == zero) && (beta == one))) {
+        return;
+    }
+    //
+    //     Set  LENX  and  LENY, the lengths of the vectors x and y, and set
+    //     up the start poINTEGERs in  X  and  Y.
+    //
+    INTEGER lenx = 0;
+    INTEGER leny = 0;
     if (Mlsame(trans, "N")) {
-	lenx = n;
-	leny = m;
+        lenx = n;
+        leny = m;
     } else {
-	lenx = m;
-	leny = n;
+        lenx = m;
+        leny = n;
     }
-    if (incx > 0)
-	kx = 0;
-    else
-	kx = (1 - lenx) * incx;
-    if (incy > 0)
-	ky = 0;
-    else
-	ky = (1 - leny) * incy;
-
-//start the operations. in this version the elements of a are
-//accessed sequentially with One pass through a.
-//first form  y := beta*y.
-    if (beta != One) {
-	iy = ky;
-	if (beta == Zero) {
-	    for (i = 0; i < leny; i++) {
-		y[iy] = Zero;
-		iy = iy + incy;
-	    }
-	} else {
-	    for (i = 0; i < leny; i++) {
-		y[iy] = beta * y[iy];
-		iy = iy + incy;
-	    }
-	}
+    INTEGER kx = 0;
+    if (incx > 0) {
+        kx = 1;
+    } else {
+        kx = 1 - (lenx - 1) * incx;
     }
-    if (alpha == Zero)
-	return;
+    INTEGER ky = 0;
+    if (incy > 0) {
+        ky = 1;
+    } else {
+        ky = 1 - (leny - 1) * incy;
+    }
+    //
+    //     Start the operations. In this version the elements of A are
+    //     accessed sequentially with one pass through A.
+    //
+    //     First form  y := beta*y.
+    //
+    INTEGER i = 0;
+    INTEGER iy = 0;
+    if (beta != one) {
+        if (incy == 1) {
+            if (beta == zero) {
+                for (i = 1; i <= leny; i = i + 1) {
+                    y[i - 1] = zero;
+                }
+            } else {
+                for (i = 1; i <= leny; i = i + 1) {
+                    y[i - 1] = beta * y[i - 1];
+                }
+            }
+        } else {
+            iy = ky;
+            if (beta == zero) {
+                for (i = 1; i <= leny; i = i + 1) {
+                    y[iy - 1] = zero;
+                    iy += incy;
+                }
+            } else {
+                for (i = 1; i <= leny; i = i + 1) {
+                    y[iy - 1] = beta * y[iy - 1];
+                    iy += incy;
+                }
+            }
+        }
+    }
+    if (alpha == zero) {
+        return;
+    }
+    INTEGER jx = 0;
+    INTEGER j = 0;
+    REAL temp = 0.0;
+    INTEGER jy = 0;
+    INTEGER ix = 0;
     if (Mlsame(trans, "N")) {
-//form y := alpha*A*x + y.
-	jx = kx;
-	for (j = 0; j < n; j++) {
-	    if (x[jx] != Zero) {
-		temp = alpha * x[jx];
-		iy = ky;
-		for (i = 0; i < m; i++) {
-		    y[iy] = y[iy] + temp * A[i + j * lda];
-		    iy = iy + incy;
-		}
-	    }
-	    jx = jx + incx;
-	}
+        //
+        //        Form  y := alpha*A*x + y.
+        //
+        jx = kx;
+        if (incy == 1) {
+            for (j = 1; j <= n; j = j + 1) {
+                temp = alpha * x[jx - 1];
+                for (i = 1; i <= m; i = i + 1) {
+                    y[i - 1] += temp * a[(i - 1) + (j - 1) * lda];
+                }
+                jx += incx;
+            }
+        } else {
+            for (j = 1; j <= n; j = j + 1) {
+                temp = alpha * x[jx - 1];
+                iy = ky;
+                for (i = 1; i <= m; i = i + 1) {
+                    y[iy - 1] += temp * a[(i - 1) + (j - 1) * lda];
+                    iy += incy;
+                }
+                jx += incx;
+            }
+        }
     } else {
-//Form y := alpha*A'*x + y.
-	jy = ky;
-	for (j = 0; j < n; j++) {
-	    temp = Zero;
-	    ix = kx;
-	    for (i = 0; i < m; i++) {
-		temp = temp + A[i + j * lda] * x[ix];
-		ix = ix + incx;
-	    }
-	    y[jy] = y[jy] + alpha * temp;
-	    jy = jy + incy;
-	}
+        //
+        //        Form  y := alpha*A**T*x + y.
+        //
+        jy = ky;
+        if (incx == 1) {
+            for (j = 1; j <= n; j = j + 1) {
+                temp = zero;
+                for (i = 1; i <= m; i = i + 1) {
+                    temp += a[(i - 1) + (j - 1) * lda] * x[i - 1];
+                }
+                y[jy - 1] += alpha * temp;
+                jy += incy;
+            }
+        } else {
+            for (j = 1; j <= n; j = j + 1) {
+                temp = zero;
+                ix = kx;
+                for (i = 1; i <= m; i = i + 1) {
+                    temp += a[(i - 1) + (j - 1) * lda] * x[ix - 1];
+                    ix += incx;
+                }
+                y[jy - 1] += alpha * temp;
+                jy += incy;
+            }
+        }
     }
-    return;
+    //
+    //     End of Rgemv .
+    //
 }

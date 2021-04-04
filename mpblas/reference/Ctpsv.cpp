@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
- *	Nakata, Maho
- * 	All rights reserved.
- *
- * $Id: Ctpsv.cpp,v 1.5 2010/08/07 05:50:10 nakatamaho Exp $
+ * Copyright (c) 2008-2021
+ *      Nakata, Maho
+ *      All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,183 +25,271 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
- *
- * $Id: Ctpsv.cpp,v 1.5 2010/08/07 05:50:10 nakatamaho Exp $
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
-
-/*
-Based on http://www.netlib.org/blas/ctpsv.f
-Ctpsv solves one of the systems of equations
- A*x = b, or A'*x = b, or conjg( A' )*x = b,
-where b and x are n element vectors and A is an n by n unit, or
-non-unit, upper or lower triangular matrix, supplied in packed form.
-*/
 
 #include <mpblas.h>
 
-void Ctpsv(const char *uplo, const char *trans, const char *diag, INTEGER n, COMPLEX * AP, COMPLEX * x, INTEGER incx)
-{
-    INTEGER ix, j, jx, k, kx, kk, noconj, nounit;
-    REAL Zero = 0.0;
-    COMPLEX temp;
-
-//Test the input parameters.
+void Ctpsv(const char *uplo, const char *trans, const char *diag, INTEGER const &n, COMPLEX *ap, COMPLEX *x, INTEGER const &incx) {
+    //
+    //  -- Reference BLAS level2 routine --
+    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //
+    //     Test the input parameters.
+    //
     INTEGER info = 0;
-    if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L"))
-	info = 1;
-    else if (!Mlsame(trans, "N") && !Mlsame(trans, "T") && !Mlsame(trans, "C"))
-	info = 2;
-    else if (!Mlsame(diag, "U") && !Mlsame(diag, "N"))
-	info = 3;
-    else if (n < 0)
-	info = 4;
-    else if (incx == 0)
-	info = 7;
-
+    if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
+        info = 1;
+    } else if (!Mlsame(trans, "N") && !Mlsame(trans, "T") && !Mlsame(trans, "C")) {
+        info = 2;
+    } else if (!Mlsame(diag, "U") && !Mlsame(diag, "N")) {
+        info = 3;
+    } else if (n < 0) {
+        info = 4;
+    } else if (incx == 0) {
+        info = 7;
+    }
     if (info != 0) {
-	Mxerbla("Ctpsv ", info);
-	return;
+        Mxerbla("Ctpsv ", info);
+        return;
     }
-//quick return if possible.
-    if (n == 0)
-	return;
-
-    noconj = Mlsame(trans, "T");
-    nounit = Mlsame(diag, "N");
-//set up the start point in x if the increment is not unity. this
-//will be(n - 1) * incx too small for descending loops.
-    kx = 0;
-    if (incx <= 0)
-	kx = -(n - 1) * incx;
-//start the operations. in this version the elements of ap are
-//accessed sequentially with one pass through ap.
+    //
+    //     Quick return if possible.
+    //
+    if (n == 0) {
+        return;
+    }
+    //
+    bool noconj = Mlsame(trans, "T");
+    bool nounit = Mlsame(diag, "N");
+    //
+    //     Set up the start poINTEGER in X if the increment is not unity. This
+    //     will be  ( N - 1 )*INCX  too small for descending loops.
+    //
+    INTEGER kx = 0;
+    if (incx <= 0) {
+        kx = 1 - (n - 1) * incx;
+    } else if (incx != 1) {
+        kx = 1;
+    }
+    //
+    //     Start the operations. In this version the elements of AP are
+    //     accessed sequentially with one pass through AP.
+    //
+    INTEGER kk = 0;
+    INTEGER j = 0;
+    const COMPLEX zero = (0.0, 0.0);
+    COMPLEX temp = 0.0;
+    INTEGER k = 0;
+    INTEGER i = 0;
+    INTEGER jx = 0;
+    INTEGER ix = 0;
     if (Mlsame(trans, "N")) {
-//Form x := inv(A)*x.
-	if (Mlsame(uplo, "U")) {
-	    kk = (n * (n + 1)) / 2 - 1;
-	    jx = kx + (n - 1) * incx;
-	    for (j = n - 1; j >= 0; j--) {
-		if (x[jx] != Zero) {
-		    if (nounit)
-			x[jx] = x[jx] / AP[kk];
-		    temp = x[jx];
-		    ix = jx;
-		    for (k = kk - 1; k >= kk - j; k--) {
-			ix = ix - incx;
-			x[ix] = x[ix] - temp * AP[k];
-		    }
-		}
-		jx = jx - incx;
-		kk = kk - j - 1;
-	    }
-	} else {
-	    kk = 0;
-	    jx = kx;
-	    for (j = 0; j < n; j++) {
-		if (x[jx] != Zero) {
-		    if (nounit)
-			x[jx] = x[jx] / AP[kk];
-		    temp = x[jx];
-		    ix = jx;
-		    for (k = kk + 1; k < kk + n - j; k++) {
-			ix = ix + incx;
-			x[ix] = x[ix] - temp * AP[k];
-		    }
-		}
-		jx = jx + incx;
-		kk = kk + n - j;
-	    }
-	}
+        //
+        //        Form  x := inv( A )*x.
+        //
+        if (Mlsame(uplo, "U")) {
+            kk = (n * (n + 1)) / 2;
+            if (incx == 1) {
+                for (j = n; j >= 1; j = j - 1) {
+                    if (x[j - 1] != zero) {
+                        if (nounit) {
+                            x[j - 1] = x[j - 1] / ap[kk - 1];
+                        }
+                        temp = x[j - 1];
+                        k = kk - 1;
+                        for (i = j - 1; i >= 1; i = i - 1) {
+                            x[i - 1] = x[i - 1] - temp * ap[k - 1];
+                            k = k - 1;
+                        }
+                    }
+                    kk = kk - j;
+                }
+            } else {
+                jx = kx + (n - 1) * incx;
+                for (j = n; j >= 1; j = j - 1) {
+                    if (x[jx - 1] != zero) {
+                        if (nounit) {
+                            x[jx - 1] = x[jx - 1] / ap[kk - 1];
+                        }
+                        temp = x[jx - 1];
+                        ix = jx;
+                        for (k = kk - 1; k >= kk - j + 1; k = k - 1) {
+                            ix = ix - incx;
+                            x[ix - 1] = x[ix - 1] - temp * ap[k - 1];
+                        }
+                    }
+                    jx = jx - incx;
+                    kk = kk - j;
+                }
+            }
+        } else {
+            kk = 1;
+            if (incx == 1) {
+                for (j = 1; j <= n; j = j + 1) {
+                    if (x[j - 1] != zero) {
+                        if (nounit) {
+                            x[j - 1] = x[j - 1] / ap[kk - 1];
+                        }
+                        temp = x[j - 1];
+                        k = kk + 1;
+                        for (i = j + 1; i <= n; i = i + 1) {
+                            x[i - 1] = x[i - 1] - temp * ap[k - 1];
+                            k++;
+                        }
+                    }
+                    kk += (n - j + 1);
+                }
+            } else {
+                jx = kx;
+                for (j = 1; j <= n; j = j + 1) {
+                    if (x[jx - 1] != zero) {
+                        if (nounit) {
+                            x[jx - 1] = x[jx - 1] / ap[kk - 1];
+                        }
+                        temp = x[jx - 1];
+                        ix = jx;
+                        for (k = kk + 1; k <= kk + n - j; k = k + 1) {
+                            ix += incx;
+                            x[ix - 1] = x[ix - 1] - temp * ap[k - 1];
+                        }
+                    }
+                    jx += incx;
+                    kk += (n - j + 1);
+                }
+            }
+        }
     } else {
-//Form x := inv(A')*x or x := inv(conjg(A'))*x.
-	if (Mlsame(uplo, "U")) {
-	    kk = 0;
-	    jx = kx;
-	    for (j = 0; j < n; j++) {
-		temp = x[jx];
-		ix = kx;
-		if (noconj) {
-		    for (k = kk; k < kk + j; k++) {
-			temp = temp - AP[k] * x[ix];
-			ix = ix + incx;
-		    }
-		    if (nounit)
-			temp = temp / AP[kk + j];
-		} else {
-		    for (k = kk; k < kk + j; k++) {
-			temp = temp - conj(AP[k]) * x[ix];
-			ix = ix + incx;
-		    }
-		    if (nounit)
-			temp = temp / conj(AP[kk + j]);
-		}
-		x[jx] = temp;
-		jx = jx + incx;
-		kk = kk + j + 1;
-	    }
-	} else {
-	    kk = (n * (n + 1)) / 2 - 1;
-	    kx = kx + (n - 1) * incx;
-	    jx = kx;
-	    for (j = n - 1; j >= 0; j--) {
-		temp = x[jx];
-		ix = kx;
-		if (noconj) {
-		    for (k = kk; k > kk - (n - j) + 1; k--) {
-			temp = temp - AP[k] * x[ix];
-			ix = ix - incx;
-		    }
-		    if (nounit)
-			temp = temp / AP[kk - (n - j) + 1];
-		} else {
-		    for (k = kk; k > kk - (n - j) + 1; k--) {
-			temp = temp - conj(AP[k]) * x[ix];
-			ix = ix - incx;
-		    }
-		    if (nounit)
-			temp = temp / conj(AP[kk - (n - j) + 1]);
-		}
-		x[jx] = temp;
-		jx = jx - incx;
-		kk = kk - n + j;
-	    }
-	}
+        //
+        //        Form  x := inv( A**T )*x  or  x := inv( A**H )*x.
+        //
+        if (Mlsame(uplo, "U")) {
+            kk = 1;
+            if (incx == 1) {
+                for (j = 1; j <= n; j = j + 1) {
+                    temp = x[j - 1];
+                    k = kk;
+                    if (noconj) {
+                        for (i = 1; i <= j - 1; i = i + 1) {
+                            temp = temp - ap[k - 1] * x[i - 1];
+                            k++;
+                        }
+                        if (nounit) {
+                            temp = temp / ap[(kk + j - 1) - 1];
+                        }
+                    } else {
+                        for (i = 1; i <= j - 1; i = i + 1) {
+                            temp = temp - conj(ap[k - 1]) * x[i - 1];
+                            k++;
+                        }
+                        if (nounit) {
+                            temp = temp / conj(ap[(kk + j - 1) - 1]);
+                        }
+                    }
+                    x[j - 1] = temp;
+                    kk += j;
+                }
+            } else {
+                jx = kx;
+                for (j = 1; j <= n; j = j + 1) {
+                    temp = x[jx - 1];
+                    ix = kx;
+                    if (noconj) {
+                        for (k = kk; k <= kk + j - 2; k = k + 1) {
+                            temp = temp - ap[k - 1] * x[ix - 1];
+                            ix += incx;
+                        }
+                        if (nounit) {
+                            temp = temp / ap[(kk + j - 1) - 1];
+                        }
+                    } else {
+                        for (k = kk; k <= kk + j - 2; k = k + 1) {
+                            temp = temp - conj(ap[k - 1]) * x[ix - 1];
+                            ix += incx;
+                        }
+                        if (nounit) {
+                            temp = temp / conj(ap[(kk + j - 1) - 1]);
+                        }
+                    }
+                    x[jx - 1] = temp;
+                    jx += incx;
+                    kk += j;
+                }
+            }
+        } else {
+            kk = (n * (n + 1)) / 2;
+            if (incx == 1) {
+                for (j = n; j >= 1; j = j - 1) {
+                    temp = x[j - 1];
+                    k = kk;
+                    if (noconj) {
+                        for (i = n; i >= j + 1; i = i - 1) {
+                            temp = temp - ap[k - 1] * x[i - 1];
+                            k = k - 1;
+                        }
+                        if (nounit) {
+                            temp = temp / ap[(kk - n + j) - 1];
+                        }
+                    } else {
+                        for (i = n; i >= j + 1; i = i - 1) {
+                            temp = temp - conj(ap[k - 1]) * x[i - 1];
+                            k = k - 1;
+                        }
+                        if (nounit) {
+                            temp = temp / conj(ap[(kk - n + j) - 1]);
+                        }
+                    }
+                    x[j - 1] = temp;
+                    kk = kk - (n - j + 1);
+                }
+            } else {
+                kx += (n - 1) * incx;
+                jx = kx;
+                for (j = n; j >= 1; j = j - 1) {
+                    temp = x[jx - 1];
+                    ix = kx;
+                    if (noconj) {
+                        for (k = kk; k >= kk - (n - (j + 1)); k = k - 1) {
+                            temp = temp - ap[k - 1] * x[ix - 1];
+                            ix = ix - incx;
+                        }
+                        if (nounit) {
+                            temp = temp / ap[(kk - n + j) - 1];
+                        }
+                    } else {
+                        for (k = kk; k >= kk - (n - (j + 1)); k = k - 1) {
+                            temp = temp - conj(ap[k - 1]) * x[ix - 1];
+                            ix = ix - incx;
+                        }
+                        if (nounit) {
+                            temp = temp / conj(ap[(kk - n + j) - 1]);
+                        }
+                    }
+                    x[jx - 1] = temp;
+                    jx = jx - incx;
+                    kk = kk - (n - j + 1);
+                }
+            }
+        }
     }
-    return;
+    //
+    //     End of Ctpsv .
+    //
 }

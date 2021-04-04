@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
- *	Nakata, Maho
- * 	All rights reserved.
- *
- * $Id: Rspr2.cpp,v 1.6 2010/08/07 05:50:10 nakatamaho Exp $
+ * Copyright (c) 2008-2021
+ *      Nakata, Maho
+ *      All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,132 +25,160 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
- *
- * $Id: Rspr2.cpp,v 1.6 2010/08/07 05:50:10 nakatamaho Exp $
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
-
-/*
-Based on http://www.netlib.org/blas/dspr2.f
-Rspr2 performs the symmetric rank 2 operation
- A := alpha*x*y' + alpha*y*x' + A,
-where alpha is a scalar, x and y are n element vectors and A is an
-n by n symmetric matrix, supplied in packed form.
-*/
 
 #include <mpblas.h>
 
-void Rspr2(const char *uplo, INTEGER n, REAL alpha, REAL * x, INTEGER incx, REAL * y, INTEGER incy, REAL * AP)
-{
-    INTEGER ix, iy, j, jx, jy, k, kx, ky, kk, info = 0;
-    REAL Zero = 0.0;
-    REAL temp1, temp2;
-
-//test the input parameters.
-    if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L"))
-	info = 1;
-    else if (n < 0)
-	info = 2;
-    else if (incx == 0)
-	info = 5;
-    else if (incy == 0)
-	info = 7;
+void Rspr2(const char *uplo, INTEGER const &n, REAL const &alpha, REAL *x, INTEGER const &incx, REAL *y, INTEGER const &incy, REAL *ap) {
+    //
+    //  -- Reference BLAS level2 routine --
+    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //
+    //     Test the input parameters.
+    //
+    INTEGER info = 0;
+    if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
+        info = 1;
+    } else if (n < 0) {
+        info = 2;
+    } else if (incx == 0) {
+        info = 5;
+    } else if (incy == 0) {
+        info = 7;
+    }
     if (info != 0) {
-	Mxerbla("Rspr  ", info);
-	return;
+        Mxerbla("Rspr2 ", info);
+        return;
     }
-//quick return if possible.
-    if ((n == 0) || (alpha == Zero))
-	return;
-
-//set up the start points in x and y if the increments are not both
-//unity.
-    if (incx > 0)
-	kx = 0;
-    else
-	kx = -(n - 1) * incx;
-    if (incy > 0)
-	ky = 0;
-    else
-	ky = -(n - 1) * incy;
-
-    jx = kx;
-    jy = ky;
-
-//start the operations. in this version the elements of the array ap
-//are accessed sequentially with one pass through ap.
-    kk = 0;
+    //
+    //     Quick return if possible.
+    //
+    const REAL zero = 0.0;
+    if ((n == 0) || (alpha == zero)) {
+        return;
+    }
+    //
+    //     Set up the start poINTEGERs in X and Y if the increments are not both
+    //     unity.
+    //
+    INTEGER kx = 0;
+    INTEGER ky = 0;
+    INTEGER jx = 0;
+    INTEGER jy = 0;
+    if ((incx != 1) || (incy != 1)) {
+        if (incx > 0) {
+            kx = 1;
+        } else {
+            kx = 1 - (n - 1) * incx;
+        }
+        if (incy > 0) {
+            ky = 1;
+        } else {
+            ky = 1 - (n - 1) * incy;
+        }
+        jx = kx;
+        jy = ky;
+    }
+    //
+    //     Start the operations. In this version the elements of the array AP
+    //     are accessed sequentially with one pass through AP.
+    //
+    INTEGER kk = 1;
+    INTEGER j = 0;
+    REAL temp1 = 0.0;
+    REAL temp2 = 0.0;
+    INTEGER k = 0;
+    INTEGER i = 0;
+    INTEGER ix = 0;
+    INTEGER iy = 0;
     if (Mlsame(uplo, "U")) {
-//Form A when upper triangle is stored in AP.
-	for (j = 0; j < n; j++) {
-	    if ((x[jx] != Zero) || (y[jy] != Zero)) {
-		temp1 = alpha * y[jy];
-		temp2 = alpha * x[jx];
-		ix = kx;
-		iy = ky;
-		for (k = kk; k <= kk + j; k++) {
-		    AP[k] = AP[k] + x[ix] * temp1 + y[iy] * temp2;
-		    ix = ix + incx;
-		    iy = iy + incy;
-		}
-	    }
-	    jx = jx + incx;
-	    jy = jy + incy;
-	    kk = kk + j + 1;
-	}
+        //
+        //        Form  A  when upper triangle is stored in AP.
+        //
+        if ((incx == 1) && (incy == 1)) {
+            for (j = 1; j <= n; j = j + 1) {
+                if ((x[j - 1] != zero) || (y[j - 1] != zero)) {
+                    temp1 = alpha * y[j - 1];
+                    temp2 = alpha * x[j - 1];
+                    k = kk;
+                    for (i = 1; i <= j; i = i + 1) {
+                        ap[k - 1] += x[i - 1] * temp1 + y[i - 1] * temp2;
+                        k++;
+                    }
+                }
+                kk += j;
+            }
+        } else {
+            for (j = 1; j <= n; j = j + 1) {
+                if ((x[jx - 1] != zero) || (y[jy - 1] != zero)) {
+                    temp1 = alpha * y[jy - 1];
+                    temp2 = alpha * x[jx - 1];
+                    ix = kx;
+                    iy = ky;
+                    for (k = kk; k <= kk + j - 1; k = k + 1) {
+                        ap[k - 1] += x[ix - 1] * temp1 + y[iy - 1] * temp2;
+                        ix += incx;
+                        iy += incy;
+                    }
+                }
+                jx += incx;
+                jy += incy;
+                kk += j;
+            }
+        }
     } else {
-//Form A when lower triangle is stored in AP.
-	for (j = 0; j < n; j++) {
-	    if ((x[jx] != Zero) || (y[jy] != Zero)) {
-		temp1 = alpha * y[jy];
-		temp2 = alpha * x[jx];
-		ix = jx;
-		iy = jy;
-		for (k = kk; k < kk + n - j; k++) {
-		    AP[k] = AP[k] + x[ix] * temp1 + y[iy] * temp2;
-		    ix = ix + incx;
-		    iy = iy + incy;
-		}
-	    }
-	    jx = jx + incx;
-	    jy = jy + incy;
-	    kk = kk + n - j;
-	}
+        //
+        //        Form  A  when lower triangle is stored in AP.
+        //
+        if ((incx == 1) && (incy == 1)) {
+            for (j = 1; j <= n; j = j + 1) {
+                if ((x[j - 1] != zero) || (y[j - 1] != zero)) {
+                    temp1 = alpha * y[j - 1];
+                    temp2 = alpha * x[j - 1];
+                    k = kk;
+                    for (i = j; i <= n; i = i + 1) {
+                        ap[k - 1] += x[i - 1] * temp1 + y[i - 1] * temp2;
+                        k++;
+                    }
+                }
+                kk += n - j + 1;
+            }
+        } else {
+            for (j = 1; j <= n; j = j + 1) {
+                if ((x[jx - 1] != zero) || (y[jy - 1] != zero)) {
+                    temp1 = alpha * y[jy - 1];
+                    temp2 = alpha * x[jx - 1];
+                    ix = jx;
+                    iy = jy;
+                    for (k = kk; k <= kk + n - j; k = k + 1) {
+                        ap[k - 1] += x[ix - 1] * temp1 + y[iy - 1] * temp2;
+                        ix += incx;
+                        iy += incy;
+                    }
+                }
+                jx += incx;
+                jy += incy;
+                kk += n - j + 1;
+            }
+        }
     }
-    return;
+    //
+    //     End of Rspr2 .
+    //
 }

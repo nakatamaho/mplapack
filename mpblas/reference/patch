@@ -1,0 +1,38 @@
+--- Cherk.cpp_	2021-04-04 16:09:06.172417600 +0900
++++ Cherk.cpp	2021-04-04 16:09:48.016680682 +0900
+@@ -195,7 +195,7 @@
+                 for (i = 1; i <= j - 1; i = i + 1) {
+                     temp = zero;
+                     for (l = 1; l <= k; l = l + 1) {
+-                        temp += conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
++                        temp += (conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
+                     }
+                     if (beta == zero) {
+                         c[(i - 1) + (j - 1) * ldc] = alpha * temp;
+@@ -205,7 +205,7 @@
+                 }
+                 rtemp = zero;
+                 for (l = 1; l <= k; l = l + 1) {
+-                    rtemp += conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
++                    rtemp += (conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
+                 }
+                 if (beta == zero) {
+                     c[(j - 1) + (j - 1) * ldc] = alpha * rtemp;
+@@ -217,7 +217,7 @@
+             for (j = 1; j <= n; j = j + 1) {
+                 rtemp = zero;
+                 for (l = 1; l <= k; l = l + 1) {
+-                    rtemp += conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
++                    rtemp += (conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
+                 }
+                 if (beta == zero) {
+                     c[(j - 1) + (j - 1) * ldc] = alpha * rtemp;
+@@ -227,7 +227,7 @@
+                 for (i = j + 1; i <= n; i = i + 1) {
+                     temp = zero;
+                     for (l = 1; l <= k; l = l + 1) {
+-                        temp += conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
++                        temp += (conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
+                     }
+                     if (beta == zero) {
+                         c[(i - 1) + (j - 1) * ldc] = alpha * temp;

@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
- *	Nakata, Maho
- * 	All rights reserved.
- *
- * $Id: Raxpy.cpp,v 1.6 2010/08/07 05:50:10 nakatamaho Exp $
+ * Copyright (c) 2008-2021
+ *      Nakata, Maho
+ *      All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,71 +25,76 @@
  * SUCH DAMAGE.
  *
  */
-/*
-Copyright (c) 1992-2007 The University of Tennessee.  All rights reserved.
- *
- * $Id: Raxpy.cpp,v 1.6 2010/08/07 05:50:10 nakatamaho Exp $
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer. 
-  
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-  
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT  
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-*/
-
-/*
-Based on http://www.netlib.org/blas/daxpy.f
-*/
 
 #include <mpblas.h>
 
-void Raxpy(INTEGER n, REAL da, REAL * dx, INTEGER incx, REAL * dy, INTEGER incy)
-{
-    INTEGER i, ix = 0, iy = 0;
-    REAL Zero = 0.0;
-
-    if (n <= 0)
-	return;
-    if (da == Zero)
-	return;
-
-    if (incx < 0)
-	ix = (-n + 1) * incx;
-    if (incy < 0)
-	iy = (-n + 1) * incy;
-
-    for (i = 0; i < n; i++) {
-	dy[iy] = dy[iy] + da * dx[ix];
-	ix = ix + incx;
-	iy = iy + incy;
+void Raxpy(INTEGER const &n, REAL const &da, REAL *dx, INTEGER const &incx, REAL *dy, INTEGER const &incy) {
+    //
+    //  -- Reference BLAS level1 routine --
+    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Local Scalars ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    if (n <= 0) {
+        return;
     }
-    return;
+    if (da == 0.0) {
+        return;
+    }
+    INTEGER m = 0;
+    INTEGER i = 0;
+    INTEGER mp1 = 0;
+    INTEGER ix = 0;
+    INTEGER iy = 0;
+    if (incx == 1 && incy == 1) {
+        //
+        //        code for both increments equal to 1
+        //
+        //        clean-up loop
+        //
+        m = mod(n, 4);
+        if (m != 0) {
+            for (i = 1; i <= m; i = i + 1) {
+                dy[i - 1] += da * dx[i - 1];
+            }
+        }
+        if (n < 4) {
+            return;
+        }
+        mp1 = m + 1;
+        for (i = mp1; i <= n; i = i + 4) {
+            dy[i - 1] += da * dx[i - 1];
+            dy[(i + 1) - 1] += da * dx[(i + 1) - 1];
+            dy[(i + 2) - 1] += da * dx[(i + 2) - 1];
+            dy[(i + 3) - 1] += da * dx[(i + 3) - 1];
+        }
+    } else {
+        //
+        //        code for unequal increments or equal increments
+        //          not equal to 1
+        //
+        ix = 1;
+        iy = 1;
+        if (incx < 0) {
+            ix = (-n + 1) * incx + 1;
+        }
+        if (incy < 0) {
+            iy = (-n + 1) * incy + 1;
+        }
+        for (i = 1; i <= n; i = i + 1) {
+            dy[iy - 1] += da * dx[ix - 1];
+            ix += incx;
+            iy += incy;
+        }
+    }
 }

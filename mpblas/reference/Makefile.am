@@ -1,8 +1,8 @@
 lib_LTLIBRARIES =
 
-if ENABLE_GMP
-lib_LTLIBRARIES += libmpblas_gmp_ref.la
-endif
+#if ENABLE_GMP
+#lib_LTLIBRARIES += libmpblas_gmp_ref.la
+#endif
 
 if ENABLE_MPFR
 lib_LTLIBRARIES += libmpblas_mpfr_ref.la
@@ -39,7 +39,7 @@ Rrotg.cpp Rrotm.cpp Rrotmg.cpp Rsbmv.cpp Rscal.cpp Rspmv.cpp \
 Rspr.cpp Rspr2.cpp Rswap.cpp Rsymm.cpp Rsymv.cpp Rsyr.cpp Rsyr2.cpp \
 Rsyr2k.cpp Rsyrk.cpp Rtbmv.cpp Rtbsv.cpp Rtpmv.cpp Rtpsv.cpp Rtrmm.cpp \
 Rtrmv.cpp Rtrsm.cpp Rtrsv.cpp iCamax.cpp iRamax.cpp \
-Rset.cpp Mlsame.cpp Mxerbla.cpp mplapackinit.cpp
+Mlsame.cpp Mxerbla.cpp mplapackinit.cpp
 
 if ENABLE_GMP
 libmpblas_gmp_ref_la_CPPFLAGS = -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___
