@@ -581,7 +581,7 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
         else:
           op = "(cmn"
       else:
-        if (prev_tok is not None and prev_tok.is_identifier() and prev_tok.value != "min" and  prev_tok.value != "max" and prev_tok.value != "abs"  and prev_tok.value != "sqrt" and prev_tok.value != "log2" and prev_tok.value != "pow2" and prev_tok.value != "dlamch" and prev_tok.value != "int" and prev_tok.value != "lsame" and prev_tok.value != "ddot" and prev_tok.value != "pow2" and prev_tok.value != "disnan" ):
+        if (prev_tok is not None and prev_tok.is_identifier() and prev_tok.value != "min" and  prev_tok.value != "max" and prev_tok.value != "abs"  and prev_tok.value != "sqrt" and prev_tok.value != "log2" and prev_tok.value != "pow2" and prev_tok.value != "dlamch" and prev_tok.value != "int" and prev_tok.value != "lsame" and prev_tok.value != "ddot" and prev_tok.value != "pow2" and prev_tok.value != "disnan" and prev_tok.value != "mod" and prev_tok.value != "dabs" ):
           a=convert_tokens(conv_info=conv_info,tokens=tok.value,commas=True)
           aa = a.split(',')
           if (len(aa)==1):  # one dimensional array
@@ -990,7 +990,7 @@ def convert_to_fem_do(conv_info, parent_scope, i_tok, fls_tokens):
          opening_text=["for(%s=%s; %s>=%s; %s=%s%s) {" % (i, f, i, l, i, i, s)])
     else:
       return parent_scope.open_nested_scope(
-               opening_text=["FEM_DO_STEP(%s, %s, %s, %s) {" % (i, f, l, s)])
+               opening_text=["for(%s=%s; %s<=%s; %s=%s+%s) {" % (i, f, i, l, i, i, s)]) #danger!!!
   if (conv_info.fem_do_safe):
     return parent_scope.open_nested_scope(
       opening_text=["for(%s=%s; %s<=%s; %s=%s+1) {" % (i, f, i, l, i, i)])
