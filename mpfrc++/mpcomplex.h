@@ -82,14 +82,14 @@ class mpcomplex {
     mpcomplex(const std::complex<double> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex(const std::complex<long double> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex(const mpreal &a, const mpreal &b);
-    mpcomplex(const mpreal &a, const double &b);
+    mpcomplex(const mpreal &a, const double &b); //this is required for initialization a variable with COMPLEX (a, 0.0) etc.
     mpcomplex(const double &a, const double &b, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex(const char *s, const char *t, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
 
     mpcomplex(const mpreal &a);
     mpcomplex(const mpfr_t a);
     mpcomplex(const mpf_t a);
-    mpcomplex(const double a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
+    mpcomplex(const double a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd); //this is required for Conversion from 'double' to non-scalar type 'COMPLEX' requested.
     ~mpcomplex();
 
     mpcomplex &operator=(const mpcomplex &a);
