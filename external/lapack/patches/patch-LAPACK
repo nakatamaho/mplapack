@@ -1,0 +1,208 @@
+
+--- lapack-3.9.1/SRC/dbdsvdx.f	2021-03-26 03:25:15.000000000 +0900
++++ lapack-3.9.1/SRC/dbdsvdx.f	2021-04-05 07:35:31.798984703 +0900
+@@ -345,7 +345,7 @@
+ *     Criterion for splitting is taken from DBDSQR when singular
+ *     values are computed to relative accuracy TOL. (See J. Demmel and
+ *     W. Kahan, Accurate singular values of bidiagonal matrices, SIAM
+-*     J. Sci. and Stat. Comput., 11:873–912, 1990.)
++*     J. Sci. and Stat. Comput., 11:873-912, 1990.)
+ *
+       TOL = MAX( TEN, MIN( HNDRD, EPS**MEIGTH ) )*EPS
+ *
+
+--- lapack-3.9.1/SRC/dlagtf.f	2021-03-26 03:25:15.000000000 +0900
++++ lapack-3.9.1/SRC/dlagtf.f	2021-04-05 07:35:06.713434410 +0900
+@@ -1,4 +1,4 @@
+-*> \brief \b DLAGTF computes an LU factorization of a matrix T-λI, where T is a general tridiagonal matrix, and λ a scalar, using partial pivoting with row interchanges.
++*> \brief \b DLAGTF computes an LU factorization of a matrix T-\lambda I, where T is a general tridiagonal matrix, and \lambda a scalar, using partial pivoting with row interchanges.
+ *
+ *  =========== DOCUMENTATION ===========
+ *
+
+--- lapack-3.9.1/SRC/dlagtm.f	2021-03-26 03:25:15.000000000 +0900
++++ lapack-3.9.1/SRC/dlagtm.f	2021-04-05 07:34:46.406615832 +0900
+@@ -1,4 +1,4 @@
+-*> \brief \b DLAGTM performs a matrix-matrix product of the form C = αAB+βC, where A is a tridiagonal matrix, B and C are rectangular matrices, and α and β are scalars, which may be 0, 1, or -1.
++*> \brief \b DLAGTM performs a matrix-matrix product of the form C = \alphba AB+ \beta C, where A is a tridiagonal matrix, B and C are rectangular matrices, and \alpha and \beta are scalars, which may be 0, 1, or -1.
+ *
+ *  =========== DOCUMENTATION ===========
+ *
+
+--- lapack-3.9.1/SRC/dlagts.f	2021-03-26 03:25:15.000000000 +0900
++++ lapack-3.9.1/SRC/dlagts.f	2021-04-05 07:40:36.525946422 +0900
+@@ -1,4 +1,4 @@
+-*> \brief \b DLAGTS solves the system of equations (T-λI)x = y or (T-λI)Tx = y,where T is a general tridiagonal matrix and λ a scalar, using the LU factorization computed by slagtf.
++*> \brief \b DLAGTS solves the system of equations (T-\lambda I)x = y or (T-\lambda I)Tx = y,where T is a general tridiagonal matrix and \lambda a scalar, using the LU factorization computed by slagtf.
+ *
+ *  =========== DOCUMENTATION ===========
+ *
+
+--- lapack-3.9.1/SRC/dlamswlq.f	2021-03-26 03:25:15.000000000 +0900
++++ lapack-3.9.1/SRC/dlamswlq.f	2021-04-05 07:34:06.653353414 +0900
+@@ -186,7 +186,7 @@
+ *> For more details of the overall algorithm, see the description of
+ *> Sequential TSQR in Section 2.2 of [1].
+ *>
+-*> [1] “Communication-Optimal Parallel and Sequential QR and LU Factorizations,”
++*> [1] "Communication-Optimal Parallel and Sequential QR and LU Factorizations,"
+ *>     J. Demmel, L. Grigori, M. Hoemmen, J. Langou,
+ *>     SIAM J. Sci. Comput, vol. 34, no. 1, 2012
+ *> \endverbatim
+
+--- lapack-3.9.1/SRC/dlamtsqr.f	2021-03-26 03:25:15.000000000 +0900
++++ lapack-3.9.1/SRC/dlamtsqr.f	2021-04-05 07:33:51.607956522 +0900
+@@ -187,7 +187,7 @@
+ *> For more details of the overall algorithm, see the description of
+ *> Sequential TSQR in Section 2.2 of [1].
+ *>
+-*> [1] “Communication-Optimal Parallel and Sequential QR and LU Factorizations,”
++*> [1] "Communication-Optimal Parallel and Sequential QR and LU Factorizations,"
+ *>     J. Demmel, L. Grigori, M. Hoemmen, J. Langou,
+ *>     SIAM J. Sci. Comput, vol. 34, no. 1, 2012
+ *> \endverbatim
+
+
+--- lapack-3.9.1/SRC/dlar1v.f	2021-03-26 03:25:15.000000000 +0900
++++ lapack-3.9.1/SRC/dlar1v.f	2021-04-05 07:20:10.315461185 +0900
+@@ -1,4 +1,4 @@
+-*> \brief \b DLAR1V computes the (scaled) r-th column of the inverse of the submatrix in rows b1 through bn of the tridiagonal matrix LDLT - λI.
++*> \brief \b DLAR1V computes the (scaled) r-th column of the inverse of the submatrix in rows b1 through bn of the tridiagonal matrix LDLT - \lambda I.
+ *
+ *  =========== DOCUMENTATION ===========
+ *
+
+
+--- lapack-3.9.1/SRC/dlarfx.f	2021-03-26 03:25:15.000000000 +0900
++++ lapack-3.9.1/SRC/dlarfx.f	2021-04-05 07:27:08.338429311 +0900
+@@ -1,4 +1,4 @@
+-*> \brief \b DLARFX applies an elementary reflector to a general rectangular matrix, with loop unrolling when the reflector has order ≤ 10.
++*> \brief \b DLARFX applies an elementary reflector to a general rectangular matrix, with loop unrolling when the reflector has order <=10.
+ *
+ *  =========== DOCUMENTATION ===========
+ *
+
+--- lapack-3.9.1/SRC/dlaswlq.f	2021-03-26 03:25:15.000000000 +0900
++++ lapack-3.9.1/SRC/dlaswlq.f	2021-04-05 07:26:42.348269072 +0900
+@@ -153,7 +153,7 @@
+ *> For more details of the overall algorithm, see the description of
+ *> Sequential TSQR in Section 2.2 of [1].
+ *>
+-*> [1] “Communication-Optimal Parallel and Sequential QR and LU Factorizations,”
++*> [1] "Communication-Optimal Parallel and Sequential QR and LU Factorizations,"
+ *>     J. Demmel, L. Grigori, M. Hoemmen, J. Langou,
+ *>     SIAM J. Sci. Comput, vol. 34, no. 1, 2012
+ *> \endverbatim
+
+--- lapack-3.9.1/SRC/dlatsqr.f	2021-03-26 03:25:15.000000000 +0900
++++ lapack-3.9.1/SRC/dlatsqr.f	2021-04-05 07:11:12.475801054 +0900
+@@ -155,9 +155,6 @@
+ *> For more details of the overall algorithm, see the description of
+ *> Sequential TSQR in Section 2.2 of [1].
+ *>
+-*> [1] “Communication-Optimal Parallel and Sequential QR and LU Factorizations,”
+-*>     J. Demmel, L. Grigori, M. Hoemmen, J. Langou,
+-*>     SIAM J. Sci. Comput, vol. 34, no. 1, 2012
+ *> \endverbatim
+ *>
+ *  =====================================================================
+
+--- lapack-3.9.1/SRC/dorhr_col.f	2021-03-26 03:25:15.000000000 +0900
++++ lapack-3.9.1/SRC/dorhr_col.f	2021-04-05 07:20:59.529347834 +0900
+@@ -131,7 +131,7 @@
+ *>
+ *>          D(i) is constructed as D(i) = -SIGN(Q_in_i(i,i)), where
+ *>          1 <= i <= min(M,N), and Q_in_i is Q_in after performing
+-*>          i-1 steps of “modified” Gaussian elimination.
++*>          i-1 steps of "modified" Gaussian elimination.
+ *>          See Further Details.
+ *> \endverbatim
+ *>
+
+--- lapack-3.9.1/SRC/zlagtm.f	2021-03-26 03:25:15.000000000 +0900
++++ lapack-3.9.1/SRC/zlagtm.f	2021-04-05 07:26:25.998867258 +0900
+@@ -1,4 +1,4 @@
+-*> \brief \b ZLAGTM performs a matrix-matrix product of the form C = αAB+βC, where A is a tridiagonal matrix, B and C are rectangular matrices, and α and β are scalars, which may be 0, 1, or -1.
++*> \brief \b ZLAGTM performs a matrix-matrix product of the form C = \alpha AB+ \beta C, where A is a tridiagonal matrix, B and C are rectangular matrices, and \alpha and \beta are scalars, which may be 0, 1, or -1.
+ *
+ *  =========== DOCUMENTATION ===========
+ *
+
+--- lapack-3.9.1/SRC/zlamswlq.f	2021-03-26 03:25:15.000000000 +0900
++++ lapack-3.9.1/SRC/zlamswlq.f	2021-04-05 07:25:33.806274580 +0900
+@@ -186,7 +186,7 @@
+ *> For more details of the overall algorithm, see the description of
+ *> Sequential TSQR in Section 2.2 of [1].
+ *>
+-*> [1] “Communication-Optimal Parallel and Sequential QR and LU Factorizations,”
++*> [1] "Communication-Optimal Parallel and Sequential QR and LU Factorizations,"
+ *>     J. Demmel, L. Grigori, M. Hoemmen, J. Langou,
+ *>     SIAM J. Sci. Comput, vol. 34, no. 1, 2012
+ *> \endverbatim
+
+--- lapack-3.9.1/SRC/zlamtsqr.f	2021-03-26 03:25:15.000000000 +0900
++++ lapack-3.9.1/SRC/zlamtsqr.f	2021-04-05 07:25:20.632679577 +0900
+@@ -187,7 +187,7 @@
+ *> For more details of the overall algorithm, see the description of
+ *> Sequential TSQR in Section 2.2 of [1].
+ *>
+-*> [1] “Communication-Optimal Parallel and Sequential QR and LU Factorizations,”
++*> [1] "Communication-Optimal Parallel and Sequential QR and LU Factorizations,"
+ *>     J. Demmel, L. Grigori, M. Hoemmen, J. Langou,
+ *>     SIAM J. Sci. Comput, vol. 34, no. 1, 2012
+ *> \endverbatim
+
+--- lapack-3.9.1/SRC/zlar1v.f	2021-03-26 03:25:15.000000000 +0900
++++ lapack-3.9.1/SRC/zlar1v.f	2021-04-05 07:24:58.106680920 +0900
+@@ -1,4 +1,4 @@
+-*> \brief \b ZLAR1V computes the (scaled) r-th column of the inverse of the submatrix in rows b1 through bn of the tridiagonal matrix LDLT - λI.
++*> \brief \b ZLAR1V computes the (scaled) r-th column of the inverse of the submatrix in rows b1 through bn of the tridiagonal matrix LDLT - \lambda I.
+ *
+ *  =========== DOCUMENTATION ===========
+ *
+
+--- lapack-3.9.1/SRC/zlarfx.f	2021-03-26 03:25:15.000000000 +0900
++++ lapack-3.9.1/SRC/zlarfx.f	2021-04-05 07:24:48.949893677 +0900
+@@ -1,4 +1,4 @@
+-*> \brief \b ZLARFX applies an elementary reflector to a general rectangular matrix, with loop unrolling when the reflector has order ≤ 10.
++*> \brief \b ZLARFX applies an elementary reflector to a general rectangular matrix, with loop unrolling when the reflector has order ~ 10.
+ *
+ *  =========== DOCUMENTATION ===========
+ *
+
+--- lapack-3.9.1/SRC/zlaswlq.f	2021-03-26 03:25:15.000000000 +0900
++++ lapack-3.9.1/SRC/zlaswlq.f	2021-04-05 07:21:17.907346739 +0900
+@@ -153,7 +153,7 @@
+ *> For more details of the overall algorithm, see the description of
+ *> Sequential TSQR in Section 2.2 of [1].
+ *>
+-*> [1] “Communication-Optimal Parallel and Sequential QR and LU Factorizations,”
++*> [1] "Communication-Optimal Parallel and Sequential QR and LU Factorizations,"
+ *>     J. Demmel, L. Grigori, M. Hoemmen, J. Langou,
+ *>     SIAM J. Sci. Comput, vol. 34, no. 1, 2012
+ *> \endverbatim
+
+--- lapack-3.9.1/SRC/zlatsqr.f	2021-03-26 03:25:15.000000000 +0900
++++ lapack-3.9.1/SRC/zlatsqr.f	2021-04-05 07:18:39.985021204 +0900
+@@ -155,7 +155,7 @@
+ *> For more details of the overall algorithm, see the description of
+ *> Sequential TSQR in Section 2.2 of [1].
+ *>
+-*> [1] “Communication-Optimal Parallel and Sequential QR and LU Factorizations,”
++*> [1] "Communication-Optimal Parallel and Sequential QR and LU Factorizations,"
+ *>     J. Demmel, L. Grigori, M. Hoemmen, J. Langou,
+ *>     SIAM J. Sci. Comput, vol. 34, no. 1, 2012
+ *> \endverbatim
+
+--- lapack-3.9.1/SRC/zunhr_col.f	2021-03-26 03:25:15.000000000 +0900
++++ lapack-3.9.1/SRC/zunhr_col.f	2021-04-05 07:17:09.844958212 +0900
+@@ -131,7 +131,7 @@
+ *>
+ *>          D(i) is constructed as D(i) = -SIGN(Q_in_i(i,i)), where
+ *>          1 <= i <= min(M,N), and Q_in_i is Q_in after performing
+-*>          i-1 steps of “modified” Gaussian elimination.
++*>          i-1 steps of "modified" Gaussian elimination.
+ *>          See Further Details.
+ *> \endverbatim
+ *>
+
