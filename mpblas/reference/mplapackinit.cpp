@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012
+ * Copyright (c) 2012-2021
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -26,103 +26,87 @@
  *
  */
 
-#include <stdio.h>
 #include <mpblas.h>
+#include <stdio.h>
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-void __attribute__ ((constructor)) mplapack_initialize_gmp(void);
-void __attribute__ ((destructor)) mplapack_finalize_gmp(void);
-void mplapack_initialize_gmp(void)
-{
+void __attribute__((constructor)) mplapack_initialize_gmp(void);
+void __attribute__((destructor)) mplapack_finalize_gmp(void);
+void mplapack_initialize_gmp(void) {
     char *p = getenv("MPLAPACK_GMP_PRECISION");
     if (p) {
-	mpf_set_default_prec(atoi(p));
+        mpf_set_default_prec(atoi(p));
     } else
-	mpf_set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
+        mpf_set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
 }
 
-void mplapack_finalize_gmp(void)
-{
-    //no finalization needed
+void mplapack_finalize_gmp(void) {
+    // no finalization needed
 }
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-void __attribute__ ((constructor)) mplapack_initialize_mpfr(void);
-void __attribute__ ((destructor)) mplapack_finalize_mpfr(void);
+void __attribute__((constructor)) mplapack_initialize_mpfr(void);
+void __attribute__((destructor)) mplapack_finalize_mpfr(void);
 
-void mplapack_initialize_mpfr(void)
-{
+void mplapack_initialize_mpfr(void) {
     char *p = getenv("MPLAPACK_MPFR_PRECISION");
     if (p) {
-	mpreal::set_default_prec(atoi(p));
-	mpcomplex::set_default_prec(atoi(p));
+        mpreal::set_default_prec(atoi(p));
+        mpcomplex::set_default_prec(atoi(p));
     } else {
-	mpreal::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
-	mpcomplex::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
+        mpreal::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
+        mpcomplex::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
     }
 }
 
-void mplapack_finalize_mpfr(void)
-{
-    //no finalization needed
+void mplapack_finalize_mpfr(void) {
+    // no finalization needed
 }
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_QD___ || defined ___MPLAPACK_BUILD_WITH_DD___
-void __attribute__ ((constructor)) mplapack_initialize_qd(void);
-void __attribute__ ((destructor)) mplapack_finalize_qd(void);
+void __attribute__((constructor)) mplapack_initialize_qd(void);
+void __attribute__((destructor)) mplapack_finalize_qd(void);
 
 static unsigned int oldcw;
-void mplapack_initialize_qd(void)
-{
-    fpu_fix_start(&oldcw);
-}
+void mplapack_initialize_qd(void) { fpu_fix_start(&oldcw); }
 
-void mplapack_finalize_qd(void)
-{
-    fpu_fix_end(&oldcw);
-}
+void mplapack_finalize_qd(void) { fpu_fix_end(&oldcw); }
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
-void __attribute__ ((constructor)) mplapack_initialize_double(void);
-void __attribute__ ((destructor)) mplapack_finalize_double(void);
-void mplapack_initialize_double(void)
-{
-    //no initializization needed
+void __attribute__((constructor)) mplapack_initialize_double(void);
+void __attribute__((destructor)) mplapack_finalize_double(void);
+void mplapack_initialize_double(void) {
+    // no initializization needed
 }
 
-void mplapack_finalize_double(void)
-{
-    //no finalization needed
+void mplapack_finalize_double(void) {
+    // no finalization needed
 }
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-void __attribute__ ((constructor)) mplapack_initialize__Float64x(void);
-void __attribute__ ((destructor)) mplapack_finalize__Float64x(void);
-void mplapack_initialize__Float64x(void)
-{
-    //no initializization needed
+void __attribute__((constructor)) mplapack_initialize__Float64x(void);
+void __attribute__((destructor)) mplapack_finalize__Float64x(void);
+void mplapack_initialize__Float64x(void) {
+    // no initializization needed
 }
 
-void mplapack_finalize__Float64x(void)
-{
-    //no finalization needed
+void mplapack_finalize__Float64x(void) {
+    // no finalization needed
 }
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-void __attribute__ ((constructor)) mplapack_initialize_binary128(void);
-void __attribute__ ((destructor)) mplapack_finalize_binary128(void);
-void mplapack_initialize__Float128(void)
-{
-    //no initializization needed
+void __attribute__((constructor)) mplapack_initialize_binary128(void);
+void __attribute__((destructor)) mplapack_finalize_binary128(void);
+void mplapack_initialize__Float128(void) {
+    // no initializization needed
 }
 
-void mplapack_finalize__Float128(void)
-{
-    //no finalization needed
+void mplapack_finalize__Float128(void) {
+    // no finalization needed
 }
 #endif
