@@ -30,8 +30,7 @@
 
 COMPLEX
 Cdotc(INTEGER const &n, COMPLEX *zx, INTEGER const &incx, COMPLEX *zy, INTEGER const &incy) {
-    REAL zero = 0.0;
-    COMPLEX return_value = (zero, zero);
+    COMPLEX return_value = (0.0, 0.0);
     //
     //  -- Reference BLAS level1 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -48,8 +47,8 @@ Cdotc(INTEGER const &n, COMPLEX *zx, INTEGER const &incx, COMPLEX *zy, INTEGER c
     //     ..
     //     .. Intrinsic Functions ..
     //     ..
-    COMPLEX ztemp = (zero, zero);
-    return_value = (zero, zero);
+    COMPLEX ztemp = (0.0, 0.0);
+    return_value = (0.0, 0.0);
     if (n <= 0) {
         return return_value;
     }

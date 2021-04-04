@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2021
  *	Nakata, Maho
  * 	All rights reserved.
- *
- * $Id: mpblas.h,v 1.17 2010/08/07 03:15:46 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -87,7 +85,6 @@ typedef std::complex<_Float64x> COMPLEX;
 #define Mxerbla  Mxerbla__Float64x
 #endif
 
-
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
 #include <mpblas__Float128.h>
 typedef mplapackint INTEGER;
@@ -103,4 +100,13 @@ typedef std::complex<_Float128> COMPLEX;
 using std::max;
 using std::min;
 
+inline INTEGER mod (INTEGER a, INTEGER b)
+{
+  return a % b;
+}
+
+inline REAL pow2 (REAL a)
+{
+  return a * a;
+}
 #endif

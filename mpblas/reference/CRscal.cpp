@@ -50,13 +50,12 @@ void CRscal(INTEGER const &n, REAL const &da, COMPLEX *zx, INTEGER const &incx) 
     }
     INTEGER i = 0;
     INTEGER nincx = 0;
-    REAL zero = 0.0;
     if (incx == 1) {
         //
         //        code for increment equal to 1
         //
         for (i = 1; i <= n; i = i + 1) {
-            zx[i - 1] = COMPLEX(da, zero) * zx[i - 1];
+            zx[i - 1] = COMPLEX(da, 0.0) * zx[i - 1];
         }
     } else {
         //
@@ -64,7 +63,7 @@ void CRscal(INTEGER const &n, REAL const &da, COMPLEX *zx, INTEGER const &incx) 
         //
         nincx = n * incx;
         for (i = 1; i <= nincx; i = i + incx) {
-            zx[i - 1] = COMPLEX(da, zero) * zx[i - 1];
+            zx[i - 1] = COMPLEX(da, 0.0) * zx[i - 1];
         }
     }
 }
