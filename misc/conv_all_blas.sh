@@ -4,9 +4,11 @@ FILES=`ls ~/mplapack/external/lapack/work/internal/lapack-3.9.1/BLAS/SRC/d*.f ~/
 rm -f BLAS_LIST
 echo "sed \\" >> BLAS_LIST
 for _file in $FILES; do
-oldfilename=`basename $_file | sed -e 's/\.f$//'`
+oldfilename=`basename $_file | sed -e 's/\.f$//'` 
+oldfilenameUP=`basename $_file | sed -e 's/\.f$//' |  tr [a-z] [A-Z] `
 newfilename=`basename $_file | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^iz/iC/' -e 's/\.f$//'`
 echo "-e 's/$oldfilename/$newfilename/g' \\" >> BLAS_LIST
+echo "-e 's/$oldfilenameUP/$newfilename/g' \\" >> BLAS_LIST
 done
 echo "-e 's///g'" >> BLAS_LIST
 
