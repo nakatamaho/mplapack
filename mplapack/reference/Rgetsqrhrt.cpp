@@ -93,7 +93,7 @@ void Rgetsqrhrt(INTEGER const &m, INTEGER const &n, INTEGER const &mb1, INTEGER 
             //
             nb1local = min(nb1, n);
             //
-            num_all_row_blocks = max((INTEGER)1, ceiling(m - n.real() / mb1 - n.real()));
+            num_all_row_blocks = max((INTEGER)1, ceil(REAL(m - n) / REAL(mb1 - n)));
             //
             //           T array in TSQR.
             //
