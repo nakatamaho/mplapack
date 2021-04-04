@@ -562,6 +562,12 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
     had_str_concat = mutable(value=False)
   from fable.tokenization import group_power
   for tok in group_power(tokens=tokens):
+    if (tok.value == "dble"):
+      final = "MPLAPACK_REAL"
+      rapp(final)
+    if (tok.value == "dimag"):
+      final = "MPLAPACK_IMAG"
+      rapp(final)
     if (tok.is_seq()):
       if (    len(tok.value) == 2
           and tok.value[0].is_op_with(value="*")
@@ -581,7 +587,7 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
         else:
           op = "(cmn"
       else:
-        if (prev_tok is not None and prev_tok.is_identifier() and prev_tok.value != "min" and  prev_tok.value != "max" and prev_tok.value != "abs"  and prev_tok.value != "sqrt" and prev_tok.value != "log2" and prev_tok.value != "pow2" and prev_tok.value != "dlamch" and prev_tok.value != "int" and prev_tok.value != "lsame" and prev_tok.value != "ddot" and prev_tok.value != "pow2" and prev_tok.value != "disnan" and prev_tok.value != "mod" and prev_tok.value != "dabs" ):
+        if (prev_tok is not None and prev_tok.is_identifier() and prev_tok.value != "min" and prev_tok.value != "dble" and prev_tok.value != "dimag" and prev_tok.value != "max" and prev_tok.value != "abs"  and prev_tok.value != "sqrt" and prev_tok.value != "log2" and prev_tok.value != "pow2" and prev_tok.value != "dlamch" and prev_tok.value != "int" and prev_tok.value != "lsame" and prev_tok.value != "ddot" and prev_tok.value != "pow2" and prev_tok.value != "disnan" and prev_tok.value != "mod" and prev_tok.value != "dabs" ):
           a=convert_tokens(conv_info=conv_info,tokens=tok.value,commas=True)
           aa = a.split(',')
           if (len(aa)==1):  # one dimensional array
@@ -625,6 +631,30 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
               __final = _final.replace(remove1,'')
               rapp(__final)
               continue
+        elif (prev_tok is not None and prev_tok.is_identifier() and prev_tok.value == "dble"):
+          a=convert_tokens(conv_info=conv_info,tokens=tok.value,commas=True)
+          op = "("
+          ed = ")"
+          ed2 = ".real()"
+          aa = a.split(',')
+          if (len(aa)==1):
+            final = a + ed2
+          else:
+            final = op + a + ed + ed2
+          rapp(final)
+          continue
+        elif (prev_tok is not None and prev_tok.is_identifier() and prev_tok.value == "dimag"):
+          a=convert_tokens(conv_info=conv_info,tokens=tok.value,commas=True)
+          op = "("
+          ed = ")"
+          ed2 = ".imag()"
+          aa = a.split(',')
+          if (len(aa)==1):
+            final = a + ed2
+          else:
+            final = op + a + ed + ed2
+          rapp(final)
+          continue
         else: # not an array
           op = "("
           ed =")"

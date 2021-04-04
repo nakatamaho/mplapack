@@ -5,8 +5,8 @@ rm -f BLAS_LIST
 echo "sed \\" >> BLAS_LIST
 for _file in $FILES; do
 oldfilename=`basename $_file | sed -e 's/\.f$//'` 
-oldfilenameUP=`basename $_file | sed -e 's/\.f$//' |  tr [a-z] [A-Z] `
-newfilename=`basename $_file | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^iz/iC/' -e 's/\.f$//'`
+oldfilenameUP=`basename $_file | sed -e 's/\.f$//' | tr a-z A-Z`
+newfilename=`basename $_file | sed -e 's/^dcabs/RCabs/g' -e 's/^dzasum/RCasum/g' -e 's/^dznrm2/RCnrm2/g' | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^iz/iC/' -e 's/\.f$//'`
 echo "-e 's/$oldfilename/$newfilename/g' \\" >> BLAS_LIST
 echo "-e 's/$oldfilenameUP/$newfilename/g' \\" >> BLAS_LIST
 done
@@ -15,9 +15,10 @@ echo "-e 's///g'" >> BLAS_LIST
 i=0
 for _file in $FILES; do
 bash ~/mplapack/misc/fem_convert_blas.sh $_file
-newfilename=`basename $_file | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^iz/iC/' -e 's/\.f$//'`
+newfilename=`basename $_file | | sed -e 's/^dcabs/RCabs/g' -e 's/^dzasum/RCasum/g' -e 's/^dznrm2/RCnrm2/g' | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^iz/iC/' -e 's/\.f$//'`
 cat ${newfilename}.cpp | bash BLAS_LIST > ${newfilename}.cpp_ 
 mv ${newfilename}.cpp_  ${newfilename}.cpp
+/usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' ${newfilename}.cpp |  tr ':' ' ' | sed -e 's/^typename //' > ${newfilename}.hpp
 if [ $i -ge 10 ]; then
 exit
 fi
