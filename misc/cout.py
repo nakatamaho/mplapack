@@ -599,7 +599,7 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
         else:
           op = "(cmn"
       else:
-        if (prev_tok is not None and prev_tok.is_identifier() and prev_tok.value != "min" and prev_tok.value != "dsign" and prev_tok.value != "dsqrt" and prev_tok.value != "dble" and prev_tok.value != "dimag" and prev_tok.value != "max" and prev_tok.value != "abs"  and prev_tok.value != "sqrt" and prev_tok.value != "log2" and prev_tok.value != "pow2" and prev_tok.value != "dlamch" and prev_tok.value != "int" and prev_tok.value != "lsame" and prev_tok.value != "ddot" and prev_tok.value != "pow2" and prev_tok.value != "disnan" and prev_tok.value != "mod" and prev_tok.value != "dabs" and prev_tok.value != "cdabs" and prev_tok.value != "dconjg" and prev_tok.value != "dcabs1" and prev_tok.value != "dcmplx"):
+        if (prev_tok is not None and prev_tok.is_identifier() and prev_tok.value != "min" and prev_tok.value != "dsign" and prev_tok.value != "dsqrt" and prev_tok.value != "dble" and prev_tok.value != "dimag" and prev_tok.value != "max" and prev_tok.value != "abs"  and prev_tok.value != "sqrt" and prev_tok.value != "log2" and prev_tok.value != "pow2" and prev_tok.value != "dlamch" and prev_tok.value != "int" and prev_tok.value != "lsame" and prev_tok.value != "ddot" and prev_tok.value != "pow2" and prev_tok.value != "disnan" and prev_tok.value != "mod" and prev_tok.value != "dabs" and prev_tok.value != "cdabs" and prev_tok.value != "dconjg" and prev_tok.value != "dcabs1" and prev_tok.value != "dcmplx" and prev_tok.value != "ceiling"):
           a=convert_tokens(conv_info=conv_info,tokens=tok.value,commas=True)
           aa = a.split(',')
           if (len(aa)==1):  # one dimensional array

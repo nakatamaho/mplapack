@@ -28,5 +28,5 @@ mv ${newfilename}.cpp_  ${newfilename}.cpp
 rm ${oldfilename}.cpp
 done
 patch -p0 < patch
-rm BLAS_LIST
+cp BLAS_LIST ~/mplapack/misc/
 #cat ~/mplapack/misc/header_blas *hpp > mpblas.h
