@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Chpr2(const char *uplo, INTEGER const &n, COMPLEX const &alpha, COMPLEX *x, INTEGER const &incx, COMPLEX *y, INTEGER const &incy, COMPLEX *ap) {
+void Chpr2(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *ap) {
     //
     //  -- Reference BLAS level2 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Rger(INTEGER const &m, INTEGER const &n, REAL const &alpha, REAL *x, INTEGER const &incx, REAL *y, INTEGER const &incy, REAL *a, INTEGER const &lda) {
+void Rger(INTEGER const m, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *a, INTEGER const lda) {
     //
     //  -- Reference BLAS level2 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

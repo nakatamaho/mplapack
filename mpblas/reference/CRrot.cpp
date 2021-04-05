@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void CRrot(INTEGER const &n, COMPLEX *zx, INTEGER const &incx, COMPLEX *zy, INTEGER const &incy, REAL const &c, REAL const &s) {
+void CRrot(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy, REAL const c, REAL const s) {
     //
     //  -- Reference BLAS level1 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

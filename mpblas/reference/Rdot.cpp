@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-REAL Rdot(INTEGER const &n, REAL *dx, INTEGER const &incx, REAL *dy, INTEGER const &incy) {
+REAL Rdot(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy) {
     REAL return_value = 0.0;
     //
     //  -- Reference BLAS level1 routine --

@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const &dy1, REAL *dparam) {
+void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
     //
     //  -- Reference BLAS level1 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

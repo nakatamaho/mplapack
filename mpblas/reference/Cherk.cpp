@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Cherk(const char *uplo, const char *trans, INTEGER const &n, INTEGER const &k, REAL const &alpha, COMPLEX *a, INTEGER const &lda, REAL const &beta, COMPLEX *c, INTEGER const &ldc) {
+void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, COMPLEX *a, INTEGER const lda, REAL const beta, COMPLEX *c, INTEGER const ldc) {
     //
     //  -- Reference BLAS level3 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

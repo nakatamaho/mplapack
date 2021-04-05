@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Cscal(INTEGER const &n, COMPLEX const &za, COMPLEX *zx, INTEGER const &incx) {
+void Cscal(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx) {
     //
     //  -- Reference BLAS level1 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

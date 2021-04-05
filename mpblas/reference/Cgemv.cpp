@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Cgemv(const char *trans, INTEGER const &m, INTEGER const &n, COMPLEX const &alpha, COMPLEX *a, INTEGER const &lda, COMPLEX *x, INTEGER const &incx, COMPLEX const &beta, COMPLEX *y, INTEGER const &incy) {
+void Cgemv(const char *trans, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) {
     //
     //  -- Reference BLAS level2 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

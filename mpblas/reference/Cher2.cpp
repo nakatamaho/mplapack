@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Cher2(const char *uplo, INTEGER const &n, COMPLEX const &alpha, COMPLEX *x, INTEGER const &incx, COMPLEX *y, INTEGER const &incy, COMPLEX *a, INTEGER const &lda) {
+void Cher2(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *a, INTEGER const lda) {
     //
     //  -- Reference BLAS level2 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

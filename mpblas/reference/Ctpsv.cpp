@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Ctpsv(const char *uplo, const char *trans, const char *diag, INTEGER const &n, COMPLEX *ap, COMPLEX *x, INTEGER const &incx) {
+void Ctpsv(const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *ap, COMPLEX *x, INTEGER const incx) {
     //
     //  -- Reference BLAS level2 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Crotg(COMPLEX &ca, COMPLEX const &cb, REAL &c, COMPLEX &s) {
+void Crotg(COMPLEX &ca, COMPLEX const cb, REAL &c, COMPLEX &s) {
     //
     //  -- Reference BLAS level1 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

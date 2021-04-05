@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Rsyr(const char *uplo, INTEGER const &n, REAL const &alpha, REAL *x, INTEGER const &incx, REAL *a, INTEGER const &lda) {
+void Rsyr(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *a, INTEGER const lda) {
     //
     //  -- Reference BLAS level2 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

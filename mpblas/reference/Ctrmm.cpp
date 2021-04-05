@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Ctrmm(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const &m, INTEGER const &n, COMPLEX const &alpha, COMPLEX *a, INTEGER const &lda, COMPLEX *b, INTEGER const &ldb) {
+void Ctrmm(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb) {
     //
     //  -- Reference BLAS level3 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-REAL RCabs1(COMPLEX const &z) {
+REAL RCabs1(COMPLEX const z) {
     REAL return_value = 0.0;
     //
     //  -- Reference BLAS level1 routine --

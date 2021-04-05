@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Csyrk(const char *uplo, const char *trans, INTEGER const &n, INTEGER const &k, COMPLEX const &alpha, COMPLEX *a, INTEGER const &lda, COMPLEX const &beta, COMPLEX *c, INTEGER const &ldc) {
+void Csyrk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX const beta, COMPLEX *c, INTEGER const ldc) {
     //
     //  -- Reference BLAS level3 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

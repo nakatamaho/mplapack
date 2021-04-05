@@ -29,7 +29,7 @@
 #include <mpblas.h>
 
 COMPLEX
-Cdotu(INTEGER const &n, COMPLEX *zx, INTEGER const &incx, COMPLEX *zy, INTEGER const &incy) {
+Cdotu(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy) {
     COMPLEX return_value = (0.0, 0.0);
     //
     //  -- Reference BLAS level1 routine --

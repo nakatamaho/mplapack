@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Rtrmv(const char *uplo, const char *trans, const char *diag, INTEGER const &n, REAL *a, INTEGER const &lda, REAL *x, INTEGER const &incx) {
+void Rtrmv(const char *uplo, const char *trans, const char *diag, INTEGER const n, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx) {
     //
     //  -- Reference BLAS level2 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

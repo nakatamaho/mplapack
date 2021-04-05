@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Chpmv(const char *uplo, INTEGER const &n, COMPLEX const &alpha, COMPLEX *ap, COMPLEX *x, INTEGER const &incx, COMPLEX const &beta, COMPLEX *y, INTEGER const &incy) {
+void Chpmv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *ap, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) {
     //
     //  -- Reference BLAS level2 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

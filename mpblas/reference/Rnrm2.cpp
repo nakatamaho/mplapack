@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-REAL Rnrm2(INTEGER const &n, REAL *x, INTEGER const &incx) {
+REAL Rnrm2(INTEGER const n, REAL *x, INTEGER const incx) {
     REAL return_value = 0.0;
     //
     //  -- Reference BLAS level1 routine --

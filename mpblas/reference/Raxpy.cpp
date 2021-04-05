@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Raxpy(INTEGER const &n, REAL const &da, REAL *dx, INTEGER const &incx, REAL *dy, INTEGER const &incy) {
+void Raxpy(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy) {
     //
     //  -- Reference BLAS level1 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

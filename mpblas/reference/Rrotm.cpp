@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Rrotm(INTEGER const &n, REAL *dx, INTEGER const &incx, REAL *dy, INTEGER const &incy, REAL *dparam) {
+void Rrotm(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL *dparam) {
     //
     //  -- Reference BLAS level1 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

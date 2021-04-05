@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Rsymv(const char *uplo, INTEGER const &n, REAL const &alpha, REAL *a, INTEGER const &lda, REAL *x, INTEGER const &incx, REAL const &beta, REAL *y, INTEGER const &incy) {
+void Rsymv(const char *uplo, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) {
     //
     //  -- Reference BLAS level2 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

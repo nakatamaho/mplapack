@@ -29,7 +29,7 @@
 #include <mpblas.h>
 
 INTEGER
-iRamax(INTEGER const &n, REAL *dx, INTEGER const &incx) {
+iRamax(INTEGER const n, REAL *dx, INTEGER const incx) {
     INTEGER return_value = 0;
     //
     //  -- Reference BLAS level1 routine --

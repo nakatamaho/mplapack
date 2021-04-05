@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Cswap(INTEGER const &n, COMPLEX *zx, INTEGER const &incx, COMPLEX *zy, INTEGER const &incy) {
+void Cswap(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy) {
     //
     //  -- Reference BLAS level1 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

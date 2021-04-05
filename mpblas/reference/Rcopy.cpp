@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Rcopy(INTEGER const &n, REAL *dx, INTEGER const &incx, REAL *dy, INTEGER const &incy) {
+void Rcopy(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy) {
     //
     //  -- Reference BLAS level1 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

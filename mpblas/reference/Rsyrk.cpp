@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Rsyrk(const char *uplo, const char *trans, INTEGER const &n, INTEGER const &k, REAL const &alpha, REAL *a, INTEGER const &lda, REAL const &beta, REAL *c, INTEGER const &ldc) {
+void Rsyrk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL const beta, REAL *c, INTEGER const ldc) {
     //
     //  -- Reference BLAS level3 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

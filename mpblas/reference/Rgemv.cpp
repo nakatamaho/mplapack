@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Rgemv(const char *trans, INTEGER const &m, INTEGER const &n, REAL const &alpha, REAL *a, INTEGER const &lda, REAL *x, INTEGER const &incx, REAL const &beta, REAL *y, INTEGER const &incy) {
+void Rgemv(const char *trans, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) {
     //
     //  -- Reference BLAS level2 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Ccopy(INTEGER const &n, COMPLEX *zx, INTEGER const &incx, COMPLEX *zy, INTEGER const &incy) {
+void Ccopy(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy) {
     //
     //  -- Reference BLAS level1 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
