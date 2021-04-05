@@ -35,7 +35,7 @@ qd_real Rdot_omp(mplapackint n, qd_real * dx, mplapackint incx, qd_real * dy, mp
 
 #define SINGLEOROMP 1000
 
-qd_real Rdot(mplapackint n, qd_real * dx, mplapackint incx, qd_real * dy, mplapackint incy)
+qd_real Rdot(mplapackint const &n, qd_real *dx, mplapackint const &incx, qd_real *dy, mplapackint const &incy)
 {
     mplapackint ix = 0;
     mplapackint iy = 0;

@@ -35,7 +35,7 @@ mpf_class Rdot_omp(mplapackint n, mpf_class * dx, mplapackint incx, mpf_class * 
 
 #define SINGLEOROMP 1000
 
-mpf_class Rdot(mplapackint n, mpf_class * dx, mplapackint incx, mpf_class * dy, mplapackint incy)
+mpf_class Rdot(mplapackint const &n, mpf_class *dx, mplapackint const &incx, mpf_class *dy, mplapackint const &incy)
 {
     mplapackint ix = 0;
     mplapackint iy = 0;

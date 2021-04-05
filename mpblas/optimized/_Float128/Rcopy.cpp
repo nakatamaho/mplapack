@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2011, 2012
+ * Copyright (c) 2010, 2011, 2012-2021
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -79,7 +79,7 @@ void Rcopy_omp(mplapackint n, _Float128 * dx, mplapackint incx, _Float128 * dy, 
 
 #define SINGLEOROMP 1000
 
-void Rcopy(mplapackint n, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy)
+void Rcopy(mplapackint const &n, _Float128 *dx, mplapackint const &incx, _Float128 *dy, mplapackint const &incy)
 {
     mplapackint ix = 0;
     mplapackint iy = 0;

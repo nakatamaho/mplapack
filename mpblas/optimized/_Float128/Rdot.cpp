@@ -35,7 +35,7 @@ _Float128 Rdot_omp(mplapackint n, _Float128 * dx, mplapackint incx, _Float128 * 
 
 #define SINGLEOROMP 1000
 
-_Float128 Rdot(mplapackint n, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy)
+_Float128 Rdot(mplapackint const &n, _Float128 *dx, mplapackint const &incx, _Float128 *dy, mplapackint const &incy)
 {
     mplapackint ix = 0;
     mplapackint iy = 0;

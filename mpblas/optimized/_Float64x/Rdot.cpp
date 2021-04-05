@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2012
+ * Copyright (c) 2008-2012,2021
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -35,7 +35,7 @@ _Float64x Rdot_omp(mplapackint n, _Float64x * dx, mplapackint incx, _Float64x * 
 
 #define SINGLEOROMP 1000
 
-_Float64x Rdot(mplapackint n, _Float64x * dx, mplapackint incx, _Float64x * dy, mplapackint incy)
+_Float64x Rdot(mplapackint const &n, _Float64x *dx, mplapackint const &incx, _Float64x *dy, mplapackint const &incy)
 {
     mplapackint ix = 0;
     mplapackint iy = 0;

@@ -35,7 +35,7 @@ void Raxpy_ref(mplapackint n, dd_real da, dd_real * dx, mplapackint incx, dd_rea
 
 #define SINGLEOROMP 1000
 
-void Raxpy(mplapackint n, dd_real da, dd_real * dx, mplapackint incx, dd_real * dy, mplapackint incy)
+void Raxpy(mplapackint const &n, dd_real const &da, dd_real *dx, mplapackint const &incx, dd_real *dy, mplapackint const &incy)
 {
     dd_real Zero = 0.0;
     mplapackint i;

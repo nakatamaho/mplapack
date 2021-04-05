@@ -38,7 +38,7 @@ void Rgemm_ref(const char *transa, const char *transb, mplapackint m, mplapackin
 
 #define SINGLEOROMP 1000000
 
-void Rgemm(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, dd_real alpha, dd_real * A, mplapackint lda, dd_real * B, mplapackint ldb, dd_real beta, dd_real * C, mplapackint ldc)
+void Rgemm(const char *transa, const char *transb, mplapackint const &m, mplapackint const &n, mplapackint const &k, dd_real const &alpha, dd_real *A, mplapackint const &lda, dd_real *B, mplapackint const &ldb, dd_real const &beta, dd_real *C, mplapackint const &ldc)
 {
     mplapackint i, j, l, nota, notb, nrowa, ncola, nrowb, info;
     dd_real temp;

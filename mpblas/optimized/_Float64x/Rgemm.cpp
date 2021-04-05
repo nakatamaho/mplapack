@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2012
+ * Copyright (c) 2008-2012,2021
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -38,7 +38,7 @@ void Rgemm_ref(const char *transa, const char *transb, mplapackint m, mplapackin
 
 #define SINGLEOROMP 1000000
 
-void Rgemm(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, _Float64x alpha, _Float64x * A, mplapackint lda, _Float64x * B, mplapackint ldb, _Float64x beta, _Float64x * C, mplapackint ldc)
+void Rgemm(const char *transa, const char *transb, mplapackint const &m, mplapackint const &n, mplapackint const &k, _Float64x const &alpha, _Float64x *A, mplapackint const &lda, _Float64x *B, mplapackint const &ldb, _Float64x const &beta, _Float64x *C, mplapackint const &ldc)
 {
     mplapackint i, j, l, nota, notb, nrowa, ncola, nrowb, info;
     _Float64x temp;
