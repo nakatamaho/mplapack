@@ -35,7 +35,7 @@ dd_real Rdot_omp(mplapackint n, dd_real * dx, mplapackint incx, dd_real * dy, mp
 
 #define SINGLEOROMP 1000
 
-dd_real Rdot(mplapackint const &n, dd_real *dx, mplapackint const &incx, dd_real *dy, mplapackint const &incy)
+dd_real Rdot(mplapackint const n, dd_real *dx, mplapackint const incx, dd_real *dy, mplapackint const incy)
 {
     mplapackint ix = 0;
     mplapackint iy = 0;

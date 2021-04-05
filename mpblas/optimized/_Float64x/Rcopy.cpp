@@ -79,7 +79,7 @@ void Rcopy_omp(mplapackint n, _Float64x * dx, mplapackint incx, _Float64x * dy, 
 
 #define SINGLEOROMP 1000
 
-void Rcopy(mplapackint const &n, _Float64x *dx, mplapackint const &incx, _Float64x *dy, mplapackint const &incy)
+void Rcopy(mplapackint const n, _Float64x *dx, mplapackint const incx, _Float64x *dy, mplapackint const incy)
 {
     mplapackint ix = 0;
     mplapackint iy = 0;

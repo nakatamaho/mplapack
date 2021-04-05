@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,7 +27,6 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
 
 void Rpotrs(const char *uplo, INTEGER const &n, INTEGER const &nrhs, REAL *a, INTEGER const &lda, REAL *b, INTEGER const &ldb, INTEGER &info) {
     //

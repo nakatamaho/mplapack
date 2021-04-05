@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,7 +27,6 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
 
 void Rpotf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INTEGER &info) {
     bool upper = false;
@@ -90,7 +89,7 @@ void Rpotf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INT
             //           Compute U(J,J) and test for non-positive-definiteness.
             //
             ajj = a[(j - 1) + (j - 1) * lda] - Rdot(j - 1, a[(j - 1) * lda], 1, a[(j - 1) * lda], 1);
-            if (ajj <= zero || Risnan(ajj)) {
+            if (ajj <= zero || disnan(ajj)) {
                 a[(j - 1) + (j - 1) * lda] = ajj;
                 goto statement_30;
             }
@@ -113,7 +112,7 @@ void Rpotf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INT
             //           Compute L(J,J) and test for non-positive-definiteness.
             //
             ajj = a[(j - 1) + (j - 1) * lda] - Rdot(j - 1, a[(j - 1)], lda, a[(j - 1)], lda);
-            if (ajj <= zero || Risnan(ajj)) {
+            if (ajj <= zero || disnan(ajj)) {
                 a[(j - 1) + (j - 1) * lda] = ajj;
                 goto statement_30;
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,7 +27,6 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
 
 INTEGER
 iCmax1(INTEGER const &n, COMPLEX *zx, INTEGER const &incx) {

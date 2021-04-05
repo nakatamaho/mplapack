@@ -24,6 +24,8 @@ oldfilename=`basename $_file | sed -e 's/\.f$//'`
 newfilename=`basename $_file | sed -e 's/^zdscal/CRscal/g' -e 's/^zdrot/CRrot/g' -e 's/^dcabs/RCabs/g' -e 's/^dzasum/RCasum/g' -e 's/^dznrm2/RCnrm2/g' | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^iz/iC/' -e 's/\.f$//'`
 cat ${oldfilename}.cpp | bash BLAS_LIST > ${newfilename}.cpp_
 mv ${newfilename}.cpp_  ${newfilename}.cpp
+sed -i -e 's/const &/const /g' ${newfilename}.cpp
+
 /usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' ${newfilename}.cpp |  tr ':' ' ' | sed -e 's/^typename //' > ${newfilename}.hpp
 rm ${oldfilename}.cpp
 done

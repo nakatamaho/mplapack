@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,7 +27,6 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
 
 void Rpotri(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INTEGER &info) {
     //
@@ -73,14 +72,14 @@ void Rpotri(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INT
     //
     //     Invert the triangular Cholesky factor U or L.
     //
-    Rtrtri(uplo, "Non-unit", n, a, lda, info);
+    dtrtri(uplo, "Non-unit", n, a, lda, info);
     if (info > 0) {
         return;
     }
     //
     //     Form inv(U) * inv(U)**T or inv(L)**T * inv(L).
     //
-    Rlauum(uplo, n, a, lda, info);
+    dlauum(uplo, n, a, lda, info);
     //
     //     End of Rpotri
     //

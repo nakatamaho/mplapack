@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,7 +27,6 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
 
 void Rpotrf(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INTEGER &info) {
     bool upper = false;
@@ -83,7 +82,7 @@ void Rpotrf(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INT
     //
     //     Determine the block size for this environment.
     //
-    nb = iMlaenv[("Rpotrf" - 1) * ldiMlaenv];
+    nb = ilaenv(1, "Rpotrf", uplo, n, -1, -1, -1);
     if (nb <= 1 || nb >= n) {
         //
         //        Use unblocked code.

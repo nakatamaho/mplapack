@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,7 +27,6 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
 
 void Rpotrf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INTEGER &info) {
     //
@@ -87,7 +86,7 @@ void Rpotrf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, IN
         //
         //        Test for non-positive-definiteness
         //
-        if (a[(1 - 1)] <= zero || Risnan(a[(1 - 1)])) {
+        if (a[(1 - 1)] <= zero || disnan(a[(1 - 1)])) {
             info = 1;
             return;
         }
