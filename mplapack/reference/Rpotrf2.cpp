@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Rpotrf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INTEGER &info) {
+void Rpotrf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER &info) {
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -86,7 +86,7 @@ void Rpotrf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, IN
         //
         //        Test for non-positive-definiteness
         //
-        if (a[(1 - 1)] <= zero || disnan(a[(1 - 1)])) {
+        if (a[(1 - 1)] <= zero || Risnan(a[(1 - 1)])) {
             info = 1;
             return;
         }
@@ -103,7 +103,7 @@ void Rpotrf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, IN
         //
         //        Factor A11
         //
-        Rpotrf2(uplo, n1, a[(1 - 1)], lda, iinfo);
+        Rpotrf2(uplo, n1, &a[(1 - 1)], lda, iinfo);
         if (iinfo != 0) {
             info = iinfo;
             return;
@@ -115,12 +115,12 @@ void Rpotrf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, IN
             //
             //           Update and scale A12
             //
-            Rtrsm("L", "U", "T", "N", n1, n2, one, a[(1 - 1)], lda, a[((n1 + 1) - 1) * lda], lda);
+            Rtrsm("L", "U", "T", "N", n1, n2, one, &a[(1 - 1)], lda, &a[((n1 + 1) - 1) * lda], lda);
             //
             //           Update and factor A22
             //
-            Rsyrk(uplo, "T", n2, n1, -one, a[((n1 + 1) - 1) * lda], lda, one, a[((n1 + 1) - 1) + ((n1 + 1) - 1) * lda], lda);
-            Rpotrf2(uplo, n2, a[((n1 + 1) - 1) + ((n1 + 1) - 1) * lda], lda, iinfo);
+            Rsyrk(uplo, "T", n2, n1, -one, &a[((n1 + 1) - 1) * lda], lda, one, &a[((n1 + 1) - 1) + ((n1 + 1) - 1) * lda], lda);
+            Rpotrf2(uplo, n2, &a[((n1 + 1) - 1) + ((n1 + 1) - 1) * lda], lda, iinfo);
             if (iinfo != 0) {
                 info = iinfo + n1;
                 return;
@@ -132,12 +132,12 @@ void Rpotrf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, IN
             //
             //           Update and scale A21
             //
-            Rtrsm("R", "L", "T", "N", n2, n1, one, a[(1 - 1)], lda, a[((n1 + 1) - 1)], lda);
+            Rtrsm("R", "L", "T", "N", n2, n1, one, &a[(1 - 1)], lda, &a[((n1 + 1) - 1)], lda);
             //
             //           Update and factor A22
             //
-            Rsyrk(uplo, "N", n2, n1, -one, a[((n1 + 1) - 1)], lda, one, a[((n1 + 1) - 1) + ((n1 + 1) - 1) * lda], lda);
-            Rpotrf2(uplo, n2, a[((n1 + 1) - 1) + ((n1 + 1) - 1) * lda], lda, iinfo);
+            Rsyrk(uplo, "N", n2, n1, -one, &a[((n1 + 1) - 1)], lda, one, &a[((n1 + 1) - 1) + ((n1 + 1) - 1) * lda], lda);
+            Rpotrf2(uplo, n2, &a[((n1 + 1) - 1) + ((n1 + 1) - 1) * lda], lda, iinfo);
             if (iinfo != 0) {
                 info = iinfo + n1;
                 return;

@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Rpotri(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INTEGER &info) {
+void Rpotri(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER &info) {
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -72,14 +72,14 @@ void Rpotri(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INT
     //
     //     Invert the triangular Cholesky factor U or L.
     //
-    dtrtri(uplo, "Non-unit", n, a, lda, info);
+    Rtrtri(uplo, "Non-unit", n, a, lda, info);
     if (info > 0) {
         return;
     }
     //
     //     Form inv(U) * inv(U)**T or inv(L)**T * inv(L).
     //
-    dlauum(uplo, n, a, lda, info);
+    Rlauum(uplo, n, a, lda, info);
     //
     //     End of Rpotri
     //

@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Rpotrf(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INTEGER &info) {
+void Rpotrf(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER &info) {
     bool upper = false;
     INTEGER nb = 0;
     INTEGER j = 0;
@@ -102,8 +102,8 @@ void Rpotrf(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INT
                 //              for non-positive-definiteness.
                 //
                 jb = min(nb, n - j + 1);
-                Rsyrk("Upper", "Transpose", jb, j - 1, -one, a[(j - 1) * lda], lda, one, a[(j - 1) + (j - 1) * lda], lda);
-                Rpotrf2("Upper", jb, a[(j - 1) + (j - 1) * lda], lda, info);
+                Rsyrk("Upper", "Transpose", jb, j - 1, -one, &a[(j - 1) * lda], lda, one, &a[(j - 1) + (j - 1) * lda], lda);
+                Rpotrf2("Upper", jb, &a[(j - 1) + (j - 1) * lda], lda, info);
                 if (info != 0) {
                     goto statement_30;
                 }
@@ -111,8 +111,8 @@ void Rpotrf(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INT
                     //
                     //                 Compute the current block row.
                     //
-                    Rgemm("Transpose", "No transpose", jb, n - j - jb + 1, j - 1, -one, a[(j - 1) * lda], lda, a[((j + jb) - 1) * lda], lda, one, a[(j - 1) + ((j + jb) - 1) * lda], lda);
-                    Rtrsm("Left", "Upper", "Transpose", "Non-unit", jb, n - j - jb + 1, one, a[(j - 1) + (j - 1) * lda], lda, a[(j - 1) + ((j + jb) - 1) * lda], lda);
+                    Rgemm("Transpose", "No transpose", jb, n - j - jb + 1, j - 1, -one, &a[(j - 1) * lda], lda, &a[((j + jb) - 1) * lda], lda, one, &a[(j - 1) + ((j + jb) - 1) * lda], lda);
+                    Rtrsm("Left", "Upper", "Transpose", "Non-unit", jb, n - j - jb + 1, one, &a[(j - 1) + (j - 1) * lda], lda, &a[(j - 1) + ((j + jb) - 1) * lda], lda);
                 }
             }
             //
@@ -126,8 +126,8 @@ void Rpotrf(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INT
                 //              for non-positive-definiteness.
                 //
                 jb = min(nb, n - j + 1);
-                Rsyrk("Lower", "No transpose", jb, j - 1, -one, a[(j - 1)], lda, one, a[(j - 1) + (j - 1) * lda], lda);
-                Rpotrf2("Lower", jb, a[(j - 1) + (j - 1) * lda], lda, info);
+                Rsyrk("Lower", "No transpose", jb, j - 1, -one, &a[(j - 1)], lda, one, &a[(j - 1) + (j - 1) * lda], lda);
+                Rpotrf2("Lower", jb, &a[(j - 1) + (j - 1) * lda], lda, info);
                 if (info != 0) {
                     goto statement_30;
                 }
@@ -135,8 +135,8 @@ void Rpotrf(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INT
                     //
                     //                 Compute the current block column.
                     //
-                    Rgemm("No transpose", "Transpose", n - j - jb + 1, jb, j - 1, -one, a[((j + jb) - 1)], lda, a[(j - 1)], lda, one, a[((j + jb) - 1) + (j - 1) * lda], lda);
-                    Rtrsm("Right", "Lower", "Transpose", "Non-unit", n - j - jb + 1, jb, one, a[(j - 1) + (j - 1) * lda], lda, a[((j + jb) - 1) + (j - 1) * lda], lda);
+                    Rgemm("No transpose", "Transpose", n - j - jb + 1, jb, j - 1, -one, &a[((j + jb) - 1)], lda, &a[(j - 1)], lda, one, &a[((j + jb) - 1) + (j - 1) * lda], lda);
+                    Rtrsm("Right", "Lower", "Transpose", "Non-unit", n - j - jb + 1, jb, one, &a[(j - 1) + (j - 1) * lda], lda, &a[((j + jb) - 1) + (j - 1) * lda], lda);
                 }
             }
         }

@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Rpotf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INTEGER &info) {
+void Rpotf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER &info) {
     bool upper = false;
     INTEGER j = 0;
     REAL ajj = 0.0;
@@ -88,8 +88,8 @@ void Rpotf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INT
             //
             //           Compute U(J,J) and test for non-positive-definiteness.
             //
-            ajj = a[(j - 1) + (j - 1) * lda] - Rdot(j - 1, a[(j - 1) * lda], 1, a[(j - 1) * lda], 1);
-            if (ajj <= zero || disnan(ajj)) {
+            ajj = a[(j - 1) + (j - 1) * lda] - Rdot(j - 1, &a[(j - 1) * lda], 1, &a[(j - 1) * lda], 1);
+            if (ajj <= zero || Risnan(ajj)) {
                 a[(j - 1) + (j - 1) * lda] = ajj;
                 goto statement_30;
             }
@@ -99,8 +99,8 @@ void Rpotf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INT
             //           Compute elements J+1:N of row J.
             //
             if (j < n) {
-                Rgemv("Transpose", j - 1, n - j, -one, a[((j + 1) - 1) * lda], lda, a[(j - 1) * lda], 1, one, a[(j - 1) + ((j + 1) - 1) * lda], lda);
-                Rscal(n - j, one / ajj, a[(j - 1) + ((j + 1) - 1) * lda], lda);
+                Rgemv("Transpose", j - 1, n - j, -one, &a[((j + 1) - 1) * lda], lda, &a[(j - 1) * lda], 1, one, &a[(j - 1) + ((j + 1) - 1) * lda], lda);
+                Rscal(n - j, one / ajj, &a[(j - 1) + ((j + 1) - 1) * lda], lda);
             }
         }
     } else {
@@ -111,8 +111,8 @@ void Rpotf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INT
             //
             //           Compute L(J,J) and test for non-positive-definiteness.
             //
-            ajj = a[(j - 1) + (j - 1) * lda] - Rdot(j - 1, a[(j - 1)], lda, a[(j - 1)], lda);
-            if (ajj <= zero || disnan(ajj)) {
+            ajj = a[(j - 1) + (j - 1) * lda] - Rdot(j - 1, &a[(j - 1)], lda, &a[(j - 1)], lda);
+            if (ajj <= zero || Risnan(ajj)) {
                 a[(j - 1) + (j - 1) * lda] = ajj;
                 goto statement_30;
             }
@@ -122,8 +122,8 @@ void Rpotf2(const char *uplo, INTEGER const &n, REAL *a, INTEGER const &lda, INT
             //           Compute elements J+1:N of column J.
             //
             if (j < n) {
-                Rgemv("No transpose", n - j, j - 1, -one, a[((j + 1) - 1)], lda, a[(j - 1)], lda, one, a[((j + 1) - 1) + (j - 1) * lda], 1);
-                Rscal(n - j, one / ajj, a[((j + 1) - 1) + (j - 1) * lda], 1);
+                Rgemv("No transpose", n - j, j - 1, -one, &a[((j + 1) - 1)], lda, &a[(j - 1)], lda, one, &a[((j + 1) - 1) + (j - 1) * lda], 1);
+                Rscal(n - j, one / ajj, &a[((j + 1) - 1) + (j - 1) * lda], 1);
             }
         }
     }

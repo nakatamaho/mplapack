@@ -85,8 +85,11 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
+Rdisna.cpp \
+Risnan.cpp \
 Rpotf2.cpp \
 Rpotrf.cpp \
 Rpotrf2.cpp \
 Rpotri.cpp \
-Rpotrs.cpp 
+Rpotrs.cpp \
+Rlamch.cpp 

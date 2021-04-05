@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 
-void Rpotrs(const char *uplo, INTEGER const &n, INTEGER const &nrhs, REAL *a, INTEGER const &lda, REAL *b, INTEGER const &ldb, INTEGER &info) {
+void Rpotrs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, INTEGER &info) {
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
