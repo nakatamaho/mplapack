@@ -1,5 +1,5 @@
 cd ~/mplapack/mplapack/reference
-FILES=`ls ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/d*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/z*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/id*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/iz*.f | grep -v dsdot | head -100`
+FILES=`ls ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/d*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/z*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/id*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/iz*.f | grep -v dsdot`
 
 rm -f LAPACK_LIST LAPACK_LIST_  LAPACK_LIST__
 echo "sed \\" > LAPACK_LIST
