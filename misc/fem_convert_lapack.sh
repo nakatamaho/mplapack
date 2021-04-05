@@ -11,7 +11,7 @@ fable.cout $1 | sed -e 's/max(1/max((INTEGER)1/g'  -e 's/fem::double0/0\.0/g' | 
 clang-format -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" ${output}_ > ${output}
 cat $output | sed -e 's/_MPLAPACK_REPLACE_dcmplx/COMPLEX/g' -e 's/arr_ref<COMPLEX> /COMPLEX \*/g' -e 's/arr_cref<COMPLEX> /COMPLEX \*/g' -e 's/arr_ref<COMPLEX, 2> /COMPLEX \*/g' -e 's/cabs/abs/g' -e 's/dabs1/RCabs1/g' > ${output}_
 cat ${output}_ | sed -e '/#include <fem.hpp> \/\/ Fortran EMulation library of fable module/,/\/\/  =====================================================================/d' > ${output}
-cat ${output} | sed -e 's/lsame/Mlsame/g' -e 's/xerbla/Mxerbla/g' > ${output}_
-cat /home/docker/mplapack/misc/header_blas ${output}_ | sed '/namespace placeholder_please_replace/d' > ${output}
+cat ${output} | sed -e 's/lsame/Mlsame/g' -e 's/xerbla/Mxerbla/g' -e 's/ilaenv/iMlaenv/g' > ${output}_
+cat /home/docker/mplapack/misc/header_lapack ${output}_ | sed '/namespace placeholder_please_replace/d' > ${output}
 clang-format -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" ${output} > ${output}_
 mv ${output}_ ${output}
