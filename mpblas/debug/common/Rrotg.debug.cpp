@@ -58,9 +58,9 @@ void Rrotg_test()
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 	drotg_f77(&a_ref, &b_ref, &c_ref, &s_ref);
 #else
-	Rrotg(&a_ref, &b_ref, &c_ref, &s_ref);
+	Rrotg(a_ref, b_ref, c_ref, s_ref);
 #endif
-	Rrotg(&a, &b, &c, &s);
+	Rrotg(a, b, c, s);
 	diff[0] = abs(a - a_ref);
 	diff[1] = abs(b - b_ref);
 	diff[2] = abs(c - c_ref);

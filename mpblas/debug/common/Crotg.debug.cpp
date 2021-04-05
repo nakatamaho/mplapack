@@ -64,9 +64,9 @@ void Crotg_test()
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 	zrotg_f77(&ca_ref, &cb_ref, &cc_ref, &cs_ref);
 #else
-	Crotg(&ca_ref, cb_ref, &cc_ref, &cs_ref);
+	Crotg(ca_ref, cb_ref, cc_ref, cs_ref);
 #endif
-	Crotg(&ca, cb, &cc, &cs);
+	Crotg(ca, cb, cc, cs);
 
 	diff1 = abs(ca_ref - ca);
 	diff2 = abs(cb_ref - cb);
