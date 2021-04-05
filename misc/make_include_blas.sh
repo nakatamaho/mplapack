@@ -16,7 +16,7 @@ for mplib in $MPLIBS; do
         cp header_all mpblas_${mplib}.h 
         sed -i -e 's/INTEGER/mplapackint/g' mpblas_${mplib}.h 
         sed -i -e 's/COMPLEX/mpc_class/g' mpblas_${mplib}.h 
-        sed -i -e 's/REAL/mpc_class/g' mpblas_${mplib}.h 
+        sed -i -e 's/REAL/mpf_class/g' mpblas_${mplib}.h 
         sed -i -e "s/Mlsame/Mlsame_${mplib}/g" mpblas_${mplib}.h 
         sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mpblas_${mplib}.h 
     fi
