@@ -1,19 +1,18 @@
 #!/bin/sh
 
 USE_CCACHE=yes
-export PATH=/opt/rh/devtoolset-9/root/usr/bin/:$PATH
 
 if [ x$USE_CCACHE = x"yes" ] ; then
-CXX="ccache g++" ; export CXX
-CC="ccache gcc" ; export CC
-FC="gfortran"; export FC
-F77="gfortran"; export F77
+CXX="ccache /opt/rh/devtoolset-9/root/usr/bin/g++" ; export CXX
+CC="ccache /opt/rh/devtoolset-9/root/usr/bin/gcc" ; export CC
+FC="/opt/rh/devtoolset-9/root/usr/bin/gfortran"; export FC
+F77="/opt/rh/devtoolset-9/root/usr/bin/gfortran"; export F77
 ccache -M 20G
 else
-CXX="g++" ; export CXX
-CC="gcc" ; export CC
-FC="gfortran"; export FC
-F77="gfortran"; export F77
+CXX="/opt/rh/devtoolset-9/root/usr/bin/g++" ; export CXX
+CC="/opt/rh/devtoolset-9/root/usr/bin/gcc" ; export CC
+FC="/opt/rh/devtoolset-9/root/usr/bin/gfortran"; export FC
+F77="/opt/rh/devtoolset-9/root/usr/bin/gfortran"; export F77
 fi
 
 pushd mplapack/debug ; bash gen.Makefile.am.sh ; popd
