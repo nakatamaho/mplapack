@@ -44,12 +44,21 @@
 #endif
 _MPLAPACK_EXTERN_ int mplapack_errno;
 
+dd_complex Cdotc(mplapackint const &n, dd_complex *zx, mplapackint const &incx, dd_complex *zy, mplapackint const &incy);
+dd_complex Cdotu(mplapackint const &n, dd_complex *zx, mplapackint const &incx, dd_complex *zy, mplapackint const &incy);
+dd_real RCabs1(dd_complex const &z);
+dd_real RCasum(mplapackint const &n, dd_complex *zx, mplapackint const &incx);
+dd_real RCnrm2(mplapackint const &n, dd_complex *x, mplapackint const &incx);
+dd_real Rasum(mplapackint const &n, dd_real *dx, mplapackint const &incx);
+dd_real Rdot(mplapackint const &n, dd_real *dx, mplapackint const &incx, dd_real *dy, mplapackint const &incy);
+dd_real Rnrm2(mplapackint const &n, dd_real *x, mplapackint const &incx);
+mplapackint Mlsame_dd(const char *a, const char *b);
+mplapackint iCamax(mplapackint const &n, dd_complex *zx, mplapackint const &incx);
+mplapackint iRamax(mplapackint const &n, dd_real *dx, mplapackint const &incx);
 void CRrot(mplapackint const &n, dd_complex *zx, mplapackint const &incx, dd_complex *zy, mplapackint const &incy, dd_real const &c, dd_real const &s);
 void CRscal(mplapackint const &n, dd_real const &da, dd_complex *zx, mplapackint const &incx);
 void Caxpy(mplapackint const &n, dd_complex const &za, dd_complex *zx, mplapackint const &incx, dd_complex *zy, mplapackint const &incy);
 void Ccopy(mplapackint const &n, dd_complex *zx, mplapackint const &incx, dd_complex *zy, mplapackint const &incy);
-dd_complex Cdotc(mplapackint const &n, dd_complex *zx, mplapackint const &incx, dd_complex *zy, mplapackint const &incy);
-dd_complex Cdotu(mplapackint const &n, dd_complex *zx, mplapackint const &incx, dd_complex *zy, mplapackint const &incy);
 void Cgbmv(const char *trans, mplapackint const &m, mplapackint const &n, mplapackint const &kl, mplapackint const &ku, dd_complex const &alpha, dd_complex *a, mplapackint const &lda, dd_complex *x, mplapackint const &incx, dd_complex const &beta, dd_complex *y, mplapackint const &incy);
 void Cgemm(const char *transa, const char *transb, mplapackint const &m, mplapackint const &n, mplapackint const &k, dd_complex const &alpha, dd_complex *a, mplapackint const &lda, dd_complex *b, mplapackint const &ldb, dd_complex const &beta, dd_complex *c, mplapackint const &ldc);
 void Cgemv(const char *trans, mplapackint const &m, mplapackint const &n, dd_complex const &alpha, dd_complex *a, mplapackint const &lda, dd_complex *x, mplapackint const &incx, dd_complex const &beta, dd_complex *y, mplapackint const &incy);
@@ -79,20 +88,13 @@ void Ctrmm(const char *side, const char *uplo, const char *transa, const char *d
 void Ctrmv(const char *uplo, const char *trans, const char *diag, mplapackint const &n, dd_complex *a, mplapackint const &lda, dd_complex *x, mplapackint const &incx);
 void Ctrsm(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint const &m, mplapackint const &n, dd_complex const &alpha, dd_complex *a, mplapackint const &lda, dd_complex *b, mplapackint const &ldb);
 void Ctrsv(const char *uplo, const char *trans, const char *diag, mplapackint const &n, dd_complex *a, mplapackint const &lda, dd_complex *x, mplapackint const &incx);
-mplapackint Mlsame_dd(const char *a, const char *b);
 void Mxerbla_dd(const char *srname, int info);
-dd_real RCabs1(dd_complex const &z);
-dd_real RCasum(mplapackint const &n, dd_complex *zx, mplapackint const &incx);
-dd_real RCnrm2(mplapackint const &n, dd_complex *x, mplapackint const &incx);
-dd_real Rasum(mplapackint const &n, dd_real *dx, mplapackint const &incx);
 void Raxpy(mplapackint const &n, dd_real const &da, dd_real *dx, mplapackint const &incx, dd_real *dy, mplapackint const &incy);
 void Rcopy(mplapackint const &n, dd_real *dx, mplapackint const &incx, dd_real *dy, mplapackint const &incy);
-dd_real Rdot(mplapackint const &n, dd_real *dx, mplapackint const &incx, dd_real *dy, mplapackint const &incy);
 void Rgbmv(const char *trans, mplapackint const &m, mplapackint const &n, mplapackint const &kl, mplapackint const &ku, dd_real const &alpha, dd_real *a, mplapackint const &lda, dd_real *x, mplapackint const &incx, dd_real const &beta, dd_real *y, mplapackint const &incy);
 void Rgemm(const char *transa, const char *transb, mplapackint const &m, mplapackint const &n, mplapackint const &k, dd_real const &alpha, dd_real *a, mplapackint const &lda, dd_real *b, mplapackint const &ldb, dd_real const &beta, dd_real *c, mplapackint const &ldc);
 void Rgemv(const char *trans, mplapackint const &m, mplapackint const &n, dd_real const &alpha, dd_real *a, mplapackint const &lda, dd_real *x, mplapackint const &incx, dd_real const &beta, dd_real *y, mplapackint const &incy);
 void Rger(mplapackint const &m, mplapackint const &n, dd_real const &alpha, dd_real *x, mplapackint const &incx, dd_real *y, mplapackint const &incy, dd_real *a, mplapackint const &lda);
-dd_real Rnrm2(mplapackint const &n, dd_real *x, mplapackint const &incx);
 void Rrot(mplapackint const &n, dd_real *dx, mplapackint const &incx, dd_real *dy, mplapackint const &incy, dd_real const &c, dd_real const &s);
 void Rrotg(dd_real &da, dd_real &db, dd_real &c, dd_real &s);
 void Rrotm(mplapackint const &n, dd_real *dx, mplapackint const &incx, dd_real *dy, mplapackint const &incy, dd_real *dparam);
@@ -117,6 +119,4 @@ void Rtrmm(const char *side, const char *uplo, const char *transa, const char *d
 void Rtrmv(const char *uplo, const char *trans, const char *diag, mplapackint const &n, dd_real *a, mplapackint const &lda, dd_real *x, mplapackint const &incx);
 void Rtrsm(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint const &m, mplapackint const &n, dd_real const &alpha, dd_real *a, mplapackint const &lda, dd_real *b, mplapackint const &ldb);
 void Rtrsv(const char *uplo, const char *trans, const char *diag, mplapackint const &n, dd_real *a, mplapackint const &lda, dd_real *x, mplapackint const &incx);
-mplapackint iCamax(mplapackint const &n, dd_complex *zx, mplapackint const &incx);
-mplapackint iRamax(mplapackint const &n, dd_real *dx, mplapackint const &incx);
 #endif

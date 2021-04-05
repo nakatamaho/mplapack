@@ -39,12 +39,21 @@
 #endif
 _MPLAPACK_EXTERN_ int mplapack_errno;
 
+_Float64x RCabs1(std::complex<_Float64x> const &z);
+_Float64x RCasum(mplapackint const &n, std::complex<_Float64x> *zx, mplapackint const &incx);
+_Float64x RCnrm2(mplapackint const &n, std::complex<_Float64x> *x, mplapackint const &incx);
+_Float64x Rasum(mplapackint const &n, _Float64x *dx, mplapackint const &incx);
+_Float64x Rdot(mplapackint const &n, _Float64x *dx, mplapackint const &incx, _Float64x *dy, mplapackint const &incy);
+_Float64x Rnrm2(mplapackint const &n, _Float64x *x, mplapackint const &incx);
+mplapackint Mlsame__Float64x(const char *a, const char *b);
+mplapackint iCamax(mplapackint const &n, std::complex<_Float64x> *zx, mplapackint const &incx);
+mplapackint iRamax(mplapackint const &n, _Float64x *dx, mplapackint const &incx);
+std::complex<_Float64x> Cdotc(mplapackint const &n, std::complex<_Float64x> *zx, mplapackint const &incx, std::complex<_Float64x> *zy, mplapackint const &incy);
+std::complex<_Float64x> Cdotu(mplapackint const &n, std::complex<_Float64x> *zx, mplapackint const &incx, std::complex<_Float64x> *zy, mplapackint const &incy);
 void CRrot(mplapackint const &n, std::complex<_Float64x> *zx, mplapackint const &incx, std::complex<_Float64x> *zy, mplapackint const &incy, _Float64x const &c, _Float64x const &s);
 void CRscal(mplapackint const &n, _Float64x const &da, std::complex<_Float64x> *zx, mplapackint const &incx);
 void Caxpy(mplapackint const &n, std::complex<_Float64x> const &za, std::complex<_Float64x> *zx, mplapackint const &incx, std::complex<_Float64x> *zy, mplapackint const &incy);
 void Ccopy(mplapackint const &n, std::complex<_Float64x> *zx, mplapackint const &incx, std::complex<_Float64x> *zy, mplapackint const &incy);
-std::complex<_Float64x> Cdotc(mplapackint const &n, std::complex<_Float64x> *zx, mplapackint const &incx, std::complex<_Float64x> *zy, mplapackint const &incy);
-std::complex<_Float64x> Cdotu(mplapackint const &n, std::complex<_Float64x> *zx, mplapackint const &incx, std::complex<_Float64x> *zy, mplapackint const &incy);
 void Cgbmv(const char *trans, mplapackint const &m, mplapackint const &n, mplapackint const &kl, mplapackint const &ku, std::complex<_Float64x> const &alpha, std::complex<_Float64x> *a, mplapackint const &lda, std::complex<_Float64x> *x, mplapackint const &incx, std::complex<_Float64x> const &beta, std::complex<_Float64x> *y, mplapackint const &incy);
 void Cgemm(const char *transa, const char *transb, mplapackint const &m, mplapackint const &n, mplapackint const &k, std::complex<_Float64x> const &alpha, std::complex<_Float64x> *a, mplapackint const &lda, std::complex<_Float64x> *b, mplapackint const &ldb, std::complex<_Float64x> const &beta, std::complex<_Float64x> *c, mplapackint const &ldc);
 void Cgemv(const char *trans, mplapackint const &m, mplapackint const &n, std::complex<_Float64x> const &alpha, std::complex<_Float64x> *a, mplapackint const &lda, std::complex<_Float64x> *x, mplapackint const &incx, std::complex<_Float64x> const &beta, std::complex<_Float64x> *y, mplapackint const &incy);
@@ -74,20 +83,13 @@ void Ctrmm(const char *side, const char *uplo, const char *transa, const char *d
 void Ctrmv(const char *uplo, const char *trans, const char *diag, mplapackint const &n, std::complex<_Float64x> *a, mplapackint const &lda, std::complex<_Float64x> *x, mplapackint const &incx);
 void Ctrsm(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint const &m, mplapackint const &n, std::complex<_Float64x> const &alpha, std::complex<_Float64x> *a, mplapackint const &lda, std::complex<_Float64x> *b, mplapackint const &ldb);
 void Ctrsv(const char *uplo, const char *trans, const char *diag, mplapackint const &n, std::complex<_Float64x> *a, mplapackint const &lda, std::complex<_Float64x> *x, mplapackint const &incx);
-mplapackint Mlsame__Float64x(const char *a, const char *b);
 void Mxerbla__Float64x(const char *srname, int info);
-_Float64x RCabs1(std::complex<_Float64x> const &z);
-_Float64x RCasum(mplapackint const &n, std::complex<_Float64x> *zx, mplapackint const &incx);
-_Float64x RCnrm2(mplapackint const &n, std::complex<_Float64x> *x, mplapackint const &incx);
-_Float64x Rasum(mplapackint const &n, _Float64x *dx, mplapackint const &incx);
 void Raxpy(mplapackint const &n, _Float64x const &da, _Float64x *dx, mplapackint const &incx, _Float64x *dy, mplapackint const &incy);
 void Rcopy(mplapackint const &n, _Float64x *dx, mplapackint const &incx, _Float64x *dy, mplapackint const &incy);
-_Float64x Rdot(mplapackint const &n, _Float64x *dx, mplapackint const &incx, _Float64x *dy, mplapackint const &incy);
 void Rgbmv(const char *trans, mplapackint const &m, mplapackint const &n, mplapackint const &kl, mplapackint const &ku, _Float64x const &alpha, _Float64x *a, mplapackint const &lda, _Float64x *x, mplapackint const &incx, _Float64x const &beta, _Float64x *y, mplapackint const &incy);
 void Rgemm(const char *transa, const char *transb, mplapackint const &m, mplapackint const &n, mplapackint const &k, _Float64x const &alpha, _Float64x *a, mplapackint const &lda, _Float64x *b, mplapackint const &ldb, _Float64x const &beta, _Float64x *c, mplapackint const &ldc);
 void Rgemv(const char *trans, mplapackint const &m, mplapackint const &n, _Float64x const &alpha, _Float64x *a, mplapackint const &lda, _Float64x *x, mplapackint const &incx, _Float64x const &beta, _Float64x *y, mplapackint const &incy);
 void Rger(mplapackint const &m, mplapackint const &n, _Float64x const &alpha, _Float64x *x, mplapackint const &incx, _Float64x *y, mplapackint const &incy, _Float64x *a, mplapackint const &lda);
-_Float64x Rnrm2(mplapackint const &n, _Float64x *x, mplapackint const &incx);
 void Rrot(mplapackint const &n, _Float64x *dx, mplapackint const &incx, _Float64x *dy, mplapackint const &incy, _Float64x const &c, _Float64x const &s);
 void Rrotg(_Float64x &da, _Float64x &db, _Float64x &c, _Float64x &s);
 void Rrotm(mplapackint const &n, _Float64x *dx, mplapackint const &incx, _Float64x *dy, mplapackint const &incy, _Float64x *dparam);
@@ -112,6 +114,4 @@ void Rtrmm(const char *side, const char *uplo, const char *transa, const char *d
 void Rtrmv(const char *uplo, const char *trans, const char *diag, mplapackint const &n, _Float64x *a, mplapackint const &lda, _Float64x *x, mplapackint const &incx);
 void Rtrsm(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint const &m, mplapackint const &n, _Float64x const &alpha, _Float64x *a, mplapackint const &lda, _Float64x *b, mplapackint const &ldb);
 void Rtrsv(const char *uplo, const char *trans, const char *diag, mplapackint const &n, _Float64x *a, mplapackint const &lda, _Float64x *x, mplapackint const &incx);
-mplapackint iCamax(mplapackint const &n, std::complex<_Float64x> *zx, mplapackint const &incx);
-mplapackint iRamax(mplapackint const &n, _Float64x *dx, mplapackint const &incx);
 #endif

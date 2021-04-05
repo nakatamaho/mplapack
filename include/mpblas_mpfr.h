@@ -43,12 +43,21 @@ using namespace mpfr;
 #endif
 _MPLAPACK_EXTERN_ int mplapack_errno;
 
+mpcomplex Cdotc(mplapackint const &n, mpcomplex *zx, mplapackint const &incx, mpcomplex *zy, mplapackint const &incy);
+mpcomplex Cdotu(mplapackint const &n, mpcomplex *zx, mplapackint const &incx, mpcomplex *zy, mplapackint const &incy);
+mplapackint Mlsame_mpfr(const char *a, const char *b);
+mplapackint iCamax(mplapackint const &n, mpcomplex *zx, mplapackint const &incx);
+mplapackint iRamax(mplapackint const &n, mpreal *dx, mplapackint const &incx);
+mpreal RCabs1(mpcomplex const &z);
+mpreal RCasum(mplapackint const &n, mpcomplex *zx, mplapackint const &incx);
+mpreal RCnrm2(mplapackint const &n, mpcomplex *x, mplapackint const &incx);
+mpreal Rasum(mplapackint const &n, mpreal *dx, mplapackint const &incx);
+mpreal Rdot(mplapackint const &n, mpreal *dx, mplapackint const &incx, mpreal *dy, mplapackint const &incy);
+mpreal Rnrm2(mplapackint const &n, mpreal *x, mplapackint const &incx);
 void CRrot(mplapackint const &n, mpcomplex *zx, mplapackint const &incx, mpcomplex *zy, mplapackint const &incy, mpreal const &c, mpreal const &s);
 void CRscal(mplapackint const &n, mpreal const &da, mpcomplex *zx, mplapackint const &incx);
 void Caxpy(mplapackint const &n, mpcomplex const &za, mpcomplex *zx, mplapackint const &incx, mpcomplex *zy, mplapackint const &incy);
 void Ccopy(mplapackint const &n, mpcomplex *zx, mplapackint const &incx, mpcomplex *zy, mplapackint const &incy);
-mpcomplex Cdotc(mplapackint const &n, mpcomplex *zx, mplapackint const &incx, mpcomplex *zy, mplapackint const &incy);
-mpcomplex Cdotu(mplapackint const &n, mpcomplex *zx, mplapackint const &incx, mpcomplex *zy, mplapackint const &incy);
 void Cgbmv(const char *trans, mplapackint const &m, mplapackint const &n, mplapackint const &kl, mplapackint const &ku, mpcomplex const &alpha, mpcomplex *a, mplapackint const &lda, mpcomplex *x, mplapackint const &incx, mpcomplex const &beta, mpcomplex *y, mplapackint const &incy);
 void Cgemm(const char *transa, const char *transb, mplapackint const &m, mplapackint const &n, mplapackint const &k, mpcomplex const &alpha, mpcomplex *a, mplapackint const &lda, mpcomplex *b, mplapackint const &ldb, mpcomplex const &beta, mpcomplex *c, mplapackint const &ldc);
 void Cgemv(const char *trans, mplapackint const &m, mplapackint const &n, mpcomplex const &alpha, mpcomplex *a, mplapackint const &lda, mpcomplex *x, mplapackint const &incx, mpcomplex const &beta, mpcomplex *y, mplapackint const &incy);
@@ -78,20 +87,13 @@ void Ctrmm(const char *side, const char *uplo, const char *transa, const char *d
 void Ctrmv(const char *uplo, const char *trans, const char *diag, mplapackint const &n, mpcomplex *a, mplapackint const &lda, mpcomplex *x, mplapackint const &incx);
 void Ctrsm(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint const &m, mplapackint const &n, mpcomplex const &alpha, mpcomplex *a, mplapackint const &lda, mpcomplex *b, mplapackint const &ldb);
 void Ctrsv(const char *uplo, const char *trans, const char *diag, mplapackint const &n, mpcomplex *a, mplapackint const &lda, mpcomplex *x, mplapackint const &incx);
-mplapackint Mlsame_mpfr(const char *a, const char *b);
 void Mxerbla_mpfr(const char *srname, int info);
-mpreal RCabs1(mpcomplex const &z);
-mpreal RCasum(mplapackint const &n, mpcomplex *zx, mplapackint const &incx);
-mpreal RCnrm2(mplapackint const &n, mpcomplex *x, mplapackint const &incx);
-mpreal Rasum(mplapackint const &n, mpreal *dx, mplapackint const &incx);
 void Raxpy(mplapackint const &n, mpreal const &da, mpreal *dx, mplapackint const &incx, mpreal *dy, mplapackint const &incy);
 void Rcopy(mplapackint const &n, mpreal *dx, mplapackint const &incx, mpreal *dy, mplapackint const &incy);
-mpreal Rdot(mplapackint const &n, mpreal *dx, mplapackint const &incx, mpreal *dy, mplapackint const &incy);
 void Rgbmv(const char *trans, mplapackint const &m, mplapackint const &n, mplapackint const &kl, mplapackint const &ku, mpreal const &alpha, mpreal *a, mplapackint const &lda, mpreal *x, mplapackint const &incx, mpreal const &beta, mpreal *y, mplapackint const &incy);
 void Rgemm(const char *transa, const char *transb, mplapackint const &m, mplapackint const &n, mplapackint const &k, mpreal const &alpha, mpreal *a, mplapackint const &lda, mpreal *b, mplapackint const &ldb, mpreal const &beta, mpreal *c, mplapackint const &ldc);
 void Rgemv(const char *trans, mplapackint const &m, mplapackint const &n, mpreal const &alpha, mpreal *a, mplapackint const &lda, mpreal *x, mplapackint const &incx, mpreal const &beta, mpreal *y, mplapackint const &incy);
 void Rger(mplapackint const &m, mplapackint const &n, mpreal const &alpha, mpreal *x, mplapackint const &incx, mpreal *y, mplapackint const &incy, mpreal *a, mplapackint const &lda);
-mpreal Rnrm2(mplapackint const &n, mpreal *x, mplapackint const &incx);
 void Rrot(mplapackint const &n, mpreal *dx, mplapackint const &incx, mpreal *dy, mplapackint const &incy, mpreal const &c, mpreal const &s);
 void Rrotg(mpreal &da, mpreal &db, mpreal &c, mpreal &s);
 void Rrotm(mplapackint const &n, mpreal *dx, mplapackint const &incx, mpreal *dy, mplapackint const &incy, mpreal *dparam);
@@ -116,6 +118,4 @@ void Rtrmm(const char *side, const char *uplo, const char *transa, const char *d
 void Rtrmv(const char *uplo, const char *trans, const char *diag, mplapackint const &n, mpreal *a, mplapackint const &lda, mpreal *x, mplapackint const &incx);
 void Rtrsm(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint const &m, mplapackint const &n, mpreal const &alpha, mpreal *a, mplapackint const &lda, mpreal *b, mplapackint const &ldb);
 void Rtrsv(const char *uplo, const char *trans, const char *diag, mplapackint const &n, mpreal *a, mplapackint const &lda, mpreal *x, mplapackint const &incx);
-mplapackint iCamax(mplapackint const &n, mpcomplex *zx, mplapackint const &incx);
-mplapackint iRamax(mplapackint const &n, mpreal *dx, mplapackint const &incx);
 #endif
