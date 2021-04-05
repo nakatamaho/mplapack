@@ -9,7 +9,8 @@ else
 fi
 
 MPLIBS="gmp mpfr _Float128 dd qd double _Float64x"
-cat *hpp > header_all
+
+cat *hpp ~/mplapack/misc/special.hpp > header_all
 
 for mplib in $MPLIBS; do
     if [ x"$mplib" = x"gmp" ]; then
@@ -17,8 +18,7 @@ for mplib in $MPLIBS; do
         sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h 
         sed -i -e 's/COMPLEX/mpc_class/g' mplapack_${mplib}.h 
         sed -i -e 's/REAL/mpf_class/g' mplapack_${mplib}.h 
-        sed -i -e "s/Mlsame/Mlsame_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
     fi
 
     if [ x"$mplib" = x"mpfr" ]; then
@@ -26,8 +26,7 @@ for mplib in $MPLIBS; do
         sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h 
         sed -i -e 's/COMPLEX/mpcomplex/g' mplapack_${mplib}.h 
         sed -i -e 's/REAL/mpreal/g' mplapack_${mplib}.h 
-        sed -i -e "s/Mlsame/Mlsame_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
     fi
 
     if [ x"$mplib" = x"double" ]; then
@@ -35,8 +34,7 @@ for mplib in $MPLIBS; do
         sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h 
         sed -i -e 's/COMPLEX/std::complex<double>/g' mplapack_${mplib}.h 
         sed -i -e 's/REAL/double/g' mplapack_${mplib}.h 
-        sed -i -e "s/Mlsame/Mlsame_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
     fi
 
     if [ x"$mplib" = x"dd" ]; then
@@ -44,8 +42,7 @@ for mplib in $MPLIBS; do
         sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h 
         sed -i -e 's/COMPLEX/dd_complex/g' mplapack_${mplib}.h 
         sed -i -e 's/REAL/dd_real/g' mplapack_${mplib}.h 
-        sed -i -e "s/Mlsame/Mlsame_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
     fi
 
 
@@ -54,8 +51,7 @@ for mplib in $MPLIBS; do
         sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h 
         sed -i -e 's/COMPLEX/qd_complex/g' mplapack_${mplib}.h 
         sed -i -e 's/REAL/qd_real/g' mplapack_${mplib}.h 
-        sed -i -e "s/Mlsame/Mlsame_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
     fi
 
     if [ x"$mplib" = x"_Float128" ]; then
@@ -63,8 +59,7 @@ for mplib in $MPLIBS; do
         sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h 
         sed -i -e 's/COMPLEX/std::complex<_Float128>/g' mplapack_${mplib}.h 
         sed -i -e 's/REAL/_Float128/g' mplapack_${mplib}.h 
-        sed -i -e "s/Mlsame/Mlsame_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
     fi
 
     if [ x"$mplib" = x"_Float64x" ]; then
@@ -72,8 +67,7 @@ for mplib in $MPLIBS; do
         sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h 
         sed -i -e 's/COMPLEX/std::complex<_Float64x>/g' mplapack_${mplib}.h 
         sed -i -e 's/REAL/_Float64x/g' mplapack_${mplib}.h 
-        sed -i -e "s/Mlsame/Mlsame_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
     fi
 
     clang-format -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mplapack_${mplib}.h | sort > l ; mv l mplapack_${mplib}.h 
