@@ -1,5 +1,5 @@
 cd ~/mplapack/mpblas/reference
-FILES=`ls ~/mplapack/external/lapack/work/internal/lapack-3.9.1/BLAS/SRC/d*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/BLAS/SRC/z*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/BLAS/SRC/id*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/BLAS/SRC/iz*.f | grep -v dsrot`
+FILES=`ls ~/mplapack/external/lapack/work/internal/lapack-3.9.1/BLAS/SRC/d*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/BLAS/SRC/z*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/BLAS/SRC/id*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/BLAS/SRC/iz*.f | grep -v dsdot`
 
 rm -f BLAS_LIST BLAS_LIST_  BLAS_LIST__
 echo "sed \\" > BLAS_LIST
