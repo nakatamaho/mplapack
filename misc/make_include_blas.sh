@@ -76,7 +76,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mpblas_${mplib}.h 
     fi
 
-    clang-format -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mpblas_${mplib}.h > l ; mv l mpblas_${mplib}.h 
+    clang-format -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mpblas_${mplib}.h | sort > l ; mv l mpblas_${mplib}.h 
     cat ~/mplapack/misc/mpblas_${mplib}.h.in mpblas_${mplib}.h > ~/mplapack/include/mpblas_${mplib}.h
     rm mpblas_${mplib}.h
     echo "#endif" >> ~/mplapack/include/mpblas_${mplib}.h
