@@ -54,9 +54,9 @@ inline _Float128 sqrt(const _Float128 &a) {
 inline _Float128 log(const _Float128 &a) {
    return logq(a);
 }
-//inline _Float128 log2(const _Float128 &a) {
-//   return log2q(a);
-//}
+inline _Float128 log2(const _Float128 &a) {
+   return log2q(a);
+}
 inline _Float128 pow(const _Float128 &a, const _Float128 &b) {
    return powq(a, b);
 }
@@ -115,13 +115,6 @@ inline std::complex<_Float128> log(const std::complex<_Float128> &a) {
 }
 
 }
-
-#if !(_XOPEN_SOURCE >= 600) && !(_ISOC99_SOURCE)
-inline _Float128 log2(_Float128 x)
-{
-   return log(x) / log(2.0);
-}
-#endif
 
 #else //___MPLAPACK_WANT_LIBQUADMATH___
 //#define __STDC_WANT_IEC_60559_TYPES_EXT__ somehow not needed (since g++?)
