@@ -1,0 +1,14 @@
+--- Rtrtri.cpp~	2021-04-06 06:58:24.424353540 +0900
++++ Rtrtri.cpp	2021-04-06 07:00:50.544453772 +0900
+@@ -93,7 +93,10 @@
+     //
+     //     Determine the block size for this environment.
+     //
+-    INTEGER nb = iMlaenv(1, "Rtrtri", uplo + diag, n, -1, -1, -1);
++    char buf[100];
++    strcpy(buf, uplo);
++    strcat(buf, diag);
++    INTEGER nb = iMlaenv(1, "Rtrtri", buf, n, -1, -1, -1);
+     INTEGER j = 0;
+     INTEGER jb = 0;
+     const REAL one = 1.0;
