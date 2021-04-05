@@ -30,5 +30,5 @@ done
 /usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' Mxerbla.cpp |  tr ':' ' ' | sed -e 's/^typename //' > Mxerbla.hpp
 /usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' Mlsame.cpp |  tr ':' ' ' | sed -e 's/^typename //' > Mlsame.hpp
 
-cp BLAS_LIST ~/mplapack/misc/
+mv BLAS_LIST ~/mplapack/misc/
 cat ~/mplapack/misc/header_blas *hpp > mpblas.h
