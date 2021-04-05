@@ -84,10 +84,12 @@ class mpc_class {
     friend bool operator==(const mpc_class & a, const mpc_class & b);
     friend bool operator==(const mpc_class & a, const mpf_class & b);
     friend bool operator==(const mpf_class & a, const mpc_class & b);
+    friend bool operator==(const mpc_class & a, const double & b);
 
     friend bool operator!=(const mpc_class & a, const mpc_class & b);
     friend bool operator!=(const mpc_class & a, const mpf_class & b);
     friend bool operator!=(const mpf_class & a, const mpc_class & b);
+    friend bool operator!=(const mpc_class & a, const double & b);
 
 //subsututtion
 //difficult to implement; mpc_class& operator=(const mpc_class& b);
@@ -214,6 +216,14 @@ inline bool operator==(const mpc_class & a, const mpf_class & b)
 	return false;
 }
 
+inline bool operator==(const mpc_class & a, const double & b)
+{
+    if ((a.re == b) && (a.im == 0.0)) {
+	return true;
+    } else
+	return false;
+}
+
 inline bool operator!=(const mpc_class & a, const mpc_class & b)
 {
     if ((a.re != b.re) || (a.im != b.im)) {
@@ -233,6 +243,14 @@ inline bool operator!=(const mpf_class & a, const mpc_class & b)
 inline bool operator!=(const mpc_class & a, const mpf_class & b)
 {
     if ((a.re != b) || (a.im != 0.0)) {
+	return true;
+    } else
+	return false;
+}
+
+inline bool operator!=(const mpc_class & a, const double & b)
+{
+    if ((a.re != b) || (a.im == 0.0)) {
 	return true;
     } else
 	return false;
