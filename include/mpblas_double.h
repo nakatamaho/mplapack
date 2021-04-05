@@ -95,7 +95,6 @@ void Rrotm(mplapackint const &n, double *dx, mplapackint const &incx, double *dy
 void Rrotmg(double &dd1, double &dd2, double &dx1, double const &dy1, double *dparam);
 void Rsbmv(const char *uplo, mplapackint const &n, mplapackint const &k, double const &alpha, double *a, mplapackint const &lda, double *x, mplapackint const &incx, double const &beta, double *y, mplapackint const &incy);
 void Rscal(mplapackint const &n, double const &da, double *dx, mplapackint const &incx);
-double Rsdot(mplapackint const &n, arr_cref<float> sx, mplapackint const &incx, arr_cref<float> sy, mplapackint const &incy);
 void Rspmv(const char *uplo, mplapackint const &n, double const &alpha, double *ap, double *x, mplapackint const &incx, double const &beta, double *y, mplapackint const &incy);
 void Rspr(const char *uplo, mplapackint const &n, double const &alpha, double *x, mplapackint const &incx, double *ap);
 void Rspr2(const char *uplo, mplapackint const &n, double const &alpha, double *x, mplapackint const &incx, double *y, mplapackint const &incy, double *ap);
