@@ -114,7 +114,7 @@ Chetrs_aa.cpp \
 Chetrs_rook.cpp \
 Chfrk.cpp \
 Chpsv.cpp \
-Cla_wwcommitw.cpp \
+Cla_wwaddw.cpp \
 Clacgv.cpp \
 Clacp2.cpp \
 Clacpy.cpp \
