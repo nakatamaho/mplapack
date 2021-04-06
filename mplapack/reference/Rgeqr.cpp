@@ -89,7 +89,7 @@ void Rgeqr(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
     if (nb > min(m, n) || nb < 1) {
         nb = 1;
     }
-    INTEGER mINTEGERsz = n + 5;
+    INTEGER mintsz = n + 5;
     INTEGER nblcks = 0;
     if (mb > n && m > n) {
         if (mod(m - n, mb - n) == 0) {
@@ -104,7 +104,7 @@ void Rgeqr(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
     //     Determine if the workspace size satisfies minimal size
     //
     bool lminws = false;
-    if ((tsize < max((INTEGER)1, nb * n * nblcks + 5) || lwork < nb * n) && (lwork >= n) && (tsize >= mINTEGERsz) && (!lquery)) {
+    if ((tsize < max((INTEGER)1, nb * n * nblcks + 5) || lwork < nb * n) && (lwork >= n) && (tsize >= mintsz) && (!lquery)) {
         if (tsize < max((INTEGER)1, nb * n * nblcks + 5)) {
             lminws = true;
             nb = 1;
@@ -130,7 +130,7 @@ void Rgeqr(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
     //
     if (info == 0) {
         if (mINTEGER) {
-            t[1 - 1] = mINTEGERsz;
+            t[1 - 1] = mintsz;
         } else {
             t[1 - 1] = nb * n * nblcks + 5;
         }

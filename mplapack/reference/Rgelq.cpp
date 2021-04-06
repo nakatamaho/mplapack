@@ -89,7 +89,7 @@ void Rgelq(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
     if (nb > n || nb <= m) {
         nb = n;
     }
-    INTEGER mINTEGERsz = m + 5;
+    INTEGER mintsz = m + 5;
     INTEGER nblcks = 0;
     if (nb > m && n > m) {
         if (mod(n - m, nb - m) == 0) {
@@ -113,7 +113,7 @@ void Rgelq(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
         lwopt = max((INTEGER)1, mb * m);
     }
     bool lminws = false;
-    if ((tsize < max((INTEGER)1, mb * m * nblcks + 5) || lwork < lwopt) && (lwork >= lwmin) && (tsize >= mINTEGERsz) && (!lquery)) {
+    if ((tsize < max((INTEGER)1, mb * m * nblcks + 5) || lwork < lwopt) && (lwork >= lwmin) && (tsize >= mintsz) && (!lquery)) {
         if (tsize < max((INTEGER)1, mb * m * nblcks + 5)) {
             lminws = true;
             mb = 1;
@@ -145,7 +145,7 @@ void Rgelq(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
     //
     if (info == 0) {
         if (mINTEGER) {
-            t[1 - 1] = mINTEGERsz;
+            t[1 - 1] = mintsz;
         } else {
             t[1 - 1] = mb * m * nblcks + 5;
         }

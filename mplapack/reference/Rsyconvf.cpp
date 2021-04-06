@@ -139,7 +139,7 @@ void Rsyconvf(const char *uplo, const char *way, INTEGER const n, REAL *a, INTEG
                     }
                     //
                     //                 Convert IPIV
-                    //                 There is no INTEGERerchnge of rows i and and IPIV(i),
+                    //                 There is no interchnge of rows i and and IPIV(i),
                     //                 so this should be reflected in IPIV format for
                     //                 *SYTRF_RK ( or *SYTRF_BK)
                     //
@@ -277,7 +277,7 @@ void Rsyconvf(const char *uplo, const char *way, INTEGER const n, REAL *a, INTEG
                     }
                     //
                     //                 Convert IPIV
-                    //                 There is no INTEGERerchnge of rows i and and IPIV(i),
+                    //                 There is no interchnge of rows i and and IPIV(i),
                     //                 so this should be reflected in IPIV format for
                     //                 *SYTRF_RK ( or *SYTRF_BK)
                     //

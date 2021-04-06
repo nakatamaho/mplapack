@@ -88,18 +88,18 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
     //
     maxitr = INTEGER((log(spdiam + pivmin) - log(pivmin)) / log(two)) + 2;
     //
-    //     Initialize unconverged INTEGERervals in [ WORK(2*I-1), WORK(2*I) ].
+    //     Initialize unconverged intervals in [ WORK(2*I-1), WORK(2*I) ].
     //     The Sturm Count, Count( WORK(2*I-1) ) is arranged to be I-1, while
     //     Count( WORK(2*I) ) is stored in IWORK( 2*I ). The integer IWORK( 2*I-1 )
-    //     for an unconverged INTEGERerval is set to the index of the next unconverged
-    //     INTEGERerval, and is -1 or 0 for a converged INTEGERerval. Thus a linked
-    //     list of unconverged INTEGERervals is set up.
+    //     for an unconverged interval is set to the index of the next unconverged
+    //     interval, and is -1 or 0 for a converged interval. Thus a linked
+    //     list of unconverged intervals is set up.
     //
     i1 = ifirst;
     i2 = ilast;
-    //     The number of unconverged INTEGERervals
+    //     The number of unconverged intervals
     nINTEGER = 0;
-    //     The last unconverged INTEGERerval found
+    //     The last unconverged interval found
     prev = 0;
     for (i = i1; i <= i2; i = i + 1) {
         k = 2 * i;
@@ -110,14 +110,14 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
         width = right - mid;
         tmp = max(abs(left), abs(right));
         //
-        //        The following test prevents the test of converged INTEGERervals
+        //        The following test prevents the test of converged intervals
         if (width < rtol * tmp) {
-            //           This INTEGERerval has already converged and does not need refinement.
+            //           This interval has already converged and does not need refinement.
             //           (Note that the gaps might change through refining the
             //            eigenvalues, however, they can only get bigger.)
             //           Remove it from the list.
             iwork[(k - 1) - 1] = -1;
-            //           Make sure that I1 always points to the first unconverged INTEGERerval
+            //           Make sure that I1 always points to the first unconverged interval
             if ((i == i1) && (i < i2)) {
                 i1 = i + 1;
             }
@@ -125,7 +125,7 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
                 iwork[(2 * prev - 1) - 1] = i + 1;
             }
         } else {
-            //           unconverged INTEGERerval found
+            //           unconverged interval found
             prev = i;
             //           Make sure that [LEFT,RIGHT] contains the desired eigenvalue
             //
@@ -182,7 +182,7 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
     //
     savi1 = i1;
     //
-    //     Do while( NINT.GT.0 ), i.e. there are still unconverged INTEGERervals
+    //     Do while( NINT.GT.0 ), i.e. there are still unconverged intervals
     //     and while (ITER.LT.MAXITR)
     //
     iter = 0;
@@ -199,19 +199,19 @@ statement_80:
         right = work[k - 1];
         mid = half * (left + right);
         //
-        //        semiwidth of INTEGERerval
+        //        semiwidth of interval
         width = right - mid;
         tmp = max(abs(left), abs(right));
         //
         if ((width < rtol * tmp) || (iter == maxitr)) {
-            //           reduce number of unconverged INTEGERervals
+            //           reduce number of unconverged intervals
             nINTEGER = nINTEGER - 1;
-            //           Mark INTEGERerval as converged.
+            //           Mark interval as converged.
             iwork[(k - 1) - 1] = 0;
             if (i1 == i) {
                 i1 = next;
             } else {
-                //              Prev holds the last unconverged INTEGERerval previously examined
+                //              Prev holds the last unconverged interval previously examined
                 if (prev >= i1) {
                     iwork[(2 * prev - 1) - 1] = next;
                 }
@@ -245,18 +245,18 @@ statement_80:
     statement_100:;
     }
     iter++;
-    //     do another loop if there are still unconverged INTEGERervals
-    //     However, in the last iteration, all INTEGERervals are accepted
+    //     do another loop if there are still unconverged intervals
+    //     However, in the last iteration, all intervals are accepted
     //     since this is the best we can do.
     if ((nINTEGER > 0) && (iter <= maxitr)) {
         goto statement_80;
     }
     //
-    //     At this point, all the INTEGERervals have converged
+    //     At this point, all the intervals have converged
     for (i = savi1; i <= ilast; i = i + 1) {
         k = 2 * i;
         ii = i - offset;
-        //        All INTEGERervals marked by '0' have been refined.
+        //        All intervals marked by '0' have been refined.
         if (iwork[(k - 1) - 1] == 0) {
             w[ii - 1] = half * (work[(k - 1) - 1] + work[k - 1]);
             werr[ii - 1] = work[k - 1] - w[ii - 1];
