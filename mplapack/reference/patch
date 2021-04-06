@@ -145,3 +145,16 @@
              }
          }
      }
+
+Rlartgs calls Rlartgp which might changes const cs and cosnt sn
+--- Rlartgs.cpp~	2021-04-06 10:24:05.420296044 +0900
++++ Rlartgs.cpp	2021-04-06 10:37:18.068372309 +0900
+@@ -29,7 +29,7 @@
+ #include <mpblas.h>
+ #include <mplapack.h>
+ 
+-void Rlartgs(REAL const x, REAL const y, REAL const sigma, REAL const cs, REAL const sn) {
++void Rlartgs(REAL const x, REAL const y, REAL const sigma, REAL cs, REAL sn) {
+     //
+     //  -- LAPACK computational routine --
+     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
