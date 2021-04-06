@@ -103,7 +103,7 @@ void Rormql(const char *side, const char *trans, INTEGER const m, INTEGER const 
         } else {
             char side_trans[3];
             side_trans[0] = side[0];
-            side_trans[0] = trans[0];
+            side_trans[1] = trans[0];
             side_trans[2] = '\0';
             nb = min(nbmax, iMlaenv(1, "Rormql", side_trans, m, n, k, -1));
             lwkopt = nw * nb + tsize;
@@ -130,7 +130,7 @@ void Rormql(const char *side, const char *trans, INTEGER const m, INTEGER const 
         if (lwork < nw * nb + tsize) {
             char side_trans[3];
             side_trans[0] = side[0];
-            side_trans[0] = trans[0];
+            side_trans[1] = trans[0];
             side_trans[2] = '\0';
             nb = (lwork - tsize) / ldwork;
             nbmin = max((INTEGER)2, iMlaenv(2, "Rormql", side_trans, m, n, k, -1));

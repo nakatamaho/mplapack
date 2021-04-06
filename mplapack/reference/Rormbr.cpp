@@ -95,7 +95,7 @@ void Rormbr(const char *vect, const char *side, const char *trans, INTEGER const
     if (info == 0) {
         char side_trans[3];
         side_trans[0] = side[0];
-        side_trans[0] = trans[0];
+        side_trans[1] = trans[0];
         side_trans[2] = '\0';
         if (applyq) {
             if (left) {
