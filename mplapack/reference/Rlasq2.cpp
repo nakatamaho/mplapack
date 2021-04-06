@@ -194,9 +194,9 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
         }
         d += z[k - 1];
         e += z[(k + 1) - 1];
-        qmax = max(qmax, z[k - 1]);
-        emin = min(emin, z[(k + 1) - 1]);
-        zmax = max({qmax, zmax, z[(k + 1) - 1]});
+        qmax = max(qmax, &z[k - 1]);
+        emin = min(emin, &z[(k + 1) - 1]);
+        zmax = max(qmax, zmax, &z[(k + 1) - 1]);
     }
     if (z[(2 * n - 1) - 1] < zero) {
         info = -(200 + 2 * n - 1);
@@ -204,7 +204,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
         return;
     }
     d += z[(2 * n - 1) - 1];
-    qmax = max(qmax, z[(2 * n - 1) - 1]);
+    qmax = max(qmax, &z[(2 * n - 1) - 1]);
     zmax = max(qmax, zmax);
     //
     //     Check for diagonality.
@@ -292,7 +292,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
                 z[(i4 - 2 * pp) - 1] = z[(i4 + 1) - 1] * (z[(i4 - 1) - 1] / z[(i4 - 2 * pp - 2) - 1]);
                 d = z[(i4 + 1) - 1] * (d / z[(i4 - 2 * pp - 2) - 1]);
             }
-            emin = min(emin, z[(i4 - 2 * pp) - 1]);
+            emin = min(emin, &z[(i4 - 2 * pp) - 1]);
         }
         z[(4 * n0 - pp - 2) - 1] = d;
         //
@@ -300,7 +300,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
         //
         qmax = z[(4 * i0 - pp - 2) - 1];
         for (i4 = 4 * i0 - pp + 2; i4 <= 4 * n0 - pp - 2; i4 = i4 + 4) {
-            qmax = max(qmax, z[i4 - 1]);
+            qmax = max(qmax, &z[i4 - 1]);
         }
         //
         //        Prepare for the next iteration on K.
@@ -360,11 +360,11 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
                 goto statement_100;
             }
             if (qmin >= four * emax) {
-                qmin = min(qmin, z[(i4 - 3) - 1]);
-                emax = max(emax, z[(i4 - 5) - 1]);
+                qmin = min(qmin, &z[(i4 - 3) - 1]);
+                emax = max(emax, &z[(i4 - 5) - 1]);
             }
-            qmax = max(qmax, z[(i4 - 7) - 1] + z[(i4 - 5) - 1]);
-            emin = min(emin, z[(i4 - 5) - 1]);
+            qmax = max(qmax, &z[(i4 - 7) - 1] + z[(i4 - 5) - 1]);
+            emin = min(emin, &z[(i4 - 5) - 1]);
         }
         i4 = 4;
     //
@@ -441,9 +441,9 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
                             emin = z[(i4 + 3) - 1];
                             oldemn = z[(i4 + 4) - 1];
                         } else {
-                            qmax = max(qmax, z[(i4 + 1) - 1]);
-                            emin = min(emin, z[(i4 - 1) - 1]);
-                            oldemn = min(oldemn, z[i4 - 1]);
+                            qmax = max(qmax, &z[(i4 + 1) - 1]);
+                            emin = min(emin, &z[(i4 - 1) - 1]);
+                            oldemn = min(oldemn, &z[i4 - 1]);
                         }
                     }
                     z[(4 * n0 - 1) - 1] = emin;
@@ -530,9 +530,9 @@ statement_170:
     //
     z[(2 * n + 1) - 1] = trace;
     z[(2 * n + 2) - 1] = e;
-    z[(2 * n + 3) - 1] = REAL(iter);
-    z[(2 * n + 4) - 1] = REAL(ndiv) / REAL(pow2(n));
-    z[(2 * n + 5) - 1] = hundrd * nfail / REAL(iter);
+    z[(2 * n + 3) - 1] = iter.real();
+    z[(2 * n + 4) - 1] = ndiv.real() / pow2(n).real();
+    z[(2 * n + 5) - 1] = hundrd * nfail / iter.real();
     //
     //     End of Rlasq2
     //
