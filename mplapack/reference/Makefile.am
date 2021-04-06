@@ -125,7 +125,6 @@ Rlasyf.cpp \
 Rlasyf_aa.cpp \
 Rlasyf_rk.cpp \
 Rlasyf_rook.cpp \
-Rlatrd.cpp \
 Rorg2l.cpp \
 Rorg2r.cpp \
 Rorgql.cpp \

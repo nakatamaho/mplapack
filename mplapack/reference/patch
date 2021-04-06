@@ -268,3 +268,25 @@ Rlartgs calls Rlartgp which might changes const cs and cosnt sn
              }
          }
      }
+--- Rorg2l.cpp_	2021-04-06 11:01:56.656232602 +0900
++++ Rorg2l.cpp	2021-04-06 11:02:13.044231625 +0900
+@@ -96,7 +96,7 @@
+         //        Apply H(i) to A(1:m-k+i,1:n-k+i) from the left
+         //
+         a[((m - n + ii) - 1) + (ii - 1) * lda] = one;
+-        Rlarf("Left", m - n + ii, ii - 1, &a[(ii - 1) * lda], 1, &tau[i - 1], a, lda, work);
++        Rlarf("Left", m - n + ii, ii - 1, &a[(ii - 1) * lda], 1, tau[i - 1], a, lda, work);
+         Rscal(m - n + ii - 1, -tau[i - 1], &a[(ii - 1) * lda], 1);
+         a[((m - n + ii) - 1) + (ii - 1) * lda] = one - tau[i - 1];
+         //
+--- Rorg2r.cpp_	2021-04-06 11:03:12.315004669 +0900
++++ Rorg2r.cpp	2021-04-06 11:03:20.143024991 +0900
+@@ -95,7 +95,7 @@
+         //
+         if (i < n) {
+             a[(i - 1) + (i - 1) * lda] = one;
+-            Rlarf("Left", m - i + 1, n - i, &a[(i - 1) + (i - 1) * lda], 1, &tau[i - 1], &a[(i - 1) + ((i + 1) - 1) * lda], lda, work);
++            Rlarf("Left", m - i + 1, n - i, &a[(i - 1) + (i - 1) * lda], 1, tau[i - 1], &a[(i - 1) + ((i + 1) - 1) * lda], lda, work);
+         }
+         if (i < m) {
+             Rscal(m - i, -tau[i - 1], &a[((i + 1) - 1) + (i - 1) * lda], 1);
