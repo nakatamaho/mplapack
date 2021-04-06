@@ -1,4 +1,3 @@
-cd ~/mplapack/mplapack/reference
 FILES=`ls ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/d*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/z*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/id*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/iz*.f | grep -v dsdot`
 
 #FILES_SUBSET=`ls ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/d*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/z*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/id*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/iz*.f | grep -v dsdot | grep -e dpot -e disn -e isna -e uum -e lauu2 -e trt`
@@ -28,12 +27,12 @@ rm -f LAPACK_LIST LAPACK_LIST_  LAPACK_LIST__
 echo "sed \\" > LAPACK_LIST
 echo "-e 's///g'" >> LAPACK_LIST__
 
-FILES_SUBSET=`ls ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/d*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/z*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/id*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/iz*.f | grep -v dsdot | grep -v zggsvp3`
+FILES_SUBSET=`ls ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/d*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/z*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/i*.f | grep -v dsdot | grep -v zggsvp3 | grep il`
 
 for _file in $FILES_SUBSET; do
 oldfilename=`basename $_file | sed -e 's/\.f$//'` 
 oldfilenameUP=`basename $_file | sed -e 's/\.f$//' | tr a-z A-Z`
-newfilename=`basename $_file | sed -e 's/^dzsum1/RCsum1/g' -e 's/^zdscal/CRscal/g' -e 's/^zdrot/CRrot/g' -e 's/^dcabs/RCabs/g' -e 's/^dzasum/RCasum/g' -e 's/^dznrm2/RCnrm2/g' | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^iz/iC/' -e 's/\.f$//'`
+newfilename=`basename $_file | sed -e 's/^dzsum1/RCsum1/g' -e 's/^zdscal/CRscal/g' -e 's/^zdrot/CRrot/g' -e 's/^dcabs/RCabs/g' -e 's/^dzasum/RCasum/g' -e 's/^dznrm2/RCnrm2/g' | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^iz/iC/' -e 's/^ila/iMla/' -e 's/\.f$//'`
 echo "-e 's/$oldfilename/$newfilename/g' \\" >> LAPACK_LIST_
 echo "-e 's/$oldfilenameUP/$newfilename/g' \\" >> LAPACK_LIST_
 done
@@ -48,11 +47,10 @@ fi
 
 cp ~/mplapack/misc/BLAS_LIST .
 
-rm -f FILELIST
 for _file in $FILES_SUBSET ; do
 bash ~/mplapack/misc/fem_convert_lapack.sh $_file
 oldfilename=`basename $_file | sed -e 's/\.f$//'`
-newfilename=`basename $_file | sed -e 's/^dzsum1/RCsum1/g' -e 's/^zdscal/CRscal/g' -e 's/^zdrot/CRrot/g' -e 's/^dcabs/RCabs/g' -e 's/^dzasum/RCasum/g' -e 's/^dznrm2/RCnrm2/g' | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^iz/iC/' -e 's/\.f$//'`
+newfilename=`basename $_file | sed -e 's/^dzsum1/RCsum1/g' -e 's/^zdscal/CRscal/g' -e 's/^zdrot/CRrot/g' -e 's/^dcabs/RCabs/g' -e 's/^dzasum/RCasum/g' -e 's/^dznrm2/RCnrm2/g' | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^iz/iC/' -e 's/^ila/iMla/' -e 's/\.f$//'`
 
 if [ ! -e $newfilename ]; then
 cat ${oldfilename}.cpp | bash BLAS_LIST | bash LAPACK_LIST | sed 's/dlamch/Rlamch/g' > ${newfilename}.cpp_
@@ -74,23 +72,4 @@ sed -i -e 's/, work\[/, \&work\[/g' ${newfilename}.cpp
 fi
 /usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' ${newfilename}.cpp |  tr ':' ' ' | sed -e 's/^typename //' > ${newfilename}.hpp
 rm -f ${oldfilename}.cpp
-echo "${newfilename}.cpp \\" >> FILELIST
 done
-
-#spcial case
-echo "Rlamch.cpp \\" >> FILELIST
-
-sed -e "/%%insert here%%/e cat FILELIST" Makefile.am.in > Makefile.am
-sed -i -e "s/%%insert here%%//g" Makefile.am
-head -c -1 Makefile.am > Makefile.am_
-mv Makefile.am_ Makefile.am
-sed -i -e '$s/\\//' Makefile.am
-
-rm BLAS_LIST
-
-mv LAPACK_LIST ~/mplapack/misc/
-cat *hpp |sort > mplapack.h
-cat ~/mplapack/misc/header mplapack.h > mplapack.h_
-clang-format -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mplapack.h_ > mplapack.h
-rm mplapack.h_
-
