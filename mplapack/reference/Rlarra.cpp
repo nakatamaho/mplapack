@@ -59,7 +59,7 @@ void Rlarra(INTEGER const n, REAL *d, REAL *e, REAL *e2, REAL const spltol, REAL
         return;
     }
     //
-    //     Compute splitting poINTEGERs
+    //     Compute splitting points
     nsplit = 1;
     const REAL zero = 0.0;
     REAL tmp1 = 0.0;

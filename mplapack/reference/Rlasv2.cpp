@@ -55,7 +55,7 @@ void Rlasv2(REAL const f, REAL const g, REAL const h, REAL &ssmin, REAL &ssmax, 
     REAL ht = h;
     REAL ha = abs(h);
     //
-    //     PMAX poINTEGERs to the maximum absolute element of matrix
+    //     PMAX points to the maximum absolute element of matrix
     //       PMAX = 1 if F largest in absolute values
     //       PMAX = 2 if G largest in absolute values
     //       PMAX = 3 if H largest in absolute values

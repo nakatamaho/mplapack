@@ -97,7 +97,7 @@ void Rlasq1(INTEGER const n, REAL *d, REAL *e, REAL *work, INTEGER &info) {
     }
     //
     //     Copy D and E into WORK (in the Z format) and scale (squaring the
-    //     input data makes scaling by a power of the radix poINTEGERless).
+    //     input data makes scaling by a power of the radix pointless).
     //
     REAL eps = Rlamch("Precision");
     REAL safmin = Rlamch("Safe minimum");

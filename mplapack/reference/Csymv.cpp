@@ -81,7 +81,7 @@ void Csymv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, I
         return;
     }
     //
-    //     Set up the start poINTEGERs in  X  and  Y.
+    //     Set up the start points in  X  and  Y.
     //
     INTEGER kx = 0;
     if (incx > 0) {

@@ -90,7 +90,7 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
     //
     //     Initialize unconverged INTEGERervals in [ WORK(2*I-1), WORK(2*I) ].
     //     The Sturm Count, Count( WORK(2*I-1) ) is arranged to be I-1, while
-    //     Count( WORK(2*I) ) is stored in IWORK( 2*I ). The INTEGEReger IWORK( 2*I-1 )
+    //     Count( WORK(2*I) ) is stored in IWORK( 2*I ). The integer IWORK( 2*I-1 )
     //     for an unconverged INTEGERerval is set to the index of the next unconverged
     //     INTEGERerval, and is -1 or 0 for a converged INTEGERerval. Thus a linked
     //     list of unconverged INTEGERervals is set up.
@@ -117,7 +117,7 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
             //            eigenvalues, however, they can only get bigger.)
             //           Remove it from the list.
             iwork[(k - 1) - 1] = -1;
-            //           Make sure that I1 always poINTEGERs to the first unconverged INTEGERerval
+            //           Make sure that I1 always points to the first unconverged INTEGERerval
             if ((i == i1) && (i < i2)) {
                 i1 = i + 1;
             }
@@ -252,7 +252,7 @@ statement_80:
         goto statement_80;
     }
     //
-    //     At this poINTEGER, all the INTEGERervals have converged
+    //     At this point, all the INTEGERervals have converged
     for (i = savi1; i <= ilast; i = i + 1) {
         k = 2 * i;
         ii = i - offset;
