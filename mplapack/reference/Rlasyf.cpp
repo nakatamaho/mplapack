@@ -114,7 +114,7 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
         //
         kstep = 1;
         //
-        //        Determine rows and columns to be INTEGERerchanged and whether
+        //        Determine rows and columns to be interchanged and whether
         //        a 1-by-1 or 2-by-2 pivot block will be used
         //
         absakk = abs(w[(k - 1) + (kw - 1) * ldw]);
@@ -141,7 +141,7 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
         } else {
             if (absakk >= alpha * colmax) {
                 //
-                //              no INTEGERerchange, use 1-by-1 pivot block
+                //              no interchange, use 1-by-1 pivot block
                 //
                 kp = k;
             } else {
@@ -166,12 +166,12 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
                     //
-                    //                 no INTEGERerchange, use 1-by-1 pivot block
+                    //                 no interchange, use 1-by-1 pivot block
                     //
                     kp = k;
                 } else if (abs(w[(imax - 1) + ((kw - 1) - 1) * ldw]) >= alpha * rowmax) {
                     //
-                    //                 INTEGERerchange rows and columns K and IMAX, use 1-by-1
+                    //                 interchange rows and columns K and IMAX, use 1-by-1
                     //                 pivot block
                     //
                     kp = imax;
@@ -181,7 +181,7 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
                     Rcopy(k, &w[((kw - 1) - 1) * ldw], 1, &w[(kw - 1) * ldw], 1);
                 } else {
                     //
-                    //                 INTEGERerchange rows and columns K-1 and IMAX, use 2-by-2
+                    //                 interchange rows and columns K-1 and IMAX, use 2-by-2
                     //                 pivot block
                     //
                     kp = imax;
@@ -315,7 +315,7 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
             //
         }
         //
-        //        Store details of the INTEGERerchanges in IPIV
+        //        Store details of the interchanges in IPIV
         //
         if (kstep == 1) {
             ipiv[k - 1] = kp;
@@ -351,13 +351,13 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
             Rgemm("No transpose", "Transpose", j - 1, jb, n - k, -one, &a[((k + 1) - 1) * lda], lda, &w[(j - 1) + ((kw + 1) - 1) * ldw], ldw, one, &a[(j - 1) * lda], lda);
         }
         //
-        //        Put U12 in standard form by partially undoing the INTEGERerchanges
+        //        Put U12 in standard form by partially undoing the interchanges
         //        in columns k+1:n looping backwards from k+1 to n
         //
         j = k + 1;
     statement_60:
         //
-        //           Undo the INTEGERerchanges (if any) of rows JJ and JP at each
+        //           Undo the interchanges (if any) of rows JJ and JP at each
         //           step J
         //
         //           (Here, J is a diagonal index)
@@ -406,7 +406,7 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
         //
         kstep = 1;
         //
-        //        Determine rows and columns to be INTEGERerchanged and whether
+        //        Determine rows and columns to be interchanged and whether
         //        a 1-by-1 or 2-by-2 pivot block will be used
         //
         absakk = abs(w[(k - 1) + (k - 1) * ldw]);
@@ -433,7 +433,7 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
         } else {
             if (absakk >= alpha * colmax) {
                 //
-                //              no INTEGERerchange, use 1-by-1 pivot block
+                //              no interchange, use 1-by-1 pivot block
                 //
                 kp = k;
             } else {
@@ -456,12 +456,12 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
                     //
-                    //                 no INTEGERerchange, use 1-by-1 pivot block
+                    //                 no interchange, use 1-by-1 pivot block
                     //
                     kp = k;
                 } else if (abs(w[(imax - 1) + ((k + 1) - 1) * ldw]) >= alpha * rowmax) {
                     //
-                    //                 INTEGERerchange rows and columns K and IMAX, use 1-by-1
+                    //                 interchange rows and columns K and IMAX, use 1-by-1
                     //                 pivot block
                     //
                     kp = imax;
@@ -471,7 +471,7 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
                     Rcopy(n - k + 1, &w[(k - 1) + ((k + 1) - 1) * ldw], 1, &w[(k - 1) + (k - 1) * ldw], 1);
                 } else {
                     //
-                    //                 INTEGERerchange rows and columns K+1 and IMAX, use 2-by-2
+                    //                 interchange rows and columns K+1 and IMAX, use 2-by-2
                     //                 pivot block
                     //
                     kp = imax;
@@ -603,7 +603,7 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
             //
         }
         //
-        //        Store details of the INTEGERerchanges in IPIV
+        //        Store details of the interchanges in IPIV
         //
         if (kstep == 1) {
             ipiv[k - 1] = kp;
@@ -641,13 +641,13 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
             }
         }
         //
-        //        Put L21 in standard form by partially undoing the INTEGERerchanges
+        //        Put L21 in standard form by partially undoing the interchanges
         //        of rows in columns 1:k-1 looping backwards from k-1 to 1
         //
         j = k - 1;
     statement_120:
         //
-        //           Undo the INTEGERerchanges (if any) of rows JJ and JP at each
+        //           Undo the interchanges (if any) of rows JJ and JP at each
         //           step J
         //
         //           (Here, J is a diagonal index)

@@ -157,7 +157,7 @@ void Cgetri(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPL
         }
     }
     //
-    //     Apply column INTEGERerchanges.
+    //     Apply column interchanges.
     //
     INTEGER jp = 0;
     for (j = n - 1; j >= 1; j = j - 1) {

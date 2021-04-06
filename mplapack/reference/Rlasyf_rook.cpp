@@ -129,7 +129,7 @@ void Rlasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
             Rgemv("No transpose", k, n - k, -one, &a[((k + 1) - 1) * lda], lda, &w[(k - 1) + ((kw + 1) - 1) * ldw], ldw, one, &w[(kw - 1) * ldw], 1);
         }
         //
-        //        Determine rows and columns to be INTEGERerchanged and whether
+        //        Determine rows and columns to be interchanged and whether
         //        a 1-by-1 or 2-by-2 pivot block will be used
         //
         absakk = abs(w[(k - 1) + (kw - 1) * ldw]);
@@ -158,14 +158,14 @@ void Rlasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
             //
             //           ============================================================
             //
-            //           Test for INTEGERerchange
+            //           Test for interchange
             //
             //           Equivalent to testing for ABSAKK.GE.ALPHA*COLMAX
             //           (used to handle NaN and Inf)
             //
             if (!(absakk < alpha * colmax)) {
                 //
-                //              no INTEGERerchange, use 1-by-1 pivot block
+                //              no interchange, use 1-by-1 pivot block
                 //
                 kp = k;
                 //
@@ -214,7 +214,7 @@ void Rlasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 //
                 if (!(abs(w[(imax - 1) + ((kw - 1) - 1) * ldw]) < alpha * rowmax)) {
                     //
-                    //                    INTEGERerchange rows and columns K and IMAX,
+                    //                    interchange rows and columns K and IMAX,
                     //                    use 1-by-1 pivot block
                     //
                     kp = imax;
@@ -230,7 +230,7 @@ void Rlasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                     //
                 } else if ((p == jmax) || (rowmax <= colmax)) {
                     //
-                    //                    INTEGERerchange rows and columns K-1 and IMAX,
+                    //                    interchange rows and columns K-1 and IMAX,
                     //                    use 2-by-2 pivot block
                     //
                     kp = imax;
@@ -351,7 +351,7 @@ void Rlasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
             }
         }
         //
-        //        Store details of the INTEGERerchanges in IPIV
+        //        Store details of the interchanges in IPIV
         //
         if (kstep == 1) {
             ipiv[k - 1] = kp;
@@ -389,7 +389,7 @@ void Rlasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
             }
         }
         //
-        //        Put U12 in standard form by partially undoing the INTEGERerchanges
+        //        Put U12 in standard form by partially undoing the interchanges
         //        in columns k+1:n
         //
         j = k + 1;
@@ -449,7 +449,7 @@ void Rlasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
             Rgemv("No transpose", n - k + 1, k - 1, -one, &a[(k - 1)], lda, &w[(k - 1)], ldw, one, &w[(k - 1) + (k - 1) * ldw], 1);
         }
         //
-        //        Determine rows and columns to be INTEGERerchanged and whether
+        //        Determine rows and columns to be interchanged and whether
         //        a 1-by-1 or 2-by-2 pivot block will be used
         //
         absakk = abs(w[(k - 1) + (k - 1) * ldw]);
@@ -478,14 +478,14 @@ void Rlasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
             //
             //           ============================================================
             //
-            //           Test for INTEGERerchange
+            //           Test for interchange
             //
             //           Equivalent to testing for ABSAKK.GE.ALPHA*COLMAX
             //           (used to handle NaN and Inf)
             //
             if (!(absakk < alpha * colmax)) {
                 //
-                //              no INTEGERerchange, use 1-by-1 pivot block
+                //              no interchange, use 1-by-1 pivot block
                 //
                 kp = k;
                 //
@@ -533,7 +533,7 @@ void Rlasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 //
                 if (!(abs(w[(imax - 1) + ((k + 1) - 1) * ldw]) < alpha * rowmax)) {
                     //
-                    //                    INTEGERerchange rows and columns K and IMAX,
+                    //                    interchange rows and columns K and IMAX,
                     //                    use 1-by-1 pivot block
                     //
                     kp = imax;
@@ -549,7 +549,7 @@ void Rlasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                     //
                 } else if ((p == jmax) || (rowmax <= colmax)) {
                     //
-                    //                    INTEGERerchange rows and columns K+1 and IMAX,
+                    //                    interchange rows and columns K+1 and IMAX,
                     //                    use 2-by-2 pivot block
                     //
                     kp = imax;
@@ -664,7 +664,7 @@ void Rlasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
             }
         }
         //
-        //        Store details of the INTEGERerchanges in IPIV
+        //        Store details of the interchanges in IPIV
         //
         if (kstep == 1) {
             ipiv[k - 1] = kp;
@@ -702,7 +702,7 @@ void Rlasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
             }
         }
         //
-        //        Put L21 in standard form by partially undoing the INTEGERerchanges
+        //        Put L21 in standard form by partially undoing the interchanges
         //        in columns 1:k-1
         //
         j = k - 1;

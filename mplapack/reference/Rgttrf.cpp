@@ -81,7 +81,7 @@ void Rgttrf(INTEGER const n, REAL *dl, REAL *d, REAL *du, REAL *du2, INTEGER *ip
     for (i = 1; i <= n - 2; i = i + 1) {
         if (abs(d[i - 1]) >= abs(dl[i - 1])) {
             //
-            //           No row INTEGERerchange required, eliminate DL(I)
+            //           No row interchange required, eliminate DL(I)
             //
             if (d[i - 1] != zero) {
                 fact = dl[i - 1] / d[i - 1];

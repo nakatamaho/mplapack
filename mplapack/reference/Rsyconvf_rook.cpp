@@ -115,7 +115,7 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
             while (i >= 1) {
                 if (ipiv[i - 1] > 0) {
                     //
-                    //                 1-by-1 pivot INTEGERerchange
+                    //                 1-by-1 pivot interchange
                     //
                     //                 Swap rows i and IPIV(i) in A(1:i,N-i:N)
                     //
@@ -128,7 +128,7 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
                     //
                 } else {
                     //
-                    //                 2-by-2 pivot INTEGERerchange
+                    //                 2-by-2 pivot interchange
                     //
                     //                 Swap rows i and IPIV(i) and i-1 and IPIV(i-1)
                     //                 in A(1:i,N-i:N)
@@ -162,7 +162,7 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
             while (i <= n) {
                 if (ipiv[i - 1] > 0) {
                     //
-                    //                 1-by-1 pivot INTEGERerchange
+                    //                 1-by-1 pivot interchange
                     //
                     //                 Swap rows i and IPIV(i) in A(1:i,N-i:N)
                     //
@@ -175,7 +175,7 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
                     //
                 } else {
                     //
-                    //                 2-by-2 pivot INTEGERerchange
+                    //                 2-by-2 pivot interchange
                     //
                     //                 Swap rows i-1 and IPIV(i-1) and i and IPIV(i)
                     //                 in A(1:i,N-i:N)
@@ -248,7 +248,7 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
             while (i <= n) {
                 if (ipiv[i - 1] > 0) {
                     //
-                    //                 1-by-1 pivot INTEGERerchange
+                    //                 1-by-1 pivot interchange
                     //
                     //                 Swap rows i and IPIV(i) in A(i:N,1:i-1)
                     //
@@ -261,7 +261,7 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
                     //
                 } else {
                     //
-                    //                 2-by-2 pivot INTEGERerchange
+                    //                 2-by-2 pivot interchange
                     //
                     //                 Swap rows i and IPIV(i) and i+1 and IPIV(i+1)
                     //                 in A(i:N,1:i-1)
@@ -295,7 +295,7 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
             while (i >= 1) {
                 if (ipiv[i - 1] > 0) {
                     //
-                    //                 1-by-1 pivot INTEGERerchange
+                    //                 1-by-1 pivot interchange
                     //
                     //                 Swap rows i and IPIV(i) in A(i:N,1:i-1)
                     //
@@ -308,7 +308,7 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
                     //
                 } else {
                     //
-                    //                 2-by-2 pivot INTEGERerchange
+                    //                 2-by-2 pivot interchange
                     //
                     //                 Swap rows i+1 and IPIV(i+1) and i and IPIV(i)
                     //                 in A(i:N,1:i-1)

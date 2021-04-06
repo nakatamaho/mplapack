@@ -85,7 +85,7 @@ void Cgetrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
         //
         //        Solve A * X = B.
         //
-        //        Apply row INTEGERerchanges to the right hand sides.
+        //        Apply row interchanges to the right hand sides.
         //
         Claswp(nrhs, b, ldb, 1, n, ipiv, 1);
         //
@@ -108,7 +108,7 @@ void Cgetrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
         //
         Ctrsm("Left", "Lower", trans, "Unit", n, nrhs, one, a, lda, b, ldb);
         //
-        //        Apply row INTEGERerchanges to the solution vectors.
+        //        Apply row interchanges to the solution vectors.
         //
         Claswp(nrhs, b, ldb, 1, n, ipiv, -1);
     }

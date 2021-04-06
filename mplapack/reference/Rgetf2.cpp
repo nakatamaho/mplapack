@@ -92,7 +92,7 @@ void Rgetf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
         ipiv[j - 1] = jp;
         if (a[(jp - 1) + (j - 1) * lda] != zero) {
             //
-            //           Apply the INTEGERerchange to columns 1:N.
+            //           Apply the interchange to columns 1:N.
             //
             if (jp != j) {
                 Rswap(n, &a[(j - 1)], lda, &a[(jp - 1)], lda);

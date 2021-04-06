@@ -92,7 +92,7 @@ void Cgetf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
         ipiv[j - 1] = jp;
         if (a[(jp - 1) + (j - 1) * lda] != zero) {
             //
-            //           Apply the INTEGERerchange to columns 1:N.
+            //           Apply the interchange to columns 1:N.
             //
             if (jp != j) {
                 Cswap(n, &a[(j - 1)], lda, &a[(jp - 1)], lda);

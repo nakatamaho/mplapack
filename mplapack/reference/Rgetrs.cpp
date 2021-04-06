@@ -85,7 +85,7 @@ void Rgetrs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *a, INT
         //
         //        Solve A * X = B.
         //
-        //        Apply row INTEGERerchanges to the right hand sides.
+        //        Apply row interchanges to the right hand sides.
         //
         Rlaswp(nrhs, b, ldb, 1, n, ipiv, 1);
         //
@@ -108,7 +108,7 @@ void Rgetrs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *a, INT
         //
         Rtrsm("Left", "Lower", "Transpose", "Unit", n, nrhs, one, a, lda, b, ldb);
         //
-        //        Apply row INTEGERerchanges to the solution vectors.
+        //        Apply row interchanges to the solution vectors.
         //
         Rlaswp(nrhs, b, ldb, 1, n, ipiv, -1);
     }

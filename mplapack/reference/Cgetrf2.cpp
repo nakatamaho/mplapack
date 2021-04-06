@@ -107,7 +107,7 @@ void Cgetrf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         ipiv[1 - 1] = i;
         if (a[(i - 1)] != zero) {
             //
-            //           Apply the INTEGERerchange
+            //           Apply the interchange
             //
             if (i != 1) {
                 temp = a[(1 - 1)];
@@ -147,7 +147,7 @@ void Cgetrf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         }
         //
         //                              [ A12 ]
-        //        Apply INTEGERerchanges to [ --- ]
+        //        Apply interchanges to [ --- ]
         //                              [ A22 ]
         //
         Claswp(n2, &a[((n1 + 1) - 1) * lda], lda, 1, n1, ipiv, 1);
@@ -173,7 +173,7 @@ void Cgetrf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             ipiv[i - 1] += n1;
         }
         //
-        //        Apply INTEGERerchanges to A21
+        //        Apply interchanges to A21
         //
         Claswp(n1, &a[(1 - 1)], lda, n1 + 1, min(m, n), ipiv, 1);
         //

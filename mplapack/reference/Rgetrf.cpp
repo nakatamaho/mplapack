@@ -109,13 +109,13 @@ void Rgetrf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
                 ipiv[i - 1] += j - 1;
             }
             //
-            //           Apply INTEGERerchanges to columns 1:J-1.
+            //           Apply interchanges to columns 1:J-1.
             //
             Rlaswp(j - 1, a, lda, j, j + jb - 1, ipiv, 1);
             //
             if (j + jb <= n) {
                 //
-                //              Apply INTEGERerchanges to columns J+JB:N.
+                //              Apply interchanges to columns J+JB:N.
                 //
                 Rlaswp(n - j - jb + 1, &a[((j + jb) - 1) * lda], lda, j, j + jb - 1, ipiv, 1);
                 //

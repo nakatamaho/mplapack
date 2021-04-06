@@ -102,7 +102,7 @@ void Rsytrs_3(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
         //
         //        (We can do the simple loop over IPIV with decrement -1,
         //        since the ABS value of IPIV( I ) represents the row index
-        //        of the INTEGERerchange with row i in both 1x1 and 2x2 pivot cases)
+        //        of the interchange with row i in both 1x1 and 2x2 pivot cases)
         //
         for (k = n; k >= 1; k = k - 1) {
             kp = abs(ipiv[k - 1]);
@@ -148,7 +148,7 @@ void Rsytrs_3(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
         //
         //        (We can do the simple loop over IPIV with increment 1,
         //        since the ABS value of IPIV(I) represents the row index
-        //        of the INTEGERerchange with row i in both 1x1 and 2x2 pivot cases)
+        //        of the interchange with row i in both 1x1 and 2x2 pivot cases)
         //
         for (k = 1; k <= n; k = k + 1) {
             kp = abs(ipiv[k - 1]);
@@ -169,7 +169,7 @@ void Rsytrs_3(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
         //
         //        (We can do the simple loop over IPIV with increment 1,
         //        since the ABS value of IPIV(I) represents the row index
-        //        of the INTEGERerchange with row i in both 1x1 and 2x2 pivot cases)
+        //        of the interchange with row i in both 1x1 and 2x2 pivot cases)
         //
         for (k = 1; k <= n; k = k + 1) {
             kp = abs(ipiv[k - 1]);
@@ -215,7 +215,7 @@ void Rsytrs_3(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
         //
         //        (We can do the simple loop over IPIV with decrement -1,
         //        since the ABS value of IPIV(I) represents the row index
-        //        of the INTEGERerchange with row i in both 1x1 and 2x2 pivot cases)
+        //        of the interchange with row i in both 1x1 and 2x2 pivot cases)
         //
         for (k = n; k >= 1; k = k - 1) {
             kp = abs(ipiv[k - 1]);

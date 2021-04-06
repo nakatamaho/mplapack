@@ -78,7 +78,7 @@ void Rgtsv(INTEGER const n, INTEGER const nrhs, REAL *dl, REAL *d, REAL *du, REA
         for (i = 1; i <= n - 2; i = i + 1) {
             if (abs(d[i - 1]) >= abs(dl[i - 1])) {
                 //
-                //              No row INTEGERerchange required
+                //              No row interchange required
                 //
                 if (d[i - 1] != zero) {
                     fact = dl[i - 1] / d[i - 1];
@@ -135,7 +135,7 @@ void Rgtsv(INTEGER const n, INTEGER const nrhs, REAL *dl, REAL *d, REAL *du, REA
         for (i = 1; i <= n - 2; i = i + 1) {
             if (abs(d[i - 1]) >= abs(dl[i - 1])) {
                 //
-                //              No row INTEGERerchange required
+                //              No row interchange required
                 //
                 if (d[i - 1] != zero) {
                     fact = dl[i - 1] / d[i - 1];

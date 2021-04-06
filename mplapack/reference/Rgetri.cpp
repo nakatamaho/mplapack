@@ -157,7 +157,7 @@ void Rgetri(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *wo
         }
     }
     //
-    //     Apply column INTEGERerchanges.
+    //     Apply column interchanges.
     //
     INTEGER jp = 0;
     for (j = n - 1; j >= 1; j = j - 1) {

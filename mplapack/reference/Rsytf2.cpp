@@ -117,7 +117,7 @@ void Rsytf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         }
         kstep = 1;
         //
-        //        Determine rows and columns to be INTEGERerchanged and whether
+        //        Determine rows and columns to be interchanged and whether
         //        a 1-by-1 or 2-by-2 pivot block will be used
         //
         absakk = abs(a[(k - 1) + (k - 1) * lda]);
@@ -145,7 +145,7 @@ void Rsytf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         } else {
             if (absakk >= alpha * colmax) {
                 //
-                //              no INTEGERerchange, use 1-by-1 pivot block
+                //              no interchange, use 1-by-1 pivot block
                 //
                 kp = k;
             } else {
@@ -162,18 +162,18 @@ void Rsytf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
                     //
-                    //                 no INTEGERerchange, use 1-by-1 pivot block
+                    //                 no interchange, use 1-by-1 pivot block
                     //
                     kp = k;
                 } else if (abs(a[(imax - 1) + (imax - 1) * lda]) >= alpha * rowmax) {
                     //
-                    //                 INTEGERerchange rows and columns K and IMAX, use 1-by-1
+                    //                 interchange rows and columns K and IMAX, use 1-by-1
                     //                 pivot block
                     //
                     kp = imax;
                 } else {
                     //
-                    //                 INTEGERerchange rows and columns K-1 and IMAX, use 2-by-2
+                    //                 interchange rows and columns K-1 and IMAX, use 2-by-2
                     //                 pivot block
                     //
                     kp = imax;
@@ -256,7 +256,7 @@ void Rsytf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
             }
         }
         //
-        //        Store details of the INTEGERerchanges in IPIV
+        //        Store details of the interchanges in IPIV
         //
         if (kstep == 1) {
             ipiv[k - 1] = kp;
@@ -287,7 +287,7 @@ void Rsytf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         }
         kstep = 1;
         //
-        //        Determine rows and columns to be INTEGERerchanged and whether
+        //        Determine rows and columns to be interchanged and whether
         //        a 1-by-1 or 2-by-2 pivot block will be used
         //
         absakk = abs(a[(k - 1) + (k - 1) * lda]);
@@ -315,7 +315,7 @@ void Rsytf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         } else {
             if (absakk >= alpha * colmax) {
                 //
-                //              no INTEGERerchange, use 1-by-1 pivot block
+                //              no interchange, use 1-by-1 pivot block
                 //
                 kp = k;
             } else {
@@ -332,18 +332,18 @@ void Rsytf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
                     //
-                    //                 no INTEGERerchange, use 1-by-1 pivot block
+                    //                 no interchange, use 1-by-1 pivot block
                     //
                     kp = k;
                 } else if (abs(a[(imax - 1) + (imax - 1) * lda]) >= alpha * rowmax) {
                     //
-                    //                 INTEGERerchange rows and columns K and IMAX, use 1-by-1
+                    //                 interchange rows and columns K and IMAX, use 1-by-1
                     //                 pivot block
                     //
                     kp = imax;
                 } else {
                     //
-                    //                 INTEGERerchange rows and columns K+1 and IMAX, use 2-by-2
+                    //                 interchange rows and columns K+1 and IMAX, use 2-by-2
                     //                 pivot block
                     //
                     kp = imax;
@@ -430,7 +430,7 @@ void Rsytf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
             }
         }
         //
-        //        Store details of the INTEGERerchanges in IPIV
+        //        Store details of the interchanges in IPIV
         //
         if (kstep == 1) {
             ipiv[k - 1] = kp;

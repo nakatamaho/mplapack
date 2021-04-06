@@ -29,12 +29,12 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-REAL abs1(COMPLEX ff)
+inline REAL abs1(COMPLEX ff)
 {
   return max(abs(ff.real()), abs(ff.imag()));
 }
 
-REAL abssq(COMPLEX ff)
+inline REAL abssq(COMPLEX ff)
 {
   REAL temp;
 
