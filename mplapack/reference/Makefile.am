@@ -85,6 +85,10 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
+iMlazlr.cpp \
+iMlazlc.cpp \
+iMladlr.cpp \
+iMladlc.cpp \
 Claev2.cpp \
 Clansy.cpp \
 Clanhe.cpp \
