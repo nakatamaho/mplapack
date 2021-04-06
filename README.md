@@ -31,6 +31,20 @@ $ cd mplapack
 $ /usr/bin/time docker build -t mplapack:ubuntu2004 -f Dockerfile_ubuntu20.04 . 2>&1 | tee log.ubuntu2004
 ```
 
+CentOS 7 (amd64)
+```
+$ git clone https://github.com/nakatamaho/mplapack/
+$ cd mplapack
+$ /usr/bin/time docker build -t mplapack:centos7 -f Dockerfile_CentOS7 . 2>&1 | tee log.CentOS7
+```
+
+CentOS 8 (amd64, AArch64)
+```
+$ git clone https://github.com/nakatamaho/mplapack/
+$ cd mplapack
+$ /usr/bin/time docker build -t mplapack:centos8 -f Dockerfile_CentOS8 . 2>&1 | tee log.CentOS8
+```
+
 Ubuntu 18.04 (amd64, AArch64)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
