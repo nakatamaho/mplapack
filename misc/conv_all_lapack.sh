@@ -28,10 +28,12 @@ rm -f LAPACK_LIST LAPACK_LIST_  LAPACK_LIST__
 echo "sed \\" > LAPACK_LIST
 echo "-e 's///g'" >> LAPACK_LIST__
 
+FILES_SUBSET=`ls ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/d*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/z*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/id*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/iz*.f | grep -v dsdot | grep -v zggsvp3`
+
 for _file in $FILES_SUBSET; do
 oldfilename=`basename $_file | sed -e 's/\.f$//'` 
 oldfilenameUP=`basename $_file | sed -e 's/\.f$//' | tr a-z A-Z`
-newfilename=`basename $_file | sed -e 's/^zdscal/CRscal/g' -e 's/^zdrot/CRrot/g' -e 's/^dcabs/RCabs/g' -e 's/^dzasum/RCasum/g' -e 's/^dznrm2/RCnrm2/g' | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^iz/iC/' -e 's/\.f$//'`
+newfilename=`basename $_file | sed -e 's/^dzsum1/RCsum1/g' -e 's/^zdscal/CRscal/g' -e 's/^zdrot/CRrot/g' -e 's/^dcabs/RCabs/g' -e 's/^dzasum/RCasum/g' -e 's/^dznrm2/RCnrm2/g' | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^iz/iC/' -e 's/\.f$//'`
 echo "-e 's/$oldfilename/$newfilename/g' \\" >> LAPACK_LIST_
 echo "-e 's/$oldfilenameUP/$newfilename/g' \\" >> LAPACK_LIST_
 done
@@ -50,7 +52,9 @@ rm -f FILELIST
 for _file in $FILES_SUBSET ; do
 bash ~/mplapack/misc/fem_convert_lapack.sh $_file
 oldfilename=`basename $_file | sed -e 's/\.f$//'`
-newfilename=`basename $_file | sed -e 's/^zdscal/CRscal/g' -e 's/^zdrot/CRrot/g' -e 's/^dcabs/RCabs/g' -e 's/^dzasum/RCasum/g' -e 's/^dznrm2/RCnrm2/g' | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^iz/iC/' -e 's/\.f$//'`
+newfilename=`basename $_file | sed -e 's/^dzsum1/RCsum1/g' -e 's/^zdscal/CRscal/g' -e 's/^zdrot/CRrot/g' -e 's/^dcabs/RCabs/g' -e 's/^dzasum/RCasum/g' -e 's/^dznrm2/RCnrm2/g' | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^iz/iC/' -e 's/\.f$//'`
+
+if [ ! -e $newfilename ]; then
 cat ${oldfilename}.cpp | bash BLAS_LIST | bash LAPACK_LIST | sed 's/dlamch/Rlamch/g' > ${newfilename}.cpp_
 mv ${newfilename}.cpp_  ${newfilename}.cpp
 sed -i -e 's/const &/const /g' ${newfilename}.cpp
@@ -67,8 +71,9 @@ sed -i -e 's/, w\[/, \&w\[/g' ${newfilename}.cpp
 sed -i -e 's/, z\[/, \&z\[/g' ${newfilename}.cpp
 sed -i -e 's/, ipiv\[/, \&ipiv\[/g' ${newfilename}.cpp
 sed -i -e 's/, work\[/, \&work\[/g' ${newfilename}.cpp
+fi
 /usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' ${newfilename}.cpp |  tr ':' ' ' | sed -e 's/^typename //' > ${newfilename}.hpp
-rm ${oldfilename}.cpp
+rm -f ${oldfilename}.cpp
 echo "${newfilename}.cpp \\" >> FILELIST
 done
 
