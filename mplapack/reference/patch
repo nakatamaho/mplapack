@@ -26,3 +26,122 @@
      if (n == 0) {
          value = zero;
      } else if (Mlsame(norm, "M")) {
+--- Rgetri.cpp~	2021-04-06 08:41:16.668398293 +0900
++++ Rgetri.cpp	2021-04-06 08:42:49.250699928 +0900
+@@ -93,10 +93,10 @@
+     INTEGER ldwork = n;
+     INTEGER iws = 0;
+     if (nb > 1 && nb < n) {
+-        iws = max(ldwork * nb, 1);
++        iws = max(ldwork * nb, (INTEGER)1);
+         if (lwork < iws) {
+             nb = lwork / ldwork;
+-            nbmin = max(2, iMlaenv(2, "Rgetri", " ", n, -1, -1, -1));
++            nbmin = max((INTEGER)2, iMlaenv(2, "Rgetri", " ", n, -1, -1, -1));
+         }
+     } else {
+         iws = n;
+--- Rlaorhr_col_getrfnp2.cpp~	2021-04-06 09:15:54.292429657 +0900
++++ Rlaorhr_col_getrfnp2.cpp	2021-04-06 09:17:11.624988625 +0900
+@@ -88,7 +88,7 @@
+         //
+         //        Transfer the sign
+         //
+-        d[1 - 1] = -sign(one, &a[(1 - 1)]);
++        d[1 - 1] = -sign(one, a[(1 - 1)]);
+         //
+         //        Construct the row of U
+         //
+@@ -101,7 +101,7 @@
+         //
+         //        Transfer the sign
+         //
+-        d[1 - 1] = -sign(one, &a[(1 - 1)]);
++        d[1 - 1] = -sign(one, a[(1 - 1)]);
+         //
+         //        Construct the row of U
+         //
+--- Rlapy3.cpp~	2021-04-06 09:15:54.608429638 +0900
++++ Rlapy3.cpp	2021-04-06 09:17:49.140414965 +0900
+@@ -52,7 +52,7 @@
+     REAL xabs = abs(x);
+     REAL yabs = abs(y);
+     REAL zabs = abs(z);
+-    REAL w = max(xabs, yabs, zabs);
++    REAL w = max(max(xabs, yabs), zabs);
+     const REAL zero = 0.0;
+     if (w == zero) {
+         //     W can be zero for max(0,nan,0)
+--- Rlarfb.cpp~	2021-04-06 09:41:30.176341327 +0900
++++ Rlarfb.cpp	2021-04-06 09:45:58.191156448 +0900
+@@ -58,11 +58,11 @@
+         return;
+     }
+     //
+-    str<1> transt = char0;
++    char transt;
+     if (Mlsame(trans, "N")) {
+-        transt = "T";
++        transt = 'T';
+     } else {
+-        transt = "N";
++        transt = 'N';
+     }
+     //
+     INTEGER j = 0;
+@@ -101,7 +101,7 @@
+                 //
+                 //              W := W * T**T  or  W * T
+                 //
+-                Rtrmm("Right", "Upper", transt, "Non-unit", n, k, one, t, ldt, work, ldwork);
++                Rtrmm("Right", "Upper", &transt, "Non-unit", n, k, one, t, ldt, work, ldwork);
+                 //
+                 //              C := C - V * W**T
+                 //
+@@ -203,7 +203,7 @@
+                 //
+                 //              W := W * T**T  or  W * T
+                 //
+-                Rtrmm("Right", "Lower", transt, "Non-unit", n, k, one, t, ldt, work, ldwork);
++                Rtrmm("Right", "Lower", &transt, "Non-unit", n, k, one, t, ldt, work, ldwork);
+                 //
+                 //              C := C - V * W**T
+                 //
+@@ -307,7 +307,7 @@
+                 //
+                 //              W := W * T**T  or  W * T
+                 //
+-                Rtrmm("Right", "Upper", transt, "Non-unit", n, k, one, t, ldt, work, ldwork);
++                Rtrmm("Right", "Upper", &transt, "Non-unit", n, k, one, t, ldt, work, ldwork);
+                 //
+                 //              C := C - V**T * W**T
+                 //
+@@ -409,7 +409,7 @@
+                 //
+                 //              W := W * T**T  or  W * T
+                 //
+-                Rtrmm("Right", "Lower", transt, "Non-unit", n, k, one, t, ldt, work, ldwork);
++                Rtrmm("Right", "Lower", &transt, "Non-unit", n, k, one, t, ldt, work, ldwork);
+                 //
+                 //              C := C - V**T * W**T
+                 //
+--- Rorgqr.cpp_org	2021-04-06 10:24:08.675295850 +0900
++++ Rorgqr.cpp	2021-04-06 10:32:41.350138705 +0900
+@@ -94,7 +94,7 @@
+         //
+         //        Determine when to cross over from blocked to unblocked code.
+         //
+-        nx = max(0, iMlaenv(3, "Rorgqr", " ", m, n, k, -1));
++        nx = max((INTEGER)0, iMlaenv(3, "Rorgqr", " ", m, n, k, -1));
+         if (nx < k) {
+             //
+             //           Determine if workspace is large enough for blocked code.
+@@ -107,7 +107,7 @@
+                 //              determine the minimum value of NB.
+                 //
+                 nb = lwork / ldwork;
+-                nbmin = max(2, iMlaenv(2, "Rorgqr", " ", m, n, k, -1));
++                nbmin = max((INTEGER)2, iMlaenv(2, "Rorgqr", " ", m, n, k, -1));
+             }
+         }
+     }
