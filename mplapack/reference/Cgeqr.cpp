@@ -61,11 +61,11 @@ void Cgeqr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMP
     //
     bool lquery = (tsize == -1 || tsize == -2 || lwork == -1 || lwork == -2);
     //
-    bool mINTEGER = false;
+    bool mint = false;
     bool minw = false;
     if (tsize == -2 || lwork == -2) {
         if (tsize != -1) {
-            mINTEGER = true;
+            mint = true;
         }
         if (lwork != -1) {
             minw = true;
@@ -89,7 +89,7 @@ void Cgeqr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMP
     if (nb > min(m, n) || nb < 1) {
         nb = 1;
     }
-    INTEGER mINTEGERsz = n + 5;
+    INTEGER mintsz = n + 5;
     INTEGER nblcks = 0;
     if (mb > n && m > n) {
         if (mod(m - n, mb - n) == 0) {
@@ -104,7 +104,7 @@ void Cgeqr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMP
     //     Determine if the workspace size satisfies minimal size
     //
     bool lminws = false;
-    if ((tsize < max((INTEGER)1, nb * n * nblcks + 5) || lwork < nb * n) && (lwork >= n) && (tsize >= mINTEGERsz) && (!lquery)) {
+    if ((tsize < max((INTEGER)1, nb * n * nblcks + 5) || lwork < nb * n) && (lwork >= n) && (tsize >= mintsz) && (!lquery)) {
         if (tsize < max((INTEGER)1, nb * n * nblcks + 5)) {
             lminws = true;
             nb = 1;
@@ -129,8 +129,8 @@ void Cgeqr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMP
     }
     //
     if (info == 0) {
-        if (mINTEGER) {
-            t[1 - 1] = mINTEGERsz;
+        if (mint) {
+            t[1 - 1] = mintsz;
         } else {
             t[1 - 1] = nb * n * nblcks + 5;
         }
