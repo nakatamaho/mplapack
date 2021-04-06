@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-REAL Rzsum1(INTEGER const n, COMPLEX *cx, INTEGER const incx) {
+REAL RCsum1(INTEGER const n, COMPLEX *cx, INTEGER const incx) {
     REAL return_value = 0.0;
     REAL stemp = 0.0;
     INTEGER nincx = 0;
@@ -85,6 +85,6 @@ statement_20:
     return_value = stemp;
     return return_value;
     //
-    //     End of Rzsum1
+    //     End of RCsum1
     //
 }
