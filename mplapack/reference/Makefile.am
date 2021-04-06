@@ -93,7 +93,6 @@ Clarfg.cpp \
 Clartg.cpp \
 Cpotf2.cpp \
 Clascl.cpp \
-Csteqr.cpp \
 Chetd2.cpp \
 Clatrd.cpp \
 Rsytrd.cpp \
@@ -414,4 +413,5 @@ Rtrti2.cpp \
 Rtrtrs.cpp \
 Rtrttp.cpp \
 iCmax1.cpp \
+Csteqr.cpp \
 iMlaenv.cpp 

@@ -127,7 +127,7 @@ void Cunhr_col(INTEGER const m, INTEGER const n, INTEGER const nb, COMPLEX *a, I
         //
         //        (2-1) Copy the upper-triangular part of the current JNB-by-JNB
         //        diagonal block U(JB) (of the N-by-N matrix U) stored
-        //        in A(JB:JB+JNB-1,JB:JB+JNB-1) INTEGERo the upper-triangular part
+        //        in A(JB:JB+JNB-1,JB:JB+JNB-1) into the upper-triangular part
         //        of the current JNB-by-JNB block T(1:JNB,JB:JB+JNB-1)
         //        column-by-column, total JNB*(JNB+1)/2 elements.
         //

@@ -90,7 +90,7 @@ void Rlarrr(INTEGER const n, REAL *d, REAL *e, INTEGER &info) {
     //     x = max(OFFDIG + OFFDIG2), so when x is close to 1/2, no relative
     //     accuracy is promised.  In the notation of the code fragment below,
     //     1/(1 - (OFFDIG + OFFDIG2)) is the condition number.
-    //     We don't think it is worth going INTEGERo "sdd mode" unless the relative
+    //     We don't think it is worth going into "sdd mode" unless the relative
     //     condition number is reasonable, not 1/macheps.
     //     The threshold should be compatible with other thresholds used in the
     //     code. We set  OFFDIG + OFFDIG2 <= .999 =: RELCOND, it corresponds

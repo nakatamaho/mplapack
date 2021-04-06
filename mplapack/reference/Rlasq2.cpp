@@ -403,7 +403,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
             }
         }
         //
-        //        Put -(initial shift) INTEGERo DMIN.
+        //        Put -(initial shift) into DMIN.
         //
         dmin = -max(zero, qmin - two * sqrt(qmin) * sqrt(emax));
         //

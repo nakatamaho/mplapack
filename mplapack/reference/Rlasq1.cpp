@@ -96,7 +96,7 @@ void Rlasq1(INTEGER const n, REAL *d, REAL *e, REAL *work, INTEGER &info) {
         sigmx = max(sigmx, d[i - 1]);
     }
     //
-    //     Copy D and E INTEGERo WORK (in the Z format) and scale (squaring the
+    //     Copy D and E into WORK (in the Z format) and scale (squaring the
     //     input data makes scaling by a power of the radix poINTEGERless).
     //
     REAL eps = Rlamch("Precision");
@@ -123,7 +123,7 @@ void Rlasq1(INTEGER const n, REAL *d, REAL *e, REAL *work, INTEGER &info) {
     } else if (info == 2) {
         //
         //     Maximum number of iterations exceeded.  Move data from WORK
-        //     INTEGERo D and E so the calling subroutine can try to finish
+        //     into D and E so the calling subroutine can try to finish
         //
         for (i = 1; i <= n; i = i + 1) {
             d[i - 1] = sqrt(work[(2 * i - 1) - 1]);

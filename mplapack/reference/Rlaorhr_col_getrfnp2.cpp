@@ -125,7 +125,7 @@ void Rlaorhr_col_getrfnp2(INTEGER const m, INTEGER const n, REAL *a, INTEGER con
         //
     } else {
         //
-        //        Divide the matrix B INTEGERo four submatrices
+        //        Divide the matrix B into four submatrices
         //
         n1 = min(m, n) / 2;
         n2 = n - n1;

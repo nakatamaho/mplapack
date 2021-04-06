@@ -106,7 +106,7 @@ statement_10:
         //
         if (dir == 0) {
             //
-            //           Sort INTEGERo decreasing order
+            //           Sort into decreasing order
             //
             for (i = start + 1; i <= endd; i = i + 1) {
                 for (j = i; j >= start + 1; j = j - 1) {
@@ -123,7 +123,7 @@ statement_10:
             //
         } else {
             //
-            //           Sort INTEGERo increasing order
+            //           Sort into increasing order
             //
             for (i = start + 1; i <= endd; i = i + 1) {
                 for (j = i; j >= start + 1; j = j - 1) {
@@ -170,7 +170,7 @@ statement_10:
         //
         if (dir == 0) {
             //
-            //           Sort INTEGERo decreasing order
+            //           Sort into decreasing order
             //
             i = start - 1;
             j = endd + 1;

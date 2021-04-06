@@ -172,7 +172,7 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
             }
             here += nbnext;
             //
-            //           Test if 2-by-2 block breaks INTEGERo two 1-by-1 blocks.
+            //           Test if 2-by-2 block breaks into two 1-by-1 blocks.
             //
             if (nbf == 2) {
                 if (a[((here + 1) - 1) + (here - 1) * lda] == zero) {
@@ -271,7 +271,7 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
             }
             here = here - nbnext;
             //
-            //           Test if 2-by-2 block breaks INTEGERo two 1-by-1 blocks.
+            //           Test if 2-by-2 block breaks into two 1-by-1 blocks.
             //
             if (nbf == 2) {
                 if (a[((here + 1) - 1) + (here - 1) * lda] == zero) {

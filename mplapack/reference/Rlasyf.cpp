@@ -205,7 +205,7 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
             if (kp != kk) {
                 //
                 //              Copy non-updated column KK to column KP of submatrix A
-                //              at step K. No need to copy element INTEGERo column K
+                //              at step K. No need to copy element into column K
                 //              (or K and K-1 for 2-by-2 pivot) of A, since these columns
                 //              will be later overwritten.
                 //
@@ -491,7 +491,7 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
             if (kp != kk) {
                 //
                 //              Copy non-updated column KK to column KP of submatrix A
-                //              at step K. No need to copy element INTEGERo column K
+                //              at step K. No need to copy element into column K
                 //              (or K and K+1 for 2-by-2 pivot) of A, since these columns
                 //              will be later overwritten.
                 //

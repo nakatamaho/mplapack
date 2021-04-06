@@ -156,7 +156,7 @@ void Rtrexc(const char *compq, INTEGER const n, REAL *t, INTEGER const ldt, REAL
             }
             here += nbnext;
             //
-            //           Test if 2 by 2 block breaks INTEGERo two 1 by 1 blocks
+            //           Test if 2 by 2 block breaks into two 1 by 1 blocks
             //
             if (nbf == 2) {
                 if (t[((here + 1) - 1) + (here - 1) * ldt] == zero) {
@@ -241,7 +241,7 @@ void Rtrexc(const char *compq, INTEGER const n, REAL *t, INTEGER const ldt, REAL
             }
             here = here - nbnext;
             //
-            //           Test if 2 by 2 block breaks INTEGERo two 1 by 1 blocks
+            //           Test if 2 by 2 block breaks into two 1 by 1 blocks
             //
             if (nbf == 2) {
                 if (t[((here + 1) - 1) + (here - 1) * ldt] == zero) {

@@ -75,7 +75,7 @@ void Rlarfb_gett(const char *ident, INTEGER const m, INTEGER const n, INTEGER co
     if (n > k) {
         //
         //        col2_(1) Compute W2: = A2. Therefore, copy A2 = A(1:K, K+1:N)
-        //        INTEGERo W2=WORK(1:K, 1:N-K) column-by-column.
+        //        into W2=WORK(1:K, 1:N-K) column-by-column.
         //
         for (j = 1; j <= n - k; j = j + 1) {
             Rcopy(k, &a[((k + j) - 1) * lda], 1, &work[(j - 1) * ldwork], 1);
@@ -140,7 +140,7 @@ void Rlarfb_gett(const char *ident, INTEGER const m, INTEGER const n, INTEGER co
     //     ------------------------------------------------------------------
     //
     //     col1_(1) Compute W1: = A1. Copy the upper-triangular
-    //     A1 = A(1:K, 1:K) INTEGERo the upper-triangular
+    //     A1 = A(1:K, 1:K) into the upper-triangular
     //     W1 = WORK(1:K, 1:K) column-by-column.
     //
     for (j = 1; j <= k; j = j + 1) {

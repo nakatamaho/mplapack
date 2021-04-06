@@ -264,7 +264,7 @@ void Rsytf2_rk(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, RE
                 a[(k - 1) + (k - 1) * lda] = a[(p - 1) + (p - 1) * lda];
                 a[(p - 1) + (p - 1) * lda] = t;
                 //
-                //              Convert upper triangle of A INTEGERo U form by applying
+                //              Convert upper triangle of A into U form by applying
                 //              the INTEGERerchanges in columns k+1:N.
                 //
                 if (k < n) {
@@ -296,7 +296,7 @@ void Rsytf2_rk(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, RE
                     a[(kp - 1) + (k - 1) * lda] = t;
                 }
                 //
-                //              Convert upper triangle of A INTEGERo U form by applying
+                //              Convert upper triangle of A into U form by applying
                 //              the INTEGERerchanges in columns k+1:N.
                 //
                 if (k < n) {
@@ -579,7 +579,7 @@ void Rsytf2_rk(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, RE
                 a[(k - 1) + (k - 1) * lda] = a[(p - 1) + (p - 1) * lda];
                 a[(p - 1) + (p - 1) * lda] = t;
                 //
-                //              Convert lower triangle of A INTEGERo L form by applying
+                //              Convert lower triangle of A into L form by applying
                 //              the INTEGERerchanges in columns 1:k-1.
                 //
                 if (k > 1) {
@@ -611,7 +611,7 @@ void Rsytf2_rk(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, RE
                     a[(kp - 1) + (k - 1) * lda] = t;
                 }
                 //
-                //              Convert lower triangle of A INTEGERo L form by applying
+                //              Convert lower triangle of A into L form by applying
                 //              the INTEGERerchanges in columns 1:k-1.
                 //
                 if (k > 1) {

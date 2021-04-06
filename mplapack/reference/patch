@@ -236,7 +236,7 @@ Rlartgs calls Rlartgp which might changes const cs and cosnt sn
              }
          } else {
              //
--            //           Sort INTEGERo increasing order
+-            //           Sort into increasing order
 +            //           Sort into increasing order
              //
              i = start - 1;

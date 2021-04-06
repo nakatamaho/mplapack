@@ -110,7 +110,7 @@ void Rlasyf_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             Rgemv("No transpose", mj, j - k1, -one, &h[(j - 1) + (k1 - 1) * ldh], ldh, &a[(j - 1) * lda], 1, one, &h[(j - 1) + (j - 1) * ldh], 1);
         }
         //
-        //        Copy H(i:M, i) INTEGERo WORK
+        //        Copy H(i:M, i) into WORK
         //
         Rcopy(mj, &h[(j - 1) + (j - 1) * ldh], 1, &work[1 - 1], 1);
         //
@@ -192,7 +192,7 @@ void Rlasyf_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             //
             if (j < nb) {
                 //
-                //              Copy A(J+1:M, J+1) INTEGERo H(J:M, J),
+                //              Copy A(J+1:M, J+1) into H(J:M, J),
                 //
                 Rcopy(m - j, &a[((k + 1) - 1) + ((j + 1) - 1) * lda], lda, &h[((j + 1) - 1) + ((j + 1) - 1) * ldh], 1);
             }
@@ -254,7 +254,7 @@ void Rlasyf_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             Rgemv("No transpose", mj, j - k1, -one, &h[(j - 1) + (k1 - 1) * ldh], ldh, &a[(j - 1)], lda, one, &h[(j - 1) + (j - 1) * ldh], 1);
         }
         //
-        //        Copy H(J:M, J) INTEGERo WORK
+        //        Copy H(J:M, J) into WORK
         //
         Rcopy(mj, &h[(j - 1) + (j - 1) * ldh], 1, &work[1 - 1], 1);
         //
@@ -336,7 +336,7 @@ void Rlasyf_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             //
             if (j < nb) {
                 //
-                //              Copy A(J+1:M, J+1) INTEGERo H(J+1:M, J),
+                //              Copy A(J+1:M, J+1) into H(J+1:M, J),
                 //
                 Rcopy(m - j, &a[((j + 1) - 1) + ((k + 1) - 1) * lda], 1, &h[((j + 1) - 1) + ((j + 1) - 1) * ldh], 1);
             }
