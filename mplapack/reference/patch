@@ -342,3 +342,81 @@ Rlartgs calls Rlartgp which might changes const cs and cosnt sn
              }
              d[(l - 1) - 1] = rt1;
              d[l - 1] = rt2;
+--- Cungqr.cpp_org	2021-04-06 11:31:18.119617342 +0900
++++ Cungqr.cpp	2021-04-06 11:31:41.648868728 +0900
+@@ -94,7 +94,7 @@
+         //
+         //        Determine when to cross over from blocked to unblocked code.
+         //
+-        nx = max(0, iMlaenv(3, "Cungqr", " ", m, n, k, -1));
++        nx = max((INTEGER)0, iMlaenv(3, "Cungqr", " ", m, n, k, -1));
+         if (nx < k) {
+             //
+             //           Determine if workspace is large enough for blocked code.
+@@ -107,7 +107,7 @@
+                 //              determine the minimum value of NB.
+                 //
+                 nb = lwork / ldwork;
+-                nbmin = max(2, iMlaenv(2, "Cungqr", " ", m, n, k, -1));
++                nbmin = max((INTEGER)2, iMlaenv(2, "Cungqr", " ", m, n, k, -1));
+             }
+         }
+     }
+--- Rsterf.cpp_org	2021-04-06 11:34:48.701307312 +0900
++++ Rsterf.cpp	2021-04-06 11:35:18.890264302 +0900
+@@ -210,7 +210,7 @@
+         //
+         if (m == l + 1) {
+             rte = sqrt(e[l - 1]);
+-            Rlae2(d[l - 1], rte, &d[(l + 1) - 1], rt1, rt2);
++            Rlae2(d[l - 1], rte, d[(l + 1) - 1], rt1, rt2);
+             d[l - 1] = rt1;
+             d[(l + 1) - 1] = rt2;
+             e[l - 1] = zero;
+@@ -303,7 +303,7 @@
+         //
+         if (m == l - 1) {
+             rte = sqrt(e[(l - 1) - 1]);
+-            Rlae2(d[l - 1], rte, &d[(l - 1) - 1], rt1, rt2);
++            Rlae2(d[l - 1], rte, d[(l - 1) - 1], rt1, rt2);
+             d[l - 1] = rt1;
+             d[(l - 1) - 1] = rt2;
+             e[(l - 1) - 1] = zero;
+--- Rlatrd.cpp	2021-04-06 11:42:07.179825001 +0900
++++ Rlatrd.cpp_new	2021-04-06 11:41:47.137345407 +0900
+@@ -84,7 +84,7 @@
+                 //              Generate elementary reflector H(i) to annihilate
+                 //              A(1:i-2,i)
+                 //
+-                Rlarfg(i - 1, &a[((i - 1) - 1) + (i - 1) * lda], &a[(i - 1) * lda], 1, &tau[(i - 1) - 1]);
++                Rlarfg(i - 1, a[((i - 1) - 1) + (i - 1) * lda], &a[(i - 1) * lda], 1, tau[(i - 1) - 1]);
+                 e[(i - 1) - 1] = a[((i - 1) - 1) + (i - 1) * lda];
+                 a[((i - 1) - 1) + (i - 1) * lda] = one;
+                 //
+@@ -97,7 +97,7 @@
+                     Rgemv("Transpose", i - 1, n - i, one, &a[((i + 1) - 1) * lda], lda, &a[(i - 1) * lda], 1, zero, &w[((i + 1) - 1) + (iw - 1) * ldw], 1);
+                     Rgemv("No transpose", i - 1, n - i, -one, &w[((iw + 1) - 1) * ldw], ldw, &w[((i + 1) - 1) + (iw - 1) * ldw], 1, one, &w[(iw - 1) * ldw], 1);
+                 }
+-                Rscal(i - 1, &tau[(i - 1) - 1], &w[(iw - 1) * ldw], 1);
++                Rscal(i - 1, tau[(i - 1) - 1], &w[(iw - 1) * ldw], 1);
+                 alpha = -half * tau[(i - 1) - 1] * Rdot(i - 1, &w[(iw - 1) * ldw], 1, &a[(i - 1) * lda], 1);
+                 Raxpy(i - 1, alpha, &a[(i - 1) * lda], 1, &w[(iw - 1) * ldw], 1);
+             }
+@@ -118,7 +118,7 @@
+                 //              Generate elementary reflector H(i) to annihilate
+                 //              A(i+2:n,i)
+                 //
+-                Rlarfg(n - i, &a[((i + 1) - 1) + (i - 1) * lda], &a[((min(i + 2) - 1) + (n)-1) * lda], 1, &tau[i - 1]);
++                Rlarfg(n - i, &a[((i + 1) - 1) + (i - 1) * lda], &a[(min(i + 2, n) - 1) + (i - 1) * lda], 1, &tau[i - 1]);
+                 e[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
+                 a[((i + 1) - 1) + (i - 1) * lda] = one;
+                 //
+@@ -129,7 +129,7 @@
+                 Rgemv("No transpose", n - i, i - 1, -one, &a[((i + 1) - 1)], lda, &w[(i - 1) * ldw], 1, one, &w[((i + 1) - 1) + (i - 1) * ldw], 1);
+                 Rgemv("Transpose", n - i, i - 1, one, &a[((i + 1) - 1)], lda, &a[((i + 1) - 1) + (i - 1) * lda], 1, zero, &w[(i - 1) * ldw], 1);
+                 Rgemv("No transpose", n - i, i - 1, -one, &w[((i + 1) - 1)], ldw, &w[(i - 1) * ldw], 1, one, &w[((i + 1) - 1) + (i - 1) * ldw], 1);
+-                Rscal(n - i, &tau[i - 1], &w[((i + 1) - 1) + (i - 1) * ldw], 1);
++                Rscal(n - i, tau[i - 1], &w[((i + 1) - 1) + (i - 1) * ldw], 1);
+                 alpha = -half * tau[i - 1] * Rdot(n - i, &w[((i + 1) - 1) + (i - 1) * ldw], 1, &a[((i + 1) - 1) + (i - 1) * lda], 1);
+                 Raxpy(n - i, alpha, &a[((i + 1) - 1) + (i - 1) * lda], 1, &w[((i + 1) - 1) + (i - 1) * ldw], 1);
+             }

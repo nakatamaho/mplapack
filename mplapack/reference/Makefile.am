@@ -85,7 +85,6 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
-Rsteqr.cpp \
 Rcombssq.cpp \
 Rgesv.cpp \
 Rgetf2.cpp \
@@ -136,6 +135,7 @@ Rpotf2.cpp \
 Rpotrf.cpp \
 Rpotrf2.cpp \
 Rsprfs.cpp \
+Rsteqr.cpp \
 Rsterf.cpp \
 Rsyev.cpp \
 Rsyev_2stage.cpp \
