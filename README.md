@@ -102,6 +102,7 @@ $ cd ; fable.cout sample.f
 ```
 
 # History
+* 2021/4/6  0.9.1 release. CentOS support
 * 2021/4/1  0.9.0 release. Rename to mplapack. You must rename include files, etc. Rewrite and recompilation required.
 * 2012/12/25: MPACK 0.8.0 NVIDIA C2050 support for Rgemm in double-double, and preliminary support for Intel Xeon Phi. ANNOUNCE
 * 2012/12/20: MPACK 0.8.0-RC2 Build fixes on various platforms.
