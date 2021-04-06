@@ -89,6 +89,48 @@ $ cd ; fable.cout sample.f
 
 # History
 * 2021/4/1  0.9.0 release. Rename to mplapack. You must rename include files, etc. Rewrite and recompilation required.
+* 2012/12/25: MPACK 0.8.0 NVIDIA C2050 support for Rgemm in double-double, and preliminary support for Intel Xeon Phi. ANNOUNCE
+* 2012/12/20: MPACK 0.8.0-RC2 Build fixes on various platforms.
+* 2012/12/05: Our Rgemm dd paper "A Fast implementation of matrix-matrix product in double-double precision on NVIDIA C2050 and application to semidefinite programming" is selected as the Best Papers of The Third International Conference on Networking and Computing. Slide is here.
+* 2012/11/29: MPACK 0.8.0-RC1 CUDA version of Rgemm in double-double precision is integrated.
+* 2012/10/13: CUDA 4.2 or later version of accelarated Rgemm in double-double precision on NVIDIA C2050 GPU is now available. Note it does not work on CUDA 4.1. Origial release announce is here., and preprint is available from here, and it will be presented at The Third International Conference on Networking and Computing Okinawa, Japan, December 5-7, 2012 .
+* 2012/06/16: MPACK 0.7.0! Announcement
+* 2012/06/16: Development has been migrated to SVN repository.
+* 2011/10/28: Rgemm accleration in double-double precision on NVIDIA C2050 GPU is now available. Even though papers are not published, you can just try by "make". Note that only CUDA 3.2 is supported. Origial release announce is here.
+* 2011/08/24: Rgemm accleration on NVIDIA C2050 GPU is coming. Unforutnately paper are rejected, so please wait... Here is a pdf slide.
+* 2010/08/20: MPACK 0.6.7! Includes condition number estimators; Rgecon and Rpocon. Now 100 MLAPACK routines, and license has been changed to 2-caluse BSD style license. No longer use LGPLv3.
+* 2010/08/6: MPACK 0.6.6! Build fix release. Tested on various Linux distributions.
+* 2010/05/31: A paper for MPACK (0.6.4) in Japanese has been uploaded.
+* 2010/05/21: MPACK 0.6.5! MPFR support, and MBLAS license has been changed to BSD style. Still MLAPACK part is LGPLv3. I'll replace hopefully soon.
+* 2010/01/13: MPACK 0.6.4! BUILD FIX RELEASE! PLEASE CHECK ON YOUR ENVIRONMET! THANKS! ALSO WINDOWS IS SUPPORTED!
+* 2009/12/18: POSTER and SLIDE ARE UPLOADED; MPACK (MBLAS/MLAPACK) poster at HPCS2010 in English, and slide in Japanese, and I did two seminars about MPACK (MBLAS/MLAPACK) @NII and @Tokyo Univ; here is the slide.
+* 2009/11/24: MPACK 0.6.0!
+* 2009/11/7: Add example page.
+* 2009/10/9: MPACK 0.5.2, build fix on Intel Mac.
+* 2009/10/6: The cvs version has faster Raxpy using OpenMP parallelism.
+* 2009/10/5: MPACK 0.5.1, just minor updates.
+* 2009/9/24: MPACK 0.5.0!
+* 2009/9/17: GMP/QD/DD integration is going very well; now builds the mlapack part as well.
+* 2009/9/11: Now CVS version of MBLAS supports QD and DD. I abandoned "explicit generation of instances" for bad performance.
+* 2009/5/25: Now I switched to template programming so that the library will be most portable. We automatically generate GMP, QD and DD versions via "explicit generation of instances". For real calculations, source code level compatibility is retained and also we can made some optimized version as well, whereas complex code we need a small changes. Typically 2-3 percent performance loss have been observed.
+* 2009/3/21: QD and DD version of SDPA (SDPA-QD, DD) have been uploaded. These packages include some part of MPACK in QD and DD.
+* 2009/2/10: mpack-devel ML has been launched.
+* 2009/2/10: mpack-0.0.9.tar.gz. 
+* 2009/2/5: SDPA-GMP 7.1.2 has been released now is supported by MPACK (MBLAS/MLAPACK!)
+* 2009/1/8: mpack-0.0.8.tar.gz. Moved to souceforge.net.
+* 2008/8/22: mpack-0.0.6.tar.gz. Build fix release.
+* 2008/8/14: mpack-0.0.5.tar.gz. Eighteen LAPACK routines (Rlamch, Rlae2, Rlaev2, Rlassq, Rlanst, Rlansy, Rlapy2, Rlarf, Rlarfg, Rpotf2, Rlarfb, Rlaset, Rlarft, Rlartg, Rlascl, Rlasrt, Rlasr, Rlatrd) with check programs and complete "blas.h" and "lapack.h" (prototypes for the BLAS and LAPACK) have been made.
+* 2008/7/23: mpack-0.0.4.tar.gz. All test cases are imported.
+* 2008/7/18: mpack-0.0.3.tar.gz. Fix copyright issues, make check partially works, except for MacOSX.
+* 2008/7/17: mpack-0.0.2.tar.gz. Installation instructions on Fedora9 and Ubuntu 8.04 are now available. Build fix with gcc-4.3.
+* 2008/7/15: mpack-0.0.1.tar.gz. Now configurable and installable :)
+* 2008/7/11: Change GPL to LGPLv3 and upload mpack-0.0.0.tar.gz.
+* 2008/6/27: Add mBSD header of original authors.
+* 2008/6/26: Tar ball has been provided. All sources for MBLAS have been uploaded.
+* 2008/6/24: This page has been created. 
+
+# Oldpage
+http://mplapack.sourceforge.net/
 
 # Acknowledgement:
 
