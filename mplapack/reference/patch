@@ -158,3 +158,26 @@ Rlartgs calls Rlartgp which might changes const cs and cosnt sn
      //
      //  -- LAPACK computational routine --
      //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+--- Rlascl.cpp~	2021-04-06 10:24:05.763296023 +0900
++++ Rlascl.cpp	2021-04-06 10:38:51.031215922 +0900
+@@ -106,9 +106,9 @@
+     } else if (itype <= 3 && lda < max((INTEGER)1, m)) {
+         info = -9;
+     } else if (itype >= 4) {
+-        if (kl < 0 || kl > max(m - 1, 0)) {
++        if (kl < 0 || kl > max(m - 1, (INTEGER)0)) {
+             info = -2;
+-        } else if (ku < 0 || ku > max(n - 1, 0) || ((itype == 4 || itype == 5) && kl != ku)) {
++        } else if (ku < 0 || ku > max(n - 1, (INTEGER)0) || ((itype == 4 || itype == 5) && kl != ku)) {
+             info = -3;
+         } else if ((itype == 4 && lda < kl + 1) || (itype == 5 && lda < ku + 1) || (itype == 6 && lda < 2 * kl + ku + 1)) {
+             info = -9;
+@@ -223,7 +223,7 @@
+         k1 = ku + 2;
+         k3 = ku + 1;
+         for (j = 1; j <= n; j = j + 1) {
+-            for (i = max(k1 - j, 1); i <= k3; i = i + 1) {
++            for (i = max(k1 - j, (INTEGER)1); i <= k3; i = i + 1) {
+                 a[(i - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda] * mul;
+             }
+         }
