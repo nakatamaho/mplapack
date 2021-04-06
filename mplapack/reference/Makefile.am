@@ -262,7 +262,7 @@ Rgttrf.cpp \
 Rgtts2.cpp \
 Risnan.cpp \
 Rla_gerpvgrw.cpp \
-Rla_wwcommitw.cpp \
+Rla_wwaddw.cpp \
 Rlabad.cpp \
 Rlacpy.cpp \
 Rladiv.cpp \
