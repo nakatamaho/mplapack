@@ -181,3 +181,90 @@ Rlartgs calls Rlartgp which might changes const cs and cosnt sn
                  a[(i - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda] * mul;
              }
          }
+--- Rlasrt.cpp	2021-04-06 10:47:58.800614463 +0900
++++ Rlasrt.cpp	2021-04-06 10:49:17.940637323 +0900
+@@ -32,7 +32,8 @@
+ void Rlasrt(const char *id, INTEGER const n, REAL *d, INTEGER &info) {
+     INTEGER dir = 0;
+     INTEGER stkpnt = 0;
+-    arr_2d<2, 32, INTEGER> stack(fill0);
++    INTEGER stacklen = 32;
++    INTEGER stack[2 * stacklen];
+     INTEGER start = 0;
+     INTEGER endd = 0;
+     const INTEGER select = 20;
+@@ -93,11 +94,11 @@
+     }
+     //
+     stkpnt = 1;
+-    stack(1, 1) = 1;
+-    stack(2, 1) = n;
++    stack[(1 - 1) + (1 - 1) * stacklen] = 1;
++    stack[(2 - 1) + (1 - 1) * stacklen] = n;
+ statement_10:
+-    start = stack(1, stkpnt);
+-    endd = stack(2, stkpnt);
++    start = stack[(1 - 1) + (stkpnt - 1) * stacklen];
++    endd = stack[(2 - 1) + (stkpnt - 1) * stacklen];
+     stkpnt = stkpnt - 1;
+     if (endd - start <= select && endd - start > 0) {
+         //
+@@ -192,22 +193,22 @@
+             }
+             if (j - start > endd - j - 1) {
+                 stkpnt++;
+-                stack(1, stkpnt) = start;
+-                stack(2, stkpnt) = j;
++                stack[(1 - 1) + (stkpnt - 1) * stacklen] = start;
++                stack[(2 - 1) + (stkpnt - 1) * stacklen] = j;
+                 stkpnt++;
+-                stack(1, stkpnt) = j + 1;
+-                stack(2, stkpnt) = endd;
++                stack[(1 - 1) + (stkpnt - 1) * stacklen] = j + 1;
++                stack[(2 - 1) + (stkpnt - 1) * stacklen] = endd;
+             } else {
+                 stkpnt++;
+-                stack(1, stkpnt) = j + 1;
+-                stack(2, stkpnt) = endd;
++                stack[(1 - 1) + (stkpnt - 1) * stacklen] = j + 1;
++                stack[(2 - 1) + (stkpnt - 1) * stacklen] = endd;
+                 stkpnt++;
+-                stack(1, stkpnt) = start;
+-                stack(2, stkpnt) = j;
++                stack[(1 - 1) + (stkpnt - 1) * stacklen] = start;
++                stack[(2 - 1) + (stkpnt - 1) * stacklen] = j;
+             }
+         } else {
+             //
+-            //           Sort INTEGERo increasing order
++            //           Sort into increasing order
+             //
+             i = start - 1;
+             j = endd + 1;
+@@ -230,18 +231,18 @@
+             }
+             if (j - start > endd - j - 1) {
+                 stkpnt++;
+-                stack(1, stkpnt) = start;
+-                stack(2, stkpnt) = j;
++                stack[(1 - 1) + (stkpnt - 1) * stacklen] = start;
++                stack[(2 - 1) + (stkpnt - 1) * stacklen] = j;
+                 stkpnt++;
+-                stack(1, stkpnt) = j + 1;
+-                stack(2, stkpnt) = endd;
++                stack[(1 - 1) + (stkpnt - 1) * stacklen] = j + 1;
++                stack[(2 - 1) + (stkpnt - 1) * stacklen] = endd;
+             } else {
+                 stkpnt++;
+-                stack(1, stkpnt) = j + 1;
+-                stack(2, stkpnt) = endd;
++                stack[(1 - 1) + (stkpnt - 1) * stacklen] = j + 1;
++                stack[(2 - 1) + (stkpnt - 1) * stacklen] = endd;
+                 stkpnt++;
+-                stack(1, stkpnt) = start;
+-                stack(2, stkpnt) = j;
++                stack[(1 - 1) + (stkpnt - 1) * stacklen] = start;
++                stack[(2 - 1) + (stkpnt - 1) * stacklen] = j;
+             }
+         }
+     }
