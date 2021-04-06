@@ -64,6 +64,7 @@ sed -i -e 's/, v\[/, \&v\[/g' ${newfilename}.cpp
 sed -i -e 's/, t\[/, \&t\[/g' ${newfilename}.cpp
 sed -i -e 's/, tau\[/, \&tau\[/g' ${newfilename}.cpp
 sed -i -e 's/, w\[/, \&w\[/g' ${newfilename}.cpp
+sed -i -e 's/, z\[/, \&z\[/g' ${newfilename}.cpp
 sed -i -e 's/, ipiv\[/, \&ipiv\[/g' ${newfilename}.cpp
 sed -i -e 's/, work\[/, \&work\[/g' ${newfilename}.cpp
 /usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' ${newfilename}.cpp |  tr ':' ' ' | sed -e 's/^typename //' > ${newfilename}.hpp
