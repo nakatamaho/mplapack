@@ -52,7 +52,7 @@ REAL Rlapy3(REAL const x, REAL const y, REAL const z) {
     REAL xabs = abs(x);
     REAL yabs = abs(y);
     REAL zabs = abs(z);
-    REAL w = max(max(xabs, yabs), zabs);
+    REAL w = max({xabs, yabs, zabs});
     const REAL zero = 0.0;
     if (w == zero) {
         //     W can be zero for max(0,nan,0)

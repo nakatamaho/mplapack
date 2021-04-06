@@ -85,6 +85,34 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
+Claev2.cpp \
+Clansy.cpp \
+Clanhe.cpp \
+Cladiv.cpp \
+Clarfg.cpp \
+Clartg.cpp \
+Cpotf2.cpp \
+Clascl.cpp \
+Csteqr.cpp \
+Chetd2.cpp \
+Clatrd.cpp \
+Rsytrd.cpp \
+Chetrd.cpp \
+Rlarf.cpp \
+Clarf.cpp \
+Cung2l.cpp \
+Cung2r.cpp \
+Clarft.cpp \
+Clarfb.cpp \
+Cungql.cpp \
+Cheev.cpp \
+Clacrm.cpp \
+Rtrtri.cpp \
+Ctrtri.cpp \
+Cgetri.cpp \
+Clasyf.cpp \
+Clahef.cpp \
+Claesy.cpp \
 Cdrscl.cpp \
 Cgebak.cpp \
 Cgelq.cpp \
