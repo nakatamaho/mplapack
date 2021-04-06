@@ -290,3 +290,23 @@ Rlartgs calls Rlartgp which might changes const cs and cosnt sn
          }
          if (i < m) {
              Rscal(m - i, -tau[i - 1], &a[((i + 1) - 1) + (i - 1) * lda], 1);
+--- Rorgql.cpp_	2021-04-06 11:07:31.225191333 +0900
++++ Rorgql.cpp	2021-04-06 11:07:44.406190547 +0900
+@@ -105,7 +105,7 @@
+         //
+         //        Determine when to cross over from blocked to unblocked code.
+         //
+-        nx = max(0, iMlaenv(3, "Rorgql", " ", m, n, k, -1));
++        nx = max((INTEGER)0, iMlaenv(3, "Rorgql", " ", m, n, k, -1));
+         if (nx < k) {
+             //
+             //           Determine if workspace is large enough for blocked code.
+@@ -118,7 +118,7 @@
+                 //              determine the minimum value of NB.
+                 //
+                 nb = lwork / ldwork;
+-                nbmin = max(2, iMlaenv(2, "Rorgql", " ", m, n, k, -1));
++                nbmin = max((INTEGER)2, iMlaenv(2, "Rorgql", " ", m, n, k, -1));
+             }
+         }
+     }
