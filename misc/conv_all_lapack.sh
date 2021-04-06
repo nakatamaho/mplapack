@@ -3,7 +3,7 @@ FILES=`ls ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/d*.f ~/mplap
 
 #FILES_SUBSET=`ls ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/d*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/z*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/id*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/iz*.f | grep -v dsdot | grep -e dpot -e disn -e isna -e uum -e lauu2 -e trt`
 
-FILES_SUBSET=`ls ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/d*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/z*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/id*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/iz*.f | \
+FILES_SUBSET=`ls ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/d*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/z*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/i{d,l}*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/iz*.f | \
 grep -v dsg | grep -v zcg | grep -v svd | grep -v gesvj | grep -v x.f | grep -v la_syr | \
 grep -e lae2 -e laev2 -e laev2 -e lassq -e lanst -e lansy -e lanhe -e lapy2 -e larfg -e lapy3 -e ladiv -e larfg -e lartg -e lart \
 -e laset -e laset -e Rlasr -e lasr -e potf2  \
@@ -20,7 +20,7 @@ grep -e lae2 -e laev2 -e laev2 -e lassq -e lanst -e lansy -e lanhe -e lapy2 -e l
 -e gesv -e  trtrs -e trtrs -e lasyf -e lasyf \
 -e lahef -e lacrt -e laesy -e rot -e   spmv   \
 -e spr -e   symv -e  syr -e   max1 -e dsum1 \
--e nan -e dcombssq`
+-e nan -e dcombssq -e iladl`
 
 CACHED=no
 if [ x"$CACHED" = x"no" ]; then
@@ -55,6 +55,15 @@ cat ${oldfilename}.cpp | bash BLAS_LIST | bash LAPACK_LIST | sed 's/dlamch/Rlamc
 mv ${newfilename}.cpp_  ${newfilename}.cpp
 sed -i -e 's/const &/const /g' ${newfilename}.cpp
 sed -i -e 's/, a\[/, \&a\[/g' ${newfilename}.cpp
+sed -i -e 's/, b\[/, \&b\[/g' ${newfilename}.cpp
+sed -i -e 's/, c\[/, \&c\[/g' ${newfilename}.cpp
+sed -i -e 's/, d\[/, \&d\[/g' ${newfilename}.cpp
+sed -i -e 's/, e\[/, \&e\[/g' ${newfilename}.cpp
+sed -i -e 's/, h\[/, \&h\[/g' ${newfilename}.cpp
+sed -i -e 's/, v\[/, \&v\[/g' ${newfilename}.cpp
+sed -i -e 's/, t\[/, \&t\[/g' ${newfilename}.cpp
+sed -i -e 's/, tau\[/, \&tau\[/g' ${newfilename}.cpp
+sed -i -e 's/, w\[/, \&w\[/g' ${newfilename}.cpp
 sed -i -e 's/, ipiv\[/, \&ipiv\[/g' ${newfilename}.cpp
 sed -i -e 's/, work\[/, \&work\[/g' ${newfilename}.cpp
 /usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' ${newfilename}.cpp |  tr ':' ' ' | sed -e 's/^typename //' > ${newfilename}.hpp
