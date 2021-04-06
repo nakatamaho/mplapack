@@ -8,10 +8,15 @@ else
     SED=gsed
 fi
 
+FILES=`ls *cpp | grep -v Rlamch | grep -v iMlaenv | grep -v Mutils`
+for filename in $FILES; do
+/usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' ${filename} |  tr ':' ' ' | sed -e 's/^typename //' > ${filename}.hpp
+done
+
+cat *hpp ~/mplapack/misc/special.hpp | grep -v arr_c | grep -v common | grep -v UNHANDLED_function | grep -v arr_ref > header_all
+rm *hpp
+
 MPLIBS="gmp mpfr _Float128 dd qd double _Float64x"
-
-cat *hpp ~/mplapack/misc/special.hpp > header_all
-
 for mplib in $MPLIBS; do
     if [ x"$mplib" = x"gmp" ]; then
         cp header_all mplapack_${mplib}.h 
@@ -82,4 +87,5 @@ for mplib in $MPLIBS; do
     echo "#endif" >> ~/mplapack/include/mplapack_${mplib}.h
 
 done
-rm header_all mplapack.h *hpp
+#rm header_all mplapack.h *hpp
+rm mplapack.h
