@@ -310,3 +310,35 @@ Rlartgs calls Rlartgp which might changes const cs and cosnt sn
              }
          }
      }
+--- Rsteqr.cpp_org	2021-04-06 11:26:48.893245295 +0900
++++ Rsteqr.cpp	2021-04-06 11:29:22.173868889 +0900
+@@ -248,12 +248,12 @@
+         //
+         if (m == l + 1) {
+             if (icompz > 0) {
+-                Rlaev2(d[l - 1], &e[l - 1], &d[(l + 1) - 1], rt1, rt2, c, s);
++                Rlaev2(d[l - 1], e[l - 1], d[(l + 1) - 1], rt1, rt2, c, s);
+                 work[l - 1] = c;
+                 work[(n - 1 + l) - 1] = s;
+                 Rlasr("R", "V", "B", n, 2, &work[l - 1], &work[(n - 1 + l) - 1], &z[(l - 1) * ldz], ldz);
+             } else {
+-                Rlae2(d[l - 1], &e[l - 1], &d[(l + 1) - 1], rt1, rt2);
++                Rlae2(d[l - 1], e[l - 1], d[(l + 1) - 1], rt1, rt2);
+             }
+             d[l - 1] = rt1;
+             d[(l + 1) - 1] = rt2;
+@@ -360,12 +360,12 @@
+         //
+         if (m == l - 1) {
+             if (icompz > 0) {
+-                Rlaev2(d[(l - 1) - 1], &e[(l - 1) - 1], &d[l - 1], rt1, rt2, c, s);
++                Rlaev2(d[(l - 1) - 1], e[(l - 1) - 1], d[l - 1], rt1, rt2, c, s);
+                 work[m - 1] = c;
+                 work[(n - 1 + m) - 1] = s;
+                 Rlasr("R", "V", "F", n, 2, &work[m - 1], &work[(n - 1 + m) - 1], &z[((l - 1) - 1) * ldz], ldz);
+             } else {
+-                Rlae2(d[(l - 1) - 1], &e[(l - 1) - 1], &d[l - 1], rt1, rt2);
++                Rlae2(d[(l - 1) - 1], e[(l - 1) - 1], d[l - 1], rt1, rt2);
+             }
+             d[(l - 1) - 1] = rt1;
+             d[l - 1] = rt2;
