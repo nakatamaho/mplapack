@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarrc(const char *jobt, INTEGER const n, REAL const vl, REAL const vu, REAL *d, REAL *e, REAL const  /* pivmin */, INTEGER &eigcnt, INTEGER &lcnt, INTEGER &rcnt, INTEGER &info) {
+void Rlarrc(const char *jobt, INTEGER const n, REAL const vl, REAL const vu, REAL *d, REAL *e, REAL const /* pivmin */, INTEGER &eigcnt, INTEGER &lcnt, INTEGER &rcnt, INTEGER &info) {
     //
     //  -- LAPACK auxiliary routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

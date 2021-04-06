@@ -116,7 +116,7 @@ void Rsytrd(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
                 //              minimum value of NB, and reduce NB or force use of
                 //              unblocked code by setting NX = N.
                 //
-	        nb = max(lwork / ldwork, (INTEGER)1);
+                nb = max(lwork / ldwork, (INTEGER)1);
                 nbmin = iMlaenv(2, "Rsytrd", uplo, n, -1, -1, -1);
                 if (nb < nbmin) {
                     nx = n;

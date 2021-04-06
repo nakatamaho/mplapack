@@ -92,7 +92,7 @@ void Claesy(COMPLEX const a, COMPLEX const b, COMPLEX const c, COMPLEX &rt1, COM
         tabs = abs(t);
         z = max(babs, tabs);
         if (z > zero) {
-	    t = z * sqrt((t / z) * (t / z) + (b / z) * (b / z));
+            t = z * sqrt((t / z) * (t / z) + (b / z) * (b / z));
         }
         //
         //        Compute the two eigenvalues.  RT1 and RT2 are exchanged
@@ -114,7 +114,7 @@ void Claesy(COMPLEX const a, COMPLEX const b, COMPLEX const c, COMPLEX &rt1, COM
         sn1 = (rt1 - a) / b;
         tabs = abs(sn1);
         if (tabs > one) {
-	    t = tabs *  sqrt((one / tabs) * (one / tabs) + (sn1 / tabs) * (sn1 / tabs));
+            t = tabs * sqrt((one / tabs) * (one / tabs) + (sn1 / tabs) * (sn1 / tabs));
         } else {
             t = sqrt(cone + sn1 * sn1);
         }

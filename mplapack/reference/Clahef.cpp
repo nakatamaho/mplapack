@@ -29,10 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX ff)
-{
-  return max(abs(ff.real()), abs(ff.imag()));
-}
+inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
 
 void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *w, INTEGER const ldw, INTEGER &info) {
     COMPLEX z = 0.0;

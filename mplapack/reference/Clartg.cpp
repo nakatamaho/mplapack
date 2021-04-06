@@ -29,17 +29,13 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX ff)
-{
-  return max(abs(ff.real()), abs(ff.imag()));
-}
+inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
 
-inline REAL abssq(COMPLEX ff)
-{
-  REAL temp;
+inline REAL abssq(COMPLEX ff) {
+    REAL temp;
 
-  temp = (ff.real() * ff.real()) + (ff.imag() * ff.imag());
-  return temp;
+    temp = (ff.real() * ff.real()) + (ff.imag() * ff.imag());
+    return temp;
 }
 
 void Clartg(COMPLEX const f, COMPLEX const g, REAL &cs, COMPLEX &sn, COMPLEX &r) {

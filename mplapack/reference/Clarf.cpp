@@ -77,7 +77,7 @@ void Clarf(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, INTEG
         }
         if (applyleft) {
             //     Scan for the last non-zero column in C(1:lastv,:).
-	    lastc = iMlazlc(lastv, n, c, ldc);
+            lastc = iMlazlc(lastv, n, c, ldc);
         } else {
             //     Scan for the last non-zero row in C(:,1:lastv).
             lastc = iMlazlr(m, lastv, c, ldc);

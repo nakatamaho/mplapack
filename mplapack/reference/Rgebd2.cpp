@@ -78,7 +78,7 @@ void Rgebd2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
             //
             //           Generate elementary reflector H(i) to annihilate A(i+1:m,i)
             //
-	    Rlarfg(m - i + 1, a[(i - 1) + (i - 1) * lda], &a[(min(i+1,m)-1) + (i-1) * lda], 1, tauq[i - 1]);
+            Rlarfg(m - i + 1, a[(i - 1) + (i - 1) * lda], &a[(min(i + 1, m) - 1) + (i - 1) * lda], 1, tauq[i - 1]);
             d[i - 1] = a[(i - 1) + (i - 1) * lda];
             a[(i - 1) + (i - 1) * lda] = one;
             //
@@ -94,14 +94,14 @@ void Rgebd2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
                 //              Generate elementary reflector G(i) to annihilate
                 //              A(i,i+2:n)
                 //
-	      Rlarfg(n - i, a[(i-1)+((i + 1)-1)*lda], &a[(i-1)+(min(i + 2,n)-1)*lda], lda, taup[i-1]);
-        e[i-1] = a[(i-1)+((i + 1)-1)*lda];
-        a[(i-1)+((i + 1)-1)*lda] = one;
-        //
-        //              Apply G(i) to A(i+1:m,i+1:n) from the right
-        //
-        Rlarf("Right", m - i, n - i, &a[(i-1)+((i + 1)-1)*lda], lda, taup[i-1], &a[((i + 1)-1)+((i + 1)-1)*lda], lda, work);
-        a[(i-1)+((i + 1)-1)*lda] = e[i-1];
+                Rlarfg(n - i, a[(i - 1) + ((i + 1) - 1) * lda], &a[(i - 1) + (min(i + 2, n) - 1) * lda], lda, taup[i - 1]);
+                e[i - 1] = a[(i - 1) + ((i + 1) - 1) * lda];
+                a[(i - 1) + ((i + 1) - 1) * lda] = one;
+                //
+                //              Apply G(i) to A(i+1:m,i+1:n) from the right
+                //
+                Rlarf("Right", m - i, n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda, taup[i - 1], &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, work);
+                a[(i - 1) + ((i + 1) - 1) * lda] = e[i - 1];
             } else {
                 taup[i - 1] = zero;
             }
@@ -114,23 +114,23 @@ void Rgebd2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
             //
             //           Generate elementary reflector G(i) to annihilate A(i,i+1:n)
             //
-	  Rlarfg(n - i + 1, a[(i-1)+(i-1)*lda], &a[(i-1)+(min(i + 1, n)-1)*lda], lda, taup[i-1]);
-      d[i-1] = a[(i-1)+(i-1)*lda];
-      a[(i-1)+(i-1)*lda] = one;
-      //
-      //           Apply G(i) to A(i+1:m,i:n) from the right
-      //
-      if (i < m) {
+            Rlarfg(n - i + 1, a[(i - 1) + (i - 1) * lda], &a[(i - 1) + (min(i + 1, n) - 1) * lda], lda, taup[i - 1]);
+            d[i - 1] = a[(i - 1) + (i - 1) * lda];
+            a[(i - 1) + (i - 1) * lda] = one;
+            //
+            //           Apply G(i) to A(i+1:m,i:n) from the right
+            //
+            if (i < m) {
                 Rlarf("Right", m - i, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, taup[i - 1], &a[((i + 1) - 1) + (i - 1) * lda], lda, work);
-      }
-      a[(i-1)+(i-1)*lda] = d[i-1];
-      //
-      if (i < m) {
+            }
+            a[(i - 1) + (i - 1) * lda] = d[i - 1];
+            //
+            if (i < m) {
                 //
                 //              Generate elementary reflector H(i) to annihilate
                 //              A(i+2:m,i)
                 //
-	Rlarfg(m - i, a[((i + 1) - 1) + (i - 1) * lda], &a[(min(i + 2, m)-1) + (i-1)* lda], 1, tauq[i - 1]);
+                Rlarfg(m - i, a[((i + 1) - 1) + (i - 1) * lda], &a[(min(i + 2, m) - 1) + (i - 1) * lda], 1, tauq[i - 1]);
                 e[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 a[((i + 1) - 1) + (i - 1) * lda] = one;
                 //
@@ -138,10 +138,9 @@ void Rgebd2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
                 //
                 Rlarf("Left", m - i, n - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, tauq[i - 1], &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, work);
                 a[((i + 1) - 1) + (i - 1) * lda] = e[i - 1];
-      }
-      else {
+            } else {
                 tauq[i - 1] = zero;
-      }
+            }
         }
     }
     //

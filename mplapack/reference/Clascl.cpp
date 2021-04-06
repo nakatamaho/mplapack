@@ -223,7 +223,7 @@ statement_10:
         k1 = ku + 2;
         k3 = ku + 1;
         for (j = 1; j <= n; j = j + 1) {
-	    for (i = max(k1 - j, (INTEGER)1); i <= k3; i = i + 1) {
+            for (i = max(k1 - j, (INTEGER)1); i <= k3; i = i + 1) {
                 a[(i - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda] * mul;
             }
         }

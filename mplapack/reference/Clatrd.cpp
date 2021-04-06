@@ -132,7 +132,7 @@ void Clatrd(const char *uplo, INTEGER const n, INTEGER const nb, COMPLEX *a, INT
                 //              A(i+2:n,i)
                 //
                 alpha = a[((i + 1) - 1) + (i - 1) * lda];
-                Clarfg(n - i, alpha, &a[(min(i + 2, n)-1) + (i-1) * lda], 1, tau[i - 1]);
+                Clarfg(n - i, alpha, &a[(min(i + 2, n) - 1) + (i - 1) * lda], 1, tau[i - 1]);
                 e[i - 1] = alpha.real();
                 a[((i + 1) - 1) + (i - 1) * lda] = one;
                 //
