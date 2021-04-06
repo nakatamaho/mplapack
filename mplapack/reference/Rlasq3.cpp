@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlasq3(INTEGER const i0, INTEGER &n0, REAL *z, INTEGER &pp, REAL &dmin, REAL &sigma, REAL &desig, REAL &qmax, INTEGER &nfail, INTEGER &iter, INTEGER &ndiv, bool const ieee, INTEGER &ttype, REAL dmin1, REAL &dmin2, REAL dn, REAL dn1, REAL dn2, REAL g, REAL &tau) {
+void Rlasq3(INTEGER const i0, INTEGER &n0, REAL *z, INTEGER &pp, REAL &dmin, REAL &sigma, REAL &desig, REAL &qmax, INTEGER &nfail, INTEGER &iter, INTEGER &ndiv, bool const ieee, INTEGER &ttype, REAL const dmin1, REAL &dmin2, REAL const dn, REAL const dn1, REAL const dn2, REAL const g, REAL &tau) {
     INTEGER n0in = 0;
     REAL eps = 0.0;
     const REAL hundrd = 100.0;
