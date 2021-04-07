@@ -70,7 +70,7 @@ $ /usr/bin/time docker build -t mplapack:mingw -f  Dockerfile_ubuntu20.04_mingw6
 
 ```
 $ sudo port install gcc9 coreutils git ccache
-$ git clone https://github.com/nakatamaho/mplapack.git -b v0.9.0 --depth 1
+$ git clone https://github.com/nakatamaho/mplapack.git -b v0.9.1 --depth 1
 $ cd mplapack
 $ pushd mplapack/debug ; bash gen.Makefile.am.sh ; popd
 $ autoreconf --force --install ; aclocal ; autoconf ; automake; autoreconf --force --install
@@ -78,7 +78,7 @@ $ CXX="g++-mp-9" ; export CXX
 $ CC="gcc-mp-9" ; export CC
 $ FC="gfortran-mp-9"; export FC
 $ F77="gfortran-mp-9"; export F77
-$ ./configure --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-debug=yes
+$ ./configure --prefix=/Users/maho/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-debug=yes
 ```
 
 Note: Float64x is supported only on Intel CPUs.
