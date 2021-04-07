@@ -148,6 +148,8 @@ extern "C" {
 }
 #endif
 
+//Intel C/C++ compilers currently only supports __float128
+//and following workaround works
 #if defined(__INTEL_COMPILER)
 #define _Float128 __float128
 #endif
