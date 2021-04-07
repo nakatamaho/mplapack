@@ -3,6 +3,8 @@ RUN yum install -y gcc gcc-c++ gcc-gfortran make automake libtool
 RUN yum install -y python3
 RUN yum install -y sudo which patch bzip2 git wget time
 RUN yum install -y emacs
+RUN yum install -y epel-release
+RUN yum install -y ccache diffutils
 
 ARG DOCKER_UID=1000
 ARG DOCKER_USER=docker
