@@ -1,0 +1,30 @@
+FROM arm64v8/centos:7
+RUN yum install -y emacs xeyes
+RUN yum install -y python3
+RUN yum install -y gcc gcc-c++ gcc-gfortran make automake libtool
+RUN yum install -y diffutils sudo which patch bzip2 git wget time
+RUN yum install -y epel-release
+RUN yum install -y ccache
+
+ARG DOCKER_UID=1000
+ARG DOCKER_USER=docker
+ARG DOCKER_PASSWORD=docker
+RUN useradd -u $DOCKER_UID -m $DOCKER_USER --shell /bin/bash -G wheel,root && \
+    echo "$DOCKER_USER:$DOCKER_PASSWD" | chpasswd && \
+    echo "$DOCKER_USER ALL=(ALL) ALL" >> /etc/sudoers && \
+    echo "$DOCKER_USER ALL=NOPASSWD: ALL" >> /etc/sudoers
+
+ARG GIT_EMAIL="maho.nakata@gmail.com"
+ARG GIT_NAME="NAKATA Maho"
+
+USER ${DOCKER_USER}
+RUN echo "[user]" >> /home/$DOCKER_USER/.gitconfig && \
+    echo "email = ${GIT_EMAIL}" >> /home/$DOCKER_USER/.gitconfig && \
+    echo "name = ${GIT_NAME}" >> /home/$DOCKER_USER/.gitconfig
+
+RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
+#RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git
+#RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.centos7.aarch64.sh
+#RUN cd /home/$DOCKER_USER/mplapack && make -j4
+#RUN cd /home/$DOCKER_USER/mplapack && make install
+
