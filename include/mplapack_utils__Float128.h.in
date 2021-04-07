@@ -72,9 +72,11 @@ extern "C" {
 typedef __float128 _Float128;
 
 namespace std {
+#ifndef _GLIBCXX_BITS_STD_ABS_H
 inline _Float128 abs(const _Float128 &a) {
    return fabsq(a);
 }
+#endif
 inline _Float128 sqrt(const _Float128 &a) {
    return sqrtq(a);
 }
