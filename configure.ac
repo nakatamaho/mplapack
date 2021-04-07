@@ -312,10 +312,10 @@ if test x$enable__Float128 = x"yes"; then
         AC_MSG_RESULT([_Float128 is supported via native libc and _Float128 and long double are the same])
         sed 's/%%MPLAPACK_BINARY128%%/#define ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
     elif test "$have__Float128" = "yes" && test x"$want_libquadmath" = x"no" && test x"$_Float128islongdouble" != x"yes"; then
-        AC_MSG_RESULT([_Float128 is supported via native libc])
+        AC_MSG_RESULT([_Float128 is supported via native libc and only binary128 in this system])
         sed 's/%%MPLAPACK_BINARY128%%/#define ___MPLAPACK__FLOAT128_ONLY___/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
     elif test "$have__Float128" = "no" && test x"$longdoubleisbinary128" = x"yes"; then
-        AC_MSG_RESULT([long double is binary128, but both _Float128 nor __float128 are not supported])
+        AC_MSG_RESULT([long double is binary128, but neither _Float128 nor __float128 are supported])
         sed 's/%%MPLAPACK_BINARY128%%/#define ___MPLAPACK_LONGDOUBLE_IS_BINARY128___/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
     else 
         AC_MSG_ERROR([binary128 is not supported on this system])
@@ -700,9 +700,9 @@ if test x$enable__Float128 = x"yes" && test x"$want_libquadmath" = x"yes"; then
 elif test x$enable__Float128 = x"yes" && test x"$want_libquadmath" = x"no" && test x"$_Float128islongdouble" = x"yes"; then
         AC_MSG_RESULT([_Float128 is supported via native libc and _Float128 and long double are the same])
 elif test x$enable__Float128 = x"yes" && test x"$want_libquadmath" = x"no" && test x"$_Float128islongdouble" != x"yes"; then
-        AC_MSG_RESULT([_Float128 is supported via native libc])
+        AC_MSG_RESULT([_Float128 is supported via native libc and only binary128 in this system])
 elif test x$enable__Float128 = x"yes" && test x"$longdoubleisbinary128" = x"yes"; then
-        AC_MSG_RESULT([long double is binary128, but both _Float128 nor __float128 are not supported])
+        AC_MSG_RESULT([long double is binary128, but neither _Float128 nor __float128 are supported])
 else
         AC_MSG_RESULT([disable _Float128])
 fi
