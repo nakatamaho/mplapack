@@ -48,6 +48,10 @@
 
 #include "mpfr.h"
 
+#ifndef ___MPREAL_DEFAULT_PRECISION___
+#define ___MPREAL_DEFAULT_PRECISION___ 512
+#endif
+
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
 #include "gmpxx.h"
 #endif
@@ -98,8 +102,15 @@ class mpreal {
     inline static mp_rnd_t default_rnd = mpfr_get_default_rounding_mode();
     inline static mp_rnd_t get_default_rnd() { return default_rnd; }
     inline static void set_default_rnd(mpfr_rnd_t rnd_mode) { default_rnd = rnd_mode; }
-
-    inline static mp_prec_t default_prec = mpfr_get_default_prec();
+    inline static mp_prec_t _default_prec() {
+        char *p = getenv("MPLAPACK_MPFR_PRECISION");
+        if (p) {
+	    return (mp_prec_t) atoi(p);
+        } else {
+	    return (mp_prec_t) ___MPREAL_DEFAULT_PRECISION___;
+        }
+    }
+    inline static mp_prec_t default_prec = _default_prec();
     inline static mp_prec_t get_default_prec() { return default_prec; }
     inline static void set_default_prec(mp_prec_t prec) { default_prec = prec; }
 
@@ -1878,7 +1889,7 @@ inline mpreal::mpreal() {
 }
 
 inline mpreal::mpreal(const mpreal &u) {
-    mpfr_init2(mp, mpfr_get_prec(u.mp));
+    mpfr_init2(mp, u.get_prec());
     mpfr_set(mp, u.mp, default_rnd);
 }
 
@@ -1942,14 +1953,14 @@ inline mpreal::mpreal(const double u, mp_prec_t prec, mp_rnd_t mode) {
 // Operators - Assignment
 inline mpreal &mpreal::operator=(const char *s) {
     mpfr_t t;
-    if (0 == mpfr_init_set_str(t, s, default_base, default_rnd)) {
+    mpfr_init2 (t, default_prec);
+    if (0 == mpfr_set_str(t, s, default_base, default_rnd)) {
         mpfr_set(mp, t, mpreal::default_rnd);
         mpfr_clear(t);
     } else {
         mpfr_clear(t);
         // cerr<<"fail to convert string"<<endl;
     }
-
     return *this;
 }
 inline const mpreal fma(const mpreal &v1, const mpreal &v2, const mpreal &v3, mp_rnd_t rnd_mode) {
@@ -2316,7 +2327,6 @@ inline const mpreal operator-(const mpreal &a, const _Float128 &b) {
 #endif
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
 inline _Float128 cast2_Float128(const mpreal &b) {
-    // mpreal -> mpfr -> _Float128
     _Float128 q;
     mpreal a(b);
     q = mpfr_get_float128((mpfr_ptr)a, mpreal::default_rnd);

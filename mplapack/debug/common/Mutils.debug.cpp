@@ -442,6 +442,9 @@ void Mutils_test()
 
 int main(int argc, char *argv[])
 {
+    mpreal::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
+    mpcomplex::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
+
     printf("*** Testing Mutils start ***\n");
     Mutils_test();
     printf("*** Testing Mutils successful ***\n");

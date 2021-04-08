@@ -63,11 +63,27 @@ class mpcomplex {
     inline static mp_rnd_t get_default_imag_rnd() { return default_imag_rnd; }
     inline static void set_default_imag_rnd(mpfr_rnd_t rnd_mode) { default_imag_rnd = rnd_mode; }
 
-    inline static mp_prec_t default_real_prec = mpfr_get_default_prec();
+    inline static mp_prec_t _default_real_prec() {
+      char *p = getenv("MPLAPACK_MPFR_PRECISION");
+        if (p) {
+	    return (mp_prec_t)atoi(p);
+        } else {
+	    return (mp_prec_t) ___MPREAL_DEFAULT_PRECISION___;
+        }
+    }
+    inline static mp_prec_t default_real_prec = _default_real_prec();
     inline static mp_prec_t get_default_real_prec() { return default_real_prec; }
     inline static void set_default_real_prec(mp_prec_t prec) { default_real_prec = prec; }
 
-    inline static mp_prec_t default_imag_prec = mpfr_get_default_prec();
+    inline static mp_prec_t _default_imag_prec() {
+      char *p = getenv("MPLAPACK_MPFR_PRECISION");
+        if (p) {
+	    return (mp_prec_t)atoi(p);
+        } else {
+	    return (mp_prec_t) ___MPREAL_DEFAULT_PRECISION___;
+        }
+    }
+    inline static mp_prec_t default_imag_prec = _default_imag_prec();
     inline static mp_prec_t get_default_imag_prec() { return default_imag_prec; }
     inline static void set_default_imag_prec(mp_prec_t prec) { default_imag_prec = prec; }
 

@@ -156,15 +156,19 @@ REAL pi(REAL dummy)
     return dd_real::_pi;
 
 #elif defined ___MPLAPACK_BUILD_WITH_MPFR___
-    mpfr_free_cache();
-    return const_pi(mpfr_get_default_prec());
+    REAL _PI;
+    _PI = const_pi(mpreal::get_default_prec());
+    return _PI;
 
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
     return M_PI;
+
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK_WANT_LIBQUADMATH___
     return M_PIq;
+
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK_WANT_LIBQUADMATH___
     return M_PIf128;
+
 #else
 return dummy;
 #endif
