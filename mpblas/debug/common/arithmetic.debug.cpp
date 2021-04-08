@@ -41,9 +41,9 @@ void subst_test1()
   char buf1[BUFLEN], buf2[BUFLEN], buf3[BUFLEN];
   REAL tmp1;
   REAL_REF tmp2;
-  printf("*** Substitution test 1 ***\n");
-  strcpy (buf1, "-1.234567890123456789012345678901234567890123456789012345678901234567890e+01");
 
+  printf("*** Substitution test 1 ***\n");
+  strcpy (buf1, "-1.234567890123456789012345678901234567890123456789012345678901234567890E1");
 //tmp1 = buf1;
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ 
   #if defined ___MPLAPACK_WANT_LIBQUADMATH___
@@ -92,7 +92,6 @@ void subst_test2()
   REAL tmp1;
   REAL_REF tmp2;
   printf("*** Substitution test 2 ***\n");
-//  strcpy (buf1, "-1.234567890123456789012345678901234567890123456789012345678901234567890+e1");
   strcpy (buf1, "-1.234567890123456789012345678901234567890123456789012345678901234567890E1");
 
 //tmp2 = buf1;

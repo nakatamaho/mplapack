@@ -19,7 +19,7 @@ void printnum(_Float128 rtmp)
 #elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
     snprintf (buf, sizeof buf, "%.35Le", rtmp);
 #else
-    strfromf128(buf, sizeof(buf), "%+-#*.35Qe", rtmp);
+    strfromf128(buf, sizeof(buf), "%.35e", rtmp);
 #endif
     printf ("%s", buf);
     return;

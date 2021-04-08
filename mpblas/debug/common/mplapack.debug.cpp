@@ -553,7 +553,7 @@ void printnum(_Float128 rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
-    int n = quadmath_snprintf (buf, sizeof buf, "%+-#*.35Qe", width, rtmp);
+    int n = quadmath_snprintf (buf, BUFLEN, "%+-#*.35Qe", rtmp);
     if ((size_t) n < sizeof buf)
     printf ("%s", buf);
     return;
@@ -563,10 +563,10 @@ void printnum(std::complex<_Float128> rtmp)
 {
     int width = 42, n;
     char buf[BUFLEN], buf2[BUFLEN];
-    n = quadmath_snprintf (buf, sizeof buf, "%+-#*.35Qe", width, rtmp.real());
+    n = quadmath_snprintf (buf, BUFLEN, "%+-#*.35Qe", rtmp.real());
     if ((size_t) n < sizeof buf)
     printf ("%s", buf);
-    n = quadmath_snprintf (buf2, sizeof buf2, "%+-#*.35Qe", width, rtmp.imag());
+    n = quadmath_snprintf (buf2, BUFLEN, "%+-#*.35Qe", rtmp.imag());
     if ((size_t) n < sizeof buf2)
     printf ("%s", buf2);
     printf ("i");
@@ -653,12 +653,12 @@ void set_random_number1to2(mpcomplex & a, std::complex<_Float128> &b)
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_WANT_LIBQUADMATH___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK__FLOAT128_ONLY___
 void printnum(_Float128 rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
-    strfromf128 (buf, sizeof buf, "%+-#*.35Qe", rtmp);
+    strfromf128 (buf, BUFLEN, "%.40e", rtmp);
     printf ("%s", buf);
     return;
 }
@@ -667,9 +667,9 @@ void printnum(std::complex<_Float128> rtmp)
 {
     int width = 42, n;
     char buf[BUFLEN], buf2[BUFLEN];
-    strfromf128 (buf, sizeof buf, "%+-#*.35Qe", rtmp.real());
+    strfromf128 (buf, BUFLEN, "%.40e", rtmp.real());
     printf ("%s", buf);
-    strfromf128 (buf2, sizeof buf2, "%+-#*.35Qe", rtmp.imag());
+    strfromf128 (buf2, BUFLEN, "%.40e", rtmp.imag());
     printf ("%s", buf2);
     printf ("i");
     return;
@@ -677,8 +677,7 @@ void printnum(std::complex<_Float128> rtmp)
 
 void sprintnum(char *buf, _Float128 rtmp)
 {
-    int width = 42;
-    strfromf128 (buf, BUFLEN, "%+-#*.35Qe", rtmp);
+    strfromf128 (buf, BUFLEN, "%.40e", rtmp);
     return;
 }
 
@@ -686,8 +685,8 @@ void sprintnum(char *buf, std::complex<_Float128> rtmp)
 {
     int width = 42, n;
     char buf2[BUFLEN];
-    strfromf128 (buf, sizeof buf, "%+-#*.35Qe", rtmp.real());
-    strfromf128 (buf2, sizeof buf2, "%+-#*.35Qe", rtmp.imag());
+    strfromf128 (buf, BUFLEN, "%.40e", rtmp.real());
+    strfromf128 (buf2, BUFLEN, "%.40e", rtmp.imag());
     n = strlen(buf);  
     strncat(buf, buf2, n);
     return;
@@ -760,7 +759,7 @@ void set_random_number1to2(mpcomplex & a, std::complex<_Float128> &b)
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_WANT_LIBQUADMATH___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && (defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ || defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___)
 void set_random_number(mpreal &a, long double & b)
 {
     mpreal dummy;
