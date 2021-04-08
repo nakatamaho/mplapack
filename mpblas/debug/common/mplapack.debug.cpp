@@ -653,7 +653,7 @@ void set_random_number1to2(mpcomplex & a, std::complex<_Float128> &b)
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_WANT_LIBQUADMATH___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
 void printnum(_Float128 rtmp)
 {
     int width = 42;
@@ -760,7 +760,7 @@ void set_random_number1to2(mpcomplex & a, std::complex<_Float128> &b)
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_WANT_LIBQUADMATH___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && (defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ || defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___) 
 void set_random_number(mpreal &a, long double & b)
 {
     mpreal dummy;
