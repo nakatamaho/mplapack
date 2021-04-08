@@ -48,13 +48,15 @@ void subst_test1()
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ 
   #if defined ___MPLAPACK_WANT_LIBQUADMATH___
   tmp1 = strtoflt128(buf1, NULL);
-  #else
+  #elif !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___  
   tmp1 = strtof128(buf1, NULL);
+  #else
+  sscanf(buf1, "%Le", &tmp1);
   #endif
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
-  sscanf(buf1, "%lf", &tmp1);
+  sscanf(buf1, "%le", &tmp1);
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-  sscanf(buf1, "%Lf", &tmp1);
+  sscanf(buf1, "%Le", &tmp1);
 #else
   tmp1 = buf1;
 #endif

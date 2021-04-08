@@ -425,7 +425,7 @@ class mpreal {
 #if defined ___MPLAPACK_BUILD_WITH_DD___
     mpreal(const dd_real &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
 #endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
     mpreal(const _Float128 &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
     mpreal &operator=(const _Float128 &a);
 #endif
@@ -680,13 +680,15 @@ inline mpreal &mpreal::operator=(const mpq_t v) {
     mpfr_set_q(mp, v, default_rnd);
     return *this;
 }
-
+//XXX other operator= should add mpfr_init2
 inline mpreal &mpreal::operator=(const long double v) {
+    mpfr_init2(mp, default_prec);
     mpfr_set_ld(mp, v, default_rnd);
     return *this;
 }
 
 inline mpreal &mpreal::operator=(const double v) {
+    mpfr_init2(mp, default_prec);
     mpfr_set_d(mp, v, default_rnd);
     return *this;
 }
@@ -829,7 +831,8 @@ inline mpreal &mpreal::operator-=(const mpq_t v) {
     return *this;
 }
 
-inline mpreal &mpreal::operator-=(const long double v) { return *this -= mpreal(v, default_rnd); }
+// XXX add default_prec for other operators as well otherwise, fails
+inline mpreal &mpreal::operator-=(const long double v) { return *this -= mpreal(v, default_prec, default_rnd); }
 
 inline mpreal &mpreal::operator-=(const double v) {
     mpfr_sub_d(mp, mp, v, default_rnd);
@@ -2306,7 +2309,7 @@ inline dd_real cast2dd_real(const mpreal &b) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
 inline mpreal &mpreal::operator=(const _Float128 &a) {
     mpfr_init2(mp, default_prec);
     mpfr_set_float128(mp, a, default_rnd);
