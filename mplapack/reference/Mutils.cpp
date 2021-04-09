@@ -169,7 +169,7 @@ REAL pi(REAL dummy)
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___ 
     return M_PIl;
 
-#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && (___MPLAPACK__FLOAT128_ONLY___ || defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___)
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && (defined ___MPLAPACK__FLOAT128_ONLY___ || defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___)
     return M_PIf128;
 
 #else
