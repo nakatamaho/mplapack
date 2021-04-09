@@ -29,13 +29,9 @@ work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
 	echo "CC = $(CC)"           >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "CFLAGS = -O0"         >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "FC = $(FC)"           >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-if IS_INTELCC
-	echo "FFLAGS = -O2"         >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-else
-	echo "FFLAGS = -O2 -frecursive" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-endif
+	echo "FFLAGS = -O0"         >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "FFLAGS_DRV = \$$(FFLAGS)" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "FFLAGS_NOOPT = -O0 -frecursive" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "FFLAGS_NOOPT = -O0" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "LDFLAGS ="       >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "AR = $(AR)"         >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "ARFLAGS = cr"      >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
