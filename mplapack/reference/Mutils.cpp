@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -166,10 +166,13 @@ REAL pi(REAL dummy)
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK_WANT_LIBQUADMATH___
     return M_PIq;
 
-#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK_WANT_LIBQUADMATH___
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___ 
+    return M_PIl;
+
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && (___MPLAPACK__FLOAT128_ONLY___ || defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___)
     return M_PIf128;
 
 #else
-return dummy;
+    #error "please define pi"
 #endif
 }
