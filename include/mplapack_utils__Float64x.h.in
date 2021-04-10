@@ -1,9 +1,8 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2021
  *	Nakata, Maho
  * 	All rights reserved.
  *
- * $Id: mutils_long double.h,v 1.11 2010/08/07 03:15:46 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +31,79 @@
 #define _MPLAPACK_UTILS__FLOAT64X_H_
 
 %%MPLAPACK__FLOAT64X___FLOAT80_%%
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <math.h>
+#include <complex.h>
+#include <complex>
+#ifdef __cplusplus
+}
+#endif
+
+#if defined ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___
+
+#if defined(__INTEL_COMPILER)
+typedef long double _Float64x;
+#endif
+#endif
+
+#if !defined ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___
+
+namespace std {
+inline _Float64x sqrt(const _Float64x &a) {
+   return sqrtl(a);
+}
+inline _Float64x log(const _Float64x &a) {
+   return logl(a);
+}
+inline _Float64x exp(const _Float64x &a) {
+   return expl(a);
+}
+inline _Float64x sin(const _Float64x &a) {
+   return sinl(a);
+}
+inline _Float64x cos(const _Float64x &a) {
+   return cosl(a);
+}
+inline _Float64x log10(const _Float64x &a) {
+   return log10l(a);
+}
+}
+
+#include <complex>
+namespace std {
+
+inline _Float64x abs(const std::complex<_Float64x> &a) {
+  return sqrtl(a.real() * a.real() + a.imag() * a.imag());
+}
+inline std::complex<_Float64x> sqrt(const std::complex<_Float64x> &a) {
+   _Float64x _Complex b,tmp;
+   std::complex<_Float64x> c;
+   __real__(b) = (a.real()); __imag__(b) = (a.imag());
+   tmp = csqrtl (b);
+   c.real( __real__(tmp)); c.imag(__imag__(tmp));
+   return c;
+}
+inline std::complex<_Float64x> exp(const std::complex<_Float64x> &a) {
+   _Float64x _Complex b,tmp;
+   std::complex<_Float64x> c;
+   __real__(b) = (a.real()); __imag__(b) = (a.imag());
+   tmp = cexpl (b);
+   c.real(__real__(tmp)); c.imag(__imag__(tmp));
+   return c;
+}
+inline std::complex<_Float64x> log(const std::complex<_Float64x> &a) {
+   _Float64x _Complex b,tmp;
+   std::complex<_Float64x> c;
+   __real__(b) = (a.real()); __imag__(b) = (a.imag());
+   tmp = clogl (b);
+   c.real(__real__(tmp)); c.imag(__imag__(tmp));
+   return c;
+}
+}
+#endif
 
 #include <complex>
 _Float64x pi(_Float64x dummy);
