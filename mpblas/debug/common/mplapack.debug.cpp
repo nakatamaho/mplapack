@@ -553,7 +553,7 @@ void printnum(_Float128 rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
-    int n = quadmath_snprintf (buf, BUFLEN, "%+-#*.35Qe", rtmp);
+    int n = quadmath_snprintf (buf, sizeof buf, "%+-#*.35Qe", width, rtmp);
     if ((size_t) n < sizeof buf)
     printf ("%s", buf);
     return;
@@ -563,10 +563,10 @@ void printnum(std::complex<_Float128> rtmp)
 {
     int width = 42, n;
     char buf[BUFLEN], buf2[BUFLEN];
-    n = quadmath_snprintf (buf, BUFLEN, "%+-#*.35Qe", rtmp.real());
+    n = quadmath_snprintf (buf, sizeof buf, "%+-#*.35Qe", width, rtmp.real());
     if ((size_t) n < sizeof buf)
     printf ("%s", buf);
-    n = quadmath_snprintf (buf2, BUFLEN, "%+-#*.35Qe", rtmp.imag());
+    n = quadmath_snprintf (buf2, sizeof buf, "%+-#*.35Qe", width, rtmp.imag());
     if ((size_t) n < sizeof buf2)
     printf ("%s", buf2);
     printf ("i");
