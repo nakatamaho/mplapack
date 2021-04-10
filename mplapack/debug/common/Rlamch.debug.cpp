@@ -433,6 +433,55 @@ void Rlamch__Float128_test()
 }
 #endif
 
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
+void Rlamch__Float64x_test()
+{
+    _Float64x tmp;
+    tmp = Rlamch__Float64x("E");
+/*
+    if (1.0Q + tmp > 1.0Q) {printf("rlamche f64x ok\n");} else {printf("rlamche f64x Error\n");}
+    if (1.0Q + tmp/2.0Q > 1.0Q) {printf("rlamche f64x error\n");} else {printf("rlamche f64x ok\n");}
+    if (1.0Q + tmp/2.0Q == 1.0Q) {printf("rlamche f64x ok\n");} else {printf("rlamche f64x error\n");}
+*/
+#if defined VERBOSE_TEST
+    printf("Rlamch E: Epsilon                      "); printnum(Rlamch__Float64x("E")); printf("\n");
+#endif
+    tmp = Rlamch__Float64x("S");
+    printf("Rlamch S: Safe minimum                 "); printnum(tmp); printf("\n");
+
+    tmp = Rlamch__Float64x("B");
+    printf("Rlamch B: Base                         "); printnum(tmp); printf("\n");
+
+    tmp = Rlamch__Float64x("P");
+    printf("Rlamch P: Precision                    "); printnum(tmp); printf("\n");
+
+    tmp = Rlamch__Float64x("N");
+    printf("Rlamch N: Number of digits in mantissa "); printnum(tmp); printf("\n");
+
+    tmp = Rlamch__Float64x("R");
+    printf("Rlamch R: Rounding mode                "); printnum(tmp); printf("\n");
+
+    tmp = Rlamch__Float64x("M");
+    printf("Rlamch M: Minimum exponent:            "); printnum(tmp); printf("\n");
+
+    tmp = Rlamch__Float64x("U");
+    printf("Rlamch U: Underflow threshold          "); printnum(tmp); printf("\n");
+
+    tmp = Rlamch__Float64x("L");
+    printf("Rlamch L: Largest exponent             "); printnum(tmp); printf("\n");
+
+    tmp = Rlamch__Float64x("O");
+    printf("Rlamch O: Overflow threshold           "); printnum(tmp); printf("\n");
+
+    tmp = Rlamch__Float64x("S");
+    tmp = 1.0 / tmp;
+    printf("Rlamch -: Reciprocal of safe minimum   "); printnum(tmp); printf("\n");
+
+    tmp = Rlamch__Float64x("Z");
+    printf("Rlamch Z: dummy (error)                "); printnum(tmp); printf("\n");
+}
+#endif
+
 int main(int argc, char *argv[])
 {
     printf("*** Testing Rlamch start ***\n");
@@ -451,8 +500,8 @@ int main(int argc, char *argv[])
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
     Rlamch_double_test();
 #endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-    Rlamch__Float128_test();
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
+    Rlamch__Float64x_test();
 #endif
     printf("*** Testing Rlamch successful ***\n");
     return(0);
