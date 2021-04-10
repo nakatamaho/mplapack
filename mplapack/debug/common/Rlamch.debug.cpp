@@ -503,6 +503,9 @@ int main(int argc, char *argv[])
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
     Rlamch__Float64x_test();
 #endif
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+    Rlamch__Float128_test();
+#endif
     printf("*** Testing Rlamch successful ***\n");
     return(0);
 }
