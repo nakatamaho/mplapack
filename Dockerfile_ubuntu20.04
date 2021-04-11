@@ -33,7 +33,7 @@ RUN echo "\n\
 " > /home/$DOCKER_USER/.gitconfig
 
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
-RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git -b v0.9.1 --depth 1
+RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git -b v0.9.3 --depth 1
 RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.ubuntu20.04.sh
 RUN cd /home/$DOCKER_USER/mplapack && make -j4
 RUN cd /home/$DOCKER_USER/mplapack && make install

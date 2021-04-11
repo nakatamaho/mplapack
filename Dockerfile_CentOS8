@@ -23,7 +23,7 @@ RUN echo "[user]" >> /home/$DOCKER_USER/.gitconfig && \
     echo "name = ${GIT_NAME}" >> /home/$DOCKER_USER/.gitconfig
 
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
-RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git -b v0.9.1 --depth 1
+RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git -b v0.9.3 --depth 1
 RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.centos8.sh
 RUN cd /home/$DOCKER_USER/mplapack && make -j6
 RUN cd /home/$DOCKER_USER/mplapack && make install
