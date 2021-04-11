@@ -41,20 +41,22 @@ void subst_test1()
   char buf1[BUFLEN], buf2[BUFLEN], buf3[BUFLEN];
   REAL tmp1;
   REAL_REF tmp2;
-  printf("*** Substitution test 1 ***\n");
-  strcpy (buf1, "-1.234567890123456789012345678901234567890123456789012345678901234567890e+01");
 
+  printf("*** Substitution test 1 ***\n");
+  strcpy (buf1, "-1.234567890123456789012345678901234567890123456789012345678901234567890E1");
 //tmp1 = buf1;
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ 
   #if defined ___MPLAPACK_WANT_LIBQUADMATH___
   tmp1 = strtoflt128(buf1, NULL);
-  #else
+  #elif !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___  
   tmp1 = strtof128(buf1, NULL);
+  #else
+  sscanf(buf1, "%Le", &tmp1);
   #endif
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
-  sscanf(buf1, "%lf", &tmp1);
+  sscanf(buf1, "%le", &tmp1);
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-  sscanf(buf1, "%Lf", &tmp1);
+  sscanf(buf1, "%Le", &tmp1);
 #else
   tmp1 = buf1;
 #endif
@@ -92,7 +94,7 @@ void subst_test2()
   REAL tmp1;
   REAL_REF tmp2;
   printf("*** Substitution test 2 ***\n");
-  strcpy (buf1, "-1.234567890123456789012345678901234567890123456789012345678901234567890e+01");
+  strcpy (buf1, "-1.234567890123456789012345678901234567890123456789012345678901234567890E1");
 
 //tmp2 = buf1;
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___

@@ -140,7 +140,7 @@ using namespace mpfr;
 //#define GMP_P_FORMAT  "%+21.16Fe"
 //#define MPFR_P_FORMAT "%+21.16Re"
 #define P_FORMAT      "%+21.16e"
-#define LP_FORMAT      "%+21.16Le"
+#define LP_FORMAT      "%+5.50Le"
 #define QD_PRECISION  64
 #define DD_PRECISION  32
 #define BUFLEN 1024

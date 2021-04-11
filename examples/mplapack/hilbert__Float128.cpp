@@ -16,9 +16,10 @@ void printnum(_Float128 rtmp)
     char buf[BUFLEN];
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
     int n = quadmath_snprintf (buf, sizeof buf, "%+-#*.35Qe", width, rtmp);
-    if ((size_t) n < sizeof buf)
+#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+    snprintf (buf, sizeof buf, "%.35Le", rtmp);
 #else
-    strfromf128(buf, sizeof(buf), "%+-#*.35Qe", rtmp);
+    strfromf128(buf, sizeof(buf), "%.35e", rtmp);
 #endif
     printf ("%s", buf);
     return;

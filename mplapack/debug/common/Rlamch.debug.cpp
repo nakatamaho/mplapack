@@ -94,11 +94,8 @@ void Rlamch_mpfr_test()
 {
     REAL tmp, tmp2;
     tmp = Rlamch_mpfr("E");
-    tmp2 = Rlamch_mpfr("E");
-#if defined VERBOSE_TEST
-    printf("Rlamch E: Epsilon                      "); printnum(Rlamch_mpfr("E")); printf("\n");
-#endif
 
+    printf("Rlamch E: Epsilon                      "); printnum(tmp); printf("\n");
     if (1.0 + tmp * 2.0 <= 1.0) {
         printf("*** Testing Mutils (RlamchE) failed ***\n");
 	exit(1);
@@ -182,15 +179,9 @@ void Rlamch_mpfr_test()
 void Rlamch_gmp_test()
 {
     REAL tmp, tmp2;
+
     tmp = Rlamch_gmp("E");
-    tmp2 = Rlamch_gmp("E");
-#if defined VERBOSE_TEST
-    printf("Rlamch E: Epsilon                      "); printnum(Rlamch_gmp("E")); printf("\n");
-#endif
-    if (abs(tmp - tmp2) != 0.0) {
-        printf("*** Testing Mutils (RlamchE) failed ***\n");
-	exit(1);
-    }
+    printf("Rlamch E: Epsilon                      "); printnum(tmp); printf("\n");
     if (1.0 + tmp*0.5 != 1.0) {
         printf("*** Testing Mutils (RlamchE) failed ***\n");
 	exit(1);
@@ -237,19 +228,15 @@ void
 Rlamch_qd_test()
 {
     qd_real tmp, tmp2;
+
     tmp = Rlamch_qd("E");
-    tmp2 = Rlamch_qd("E");
-#if defined VERBOSE_TEST
-    printf("Rlamch E: Epsilon                      "); printnum(Rlamch_qd("E")); printf("\n");
-#endif
-    if (abs(tmp - tmp2) != 0.0) {
-        printf("*** Testing Mutils (RlamchE) failed ***\n");
-	exit(1);
-    }
+    printf("Rlamch E: Epsilon                      "); printnum(tmp); printf("\n");
+/*
     if (1.0 + tmp <= 1.0) {
         printf("*** Testing Mutils (RlamchE) failed ***\n");
 	exit(1);
     }
+*/
     tmp = Rlamch_qd("S");
     printf("Rlamch S: Safe minimum                 "); printnum(tmp); printf("\n");
 
@@ -292,18 +279,15 @@ Rlamch_dd_test()
 {
     dd_real tmp, tmp2;
     tmp = Rlamch_dd("E");
-    tmp2 = Rlamch_dd("E");
-#if defined VERBOSE_TEST
-    printf("Rlamch E: Epsilon                      "); printnum(Rlamch_dd("E")); printf("\n");
-#endif
-    if (abs(tmp - tmp2) != 0.0) {
-        printf("*** Testing Mutils (RlamchE) failed ***\n");
-	exit(1);
-    }
+
+    printf("Rlamch E: Epsilon                      "); printnum(tmp); printf("\n");
+
+/*
     if (1.0 + tmp <= 1.0) {
         printf("*** Testing Mutils (RlamchE) failed ***\n");
 	exit(1);
     }
+*/
     tmp = Rlamch_dd("S");
     printf("Rlamch S: Safe minimum                 "); printnum(tmp); printf("\n");
 
@@ -345,9 +329,9 @@ void Rlamch_double_test()
 {
     double tmp;
     tmp = Rlamch_double("E");
-#if defined VERBOSE_TEST
-    printf("Rlamch E: Epsilon                      "); printnum(Rlamch_double("E")); printf("\n");
-#endif
+
+    printf("Rlamch E: Epsilon                      "); printnum(tmp); printf("\n");
+
     tmp = Rlamch_double("S");
     printf("Rlamch S: Safe minimum                 "); printnum(tmp); printf("\n");
 
@@ -388,15 +372,16 @@ void Rlamch_double_test()
 void Rlamch__Float128_test()
 {
     _Float128 tmp;
+
     tmp = Rlamch__Float128("E");
+    printf("Rlamch E: Epsilon                      "); printnum(tmp); printf("\n");
+
 /*
     if (1.0Q + tmp > 1.0Q) {printf("rlamche f128 ok\n");} else {printf("rlamche f128 Error\n");}
     if (1.0Q + tmp/2.0Q > 1.0Q) {printf("rlamche f128 error\n");} else {printf("rlamche f128 ok\n");}
     if (1.0Q + tmp/2.0Q == 1.0Q) {printf("rlamche f128 ok\n");} else {printf("rlamche f128 error\n");}
 */
-#if defined VERBOSE_TEST
-    printf("Rlamch E: Epsilon                      "); printnum(Rlamch__Float128("E")); printf("\n");
-#endif
+
     tmp = Rlamch__Float128("S");
     printf("Rlamch S: Safe minimum                 "); printnum(tmp); printf("\n");
 
@@ -433,6 +418,54 @@ void Rlamch__Float128_test()
 }
 #endif
 
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
+void Rlamch__Float64x_test()
+{
+    _Float64x tmp;
+    tmp = Rlamch__Float64x("E");
+    printf("Rlamch E: Epsilon                      "); printnum(tmp); printf("\n");
+/*
+    if (1.0Q + tmp > 1.0Q) {printf("rlamche f64x ok\n");} else {printf("rlamche f64x Error\n");}
+    if (1.0Q + tmp/2.0Q > 1.0Q) {printf("rlamche f64x error\n");} else {printf("rlamche f64x ok\n");}
+    if (1.0Q + tmp/2.0Q == 1.0Q) {printf("rlamche f64x ok\n");} else {printf("rlamche f64x error\n");}
+*/
+
+    tmp = Rlamch__Float64x("S");
+    printf("Rlamch S: Safe minimum                 "); printnum(tmp); printf("\n");
+
+    tmp = Rlamch__Float64x("B");
+    printf("Rlamch B: Base                         "); printnum(tmp); printf("\n");
+
+    tmp = Rlamch__Float64x("P");
+    printf("Rlamch P: Precision                    "); printnum(tmp); printf("\n");
+
+    tmp = Rlamch__Float64x("N");
+    printf("Rlamch N: Number of digits in mantissa "); printnum(tmp); printf("\n");
+
+    tmp = Rlamch__Float64x("R");
+    printf("Rlamch R: Rounding mode                "); printnum(tmp); printf("\n");
+
+    tmp = Rlamch__Float64x("M");
+    printf("Rlamch M: Minimum exponent:            "); printnum(tmp); printf("\n");
+
+    tmp = Rlamch__Float64x("U");
+    printf("Rlamch U: Underflow threshold          "); printnum(tmp); printf("\n");
+
+    tmp = Rlamch__Float64x("L");
+    printf("Rlamch L: Largest exponent             "); printnum(tmp); printf("\n");
+
+    tmp = Rlamch__Float64x("O");
+    printf("Rlamch O: Overflow threshold           "); printnum(tmp); printf("\n");
+
+    tmp = Rlamch__Float64x("S");
+    tmp = 1.0 / tmp;
+    printf("Rlamch -: Reciprocal of safe minimum   "); printnum(tmp); printf("\n");
+
+    tmp = Rlamch__Float64x("Z");
+    printf("Rlamch Z: dummy (error)                "); printnum(tmp); printf("\n");
+}
+#endif
+
 int main(int argc, char *argv[])
 {
     printf("*** Testing Rlamch start ***\n");
@@ -450,6 +483,9 @@ int main(int argc, char *argv[])
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
     Rlamch_double_test();
+#endif
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
+    Rlamch__Float64x_test();
 #endif
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
     Rlamch__Float128_test();

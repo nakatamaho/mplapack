@@ -63,11 +63,27 @@ class mpcomplex {
     inline static mp_rnd_t get_default_imag_rnd() { return default_imag_rnd; }
     inline static void set_default_imag_rnd(mpfr_rnd_t rnd_mode) { default_imag_rnd = rnd_mode; }
 
-    inline static mp_prec_t default_real_prec = mpfr_get_default_prec();
+    inline static mp_prec_t _default_real_prec() {
+      char *p = getenv("MPLAPACK_MPFR_PRECISION");
+        if (p) {
+	    return (mp_prec_t)atoi(p);
+        } else {
+	    return (mp_prec_t) ___MPREAL_DEFAULT_PRECISION___;
+        }
+    }
+    inline static mp_prec_t default_real_prec = _default_real_prec();
     inline static mp_prec_t get_default_real_prec() { return default_real_prec; }
     inline static void set_default_real_prec(mp_prec_t prec) { default_real_prec = prec; }
 
-    inline static mp_prec_t default_imag_prec = mpfr_get_default_prec();
+    inline static mp_prec_t _default_imag_prec() {
+      char *p = getenv("MPLAPACK_MPFR_PRECISION");
+        if (p) {
+	    return (mp_prec_t)atoi(p);
+        } else {
+	    return (mp_prec_t) ___MPREAL_DEFAULT_PRECISION___;
+        }
+    }
+    inline static mp_prec_t default_imag_prec = _default_imag_prec();
     inline static mp_prec_t get_default_imag_prec() { return default_imag_prec; }
     inline static void set_default_imag_prec(mp_prec_t prec) { default_imag_prec = prec; }
 
@@ -243,7 +259,7 @@ class mpcomplex {
     mpcomplex(const dd_complex &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex &operator=(const dd_complex &a);
 #endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
     mpcomplex(const std::complex<_Float128> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex &operator=(const std::complex<_Float128> &a);
 #endif
@@ -1111,7 +1127,7 @@ inline mpcomplex &mpcomplex::operator=(const dd_complex &a) {
 
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
 inline mpcomplex::mpcomplex(const std::complex<_Float128> &a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
     mpfr_t mp_real, mp_imag;
     mpc_init3(mpc, pr, pi);
