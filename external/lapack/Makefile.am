@@ -22,8 +22,6 @@ endif
 if IS_MIC
 	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/patch-mic
 endif
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/patch-BLAS
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p1 < $(abs_builddir)/patches/patch-LAPACK
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
@@ -31,14 +29,18 @@ work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
 	echo "CC = $(CC)"           >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "CFLAGS = -O0"         >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "FC = $(FC)"           >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "FFLAGS = -O2 -frecursive" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "FFLAGS = -O0"         >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "FFLAGS_DRV = \$$(FFLAGS)" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "FFLAGS_NOOPT = -O0 -frecursive" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "FFLAGS_NOOPT = -O0" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "LDFLAGS ="       >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "AR = $(AR)"         >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "ARFLAGS = cr"      >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "RANLIB = $(RANLIB)"   >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+if IS_INTELCC
+	echo "TIMER = INT_CPU_TIME"      >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+else
 	echo "TIMER = INT_ETIME"      >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+endif
 	echo "TOPSRCDIR = $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "BLASLIB      = \$$(TOPSRCDIR)/libblas.a"     >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "CBLASLIB     = \$$(TOPSRCDIR)/libcblas.a"    >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
