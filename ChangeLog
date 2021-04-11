@@ -1,3 +1,7 @@
+2021/4/11   Nakata Maho <maho@riken.jp> 0.9.3
+            * build fix for CentOS7 (AArch64)
+            * Rlamch fixes for win64
+
 2021/4/5    Nakata Maho <maho@riken.jp> 0.9.1
             * build fix for CentOS7 (x86_64, _Float128 via libquadmath)
             * build verified for CentOS8 (AArm64, _Float128 via glibc)
