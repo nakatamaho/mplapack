@@ -175,6 +175,8 @@ REAL pi(REAL dummy)
 #elif defined _MPLAPACK_UTILS__FLOAT64X_H_
     #if defined __APPLE__ // __MATH_LONG_DOUBLE_CONSTANTS looks broken
         return  0xc.90fdaa22168c235p-2L;
+    #elif defined __MINGW32__
+        return  0xc.90fdaa22168c235p-2L;
     #else
         return M_PIl;
     #endif
