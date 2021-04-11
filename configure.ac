@@ -168,7 +168,6 @@ AC_ARG_ENABLE(reference,
 AS_HELP_STRING([--disable-reference], [Build without reference libraries]))
 AM_CONDITIONAL(DISABLE_REFERENCE, test x$enable_reference = xno)
 
-
 dnl enable GMP version of MPLAPACK.
 AC_ARG_ENABLE(gmp,
 AS_HELP_STRING([--enable-gmp], [Enable GMP version]))
@@ -259,9 +258,9 @@ if test x$enable__Float128 = x"yes"; then
                _Float128 *y = x;
            }
         ]]) 
-        ], [float128islongdouble=yes], [float128islongdouble=no])
+        ], [_Float128islongdouble=yes], [_Float128islongdouble=no])
 
-        if test "$float128islongdouble" = "yes"; then 
+        if test "$_Float128islongdouble" = "yes"; then 
              AC_MSG_RESULT([_Float128 is long double])
         else
              AC_MSG_RESULT([_Float128 is not long double])
@@ -269,6 +268,26 @@ if test x$enable__Float128 = x"yes"; then
     fi
 
     if test x"$have__Float128" = x"no"; then
+        AC_COMPILE_IFELSE([
+        AC_LANG_SOURCE([[
+           #include <stdio.h>
+           #include <limits>
+           int main(){
+           #if __LDBL_MANT_DIG__  >= 113
+              printf("%d\n",__LDBL_MANT_DIG__);
+           #else
+           #error
+           #endif
+        }
+        ]]) 
+        ], [longdoubleisbinary128=yes], [longdoubleisbinary128=no])
+
+        if test "$longdoubleisbinary128" = "yes"; then 
+             AC_MSG_RESULT([long double is binary128])
+        else
+             AC_MSG_RESULT([long double is not binary128])
+        fi
+
         save_LIBS="$LIBS"
         LIBS="-lquadmath $LIBS"
         AC_LINK_IFELSE([
@@ -282,30 +301,30 @@ if test x$enable__Float128 = x"yes"; then
                     printf("%s",buf);
                 }
            ]])
-        ], [have__Float128=yes want_libquadmath=yes], [have__Float128=no])
-
-        if test "$have__Float128" = "no"; then
-            AC_MSG_ERROR([_Float128 is not supported on this platform])
-        fi
+        ], [have___float128=yes want_libquadmath=yes], [have___float128=no])
         LIBS="$save_LIBS"
     fi
 
-    if test "$want_libquadmath" = "yes"; then
+    if test "$have___float128" = "yes" && test x"$want_libquadmath" = x"yes" ; then
         AC_MSG_RESULT([_Float128 is supported via __float128 and libquadmath])
-        sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%/#define ___MPLAPACK_WANT_LIBQUADMATH___\ntypedef __float128 _Float128;/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
-        AM_CONDITIONAL(WANT_QUADMATH, test x$want_libquadmath = xyes)
-    else
-        AC_MSG_RESULT([_Float128 is supported via native libc])
-        if test "$float128islongdouble" = "yes"; then 
-            sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%/#define ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
-        else
-            sed 's/%%MPLAPACK_FLOAT128_LIBC_OR_LIBQUADMATH%%//g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
-        fi
-        AM_CONDITIONAL(WANT_QUADMATH, test x$want_libquadmath = xyes)
+        sed 's/%%MPLAPACK_BINARY128%%/#define ___MPLAPACK_WANT_LIBQUADMATH___/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
+    elif test "$have__Float128" = "yes" && test x"$want_libquadmath" = x"no" && test x"$_Float128islongdouble" = x"yes"; then
+        AC_MSG_RESULT([_Float128 is supported via native libc and _Float128 and long double are the same])
+        sed 's/%%MPLAPACK_BINARY128%%/#define ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
+    elif test "$have__Float128" = "yes" && test x"$want_libquadmath" = x"no" && test x"$_Float128islongdouble" != x"yes"; then
+        AC_MSG_RESULT([_Float128 is supported via native libc and only binary128 in this system])
+        sed 's/%%MPLAPACK_BINARY128%%/#define ___MPLAPACK__FLOAT128_ONLY___/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
+    elif test "$have__Float128" = "no" && test x"$longdoubleisbinary128" = x"yes"; then
+        AC_MSG_RESULT([long double is binary128, but neither _Float128 nor __float128 are supported])
+        sed 's/%%MPLAPACK_BINARY128%%/#define ___MPLAPACK_LONGDOUBLE_IS_BINARY128___/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
+    else 
+        AC_MSG_ERROR([binary128 is not supported on this system])
     fi
 fi
 AM_CONDITIONAL(ENABLE__FLOAT128, test x$enable__Float128 = xyes)
-AM_CONDITIONAL(IS__FLOAT128_LONGDOUBLE, test x$float128islongdouble = xyes)
+AM_CONDITIONAL(WANT_QUADMATH, test x$want_libquadmath = xyes)
+AM_CONDITIONAL(IS__FLOAT128_LONGDOUBLE, test x$_Float128islongdouble = xyes)
+AM_CONDITIONAL(IS_LONGDOUBLE_BINARY128, test x$longdoubleisbinary128 = xyes)
 
 CXXFLAGS="$SAVE_CXXFLAGS"
 
@@ -676,15 +695,18 @@ if test x$enable__Float64x = x"yes"; then
     fi
 fi
 
-if test x$enable__Float128 = x"yes"; then
-    if test "$want_libquadmath" = "yes"; then
-        AC_MSG_RESULT([Enable _Float128 version via __float128 and libquadmath])
-    else
-        AC_MSG_RESULT([Enable native _Float128 version via native libc])
-    fi
+if test x$enable__Float128 = x"yes" && test x"$want_libquadmath" = x"yes"; then
+        AC_MSG_RESULT([_Float128 is supported via __float128 and libquadmath])
+elif test x$enable__Float128 = x"yes" && test x"$want_libquadmath" = x"no" && test x"$_Float128islongdouble" = x"yes"; then
+        AC_MSG_RESULT([_Float128 is supported via native libc and _Float128 and long double are the same])
+elif test x$enable__Float128 = x"yes" && test x"$want_libquadmath" = x"no" && test x"$_Float128islongdouble" != x"yes"; then
+        AC_MSG_RESULT([_Float128 is supported via native libc and only binary128 in this system])
+elif test x$enable__Float128 = x"yes" && test x"$longdoubleisbinary128" = x"yes"; then
+        AC_MSG_RESULT([long double is binary128, but neither _Float128 nor __float128 are supported])
 else
-    AC_MSG_RESULT([Disable _Float128 version])
+        AC_MSG_RESULT([disable _Float128])
 fi
+
 if test x$enable_debug = x"yes"; then
 AC_MSG_RESULT([Enable debug])
 AC_SUBST(LAPACK_DIR, [lapack])
