@@ -61,11 +61,11 @@ void Rgeqr(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
     //
     bool lquery = (tsize == -1 || tsize == -2 || lwork == -1 || lwork == -2);
     //
-    bool mINTEGER = false;
+    bool mint = false;
     bool minw = false;
     if (tsize == -2 || lwork == -2) {
         if (tsize != -1) {
-            mINTEGER = true;
+            mint = true;
         }
         if (lwork != -1) {
             minw = true;
@@ -129,7 +129,7 @@ void Rgeqr(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
     }
     //
     if (info == 0) {
-        if (mINTEGER) {
+        if (mint) {
             t[1 - 1] = mintsz;
         } else {
             t[1 - 1] = nb * n * nblcks + 5;

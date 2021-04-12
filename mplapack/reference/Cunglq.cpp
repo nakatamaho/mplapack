@@ -94,7 +94,7 @@ void Cunglq(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
         //
         //        Determine when to cross over from blocked to unblocked code.
         //
-        nx = max(0, iMlaenv(3, "Cunglq", " ", m, n, k, -1));
+        nx = max((INTEGER)0, iMlaenv(3, "Cunglq", " ", m, n, k, -1));
         if (nx < k) {
             //
             //           Determine if workspace is large enough for blocked code.
@@ -107,7 +107,7 @@ void Cunglq(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
                 //              determine the minimum value of NB.
                 //
                 nb = lwork / ldwork;
-                nbmin = max(2, iMlaenv(2, "Cunglq", " ", m, n, k, -1));
+                nbmin = max((INTEGER)2, iMlaenv(2, "Cunglq", " ", m, n, k, -1));
             }
         }
     }

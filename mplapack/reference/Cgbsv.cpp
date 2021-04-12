@@ -61,7 +61,7 @@ void Cgbsv(INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nr
         info = -4;
     } else if (ldab < 2 * kl + ku + 1) {
         info = -6;
-    } else if (ldb < max(n, 1)) {
+    } else if (ldb < max(n, (INTEGER)1)) {
         info = -9;
     }
     if (info != 0) {

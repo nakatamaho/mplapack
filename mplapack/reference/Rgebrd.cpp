@@ -93,7 +93,7 @@ void Rgebrd(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     INTEGER nbmin = 0;
     if (nb > 1 && nb < minmn) {
         //
-        //        Set the crossover poINTEGER NX.
+        //        Set the crossover point NX.
         //
         nx = max(nb, iMlaenv(3, "Rgebrd", " ", m, n, -1, -1));
         //

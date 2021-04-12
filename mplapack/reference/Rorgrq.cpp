@@ -105,7 +105,7 @@ void Rorgrq(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
         //
         //        Determine when to cross over from blocked to unblocked code.
         //
-        nx = max(0, iMlaenv(3, "Rorgrq", " ", m, n, k, -1));
+        nx = max((INTEGER)0, iMlaenv(3, "Rorgrq", " ", m, n, k, -1));
         if (nx < k) {
             //
             //           Determine if workspace is large enough for blocked code.
@@ -118,7 +118,7 @@ void Rorgrq(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
                 //              determine the minimum value of NB.
                 //
                 nb = lwork / ldwork;
-                nbmin = max(2, iMlaenv(2, "Rorgrq", " ", m, n, k, -1));
+                nbmin = max((INTEGER)2, iMlaenv(2, "Rorgrq", " ", m, n, k, -1));
             }
         }
     }

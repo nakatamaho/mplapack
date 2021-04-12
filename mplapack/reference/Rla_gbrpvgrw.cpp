@@ -59,10 +59,10 @@ REAL Rla_gbrpvgrw(INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER c
     for (j = 1; j <= ncols; j = j + 1) {
         amax = 0.0;
         umax = 0.0;
-        for (i = max(j - ku, 1); i <= min(j + kl, n); i = i + 1) {
+        for (i = max(j - ku, (INTEGER)1); i <= min(j + kl, n); i = i + 1) {
             amax = max(abs(ab[((kd + i - j) - 1) + (j - 1) * ldab]), amax);
         }
-        for (i = max(j - ku, 1); i <= j; i = i + 1) {
+        for (i = max(j - ku, (INTEGER)1); i <= j; i = i + 1) {
             umax = max(abs(afb[((kd + i - j) - 1) + (j - 1) * ldafb]), umax);
         }
         if (umax != 0.0) {

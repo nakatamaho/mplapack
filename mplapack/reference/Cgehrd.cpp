@@ -131,7 +131,7 @@ void Cgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, I
                 //              minimum value of NB, and reduce NB or force use of
                 //              unblocked code
                 //
-                nbmin = max(2, iMlaenv(2, "Cgehrd", " ", n, ilo, ihi, -1));
+	        nbmin = max((INTEGER)2, iMlaenv(2, "Cgehrd", " ", n, ilo, ihi, -1));
                 if (lwork >= (n * nbmin + tsize)) {
                     nb = (lwork - tsize) / n;
                 } else {

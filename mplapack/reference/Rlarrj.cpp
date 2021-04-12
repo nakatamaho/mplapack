@@ -34,7 +34,7 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
     INTEGER maxitr = 0;
     INTEGER i1 = 0;
     INTEGER i2 = 0;
-    INTEGER nINTEGER = 0;
+    INTEGER nint = 0;
     INTEGER prev = 0;
     INTEGER i = 0;
     INTEGER k = 0;
@@ -53,7 +53,7 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
     INTEGER j = 0;
     INTEGER savi1 = 0;
     INTEGER iter = 0;
-    INTEGER olnINTEGER = 0;
+    INTEGER olnint = 0;
     INTEGER p = 0;
     INTEGER next = 0;
     const REAL half = 0.5e0;
@@ -86,7 +86,7 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
         return;
     }
     //
-    maxitr = INTEGER((log(spdiam + pivmin) - log(pivmin)) / log(two)) + 2;
+    maxitr = INTEGER((log(spdiam + pivmin) - log(pivmin)) / log(two)) + (INTEGER)2;
     //
     //     Initialize unconverged intervals in [ WORK(2*I-1), WORK(2*I) ].
     //     The Sturm Count, Count( WORK(2*I-1) ) is arranged to be I-1, while
@@ -98,7 +98,7 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
     i1 = ifirst;
     i2 = ilast;
     //     The number of unconverged intervals
-    nINTEGER = 0;
+    nint = 0;
     //     The last unconverged interval found
     prev = 0;
     for (i = i1; i <= i2; i = i + 1) {
@@ -172,7 +172,7 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
                 fac = two * fac;
                 goto statement_50;
             }
-            nINTEGER++;
+            nint++;
             iwork[(k - 1) - 1] = i + 1;
             iwork[k - 1] = cnt;
         }
@@ -189,9 +189,9 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
 statement_80:
     prev = i1 - 1;
     i = i1;
-    olnINTEGER = nINTEGER;
+    olnint = nint;
     //
-    for (p = 1; p <= olnINTEGER; p = p + 1) {
+    for (p = 1; p <= olnint; p = p + 1) {
         k = 2 * i;
         ii = i - offset;
         next = iwork[(k - 1) - 1];
@@ -205,7 +205,7 @@ statement_80:
         //
         if ((width < rtol * tmp) || (iter == maxitr)) {
             //           reduce number of unconverged intervals
-            nINTEGER = nINTEGER - 1;
+            nint = nint - 1;
             //           Mark interval as converged.
             iwork[(k - 1) - 1] = 0;
             if (i1 == i) {
@@ -248,7 +248,7 @@ statement_80:
     //     do another loop if there are still unconverged intervals
     //     However, in the last iteration, all intervals are accepted
     //     since this is the best we can do.
-    if ((nINTEGER > 0) && (iter <= maxitr)) {
+    if ((nint > 0) && (iter <= maxitr)) {
         goto statement_80;
     }
     //

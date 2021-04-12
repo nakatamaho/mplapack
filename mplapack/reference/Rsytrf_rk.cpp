@@ -100,8 +100,8 @@ void Rsytrf_rk(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, RE
     if (nb > 1 && nb < n) {
         iws = ldwork * nb;
         if (lwork < iws) {
-            nb = max(lwork / ldwork, 1);
-            nbmin = max(2, iMlaenv(2, "Rsytrf_rk", uplo, n, -1, -1, -1));
+            nb = max(lwork / ldwork, (INTEGER)1);
+            nbmin = max((INTEGER)2, iMlaenv(2, "Rsytrf_rk", uplo, n, -1, -1, -1));
         }
     } else {
         iws = 1;

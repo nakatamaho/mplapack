@@ -4,25 +4,25 @@ if ENABLE_MPFR
 lib_LTLIBRARIES += libmplapack_mpfr_ref.la
 endif
 
-if ENABLE_GMP
-lib_LTLIBRARIES += libmplapack_gmp_ref.la
-endif
+#if ENABLE_GMP
+#lib_LTLIBRARIES += libmplapack_gmp_ref.la
+#endif
 
-if ENABLE_QD
-lib_LTLIBRARIES += libmplapack_qd_ref.la
-endif
+#if ENABLE_QD
+#lib_LTLIBRARIES += libmplapack_qd_ref.la
+#endif
 
-if ENABLE_DD
-lib_LTLIBRARIES += libmplapack_dd_ref.la
-endif
+#if ENABLE_DD
+#lib_LTLIBRARIES += libmplapack_dd_ref.la
+#endif
 
-if ENABLE_DOUBLE
-lib_LTLIBRARIES += libmplapack_double_ref.la
-endif
+#if ENABLE_DOUBLE
+#lib_LTLIBRARIES += libmplapack_double_ref.la
+#endif
 
-if ENABLE__FLOAT64X
-lib_LTLIBRARIES += libmplapack__Float64x_ref.la
-endif
+#if ENABLE__FLOAT64X
+#lib_LTLIBRARIES += libmplapack__Float64x_ref.la
+#endif
 
 if ENABLE__FLOAT128
 lib_LTLIBRARIES += libmplapack__Float128_ref.la
@@ -85,80 +85,44 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
-Rorm2l.cpp \
-Rorm2r.cpp \
-Rormlq.cpp \
-Rgebrd.cpp \
-Rormbr.cpp \
-Rormql.cpp \
-Rormqr.cpp \
-Rorml2.cpp \
-Rorm2r.cpp \
-Rorglq.cpp \
-Rorgl2.cpp \
-Rgeqrf.cpp \
-Rgelqf.cpp \
-Rgeqr2.cpp \
-Chetri.cpp \
-Chetri_rook.cpp \
-Clarfy.cpp \
-Rgelq2.cpp \
-Rlabrd.cpp \
-Rgebd2.cpp \
-Rbdsqr.cpp \
-iMlazlr.cpp \
-iMlazlc.cpp \
-iMladlr.cpp \
-iMladlc.cpp \
-Claev2.cpp \
-Clansy.cpp \
-Clanhe.cpp \
-Cladiv.cpp \
-Clarfg.cpp \
-Clartg.cpp \
-Cpotf2.cpp \
-Clascl.cpp \
-Chetd2.cpp \
-Clatrd.cpp \
-Rsytrd.cpp \
-Chetrd.cpp \
-Rlarf.cpp \
-Clarf.cpp \
-Cung2l.cpp \
-Cung2r.cpp \
-Clarft.cpp \
-Clarfb.cpp \
-Cungql.cpp \
-Cheev.cpp \
-Clacrm.cpp \
-Rtrtri.cpp \
-Ctrtri.cpp \
-Cgetri.cpp \
-Clasyf.cpp \
-Clahef.cpp \
-Claesy.cpp \
 Cdrscl.cpp \
+Cgbsv.cpp \
 Cgebak.cpp \
-Cgelq.cpp \
+Cgehrd.cpp \
+Cgelqf.cpp \
 Cgelqt.cpp \
 Cgemlqt.cpp \
 Cgemqrt.cpp \
-Cgeqr.cpp \
+Cgeqlf.cpp \
+Cgeqrf.cpp \
+Cgeqrfp.cpp \
 Cgeqrt.cpp \
+Cgerqf.cpp \
 Cgesv.cpp \
 Cgetc2.cpp \
 Cgetf2.cpp \
 Cgetrf.cpp \
 Cgetrf2.cpp \
+Cgetri.cpp \
 Cgetrs.cpp \
+Cgetsqrhrt.cpp \
 Cggbak.cpp \
+Cgttrs.cpp \
 Cgtts2.cpp \
+Cheev.cpp \
 Chegst.cpp \
 Chesv.cpp \
 Chesv_rook.cpp \
 Cheswapr.cpp \
+Chetd2.cpp \
+Chetrd.cpp \
+Chetrf.cpp \
+Chetrf_rk.cpp \
+Chetrf_rook.cpp \
+Chetri.cpp \
 Chetri2.cpp \
 Chetri_3.cpp \
+Chetri_rook.cpp \
 Chetrs.cpp \
 Chetrs2.cpp \
 Chetrs_3.cpp \
@@ -170,10 +134,19 @@ Cla_wwaddw.cpp \
 Clacgv.cpp \
 Clacp2.cpp \
 Clacpy.cpp \
+Clacrm.cpp \
 Clacrt.cpp \
+Cladiv.cpp \
+Claesy.cpp \
+Claev2.cpp \
 Clagtm.cpp \
+Clahef.cpp \
+Clamswlq.cpp \
+Clamtsqr.cpp \
 Clangt.cpp \
+Clanhe.cpp \
 Clanht.cpp \
+Clansy.cpp \
 Clapmr.cpp \
 Clapmt.cpp \
 Claqgb.cpp \
@@ -184,19 +157,29 @@ Claqhp.cpp \
 Claqsb.cpp \
 Claqsp.cpp \
 Claqsy.cpp \
+Clar1v.cpp \
 Clar2v.cpp \
+Clarf.cpp \
+Clarfb.cpp \
 Clarfb_gett.cpp \
+Clarfg.cpp \
+Clarft.cpp \
 Clarfx.cpp \
+Clarfy.cpp \
 Clarscl2.cpp \
+Clartg.cpp \
 Clartv.cpp \
 Clarz.cpp \
 Clarzt.cpp \
+Clascl.cpp \
 Clascl2.cpp \
 Claset.cpp \
 Clasr.cpp \
 Classq.cpp \
 Claswlq.cpp \
 Claswp.cpp \
+Clasyf.cpp \
+Clatrd.cpp \
 Clatsqr.cpp \
 Claunhr_col_getrfnp.cpp \
 Clauum.cpp \
@@ -205,6 +188,7 @@ Cpbsv.cpp \
 Cpbtrs.cpp \
 Cpoequ.cpp \
 Cposv.cpp \
+Cpotf2.cpp \
 Cpotrf.cpp \
 Cpotrf2.cpp \
 Cpotri.cpp \
@@ -221,12 +205,16 @@ Crot.cpp \
 Cspmv.cpp \
 Cspr.cpp \
 Cspsv.cpp \
+Csteqr.cpp \
 Csyconv.cpp \
 Csyconvf.cpp \
 Csyconvf_rook.cpp \
 Csymv.cpp \
 Csyr.cpp \
 Csyswapr.cpp \
+Csytrf.cpp \
+Csytrf_rk.cpp \
+Csytrf_rook.cpp \
 Csytri2.cpp \
 Csytri_3.cpp \
 Csytrs.cpp \
@@ -244,16 +232,22 @@ Ctprfb.cpp \
 Ctptrs.cpp \
 Ctpttr.cpp \
 Ctrti2.cpp \
+Ctrtri.cpp \
 Ctrtrs.cpp \
 Ctrttp.cpp \
+Ctzrzf.cpp \
 Cunbdb5.cpp \
 Cunbdb6.cpp \
+Cung2l.cpp \
+Cung2r.cpp \
 Cunghr.cpp \
 Cungl2.cpp \
+Cunglq.cpp \
+Cungql.cpp \
 Cungqr.cpp \
 Cungr2.cpp \
+Cungrq.cpp \
 Cungtr.cpp \
-Cungtsqr.cpp \
 Cunhr_col.cpp \
 Cunm2l.cpp \
 Cunm2r.cpp \
@@ -262,29 +256,45 @@ Cunmr2.cpp \
 Cunmr3.cpp \
 Mutils.cpp \
 RCsum1.cpp \
+Rbdsqr.cpp \
+Rbdsvdx.cpp \
 Rcombssq.cpp \
+Rgbsv.cpp \
 Rgebak.cpp \
-Rgelq.cpp \
+Rgebd2.cpp \
+Rgebrd.cpp \
+Rgehrd.cpp \
+Rgelq2.cpp \
+Rgelqf.cpp \
 Rgelqt.cpp \
 Rgemlqt.cpp \
 Rgemqrt.cpp \
-Rgeqr.cpp \
+Rgeqlf.cpp \
+Rgeqr2.cpp \
+Rgeqrf.cpp \
+Rgeqrfp.cpp \
 Rgeqrt.cpp \
+Rgerqf.cpp \
 Rgesv.cpp \
+Rgesvd.cpp \
 Rgetc2.cpp \
 Rgetf2.cpp \
 Rgetrf.cpp \
 Rgetrf2.cpp \
 Rgetri.cpp \
 Rgetrs.cpp \
+Rgetsqrhrt.cpp \
 Rggbak.cpp \
 Rgtsv.cpp \
 Rgttrf.cpp \
+Rgttrs.cpp \
 Rgtts2.cpp \
 Risnan.cpp \
+Rla_gbrpvgrw.cpp \
 Rla_gerpvgrw.cpp \
 Rla_wwaddw.cpp \
 Rlabad.cpp \
+Rlabrd.cpp \
 Rlacpy.cpp \
 Rladiv.cpp \
 Rlae2.cpp \
@@ -292,11 +302,13 @@ Rlaed5.cpp \
 Rlaev2.cpp \
 Rlagtf.cpp \
 Rlagtm.cpp \
+Rlagts.cpp \
 Rlaic1.cpp \
 Rlaisnan.cpp \
 Rlamch.cpp \
 Rlamrg.cpp \
 Rlamswlq.cpp \
+Rlamtsqr.cpp \
 Rlaneg.cpp \
 Rlangt.cpp \
 Rlanst.cpp \
@@ -316,6 +328,7 @@ Rlaqsp.cpp \
 Rlaqsy.cpp \
 Rlar1v.cpp \
 Rlar2v.cpp \
+Rlarf.cpp \
 Rlarfb.cpp \
 Rlarfb_gett.cpp \
 Rlarfg.cpp \
@@ -363,10 +376,19 @@ Rorg2l.cpp \
 Rorg2r.cpp \
 Rorgbr.cpp \
 Rorghr.cpp \
+Rorgl2.cpp \
+Rorglq.cpp \
 Rorgql.cpp \
 Rorgqr.cpp \
+Rorgrq.cpp \
 Rorgtr.cpp \
 Rorhr_col.cpp \
+Rorm2l.cpp \
+Rorm2r.cpp \
+Rormbr.cpp \
+Rorml2.cpp \
+Rormql.cpp \
+Rormqr.cpp \
 Rpbequ.cpp \
 Rpbsv.cpp \
 Rpbtrs.cpp \
@@ -398,7 +420,6 @@ Rstevd.cpp \
 Rsyconv.cpp \
 Rsyconvf.cpp \
 Rsyconvf_rook.cpp \
-Rsyequb.cpp \
 Rsyev.cpp \
 Rsyevd.cpp \
 Rsygs2.cpp \
@@ -414,6 +435,10 @@ Rsytd2.cpp \
 Rsytf2.cpp \
 Rsytf2_rk.cpp \
 Rsytf2_rook.cpp \
+Rsytrd.cpp \
+Rsytrf.cpp \
+Rsytrf_rk.cpp \
+Rsytrf_rook.cpp \
 Rsytri.cpp \
 Rsytri2.cpp \
 Rsytri_3.cpp \
@@ -435,9 +460,17 @@ Rtptrs.cpp \
 Rtpttr.cpp \
 Rtrexc.cpp \
 Rtrti2.cpp \
+Rtrtri.cpp \
 Rtrtrs.cpp \
 Rtrttp.cpp \
+Rtzrzf.cpp \
 iCmax1.cpp \
-Csteqr.cpp \
+iMladiag.cpp \
+iMladlc.cpp \
+iMladlr.cpp \
 iMlaenv.cpp \
-Rgesvd.cpp
+iMlaprec.cpp \
+iMlatrans.cpp \
+iMlauplo.cpp \
+iMlazlc.cpp \
+iMlazlr.cpp

@@ -91,7 +91,7 @@ void Cgeqrfp(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
         //
         //        Determine when to cross over from blocked to unblocked code.
         //
-        nx = max(0, iMlaenv(3, "Cgeqrf", " ", m, n, -1, -1));
+        nx = max((INTEGER)0, iMlaenv(3, "Cgeqrf", " ", m, n, -1, -1));
         if (nx < k) {
             //
             //           Determine if workspace is large enough for blocked code.
@@ -104,7 +104,7 @@ void Cgeqrfp(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
                 //              determine the minimum value of NB.
                 //
                 nb = lwork / ldwork;
-                nbmin = max(2, iMlaenv(2, "Cgeqrf", " ", m, n, -1, -1));
+                nbmin = max((INTEGER)2, iMlaenv(2, "Cgeqrf", " ", m, n, -1, -1));
             }
         }
     }

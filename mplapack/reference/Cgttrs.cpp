@@ -60,7 +60,7 @@ void Cgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
         info = -2;
     } else if (nrhs < 0) {
         info = -3;
-    } else if (ldb < max(n, 1)) {
+    } else if (ldb < max(n, (INTEGER)1)) {
         info = -10;
     }
     if (info != 0) {
