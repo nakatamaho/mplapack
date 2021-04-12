@@ -62,11 +62,6 @@ void Rormql(const char *side, const char *trans, INTEGER const m, INTEGER const 
     bool lquery = (lwork == -1);
     //
     //
-    char side_trans[3];
-    side_trans[0] = side[0];
-    side_trans[1] = trans[0];
-    side_trans[2] = '\0';
-
     INTEGER nq = 0;
     INTEGER nw = 0;
     if (left) {
@@ -106,7 +101,7 @@ void Rormql(const char *side, const char *trans, INTEGER const m, INTEGER const 
         if (m == 0 || n == 0) {
             lwkopt = 1;
         } else {
-            nb = min(nbmax, iMlaenv(1, "Rormql", side_trans, m, n, k, -1));
+            nb = min(nbmax, iMlaenv(1, "Rormql", side + trans, m, n, k, -1));
             lwkopt = nw * nb + tsize;
         }
         work[1 - 1] = lwkopt;
@@ -130,7 +125,7 @@ void Rormql(const char *side, const char *trans, INTEGER const m, INTEGER const 
     if (nb > 1 && nb < k) {
         if (lwork < nw * nb + tsize) {
             nb = (lwork - tsize) / ldwork;
-            nbmin = max((INTEGER)2, iMlaenv(2, "Rormql", side_trans, m, n, k, -1));
+            nbmin = max(2, iMlaenv(2, "Rormql", side + trans, m, n, k, -1));
         }
     }
     //
