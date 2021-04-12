@@ -16,13 +16,13 @@ endif
 #lib_LTLIBRARIES += libmplapack_dd_ref.la
 #endif
 
-#if ENABLE_DOUBLE
-#lib_LTLIBRARIES += libmplapack_double_ref.la
-#endif
+if ENABLE_DOUBLE
+lib_LTLIBRARIES += libmplapack_double_ref.la
+endif
 
-#if ENABLE__FLOAT64X
-#lib_LTLIBRARIES += libmplapack__Float64x_ref.la
-#endif
+if ENABLE__FLOAT64X
+lib_LTLIBRARIES += libmplapack__Float64x_ref.la
+endif
 
 if ENABLE__FLOAT128
 lib_LTLIBRARIES += libmplapack__Float128_ref.la
@@ -109,7 +109,6 @@ Cgetsqrhrt.cpp \
 Cggbak.cpp \
 Cgttrs.cpp \
 Cgtts2.cpp \
-Cheev.cpp \
 Chegst.cpp \
 Chesv.cpp \
 Chesv_rook.cpp \
@@ -420,7 +419,6 @@ Rstevd.cpp \
 Rsyconv.cpp \
 Rsyconvf.cpp \
 Rsyconvf_rook.cpp \
-Rsyev.cpp \
 Rsyevd.cpp \
 Rsygs2.cpp \
 Rsygst.cpp \
@@ -473,4 +471,17 @@ iMlaprec.cpp \
 iMlatrans.cpp \
 iMlauplo.cpp \
 iMlazlc.cpp \
-iMlazlr.cpp
+iMlazlr.cpp \
+Rsyev.cpp \
+Cheev.cpp \
+Chpev.cpp \
+Rsbev.cpp \
+Chbev.cpp \
+Rspev.cpp \
+Chpev.cpp \
+Rgees.cpp \
+Cgees.cpp \
+Rgeev.cpp \
+Cgeev.cpp \
+Rgesvd.cpp \
+Cgesvd.cpp
