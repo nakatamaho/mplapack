@@ -85,8 +85,8 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
+Rormlq.cpp \
 Rgebrd.cpp \
-Rgesvd.cpp \
 Rormbr.cpp \
 Rormql.cpp \
 Rormqr.cpp \
@@ -437,4 +437,5 @@ Rtrtrs.cpp \
 Rtrttp.cpp \
 iCmax1.cpp \
 Csteqr.cpp \
-iMlaenv.cpp 
+iMlaenv.cpp \
+Rgesvd.cpp
