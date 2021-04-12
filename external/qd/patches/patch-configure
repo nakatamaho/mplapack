@@ -1,17 +1,32 @@
---- configure~	2021-03-23 12:59:14.921507937 +0900
-+++ configure	2021-03-23 18:20:48.715727982 +0900
-@@ -4831,6 +4831,16 @@
+--- configure_org	2021-04-12 11:04:34.351874339 +0900
++++ configure	2021-04-12 11:05:04.158161350 +0900
+@@ -4782,13 +4782,30 @@
+ 
+ 
+ 
+-CXX_PROG_NAME=`basename $CXX`
++_CXX_PROG_NAME=`echo $CXX | sed 's/ccache//g' | awk '{print $1}'`
++CXX_PROG_NAME=`basename $_CXX_PROG_NAME`
+ case $host in
+   powerpc*-*-*)
+     case "$CXX_PROG_NAME" in
        xlC*)
          REQ_CXXFLAGS="$REQ_CXXFLAGS -qstrict"
        ;;
 +      g++*)
-+        REQ_CXXFLAGS="$REQ_CXXFLAGS -ffp-contract=off"
++        REQ_CXXFLAGS="$REQ_CXXFLAGS -ffp-contract=off" #-fno-tree-pre in debian #935289, 
++      ;;
++      c++*)
++        REQ_CXXFLAGS="$REQ_CXXFLAGS -ffp-contract=off" #-fno-tree-pre in debian #935289, 
 +      ;;
 +    esac
 +  ;;
 +  aarch64*-*-*)
 +    case "$CXX_PROG_NAME" in
 +      g++*)
++        REQ_CXXFLAGS="$REQ_CXXFLAGS -mabi=lp64"
++      ;;
++      c++*)
 +        REQ_CXXFLAGS="$REQ_CXXFLAGS -mabi=lp64"
 +      ;;
      esac
