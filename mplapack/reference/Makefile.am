@@ -473,15 +473,15 @@ iMlauplo.cpp \
 iMlazlc.cpp \
 iMlazlr.cpp \
 Rsyev.cpp \
-Cheev.cpp \
-Chpev.cpp \
-Rsbev.cpp \
-Chbev.cpp \
-Rspev.cpp \
-Chpev.cpp \
-Rgees.cpp \
-Cgees.cpp \
-Rgeev.cpp \
-Cgeev.cpp \
-Rgesvd.cpp \
-Cgesvd.cpp
+Cheev.cpp 
+#Chpev.cpp \
+#Rsbev.cpp \
+#Chbev.cpp \
+#Rspev.cpp \
+#Chpev.cpp \
+#Rgees.cpp \
+#Cgees.cpp \
+#Rgeev.cpp \
+#Cgeev.cpp \
+#Rgesvd.cpp \
+#Cgesvd.cpp
