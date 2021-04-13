@@ -85,7 +85,7 @@ void Rsyevd(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGE
         } else {
             if (wantz) {
                 liwmin = 3 + 5 * n;
-                lwmin = 1 + 6 * n + 2 * pow2(n);
+                lwmin = 1 + 6 * n + 2 * castINTEGER(pow2(castREAL(n)));
             } else {
                 liwmin = 1;
                 lwmin = 2 * n + 1;

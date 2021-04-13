@@ -76,7 +76,7 @@ void Rsysv_rook(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, 
             lwkopt = 1;
         } else {
             Rsytrf_rook(uplo, n, a, lda, ipiv, work, -1, info);
-            lwkopt = work[1 - 1];
+            lwkopt = castINTEGER(work[1 - 1]);
         }
         work[1 - 1] = lwkopt;
     }

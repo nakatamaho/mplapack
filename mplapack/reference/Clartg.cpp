@@ -85,7 +85,7 @@ void Clartg(COMPLEX const f, COMPLEX const g, REAL &cs, COMPLEX &sn, COMPLEX &r)
     //
     safmin = Rlamch("S");
     eps = Rlamch("E");
-    safmn2 = pow(Rlamch("B"), INTEGER(log(safmin / eps) / log(Rlamch("B")) / two));
+    safmn2 = pow(Rlamch("B"), castINTEGER(log(safmin / eps) / log(Rlamch("B")) / two));
     safmx2 = one / safmn2;
     scale = max(abs1(f), abs1(g));
     fs = f;

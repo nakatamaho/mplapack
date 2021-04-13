@@ -72,7 +72,7 @@ void Rlartgp(REAL const f, REAL const g, REAL &cs, REAL &sn, REAL &r) {
     //     IF( FIRST ) THEN
     safmin = Rlamch("S");
     eps = Rlamch("E");
-    safmn2 = pow(Rlamch("B"), INTEGER(log(safmin / eps) / log(Rlamch("B")) / two));
+    safmn2 = pow(Rlamch("B"), castINTEGER(log(safmin / eps) / log(Rlamch("B")) / two));
     safmx2 = one / safmn2;
     //        FIRST = .FALSE.
     //     END IF

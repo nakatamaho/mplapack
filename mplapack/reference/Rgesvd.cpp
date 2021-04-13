@@ -126,21 +126,21 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             bdspac = 5 * n;
             //           Compute space needed for Rgeqrf
             Rgeqrf(m, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rgeqrf = INTEGER(dum[1 - 1]);
+            lwork_Rgeqrf = castINTEGER(dum[1 - 1]);
             //           Compute space needed for Rorgqr
             Rorgqr(m, n, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorgqr_n = INTEGER(dum[1 - 1]);
+            lwork_Rorgqr_n = castINTEGER(dum[1 - 1]);
             Rorgqr(m, m, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorgqr_m = INTEGER(dum[1 - 1]);
+            lwork_Rorgqr_m = castINTEGER(dum[1 - 1]);
             //           Compute space needed for Rgebrd
             Rgebrd(n, n, a, lda, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rgebrd = INTEGER(dum[1 - 1]);
+            lwork_Rgebrd = castINTEGER(dum[1 - 1]);
             //           Compute space needed for Rorgbr P
             Rorgbr("P", n, n, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorgbr_p = INTEGER(dum[1 - 1]);
+            lwork_Rorgbr_p = castINTEGER(dum[1 - 1]);
             //           Compute space needed for Rorgbr Q
             Rorgbr("Q", n, n, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorgbr_q = INTEGER(dum[1 - 1]);
+            lwork_Rorgbr_q = castINTEGER(dum[1 - 1]);
             //
             if (m >= mnthr) {
                 if (wntun) {
@@ -256,16 +256,16 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                 //              Path 10 (M at least N, but not much larger)
                 //
                 Rgebrd(m, n, a, lda, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, ierr);
-                lwork_Rgebrd = INTEGER(dum[1 - 1]);
+                lwork_Rgebrd = castINTEGER(dum[1 - 1]);
                 maxwrk = 3 * n + lwork_Rgebrd;
                 if (wntus || wntuo) {
                     Rorgbr("Q", m, n, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-                    lwork_Rorgbr_q = INTEGER(dum[1 - 1]);
+                    lwork_Rorgbr_q = castINTEGER(dum[1 - 1]);
                     maxwrk = max(maxwrk, 3 * n + lwork_Rorgbr_q);
                 }
                 if (wntua) {
                     Rorgbr("Q", m, m, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-                    lwork_Rorgbr_q = INTEGER(dum[1 - 1]);
+                    lwork_Rorgbr_q = castINTEGER(dum[1 - 1]);
                     maxwrk = max(maxwrk, 3 * n + lwork_Rorgbr_q);
                 }
                 if (!wntvn) {
@@ -286,21 +286,21 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             bdspac = 5 * m;
             //           Compute space needed for Rgelqf
             Rgelqf(m, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rgelqf = INTEGER(dum[1 - 1]);
+            lwork_Rgelqf = castINTEGER(dum[1 - 1]);
             //           Compute space needed for Rorglq
             Rorglq(n, n, m, &dum[1 - 1], n, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorglq_n = INTEGER(dum[1 - 1]);
+            lwork_Rorglq_n = castINTEGER(dum[1 - 1]);
             Rorglq(m, n, m, a, lda, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorglq_m = INTEGER(dum[1 - 1]);
+            lwork_Rorglq_m = castINTEGER(dum[1 - 1]);
             //           Compute space needed for Rgebrd
             Rgebrd(m, m, a, lda, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rgebrd = INTEGER(dum[1 - 1]);
+            lwork_Rgebrd = castINTEGER(dum[1 - 1]);
             //            Compute space needed for Rorgbr P
             Rorgbr("P", m, m, m, a, n, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorgbr_p = INTEGER(dum[1 - 1]);
+            lwork_Rorgbr_p = castINTEGER(dum[1 - 1]);
             //           Compute space needed for Rorgbr Q
             Rorgbr("Q", m, m, m, a, n, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorgbr_q = INTEGER(dum[1 - 1]);
+            lwork_Rorgbr_q = castINTEGER(dum[1 - 1]);
             if (n >= mnthr) {
                 if (wntvn) {
                     //
@@ -415,17 +415,17 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                 //              Path 10t(N greater than M, but not much larger)
                 //
                 Rgebrd(m, n, a, lda, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, ierr);
-                lwork_Rgebrd = INTEGER(dum[1 - 1]);
+                lwork_Rgebrd = castINTEGER(dum[1 - 1]);
                 maxwrk = 3 * m + lwork_Rgebrd;
                 if (wntvs || wntvo) {
                     //                Compute space needed for Rorgbr P
                     Rorgbr("P", m, n, m, a, n, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-                    lwork_Rorgbr_p = INTEGER(dum[1 - 1]);
+                    lwork_Rorgbr_p = castINTEGER(dum[1 - 1]);
                     maxwrk = max(maxwrk, 3 * m + lwork_Rorgbr_p);
                 }
                 if (wntva) {
                     Rorgbr("P", n, n, m, a, n, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-                    lwork_Rorgbr_p = INTEGER(dum[1 - 1]);
+                    lwork_Rorgbr_p = castINTEGER(dum[1 - 1]);
                     maxwrk = max(maxwrk, 3 * m + lwork_Rorgbr_p);
                 }
                 if (!wntun) {

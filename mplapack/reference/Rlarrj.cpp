@@ -86,7 +86,7 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
         return;
     }
     //
-    maxitr = INTEGER((log(spdiam + pivmin) - log(pivmin)) / log(two)) + (INTEGER)2;
+    maxitr = castINTEGER((log(spdiam + pivmin) - log(pivmin)) / log(two)) + (INTEGER)2;
     //
     //     Initialize unconverged intervals in [ WORK(2*I-1), WORK(2*I) ].
     //     The Sturm Count, Count( WORK(2*I-1) ) is arranged to be I-1, while

@@ -110,7 +110,7 @@ void Rpoequb(INTEGER const n, REAL *a, INTEGER const lda, REAL *s, REAL &scond, 
         //        of the diagonal elements.
         //
         for (i = 1; i <= n; i = i + 1) {
-            s[i - 1] = pow(base, INTEGER(tmp * log(s[i - 1])));
+            s[i - 1] = pow(base, castINTEGER(tmp * log(s[i - 1])));
         }
         //
         //        Compute SCOND = min(S(I)) / max(S(I)).

@@ -59,7 +59,7 @@ void Rgebrd(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     info = 0;
     INTEGER nb = max((INTEGER)1, iMlaenv(1, "Rgebrd", " ", m, n, -1, -1));
     INTEGER lwkopt = (m + n) * nb;
-    work[1 - 1] = REAL(lwkopt);
+    work[1 - 1] = castREAL(lwkopt);
     bool lquery = (lwork == -1);
     if (m < 0) {
         info = -1;

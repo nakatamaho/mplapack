@@ -95,7 +95,7 @@ void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
                 }
             }
         }
-        lwkopt = work[1 - 1];
+        lwkopt = castINTEGER(work[1 - 1]);
         lwkopt = max(lwkopt, mn);
     }
     //

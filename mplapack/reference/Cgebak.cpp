@@ -139,7 +139,7 @@ statement_30:
                 if (i < ilo) {
                     i = ilo - ii;
                 }
-                k = scale[i - 1];
+                k = castINTEGER(scale[i - 1]);
                 if (k == i) {
                     goto statement_40;
                 }
@@ -157,7 +157,7 @@ statement_30:
                 if (i < ilo) {
                     i = ilo - ii;
                 }
-                k = scale[i - 1];
+                k = castINTEGER(scale[i - 1]);
                 if (k == i) {
                     goto statement_50;
                 }

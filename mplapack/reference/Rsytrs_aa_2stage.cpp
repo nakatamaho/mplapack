@@ -81,7 +81,7 @@ void Rsytrs_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, REA
     //
     //     Read NB and compute LDTB
     //
-    INTEGER nb = INTEGER(tb[1 - 1]);
+    INTEGER nb = castINTEGER(tb[1 - 1]);
     INTEGER ldtb = ltb / n;
     //
     const REAL one = 1.0;

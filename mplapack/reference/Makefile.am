@@ -12,9 +12,9 @@ endif
 #lib_LTLIBRARIES += libmplapack_qd_ref.la
 #endif
 
-#if ENABLE_DD
-#lib_LTLIBRARIES += libmplapack_dd_ref.la
-#endif
+if ENABLE_DD
+lib_LTLIBRARIES += libmplapack_dd_ref.la
+endif
 
 if ENABLE_DOUBLE
 lib_LTLIBRARIES += libmplapack_double_ref.la
@@ -85,6 +85,7 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
+Rlasd0.cpp \
 Cdrscl.cpp \
 Cgbsv.cpp \
 Cgebak.cpp \

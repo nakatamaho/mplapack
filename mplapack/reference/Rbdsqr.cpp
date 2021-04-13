@@ -223,7 +223,7 @@ void Rbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
             }
         }
     statement_50:
-        sminoa = sminoa / sqrt(REAL(n));
+        sminoa = sminoa / sqrt(castREAL(n));
         thresh = max(tol * sminoa, maxitr * (n * (n * unfl)));
     } else {
         //

@@ -77,7 +77,7 @@ void Rsysv_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL
     INTEGER lwkopt = 0;
     if (info == 0) {
         Rsytrf_aa_2stage(uplo, n, a, lda, tb, -1, ipiv, ipiv2, work, -1, info);
-        lwkopt = INTEGER(work[1 - 1]);
+        lwkopt = castINTEGER(work[1 - 1]);
     }
     //
     if (info != 0) {

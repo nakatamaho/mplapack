@@ -85,7 +85,7 @@ void Rlarfgp(INTEGER const n, REAL &alpha, REAL *x, INTEGER const incx, REAL &ta
             //           zero checks when TAU.ne.ZERO, and we must clear X.
             tau = two;
             for (j = 1; j <= n - 1; j = j + 1) {
-                x[(1 + (j - 1) * incx) - 1] = 0;
+	      x[(1 + (j - 1) * incx) - 1] = 0.0;
             }
             alpha = -alpha;
         }
@@ -140,7 +140,7 @@ void Rlarfgp(INTEGER const n, REAL &alpha, REAL *x, INTEGER const incx, REAL &ta
             } else {
                 tau = two;
                 for (j = 1; j <= n - 1; j = j + 1) {
-                    x[(1 + (j - 1) * incx) - 1] = 0;
+                    x[(1 + (j - 1) * incx) - 1] = 0.0;
                 }
                 beta = -savealpha;
             }

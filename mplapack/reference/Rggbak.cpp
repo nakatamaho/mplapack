@@ -136,7 +136,7 @@ statement_30:
             }
             //
             for (i = ilo - 1; i >= 1; i = i - 1) {
-                k = INTEGER(rscale[i - 1]);
+                k = castINTEGER(rscale[i - 1]);
                 if (k == i) {
                     goto statement_40;
                 }
@@ -149,7 +149,7 @@ statement_30:
                 goto statement_70;
             }
             for (i = ihi + 1; i <= n; i = i + 1) {
-                k = INTEGER(rscale[i - 1]);
+                k = castINTEGER(rscale[i - 1]);
                 if (k == i) {
                     goto statement_60;
                 }
@@ -166,7 +166,7 @@ statement_30:
                 goto statement_90;
             }
             for (i = ilo - 1; i >= 1; i = i - 1) {
-                k = INTEGER(lscale[i - 1]);
+                k = castINTEGER(lscale[i - 1]);
                 if (k == i) {
                     goto statement_80;
                 }
@@ -179,7 +179,7 @@ statement_30:
                 goto statement_110;
             }
             for (i = ihi + 1; i <= n; i = i + 1) {
-                k = INTEGER(lscale[i - 1]);
+                k = castINTEGER(lscale[i - 1]);
                 if (k == i) {
                     goto statement_100;
                 }

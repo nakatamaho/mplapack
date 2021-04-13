@@ -78,7 +78,7 @@ void Rlanv2(REAL &a, REAL &b, REAL &c, REAL &d, REAL &rt1r, REAL &rt1i, REAL &rt
     //
     safmin = Rlamch("S");
     eps = Rlamch("P");
-    safmn2 = pow(Rlamch("B"), INTEGER(log(safmin / eps) / log(Rlamch("B")) / two));
+    safmn2 = pow(Rlamch("B"), castINTEGER(log(safmin / eps) / log(Rlamch("B")) / two));
     safmx2 = one / safmn2;
     if (c == zero) {
         cs = one;

@@ -75,9 +75,9 @@ void Rsysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
     INTEGER lwkopt = 0;
     if (info == 0) {
         Rsytrf_aa(uplo, n, a, lda, ipiv, work, -1, info);
-        lwkopt_sytrf = INTEGER(work[1 - 1]);
+        lwkopt_sytrf = castINTEGER(work[1 - 1]);
         Rsytrs_aa(uplo, n, nrhs, a, lda, ipiv, b, ldb, work, -1, info);
-        lwkopt_sytrs = INTEGER(work[1 - 1]);
+        lwkopt_sytrs = castINTEGER(work[1 - 1]);
         lwkopt = max(lwkopt_sytrf, lwkopt_sytrs);
         work[1 - 1] = lwkopt;
     }
