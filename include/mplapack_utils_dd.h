@@ -50,16 +50,16 @@ inline dd_real sign(dd_real a, dd_real b)
   return mtmp;
 }
 
-inline dd_real castREAL(mplapackint n)
+inline dd_real castREAL_dd(mplapackint n)
 {
     dd_real ret;
     ret.x[0] = (static_cast<double>(n));
     ret.x[1] = 0.0;
     return ret;
 }
-inline mplapackint castINTEGER(dd_real a)
+inline mplapackint castINTEGER_dd(dd_real a)
 {
-    mplapackint i = static_cast<mplapackint>(a);
+    mplapackint i = a.x[0];
     return i;
 }
   

@@ -60,13 +60,13 @@ REAL Rla_gbrpvgrw(INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER c
         amax = 0.0;
         umax = 0.0;
         for (i = max(j - ku, (INTEGER)1); i <= min(j + kl, n); i = i + 1) {
-            amax = max(abs(ab[((kd + i - j) - 1) + (j - 1) * ldab]), amax);
+            amax = max(REAL(abs(ab[((kd + i - j) - 1) + (j - 1) * ldab])), amax);
         }
         for (i = max(j - ku, (INTEGER)1); i <= j; i = i + 1) {
-            umax = max(abs(afb[((kd + i - j) - 1) + (j - 1) * ldafb]), umax);
+            umax = max(REAL(abs(afb[((kd + i - j) - 1) + (j - 1) * ldafb])), umax);
         }
         if (umax != 0.0) {
-            rpvgrw = min(amax / umax, rpvgrw);
+            rpvgrw = min(REAL(amax / umax), rpvgrw);
         }
     }
     return_value = rpvgrw;

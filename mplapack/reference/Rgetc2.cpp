@@ -109,7 +109,7 @@ void Rgetc2(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER 
             }
         }
         if (i == 1) {
-            smin = max(eps * xmax, smlnum);
+	    smin = max(REAL(eps * xmax), smlnum);
         }
         //
         //        Swap rows

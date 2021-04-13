@@ -56,13 +56,13 @@ inline double sign(double a, double b)
   return mtmp;
 }
 
-inline double castREAL(mplapackint n)
+inline double castREAL_double(mplapackint n)
 {
     double ret = n;
     return ret;
 }
 
-inline mplapackint castINTEGER(double a)
+inline mplapackint castINTEGER_double(double a)
 {
     mplapackint i = a;
     return i;

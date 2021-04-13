@@ -59,13 +59,13 @@ REAL Rla_gerpvgrw(INTEGER const n, INTEGER const ncols, REAL *a, INTEGER const l
         amax = 0.0;
         umax = 0.0;
         for (i = 1; i <= n; i = i + 1) {
-            amax = max(abs(a[(i - 1) + (j - 1) * lda]), amax);
+            amax = max(REAL(abs(a[(i - 1) + (j - 1) * lda])), amax);
         }
         for (i = 1; i <= j; i = i + 1) {
-            umax = max(abs(af[(i - 1) + (j - 1) * ldaf]), umax);
+            umax = max(REAL(abs(af[(i - 1) + (j - 1) * ldaf])), umax);
         }
         if (umax != 0.0) {
-            rpvgrw = min(amax / umax, rpvgrw);
+            rpvgrw = min(REAL(amax / umax), rpvgrw);
         }
     }
     return_value = rpvgrw;

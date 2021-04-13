@@ -157,7 +157,7 @@ void Rsytf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
                 rowmax = abs(a[(imax - 1) + (jmax - 1) * lda]);
                 if (imax > 1) {
                     jmax = iRamax(imax - 1, &a[(imax - 1) * lda], 1);
-                    rowmax = max(rowmax, abs(a[(jmax - 1) + (imax - 1) * lda]));
+                    rowmax = max(rowmax, REAL(abs(a[(jmax - 1) + (imax - 1) * lda])));
                 }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
@@ -327,7 +327,7 @@ void Rsytf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
                 rowmax = abs(a[(imax - 1) + (jmax - 1) * lda]);
                 if (imax < n) {
                     jmax = imax + iRamax(n - imax, &a[((imax + 1) - 1) + (imax - 1) * lda], 1);
-                    rowmax = max(rowmax, abs(a[(jmax - 1) + (imax - 1) * lda]));
+                    rowmax = max(rowmax, REAL(abs(a[(jmax - 1) + (imax - 1) * lda])));
                 }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {

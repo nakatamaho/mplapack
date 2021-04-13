@@ -80,7 +80,7 @@ void Rlasq1(INTEGER const n, REAL *d, REAL *e, REAL *work, INTEGER &info) {
     INTEGER i = 0;
     for (i = 1; i <= n - 1; i = i + 1) {
         d[i - 1] = abs(d[i - 1]);
-        sigmx = max(sigmx, abs(e[i - 1]));
+        sigmx = max(sigmx, REAL(abs(e[i - 1])));
     }
     d[n - 1] = abs(d[n - 1]);
     //

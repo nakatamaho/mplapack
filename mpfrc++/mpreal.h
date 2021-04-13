@@ -2309,6 +2309,14 @@ inline dd_real cast2dd_real(const mpreal &b) {
 }
 #endif
 
+#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+inline double cast2double(const mpreal &b) {
+    double p;
+    p = b;
+    return p;
+}
+#endif
+
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
 inline mpreal &mpreal::operator=(const _Float128 &a) {
     mpfr_init2(mp, default_prec);

@@ -161,7 +161,7 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
                 rowmax = abs(w[(jmax - 1) + ((kw - 1) - 1) * ldw]);
                 if (imax > 1) {
                     jmax = iRamax(imax - 1, &w[((kw - 1) - 1) * ldw], 1);
-                    rowmax = max(rowmax, abs(w[(jmax - 1) + ((kw - 1) - 1) * ldw]));
+                    rowmax = max(rowmax, REAL(abs(w[(jmax - 1) + ((kw - 1) - 1) * ldw])));
                 }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
@@ -451,7 +451,7 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
                 rowmax = abs(w[(jmax - 1) + ((k + 1) - 1) * ldw]);
                 if (imax < n) {
                     jmax = imax + iRamax(n - imax, &w[((imax + 1) - 1) + ((k + 1) - 1) * ldw], 1);
-                    rowmax = max(rowmax, abs(w[(jmax - 1) + ((k + 1) - 1) * ldw]));
+                    rowmax = max(rowmax, REAL(abs(w[(jmax - 1) + ((k + 1) - 1) * ldw])));
                 }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {

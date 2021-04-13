@@ -58,13 +58,13 @@ inline mpf_class sign(mpf_class a, mpf_class b)
     return mtmp;
 }
 
-inline mpf_class castREAL(mplapackint n)
+inline mpf_class castREAL_gmp(mplapackint n)
 {
     mpf_class a(n);
     return a;
 }
 
-inline mplapackint castINTEGER(mpf_class a)
+inline mplapackint castINTEGER_gmp(mpf_class a)
 {
     mplapackint i;
     i = mpf_get_si(a.get_mpf_t());

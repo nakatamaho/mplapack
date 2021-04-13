@@ -51,7 +51,7 @@ inline qd_real sign(qd_real a, qd_real b)
 }
 
 
-inline qd_real castREAL(mplapackint n)
+inline qd_real castREAL_qd(mplapackint n)
 {
     qd_real ret;
     ret.x[0] = (static_cast<double>(n));
@@ -60,7 +60,7 @@ inline qd_real castREAL(mplapackint n)
     ret.x[3] = 0.0;
     return ret;
 }
-inline mplapackint castINTEGER(qd_real a)
+inline mplapackint castINTEGER_qd(qd_real a)
 {
     mplapackint i = (mplapackint)a.x[0];
     return i;

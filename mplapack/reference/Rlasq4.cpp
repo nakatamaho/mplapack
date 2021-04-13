@@ -100,7 +100,7 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
                     gap1 = a2 - dn - (b1 + b2);
                 }
                 if (gap1 > zero && gap1 > b1) {
-                    s = max(dn - (b1 / gap1) * b1, half * dmin);
+                    s = max(REAL(dn - (b1 / gap1) * b1), REAL(half * dmin));
                     ttype = -2;
                 } else {
                     s = zero;
@@ -108,9 +108,9 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
                         s = dn - b1;
                     }
                     if (a2 > (b1 + b2)) {
-                        s = min(s, a2 - (b1 + b2));
+                        s = min(s, REAL(a2 - (b1 + b2)));
                     }
-                    s = max(s, third * dmin);
+                    s = max(s, REAL(third * dmin));
                     ttype = -3;
                 }
             } else {
@@ -260,9 +260,9 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
             a2 = dmin1 / (one + pow2(b2));
             gap2 = half * dmin2 - a2;
             if (gap2 > zero && gap2 > b2 * a2) {
-                s = max(s, a2 * (one - cnst2 * a2 * (b2 / gap2) * b2));
+                s = max(s, REAL(a2 * (one - cnst2 * a2 * (b2 / gap2) * b2)));
             } else {
-                s = max(s, a2 * (one - cnst2 * b2));
+                s = max(s, REAL(a2 * (one - cnst2 * b2)));
                 ttype = -8;
             }
         } else {
@@ -308,9 +308,9 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
             a2 = dmin2 / (one + pow2(b2));
             gap2 = z[(nn - 7) - 1] + z[(nn - 9) - 1] - sqrt(z[(nn - 11) - 1]) * sqrt(z[(nn - 9) - 1]) - a2;
             if (gap2 > zero && gap2 > b2 * a2) {
-                s = max(s, a2 * (one - cnst2 * a2 * (b2 / gap2) * b2));
+                s = max(s, REAL(a2 * (one - cnst2 * a2 * (b2 / gap2) * b2)));
             } else {
-                s = max(s, a2 * (one - cnst2 * b2));
+                s = max(s, REAL(a2 * (one - cnst2 * b2)));
             }
         } else {
             s = qurtr * dmin2;

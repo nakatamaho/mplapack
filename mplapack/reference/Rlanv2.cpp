@@ -106,7 +106,7 @@ void Rlanv2(REAL &a, REAL &b, REAL &c, REAL &d, REAL &rt1r, REAL &rt1i, REAL &rt
         p = half * temp;
         bcmax = max(abs(b), abs(c));
         bcmis = min(abs(b), abs(c)) * sign(one, b) * sign(one, c);
-        scale = max(abs(p), bcmax);
+        scale = max(REAL(abs(p)), bcmax);
         z = (p / scale) * p + (bcmax / scale) * bcmis;
         //
         //        If Z is of the order of the machine accuracy, postpone the

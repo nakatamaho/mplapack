@@ -52,7 +52,7 @@ inline mpreal sign(mpreal a, mpreal b)
     return mtmp;
 }
 
-inline mplapackint castINTEGER(mpreal a)
+inline mplapackint castINTEGER_mpfr(mpreal a)
 {
     mplapackint i;
     mpreal tmp;
@@ -62,7 +62,7 @@ inline mplapackint castINTEGER(mpreal a)
     return i;
 }
 
-inline mpreal castREAL(mplapackint a)
+inline mpreal castREAL_mpfr(mplapackint a)
 {
     mpreal i = a;
     return i;

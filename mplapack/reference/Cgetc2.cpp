@@ -109,7 +109,7 @@ void Cgetc2(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, INTEG
             }
         }
         if (i == 1) {
-            smin = max(eps * xmax, smlnum);
+	  smin = max(REAL(eps * xmax), smlnum);
         }
         //
         //        Swap rows
