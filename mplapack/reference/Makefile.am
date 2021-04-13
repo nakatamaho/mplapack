@@ -474,8 +474,8 @@ iMlauplo.cpp \
 iMlazlc.cpp \
 iMlazlr.cpp \
 Rsyev.cpp \
-Cheev.cpp 
-#Chpev.cpp \
+Cheev.cpp  \
+Chpev.cpp
 #Rsbev.cpp \
 #Chbev.cpp \
 #Rspev.cpp \
