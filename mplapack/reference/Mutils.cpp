@@ -3,7 +3,7 @@
  *      Nakata, Maho
  *      All rights reserved.
  *
- *  $Id: Mutils.cpp,v 1.14 2010/08/07 04:48:32 nakatamaho Exp $ 
+ *  $Id: Mutils.cpp,v 1.14 2010/08/07 04:48:32 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,61 +33,51 @@
 
 #define __MUTILS_CPP__
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-REAL log2(REAL x)
-{
+REAL log2(REAL x) {
     double d;
     double ln2_app;
     signed long int exp;
 
     d = mpf_get_d_2exp(&exp, x.get_mpf_t());
-    ln2_app = (double) exp + log10(d) / log10(2);
+    ln2_app = (double)exp + log10(d) / log10(2);
     return ln2_app;
 }
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_QD___
-REAL log2(REAL x)
-{
-    return log10(x) / (qd_real::_log2 / qd_real::_log10);
-}
+REAL log2(REAL x) { return log10(x) / (qd_real::_log2 / qd_real::_log10); }
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DD___
-REAL log2(REAL x)
-{
-    return log10(x) / (dd_real::_log2 / dd_real::_log10);
-}
+REAL log2(REAL x) { return log10(x) / (dd_real::_log2 / dd_real::_log10); }
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-REAL log(REAL x)
-{
+REAL log(REAL x) {
     double d;
     double ln_app;
     signed long int exp;
 
     d = mpf_get_d_2exp(&exp, x.get_mpf_t());
-    ln_app = (double) exp *log(2.0) + log(d);
+    ln_app = (double)exp * log(2.0) + log(d);
     return ln_app;
 }
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-REAL log10(REAL x)
-{
+REAL log10(REAL x) {
     double d;
     double ln10_app;
     signed long int exp;
 
     d = mpf_get_d_2exp(&exp, x.get_mpf_t());
-    ln10_app = (double) exp *log10(2.0) + log10(d);
+    ln10_app = (double)exp * log10(2.0) + log10(d);
     return ln10_app;
 }
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-REAL pow(REAL x, REAL y)
-{
+REAL pow(REAL x, REAL y) {
     REAL mtemp1, mtemp2;
     mtemp1 = y * log(x);
     mtemp2 = exp(mtemp1);
@@ -96,8 +86,7 @@ REAL pow(REAL x, REAL y)
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-REAL cos(REAL x)
-{
+REAL cos(REAL x) {
     REAL mtemp1;
     mtemp1 = cos(x.get_d());
     return mtemp1;
@@ -105,8 +94,7 @@ REAL cos(REAL x)
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-REAL sin(REAL x)
-{
+REAL sin(REAL x) {
     REAL mtemp1;
     mtemp1 = sin(x.get_d());
     return mtemp1;
@@ -114,16 +102,14 @@ REAL sin(REAL x)
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-REAL exp(REAL x)
-{
+REAL exp(REAL x) {
     REAL mtemp1;
     mtemp1 = exp(x.get_d());
     return mtemp1;
 }
 #endif
 
-COMPLEX exp(COMPLEX x)
-{
+COMPLEX exp(COMPLEX x) {
     REAL ex;
     REAL c;
     REAL s;
@@ -142,8 +128,7 @@ COMPLEX exp(COMPLEX x)
     return ans;
 }
 
-REAL pi(REAL dummy)
-{
+REAL pi(REAL dummy) {
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
     REAL mtemp1;
     mtemp1 = M_PI;
@@ -166,21 +151,21 @@ REAL pi(REAL dummy)
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK_WANT_LIBQUADMATH___
     return M_PIq;
 
-#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___ 
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
     return M_PIl;
 
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && (defined ___MPLAPACK__FLOAT128_ONLY___ || defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___)
     return M_PIf128;
 
 #elif defined _MPLAPACK_UTILS__FLOAT64X_H_
-    #if defined __APPLE__ // __MATH_LONG_DOUBLE_CONSTANTS looks broken
-        return  0xc.90fdaa22168c235p-2L;
-    #elif defined __MINGW32__
-        return  0xc.90fdaa22168c235p-2L;
-    #else
-        return M_PIl;
-    #endif
+#if defined __APPLE__ // __MATH_LONG_DOUBLE_CONSTANTS looks broken
+    return 0xc.90fdaa22168c235p-2L;
+#elif defined __MINGW32__
+    return 0xc.90fdaa22168c235p-2L;
 #else
-    #error "please define pi"
+    return M_PIl;
+#endif
+#else
+#error "please define pi"
 #endif
 }

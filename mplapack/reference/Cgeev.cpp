@@ -292,7 +292,7 @@ void Cgeev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
             scl = one / RCnrm2(n, &vl[(i - 1) * ldvl], 1);
             CRscal(n, scl, &vl[(i - 1) * ldvl], 1);
             for (k = 1; k <= n; k = k + 1) {
-	      rwork[(irwork + k - 1) - 1] = pow2(vl[(k - 1) + (i - 1) * ldvl].real()) + pow2(vl[(k - 1) + (i - 1) * ldvl].imag());
+                rwork[(irwork + k - 1) - 1] = pow2(vl[(k - 1) + (i - 1) * ldvl].real()) + pow2(vl[(k - 1) + (i - 1) * ldvl].imag());
             }
             k = iRamax(n, &rwork[irwork - 1], 1);
             tmp = conj(vl[(k - 1) + (i - 1) * ldvl]) / sqrt(rwork[(irwork + k - 1) - 1]);
@@ -315,7 +315,7 @@ void Cgeev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
             scl = one / RCnrm2(n, &vr[(i - 1) * ldvr], 1);
             CRscal(n, scl, &vr[(i - 1) * ldvr], 1);
             for (k = 1; k <= n; k = k + 1) {
-	      rwork[(irwork + k - 1) - 1] = pow2(vr[(k - 1) + (i - 1) * ldvr].real()) + pow2(vr[(k - 1) + (i - 1) * ldvr].real());
+                rwork[(irwork + k - 1) - 1] = pow2(vr[(k - 1) + (i - 1) * ldvr].real()) + pow2(vr[(k - 1) + (i - 1) * ldvr].real());
             }
             k = iRamax(n, &rwork[irwork - 1], 1);
             tmp = conj(vr[(k - 1) + (i - 1) * ldvr]) / sqrt(rwork[(irwork + k - 1) - 1]);
@@ -328,7 +328,7 @@ void Cgeev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
 //
 statement_50:
     if (scalea) {
-      Clascl("G", 0, 0, cscale, anrm, n - info, 1, &w[(info + 1) - 1], max(n - info, (INTEGER)1), ierr);
+        Clascl("G", 0, 0, cscale, anrm, n - info, 1, &w[(info + 1) - 1], max(n - info, (INTEGER)1), ierr);
         if (info > 0) {
             Clascl("G", 0, 0, cscale, anrm, ilo - 1, 1, w, n, ierr);
         }

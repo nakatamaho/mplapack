@@ -135,7 +135,7 @@ statement_30:
                 goto statement_50;
             }
             for (i = ilo - 1; i >= 1; i = i - 1) {
-  	        k = castINTEGER(rscale[i - 1]);
+                k = castINTEGER(rscale[i - 1]);
                 if (k == i) {
                     goto statement_40;
                 }
@@ -148,7 +148,7 @@ statement_30:
                 goto statement_70;
             }
             for (i = ihi + 1; i <= n; i = i + 1) {
-	        k = castINTEGER(rscale[i - 1]);
+                k = castINTEGER(rscale[i - 1]);
                 if (k == i) {
                     goto statement_60;
                 }

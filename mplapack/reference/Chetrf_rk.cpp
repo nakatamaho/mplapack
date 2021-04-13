@@ -100,7 +100,7 @@ void Chetrf_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     if (nb > 1 && nb < n) {
         iws = ldwork * nb;
         if (lwork < iws) {
-	    nb = max(lwork / ldwork, (INTEGER)1);
+            nb = max(lwork / ldwork, (INTEGER)1);
             nbmin = max((INTEGER)2, iMlaenv(2, "Chetrf_rk", uplo, n, -1, -1, -1));
         }
     } else {

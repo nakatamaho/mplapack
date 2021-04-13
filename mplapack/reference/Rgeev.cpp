@@ -338,8 +338,8 @@ void Rgeev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
 //
 statement_50:
     if (scalea) {
-      Rlascl("G", 0, 0, cscale, anrm, n - info, 1, &wr[(info + 1) - 1], max(n - info, (INTEGER)1), ierr);
-      Rlascl("G", 0, 0, cscale, anrm, n - info, 1, &wi[(info + 1) - 1], max(n - info, (INTEGER)1), ierr);
+        Rlascl("G", 0, 0, cscale, anrm, n - info, 1, &wr[(info + 1) - 1], max(n - info, (INTEGER)1), ierr);
+        Rlascl("G", 0, 0, cscale, anrm, n - info, 1, &wi[(info + 1) - 1], max(n - info, (INTEGER)1), ierr);
         if (info > 0) {
             Rlascl("G", 0, 0, cscale, anrm, ilo - 1, 1, wr, n, ierr);
             Rlascl("G", 0, 0, cscale, anrm, ilo - 1, 1, wi, n, ierr);
