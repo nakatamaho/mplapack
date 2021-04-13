@@ -36,7 +36,6 @@ qd_complex exp(qd_complex x);
 qd_real pi(qd_real dummy);
 
 qd_real sign(qd_real a, qd_real b);
-double cast2double(qd_real a);
 qd_complex Real2Complex(qd_real a, qd_real b);
 qd_real Cabs1(qd_complex zdum);
 
@@ -51,18 +50,19 @@ inline qd_real sign(qd_real a, qd_real b)
   return mtmp;
 }
 
-inline double cast2double(qd_real a)
-{
-    return a.x[0];
-}
 
-inline long __qd_nint(qd_real a)
+inline qd_real castREAL(mplapackint n)
 {
-    long i;
-    qd_real tmp;
-    a = a + 0.5;
-    tmp = floor(a);
-    i = (long)tmp.x[0];
+    qd_real ret;
+    ret.x[0] = (static_cast<double>(n));
+    ret.x[1] = 0.0;
+    ret.x[2] = 0.0;
+    ret.x[3] = 0.0;
+    return ret;
+}
+inline mplapackint castINTEGER(qd_real a)
+{
+    mplapackint i = (mplapackint)a.x[0];
     return i;
 }
 

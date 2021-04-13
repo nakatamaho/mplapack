@@ -29,8 +29,8 @@
 #ifndef _MPBLAS__FLOAT128_H_
 #define _MPBLAS__FLOAT128_H_
 
-#include "mplapack_utils__Float128.h"
 #include "mplapack_config.h"
+#include "mplapack_utils__Float128.h"
 
 #if !defined __MPLAPACK_ERRNO__
 #define _MPLAPACK_EXTERN_ extern

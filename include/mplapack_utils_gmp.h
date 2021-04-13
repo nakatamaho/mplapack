@@ -45,8 +45,6 @@ mpc_class exp(mpc_class x);
 mpf_class pi(mpf_class dummy);
 
 mpf_class sign(mpf_class a, mpf_class b);
-double cast2double(mpf_class a);
-long nint(mpf_class a);
 mpc_class Real2Complex(mpf_class a, mpf_class b);
 mpf_class Cabs1(mpc_class zdum);
 
@@ -60,34 +58,19 @@ inline mpf_class sign(mpf_class a, mpf_class b)
     return mtmp;
 }
 
-inline double cast2double(mpf_class a)
+inline mpf_class castREAL(mplapackint n)
 {
-    return a.get_d();
+    mpf_class a(n);
+    return a;
 }
 
-inline long nint(mpf_class a)
+inline mplapackint castINTEGER(mpf_class a)
 {
-    long i;
-    mpf_class tmp;
-    a = a + 0.5;
-    mpf_floor(tmp.get_mpf_t(), a.get_mpf_t());
-    i = mpf_get_si(tmp.get_mpf_t());
+    mplapackint i;
+    i = mpf_get_si(a.get_mpf_t());
     return i;
 }
 
-inline mpc_class Real2Complex(mpf_class a, mpf_class b)
-{
-    mpc_class ret;
-    ret.real(a);
-    ret.imag(b);
-    return ret;
-}
-
-inline mpf_class Cabs1(mpc_class zdum)
-{
-    mpf_class ret;
-    ret = abs(zdum.real()) + abs(zdum.imag());
-    return ret;
-}
-
 #endif
+
+

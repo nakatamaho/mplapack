@@ -4,13 +4,13 @@ if ENABLE_MPFR
 lib_LTLIBRARIES += libmplapack_mpfr_ref.la
 endif
 
-#if ENABLE_GMP
-#lib_LTLIBRARIES += libmplapack_gmp_ref.la
-#endif
+if ENABLE_GMP
+lib_LTLIBRARIES += libmplapack_gmp_ref.la
+endif
 
-#if ENABLE_QD
-#lib_LTLIBRARIES += libmplapack_qd_ref.la
-#endif
+if ENABLE_QD
+lib_LTLIBRARIES += libmplapack_qd_ref.la
+endif
 
 if ENABLE_DD
 lib_LTLIBRARIES += libmplapack_dd_ref.la
