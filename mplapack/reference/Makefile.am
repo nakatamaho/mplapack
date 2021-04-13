@@ -85,6 +85,18 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
+Rsyev.cpp \
+Cheev.cpp \
+Chpev.cpp \
+Rsbev.cpp \
+Chbev.cpp \
+Rspev.cpp \
+Rgees.cpp \
+Cgees.cpp \
+Rgeev.cpp \
+Cgeev.cpp \
+Rgesvd.cpp \
+Cgesvd.cpp \
 Rlasd0.cpp \
 Cdrscl.cpp \
 Cgbsv.cpp \
@@ -276,7 +288,6 @@ Rgeqrfp.cpp \
 Rgeqrt.cpp \
 Rgerqf.cpp \
 Rgesv.cpp \
-Rgesvd.cpp \
 Rgetc2.cpp \
 Rgetf2.cpp \
 Rgetrf.cpp \
@@ -472,17 +483,4 @@ iMlaprec.cpp \
 iMlatrans.cpp \
 iMlauplo.cpp \
 iMlazlc.cpp \
-iMlazlr.cpp \
-Rsyev.cpp \
-Cheev.cpp  \
-Chpev.cpp
-#Rsbev.cpp \
-#Chbev.cpp \
-#Rspev.cpp \
-#Chpev.cpp \
-#Rgees.cpp \
-#Cgees.cpp \
-#Rgeev.cpp \
-#Cgeev.cpp \
-#Rgesvd.cpp \
-#Cgesvd.cpp
+iMlazlr.cpp
