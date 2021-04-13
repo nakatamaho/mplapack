@@ -42,8 +42,6 @@ inline double log2(double x)
 double pi(double dummy);
 
 double sign(double a, double b);
-double cast2double(double a);
-long nint(double a);
 std::complex<double> Real2Complex(double a, double b);
 double Cabs1(std::complex<double> zdum);
 
@@ -58,19 +56,15 @@ inline double sign(double a, double b)
   return mtmp;
 }
 
-inline double
-cast2double(double a)
+inline double castREAL(mplapackint n)
 {
-    return a;
+    double ret = n;
+    return ret;
 }
 
-inline long nint(double a)
+inline mplapackint castINTEGER(double a)
 {
-    long i;
-    double tmp;
-    a = a + 0.5;
-    tmp = floor(a);
-    i = (long)tmp;
+    mplapackint i = a;
     return i;
 }
 

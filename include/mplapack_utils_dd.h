@@ -40,6 +40,7 @@ double cast2double(dd_real a);
 dd_complex Real2Complex(dd_real a, dd_real b);
 dd_real Cabs1(dd_complex zdum);
 
+
 //implementation of sign transfer function.
 inline dd_real sign(dd_real a, dd_real b)
 {
@@ -56,7 +57,13 @@ inline double cast2double(dd_real a)
     return a.x[0];
 }
 
-inline long __dd_nint(dd_real a)
+inline dd_real castREAL(mplapackint n)
+{
+    dd_real ret;
+    ret = (int)n;
+    return ret;
+}
+inline mplapackint castINTEGER(dd_real a)
 {
     long i;
     dd_real tmp;
@@ -65,7 +72,7 @@ inline long __dd_nint(dd_real a)
     i = (int)tmp.x[0];
     return i;
 }
-
+  
 inline dd_complex Real2Complex(dd_real a, dd_real b)
 {
     dd_complex ret;

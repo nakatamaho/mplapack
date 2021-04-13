@@ -38,8 +38,6 @@ using namespace mpfr;
 
 mpreal pi(mpreal dummy);
 mpreal sign(mpreal a, mpreal b);
-double cast2double(mpreal a);
-long nint(mpreal a);
 mpcomplex Real2Complex(mpreal a, mpreal b);
 mpreal Cabs1(mpcomplex zdum);
 
@@ -54,20 +52,19 @@ inline mpreal sign(mpreal a, mpreal b)
     return mtmp;
 }
 
-inline double cast2double(mpreal a)
+inline mplapackint castINTEGER(mpreal a)
 {
-    double tmp;
-    tmp = a;
-    return a;
-}
-
-inline long nint(mpreal a)
-{
-    long i;
+    mplapackint i;
     mpreal tmp;
     a = a + 0.5;
     tmp = floor(a);
     i = tmp; //cast to long
+    return i;
+}
+
+inline mpreal castREAL(mplapackint a)
+{
+    mpreal i = a;
     return i;
 }
 
