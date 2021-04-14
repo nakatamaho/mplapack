@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
+
 void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER const n, INTEGER const ktop, INTEGER const kbot, INTEGER const nshfts, COMPLEX *s, COMPLEX *h, INTEGER const ldh, INTEGER const iloz, INTEGER const ihiz, COMPLEX *z, INTEGER const ldz, COMPLEX *v, INTEGER const ldv, COMPLEX *u, INTEGER const ldu, INTEGER const nv, COMPLEX *wv, INTEGER const ldwv, INTEGER const nh, COMPLEX *wh, INTEGER const ldwh) {
     //
     //  -- LAPACK auxiliary routine --
@@ -58,7 +60,6 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
     //     ..
     //     .. Statement Function definitions ..
     COMPLEX cdum = 0.0;
-    abs1[cdum - 1] = abs(cdum.real()) + abs(cdum.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -87,7 +88,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
     REAL safmax = rone / safmin;
     Rlabad(safmin, safmax);
     REAL ulp = Rlamch("PRECISION");
-    REAL smlnum = safmin * (n.real() / ulp);
+    REAL smlnum = safmin * (castREAL(n) / ulp);
     //
     //     ==== Use accumulated reflections to update far-from-diagonal
     //     .    entries ? ====
@@ -136,7 +137,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
     INTEGER kms = 0;
     INTEGER m = 0;
     COMPLEX alpha = 0.0;
-    arr_1d<3, COMPLEX> vt(fill0);
+    COMPLEX vt[3];
     INTEGER i2 = 0;
     INTEGER i4 = 0;
     INTEGER k1 = 0;
@@ -199,11 +200,11 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                 if (k == ktop - 1) {
                     Claqr1(2, &h[((k + 1) - 1) + ((k + 1) - 1) * ldh], ldh, s[(2 * m22 - 1) - 1], s[(2 * m22) - 1], &v[(m22 - 1) * ldv]);
                     beta = v[(m22 - 1) * ldv];
-                    Clarfg(2, beta, &v[(2 - 1) + (m22 - 1) * ldv], 1, &v[(m22 - 1) * ldv]);
+                    Clarfg(2, beta, &v[(2 - 1) + (m22 - 1) * ldv], 1, v[(m22 - 1) * ldv]);
                 } else {
                     beta = h[((k + 1) - 1) + (k - 1) * ldh];
                     v[(2 - 1) + (m22 - 1) * ldv] = h[((k + 2) - 1) + (k - 1) * ldh];
-                    Clarfg(2, beta, &v[(2 - 1) + (m22 - 1) * ldv], 1, &v[(m22 - 1) * ldv]);
+                    Clarfg(2, beta, &v[(2 - 1) + (m22 - 1) * ldv], 1, v[(m22 - 1) * ldv]);
                     h[((k + 1) - 1) + (k - 1) * ldh] = beta;
                     h[((k + 2) - 1) + (k - 1) * ldh] = zero;
                 }
@@ -244,32 +245,32 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                 //
                 if (k >= ktop) {
                     if (h[((k + 1) - 1) + (k - 1) * ldh] != zero) {
-                        tst1 = abs1[h[(k - 1) + (k - 1) * ldh] - 1] + abs1[(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]) - 1];
+                        tst1 = abs1(h[(k - 1) + (k - 1) * ldh]) + abs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]);
                         if (tst1 == rzero) {
                             if (k >= ktop + 1) {
-                                tst1 += abs1[(h[(k - 1) + ((k - 1) - 1) * ldh]) - 1];
+                                tst1 += abs1(h[(k - 1) + ((k - 1) - 1) * ldh]);
                             }
                             if (k >= ktop + 2) {
-                                tst1 += abs1[(h[(k - 1) + ((k - 2) - 1) * ldh]) - 1];
+                                tst1 += abs1(h[(k - 1) + ((k - 2) - 1) * ldh]);
                             }
                             if (k >= ktop + 3) {
-                                tst1 += abs1[(h[(k - 1) + ((k - 3) - 1) * ldh]) - 1];
+                                tst1 += abs1(h[(k - 1) + ((k - 3) - 1) * ldh]);
                             }
                             if (k <= kbot - 2) {
-                                tst1 += abs1[(h[((k + 2) - 1) + ((k + 1) - 1) * ldh]) - 1];
+                                tst1 += abs1(h[((k + 2) - 1) + ((k + 1) - 1) * ldh]);
                             }
                             if (k <= kbot - 3) {
-                                tst1 += abs1[(h[((k + 3) - 1) + ((k + 1) - 1) * ldh]) - 1];
+                                tst1 += abs1(h[((k + 3) - 1) + ((k + 1) - 1) * ldh]);
                             }
                             if (k <= kbot - 4) {
-                                tst1 += abs1[(h[((k + 4) - 1) + ((k + 1) - 1) * ldh]) - 1];
+                                tst1 += abs1(h[((k + 4) - 1) + ((k + 1) - 1) * ldh]);
                             }
                         }
-                        if (abs1[(h[((k + 1) - 1) + (k - 1) * ldh]) - 1] <= max(smlnum, ulp * tst1)) {
-                            h12 = max(abs1[(h[((k + 1) - 1) + (k - 1) * ldh]) - 1], abs1[(h[(k - 1) + ((k + 1) - 1) * ldh]) - 1]);
-                            h21 = min(abs1[(h[((k + 1) - 1) + (k - 1) * ldh]) - 1], abs1[(h[(k - 1) + ((k + 1) - 1) * ldh]) - 1]);
-                            h11 = max(abs1[(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]) - 1], abs1[(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]) - 1]);
-                            h22 = min(abs1[(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]) - 1], abs1[(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]) - 1]);
+                        if (abs1(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, ulp * tst1)) {
+                            h12 = max(abs1(h[((k + 1) - 1) + (k - 1) * ldh]), abs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
+                            h21 = min(abs1(h[((k + 1) - 1) + (k - 1) * ldh]), abs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
+                            h11 = max(abs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), abs1(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
+                            h22 = min(abs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), abs1(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
                             scl = h11 + h12;
                             tst2 = h22 * (h11 / scl);
                             //
@@ -305,7 +306,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                 if (k == ktop - 1) {
                     Claqr1(3, &h[(ktop - 1) + (ktop - 1) * ldh], ldh, s[(2 * m - 1) - 1], s[(2 * m) - 1], &v[(m - 1) * ldv]);
                     alpha = v[(m - 1) * ldv];
-                    Clarfg(3, alpha, &v[(2 - 1) + (m - 1) * ldv], 1, &v[(m - 1) * ldv]);
+                    Clarfg(3, alpha, &v[(2 - 1) + (m - 1) * ldv], 1, v[(m - 1) * ldv]);
                 } else {
                     //
                     //                 ==== Perform delayed transformation of row below
@@ -323,7 +324,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                     beta = h[((k + 1) - 1) + (k - 1) * ldh];
                     v[(2 - 1) + (m - 1) * ldv] = h[((k + 2) - 1) + (k - 1) * ldh];
                     v[(3 - 1) + (m - 1) * ldv] = h[((k + 3) - 1) + (k - 1) * ldh];
-                    Clarfg(3, beta, &v[(2 - 1) + (m - 1) * ldv], 1, &v[(m - 1) * ldv]);
+                    Clarfg(3, beta, &v[(2 - 1) + (m - 1) * ldv], 1, v[(m - 1) * ldv]);
                     //
                     //                 ==== A Bulge may collapse because of vigilant
                     //                 .    deflation or destructive underflow.  In the
@@ -347,10 +348,10 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                         //
                         Claqr1(3, &h[((k + 1) - 1) + ((k + 1) - 1) * ldh], ldh, s[(2 * m - 1) - 1], s[(2 * m) - 1], vt);
                         alpha = vt[1 - 1];
-                        Clarfg(3, alpha, vt[2 - 1], 1, vt[1 - 1]);
+                        Clarfg(3, alpha, &vt[2 - 1], 1, vt[1 - 1]);
                         refsum = conj(vt[1 - 1]) * (h[((k + 1) - 1) + (k - 1) * ldh] + conj(vt[2 - 1]) * h[((k + 2) - 1) + (k - 1) * ldh]);
                         //
-                        if (abs1[(h[((k + 2) - 1) + (k - 1) * ldh] - refsum * vt[2 - 1]) - 1] + abs1[(refsum * vt[3 - 1]) - 1] > ulp * (abs1[h[(k - 1) + (k - 1) * ldh] - 1] + abs1[(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]) - 1] + abs1[(h[((k + 2) - 1) + ((k + 2) - 1) * ldh]) - 1])) {
+                        if (abs1(h[((k + 2) - 1) + (k - 1) * ldh] - refsum * vt[2 - 1]) + abs1(refsum * vt[3 - 1]) > ulp * (abs1(h[(k - 1) + (k - 1) * ldh]) + abs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]) + abs1(h[((k + 2) - 1) + ((k + 2) - 1) * ldh]))) {
                             //
                             //                       ==== Starting a new bulge here would
                             //                       .    create non-negligible fill.  Use
@@ -410,32 +411,32 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                     continue;
                 }
                 if (h[((k + 1) - 1) + (k - 1) * ldh] != zero) {
-                    tst1 = abs1[h[(k - 1) + (k - 1) * ldh] - 1] + abs1[(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]) - 1];
+                    tst1 = abs1(h[(k - 1) + (k - 1) * ldh]) + abs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]);
                     if (tst1 == rzero) {
                         if (k >= ktop + 1) {
-                            tst1 += abs1[(h[(k - 1) + ((k - 1) - 1) * ldh]) - 1];
+                            tst1 += abs1(h[(k - 1) + ((k - 1) - 1) * ldh]);
                         }
                         if (k >= ktop + 2) {
-                            tst1 += abs1[(h[(k - 1) + ((k - 2) - 1) * ldh]) - 1];
+                            tst1 += abs1(h[(k - 1) + ((k - 2) - 1) * ldh]);
                         }
                         if (k >= ktop + 3) {
-                            tst1 += abs1[(h[(k - 1) + ((k - 3) - 1) * ldh]) - 1];
+                            tst1 += abs1(h[(k - 1) + ((k - 3) - 1) * ldh]);
                         }
                         if (k <= kbot - 2) {
-                            tst1 += abs1[(h[((k + 2) - 1) + ((k + 1) - 1) * ldh]) - 1];
+                            tst1 += abs1(h[((k + 2) - 1) + ((k + 1) - 1) * ldh]);
                         }
                         if (k <= kbot - 3) {
-                            tst1 += abs1[(h[((k + 3) - 1) + ((k + 1) - 1) * ldh]) - 1];
+                            tst1 += abs1(h[((k + 3) - 1) + ((k + 1) - 1) * ldh]);
                         }
                         if (k <= kbot - 4) {
-                            tst1 += abs1[(h[((k + 4) - 1) + ((k + 1) - 1) * ldh]) - 1];
+                            tst1 += abs1(h[((k + 4) - 1) + ((k + 1) - 1) * ldh]);
                         }
                     }
-                    if (abs1[(h[((k + 1) - 1) + (k - 1) * ldh]) - 1] <= max(smlnum, ulp * tst1)) {
-                        h12 = max(abs1[(h[((k + 1) - 1) + (k - 1) * ldh]) - 1], abs1[(h[(k - 1) + ((k + 1) - 1) * ldh]) - 1]);
-                        h21 = min(abs1[(h[((k + 1) - 1) + (k - 1) * ldh]) - 1], abs1[(h[(k - 1) + ((k + 1) - 1) * ldh]) - 1]);
-                        h11 = max(abs1[(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]) - 1], abs1[(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]) - 1]);
-                        h22 = min(abs1[(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]) - 1], abs1[(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]) - 1]);
+                    if (abs1(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, ulp * tst1)) {
+                        h12 = max(abs1(h[((k + 1) - 1) + (k - 1) * ldh]), abs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
+                        h21 = min(abs1(h[((k + 1) - 1) + (k - 1) * ldh]), abs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
+                        h11 = max(abs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), abs1(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
+                        h22 = min(abs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), abs1(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
                         scl = h11 + h12;
                         tst2 = h22 * (h11 / scl);
                         //
@@ -527,7 +528,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
             //
             for (jcol = min(ndcol, kbot) + 1; jcol <= jbot; jcol = jcol + nh) {
                 jlen = min(nh, jbot - jcol + 1);
-                Cgemm("C", "N", nu, jlen, nu, one, u[(k1 - 1) + (k1 - 1) * ldu], ldu, &h[((incol + k1) - 1) + (jcol - 1) * ldh], ldh, zero, wh, ldwh);
+                Cgemm("C", "N", nu, jlen, nu, one, &u[(k1 - 1) + (k1 - 1) * ldu], ldu, &h[((incol + k1) - 1) + (jcol - 1) * ldh], ldh, zero, wh, ldwh);
                 Clacpy("ALL", nu, jlen, wh, ldwh, &h[((incol + k1) - 1) + (jcol - 1) * ldh], ldh);
             }
             //
@@ -535,7 +536,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
             //
             for (jrow = jtop; jrow <= max(ktop, incol) - 1; jrow = jrow + nv) {
                 jlen = min(nv, max(ktop, incol) - jrow);
-                Cgemm("N", "N", jlen, nu, nu, one, &h[(jrow - 1) + ((incol + k1) - 1) * ldh], ldh, u[(k1 - 1) + (k1 - 1) * ldu], ldu, zero, wv, ldwv);
+                Cgemm("N", "N", jlen, nu, nu, one, &h[(jrow - 1) + ((incol + k1) - 1) * ldh], ldh, &u[(k1 - 1) + (k1 - 1) * ldu], ldu, zero, wv, ldwv);
                 Clacpy("ALL", jlen, nu, wv, ldwv, &h[(jrow - 1) + ((incol + k1) - 1) * ldh], ldh);
             }
             //
@@ -544,7 +545,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
             if (wantz) {
                 for (jrow = iloz; jrow <= ihiz; jrow = jrow + nv) {
                     jlen = min(nv, ihiz - jrow + 1);
-                    Cgemm("N", "N", jlen, nu, nu, one, &z[(jrow - 1) + ((incol + k1) - 1) * ldz], ldz, u[(k1 - 1) + (k1 - 1) * ldu], ldu, zero, wv, ldwv);
+                    Cgemm("N", "N", jlen, nu, nu, one, &z[(jrow - 1) + ((incol + k1) - 1) * ldz], ldz, &u[(k1 - 1) + (k1 - 1) * ldu], ldu, zero, wv, ldwv);
                     Clacpy("ALL", jlen, nu, wv, ldwv, &z[(jrow - 1) + ((incol + k1) - 1) * ldz], ldz);
                 }
             }
