@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
+
 void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const ktop, INTEGER const kbot, INTEGER const nw, COMPLEX *h, INTEGER const ldh, INTEGER const iloz, INTEGER const ihiz, COMPLEX *z, INTEGER const ldz, INTEGER &ns, INTEGER &nd, COMPLEX *sh, COMPLEX *v, INTEGER const ldv, INTEGER const nh, COMPLEX *t, INTEGER const ldt, INTEGER const nv, COMPLEX *wv, INTEGER const ldwv, COMPLEX *work, INTEGER const lwork) {
     //
     //  -- LAPACK auxiliary routine --
@@ -56,7 +58,6 @@ void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     //     ..
     //     .. Statement Function definitions ..
     COMPLEX cdum = 0.0;
-    abs1[cdum - 1] = abs(cdum.real()) + abs(cdum.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -74,12 +75,12 @@ void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         //        ==== Workspace query call to Cgehrd ====
         //
         Cgehrd(jw, 1, jw - 1, t, ldt, work, work, -1, info);
-        lwk1 = int(work[1 - 1]);
+        lwk1 = castINTEGER(work[1 - 1].real());
         //
         //        ==== Workspace query call to Cunmhr ====
         //
         Cunmhr("R", "N", jw, jw, 1, jw - 1, t, ldt, work, v, ldv, work, -1, info);
-        lwk2 = int(work[1 - 1]);
+        lwk2 = castINTEGER(work[1 - 1].real());
         //
         //        ==== Optimal workspace ====
         //
@@ -89,7 +90,7 @@ void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     //     ==== Quick return in case of workspace query. ====
     //
     if (lwork == -1) {
-        work[1 - 1] = COMPLEX(lwkopt, 0);
+        work[1 - 1] = COMPLEX(lwkopt, 0.0);
         return;
     }
     //
@@ -114,7 +115,7 @@ void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     REAL safmax = rone / safmin;
     Rlabad(safmin, safmax);
     REAL ulp = Rlamch("PRECISION");
-    REAL smlnum = safmin * (n.real() / ulp);
+    REAL smlnum = safmin * (castREAL(n) / ulp);
     //
     //     ==== Setup deflation window ====
     //
@@ -135,7 +136,7 @@ void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         sh[kwtop - 1] = h[(kwtop - 1) + (kwtop - 1) * ldh];
         ns = 1;
         nd = 0;
-        if (abs1[s - 1] <= max(smlnum, ulp * abs1[h[(kwtop - 1) + (kwtop - 1) * ldh] - 1])) {
+        if (abs1(s) <= max(smlnum, ulp * abs1(h[(kwtop - 1) + (kwtop - 1) * ldh]))) {
             ns = 0;
             nd = 1;
             if (kwtop > ktop) {
@@ -157,7 +158,7 @@ void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     //
     Claset("A", jw, jw, zero, one, v, ldv);
     INTEGER infqr = 0;
-    Clahqr(true, true, jw, 1, jw, t, ldt, sh[kwtop - 1], 1, jw, v, ldv, infqr);
+    Clahqr(true, true, jw, 1, jw, t, ldt, &sh[kwtop - 1], 1, jw, v, ldv, infqr);
     //
     //     ==== Deflation detection loop ====
     //
@@ -171,11 +172,11 @@ void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         //
         //        ==== Small spike tip deflation test ====
         //
-        foo = abs1[t[(ns - 1) + (ns - 1) * ldt] - 1];
+        foo = abs1(t[(ns - 1) + (ns - 1) * ldt]);
         if (foo == rzero) {
-            foo = abs1[s - 1];
+            foo = abs1(s);
         }
-        if (abs1[s - 1] * abs1[v[(ns - 1) * ldv] - 1] <= max(smlnum, ulp * foo)) {
+        if (abs1(s) * abs1(v[(ns - 1) * ldv]) <= max(smlnum, ulp * foo)) {
             //
             //           ==== One more converged eigenvalue ====
             //
@@ -207,7 +208,7 @@ void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         for (i = infqr + 1; i <= ns; i = i + 1) {
             ifst = i;
             for (j = i + 1; j <= ns; j = j + 1) {
-                if (abs1[t[(j - 1) + (j - 1) * ldt] - 1] > abs1[t[(ifst - 1) + (ifst - 1) * ldt] - 1]) {
+                if (abs1(t[(j - 1) + (j - 1) * ldt]) > abs1(t[(ifst - 1) + (ifst - 1) * ldt])) {
                     ifst = j;
                 }
             }
@@ -315,7 +316,7 @@ void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     //
     //      ==== Return optimal workspace. ====
     //
-    work[1 - 1] = COMPLEX(lwkopt, 0);
+    work[1 - 1] = COMPLEX(lwkopt, 0.0);
     //
     //     ==== End of Claqr2 ====
     //

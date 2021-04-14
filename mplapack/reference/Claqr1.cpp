@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
+
 void Claqr1(INTEGER const n, COMPLEX *h, INTEGER const ldh, COMPLEX const s1, COMPLEX const s2, COMPLEX *v) {
     //
     //  -- LAPACK auxiliary routine --
@@ -52,7 +54,6 @@ void Claqr1(INTEGER const n, COMPLEX *h, INTEGER const ldh, COMPLEX const s1, CO
     //     ..
     //     .. Statement Function definitions ..
     COMPLEX cdum = 0.0;
-    abs1[cdum - 1] = abs(cdum.real()) + abs(cdum.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -68,7 +69,7 @@ void Claqr1(INTEGER const n, COMPLEX *h, INTEGER const ldh, COMPLEX const s1, CO
     COMPLEX h21s = 0.0;
     COMPLEX h31s = 0.0;
     if (n == 2) {
-        s = abs1[(h[(1 - 1)] - s2) - 1] + abs1[h[(2 - 1)] - 1];
+        s = abs1(h[(1 - 1)] - s2) + abs1(h[(2 - 1)]);
         if (s == rzero) {
             v[1 - 1] = zero;
             v[2 - 1] = zero;
@@ -78,7 +79,7 @@ void Claqr1(INTEGER const n, COMPLEX *h, INTEGER const ldh, COMPLEX const s1, CO
             v[2 - 1] = h21s * (h[(1 - 1)] + h[(2 - 1) + (2 - 1) * ldh] - s1 - s2);
         }
     } else {
-        s = abs1[(h[(1 - 1)] - s2) - 1] + abs1[h[(2 - 1)] - 1] + abs1[h[(3 - 1)] - 1];
+        s = abs1(h[(1 - 1)] - s2) + abs1(h[(2 - 1)]) + abs1(h[(3 - 1)]);
         if (s == zero) {
             v[1 - 1] = zero;
             v[2 - 1] = zero;

@@ -29,12 +29,14 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
+
 void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *h, INTEGER const ldh, COMPLEX *w, INTEGER const iloz, INTEGER const ihiz, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     COMPLEX cdum = 0.0;
     const COMPLEX one = (1.0, 0.0);
     const INTEGER ntiny = 15;
     INTEGER lwkopt = 0;
-    str<2> jbcmpz = char0;
+    char jbcmpz[2];
     INTEGER nwr = 0;
     INTEGER nsr = 0;
     INTEGER ls = 0;
@@ -67,7 +69,7 @@ void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     INTEGER ns = 0;
     INTEGER i = 0;
     const REAL wilk1 = 0.75e0;
-    arr_2d<1, 1, COMPLEX> zdum(fill0);
+    COMPLEX zdum[2];
     INTEGER inf = 0;
     REAL s = 0.0;
     COMPLEX aa = 0.0;
@@ -125,7 +127,6 @@ void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1[cdum - 1] = abs(cdum.real()) + abs(cdum.imag());
     //     ..
     //     .. Executable Statements ..
     info = 0;
@@ -157,14 +158,14 @@ void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         //        ==== Set up job flags for iMlaenv. ====
         //
         if (wantt) {
-            jbcmpz[(1 - 1)] = "S";
+            jbcmpz[0] = 'S';
         } else {
-            jbcmpz[(1 - 1)] = "E";
+            jbcmpz[0] = 'E';
         }
         if (wantz) {
-            jbcmpz[(2 - 1) + (2 - 1) * ldjbcmpz] = "V";
+            jbcmpz[1] = 'V';
         } else {
-            jbcmpz[(2 - 1) + (2 - 1) * ldjbcmpz] = "N";
+            jbcmpz[1] = 'N';
         }
         //
         //        ==== NWR = recommended deflation window size.  At this
@@ -175,7 +176,7 @@ void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         //
         nwr = iMlaenv(13, "Claqr4", jbcmpz, n, ilo, ihi, lwork);
         nwr = max(2, nwr);
-        nwr = min(ihi - ilo + 1, (n - 1) / 3, nwr);
+        nwr = min({ihi - ilo + 1, (n - 1) / 3, nwr});
         //
         //        ==== NSR = recommended number of simultaneous shifts.
         //        .    At this poINTEGER N .GT. NTINY = 15, so there is at
@@ -183,7 +184,7 @@ void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         //        .    and greater than or equal to two as required. ====
         //
         nsr = iMlaenv(15, "Claqr4", jbcmpz, n, ilo, ihi, lwork);
-        nsr = min(nsr, (n - 3) / 6, ihi - ilo);
+        nsr = min({nsr, (n - 3) / 6, ihi - ilo});
         nsr = max(2, nsr - mod(nsr, 2));
         //
         //        ==== Estimate optimal workspace ====
@@ -194,12 +195,12 @@ void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         //
         //        ==== Optimal workspace = MAX(Claqr5, Claqr2) ====
         //
-        lwkopt = max(3 * nsr / 2, int(work[1 - 1]));
+        lwkopt = max(3 * nsr / 2, castINTEGER(work[1 - 1].real()));
         //
         //        ==== Quick return in case of workspace query. ====
         //
         if (lwork == -1) {
-            work[1 - 1] = COMPLEX(lwkopt, 0);
+            work[1 - 1] = COMPLEX(lwkopt, 0.0);
             return;
         }
         //
@@ -293,7 +294,7 @@ void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                     nw = nh;
                 } else {
                     kwtop = kbot - nw + 1;
-                    if (abs1[(h[(kwtop - 1) + ((kwtop - 1) - 1) * ldh]) - 1] > abs1[(h[((kwtop - 1) - 1) + ((kwtop - 2) - 1) * ldh]) - 1]) {
+                    if (abs1(h[(kwtop - 1) + ((kwtop - 1) - 1) * ldh]) > abs1(h[((kwtop - 1) - 1) + ((kwtop - 2) - 1) * ldh])) {
                         nw++;
                     }
                 }
@@ -349,7 +350,8 @@ void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                 //              .    This may be lowered (slightly) if Claqr2
                 //              .    did not provide that many shifts. ====
                 //
-                ns = min(nsmax, nsr, max(2, kbot - ktop));
+                INTEGER itmp = max(2, kbot - ktop);
+                ns = min({nsmax, nsr, itmp});
                 ns = ns - mod(ns, 2);
                 //
                 //              ==== If there have been no deflations
@@ -362,7 +364,7 @@ void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                 if (mod(ndfl, kexsh) == 0) {
                     ks = kbot - ns + 1;
                     for (i = kbot; i >= ks + 1; i = i - 2) {
-                        w[i - 1] = h[(i - 1) + (i - 1) * ldh] + wilk1 * abs1[(h[(i - 1) + ((i - 1) - 1) * ldh]) - 1];
+                        w[i - 1] = h[(i - 1) + (i - 1) * ldh] + wilk1 * abs1(h[(i - 1) + ((i - 1) - 1) * ldh]);
                         w[(i - 1) - 1] = w[i - 1];
                     }
                 } else {
@@ -388,7 +390,7 @@ void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                         //                    .    because H(KBOT,KBOT-1) is nonzero.) ====
                         //
                         if (ks >= kbot) {
-                            s = abs1[(h[((kbot - 1) - 1) + ((kbot - 1) - 1) * ldh]) - 1] + abs1[(h[(kbot - 1) + ((kbot - 1) - 1) * ldh]) - 1] + abs1[(h[((kbot - 1) - 1) + (kbot - 1) * ldh]) - 1] + abs1[h[(kbot - 1) + (kbot - 1) * ldh] - 1];
+                            s = abs1(h[((kbot - 1) - 1) + ((kbot - 1) - 1) * ldh]) + abs1(h[(kbot - 1) + ((kbot - 1) - 1) * ldh]) + abs1(h[((kbot - 1) - 1) + (kbot - 1) * ldh]) + abs1(h[(kbot - 1) + (kbot - 1) * ldh]);
                             aa = h[((kbot - 1) - 1) + ((kbot - 1) - 1) * ldh] / s;
                             cc = h[(kbot - 1) + ((kbot - 1) - 1) * ldh] / s;
                             bb = h[((kbot - 1) - 1) + (kbot - 1) * ldh] / s;
@@ -414,7 +416,7 @@ void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                             }
                             sorted = true;
                             for (i = ks; i <= k - 1; i = i + 1) {
-                                if (abs1[w[i - 1] - 1] < abs1[(w[(i + 1) - 1]) - 1]) {
+                                if (abs1(w[i - 1]) < abs1(w[(i + 1) - 1])) {
                                     sorted = false;
                                     swap = w[i - 1];
                                     w[i - 1] = w[(i + 1) - 1];
@@ -430,7 +432,7 @@ void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                 //              .    only one.  ====
                 //
                 if (kbot - ks + 1 == 2) {
-                    if (abs1[(w[kbot - 1] - h[(kbot - 1) + (kbot - 1) * ldh]) - 1] < abs1[(w[(kbot - 1) - 1] - h[(kbot - 1) + (kbot - 1) * ldh]) - 1]) {
+                    if (abs1(w[kbot - 1] - h[(kbot - 1) + (kbot - 1) * ldh]) < abs1(w[(kbot - 1) - 1] - h[(kbot - 1) + (kbot - 1) * ldh])) {
                         w[(kbot - 1) - 1] = w[kbot - 1];
                     } else {
                         w[kbot - 1] = w[(kbot - 1) - 1];
@@ -489,7 +491,7 @@ void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     //
     //     ==== Return the optimal value of LWORK. ====
     //
-    work[1 - 1] = COMPLEX(lwkopt, 0);
+    work[1 - 1] = COMPLEX(lwkopt, 0.0);
     //
     //     ==== End of Claqr4 ====
     //

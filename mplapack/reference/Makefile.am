@@ -85,6 +85,17 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
+Claqr0.cpp \
+Claqr1.cpp \
+Claqr2.cpp \
+Claqr3.cpp \
+Claqr4.cpp \
+Claqr5.cpp \
+Claqsb.cpp \
+Claqsp.cpp \
+Claqsy.cpp \
+Clar1v.cpp \
+Clar2v.cpp \
 Rlasd0.cpp \
 Rlasd1.cpp \
 Rlasd2.cpp \
