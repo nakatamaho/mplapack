@@ -208,10 +208,10 @@ void Rlasdq(const char *uplo, INTEGER const sqre, INTEGER const n, INTEGER const
             d[isub - 1] = d[i - 1];
             d[i - 1] = smin;
             if (ncvt > 0) {
-                Rswap(ncvt, vt[(isub - 1)], ldvt, vt[(i - 1)], ldvt);
+                Rswap(ncvt, &vt[(isub - 1)], ldvt, &vt[(i - 1)], ldvt);
             }
             if (nru > 0) {
-                Rswap(nru, u[(isub - 1) * ldu], 1, u[(i - 1) * ldu], 1);
+                Rswap(nru, &u[(isub - 1) * ldu], 1, &u[(i - 1) * ldu], 1);
             }
             if (ncc > 0) {
                 Rswap(ncc, &c[(isub - 1)], ldc, &c[(i - 1)], ldc);

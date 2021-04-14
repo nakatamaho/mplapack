@@ -91,7 +91,6 @@ Rlasd2.cpp \
 Rlasd3.cpp \
 Rlasd4.cpp \
 Rlasd5.cpp \
-Rlasdq.cpp \
 Rlasdt.cpp \
 Rlaset.cpp \
 Rlasq1.cpp \
@@ -101,6 +100,7 @@ Rlasq4.cpp \
 Rlasq5.cpp \
 Rlasq6.cpp \
 Cbdsqr.cpp \
+Rlasdq.cpp \
 Cgelqt3.cpp \
 Cgelq2.cpp \
 Cgehd2.cpp \

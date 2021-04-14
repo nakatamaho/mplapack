@@ -54,8 +54,8 @@ void Rlasdt(INTEGER const n, INTEGER &lvl, INTEGER &nd, INTEGER *inode, INTEGER 
     //
     INTEGER maxn = max((INTEGER)1, n);
     const REAL two = 2.0e+0;
-    REAL temp = log(maxn.real() / msub + 1.real()) / log(two);
-    lvl = int(temp) + 1;
+    REAL temp = log(castREAL(maxn) / castREAL(msub + (INTEGER)1)) / log(two);
+    lvl = castINTEGER(temp) + 1;
     //
     INTEGER i = n / 2;
     inode[1 - 1] = i + 1;
