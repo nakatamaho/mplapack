@@ -76,8 +76,8 @@ void Rlasd4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
     REAL dtisq = 0.0;
     REAL dtiim = 0.0;
     REAL dtiip = 0.0;
-    arr_1d<3, REAL> zz(fill0);
-    arr_1d<3, REAL> dd(fill0);
+    REAL zz[3];
+    REAL dd[3];
     REAL prew = 0.0;
     bool swtch = false;
     REAL temp2 = 0.0;

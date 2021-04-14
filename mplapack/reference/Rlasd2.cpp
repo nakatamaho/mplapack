@@ -49,9 +49,9 @@ void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, 
     const REAL zero = 0.0;
     INTEGER idxjp = 0;
     INTEGER idxj = 0;
-    arr_1d<4, int> ctot(fill0);
+    INTEGER ctot[4];
     INTEGER ct = 0;
-    arr_1d<4, int> psm(fill0);
+    INTEGER psm[4];
     INTEGER jp = 0;
     const REAL two = 2.0e+0;
     REAL hlftol = 0.0;
@@ -155,7 +155,7 @@ void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, 
         idxc[i - 1] = coltyp[idxq[i - 1] - 1];
     }
     //
-    Rlamrg(nl, nr, dsigma[2 - 1], 1, 1, idx[2 - 1]);
+    Rlamrg(nl, nr, &dsigma[2 - 1], 1, 1, &idx[2 - 1]);
     //
     for (i = 2; i <= n; i = i + 1) {
         idxi = 1 + idx[i - 1];
@@ -252,8 +252,8 @@ statement_100:
             if (idxj <= nlp1) {
                 idxj = idxj - 1;
             }
-            Rrot(n, u[(idxjp - 1) * ldu], 1, u[(idxj - 1) * ldu], 1, c, s);
-            Rrot(m, vt[(idxjp - 1)], ldvt, vt[(idxj - 1)], ldvt, c, s);
+            Rrot(n, &u[(idxjp - 1) * ldu], 1, &u[(idxj - 1) * ldu], 1, c, s);
+            Rrot(m, &vt[(idxjp - 1)], ldvt, &vt[(idxj - 1)], ldvt, c, s);
             if (coltyp[j - 1] != coltyp[jprev - 1]) {
                 coltyp[j - 1] = 3;
             }
@@ -327,8 +327,8 @@ statement_120:
         if (idxj <= nlp1) {
             idxj = idxj - 1;
         }
-        Rcopy(n, u[(idxj - 1) * ldu], 1, u2[(j - 1) * ldu2], 1);
-        Rcopy(m, vt[(idxj - 1)], ldvt, vt2[(j - 1)], ldvt2);
+        Rcopy(n, &u[(idxj - 1) * ldu], 1, &u2[(j - 1) * ldu2], 1);
+        Rcopy(m, &vt[(idxj - 1)], ldvt, &vt2[(j - 1)], ldvt2);
     }
     //
     //     Determine DSIGMA(1), DSIGMA(2) and Z(1)
@@ -339,7 +339,7 @@ statement_120:
         dsigma[2 - 1] = hlftol;
     }
     if (m > n) {
-        z[1 - 1] = Rlapy2(z1, &z[m - 1]);
+        z[1 - 1] = Rlapy2(z1, z[m - 1]);
         if (z[1 - 1] <= tol) {
             c = one;
             s = zero;
@@ -358,7 +358,7 @@ statement_120:
     //
     //     Move the rest of the updating row to Z.
     //
-    Rcopy(k - 1, u2[(2 - 1)], 1, &z[2 - 1], 1);
+    Rcopy(k - 1, &u2[(2 - 1)], 1, &z[2 - 1], 1);
     //
     //     Determine the first column of U2, the first row of VT2 and the
     //     last row of VT.
@@ -375,19 +375,19 @@ statement_120:
             vt[(m - 1) + (i - 1) * ldvt] = c * vt[(m - 1) + (i - 1) * ldvt];
         }
     } else {
-        Rcopy(m, vt[(nlp1 - 1)], ldvt, vt2[(1 - 1)], ldvt2);
+        Rcopy(m, &vt[(nlp1 - 1)], ldvt, &vt2[(1 - 1)], ldvt2);
     }
     if (m > n) {
-        Rcopy(m, vt[(m - 1)], ldvt, vt2[(m - 1)], ldvt2);
+        Rcopy(m, &vt[(m - 1)], ldvt, &vt2[(m - 1)], ldvt2);
     }
     //
     //     The deflated singular values and their corresponding vectors go
     //     into the back of D, U, and V respectively.
     //
     if (n > k) {
-        Rcopy(n - k, dsigma[(k + 1) - 1], 1, &d[(k + 1) - 1], 1);
-        Rlacpy("A", n, n - k, u2[((k + 1) - 1) * ldu2], ldu2, u[((k + 1) - 1) * ldu], ldu);
-        Rlacpy("A", n - k, m, vt2[((k + 1) - 1)], ldvt2, vt[((k + 1) - 1)], ldvt);
+        Rcopy(n - k, &dsigma[(k + 1) - 1], 1, &d[(k + 1) - 1], 1);
+        Rlacpy("A", n, n - k, &u2[((k + 1) - 1) * ldu2], ldu2, &u[((k + 1) - 1) * ldu], ldu);
+        Rlacpy("A", n - k, m, &vt2[((k + 1) - 1)], ldvt2, &vt[((k + 1) - 1)], ldvt);
     }
     //
     //     Copy CTOT into COLTYP for referencing in Rlasd3.

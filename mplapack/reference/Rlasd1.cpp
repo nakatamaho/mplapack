@@ -109,12 +109,12 @@ void Rlasd1(INTEGER const nl, INTEGER const nr, INTEGER const sqre, REAL *d, REA
     //     Deflate singular values.
     //
     INTEGER k = 0;
-    Rlasd2(nl, nr, sqre, k, d, &work[iz - 1], alpha, beta, u, ldu, vt, ldvt, &work[isigma - 1], &work[iu2 - 1], ldu2, &work[ivt2 - 1], ldvt2, iwork[idxp - 1], iwork[idx - 1], iwork[idxc - 1], idxq, iwork[coltyp - 1], info);
+    Rlasd2(nl, nr, sqre, k, d, &work[iz - 1], alpha, beta, u, ldu, vt, ldvt, &work[isigma - 1], &work[iu2 - 1], ldu2, &work[ivt2 - 1], ldvt2, &iwork[idxp - 1], &iwork[idx - 1], &iwork[idxc - 1], idxq, &iwork[coltyp - 1], info);
     //
     //     Solve Secular Equation and update singular vectors.
     //
     INTEGER ldq = k;
-    Rlasd3(nl, nr, sqre, k, d, &work[iq - 1], ldq, &work[isigma - 1], u, ldu, &work[iu2 - 1], ldu2, vt, ldvt, &work[ivt2 - 1], ldvt2, iwork[idxc - 1], iwork[coltyp - 1], &work[iz - 1], info);
+    Rlasd3(nl, nr, sqre, k, d, &work[iq - 1], ldq, &work[isigma - 1], u, ldu, &work[iu2 - 1], ldu2, vt, ldvt, &work[ivt2 - 1], ldvt2, &iwork[idxc - 1], &iwork[coltyp - 1], &work[iz - 1], info);
     //
     //     Report the convergence failure.
     //

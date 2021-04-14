@@ -174,7 +174,7 @@ void Chetf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 if (imax > 1) {
                     jmax = iCamax(imax - 1, &a[(imax - 1) * lda], 1);
                     rowmax = max(rowmax, abs1(a[(jmax - 1) + (imax - 1) * lda]));
-  	      }
+                }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
                     //
@@ -266,7 +266,7 @@ void Chetf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 //
                 if (k > 2) {
                     //
-                    d = Rlapy2( a[((k - 1) - 1) + (k - 1) * lda].real(), a[((k - 1) - 1) + (k - 1) * lda].imag());
+                    d = Rlapy2(a[((k - 1) - 1) + (k - 1) * lda].real(), a[((k - 1) - 1) + (k - 1) * lda].imag());
                     d22 = a[((k - 1) - 1) + ((k - 1) - 1) * lda].real() / d;
                     d11 = a[(k - 1) + (k - 1) * lda].real() / d;
                     tt = one / (d11 * d22 - one);

@@ -29,6 +29,11 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL Rlamc3(REAL a, REAL b) {
+    REAL c = a + b;
+    return c;
+}
+
 void Rlasd3(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER const k, REAL *d, REAL *q, INTEGER const ldq, REAL *dsigma, REAL *u, INTEGER const ldu, REAL *u2, INTEGER const ldu2, REAL *vt, INTEGER const ldvt, REAL *vt2, INTEGER const ldvt2, INTEGER *idxc, INTEGER *ctot, REAL *z, INTEGER &info) {
     INTEGER n = 0;
     INTEGER m = 0;
@@ -108,9 +113,9 @@ void Rlasd3(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER cons
     //
     if (k == 1) {
         d[1 - 1] = abs(z[1 - 1]);
-        Rcopy(m, vt2[(1 - 1)], ldvt2, vt[(1 - 1)], ldvt);
+        Rcopy(m, &vt2[(1 - 1)], ldvt2, &vt[(1 - 1)], ldvt);
         if (z[1 - 1] > zero) {
-            Rcopy(n, u2[(1 - 1)], 1, u[(1 - 1)], 1);
+            Rcopy(n, &u2[(1 - 1)], 1, &u[(1 - 1)], 1);
         } else {
             for (i = 1; i <= n; i = i + 1) {
                 u[(i - 1)] = -u2[(i - 1)];
@@ -137,7 +142,7 @@ void Rlasd3(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER cons
     //     this code.
     //
     for (i = 1; i <= k; i = i + 1) {
-        dsigma[i - 1] = dlamc3[(dsigma[i - 1] - 1) + (dsigma[i - 1] - 1) * lddlamc3] - dsigma[i - 1];
+        dsigma[i - 1] = Rlamc3(dsigma[i - 1], dsigma[i - 1]) - dsigma[i - 1];
     }
     //
     //     Keep a copy of Z.
@@ -153,7 +158,7 @@ void Rlasd3(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER cons
     //     Find the new singular values.
     //
     for (j = 1; j <= k; j = j + 1) {
-        Rlasd4(k, j, dsigma, z, u[(j - 1) * ldu], rho, &d[j - 1], vt[(j - 1) * ldvt], info);
+        Rlasd4(k, j, dsigma, z, &u[(j - 1) * ldu], rho, d[j - 1], &vt[(j - 1) * ldvt], info);
         //
         //        If the zero finder fails, report the convergence failure.
         //
@@ -185,7 +190,7 @@ void Rlasd3(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER cons
             vt[(j - 1) + (i - 1) * ldvt] = z[j - 1] / u[(j - 1) + (i - 1) * ldu] / vt[(j - 1) + (i - 1) * ldvt];
             u[(j - 1) + (i - 1) * ldu] = dsigma[j - 1] * vt[(j - 1) + (i - 1) * ldvt];
         }
-        temp = Rnrm2(k, u[(i - 1) * ldu], 1);
+        temp = Rnrm2(k, &u[(i - 1) * ldu], (INTEGER)1);
         q[(i - 1) * ldq] = u[(i - 1) * ldu] / temp;
         for (j = 2; j <= k; j = j + 1) {
             jc = idxc[j - 1];
@@ -200,27 +205,27 @@ void Rlasd3(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER cons
         goto statement_100;
     }
     if (ctot[1 - 1] > 0) {
-        Rgemm("N", "N", nl, k, ctot[1 - 1], one, u2[(2 - 1) * ldu2], ldu2, q[(2 - 1)], ldq, zero, u[(1 - 1)], ldu);
+        Rgemm("N", "N", nl, k, ctot[1 - 1], one, &u2[(2 - 1) * ldu2], ldu2, &q[(2 - 1)], ldq, zero, &u[(1 - 1)], ldu);
         if (ctot[3 - 1] > 0) {
             ktemp = 2 + ctot[1 - 1] + ctot[2 - 1];
-            Rgemm("N", "N", nl, k, ctot[3 - 1], one, u2[(ktemp - 1) * ldu2], ldu2, q[(ktemp - 1)], ldq, one, u[(1 - 1)], ldu);
+            Rgemm("N", "N", nl, k, ctot[3 - 1], one, &u2[(ktemp - 1) * ldu2], ldu2, &q[(ktemp - 1)], ldq, one, &u[(1 - 1)], ldu);
         }
     } else if (ctot[3 - 1] > 0) {
         ktemp = 2 + ctot[1 - 1] + ctot[2 - 1];
-        Rgemm("N", "N", nl, k, ctot[3 - 1], one, u2[(ktemp - 1) * ldu2], ldu2, q[(ktemp - 1)], ldq, zero, u[(1 - 1)], ldu);
+        Rgemm("N", "N", nl, k, ctot[3 - 1], one, &u2[(ktemp - 1) * ldu2], ldu2, &q[(ktemp - 1)], ldq, zero, &u[(1 - 1)], ldu);
     } else {
         Rlacpy("F", nl, k, u2, ldu2, u, ldu);
     }
-    Rcopy(k, q[(1 - 1)], ldq, u[(nlp1 - 1)], ldu);
+    Rcopy(k, &q[(1 - 1)], ldq, &u[(nlp1 - 1)], ldu);
     ktemp = 2 + ctot[1 - 1];
     ctemp = ctot[2 - 1] + ctot[3 - 1];
-    Rgemm("N", "N", nr, k, ctemp, one, u2[(nlp2 - 1) + (ktemp - 1) * ldu2], ldu2, q[(ktemp - 1)], ldq, zero, u[(nlp2 - 1)], ldu);
+    Rgemm("N", "N", nr, k, ctemp, one, &u2[(nlp2 - 1) + (ktemp - 1) * ldu2], ldu2, &q[(ktemp - 1)], ldq, zero, &u[(nlp2 - 1)], ldu);
 //
 //     Generate the right singular vectors.
 //
 statement_100:
     for (i = 1; i <= k; i = i + 1) {
-        temp = Rnrm2(k, vt[(i - 1) * ldvt], 1);
+        temp = Rnrm2(k, &vt[(i - 1) * ldvt], 1);
         q[(i - 1)] = vt[(i - 1) * ldvt] / temp;
         for (j = 2; j <= k; j = j + 1) {
             jc = idxc[j - 1];
@@ -235,10 +240,10 @@ statement_100:
         return;
     }
     ktemp = 1 + ctot[1 - 1];
-    Rgemm("N", "N", k, nlp1, ktemp, one, q[(1 - 1)], ldq, vt2[(1 - 1)], ldvt2, zero, vt[(1 - 1)], ldvt);
+    Rgemm("N", "N", k, nlp1, ktemp, one, &q[(1 - 1)], ldq, &vt2[(1 - 1)], ldvt2, zero, &vt[(1 - 1)], ldvt);
     ktemp = 2 + ctot[1 - 1] + ctot[2 - 1];
     if (ktemp <= ldvt2) {
-        Rgemm("N", "N", k, nlp1, ctot[3 - 1], one, q[(ktemp - 1) * ldq], ldq, vt2[(ktemp - 1)], ldvt2, one, vt[(1 - 1)], ldvt);
+        Rgemm("N", "N", k, nlp1, ctot[3 - 1], one, &q[(ktemp - 1) * ldq], ldq, &vt2[(ktemp - 1)], ldvt2, one, &vt[(1 - 1)], ldvt);
     }
     //
     ktemp = ctot[1 - 1] + 1;
@@ -252,7 +257,7 @@ statement_100:
         }
     }
     ctemp = 1 + ctot[2 - 1] + ctot[3 - 1];
-    Rgemm("N", "N", k, nrp1, ctemp, one, q[(ktemp - 1) * ldq], ldq, vt2[(ktemp - 1) + (nlp2 - 1) * ldvt2], ldvt2, zero, vt[(nlp2 - 1) * ldvt], ldvt);
+    Rgemm("N", "N", k, nrp1, ctemp, one, &q[(ktemp - 1) * ldq], ldq, &vt2[(ktemp - 1) + (nlp2 - 1) * ldvt2], ldvt2, zero, &vt[(nlp2 - 1) * ldvt], ldvt);
     //
     //     End of Rlasd3
     //

@@ -58,7 +58,7 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     //     Test the input parameters.
     //
     info = 0;
-    INTEGER ldwork = nb + 3; //work is [n+nb+1, nb+3] matrix
+    INTEGER ldwork = nb + 3; // work is [n+nb+1, nb+3] matrix
     bool upper = Mlsame(uplo, "U");
     if (!upper && !Mlsame(uplo, "L")) {
         info = -1;
@@ -148,13 +148,13 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         while (k <= n) {
             if (ipiv[k - 1] > 0) {
                 //           1 x 1 diagonal NNB
-	        work[(k - 1) + (invd - 1) * ldwork] = one / (a[(k - 1) + (k - 1) * lda]).real();
+                work[(k - 1) + (invd - 1) * ldwork] = one / (a[(k - 1) + (k - 1) * lda]).real();
                 work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0.0;
                 k++;
             } else {
                 //           2 x 2 diagonal NNB
                 t = abs(work[((k + 1) - 1)]);
-                ak = (a[(k - 1) + (k - 1) * lda]).real()  / t;
+                ak = (a[(k - 1) + (k - 1) * lda]).real() / t;
                 akp1 = ((a[((k + 1) - 1) + ((k + 1) - 1) * lda]) - 1).real() / t;
                 akkp1 = work[((k + 1) - 1)] / t;
                 d = t * (ak * akp1 - one);
@@ -327,7 +327,7 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         while (k >= 1) {
             if (ipiv[k - 1] > 0) {
                 //           1 x 1 diagonal NNB
-	        work[(k - 1) + (invd - 1) * ldwork] = one / a[(k - 1) + (k - 1) * lda].real();
+                work[(k - 1) + (invd - 1) * ldwork] = one / a[(k - 1) + (k - 1) * lda].real();
                 work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0.0;
                 k = k - 1;
             } else {

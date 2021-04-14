@@ -85,6 +85,22 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
+Rlasd0.cpp \
+Rlasd1.cpp \
+Rlasd2.cpp \
+Rlasd3.cpp \
+Rlasd4.cpp \
+Rlasd5.cpp \
+Rlasdq.cpp \
+Rlasdt.cpp \
+Rlaset.cpp \
+Rlasq1.cpp \
+Rlasq2.cpp \
+Rlasq3.cpp \
+Rlasq4.cpp \
+Rlasq5.cpp \
+Rlasq6.cpp \
+Cbdsqr.cpp \
 Cgelqt3.cpp \
 Cgelq2.cpp \
 Cgehd2.cpp \
@@ -475,21 +491,6 @@ Rlarzt.cpp \
 Rlas2.cpp \
 Rlascl.cpp \
 Rlascl2.cpp \
-Rlasd0.cpp \
-Rlasd1.cpp \
-Rlasd2.cpp \
-Rlasd3.cpp \
-Rlasd4.cpp \
-Rlasd5.cpp \
-Rlasdq.cpp \
-Rlasdt.cpp \
-Rlaset.cpp \
-Rlasq1.cpp \
-Rlasq2.cpp \
-Rlasq3.cpp \
-Rlasq4.cpp \
-Rlasq5.cpp \
-Rlasq6.cpp \
 Rlasr.cpp \
 Rlasrt.cpp \
 Rlassq.cpp \
@@ -644,5 +645,4 @@ iMlaprec.cpp \
 iMlatrans.cpp \
 iMlauplo.cpp \
 iMlazlc.cpp \
-iMlazlr.cpp \
-Cbdsqr.cpp
+iMlazlr.cpp

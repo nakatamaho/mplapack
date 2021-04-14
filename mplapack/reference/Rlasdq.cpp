@@ -107,7 +107,7 @@ void Rlasdq(const char *uplo, INTEGER const sqre, INTEGER const n, INTEGER const
     const REAL zero = 0.0;
     if ((iuplo == 1) && (sqre1 == 1)) {
         for (i = 1; i <= n - 1; i = i + 1) {
-            Rlartg(d[i - 1], &e[i - 1], cs, sn, r);
+            Rlartg(d[i - 1], e[i - 1], cs, sn, r);
             d[i - 1] = r;
             e[i - 1] = sn * d[(i + 1) - 1];
             d[(i + 1) - 1] = cs * d[(i + 1) - 1];

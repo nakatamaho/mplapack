@@ -630,7 +630,7 @@ statement_160:
             //           Change sign of singular vectors, if desired
             //
             if (ncvt > 0) {
-                CRscal(ncvt, negone, vt[(i - 1)], ldvt);
+                CRscal(ncvt, negone, &vt[(i - 1)], ldvt);
             }
         }
     }
@@ -657,10 +657,10 @@ statement_160:
             d[isub - 1] = d[(n + 1 - i) - 1];
             d[(n + 1 - i) - 1] = smin;
             if (ncvt > 0) {
-                Cswap(ncvt, vt[(isub - 1)], ldvt, vt[((n + 1 - i) - 1)], ldvt);
+                Cswap(ncvt, &vt[(isub - 1)], ldvt, &vt[((n + 1 - i) - 1)], ldvt);
             }
             if (nru > 0) {
-                Cswap(nru, u[(isub - 1) * ldu], 1, u[((n + 1 - i) - 1) * ldu], 1);
+                Cswap(nru, &u[(isub - 1) * ldu], 1, &u[((n + 1 - i) - 1) * ldu], 1);
             }
             if (ncc > 0) {
                 Cswap(ncc, &c[(isub - 1)], ldc, &c[((n + 1 - i) - 1)], ldc);
