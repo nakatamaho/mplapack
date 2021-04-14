@@ -100,6 +100,10 @@ void Cgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     INTEGER i = 0;
     const COMPLEX zero = (0.0, 0.0);
     const INTEGER ldwork = nbmax + 1;
+    COMPLEX work13[ldwork * nbmax];
+    COMPLEX work31[ldwork * nbmax];
+    INTEGER ldwork13 = ldwork;
+    INTEGER ldwork31 = ldwork;
     INTEGER ju = 0;
     INTEGER jb = 0;
     INTEGER i2 = 0;
@@ -192,7 +196,7 @@ void Cgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 //              subdiagonal elements in the current column.
                 //
                 km = min(kl, m - jj);
-                jp = iCamax(km + 1, ab[((kv + 1) - 1) + (jj - 1) * ldab], 1);
+                jp = iCamax(km + 1, &ab[((kv + 1) - 1) + (jj - 1) * ldab], 1);
                 ipiv[jj - 1] = jp + jj - j;
                 if (ab[((kv + jp) - 1) + (jj - 1) * ldab] != zero) {
                     ju = max(ju, min(jj + ku + jp - 1, n));
@@ -202,20 +206,20 @@ void Cgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                         //
                         if (jp + jj - 1 < j + kl) {
                             //
-                            Cswap(jb, ab[((kv + 1 + jj - j) - 1) + (j - 1) * ldab], ldab - 1, ab[((kv + jp + jj - j) - 1) + (j - 1) * ldab], ldab - 1);
+                            Cswap(jb, &ab[((kv + 1 + jj - j) - 1) + (j - 1) * ldab], ldab - 1, &ab[((kv + jp + jj - j) - 1) + (j - 1) * ldab], ldab - 1);
                         } else {
                             //
                             //                       The interchange affects columns J to JJ-1 of A31
                             //                       which are stored in the work array WORK31
                             //
-                            Cswap(jj - j, ab[((kv + 1 + jj - j) - 1) + (j - 1) * ldab], ldab - 1, work31[((jp + jj - j - kl) - 1)], ldwork);
-                            Cswap(j + jb - jj, ab[((kv + 1) - 1) + (jj - 1) * ldab], ldab - 1, ab[((kv + jp) - 1) + (jj - 1) * ldab], ldab - 1);
+                            Cswap(jj - j, &ab[((kv + 1 + jj - j) - 1) + (j - 1) * ldab], ldab - 1, &work31[((jp + jj - j - kl) - 1)], ldwork);
+                            Cswap(j + jb - jj, &ab[((kv + 1) - 1) + (jj - 1) * ldab], ldab - 1, &ab[((kv + jp) - 1) + (jj - 1) * ldab], ldab - 1);
                         }
                     }
                     //
                     //                 Compute multipliers
                     //
-                    Cscal(km, one / ab[((kv + 1) - 1) + (jj - 1) * ldab], ab[((kv + 2) - 1) + (jj - 1) * ldab], 1);
+                    Cscal(km, one / ab[((kv + 1) - 1) + (jj - 1) * ldab], &ab[((kv + 2) - 1) + (jj - 1) * ldab], 1);
                     //
                     //                 Update trailing submatrix within the band and within
                     //                 the current block. JM is the index of the last column
@@ -223,7 +227,7 @@ void Cgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                     //
                     jm = min(ju, j + jb - 1);
                     if (jm > jj) {
-                        Cgeru(km, jm - jj, -one, ab[((kv + 2) - 1) + (jj - 1) * ldab], 1, ab[(kv - 1) + ((jj + 1) - 1) * ldab], ldab - 1, ab[((kv + 1) - 1) + ((jj + 1) - 1) * ldab], ldab - 1);
+                        Cgeru(km, jm - jj, -one, &ab[((kv + 2) - 1) + (jj - 1) * ldab], 1, &ab[(kv - 1) + ((jj + 1) - 1) * ldab], ldab - 1, &ab[((kv + 1) - 1) + ((jj + 1) - 1) * ldab], ldab - 1);
                     }
                 } else {
                     //
@@ -239,7 +243,7 @@ void Cgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 //
                 nw = min(jj - j + 1, i3);
                 if (nw > 0) {
-                    Ccopy(nw, ab[((kv + kl + 1 - jj + j) - 1) + (jj - 1) * ldab], 1, work31[((jj - j + 1) - 1) * ldwork31], 1);
+                    Ccopy(nw, &ab[((kv + kl + 1 - jj + j) - 1) + (jj - 1) * ldab], 1, &work31[((jj - j + 1) - 1) * ldwork31], 1);
                 }
             }
             if (j + jb <= n) {
@@ -252,7 +256,7 @@ void Cgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 //              Use Claswp to apply the row interchanges to A12, A22, and
                 //              A32.
                 //
-                Claswp(j2, ab[((kv + 1 - jb) - 1) + ((j + jb) - 1) * ldab], ldab - 1, 1, jb, &ipiv[j - 1], 1);
+                Claswp(j2, &ab[((kv + 1 - jb) - 1) + ((j + jb) - 1) * ldab], ldab - 1, 1, jb, &ipiv[j - 1], 1);
                 //
                 //              Adjust the pivot indices.
                 //
@@ -282,20 +286,20 @@ void Cgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                     //
                     //                 Update A12
                     //
-                    Ctrsm("Left", "Lower", "No transpose", "Unit", jb, j2, one, ab[((kv + 1) - 1) + (j - 1) * ldab], ldab - 1, ab[((kv + 1 - jb) - 1) + ((j + jb) - 1) * ldab], ldab - 1);
+                    Ctrsm("Left", "Lower", "No transpose", "Unit", jb, j2, one, &ab[((kv + 1) - 1) + (j - 1) * ldab], ldab - 1, &ab[((kv + 1 - jb) - 1) + ((j + jb) - 1) * ldab], ldab - 1);
                     //
                     if (i2 > 0) {
                         //
                         //                    Update A22
                         //
-                        Cgemm("No transpose", "No transpose", i2, j2, jb, -one, ab[((kv + 1 + jb) - 1) + (j - 1) * ldab], ldab - 1, ab[((kv + 1 - jb) - 1) + ((j + jb) - 1) * ldab], ldab - 1, one, ab[((kv + 1) - 1) + ((j + jb) - 1) * ldab], ldab - 1);
+                        Cgemm("No transpose", "No transpose", i2, j2, jb, -one, &ab[((kv + 1 + jb) - 1) + (j - 1) * ldab], ldab - 1, &ab[((kv + 1 - jb) - 1) + ((j + jb) - 1) * ldab], ldab - 1, one, &ab[((kv + 1) - 1) + ((j + jb) - 1) * ldab], ldab - 1);
                     }
                     //
                     if (i3 > 0) {
                         //
                         //                    Update A32
                         //
-                        Cgemm("No transpose", "No transpose", i3, j2, jb, -one, work31, ldwork, ab[((kv + 1 - jb) - 1) + ((j + jb) - 1) * ldab], ldab - 1, one, ab[((kv + kl + 1 - jb) - 1) + ((j + jb) - 1) * ldab], ldab - 1);
+                        Cgemm("No transpose", "No transpose", i3, j2, jb, -one, work31, ldwork, &ab[((kv + 1 - jb) - 1) + ((j + jb) - 1) * ldab], ldab - 1, one, &ab[((kv + kl + 1 - jb) - 1) + ((j + jb) - 1) * ldab], ldab - 1);
                     }
                 }
                 //
@@ -312,20 +316,20 @@ void Cgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                     //
                     //                 Update A13 in the work array
                     //
-                    Ctrsm("Left", "Lower", "No transpose", "Unit", jb, j3, one, ab[((kv + 1) - 1) + (j - 1) * ldab], ldab - 1, work13, ldwork);
+                    Ctrsm("Left", "Lower", "No transpose", "Unit", jb, j3, one, &ab[((kv + 1) - 1) + (j - 1) * ldab], ldab - 1, work13, ldwork);
                     //
                     if (i2 > 0) {
                         //
                         //                    Update A23
                         //
-                        Cgemm("No transpose", "No transpose", i2, j3, jb, -one, ab[((kv + 1 + jb) - 1) + (j - 1) * ldab], ldab - 1, work13, ldwork, one, ab[((1 + jb) - 1) + ((j + kv) - 1) * ldab], ldab - 1);
+                        Cgemm("No transpose", "No transpose", i2, j3, jb, -one, &ab[((kv + 1 + jb) - 1) + (j - 1) * ldab], ldab - 1, work13, ldwork, one, &ab[((1 + jb) - 1) + ((j + kv) - 1) * ldab], ldab - 1);
                     }
                     //
                     if (i3 > 0) {
                         //
                         //                    Update A33
                         //
-                        Cgemm("No transpose", "No transpose", i3, j3, jb, -one, work31, ldwork, work13, ldwork, one, ab[((1 + kl) - 1) + ((j + kv) - 1) * ldab], ldab - 1);
+                        Cgemm("No transpose", "No transpose", i3, j3, jb, -one, work31, ldwork, work13, ldwork, one, &ab[((1 + kl) - 1) + ((j + kv) - 1) * ldab], ldab - 1);
                     }
                     //
                     //                 Copy the lower triangle of A13 back into place
@@ -359,12 +363,12 @@ void Cgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                         //
                         //                    The interchange does not affect A31
                         //
-                        Cswap(jj - j, ab[((kv + 1 + jj - j) - 1) + (j - 1) * ldab], ldab - 1, ab[((kv + jp + jj - j) - 1) + (j - 1) * ldab], ldab - 1);
+                        Cswap(jj - j, &ab[((kv + 1 + jj - j) - 1) + (j - 1) * ldab], ldab - 1, &ab[((kv + jp + jj - j) - 1) + (j - 1) * ldab], ldab - 1);
                     } else {
                         //
                         //                    The interchange does affect A31
                         //
-                        Cswap(jj - j, ab[((kv + 1 + jj - j) - 1) + (j - 1) * ldab], ldab - 1, work31[((jp + jj - j - kl) - 1)], ldwork);
+                        Cswap(jj - j, &ab[((kv + 1 + jj - j) - 1) + (j - 1) * ldab], ldab - 1, &work31[((jp + jj - j - kl) - 1)], ldwork);
                     }
                 }
                 //
@@ -372,7 +376,7 @@ void Cgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 //
                 nw = min(i3, jj - j + 1);
                 if (nw > 0) {
-                    Ccopy(nw, work31[((jj - j + 1) - 1) * ldwork31], 1, ab[((kv + kl + 1 - jj + j) - 1) + (jj - 1) * ldab], 1);
+                    Ccopy(nw, &work31[((jj - j + 1) - 1) * ldwork31], 1, &ab[((kv + kl + 1 - jj + j) - 1) + (jj - 1) * ldab], 1);
                 }
             }
         }

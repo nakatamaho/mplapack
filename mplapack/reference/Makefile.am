@@ -85,7 +85,6 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
-Cbdsqr.cpp \
 Cdrscl.cpp \
 Cgbsv.cpp \
 Cgbtf2.cpp \
@@ -645,4 +644,5 @@ iMlaprec.cpp \
 iMlatrans.cpp \
 iMlauplo.cpp \
 iMlazlc.cpp \
-iMlazlr.cpp
+iMlazlr.cpp \
+Cbdsqr.cpp

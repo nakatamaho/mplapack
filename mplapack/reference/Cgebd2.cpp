@@ -104,8 +104,7 @@ void Cgebd2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
         //
         //              Apply G(i) to A(i+1:m,i+1:n) from the right
         //
-        Clarf("Right", m - i, n - i, &a[(i-1)+((i + 1)-1)*lda], lda,
-          taup[i-1], &a[((i + 1)-1)+((i + 1)-1)*lda], lda, work);
+        Clarf("Right", m - i, n - i, &a[(i-1)+((i + 1)-1)*lda], lda,taup[i-1], &a[((i + 1)-1)+((i + 1)-1)*lda], lda, work);
         Clacgv(n - i, &a[(i-1)+((i + 1)-1)*lda], lda);
         a[(i-1)+((i + 1)-1)*lda] = e[i-1];
             } else {

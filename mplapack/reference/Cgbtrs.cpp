@@ -110,7 +110,7 @@ void Cgbtrs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
                 if (l != j) {
                     Cswap(nrhs, &b[(l - 1)], ldb, &b[(j - 1)], ldb);
                 }
-                Cgeru(lm, nrhs, -one, ab[((kd + 1) - 1) + (j - 1) * ldab], 1, &b[(j - 1)], ldb, &b[((j + 1) - 1)], ldb);
+                Cgeru(lm, nrhs, -one, &ab[((kd + 1) - 1) + (j - 1) * ldab], 1, &b[(j - 1)], ldb, &b[((j + 1) - 1)], ldb);
             }
         }
         //
@@ -137,7 +137,7 @@ void Cgbtrs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
         if (lnoti) {
             for (j = n - 1; j >= 1; j = j - 1) {
                 lm = min(kl, n - j);
-                Cgemv("Transpose", lm, nrhs, -one, &b[((j + 1) - 1)], ldb, ab[((kd + 1) - 1) + (j - 1) * ldab], 1, one, &b[(j - 1)], ldb);
+                Cgemv("Transpose", lm, nrhs, -one, &b[((j + 1) - 1)], ldb, &ab[((kd + 1) - 1) + (j - 1) * ldab], 1, one, &b[(j - 1)], ldb);
                 l = ipiv[j - 1];
                 if (l != j) {
                     Cswap(nrhs, &b[(l - 1)], ldb, &b[(j - 1)], ldb);
@@ -162,7 +162,7 @@ void Cgbtrs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
             for (j = n - 1; j >= 1; j = j - 1) {
                 lm = min(kl, n - j);
                 Clacgv(nrhs, &b[(j - 1)], ldb);
-                Cgemv("Conjugate transpose", lm, nrhs, -one, &b[((j + 1) - 1)], ldb, ab[((kd + 1) - 1) + (j - 1) * ldab], 1, one, &b[(j - 1)], ldb);
+                Cgemv("Conjugate transpose", lm, nrhs, -one, &b[((j + 1) - 1)], ldb, &ab[((kd + 1) - 1) + (j - 1) * ldab], 1, one, &b[(j - 1)], ldb);
                 Clacgv(nrhs, &b[(j - 1)], ldb);
                 l = ipiv[j - 1];
                 if (l != j) {
