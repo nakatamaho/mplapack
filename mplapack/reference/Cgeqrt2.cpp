@@ -92,7 +92,7 @@ void Cgeqrt2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
             //
             //           A(I:M,I+1:N) = A(I:m,I+1:N) + alpha*A(I:M,I)*W(1:N-1)^H
             //
-            alpha = -conjg(t[(i - 1)]);
+            alpha = -conj(t[(i - 1)]);
             Cgerc(m - i + 1, n - i, alpha, &a[(i - 1) + (i - 1) * lda], 1, &t[(n - 1) * ldt], 1, &a[(i - 1) + ((i + 1) - 1) * lda], lda);
             a[(i - 1) + (i - 1) * lda] = aii;
         }

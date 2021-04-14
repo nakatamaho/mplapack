@@ -78,7 +78,7 @@ void Cgeql2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         //        A(1:m-k+i-1,n-k+i)
         //
         alpha = a[((m - k + i) - 1) + ((n - k + i) - 1) * lda];
-        Clarfg(m - k + i, alpha, &a[((n - k + i) - 1) * lda], 1, &tau[i - 1]);
+        Clarfg(m - k + i, alpha, &a[((n - k + i) - 1) * lda], 1, tau[i - 1]);
         //
         //        Apply H(i)**H to A(1:m-k+i,1:n-k+i-1) from the left
         //

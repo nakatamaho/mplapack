@@ -134,7 +134,7 @@ void Clarzb(const char *side, const char *trans, const char *direct, const char 
             Cgemm("No transpose", "Transpose", m, k, l, one, &c[((n - l + 1) - 1) * ldc], ldc, v, ldv, one, work, ldwork);
         }
         //
-        //        W( 1:m, 1:k ) = W( 1:m, 1:k ) * conjg( T )  or
+        //        W( 1:m, 1:k ) = W( 1:m, 1:k ) * conj( T )  or
         //                        W( 1:m, 1:k ) * T**H
         //
         for (j = 1; j <= k; j = j + 1) {
@@ -154,7 +154,7 @@ void Clarzb(const char *side, const char *trans, const char *direct, const char 
         }
         //
         //        C( 1:m, n-l+1:n ) = C( 1:m, n-l+1:n ) - ...
-        //                            W( 1:m, 1:k ) * conjg( V( 1:k, 1:l ) )
+        //                            W( 1:m, 1:k ) * conj( V( 1:k, 1:l ) )
         //
         for (j = 1; j <= l; j = j + 1) {
             Clacgv(k, &v[(j - 1) * ldv], 1);

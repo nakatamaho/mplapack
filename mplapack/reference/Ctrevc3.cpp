@@ -320,7 +320,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             //           Form right-hand side.
             //
             for (k = ki + 1; k <= n; k = k + 1) {
-                work[(k + iv * n) - 1] = -conjg(t[(ki - 1) + (k - 1) * ldt]);
+                work[(k + iv * n) - 1] = -conj(t[(ki - 1) + (k - 1) * ldt]);
             }
             //
             //           Solve conjugate-transposed triangular system:

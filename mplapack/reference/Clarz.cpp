@@ -58,12 +58,12 @@ void Clarz(const char *side, INTEGER const m, INTEGER const n, INTEGER const l, 
         //
         if (tau != zero) {
             //
-            //           w( 1:n ) = conjg( C( 1, 1:n ) )
+            //           w( 1:n ) = conj( C( 1, 1:n ) )
             //
             Ccopy(n, c, ldc, work, 1);
             Clacgv(n, work, 1);
             //
-            //           w( 1:n ) = conjg( w( 1:n ) + C( m-l+1:m, 1:n )**H * v( 1:l ) )
+            //           w( 1:n ) = conj( w( 1:n ) + C( m-l+1:m, 1:n )**H * v( 1:l ) )
             //
             Cgemv("Conjugate transpose", l, n, one, &c[((m - l + 1) - 1)], ldc, v, incv, one, work, 1);
             Clacgv(n, work, 1);

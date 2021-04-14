@@ -80,8 +80,8 @@ void Cgebd2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
             //           Generate elementary reflector H(i) to annihilate A(i+1:m,i)
             //
             alpha = a[(i - 1) + (i - 1) * lda];
-            Clarfg(m - i + 1, alpha, &a[((min(i + 1) - 1) + (m)-1) * lda], 1, tauq[i - 1]);
-            d[i - 1] = alpha;
+            Clarfg(m - i + 1, a[(i - 1) + (i - 1) * lda], &a[(min(i + 1, m) - 1) + (i - 1) * lda], 1, tauq[i - 1]);
+            d[i - 1] = alpha.real();
             a[(i - 1) + (i - 1) * lda] = one;
             //
             //           Apply H(i)**H to A(i:m,i+1:n) from the left
@@ -98,15 +98,15 @@ void Cgebd2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
                 //
                 Clacgv(n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda);
                 alpha = a[(i - 1) + ((i + 1) - 1) * lda];
-        Clarfg(n - i, alpha, &a[(i-1)+((min(i + 2)-1)*lda], lda, taup[i-1]);
-        e[i-1] = alpha;
-        a[(i-1)+((i + 1)-1)*lda] = one;
-        //
-        //              Apply G(i) to A(i+1:m,i+1:n) from the right
-        //
-        Clarf("Right", m - i, n - i, &a[(i-1)+((i + 1)-1)*lda], lda,taup[i-1], &a[((i + 1)-1)+((i + 1)-1)*lda], lda, work);
-        Clacgv(n - i, &a[(i-1)+((i + 1)-1)*lda], lda);
-        a[(i-1)+((i + 1)-1)*lda] = e[i-1];
+                Clarfg(n - i, alpha, &a[(i - 1) + (min(i + 2, n) - 1) * lda], lda, taup[i - 1]);
+                e[i - 1] = alpha.real();
+                a[(i - 1) + ((i + 1) - 1) * lda] = one;
+                //
+                //              Apply G(i) to A(i+1:m,i+1:n) from the right
+                //
+                Clarf("Right", m - i, n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda, taup[i - 1], &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, work);
+                Clacgv(n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda);
+                a[(i - 1) + ((i + 1) - 1) * lda] = e[i - 1];
             } else {
                 taup[i - 1] = zero;
             }
@@ -121,37 +121,35 @@ void Cgebd2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
             //
             Clacgv(n - i + 1, &a[(i - 1) + (i - 1) * lda], lda);
             alpha = a[(i - 1) + (i - 1) * lda];
-      Clarfg(n - i + 1, alpha, &a[(i-1)+((min(i + 1)-1)*lda],
-        lda, taup[i-1]);
-      d[i-1] = alpha;
-      a[(i-1)+(i-1)*lda] = one;
-      //
-      //           Apply G(i) to A(i+1:m,i:n) from the right
-      //
-      if (i < m) {
+            Clarfg(n - i + 1, alpha, &a[(i - 1) + (min(i + 1, n) - 1) * lda], lda, taup[i - 1]);
+            d[i - 1] = alpha.real();
+            a[(i - 1) + (i - 1) * lda] = one;
+            //
+            //           Apply G(i) to A(i+1:m,i:n) from the right
+            //
+            if (i < m) {
                 Clarf("Right", m - i, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, taup[i - 1], &a[((i + 1) - 1) + (i - 1) * lda], lda, work);
-      }
-      Clacgv(n - i + 1, &a[(i-1)+(i-1)*lda], lda);
-      a[(i-1)+(i-1)*lda] = d[i-1];
-      //
-      if (i < m) {
+            }
+            Clacgv(n - i + 1, &a[(i - 1) + (i - 1) * lda], lda);
+            a[(i - 1) + (i - 1) * lda] = d[i - 1];
+            //
+            if (i < m) {
                 //
                 //              Generate elementary reflector H(i) to annihilate
                 //              A(i+2:m,i)
                 //
                 alpha = a[((i + 1) - 1) + (i - 1) * lda];
-                Clarfg(m - i, alpha, &a[((min(i + 2) - 1) + (m)-1) * lda], 1, tauq[i - 1]);
-                e[i - 1] = alpha;
+                Clarfg(m - i, alpha, &a[(min(i + 2, m) - 1) + (i - 1) * lda], 1, tauq[i - 1]);
+                e[i - 1] = alpha.real();
                 a[((i + 1) - 1) + (i - 1) * lda] = one;
                 //
                 //              Apply H(i)**H to A(i+1:m,i+1:n) from the left
                 //
                 Clarf("Left", m - i, n - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, conj(tauq[i - 1]), &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, work);
                 a[((i + 1) - 1) + (i - 1) * lda] = e[i - 1];
-      }
-      else {
+            } else {
                 tauq[i - 1] = zero;
-      }
+            }
         }
     }
     //

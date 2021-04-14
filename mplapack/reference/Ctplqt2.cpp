@@ -90,10 +90,10 @@ void Ctplqt2(INTEGER const m, INTEGER const n, INTEGER const l, COMPLEX *a, INTE
         //
         p = n - l + min(l, i);
         Clarfg(p + 1, &a[(i - 1) + (i - 1) * lda], &b[(i - 1)], ldb, &t[(i - 1) * ldt]);
-        t[(i - 1) * ldt] = conjg(t[(i - 1) * ldt]);
+        t[(i - 1) * ldt] = conj(t[(i - 1) * ldt]);
         if (i < m) {
             for (j = 1; j <= p; j = j + 1) {
-                b[(i - 1) + (j - 1) * ldb] = conjg(b[(i - 1) + (j - 1) * ldb]);
+                b[(i - 1) + (j - 1) * ldb] = conj(b[(i - 1) + (j - 1) * ldb]);
             }
             //
             //           W(M-I:1) := C(I+1:M,I:N) * C(I,I:N) [use W = T(M,:)]
@@ -111,7 +111,7 @@ void Ctplqt2(INTEGER const m, INTEGER const n, INTEGER const l, COMPLEX *a, INTE
             }
             Cgerc(m - i, p, (alpha), &t[(m - 1)], ldt, &b[(i - 1)], ldb, &b[((i + 1) - 1)], ldb);
             for (j = 1; j <= p; j = j + 1) {
-                b[(i - 1) + (j - 1) * ldb] = conjg(b[(i - 1) + (j - 1) * ldb]);
+                b[(i - 1) + (j - 1) * ldb] = conj(b[(i - 1) + (j - 1) * ldb]);
             }
         }
     }
@@ -131,7 +131,7 @@ void Ctplqt2(INTEGER const m, INTEGER const n, INTEGER const l, COMPLEX *a, INTE
         np = min(n - l + 1, n);
         mp = min(p + 1, m);
         for (j = 1; j <= n - l + p; j = j + 1) {
-            b[(i - 1) + (j - 1) * ldb] = conjg(b[(i - 1) + (j - 1) * ldb]);
+            b[(i - 1) + (j - 1) * ldb] = conj(b[(i - 1) + (j - 1) * ldb]);
         }
         //
         //        Triangular part of B2
@@ -152,14 +152,14 @@ void Ctplqt2(INTEGER const m, INTEGER const n, INTEGER const l, COMPLEX *a, INTE
         //        T(1:I-1,I) := T(1:I-1,1:I-1) * T(I,1:I-1)
         //
         for (j = 1; j <= i - 1; j = j + 1) {
-            t[(i - 1) + (j - 1) * ldt] = conjg(t[(i - 1) + (j - 1) * ldt]);
+            t[(i - 1) + (j - 1) * ldt] = conj(t[(i - 1) + (j - 1) * ldt]);
         }
         Ctrmv("L", "C", "N", i - 1, t, ldt, &t[(i - 1)], ldt);
         for (j = 1; j <= i - 1; j = j + 1) {
-            t[(i - 1) + (j - 1) * ldt] = conjg(t[(i - 1) + (j - 1) * ldt]);
+            t[(i - 1) + (j - 1) * ldt] = conj(t[(i - 1) + (j - 1) * ldt]);
         }
         for (j = 1; j <= n - l + p; j = j + 1) {
-            b[(i - 1) + (j - 1) * ldb] = conjg(b[(i - 1) + (j - 1) * ldb]);
+            b[(i - 1) + (j - 1) * ldb] = conj(b[(i - 1) + (j - 1) * ldb]);
         }
         //
         //        T(I,I) = tau(I)

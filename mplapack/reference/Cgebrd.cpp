@@ -59,7 +59,7 @@ void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     info = 0;
     INTEGER nb = max((INTEGER)1, iMlaenv(1, "Cgebrd", " ", m, n, -1, -1));
     INTEGER lwkopt = (m + n) * nb;
-    work[1 - 1] = lwkopt.real();
+    work[1 - 1] = castREAL(lwkopt);
     bool lquery = (lwork == -1);
     if (m < 0) {
         info = -1;
@@ -67,7 +67,7 @@ void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
         info = -2;
     } else if (lda < max((INTEGER)1, m)) {
         info = -4;
-    } else if (lwork < max((INTEGER)1, m, n) && !lquery) {
+    } else if (lwork < max({(INTEGER)1, m, n}) && !lquery) {
         info = -10;
     }
     if (info < 0) {
@@ -128,7 +128,7 @@ void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
         //        the matrices X and Y which are needed to update the unreduced
         //        part of the matrix
         //
-        Clabrd(m - i + 1, n - i + 1, nb, &a[(i - 1) + (i - 1) * lda], lda, &d[i - 1], &e[i - 1], tauq[i - 1], taup[i - 1], work, ldwrkx, &work[(ldwrkx * nb + 1) - 1], ldwrky);
+        Clabrd(m - i + 1, n - i + 1, nb, &a[(i - 1) + (i - 1) * lda], lda, &d[i - 1], &e[i - 1], &tauq[i - 1], &taup[i - 1], work, ldwrkx, &work[(ldwrkx * nb + 1) - 1], ldwrky);
         //
         //        Update the trailing submatrix A(i+ib:m,i+ib:n), using
         //        an update of the form  A := A - V*Y**H - X*U**H
@@ -154,7 +154,7 @@ void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     //     Use unblocked code to reduce the remainder of the matrix
     //
     INTEGER iinfo = 0;
-    Cgebd2(m - i + 1, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, &d[i - 1], &e[i - 1], tauq[i - 1], taup[i - 1], work, iinfo);
+    Cgebd2(m - i + 1, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, &d[i - 1], &e[i - 1], &tauq[i - 1], &taup[i - 1], work, iinfo);
     work[1 - 1] = ws;
     //
     //     End of Cgebrd

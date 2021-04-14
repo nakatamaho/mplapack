@@ -106,7 +106,7 @@ void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
         //
         //        Factorize the trailing columns of A using the upper triangle
         //        of A and working backwards, and compute the matrix W = U12*D
-        //        for use in updating A11 (note that conjg(W) is actually stored)
+        //        for use in updating A11 (note that conj(W) is actually stored)
         //        Initialize the first entry of array E, where superdiagonal
         //        elements of D are stored
         //
@@ -525,7 +525,7 @@ void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
         //
         //        A11 := A11 - U12*D*U12**H = A11 - U12*W**H
         //
-        //        computing blocks of NB columns at a time (note that conjg(W) is
+        //        computing blocks of NB columns at a time (note that conj(W) is
         //        actually stored)
         //
         for (j = ((k - 1) / nb) * nb + 1; j <= 1; j = j + -nb) {
@@ -554,7 +554,7 @@ void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
         //
         //        Factorize the leading columns of A using the lower triangle
         //        of A and working forwards, and compute the matrix W = L21*D
-        //        for use in updating A22 (note that conjg(W) is actually stored)
+        //        for use in updating A22 (note that conj(W) is actually stored)
         //
         //        Initialize the unused last entry of the subdiagonal array E.
         //
@@ -966,7 +966,7 @@ void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
         //
         //        A22 := A22 - L21*D*L21**H = A22 - L21*W**H
         //
-        //        computing blocks of NB columns at a time (note that conjg(W) is
+        //        computing blocks of NB columns at a time (note that conj(W) is
         //        actually stored)
         //
         for (j = k; j <= n; j = j + nb) {

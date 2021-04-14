@@ -77,12 +77,12 @@ void Cgehd2(INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, I
         //        Compute elementary reflector H(i) to annihilate A(i+2:ihi,i)
         //
         alpha = a[((i + 1) - 1) + (i - 1) * lda];
-        Clarfg(ihi - i, alpha, &a[((min(i + 2) - 1) + (n)-1) * lda], 1, &tau[i - 1]);
+        Clarfg(ihi - i, alpha, &a[(min(i + 2, n) - 1) + (i - 1) * lda], 1, tau[i - 1]);
         a[((i + 1) - 1) + (i - 1) * lda] = one;
         //
         //        Apply H(i) to A(1:ihi,i+1:ihi) from the right
         //
-        Clarf("Right", ihi, ihi - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, &tau[i - 1], &a[((i + 1) - 1) * lda], lda, work);
+        Clarf("Right", ihi, ihi - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, tau[i - 1], &a[((i + 1) - 1) * lda], lda, work);
         //
         //        Apply H(i)**H to A(i+1:ihi,i+1:n) from the left
         //

@@ -95,15 +95,15 @@ void Ctpqrt2(INTEGER const m, INTEGER const n, INTEGER const l, COMPLEX *a, INTE
             //           W(1:N-I) := C(I:M,I+1:N)**H * C(I:M,I) [use W = T(:,N)]
             //
             for (j = 1; j <= n - i; j = j + 1) {
-                t[(j - 1) + (n - 1) * ldt] = conjg(a[(i - 1) + ((i + j) - 1) * lda]);
+                t[(j - 1) + (n - 1) * ldt] = conj(a[(i - 1) + ((i + j) - 1) * lda]);
             }
             Cgemv("C", p, n - i, one, &b[((i + 1) - 1) * ldb], ldb, &b[(i - 1) * ldb], 1, one, &t[(n - 1) * ldt], 1);
             //
             //           C(I:M,I+1:N) = C(I:m,I+1:N) + alpha*C(I:M,I)*W(1:N-1)**H
             //
-            alpha = -conjg(t[(i - 1)]);
+            alpha = -conj(t[(i - 1)]);
             for (j = 1; j <= n - i; j = j + 1) {
-                a[(i - 1) + ((i + j) - 1) * lda] += alpha * conjg(t[(j - 1) + (n - 1) * ldt]);
+                a[(i - 1) + ((i + j) - 1) * lda] += alpha * conj(t[(j - 1) + (n - 1) * ldt]);
             }
             Cgerc(p, n - i, alpha, &b[(i - 1) * ldb], 1, &t[(n - 1) * ldt], 1, &b[((i + 1) - 1) * ldb], ldb);
         }

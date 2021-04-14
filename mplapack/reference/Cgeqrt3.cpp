@@ -123,7 +123,7 @@ void Cgeqrt3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
         //
         for (i = 1; i <= n1; i = i + 1) {
             for (j = 1; j <= n2; j = j + 1) {
-                t[(i - 1) + ((j + n1) - 1) * ldt] = conjg(a[((j + n1) - 1) + (i - 1) * lda]);
+                t[(i - 1) + ((j + n1) - 1) * ldt] = conj(a[((j + n1) - 1) + (i - 1) * lda]);
             }
         }
         //
