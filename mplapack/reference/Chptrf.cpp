@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
+
 void Chptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool upper = false;
@@ -89,7 +91,6 @@ void Chptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1[zdum - 1] = abs(zdum.real()) + abs(zdum.imag());
     //     ..
     //     .. Executable Statements ..
     //

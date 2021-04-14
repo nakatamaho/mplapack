@@ -116,7 +116,7 @@ void Rlasdq(const char *uplo, INTEGER const sqre, INTEGER const n, INTEGER const
                 work[(n + i) - 1] = sn;
             }
         }
-        Rlartg(d[n - 1], &e[n - 1], cs, sn, r);
+        Rlartg(d[n - 1], e[n - 1], cs, sn, r);
         d[n - 1] = r;
         e[n - 1] = zero;
         if (rotate) {
@@ -138,7 +138,7 @@ void Rlasdq(const char *uplo, INTEGER const sqre, INTEGER const n, INTEGER const
     //
     if (iuplo == 2) {
         for (i = 1; i <= n - 1; i = i + 1) {
-            Rlartg(d[i - 1], &e[i - 1], cs, sn, r);
+            Rlartg(d[i - 1], e[i - 1], cs, sn, r);
             d[i - 1] = r;
             e[i - 1] = sn * d[(i + 1) - 1];
             d[(i + 1) - 1] = cs * d[(i + 1) - 1];
@@ -152,7 +152,7 @@ void Rlasdq(const char *uplo, INTEGER const sqre, INTEGER const n, INTEGER const
         //        rotation is needed.
         //
         if (sqre1 == 1) {
-            Rlartg(d[n - 1], &e[n - 1], cs, sn, r);
+            Rlartg(d[n - 1], e[n - 1], cs, sn, r);
             d[n - 1] = r;
             if (rotate) {
                 work[n - 1] = cs;

@@ -129,7 +129,7 @@ void Rlasq5(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL 
                         d = z[(j4 + 1) - 1] * (d / z[(j4 - 2) - 1]) - tau;
                     }
                     dmin = min(dmin, d);
-                    emin = min(emin, &z[j4 - 1]);
+                    emin = min(emin, z[j4 - 1]);
                 }
             } else {
                 for (j4 = 4 * i0; j4 <= 4 * (n0 - 3); j4 = j4 + 4) {
@@ -141,7 +141,7 @@ void Rlasq5(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL 
                         d = z[(j4 + 2) - 1] * (d / z[(j4 - 3) - 1]) - tau;
                     }
                     dmin = min(dmin, d);
-                    emin = min(emin, &z[(j4 - 1) - 1]);
+                    emin = min(emin, z[(j4 - 1)]);
                 }
             }
             //
@@ -246,7 +246,7 @@ void Rlasq5(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL 
                         d = zero;
                     }
                     dmin = min(dmin, d);
-                    emin = min(emin, &z[j4 - 1]);
+                    emin = min(emin, z[j4 - 1]);
                 }
             } else {
                 for (j4 = 4 * i0; j4 <= 4 * (n0 - 3); j4 = j4 + 4) {
@@ -261,7 +261,7 @@ void Rlasq5(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL 
                         d = zero;
                     }
                     dmin = min(dmin, d);
-                    emin = min(emin, &z[(j4 - 1) - 1]);
+                    emin = min(emin, z[(j4 - 1) - 1]);
                 }
             }
             //

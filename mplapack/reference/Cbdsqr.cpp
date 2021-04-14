@@ -222,7 +222,7 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
             }
         }
     statement_50:
-        sminoa = sminoa / sqrt(n.real());
+        sminoa = sminoa / sqrt(castREAL(n));
         thresh = max(tol * sminoa, maxitr * n * n * unfl);
     } else {
         //
@@ -275,7 +275,7 @@ statement_60:
             goto statement_80;
         }
         smin = min(smin, abss);
-        smax = max(smax, abss, abse);
+        smax = max({smax, abss, abse});
     }
     ll = 0;
     goto statement_90;
@@ -300,7 +300,7 @@ statement_90:
         //
         //        2 by 2 block, handle separately
         //
-        Rlasv2(d[(m - 1) - 1], &e[(m - 1) - 1], &d[m - 1], sigmn, sigmx, sinr, cosr, sinl, cosl);
+        Rlasv2(d[(m - 1) - 1], e[(m - 1) - 1], d[m - 1], sigmn, sigmx, sinr, cosr, sinl, cosl);
         d[(m - 1) - 1] = sigmx;
         e[(m - 1) - 1] = zero;
         d[m - 1] = sigmn;
@@ -308,10 +308,10 @@ statement_90:
         //        Compute singular vectors, if desired
         //
         if (ncvt > 0) {
-            CRrot(ncvt, vt[((m - 1) - 1)], ldvt, vt[(m - 1)], ldvt, cosr, sinr);
+            CRrot(ncvt, &vt[((m - 1) - 1)], ldvt, &vt[(m - 1)], ldvt, cosr, sinr);
         }
         if (nru > 0) {
-            CRrot(nru, u[((m - 1) - 1) * ldu], 1, u[(m - 1) * ldu], 1, cosl, sinl);
+            CRrot(nru, &u[((m - 1) - 1) * ldu], 1, &u[(m - 1) * ldu], 1, cosl, sinl);
         }
         if (ncc > 0) {
             CRrot(ncc, &c[((m - 1) - 1)], ldc, &c[(m - 1)], ldc, cosl, sinl);
@@ -410,10 +410,10 @@ statement_90:
         //
         if (idir == 1) {
             sll = abs(d[ll - 1]);
-            Rlas2(d[(m - 1) - 1], &e[(m - 1) - 1], &d[m - 1], shift, r);
+            Rlas2(d[(m - 1) - 1], e[(m - 1) - 1], d[m - 1], shift, r);
         } else {
             sll = abs(d[m - 1]);
-            Rlas2(d[ll - 1], &e[ll - 1], &d[(ll + 1) - 1], shift, r);
+            Rlas2(d[ll - 1], e[ll - 1], d[(ll + 1) - 1], shift, r);
         }
         //
         //        Test if shift negligible, and if so set to zero
@@ -440,11 +440,11 @@ statement_90:
             cs = one;
             oldcs = one;
             for (i = ll; i <= m - 1; i = i + 1) {
-                Rlartg(d[i - 1] * cs, &e[i - 1], cs, sn, r);
+                Rlartg(d[i - 1] * cs, e[i - 1], cs, sn, r);
                 if (i > ll) {
                     e[(i - 1) - 1] = oldsn * r;
                 }
-                Rlartg(oldcs * r, &d[(i + 1) - 1] * sn, oldcs, oldsn, &d[i - 1]);
+                Rlartg(oldcs * r, d[(i + 1) - 1] * sn, oldcs, oldsn, d[i - 1]);
                 rwork[(i - ll + 1) - 1] = cs;
                 rwork[(i - ll + 1 + nm1) - 1] = sn;
                 rwork[(i - ll + 1 + nm12) - 1] = oldcs;
@@ -457,13 +457,13 @@ statement_90:
             //           Update singular vectors
             //
             if (ncvt > 0) {
-                Clasr("L", "V", "F", m - ll + 1, ncvt, rwork[1 - 1], rwork[n - 1], vt[(ll - 1)], ldvt);
+                Clasr("L", "V", "F", m - ll + 1, ncvt, &rwork[1 - 1], &rwork[n - 1], &vt[(ll - 1)], ldvt);
             }
             if (nru > 0) {
-                Clasr("R", "V", "F", nru, m - ll + 1, rwork[(nm12 + 1) - 1], rwork[(nm13 + 1) - 1], u[(ll - 1) * ldu], ldu);
+                Clasr("R", "V", "F", nru, m - ll + 1, &rwork[(nm12 + 1) - 1], &rwork[(nm13 + 1) - 1], &u[(ll - 1) * ldu], ldu);
             }
             if (ncc > 0) {
-                Clasr("L", "V", "F", m - ll + 1, ncc, rwork[(nm12 + 1) - 1], rwork[(nm13 + 1) - 1], &c[(ll - 1)], ldc);
+                Clasr("L", "V", "F", m - ll + 1, ncc, &rwork[(nm12 + 1) - 1], &rwork[(nm13 + 1) - 1], &c[(ll - 1)], ldc);
             }
             //
             //           Test convergence
@@ -480,11 +480,11 @@ statement_90:
             cs = one;
             oldcs = one;
             for (i = m; i >= ll + 1; i = i - 1) {
-                Rlartg(d[i - 1] * cs, &e[(i - 1) - 1], cs, sn, r);
+                Rlartg(d[i - 1] * cs, e[(i - 1) - 1], cs, sn, r);
                 if (i < m) {
                     e[i - 1] = oldsn * r;
                 }
-                Rlartg(oldcs * r, &d[(i - 1) - 1] * sn, oldcs, oldsn, &d[i - 1]);
+                Rlartg(oldcs * r, d[(i - 1) - 1] * sn, oldcs, oldsn, d[i - 1]);
                 rwork[(i - ll) - 1] = cs;
                 rwork[(i - ll + nm1) - 1] = -sn;
                 rwork[(i - ll + nm12) - 1] = oldcs;
@@ -497,13 +497,13 @@ statement_90:
             //           Update singular vectors
             //
             if (ncvt > 0) {
-                Clasr("L", "V", "B", m - ll + 1, ncvt, rwork[(nm12 + 1) - 1], rwork[(nm13 + 1) - 1], vt[(ll - 1)], ldvt);
+                Clasr("L", "V", "B", m - ll + 1, ncvt, &rwork[(nm12 + 1) - 1], &rwork[(nm13 + 1) - 1], &vt[(ll - 1)], ldvt);
             }
             if (nru > 0) {
-                Clasr("R", "V", "B", nru, m - ll + 1, rwork[1 - 1], rwork[n - 1], u[(ll - 1) * ldu], ldu);
+                Clasr("R", "V", "B", nru, m - ll + 1, &rwork[1 - 1], &rwork[n - 1], &u[(ll - 1) * ldu], ldu);
             }
             if (ncc > 0) {
-                Clasr("L", "V", "B", m - ll + 1, ncc, rwork[1 - 1], rwork[n - 1], &c[(ll - 1)], ldc);
+                Clasr("L", "V", "B", m - ll + 1, ncc, &rwork[1 - 1], &rwork[n - 1], &c[(ll - 1)], ldc);
             }
             //
             //           Test convergence
@@ -521,7 +521,7 @@ statement_90:
             //           Chase bulge from top to bottom
             //           Save cosines and sines for later singular vector updates
             //
-            f = (abs(d[ll - 1]) - shift) * (sign(one, &d[ll - 1]) + shift / d[ll - 1]);
+            f = (abs(d[ll - 1]) - shift) * (sign(one, d[ll - 1]) + shift / d[ll - 1]);
             g = e[ll - 1];
             for (i = ll; i <= m - 1; i = i + 1) {
                 Rlartg(f, g, cosr, sinr, r);
@@ -550,13 +550,13 @@ statement_90:
             //           Update singular vectors
             //
             if (ncvt > 0) {
-                Clasr("L", "V", "F", m - ll + 1, ncvt, rwork[1 - 1], rwork[n - 1], vt[(ll - 1)], ldvt);
+                Clasr("L", "V", "F", m - ll + 1, ncvt, &rwork[1 - 1], &rwork[n - 1], &vt[(ll - 1)], ldvt);
             }
             if (nru > 0) {
-                Clasr("R", "V", "F", nru, m - ll + 1, rwork[(nm12 + 1) - 1], rwork[(nm13 + 1) - 1], u[(ll - 1) * ldu], ldu);
+                Clasr("R", "V", "F", nru, m - ll + 1, &rwork[(nm12 + 1) - 1], &rwork[(nm13 + 1) - 1], &u[(ll - 1) * ldu], ldu);
             }
             if (ncc > 0) {
-                Clasr("L", "V", "F", m - ll + 1, ncc, rwork[(nm12 + 1) - 1], rwork[(nm13 + 1) - 1], &c[(ll - 1)], ldc);
+                Clasr("L", "V", "F", m - ll + 1, ncc, &rwork[(nm12 + 1) - 1], &rwork[(nm13 + 1) - 1], &c[(ll - 1)], ldc);
             }
             //
             //           Test convergence
@@ -570,7 +570,7 @@ statement_90:
             //           Chase bulge from bottom to top
             //           Save cosines and sines for later singular vector updates
             //
-            f = (abs(d[m - 1]) - shift) * (sign(one, &d[m - 1]) + shift / d[m - 1]);
+            f = (abs(d[m - 1]) - shift) * (sign(one, d[m - 1]) + shift / d[m - 1]);
             g = e[(m - 1) - 1];
             for (i = m; i >= ll + 1; i = i - 1) {
                 Rlartg(f, g, cosr, sinr, r);
@@ -605,13 +605,13 @@ statement_90:
             //           Update singular vectors if desired
             //
             if (ncvt > 0) {
-                Clasr("L", "V", "B", m - ll + 1, ncvt, rwork[(nm12 + 1) - 1], rwork[(nm13 + 1) - 1], vt[(ll - 1)], ldvt);
+                Clasr("L", "V", "B", m - ll + 1, ncvt, &rwork[(nm12 + 1) - 1], &rwork[(nm13 + 1) - 1], &vt[(ll - 1)], ldvt);
             }
             if (nru > 0) {
-                Clasr("R", "V", "B", nru, m - ll + 1, rwork[1 - 1], rwork[n - 1], u[(ll - 1) * ldu], ldu);
+                Clasr("R", "V", "B", nru, m - ll + 1, &rwork[1 - 1], &rwork[n - 1], &u[(ll - 1) * ldu], ldu);
             }
             if (ncc > 0) {
-                Clasr("L", "V", "B", m - ll + 1, ncc, rwork[1 - 1], rwork[n - 1], &c[(ll - 1)], ldc);
+                Clasr("L", "V", "B", m - ll + 1, ncc, &rwork[1 - 1], &rwork[n - 1], &c[(ll - 1)], ldc);
             }
         }
     }
