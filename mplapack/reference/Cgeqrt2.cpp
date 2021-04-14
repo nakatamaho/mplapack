@@ -78,7 +78,7 @@ void Cgeqrt2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
         //
         //        Generate elem. refl. H(i) to annihilate A(i+1:m,i), tau(I) -> T(I,1)
         //
-        Clarfg(m - i + 1, &a[(i - 1) + (i - 1) * lda], &a[((min(i + 1) - 1) + (m)-1) * lda], 1, &t[(i - 1)]);
+        Clarfg(m - i + 1, a[(i - 1) + (i - 1) * lda], &a[(min(i + 1, m) - 1) + (i - 1) * lda], 1, t[(i - 1)]);
         if (i < n) {
             //
             //           Apply H(i) to A(I:M,I+1:N) from the left

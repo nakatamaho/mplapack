@@ -85,6 +85,10 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
+Cgelqt3.cpp \
+Cgelq2.cpp \
+Cgehd2.cpp \
+Cgebd2.cpp \
 Cdrscl.cpp \
 Cgbsv.cpp \
 Cgbtf2.cpp \
@@ -92,17 +96,13 @@ Cgbtrf.cpp \
 Cgbtrs.cpp \
 Cgebak.cpp \
 Cgebal.cpp \
-Cgebd2.cpp \
 Cgebrd.cpp \
 Cgees.cpp \
 Cgeev.cpp \
-Cgehd2.cpp \
 Cgehrd.cpp \
 Cgelq.cpp \
-Cgelq2.cpp \
 Cgelqf.cpp \
 Cgelqt.cpp \
-Cgelqt3.cpp \
 Cgemlqt.cpp \
 Cgemqrt.cpp \
 Cgeql2.cpp \

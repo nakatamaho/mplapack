@@ -90,8 +90,8 @@ void Chegs2(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *a, 
                 //
                 //              Update the upper triangle of A(k:n,k:n)
                 //
-                akk = a[(k - 1) + (k - 1) * lda];
-                bkk = b[(k - 1) + (k - 1) * ldb];
+                akk = a[(k - 1) + (k - 1) * lda].real();
+                bkk = b[(k - 1) + (k - 1) * ldb].real();
                 akk = akk / pow2(bkk);
                 a[(k - 1) + (k - 1) * lda] = akk;
                 if (k < n) {
@@ -115,8 +115,8 @@ void Chegs2(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *a, 
                 //
                 //              Update the lower triangle of A(k:n,k:n)
                 //
-                akk = a[(k - 1) + (k - 1) * lda];
-                bkk = b[(k - 1) + (k - 1) * ldb];
+                akk = a[(k - 1) + (k - 1) * lda].real();
+                bkk = b[(k - 1) + (k - 1) * ldb].real();
                 akk = akk / pow2(bkk);
                 a[(k - 1) + (k - 1) * lda] = akk;
                 if (k < n) {
@@ -138,8 +138,8 @@ void Chegs2(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *a, 
                 //
                 //              Update the upper triangle of A(1:k,1:k)
                 //
-                akk = a[(k - 1) + (k - 1) * lda];
-                bkk = b[(k - 1) + (k - 1) * ldb];
+                akk = a[(k - 1) + (k - 1) * lda].real();
+                bkk = b[(k - 1) + (k - 1) * ldb].real();
                 Ctrmv(uplo, "No transpose", "Non-unit", k - 1, b, ldb, &a[(k - 1) * lda], 1);
                 ct = half * akk;
                 Caxpy(k - 1, ct, &b[(k - 1) * ldb], 1, &a[(k - 1) * lda], 1);
@@ -156,8 +156,8 @@ void Chegs2(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *a, 
                 //
                 //              Update the lower triangle of A(1:k,1:k)
                 //
-                akk = a[(k - 1) + (k - 1) * lda];
-                bkk = b[(k - 1) + (k - 1) * ldb];
+                akk = a[(k - 1) + (k - 1) * lda].real();
+                bkk = b[(k - 1) + (k - 1) * ldb].real();
                 Clacgv(k - 1, &a[(k - 1)], lda);
                 Ctrmv(uplo, "Conjugate transpose", "Non-unit", k - 1, b, ldb, &a[(k - 1)], lda);
                 ct = half * akk;

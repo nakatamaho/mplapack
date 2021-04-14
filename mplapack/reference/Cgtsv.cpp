@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
+
 void Cgtsv(INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
     //  -- LAPACK driver routine --
@@ -54,7 +56,6 @@ void Cgtsv(INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX
     //     ..
     //     .. Statement Function definitions ..
     COMPLEX zdum = 0.0;
-    abs1[zdum - 1] = abs(zdum.real()) + abs(zdum.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -93,7 +94,7 @@ void Cgtsv(INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX
                 info = k;
                 return;
             }
-        } else if (abs1[d[k - 1] - 1] >= abs1[dl[k - 1] - 1]) {
+        } else if (abs1(d[k - 1]) >= abs1(dl[k - 1])) {
             //
             //           No row interchange required
             //

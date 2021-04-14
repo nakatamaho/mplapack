@@ -79,12 +79,12 @@ void Cgerq2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         //
         Clacgv(n - k + i, &a[((m - k + i) - 1)], lda);
         alpha = a[((m - k + i) - 1) + ((n - k + i) - 1) * lda];
-        Clarfg(n - k + i, alpha, &a[((m - k + i) - 1)], lda, &tau[i - 1]);
+        Clarfg(n - k + i, alpha, &a[((m - k + i) - 1)], lda, tau[i - 1]);
         //
         //        Apply H(i) to A(1:m-k+i-1,1:n-k+i) from the right
         //
         a[((m - k + i) - 1) + ((n - k + i) - 1) * lda] = one;
-        Clarf("Right", m - k + i - 1, n - k + i, &a[((m - k + i) - 1)], lda, &tau[i - 1], a, lda, work);
+        Clarf("Right", m - k + i - 1, n - k + i, &a[((m - k + i) - 1)], lda, tau[i - 1], a, lda, work);
         a[((m - k + i) - 1) + ((n - k + i) - 1) * lda] = alpha;
         Clacgv(n - k + i - 1, &a[((m - k + i) - 1)], lda);
     }

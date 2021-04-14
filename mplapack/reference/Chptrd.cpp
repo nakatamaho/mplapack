@@ -96,8 +96,8 @@ void Chptrd(const char *uplo, INTEGER const n, COMPLEX *ap, REAL *d, REAL *e, CO
             //           to annihilate A(1:i-1,i+1)
             //
             alpha = ap[(i1 + i - 1) - 1];
-            Clarfg(i, alpha, ap[i1 - 1], 1, taui);
-            e[i - 1] = alpha;
+            Clarfg(i, alpha, &ap[i1 - 1], 1, taui);
+            e[i - 1] = alpha.real();
             //
             if (taui != zero) {
                 //
@@ -107,25 +107,25 @@ void Chptrd(const char *uplo, INTEGER const n, COMPLEX *ap, REAL *d, REAL *e, CO
                 //
                 //              Compute  y := tau * A * v  storing y in TAU(1:i)
                 //
-                Chpmv(uplo, i, taui, ap, ap[i1 - 1], 1, zero, tau, 1);
+                Chpmv(uplo, i, taui, ap, &ap[i1 - 1], 1, zero, tau, 1);
                 //
                 //              Compute  w := y - 1/2 * tau * (y**H *v) * v
                 //
-                alpha = -half * taui * Cdotc(i, tau, 1, ap[i1 - 1], 1);
-                Caxpy(i, alpha, ap[i1 - 1], 1, tau, 1);
+                alpha = -half * taui * Cdotc(i, tau, 1, &ap[i1 - 1], 1);
+                Caxpy(i, alpha, &ap[i1 - 1], 1, tau, 1);
                 //
                 //              Apply the transformation as a rank-2 update:
                 //                 A := A - v * w**H - w * v**H
                 //
-                Chpr2(uplo, i, -one, ap[i1 - 1], 1, tau, 1, ap);
+                Chpr2(uplo, i, -one, &ap[i1 - 1], 1, tau, 1, ap);
                 //
             }
             ap[(i1 + i - 1) - 1] = e[i - 1];
-            d[(i + 1) - 1] = ap[(i1 + i) - 1];
+            d[(i + 1) - 1] = ap[(i1 + i) - 1].real();
             tau[i - 1] = taui;
             i1 = i1 - i;
         }
-        d[1 - 1] = ap[1 - 1];
+        d[1 - 1] = ap[1 - 1].real();
     } else {
         //
         //        Reduce the lower triangle of A. II is the index in AP of
@@ -140,8 +140,8 @@ void Chptrd(const char *uplo, INTEGER const n, COMPLEX *ap, REAL *d, REAL *e, CO
             //           to annihilate A(i+2:n,i)
             //
             alpha = ap[(ii + 1) - 1];
-            Clarfg(n - i, alpha, ap[(ii + 2) - 1], 1, taui);
-            e[i - 1] = alpha;
+            Clarfg(n - i, alpha, &ap[(ii + 2) - 1], 1, taui);
+            e[i - 1] = alpha.real();
             //
             if (taui != zero) {
                 //
@@ -151,25 +151,25 @@ void Chptrd(const char *uplo, INTEGER const n, COMPLEX *ap, REAL *d, REAL *e, CO
                 //
                 //              Compute  y := tau * A * v  storing y in TAU(i:n-1)
                 //
-                Chpmv(uplo, n - i, taui, ap[i1i1 - 1], ap[(ii + 1) - 1], 1, zero, &tau[i - 1], 1);
+                Chpmv(uplo, n - i, taui, &ap[i1i1 - 1], &ap[(ii + 1) - 1], 1, zero, &tau[i - 1], 1);
                 //
                 //              Compute  w := y - 1/2 * tau * (y**H *v) * v
                 //
-                alpha = -half * taui * Cdotc(n - i, &tau[i - 1], 1, ap[(ii + 1) - 1], 1);
-                Caxpy(n - i, alpha, ap[(ii + 1) - 1], 1, &tau[i - 1], 1);
+                alpha = -half * taui * Cdotc(n - i, &tau[i - 1], 1, &ap[(ii + 1) - 1], 1);
+                Caxpy(n - i, alpha, &ap[(ii + 1) - 1], 1, &tau[i - 1], 1);
                 //
                 //              Apply the transformation as a rank-2 update:
                 //                 A := A - v * w**H - w * v**H
                 //
-                Chpr2(uplo, n - i, -one, ap[(ii + 1) - 1], 1, &tau[i - 1], 1, ap[i1i1 - 1]);
+                Chpr2(uplo, n - i, -one, &ap[(ii + 1) - 1], 1, &tau[i - 1], 1, &ap[i1i1 - 1]);
                 //
             }
             ap[(ii + 1) - 1] = e[i - 1];
-            d[i - 1] = ap[ii - 1];
+            d[i - 1] = ap[ii - 1].real();
             tau[i - 1] = taui;
             ii = i1i1;
         }
-        d[n - 1] = ap[ii - 1];
+        d[n - 1] = ap[ii - 1].real();
     }
     //
     //     End of Chptrd

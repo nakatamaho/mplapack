@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
+
 void Chetf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool upper = false;
@@ -84,7 +86,6 @@ void Chetf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1[zdum - 1] = abs(zdum.real()) + abs(zdum.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -136,7 +137,7 @@ void Chetf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //
         if (k > 1) {
             imax = iCamax(k - 1, &a[(k - 1) * lda], 1);
-            colmax = abs1[a[(imax - 1) + (k - 1) * lda] - 1];
+            colmax = abs1(a[(imax - 1) + (k - 1) * lda]);
         } else {
             colmax = zero;
         }
@@ -169,11 +170,11 @@ void Chetf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 //              Determine only ROWMAX.
                 //
                 jmax = imax + iCamax(k - imax, &a[(imax - 1) + ((imax + 1) - 1) * lda], lda);
-                rowmax = abs1[a[(imax - 1) + (jmax - 1) * lda] - 1];
+                rowmax = abs1(a[(imax - 1) + (jmax - 1) * lda] - 1);
                 if (imax > 1) {
                     jmax = iCamax(imax - 1, &a[(imax - 1) * lda], 1);
-                    rowmax = max(rowmax, abs1[a[(jmax - 1) + (imax - 1) * lda] - 1]);
-                }
+                    rowmax = max(rowmax, abs1(a[(jmax - 1) + (imax - 1) * lda]));
+  	      }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
                     //
@@ -265,7 +266,7 @@ void Chetf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 //
                 if (k > 2) {
                     //
-                    d = Rlapy2(a[((k - 1) - 1) + (k - 1) * lda].real(), &a[((k - 1) - 1) + (k - 1) * lda].imag());
+                    d = Rlapy2( a[((k - 1) - 1) + (k - 1) * lda].real(), a[((k - 1) - 1) + (k - 1) * lda].imag());
                     d22 = a[((k - 1) - 1) + ((k - 1) - 1) * lda].real() / d;
                     d11 = a[(k - 1) + (k - 1) * lda].real() / d;
                     tt = one / (d11 * d22 - one);
@@ -330,7 +331,7 @@ void Chetf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //
         if (k < n) {
             imax = k + iCamax(n - k, &a[((k + 1) - 1) + (k - 1) * lda], 1);
-            colmax = abs1[a[(imax - 1) + (k - 1) * lda] - 1];
+            colmax = abs1(a[(imax - 1) + (k - 1) * lda]);
         } else {
             colmax = zero;
         }
@@ -363,10 +364,10 @@ void Chetf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 //              Determine only ROWMAX.
                 //
                 jmax = k - 1 + iCamax(imax - k, &a[(imax - 1) + (k - 1) * lda], lda);
-                rowmax = abs1[a[(imax - 1) + (jmax - 1) * lda] - 1];
+                rowmax = abs1(a[(imax - 1) + (jmax - 1) * lda]);
                 if (imax < n) {
                     jmax = imax + iCamax(n - imax, &a[((imax + 1) - 1) + (imax - 1) * lda], 1);
-                    rowmax = max(rowmax, abs1[a[(jmax - 1) + (imax - 1) * lda] - 1]);
+                    rowmax = max(rowmax, abs1(a[(jmax - 1) + (imax - 1) * lda]));
                 }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
@@ -462,7 +463,7 @@ void Chetf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                     //                 where L(k) and L(k+1) are the k-th and (k+1)-th
                     //                 columns of L
                     //
-                    d = Rlapy2(a[((k + 1) - 1) + (k - 1) * lda].real(), &a[((k + 1) - 1) + (k - 1) * lda].imag());
+                    d = Rlapy2(a[((k + 1) - 1) + (k - 1) * lda].real(), a[((k + 1) - 1) + (k - 1) * lda].imag());
                     d11 = a[((k + 1) - 1) + ((k + 1) - 1) * lda].real() / d;
                     d22 = a[(k - 1) + (k - 1) * lda].real() / d;
                     tt = one / (d11 * d22 - one);

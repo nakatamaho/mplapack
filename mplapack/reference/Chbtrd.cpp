@@ -154,7 +154,7 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                         //                    generate plane rotations to annihilate nonzero
                         //                    elements which have been created outside the band
                         //
-                        Clargv(nr, ab[((j1 - 1) - 1) * ldab], inca, &work[j1 - 1], kd1, &d[j1 - 1], kd1);
+                        Clargv(nr, &ab[((j1 - 1) - 1) * ldab], inca, &work[j1 - 1], kd1, &d[j1 - 1], kd1);
                         //
                         //                    apply rotations from the right
                         //
@@ -163,13 +163,13 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                         //
                         if (nr >= 2 * kd - 1) {
                             for (l = 1; l <= kd - 1; l = l + 1) {
-                                Clartv(nr, ab[((l + 1) - 1) + ((j1 - 1) - 1) * ldab], inca, ab[(l - 1) + (j1 - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
+                                Clartv(nr, &ab[((l + 1) - 1) + ((j1 - 1) - 1) * ldab], inca, &ab[(l - 1) + (j1 - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
                             }
                             //
                         } else {
                             jend = j1 + (nr - 1) * kd1;
                             for (jinc = j1; jinc <= jend; jinc = jinc + kd1) {
-                                Crot(kdm1, ab[(2 - 1) + ((jinc - 1) - 1) * ldab], 1, ab[(jinc - 1) * ldab], 1, &d[jinc - 1], &work[jinc - 1]);
+                                Crot(kdm1, &ab[(2 - 1) + ((jinc - 1) - 1) * ldab], 1, &ab[(jinc - 1) * ldab], 1, d[jinc - 1], work[jinc - 1]);
                             }
                         }
                     }
@@ -180,12 +180,12 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                             //                       generate plane rotation to annihilate a(i,i+k-1)
                             //                       within the band
                             //
-                            Clartg(ab[((kd - k + 3) - 1) + ((i + k - 2) - 1) * ldab], ab[((kd - k + 2) - 1) + ((i + k - 1) - 1) * ldab], &d[(i + k - 1) - 1], &work[(i + k - 1) - 1], temp);
+                            Clartg(ab[((kd - k + 3) - 1) + ((i + k - 2) - 1) * ldab], ab[((kd - k + 2) - 1) + ((i + k - 1) - 1) * ldab], d[(i + k - 1) - 1], work[(i + k - 1) - 1], temp);
                             ab[((kd - k + 3) - 1) + ((i + k - 2) - 1) * ldab] = temp;
                             //
                             //                       apply rotation from the right
                             //
-                            Crot(k - 3, ab[((kd - k + 4) - 1) + ((i + k - 2) - 1) * ldab], 1, ab[((kd - k + 3) - 1) + ((i + k - 1) - 1) * ldab], 1, &d[(i + k - 1) - 1], &work[(i + k - 1) - 1]);
+                            Crot(k - 3, &ab[((kd - k + 4) - 1) + ((i + k - 2) - 1) * ldab], 1, &ab[((kd - k + 3) - 1) + ((i + k - 1) - 1) * ldab], 1, d[(i + k - 1) - 1], work[(i + k - 1) - 1]);
                         }
                         nr++;
                         j1 = j1 - kdn - 1;
@@ -195,7 +195,7 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                     //                 blocks
                     //
                     if (nr > 0) {
-                        Clar2v(nr, ab[(kd1 - 1) + ((j1 - 1) - 1) * ldab], ab[(kd1 - 1) + (j1 - 1) * ldab], ab[(kd - 1) + (j1 - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
+                        Clar2v(nr, &ab[(kd1 - 1) + ((j1 - 1) - 1) * ldab], &ab[(kd1 - 1) + (j1 - 1) * ldab], &ab[(kd - 1) + (j1 - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
                     }
                     //
                     //                 apply plane rotations from the left
@@ -214,20 +214,20 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                                     nrt = nr;
                                 }
                                 if (nrt > 0) {
-                                    Clartv(nrt, ab[((kd - l) - 1) + ((j1 + l) - 1) * ldab], inca, ab[((kd - l + 1) - 1) + ((j1 + l) - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
+                                    Clartv(nrt, &ab[((kd - l) - 1) + ((j1 + l) - 1) * ldab], inca, &ab[((kd - l + 1) - 1) + ((j1 + l) - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
                                 }
                             }
                         } else {
                             j1end = j1 + kd1 * (nr - 2);
                             if (j1end >= j1) {
                                 for (jin = j1; jin <= j1end; jin = jin + kd1) {
-                                    Crot(kd - 1, ab[((kd - 1) - 1) + ((jin + 1) - 1) * ldab], incx, ab[(kd - 1) + ((jin + 1) - 1) * ldab], incx, &d[jin - 1], &work[jin - 1]);
+                                    Crot(kd - 1, &ab[((kd - 1) - 1) + ((jin + 1) - 1) * ldab], incx, &ab[(kd - 1) + ((jin + 1) - 1) * ldab], incx, d[jin - 1], work[jin - 1]);
                                 }
                             }
                             lend = min(kdm1, n - j2);
                             last = j1end + kd1;
                             if (lend > 0) {
-                                Crot(lend, ab[((kd - 1) - 1) + ((last + 1) - 1) * ldab], incx, ab[(kd - 1) + ((last + 1) - 1) * ldab], incx, &d[last - 1], &work[last - 1]);
+                                Crot(lend, &ab[((kd - 1) - 1) + ((last + 1) - 1) * ldab], incx, &ab[(kd - 1) + ((last + 1) - 1) * ldab], incx, d[last - 1], work[last - 1]);
                             }
                         }
                     }
@@ -254,12 +254,12 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                                 iqb = max((INTEGER)1, j - ibl);
                                 nq = 1 + iqaend - iqb;
                                 iqaend = min(iqaend + kd, iqend);
-                                Crot(nq, q[(iqb - 1) + ((j - 1) - 1) * ldq], 1, q[(iqb - 1) + (j - 1) * ldq], 1, &d[j - 1], conj(work[j - 1]));
+                                Crot(nq, &q[(iqb - 1) + ((j - 1) - 1) * ldq], 1, &q[(iqb - 1) + (j - 1) * ldq], 1, d[j - 1], conj(work[j - 1]));
                             }
                         } else {
                             //
                             for (j = j1; j <= j2; j = j + kd1) {
-                                Crot(n, q[((j - 1) - 1) * ldq], 1, q[(j - 1) * ldq], 1, &d[j - 1], conj(work[j - 1]));
+                                Crot(n, &q[((j - 1) - 1) * ldq], 1, &q[(j - 1) * ldq], 1, d[j - 1], conj(work[j - 1]));
                             }
                         }
                         //
@@ -303,7 +303,7 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                     ab[(kd - 1) + ((i + 2) - 1) * ldab] = ab[(kd - 1) + ((i + 2) - 1) * ldab] * t;
                 }
                 if (wantq) {
-                    Cscal(n, conj(t), q[((i + 1) - 1) * ldq], 1);
+                    Cscal(n, conj(t), &q[((i + 1) - 1) * ldq], 1);
                 }
             }
         } else {
@@ -318,7 +318,7 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
         //        copy diagonal elements to D
         //
         for (i = 1; i <= n; i = i + 1) {
-            d[i - 1] = ab[(kd1 - 1) + (i - 1) * ldab];
+            d[i - 1] = ab[(kd1 - 1) + (i - 1) * ldab].real();
         }
         //
     } else {
@@ -346,7 +346,7 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                         //                    generate plane rotations to annihilate nonzero
                         //                    elements which have been created outside the band
                         //
-                        Clargv(nr, ab[(kd1 - 1) + ((j1 - kd1) - 1) * ldab], inca, &work[j1 - 1], kd1, &d[j1 - 1], kd1);
+                        Clargv(nr, &ab[(kd1 - 1) + ((j1 - kd1) - 1) * ldab], inca, &work[j1 - 1], kd1, &d[j1 - 1], kd1);
                         //
                         //                    apply plane rotations from one side
                         //
@@ -355,12 +355,12 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                         //
                         if (nr > 2 * kd - 1) {
                             for (l = 1; l <= kd - 1; l = l + 1) {
-                                Clartv(nr, ab[((kd1 - l) - 1) + ((j1 - kd1 + l) - 1) * ldab], inca, ab[((kd1 - l + 1) - 1) + ((j1 - kd1 + l) - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
+                                Clartv(nr, &ab[((kd1 - l) - 1) + ((j1 - kd1 + l) - 1) * ldab], inca, &ab[((kd1 - l + 1) - 1) + ((j1 - kd1 + l) - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
                             }
                         } else {
                             jend = j1 + kd1 * (nr - 1);
                             for (jinc = j1; jinc <= jend; jinc = jinc + kd1) {
-                                Crot(kdm1, ab[(kd - 1) + ((jinc - kd) - 1) * ldab], incx, ab[(kd1 - 1) + ((jinc - kd) - 1) * ldab], incx, &d[jinc - 1], &work[jinc - 1]);
+                                Crot(kdm1, &ab[(kd - 1) + ((jinc - kd) - 1) * ldab], incx, &ab[(kd1 - 1) + ((jinc - kd) - 1) * ldab], incx, d[jinc - 1], work[jinc - 1]);
                             }
                         }
                         //
@@ -372,12 +372,12 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                             //                       generate plane rotation to annihilate a(i+k-1,i)
                             //                       within the band
                             //
-                            Clartg(ab[((k - 1) - 1) + (i - 1) * ldab], ab[(k - 1) + (i - 1) * ldab], &d[(i + k - 1) - 1], &work[(i + k - 1) - 1], temp);
+                            Clartg(ab[((k - 1) - 1) + (i - 1) * ldab], ab[(k - 1) + (i - 1) * ldab], d[(i + k - 1) - 1], work[(i + k - 1) - 1], temp);
                             ab[((k - 1) - 1) + (i - 1) * ldab] = temp;
                             //
                             //                       apply rotation from the left
                             //
-                            Crot(k - 3, ab[((k - 2) - 1) + ((i + 1) - 1) * ldab], ldab - 1, ab[((k - 1) - 1) + ((i + 1) - 1) * ldab], ldab - 1, &d[(i + k - 1) - 1], &work[(i + k - 1) - 1]);
+                            Crot(k - 3, &ab[((k - 2) - 1) + ((i + 1) - 1) * ldab], ldab - 1, &ab[((k - 1) - 1) + ((i + 1) - 1) * ldab], ldab - 1, d[(i + k - 1) - 1], work[(i + k - 1) - 1]);
                         }
                         nr++;
                         j1 = j1 - kdn - 1;
@@ -387,7 +387,7 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                     //                 blocks
                     //
                     if (nr > 0) {
-                        Clar2v(nr, ab[((j1 - 1) - 1) * ldab], ab[(j1 - 1) * ldab], ab[(2 - 1) + ((j1 - 1) - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
+                        Clar2v(nr, &ab[((j1 - 1) - 1) * ldab], &ab[(j1 - 1) * ldab], &ab[(2 - 1) + ((j1 - 1) - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
                     }
                     //
                     //                 apply plane rotations from the right
@@ -405,20 +405,20 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                                     nrt = nr;
                                 }
                                 if (nrt > 0) {
-                                    Clartv(nrt, ab[((l + 2) - 1) + ((j1 - 1) - 1) * ldab], inca, ab[((l + 1) - 1) + (j1 - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
+                                    Clartv(nrt, &ab[((l + 2) - 1) + ((j1 - 1) - 1) * ldab], inca, &ab[((l + 1) - 1) + (j1 - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
                                 }
                             }
                         } else {
                             j1end = j1 + kd1 * (nr - 2);
                             if (j1end >= j1) {
                                 for (j1inc = j1; j1inc <= j1end; j1inc = j1inc + kd1) {
-                                    Crot(kdm1, ab[(3 - 1) + ((j1inc - 1) - 1) * ldab], 1, ab[(2 - 1) + (j1inc - 1) * ldab], 1, &d[j1inc - 1], &work[j1inc - 1]);
+                                    Crot(kdm1, &ab[(3 - 1) + ((j1inc - 1) - 1) * ldab], 1, &ab[(2 - 1) + (j1inc - 1) * ldab], 1, d[j1inc - 1], work[j1inc - 1]);
                                 }
                             }
                             lend = min(kdm1, n - j2);
                             last = j1end + kd1;
                             if (lend > 0) {
-                                Crot(lend, ab[(3 - 1) + ((last - 1) - 1) * ldab], 1, ab[(2 - 1) + (last - 1) * ldab], 1, &d[last - 1], &work[last - 1]);
+                                Crot(lend, &ab[(3 - 1) + ((last - 1) - 1) * ldab], 1, &ab[(2 - 1) + (last - 1) * ldab], 1, d[last - 1], work[last - 1]);
                             }
                         }
                     }
@@ -445,12 +445,12 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                                 iqb = max((INTEGER)1, j - ibl);
                                 nq = 1 + iqaend - iqb;
                                 iqaend = min(iqaend + kd, iqend);
-                                Crot(nq, q[(iqb - 1) + ((j - 1) - 1) * ldq], 1, q[(iqb - 1) + (j - 1) * ldq], 1, &d[j - 1], &work[j - 1]);
+                                Crot(nq, &q[(iqb - 1) + ((j - 1) - 1) * ldq], 1, &q[(iqb - 1) + (j - 1) * ldq], 1, d[j - 1], work[j - 1]);
                             }
                         } else {
                             //
                             for (j = j1; j <= j2; j = j + kd1) {
-                                Crot(n, q[((j - 1) - 1) * ldq], 1, q[(j - 1) * ldq], 1, &d[j - 1], &work[j - 1]);
+                                Crot(n, &q[((j - 1) - 1) * ldq], 1, &q[(j - 1) * ldq], 1, d[j - 1], work[j - 1]);
                             }
                         }
                     }
@@ -493,7 +493,7 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                     ab[(2 - 1) + ((i + 1) - 1) * ldab] = ab[(2 - 1) + ((i + 1) - 1) * ldab] * t;
                 }
                 if (wantq) {
-                    Cscal(n, t, q[((i + 1) - 1) * ldq], 1);
+                    Cscal(n, t, &q[((i + 1) - 1) * ldq], 1);
                 }
             }
         } else {
@@ -508,7 +508,7 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
         //        copy diagonal elements to D
         //
         for (i = 1; i <= n; i = i + 1) {
-            d[i - 1] = ab[(i - 1) * ldab];
+            d[i - 1] = ab[(i - 1) * ldab].real();
         }
     }
     //

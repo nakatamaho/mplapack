@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
+
 void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info) {
     COMPLEX z = 0.0;
     bool upper = false;
@@ -91,7 +93,6 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1[z - 1] = abs(z.real()) + abs(z.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -148,7 +149,7 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
         //
         if (k > 1) {
             imax = iCamax(k - 1, &a[(k - 1) * lda], 1);
-            colmax = abs1[a[(imax - 1) + (k - 1) * lda] - 1];
+            colmax = abs1(a[(imax - 1) + (k - 1) * lda]);
         } else {
             colmax = zero;
         }
@@ -194,14 +195,14 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
                 //
                 if (imax != k) {
                     jmax = imax + iCamax(k - imax, &a[(imax - 1) + ((imax + 1) - 1) * lda], lda);
-                    rowmax = abs1[a[(imax - 1) + (jmax - 1) * lda] - 1];
+                    rowmax = abs1(a[(imax - 1) + (jmax - 1) * lda]);
                 } else {
                     rowmax = zero;
                 }
                 //
                 if (imax > 1) {
                     itemp = iCamax(imax - 1, &a[(imax - 1) * lda], 1);
-                    dtemp = abs1[a[(itemp - 1) + (imax - 1) * lda] - 1];
+                    dtemp = abs1(a[(itemp - 1) + (imax - 1) * lda]);
                     if (dtemp > rowmax) {
                         rowmax = dtemp;
                         jmax = itemp;
@@ -382,9 +383,9 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
                 //
                 if (k > 2) {
                     //                 D = |A12|
-                    d = Rlapy2(a[((k - 1) - 1) + (k - 1) * lda].real(), &a[((k - 1) - 1) + (k - 1) * lda].imag());
-                    d11 = a[(k - 1) + (k - 1) * lda] / d;
-                    d22 = a[((k - 1) - 1) + ((k - 1) - 1) * lda] / d;
+                    d = Rlapy2(a[((k - 1) - 1) + (k - 1) * lda].real(), a[((k - 1) - 1) + (k - 1) * lda].imag());
+                    d11 = (a[(k - 1) + (k - 1) * lda] / d).real();
+                    d22 = (a[((k - 1) - 1) + ((k - 1) - 1) * lda] / d).real();
                     d12 = a[((k - 1) - 1) + (k - 1) * lda] / d;
                     tt = one / (d11 * d22 - one);
                     //
@@ -459,7 +460,7 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
         //
         if (k < n) {
             imax = k + iCamax(n - k, &a[((k + 1) - 1) + (k - 1) * lda], 1);
-            colmax = abs1[a[(imax - 1) + (k - 1) * lda] - 1];
+            colmax = abs1(a[(imax - 1) + (k - 1) * lda]);
         } else {
             colmax = zero;
         }
@@ -505,14 +506,14 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
                 //
                 if (imax != k) {
                     jmax = k - 1 + iCamax(imax - k, &a[(imax - 1) + (k - 1) * lda], lda);
-                    rowmax = abs1[a[(imax - 1) + (jmax - 1) * lda] - 1];
+                    rowmax = abs1(a[(imax - 1) + (jmax - 1) * lda]);
                 } else {
                     rowmax = zero;
                 }
                 //
                 if (imax < n) {
                     itemp = imax + iCamax(n - imax, &a[((imax + 1) - 1) + (imax - 1) * lda], 1);
-                    dtemp = abs1[a[(itemp - 1) + (imax - 1) * lda] - 1];
+                    dtemp = abs1(a[(itemp - 1) + (imax - 1) * lda]);
                     if (dtemp > rowmax) {
                         rowmax = dtemp;
                         jmax = itemp;
@@ -695,7 +696,7 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
                 //
                 if (k < n - 1) {
                     //                 D = |A21|
-                    d = Rlapy2(a[((k + 1) - 1) + (k - 1) * lda].real(), &a[((k + 1) - 1) + (k - 1) * lda].imag());
+                    d = Rlapy2(a[((k + 1) - 1) + (k - 1) * lda].real(), a[((k + 1) - 1) + (k - 1) * lda].imag());
                     d11 = a[((k + 1) - 1) + ((k + 1) - 1) * lda].real() / d;
                     d22 = a[(k - 1) + (k - 1) * lda].real() / d;
                     d21 = a[((k + 1) - 1) + (k - 1) * lda] / d;
