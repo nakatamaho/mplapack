@@ -84,15 +84,6 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
-Rlasd8.cpp \
-Rlasda.cpp \
-Rlasd7.cpp \
-Rbdsdc.cpp \
-Rlasy2.cpp \
-Rgerfsx.cpp \
-Rlaexc.cpp \
-Rsptrs.cpp \
-Rgbrfsx.cpp \
 Csptrs.cpp \
 Rsytrf_aa.cpp \
 Rpbtrf.cpp \

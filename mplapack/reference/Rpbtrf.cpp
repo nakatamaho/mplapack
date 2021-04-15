@@ -42,6 +42,7 @@ void Rpbtrf(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
     INTEGER i3 = 0;
     const REAL one = 1.0;
     INTEGER jj = 0;
+    REAL work[ldwork * nbmax];
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -130,7 +131,7 @@ void Rpbtrf(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
                 //
                 //              Factorize the diagonal block
                 //
-                Rpotf2(uplo, ib, ab[((kd + 1) - 1) + (i - 1) * ldab], ldab - 1, ii);
+                Rpotf2(uplo, ib, &ab[((kd + 1) - 1) + (i - 1) * ldab], ldab - 1, ii);
                 if (ii != 0) {
                     info = i + ii - 1;
                     goto statement_150;
@@ -158,11 +159,11 @@ void Rpbtrf(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
                         //
                         //                    Update A12
                         //
-                        Rtrsm("Left", "Upper", "Transpose", "Non-unit", ib, i2, one, ab[((kd + 1) - 1) + (i - 1) * ldab], ldab - 1, ab[((kd + 1 - ib) - 1) + ((i + ib) - 1) * ldab], ldab - 1);
+                        Rtrsm("Left", "Upper", "Transpose", "Non-unit", ib, i2, one, &ab[((kd + 1) - 1) + (i - 1) * ldab], ldab - 1, &ab[((kd + 1 - ib) - 1) + ((i + ib) - 1) * ldab], ldab - 1);
                         //
                         //                    Update A22
                         //
-                        Rsyrk("Upper", "Transpose", i2, ib, -one, ab[((kd + 1 - ib) - 1) + ((i + ib) - 1) * ldab], ldab - 1, one, ab[((kd + 1) - 1) + ((i + ib) - 1) * ldab], ldab - 1);
+                        Rsyrk("Upper", "Transpose", i2, ib, -one, &ab[((kd + 1 - ib) - 1) + ((i + ib) - 1) * ldab], ldab - 1, one, &ab[((kd + 1) - 1) + ((i + ib) - 1) * ldab], ldab - 1);
                     }
                     //
                     if (i3 > 0) {
@@ -177,17 +178,17 @@ void Rpbtrf(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
                         //
                         //                    Update A13 (in the work array).
                         //
-                        Rtrsm("Left", "Upper", "Transpose", "Non-unit", ib, i3, one, ab[((kd + 1) - 1) + (i - 1) * ldab], ldab - 1, work, ldwork);
+                        Rtrsm("Left", "Upper", "Transpose", "Non-unit", ib, i3, one, &ab[((kd + 1) - 1) + (i - 1) * ldab], ldab - 1, work, ldwork);
                         //
                         //                    Update A23
                         //
                         if (i2 > 0) {
-                            Rgemm("Transpose", "No Transpose", i2, i3, ib, -one, ab[((kd + 1 - ib) - 1) + ((i + ib) - 1) * ldab], ldab - 1, work, ldwork, one, ab[((1 + ib) - 1) + ((i + kd) - 1) * ldab], ldab - 1);
+                            Rgemm("Transpose", "No Transpose", i2, i3, ib, -one, &ab[((kd + 1 - ib) - 1) + ((i + ib) - 1) * ldab], ldab - 1, work, ldwork, one, &ab[((1 + ib) - 1) + ((i + kd) - 1) * ldab], ldab - 1);
                         }
                         //
                         //                    Update A33
                         //
-                        Rsyrk("Upper", "Transpose", i3, ib, -one, work, ldwork, one, ab[((kd + 1) - 1) + ((i + kd) - 1) * ldab], ldab - 1);
+                        Rsyrk("Upper", "Transpose", i3, ib, -one, work, ldwork, one, &ab[((kd + 1) - 1) + ((i + kd) - 1) * ldab], ldab - 1);
                         //
                         //                    Copy the lower triangle of A13 back into place.
                         //
@@ -220,7 +221,7 @@ void Rpbtrf(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
                 //
                 //              Factorize the diagonal block
                 //
-                Rpotf2(uplo, ib, ab[(i - 1) * ldab], ldab - 1, ii);
+                Rpotf2(uplo, ib, &ab[(i - 1) * ldab], ldab - 1, ii);
                 if (ii != 0) {
                     info = i + ii - 1;
                     goto statement_150;
@@ -248,11 +249,11 @@ void Rpbtrf(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
                         //
                         //                    Update A21
                         //
-                        Rtrsm("Right", "Lower", "Transpose", "Non-unit", i2, ib, one, ab[(i - 1) * ldab], ldab - 1, ab[((1 + ib) - 1) + (i - 1) * ldab], ldab - 1);
+                        Rtrsm("Right", "Lower", "Transpose", "Non-unit", i2, ib, one, &ab[(i - 1) * ldab], ldab - 1, &ab[((1 + ib) - 1) + (i - 1) * ldab], ldab - 1);
                         //
                         //                    Update A22
                         //
-                        Rsyrk("Lower", "No Transpose", i2, ib, -one, ab[((1 + ib) - 1) + (i - 1) * ldab], ldab - 1, one, ab[((i + ib) - 1) * ldab], ldab - 1);
+                        Rsyrk("Lower", "No Transpose", i2, ib, -one, &ab[((1 + ib) - 1) + (i - 1) * ldab], ldab - 1, one, &ab[((i + ib) - 1) * ldab], ldab - 1);
                     }
                     //
                     if (i3 > 0) {
@@ -267,17 +268,17 @@ void Rpbtrf(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
                         //
                         //                    Update A31 (in the work array).
                         //
-                        Rtrsm("Right", "Lower", "Transpose", "Non-unit", i3, ib, one, ab[(i - 1) * ldab], ldab - 1, work, ldwork);
+                        Rtrsm("Right", "Lower", "Transpose", "Non-unit", i3, ib, one, &ab[(i - 1) * ldab], ldab - 1, work, ldwork);
                         //
                         //                    Update A32
                         //
                         if (i2 > 0) {
-                            Rgemm("No transpose", "Transpose", i3, i2, ib, -one, work, ldwork, ab[((1 + ib) - 1) + (i - 1) * ldab], ldab - 1, one, ab[((1 + kd - ib) - 1) + ((i + ib) - 1) * ldab], ldab - 1);
+                            Rgemm("No transpose", "Transpose", i3, i2, ib, -one, work, ldwork, &ab[((1 + ib) - 1) + (i - 1) * ldab], ldab - 1, one, &ab[((1 + kd - ib) - 1) + ((i + ib) - 1) * ldab], ldab - 1);
                         }
                         //
                         //                    Update A33
                         //
-                        Rsyrk("Lower", "No Transpose", i3, ib, -one, work, ldwork, one, ab[((i + kd) - 1) * ldab], ldab - 1);
+                        Rsyrk("Lower", "No Transpose", i3, ib, -one, work, ldwork, one, &ab[((i + kd) - 1) * ldab], ldab - 1);
                         //
                         //                    Copy the upper triangle of A31 back into place.
                         //

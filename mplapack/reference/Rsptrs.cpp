@@ -122,7 +122,7 @@ void Rsptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, INT
             //           Multiply by inv(U(K)), where U(K) is the transformation
             //           stored in column K of A.
             //
-            Rger(k - 1, nrhs, -one, ap[kc - 1], 1, &b[(k - 1)], ldb, &b[(1 - 1)], ldb);
+            Rger(k - 1, nrhs, -one, &ap[kc - 1], 1, &b[(k - 1)], ldb, &b[(1 - 1)], ldb);
             //
             //           Multiply by the inverse of the diagonal block.
             //
@@ -142,8 +142,8 @@ void Rsptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, INT
             //           Multiply by inv(U(K)), where U(K) is the transformation
             //           stored in columns K-1 and K of A.
             //
-            Rger(k - 2, nrhs, -one, ap[kc - 1], 1, &b[(k - 1)], ldb, &b[(1 - 1)], ldb);
-            Rger(k - 2, nrhs, -one, ap[(kc - (k - 1)) - 1], 1, &b[((k - 1) - 1)], ldb, &b[(1 - 1)], ldb);
+            Rger(k - 2, nrhs, -one, &ap[kc - 1], 1, &b[(k - 1)], ldb, &b[(1 - 1)], ldb);
+            Rger(k - 2, nrhs, -one, &ap[(kc - (k - 1)) - 1], 1, &b[((k - 1) - 1)], ldb, &b[(1 - 1)], ldb);
             //
             //           Multiply by the inverse of the diagonal block.
             //
@@ -186,7 +186,7 @@ void Rsptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, INT
             //           Multiply by inv(U**T(K)), where U(K) is the transformation
             //           stored in column K of A.
             //
-            Rgemv("Transpose", k - 1, nrhs, -one, b, ldb, ap[kc - 1], 1, one, &b[(k - 1)], ldb);
+            Rgemv("Transpose", k - 1, nrhs, -one, b, ldb, &ap[kc - 1], 1, one, &b[(k - 1)], ldb);
             //
             //           Interchange rows K and IPIV(K).
             //
@@ -203,8 +203,8 @@ void Rsptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, INT
             //           Multiply by inv(U**T(K+1)), where U(K+1) is the transformation
             //           stored in columns K and K+1 of A.
             //
-            Rgemv("Transpose", k - 1, nrhs, -one, b, ldb, ap[kc - 1], 1, one, &b[(k - 1)], ldb);
-            Rgemv("Transpose", k - 1, nrhs, -one, b, ldb, ap[(kc + k) - 1], 1, one, &b[((k + 1) - 1)], ldb);
+            Rgemv("Transpose", k - 1, nrhs, -one, b, ldb, &ap[kc - 1], 1, one, &b[(k - 1)], ldb);
+            Rgemv("Transpose", k - 1, nrhs, -one, b, ldb, &ap[(kc + k) - 1], 1, one, &b[((k + 1) - 1)], ldb);
             //
             //           Interchange rows K and -IPIV(K).
             //
@@ -253,7 +253,7 @@ void Rsptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, INT
             //           stored in column K of A.
             //
             if (k < n) {
-                Rger(n - k, nrhs, -one, ap[(kc + 1) - 1], 1, &b[(k - 1)], ldb, &b[((k + 1) - 1)], ldb);
+                Rger(n - k, nrhs, -one, &ap[(kc + 1) - 1], 1, &b[(k - 1)], ldb, &b[((k + 1) - 1)], ldb);
             }
             //
             //           Multiply by the inverse of the diagonal block.
@@ -276,8 +276,8 @@ void Rsptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, INT
             //           stored in columns K and K+1 of A.
             //
             if (k < n - 1) {
-                Rger(n - k - 1, nrhs, -one, ap[(kc + 2) - 1], 1, &b[(k - 1)], ldb, &b[((k + 2) - 1)], ldb);
-                Rger(n - k - 1, nrhs, -one, ap[(kc + n - k + 2) - 1], 1, &b[((k + 1) - 1)], ldb, &b[((k + 2) - 1)], ldb);
+                Rger(n - k - 1, nrhs, -one, &ap[(kc + 2) - 1], 1, &b[(k - 1)], ldb, &b[((k + 2) - 1)], ldb);
+                Rger(n - k - 1, nrhs, -one, &ap[(kc + n - k + 2) - 1], 1, &b[((k + 1) - 1)], ldb, &b[((k + 2) - 1)], ldb);
             }
             //
             //           Multiply by the inverse of the diagonal block.
@@ -323,7 +323,7 @@ void Rsptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, INT
             //           stored in column K of A.
             //
             if (k < n) {
-                Rgemv("Transpose", n - k, nrhs, -one, &b[((k + 1) - 1)], ldb, ap[(kc + 1) - 1], 1, one, &b[(k - 1)], ldb);
+                Rgemv("Transpose", n - k, nrhs, -one, &b[((k + 1) - 1)], ldb, &ap[(kc + 1) - 1], 1, one, &b[(k - 1)], ldb);
             }
             //
             //           Interchange rows K and IPIV(K).
@@ -341,8 +341,8 @@ void Rsptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, INT
             //           stored in columns K-1 and K of A.
             //
             if (k < n) {
-                Rgemv("Transpose", n - k, nrhs, -one, &b[((k + 1) - 1)], ldb, ap[(kc + 1) - 1], 1, one, &b[(k - 1)], ldb);
-                Rgemv("Transpose", n - k, nrhs, -one, &b[((k + 1) - 1)], ldb, ap[(kc - (n - k)) - 1], 1, one, &b[((k - 1) - 1)], ldb);
+                Rgemv("Transpose", n - k, nrhs, -one, &b[((k + 1) - 1)], ldb, &ap[(kc + 1) - 1], 1, one, &b[(k - 1)], ldb);
+                Rgemv("Transpose", n - k, nrhs, -one, &b[((k + 1) - 1)], ldb, &ap[(kc - (n - k)) - 1], 1, one, &b[((k - 1) - 1)], ldb);
             }
             //
             //           Interchange rows K and -IPIV(K).

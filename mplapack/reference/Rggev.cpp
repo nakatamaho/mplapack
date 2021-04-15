@@ -58,8 +58,8 @@ void Rggev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
     INTEGER irows = 0;
     INTEGER icols = 0;
     INTEGER itau = 0;
-    str<1> chtemp = char0;
-    arr_1d<1, bool> ldumma(fill0);
+    char chtemp;
+    bool ldumma;
     INTEGER in = 0;
     INTEGER jc = 0;
     REAL temp = 0.0;
@@ -241,9 +241,9 @@ void Rggev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
     if (ilvl) {
         Rlaset("Full", n, n, zero, one, vl, ldvl);
         if (irows > 1) {
-            Rlacpy("L", irows - 1, irows - 1, &b[((ilo + 1) - 1) + (ilo - 1) * ldb], ldb, vl[((ilo + 1) - 1) + (ilo - 1) * ldvl], ldvl);
+            Rlacpy("L", irows - 1, irows - 1, &b[((ilo + 1) - 1) + (ilo - 1) * ldb], ldb, &vl[((ilo + 1) - 1) + (ilo - 1) * ldvl], ldvl);
         }
-        Rorgqr(irows, irows, irows, vl[(ilo - 1) + (ilo - 1) * ldvl], ldvl, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
+        Rorgqr(irows, irows, irows, &vl[(ilo - 1) + (ilo - 1) * ldvl], ldvl, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     }
     //
     //     Initialize VR
@@ -270,9 +270,9 @@ void Rggev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
     //
     iwrk = itau;
     if (ilv) {
-        chtemp = "S";
+        chtemp = 'S';
     } else {
-        chtemp = "E";
+        chtemp = 'E';
     }
     Rhgeqz(chtemp, jobvl, jobvr, n, ilo, ihi, a, lda, b, ldb, alphar, alphai, beta, vl, ldvl, vr, ldvr, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     if (ierr != 0) {

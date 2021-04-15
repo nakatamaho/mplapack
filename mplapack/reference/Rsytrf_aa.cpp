@@ -148,7 +148,7 @@ void Rsytrf_aa(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, IN
         //
         //        Panel factorization
         //
-        Rlasyf_aa(uplo, 2 - k1, n - j, jb, &a[(max(j) - 1) * lda], lda, &ipiv[(j + 1) - 1], work, n, &work[(n * nb + 1) - 1]);
+        Rlasyf_aa(uplo, 2 - k1, n - j, jb, &a[(max(1, j) - 1) + ((j + 1) - 1) * lda], lda, &ipiv[(j + 1) - 1], work, n, &work[(n * nb + 1) - 1]);
         //
         //        Adjust IPIV and apply it back (J-th step picks (J+1)-th pivot)
         //
@@ -257,24 +257,23 @@ void Rsytrf_aa(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, IN
         //
         //        Panel factorization
         //
-    Rlasyf_aa(uplo, 2 - k1, n - j, jb, &a[((j + 1)-1)+(max((INTEGER)1-1)*lda],
-      lda, &ipiv[(j + 1)-1], work, n, &work[(n * nb + 1)-1]);
-    //
-    //        Adjust IPIV and apply it back (J-th step picks (J+1)-th pivot)
-    //
-    for(j2=j + 2; j2<=min(n, j + jb + 1); j2=j2+1) {
+        Rlasyf_aa(uplo, 2 - k1, n - j, jb, &a[(max(1, j) - 1) + ((j + 1) - 1) * lda], lda, &ipiv[(j + 1) - 1], work, n, &work[(n * nb + 1) - 1]);
+        //
+        //        Adjust IPIV and apply it back (J-th step picks (J+1)-th pivot)
+        //
+        for (j2 = j + 2; j2 <= min(n, j + jb + 1); j2 = j2 + 1) {
             ipiv[j2 - 1] += j;
             if ((j2 != ipiv[j2 - 1]) && ((j1 - k1) > 2)) {
                 Rswap(j1 - k1 - 2, &a[(j2 - 1)], lda, &a[(ipiv[j2 - 1] - 1)], lda);
             }
-    }
-    j += jb;
-    //
-    //        Trailing submatrix update, where
-    //          A(J2+1, J1-1) stores L(J2+1, J1) and
-    //          WORK(J2+1, 1) stores H(J2+1, 1)
-    //
-    if (j < n) {
+        }
+        j += jb;
+        //
+        //        Trailing submatrix update, where
+        //          A(J2+1, J1-1) stores L(J2+1, J1) and
+        //          WORK(J2+1, 1) stores H(J2+1, 1)
+        //
+        if (j < n) {
             //
             //           if first panel and JB=1 (NB=1), then nothing to do
             //
@@ -331,8 +330,8 @@ void Rsytrf_aa(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, IN
             //           WORK(J+1, 1) stores H(J+1, 1)
             //
             Rcopy(n - j, &a[((j + 1) - 1) + ((j + 1) - 1) * lda], 1, &work[1 - 1], 1);
-    }
-    goto statement_11;
+        }
+        goto statement_11;
     }
 //
 statement_20:;

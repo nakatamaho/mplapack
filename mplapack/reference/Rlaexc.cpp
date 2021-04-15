@@ -40,7 +40,7 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
     REAL temp = 0.0;
     INTEGER nd = 0;
     const INTEGER ldd = 4;
-    arr_2d<ldd, 4, REAL> d(fill0);
+    REAL d[ldd * 4];
     REAL dnorm = 0.0;
     REAL eps = 0.0;
     REAL smlnum = 0.0;
@@ -48,18 +48,18 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
     REAL thresh = 0.0;
     REAL scale = 0.0;
     const INTEGER ldx = 2;
-    arr_2d<ldx, 2, REAL> x(fill0);
+    REAL x[ldx * 2];
     REAL xnorm = 0.0;
     INTEGER ierr = 0;
     INTEGER k = 0;
-    arr_1d<3, REAL> u(fill0);
+    REAL u[3];
     REAL tau = 0.0;
     const REAL one = 1.0;
     const REAL zero = 0.0;
     REAL t33 = 0.0;
-    arr_1d<3, REAL> u1(fill0);
+    REAL u1[3];
     REAL tau1 = 0.0;
-    arr_1d<3, REAL> u2(fill0);
+    REAL u2[3];
     REAL tau2 = 0.0;
     REAL wr1 = 0.0;
     REAL wi1 = 0.0;
@@ -131,7 +131,7 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
             //
             //           Accumulate transformation in the matrix Q.
             //
-            Rrot(n, q[(j1 - 1) * ldq], 1, q[(j2 - 1) * ldq], 1, cs, sn);
+            Rrot(n, &q[(j1 - 1) * ldq], 1, &q[(j2 - 1) * ldq], 1, cs, sn);
         }
         //
     } else {
@@ -190,7 +190,7 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         //
         //        Test whether to reject swap.
         //
-        if (max(abs(d[(3 - 1)]), abs(d[(3 - 1) + (2 - 1) * ldd]), abs(d[(3 - 1) + (3 - 1) * ldd] - t11)) > thresh) {
+        if (max({abs(d[(3 - 1)]), abs(d[(3 - 1) + (2 - 1) * ldd]), abs(d[(3 - 1) + (3 - 1) * ldd] - t11)}) > thresh) {
             goto statement_50;
         }
         //
@@ -207,7 +207,7 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
             //
             //           Accumulate transformation in the matrix Q.
             //
-            Rlarfx("R", n, 3, u, tau, q[(j1 - 1) * ldq], ldq, work);
+            Rlarfx("R", n, 3, u, tau, &q[(j1 - 1) * ldq], ldq, work);
         }
         goto statement_40;
     //
@@ -222,7 +222,7 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         u[1 - 1] = -x[(1 - 1)];
         u[2 - 1] = -x[(2 - 1)];
         u[3 - 1] = scale;
-        Rlarfg(3, u[1 - 1], u[2 - 1], 1, tau);
+        Rlarfg(3, u[1 - 1], &u[2 - 1], 1, tau);
         u[1 - 1] = one;
         t33 = t[(j3 - 1) + (j3 - 1) * ldt];
         //
@@ -233,7 +233,7 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         //
         //        Test whether to reject swap.
         //
-        if (max(abs(d[(2 - 1)]), abs(d[(3 - 1)]), abs(d[(1 - 1)] - t33)) > thresh) {
+        if (max({abs(d[(2 - 1)]), abs(d[(3 - 1)]), abs(d[(1 - 1)] - t33)}) > thresh) {
             goto statement_50;
         }
         //
@@ -250,7 +250,7 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
             //
             //           Accumulate transformation in the matrix Q.
             //
-            Rlarfx("R", n, 3, u, tau, q[(j1 - 1) * ldq], ldq, work);
+            Rlarfx("R", n, 3, u, tau, &q[(j1 - 1) * ldq], ldq, work);
         }
         goto statement_40;
     //
@@ -267,14 +267,14 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         u1[1 - 1] = -x[(1 - 1)];
         u1[2 - 1] = -x[(2 - 1)];
         u1[3 - 1] = scale;
-        Rlarfg(3, u1[1 - 1], u1[2 - 1], 1, tau1);
+        Rlarfg(3, u1[1 - 1], &u1[2 - 1], 1, tau1);
         u1[1 - 1] = one;
         //
         temp = -tau1 * (x[(2 - 1) * ldx] + u1[2 - 1] * x[(2 - 1) + (2 - 1) * ldx]);
         u2[1 - 1] = -temp * u1[2 - 1] - x[(2 - 1) + (2 - 1) * ldx];
         u2[2 - 1] = -temp * u1[3 - 1];
         u2[3 - 1] = scale;
-        Rlarfg(3, u2[1 - 1], u2[2 - 1], 1, tau2);
+        Rlarfg(3, u2[1 - 1], &u2[2 - 1], 1, tau2);
         u2[1 - 1] = one;
         //
         //        Perform swap provisionally on diagonal block in D.
@@ -286,7 +286,7 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         //
         //        Test whether to reject swap.
         //
-        if (max(abs(d[(3 - 1)]), abs(d[(3 - 1) + (2 - 1) * ldd]), abs(d[(4 - 1)]), abs(d[(4 - 1) + (2 - 1) * ldd])) > thresh) {
+        if (max({abs(d[(3 - 1)]), abs(d[(3 - 1) + (2 - 1) * ldd]), abs(d[(4 - 1)]), abs(d[(4 - 1) + (2 - 1) * ldd])}) > thresh) {
             goto statement_50;
         }
         //
@@ -306,8 +306,8 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
             //
             //           Accumulate transformation in the matrix Q.
             //
-            Rlarfx("R", n, 3, u1, tau1, q[(j1 - 1) * ldq], ldq, work);
-            Rlarfx("R", n, 3, u2, tau2, q[(j2 - 1) * ldq], ldq, work);
+            Rlarfx("R", n, 3, u1, tau1, &q[(j1 - 1) * ldq], ldq, work);
+            Rlarfx("R", n, 3, u2, tau2, &q[(j2 - 1) * ldq], ldq, work);
         }
     //
     statement_40:
@@ -316,11 +316,11 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
             //
             //           Standardize new 2-by-2 block T11
             //
-            Rlanv2(t[(j1 - 1) + (j1 - 1) * ldt], &t[(j1 - 1) + (j2 - 1) * ldt], &t[(j2 - 1) + (j1 - 1) * ldt], &t[(j2 - 1) + (j2 - 1) * ldt], wr1, wi1, wr2, wi2, cs, sn);
+            Rlanv2(t[(j1 - 1) + (j1 - 1) * ldt], t[(j1 - 1) + (j2 - 1) * ldt], t[(j2 - 1) + (j1 - 1) * ldt], t[(j2 - 1) + (j2 - 1) * ldt], wr1, wi1, wr2, wi2, cs, sn);
             Rrot(n - j1 - 1, &t[(j1 - 1) + ((j1 + 2) - 1) * ldt], ldt, &t[(j2 - 1) + ((j1 + 2) - 1) * ldt], ldt, cs, sn);
             Rrot(j1 - 1, &t[(j1 - 1) * ldt], 1, &t[(j2 - 1) * ldt], 1, cs, sn);
             if (wantq) {
-                Rrot(n, q[(j1 - 1) * ldq], 1, q[(j2 - 1) * ldq], 1, cs, sn);
+                Rrot(n, &q[(j1 - 1) * ldq], 1, &q[(j2 - 1) * ldq], 1, cs, sn);
             }
         }
         //
@@ -330,13 +330,13 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
             //
             j3 = j1 + n2;
             j4 = j3 + 1;
-            Rlanv2(t[(j3 - 1) + (j3 - 1) * ldt], &t[(j3 - 1) + (j4 - 1) * ldt], &t[(j4 - 1) + (j3 - 1) * ldt], &t[(j4 - 1) + (j4 - 1) * ldt], wr1, wi1, wr2, wi2, cs, sn);
+            Rlanv2(t[(j3 - 1) + (j3 - 1) * ldt], t[(j3 - 1) + (j4 - 1) * ldt], t[(j4 - 1) + (j3 - 1) * ldt], t[(j4 - 1) + (j4 - 1) * ldt], wr1, wi1, wr2, wi2, cs, sn);
             if (j3 + 2 <= n) {
                 Rrot(n - j3 - 1, &t[(j3 - 1) + ((j3 + 2) - 1) * ldt], ldt, &t[(j4 - 1) + ((j3 + 2) - 1) * ldt], ldt, cs, sn);
             }
             Rrot(j3 - 1, &t[(j3 - 1) * ldt], 1, &t[(j4 - 1) * ldt], 1, cs, sn);
             if (wantq) {
-                Rrot(n, q[(j3 - 1) * ldq], 1, q[(j4 - 1) * ldq], 1, cs, sn);
+                Rrot(n, &q[(j3 - 1) * ldq], 1, &q[(j4 - 1) * ldq], 1, cs, sn);
             }
         }
         //
