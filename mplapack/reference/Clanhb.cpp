@@ -157,7 +157,7 @@ REAL Clanhb(const char *norm, const char *uplo, INTEGER const n, INTEGER const k
                 for (j = 2; j <= n; j = j + 1) {
                     colssq[1 - 1] = zero;
                     colssq[2 - 1] = one;
-                    Classq(min(j - 1, k), &ab[(max(k + 2 - j, 1) -1) + (j-1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
+                    Classq(min(j - 1, k), &ab[(max(k + 2 - j, 1) - 1) + (j - 1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
                     Rcombssq(ssq, colssq);
                 }
                 l = k + 1;

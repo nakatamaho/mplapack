@@ -129,16 +129,16 @@ statement_10:
         //                    *A(RK:M,K).
         //
         if (k > 1) {
-            Rgemv("Transpose", m - rk + 1, k - 1, -tau[k - 1], &a[(rk - 1)], lda, &a[(rk - 1) + (k - 1) * lda], 1, zero, auxv[1 - 1], 1);
+            Rgemv("Transpose", m - rk + 1, k - 1, -tau[k - 1], &a[(rk - 1)], lda, &a[(rk - 1) + (k - 1) * lda], 1, zero, &auxv[1 - 1], 1);
             //
-            Rgemv("No transpose", n, k - 1, one, f[(1 - 1)], ldf, auxv[1 - 1], 1, one, f[(k - 1) * ldf], 1);
+            Rgemv("No transpose", n, k - 1, one, &f[(1 - 1)], ldf, &auxv[1 - 1], 1, one, &f[(k - 1) * ldf], 1);
         }
         //
         //        Update the current row of A:
         //        A(RK,K+1:N) := A(RK,K+1:N) - A(RK,1:K)*F(K+1:N,1:K)**T.
         //
         if (k < n) {
-            Rgemv("No transpose", n - k, k, -one, f[((k + 1) - 1)], ldf, &a[(rk - 1)], lda, one, &a[(rk - 1) + ((k + 1) - 1) * lda], lda);
+            Rgemv("No transpose", n - k, k, -one, &f[((k + 1) - 1)], ldf, &a[(rk - 1)], lda, one, &a[(rk - 1) + ((k + 1) - 1) * lda], lda);
         }
         //
         //        Update partial column norms.
@@ -154,7 +154,7 @@ statement_10:
                     temp = max(zero, (one + temp) * (one - temp));
                     temp2 = temp * pow2((vn1[j - 1] / vn2[j - 1]));
                     if (temp2 <= tol3z) {
-                        vn2[j - 1] = lsticc.real();
+                        vn2[j - 1] = castREAL(lsticc);
                         lsticc = j;
                     } else {
                         vn1[j - 1] = vn1[j - 1] * sqrt(temp);
@@ -177,14 +177,14 @@ statement_10:
     //                         A(OFFSET+KB+1:M,1:KB)*F(KB+1:N,1:KB)**T.
     //
     if (kb < min(n, m - offset)) {
-        Rgemm("No transpose", "Transpose", m - rk, n - kb, kb, -one, &a[((rk + 1) - 1)], lda, f[((kb + 1) - 1)], ldf, one, &a[((rk + 1) - 1) + ((kb + 1) - 1) * lda], lda);
+        Rgemm("No transpose", "Transpose", m - rk, n - kb, kb, -one, &a[((rk + 1) - 1)], lda, &f[((kb + 1) - 1)], ldf, one, &a[((rk + 1) - 1) + ((kb + 1) - 1) * lda], lda);
     }
 //
 //     Recomputation of difficult columns.
 //
 statement_40:
     if (lsticc > 0) {
-        itemp = nint[vn2[lsticc - 1] - 1];
+        itemp = nint(vn2[lsticc - 1]);
         vn1[lsticc - 1] = Rnrm2(m - rk, &a[((rk + 1) - 1) + (lsticc - 1) * lda], 1);
         //
         //        NOTE: The computation of VN1( LSTICC ) relies on the fact that

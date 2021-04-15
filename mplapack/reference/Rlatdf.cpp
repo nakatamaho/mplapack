@@ -69,8 +69,8 @@ void Rlatdf(INTEGER const ijob, INTEGER const n, REAL *z, INTEGER const ldz, REA
     const REAL zero = 0.0;
     INTEGER i = 0;
     INTEGER k = 0;
-    REAL work[ 4 * maxdim ];
-    INTEGER iwork[ maxdim ];
+    REAL work[4 * maxdim];
+    INTEGER iwork[maxdim];
     INTEGER info = 0;
     REAL xm[maxdim];
     if (ijob != 2) {

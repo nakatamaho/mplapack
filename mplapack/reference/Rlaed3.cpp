@@ -30,8 +30,8 @@
 #include <mplapack.h>
 
 inline REAL Rlamc3(REAL a, REAL b) {
-  REAL c = a + b;
-  return c;
+    REAL c = a + b;
+    return c;
 }
 
 void Rlaed3(INTEGER const k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q, INTEGER const ldq, REAL const rho, REAL *dlamda, REAL *q2, INTEGER *indx, INTEGER *ctot, REAL *w, REAL *s, INTEGER &info) {
@@ -109,7 +109,7 @@ void Rlaed3(INTEGER const k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q
     //     this code.
     //
     for (i = 1; i <= k; i = i + 1) {
-      dlamda[i - 1] = Rlamc3(dlamda[i - 1], dlamda[i - 1]) - dlamda[i - 1];
+        dlamda[i - 1] = Rlamc3(dlamda[i - 1], dlamda[i - 1]) - dlamda[i - 1];
     }
     //
     for (j = 1; j <= k; j = j + 1) {
