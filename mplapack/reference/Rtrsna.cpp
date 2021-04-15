@@ -50,7 +50,7 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     REAL cond = 0.0;
     INTEGER ifst = 0;
     INTEGER ilst = 0;
-    arr_1d<1, REAL> dummy(fill0);
+    REAL dummy[1];
     INTEGER ierr = 0;
     REAL scale = 0.0;
     REAL est = 0.0;
@@ -64,7 +64,7 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     INTEGER j = 0;
     const REAL two = 2.0e+0;
     INTEGER kase = 0;
-    arr_1d<3, int> isave(fill0);
+    INTEGER isave[3];
     REAL dumm = 0.0;
     //
     //  -- LAPACK computational routine --
@@ -127,17 +127,17 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                 } else {
                     if (k < n) {
                         if (t[((k + 1) - 1) + (k - 1) * ldt] == zero) {
-                            if (select(k)) {
+                            if (select[k - 1]) {
                                 m++;
                             }
                         } else {
                             pair = true;
-                            if (select(k) || select(k + 1)) {
+                            if (select[k - 1] || select[(k + 1) - 1]) {
                                 m += 2;
                             }
                         }
                     } else {
-                        if (select(n)) {
+                        if (select[n - 1]) {
                             m++;
                         }
                     }
@@ -166,7 +166,7 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     //
     if (n == 1) {
         if (somcon) {
-            if (!select(1)) {
+            if (!select[1 - 1]) {
                 return;
             }
         }
@@ -206,11 +206,11 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         //
         if (somcon) {
             if (pair) {
-                if (!select(k) && !select(k + 1)) {
+                if (!select[k - 1] && !select[(k + 1) - 1]) {
                     goto statement_60;
                 }
             } else {
-                if (!select(k)) {
+                if (!select[k - 1]) {
                     goto statement_60;
                 }
             }
@@ -227,20 +227,20 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                 //
                 //              Real eigenvalue.
                 //
-                prod = Rdot(n, vr[(ks - 1) * ldvr], 1, vl[(ks - 1) * ldvl], 1);
-                rnrm = Rnrm2(n, vr[(ks - 1) * ldvr], 1);
-                lnrm = Rnrm2(n, vl[(ks - 1) * ldvl], 1);
+                prod = Rdot(n, &vr[(ks - 1) * ldvr], 1, &vl[(ks - 1) * ldvl], 1);
+                rnrm = Rnrm2(n, &vr[(ks - 1) * ldvr], 1);
+                lnrm = Rnrm2(n, &vl[(ks - 1) * ldvl], 1);
                 s[ks - 1] = abs(prod) / (rnrm * lnrm);
             } else {
                 //
                 //              Complex eigenvalue.
                 //
-                prod1 = Rdot(n, vr[(ks - 1) * ldvr], 1, vl[(ks - 1) * ldvl], 1);
-                prod1 += Rdot(n, vr[((ks + 1) - 1) * ldvr], 1, vl[((ks + 1) - 1) * ldvl], 1);
-                prod2 = Rdot(n, vl[(ks - 1) * ldvl], 1, vr[((ks + 1) - 1) * ldvr], 1);
-                prod2 = prod2 - Rdot(n, vl[((ks + 1) - 1) * ldvl], 1, vr[(ks - 1) * ldvr], 1);
-                rnrm = Rlapy2(Rnrm2(n, vr[(ks - 1) * ldvr], 1), Rnrm2(n, vr[((ks + 1) - 1) * ldvr], 1));
-                lnrm = Rlapy2(Rnrm2(n, vl[(ks - 1) * ldvl], 1), Rnrm2(n, vl[((ks + 1) - 1) * ldvl], 1));
+                prod1 = Rdot(n, &vr[(ks - 1) * ldvr], 1, &vl[(ks - 1) * ldvl], 1);
+                prod1 += Rdot(n, &vr[((ks + 1) - 1) * ldvr], 1, &vl[((ks + 1) - 1) * ldvl], 1);
+                prod2 = Rdot(n, &vl[(ks - 1) * ldvl], 1, &vr[((ks + 1) - 1) * ldvr], 1);
+                prod2 = prod2 - Rdot(n, &vl[((ks + 1) - 1) * ldvl], 1, &vr[(ks - 1) * ldvr], 1);
+                rnrm = Rlapy2(Rnrm2(n, &vr[(ks - 1) * ldvr], 1), Rnrm2(n, &vr[((ks + 1) - 1) * ldvr], 1));
+                lnrm = Rlapy2(Rnrm2(n, &vl[(ks - 1) * ldvl], 1), Rnrm2(n, &vl[((ks + 1) - 1) * ldvl], 1));
                 cond = Rlapy2(prod1, prod2) / (rnrm * lnrm);
                 s[ks - 1] = cond;
                 s[(ks + 1) - 1] = cond;
@@ -290,7 +290,7 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                     //                 with negative imaginary  part.
                     //
                     mu = sqrt(abs(work[(2 - 1) * ldwork])) * sqrt(abs(work[(2 - 1)]));
-                    delta = Rlapy2(mu, &work[(2 - 1)]);
+                    delta = Rlapy2(mu, work[(2 - 1)]);
                     cs = mu / delta;
                     sn = -work[(2 - 1)] / delta;
                     //

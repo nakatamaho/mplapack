@@ -114,6 +114,7 @@ Rlaqr4.cpp \
 Rlaqr0.cpp \
 Rlatbs.cpp \
 Rgelss.cpp \
+Rlaqtr.cpp \
 Rgsvj1.cpp \
 Csytf2_rook.cpp \
 Rlaed4.cpp \
