@@ -71,11 +71,11 @@ void Rlarzb(const char *side, const char *trans, const char *direct, const char 
         return;
     }
     //
-    str<1> transt = char0;
+    char transt;
     if (Mlsame(trans, "N")) {
-        transt = "T";
+        transt = 'T';
     } else {
-        transt = "N";
+        transt = 'N';
     }
     //
     INTEGER j = 0;
@@ -100,7 +100,7 @@ void Rlarzb(const char *side, const char *trans, const char *direct, const char 
         //
         //        W( 1:n, 1:k ) = W( 1:n, 1:k ) * T**T  or  W( 1:m, 1:k ) * T
         //
-        Rtrmm("Right", "Lower", transt, "Non-unit", n, k, one, t, ldt, work, ldwork);
+        Rtrmm("Right", "Lower", &transt, "Non-unit", n, k, one, t, ldt, work, ldwork);
         //
         //        C( 1:k, 1:n ) = C( 1:k, 1:n ) - W( 1:n, 1:k )**T
         //

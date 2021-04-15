@@ -125,7 +125,7 @@ void Rlaed7(INTEGER const icompq, INTEGER const n, INTEGER const qsiz, INTEGER c
         ptr += pow(2, (tlvls - i));
     }
     curr = ptr + curpbm;
-    dlaeda(n, tlvls, curlvl, curpbm, prmptr, perm, givptr, givcol, givnum, qstore, qptr, &work[iz - 1], &work[(iz + n) - 1], info);
+    Rlaeda(n, tlvls, curlvl, curpbm, prmptr, perm, givptr, givcol, givnum, qstore, qptr, &work[iz - 1], &work[(iz + n) - 1], info);
     //
     //     When solving the final problem, we no longer need the stored data,
     //     so we will overwrite the data from this level onto the previously
