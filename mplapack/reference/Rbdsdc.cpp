@@ -222,7 +222,7 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
     //
     eps = (0.9e+0) * Rlamch("Epsilon");
     //
-    mlvl = int(log(n.real() / smlsiz + 1.real()) / log(two)) + 1;
+    mlvl = castINTEGER(log(castREAL(n) / castREAL(smlsiz + 1)) / log(two)) + 1;
     smlszp = smlsiz + 1;
     //
     if (icompq == 1) {
@@ -244,7 +244,7 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
     //
     for (i = 1; i <= n; i = i + 1) {
         if (abs(d[i - 1]) < eps) {
-            d[i - 1] = sign(eps, &d[i - 1]);
+            d[i - 1] = sign(eps, d[i - 1]);
         }
     }
     //
@@ -275,16 +275,16 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
                 //
                 nsize = i - start + 1;
                 if (icompq == 2) {
-                    u[(n - 1) + (n - 1) * ldu] = sign(one, &d[n - 1]);
+                    u[(n - 1) + (n - 1) * ldu] = sign(one, d[n - 1]);
                     vt[(n - 1) + (n - 1) * ldvt] = one;
                 } else if (icompq == 1) {
-                    q[(n + (qstart - 1) * n) - 1] = sign(one, &d[n - 1]);
+                    q[(n + (qstart - 1) * n) - 1] = sign(one, d[n - 1]);
                     q[(n + (smlsiz + qstart - 1) * n) - 1] = one;
                 }
                 d[n - 1] = abs(d[n - 1]);
             }
             if (icompq == 2) {
-                Rlasd0(nsize, sqre, &d[start - 1], &e[start - 1], u[(start - 1) + (start - 1) * ldu], ldu, vt[(start - 1) + (start - 1) * ldvt], ldvt, smlsiz, iwork, &work[wstart - 1], info);
+                Rlasd0(nsize, sqre, &d[start - 1], &e[start - 1], &u[(start - 1) + (start - 1) * ldu], ldu, &vt[(start - 1) + (start - 1) * ldvt], ldvt, smlsiz, iwork, &work[wstart - 1], info);
             } else {
                 Rlasda(icompq, smlsiz, nsize, sqre, &d[start - 1], &e[start - 1], q[(start + (iu + qstart - 2) * n) - 1], n, q[(start + (ivt + qstart - 2) * n) - 1], iq[(start + k * n) - 1], q[(start + (difl + qstart - 2) * n) - 1], q[(start + (difr + qstart - 2) * n) - 1], q[(start + (z + qstart - 2) * n) - 1], q[(start + (poles + qstart - 2) * n) - 1], iq[(start + givptr * n) - 1], iq[(start + givcol * n) - 1], n, iq[(start + perm * n) - 1], q[(start + (givnum + qstart - 2) * n) - 1], q[(start + (ic + qstart - 2) * n) - 1], q[(start + (is + qstart - 2) * n) - 1], &work[wstart - 1], iwork, info);
             }
@@ -318,8 +318,8 @@ statement_40:
             if (icompq == 1) {
                 iq[i - 1] = kk;
             } else if (icompq == 2) {
-                Rswap(n, u[(i - 1) * ldu], 1, u[(kk - 1) * ldu], 1);
-                Rswap(n, vt[(i - 1)], ldvt, vt[(kk - 1)], ldvt);
+                Rswap(n, &u[(i - 1) * ldu], 1, &u[(kk - 1) * ldu], 1);
+                Rswap(n, &vt[(i - 1)], ldvt, &vt[(kk - 1)], ldvt);
             }
         } else if (icompq == 1) {
             iq[i - 1] = i;
