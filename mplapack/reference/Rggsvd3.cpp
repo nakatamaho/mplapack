@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const n, INTEGER const p, INTEGER const k, INTEGER const l, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alpha, REAL *beta, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *q, INTEGER const ldq, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
+void Rggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const n, INTEGER const p, INTEGER k, INTEGER l, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alpha, REAL *beta, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *q, INTEGER const ldq, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
     //
     //  -- LAPACK driver routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -95,10 +95,10 @@ void Rggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     REAL tolb = 0.0;
     if (info == 0) {
         Rggsvp3(jobu, jobv, jobq, m, p, n, a, lda, b, ldb, tola, tolb, k, l, u, ldu, v, ldv, q, ldq, iwork, work, work, -1, info);
-        lwkopt = n + int(work[1 - 1]);
+        lwkopt = n + castINTEGER(work[1 - 1]);
         lwkopt = max(2 * n, lwkopt);
         lwkopt = max((INTEGER)1, lwkopt);
-        work[1 - 1] = lwkopt.real();
+        work[1 - 1] = castREAL(lwkopt);
     }
     //
     if (info != 0) {
@@ -163,7 +163,7 @@ void Rggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
         }
     }
     //
-    work[1 - 1] = lwkopt.real();
+    work[1 - 1] = castREAL(lwkopt);
     //
     //     End of Rggsvd3
     //

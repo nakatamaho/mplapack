@@ -35,12 +35,12 @@ void Rgbcon(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
     const REAL one = 1.0;
     REAL smlnum = 0.0;
     REAL ainvnm = 0.0;
-    str<1> normin = char0;
+    char normin;
     INTEGER kase1 = 0;
     INTEGER kd = 0;
     bool lnoti = false;
     INTEGER kase = 0;
-    arr_1d<3, int> isave(fill0);
+    INTEGER isave[3];
     INTEGER j = 0;
     INTEGER lm = 0;
     INTEGER jp = 0;
@@ -110,7 +110,7 @@ void Rgbcon(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
     //     Estimate the norm of inv(A).
     //
     ainvnm = zero;
-    normin = "N";
+    normin = 'N';
     if (onenrm) {
         kase1 = 1;
     } else {
@@ -135,25 +135,25 @@ statement_10:
                         work[jp - 1] = work[j - 1];
                         work[j - 1] = t;
                     }
-                    Raxpy(lm, -t, ab[((kd + 1) - 1) + (j - 1) * ldab], 1, &work[(j + 1) - 1], 1);
+                    Raxpy(lm, -t, &ab[((kd + 1) - 1) + (j - 1) * ldab], 1, &work[(j + 1) - 1], 1);
                 }
             }
             //
             //           Multiply by inv(U).
             //
-            Rlatbs("Upper", "No transpose", "Non-unit", normin, n, kl + ku, ab, ldab, work, scale, &work[(2 * n + 1) - 1], info);
+            Rlatbs("Upper", "No transpose", "Non-unit", &normin, n, kl + ku, ab, ldab, work, scale, &work[(2 * n + 1) - 1], info);
         } else {
             //
             //           Multiply by inv(U**T).
             //
-            Rlatbs("Upper", "Transpose", "Non-unit", normin, n, kl + ku, ab, ldab, work, scale, &work[(2 * n + 1) - 1], info);
+            Rlatbs("Upper", "Transpose", "Non-unit", &normin, n, kl + ku, ab, ldab, work, scale, &work[(2 * n + 1) - 1], info);
             //
             //           Multiply by inv(L**T).
             //
             if (lnoti) {
                 for (j = n - 1; j >= 1; j = j - 1) {
                     lm = min(kl, n - j);
-                    work[j - 1] = work[j - 1] - Rdot(lm, ab[((kd + 1) - 1) + (j - 1) * ldab], 1, &work[(j + 1) - 1], 1);
+                    work[j - 1] = work[j - 1] - Rdot(lm, &ab[((kd + 1) - 1) + (j - 1) * ldab], 1, &work[(j + 1) - 1], 1);
                     jp = ipiv[j - 1];
                     if (jp != j) {
                         t = work[jp - 1];
@@ -166,7 +166,7 @@ statement_10:
         //
         //        Divide X by 1/SCALE if doing so will not cause overflow.
         //
-        normin = "Y";
+        normin = 'Y';
         if (scale != one) {
             ix = iRamax(n, work, 1);
             if (scale < abs(work[ix - 1]) * smlnum || scale == zero) {

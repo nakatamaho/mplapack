@@ -154,18 +154,18 @@ void Rgghrd(const char *compq, const char *compz, INTEGER const n, INTEGER const
             //           Step 1: rotate rows JROW-1, JROW to kill A(JROW,JCOL)
             //
             temp = a[((jrow - 1) - 1) + (jcol - 1) * lda];
-            Rlartg(temp, &a[(jrow - 1) + (jcol - 1) * lda], c, s, &a[((jrow - 1) - 1) + (jcol - 1) * lda]);
+            Rlartg(temp, a[(jrow - 1) + (jcol - 1) * lda], c, s, a[((jrow - 1) - 1) + (jcol - 1) * lda]);
             a[(jrow - 1) + (jcol - 1) * lda] = zero;
             Rrot(n - jcol, &a[((jrow - 1) - 1) + ((jcol + 1) - 1) * lda], lda, &a[(jrow - 1) + ((jcol + 1) - 1) * lda], lda, c, s);
             Rrot(n + 2 - jrow, &b[((jrow - 1) - 1) + ((jrow - 1) - 1) * ldb], ldb, &b[(jrow - 1) + ((jrow - 1) - 1) * ldb], ldb, c, s);
             if (ilq) {
-                Rrot(n, q[((jrow - 1) - 1) * ldq], 1, q[(jrow - 1) * ldq], 1, c, s);
+                Rrot(n, &q[((jrow - 1) - 1) * ldq], 1, &q[(jrow - 1) * ldq], 1, c, s);
             }
             //
             //           Step 2: rotate columns JROW, JROW-1 to kill B(JROW,JROW-1)
             //
             temp = b[(jrow - 1) + (jrow - 1) * ldb];
-            Rlartg(temp, &b[(jrow - 1) + ((jrow - 1) - 1) * ldb], c, s, &b[(jrow - 1) + (jrow - 1) * ldb]);
+            Rlartg(temp, b[(jrow - 1) + ((jrow - 1) - 1) * ldb], c, s, b[(jrow - 1) + (jrow - 1) * ldb]);
             b[(jrow - 1) + ((jrow - 1) - 1) * ldb] = zero;
             Rrot(ihi, &a[(jrow - 1) * lda], 1, &a[((jrow - 1) - 1) * lda], 1, c, s);
             Rrot(jrow - 1, &b[(jrow - 1) * ldb], 1, &b[((jrow - 1) - 1) * ldb], 1, c, s);

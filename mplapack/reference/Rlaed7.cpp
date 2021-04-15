@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaed7(INTEGER const icompq, INTEGER const n, INTEGER const qsiz, INTEGER const tlvls, INTEGER const curlvl, INTEGER const curpbm, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq, REAL const rho, INTEGER const cutpnt, REAL *qstore, INTEGER *qptr, INTEGER *prmptr, INTEGER *perm, INTEGER *givptr, INTEGER *givcol, REAL *givnum, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rlaed7(INTEGER const icompq, INTEGER const n, INTEGER const qsiz, INTEGER const tlvls, INTEGER const curlvl, INTEGER const curpbm, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq, REAL rho, INTEGER const cutpnt, REAL *qstore, INTEGER *qptr, INTEGER *prmptr, INTEGER *perm, INTEGER *givptr, INTEGER *givcol, REAL *givnum, REAL *work, INTEGER *iwork, INTEGER &info) {
     INTEGER ldq2 = 0;
     INTEGER iz = 0;
     INTEGER idlmda = 0;
@@ -139,19 +139,19 @@ void Rlaed7(INTEGER const icompq, INTEGER const n, INTEGER const qsiz, INTEGER c
     //
     //     Sort and Deflate eigenvalues.
     //
-    Rlaed8(icompq, k, n, qsiz, d, q, ldq, indxq, rho, cutpnt, &work[iz - 1], &work[idlmda - 1], &work[iq2 - 1], ldq2, &work[iw - 1], perm[prmptr[curr - 1] - 1], givptr[(curr + 1) - 1], givcol[(givptr[curr - 1] - 1) * 2], givnum[(givptr[curr - 1] - 1) * 2], iwork[indxp - 1], iwork[indx - 1], info);
+    Rlaed8(icompq, k, n, qsiz, d, q, ldq, indxq, rho, cutpnt, &work[iz - 1], &work[idlmda - 1], &work[iq2 - 1], ldq2, &work[iw - 1], &perm[prmptr[curr - 1] - 1], givptr[(curr + 1) - 1], &givcol[(givptr[curr - 1] - 1) * 2], &givnum[(givptr[curr - 1] - 1) * 2], &iwork[indxp - 1], &iwork[indx - 1], info);
     prmptr[(curr + 1) - 1] = prmptr[curr - 1] + n;
     givptr[(curr + 1) - 1] += givptr[curr - 1];
     //
     //     Solve Secular Equation.
     //
     if (k != 0) {
-        Rlaed9(k, 1, k, n, d, &work[is - 1], k, rho, work[idlmda - 1], &work[iw - 1], qstore[qptr[curr - 1] - 1], k, info);
+        Rlaed9(k, 1, k, n, d, &work[is - 1], k, rho, &work[idlmda - 1], &work[iw - 1], &qstore[qptr[curr - 1] - 1], k, info);
         if (info != 0) {
             goto statement_30;
         }
         if (icompq == 1) {
-            Rgemm("N", "N", qsiz, k, k, one, &work[iq2 - 1], ldq2, qstore[qptr[curr - 1] - 1], k, zero, q, ldq);
+            Rgemm("N", "N", qsiz, k, k, one, &work[iq2 - 1], ldq2, &qstore[qptr[curr - 1] - 1], k, zero, q, ldq);
         }
         qptr[(curr + 1) - 1] = qptr[curr - 1] + pow2(k);
         //
