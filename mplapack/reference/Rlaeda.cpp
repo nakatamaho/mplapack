@@ -88,15 +88,15 @@ void Rlaeda(INTEGER const n, INTEGER const tlvls, INTEGER const curlvl, INTEGER 
     //     roots.
     //
     const REAL half = 0.5e0;
-    INTEGER bsiz1 = int(half + sqrt(qptr[(curr + 1) - 1] - qptr[curr - 1].real()));
-    INTEGER bsiz2 = int(half + sqrt(qptr[(curr + 2) - 1] - qptr[(curr + 1) - 1].real()));
+    INTEGER bsiz1 = castINTEGER(half + sqrt(castREAL(qptr[(curr + 1) - 1] - qptr[curr - 1])));
+    INTEGER bsiz2 = castINTEGER(half + sqrt(castREAL(qptr[(curr + 2) - 1] - qptr[(curr + 1) - 1])));
     INTEGER k = 0;
     const REAL zero = 0.0;
     for (k = 1; k <= mid - bsiz1 - 1; k = k + 1) {
         z[k - 1] = zero;
     }
-    Rcopy(bsiz1, q[(qptr[curr - 1] + bsiz1 - 1) - 1], bsiz1, &z[(mid - bsiz1) - 1], 1);
-    Rcopy(bsiz2, q[(qptr[(curr + 1) - 1]) - 1], bsiz2, &z[mid - 1], 1);
+    Rcopy(bsiz1, &q[(qptr[curr - 1] + bsiz1 - 1) - 1], bsiz1, &z[(mid - bsiz1) - 1], 1);
+    Rcopy(bsiz2, &q[(qptr[(curr + 1) - 1]) - 1], bsiz2, &z[mid - 1], 1);
     for (k = mid + bsiz2; k <= n; k = k + 1) {
         z[k - 1] = zero;
     }
@@ -120,10 +120,10 @@ void Rlaeda(INTEGER const n, INTEGER const tlvls, INTEGER const curlvl, INTEGER 
         //       Apply Givens at CURR and CURR+1
         //
         for (i = givptr[curr - 1]; i <= givptr[(curr + 1) - 1] - 1; i = i + 1) {
-            Rrot(1, &z[(zptr1 + givcol[(i - 1) * ldgivcol] - 1) - 1], 1, &z[(zptr1 + givcol[(2 - 1) + (i - 1) * ldgivcol] - 1) - 1], 1, givnum[(i - 1) * ldgivnum], givnum[(2 - 1) + (i - 1) * ldgivnum]);
+            Rrot(1, &z[(zptr1 + givcol[(i - 1) * 2] - 1) - 1], 1, &z[(zptr1 + givcol[(2 - 1) + (i - 1) * 2] - 1) - 1], 1, givnum[(i - 1) * 2], givnum[(2 - 1) + (i - 1) * 2]);
         }
         for (i = givptr[(curr + 1) - 1]; i <= givptr[(curr + 2) - 1] - 1; i = i + 1) {
-            Rrot(1, &z[(mid - 1 + givcol[(i - 1) * ldgivcol]) - 1], 1, &z[(mid - 1 + givcol[(2 - 1) + (i - 1) * ldgivcol]) - 1], 1, givnum[(i - 1) * ldgivnum], givnum[(2 - 1) + (i - 1) * ldgivnum]);
+            Rrot(1, &z[(mid - 1 + givcol[(i - 1) * 2]) - 1], 1, &z[(mid - 1 + givcol[(2 - 1) + (i - 1) * 2]) - 1], 1, givnum[(i - 1) * 2], givnum[(2 - 1) + (i - 1) * 2]);
         }
         psiz1 = prmptr[(curr + 1) - 1] - prmptr[curr - 1];
         psiz2 = prmptr[(curr + 2) - 1] - prmptr[(curr + 1) - 1];
@@ -140,16 +140,16 @@ void Rlaeda(INTEGER const n, INTEGER const tlvls, INTEGER const curlvl, INTEGER 
         //        the SQRT in case the machine underestimates one of these
         //        square roots.
         //
-        bsiz1 = int(half + sqrt(qptr[(curr + 1) - 1] - qptr[curr - 1].real()));
-        bsiz2 = int(half + sqrt(qptr[(curr + 2) - 1] - qptr[(curr + 1) - 1].real()));
+        bsiz1 = castINTEGER(half + sqrt(castREAL(qptr[(curr + 1) - 1] - qptr[curr - 1])));
+        bsiz2 = castINTEGER(half + sqrt(castREAL(qptr[(curr + 2) - 1] - qptr[(curr + 1) - 1])));
         if (bsiz1 > 0) {
-            Rgemv("T", bsiz1, bsiz1, one, q[qptr[curr - 1] - 1], bsiz1, ztemp[1 - 1], 1, zero, &z[zptr1 - 1], 1);
+            Rgemv("T", bsiz1, bsiz1, one, &q[qptr[curr - 1] - 1], bsiz1, &ztemp[1 - 1], 1, zero, &z[zptr1 - 1], 1);
         }
-        Rcopy(psiz1 - bsiz1, ztemp[(bsiz1 + 1) - 1], 1, &z[(zptr1 + bsiz1) - 1], 1);
+        Rcopy(psiz1 - bsiz1, &ztemp[(bsiz1 + 1) - 1], 1, &z[(zptr1 + bsiz1) - 1], 1);
         if (bsiz2 > 0) {
-            Rgemv("T", bsiz2, bsiz2, one, q[(qptr[(curr + 1) - 1]) - 1], bsiz2, ztemp[(psiz1 + 1) - 1], 1, zero, &z[mid - 1], 1);
+            Rgemv("T", bsiz2, bsiz2, one, &q[(qptr[(curr + 1) - 1]) - 1], bsiz2, &ztemp[(psiz1 + 1) - 1], 1, zero, &z[mid - 1], 1);
         }
-        Rcopy(psiz2 - bsiz2, ztemp[(psiz1 + bsiz2 + 1) - 1], 1, &z[(mid + bsiz2) - 1], 1);
+        Rcopy(psiz2 - bsiz2, &ztemp[(psiz1 + bsiz2 + 1) - 1], 1, &z[(mid + bsiz2) - 1], 1);
         //
         ptr += pow(2, (tlvls - k));
     }

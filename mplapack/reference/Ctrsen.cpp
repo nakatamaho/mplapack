@@ -41,7 +41,7 @@ void Ctrsen(const char *job, const char *compq, bool *select, INTEGER const n, C
     bool lquery = false;
     INTEGER lwmin = 0;
     const REAL one = 1.0;
-    arr_1d<1, REAL> rwork(fill0);
+    REAL rwork[1];
     INTEGER ks = 0;
     INTEGER ierr = 0;
     REAL scale = 0.0;
@@ -49,7 +49,7 @@ void Ctrsen(const char *job, const char *compq, bool *select, INTEGER const n, C
     const REAL zero = 0.0;
     REAL est = 0.0;
     INTEGER kase = 0;
-    arr_1d<3, int> isave(fill0);
+    INTEGER isave[3];
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -87,7 +87,7 @@ void Ctrsen(const char *job, const char *compq, bool *select, INTEGER const n, C
     //
     m = 0;
     for (k = 1; k <= n; k = k + 1) {
-        if (select(k)) {
+        if (select[k - 1]) {
             m++;
         }
     }
@@ -148,7 +148,7 @@ void Ctrsen(const char *job, const char *compq, bool *select, INTEGER const n, C
     //
     ks = 0;
     for (k = 1; k <= n; k = k + 1) {
-        if (select(k)) {
+        if (select[k - 1]) {
             ks++;
             //
             //           Swap the K-th eigenvalue to position KS.
