@@ -120,8 +120,8 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
             rcmin = bignum;
             rcmax = zero;
             for (j = 1; j <= n; j = j + 1) {
-                rcmin = min(rcmin, &c[j - 1]);
-                rcmax = max(rcmax, &c[j - 1]);
+                rcmin = min(rcmin, c[j - 1]);
+                rcmax = max(rcmax, c[j - 1]);
             }
             if (rcmin <= zero) {
                 info = -14;
@@ -192,7 +192,7 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         for (j = 1; j <= n; j = j + 1) {
             j1 = max(j - ku, 1);
             j2 = min(j + kl, n);
-            Rcopy(j2 - j1 + 1, ab[((ku + 1 - j + j1) - 1) + (j - 1) * ldab], 1, afb[((kl + ku + 1 - j + j1) - 1) + (j - 1) * ldafb], 1);
+            Rcopy(j2 - j1 + 1, &ab[((ku + 1 - j + j1) - 1) + (j - 1) * ldab], 1, &afb[((kl + ku + 1 - j + j1) - 1) + (j - 1) * ldafb], 1);
         }
         //
         Rgbtrf(n, n, kl, ku, afb, ldafb, ipiv, info);

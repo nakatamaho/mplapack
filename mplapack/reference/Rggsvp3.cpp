@@ -96,7 +96,7 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     //
     if (info == 0) {
         Rgeqp3(p, n, b, ldb, iwork, tau, work, -1, info);
-        lwkopt = int(work[1 - 1]);
+        lwkopt = castINTEGER(work[1 - 1]);
         if (wantv) {
             lwkopt = max(lwkopt, p);
         }
@@ -106,9 +106,9 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
             lwkopt = max(lwkopt, n);
         }
         Rgeqp3(m, n, a, lda, iwork, tau, work, -1, info);
-        lwkopt = max(lwkopt, int(work[1 - 1]));
+        lwkopt = max(lwkopt, castINTEGER(work[1 - 1]));
         lwkopt = max((INTEGER)1, lwkopt);
-        work[1 - 1] = lwkopt.real();
+        work[1 - 1] = castREAL(lwkopt);
     }
     //
     if (info != 0) {
@@ -234,7 +234,7 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
         //
         Rlaset("Full", m, m, zero, zero, u, ldu);
         if (m > 1) {
-            Rlacpy("Lower", m - 1, n - l, &a[(2 - 1)], lda, u[(2 - 1)], ldu);
+            Rlacpy("Lower", m - 1, n - l, &a[(2 - 1)], lda, &u[(2 - 1)], ldu);
         }
         Rorg2r(m, m, min(m, n - l), u, ldu, tau, work, info);
     }
@@ -292,7 +292,7 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
             //
             //           Update U(:,K+1:M) := U(:,K+1:M)*U1
             //
-            Rorm2r("Right", "No transpose", m, m - k, min(m - k, l), &a[((k + 1) - 1) + ((n - l + 1) - 1) * lda], lda, tau, u[((k + 1) - 1) * ldu], ldu, work, info);
+            Rorm2r("Right", "No transpose", m, m - k, min(m - k, l), &a[((k + 1) - 1) + ((n - l + 1) - 1) * lda], lda, tau, &u[((k + 1) - 1) * ldu], ldu, work, info);
         }
         //
         //        Clean up
@@ -305,7 +305,7 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
         //
     }
     //
-    work[1 - 1] = lwkopt.real();
+    work[1 - 1] = castREAL(lwkopt);
     //
     //     End of Rggsvp3
     //

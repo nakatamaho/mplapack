@@ -64,8 +64,8 @@ REAL Rlantr(const char *norm, const char *uplo, const char *diag, INTEGER const 
     INTEGER i = 0;
     REAL sum = 0.0;
     bool udiag = false;
-    arr_1d<2, REAL> ssq(fill0);
-    arr_1d<2, REAL> colssq(fill0);
+    REAL ssq[2];
+    REAL colssq[2];
     if (min(m, n) == 0) {
         value = zero;
     } else if (Mlsame(norm, "M")) {
@@ -245,7 +245,7 @@ REAL Rlantr(const char *norm, const char *uplo, const char *diag, INTEGER const 
                 for (j = 1; j <= n; j = j + 1) {
                     colssq[1 - 1] = zero;
                     colssq[2 - 1] = one;
-                    Rlassq(m - j, &a[(min(m - 1) + ((j + 1)) - 1) * lda], 1, colssq[1 - 1], colssq[2 - 1]);
+                    Rlassq(m - j, &a[(min(m, j + 1) - 1) + (j - 1) * lda], 1, colssq[1 - 1], colssq[2 - 1]);
                     Rcombssq(ssq, colssq);
                 }
             } else {
