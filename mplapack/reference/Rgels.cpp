@@ -39,7 +39,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
     REAL smlnum = 0.0;
     const REAL one = 1.0;
     REAL bignum = 0.0;
-    arr_1d<1, REAL> rwork(fill0);
+    REAL rwork[1];
     REAL anrm = 0.0;
     INTEGER iascl = 0;
     INTEGER brow = 0;
@@ -89,7 +89,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
         info = -4;
     } else if (lda < max((INTEGER)1, m)) {
         info = -6;
-    } else if (ldb < max((INTEGER)1, m, n)) {
+    } else if (ldb < max({(INTEGER)1, m, n})) {
         info = -8;
     } else if (lwork < max((INTEGER)1, mn + max(mn, nrhs)) && !lquery) {
         info = -10;
@@ -121,7 +121,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
         }
         //
         wsize = max((INTEGER)1, mn + max(mn, nrhs) * nb);
-        work[1 - 1] = wsize.real();
+        work[1 - 1] = castREAL(wsize);
         //
     }
     //
@@ -134,7 +134,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
     //
     //     Quick return if possible
     //
-    if (min(m, n, nrhs) == 0) {
+    if (min({m, n, nrhs}) == 0) {
         Rlaset("Full", max(m, n), nrhs, zero, zero, b, ldb);
         return;
     }
@@ -321,7 +321,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
     }
 //
 statement_50:
-    work[1 - 1] = wsize.real();
+    work[1 - 1] = castREAL(wsize);
     //
     //     End of Rgels
     //

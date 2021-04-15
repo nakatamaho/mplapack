@@ -51,9 +51,9 @@ void Rlaed2(INTEGER &k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q, INT
     REAL s = 0.0;
     REAL c = 0.0;
     REAL tau = 0.0;
-    arr_1d<4, int> ctot(fill0);
+    INTEGER ctot[4];
     INTEGER ct = 0;
-    arr_1d<4, int> psm(fill0);
+    INTEGER psm[4];
     INTEGER js = 0;
     INTEGER iq1 = 0;
     //
@@ -153,7 +153,7 @@ void Rlaed2(INTEGER &k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q, INT
         iq2 = 1;
         for (j = 1; j <= n; j = j + 1) {
             i = indx[j - 1];
-            Rcopy(n, q[(i - 1) * ldq], 1, q2[iq2 - 1], 1);
+            Rcopy(n, &q[(i - 1) * ldq], 1, &q2[iq2 - 1], 1);
             dlamda[j - 1] = d[i - 1];
             iq2 += n;
         }
@@ -231,7 +231,7 @@ statement_80:
                 coltyp[nj - 1] = 2;
             }
             coltyp[pj - 1] = 4;
-            Rrot(n, q[(pj - 1) * ldq], 1, q[(nj - 1) * ldq], 1, c, s);
+            Rrot(n, &q[(pj - 1) * ldq], 1, &q[(nj - 1) * ldq], 1, c, s);
             t = d[pj - 1] * pow2(c) + d[nj - 1] * pow2(s);
             d[nj - 1] = d[pj - 1] * pow2(s) + d[nj - 1] * pow2(c);
             d[pj - 1] = t;
@@ -312,7 +312,7 @@ statement_100:
     iq2 = 1 + (ctot[1 - 1] + ctot[2 - 1]) * n1;
     for (j = 1; j <= ctot[1 - 1]; j = j + 1) {
         js = indx[i - 1];
-        Rcopy(n1, q[(js - 1) * ldq], 1, q2[iq1 - 1], 1);
+        Rcopy(n1, &q[(js - 1) * ldq], 1, &q2[iq1 - 1], 1);
         z[i - 1] = d[js - 1];
         i++;
         iq1 += n1;
@@ -320,8 +320,8 @@ statement_100:
     //
     for (j = 1; j <= ctot[2 - 1]; j = j + 1) {
         js = indx[i - 1];
-        Rcopy(n1, q[(js - 1) * ldq], 1, q2[iq1 - 1], 1);
-        Rcopy(n2, q[((n1 + 1) - 1) + (js - 1) * ldq], 1, q2[iq2 - 1], 1);
+        Rcopy(n1, &q[(js - 1) * ldq], 1, &q2[iq1 - 1], 1);
+        Rcopy(n2, &q[((n1 + 1) - 1) + (js - 1) * ldq], 1, &q2[iq2 - 1], 1);
         z[i - 1] = d[js - 1];
         i++;
         iq1 += n1;
@@ -330,7 +330,7 @@ statement_100:
     //
     for (j = 1; j <= ctot[3 - 1]; j = j + 1) {
         js = indx[i - 1];
-        Rcopy(n2, q[((n1 + 1) - 1) + (js - 1) * ldq], 1, q2[iq2 - 1], 1);
+        Rcopy(n2, &q[((n1 + 1) - 1) + (js - 1) * ldq], 1, &q2[iq2 - 1], 1);
         z[i - 1] = d[js - 1];
         i++;
         iq2 += n2;
@@ -339,7 +339,7 @@ statement_100:
     iq1 = iq2;
     for (j = 1; j <= ctot[4 - 1]; j = j + 1) {
         js = indx[i - 1];
-        Rcopy(n, q[(js - 1) * ldq], 1, q2[iq2 - 1], 1);
+        Rcopy(n, &q[(js - 1) * ldq], 1, &q2[iq2 - 1], 1);
         iq2 += n;
         z[i - 1] = d[js - 1];
         i++;
@@ -349,7 +349,7 @@ statement_100:
     //     into the last N - K slots of D and Q respectively.
     //
     if (k < n) {
-        Rlacpy("A", n, ctot[4 - 1], q2[iq1 - 1], n, q[((k + 1) - 1) * ldq], ldq);
+        Rlacpy("A", n, ctot[4 - 1], &q2[iq1 - 1], n, &q[((k + 1) - 1) * ldq], ldq);
         Rcopy(n - k, &z[(k + 1) - 1], 1, &d[(k + 1) - 1], 1);
     }
     //

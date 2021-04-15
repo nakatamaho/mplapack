@@ -110,7 +110,7 @@ void Rstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
             liwmin = 1;
             lwmin = 2 * (n - 1);
         } else {
-            lgn = int(log(n.real()) / log(two));
+            lgn = castINTEGER(log(castREAL(n)) / log(two));
             if (pow(2, lgn) < n) {
                 lgn++;
             }

@@ -33,8 +33,8 @@ void Rgtrfs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
     bool notran = false;
     INTEGER j = 0;
     const REAL zero = 0.0;
-    str<1> transn = char0;
-    str<1> transt = char0;
+    char transn;
+    char transt;
     INTEGER nz = 0;
     REAL eps = 0.0;
     REAL safmin = 0.0;
@@ -49,7 +49,7 @@ void Rgtrfs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
     const REAL two = 2.0e+0;
     const INTEGER itmax = 5;
     INTEGER kase = 0;
-    arr_1d<3, int> isave(fill0);
+    INTEGER isave[3];
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -107,11 +107,11 @@ void Rgtrfs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
     }
     //
     if (notran) {
-        transn = "N";
-        transt = "T";
+        transn = 'N';
+        transt = 'T';
     } else {
-        transn = "T";
-        transt = "N";
+        transn = 'T';
+        transt = 'N';
     }
     //
     //     NZ = maximum number of nonzero elements in each row of A, plus 1
@@ -136,7 +136,7 @@ void Rgtrfs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
         //        where op(A) = A, A**T, or A**H, depending on TRANS.
         //
         Rcopy(n, &b[(j - 1) * ldb], 1, &work[(n + 1) - 1], 1);
-        Rlagtm(trans, n, 1, -one, dl, d, du, x[(j - 1) * ldx], ldx, one, &work[(n + 1) - 1], n);
+        Rlagtm(trans, n, 1, -one, dl, d, du, &x[(j - 1) * ldx], ldx, one, &work[(n + 1) - 1], n);
         //
         //        Compute abs(op(A))*abs(x) + abs(b) for use in the backward
         //        error bound.
@@ -193,7 +193,7 @@ void Rgtrfs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
             //           Update solution and try again.
             //
             Rgttrs(trans, n, 1, dlf, df, duf, du2, ipiv, &work[(n + 1) - 1], n, info);
-            Raxpy(n, one, &work[(n + 1) - 1], 1, x[(j - 1) * ldx], 1);
+            Raxpy(n, one, &work[(n + 1) - 1], 1, &x[(j - 1) * ldx], 1);
             lstres = berr[j - 1];
             count++;
             goto statement_20;
@@ -237,7 +237,7 @@ void Rgtrfs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
                 //
                 //              Multiply by diag(W)*inv(op(A)**T).
                 //
-                Rgttrs(transt, n, 1, dlf, df, duf, du2, ipiv, &work[(n + 1) - 1], n, info);
+                Rgttrs(&transt, n, 1, dlf, df, duf, du2, ipiv, &work[(n + 1) - 1], n, info);
                 for (i = 1; i <= n; i = i + 1) {
                     work[(n + i) - 1] = work[i - 1] * work[(n + i) - 1];
                 }
@@ -248,7 +248,7 @@ void Rgtrfs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
                 for (i = 1; i <= n; i = i + 1) {
                     work[(n + i) - 1] = work[i - 1] * work[(n + i) - 1];
                 }
-                Rgttrs(transn, n, 1, dlf, df, duf, du2, ipiv, &work[(n + 1) - 1], n, info);
+                Rgttrs(&transn, n, 1, dlf, df, duf, du2, ipiv, &work[(n + 1) - 1], n, info);
             }
             goto statement_70;
         }

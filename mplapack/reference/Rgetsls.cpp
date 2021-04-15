@@ -35,8 +35,8 @@ void Rgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
     INTEGER mnk = 0;
     bool tran = false;
     bool lquery = false;
-    arr_1d<5, REAL> tq(fill0);
-    arr_1d<1, REAL> workq(fill0);
+    REAL tq[5];
+    REAL workq[1];
     INTEGER info2 = 0;
     INTEGER tszo = 0;
     INTEGER lwo = 0;
@@ -102,7 +102,7 @@ void Rgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
         info = -4;
     } else if (lda < max((INTEGER)1, m)) {
         info = -6;
-    } else if (ldb < max((INTEGER)1, m, n)) {
+    } else if (ldb < max({(INTEGER)1, m, n})) {
         info = -8;
     }
     //
@@ -112,28 +112,28 @@ void Rgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
         //
         if (m >= n) {
             Rgeqr(m, n, a, lda, tq, -1, workq, -1, info2);
-            tszo = int(tq[1 - 1]);
-            lwo = int(workq[1 - 1]);
+            tszo = castINTEGER(tq[1 - 1]);
+            lwo = castINTEGER(workq[1 - 1]);
             Rgemqr("L", trans, m, nrhs, n, a, lda, tq, tszo, b, ldb, workq, -1, info2);
-            lwo = max(lwo, int(workq[1 - 1]));
+            lwo = max(lwo, castINTEGER(workq[1 - 1]));
             Rgeqr(m, n, a, lda, tq, -2, workq, -2, info2);
-            tszm = int(tq[1 - 1]);
-            lwm = int(workq[1 - 1]);
+            tszm = castINTEGER(tq[1 - 1]);
+            lwm = castINTEGER(workq[1 - 1]);
             Rgemqr("L", trans, m, nrhs, n, a, lda, tq, tszm, b, ldb, workq, -1, info2);
-            lwm = max(lwm, int(workq[1 - 1]));
+            lwm = max(lwm, castINTEGER(workq[1 - 1]));
             wsizeo = tszo + lwo;
             wsizem = tszm + lwm;
         } else {
             Rgelq(m, n, a, lda, tq, -1, workq, -1, info2);
-            tszo = int(tq[1 - 1]);
-            lwo = int(workq[1 - 1]);
+            tszo = castINTEGER(tq[1 - 1]);
+            lwo = castINTEGER(workq[1 - 1]);
             Rgemlq("L", trans, n, nrhs, m, a, lda, tq, tszo, b, ldb, workq, -1, info2);
-            lwo = max(lwo, int(workq[1 - 1]));
+            lwo = max(lwo, castINTEGER(workq[1 - 1]));
             Rgelq(m, n, a, lda, tq, -2, workq, -2, info2);
-            tszm = int(tq[1 - 1]);
-            lwm = int(workq[1 - 1]);
+            tszm = castINTEGER(tq[1 - 1]);
+            lwm = castINTEGER(workq[1 - 1]);
             Rgemlq("L", trans, n, nrhs, m, a, lda, tq, tszm, b, ldb, workq, -1, info2);
-            lwm = max(lwm, int(workq[1 - 1]));
+            lwm = max(lwm, castINTEGER(workq[1 - 1]));
             wsizeo = tszo + lwo;
             wsizem = tszm + lwm;
         }
@@ -146,15 +146,15 @@ void Rgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
     //
     if (info != 0) {
         Mxerbla("Rgetsls", -info);
-        work[1 - 1] = wsizeo.real();
+        work[1 - 1] = castREAL(wsizeo);
         return;
     }
     if (lquery) {
         if (lwork == -1) {
-            work[1 - 1] = real[wsizeo - 1];
+            work[1 - 1] = castREAL(wsizeo);
         }
         if (lwork == -2) {
-            work[1 - 1] = real[wsizem - 1];
+            work[1 - 1] = castREAL(wsizem);
         }
         return;
     }
@@ -168,7 +168,7 @@ void Rgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
     //
     //     Quick return if possible
     //
-    if (min(m, n, nrhs) == 0) {
+    if (min({m, n, nrhs}) == 0) {
         Rlaset("FULL", max(m, n), nrhs, zero, zero, b, ldb);
         return;
     }
@@ -345,7 +345,7 @@ void Rgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
     }
 //
 statement_50:
-    work[1 - 1] = tszo + lwo.real();
+    work[1 - 1] = castREAL(tszo + lwo);
     //
     //     End of Rgetsls
     //
