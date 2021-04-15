@@ -92,7 +92,7 @@ void Rsptrd(const char *uplo, INTEGER const n, REAL *ap, REAL *d, REAL *e, REAL 
             //           Generate elementary reflector H(i) = I - tau * v * v**T
             //           to annihilate A(1:i-1,i+1)
             //
-            Rlarfg(i, ap[(i1 + i - 1) - 1], ap[i1 - 1], 1, taui);
+            Rlarfg(i, ap[(i1 + i - 1) - 1], &ap[i1 - 1], 1, taui);
             e[i - 1] = ap[(i1 + i - 1) - 1];
             //
             if (taui != zero) {
@@ -103,17 +103,17 @@ void Rsptrd(const char *uplo, INTEGER const n, REAL *ap, REAL *d, REAL *e, REAL 
                 //
                 //              Compute  y := tau * A * v  storing y in TAU(1:i)
                 //
-                Rspmv(uplo, i, taui, ap, ap[i1 - 1], 1, zero, tau, 1);
+                Rspmv(uplo, i, taui, ap, &ap[i1 - 1], 1, zero, tau, 1);
                 //
                 //              Compute  w := y - 1/2 * tau * (y**T *v) * v
                 //
-                alpha = -half * taui * Rdot(i, tau, 1, ap[i1 - 1], 1);
-                Raxpy(i, alpha, ap[i1 - 1], 1, tau, 1);
+                alpha = -half * taui * Rdot(i, tau, 1, &ap[i1 - 1], 1);
+                Raxpy(i, alpha, &ap[i1 - 1], 1, tau, 1);
                 //
                 //              Apply the transformation as a rank-2 update:
                 //                 A := A - v * w**T - w * v**T
                 //
-                Rspr2(uplo, i, -one, ap[i1 - 1], 1, tau, 1, ap);
+                Rspr2(uplo, i, -one, &ap[i1 - 1], 1, tau, 1, ap);
                 //
                 ap[(i1 + i - 1) - 1] = e[i - 1];
             }
@@ -134,7 +134,7 @@ void Rsptrd(const char *uplo, INTEGER const n, REAL *ap, REAL *d, REAL *e, REAL 
             //           Generate elementary reflector H(i) = I - tau * v * v**T
             //           to annihilate A(i+2:n,i)
             //
-            Rlarfg(n - i, ap[(ii + 1) - 1], ap[(ii + 2) - 1], 1, taui);
+            Rlarfg(n - i, ap[(ii + 1) - 1], &ap[(ii + 2) - 1], 1, taui);
             e[i - 1] = ap[(ii + 1) - 1];
             //
             if (taui != zero) {
@@ -145,17 +145,17 @@ void Rsptrd(const char *uplo, INTEGER const n, REAL *ap, REAL *d, REAL *e, REAL 
                 //
                 //              Compute  y := tau * A * v  storing y in TAU(i:n-1)
                 //
-                Rspmv(uplo, n - i, taui, ap[i1i1 - 1], ap[(ii + 1) - 1], 1, zero, &tau[i - 1], 1);
+                Rspmv(uplo, n - i, taui, &ap[i1i1 - 1], &ap[(ii + 1) - 1], 1, zero, &tau[i - 1], 1);
                 //
                 //              Compute  w := y - 1/2 * tau * (y**T *v) * v
                 //
-                alpha = -half * taui * Rdot(n - i, &tau[i - 1], 1, ap[(ii + 1) - 1], 1);
-                Raxpy(n - i, alpha, ap[(ii + 1) - 1], 1, &tau[i - 1], 1);
+                alpha = -half * taui * Rdot(n - i, &tau[i - 1], 1, &ap[(ii + 1) - 1], 1);
+                Raxpy(n - i, alpha, &ap[(ii + 1) - 1], 1, &tau[i - 1], 1);
                 //
                 //              Apply the transformation as a rank-2 update:
                 //                 A := A - v * w**T - w * v**T
                 //
-                Rspr2(uplo, n - i, -one, ap[(ii + 1) - 1], 1, &tau[i - 1], 1, ap[i1i1 - 1]);
+                Rspr2(uplo, n - i, -one, &ap[(ii + 1) - 1], 1, &tau[i - 1], 1, &ap[i1i1 - 1]);
                 //
                 ap[(ii + 1) - 1] = e[i - 1];
             }

@@ -94,11 +94,15 @@ void Cunmqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     const INTEGER ldt = nbmax + 1;
     const INTEGER tsize = ldt * nbmax;
     INTEGER lwkopt = 0;
+    char side_trans[3];
+     side_trans[0] = side[0];
+     side_trans[1] = trans[0];
+     side_trans[2] = '\0';
     if (info == 0) {
         //
         //        Compute the workspace requirements
         //
-        nb = min(nbmax, iMlaenv(1, "Cunmqr", side + trans, m, n, k, -1));
+        nb = min(nbmax, iMlaenv(1, "Cunmqr", side_trans, m, n, k, -1));
         lwkopt = max((INTEGER)1, nw) * nb + tsize;
         work[1 - 1] = lwkopt;
     }
@@ -122,7 +126,7 @@ void Cunmqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     if (nb > 1 && nb < k) {
         if (lwork < nw * nb + tsize) {
             nb = (lwork - tsize) / ldwork;
-            nbmin = max(2, iMlaenv(2, "Cunmqr", side + trans, m, n, k, -1));
+            nbmin = max(2, iMlaenv(2, "Cunmqr", side_trans, m, n, k, -1));
         }
     }
     //

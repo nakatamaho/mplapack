@@ -69,7 +69,7 @@ void Rlahr2(INTEGER const n, INTEGER const k, INTEGER const nb, REAL *a, INTEGER
             //
             //           Update I-th column of A - Y * V**T
             //
-            Rgemv("NO TRANSPOSE", n - k, i - 1, -one, y[((k + 1) - 1)], ldy, &a[((k + i - 1) - 1)], lda, one, &a[((k + 1) - 1) + (i - 1) * lda], 1);
+            Rgemv("NO TRANSPOSE", n - k, i - 1, -one, &y[((k + 1) - 1)], ldy, &a[((k + i - 1) - 1)], lda, one, &a[((k + 1) - 1) + (i - 1) * lda], 1);
             //
             //           Apply I - V * T**T * V**T to this column (call it b) from the
             //           left, using the last column of T as workspace
@@ -107,16 +107,16 @@ void Rlahr2(INTEGER const n, INTEGER const k, INTEGER const nb, REAL *a, INTEGER
         //        Generate the elementary reflector H(I) to annihilate
         //        A(K+I+1:N,I)
         //
-        Rlarfg(n - k - i + 1, &a[((k + i) - 1) + (i - 1) * lda], &a[((min(k + i + 1) - 1) + (n)-1) * lda], 1, &tau[i - 1]);
+        Rlarfg(n - k - i + 1, a[((k + i) - 1) + (i - 1) * lda], &a[(min(k + i + 1, n)-1) + (i-1)* lda], 1, tau[i - 1]);
         ei = a[((k + i) - 1) + (i - 1) * lda];
         a[((k + i) - 1) + (i - 1) * lda] = one;
         //
         //        Compute  Y(K+1:N,I)
         //
-        Rgemv("NO TRANSPOSE", n - k, n - k - i + 1, one, &a[((k + 1) - 1) + ((i + 1) - 1) * lda], lda, &a[((k + i) - 1) + (i - 1) * lda], 1, zero, y[((k + 1) - 1) + (i - 1) * ldy], 1);
+        Rgemv("NO TRANSPOSE", n - k, n - k - i + 1, one, &a[((k + 1) - 1) + ((i + 1) - 1) * lda], lda, &a[((k + i) - 1) + (i - 1) * lda], 1, zero, &y[((k + 1) - 1) + (i - 1) * ldy], 1);
         Rgemv("Transpose", n - k - i + 1, i - 1, one, &a[((k + i) - 1)], lda, &a[((k + i) - 1) + (i - 1) * lda], 1, zero, &t[(i - 1) * ldt], 1);
-        Rgemv("NO TRANSPOSE", n - k, i - 1, -one, y[((k + 1) - 1)], ldy, &t[(i - 1) * ldt], 1, one, y[((k + 1) - 1) + (i - 1) * ldy], 1);
-        Rscal(n - k, &tau[i - 1], y[((k + 1) - 1) + (i - 1) * ldy], 1);
+        Rgemv("NO TRANSPOSE", n - k, i - 1, -one, &y[((k + 1) - 1)], ldy, &t[(i - 1) * ldt], 1, one, &y[((k + 1) - 1) + (i - 1) * ldy], 1);
+        Rscal(n - k, tau[i - 1], &y[((k + 1) - 1) + (i - 1) * ldy], 1);
         //
         //        Compute T(1:I,I)
         //

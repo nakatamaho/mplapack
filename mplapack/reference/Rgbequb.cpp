@@ -109,7 +109,7 @@ void Rgbequb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const k
     }
     for (i = 1; i <= m; i = i + 1) {
         if (r[i - 1] > zero) {
-            r[i - 1] = pow(radix, int(log(r[i - 1]) / logrdx));
+            r[i - 1] = pow(radix, castINTEGER(log(r[i - 1]) / logrdx));
         }
     }
     //
@@ -160,7 +160,7 @@ void Rgbequb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const k
             c[j - 1] = max(c[j - 1], abs(ab[((kd + i - j) - 1) + (j - 1) * ldab]) * r[i - 1]);
         }
         if (c[j - 1] > zero) {
-            c[j - 1] = pow(radix, int(log(c[j - 1]) / logrdx));
+            c[j - 1] = pow(radix, castINTEGER(log(c[j - 1]) / logrdx));
         }
     }
     //
@@ -169,8 +169,8 @@ void Rgbequb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const k
     rcmin = bignum;
     rcmax = zero;
     for (j = 1; j <= n; j = j + 1) {
-        rcmin = min(rcmin, &c[j - 1]);
-        rcmax = max(rcmax, &c[j - 1]);
+        rcmin = min(rcmin, c[j - 1]);
+        rcmax = max(rcmax, c[j - 1]);
     }
     //
     if (rcmin == zero) {

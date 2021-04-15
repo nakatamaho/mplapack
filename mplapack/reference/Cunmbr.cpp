@@ -95,19 +95,23 @@ void Cunmbr(const char *vect, const char *side, const char *trans, INTEGER const
     //
     INTEGER nb = 0;
     INTEGER lwkopt = 0;
+    char side_trans[3];
+    side_trans[0] = side[0];
+    side_trans[1] = trans[0];
+    side_trans[2] = '\0';
     if (info == 0) {
         if (nw > 0) {
             if (applyq) {
                 if (left) {
-                    nb = iMlaenv(1, "Cunmqr", side + trans, m - 1, n, m - 1, -1);
+                    nb = iMlaenv(1, "Cunmqr", side_trans, m - 1, n, m - 1, -1);
                 } else {
-                    nb = iMlaenv(1, "Cunmqr", side + trans, m, n - 1, n - 1, -1);
+                    nb = iMlaenv(1, "Cunmqr", side_trans, m, n - 1, n - 1, -1);
                 }
             } else {
                 if (left) {
-                    nb = iMlaenv(1, "Cunmlq", side + trans, m - 1, n, m - 1, -1);
+                    nb = iMlaenv(1, "Cunmlq", side_trans, m - 1, n, m - 1, -1);
                 } else {
-                    nb = iMlaenv(1, "Cunmlq", side + trans, m, n - 1, n - 1, -1);
+                    nb = iMlaenv(1, "Cunmlq", side_trans, m, n - 1, n - 1, -1);
                 }
             }
             lwkopt = max((INTEGER)1, nw * nb);
@@ -135,7 +139,7 @@ void Cunmbr(const char *vect, const char *side, const char *trans, INTEGER const
     INTEGER ni = 0;
     INTEGER i1 = 0;
     INTEGER i2 = 0;
-    str<1> transt = char0;
+    char transt;
     if (applyq) {
         //
         //        Apply Q
@@ -167,15 +171,15 @@ void Cunmbr(const char *vect, const char *side, const char *trans, INTEGER const
         //        Apply P
         //
         if (notran) {
-            transt = "C";
+            transt = 'C';
         } else {
-            transt = "N";
+            transt = 'N';
         }
         if (nq > k) {
             //
             //           P was determined by a call to Cgebrd with nq > k
             //
-            Cunmlq(side, transt, m, n, k, a, lda, tau, c, ldc, work, lwork, iinfo);
+            Cunmlq(side, &transt, m, n, k, a, lda, tau, c, ldc, work, lwork, iinfo);
         } else if (nq > 1) {
             //
             //           P was determined by a call to Cgebrd with nq <= k
@@ -191,7 +195,7 @@ void Cunmbr(const char *vect, const char *side, const char *trans, INTEGER const
                 i1 = 1;
                 i2 = 2;
             }
-            Cunmlq(side, transt, mi, ni, nq - 1, &a[(2 - 1) * lda], lda, tau, &c[(i1 - 1) + (i2 - 1) * ldc], ldc, work, lwork, iinfo);
+            Cunmlq(side, &transt, mi, ni, nq - 1, &a[(2 - 1) * lda], lda, tau, &c[(i1 - 1) + (i2 - 1) * ldc], ldc, work, lwork, iinfo);
         }
     }
     work[1 - 1] = lwkopt;

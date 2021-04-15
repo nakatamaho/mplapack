@@ -94,11 +94,15 @@ void Rormlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     const INTEGER ldt = nbmax + 1;
     const INTEGER tsize = ldt * nbmax;
     INTEGER lwkopt = 0;
+    char side_trans[3];
+    side_trans[0] = side[0];
+    side_trans[1] = trans[0];
+    side_trans[2] = '\0';
     if (info == 0) {
         //
         //        Compute the workspace requirements
         //
-        nb = min(nbmax, iMlaenv(1, "Rormlq", side + trans, m, n, k, -1));
+        nb = min(nbmax, iMlaenv(1, "Rormlq", side_trans, m, n, k, -1));
         lwkopt = max((INTEGER)1, nw) * nb + tsize;
         work[1 - 1] = lwkopt;
     }
@@ -122,7 +126,7 @@ void Rormlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     if (nb > 1 && nb < k) {
         if (lwork < nw * nb + tsize) {
             nb = (lwork - tsize) / ldwork;
-            nbmin = max(2, iMlaenv(2, "Rormlq", side + trans, m, n, k, -1));
+            nbmin = max(2, iMlaenv(2, "Rormlq", side_trans, m, n, k, -1));
         }
     }
     //
@@ -135,7 +139,7 @@ void Rormlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER jc = 0;
     INTEGER mi = 0;
     INTEGER ic = 0;
-    str<1> transt = char0;
+    char transt;
     INTEGER i = 0;
     INTEGER ib = 0;
     if (nb < nbmin || nb >= k) {
@@ -167,9 +171,9 @@ void Rormlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
         }
         //
         if (notran) {
-            transt = "T";
+            transt = 'T';
         } else {
-            transt = "N";
+            transt = 'N';
         }
         //
         for (i = i1; i <= i2; i = i + i3) {
@@ -195,7 +199,7 @@ void Rormlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
             //
             //           Apply H or H**T
             //
-            Rlarfb(side, transt, "Forward", "Rowwise", mi, ni, ib, &a[(i - 1) + (i - 1) * lda], lda, &work[iwt - 1], ldt, &c[(ic - 1) + (jc - 1) * ldc], ldc, work, ldwork);
+            Rlarfb(side, &transt, "Forward", "Rowwise", mi, ni, ib, &a[(i - 1) + (i - 1) * lda], lda, &work[iwt - 1], ldt, &c[(ic - 1) + (jc - 1) * ldc], ldc, work, ldwork);
         }
     }
     work[1 - 1] = lwkopt;

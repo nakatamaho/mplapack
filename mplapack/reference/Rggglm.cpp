@@ -89,7 +89,7 @@ void Rggglm(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER 
             nb2 = iMlaenv(1, "RgerQF", " ", n, m, -1, -1);
             nb3 = iMlaenv(1, "Rormqr", " ", n, m, p, -1);
             nb4 = iMlaenv(1, "Rormrq", " ", n, m, p, -1);
-            nb = max(nb1, nb2, nb3, nb4);
+            nb = max({nb1, nb2, nb3, nb4});
             lwkmin = m + n + p;
             lwkopt = m + np + max(n, p) * nb;
         }
@@ -137,7 +137,7 @@ void Rggglm(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER 
     //                                               ( d2 ) N-M
     //
     Rormqr("Left", "Transpose", n, 1, m, a, lda, work, d, max((INTEGER)1, n), &work[(m + np + 1) - 1], lwork - m - np, info);
-    lopt = max(lopt, int(work[(m + np + 1) - 1]));
+    lopt = max(lopt, castINTEGER(work[(m + np + 1) - 1]));
     //
     //     Solve T22*y2 = d2 for y2
     //
@@ -149,7 +149,7 @@ void Rggglm(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER 
             return;
         }
         //
-        Rcopy(n - m, &d[(m + 1) - 1], 1, y[(m + p - n + 1) - 1], 1);
+        Rcopy(n - m, &d[(m + 1) - 1], 1, &y[(m + p - n + 1) - 1], 1);
     }
     //
     //     Set y1 = 0
@@ -161,7 +161,7 @@ void Rggglm(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER 
     //     Update d1 = d1 - T12*y2
     //
     const REAL one = 1.0;
-    Rgemv("No transpose", m, n - m, -one, &b[((m + p - n + 1) - 1) * ldb], ldb, y[(m + p - n + 1) - 1], 1, one, d, 1);
+    Rgemv("No transpose", m, n - m, -one, &b[((m + p - n + 1) - 1) * ldb], ldb, &y[(m + p - n + 1) - 1], 1, one, d, 1);
     //
     //     Solve triangular system: R11*x = d1
     //
@@ -180,8 +180,8 @@ void Rggglm(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER 
     //
     //     Backward transformation y = Z**T *y
     //
-    Rormrq("Left", "Transpose", p, 1, np, &b[(max((n - p + 1)) - 1) * ldb], ldb, &work[(m + 1) - 1], y, max((INTEGER)1, p), &work[(m + np + 1) - 1], lwork - m - np, info);
-    work[1 - 1] = m + np + max(lopt, int(work[(m + np + 1) - 1]));
+    Rormrq("Left", "Transpose", p, 1, np, &b[(max( 1, n - p + 1) - 1) + ( 1-1) * ldb], ldb, &work[(m + 1) - 1], y, max((INTEGER)1, p), &work[(m + np + 1) - 1], lwork - m - np, info);
+    work[1 - 1] = m + np + max(lopt, castINTEGER(work[(m + np + 1) - 1]));
     //
     //     End of Rggglm
     //
