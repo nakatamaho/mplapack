@@ -102,7 +102,7 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         info = -3;
     } else if (lda < max((INTEGER)1, m)) {
         info = -5;
-    } else if (ldb < max((INTEGER)1, m, n)) {
+    } else if (ldb < max({(INTEGER)1, m, n})) {
         info = -7;
     }
     //
