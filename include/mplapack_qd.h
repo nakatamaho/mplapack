@@ -65,12 +65,14 @@ qd_real Rlamc3(qd_real a, qd_real b);
 qd_real Rlamc3(qd_real a, qd_real b);
 qd_real Rlamc3(qd_real a, qd_real b);
 qd_real Rlamch_qd(const char *cmach);
+qd_real Rlangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, qd_real *ab, mplapackint const ldab, qd_real *work);
 qd_real Rlange(const char *norm, mplapackint const m, mplapackint const n, qd_real *a, mplapackint const lda, qd_real *work);
 qd_real Rlangt(const char *norm, mplapackint const n, qd_real *dl, qd_real *d, qd_real *du);
 qd_real Rlansb(const char *norm, const char *uplo, mplapackint const n, mplapackint const k, qd_real *ab, mplapackint const ldab, qd_real *work);
 qd_real Rlansp(const char *norm, const char *uplo, mplapackint const n, qd_real *ap, qd_real *work);
 qd_real Rlanst(const char *norm, mplapackint const n, qd_real *d, qd_real *e);
 qd_real Rlansy(const char *norm, const char *uplo, mplapackint const n, qd_real *a, mplapackint const lda, qd_real *work);
+qd_real Rlantb(const char *norm, const char *uplo, const char *diag, mplapackint const n, mplapackint const k, qd_real *ab, mplapackint const ldab, qd_real *work);
 qd_real Rlantr(const char *norm, const char *uplo, const char *diag, mplapackint const m, mplapackint const n, qd_real *a, mplapackint const lda, qd_real *work);
 qd_real Rlapy2(qd_real const x, qd_real const y);
 qd_real Rlapy3(qd_real const x, qd_real const y, qd_real const z);
@@ -455,6 +457,7 @@ void Rlaeda(mplapackint const n, mplapackint const tlvls, mplapackint const curl
 void Rlaev2(qd_real const a, qd_real const b, qd_real const c, qd_real &rt1, qd_real &rt2, qd_real &cs1, qd_real &sn1);
 void Rlaexc(bool const wantq, mplapackint const n, qd_real *t, mplapackint const ldt, qd_real *q, mplapackint const ldq, mplapackint const j1, mplapackint const n1, mplapackint const n2, qd_real *work, mplapackint &info);
 void Rlag2(qd_real *a, mplapackint const lda, qd_real *b, mplapackint const ldb, qd_real const safmin, qd_real &scale1, qd_real &scale2, qd_real &wr1, qd_real &wr2, qd_real &wi);
+void Rlags2(bool const upper, qd_real const a1, qd_real const a2, qd_real const a3, qd_real const b1, qd_real const b2, qd_real const b3, qd_real &csu, qd_real &snu, qd_real &csv, qd_real &snv, qd_real const csq, qd_real const snq);
 void Rlagtf(mplapackint const n, qd_real *a, qd_real const lambda, qd_real *b, qd_real *c, qd_real const tol, qd_real *d, mplapackint *in, mplapackint &info);
 void Rlagtm(const char *trans, mplapackint const n, mplapackint const nrhs, qd_real const alpha, qd_real *dl, qd_real *d, qd_real *du, qd_real *x, mplapackint const ldx, qd_real const beta, qd_real *b, mplapackint const ldb);
 void Rlagv2(qd_real *a, mplapackint const lda, qd_real *b, mplapackint const ldb, qd_real *alphar, qd_real *alphai, qd_real *beta, qd_real &csl, qd_real &snl, qd_real &csr, qd_real &snr);
@@ -567,6 +570,7 @@ void Rormlq(const char *side, const char *trans, mplapackint const m, mplapackin
 void Rormql(const char *side, const char *trans, mplapackint const m, mplapackint const n, mplapackint const k, qd_real *a, mplapackint const lda, qd_real *tau, qd_real *c, mplapackint const ldc, qd_real *work, mplapackint const lwork, mplapackint &info);
 void Rormqr(const char *side, const char *trans, mplapackint const m, mplapackint const n, mplapackint const k, qd_real *a, mplapackint const lda, qd_real *tau, qd_real *c, mplapackint const ldc, qd_real *work, mplapackint const lwork, mplapackint &info);
 void Rormr2(const char *side, const char *trans, mplapackint const m, mplapackint const n, mplapackint const k, qd_real *a, mplapackint const lda, qd_real *tau, qd_real *c, mplapackint const ldc, qd_real *work, mplapackint &info);
+void Rormr3(const char *side, const char *trans, mplapackint const m, mplapackint const n, mplapackint const k, mplapackint const l, qd_real *a, mplapackint const lda, qd_real *tau, qd_real *c, mplapackint const ldc, qd_real *work, mplapackint &info);
 void Rormrq(const char *side, const char *trans, mplapackint const m, mplapackint const n, mplapackint const k, qd_real *a, mplapackint const lda, qd_real *tau, qd_real *c, mplapackint const ldc, qd_real *work, mplapackint const lwork, mplapackint &info);
 void Rormrz(const char *side, const char *trans, mplapackint const m, mplapackint const n, mplapackint const k, mplapackint const l, qd_real *a, mplapackint const lda, qd_real *tau, qd_real *c, mplapackint const ldc, qd_real *work, mplapackint const lwork, mplapackint &info);
 void Rormtr(const char *side, const char *uplo, const char *trans, mplapackint const m, mplapackint const n, qd_real *a, mplapackint const lda, qd_real *tau, qd_real *c, mplapackint const ldc, qd_real *work, mplapackint const lwork, mplapackint &info);
@@ -673,6 +677,4 @@ void Rtrtri(const char *uplo, const char *diag, mplapackint const n, qd_real *a,
 void Rtrtrs(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const nrhs, qd_real *a, mplapackint const lda, qd_real *b, mplapackint const ldb, mplapackint &info);
 void Rtrttp(const char *uplo, mplapackint const n, qd_real *a, mplapackint const lda, qd_real *ap, mplapackint &info);
 void Rtzrzf(mplapackint const m, mplapackint const n, qd_real *a, mplapackint const lda, qd_real *tau, qd_real *work, mplapackint const lwork, mplapackint &info);
-void dgtsv(mplapackint const &n, mplapackint const &nrhs, qd_real *dl, qd_real *d, qd_real *du, qd_real *b, mplapackint const &ldb, int &info);
-void xerbla(...);
 #endif

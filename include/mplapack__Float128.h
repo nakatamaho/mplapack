@@ -53,12 +53,14 @@ _Float128 Rlamc3(_Float128 a, _Float128 b);
 _Float128 Rlamc3(_Float128 a, _Float128 b);
 _Float128 Rlamc3(_Float128 a, _Float128 b);
 _Float128 Rlamch__Float128(const char *cmach);
+_Float128 Rlangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, _Float128 *ab, mplapackint const ldab, _Float128 *work);
 _Float128 Rlange(const char *norm, mplapackint const m, mplapackint const n, _Float128 *a, mplapackint const lda, _Float128 *work);
 _Float128 Rlangt(const char *norm, mplapackint const n, _Float128 *dl, _Float128 *d, _Float128 *du);
 _Float128 Rlansb(const char *norm, const char *uplo, mplapackint const n, mplapackint const k, _Float128 *ab, mplapackint const ldab, _Float128 *work);
 _Float128 Rlansp(const char *norm, const char *uplo, mplapackint const n, _Float128 *ap, _Float128 *work);
 _Float128 Rlanst(const char *norm, mplapackint const n, _Float128 *d, _Float128 *e);
 _Float128 Rlansy(const char *norm, const char *uplo, mplapackint const n, _Float128 *a, mplapackint const lda, _Float128 *work);
+_Float128 Rlantb(const char *norm, const char *uplo, const char *diag, mplapackint const n, mplapackint const k, _Float128 *ab, mplapackint const ldab, _Float128 *work);
 _Float128 Rlantr(const char *norm, const char *uplo, const char *diag, mplapackint const m, mplapackint const n, _Float128 *a, mplapackint const lda, _Float128 *work);
 _Float128 Rlapy2(_Float128 const x, _Float128 const y);
 _Float128 Rlapy3(_Float128 const x, _Float128 const y, _Float128 const z);
@@ -457,6 +459,7 @@ void Rlaeda(mplapackint const n, mplapackint const tlvls, mplapackint const curl
 void Rlaev2(_Float128 const a, _Float128 const b, _Float128 const c, _Float128 &rt1, _Float128 &rt2, _Float128 &cs1, _Float128 &sn1);
 void Rlaexc(bool const wantq, mplapackint const n, _Float128 *t, mplapackint const ldt, _Float128 *q, mplapackint const ldq, mplapackint const j1, mplapackint const n1, mplapackint const n2, _Float128 *work, mplapackint &info);
 void Rlag2(_Float128 *a, mplapackint const lda, _Float128 *b, mplapackint const ldb, _Float128 const safmin, _Float128 &scale1, _Float128 &scale2, _Float128 &wr1, _Float128 &wr2, _Float128 &wi);
+void Rlags2(bool const upper, _Float128 const a1, _Float128 const a2, _Float128 const a3, _Float128 const b1, _Float128 const b2, _Float128 const b3, _Float128 &csu, _Float128 &snu, _Float128 &csv, _Float128 &snv, _Float128 const csq, _Float128 const snq);
 void Rlagtf(mplapackint const n, _Float128 *a, _Float128 const lambda, _Float128 *b, _Float128 *c, _Float128 const tol, _Float128 *d, mplapackint *in, mplapackint &info);
 void Rlagtm(const char *trans, mplapackint const n, mplapackint const nrhs, _Float128 const alpha, _Float128 *dl, _Float128 *d, _Float128 *du, _Float128 *x, mplapackint const ldx, _Float128 const beta, _Float128 *b, mplapackint const ldb);
 void Rlagv2(_Float128 *a, mplapackint const lda, _Float128 *b, mplapackint const ldb, _Float128 *alphar, _Float128 *alphai, _Float128 *beta, _Float128 &csl, _Float128 &snl, _Float128 &csr, _Float128 &snr);
@@ -569,6 +572,7 @@ void Rormlq(const char *side, const char *trans, mplapackint const m, mplapackin
 void Rormql(const char *side, const char *trans, mplapackint const m, mplapackint const n, mplapackint const k, _Float128 *a, mplapackint const lda, _Float128 *tau, _Float128 *c, mplapackint const ldc, _Float128 *work, mplapackint const lwork, mplapackint &info);
 void Rormqr(const char *side, const char *trans, mplapackint const m, mplapackint const n, mplapackint const k, _Float128 *a, mplapackint const lda, _Float128 *tau, _Float128 *c, mplapackint const ldc, _Float128 *work, mplapackint const lwork, mplapackint &info);
 void Rormr2(const char *side, const char *trans, mplapackint const m, mplapackint const n, mplapackint const k, _Float128 *a, mplapackint const lda, _Float128 *tau, _Float128 *c, mplapackint const ldc, _Float128 *work, mplapackint &info);
+void Rormr3(const char *side, const char *trans, mplapackint const m, mplapackint const n, mplapackint const k, mplapackint const l, _Float128 *a, mplapackint const lda, _Float128 *tau, _Float128 *c, mplapackint const ldc, _Float128 *work, mplapackint &info);
 void Rormrq(const char *side, const char *trans, mplapackint const m, mplapackint const n, mplapackint const k, _Float128 *a, mplapackint const lda, _Float128 *tau, _Float128 *c, mplapackint const ldc, _Float128 *work, mplapackint const lwork, mplapackint &info);
 void Rormrz(const char *side, const char *trans, mplapackint const m, mplapackint const n, mplapackint const k, mplapackint const l, _Float128 *a, mplapackint const lda, _Float128 *tau, _Float128 *c, mplapackint const ldc, _Float128 *work, mplapackint const lwork, mplapackint &info);
 void Rormtr(const char *side, const char *uplo, const char *trans, mplapackint const m, mplapackint const n, _Float128 *a, mplapackint const lda, _Float128 *tau, _Float128 *c, mplapackint const ldc, _Float128 *work, mplapackint const lwork, mplapackint &info);
@@ -675,6 +679,4 @@ void Rtrtri(const char *uplo, const char *diag, mplapackint const n, _Float128 *
 void Rtrtrs(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const nrhs, _Float128 *a, mplapackint const lda, _Float128 *b, mplapackint const ldb, mplapackint &info);
 void Rtrttp(const char *uplo, mplapackint const n, _Float128 *a, mplapackint const lda, _Float128 *ap, mplapackint &info);
 void Rtzrzf(mplapackint const m, mplapackint const n, _Float128 *a, mplapackint const lda, _Float128 *tau, _Float128 *work, mplapackint const lwork, mplapackint &info);
-void dgtsv(mplapackint const &n, mplapackint const &nrhs, _Float128 *dl, _Float128 *d, _Float128 *du, _Float128 *b, mplapackint const &ldb, int &info);
-void xerbla(...);
 #endif
