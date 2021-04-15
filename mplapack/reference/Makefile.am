@@ -85,15 +85,6 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
-Cunmqr.cpp \
-Rgbequb.cpp \
-Rsptrd.cpp \
-Rggglm.cpp \
-Rormlq.cpp \
-Rlahr2.cpp \
-Cunmlq.cpp \
-Cunmbr.cpp \
-Clarzb.cpp \
 Rgglse.cpp \
 Clahr2.cpp \
 Rlansb.cpp \

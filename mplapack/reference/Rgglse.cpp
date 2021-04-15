@@ -89,7 +89,7 @@ void Rgglse(INTEGER const m, INTEGER const n, INTEGER const p, REAL *a, INTEGER 
             nb2 = iMlaenv(1, "RgerQF", " ", m, n, -1, -1);
             nb3 = iMlaenv(1, "Rormqr", " ", m, n, p, -1);
             nb4 = iMlaenv(1, "Rormrq", " ", m, n, p, -1);
-            nb = max(nb1, nb2, nb3, nb4);
+            nb = max({nb1, nb2, nb3, nb4});
             lwkmin = m + n + p;
             lwkopt = p + mn + max(m, n) * nb;
         }
@@ -129,7 +129,7 @@ void Rgglse(INTEGER const m, INTEGER const n, INTEGER const p, REAL *a, INTEGER 
     //                          ( c2 ) M+P-N
     //
     Rormqr("Left", "Transpose", m, 1, mn, a, lda, &work[(p + 1) - 1], c, max((INTEGER)1, m), &work[(p + mn + 1) - 1], lwork - p - mn, info);
-    lopt = max(lopt, int(work[(p + mn + 1) - 1]));
+    lopt = max(lopt, castINTEGER(work[(p + mn + 1) - 1]));
     //
     //     Solve T12*x2 = d for x2
     //
@@ -144,7 +144,7 @@ void Rgglse(INTEGER const m, INTEGER const n, INTEGER const p, REAL *a, INTEGER 
         //
         //        Put the solution in X
         //
-        Rcopy(p, d, 1, x[(n - p + 1) - 1], 1);
+        Rcopy(p, d, 1, &x[(n - p + 1) - 1], 1);
         //
         //        Update c1
         //
@@ -185,7 +185,7 @@ void Rgglse(INTEGER const m, INTEGER const n, INTEGER const p, REAL *a, INTEGER 
     //     Backward transformation x = Q**T*x
     //
     Rormrq("Left", "Transpose", n, 1, p, b, ldb, &work[1 - 1], x, n, &work[(p + mn + 1) - 1], lwork - p - mn, info);
-    work[1 - 1] = p + mn + max(lopt, int(work[(p + mn + 1) - 1]));
+    work[1 - 1] = p + mn + max(lopt, castINTEGER(work[(p + mn + 1) - 1]));
     //
     //     End of Rgglse
     //

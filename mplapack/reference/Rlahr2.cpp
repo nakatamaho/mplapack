@@ -107,7 +107,7 @@ void Rlahr2(INTEGER const n, INTEGER const k, INTEGER const nb, REAL *a, INTEGER
         //        Generate the elementary reflector H(I) to annihilate
         //        A(K+I+1:N,I)
         //
-        Rlarfg(n - k - i + 1, a[((k + i) - 1) + (i - 1) * lda], &a[(min(k + i + 1, n)-1) + (i-1)* lda], 1, tau[i - 1]);
+        Rlarfg(n - k - i + 1, a[((k + i) - 1) + (i - 1) * lda], &a[(min(k + i + 1, n) - 1) + (i - 1) * lda], 1, tau[i - 1]);
         ei = a[((k + i) - 1) + (i - 1) * lda];
         a[((k + i) - 1) + (i - 1) * lda] = one;
         //

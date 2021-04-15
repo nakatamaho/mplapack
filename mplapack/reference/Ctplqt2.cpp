@@ -89,7 +89,7 @@ void Ctplqt2(INTEGER const m, INTEGER const n, INTEGER const l, COMPLEX *a, INTE
         //        Generate elementary reflector H(I) to annihilate B(I,:)
         //
         p = n - l + min(l, i);
-        Clarfg(p + 1, &a[(i - 1) + (i - 1) * lda], &b[(i - 1)], ldb, &t[(i - 1) * ldt]);
+        Clarfg(p + 1, a[(i - 1) + (i - 1) * lda], &b[(i - 1)], ldb, t[(i - 1) * ldt]);
         t[(i - 1) * ldt] = conj(t[(i - 1) * ldt]);
         if (i < m) {
             for (j = 1; j <= p; j = j + 1) {

@@ -70,7 +70,7 @@ void Clahr2(INTEGER const n, INTEGER const k, INTEGER const nb, COMPLEX *a, INTE
             //           Update I-th column of A - Y * V**H
             //
             Clacgv(i - 1, &a[((k + i - 1) - 1)], lda);
-            Cgemv("NO TRANSPOSE", n - k, i - 1, -one, y[((k + 1) - 1)], ldy, &a[((k + i - 1) - 1)], lda, one, &a[((k + 1) - 1) + (i - 1) * lda], 1);
+            Cgemv("NO TRANSPOSE", n - k, i - 1, -one, &y[((k + 1) - 1)], ldy, &a[((k + i - 1) - 1)], lda, one, &a[((k + 1) - 1) + (i - 1) * lda], 1);
             Clacgv(i - 1, &a[((k + i - 1) - 1)], lda);
             //
             //           Apply I - V * T**H * V**H to this column (call it b) from the
@@ -109,16 +109,16 @@ void Clahr2(INTEGER const n, INTEGER const k, INTEGER const nb, COMPLEX *a, INTE
         //        Generate the elementary reflector H(I) to annihilate
         //        A(K+I+1:N,I)
         //
-        Clarfg(n - k - i + 1, &a[((k + i) - 1) + (i - 1) * lda], &a[((min(k + i + 1) - 1) + (n)-1) * lda], 1, &tau[i - 1]);
+        Clarfg(n - k - i + 1, a[((k + i) - 1) + (i - 1) * lda], &a[(min(k + i + 1, n) - 1) + (i - 1) * lda], 1, tau[i - 1]);
         ei = a[((k + i) - 1) + (i - 1) * lda];
         a[((k + i) - 1) + (i - 1) * lda] = one;
         //
         //        Compute  Y(K+1:N,I)
         //
-        Cgemv("NO TRANSPOSE", n - k, n - k - i + 1, one, &a[((k + 1) - 1) + ((i + 1) - 1) * lda], lda, &a[((k + i) - 1) + (i - 1) * lda], 1, zero, y[((k + 1) - 1) + (i - 1) * ldy], 1);
+        Cgemv("NO TRANSPOSE", n - k, n - k - i + 1, one, &a[((k + 1) - 1) + ((i + 1) - 1) * lda], lda, &a[((k + i) - 1) + (i - 1) * lda], 1, zero, &y[((k + 1) - 1) + (i - 1) * ldy], 1);
         Cgemv("Conjugate transpose", n - k - i + 1, i - 1, one, &a[((k + i) - 1)], lda, &a[((k + i) - 1) + (i - 1) * lda], 1, zero, &t[(i - 1) * ldt], 1);
-        Cgemv("NO TRANSPOSE", n - k, i - 1, -one, y[((k + 1) - 1)], ldy, &t[(i - 1) * ldt], 1, one, y[((k + 1) - 1) + (i - 1) * ldy], 1);
-        Cscal(n - k, &tau[i - 1], y[((k + 1) - 1) + (i - 1) * ldy], 1);
+        Cgemv("NO TRANSPOSE", n - k, i - 1, -one, &y[((k + 1) - 1)], ldy, &t[(i - 1) * ldt], 1, one, &y[((k + 1) - 1) + (i - 1) * ldy], 1);
+        Cscal(n - k, tau[i - 1], &y[((k + 1) - 1) + (i - 1) * ldy], 1);
         //
         //        Compute T(1:I,I)
         //
