@@ -210,7 +210,7 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
                     anorm = max(anorm, abs(ab[(i - 1) + (j - 1) * ldab]));
                 }
             }
-            rpvgrw = Rlantb("M", "U", "N", info, min(info - 1, kl + ku), afb[(max((kl + ku + 2 - info)) - 1) * ldafb], ldafb, work);
+            rpvgrw = Rlantb("M", "U", "N", info, min(info - 1, kl + ku), afb[(max(1, kl + ku + 2 - info) - 1) + (1 - 1) * ldafb], ldafb, work);
             if (rpvgrw == zero) {
                 rpvgrw = one;
             } else {
@@ -225,13 +225,13 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
     //     Compute the norm of the matrix A and the
     //     reciprocal pivot growth factor RPVGRW.
     //
-    str<1> norm = char0;
+    char norm;
     if (notran) {
         norm = "1";
     } else {
         norm = "I";
     }
-    anorm = Rlangb(norm, n, kl, ku, ab, ldab, work);
+    anorm = Rlangb(&norm, n, kl, ku, ab, ldab, work);
     rpvgrw = Rlantb("M", "U", "N", n, kl + ku, afb, ldafb, work);
     if (rpvgrw == zero) {
         rpvgrw = one;
