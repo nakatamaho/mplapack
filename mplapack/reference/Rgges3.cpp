@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgges3(const char *jobvsl, const char *jobvsr, const char *sort, UNHANDLED_function_pointer selctg, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, INTEGER &sdim, REAL *alphar, REAL *alphai, REAL *beta, REAL *vsl, INTEGER const ldvsl, REAL *vsr, INTEGER const ldvsr, REAL *work, INTEGER const lwork, bool *bwork, INTEGER &info) {
+void Rgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selctg)(REAL, REAL), INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, INTEGER &sdim, REAL *alphar, REAL *alphai, REAL *beta, REAL *vsl, INTEGER const ldvsl, REAL *vsr, INTEGER const ldvsr, REAL *work, INTEGER const lwork, bool *bwork, INTEGER &info) {
     INTEGER ijobvl = 0;
     bool ilvsl = false;
     INTEGER ijobvr = 0;
@@ -40,8 +40,8 @@ void Rgges3(const char *jobvsl, const char *jobvsr, const char *sort, UNHANDLED_
     INTEGER lwkopt = 0;
     REAL pvsl = 0.0;
     REAL pvsr = 0.0;
-    arr_1d<2, REAL> dif(fill0);
-    arr_1d<1, int> idum(fill0);
+    REAL dif[2];
+    INTEGER idum[1];
     REAL eps = 0.0;
     REAL safmin = 0.0;
     const REAL one = 1.0;
@@ -150,20 +150,20 @@ void Rgges3(const char *jobvsl, const char *jobvsr, const char *sort, UNHANDLED_
     //
     if (info == 0) {
         Rgeqrf(n, n, b, ldb, work, work, -1, ierr);
-        lwkopt = max(6 * n + 16, 3 * n + int(work[1 - 1]));
+        lwkopt = max(6 * n + 16, 3 * n + castINTEGER(work[1 - 1]));
         Rormqr("L", "T", n, n, n, b, ldb, work, a, lda, work, -1, ierr);
-        lwkopt = max(lwkopt, 3 * n + int(work[1 - 1]));
+        lwkopt = max(lwkopt, 3 * n + castINTEGER(work[1 - 1]));
         if (ilvsl) {
             Rorgqr(n, n, n, vsl, ldvsl, work, work, -1, ierr);
-            lwkopt = max(lwkopt, 3 * n + int(work[1 - 1]));
+            lwkopt = max(lwkopt, 3 * n + castINTEGER(work[1 - 1]));
         }
         Rgghd3(jobvsl, jobvsr, n, 1, n, a, lda, b, ldb, vsl, ldvsl, vsr, ldvsr, work, -1, ierr);
-        lwkopt = max(lwkopt, 3 * n + int(work[1 - 1]));
+        lwkopt = max(lwkopt, 3 * n + castINTEGER(work[1 - 1]));
         Rhgeqz("S", jobvsl, jobvsr, n, 1, n, a, lda, b, ldb, alphar, alphai, beta, vsl, ldvsl, vsr, ldvsr, work, -1, ierr);
-        lwkopt = max(lwkopt, 2 * n + int(work[1 - 1]));
+        lwkopt = max(lwkopt, 2 * n + castINTEGER(work[1 - 1]));
         if (wantst) {
             Rtgsen(0, ilvsl, ilvsr, bwork, n, a, lda, b, ldb, alphar, alphai, beta, vsl, ldvsl, vsr, ldvsr, sdim, pvsl, pvsr, dif, work, -1, idum, 1, ierr);
-            lwkopt = max(lwkopt, 2 * n + int(work[1 - 1]));
+            lwkopt = max(lwkopt, 2 * n + castINTEGER(work[1 - 1]));
         }
         work[1 - 1] = lwkopt;
     }
@@ -245,9 +245,9 @@ void Rgges3(const char *jobvsl, const char *jobvsr, const char *sort, UNHANDLED_
     if (ilvsl) {
         Rlaset("Full", n, n, zero, one, vsl, ldvsl);
         if (irows > 1) {
-            Rlacpy("L", irows - 1, irows - 1, &b[((ilo + 1) - 1) + (ilo - 1) * ldb], ldb, vsl[((ilo + 1) - 1) + (ilo - 1) * ldvsl], ldvsl);
+            Rlacpy("L", irows - 1, irows - 1, &b[((ilo + 1) - 1) + (ilo - 1) * ldb], ldb, &vsl[((ilo + 1) - 1) + (ilo - 1) * ldvsl], ldvsl);
         }
-        Rorgqr(irows, irows, irows, vsl[(ilo - 1) + (ilo - 1) * ldvsl], ldvsl, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
+        Rorgqr(irows, irows, irows, &vsl[(ilo - 1) + (ilo - 1) * ldvsl], ldvsl, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     }
     //
     //     Initialize VSR
@@ -293,7 +293,7 @@ void Rgges3(const char *jobvsl, const char *jobvsr, const char *sort, UNHANDLED_
         //        Select eigenvalues
         //
         for (i = 1; i <= n; i = i + 1) {
-            bwork[i - 1] = selctg[(alphar[i - 1] - 1) + (alphai[i - 1] - 1) * ldselctg];
+            bwork[i - 1] = selctg(alphar[i - 1], alphai[i - 1]);
         }
         //
         Rtgsen(0, ilvsl, ilvsr, bwork, n, a, lda, b, ldb, alphar, alphai, beta, vsl, ldvsl, vsr, ldvsr, sdim, pvsl, pvsr, dif, &work[iwrk - 1], lwork - iwrk + 1, idum, 1, ierr);
@@ -370,7 +370,7 @@ void Rgges3(const char *jobvsl, const char *jobvsr, const char *sort, UNHANDLED_
         sdim = 0;
         ip = 0;
         for (i = 1; i <= n; i = i + 1) {
-            cursl = selctg[(alphar[i - 1] - 1) + (alphai[i - 1] - 1) * ldselctg];
+            cursl = selctg(alphar[i - 1], alphai[i - 1]);
             if (alphai[i - 1] == zero) {
                 if (cursl) {
                     sdim++;

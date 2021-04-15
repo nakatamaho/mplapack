@@ -287,7 +287,7 @@ statement_190:
     //
     //     Compute right side vector in resulting linear equations
     //
-    basl = log10[sclfac - 1];
+    basl = log10(sclfac);
     for (i = ilo; i <= ihi; i = i + 1) {
         for (j = ilo; j <= ihi; j = j + 1) {
             tb = b[(i - 1) + (j - 1) * ldb];
@@ -295,19 +295,19 @@ statement_190:
             if (ta == zero) {
                 goto statement_210;
             }
-            ta = log10[abs(ta) - 1] / basl;
+            ta = log10(abs(ta)) / basl;
         statement_210:
             if (tb == zero) {
                 goto statement_220;
             }
-            tb = log10[abs(tb) - 1] / basl;
+            tb = log10(abs(tb)) / basl;
         statement_220:
             work[(i + 4 * n) - 1] = work[(i + 4 * n) - 1] - ta - tb;
             work[(j + 5 * n) - 1] = work[(j + 5 * n) - 1] - ta - tb;
         }
     }
     //
-    coef = one / 2 * nr.real();
+    coef = one / castREAL(2 * nr);
     coef2 = coef * coef;
     coef5 = half * coef2;
     nrp2 = nr + 2;
@@ -367,7 +367,7 @@ statement_250:
             sum += work[j - 1];
         statement_290:;
         }
-        work[(i + 2 * n) - 1] = kount.real() * work[(i + n) - 1] + sum;
+        work[(i + 2 * n) - 1] = castREAL(kount) * work[(i + n) - 1] + sum;
     }
     //
     for (j = ilo; j <= ihi; j = j + 1) {
@@ -387,7 +387,7 @@ statement_250:
             sum += work[(i + n) - 1];
         statement_320:;
         }
-        work[(j + 3 * n) - 1] = kount.real() * work[j - 1] + sum;
+        work[(j + 3 * n) - 1] = castREAL(kount) * work[j - 1] + sum;
     }
     //
     sum = Rdot(nr, &work[(ilo + n) - 1], 1, &work[(ilo + 2 * n) - 1], 1) + Rdot(nr, &work[ilo - 1], 1, &work[(ilo + 3 * n) - 1], 1);
@@ -426,24 +426,24 @@ statement_250:
 statement_350:
     sfmin = Rlamch("S");
     sfmax = one / sfmin;
-    lsfmin = int(log10[sfmin - 1] / basl + one);
-    lsfmax = int(log10[sfmax - 1] / basl);
+    lsfmin = castINTEGER(log10(sfmin - 1) / basl + one);
+    lsfmax = castINTEGER(log10(sfmax - 1) / basl);
     for (i = ilo; i <= ihi; i = i + 1) {
         irab = iRamax(n - ilo + 1, &a[(i - 1) + (ilo - 1) * lda], lda);
         rab = abs(a[(i - 1) + ((irab + ilo - 1) - 1) * lda]);
         irab = iRamax(n - ilo + 1, &b[(i - 1) + (ilo - 1) * ldb], ldb);
         rab = max(rab, abs(b[(i - 1) + ((irab + ilo - 1) - 1) * ldb]));
-        lrab = int(log10[(rab + sfmin) - 1] / basl + one);
-        ir = int(lscale[i - 1] + sign(half, lscale[i - 1]));
-        ir = min(max(ir, lsfmin), lsfmax, lsfmax - lrab);
+        lrab = castINTEGER(log10(rab + sfmin) / basl + one);
+        ir = castINTEGER(lscale[i - 1] + sign(half, lscale[i - 1]));
+        ir = min({max(ir, lsfmin), lsfmax, lsfmax - lrab});
         lscale[i - 1] = pow(sclfac, ir);
         icab = iRamax(ihi, &a[(i - 1) * lda], 1);
         cab = abs(a[(icab - 1) + (i - 1) * lda]);
         icab = iRamax(ihi, &b[(i - 1) * ldb], 1);
         cab = max(cab, abs(b[(icab - 1) + (i - 1) * ldb]));
-        lcab = int(log10[(cab + sfmin) - 1] / basl + one);
-        jc = int(rscale[i - 1] + sign(half, rscale[i - 1]));
-        jc = min(max(jc, lsfmin), lsfmax, lsfmax - lcab);
+        lcab = castINTEGER(log10((cab + sfmin)) / basl + one);
+        jc = castINTEGER(rscale[i - 1] + sign(half, rscale[i - 1]));
+        jc = min({max(jc, lsfmin), lsfmax, lsfmax - lcab});
         rscale[i - 1] = pow(sclfac, jc);
     }
     //

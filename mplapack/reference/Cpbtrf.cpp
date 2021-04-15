@@ -43,6 +43,7 @@ void Cpbtrf(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
     const COMPLEX cone = (1.0, 0.0);
     const REAL one = 1.0;
     INTEGER jj = 0;
+    COMPLEX work[ldwork * nbmax];
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -131,7 +132,7 @@ void Cpbtrf(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
                 //
                 //              Factorize the diagonal block
                 //
-                Cpotf2(uplo, ib, ab[((kd + 1) - 1) + (i - 1) * ldab], ldab - 1, ii);
+                Cpotf2(uplo, ib, &ab[((kd + 1) - 1) + (i - 1) * ldab], ldab - 1, ii);
                 if (ii != 0) {
                     info = i + ii - 1;
                     goto statement_150;
@@ -159,11 +160,11 @@ void Cpbtrf(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
                         //
                         //                    Update A12
                         //
-                        Ctrsm("Left", "Upper", "Conjugate transpose", "Non-unit", ib, i2, cone, ab[((kd + 1) - 1) + (i - 1) * ldab], ldab - 1, ab[((kd + 1 - ib) - 1) + ((i + ib) - 1) * ldab], ldab - 1);
+                        Ctrsm("Left", "Upper", "Conjugate transpose", "Non-unit", ib, i2, cone, &ab[((kd + 1) - 1) + (i - 1) * ldab], ldab - 1, &ab[((kd + 1 - ib) - 1) + ((i + ib) - 1) * ldab], ldab - 1);
                         //
                         //                    Update A22
                         //
-                        Cherk("Upper", "Conjugate transpose", i2, ib, -one, ab[((kd + 1 - ib) - 1) + ((i + ib) - 1) * ldab], ldab - 1, one, ab[((kd + 1) - 1) + ((i + ib) - 1) * ldab], ldab - 1);
+                        Cherk("Upper", "Conjugate transpose", i2, ib, -one, &ab[((kd + 1 - ib) - 1) + ((i + ib) - 1) * ldab], ldab - 1, one, &ab[((kd + 1) - 1) + ((i + ib) - 1) * ldab], ldab - 1);
                     }
                     //
                     if (i3 > 0) {
@@ -178,17 +179,17 @@ void Cpbtrf(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
                         //
                         //                    Update A13 (in the work array).
                         //
-                        Ctrsm("Left", "Upper", "Conjugate transpose", "Non-unit", ib, i3, cone, ab[((kd + 1) - 1) + (i - 1) * ldab], ldab - 1, work, ldwork);
+                        Ctrsm("Left", "Upper", "Conjugate transpose", "Non-unit", ib, i3, cone, &ab[((kd + 1) - 1) + (i - 1) * ldab], ldab - 1, work, ldwork);
                         //
                         //                    Update A23
                         //
                         if (i2 > 0) {
-                            Cgemm("Conjugate transpose", "No transpose", i2, i3, ib, -cone, ab[((kd + 1 - ib) - 1) + ((i + ib) - 1) * ldab], ldab - 1, work, ldwork, cone, ab[((1 + ib) - 1) + ((i + kd) - 1) * ldab], ldab - 1);
+                            Cgemm("Conjugate transpose", "No transpose", i2, i3, ib, -cone, &ab[((kd + 1 - ib) - 1) + ((i + ib) - 1) * ldab], ldab - 1, work, ldwork, cone, &ab[((1 + ib) - 1) + ((i + kd) - 1) * ldab], ldab - 1);
                         }
                         //
                         //                    Update A33
                         //
-                        Cherk("Upper", "Conjugate transpose", i3, ib, -one, work, ldwork, one, ab[((kd + 1) - 1) + ((i + kd) - 1) * ldab], ldab - 1);
+                        Cherk("Upper", "Conjugate transpose", i3, ib, -one, work, ldwork, one, &ab[((kd + 1) - 1) + ((i + kd) - 1) * ldab], ldab - 1);
                         //
                         //                    Copy the lower triangle of A13 back into place.
                         //
@@ -221,7 +222,7 @@ void Cpbtrf(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
                 //
                 //              Factorize the diagonal block
                 //
-                Cpotf2(uplo, ib, ab[(i - 1) * ldab], ldab - 1, ii);
+                Cpotf2(uplo, ib, &ab[(i - 1) * ldab], ldab - 1, ii);
                 if (ii != 0) {
                     info = i + ii - 1;
                     goto statement_150;
@@ -249,11 +250,11 @@ void Cpbtrf(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
                         //
                         //                    Update A21
                         //
-                        Ctrsm("Right", "Lower", "Conjugate transpose", "Non-unit", i2, ib, cone, ab[(i - 1) * ldab], ldab - 1, ab[((1 + ib) - 1) + (i - 1) * ldab], ldab - 1);
+                        Ctrsm("Right", "Lower", "Conjugate transpose", "Non-unit", i2, ib, cone, &ab[(i - 1) * ldab], ldab - 1, &ab[((1 + ib) - 1) + (i - 1) * ldab], ldab - 1);
                         //
                         //                    Update A22
                         //
-                        Cherk("Lower", "No transpose", i2, ib, -one, ab[((1 + ib) - 1) + (i - 1) * ldab], ldab - 1, one, ab[((i + ib) - 1) * ldab], ldab - 1);
+                        Cherk("Lower", "No transpose", i2, ib, -one, &ab[((1 + ib) - 1) + (i - 1) * ldab], ldab - 1, one, &ab[((i + ib) - 1) * ldab], ldab - 1);
                     }
                     //
                     if (i3 > 0) {
@@ -268,17 +269,17 @@ void Cpbtrf(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
                         //
                         //                    Update A31 (in the work array).
                         //
-                        Ctrsm("Right", "Lower", "Conjugate transpose", "Non-unit", i3, ib, cone, ab[(i - 1) * ldab], ldab - 1, work, ldwork);
+                        Ctrsm("Right", "Lower", "Conjugate transpose", "Non-unit", i3, ib, cone, &ab[(i - 1) * ldab], ldab - 1, work, ldwork);
                         //
                         //                    Update A32
                         //
                         if (i2 > 0) {
-                            Cgemm("No transpose", "Conjugate transpose", i3, i2, ib, -cone, work, ldwork, ab[((1 + ib) - 1) + (i - 1) * ldab], ldab - 1, cone, ab[((1 + kd - ib) - 1) + ((i + ib) - 1) * ldab], ldab - 1);
+                            Cgemm("No transpose", "Conjugate transpose", i3, i2, ib, -cone, work, ldwork, &ab[((1 + ib) - 1) + (i - 1) * ldab], ldab - 1, cone, &ab[((1 + kd - ib) - 1) + ((i + ib) - 1) * ldab], ldab - 1);
                         }
                         //
                         //                    Update A33
                         //
-                        Cherk("Lower", "No transpose", i3, ib, -one, work, ldwork, one, ab[((i + kd) - 1) * ldab], ldab - 1);
+                        Cherk("Lower", "No transpose", i3, ib, -one, work, ldwork, one, &ab[((i + kd) - 1) * ldab], ldab - 1);
                         //
                         //                    Copy the upper triangle of A31 back into place.
                         //

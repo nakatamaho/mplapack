@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgeesx(const char *jobvs, const char *sort, UNHANDLED_function_pointer select, const char *sense, INTEGER const n, REAL *a, INTEGER const lda, INTEGER &sdim, REAL *wr, REAL *wi, REAL *vs, INTEGER const ldvs, REAL const rconde, REAL &rcondv, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, bool *bwork, INTEGER &info) {
+void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), const char *sense, INTEGER const n, REAL *a, INTEGER const lda, INTEGER &sdim, REAL *wr, REAL *wi, REAL *vs, INTEGER const ldvs, REAL rconde, REAL &rcondv, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, bool *bwork, INTEGER &info) {
     bool wantvs = false;
     bool wantst = false;
     bool wantsn = false;
@@ -47,7 +47,7 @@ void Rgeesx(const char *jobvs, const char *sort, UNHANDLED_function_pointer sele
     REAL smlnum = 0.0;
     const REAL one = 1.0;
     REAL bignum = 0.0;
-    arr_1d<1, REAL> dum(fill0);
+    REAL dum;
     REAL anrm = 0.0;
     bool scalea = false;
     const REAL zero = 0.0;
@@ -195,7 +195,7 @@ void Rgeesx(const char *jobvs, const char *sort, UNHANDLED_function_pointer sele
     //
     //     Scale A if max element outside range [SMLNUM,BIGNUM]
     //
-    anrm = Rlange("M", n, n, a, lda, dum);
+    anrm = Rlange("M", n, n, a, lda, &dum);
     scalea = false;
     if (anrm > zero && anrm < smlnum) {
         scalea = true;
@@ -299,9 +299,9 @@ void Rgeesx(const char *jobvs, const char *sort, UNHANDLED_function_pointer sele
         Rlascl("H", 0, 0, cscale, anrm, n, n, a, lda, ierr);
         Rcopy(n, a, lda + 1, wr, 1);
         if ((wantsv || wantsb) && info == 0) {
-            dum[1 - 1] = rcondv;
-            Rlascl("G", 0, 0, cscale, anrm, 1, 1, dum, 1, ierr);
-            rcondv = dum[1 - 1];
+            dum[1 - 1] = *rcondv;
+            Rlascl("G", 0, 0, cscale, anrm, 1, 1, &dum, 1, ierr);
+            *rcondv = dum[1 - 1];
         }
         if (cscale == smlnum) {
             //
@@ -341,7 +341,7 @@ void Rgeesx(const char *jobvs, const char *sort, UNHANDLED_function_pointer sele
                             Rswap(n - i - 1, &a[(i - 1) + ((i + 2) - 1) * lda], lda, &a[((i + 1) - 1) + ((i + 2) - 1) * lda], lda);
                         }
                         if (wantvs) {
-                            Rswap(n, vs[(i - 1) * ldvs], 1, vs[((i + 1) - 1) * ldvs], 1);
+                            Rswap(n, &vs[(i - 1) * ldvs], 1, &vs[((i + 1) - 1) * ldvs], 1);
                         }
                         a[(i - 1) + ((i + 1) - 1) * lda] = a[((i + 1) - 1) + (i - 1) * lda];
                         a[((i + 1) - 1) + (i - 1) * lda] = zero;
@@ -351,7 +351,7 @@ void Rgeesx(const char *jobvs, const char *sort, UNHANDLED_function_pointer sele
             statement_20:;
             }
         }
-        Rlascl("G", 0, 0, cscale, anrm, n - ieval, 1, wi[(ieval + 1) - 1], max(n - ieval, 1), ierr);
+        Rlascl("G", 0, 0, cscale, anrm, n - ieval, 1, &wi[(ieval + 1) - 1], max(n - ieval, 1), ierr);
     }
     //
     if (wantst && info == 0) {

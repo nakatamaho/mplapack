@@ -274,7 +274,7 @@ void Rggev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
     } else {
         chtemp = 'E';
     }
-    Rhgeqz(chtemp, jobvl, jobvr, n, ilo, ihi, a, lda, b, ldb, alphar, alphai, beta, vl, ldvl, vr, ldvr, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
+    Rhgeqz(&chtemp, jobvl, jobvr, n, ilo, ihi, a, lda, b, ldb, alphar, alphai, beta, vl, ldvl, vr, ldvr, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     if (ierr != 0) {
         if (ierr > 0 && ierr <= n) {
             info = ierr;
@@ -292,14 +292,14 @@ void Rggev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
     if (ilv) {
         if (ilvl) {
             if (ilvr) {
-                chtemp = "B";
+                chtemp = 'B';
             } else {
-                chtemp = "L";
+                chtemp = 'L';
             }
         } else {
-            chtemp = "R";
+            chtemp = 'R';
         }
-        Rtgevc(chtemp, "B", ldumma, n, a, lda, b, ldb, vl, ldvl, vr, ldvr, n, in, &work[iwrk - 1], ierr);
+        Rtgevc(&chtemp, "B", &ldumma, n, a, lda, b, ldb, vl, ldvl, vr, ldvr, n, in, &work[iwrk - 1], ierr);
         if (ierr != 0) {
             info = n + 2;
             goto statement_110;

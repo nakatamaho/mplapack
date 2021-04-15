@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, UNHANDLED_function_pointer selctg, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, INTEGER &sdim, REAL *alphar, REAL *alphai, REAL *beta, REAL *vsl, INTEGER const ldvsl, REAL *vsr, INTEGER const ldvsr, REAL *work, INTEGER const lwork, bool *bwork, INTEGER &info) {
+void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selctg)(REAL, REAL), INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, INTEGER &sdim, REAL *alphar, REAL *alphai, REAL *beta, REAL *vsl, INTEGER const ldvsl, REAL *vsr, INTEGER const ldvsr, REAL *work, INTEGER const lwork, bool *bwork, INTEGER &info) {
     INTEGER ijobvl = 0;
     bool ilvsl = false;
     INTEGER ijobvr = 0;
@@ -63,8 +63,8 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, UNHANDLED_f
     INTEGER i = 0;
     REAL pvsl = 0.0;
     REAL pvsr = 0.0;
-    arr_1d<2, REAL> dif(fill0);
-    arr_1d<1, int> idum(fill0);
+    REAL dif[2];
+    INTEGER idum[1];
     bool lastsl = false;
     bool lst2sl = false;
     INTEGER ip = 0;
@@ -252,9 +252,9 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, UNHANDLED_f
     if (ilvsl) {
         Rlaset("Full", n, n, zero, one, vsl, ldvsl);
         if (irows > 1) {
-            Rlacpy("L", irows - 1, irows - 1, &b[((ilo + 1) - 1) + (ilo - 1) * ldb], ldb, vsl[((ilo + 1) - 1) + (ilo - 1) * ldvsl], ldvsl);
+            Rlacpy("L", irows - 1, irows - 1, &b[((ilo + 1) - 1) + (ilo - 1) * ldb], ldb, &vsl[((ilo + 1) - 1) + (ilo - 1) * ldvsl], ldvsl);
         }
-        Rorgqr(irows, irows, irows, vsl[(ilo - 1) + (ilo - 1) * ldvsl], ldvsl, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
+        Rorgqr(irows, irows, irows, &vsl[(ilo - 1) + (ilo - 1) * ldvsl], ldvsl, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     }
     //
     //     Initialize VSR
@@ -303,7 +303,7 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, UNHANDLED_f
         //        Select eigenvalues
         //
         for (i = 1; i <= n; i = i + 1) {
-            bwork[i - 1] = selctg[(alphar[i - 1] - 1) + (alphai[i - 1] - 1) * ldselctg];
+            bwork[i - 1] = selctg(alphar[i - 1], alphai[i - 1]);
         }
         //
         Rtgsen(0, ilvsl, ilvsr, bwork, n, a, lda, b, ldb, alphar, alphai, beta, vsl, ldvsl, vsr, ldvsr, sdim, pvsl, pvsr, dif, &work[iwrk - 1], lwork - iwrk + 1, idum, 1, ierr);
@@ -381,7 +381,7 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, UNHANDLED_f
         sdim = 0;
         ip = 0;
         for (i = 1; i <= n; i = i + 1) {
-            cursl = selctg[(alphar[i - 1] - 1) + (alphai[i - 1] - 1) * ldselctg];
+            cursl = selctg(alphar[i - 1], alphai[i - 1]);
             if (alphai[i - 1] == zero) {
                 if (cursl) {
                     sdim++;

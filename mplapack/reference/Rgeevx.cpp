@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char *sense, INTEGER const n, REAL *a, INTEGER const lda, REAL *wr, REAL *wi, REAL *vl, INTEGER const ldvl, REAL *vr, INTEGER const ldvr, INTEGER const ilo, INTEGER const ihi, REAL *scale, REAL &abnrm, REAL *rconde, REAL *rcondv, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
+void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char *sense, INTEGER const n, REAL *a, INTEGER const lda, REAL *wr, REAL *wi, REAL *vl, INTEGER const ldvl, REAL *vr, INTEGER const ldvr, INTEGER ilo, INTEGER ihi, REAL *scale, REAL &abnrm, REAL *rconde, REAL *rcondv, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
     bool lquery = false;
     bool wantvl = false;
     bool wantvr = false;
@@ -39,7 +39,7 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     bool wntsnb = false;
     INTEGER minwrk = 0;
     INTEGER maxwrk = 0;
-    arr_1d<1, bool> select(fill0);
+    bool select;
     INTEGER nout = 0;
     INTEGER ierr = 0;
     INTEGER lwork_trevc = 0;
@@ -49,15 +49,15 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     const REAL one = 1.0;
     REAL bignum = 0.0;
     INTEGER icond = 0;
-    arr_1d<1, REAL> dum(fill0);
+    REAL dum;
     REAL anrm = 0.0;
     bool scalea = false;
     const REAL zero = 0.0;
     REAL cscale = 0.0;
     INTEGER itau = 0;
     INTEGER iwrk = 0;
-    str<1> side = char0;
-    str<1> job = char0;
+    char side;
+    char job;
     INTEGER i = 0;
     REAL scl = 0.0;
     INTEGER k = 0;
@@ -136,13 +136,13 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
             maxwrk = n + n * iMlaenv(1, "Rgehrd", " ", n, 1, n, 0);
             //
             if (wantvl) {
-                Rtrevc3("L", "B", select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, work, -1, ierr);
-                lwork_trevc = int(work[1 - 1]);
+                Rtrevc3("L", "B", &select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, work, -1, ierr);
+                lwork_trevc = castINTEGER(work[1 - 1]);
                 maxwrk = max(maxwrk, n + lwork_trevc);
                 Rhseqr("S", "V", n, 1, n, a, lda, wr, wi, vl, ldvl, work, -1, info);
             } else if (wantvr) {
-                Rtrevc3("R", "B", select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, work, -1, ierr);
-                lwork_trevc = int(work[1 - 1]);
+                Rtrevc3("R", "B", &select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, work, -1, ierr);
+                lwork_trevc = castINTEGER(work[1 - 1]);
                 maxwrk = max(maxwrk, n + lwork_trevc);
                 Rhseqr("S", "V", n, 1, n, a, lda, wr, wi, vr, ldvr, work, -1, info);
             } else {
@@ -152,7 +152,7 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
                     Rhseqr("S", "N", n, 1, n, a, lda, wr, wi, vr, ldvr, work, -1, info);
                 }
             }
-            hswork = int(work[1 - 1]);
+            hswork = castINTEGER(work[1 - 1]);
             //
             if ((!wantvl) && (!wantvr)) {
                 minwrk = 2 * n;
@@ -209,7 +209,7 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     //     Scale A if max element outside range [SMLNUM,BIGNUM]
     //
     icond = 0;
-    anrm = Rlange("M", n, n, a, lda, dum);
+    anrm = Rlange("M", n, n, a, lda, &dum);
     scalea = false;
     if (anrm > zero && anrm < smlnum) {
         scalea = true;
@@ -225,11 +225,11 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     //     Balance the matrix and compute ABNRM
     //
     Rgebal(balanc, n, a, lda, ilo, ihi, scale, ierr);
-    abnrm = Rlange("1", n, n, a, lda, dum);
+    abnrm = Rlange("1", n, n, a, lda, &dum);
     if (scalea) {
-        dum[1 - 1] = abnrm;
-        Rlascl("G", 0, 0, cscale, anrm, 1, 1, dum, 1, ierr);
-        abnrm = dum[1 - 1];
+        dum[1 - 1] = *abnrm;
+        Rlascl("G", 0, 0, cscale, anrm, 1, 1, &dum, 1, ierr);
+        *abnrm = dum[1 - 1];
     }
     //
     //     Reduce to upper Hessenberg form
@@ -244,7 +244,7 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         //        Want left eigenvectors
         //        Copy Householder vectors to VL
         //
-        side = "L";
+        side = 'L';
         Rlacpy("L", n, n, a, lda, vl, ldvl);
         //
         //        Generate orthogonal matrix in VL
@@ -263,7 +263,7 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
             //           Want left and right eigenvectors
             //           Copy Schur vectors to VR
             //
-            side = "B";
+            side = 'B';
             Rlacpy("F", n, n, vl, ldvl, vr, ldvr);
         }
         //
@@ -272,7 +272,7 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         //        Want right eigenvectors
         //        Copy Householder vectors to VR
         //
-        side = "R";
+        side = 'R';
         Rlacpy("L", n, n, a, lda, vr, ldvr);
         //
         //        Generate orthogonal matrix in VR
@@ -292,15 +292,15 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         //        If condition numbers desired, compute Schur form
         //
         if (wntsnn) {
-            job = "E";
+            job = 'E';
         } else {
-            job = "S";
+            job = 'S';
         }
         //
         //        (Workspace: need 1, prefer HSWORK (see comments) )
         //
         iwrk = itau;
-        Rhseqr(job, "N", n, ilo, ihi, a, lda, wr, wi, vr, ldvr, &work[iwrk - 1], lwork - iwrk + 1, info);
+        Rhseqr(&job, "N", n, ilo, ihi, a, lda, wr, wi, vr, ldvr, &work[iwrk - 1], lwork - iwrk + 1, info);
     }
     //
     //     If INFO .NE. 0 from Rhseqr, then quit
@@ -314,7 +314,7 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         //        Compute left and/or right eigenvectors
         //        (Workspace: need 3*N, prefer N + 2*N*NB)
         //
-        Rtrevc3(side, "B", select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, &work[iwrk - 1], lwork - iwrk + 1, ierr);
+        Rtrevc3(&side, "B", &select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, &work[iwrk - 1], lwork - iwrk + 1, ierr);
     }
     //
     //     Compute condition numbers if desired
@@ -334,18 +334,18 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         //
         for (i = 1; i <= n; i = i + 1) {
             if (wi[i - 1] == zero) {
-                scl = one / Rnrm2(n, vl[(i - 1) * ldvl], 1);
-                Rscal(n, scl, vl[(i - 1) * ldvl], 1);
+                scl = one / Rnrm2(n, &vl[(i - 1) * ldvl], 1);
+                Rscal(n, scl, &vl[(i - 1) * ldvl], 1);
             } else if (wi[i - 1] > zero) {
-                scl = one / Rlapy2(Rnrm2(n, vl[(i - 1) * ldvl], 1), Rnrm2(n, vl[((i + 1) - 1) * ldvl], 1));
-                Rscal(n, scl, vl[(i - 1) * ldvl], 1);
-                Rscal(n, scl, vl[((i + 1) - 1) * ldvl], 1);
+                scl = one / Rlapy2(Rnrm2(n, &vl[(i - 1) * ldvl], 1), Rnrm2(n, &vl[((i + 1) - 1) * ldvl], 1));
+                Rscal(n, scl, &vl[(i - 1) * ldvl], 1);
+                Rscal(n, scl, &vl[((i + 1) - 1) * ldvl], 1);
                 for (k = 1; k <= n; k = k + 1) {
                     work[k - 1] = pow2(vl[(k - 1) + (i - 1) * ldvl]) + pow2(vl[(k - 1) + ((i + 1) - 1) * ldvl]);
                 }
                 k = iRamax(n, work, 1);
                 Rlartg(vl[(k - 1) + (i - 1) * ldvl], vl[(k - 1) + ((i + 1) - 1) * ldvl], cs, sn, r);
-                Rrot(n, vl[(i - 1) * ldvl], 1, vl[((i + 1) - 1) * ldvl], 1, cs, sn);
+                Rrot(n, &vl[(i - 1) * ldvl], 1, &vl[((i + 1) - 1) * ldvl], 1, cs, sn);
                 vl[(k - 1) + ((i + 1) - 1) * ldvl] = zero;
             }
         }
@@ -361,18 +361,18 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         //
         for (i = 1; i <= n; i = i + 1) {
             if (wi[i - 1] == zero) {
-                scl = one / Rnrm2(n, vr[(i - 1) * ldvr], 1);
-                Rscal(n, scl, vr[(i - 1) * ldvr], 1);
+                scl = one / Rnrm2(n, &vr[(i - 1) * ldvr], 1);
+                Rscal(n, scl, &vr[(i - 1) * ldvr], 1);
             } else if (wi[i - 1] > zero) {
-                scl = one / Rlapy2(Rnrm2(n, vr[(i - 1) * ldvr], 1), Rnrm2(n, vr[((i + 1) - 1) * ldvr], 1));
-                Rscal(n, scl, vr[(i - 1) * ldvr], 1);
-                Rscal(n, scl, vr[((i + 1) - 1) * ldvr], 1);
+                scl = one / Rlapy2(Rnrm2(n, &vr[(i - 1) * ldvr], 1), Rnrm2(n, &vr[((i + 1) - 1) * ldvr], 1));
+                Rscal(n, scl, &vr[(i - 1) * ldvr], 1);
+                Rscal(n, scl, &vr[((i + 1) - 1) * ldvr], 1);
                 for (k = 1; k <= n; k = k + 1) {
                     work[k - 1] = pow2(vr[(k - 1) + (i - 1) * ldvr]) + pow2(vr[(k - 1) + ((i + 1) - 1) * ldvr]);
                 }
                 k = iRamax(n, work, 1);
                 Rlartg(vr[(k - 1) + (i - 1) * ldvr], vr[(k - 1) + ((i + 1) - 1) * ldvr], cs, sn, r);
-                Rrot(n, vr[(i - 1) * ldvr], 1, vr[((i + 1) - 1) * ldvr], 1, cs, sn);
+                Rrot(n, &vr[(i - 1) * ldvr], 1, &vr[((i + 1) - 1) * ldvr], 1, cs, sn);
                 vr[(k - 1) + ((i + 1) - 1) * ldvr] = zero;
             }
         }
@@ -382,8 +382,8 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
 //
 statement_50:
     if (scalea) {
-        Rlascl("G", 0, 0, cscale, anrm, n - info, 1, wr[(info + 1) - 1], max(n - info, 1), ierr);
-        Rlascl("G", 0, 0, cscale, anrm, n - info, 1, wi[(info + 1) - 1], max(n - info, 1), ierr);
+        Rlascl("G", 0, 0, cscale, anrm, n - info, 1, &wr[(info + 1) - 1], max(n - info, 1), ierr);
+        Rlascl("G", 0, 0, cscale, anrm, n - info, 1, &wi[(info + 1) - 1], max(n - info, 1), ierr);
         if (info == 0) {
             if ((wntsnv || wntsnb) && icond == 0) {
                 Rlascl("G", 0, 0, cscale, anrm, n, 1, rcondv, n, ierr);
