@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
+
 void Claunhr_col_getrfnp2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *d, INTEGER &info) {
     //
     //  -- LAPACK computational routine --
@@ -56,7 +58,6 @@ void Claunhr_col_getrfnp2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER 
     //     ..
     //     .. Statement Function definitions ..
     COMPLEX z = 0.0;
-    abs1[z - 1] = abs(z.real()) + abs(z.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -95,7 +96,7 @@ void Claunhr_col_getrfnp2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER 
         //
         //        Transfer the sign
         //
-        d[1 - 1] = COMPLEX(-sign(one, &a[(1 - 1)].real()));
+        d[1 - 1] = COMPLEX(-sign(one, a[(1 - 1)].real()), 0.0);
         //
         //        Construct the row of U
         //
@@ -108,7 +109,7 @@ void Claunhr_col_getrfnp2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER 
         //
         //        Transfer the sign
         //
-        d[1 - 1] = COMPLEX(-sign(one, &a[(1 - 1)].real()));
+        d[1 - 1] = COMPLEX(-sign(one, a[(1 - 1)].real()), 0.0);
         //
         //        Construct the row of U
         //
@@ -122,7 +123,7 @@ void Claunhr_col_getrfnp2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER 
         //
         //        Construct the subdiagonal elements of L
         //
-        if (abs1[a[(1 - 1)] - 1] >= sfmin) {
+        if (abs1(a[(1 - 1)]) >= sfmin) {
             Cscal(m - 1, cone / a[(1 - 1)], &a[(2 - 1)], 1);
         } else {
             for (i = 2; i <= m; i = i + 1) {

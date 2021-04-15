@@ -89,7 +89,7 @@ void Rtpqrt2(INTEGER const m, INTEGER const n, INTEGER const l, REAL *a, INTEGER
         //        Generate elementary reflector H(I) to annihilate B(:,I)
         //
         p = m - l + min(l, i);
-        Rlarfg(p + 1, &a[(i - 1) + (i - 1) * lda], &b[(i - 1) * ldb], 1, &t[(i - 1)]);
+        Rlarfg(p + 1, a[(i - 1) + (i - 1) * lda], &b[(i - 1) * ldb], 1, t[(i - 1)]);
         if (i < n) {
             //
             //           W(1:N-I) := C(I:M,I+1:N)^H * C(I:M,I) [use W = T(:,N)]

@@ -119,7 +119,7 @@ void Rgbtf2(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         //        subdiagonal elements in the current column.
         //
         km = min(kl, m - j);
-        jp = iRamax(km + 1, ab[((kv + 1) - 1) + (j - 1) * ldab], 1);
+        jp = iRamax(km + 1, &ab[((kv + 1) - 1) + (j - 1) * ldab], 1);
         ipiv[j - 1] = jp + j - 1;
         if (ab[((kv + jp) - 1) + (j - 1) * ldab] != zero) {
             ju = max(ju, min(j + ku + jp - 1, n));
@@ -127,19 +127,19 @@ void Rgbtf2(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
             //           Apply interchange to columns J to JU.
             //
             if (jp != 1) {
-                Rswap(ju - j + 1, ab[((kv + jp) - 1) + (j - 1) * ldab], ldab - 1, ab[((kv + 1) - 1) + (j - 1) * ldab], ldab - 1);
+                Rswap(ju - j + 1, &ab[((kv + jp) - 1) + (j - 1) * ldab], ldab - 1, &ab[((kv + 1) - 1) + (j - 1) * ldab], ldab - 1);
             }
             //
             if (km > 0) {
                 //
                 //              Compute multipliers.
                 //
-                Rscal(km, one / ab[((kv + 1) - 1) + (j - 1) * ldab], ab[((kv + 2) - 1) + (j - 1) * ldab], 1);
+                Rscal(km, one / ab[((kv + 1) - 1) + (j - 1) * ldab], &ab[((kv + 2) - 1) + (j - 1) * ldab], 1);
                 //
                 //              Update trailing submatrix within the band.
                 //
                 if (ju > j) {
-                    Rger(km, ju - j, -one, ab[((kv + 2) - 1) + (j - 1) * ldab], 1, ab[(kv - 1) + ((j + 1) - 1) * ldab], ldab - 1, ab[((kv + 1) - 1) + ((j + 1) - 1) * ldab], ldab - 1);
+                    Rger(km, ju - j, -one, &ab[((kv + 2) - 1) + (j - 1) * ldab], 1, &ab[(kv - 1) + ((j + 1) - 1) * ldab], ldab - 1, &ab[((kv + 1) - 1) + ((j + 1) - 1) * ldab], ldab - 1);
                 }
             }
         } else {

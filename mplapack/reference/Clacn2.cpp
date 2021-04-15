@@ -69,7 +69,7 @@ void Clacn2(INTEGER const n, COMPLEX *v, COMPLEX *x, REAL &est, INTEGER &kase, I
     safmin = Rlamch("Safe minimum");
     if (kase == 0) {
         for (i = 1; i <= n; i = i + 1) {
-            x[i - 1] = COMPLEX(one / n.real());
+            x[i - 1] = COMPLEX(one / castREAL(n));
         }
         kase = 1;
         isave[1 - 1] = 1;
@@ -119,7 +119,7 @@ statement_20:
 //     FIRST ITERATION.  X HAS BEEN OVERWRITTEN BY CTRANS(A)*X.
 //
 statement_40:
-    isave[2 - 1] = iCmax1[(n - 1) + (x - 1) * ldiCmax1];
+    isave[2 - 1] = iCmax1(n, x, 1);
     isave[3 - 1] = 2;
 //
 //     MAIN LOOP - ITERATIONS 2,3,...,ITMAX.
@@ -163,7 +163,7 @@ statement_70:
 //
 statement_90:
     jlast = isave[2 - 1];
-    isave[2 - 1] = iCmax1[(n - 1) + (x - 1) * ldiCmax1];
+    isave[2 - 1] = iCmax1(n, x, 1);
     if ((abs(x[jlast - 1]) != abs(x[isave[2 - 1] - 1])) && (isave[3 - 1] < itmax)) {
         isave[3 - 1]++;
         goto statement_50;
@@ -174,7 +174,7 @@ statement_90:
 statement_100:
     altsgn = one;
     for (i = 1; i <= n; i = i + 1) {
-        x[i - 1] = COMPLEX(altsgn * (one + i - 1.real() / n - 1.real()));
+        x[i - 1] = COMPLEX(altsgn * (one + castREAL(i - 1) / castREAL(n - 1)), 0.0);
         altsgn = -altsgn;
     }
     kase = 1;
@@ -185,7 +185,7 @@ statement_100:
 //     X HAS BEEN OVERWRITTEN BY A*X.
 //
 statement_120:
-    temp = two * (RCsum1(n, x, 1) / 3 * n.real());
+    temp = two * (RCsum1(n, x, 1) / castREAL(3 * n));
     if (temp > est) {
         Ccopy(n, x, 1, v, 1);
         est = temp;

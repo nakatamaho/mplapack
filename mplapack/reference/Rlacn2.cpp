@@ -66,7 +66,7 @@ void Rlacn2(INTEGER const n, REAL *v, REAL *x, INTEGER *isgn, REAL &est, INTEGER
     //
     if (kase == 0) {
         for (i = 1; i <= n; i = i + 1) {
-            x[i - 1] = one / n.real();
+            x[i - 1] = one / castREAL(n);
         }
         kase = 1;
         isave[1 - 1] = 1;
@@ -106,7 +106,7 @@ statement_20:
         } else {
             x[i - 1] = -one;
         }
-        isgn[i - 1] = nint[x[i - 1] - 1];
+        isgn[i - 1] = nint(x[i - 1]);
     }
     kase = 2;
     isave[1 - 1] = 2;
@@ -143,7 +143,7 @@ statement_70:
         } else {
             xs = -one;
         }
-        if (nint[xs - 1] != isgn[i - 1]) {
+        if (nint(xs) != isgn[i - 1]) {
             goto statement_90;
         }
     }
@@ -162,7 +162,7 @@ statement_90:
         } else {
             x[i - 1] = -one;
         }
-        isgn[i - 1] = nint[x[i - 1] - 1];
+        isgn[i - 1] = nint(x[i - 1]);
     }
     kase = 2;
     isave[1 - 1] = 4;
@@ -184,7 +184,7 @@ statement_110:
 statement_120:
     altsgn = one;
     for (i = 1; i <= n; i = i + 1) {
-        x[i - 1] = altsgn * (one + i - 1.real() / n - 1.real());
+        x[i - 1] = altsgn * (one + castREAL(i - 1) / castREAL(n - 1));
         altsgn = -altsgn;
     }
     kase = 1;
@@ -195,7 +195,7 @@ statement_120:
 //     X HAS BEEN OVERWRITTEN BY A*X.
 //
 statement_140:
-    temp = two * (Rasum(n, x, 1) / 3 * n.real());
+    temp = two * (Rasum(n, x, 1) / castREAL(3 * n));
     if (temp > est) {
         Rcopy(n, x, 1, v, 1);
         est = temp;
