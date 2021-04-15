@@ -245,7 +245,7 @@ REAL Rlantr(const char *norm, const char *uplo, const char *diag, INTEGER const 
                 for (j = 1; j <= n; j = j + 1) {
                     colssq[1 - 1] = zero;
                     colssq[2 - 1] = one;
-                    Rlassq(m - j, &a[(min(m - 1) + ((j + 1)) - 1) * lda], 1, colssq[1 - 1], colssq[2 - 1]);
+                    Rlassq(m - j, &a[(min(m, j + 1) - 1) + (j - 1) * lda], 1, colssq[1 - 1], colssq[2 - 1]);
                     Rcombssq(ssq, colssq);
                 }
             } else {

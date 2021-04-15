@@ -210,7 +210,7 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
                     anorm = max(anorm, abs(ab[(i - 1) + (j - 1) * ldab]));
                 }
             }
-            rpvgrw = Rlantb("M", "U", "N", info, min(info - 1, kl + ku), afb[(max(1, kl + ku + 2 - info) - 1) + (1 - 1) * ldafb], ldafb, work);
+            rpvgrw = Rlantb("M", "U", "N", info, min(info - 1, kl + ku), &afb[(max(1, kl + ku + 2 - info) - 1) + (1 - 1) * ldafb], ldafb, work);
             if (rpvgrw == zero) {
                 rpvgrw = one;
             } else {
@@ -227,9 +227,9 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
     //
     char norm;
     if (notran) {
-        norm = "1";
+        norm = '1';
     } else {
-        norm = "I";
+        norm = 'I';
     }
     anorm = Rlangb(&norm, n, kl, ku, ab, ldab, work);
     rpvgrw = Rlantb("M", "U", "N", n, kl + ku, afb, ldafb, work);
@@ -241,7 +241,7 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
     //
     //     Compute the reciprocal of the condition number of A.
     //
-    Rgbcon(norm, n, kl, ku, afb, ldafb, ipiv, anorm, rcond, work, iwork, info);
+    Rgbcon(&norm, n, kl, ku, afb, ldafb, ipiv, anorm, rcond, work, iwork, info);
     //
     //     Compute the solution matrix X.
     //

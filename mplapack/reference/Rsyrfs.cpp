@@ -49,7 +49,7 @@ void Rsyrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
     const REAL two = 2.0e+0;
     const INTEGER itmax = 5;
     INTEGER kase = 0;
-    arr_1d<3, int> isave(fill0);
+    INTEGER isave[3];
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -131,7 +131,7 @@ void Rsyrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
         //        Compute residual R = B - A * X
         //
         Rcopy(n, &b[(j - 1) * ldb], 1, &work[(n + 1) - 1], 1);
-        Rsymv(uplo, n, -one, a, lda, x[(j - 1) * ldx], 1, one, &work[(n + 1) - 1], 1);
+        Rsymv(uplo, n, -one, a, lda, &x[(j - 1) * ldx], 1, one, &work[(n + 1) - 1], 1);
         //
         //        Compute componentwise relative backward error from formula
         //
@@ -191,7 +191,7 @@ void Rsyrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
             //           Update solution and try again.
             //
             Rsytrs(uplo, n, 1, af, ldaf, ipiv, &work[(n + 1) - 1], n, info);
-            Raxpy(n, one, &work[(n + 1) - 1], 1, x[(j - 1) * ldx], 1);
+            Raxpy(n, one, &work[(n + 1) - 1], 1, &x[(j - 1) * ldx], 1);
             lstres = berr[j - 1];
             count++;
             goto statement_20;

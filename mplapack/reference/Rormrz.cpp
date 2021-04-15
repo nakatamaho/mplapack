@@ -96,6 +96,10 @@ void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER nb = 0;
     const INTEGER ldt = nbmax + 1;
     const INTEGER tsize = ldt * nbmax;
+    char side_trans[3];
+    side_trans[0] = side[0];
+    side_trans[1] = trans[0];
+    side_trans[2] = '\0';
     if (info == 0) {
         //
         //        Compute the workspace requirements
@@ -103,7 +107,7 @@ void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
         if (m == 0 || n == 0) {
             lwkopt = 1;
         } else {
-            nb = min(nbmax, iMlaenv(1, "Rormrq", side + trans, m, n, k, -1));
+            nb = min(nbmax, iMlaenv(1, "Rormrq", side_trans, m, n, k, -1));
             lwkopt = nw * nb + tsize;
         }
         work[1 - 1] = lwkopt;
@@ -128,7 +132,7 @@ void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
     if (nb > 1 && nb < k) {
         if (lwork < nw * nb + tsize) {
             nb = (lwork - tsize) / ldwork;
-            nbmin = max(2, iMlaenv(2, "Rormrq", side + trans, m, n, k, -1));
+            nbmin = max(2, iMlaenv(2, "Rormrq", side_trans, m, n, k, -1));
         }
     }
     //
@@ -142,7 +146,7 @@ void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER ja = 0;
     INTEGER mi = 0;
     INTEGER ic = 0;
-    str<1> transt = char0;
+    char transt;
     INTEGER i = 0;
     INTEGER ib = 0;
     if (nb < nbmin || nb >= k) {
@@ -176,9 +180,9 @@ void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
         }
         //
         if (notran) {
-            transt = "T";
+            transt = 'T';
         } else {
-            transt = "N";
+            transt = 'N';
         }
         //
         for (i = i1; i <= i2; i = i + i3) {
@@ -205,7 +209,7 @@ void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
             //
             //           Apply H or H**T
             //
-            Rlarzb(side, transt, "Backward", "Rowwise", mi, ni, ib, l, &a[(i - 1) + (ja - 1) * lda], lda, &work[iwt - 1], ldt, &c[(ic - 1) + (jc - 1) * ldc], ldc, work, ldwork);
+            Rlarzb(side, &transt, "Backward", "Rowwise", mi, ni, ib, l, &a[(i - 1) + (ja - 1) * lda], lda, &work[iwt - 1], ldt, &c[(ic - 1) + (jc - 1) * ldc], ldc, work, ldwork);
         }
         //
     }
