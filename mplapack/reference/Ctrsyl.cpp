@@ -98,10 +98,10 @@ void Ctrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
     REAL smlnum = Rlamch("S");
     REAL bignum = one / smlnum;
     Rlabad(smlnum, bignum);
-    smlnum = smlnum * m * n.real() / eps;
+    smlnum = smlnum * castREAL(m * n) / eps;
     bignum = one / smlnum;
-    arr_1d<1, REAL> dum(fill0);
-    REAL smin = max(smlnum, eps * Clange("M", m, m, a, lda, dum), eps * Clange("M", n, n, b, ldb, dum));
+    REAL dum[1];
+    REAL smin = max({smlnum, eps * Clange("M", m, m, a, lda, dum), eps * Clange("M", n, n, b, ldb, dum)});
     REAL sgn = isgn;
     //
     INTEGER l = 0;
@@ -132,37 +132,34 @@ void Ctrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
         for (l = 1; l <= n; l = l + 1) {
             for (k = m; k >= 1; k = k - 1) {
                 //
-        suml = Cdotu(m - k, &a[(k-1)+((min(k + 1)-1)*lda], lda,
-          c[((min(k + 1)-1)+(m)-1)*ldc], 1);
-        sumr = Cdotu(l - 1, &c[(k-1)], ldc, &b[(l-1)*ldb], 1);
-        vec = c[(k-1)+(l-1)*ldc] - (suml + sgn * sumr);
-        //
-        scaloc = one;
-        a11 = a[(k-1)+(k-1)*lda] + sgn * b[(l-1)+(l-1)*ldb];
-        da11 = abs(a11.real()) +
-          abs(a11.imag());
-        if (da11 <= smin) {
+                suml = Cdotu(m - k, &a[(k - 1) + (min(k + 1, m) - 1) * lda], lda, &c[(min(k + 1, m) - 1) + (l - 1) * ldc], 1);
+                sumr = Cdotu(l - 1, &c[(k - 1)], ldc, &b[(l - 1) * ldb], 1);
+                vec = c[(k - 1) + (l - 1) * ldc] - (suml + sgn * sumr);
+                //
+                scaloc = one;
+                a11 = a[(k - 1) + (k - 1) * lda] + sgn * b[(l - 1) + (l - 1) * ldb];
+                da11 = abs(a11.real()) + abs(a11.imag());
+                if (da11 <= smin) {
                     a11 = smin;
                     da11 = smin;
                     info = 1;
-        }
-        db = abs(vec.real()) +
-          abs(vec.imag());
-        if (da11 < one && db > one) {
+                }
+                db = abs(vec.real()) + abs(vec.imag());
+                if (da11 < one && db > one) {
                     if (db > bignum * da11) {
                         scaloc = one / db;
                     }
-        }
-        x11 = Cladiv(vec * COMPLEX(scaloc), a11);
-        //
-        if (scaloc != one) {
+                }
+                x11 = Cladiv(vec * COMPLEX(scaloc), a11);
+                //
+                if (scaloc != one) {
                     for (j = 1; j <= n; j = j + 1) {
                         CRscal(m, scaloc, &c[(j - 1) * ldc], 1);
                     }
                     scale = scale * scaloc;
-        }
-        c[(k-1)+(l-1)*ldc] = x11;
-        //
+                }
+                c[(k - 1) + (l - 1) * ldc] = x11;
+                //
             }
         }
         //
@@ -236,39 +233,34 @@ void Ctrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
             for (k = 1; k <= m; k = k + 1) {
                 //
                 suml = Cdotc(k - 1, &a[(k - 1) * lda], 1, &c[(l - 1) * ldc], 1);
-        sumr = Cdotc(n - l, &c[(k-1)+((min(l + 1)-1)*ldc], ldc,
-          b[(l-1)+((min(l + 1)-1)*ldb], ldb);
-        vec = c[(k-1)+(l-1)*ldc] - (suml + sgn *
-          conj(sumr));
-        //
-        scaloc = one;
-        a11 = conj(a[(k-1)+(k-1)*lda] +
-          sgn * b[(l-1)+(l-1)*ldb]);
-        da11 = abs(a11.real()) +
-          abs(a11.imag());
-        if (da11 <= smin) {
+                sumr = Cdotc(n - l, &c[(k - 1) + (min(l + 1, n) - 1) * ldc], ldc, &b[(l - 1) + (min(l + 1, n) - 1) * ldb], ldb);
+                vec = c[(k - 1) + (l - 1) * ldc] - (suml + sgn * conj(sumr));
+                //
+                scaloc = one;
+                a11 = conj(a[(k - 1) + (k - 1) * lda] + sgn * b[(l - 1) + (l - 1) * ldb]);
+                da11 = abs(a11.real()) + abs(a11.imag());
+                if (da11 <= smin) {
                     a11 = smin;
                     da11 = smin;
                     info = 1;
-        }
-        db = abs(vec.real()) +
-          abs(vec.imag());
-        if (da11 < one && db > one) {
+                }
+                db = abs(vec.real()) + abs(vec.imag());
+                if (da11 < one && db > one) {
                     if (db > bignum * da11) {
                         scaloc = one / db;
                     }
-        }
-        //
-        x11 = Cladiv(vec * COMPLEX(scaloc), a11);
-        //
-        if (scaloc != one) {
+                }
+                //
+                x11 = Cladiv(vec * COMPLEX(scaloc), a11);
+                //
+                if (scaloc != one) {
                     for (j = 1; j <= n; j = j + 1) {
                         CRscal(m, scaloc, &c[(j - 1) * ldc], 1);
                     }
                     scale = scale * scaloc;
-        }
-        c[(k-1)+(l-1)*ldc] = x11;
-        //
+                }
+                c[(k - 1) + (l - 1) * ldc] = x11;
+                //
             }
         }
         //
@@ -289,41 +281,35 @@ void Ctrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
         for (l = n; l >= 1; l = l - 1) {
             for (k = m; k >= 1; k = k - 1) {
                 //
-        suml = Cdotu(m - k, &a[(k-1)+((min(k + 1)-1)*lda], lda,
-          c[((min(k + 1)-1)+(m)-1)*ldc], 1);
-        sumr = Cdotc(n - l, &c[(k-1)+((min(l + 1)-1)*ldc], ldc,
-          b[(l-1)+((min(l + 1)-1)*ldb], ldb);
-        vec = c[(k-1)+(l-1)*ldc] - (suml + sgn *
-          conj(sumr));
-        //
-        scaloc = one;
-        a11 = a[(k-1)+(k-1)*lda] + sgn *
-          conj(b[(l-1)+(l-1)*ldb]);
-        da11 = abs(a11.real()) +
-          abs(a11.imag());
-        if (da11 <= smin) {
+                suml = Cdotu(m - k, &a[(k - 1) + (min(k + 1, m) - 1) * lda], lda, &c[(min(k + 1, m) - 1) + (l - 1) * ldc], 1);
+                sumr = Cdotc(n - l, &c[(k - 1) + (min(l + 1, n) - 1) * ldc], ldc, &b[(l - 1) + (min(l + 1, n) - 1) * ldb], ldb);
+                vec = c[(k - 1) + (l - 1) * ldc] - (suml + sgn * conj(sumr));
+                //
+                scaloc = one;
+                a11 = a[(k - 1) + (k - 1) * lda] + sgn * conj(b[(l - 1) + (l - 1) * ldb]);
+                da11 = abs(a11.real()) + abs(a11.imag());
+                if (da11 <= smin) {
                     a11 = smin;
                     da11 = smin;
                     info = 1;
-        }
-        db = abs(vec.real()) +
-          abs(vec.imag());
-        if (da11 < one && db > one) {
+                }
+                db = abs(vec.real()) + abs(vec.imag());
+                if (da11 < one && db > one) {
                     if (db > bignum * da11) {
                         scaloc = one / db;
                     }
-        }
-        //
-        x11 = Cladiv(vec * COMPLEX(scaloc), a11);
-        //
-        if (scaloc != one) {
+                }
+                //
+                x11 = Cladiv(vec * COMPLEX(scaloc), a11);
+                //
+                if (scaloc != one) {
                     for (j = 1; j <= n; j = j + 1) {
                         CRscal(m, scaloc, &c[(j - 1) * ldc], 1);
                     }
                     scale = scale * scaloc;
-        }
-        c[(k-1)+(l-1)*ldc] = x11;
-        //
+                }
+                c[(k - 1) + (l - 1) * ldc] = x11;
+                //
             }
         }
         //

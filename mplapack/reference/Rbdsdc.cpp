@@ -138,10 +138,10 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
     smlsiz = iMlaenv(9, "Rbdsdc", " ", 0, 0, 0, 0);
     if (n == 1) {
         if (icompq == 1) {
-            q[1 - 1] = sign(one, &d[1 - 1]);
+            q[1 - 1] = sign(one, d[1 - 1]);
             q[(1 + smlsiz * n) - 1] = one;
         } else if (icompq == 2) {
-            u[(1 - 1)] = sign(one, &d[1 - 1]);
+            u[(1 - 1)] = sign(one, d[1 - 1]);
             vt[(1 - 1)] = one;
         }
         d[1 - 1] = abs(d[1 - 1]);
@@ -155,8 +155,8 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
     wstart = 1;
     qstart = 3;
     if (icompq == 1) {
-        Rcopy(n, d, 1, q[1 - 1], 1);
-        Rcopy(n - 1, e, 1, q[(n + 1) - 1], 1);
+        Rcopy(n, d, 1, &q[1 - 1], 1);
+        Rcopy(n - 1, e, 1, &q[(n + 1) - 1], 1);
     }
     if (iuplo == 2) {
         qstart = 5;
@@ -164,7 +164,7 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
             wstart = 2 * n - 1;
         }
         for (i = 1; i <= n - 1; i = i + 1) {
-            Rlartg(d[i - 1], &e[i - 1], cs, sn, r);
+            Rlartg(d[i - 1], e[i - 1], cs, sn, r);
             d[i - 1] = r;
             e[i - 1] = sn * d[(i + 1) - 1];
             d[(i + 1) - 1] = cs * d[(i + 1) - 1];
@@ -199,9 +199,9 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
         } else if (icompq == 1) {
             iu = 1;
             ivt = iu + n;
-            Rlaset("A", n, n, zero, one, q[(iu + (qstart - 1) * n) - 1], n);
-            Rlaset("A", n, n, zero, one, q[(ivt + (qstart - 1) * n) - 1], n);
-            Rlasdq("U", 0, n, n, n, 0, d, e, q[(ivt + (qstart - 1) * n) - 1], n, q[(iu + (qstart - 1) * n) - 1], n, q[(iu + (qstart - 1) * n) - 1], n, &work[wstart - 1], info);
+            Rlaset("A", n, n, zero, one, &q[(iu + (qstart - 1) * n) - 1], n);
+            Rlaset("A", n, n, zero, one, &q[(ivt + (qstart - 1) * n) - 1], n);
+            Rlasdq("U", 0, n, n, n, 0, d, e, &q[(ivt + (qstart - 1) * n) - 1], n, &q[(iu + (qstart - 1) * n) - 1], n, &q[(iu + (qstart - 1) * n) - 1], n, &work[wstart - 1], info);
         }
         goto statement_40;
     }
