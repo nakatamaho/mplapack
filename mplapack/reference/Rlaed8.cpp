@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaed8(INTEGER const icompq, INTEGER &k, INTEGER const n, INTEGER const qsiz, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq, REAL &rho, INTEGER const cutpnt, REAL *z, REAL *dlamda, REAL *q2, INTEGER const ldq2, REAL *w, INTEGER *perm, INTEGER &givptr, arr_ref<int, 2> givcol, REAL *givnum, INTEGER *indxp, INTEGER *indx, INTEGER &info) {
+void Rlaed8(INTEGER const icompq, INTEGER &k, INTEGER const n, INTEGER const qsiz, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq, REAL &rho, INTEGER const cutpnt, REAL *z, REAL *dlamda, REAL *q2, INTEGER const ldq2, REAL *w, INTEGER *perm, INTEGER &givptr, INTEGER * givcol, REAL *givnum, INTEGER *indxp, INTEGER *indx, INTEGER &info) {
     INTEGER n1 = 0;
     INTEGER n2 = 0;
     INTEGER n1p1 = 0;

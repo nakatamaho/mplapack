@@ -139,14 +139,14 @@ void Rlaed7(INTEGER const icompq, INTEGER const n, INTEGER const qsiz, INTEGER c
     //
     //     Sort and Deflate eigenvalues.
     //
-    dlaed8(icompq, k, n, qsiz, d, q, ldq, indxq, rho, cutpnt, &work[iz - 1], &work[idlmda - 1], &work[iq2 - 1], ldq2, &work[iw - 1], perm[prmptr[curr - 1] - 1], givptr[(curr + 1) - 1], givcol[(givptr[curr - 1] - 1) * ldgivcol], givnum[(givptr[curr - 1] - 1) * ldgivnum], iwork[indxp - 1], iwork[indx - 1], info);
+    Rlaed8(icompq, k, n, qsiz, d, q, ldq, indxq, rho, cutpnt, &work[iz - 1], &work[idlmda - 1], &work[iq2 - 1], ldq2, &work[iw - 1], perm[prmptr[curr - 1] - 1], givptr[(curr + 1) - 1], givcol[(givptr[curr - 1] - 1) * 2], givnum[(givptr[curr - 1] - 1) * 2], iwork[indxp - 1], iwork[indx - 1], info);
     prmptr[(curr + 1) - 1] = prmptr[curr - 1] + n;
     givptr[(curr + 1) - 1] += givptr[curr - 1];
     //
     //     Solve Secular Equation.
     //
     if (k != 0) {
-        dlaed9(k, 1, k, n, d, &work[is - 1], k, rho, &work[idlmda - 1], &work[iw - 1], qstore[qptr[curr - 1] - 1], k, info);
+        Rlaed9(k, 1, k, n, d, &work[is - 1], k, rho, work[idlmda - 1], &work[iw - 1], qstore[qptr[curr - 1] - 1], k, info);
         if (info != 0) {
             goto statement_30;
         }
@@ -159,7 +159,7 @@ void Rlaed7(INTEGER const icompq, INTEGER const n, INTEGER const qsiz, INTEGER c
         //
         n1 = k;
         n2 = n - k;
-        dlamrg(n1, n2, d, 1, -1, indxq);
+        Rlamrg(n1, n2, d, 1, -1, indxq);
     } else {
         qptr[(curr + 1) - 1] = qptr[curr - 1];
         for (i = 1; i <= n; i = i + 1) {
