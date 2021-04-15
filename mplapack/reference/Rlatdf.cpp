@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlatdf(INTEGER const ijob, INTEGER const n, REAL *z, INTEGER const ldz, REAL *rhs, REAL const rdsum, REAL const rRscal, INTEGER *ipiv, INTEGER *jpiv) {
+void Rlatdf(INTEGER const ijob, INTEGER const n, REAL *z, INTEGER const ldz, REAL *rhs, REAL rdsum, REAL rdscal, INTEGER *ipiv, INTEGER *jpiv) {
     //
     //  -- LAPACK auxiliary routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -65,14 +65,14 @@ void Rlatdf(INTEGER const ijob, INTEGER const n, REAL *z, INTEGER const ldz, REA
     REAL sminu = 0.0;
     REAL temp = 0.0;
     const INTEGER maxdim = 8;
-    arr_1d<maxdim, REAL> xp(fill0);
+    REAL xp[maxdim];
     const REAL zero = 0.0;
     INTEGER i = 0;
     INTEGER k = 0;
-    arr_1d<4 * maxdim, REAL> work(fill0);
-    arr_1d<maxdim, int> iwork(fill0);
+    REAL work[ 4 * maxdim ];
+    INTEGER iwork[ maxdim ];
     INTEGER info = 0;
-    arr_1d<maxdim, REAL> xm(fill0);
+    REAL xm[maxdim];
     if (ijob != 2) {
         //
         //        Apply permutations IPIV to RHS
@@ -92,7 +92,7 @@ void Rlatdf(INTEGER const ijob, INTEGER const n, REAL *z, INTEGER const ldz, REA
             //           SMIN computed more efficiently than in BSOLVE [1].
             //
             splus += Rdot(n - j, &z[((j + 1) - 1) + (j - 1) * ldz], 1, &z[((j + 1) - 1) + (j - 1) * ldz], 1);
-            sminu = Rdot(n - j, &z[((j + 1) - 1) + (j - 1) * ldz], 1, rhs[(j + 1) - 1], 1);
+            sminu = Rdot(n - j, &z[((j + 1) - 1) + (j - 1) * ldz], 1, &rhs[(j + 1) - 1], 1);
             splus = splus * rhs[j - 1];
             if (splus > sminu) {
                 rhs[j - 1] = bp;
@@ -113,7 +113,7 @@ void Rlatdf(INTEGER const ijob, INTEGER const n, REAL *z, INTEGER const ldz, REA
             //           Compute the remaining r.h.s.
             //
             temp = -rhs[j - 1];
-            Raxpy(n - j, temp, &z[((j + 1) - 1) + (j - 1) * ldz], 1, rhs[(j + 1) - 1], 1);
+            Raxpy(n - j, temp, &z[((j + 1) - 1) + (j - 1) * ldz], 1, &rhs[(j + 1) - 1], 1);
             //
         }
         //
@@ -148,7 +148,7 @@ void Rlatdf(INTEGER const ijob, INTEGER const n, REAL *z, INTEGER const ldz, REA
         //
         //        Compute the sum of squares
         //
-        Rlassq(n, rhs, 1, rRscal, rdsum);
+        Rlassq(n, rhs, 1, rdscal, rdsum);
         //
     } else {
         //
@@ -173,7 +173,7 @@ void Rlatdf(INTEGER const ijob, INTEGER const n, REAL *z, INTEGER const ldz, REA
         //
         //        Compute the sum of squares
         //
-        Rlassq(n, rhs, 1, rRscal, rdsum);
+        Rlassq(n, rhs, 1, rdscal, rdsum);
         //
     }
     //

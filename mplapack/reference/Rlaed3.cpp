@@ -29,6 +29,11 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL Rlamc3(REAL a, REAL b) {
+  REAL c = a + b;
+  return c;
+}
+
 void Rlaed3(INTEGER const k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q, INTEGER const ldq, REAL const rho, REAL *dlamda, REAL *q2, INTEGER *indx, INTEGER *ctot, REAL *w, REAL *s, INTEGER &info) {
     INTEGER i = 0;
     INTEGER j = 0;
@@ -104,11 +109,11 @@ void Rlaed3(INTEGER const k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q
     //     this code.
     //
     for (i = 1; i <= k; i = i + 1) {
-        dlamda[i - 1] = dlamc3[(dlamda[i - 1] - 1) + (dlamda[i - 1] - 1) * lddlamc3] - dlamda[i - 1];
+      dlamda[i - 1] = Rlamc3(dlamda[i - 1], dlamda[i - 1]) - dlamda[i - 1];
     }
     //
     for (j = 1; j <= k; j = j + 1) {
-        Rlaed4(k, j, dlamda, w, q[(j - 1) * ldq], rho, &d[j - 1], info);
+        Rlaed4(k, j, dlamda, w, &q[(j - 1) * ldq], rho, d[j - 1], info);
         //
         //        If the zero finder fails, the computation is terminated.
         //
@@ -172,19 +177,19 @@ statement_110:
     n12 = ctot[1 - 1] + ctot[2 - 1];
     n23 = ctot[2 - 1] + ctot[3 - 1];
     //
-    Rlacpy("A", n23, k, q[((ctot[1 - 1] + 1) - 1)], ldq, s, n23);
+    Rlacpy("A", n23, k, &q[((ctot[1 - 1] + 1) - 1)], ldq, s, n23);
     iq2 = n1 * n12 + 1;
     if (n23 != 0) {
-        Rgemm("N", "N", n2, k, n23, one, q2[iq2 - 1], n2, s, n23, zero, q[((n1 + 1) - 1)], ldq);
+        Rgemm("N", "N", n2, k, n23, one, &q2[iq2 - 1], n2, s, n23, zero, &q[((n1 + 1) - 1)], ldq);
     } else {
-        Rlaset("A", n2, k, zero, zero, q[((n1 + 1) - 1)], ldq);
+        Rlaset("A", n2, k, zero, zero, &q[((n1 + 1) - 1)], ldq);
     }
     //
     Rlacpy("A", n12, k, q, ldq, s, n12);
     if (n12 != 0) {
         Rgemm("N", "N", n1, k, n12, one, q2, n1, s, n12, zero, q, ldq);
     } else {
-        Rlaset("A", n1, k, zero, zero, q[(1 - 1)], ldq);
+        Rlaset("A", n1, k, zero, zero, &q[(1 - 1)], ldq);
     }
 //
 statement_120:;

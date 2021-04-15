@@ -64,9 +64,9 @@ REAL Clanhp(const char *norm, const char *uplo, INTEGER const n, COMPLEX *ap, RE
     INTEGER i = 0;
     REAL sum = 0.0;
     REAL absa = 0.0;
-    arr_1d<2, REAL> ssq(fill0);
+    REAL ssq[2];
     const REAL one = 1.0;
-    arr_1d<2, REAL> colssq(fill0);
+    REAL colssq[2];
     if (n == 0) {
         value = zero;
     } else if (Mlsame(norm, "M")) {
@@ -164,7 +164,7 @@ REAL Clanhp(const char *norm, const char *uplo, INTEGER const n, COMPLEX *ap, RE
             for (j = 2; j <= n; j = j + 1) {
                 colssq[1 - 1] = zero;
                 colssq[2 - 1] = one;
-                Classq(j - 1, ap[k - 1], 1, colssq[1 - 1], colssq[2 - 1]);
+                Classq(j - 1, &ap[k - 1], 1, colssq[1 - 1], colssq[2 - 1]);
                 Rcombssq(ssq, colssq);
                 k += j;
             }
@@ -172,7 +172,7 @@ REAL Clanhp(const char *norm, const char *uplo, INTEGER const n, COMPLEX *ap, RE
             for (j = 1; j <= n - 1; j = j + 1) {
                 colssq[1 - 1] = zero;
                 colssq[2 - 1] = one;
-                Classq(n - j, ap[k - 1], 1, colssq[1 - 1], colssq[2 - 1]);
+                Classq(n - j, &ap[k - 1], 1, colssq[1 - 1], colssq[2 - 1]);
                 Rcombssq(ssq, colssq);
                 k += n - j + 1;
             }

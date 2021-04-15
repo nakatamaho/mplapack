@@ -140,12 +140,12 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
         na = min(m, nfxd);
         // CC      CALL Rgeqr2( M, NA, A, LDA, TAU, WORK, INFO )
         Rgeqrf(m, na, a, lda, tau, work, lwork, info);
-        iws = max(iws, int(work[1 - 1]));
+        iws = max(iws, castINTEGER(work[1 - 1]));
         if (na < n) {
             // CC         CALL Rorm2r( 'Left', 'Transpose', M, N-NA, NA, A, LDA,
             // CC  $                   TAU, A( 1, NA+1 ), LDA, WORK, INFO )
             Rormqr("Left", "Transpose", m, n - na, na, a, lda, tau, &a[((na + 1) - 1) * lda], lda, work, lwork, info);
-            iws = max(iws, int(work[1 - 1]));
+            iws = max(iws, castINTEGER(work[1 - 1]));
         }
     }
     //

@@ -64,9 +64,9 @@ REAL Clanhb(const char *norm, const char *uplo, INTEGER const n, INTEGER const k
     REAL sum = 0.0;
     INTEGER l = 0;
     REAL absa = 0.0;
-    arr_1d<2, REAL> ssq(fill0);
+    REAL ssq[2];
     const REAL one = 1.0;
-    arr_1d<2, REAL> colssq(fill0);
+    REAL colssq[2];
     if (n == 0) {
         value = zero;
     } else if (Mlsame(norm, "M")) {
@@ -157,7 +157,7 @@ REAL Clanhb(const char *norm, const char *uplo, INTEGER const n, INTEGER const k
                 for (j = 2; j <= n; j = j + 1) {
                     colssq[1 - 1] = zero;
                     colssq[2 - 1] = one;
-                    Classq(min(j - 1, k), ab[((max(k + 2 - j) - 1) + (1) - 1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
+                    Classq(min(j - 1, k), &ab[(max(k + 2 - j, 1) -1) + (j-1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
                     Rcombssq(ssq, colssq);
                 }
                 l = k + 1;
@@ -165,7 +165,7 @@ REAL Clanhb(const char *norm, const char *uplo, INTEGER const n, INTEGER const k
                 for (j = 1; j <= n - 1; j = j + 1) {
                     colssq[1 - 1] = zero;
                     colssq[2 - 1] = one;
-                    Classq(min(n - j, k), ab[(2 - 1) + (j - 1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
+                    Classq(min(n - j, k), &ab[(2 - 1) + (j - 1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
                     Rcombssq(ssq, colssq);
                 }
                 l = 1;

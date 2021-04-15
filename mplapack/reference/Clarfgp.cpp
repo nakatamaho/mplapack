@@ -164,7 +164,7 @@ void Clarfgp(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, CO
                     for (j = 1; j <= n - 1; j = j + 1) {
                         x[(1 + (j - 1) * incx) - 1] = zero;
                     }
-                    beta = -savealpha;
+                    beta = beta - savealpha.real();
                 }
             } else {
                 xnorm = Rlapy2(alphr, alphi);
