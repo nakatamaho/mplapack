@@ -57,7 +57,7 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
     //
     //     Scale A
     //
-    REAL anorm = max(abs(a[(1 - 1)]) + abs(a[(2 - 1)]), abs(a[(2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda]), safmin);
+    REAL anorm = max({abs(a[(1 - 1)]) + abs(a[(2 - 1)]), abs(a[(2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda]), safmin});
     REAL ascale = one / anorm;
     REAL a11 = ascale * a[(1 - 1)];
     REAL a21 = ascale * a[(2 - 1)];
@@ -69,7 +69,7 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
     REAL b11 = b[(1 - 1)];
     REAL b12 = b[(2 - 1) * ldb];
     REAL b22 = b[(2 - 1) + (2 - 1) * ldb];
-    REAL bmin = rtmin * max(abs(b11), abs(b12), abs(b22), rtmin);
+    REAL bmin = rtmin * max({abs(b11), abs(b12), abs(b22), rtmin});
     if (abs(b11) < bmin) {
         b11 = sign(bmin, b11);
     }
@@ -79,7 +79,7 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
     //
     //     Scale B
     //
-    REAL bnorm = max(abs(b11), abs(b12) + abs(b22), safmin);
+    REAL bnorm = max({abs(b11), abs(b12) + abs(b22), safmin});
     REAL bsize = max(abs(b11), abs(b22));
     REAL bscale = one / bsize;
     b11 = b11 * bscale;
@@ -211,7 +211,7 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
     //
     REAL wabs = abs(wr1) + abs(wi);
     const REAL fuzzy1 = one + 1.0e-5;
-    REAL wsize = max(safmin, c1, fuzzy1 * (wabs * c2 + c3), min(c4, half * max(wabs, c5)));
+    REAL wsize = max({safmin, c1, fuzzy1 * (wabs * c2 + c3), min(c4, half * max(wabs, c5))});
     REAL wscale = 0.0;
     if (wsize != one) {
         wscale = one / wsize;
@@ -234,7 +234,7 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
     //     Scale second eigenvalue (if real)
     //
     if (wi == zero) {
-        wsize = max(safmin, c1, fuzzy1 * (abs(wr2) * c2 + c3), min(c4, half * max(abs(wr2), c5)));
+        wsize = max({safmin, c1, fuzzy1 * (abs(wr2) * c2 + c3), min(c4, half * max(abs(wr2), c5))});
         if (wsize != one) {
             wscale = one / wsize;
             if (wsize > one) {

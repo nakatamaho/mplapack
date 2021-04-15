@@ -34,15 +34,15 @@ void Ctgex2(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
     INTEGER m = 0;
     bool weak = false;
     bool strong = false;
-    arr_2d<ldst, ldst, COMPLEX> s(fill0);
-    arr_2d<ldst, ldst, COMPLEX> t(fill0);
+    COMPLEX s[ldst * ldst];
+    COMPLEX t[ldst * ldst];
     REAL eps = 0.0;
     REAL smlnum = 0.0;
     const COMPLEX czero = (0.0, 0.0);
     REAL scale = 0.0;
     const COMPLEX cone = (1.0, 0.0);
     REAL sum = 0.0;
-    arr_1d<8, COMPLEX> work(fill0);
+    COMPLEX work[8];
     REAL sa = 0.0;
     REAL sb = 0.0;
     const REAL twenty = 2.0e+1;
@@ -129,20 +129,20 @@ void Ctgex2(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
     //     Compute unitary QL and RQ that swap 1-by-1 and 1-by-1 blocks
     //     using Givens rotations and perform the swap tentatively.
     //
-    f = s[(2 - 1) + (2 - 1) * lds] * t[(1 - 1)] - t[(2 - 1) + (2 - 1) * ldt] * s[(1 - 1)];
-    g = s[(2 - 1) + (2 - 1) * lds] * t[(2 - 1) * ldt] - t[(2 - 1) + (2 - 1) * ldt] * s[(2 - 1) * lds];
-    sa = abs(s[(2 - 1) + (2 - 1) * lds]) * abs(t[(1 - 1)]);
-    sb = abs(s[(1 - 1)]) * abs(t[(2 - 1) + (2 - 1) * ldt]);
+    f = s[(2 - 1) + (2 - 1) * ldst] * t[(1 - 1)] - t[(2 - 1) + (2 - 1) * ldst] * s[(1 - 1)];
+    g = s[(2 - 1) + (2 - 1) * ldst] * t[(2 - 1) * ldst] - t[(2 - 1) + (2 - 1) * ldst] * s[(2 - 1) * ldst];
+    sa = abs(s[(2 - 1) + (2 - 1) * ldst]) * abs(t[(1 - 1)]);
+    sb = abs(s[(1 - 1)]) * abs(t[(2 - 1) + (2 - 1) * ldst]);
     Clartg(g, f, cz, sz, cdum);
     sz = -sz;
-    Crot(2, s[(1 - 1)], 1, s[(2 - 1) * lds], 1, cz, conj(sz));
-    Crot(2, &t[(1 - 1)], 1, &t[(2 - 1) * ldt], 1, cz, conj(sz));
+    Crot(2, &s[(1 - 1)], 1, &s[(2 - 1) * ldst], 1, cz, conj(sz));
+    Crot(2, &t[(1 - 1)], 1, &t[(2 - 1) * ldst], 1, cz, conj(sz));
     if (sa >= sb) {
         Clartg(s[(1 - 1)], s[(2 - 1)], cq, sq, cdum);
     } else {
-        Clartg(t[(1 - 1)], &t[(2 - 1)], cq, sq, cdum);
+        Clartg(t[(1 - 1)], t[(2 - 1)], cq, sq, cdum);
     }
-    Crot(2, s[(1 - 1)], ldst, s[(2 - 1)], ldst, cq, sq);
+    Crot(2, &s[(1 - 1)], ldst, &s[(2 - 1)], ldst, cq, sq);
     Crot(2, &t[(1 - 1)], ldst, &t[(2 - 1)], ldst, cq, sq);
     //
     //     Weak stability test: |S21| <= O(EPS F-norm((A)))
@@ -205,7 +205,7 @@ void Ctgex2(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
         Crot(n, &z[(j1 - 1) * ldz], 1, &z[((j1 + 1) - 1) * ldz], 1, cz, conj(sz));
     }
     if (wantq) {
-        Crot(n, q[(j1 - 1) * ldq], 1, q[((j1 + 1) - 1) * ldq], 1, cq, conj(sq));
+        Crot(n, &q[(j1 - 1) * ldq], 1, &q[((j1 + 1) - 1) * ldq], 1, cq, conj(sq));
     }
     //
     //     Exit with INFO = 0 if swap was successfully performed.

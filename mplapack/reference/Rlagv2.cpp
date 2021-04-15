@@ -59,7 +59,7 @@ void Rlagv2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alphar
     //
     //     Scale A
     //
-    REAL anorm = max(abs(a[(1 - 1)]) + abs(a[(2 - 1)]), abs(a[(2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda]), safmin);
+    REAL anorm = max({abs(a[(1 - 1)]) + abs(a[(2 - 1)]), abs(a[(2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda]), safmin});
     const REAL one = 1.0;
     REAL ascale = one / anorm;
     a[(1 - 1)] = ascale * a[(1 - 1)];
@@ -69,7 +69,7 @@ void Rlagv2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alphar
     //
     //     Scale B
     //
-    REAL bnorm = max(abs(b[(1 - 1)]), abs(b[(2 - 1) * ldb]) + abs(b[(2 - 1) + (2 - 1) * ldb]), safmin);
+    REAL bnorm = max({abs(b[(1 - 1)]), abs(b[(2 - 1) * ldb]) + abs(b[(2 - 1) + (2 - 1) * ldb]), safmin});
     REAL bscale = one / bnorm;
     b[(1 - 1)] = bscale * b[(1 - 1)];
     b[(2 - 1) * ldb] = bscale * b[(2 - 1) * ldb];
@@ -102,7 +102,7 @@ void Rlagv2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alphar
         //     Check if B is singular
         //
     } else if (abs(b[(1 - 1)]) <= ulp) {
-        Rlartg(a[(1 - 1)], &a[(2 - 1)], csl, snl, r);
+        Rlartg(a[(1 - 1)], a[(2 - 1)], csl, snl, r);
         csr = one;
         snr = zero;
         Rrot(2, &a[(1 - 1)], lda, &a[(2 - 1)], lda, csl, snl);
@@ -113,7 +113,7 @@ void Rlagv2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alphar
         wi = zero;
         //
     } else if (abs(b[(2 - 1) + (2 - 1) * ldb]) <= ulp) {
-        Rlartg(a[(2 - 1) + (2 - 1) * lda], &a[(2 - 1)], csr, snr, t);
+        Rlartg(a[(2 - 1) + (2 - 1) * lda], a[(2 - 1)], csr, snr, t);
         snr = -snr;
         Rrot(2, &a[(1 - 1)], 1, &a[(2 - 1) * lda], 1, csr, snr);
         Rrot(2, &b[(1 - 1)], 1, &b[(2 - 1) * ldb], 1, csr, snr);
@@ -170,13 +170,13 @@ void Rlagv2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alphar
                 //
                 //              find left rotation matrix Q to zero out B(2,1)
                 //
-                Rlartg(b[(1 - 1)], &b[(2 - 1)], csl, snl, r);
+                Rlartg(b[(1 - 1)], b[(2 - 1)], csl, snl, r);
                 //
             } else {
                 //
                 //              find left rotation matrix Q to zero out A(2,1)
                 //
-                Rlartg(a[(1 - 1)], &a[(2 - 1)], csl, snl, r);
+                Rlartg(a[(1 - 1)], a[(2 - 1)], csl, snl, r);
                 //
             }
             //
@@ -191,7 +191,7 @@ void Rlagv2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alphar
             //           a pair of complex conjugate eigenvalues
             //           first compute the SVD of the matrix B
             //
-            Rlasv2(b[(1 - 1)], &b[(2 - 1) * ldb], &b[(2 - 1) + (2 - 1) * ldb], r, t, snr, csr, snl, csl);
+            Rlasv2(b[(1 - 1)], b[(2 - 1) * ldb], b[(2 - 1) + (2 - 1) * ldb], r, t, snr, csr, snl, csl);
             //
             //           Form (A,B) := Q(A,B)Z**T where Q is left rotation matrix and
             //           Z is right rotation matrix computed from Rlasv2

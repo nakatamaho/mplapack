@@ -72,7 +72,7 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
     bool wantt = Mlsame(job, "S");
     bool initz = Mlsame(compz, "I");
     bool wantz = initz || Mlsame(compz, "V");
-    work[1 - 1] = (max((INTEGER)1, n)).real();
+    work[1 - 1] = castREAL(max((INTEGER)1, n));
     bool lquery = lwork == -1;
     //
     info = 0;
@@ -101,7 +101,9 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
     const INTEGER ntiny = 15;
     INTEGER kbot = 0;
     const INTEGER nl = 49;
-    arr_1d<nl, REAL> workl(fill0);
+    REAL workl[nl];
+    REAL hl[nl * nl];
+    INTEGER ldhl = nl;
     if (info != 0) {
         //
         //        ==== Quick return in case of invalid argument. ====
@@ -122,7 +124,7 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
         Rlaqr0(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo, ihi, z, ldz, work, lwork, info);
         //        ==== Ensure reported workspace size is backward-compatible with
         //        .    previous LAPACK versions. ====
-        work[1 - 1] = max((max((INTEGER)1, n)).real(), &work[1 - 1]);
+        work[1 - 1] = max(castREAL(max((INTEGER)1, n)), work[1 - 1]);
         return;
         //
     } else {
@@ -154,7 +156,11 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
         //
         //        ==== Rlahqr/Rlaqr0 crossover poINTEGER ====
         //
-        nmin = iMlaenv(12, "Rhseqr", job[(1 - 1)] + compz[(1 - 1)], n, ilo, ihi, lwork);
+        char job_compz[3];
+        job_compz[0] = job[0];
+        job_compz[1] = compz[0];
+        job_compz[2] = '\0';
+        nmin = iMlaenv(12, "Rhseqr", job_compz, n, ilo, ihi, lwork);
         nmin = max(ntiny, nmin);
         //
         //        ==== Rlaqr0 for big matrices; Rlahqr for small ones ====
@@ -190,7 +196,7 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
                     //
                     Rlacpy("A", n, n, h, ldh, hl, nl);
                     hl[((n + 1) - 1) + (n - 1) * ldhl] = zero;
-                    Rlaset("A", nl, nl - n, zero, zero, hl[((n + 1) - 1) * ldhl], nl);
+                    Rlaset("A", nl, nl - n, zero, zero, &hl[((n + 1) - 1) * ldhl], nl);
                     Rlaqr0(wantt, wantz, nl, ilo, kbot, hl, nl, wr, wi, ilo, ihi, z, ldz, workl, nl, info);
                     if (wantt || info != 0) {
                         Rlacpy("A", n, n, hl, nl, h, ldh);
@@ -208,7 +214,7 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
         //        ==== Ensure reported workspace size is backward-compatible with
         //        .    previous LAPACK versions. ====
         //
-        work[1 - 1] = max((max((INTEGER)1, n)).real(), &work[1 - 1]);
+        work[1 - 1] = max(castREAL(max((INTEGER)1, n)), work[1 - 1]);
     }
     //
     //     ==== End of Rhseqr ====
