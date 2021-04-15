@@ -51,6 +51,8 @@ void Rlaed8(INTEGER const icompq, INTEGER &k, INTEGER const n, INTEGER const qsi
     REAL c = 0.0;
     REAL tau = 0.0;
     INTEGER jp = 0;
+    INTEGER ldgivcol = 2;
+    INTEGER ldgivnum = 2;
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -165,9 +167,9 @@ void Rlaed8(INTEGER const icompq, INTEGER &k, INTEGER const n, INTEGER const qsi
         } else {
             for (j = 1; j <= n; j = j + 1) {
                 perm[j - 1] = indxq[indx[j - 1] - 1];
-                Rcopy(qsiz, q[(perm[j - 1] - 1) * ldq], 1, q2[(j - 1) * ldq2], 1);
+                Rcopy(qsiz, &q[(perm[j - 1] - 1) * ldq], 1, &q2[(j - 1) * ldq2], 1);
             }
-            Rlacpy("A", qsiz, n, q2[(1 - 1)], ldq2, q[(1 - 1)], ldq);
+            Rlacpy("A", qsiz, n, &q2[(1 - 1)], ldq2, &q[(1 - 1)], ldq);
         }
         return;
     }
@@ -235,7 +237,7 @@ statement_80:
             givnum[(givptr - 1) * ldgivnum] = c;
             givnum[(2 - 1) + (givptr - 1) * ldgivnum] = s;
             if (icompq == 1) {
-                Rrot(qsiz, q[(indxq[indx[jlam - 1] - 1] - 1) * ldq], 1, q[(indxq[indx[j - 1] - 1] - 1) * ldq], 1, c, s);
+                Rrot(qsiz, &q[(indxq[indx[jlam - 1] - 1] - 1) * ldq], 1, &q[(indxq[indx[j - 1] - 1] - 1) * ldq], 1, c, s);
             }
             t = d[jlam - 1] * c * c + d[j - 1] * s * s;
             d[j - 1] = d[jlam - 1] * s * s + d[j - 1] * c * c;
@@ -292,7 +294,7 @@ statement_110:
             jp = indxp[j - 1];
             dlamda[j - 1] = d[jp - 1];
             perm[j - 1] = indxq[indx[jp - 1] - 1];
-            Rcopy(qsiz, q[(perm[j - 1] - 1) * ldq], 1, q2[(j - 1) * ldq2], 1);
+            Rcopy(qsiz, &q[(perm[j - 1] - 1) * ldq], 1, &q2[(j - 1) * ldq2], 1);
         }
     }
     //
@@ -301,10 +303,10 @@ statement_110:
     //
     if (k < n) {
         if (icompq == 0) {
-            Rcopy(n - k, dlamda[(k + 1) - 1], 1, &d[(k + 1) - 1], 1);
+            Rcopy(n - k, &dlamda[(k + 1) - 1], 1, &d[(k + 1) - 1], 1);
         } else {
-            Rcopy(n - k, dlamda[(k + 1) - 1], 1, &d[(k + 1) - 1], 1);
-            Rlacpy("A", qsiz, n - k, q2[((k + 1) - 1) * ldq2], ldq2, q[((k + 1) - 1) * ldq], ldq);
+            Rcopy(n - k, &dlamda[(k + 1) - 1], 1, &d[(k + 1) - 1], 1);
+            Rlacpy("A", qsiz, n - k, &q2[((k + 1) - 1) * ldq2], ldq2, &q[((k + 1) - 1) * ldq], ldq);
         }
     }
     //

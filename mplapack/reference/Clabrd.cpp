@@ -70,60 +70,54 @@ void Clabrd(INTEGER const m, INTEGER const n, INTEGER const nb, COMPLEX *a, INTE
             //
             //           Update A(i:m,i)
             //
-            Clacgv(i - 1, y[(i - 1)], ldy);
-            Cgemv("No transpose", m - i + 1, i - 1, -one, &a[(i - 1)], lda, y[(i - 1)], ldy, one, &a[(i - 1) + (i - 1) * lda], 1);
-            Clacgv(i - 1, y[(i - 1)], ldy);
-            Cgemv("No transpose", m - i + 1, i - 1, -one, x[(i - 1)], ldx, &a[(i - 1) * lda], 1, one, &a[(i - 1) + (i - 1) * lda], 1);
+            Clacgv(i - 1, &y[(i - 1)], ldy);
+            Cgemv("No transpose", m - i + 1, i - 1, -one, &a[(i - 1)], lda, &y[(i - 1)], ldy, one, &a[(i - 1) + (i - 1) * lda], 1);
+            Clacgv(i - 1, &y[(i - 1)], ldy);
+            Cgemv("No transpose", m - i + 1, i - 1, -one, &x[(i - 1)], ldx, &a[(i - 1) * lda], 1, one, &a[(i - 1) + (i - 1) * lda], 1);
             //
             //           Generate reflection Q(i) to annihilate A(i+1:m,i)
             //
             alpha = a[(i - 1) + (i - 1) * lda];
-            Clarfg(m - i + 1, alpha, &a[((min(i + 1) - 1) + (m)-1) * lda], 1, tauq[i - 1]);
-            d[i - 1] = alpha;
+            Clarfg(m - i + 1, alpha, &a[(min(i + 1, m) - 1) + (i - 1) * lda], 1, tauq[i - 1]);
+            d[i - 1] = alpha.real();
             if (i < n) {
                 a[(i - 1) + (i - 1) * lda] = one;
                 //
                 //              Compute Y(i+1:n,i)
                 //
-                Cgemv("Conjugate transpose", m - i + 1, n - i, one, &a[(i - 1) + ((i + 1) - 1) * lda], lda, &a[(i - 1) + (i - 1) * lda], 1, zero, y[((i + 1) - 1) + (i - 1) * ldy], 1);
-                Cgemv("Conjugate transpose", m - i + 1, i - 1, one, &a[(i - 1)], lda, &a[(i - 1) + (i - 1) * lda], 1, zero, y[(i - 1) * ldy], 1);
-                Cgemv("No transpose", n - i, i - 1, -one, y[((i + 1) - 1)], ldy, y[(i - 1) * ldy], 1, one, y[((i + 1) - 1) + (i - 1) * ldy], 1);
-                Cgemv("Conjugate transpose", m - i + 1, i - 1, one, x[(i - 1)], ldx, &a[(i - 1) + (i - 1) * lda], 1, zero, y[(i - 1) * ldy], 1);
-                Cgemv("Conjugate transpose", i - 1, n - i, -one, &a[((i + 1) - 1) * lda], lda, y[(i - 1) * ldy], 1, one, y[((i + 1) - 1) + (i - 1) * ldy], 1);
-                Cscal(n - i, tauq[i - 1], y[((i + 1) - 1) + (i - 1) * ldy], 1);
+                Cgemv("Conjugate transpose", m - i + 1, n - i, one, &a[(i - 1) + ((i + 1) - 1) * lda], lda, &a[(i - 1) + (i - 1) * lda], 1, zero, &y[((i + 1) - 1) + (i - 1) * ldy], 1);
+                Cgemv("Conjugate transpose", m - i + 1, i - 1, one, &a[(i - 1)], lda, &a[(i - 1) + (i - 1) * lda], 1, zero, &y[(i - 1) * ldy], 1);
+                Cgemv("No transpose", n - i, i - 1, -one, &y[((i + 1) - 1)], ldy, &y[(i - 1) * ldy], 1, one, &y[((i + 1) - 1) + (i - 1) * ldy], 1);
+                Cgemv("Conjugate transpose", m - i + 1, i - 1, one, &x[(i - 1)], ldx, &a[(i - 1) + (i - 1) * lda], 1, zero, &y[(i - 1) * ldy], 1);
+                Cgemv("Conjugate transpose", i - 1, n - i, -one, &a[((i + 1) - 1) * lda], lda, &y[(i - 1) * ldy], 1, one, &y[((i + 1) - 1) + (i - 1) * ldy], 1);
+                Cscal(n - i, tauq[i - 1], &y[((i + 1) - 1) + (i - 1) * ldy], 1);
                 //
                 //              Update A(i,i+1:n)
                 //
                 Clacgv(n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda);
                 Clacgv(i, &a[(i - 1)], lda);
-                Cgemv("No transpose", n - i, i, -one, y[((i + 1) - 1)], ldy, &a[(i - 1)], lda, one, &a[(i - 1) + ((i + 1) - 1) * lda], lda);
+                Cgemv("No transpose", n - i, i, -one, &y[((i + 1) - 1)], ldy, &a[(i - 1)], lda, one, &a[(i - 1) + ((i + 1) - 1) * lda], lda);
                 Clacgv(i, &a[(i - 1)], lda);
-                Clacgv(i - 1, x[(i - 1)], ldx);
-                Cgemv("Conjugate transpose", i - 1, n - i, -one, &a[((i + 1) - 1) * lda], lda, x[(i - 1)], ldx, one, &a[(i - 1) + ((i + 1) - 1) * lda], lda);
-                Clacgv(i - 1, x[(i - 1)], ldx);
+                Clacgv(i - 1, &x[(i - 1)], ldx);
+                Cgemv("Conjugate transpose", i - 1, n - i, -one, &a[((i + 1) - 1) * lda], lda, &x[(i - 1)], ldx, one, &a[(i - 1) + ((i + 1) - 1) * lda], lda);
+                Clacgv(i - 1, &x[(i - 1)], ldx);
                 //
                 //              Generate reflection P(i) to annihilate A(i,i+2:n)
                 //
                 alpha = a[(i - 1) + ((i + 1) - 1) * lda];
-        Clarfg(n - i, alpha, &a[(i-1)+((min(i + 2)-1)*lda], lda, taup[i-1]);
-        e[i-1] = alpha;
-        a[(i-1)+((i + 1)-1)*lda] = one;
-        //
-        //              Compute X(i+1:m,i)
-        //
-        Cgemv("No transpose", m - i, n - i, one, &a[((i + 1)-1)+((i +
-          1)-1)*lda], lda, &a[(i-1)+((i + 1)-1)*lda], lda, zero, x[((
-          i + 1)-1)+(i-1)*ldx], 1);
-        Cgemv("Conjugate transpose", n - i, i, one, y[((i + 1)-1)],
-          ldy, &a[(i-1)+((i + 1)-1)*lda], lda, zero, x[(i-1)*ldx], 1);
-        Cgemv("No transpose", m - i, i, -one, &a[((i + 1)-1)], lda, x[(
-          i-1)*ldx], 1, one, x[((i + 1)-1)+(i-1)*ldx], 1);
-        Cgemv("No transpose", i - 1, n - i, one, &a[((i + 1)-1)*lda],
-          lda, &a[(i-1)+((i + 1)-1)*lda], lda, zero, x[(i-1)*ldx], 1);
-        Cgemv("No transpose", m - i, i - 1, -one, x[((i + 1)-1)],
-          ldx, x[(i-1)*ldx], 1, one, x[((i + 1)-1)+(i-1)*ldx], 1);
-        Cscal(m - i, taup[i-1], x[((i + 1)-1)+(i-1)*ldx], 1);
-        Clacgv(n - i, &a[(i-1)+((i + 1)-1)*lda], lda);
+                Clarfg(n - i, alpha, &a[(i - 1) + (min(i + 1, n) - 1) * lda], lda, taup[i - 1]);
+                e[i - 1] = alpha.real();
+                a[(i - 1) + ((i + 1) - 1) * lda] = one;
+                //
+                //              Compute X(i+1:m,i)
+                //
+                Cgemv("No transpose", m - i, n - i, one, &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, &a[(i - 1) + ((i + 1) - 1) * lda], lda, zero, &x[((i + 1) - 1) + (i - 1) * ldx], 1);
+                Cgemv("Conjugate transpose", n - i, i, one, &y[((i + 1) - 1)], ldy, &a[(i - 1) + ((i + 1) - 1) * lda], lda, zero, &x[(i - 1) * ldx], 1);
+                Cgemv("No transpose", m - i, i, -one, &a[((i + 1) - 1)], lda, &x[(i - 1) * ldx], 1, one, &x[((i + 1) - 1) + (i - 1) * ldx], 1);
+                Cgemv("No transpose", i - 1, n - i, one, &a[((i + 1) - 1) * lda], lda, &a[(i - 1) + ((i + 1) - 1) * lda], lda, zero, &x[(i - 1) * ldx], 1);
+                Cgemv("No transpose", m - i, i - 1, -one, &x[((i + 1) - 1)], ldx, &x[(i - 1) * ldx], 1, one, &x[((i + 1) - 1) + (i - 1) * ldx], 1);
+                Cscal(m - i, taup[i - 1], &x[((i + 1) - 1) + (i - 1) * ldx], 1);
+                Clacgv(n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda);
             }
         }
     } else {
@@ -136,57 +130,55 @@ void Clabrd(INTEGER const m, INTEGER const n, INTEGER const nb, COMPLEX *a, INTE
             //
             Clacgv(n - i + 1, &a[(i - 1) + (i - 1) * lda], lda);
             Clacgv(i - 1, &a[(i - 1)], lda);
-            Cgemv("No transpose", n - i + 1, i - 1, -one, y[(i - 1)], ldy, &a[(i - 1)], lda, one, &a[(i - 1) + (i - 1) * lda], lda);
+            Cgemv("No transpose", n - i + 1, i - 1, -one, &y[(i - 1)], ldy, &a[(i - 1)], lda, one, &a[(i - 1) + (i - 1) * lda], lda);
             Clacgv(i - 1, &a[(i - 1)], lda);
-            Clacgv(i - 1, x[(i - 1)], ldx);
-            Cgemv("Conjugate transpose", i - 1, n - i + 1, -one, &a[(i - 1) * lda], lda, x[(i - 1)], ldx, one, &a[(i - 1) + (i - 1) * lda], lda);
-            Clacgv(i - 1, x[(i - 1)], ldx);
+            Clacgv(i - 1, &x[(i - 1)], ldx);
+            Cgemv("Conjugate transpose", i - 1, n - i + 1, -one, &a[(i - 1) * lda], lda, &x[(i - 1)], ldx, one, &a[(i - 1) + (i - 1) * lda], lda);
+            Clacgv(i - 1, &x[(i - 1)], ldx);
             //
             //           Generate reflection P(i) to annihilate A(i,i+1:n)
             //
             alpha = a[(i - 1) + (i - 1) * lda];
-      Clarfg(n - i + 1, alpha, &a[(i-1)+((min(i + 1)-1)*lda],
-        lda, taup[i-1]);
-      d[i-1] = alpha;
-      if (i < m) {
+            Clarfg(n - i + 1, alpha, &a[(i - 1) + (min(i + 1, n) - 1) * lda], lda, taup[i - 1]);
+            d[i - 1] = alpha.real();
+            if (i < m) {
                 a[(i - 1) + (i - 1) * lda] = one;
                 //
                 //              Compute X(i+1:m,i)
                 //
-                Cgemv("No transpose", m - i, n - i + 1, one, &a[((i + 1) - 1) + (i - 1) * lda], lda, &a[(i - 1) + (i - 1) * lda], lda, zero, x[((i + 1) - 1) + (i - 1) * ldx], 1);
-                Cgemv("Conjugate transpose", n - i + 1, i - 1, one, y[(i - 1)], ldy, &a[(i - 1) + (i - 1) * lda], lda, zero, x[(i - 1) * ldx], 1);
-                Cgemv("No transpose", m - i, i - 1, -one, &a[((i + 1) - 1)], lda, x[(i - 1) * ldx], 1, one, x[((i + 1) - 1) + (i - 1) * ldx], 1);
-                Cgemv("No transpose", i - 1, n - i + 1, one, &a[(i - 1) * lda], lda, &a[(i - 1) + (i - 1) * lda], lda, zero, x[(i - 1) * ldx], 1);
-                Cgemv("No transpose", m - i, i - 1, -one, x[((i + 1) - 1)], ldx, x[(i - 1) * ldx], 1, one, x[((i + 1) - 1) + (i - 1) * ldx], 1);
-                Cscal(m - i, taup[i - 1], x[((i + 1) - 1) + (i - 1) * ldx], 1);
+                Cgemv("No transpose", m - i, n - i + 1, one, &a[((i + 1) - 1) + (i - 1) * lda], lda, &a[(i - 1) + (i - 1) * lda], lda, zero, &x[((i + 1) - 1) + (i - 1) * ldx], 1);
+                Cgemv("Conjugate transpose", n - i + 1, i - 1, one, &y[(i - 1)], ldy, &a[(i - 1) + (i - 1) * lda], lda, zero, &x[(i - 1) * ldx], 1);
+                Cgemv("No transpose", m - i, i - 1, -one, &a[((i + 1) - 1)], lda, &x[(i - 1) * ldx], 1, one, &x[((i + 1) - 1) + (i - 1) * ldx], 1);
+                Cgemv("No transpose", i - 1, n - i + 1, one, &a[(i - 1) * lda], lda, &a[(i - 1) + (i - 1) * lda], lda, zero, &x[(i - 1) * ldx], 1);
+                Cgemv("No transpose", m - i, i - 1, -one, &x[((i + 1) - 1)], ldx, &x[(i - 1) * ldx], 1, one, &x[((i + 1) - 1) + (i - 1) * ldx], 1);
+                Cscal(m - i, taup[i - 1], &x[((i + 1) - 1) + (i - 1) * ldx], 1);
                 Clacgv(n - i + 1, &a[(i - 1) + (i - 1) * lda], lda);
                 //
                 //              Update A(i+1:m,i)
                 //
-                Clacgv(i - 1, y[(i - 1)], ldy);
-                Cgemv("No transpose", m - i, i - 1, -one, &a[((i + 1) - 1)], lda, y[(i - 1)], ldy, one, &a[((i + 1) - 1) + (i - 1) * lda], 1);
-                Clacgv(i - 1, y[(i - 1)], ldy);
-                Cgemv("No transpose", m - i, i, -one, x[((i + 1) - 1)], ldx, &a[(i - 1) * lda], 1, one, &a[((i + 1) - 1) + (i - 1) * lda], 1);
+                Clacgv(i - 1, &y[(i - 1)], ldy);
+                Cgemv("No transpose", m - i, i - 1, -one, &a[((i + 1) - 1)], lda, &y[(i - 1)], ldy, one, &a[((i + 1) - 1) + (i - 1) * lda], 1);
+                Clacgv(i - 1, &y[(i - 1)], ldy);
+                Cgemv("No transpose", m - i, i, -one, &x[((i + 1) - 1)], ldx, &a[(i - 1) * lda], 1, one, &a[((i + 1) - 1) + (i - 1) * lda], 1);
                 //
                 //              Generate reflection Q(i) to annihilate A(i+2:m,i)
                 //
                 alpha = a[((i + 1) - 1) + (i - 1) * lda];
-                Clarfg(m - i, alpha, &a[((min(i + 2) - 1) + (m)-1) * lda], 1, tauq[i - 1]);
-                e[i - 1] = alpha;
+                Clarfg(m - i, alpha, &a[(min(i + 2, m) - 1) + (m - 1) * lda], 1, tauq[i - 1]);
+                e[i - 1] = alpha.real();
                 a[((i + 1) - 1) + (i - 1) * lda] = one;
                 //
                 //              Compute Y(i+1:n,i)
                 //
-                Cgemv("Conjugate transpose", m - i, n - i, one, &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, &a[((i + 1) - 1) + (i - 1) * lda], 1, zero, y[((i + 1) - 1) + (i - 1) * ldy], 1);
-                Cgemv("Conjugate transpose", m - i, i - 1, one, &a[((i + 1) - 1)], lda, &a[((i + 1) - 1) + (i - 1) * lda], 1, zero, y[(i - 1) * ldy], 1);
-                Cgemv("No transpose", n - i, i - 1, -one, y[((i + 1) - 1)], ldy, y[(i - 1) * ldy], 1, one, y[((i + 1) - 1) + (i - 1) * ldy], 1);
-                Cgemv("Conjugate transpose", m - i, i, one, x[((i + 1) - 1)], ldx, &a[((i + 1) - 1) + (i - 1) * lda], 1, zero, y[(i - 1) * ldy], 1);
-                Cgemv("Conjugate transpose", i, n - i, -one, &a[((i + 1) - 1) * lda], lda, y[(i - 1) * ldy], 1, one, y[((i + 1) - 1) + (i - 1) * ldy], 1);
-                Cscal(n - i, tauq[i - 1], y[((i + 1) - 1) + (i - 1) * ldy], 1);
-      }
-      else {
+                Cgemv("Conjugate transpose", m - i, n - i, one, &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, &a[((i + 1) - 1) + (i - 1) * lda], 1, zero, &y[((i + 1) - 1) + (i - 1) * ldy], 1);
+                Cgemv("Conjugate transpose", m - i, i - 1, one, &a[((i + 1) - 1)], lda, &a[((i + 1) - 1) + (i - 1) * lda], 1, zero, &y[(i - 1) * ldy], 1);
+                Cgemv("No transpose", n - i, i - 1, -one, &y[((i + 1) - 1)], ldy, &y[(i - 1) * ldy], 1, one, &y[((i + 1) - 1) + (i - 1) * ldy], 1);
+                Cgemv("Conjugate transpose", m - i, i, one, &x[((i + 1) - 1)], ldx, &a[((i + 1) - 1) + (i - 1) * lda], 1, zero, &y[(i - 1) * ldy], 1);
+                Cgemv("Conjugate transpose", i, n - i, -one, &a[((i + 1) - 1) * lda], lda, &y[(i - 1) * ldy], 1, one, &y[((i + 1) - 1) + (i - 1) * ldy], 1);
+                Cscal(n - i, tauq[i - 1], &y[((i + 1) - 1) + (i - 1) * ldy], 1);
+            } else {
                 Clacgv(n - i + 1, &a[(i - 1) + (i - 1) * lda], lda);
-      }
+            }
         }
     }
     //

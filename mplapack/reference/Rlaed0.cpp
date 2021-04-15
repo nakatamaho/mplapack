@@ -148,7 +148,7 @@ statement_10:
         //        Set up workspaces for eigenvalues only/accumulate new vectors
         //        routine
         //
-      temp = log(castREAL(n)) / log(two);
+        temp = log(castREAL(n)) / log(two);
         lgn = castINTEGER(temp);
         if (pow(2, lgn) < n) {
             lgn++;
@@ -198,7 +198,7 @@ statement_10:
                 goto statement_130;
             }
             if (icompq == 1) {
-                Rgemm("N", "N", qsiz, matsiz, matsiz, one, q[(submat - 1) * ldq], ldq, &work[(iq - 1 + iwork[(iqptr + curr) - 1]) - 1], matsiz, zero, qstore[(submat - 1) * ldqstore], ldqs);
+                Rgemm("N", "N", qsiz, matsiz, matsiz, one, &q[(submat - 1) * ldq], ldq, &work[(iq - 1 + iwork[(iqptr + curr) - 1]) - 1], matsiz, zero, &qstore[(submat - 1) * ldqs], ldqs);
             }
             iwork[(iqptr + curr + 1) - 1] = iwork[(iqptr + curr) - 1] + pow2(matsiz);
             curr++;
@@ -241,9 +241,9 @@ statement_80:
             //     tridiagonal form) are desired.
             //
             if (icompq == 2) {
-                Rlaed1(matsiz, &d[submat - 1], &q[(submat - 1) + (submat - 1) * ldq], ldq, &iwork[(indxq + submat) - 1], &e[(submat + msd2 - 1) - 1], msd2, work, &iwork[(subpbs + 1) - 1], info);
+                Rlaed1(matsiz, &d[submat - 1], &q[(submat - 1) + (submat - 1) * ldq], ldq, &iwork[(indxq + submat) - 1], e[(submat + msd2 - 1) - 1], msd2, work, &iwork[(subpbs + 1) - 1], info);
             } else {
-                Rlaed7(icompq, matsiz, qsiz, tlvls, curlvl, curprb, &d[submat - 1], qstore[(submat - 1) * ldqstore], ldqs, iwork[(indxq + submat) - 1], &e[(submat + msd2 - 1) - 1], msd2, &work[iq - 1], iwork[iqptr - 1], iwork[iprmpt - 1], iwork[iperm - 1], iwork[igivpt - 1], iwork[igivcl - 1], &work[igivnm - 1], &work[iwrem - 1], iwork[(subpbs + 1) - 1], info);
+                Rlaed7(icompq, matsiz, qsiz, tlvls, curlvl, curprb, &d[submat - 1], &qstore[(submat - 1) * ldqs], ldqs, &iwork[(indxq + submat) - 1], e[(submat + msd2 - 1) - 1], msd2, &work[iq - 1], &iwork[iqptr - 1], &iwork[iprmpt - 1], &iwork[iperm - 1], &iwork[igivpt - 1], &iwork[igivcl - 1], &work[igivnm - 1], &work[iwrem - 1], &iwork[(subpbs + 1) - 1], info);
             }
             if (info != 0) {
                 goto statement_130;
@@ -264,7 +264,7 @@ statement_80:
         for (i = 1; i <= n; i = i + 1) {
             j = iwork[(indxq + i) - 1];
             work[i - 1] = d[j - 1];
-            Rcopy(qsiz, qstore[(j - 1) * ldqstore], 1, q[(i - 1) * ldq], 1);
+            Rcopy(qsiz, &qstore[(j - 1) * ldqs], 1, &q[(i - 1) * ldq], 1);
         }
         Rcopy(n, work, 1, d, 1);
     } else if (icompq == 2) {
