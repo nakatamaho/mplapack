@@ -211,7 +211,7 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
                 //
                 //              Factorize JB columns among columns J:N.
                 //
-                Rlaqps(m, n - j + 1, j - 1, jb, fjb, &a[(j - 1) * lda], lda, jpvt[j - 1], &tau[j - 1], &work[j - 1], &work[(n + j) - 1], &work[(2 * n + 1) - 1], &work[(2 * n + jb + 1) - 1], n - j + 1);
+                Rlaqps(m, n - j + 1, j - 1, jb, fjb, &a[(j - 1) * lda], lda, &jpvt[j - 1], &tau[j - 1], &work[j - 1], &work[(n + j) - 1], &work[(2 * n + 1) - 1], &work[(2 * n + jb + 1) - 1], n - j + 1);
                 //
                 j += fjb;
                 goto statement_30;
@@ -223,7 +223,7 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
         //        Use unblocked code to factor the last or only block.
         //
         if (j <= minmn) {
-            Rlaqp2(m, n - j + 1, j - 1, &a[(j - 1) * lda], lda, jpvt[j - 1], &tau[j - 1], &work[j - 1], &work[(n + j) - 1], &work[(2 * n + 1) - 1]);
+            Rlaqp2(m, n - j + 1, j - 1, &a[(j - 1) * lda], lda, &jpvt[j - 1], &tau[j - 1], &work[j - 1], &work[(n + j) - 1], &work[(2 * n + 1) - 1]);
         }
         //
     }
