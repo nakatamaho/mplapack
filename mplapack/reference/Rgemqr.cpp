@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *t, INTEGER const tsize, REAL *c, INTEGER const ldc, REAL *work, INTEGER const lwork, INTEGER &info) {
+void Rgemqr(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *t, INTEGER const tsize, REAL *c, INTEGER const ldc, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -66,19 +66,19 @@ void Rgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER lw = 0;
     INTEGER mn = 0;
     if (left) {
-        lw = n * mb;
+        lw = n * nb;
         mn = m;
     } else {
-        lw = m * mb;
+        lw = mb * nb;
         mn = n;
     }
     //
     INTEGER nblcks = 0;
-    if ((nb > k) && (mn > k)) {
-        if (mod(mn - k, nb - k) == 0) {
-            nblcks = (mn - k) / (nb - k);
+    if ((mb > k) && (mn > k)) {
+        if (mod(mn - k, mb - k) == 0) {
+            nblcks = (mn - k) / (mb - k);
         } else {
-            nblcks = (mn - k) / (nb - k) + 1;
+            nblcks = (mn - k) / (mb - k) + 1;
         }
     } else {
         nblcks = 1;
@@ -95,7 +95,7 @@ void Rgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
         info = -4;
     } else if (k < 0 || k > mn) {
         info = -5;
-    } else if (lda < max((INTEGER)1, k)) {
+    } else if (lda < max((INTEGER)1, mn)) {
         info = -7;
     } else if (tsize < 5) {
         info = -9;
@@ -110,7 +110,7 @@ void Rgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     }
     //
     if (info != 0) {
-        Mxerbla("Rgemlq", -info);
+        Mxerbla("Rgemqr", -info);
         return;
     } else if (lquery) {
         return;
@@ -122,14 +122,14 @@ void Rgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
         return;
     }
     //
-    if ((left && m <= k) || (right && n <= k) || (nb <= k) || (nb >= max({m, n, k}))) {
-        Rgemlqt(side, trans, m, n, k, mb, a, lda, &t[6 - 1], mb, c, ldc, work, info);
+    if ((left && m <= k) || (right && n <= k) || (mb <= k) || (mb >= max({m, n, k}))) {
+        Rgemqrt(side, trans, m, n, k, nb, a, lda, &t[6 - 1], nb, c, ldc, work, info);
     } else {
-        Rlamswlq(side, trans, m, n, k, mb, nb, a, lda, &t[6 - 1], mb, c, ldc, work, lwork, info);
+        Rlamtsqr(side, trans, m, n, k, mb, nb, a, lda, &t[6 - 1], nb, c, ldc, work, lwork, info);
     }
     //
     work[1 - 1] = lw;
     //
-    //     End of Rgemlq
+    //     End of Rgemqr
     //
 }

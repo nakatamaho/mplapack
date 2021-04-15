@@ -29,7 +29,15 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *t, INTEGER const tsize, REAL *c, INTEGER const ldc, REAL *work, INTEGER const lwork, INTEGER &info) {
+void Rgtcon(const char *norm, INTEGER const n, REAL *dl, REAL *d, REAL *du, REAL *du2, INTEGER *ipiv, REAL const anorm, REAL &rcond, REAL *work, INTEGER *iwork, INTEGER &info) {
+    bool onenrm = false;
+    const REAL zero = 0.0;
+    const REAL one = 1.0;
+    INTEGER i = 0;
+    REAL ainvnm = 0.0;
+    INTEGER kase1 = 0;
+    INTEGER kase = 0;
+    INTEGER isave[3];
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -40,96 +48,84 @@ void Rgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     //     .. Array Arguments ..
     //     ..
     //
-    // =====================================================================
+    //  =====================================================================
     //
+    //     .. Parameters ..
     //     ..
     //     .. Local Scalars ..
+    //     ..
+    //     .. Local Arrays ..
     //     ..
     //     .. External Functions ..
     //     ..
     //     .. External Subroutines ..
     //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
     //     .. Executable Statements ..
     //
-    //     Test the input arguments
-    //
-    bool lquery = lwork == -1;
-    bool notran = Mlsame(trans, "N");
-    bool tran = Mlsame(trans, "T");
-    bool left = Mlsame(side, "L");
-    bool right = Mlsame(side, "R");
-    //
-    INTEGER mb = castINTEGER(t[2 - 1]);
-    INTEGER nb = castINTEGER(t[3 - 1]);
-    INTEGER lw = 0;
-    INTEGER mn = 0;
-    if (left) {
-        lw = n * mb;
-        mn = m;
-    } else {
-        lw = m * mb;
-        mn = n;
-    }
-    //
-    INTEGER nblcks = 0;
-    if ((nb > k) && (mn > k)) {
-        if (mod(mn - k, nb - k) == 0) {
-            nblcks = (mn - k) / (nb - k);
-        } else {
-            nblcks = (mn - k) / (nb - k) + 1;
-        }
-    } else {
-        nblcks = 1;
-    }
+    //     Test the input arguments.
     //
     info = 0;
-    if (!left && !right) {
+    onenrm = norm == "1" || Mlsame(norm, "O");
+    if (!onenrm && !Mlsame(norm, "I")) {
         info = -1;
-    } else if (!tran && !notran) {
-        info = -2;
-    } else if (m < 0) {
-        info = -3;
     } else if (n < 0) {
-        info = -4;
-    } else if (k < 0 || k > mn) {
-        info = -5;
-    } else if (lda < max((INTEGER)1, k)) {
-        info = -7;
-    } else if (tsize < 5) {
-        info = -9;
-    } else if (ldc < max((INTEGER)1, m)) {
-        info = -11;
-    } else if ((lwork < max((INTEGER)1, lw)) && (!lquery)) {
-        info = -13;
+        info = -2;
+    } else if (anorm < zero) {
+        info = -8;
     }
-    //
-    if (info == 0) {
-        work[1 - 1] = lw;
-    }
-    //
     if (info != 0) {
-        Mxerbla("Rgemlq", -info);
-        return;
-    } else if (lquery) {
+        Mxerbla("Rgtcon", -info);
         return;
     }
     //
     //     Quick return if possible
     //
-    if (min({m, n, k}) == 0) {
+    rcond = zero;
+    if (n == 0) {
+        rcond = one;
+        return;
+    } else if (anorm == zero) {
         return;
     }
     //
-    if ((left && m <= k) || (right && n <= k) || (nb <= k) || (nb >= max({m, n, k}))) {
-        Rgemlqt(side, trans, m, n, k, mb, a, lda, &t[6 - 1], mb, c, ldc, work, info);
-    } else {
-        Rlamswlq(side, trans, m, n, k, mb, nb, a, lda, &t[6 - 1], mb, c, ldc, work, lwork, info);
+    //     Check that D(1:N) is non-zero.
+    //
+    for (i = 1; i <= n; i = i + 1) {
+        if (d[i - 1] == zero) {
+            return;
+        }
     }
     //
-    work[1 - 1] = lw;
+    ainvnm = zero;
+    if (onenrm) {
+        kase1 = 1;
+    } else {
+        kase1 = 2;
+    }
+    kase = 0;
+statement_20:
+    Rlacn2(n, &work[(n + 1) - 1], work, iwork, ainvnm, kase, isave);
+    if (kase != 0) {
+        if (kase == kase1) {
+            //
+            //           Multiply by inv(U)*inv(L).
+            //
+            Rgttrs("No transpose", n, 1, dl, d, du, du2, ipiv, work, n, info);
+        } else {
+            //
+            //           Multiply by inv(L**T)*inv(U**T).
+            //
+            Rgttrs("Transpose", n, 1, dl, d, du, du2, ipiv, work, n, info);
+        }
+        goto statement_20;
+    }
     //
-    //     End of Rgemlq
+    //     Compute the estimate of the reciprocal condition number.
+    //
+    if (ainvnm != zero) {
+        rcond = (one / ainvnm) / anorm;
+    }
+    //
+    //     End of Rgtcon
     //
 }

@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *t, INTEGER const tsize, REAL *c, INTEGER const ldc, REAL *work, INTEGER const lwork, INTEGER &info) {
+void Rggqrf(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER const lda, REAL *taua, REAL *b, INTEGER const ldb, REAL *taub, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -40,96 +40,63 @@ void Rgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     //     .. Array Arguments ..
     //     ..
     //
-    // =====================================================================
+    //  =====================================================================
     //
-    //     ..
     //     .. Local Scalars ..
     //     ..
-    //     .. External Functions ..
-    //     ..
     //     .. External Subroutines ..
+    //     ..
+    //     .. External Functions ..
     //     ..
     //     .. Intrinsic Functions ..
     //     ..
     //     .. Executable Statements ..
     //
-    //     Test the input arguments
-    //
-    bool lquery = lwork == -1;
-    bool notran = Mlsame(trans, "N");
-    bool tran = Mlsame(trans, "T");
-    bool left = Mlsame(side, "L");
-    bool right = Mlsame(side, "R");
-    //
-    INTEGER mb = castINTEGER(t[2 - 1]);
-    INTEGER nb = castINTEGER(t[3 - 1]);
-    INTEGER lw = 0;
-    INTEGER mn = 0;
-    if (left) {
-        lw = n * mb;
-        mn = m;
-    } else {
-        lw = m * mb;
-        mn = n;
-    }
-    //
-    INTEGER nblcks = 0;
-    if ((nb > k) && (mn > k)) {
-        if (mod(mn - k, nb - k) == 0) {
-            nblcks = (mn - k) / (nb - k);
-        } else {
-            nblcks = (mn - k) / (nb - k) + 1;
-        }
-    } else {
-        nblcks = 1;
-    }
+    //     Test the input parameters
     //
     info = 0;
-    if (!left && !right) {
+    INTEGER nb1 = iMlaenv(1, "Rgeqrf", " ", n, m, -1, -1);
+    INTEGER nb2 = iMlaenv(1, "RgerQF", " ", n, p, -1, -1);
+    INTEGER nb3 = iMlaenv(1, "Rormqr", " ", n, m, p, -1);
+    INTEGER nb = max({nb1, nb2, nb3});
+    INTEGER lwkopt = max({n, m, p}) * nb;
+    work[1 - 1] = lwkopt;
+    bool lquery = (lwork == -1);
+    if (n < 0) {
         info = -1;
-    } else if (!tran && !notran) {
-        info = -2;
     } else if (m < 0) {
+        info = -2;
+    } else if (p < 0) {
         info = -3;
-    } else if (n < 0) {
-        info = -4;
-    } else if (k < 0 || k > mn) {
+    } else if (lda < max((INTEGER)1, n)) {
         info = -5;
-    } else if (lda < max((INTEGER)1, k)) {
-        info = -7;
-    } else if (tsize < 5) {
-        info = -9;
-    } else if (ldc < max((INTEGER)1, m)) {
+    } else if (ldb < max((INTEGER)1, n)) {
+        info = -8;
+    } else if (lwork < max({(INTEGER)1, n, m, p}) && !lquery) {
         info = -11;
-    } else if ((lwork < max((INTEGER)1, lw)) && (!lquery)) {
-        info = -13;
     }
-    //
-    if (info == 0) {
-        work[1 - 1] = lw;
-    }
-    //
     if (info != 0) {
-        Mxerbla("Rgemlq", -info);
+        Mxerbla("Rggqrf", -info);
         return;
     } else if (lquery) {
         return;
     }
     //
-    //     Quick return if possible
+    //     QR factorization of N-by-M matrix A: A = Q*R
     //
-    if (min({m, n, k}) == 0) {
-        return;
-    }
+    Rgeqrf(n, m, a, lda, taua, work, lwork, info);
+    INTEGER lopt = work[1 - 1];
     //
-    if ((left && m <= k) || (right && n <= k) || (nb <= k) || (nb >= max({m, n, k}))) {
-        Rgemlqt(side, trans, m, n, k, mb, a, lda, &t[6 - 1], mb, c, ldc, work, info);
-    } else {
-        Rlamswlq(side, trans, m, n, k, mb, nb, a, lda, &t[6 - 1], mb, c, ldc, work, lwork, info);
-    }
+    //     Update B := Q**T*B.
     //
-    work[1 - 1] = lw;
+    Rormqr("Left", "Transpose", n, p, min(n, m), a, lda, taua, b, ldb, work, lwork, info);
+    lopt = max(lopt, castINTEGER(work[1 - 1]));
     //
-    //     End of Rgemlq
+    //     RQ factorization of N-by-P matrix B: B = T*Z.
+    //
+    Rgerqf(n, p, b, ldb, taub, work, lwork, info);
+    work[1 - 1] = max(lopt, castINTEGER(work[1 - 1]));
+    //
+    //     End of Rggqrf
     //
 }
