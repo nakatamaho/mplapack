@@ -85,8 +85,6 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
-Rlaqp2.cpp \
-Rlaqps.cpp \
 Clargv.cpp \
 Rgeqp3.cpp \
 Clamtsqr.cpp \

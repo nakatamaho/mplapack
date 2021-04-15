@@ -29,6 +29,14 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
+inline REAL abssq(COMPLEX ff) {
+    REAL temp;
+
+    temp = (ff.real() * ff.real()) + (ff.imag() * ff.imag());
+    return temp;
+}
+
 void Clargv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, REAL *c, INTEGER const incc) {
     COMPLEX ff = 0.0;
     REAL safmin = 0.0;
@@ -91,8 +99,6 @@ void Clargv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER
     //     DATA               FIRST / .TRUE. /
     //     ..
     //     .. Statement Function definitions ..
-    abs1[ff - 1] = max(abs(ff.real()), abs(ff.imag()));
-    abssq[ff - 1] = pow2(ff.real()) + pow2(ff.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -100,7 +106,7 @@ void Clargv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER
     //        FIRST = .FALSE.
     safmin = Rlamch("S");
     eps = Rlamch("E");
-    safmn2 = pow(Rlamch("B"), int(log(safmin / eps) / log(Rlamch("B")) / two));
+    safmn2 = pow(Rlamch("B"), castINTEGER(log(safmin / eps) / log(Rlamch("B")) / two));
     safmx2 = one / safmn2;
     //     END IF
     ix = 1;
@@ -112,7 +118,7 @@ void Clargv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER
         //
         //        Use identical algorithm as in Clartg
         //
-        scale = max(abs1[f - 1], abs1[g - 1]);
+        scale = max(abs1(f), abs1(g));
         fs = f;
         gs = g;
         count = 0;
@@ -141,8 +147,8 @@ void Clargv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER
                 goto statement_20;
             }
         }
-        f2 = abssq[fs - 1];
-        g2 = abssq[gs - 1];
+        f2 = abssq(fs);
+        g2 = abssq(gs);
         if (f2 <= max(g2, one) * safmin) {
             //
             //           This is a rare case: F is very small.
@@ -170,7 +176,7 @@ void Clargv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER
             cs = f2s / g2s;
             //           Make sure abs(FF) = 1
             //           Do complex/real division explicitly with 2 real divisions
-            if (abs1[f - 1] > one) {
+            if (abs1(f) > one) {
                 d = Rlapy2(f.real(), f.imag());
                 ff = COMPLEX(f.real() / d, f.imag() / d);
             } else {
