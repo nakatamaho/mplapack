@@ -135,7 +135,7 @@ void Rormr2(const char *side, const char *trans, INTEGER const m, INTEGER const 
         //
         aii = a[(i - 1) + ((nq - k + i) - 1) * lda];
         a[(i - 1) + ((nq - k + i) - 1) * lda] = one;
-        Rlarf(side, mi, ni, &a[(i - 1)], lda, &tau[i - 1], c, ldc, work);
+        Rlarf(side, mi, ni, &a[(i - 1)], lda, tau[i - 1], c, ldc, work);
         a[(i - 1) + ((nq - k + i) - 1) * lda] = aii;
     }
     //

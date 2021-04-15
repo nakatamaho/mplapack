@@ -76,17 +76,17 @@ void Rgehd2(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
         //
         //        Compute elementary reflector H(i) to annihilate A(i+2:ihi,i)
         //
-        Rlarfg(ihi - i, &a[((i + 1) - 1) + (i - 1) * lda], &a[((min(i + 2) - 1) + (n)-1) * lda], 1, &tau[i - 1]);
+        Rlarfg(ihi - i, a[((i + 1) - 1) + (i - 1) * lda], &a[(min(i + 2, n) - 1) + (i - 1) * lda], 1, tau[i - 1]);
         aii = a[((i + 1) - 1) + (i - 1) * lda];
         a[((i + 1) - 1) + (i - 1) * lda] = one;
         //
         //        Apply H(i) to A(1:ihi,i+1:ihi) from the right
         //
-        Rlarf("Right", ihi, ihi - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, &tau[i - 1], &a[((i + 1) - 1) * lda], lda, work);
+        Rlarf("Right", ihi, ihi - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, tau[i - 1], &a[((i + 1) - 1) * lda], lda, work);
         //
         //        Apply H(i) to A(i+1:ihi,i+1:n) from the left
         //
-        Rlarf("Left", ihi - i, n - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, &tau[i - 1], &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, work);
+        Rlarf("Left", ihi - i, n - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, tau[i - 1], &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, work);
         //
         a[((i + 1) - 1) + (i - 1) * lda] = aii;
     }

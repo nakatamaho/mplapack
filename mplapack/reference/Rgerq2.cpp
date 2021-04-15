@@ -77,13 +77,13 @@ void Rgerq2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         //        Generate elementary reflector H(i) to annihilate
         //        A(m-k+i,1:n-k+i-1)
         //
-        Rlarfg(n - k + i, &a[((m - k + i) - 1) + ((n - k + i) - 1) * lda], &a[((m - k + i) - 1)], lda, &tau[i - 1]);
+        Rlarfg(n - k + i, a[((m - k + i) - 1) + ((n - k + i) - 1) * lda], &a[((m - k + i) - 1)], lda, tau[i - 1]);
         //
         //        Apply H(i) to A(1:m-k+i-1,1:n-k+i) from the right
         //
         aii = a[((m - k + i) - 1) + ((n - k + i) - 1) * lda];
         a[((m - k + i) - 1) + ((n - k + i) - 1) * lda] = one;
-        Rlarf("Right", m - k + i - 1, n - k + i, &a[((m - k + i) - 1)], lda, &tau[i - 1], a, lda, work);
+        Rlarf("Right", m - k + i - 1, n - k + i, &a[((m - k + i) - 1)], lda, tau[i - 1], a, lda, work);
         a[((m - k + i) - 1) + ((n - k + i) - 1) * lda] = aii;
     }
     //

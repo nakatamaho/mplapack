@@ -123,7 +123,7 @@ void Chptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
             //           Multiply by inv(U(K)), where U(K) is the transformation
             //           stored in column K of A.
             //
-            Cgeru(k - 1, nrhs, -one, ap[kc - 1], 1, &b[(k - 1)], ldb, &b[(1 - 1)], ldb);
+            Cgeru(k - 1, nrhs, -one, &ap[kc - 1], 1, &b[(k - 1)], ldb, &b[(1 - 1)], ldb);
             //
             //           Multiply by the inverse of the diagonal block.
             //
@@ -144,8 +144,8 @@ void Chptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
             //           Multiply by inv(U(K)), where U(K) is the transformation
             //           stored in columns K-1 and K of A.
             //
-            Cgeru(k - 2, nrhs, -one, ap[kc - 1], 1, &b[(k - 1)], ldb, &b[(1 - 1)], ldb);
-            Cgeru(k - 2, nrhs, -one, ap[(kc - (k - 1)) - 1], 1, &b[((k - 1) - 1)], ldb, &b[(1 - 1)], ldb);
+            Cgeru(k - 2, nrhs, -one, &ap[kc - 1], 1, &b[(k - 1)], ldb, &b[(1 - 1)], ldb);
+            Cgeru(k - 2, nrhs, -one, &ap[(kc - (k - 1)) - 1], 1, &b[((k - 1) - 1)], ldb, &b[(1 - 1)], ldb);
             //
             //           Multiply by the inverse of the diagonal block.
             //
@@ -190,7 +190,7 @@ void Chptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
             //
             if (k > 1) {
                 Clacgv(nrhs, &b[(k - 1)], ldb);
-                Cgemv("Conjugate transpose", k - 1, nrhs, -one, b, ldb, ap[kc - 1], 1, one, &b[(k - 1)], ldb);
+                Cgemv("Conjugate transpose", k - 1, nrhs, -one, b, ldb, &ap[kc - 1], 1, one, &b[(k - 1)], ldb);
                 Clacgv(nrhs, &b[(k - 1)], ldb);
             }
             //
@@ -211,11 +211,11 @@ void Chptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
             //
             if (k > 1) {
                 Clacgv(nrhs, &b[(k - 1)], ldb);
-                Cgemv("Conjugate transpose", k - 1, nrhs, -one, b, ldb, ap[kc - 1], 1, one, &b[(k - 1)], ldb);
+                Cgemv("Conjugate transpose", k - 1, nrhs, -one, b, ldb, &ap[kc - 1], 1, one, &b[(k - 1)], ldb);
                 Clacgv(nrhs, &b[(k - 1)], ldb);
                 //
                 Clacgv(nrhs, &b[((k + 1) - 1)], ldb);
-                Cgemv("Conjugate transpose", k - 1, nrhs, -one, b, ldb, ap[(kc + k) - 1], 1, one, &b[((k + 1) - 1)], ldb);
+                Cgemv("Conjugate transpose", k - 1, nrhs, -one, b, ldb, &ap[(kc + k) - 1], 1, one, &b[((k + 1) - 1)], ldb);
                 Clacgv(nrhs, &b[((k + 1) - 1)], ldb);
             }
             //
@@ -266,7 +266,7 @@ void Chptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
             //           stored in column K of A.
             //
             if (k < n) {
-                Cgeru(n - k, nrhs, -one, ap[(kc + 1) - 1], 1, &b[(k - 1)], ldb, &b[((k + 1) - 1)], ldb);
+                Cgeru(n - k, nrhs, -one, &ap[(kc + 1) - 1], 1, &b[(k - 1)], ldb, &b[((k + 1) - 1)], ldb);
             }
             //
             //           Multiply by the inverse of the diagonal block.
@@ -290,8 +290,8 @@ void Chptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
             //           stored in columns K and K+1 of A.
             //
             if (k < n - 1) {
-                Cgeru(n - k - 1, nrhs, -one, ap[(kc + 2) - 1], 1, &b[(k - 1)], ldb, &b[((k + 2) - 1)], ldb);
-                Cgeru(n - k - 1, nrhs, -one, ap[(kc + n - k + 2) - 1], 1, &b[((k + 1) - 1)], ldb, &b[((k + 2) - 1)], ldb);
+                Cgeru(n - k - 1, nrhs, -one, &ap[(kc + 2) - 1], 1, &b[(k - 1)], ldb, &b[((k + 2) - 1)], ldb);
+                Cgeru(n - k - 1, nrhs, -one, &ap[(kc + n - k + 2) - 1], 1, &b[((k + 1) - 1)], ldb, &b[((k + 2) - 1)], ldb);
             }
             //
             //           Multiply by the inverse of the diagonal block.
@@ -338,7 +338,7 @@ void Chptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
             //
             if (k < n) {
                 Clacgv(nrhs, &b[(k - 1)], ldb);
-                Cgemv("Conjugate transpose", n - k, nrhs, -one, &b[((k + 1) - 1)], ldb, ap[(kc + 1) - 1], 1, one, &b[(k - 1)], ldb);
+                Cgemv("Conjugate transpose", n - k, nrhs, -one, &b[((k + 1) - 1)], ldb, &ap[(kc + 1) - 1], 1, one, &b[(k - 1)], ldb);
                 Clacgv(nrhs, &b[(k - 1)], ldb);
             }
             //
@@ -358,11 +358,11 @@ void Chptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
             //
             if (k < n) {
                 Clacgv(nrhs, &b[(k - 1)], ldb);
-                Cgemv("Conjugate transpose", n - k, nrhs, -one, &b[((k + 1) - 1)], ldb, ap[(kc + 1) - 1], 1, one, &b[(k - 1)], ldb);
+                Cgemv("Conjugate transpose", n - k, nrhs, -one, &b[((k + 1) - 1)], ldb, &ap[(kc + 1) - 1], 1, one, &b[(k - 1)], ldb);
                 Clacgv(nrhs, &b[(k - 1)], ldb);
                 //
                 Clacgv(nrhs, &b[((k - 1) - 1)], ldb);
-                Cgemv("Conjugate transpose", n - k, nrhs, -one, &b[((k + 1) - 1)], ldb, ap[(kc - (n - k)) - 1], 1, one, &b[((k - 1) - 1)], ldb);
+                Cgemv("Conjugate transpose", n - k, nrhs, -one, &b[((k + 1) - 1)], ldb, &ap[(kc - (n - k)) - 1], 1, one, &b[((k - 1) - 1)], ldb);
                 Clacgv(nrhs, &b[((k - 1) - 1)], ldb);
             }
             //

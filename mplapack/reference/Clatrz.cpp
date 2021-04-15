@@ -73,7 +73,7 @@ void Clatrz(INTEGER const m, INTEGER const n, INTEGER const l, COMPLEX *a, INTEG
         //
         Clacgv(l, &a[(i - 1) + ((n - l + 1) - 1) * lda], lda);
         alpha = conj(a[(i - 1) + (i - 1) * lda]);
-        Clarfg(l + 1, alpha, &a[(i - 1) + ((n - l + 1) - 1) * lda], lda, &tau[i - 1]);
+        Clarfg(l + 1, alpha, &a[(i - 1) + ((n - l + 1) - 1) * lda], lda, tau[i - 1]);
         tau[i - 1] = conj(tau[i - 1]);
         //
         //        Apply H(i) to A(1:i-1,i:n) from the right

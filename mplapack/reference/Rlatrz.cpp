@@ -70,11 +70,11 @@ void Rlatrz(INTEGER const m, INTEGER const n, INTEGER const l, REAL *a, INTEGER 
         //        Generate elementary reflector H(i) to annihilate
         //        [ A(i,i) A(i,n-l+1:n) ]
         //
-        Rlarfg(l + 1, &a[(i - 1) + (i - 1) * lda], &a[(i - 1) + ((n - l + 1) - 1) * lda], lda, &tau[i - 1]);
+        Rlarfg(l + 1, a[(i - 1) + (i - 1) * lda], &a[(i - 1) + ((n - l + 1) - 1) * lda], lda, tau[i - 1]);
         //
         //        Apply H(i) to A(1:i-1,i:n) from the right
         //
-        Rlarz("Right", i - 1, n - i + 1, l, &a[(i - 1) + ((n - l + 1) - 1) * lda], lda, &tau[i - 1], &a[(i - 1) * lda], lda, work);
+        Rlarz("Right", i - 1, n - i + 1, l, &a[(i - 1) + ((n - l + 1) - 1) * lda], lda, tau[i - 1], &a[(i - 1) * lda], lda, work);
         //
     }
     //

@@ -87,7 +87,7 @@ void Rgesc2(INTEGER const n, REAL *a, INTEGER const lda, REAL *rhs, INTEGER *ipi
     REAL temp = 0.0;
     if (two * smlnum * abs(rhs[i - 1]) > abs(a[(n - 1) + (n - 1) * lda])) {
         temp = (one / two) / abs(rhs[i - 1]);
-        Rscal(n, temp, rhs[1 - 1], 1);
+        Rscal(n, temp, &rhs[1 - 1], 1);
         scale = scale * temp;
     }
     //

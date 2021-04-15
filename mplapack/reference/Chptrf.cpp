@@ -140,8 +140,8 @@ void Chptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
         //        column K, and COLMAX is its absolute value
         //
         if (k > 1) {
-            imax = iCamax(k - 1, ap[kc - 1], 1);
-            colmax = abs1[(ap[(kc + imax - 1) - 1]) - 1];
+            imax = iCamax(k - 1, &ap[kc - 1], (INTEGER)1);
+            colmax = abs1(ap[(kc + imax - 1) - 1]);
         } else {
             colmax = zero;
         }
@@ -170,18 +170,17 @@ void Chptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
                 jmax = imax;
                 kx = imax * (imax + 1) / 2 + imax;
                 for (j = imax + 1; j <= k; j = j + 1) {
-                    if (abs1[ap[kx - 1] - 1] > rowmax) {
-                        rowmax = abs1[ap[kx - 1] - 1];
+                    if (abs1(ap[kx - 1]) > rowmax) {
+                        rowmax = abs1(ap[kx - 1]);
                         jmax = j;
                     }
                     kx += j;
                 }
                 kpc = (imax - 1) * imax / 2 + 1;
                 if (imax > 1) {
-                    jmax = iCamax(imax - 1, ap[kpc - 1], 1);
-                    rowmax = max(rowmax, abs1[(ap[(kpc + jmax - 1) - 1]) - 1]);
-                }
-                //
+                    jmax = iCamax(imax - 1, &ap[kpc - 1], (INTEGER)1);
+                    rowmax = max(rowmax, abs1(ap[(kpc + jmax - 1) - 1]));
+                } //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
                     //
                     //                 no interchange, use 1-by-1 pivot block
@@ -212,7 +211,7 @@ void Chptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
                 //              Interchange rows and columns KK and KP in the leading
                 //              submatrix A(1:k,1:k)
                 //
-                Cswap(kp - 1, ap[knc - 1], 1, ap[kpc - 1], 1);
+                Cswap(kp - 1, &ap[knc - 1], 1, &ap[kpc - 1], 1);
                 kx = kpc + kp - 1;
                 for (j = kp + 1; j <= kk - 1; j = j + 1) {
                     kx += j - 1;
@@ -252,11 +251,11 @@ void Chptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
                 //              A := A - U(k)*D(k)*U(k)**H = A - W(k)*1/D(k)*W(k)**H
                 //
                 r1 = one / ap[(kc + k - 1) - 1].real();
-                Chpr(uplo, k - 1, -r1, ap[kc - 1], 1, ap);
+                Chpr(uplo, k - 1, -r1, &ap[kc - 1], 1, ap);
                 //
                 //              Store U(k) in column k
                 //
-                CRscal(k - 1, r1, ap[kc - 1], 1);
+                CRscal(k - 1, r1, &ap[kc - 1], 1);
             } else {
                 //
                 //              2-by-2 pivot block D(k): columns k and k-1 now hold
@@ -340,8 +339,8 @@ void Chptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
         //        column K, and COLMAX is its absolute value
         //
         if (k < n) {
-            imax = k + iCamax(n - k, ap[(kc + 1) - 1], 1);
-            colmax = abs1[(ap[(kc + imax - k) - 1]) - 1];
+            imax = k + iCamax(n - k, &ap[(kc + 1) - 1], (INTEGER)1);
+            colmax = abs1(ap[(kc + imax - k) - 1]);
         } else {
             colmax = zero;
         }
@@ -369,16 +368,16 @@ void Chptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
                 rowmax = zero;
                 kx = kc + imax - k;
                 for (j = k; j <= imax - 1; j = j + 1) {
-                    if (abs1[ap[kx - 1] - 1] > rowmax) {
-                        rowmax = abs1[ap[kx - 1] - 1];
+                    if (abs1(ap[kx - 1]) > rowmax) {
+                        rowmax = abs1(ap[kx - 1]);
                         jmax = j;
                     }
                     kx += n - j;
                 }
                 kpc = npp - (n - imax + 1) * (n - imax + 2) / 2 + 1;
                 if (imax < n) {
-                    jmax = imax + iCamax(n - imax, ap[(kpc + 1) - 1], 1);
-                    rowmax = max(rowmax, abs1[(ap[(kpc + jmax - imax) - 1]) - 1]);
+                    jmax = imax + iCamax(n - imax, &ap[(kpc + 1) - 1], 1);
+                    rowmax = max(rowmax, abs1(ap[(kpc + jmax - imax) - 1]));
                 }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
@@ -412,7 +411,7 @@ void Chptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
                 //              submatrix A(k:n,k:n)
                 //
                 if (kp < n) {
-                    Cswap(n - kp, ap[(knc + kp - kk + 1) - 1], 1, ap[(kpc + 1) - 1], 1);
+                    Cswap(n - kp, &ap[(knc + kp - kk + 1) - 1], 1, &ap[(kpc + 1) - 1], 1);
                 }
                 kx = knc + kp - kk;
                 for (j = kk + 1; j <= kp - 1; j = j + 1) {
@@ -455,11 +454,11 @@ void Chptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
                     //                 A := A - L(k)*D(k)*L(k)**H = A - W(k)*(1/D(k))*W(k)**H
                     //
                     r1 = one / ap[kc - 1].real();
-                    Chpr(uplo, n - k, -r1, ap[(kc + 1) - 1], 1, ap[(kc + n - k + 1) - 1]);
+                    Chpr(uplo, n - k, -r1, &ap[(kc + 1) - 1], 1, &ap[(kc + n - k + 1) - 1]);
                     //
                     //                 Store L(k) in column K
                     //
-                    CRscal(n - k, r1, ap[(kc + 1) - 1], 1);
+                    CRscal(n - k, r1, &ap[(kc + 1) - 1], (INTEGER)1);
                 }
             } else {
                 //
