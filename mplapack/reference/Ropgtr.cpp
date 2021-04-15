@@ -133,7 +133,7 @@ void Ropgtr(const char *uplo, INTEGER const n, REAL *ap, REAL *tau, REAL *q, INT
             //
             //           Generate Q(2:n,2:n)
             //
-            Rorg2r(n - 1, n - 1, n - 1, q[(2 - 1) + (2 - 1) * ldq], ldq, tau, work, iinfo);
+            Rorg2r(n - 1, n - 1, n - 1, &q[(2 - 1) + (2 - 1) * ldq], ldq, tau, work, iinfo);
         }
     }
     //

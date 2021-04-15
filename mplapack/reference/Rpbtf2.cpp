@@ -107,8 +107,8 @@ void Rpbtf2(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
             //
             kn = min(kd, n - j);
             if (kn > 0) {
-                Rscal(kn, one / ajj, ab[(kd - 1) + ((j + 1) - 1) * ldab], kld);
-                Rsyr("Upper", kn, -one, ab[(kd - 1) + ((j + 1) - 1) * ldab], kld, ab[((kd + 1) - 1) + ((j + 1) - 1) * ldab], kld);
+                Rscal(kn, one / ajj, &ab[(kd - 1) + ((j + 1) - 1) * ldab], kld);
+                Rsyr("Upper", kn, -one, &ab[(kd - 1) + ((j + 1) - 1) * ldab], kld, &ab[((kd + 1) - 1) + ((j + 1) - 1) * ldab], kld);
             }
         }
     } else {
@@ -131,8 +131,8 @@ void Rpbtf2(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
             //
             kn = min(kd, n - j);
             if (kn > 0) {
-                Rscal(kn, one / ajj, ab[(2 - 1) + (j - 1) * ldab], 1);
-                Rsyr("Lower", kn, -one, ab[(2 - 1) + (j - 1) * ldab], 1, ab[((j + 1) - 1) * ldab], kld);
+                Rscal(kn, one / ajj, &ab[(2 - 1) + (j - 1) * ldab], 1);
+                Rsyr("Lower", kn, -one, &ab[(2 - 1) + (j - 1) * ldab], 1, &ab[((j + 1) - 1) * ldab], kld);
             }
         }
     }

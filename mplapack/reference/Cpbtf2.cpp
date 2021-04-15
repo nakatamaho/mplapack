@@ -108,10 +108,10 @@ void Cpbtf2(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
             //
             kn = min(kd, n - j);
             if (kn > 0) {
-                CRscal(kn, one / ajj, ab[(kd - 1) + ((j + 1) - 1) * ldab], kld);
-                Clacgv(kn, ab[(kd - 1) + ((j + 1) - 1) * ldab], kld);
-                Cher("Upper", kn, -one, ab[(kd - 1) + ((j + 1) - 1) * ldab], kld, ab[((kd + 1) - 1) + ((j + 1) - 1) * ldab], kld);
-                Clacgv(kn, ab[(kd - 1) + ((j + 1) - 1) * ldab], kld);
+                CRscal(kn, one / ajj, &ab[(kd - 1) + ((j + 1) - 1) * ldab], kld);
+                Clacgv(kn, &ab[(kd - 1) + ((j + 1) - 1) * ldab], kld);
+                Cher("Upper", kn, -one, &ab[(kd - 1) + ((j + 1) - 1) * ldab], kld, &ab[((kd + 1) - 1) + ((j + 1) - 1) * ldab], kld);
+                Clacgv(kn, &ab[(kd - 1) + ((j + 1) - 1) * ldab], kld);
             }
         }
     } else {
@@ -135,8 +135,8 @@ void Cpbtf2(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
             //
             kn = min(kd, n - j);
             if (kn > 0) {
-                CRscal(kn, one / ajj, ab[(2 - 1) + (j - 1) * ldab], 1);
-                Cher("Lower", kn, -one, ab[(2 - 1) + (j - 1) * ldab], 1, ab[((j + 1) - 1) * ldab], kld);
+                CRscal(kn, one / ajj, &ab[(2 - 1) + (j - 1) * ldab], 1);
+                Cher("Lower", kn, -one, &ab[(2 - 1) + (j - 1) * ldab], 1, &ab[((j + 1) - 1) * ldab], kld);
             }
         }
     }

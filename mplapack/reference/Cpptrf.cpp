@@ -93,12 +93,12 @@ void Cpptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER &info) {
             //           Compute elements 1:J-1 of column J.
             //
             if (j > 1) {
-                Ctpsv("Upper", "Conjugate transpose", "Non-unit", j - 1, ap, ap[jc - 1], 1);
+                Ctpsv("Upper", "Conjugate transpose", "Non-unit", j - 1, ap, &ap[jc - 1], 1);
             }
             //
             //           Compute U(J,J) and test for non-positive-definiteness.
             //
-            ajj = ap[jj - 1].real() - Cdotc(j - 1, ap[jc - 1], 1, ap[jc - 1], 1);
+            ajj = ap[jj - 1].real() - Cdotc(j - 1, &ap[jc - 1], 1, &ap[jc - 1], 1).real();
             if (ajj <= zero) {
                 ap[jj - 1] = ajj;
                 goto statement_30;
@@ -126,8 +126,8 @@ void Cpptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER &info) {
             //           submatrix.
             //
             if (j < n) {
-                CRscal(n - j, one / ajj, ap[(jj + 1) - 1], 1);
-                Chpr("Lower", n - j, -one, ap[(jj + 1) - 1], 1, ap[(jj + n - j + 1) - 1]);
+                CRscal(n - j, one / ajj, &ap[(jj + 1) - 1], 1);
+                Chpr("Lower", n - j, -one, &ap[(jj + 1) - 1], 1, &ap[(jj + n - j + 1) - 1]);
                 jj += n - j + 1;
             }
         }

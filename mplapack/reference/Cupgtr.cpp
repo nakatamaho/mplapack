@@ -133,7 +133,7 @@ void Cupgtr(const char *uplo, INTEGER const n, COMPLEX *ap, COMPLEX *tau, COMPLE
             //
             //           Generate Q(2:n,2:n)
             //
-            Cung2r(n - 1, n - 1, n - 1, q[(2 - 1) + (2 - 1) * ldq], ldq, tau, work, iinfo);
+            Cung2r(n - 1, n - 1, n - 1, &q[(2 - 1) + (2 - 1) * ldq], ldq, tau, work, iinfo);
         }
     }
     //

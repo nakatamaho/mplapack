@@ -93,12 +93,12 @@ void Rpptrf(const char *uplo, INTEGER const n, REAL *ap, INTEGER &info) {
             //           Compute elements 1:J-1 of column J.
             //
             if (j > 1) {
-                Rtpsv("Upper", "Transpose", "Non-unit", j - 1, ap, ap[jc - 1], 1);
+                Rtpsv("Upper", "Transpose", "Non-unit", j - 1, ap, &ap[jc - 1], 1);
             }
             //
             //           Compute U(J,J) and test for non-positive-definiteness.
             //
-            ajj = ap[jj - 1] - Rdot(j - 1, ap[jc - 1], 1, ap[jc - 1], 1);
+            ajj = ap[jj - 1] - Rdot(j - 1, &ap[jc - 1], 1, &ap[jc - 1], 1);
             if (ajj <= zero) {
                 ap[jj - 1] = ajj;
                 goto statement_30;
@@ -126,8 +126,8 @@ void Rpptrf(const char *uplo, INTEGER const n, REAL *ap, INTEGER &info) {
             //           submatrix.
             //
             if (j < n) {
-                Rscal(n - j, one / ajj, ap[(jj + 1) - 1], 1);
-                Rspr("Lower", n - j, -one, ap[(jj + 1) - 1], 1, ap[(jj + n - j + 1) - 1]);
+                Rscal(n - j, one / ajj, &ap[(jj + 1) - 1], 1);
+                Rspr("Lower", n - j, -one, &ap[(jj + 1) - 1], 1, &ap[(jj + n - j + 1) - 1]);
                 jj += n - j + 1;
             }
         }

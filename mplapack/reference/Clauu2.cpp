@@ -84,7 +84,7 @@ void Clauu2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //        Compute the product U * U**H.
         //
         for (i = 1; i <= n; i = i + 1) {
-            aii = a[(i - 1) + (i - 1) * lda];
+            aii = a[(i - 1) + (i - 1) * lda].real();
             if (i < n) {
                 a[(i - 1) + (i - 1) * lda] = aii * aii + (Cdotc(n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda, &a[(i - 1) + ((i + 1) - 1) * lda], lda)).real();
                 Clacgv(n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda);
@@ -100,7 +100,7 @@ void Clauu2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //        Compute the product L**H * L.
         //
         for (i = 1; i <= n; i = i + 1) {
-            aii = a[(i - 1) + (i - 1) * lda];
+            aii = a[(i - 1) + (i - 1) * lda].real();
             if (i < n) {
                 a[(i - 1) + (i - 1) * lda] = aii * aii + (Cdotc(n - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, &a[((i + 1) - 1) + (i - 1) * lda], 1)).real();
                 Clacgv(i - 1, &a[(i - 1)], lda);

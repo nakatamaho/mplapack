@@ -130,7 +130,7 @@ void Ctrexc(const char *compq, INTEGER const n, COMPLEX *t, INTEGER const ldt, C
             //
             //           Accumulate transformation in the matrix Q.
             //
-            Crot(n, q[(k - 1) * ldq], 1, q[((k + 1) - 1) * ldq], 1, cs, conj(sn));
+            Crot(n, &q[(k - 1) * ldq], 1, &q[((k + 1) - 1) * ldq], 1, cs, conj(sn));
         }
         //
     }

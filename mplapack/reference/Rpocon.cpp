@@ -35,9 +35,9 @@ void Rpocon(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     const REAL one = 1.0;
     REAL smlnum = 0.0;
     INTEGER kase = 0;
-    str<1> normin = char0;
+    char normin;
     REAL ainvnm = 0.0;
-    arr_1d<3, int> isave(fill0);
+    INTEGER isave[3];
     REAL scalel = 0.0;
     REAL scaleu = 0.0;
     REAL scale = 0.0;
@@ -101,7 +101,7 @@ void Rpocon(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     //     Estimate the 1-norm of inv(A).
     //
     kase = 0;
-    normin = "N";
+    normin = 'N';
 statement_10:
     Rlacn2(n, &work[(n + 1) - 1], work, iwork, ainvnm, kase, isave);
     if (kase != 0) {
@@ -109,22 +109,22 @@ statement_10:
             //
             //           Multiply by inv(U**T).
             //
-            Rlatrs("Upper", "Transpose", "Non-unit", normin, n, a, lda, work, scalel, &work[(2 * n + 1) - 1], info);
-            normin = "Y";
+            Rlatrs("Upper", "Transpose", "Non-unit", &normin, n, a, lda, work, scalel, &work[(2 * n + 1) - 1], info);
+            normin = 'Y';
             //
             //           Multiply by inv(U).
             //
-            Rlatrs("Upper", "No transpose", "Non-unit", normin, n, a, lda, work, scaleu, &work[(2 * n + 1) - 1], info);
+            Rlatrs("Upper", "No transpose", "Non-unit", &normin, n, a, lda, work, scaleu, &work[(2 * n + 1) - 1], info);
         } else {
             //
             //           Multiply by inv(L).
             //
-            Rlatrs("Lower", "No transpose", "Non-unit", normin, n, a, lda, work, scalel, &work[(2 * n + 1) - 1], info);
-            normin = "Y";
+            Rlatrs("Lower", "No transpose", "Non-unit", &normin, n, a, lda, work, scalel, &work[(2 * n + 1) - 1], info);
+            normin = 'Y';
             //
             //           Multiply by inv(L**T).
             //
-            Rlatrs("Lower", "Transpose", "Non-unit", normin, n, a, lda, work, scaleu, &work[(2 * n + 1) - 1], info);
+            Rlatrs("Lower", "Transpose", "Non-unit", &normin, n, a, lda, work, scaleu, &work[(2 * n + 1) - 1], info);
         }
         //
         //        Multiply by 1/SCALE if doing so will not cause overflow.

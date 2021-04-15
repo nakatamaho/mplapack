@@ -91,11 +91,15 @@ void Rormhr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     //
     INTEGER nb = 0;
     INTEGER lwkopt = 0;
+    char side_trans[3];
+    side_trans[0] = side[0];
+    side_trans[1] = trans[0];
+    side_trans[2] = '\0';
     if (info == 0) {
         if (left) {
-            nb = iMlaenv(1, "Rormqr", side + trans, nh, n, nh, -1);
+            nb = iMlaenv(1, "Rormqr", side_trans, nh, n, nh, -1);
         } else {
-            nb = iMlaenv(1, "Rormqr", side + trans, m, nh, nh, -1);
+            nb = iMlaenv(1, "Rormqr", side_trans, m, nh, nh, -1);
         }
         lwkopt = max((INTEGER)1, nw) * nb;
         work[1 - 1] = lwkopt;

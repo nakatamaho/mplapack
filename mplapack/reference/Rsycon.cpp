@@ -36,7 +36,7 @@ void Rsycon(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
     INTEGER i = 0;
     INTEGER kase = 0;
     REAL ainvnm = 0.0;
-    arr_1d<3, int> isave(fill0);
+    INTEGER isave[3];
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

@@ -35,10 +35,10 @@ void Rgecon(const char *norm, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     const REAL one = 1.0;
     REAL smlnum = 0.0;
     REAL ainvnm = 0.0;
-    str<1> normin = char0;
+    char normin;
     INTEGER kase1 = 0;
     INTEGER kase = 0;
-    arr_1d<3, int> isave(fill0);
+    INTEGER isave[3];
     REAL sl = 0.0;
     REAL su = 0.0;
     REAL scale = 0.0;
@@ -102,7 +102,7 @@ void Rgecon(const char *norm, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     //     Estimate the norm of inv(A).
     //
     ainvnm = zero;
-    normin = "N";
+    normin = 'N';
     if (onenrm) {
         kase1 = 1;
     } else {
@@ -116,26 +116,26 @@ statement_10:
             //
             //           Multiply by inv(L).
             //
-            Rlatrs("Lower", "No transpose", "Unit", normin, n, a, lda, work, sl, &work[(2 * n + 1) - 1], info);
+            Rlatrs("Lower", "No transpose", "Unit", &normin, n, a, lda, work, sl, &work[(2 * n + 1) - 1], info);
             //
             //           Multiply by inv(U).
             //
-            Rlatrs("Upper", "No transpose", "Non-unit", normin, n, a, lda, work, su, &work[(3 * n + 1) - 1], info);
+            Rlatrs("Upper", "No transpose", "Non-unit", &normin, n, a, lda, work, su, &work[(3 * n + 1) - 1], info);
         } else {
             //
             //           Multiply by inv(U**T).
             //
-            Rlatrs("Upper", "Transpose", "Non-unit", normin, n, a, lda, work, su, &work[(3 * n + 1) - 1], info);
+            Rlatrs("Upper", "Transpose", "Non-unit", &normin, n, a, lda, work, su, &work[(3 * n + 1) - 1], info);
             //
             //           Multiply by inv(L**T).
             //
-            Rlatrs("Lower", "Transpose", "Unit", normin, n, a, lda, work, sl, &work[(2 * n + 1) - 1], info);
+            Rlatrs("Lower", "Transpose", "Unit", &normin, n, a, lda, work, sl, &work[(2 * n + 1) - 1], info);
         }
         //
         //        Divide X by 1/(SL*SU) if doing so will not cause overflow.
         //
         scale = sl * su;
-        normin = "Y";
+        normin = 'Y';
         if (scale != one) {
             ix = iRamax(n, work, 1);
             if (scale < abs(work[ix - 1]) * smlnum || scale == zero) {

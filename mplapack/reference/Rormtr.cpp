@@ -89,18 +89,22 @@ void Rormtr(const char *side, const char *uplo, const char *trans, INTEGER const
     //
     INTEGER nb = 0;
     INTEGER lwkopt = 0;
+    char side_trans[3];
+    side_trans[0] = side[0];
+    side_trans[1] = trans[0];
+    side_trans[2] = '\0';
     if (info == 0) {
         if (upper) {
             if (left) {
-                nb = iMlaenv(1, "Rormql", side + trans, m - 1, n, m - 1, -1);
+                nb = iMlaenv(1, "Rormql", side_trans, m - 1, n, m - 1, -1);
             } else {
-                nb = iMlaenv(1, "Rormql", side + trans, m, n - 1, n - 1, -1);
+                nb = iMlaenv(1, "Rormql", side_trans, m, n - 1, n - 1, -1);
             }
         } else {
             if (left) {
-                nb = iMlaenv(1, "Rormqr", side + trans, m - 1, n, m - 1, -1);
+                nb = iMlaenv(1, "Rormqr", side_trans, m - 1, n, m - 1, -1);
             } else {
-                nb = iMlaenv(1, "Rormqr", side + trans, m, n - 1, n - 1, -1);
+                nb = iMlaenv(1, "Rormqr", side_trans, m, n - 1, n - 1, -1);
             }
         }
         lwkopt = max((INTEGER)1, nw) * nb;

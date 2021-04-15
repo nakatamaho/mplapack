@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaed1(INTEGER const n, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq, REAL const rho, INTEGER const cutpnt, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rlaed1(INTEGER const n, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq, REAL rho, INTEGER const cutpnt, REAL *work, INTEGER *iwork, INTEGER &info) {
     INTEGER iz = 0;
     INTEGER idlmda = 0;
     INTEGER iw = 0;
@@ -103,13 +103,13 @@ void Rlaed1(INTEGER const n, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq
     //     Form the z-vector which consists of the last row of Q_1 and the
     //     first row of Q_2.
     //
-    Rcopy(cutpnt, q[(cutpnt - 1)], ldq, &work[iz - 1], 1);
+    Rcopy(cutpnt, &q[(cutpnt - 1)], ldq, &work[iz - 1], 1);
     zpp1 = cutpnt + 1;
-    Rcopy(n - cutpnt, q[(zpp1 - 1) + (zpp1 - 1) * ldq], ldq, &work[(iz + cutpnt) - 1], 1);
+    Rcopy(n - cutpnt, &q[(zpp1 - 1) + (zpp1 - 1) * ldq], ldq, &work[(iz + cutpnt) - 1], 1);
     //
     //     Deflate eigenvalues.
     //
-    Rlaed2(k, n, cutpnt, d, q, ldq, indxq, rho, &work[iz - 1], &work[idlmda - 1], &work[iw - 1], &work[iq2 - 1], iwork[indx - 1], iwork[indxc - 1], iwork[indxp - 1], iwork[coltyp - 1], info);
+    Rlaed2(k, n, cutpnt, d, q, ldq, indxq, rho, &work[iz - 1], &work[idlmda - 1], &work[iw - 1], &work[iq2 - 1], &iwork[indx - 1], &iwork[indxc - 1], &iwork[indxp - 1], &iwork[coltyp - 1], info);
     //
     if (info != 0) {
         goto statement_20;
@@ -119,7 +119,7 @@ void Rlaed1(INTEGER const n, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq
     //
     if (k != 0) {
         is = (iwork[coltyp - 1] + iwork[(coltyp + 1) - 1]) * cutpnt + (iwork[(coltyp + 1) - 1] + iwork[(coltyp + 2) - 1]) * (n - cutpnt) + iq2;
-        Rlaed3(k, n, cutpnt, d, q, ldq, rho, &work[idlmda - 1], &work[iq2 - 1], iwork[indxc - 1], iwork[coltyp - 1], &work[iw - 1], &work[is - 1], info);
+        Rlaed3(k, n, cutpnt, d, q, ldq, rho, &work[idlmda - 1], &work[iq2 - 1], &iwork[indxc - 1], &iwork[coltyp - 1], &work[iw - 1], &work[is - 1], info);
         if (info != 0) {
             goto statement_20;
         }

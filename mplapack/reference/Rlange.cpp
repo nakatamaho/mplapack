@@ -63,9 +63,9 @@ REAL Rlange(const char *norm, INTEGER const m, INTEGER const n, REAL *a, INTEGER
     INTEGER i = 0;
     REAL temp = 0.0;
     REAL sum = 0.0;
-    arr_1d<2, REAL> ssq(fill0);
+    REAL ssq[2];
     const REAL one = 1.0;
-    arr_1d<2, REAL> colssq(fill0);
+    REAL colssq[2];
     if (min(m, n) == 0) {
         value = zero;
     } else if (Mlsame(norm, "M")) {
