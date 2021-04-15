@@ -130,7 +130,7 @@ void Rlatbs(const char *uplo, const char *trans, const char *diag, const char *n
             //
             for (j = 1; j <= n; j = j + 1) {
                 jlen = min(kd, j - 1);
-                cnorm[j - 1] = Rasum(jlen, ab[((kd + 1 - jlen) - 1) + (j - 1) * ldab], 1);
+                cnorm[j - 1] = Rasum(jlen, &ab[((kd + 1 - jlen) - 1) + (j - 1) * ldab], 1);
             }
         } else {
             //
@@ -139,7 +139,7 @@ void Rlatbs(const char *uplo, const char *trans, const char *diag, const char *n
             for (j = 1; j <= n; j = j + 1) {
                 jlen = min(kd, n - j);
                 if (jlen > 0) {
-                    cnorm[j - 1] = Rasum(jlen, ab[(2 - 1) + (j - 1) * ldab], 1);
+                    cnorm[j - 1] = Rasum(jlen, &ab[(2 - 1) + (j - 1) * ldab], 1);
                 } else {
                     cnorm[j - 1] = zero;
                 }
@@ -439,7 +439,7 @@ void Rlatbs(const char *uplo, const char *trans, const char *diag, const char *n
                         //                                             x(j)* A(max((INTEGER)1,j-kd):j-1,j)
                         //
                         jlen = min(kd, j - 1);
-                        Raxpy(jlen, -x[j - 1] * tscal, ab[((kd + 1 - jlen) - 1) + (j - 1) * ldab], 1, x[(j - jlen) - 1], 1);
+                        Raxpy(jlen, -x[j - 1] * tscal, &ab[((kd + 1 - jlen) - 1) + (j - 1) * ldab], 1, &x[(j - jlen) - 1], 1);
                         i = iRamax(j - 1, x, 1);
                         xmax = abs(x[i - 1]);
                     }
@@ -451,9 +451,9 @@ void Rlatbs(const char *uplo, const char *trans, const char *diag, const char *n
                     //
                     jlen = min(kd, n - j);
                     if (jlen > 0) {
-                        Raxpy(jlen, -x[j - 1] * tscal, ab[(2 - 1) + (j - 1) * ldab], 1, x[(j + 1) - 1], 1);
+                        Raxpy(jlen, -x[j - 1] * tscal, &ab[(2 - 1) + (j - 1) * ldab], 1, &x[(j + 1) - 1], 1);
                     }
-                    i = j + iRamax(n - j, x[(j + 1) - 1], 1);
+                    i = j + iRamax(n - j, &x[(j + 1) - 1], 1);
                     xmax = abs(x[i - 1]);
                 }
             }
@@ -503,11 +503,11 @@ void Rlatbs(const char *uplo, const char *trans, const char *diag, const char *n
                     //
                     if (upper) {
                         jlen = min(kd, j - 1);
-                        sumj = Rdot(jlen, ab[((kd + 1 - jlen) - 1) + (j - 1) * ldab], 1, x[(j - jlen) - 1], 1);
+                        sumj = Rdot(jlen, &ab[((kd + 1 - jlen) - 1) + (j - 1) * ldab], 1, &x[(j - jlen) - 1], 1);
                     } else {
                         jlen = min(kd, n - j);
                         if (jlen > 0) {
-                            sumj = Rdot(jlen, ab[(2 - 1) + (j - 1) * ldab], 1, x[(j + 1) - 1], 1);
+                            sumj = Rdot(jlen, &ab[(2 - 1) + (j - 1) * ldab], 1, &x[(j + 1) - 1], 1);
                         }
                     }
                 } else {

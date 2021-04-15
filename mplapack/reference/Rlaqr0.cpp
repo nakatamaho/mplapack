@@ -33,7 +33,7 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     const REAL one = 1.0;
     const INTEGER ntiny = 15;
     INTEGER lwkopt = 0;
-    str<2> jbcmpz = char0;
+    char jbcmpz[2];
     INTEGER nwr = 0;
     INTEGER nsr = 0;
     INTEGER ls = 0;
@@ -74,7 +74,7 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     REAL dd = 0.0;
     REAL cs = 0.0;
     REAL sn = 0.0;
-    arr_2d<1, 1, REAL> zdum(fill0);
+    REAL zdum[1];
     INTEGER inf = 0;
     bool sorted = false;
     REAL swap = 0.0;
@@ -150,14 +150,14 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         //        ==== Set up job flags for iMlaenv. ====
         //
         if (wantt) {
-            jbcmpz[(1 - 1)] = "S";
+            jbcmpz[0] = 'S';
         } else {
-            jbcmpz[(1 - 1)] = "E";
+            jbcmpz[0] = 'E';
         }
         if (wantz) {
-            jbcmpz[(2 - 1) + (2 - 1) * ldjbcmpz] = "V";
+            jbcmpz[2] = 'V';
         } else {
-            jbcmpz[(2 - 1) + (2 - 1) * ldjbcmpz] = "N";
+            jbcmpz[2] = 'N';
         }
         //
         //        ==== NWR = recommended deflation window size.  At this
@@ -168,7 +168,7 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         //
         nwr = iMlaenv(13, "Rlaqr0", jbcmpz, n, ilo, ihi, lwork);
         nwr = max(2, nwr);
-        nwr = min(ihi - ilo + 1, (n - 1) / 3, nwr);
+        nwr = min({ihi - ilo + 1, (n - 1) / 3, nwr});
         //
         //        ==== NSR = recommended number of simultaneous shifts.
         //        .    At this poINTEGER N .GT. NTINY = 15, so there is at
@@ -176,7 +176,7 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         //        .    and greater than or equal to two as required. ====
         //
         nsr = iMlaenv(15, "Rlaqr0", jbcmpz, n, ilo, ihi, lwork);
-        nsr = min(nsr, (n - 3) / 6, ihi - ilo);
+        nsr = min({nsr, (n - 3) / 6, ihi - ilo});
         nsr = max(2, nsr - mod(nsr, 2));
         //
         //        ==== Estimate optimal workspace ====
@@ -187,12 +187,12 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         //
         //        ==== Optimal workspace = MAX(Rlaqr5, Rlaqr3) ====
         //
-        lwkopt = max(3 * nsr / 2, int(work[1 - 1]));
+        lwkopt = max(3 * nsr / 2, castINTEGER(work[1 - 1]));
         //
         //        ==== Quick return in case of workspace query. ====
         //
         if (lwork == -1) {
-            work[1 - 1] = lwkopt.real();
+            work[1 - 1] = castREAL(lwkopt);
             return;
         }
         //
@@ -342,7 +342,8 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                 //              .    This may be lowered (slightly) if Rlaqr3
                 //              .    did not provide that many shifts. ====
                 //
-                ns = min(nsmax, nsr, max(2, kbot - ktop));
+                INTEGER itmp = max(2, kbot - ktop);
+                ns = min({nsmax, nsr, itmp});
                 ns = ns - mod(ns, 2);
                 //
                 //              ==== If there have been no deflations
@@ -381,9 +382,9 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                         kt = n - ns + 1;
                         Rlacpy("A", ns, ns, &h[(ks - 1) + (ks - 1) * ldh], ldh, &h[(kt - 1)], ldh);
                         if (ns > nmin) {
-                            Rlaqr4(false, false, ns, 1, ns, &h[(kt - 1)], ldh, wr[ks - 1], wi[ks - 1], 1, 1, zdum, 1, work, lwork, inf);
+                            Rlaqr4(false, false, ns, 1, ns, &h[(kt - 1)], ldh, &wr[ks - 1], &wi[ks - 1], 1, 1, zdum, 1, work, lwork, inf);
                         } else {
-                            Rlahqr(false, false, ns, 1, ns, &h[(kt - 1)], ldh, wr[ks - 1], wi[ks - 1], 1, 1, zdum, 1, inf);
+                            Rlahqr(false, false, ns, 1, ns, &h[(kt - 1)], ldh, &wr[ks - 1], &wi[ks - 1], 1, 1, zdum, 1, inf);
                         }
                         ks += inf;
                         //
@@ -494,7 +495,7 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                 //
                 //              ==== Small-bulge multi-shift QR sweep ====
                 //
-                Rlaqr5(wantt, wantz, kacc22, n, ktop, kbot, ns, wr[ks - 1], wi[ks - 1], h, ldh, iloz, ihiz, z, ldz, work, 3, &h[(ku - 1)], ldh, nve, &h[(kwv - 1)], ldh, nho, &h[(ku - 1) + (kwh - 1) * ldh], ldh);
+                Rlaqr5(wantt, wantz, kacc22, n, ktop, kbot, ns, &wr[ks - 1], &wi[ks - 1], h, ldh, iloz, ihiz, z, ldz, work, 3, &h[(ku - 1)], ldh, nve, &h[(kwv - 1)], ldh, nho, &h[(ku - 1) + (kwh - 1) * ldh], ldh);
             }
             //
             //           ==== Note progress (or the lack of it). ====
@@ -517,7 +518,7 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     //
     //     ==== Return the optimal value of LWORK. ====
     //
-    work[1 - 1] = lwkopt.real();
+    work[1 - 1] = castREAL(lwkopt);
     //
     //     ==== End of Rlaqr0 ====
     //

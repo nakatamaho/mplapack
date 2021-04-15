@@ -321,7 +321,7 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     //     (Workspace: need N*N+6*N unless SENSE = 'E')
     //
     if (!wntsnn) {
-        Rtrsna(sense, "A", select, n, a, lda, vl, ldvl, vr, ldvr, rconde, rcondv, n, nout, &work[iwrk - 1], n, iwork, icond);
+        Rtrsna(sense, "A", &select, n, a, lda, vl, ldvl, vr, ldvr, rconde, rcondv, n, nout, &work[iwrk - 1], n, iwork, icond);
     }
     //
     if (wantvl) {

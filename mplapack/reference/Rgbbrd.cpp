@@ -170,7 +170,7 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                 //              which have been created below the band
                 //
                 if (nr > 0) {
-                    Rlargv(nr, ab[(klu1 - 1) + ((j1 - klm - 1) - 1) * ldab], inca, &work[j1 - 1], kb1, &work[(mn + j1) - 1], kb1);
+                    Rlargv(nr, &ab[(klu1 - 1) + ((j1 - klm - 1) - 1) * ldab], inca, &work[j1 - 1], kb1, &work[(mn + j1) - 1], kb1);
                 }
                 //
                 //              apply plane rotations from the left
@@ -182,7 +182,7 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                         nrt = nr;
                     }
                     if (nrt > 0) {
-                        Rlartv(nrt, ab[((klu1 - l) - 1) + ((j1 - klm + l - 1) - 1) * ldab], inca, ab[((klu1 - l + 1) - 1) + ((j1 - klm + l - 1) - 1) * ldab], inca, &work[(mn + j1) - 1], &work[j1 - 1], kb1);
+                        Rlartv(nrt, &ab[((klu1 - l) - 1) + ((j1 - klm + l - 1) - 1) * ldab], inca, &ab[((klu1 - l + 1) - 1) + ((j1 - klm + l - 1) - 1) * ldab], inca, &work[(mn + j1) - 1], &work[j1 - 1], kb1);
                     }
                 }
                 //
@@ -192,10 +192,10 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                         //                    generate plane rotation to annihilate a(i+ml-1,i)
                         //                    within the band, and apply rotation from the left
                         //
-                        Rlartg(ab[((ku + ml - 1) - 1) + (i - 1) * ldab], ab[((ku + ml) - 1) + (i - 1) * ldab], &work[(mn + i + ml - 1) - 1], &work[(i + ml - 1) - 1], ra);
+                        Rlartg(ab[((ku + ml - 1) - 1) + (i - 1) * ldab], ab[((ku + ml) - 1) + (i - 1) * ldab], work[(mn + i + ml - 1) - 1], work[(i + ml - 1) - 1], ra);
                         ab[((ku + ml - 1) - 1) + (i - 1) * ldab] = ra;
                         if (i < n) {
-                            Rrot(min(ku + ml - 2, n - i), ab[((ku + ml - 2) - 1) + ((i + 1) - 1) * ldab], ldab - 1, ab[((ku + ml - 1) - 1) + ((i + 1) - 1) * ldab], ldab - 1, &work[(mn + i + ml - 1) - 1], &work[(i + ml - 1) - 1]);
+                            Rrot(min(ku + ml - 2, n - i), &ab[((ku + ml - 2) - 1) + ((i + 1) - 1) * ldab], ldab - 1, &ab[((ku + ml - 1) - 1) + ((i + 1) - 1) * ldab], ldab - 1, work[(mn + i + ml - 1) - 1], work[(i + ml - 1) - 1]);
                         }
                     }
                     nr++;
@@ -207,7 +207,7 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                     //                 accumulate product of plane rotations in Q
                     //
                     for (j = j1; j <= j2; j = j + kb1) {
-                        Rrot(m, q[((j - 1) - 1) * ldq], 1, q[(j - 1) * ldq], 1, &work[(mn + j) - 1], &work[j - 1]);
+                        Rrot(m, &q[((j - 1) - 1) * ldq], 1, &q[(j - 1) * ldq], 1, work[(mn + j) - 1], work[j - 1]);
                     }
                 }
                 //
@@ -216,7 +216,7 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                     //                 apply plane rotations to C
                     //
                     for (j = j1; j <= j2; j = j + kb1) {
-                        Rrot(ncc, &c[((j - 1) - 1)], ldc, &c[(j - 1)], ldc, &work[(mn + j) - 1], &work[j - 1]);
+                        Rrot(ncc, &c[((j - 1) - 1)], ldc, &c[(j - 1)], ldc, work[(mn + j) - 1], work[j - 1]);
                     }
                 }
                 //
@@ -241,7 +241,7 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                 //              which have been generated above the band
                 //
                 if (nr > 0) {
-                    Rlargv(nr, ab[((j1 + kun - 1) - 1) * ldab], inca, &work[(j1 + kun) - 1], kb1, &work[(mn + j1 + kun) - 1], kb1);
+                    Rlargv(nr, &ab[((j1 + kun - 1) - 1) * ldab], inca, &work[(j1 + kun) - 1], kb1, &work[(mn + j1 + kun) - 1], kb1);
                 }
                 //
                 //              apply plane rotations from the right
@@ -253,7 +253,7 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                         nrt = nr;
                     }
                     if (nrt > 0) {
-                        Rlartv(nrt, ab[((l + 1) - 1) + ((j1 + kun - 1) - 1) * ldab], inca, ab[(l - 1) + ((j1 + kun) - 1) * ldab], inca, &work[(mn + j1 + kun) - 1], &work[(j1 + kun) - 1], kb1);
+                        Rlartv(nrt, &ab[((l + 1) - 1) + ((j1 + kun - 1) - 1) * ldab], inca, &ab[(l - 1) + ((j1 + kun) - 1) * ldab], inca, &work[(mn + j1 + kun) - 1], &work[(j1 + kun) - 1], kb1);
                     }
                 }
                 //
@@ -265,7 +265,7 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                         //
                         Rlartg(ab[((ku - mu + 3) - 1) + ((i + mu - 2) - 1) * ldab], ab[((ku - mu + 2) - 1) + ((i + mu - 1) - 1) * ldab], &work[(mn + i + mu - 1) - 1], &work[(i + mu - 1) - 1], ra);
                         ab[((ku - mu + 3) - 1) + ((i + mu - 2) - 1) * ldab] = ra;
-                        Rrot(min(kl + mu - 2, m - i), ab[((ku - mu + 4) - 1) + ((i + mu - 2) - 1) * ldab], 1, ab[((ku - mu + 3) - 1) + ((i + mu - 1) - 1) * ldab], 1, &work[(mn + i + mu - 1) - 1], &work[(i + mu - 1) - 1]);
+                        Rrot(min(kl + mu - 2, m - i), &ab[((ku - mu + 4) - 1) + ((i + mu - 2) - 1) * ldab], 1, &ab[((ku - mu + 3) - 1) + ((i + mu - 1) - 1) * ldab], 1, &work[(mn + i + mu - 1) - 1], &work[(i + mu - 1) - 1]);
                     }
                     nr++;
                     j1 = j1 - kb1;
@@ -276,7 +276,7 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                     //                 accumulate product of plane rotations in P**T
                     //
                     for (j = j1; j <= j2; j = j + kb1) {
-                        Rrot(n, pt[((j + kun - 1) - 1)], ldpt, pt[((j + kun) - 1)], ldpt, &work[(mn + j + kun) - 1], &work[(j + kun) - 1]);
+                        Rrot(n, &pt[((j + kun - 1) - 1)], ldpt, &pt[((j + kun) - 1)], ldpt, work[(mn + j + kun) - 1], work[(j + kun) - 1]);
                     }
                 }
                 //
