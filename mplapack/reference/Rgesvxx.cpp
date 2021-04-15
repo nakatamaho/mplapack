@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgesvxx(const char *fact, const char *trans, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *af, INTEGER const ldaf, INTEGER *ipiv, char *equed, REAL *r, REAL *c, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL const rcond, REAL &rpvgrw, REAL *berr, INTEGER const n_err_bnds, REAL *err_bnds_norm, REAL *err_bnds_comp, INTEGER const nparams, REAL *params, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rgesvxx(const char *fact, const char *trans, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *af, INTEGER const ldaf, INTEGER *ipiv, char *equed, REAL *r, REAL *c, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL rcond, REAL &rpvgrw, REAL *berr, INTEGER const n_err_bnds, REAL *err_bnds_norm, REAL *err_bnds_comp, INTEGER const nparams, REAL *params, REAL *work, INTEGER *iwork, INTEGER &info) {
     //
     //  -- LAPACK driver routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -120,8 +120,8 @@ void Rgesvxx(const char *fact, const char *trans, INTEGER const n, INTEGER const
             rcmin = bignum;
             rcmax = zero;
             for (j = 1; j <= n; j = j + 1) {
-                rcmin = min(rcmin, &c[j - 1]);
-                rcmax = max(rcmax, &c[j - 1]);
+                rcmin = min(rcmin, c[j - 1]);
+                rcmax = max(rcmax, c[j - 1]);
             }
             if (rcmin <= zero) {
                 info = -12;

@@ -133,7 +133,7 @@ void Rsyequb(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL
         s[j - 1] = 1.0 / s[j - 1];
     }
     //
-    tol = one / sqrt(2.0 * n);
+    tol = one / sqrt(2.0 * castREAL(n));
     //
     for (iter = 1; iter <= max_iter; iter = iter + 1) {
         scale = 0.0;

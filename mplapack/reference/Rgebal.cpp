@@ -226,7 +226,7 @@ statement_140:
         f = one;
         s = c + r;
     statement_160:
-        if (c >= g || max(f, c, ca) >= sfmax2 || min(r, g, ra) <= sfmin2) {
+        if (c >= g || max({f, c, ca}) >= sfmax2 || min({r, g, ra}) <= sfmin2) {
             goto statement_170;
         }
         if (Risnan(c + f + ca + r + g + ra)) {
@@ -248,7 +248,7 @@ statement_140:
     statement_170:
         g = c / sclfac;
     statement_180:
-        if (g < r || max(r, ra) >= sfmax2 || min(f, c, g, ca) <= sfmin2) {
+        if (g < r || max(r, ra) >= sfmax2 || min({f, c, g, ca}) <= sfmin2) {
             goto statement_190;
         }
         f = f / sclfac;
