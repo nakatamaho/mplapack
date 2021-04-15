@@ -52,6 +52,17 @@ inline mpreal sign(mpreal a, mpreal b)
     return mtmp;
 }
 
+inline mplapackint nint(mpreal a)
+{
+  mplapackint
+    i;
+  mpreal tmp;
+  a = a + 0.5;
+  tmp = floorl(a);
+  i = tmp; //cast to long
+  return i;
+}
+
 inline mplapackint castINTEGER_mpfr(mpreal a)
 {
     mplapackint i;

@@ -71,6 +71,17 @@ inline mplapackint castINTEGER_gmp(mpf_class a)
     return i;
 }
 
+inline mplapack nint(mpf_class a)
+{
+  mplapack i;
+  mpf_class tmp;
+  a = a + 0.5;
+  mpf_floor(tmp.get_mpf_t(), a.get_mpf_t());
+  i = mpf_get_si(tmp.get_mpf_t());
+  return i;
+}
+
+
 #endif
 
 
