@@ -85,7 +85,7 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
-Rlasd6.cpp \
+Rlasd8.cpp \
 Rlasda.cpp \
 Rlasd7.cpp \
 Rbdsdc.cpp \
@@ -151,4 +151,4 @@ Clahef_rook.cpp \
 Rtrevc3.cpp \
 Rgesvj.cpp \
 Rgejsv.cpp \
-Rgesdd.cpp 
+Rgesdd.cpp

@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlasd6(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER const sqre, REAL *d, REAL *vf, REAL *vl, REAL &alpha, REAL &beta, INTEGER *idxq, INTEGER *perm, INTEGER const givptr, INTEGER *givcol, INTEGER const ldgcol, REAL *givnum, INTEGER const ldgnum, REAL *poles, REAL *difl, REAL *difr, REAL *z, INTEGER const k, REAL const c, REAL const s, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rlasd6(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER const sqre, REAL *d, REAL *vf, REAL *vl, REAL &alpha, REAL &beta, INTEGER *idxq, INTEGER *perm, INTEGER givptr, INTEGER *givcol, INTEGER const ldgcol, REAL *givnum, INTEGER const ldgnum, REAL *poles, REAL *difl, REAL *difr, REAL *z, INTEGER k, REAL c, REAL s, REAL *work, INTEGER *iwork, INTEGER &info) {
     //
     //  -- LAPACK auxiliary routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -107,9 +107,9 @@ void Rlasd6(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
     //
     //     Sort and Deflate singular values.
     //
-    Rlasd7(icompq, nl, nr, sqre, k, d, z, &work[iw - 1], vf, &work[ivfw - 1], vl, &work[ivlw - 1], alpha, beta, &work[isigma - 1], iwork[idx - 1], iwork[idxp - 1], idxq, perm, givptr, givcol, ldgcol, givnum, ldgnum, c, s, info);
+    Rlasd7(icompq, nl, nr, sqre, k, d, z, &work[iw - 1], vf, &work[ivfw - 1], vl, &work[ivlw - 1], alpha, beta, &work[isigma - 1], &iwork[idx - 1], &iwork[idxp - 1], idxq, perm, givptr, givcol, ldgcol, givnum, ldgnum, c, s, info);
     //
-    //     Solve Secular Equation, compute DIFL, DIFR, and update VF, VL.
+    //     solve Secular Equation, compute DIFL, DIFR, and update VF, VL.
     //
     Rlasd8(icompq, k, d, z, vf, vl, difl, difr, ldgnum, &work[isigma - 1], &work[iw - 1], info);
     //
@@ -122,8 +122,8 @@ void Rlasd6(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
     //     Save the poles if ICOMPQ = 1.
     //
     if (icompq == 1) {
-        Rcopy(k, d, 1, poles[(1 - 1)], 1);
-        Rcopy(k, &work[isigma - 1], 1, poles[(2 - 1) * ldpoles], 1);
+        Rcopy(k, d, 1, &poles[(1 - 1)], 1);
+        Rcopy(k, &work[isigma - 1], 1, &poles[(2 - 1) * ldgnum], 1);
     }
     //
     //     Unscale.
