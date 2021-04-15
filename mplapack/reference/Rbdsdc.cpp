@@ -286,7 +286,7 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
             if (icompq == 2) {
                 Rlasd0(nsize, sqre, &d[start - 1], &e[start - 1], &u[(start - 1) + (start - 1) * ldu], ldu, &vt[(start - 1) + (start - 1) * ldvt], ldvt, smlsiz, iwork, &work[wstart - 1], info);
             } else {
-                Rlasda(icompq, smlsiz, nsize, sqre, &d[start - 1], &e[start - 1], q[(start + (iu + qstart - 2) * n) - 1], n, q[(start + (ivt + qstart - 2) * n) - 1], iq[(start + k * n) - 1], q[(start + (difl + qstart - 2) * n) - 1], q[(start + (difr + qstart - 2) * n) - 1], q[(start + (z + qstart - 2) * n) - 1], q[(start + (poles + qstart - 2) * n) - 1], iq[(start + givptr * n) - 1], iq[(start + givcol * n) - 1], n, iq[(start + perm * n) - 1], q[(start + (givnum + qstart - 2) * n) - 1], q[(start + (ic + qstart - 2) * n) - 1], q[(start + (is + qstart - 2) * n) - 1], &work[wstart - 1], iwork, info);
+                Rlasda(icompq, smlsiz, nsize, sqre, &d[start - 1], &e[start - 1], &q[(start + (iu + qstart - 2) * n) - 1], n, &q[(start + (ivt + qstart - 2) * n) - 1], &iq[(start + k * n) - 1], &q[(start + (difl + qstart - 2) * n) - 1], &q[(start + (difr + qstart - 2) * n) - 1], &q[(start + (z + qstart - 2) * n) - 1], &q[(start + (poles + qstart - 2) * n) - 1], &iq[(start + givptr * n) - 1], &iq[(start + givcol * n) - 1], n, &iq[(start + perm * n) - 1], &q[(start + (givnum + qstart - 2) * n) - 1], &q[(start + (ic + qstart - 2) * n) - 1], &q[(start + (is + qstart - 2) * n) - 1], &work[wstart - 1], iwork, info);
             }
             if (info != 0) {
                 return;

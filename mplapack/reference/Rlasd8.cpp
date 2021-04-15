@@ -29,6 +29,11 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL Rlamc3(REAL a, REAL b) {
+    REAL c = a + b;
+    return c;
+}
+
 void Rlasd8(INTEGER const icompq, INTEGER const k, REAL *d, REAL *z, REAL *vf, REAL *vl, REAL *difl, REAL *difr, INTEGER const lddifr, REAL *dsigma, REAL *work, INTEGER &info) {
     //
     //  -- LAPACK auxiliary routine --
@@ -102,7 +107,7 @@ void Rlasd8(INTEGER const icompq, INTEGER const k, REAL *d, REAL *z, REAL *vf, R
     //
     INTEGER i = 0;
     for (i = 1; i <= k; i = i + 1) {
-        dsigma[i - 1] = dlamc3[(dsigma[i - 1] - 1) + (dsigma[i - 1] - 1) * lddlamc3] - dsigma[i - 1];
+        dsigma[i - 1] = Rlamc3(dsigma[i - 1], dsigma[i - 1]) - dsigma[i - 1];
     }
     //
     //     Book keeping.
@@ -128,7 +133,7 @@ void Rlasd8(INTEGER const icompq, INTEGER const k, REAL *d, REAL *z, REAL *vf, R
     //
     INTEGER j = 0;
     for (j = 1; j <= k; j = j + 1) {
-        Rlasd4(k, j, dsigma, z, &work[iwk1 - 1], rho, &d[j - 1], &work[iwk2 - 1], info);
+        Rlasd4(k, j, dsigma, z, &work[iwk1 - 1], rho, d[j - 1], &work[iwk2 - 1], info);
         //
         //        If the root finder fails, report the convergence failure.
         //
@@ -149,7 +154,7 @@ void Rlasd8(INTEGER const icompq, INTEGER const k, REAL *d, REAL *z, REAL *vf, R
     //     Compute updated Z.
     //
     for (i = 1; i <= k; i = i + 1) {
-        z[i - 1] = sign(sqrt(abs(work[(iwk3i + i) - 1])), &z[i - 1]);
+        z[i - 1] = sign(sqrt(abs(work[(iwk3i + i) - 1])), z[i - 1]);
     }
     //
     //     Update VF and VL.
@@ -170,10 +175,10 @@ void Rlasd8(INTEGER const icompq, INTEGER const k, REAL *d, REAL *z, REAL *vf, R
         }
         work[j - 1] = -z[j - 1] / diflj / (dsigma[j - 1] + dj);
         for (i = 1; i <= j - 1; i = i + 1) {
-            work[i - 1] = z[i - 1] / (dlamc3[(dsigma[i - 1] - 1) + (dsigj - 1) * lddlamc3] - diflj) / (dsigma[i - 1] + dj);
+            work[i - 1] = z[i - 1] / Rlamc3(dsigma[i - 1], dsigma[i - 1]);
         }
         for (i = j + 1; i <= k; i = i + 1) {
-            work[i - 1] = z[i - 1] / (dlamc3[(dsigma[i - 1] - 1) + (dsigjp - 1) * lddlamc3] + difrj) / (dsigma[i - 1] + dj);
+            work[i - 1] = z[i - 1] / (Rlamc3(dsigma[i - 1], dsigjp) + difrj) / (dsigma[i - 1] + dj);
         }
         temp = Rnrm2(k, work, 1);
         work[(iwk2i + j) - 1] = Rdot(k, work, 1, vf, 1) / temp;

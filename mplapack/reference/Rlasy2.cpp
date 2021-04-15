@@ -39,8 +39,8 @@ void Rlasy2(bool const ltranl, bool const ltranr, INTEGER const isgn, INTEGER co
     const REAL one = 1.0;
     REAL gam = 0.0;
     REAL smin = 0.0;
-    arr_1d<4, REAL> tmp(fill0);
-    arr_1d<4, REAL> btmp(fill0);
+    REAL tmp[4];
+    REAL btmp[4];
     INTEGER ipiv = 0;
     REAL u11 = 0.0;
     REAL u12 = 0.0;
@@ -51,17 +51,23 @@ void Rlasy2(bool const ltranl, bool const ltranr, INTEGER const isgn, INTEGER co
     REAL temp = 0.0;
     const REAL two = 2.0e+0;
     const REAL half = 0.5e+0;
-    arr_1d<2, REAL> x2(fill0);
+    REAL x2[4];
     const REAL zero = 0.0;
-    arr_2d<4, 4, REAL> t16(fill0);
+    REAL t16[4 * 4];
+    INTEGER ldt16 = 4;
     INTEGER i = 0;
     REAL xmax = 0.0;
     INTEGER ip = 0;
     INTEGER jp = 0;
     INTEGER ipsv = 0;
     INTEGER jpsv = 0;
-    arr_1d<4, int> jpiv(fill0);
     INTEGER j = 0;
+    INTEGER jpiv[4];
+    INTEGER locl21[4] = {3, 4, 1, 2};
+    INTEGER locu12[4] = {2, 1, 4, 3};
+    INTEGER locu22[4] = {4, 3, 2, 1};
+    bool xswpiv[4] = {false, false, true, true};
+    bool bswpiv[4] = {false, true, false, true};
     const REAL eight = 8.0e+0;
     //
     //  -- LAPACK auxiliary routine --
@@ -148,7 +154,7 @@ statement_10:
 //
 statement_20:
     //
-    smin = max(eps * max(abs(tl[(1 - 1)]), abs(tr[(1 - 1)]), abs(tr[(2 - 1) * ldtr]), abs(tr[(2 - 1)]), abs(tr[(2 - 1) + (2 - 1) * ldtr])), smlnum);
+    smin = max(eps * max({abs(tl[(1 - 1)]), abs(tr[(1 - 1)]), abs(tr[(2 - 1) * ldtr]), abs(tr[(2 - 1)]), abs(tr[(2 - 1) + (2 - 1) * ldtr])}), smlnum);
     tmp[1 - 1] = tl[(1 - 1)] + sgn * tr[(1 - 1)];
     tmp[4 - 1] = tl[(1 - 1)] + sgn * tr[(2 - 1) + (2 - 1) * ldtr];
     if (ltranr) {
@@ -167,7 +173,7 @@ statement_20:
 //            [TL21 TL22] [X21]         [X21]         [B21]
 //
 statement_30:
-    smin = max(eps * max(abs(tr[(1 - 1)]), abs(tl[(1 - 1)]), abs(tl[(2 - 1) * ldtl]), abs(tl[(2 - 1)]), abs(tl[(2 - 1) + (2 - 1) * ldtl])), smlnum);
+    smin = max(eps * max({abs(tr[(1 - 1)]), abs(tl[(1 - 1)]), abs(tl[(2 - 1) * ldtl]), abs(tl[(2 - 1)]), abs(tl[(2 - 1) + (2 - 1) * ldtl])}), smlnum);
     tmp[1 - 1] = tl[(1 - 1)] + sgn * tr[(1 - 1)];
     tmp[4 - 1] = tl[(2 - 1) + (2 - 1) * ldtl] + sgn * tr[(1 - 1)];
     if (ltranl) {
@@ -237,8 +243,8 @@ statement_40:
 //     Set pivots less than SMIN to SMIN.
 //
 statement_50:
-    smin = max(abs(tr[(1 - 1)]), abs(tr[(2 - 1) * ldtr]), abs(tr[(2 - 1)]), abs(tr[(2 - 1) + (2 - 1) * ldtr]));
-    smin = max(smin, abs(tl[(1 - 1)]), abs(tl[(2 - 1) * ldtl]), abs(tl[(2 - 1)]), abs(tl[(2 - 1) + (2 - 1) * ldtl]));
+    smin = max({abs(tr[(1 - 1)]), abs(tr[(2 - 1) * ldtr]), abs(tr[(2 - 1)]), abs(tr[(2 - 1) + (2 - 1) * ldtr])});
+    smin = max({smin, abs(tl[(1 - 1)]), abs(tl[(2 - 1) * ldtl]), abs(tl[(2 - 1)]), abs(tl[(2 - 1) + (2 - 1) * ldtl])});
     smin = max(eps * smin, smlnum);
     btmp[1 - 1] = zero;
     Rcopy(16, btmp, 0, t16, 1);
@@ -287,13 +293,13 @@ statement_50:
             }
         }
         if (ipsv != i) {
-            Rswap(4, t16[(ipsv - 1)], 4, t16[(i - 1)], 4);
+            Rswap(4, &t16[(ipsv - 1)], 4, &t16[(i - 1)], 4);
             temp = btmp[i - 1];
             btmp[i - 1] = btmp[ipsv - 1];
             btmp[ipsv - 1] = temp;
         }
         if (jpsv != i) {
-            Rswap(4, t16[(jpsv - 1) * ldt16], 1, t16[(i - 1) * ldt16], 1);
+            Rswap(4, &t16[(jpsv - 1) * ldt16], 1, &t16[(i - 1) * ldt16], 1);
         }
         jpiv[i - 1] = jpsv;
         if (abs(t16[(i - 1) + (i - 1) * ldt16]) < smin) {
@@ -314,7 +320,7 @@ statement_50:
     }
     scale = one;
     if ((eight * smlnum) * abs(btmp[1 - 1]) > abs(t16[(1 - 1)]) || (eight * smlnum) * abs(btmp[2 - 1]) > abs(t16[(2 - 1) + (2 - 1) * ldt16]) || (eight * smlnum) * abs(btmp[3 - 1]) > abs(t16[(3 - 1) + (3 - 1) * ldt16]) || (eight * smlnum) * abs(btmp[4 - 1]) > abs(t16[(4 - 1) + (4 - 1) * ldt16])) {
-        scale = (one / eight) / max(abs(btmp[1 - 1]), abs(btmp[2 - 1]), abs(btmp[3 - 1]), abs(btmp[4 - 1]));
+        scale = (one / eight) / max({abs(btmp[1 - 1]), abs(btmp[2 - 1]), abs(btmp[3 - 1]), abs(btmp[4 - 1])});
         btmp[1 - 1] = btmp[1 - 1] * scale;
         btmp[2 - 1] = btmp[2 - 1] * scale;
         btmp[3 - 1] = btmp[3 - 1] * scale;

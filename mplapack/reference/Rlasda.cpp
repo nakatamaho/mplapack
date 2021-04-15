@@ -157,7 +157,7 @@ void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
             Rlaset("A", nlp1, nlp1, zero, one, &vt[(nlf - 1)], ldu);
             Rlasdq("U", sqrei, nl, nlp1, nl, ncc, &d[nlf - 1], &e[nlf - 1], &vt[(nlf - 1)], ldu, &u[(nlf - 1)], ldu, &u[(nlf - 1)], ldu, &work[nwork1 - 1], info);
             Rcopy(nlp1, &vt[(nlf - 1)], 1, &work[vfi - 1], 1);
-            Rcopy(nlp1, &vt[(nlf - 1) + (nlp1 - 1) * ldvt], 1, &work[vli - 1], 1);
+            Rcopy(nlp1, &vt[(nlf - 1) + (nlp1 - 1) * ldu], 1, &work[vli - 1], 1);
         }
         if (info != 0) {
             return;
@@ -185,7 +185,7 @@ void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
             Rlaset("A", nrp1, nrp1, zero, one, &vt[(nrf - 1)], ldu);
             Rlasdq("U", sqrei, nr, nrp1, nr, ncc, &d[nrf - 1], &e[nrf - 1], &vt[(nrf - 1)], ldu, &u[(nrf - 1)], ldu, &u[(nrf - 1)], ldu, &work[nwork1 - 1], info);
             Rcopy(nrp1, &vt[(nrf - 1)], 1, &work[vfi - 1], 1);
-            Rcopy(nrp1, &vt[(nrf - 1) + (nrp1 - 1) * ldvt], 1, &work[vli - 1], 1);
+            Rcopy(nrp1, &vt[(nrf - 1) + (nrp1 - 1) * ldu], 1, &work[vli - 1], 1);
         }
         if (info != 0) {
             return;
@@ -236,10 +236,10 @@ void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
             alpha = d[ic - 1];
             beta = e[ic - 1];
             if (icompq == 0) {
-                Rlasd6(icompq, nl, nr, sqrei, &d[nlf - 1], &work[vfi - 1], &work[vli - 1], alpha, beta, iwork[idxqi - 1], perm, givptr[1 - 1], givcol, ldgcol, givnum, ldu, poles, difl, difr, z, k[1 - 1], &c[1 - 1], s[1 - 1], &work[nwork1 - 1], iwork[iwk - 1], info);
+                Rlasd6(icompq, nl, nr, sqrei, &d[nlf - 1], &work[vfi - 1], &work[vli - 1], alpha, beta, &iwork[idxqi - 1], perm, givptr[1 - 1], givcol, ldgcol, givnum, ldu, poles, difl, difr, z, k[1 - 1], c[1 - 1], s[1 - 1], &work[nwork1 - 1], &iwork[iwk - 1], info);
             } else {
                 j = j - 1;
-                Rlasd6(icompq, nl, nr, sqrei, &d[nlf - 1], &work[vfi - 1], &work[vli - 1], alpha, beta, iwork[idxqi - 1], perm[(nlf - 1) + (lvl - 1) * ldperm], givptr[j - 1], givcol[(nlf - 1) + (lvl2 - 1) * ldgivcol], ldgcol, givnum[(nlf - 1) + (lvl2 - 1) * ldgivnum], ldu, poles[(nlf - 1) + (lvl2 - 1) * ldpoles], difl[(nlf - 1) + (lvl - 1) * lddifl], difr[(nlf - 1) + (lvl2 - 1) * lddifr], &z[(nlf - 1) + (lvl - 1) * ldz], k[j - 1], &c[j - 1], s[j - 1], &work[nwork1 - 1], iwork[iwk - 1], info);
+                Rlasd6(icompq, nl, nr, sqrei, &d[nlf - 1], &work[vfi - 1], &work[vli - 1], alpha, beta, &iwork[idxqi - 1], &perm[(nlf - 1) + (lvl - 1) * ldgcol], givptr[j - 1], &givcol[(nlf - 1) + (lvl2 - 1) * ldgcol], ldgcol, &givnum[(nlf - 1) + (lvl2 - 1) * ldu], ldu, &poles[(nlf - 1) + (lvl2 - 1) * ldu], &difl[(nlf - 1) + (lvl - 1) * ldu], &difr[(nlf - 1) + (lvl2 - 1) * ldu], &z[(nlf - 1) + (lvl - 1) * ldu], k[j - 1], c[j - 1], s[j - 1], &work[nwork1 - 1], &iwork[iwk - 1], info);
             }
             if (info != 0) {
                 return;

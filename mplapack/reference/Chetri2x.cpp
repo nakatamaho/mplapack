@@ -58,7 +58,7 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     //     Test the input parameters.
     //
     info = 0;
-    INTEGER ldwork = nb + 3; // work is [n+nb+1, nb+3] matrix
+    INTEGER ldwork = n + nb + 1;
     bool upper = Mlsame(uplo, "U");
     if (!upper && !Mlsame(uplo, "L")) {
         info = -1;

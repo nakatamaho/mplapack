@@ -1,5 +1,4 @@
 lib_LTLIBRARIES = 
-
 if ENABLE_MPFR
 lib_LTLIBRARIES += libmplapack_mpfr_ref.la
 endif

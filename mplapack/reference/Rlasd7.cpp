@@ -143,7 +143,7 @@ void Rlasd7(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
         vlw[i - 1] = vl[idxq[i - 1] - 1];
     }
     //
-    Rlamrg(nl, nr, dsigma[2 - 1], 1, 1, idx[2 - 1]);
+    Rlamrg(nl, nr, &dsigma[2 - 1], 1, 1, &idx[2 - 1]);
     //
     for (i = 2; i <= n; i = i + 1) {
         idxi = 1 + idx[i - 1];
@@ -240,13 +240,13 @@ statement_80:
                 if (idxj <= nlp1) {
                     idxj = idxj - 1;
                 }
-                givcol[(givptr - 1) + (2 - 1) * ldgivcol] = idxjp;
+                givcol[(givptr - 1) + (2 - 1) * ldgcol] = idxjp;
                 givcol[(givptr - 1)] = idxj;
-                givnum[(givptr - 1) + (2 - 1) * ldgivnum] = c;
+                givnum[(givptr - 1) + (2 - 1) * ldgnum] = c;
                 givnum[(givptr - 1)] = s;
             }
-            Rrot(1, vf[jprev - 1], 1, vf[j - 1], 1, c, s);
-            Rrot(1, vl[jprev - 1], 1, vl[j - 1], 1, c, s);
+            Rrot(1, &vf[jprev - 1], 1, &vf[j - 1], 1, c, s);
+            Rrot(1, &vl[jprev - 1], 1, &vl[j - 1], 1, c, s);
             k2 = k2 - 1;
             idxp[k2 - 1] = jprev;
             jprev = j;
@@ -293,7 +293,7 @@ statement_100:
     //     The deflated singular values go back into the last N - K slots of
     //     D.
     //
-    Rcopy(n - k, dsigma[(k + 1) - 1], 1, &d[(k + 1) - 1], 1);
+    Rcopy(n - k, &dsigma[(k + 1) - 1], 1, &d[(k + 1) - 1], 1);
     //
     //     Determine DSIGMA(1), DSIGMA(2), Z(1), VF(1), VL(1), VF(M), and
     //     VL(M).
@@ -304,7 +304,7 @@ statement_100:
         dsigma[2 - 1] = hlftol;
     }
     if (m > n) {
-        z[1 - 1] = Rlapy2(z1, &z[m - 1]);
+        z[1 - 1] = Rlapy2(z1, z[m - 1]);
         if (z[1 - 1] <= tol) {
             c = one;
             s = zero;
@@ -313,8 +313,8 @@ statement_100:
             c = z1 / z[1 - 1];
             s = -z[m - 1] / z[1 - 1];
         }
-        Rrot(1, vf[m - 1], 1, vf[1 - 1], 1, c, s);
-        Rrot(1, vl[m - 1], 1, vl[1 - 1], 1, c, s);
+        Rrot(1, &vf[m - 1], 1, &vf[1 - 1], 1, c, s);
+        Rrot(1, &vl[m - 1], 1, &vl[1 - 1], 1, c, s);
     } else {
         if (abs(z1) <= tol) {
             z[1 - 1] = tol;
@@ -325,9 +325,9 @@ statement_100:
     //
     //     Restore Z, VF, and VL.
     //
-    Rcopy(k - 1, zw[2 - 1], 1, &z[2 - 1], 1);
-    Rcopy(n - 1, vfw[2 - 1], 1, vf[2 - 1], 1);
-    Rcopy(n - 1, vlw[2 - 1], 1, vl[2 - 1], 1);
+    Rcopy(k - 1, &zw[2 - 1], 1, &z[2 - 1], 1);
+    Rcopy(n - 1, &vfw[2 - 1], 1, &vf[2 - 1], 1);
+    Rcopy(n - 1, &vlw[2 - 1], 1, &vl[2 - 1], 1);
     //
     //     End of Rlasd7
     //
