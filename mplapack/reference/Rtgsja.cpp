@@ -205,7 +205,7 @@ void Rtgsja(const char *jobu, const char *jobv, const char *jobq, INTEGER const 
                 //              Update orthogonal matrices U, V, Q, if desired.
                 //
                 if (wantu && k + j <= m) {
-                    Rrot(m, u[((k + j) - 1) * ldu], 1, u[((k + i) - 1) * ldu], 1, csu, snu);
+                    Rrot(m, &u[((k + j) - 1) * ldu], 1, &u[((k + i) - 1) * ldu], 1, csu, snu);
                 }
                 //
                 if (wantv) {
@@ -213,7 +213,7 @@ void Rtgsja(const char *jobu, const char *jobv, const char *jobq, INTEGER const 
                 }
                 //
                 if (wantq) {
-                    Rrot(n, q[((n - l + j) - 1) * ldq], 1, q[((n - l + i) - 1) * ldq], 1, csq, snq);
+                    Rrot(n, &q[((n - l + j) - 1) * ldq], 1, &q[((n - l + i) - 1) * ldq], 1, csq, snq);
                 }
                 //
             }
