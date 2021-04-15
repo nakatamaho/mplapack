@@ -178,7 +178,7 @@ void Rptrfs(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *df, REA
             //           Update solution and try again.
             //
             Rpttrs(n, 1, df, ef, &work[(n + 1) - 1], n, info);
-            Raxpy(n, one, &work[(n + 1) - 1], 1, x[(j - 1) * ldx], 1);
+            Raxpy(n, one, &work[(n + 1) - 1], 1, &x[(j - 1) * ldx], 1);
             lstres = berr[j - 1];
             count++;
             goto statement_20;

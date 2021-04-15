@@ -85,18 +85,6 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
-Clargv.cpp \
-Rgeqp3.cpp \
-Clamtsqr.cpp \
-Rgebal.cpp \
-Rgesvxx.cpp \
-Rsyequb.cpp \
-Ctgex2.cpp \
-Rhseqr.cpp \
-Rgbsvxx.cpp \
-Rlag2.cpp \
-Rlagv2.cpp \
-Rtrsen.cpp \
 Rgesvx.cpp \
 Rptrfs.cpp \
 Rgelsy.cpp \
@@ -104,6 +92,7 @@ Rgerfs.cpp \
 Rlaed6.cpp \
 Rggsvp3.cpp \
 Rporfs.cpp \
+Rlantr.cpp \
 Rgbsvx.cpp \
 Rsyrfs.cpp \
 Rlaed0.cpp \

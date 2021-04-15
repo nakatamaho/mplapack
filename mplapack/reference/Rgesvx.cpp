@@ -116,8 +116,8 @@ void Rgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
             rcmin = bignum;
             rcmax = zero;
             for (j = 1; j <= n; j = j + 1) {
-                rcmin = min(rcmin, &c[j - 1]);
-                rcmax = max(rcmax, &c[j - 1]);
+                rcmin = min(rcmin, c[j - 1]);
+                rcmax = max(rcmax, c[j - 1]);
             }
             if (rcmin <= zero) {
                 info = -12;
@@ -207,13 +207,13 @@ void Rgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
     //     Compute the norm of the matrix A and the
     //     reciprocal pivot growth factor RPVGRW.
     //
-    str<1> norm = char0;
+    char norm;
     if (notran) {
-        norm = "1";
+        norm = '1';
     } else {
-        norm = "I";
+        norm = 'I';
     }
-    REAL anorm = Rlange(norm, n, n, a, lda, work);
+    REAL anorm = Rlange(&norm, n, n, a, lda, work);
     rpvgrw = Rlantr("M", "U", "N", n, n, af, ldaf, work);
     if (rpvgrw == zero) {
         rpvgrw = one;
@@ -223,7 +223,7 @@ void Rgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
     //
     //     Compute the reciprocal of the condition number of A.
     //
-    Rgecon(norm, n, af, ldaf, anorm, rcond, work, iwork, info);
+    Rgecon(&norm, n, af, ldaf, anorm, rcond, work, iwork, info);
     //
     //     Compute the solution matrix X.
     //

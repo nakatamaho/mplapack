@@ -117,9 +117,9 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
             nb2 = iMlaenv(1, "RgerQF", " ", m, n, -1, -1);
             nb3 = iMlaenv(1, "Rormqr", " ", m, n, nrhs, -1);
             nb4 = iMlaenv(1, "Rormrq", " ", m, n, nrhs, -1);
-            nb = max(nb1, nb2, nb3, nb4);
-            lwkmin = mn + max(2 * mn, n + 1, mn + nrhs);
-            lwkopt = max(lwkmin, mn + 2 * n + nb * (n + 1), 2 * mn + nb * nrhs);
+            nb = max({nb1, nb2, nb3, nb4});
+            lwkmin = mn + max({2 * mn, n + 1, mn + nrhs});
+            lwkopt = max({lwkmin, mn + 2 * n + nb * (n + 1), 2 * mn + nb * nrhs});
         }
         work[1 - 1] = lwkopt;
         //
@@ -215,8 +215,8 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
 statement_10:
     if (rank < mn) {
         i = rank + 1;
-        Rlaic1(imin, rank, &work[ismin - 1], smin, &a[(i - 1) * lda], &a[(i - 1) + (i - 1) * lda], sminpr, s1, c1);
-        Rlaic1(imax, rank, &work[ismax - 1], smax, &a[(i - 1) * lda], &a[(i - 1) + (i - 1) * lda], smaxpr, s2, c2);
+        Rlaic1(imin, rank, &work[ismin - 1], smin, &a[(i - 1) * lda], a[(i - 1) + (i - 1) * lda], sminpr, s1, c1);
+        Rlaic1(imax, rank, &work[ismax - 1], smax, &a[(i - 1) * lda], a[(i - 1) + (i - 1) * lda], smaxpr, s2, c2);
         //
         if (smaxpr * rcond <= sminpr) {
             for (i = 1; i <= rank; i = i + 1) {
