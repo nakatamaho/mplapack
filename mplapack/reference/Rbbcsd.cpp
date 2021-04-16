@@ -285,7 +285,7 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
                 }
             } else {
                 nu = sigma21;
-                mu = sqrt(1.0f - pow2(nu));
+                mu = sqrt(1.0 - pow2(nu));
                 if (nu < thresh) {
                     mu = one;
                     nu = zero;
@@ -296,9 +296,9 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         //        Rotate to produce bulges in B11 and B21
         //
         if (mu <= nu) {
-            Rlartgs(b11d[imin - 1], b11e[imin - 1], mu, &work[(iv1tcs + imin - 1) - 1], &work[(iv1tsn + imin - 1) - 1]);
+            Rlartgs(b11d[imin - 1], b11e[imin - 1], mu, work[(iv1tcs + imin - 1) - 1], work[(iv1tsn + imin - 1) - 1]);
         } else {
-            Rlartgs(b21d[imin - 1], b21e[imin - 1], nu, &work[(iv1tcs + imin - 1) - 1], &work[(iv1tsn + imin - 1) - 1]);
+            Rlartgs(b21d[imin - 1], b21e[imin - 1], nu, work[(iv1tcs + imin - 1) - 1], work[(iv1tsn + imin - 1) - 1]);
         }
         //
         temp = work[(iv1tcs + imin - 1) - 1] * b11d[imin - 1] + work[(iv1tsn + imin - 1) - 1] * b11e[imin - 1];
@@ -319,18 +319,18 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         //        Chase the bulges in B11(IMIN+1,IMIN) and B21(IMIN+1,IMIN)
         //
         if (pow2(b11d[imin - 1]) + pow2(b11bulge) > pow2(thresh)) {
-            Rlartgp(b11bulge, b11d[imin - 1], &work[(iu1sn + imin - 1) - 1], &work[(iu1cs + imin - 1) - 1], r);
+            Rlartgp(b11bulge, b11d[imin - 1], work[(iu1sn + imin - 1) - 1], work[(iu1cs + imin - 1) - 1], r);
         } else if (mu <= nu) {
-            Rlartgs(b11e[imin - 1], b11d[(imin + 1) - 1], mu, &work[(iu1cs + imin - 1) - 1], &work[(iu1sn + imin - 1) - 1]);
+            Rlartgs(b11e[imin - 1], b11d[(imin + 1) - 1], mu, work[(iu1cs + imin - 1) - 1], work[(iu1sn + imin - 1) - 1]);
         } else {
-            Rlartgs(b12d[imin - 1], b12e[imin - 1], nu, &work[(iu1cs + imin - 1) - 1], &work[(iu1sn + imin - 1) - 1]);
+            Rlartgs(b12d[imin - 1], b12e[imin - 1], nu, work[(iu1cs + imin - 1) - 1], work[(iu1sn + imin - 1) - 1]);
         }
         if (pow2(b21d[imin - 1]) + pow2(b21bulge) > pow2(thresh)) {
-            Rlartgp(b21bulge, b21d[imin - 1], &work[(iu2sn + imin - 1) - 1], &work[(iu2cs + imin - 1) - 1], r);
+            Rlartgp(b21bulge, b21d[imin - 1], work[(iu2sn + imin - 1) - 1], work[(iu2cs + imin - 1) - 1], r);
         } else if (nu < mu) {
-            Rlartgs(b21e[imin - 1], b21d[(imin + 1) - 1], nu, &work[(iu2cs + imin - 1) - 1], &work[(iu2sn + imin - 1) - 1]);
+            Rlartgs(b21e[imin - 1], b21d[(imin + 1) - 1], nu, work[(iu2cs + imin - 1) - 1], work[(iu2sn + imin - 1) - 1]);
         } else {
-            Rlartgs(b22d[imin - 1], b22e[imin - 1], mu, &work[(iu2cs + imin - 1) - 1], &work[(iu2sn + imin - 1) - 1]);
+            Rlartgs(b22d[imin - 1], b22e[imin - 1], mu, work[(iu2cs + imin - 1) - 1], work[(iu2sn + imin - 1) - 1]);
         }
         work[(iu2cs + imin - 1) - 1] = -work[(iu2cs + imin - 1) - 1];
         work[(iu2sn + imin - 1) - 1] = -work[(iu2sn + imin - 1) - 1];
@@ -388,28 +388,28 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             //           chasing by applying the original shift again.
             //
             if (!restart11 && !restart21) {
-                Rlartgp(x2, x1, &work[(iv1tsn + i - 1) - 1], &work[(iv1tcs + i - 1) - 1], r);
+                Rlartgp(x2, x1, work[(iv1tsn + i - 1) - 1], work[(iv1tcs + i - 1) - 1], r);
             } else if (!restart11 && restart21) {
-                Rlartgp(b11bulge, b11e[(i - 1) - 1], &work[(iv1tsn + i - 1) - 1], &work[(iv1tcs + i - 1) - 1], r);
+                Rlartgp(b11bulge, b11e[(i - 1) - 1], work[(iv1tsn + i - 1) - 1], work[(iv1tcs + i - 1) - 1], r);
             } else if (restart11 && !restart21) {
-                Rlartgp(b21bulge, b21e[(i - 1) - 1], &work[(iv1tsn + i - 1) - 1], &work[(iv1tcs + i - 1) - 1], r);
+                Rlartgp(b21bulge, b21e[(i - 1) - 1], work[(iv1tsn + i - 1) - 1], work[(iv1tcs + i - 1) - 1], r);
             } else if (mu <= nu) {
-                Rlartgs(b11d[i - 1], b11e[i - 1], mu, &work[(iv1tcs + i - 1) - 1], &work[(iv1tsn + i - 1) - 1]);
+                Rlartgs(b11d[i - 1], b11e[i - 1], mu, work[(iv1tcs + i - 1) - 1], work[(iv1tsn + i - 1) - 1]);
             } else {
-                Rlartgs(b21d[i - 1], b21e[i - 1], nu, &work[(iv1tcs + i - 1) - 1], &work[(iv1tsn + i - 1) - 1]);
+                Rlartgs(b21d[i - 1], b21e[i - 1], nu, work[(iv1tcs + i - 1) - 1], work[(iv1tsn + i - 1) - 1]);
             }
             work[(iv1tcs + i - 1) - 1] = -work[(iv1tcs + i - 1) - 1];
             work[(iv1tsn + i - 1) - 1] = -work[(iv1tsn + i - 1) - 1];
             if (!restart12 && !restart22) {
-                Rlartgp(y2, y1, &work[(iv2tsn + i - 1 - 1) - 1], &work[(iv2tcs + i - 1 - 1) - 1], r);
+                Rlartgp(y2, y1, work[(iv2tsn + i - 1 - 1) - 1], work[(iv2tcs + i - 1 - 1) - 1], r);
             } else if (!restart12 && restart22) {
-                Rlartgp(b12bulge, b12d[(i - 1) - 1], &work[(iv2tsn + i - 1 - 1) - 1], &work[(iv2tcs + i - 1 - 1) - 1], r);
+                Rlartgp(b12bulge, b12d[(i - 1) - 1], work[(iv2tsn + i - 1 - 1) - 1], work[(iv2tcs + i - 1 - 1) - 1], r);
             } else if (restart12 && !restart22) {
-                Rlartgp(b22bulge, b22d[(i - 1) - 1], &work[(iv2tsn + i - 1 - 1) - 1], &work[(iv2tcs + i - 1 - 1) - 1], r);
+                Rlartgp(b22bulge, b22d[(i - 1) - 1], work[(iv2tsn + i - 1 - 1) - 1], work[(iv2tcs + i - 1 - 1) - 1], r);
             } else if (nu < mu) {
-                Rlartgs(b12e[(i - 1) - 1], b12d[i - 1], nu, &work[(iv2tcs + i - 1 - 1) - 1], &work[(iv2tsn + i - 1 - 1) - 1]);
+                Rlartgs(b12e[(i - 1) - 1], b12d[i - 1], nu, work[(iv2tcs + i - 1 - 1) - 1], work[(iv2tsn + i - 1 - 1) - 1]);
             } else {
-                Rlartgs(b22e[(i - 1) - 1], b22d[i - 1], mu, &work[(iv2tcs + i - 1 - 1) - 1], &work[(iv2tsn + i - 1 - 1) - 1]);
+                Rlartgs(b22e[(i - 1) - 1], b22d[i - 1], mu, work[(iv2tcs + i - 1 - 1) - 1], work[(iv2tsn + i - 1 - 1) - 1]);
             }
             //
             temp = work[(iv1tcs + i - 1) - 1] * b11d[i - 1] + work[(iv1tsn + i - 1) - 1] * b11e[i - 1];
@@ -455,26 +455,26 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             //           chasing by applying the original shift again.
             //
             if (!restart11 && !restart12) {
-                Rlartgp(x2, x1, &work[(iu1sn + i - 1) - 1], &work[(iu1cs + i - 1) - 1], r);
+                Rlartgp(x2, x1, work[(iu1sn + i - 1) - 1], work[(iu1cs + i - 1) - 1], r);
             } else if (!restart11 && restart12) {
-                Rlartgp(b11bulge, b11d[i - 1], &work[(iu1sn + i - 1) - 1], &work[(iu1cs + i - 1) - 1], r);
+                Rlartgp(b11bulge, b11d[i - 1], work[(iu1sn + i - 1) - 1], work[(iu1cs + i - 1) - 1], r);
             } else if (restart11 && !restart12) {
-                Rlartgp(b12bulge, b12e[(i - 1) - 1], &work[(iu1sn + i - 1) - 1], &work[(iu1cs + i - 1) - 1], r);
+                Rlartgp(b12bulge, b12e[(i - 1) - 1], work[(iu1sn + i - 1) - 1], work[(iu1cs + i - 1) - 1], r);
             } else if (mu <= nu) {
-                Rlartgs(b11e[i - 1], b11d[(i + 1) - 1], mu, &work[(iu1cs + i - 1) - 1], &work[(iu1sn + i - 1) - 1]);
+                Rlartgs(b11e[i - 1], b11d[(i + 1) - 1], mu, work[(iu1cs + i - 1) - 1], work[(iu1sn + i - 1) - 1]);
             } else {
-                Rlartgs(b12d[i - 1], b12e[i - 1], nu, &work[(iu1cs + i - 1) - 1], &work[(iu1sn + i - 1) - 1]);
+                Rlartgs(b12d[i - 1], b12e[i - 1], nu, work[(iu1cs + i - 1) - 1], work[(iu1sn + i - 1) - 1]);
             }
             if (!restart21 && !restart22) {
-                Rlartgp(y2, y1, &work[(iu2sn + i - 1) - 1], &work[(iu2cs + i - 1) - 1], r);
+                Rlartgp(y2, y1, work[(iu2sn + i - 1) - 1], work[(iu2cs + i - 1) - 1], r);
             } else if (!restart21 && restart22) {
-                Rlartgp(b21bulge, b21d[i - 1], &work[(iu2sn + i - 1) - 1], &work[(iu2cs + i - 1) - 1], r);
+                Rlartgp(b21bulge, b21d[i - 1], work[(iu2sn + i - 1) - 1], work[(iu2cs + i - 1) - 1], r);
             } else if (restart21 && !restart22) {
-                Rlartgp(b22bulge, b22e[(i - 1) - 1], &work[(iu2sn + i - 1) - 1], &work[(iu2cs + i - 1) - 1], r);
+                Rlartgp(b22bulge, b22e[(i - 1) - 1], work[(iu2sn + i - 1) - 1], work[(iu2cs + i - 1) - 1], r);
             } else if (nu < mu) {
-                Rlartgs(b21e[i - 1], b21e[(i + 1) - 1], nu, &work[(iu2cs + i - 1) - 1], &work[(iu2sn + i - 1) - 1]);
+                Rlartgs(b21e[i - 1], b21e[(i + 1) - 1], nu, work[(iu2cs + i - 1) - 1], work[(iu2sn + i - 1) - 1]);
             } else {
-                Rlartgs(b22d[i - 1], b22e[i - 1], mu, &work[(iu2cs + i - 1) - 1], &work[(iu2sn + i - 1) - 1]);
+                Rlartgs(b22d[i - 1], b22e[i - 1], mu, work[(iu2cs + i - 1) - 1], work[(iu2sn + i - 1) - 1]);
             }
             work[(iu2cs + i - 1) - 1] = -work[(iu2cs + i - 1) - 1];
             work[(iu2sn + i - 1) - 1] = -work[(iu2sn + i - 1) - 1];
@@ -520,15 +520,15 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         restart22 = pow2(b22d[(imax - 1) - 1]) + pow2(b22bulge) <= pow2(thresh);
         //
         if (!restart12 && !restart22) {
-            Rlartgp(y2, y1, &work[(iv2tsn + imax - 1 - 1) - 1], &work[(iv2tcs + imax - 1 - 1) - 1], r);
+            Rlartgp(y2, y1, work[(iv2tsn + imax - 1 - 1) - 1], work[(iv2tcs + imax - 1 - 1) - 1], r);
         } else if (!restart12 && restart22) {
-            Rlartgp(b12bulge, b12d[(imax - 1) - 1], &work[(iv2tsn + imax - 1 - 1) - 1], &work[(iv2tcs + imax - 1 - 1) - 1], r);
+            Rlartgp(b12bulge, b12d[(imax - 1) - 1], work[(iv2tsn + imax - 1 - 1) - 1], work[(iv2tcs + imax - 1 - 1) - 1], r);
         } else if (restart12 && !restart22) {
-            Rlartgp(b22bulge, b22d[(imax - 1) - 1], &work[(iv2tsn + imax - 1 - 1) - 1], &work[(iv2tcs + imax - 1 - 1) - 1], r);
+            Rlartgp(b22bulge, b22d[(imax - 1) - 1], work[(iv2tsn + imax - 1 - 1) - 1], work[(iv2tcs + imax - 1 - 1) - 1], r);
         } else if (nu < mu) {
-            Rlartgs(b12e[(imax - 1) - 1], b12d[imax - 1], nu, &work[(iv2tcs + imax - 1 - 1) - 1], &work[(iv2tsn + imax - 1 - 1) - 1]);
+            Rlartgs(b12e[(imax - 1) - 1], b12d[imax - 1], nu, work[(iv2tcs + imax - 1 - 1) - 1], work[(iv2tsn + imax - 1 - 1) - 1]);
         } else {
-            Rlartgs(b22e[(imax - 1) - 1], b22d[imax - 1], mu, &work[(iv2tcs + imax - 1 - 1) - 1], &work[(iv2tsn + imax - 1 - 1) - 1]);
+            Rlartgs(b22e[(imax - 1) - 1], b22d[imax - 1], mu, work[(iv2tcs + imax - 1 - 1) - 1], work[(iv2tsn + imax - 1 - 1) - 1]);
         }
         //
         temp = work[(iv2tcs + imax - 1 - 1) - 1] * b12e[(imax - 1) - 1] + work[(iv2tsn + imax - 1 - 1) - 1] * b12d[imax - 1];
@@ -542,30 +542,30 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         //
         if (wantu1) {
             if (colmajor) {
-                Rlasr("R", "V", "F", p, imax - imin + 1, &work[(iu1cs + imin - 1) - 1], &work[(iu1sn + imin - 1) - 1], u1[(imin - 1) * ldu1], ldu1);
+                Rlasr("R", "V", "F", p, imax - imin + 1, &work[(iu1cs + imin - 1) - 1], &work[(iu1sn + imin - 1) - 1], &u1[(imin - 1) * ldu1], ldu1);
             } else {
-                Rlasr("L", "V", "F", imax - imin + 1, p, &work[(iu1cs + imin - 1) - 1], &work[(iu1sn + imin - 1) - 1], u1[(imin - 1)], ldu1);
+                Rlasr("L", "V", "F", imax - imin + 1, p, &work[(iu1cs + imin - 1) - 1], &work[(iu1sn + imin - 1) - 1], &u1[(imin - 1)], ldu1);
             }
         }
         if (wantu2) {
             if (colmajor) {
-                Rlasr("R", "V", "F", m - p, imax - imin + 1, &work[(iu2cs + imin - 1) - 1], &work[(iu2sn + imin - 1) - 1], u2[(imin - 1) * ldu2], ldu2);
+                Rlasr("R", "V", "F", m - p, imax - imin + 1, &work[(iu2cs + imin - 1) - 1], &work[(iu2sn + imin - 1) - 1], &u2[(imin - 1) * ldu2], ldu2);
             } else {
-                Rlasr("L", "V", "F", imax - imin + 1, m - p, &work[(iu2cs + imin - 1) - 1], &work[(iu2sn + imin - 1) - 1], u2[(imin - 1)], ldu2);
+                Rlasr("L", "V", "F", imax - imin + 1, m - p, &work[(iu2cs + imin - 1) - 1], &work[(iu2sn + imin - 1) - 1], &u2[(imin - 1)], ldu2);
             }
         }
         if (wantv1t) {
             if (colmajor) {
-                Rlasr("L", "V", "F", imax - imin + 1, q, &work[(iv1tcs + imin - 1) - 1], &work[(iv1tsn + imin - 1) - 1], v1t[(imin - 1)], ldv1t);
+                Rlasr("L", "V", "F", imax - imin + 1, q, &work[(iv1tcs + imin - 1) - 1], &work[(iv1tsn + imin - 1) - 1], &v1t[(imin - 1)], ldv1t);
             } else {
-                Rlasr("R", "V", "F", q, imax - imin + 1, &work[(iv1tcs + imin - 1) - 1], &work[(iv1tsn + imin - 1) - 1], v1t[(imin - 1) * ldv1t], ldv1t);
+                Rlasr("R", "V", "F", q, imax - imin + 1, &work[(iv1tcs + imin - 1) - 1], &work[(iv1tsn + imin - 1) - 1], &v1t[(imin - 1) * ldv1t], ldv1t);
             }
         }
         if (wantv2t) {
             if (colmajor) {
-                Rlasr("L", "V", "F", imax - imin + 1, m - q, &work[(iv2tcs + imin - 1) - 1], &work[(iv2tsn + imin - 1) - 1], v2t[(imin - 1)], ldv2t);
+                Rlasr("L", "V", "F", imax - imin + 1, m - q, &work[(iv2tcs + imin - 1) - 1], &work[(iv2tsn + imin - 1) - 1], &v2t[(imin - 1)], ldv2t);
             } else {
-                Rlasr("R", "V", "F", m - q, imax - imin + 1, &work[(iv2tcs + imin - 1) - 1], &work[(iv2tsn + imin - 1) - 1], v2t[(imin - 1) * ldv2t], ldv2t);
+                Rlasr("R", "V", "F", m - q, imax - imin + 1, &work[(iv2tcs + imin - 1) - 1], &work[(iv2tsn + imin - 1) - 1], &v2t[(imin - 1) * ldv2t], ldv2t);
             }
         }
         //
@@ -576,9 +576,9 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             b21d[imax - 1] = -b21d[imax - 1];
             if (wantv1t) {
                 if (colmajor) {
-                    Rscal(q, negone, v1t[(imax - 1)], ldv1t);
+                    Rscal(q, negone, &v1t[(imax - 1)], ldv1t);
                 } else {
-                    Rscal(q, negone, v1t[(imax - 1) * ldv1t], 1);
+                    Rscal(q, negone, &v1t[(imax - 1) * ldv1t], 1);
                 }
             }
         }
@@ -597,9 +597,9 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             b12d[imax - 1] = -b12d[imax - 1];
             if (wantu1) {
                 if (colmajor) {
-                    Rscal(p, negone, u1[(imax - 1) * ldu1], 1);
+                    Rscal(p, negone, &u1[(imax - 1) * ldu1], 1);
                 } else {
-                    Rscal(p, negone, u1[(imax - 1)], ldu1);
+                    Rscal(p, negone, &u1[(imax - 1)], ldu1);
                 }
             }
         }
@@ -607,9 +607,9 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             b22d[imax - 1] = -b22d[imax - 1];
             if (wantu2) {
                 if (colmajor) {
-                    Rscal(m - p, negone, u2[(imax - 1) * ldu2], 1);
+                    Rscal(m - p, negone, &u2[(imax - 1) * ldu2], 1);
                 } else {
-                    Rscal(m - p, negone, u2[(imax - 1)], ldu2);
+                    Rscal(m - p, negone, &u2[(imax - 1)], ldu2);
                 }
             }
         }
@@ -619,9 +619,9 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         if (b12d[imax - 1] + b22d[imax - 1] < 0) {
             if (wantv2t) {
                 if (colmajor) {
-                    Rscal(m - q, negone, v2t[(imax - 1)], ldv2t);
+                    Rscal(m - q, negone, &v2t[(imax - 1)], ldv2t);
                 } else {
-                    Rscal(m - q, negone, v2t[(imax - 1) * ldv2t], 1);
+                    Rscal(m - q, negone, &v2t[(imax - 1) * ldv2t], 1);
                 }
             }
         }
@@ -689,29 +689,29 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             theta[i - 1] = thetamin;
             if (colmajor) {
                 if (wantu1) {
-                    Rswap(p, u1[(i - 1) * ldu1], 1, u1[(mini - 1) * ldu1], 1);
+                    Rswap(p, &u1[(i - 1) * ldu1], 1, &u1[(mini - 1) * ldu1], 1);
                 }
                 if (wantu2) {
-                    Rswap(m - p, u2[(i - 1) * ldu2], 1, u2[(mini - 1) * ldu2], 1);
+                    Rswap(m - p, &u2[(i - 1) * ldu2], 1, &u2[(mini - 1) * ldu2], 1);
                 }
                 if (wantv1t) {
-                    Rswap(q, v1t[(i - 1)], ldv1t, v1t[(mini - 1)], ldv1t);
+                    Rswap(q, &v1t[(i - 1)], ldv1t, &v1t[(mini - 1)], ldv1t);
                 }
                 if (wantv2t) {
-                    Rswap(m - q, v2t[(i - 1)], ldv2t, v2t[(mini - 1)], ldv2t);
+                    Rswap(m - q, &v2t[(i - 1)], ldv2t, &v2t[(mini - 1)], ldv2t);
                 }
             } else {
                 if (wantu1) {
-                    Rswap(p, u1[(i - 1)], ldu1, u1[(mini - 1)], ldu1);
+                    Rswap(p, &u1[(i - 1)], ldu1, &u1[(mini - 1)], ldu1);
                 }
                 if (wantu2) {
-                    Rswap(m - p, u2[(i - 1)], ldu2, u2[(mini - 1)], ldu2);
+                    Rswap(m - p, &u2[(i - 1)], ldu2, &u2[(mini - 1)], ldu2);
                 }
                 if (wantv1t) {
-                    Rswap(q, v1t[(i - 1) * ldv1t], 1, v1t[(mini - 1) * ldv1t], 1);
+                    Rswap(q, &v1t[(i - 1) * ldv1t], 1, &v1t[(mini - 1) * ldv1t], 1);
                 }
                 if (wantv2t) {
-                    Rswap(m - q, v2t[(i - 1) * ldv2t], 1, v2t[(mini - 1) * ldv2t], 1);
+                    Rswap(m - q, &v2t[(i - 1) * ldv2t], 1, &v2t[(mini - 1) * ldv2t], 1);
                 }
             }
         }

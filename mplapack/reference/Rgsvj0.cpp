@@ -738,7 +738,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
             swband = i;
         }
         //
-        if ((i > swband + 1) && (mxaapq < n.real() * tol) && (n.real() * mxaapq * mxsinj < tol)) {
+        if ((i > swband + 1) && (mxaapq < castREAL(n) * tol) && (castREAL(n) * mxaapq * mxsinj < tol)) {
             goto statement_1994;
         }
         //
