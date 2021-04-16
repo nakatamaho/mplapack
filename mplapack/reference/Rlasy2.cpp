@@ -63,11 +63,11 @@ void Rlasy2(bool const ltranl, bool const ltranr, INTEGER const isgn, INTEGER co
     INTEGER jpsv = 0;
     INTEGER j = 0;
     INTEGER jpiv[4];
-    INTEGER locl21[4] = {3, 4, 1, 2};
-    INTEGER locu12[4] = {2, 1, 4, 3};
-    INTEGER locu22[4] = {4, 3, 2, 1};
-    bool xswpiv[4] = {false, false, true, true};
-    bool bswpiv[4] = {false, true, false, true};
+    static INTEGER locl12[4] = {3, 4, 1, 2};
+    static INTEGER locu21[4] = {2, 1, 4, 3};
+    static INTEGER locu22[4] = {4, 3, 2, 1};
+    static bool xswpiv[4] = {false, false, true, true};
+    static bool bswpiv[4] = {false, true, false, true};
     const REAL eight = 8.0e+0;
     //
     //  -- LAPACK auxiliary routine --

@@ -84,18 +84,10 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
-Rlals0.cpp \
-Rlalsa.cpp \
-Rlalsd.cpp \
-Rgelsd.cpp \
-Rlaln2.cpp \
-Ctrevc3.cpp \
-Rggevx.cpp \
 Rsytrf_aa_2stage.cpp \
 Rsytri_3x.cpp \
 Csytri_3x.cpp \
 Rtgex2.cpp \
-Rgesvdx.cpp \
 Rgsvj1.cpp \
 Csytf2_rook.cpp \
 Rgghd3.cpp \

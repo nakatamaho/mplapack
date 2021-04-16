@@ -30,60 +30,9 @@
 #include <mplapack.h>
 
 void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const smin, REAL const ca, REAL *a, INTEGER const lda, REAL const d1, REAL const d2, REAL *b, INTEGER const ldb, REAL const wr, REAL const wi, REAL *x, INTEGER const ldx, REAL &scale, REAL &xnorm, INTEGER &info) {
-    FEM_CMN_SVE(Rlaln2);
-    // SAVE
-    //
-    if (is_called_first_time) {
-        {
-            static const bool values[] = {false, false, true, true};
-            data_of_type<bool>(FEM_VALUES_AND_SIZE), Cswap;
-        }
-        {
-            static const bool values[] = {false, true, false, true};
-            data_of_type<bool>(FEM_VALUES_AND_SIZE), rswap;
-        }
-        {
-            static const INTEGER values[] = {1, 2, 3, 4, 2, 1, 4, 3, 3, 4, 1, 2, 4, 3, 2, 1};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), ipivot;
-        }
-    }
-    local_equivalences loc_equivalences;
-    {
-        using mbr; // member
-        loc_equivalences.allocate(), equivalence(ci, civ).align<1>(arr_index(1, 1)).with<2>(arr_index(1)), equivalence(cr, crv).align<1>(arr_index(1, 1)).with<2>(arr_index(1));
-    }
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Equivalences ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Compute BIGNUM
-    //
+    static bool zswap[] = {false, false, true, true};
+    static bool rswap[] = {false, true, false, true};
+    static INTEGER ipivot[] = {1, 2, 3, 4, 2, 1, 4, 3, 3, 4, 1, 2, 4, 3, 2, 1};
     const REAL two = 2.0;
     REAL smlnum = two * Rlamch("Safe minimum");
     const REAL one = 1.0;
@@ -133,6 +82,13 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
     REAL bi1 = 0.0;
     REAL xi2 = 0.0;
     REAL xi1 = 0.0;
+    REAL ci[4];
+    REAL civ[4];
+    REAL cr[4];
+    REAL crv[4];
+    INTEGER ldci = 2;
+    INTEGER ldcr = 2;
+    INTEGER ldipivot = 4;
     if (na == 1) {
         //
         //        1 x 1  (i.e., scalar) system   C X = B
@@ -197,7 +153,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             //
             //           Compute X
             //
-            dladiv(scale * b[(1 - 1)], scale * b[(2 - 1) * ldb], csr, csi, x[(1 - 1)], x[(2 - 1) * ldx]);
+            Rladiv(scale * b[(1 - 1)], scale * b[(2 - 1) * ldb], csr, csi, x[(1 - 1)], x[(2 - 1) * ldx]);
             xnorm = abs(x[(1 - 1)]) + abs(x[(2 - 1) * ldx]);
         }
         //
@@ -283,7 +239,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             //
             xr2 = (br2 * scale) / ur22;
             xr1 = (scale * br1) * ur11r - xr2 * (ur11r * ur12);
-            if (Cswap[icmax - 1]) {
+            if (zswap[icmax - 1]) {
                 x[(1 - 1)] = xr2;
                 x[(2 - 1)] = xr1;
             } else {
@@ -417,10 +373,10 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
                 }
             }
             //
-            dladiv(br2, bi2, ur22, ui22, xr2, xi2);
+            Rladiv(br2, bi2, ur22, ui22, xr2, xi2);
             xr1 = ur11r * br1 - ui11r * bi1 - ur12s * xr2 + ui12s * xi2;
             xi1 = ui11r * br1 + ur11r * bi1 - ui12s * xr2 - ur12s * xi2;
-            if (Cswap[icmax - 1]) {
+            if (zswap[icmax - 1]) {
                 x[(1 - 1)] = xr2;
                 x[(2 - 1)] = xr1;
                 x[(2 - 1) * ldx] = xi2;

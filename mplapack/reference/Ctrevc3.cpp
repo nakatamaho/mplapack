@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL cabs1(COMPLEX z) { return abs(z.real()) + abs(z.imag()); }
+
 void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n, COMPLEX *t, INTEGER const ldt, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, INTEGER const mm, INTEGER &m, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER &info) {
     COMPLEX cdum = 0.0;
     bool bothv = false;
@@ -85,7 +87,6 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1[cdum - 1] = abs(cdum.real()) + abs(aimag[cdum - 1]);
     //     ..
     //     .. Executable Statements ..
     //
@@ -105,7 +106,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     if (somev) {
         m = 0;
         for (j = 1; j <= n; j = j + 1) {
-            if (select(j)) {
+            if (select[j - 1]) {
                 m++;
             }
         }
@@ -114,7 +115,11 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     }
     //
     info = 0;
-    nb = iMlaenv(1, "Ctrevc", side + howmny, n, -1, -1, -1);
+    char side_howmny[3];
+    side_howmny[0] = side[0];
+    side_howmny[1] = howmny[0];
+    side_howmny[2] = '\0';
+    nb = iMlaenv(1, "Ctrevc", side_howmny, n, -1, -1, -1);
     maxwrk = n + 2 * n * nb;
     work[1 - 1] = maxwrk;
     rwork[1 - 1] = n;
@@ -197,11 +202,11 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
         is = m;
         for (ki = n; ki >= 1; ki = ki - 1) {
             if (somev) {
-                if (!select(ki)) {
+                if (!select[ki - 1]) {
                     goto statement_80;
                 }
             }
-            smin = max(ulp * (abs1[t[(ki - 1) + (ki - 1) * ldt] - 1]), smlnum);
+            smin = max(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt])), smlnum);
             //
             //           --------------------------------------------------------
             //           Complex right eigenvector
@@ -219,7 +224,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             //
             for (k = 1; k <= ki - 1; k = k + 1) {
                 t[(k - 1) + (k - 1) * ldt] = t[(k - 1) + (k - 1) * ldt] - t[(ki - 1) + (ki - 1) * ldt];
-                if (abs1[t[(k - 1) + (k - 1) * ldt] - 1] < smin) {
+                if (cabs1(t[(k - 1) + (k - 1) * ldt]) < smin) {
                     t[(k - 1) + (k - 1) * ldt] = smin;
                 }
             }
@@ -234,11 +239,11 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             if (!over) {
                 //              ------------------------------
                 //              no back-transform: copy x to VR and normalize.
-                Ccopy(ki, &work[(1 + iv * n) - 1], 1, vr[(is - 1) * ldvr], 1);
+                Ccopy(ki, &work[(1 + iv * n) - 1], 1, &vr[(is - 1) * ldvr], 1);
                 //
-                ii = iCamax(ki, vr[(is - 1) * ldvr], 1);
-                remax = one / abs1[vr[(ii - 1) + (is - 1) * ldvr] - 1];
-                CRscal(ki, remax, vr[(is - 1) * ldvr], 1);
+                ii = iCamax(ki, &vr[(is - 1) * ldvr], 1);
+                remax = one / cabs1(vr[(ii - 1) + (is - 1) * ldvr]);
+                CRscal(ki, remax, &vr[(is - 1) * ldvr], 1);
                 //
                 for (k = ki + 1; k <= n; k = k + 1) {
                     vr[(k - 1) + (is - 1) * ldvr] = czero;
@@ -248,12 +253,12 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 //              ------------------------------
                 //              version 1: back-transform each vector with GEMV, Q*x.
                 if (ki > 1) {
-                    Cgemv("N", n, ki - 1, cone, vr, ldvr, &work[(1 + iv * n) - 1], 1, COMPLEX(scale), vr[(ki - 1) * ldvr], 1);
+                    Cgemv("N", n, ki - 1, cone, vr, ldvr, &work[(1 + iv * n) - 1], 1, COMPLEX(scale), &vr[(ki - 1) * ldvr], 1);
                 }
                 //
-                ii = iCamax(n, vr[(ki - 1) * ldvr], 1);
-                remax = one / abs1[vr[(ii - 1) + (ki - 1) * ldvr] - 1];
-                CRscal(n, remax, vr[(ki - 1) * ldvr], 1);
+                ii = iCamax(n, &vr[(ki - 1) * ldvr], 1);
+                remax = one / cabs1(vr[(ii - 1) + (ki - 1) * ldvr]);
+                CRscal(n, remax, &vr[(ki - 1) * ldvr], 1);
                 //
             } else {
                 //              ------------------------------
@@ -271,10 +276,10 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     //                 normalize vectors
                     for (k = iv; k <= nb; k = k + 1) {
                         ii = iCamax(n, &work[(1 + (nb + k) * n) - 1], 1);
-                        remax = one / abs1[(work[(ii + (nb + k) * n) - 1]) - 1];
+                        remax = one / cabs1((work[(ii + (nb + k) * n) - 1]));
                         CRscal(n, remax, &work[(1 + (nb + k) * n) - 1], 1);
                     }
-                    Clacpy("F", n, nb - iv + 1, &work[(1 + (nb + iv) * n) - 1], n, vr[(ki - 1) * ldvr], ldvr);
+                    Clacpy("F", n, nb - iv + 1, &work[(1 + (nb + iv) * n) - 1], n, &vr[(ki - 1) * ldvr], ldvr);
                     iv = nb;
                 } else {
                     iv = iv - 1;
@@ -306,11 +311,11 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
         for (ki = 1; ki <= n; ki = ki + 1) {
             //
             if (somev) {
-                if (!select(ki)) {
+                if (!select[ki - 1]) {
                     goto statement_130;
                 }
             }
-            smin = max(ulp * (abs1[t[(ki - 1) + (ki - 1) * ldt] - 1]), smlnum);
+            smin = max(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt])), smlnum);
             //
             //           --------------------------------------------------------
             //           Complex left eigenvector
@@ -328,7 +333,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             //
             for (k = ki + 1; k <= n; k = k + 1) {
                 t[(k - 1) + (k - 1) * ldt] = t[(k - 1) + (k - 1) * ldt] - t[(ki - 1) + (ki - 1) * ldt];
-                if (abs1[t[(k - 1) + (k - 1) * ldt] - 1] < smin) {
+                if (cabs1(t[(k - 1) + (k - 1) * ldt]) < smin) {
                     t[(k - 1) + (k - 1) * ldt] = smin;
                 }
             }
@@ -343,11 +348,11 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             if (!over) {
                 //              ------------------------------
                 //              no back-transform: copy x to VL and normalize.
-                Ccopy(n - ki + 1, &work[(ki + iv * n) - 1], 1, vl[(ki - 1) + (is - 1) * ldvl], 1);
+                Ccopy(n - ki + 1, &work[(ki + iv * n) - 1], 1, &vl[(ki - 1) + (is - 1) * ldvl], 1);
                 //
-                ii = iCamax(n - ki + 1, vl[(ki - 1) + (is - 1) * ldvl], 1) + ki - 1;
-                remax = one / abs1[vl[(ii - 1) + (is - 1) * ldvl] - 1];
-                CRscal(n - ki + 1, remax, vl[(ki - 1) + (is - 1) * ldvl], 1);
+                ii = iCamax(n - ki + 1, &vl[(ki - 1) + (is - 1) * ldvl], 1) + ki - 1;
+                remax = one / cabs1(vl[(ii - 1) + (is - 1) * ldvl]);
+                CRscal(n - ki + 1, remax, &vl[(ki - 1) + (is - 1) * ldvl], 1);
                 //
                 for (k = 1; k <= ki - 1; k = k + 1) {
                     vl[(k - 1) + (is - 1) * ldvl] = czero;
@@ -357,12 +362,12 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 //              ------------------------------
                 //              version 1: back-transform each vector with GEMV, Q*x.
                 if (ki < n) {
-                    Cgemv("N", n, n - ki, cone, vl[((ki + 1) - 1) * ldvl], ldvl, &work[(ki + 1 + iv * n) - 1], 1, COMPLEX(scale), vl[(ki - 1) * ldvl], 1);
+                    Cgemv("N", n, n - ki, cone, &vl[((ki + 1) - 1) * ldvl], ldvl, &work[(ki + 1 + iv * n) - 1], 1, COMPLEX(scale), &vl[(ki - 1) * ldvl], 1);
                 }
                 //
-                ii = iCamax(n, vl[(ki - 1) * ldvl], 1);
-                remax = one / abs1[vl[(ii - 1) + (ki - 1) * ldvl] - 1];
-                CRscal(n, remax, vl[(ki - 1) * ldvl], 1);
+                ii = iCamax(n, &vl[(ki - 1) * ldvl], 1);
+                remax = one / cabs1(vl[(ii - 1) + (ki - 1) * ldvl]);
+                CRscal(n, remax, &vl[(ki - 1) * ldvl], 1);
                 //
             } else {
                 //              ------------------------------
@@ -377,14 +382,14 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 //              When the number of vectors stored reaches NB,
                 //              or if this was last vector, do the GEMM
                 if ((iv == nb) || (ki == n)) {
-                    Cgemm("N", "N", n, iv, n - ki + iv, cone, vl[((ki - iv + 1) - 1) * ldvl], ldvl, &work[(ki - iv + 1 + (1) * n) - 1], n, czero, &work[(1 + (nb + 1) * n) - 1], n);
+                    Cgemm("N", "N", n, iv, n - ki + iv, cone, &vl[((ki - iv + 1) - 1) * ldvl], ldvl, &work[(ki - iv + 1 + (1) * n) - 1], n, czero, &work[(1 + (nb + 1) * n) - 1], n);
                     //                 normalize vectors
                     for (k = 1; k <= iv; k = k + 1) {
                         ii = iCamax(n, &work[(1 + (nb + k) * n) - 1], 1);
-                        remax = one / abs1[(work[(ii + (nb + k) * n) - 1]) - 1];
+                        remax = one / cabs1(work[(ii + (nb + k) * n) - 1]);
                         CRscal(n, remax, &work[(1 + (nb + k) * n) - 1], 1);
                     }
-                    Clacpy("F", n, iv, &work[(1 + (nb + 1) * n) - 1], n, vl[((ki - iv + 1) - 1) * ldvl], ldvl);
+                    Clacpy("F", n, iv, &work[(1 + (nb + 1) * n) - 1], n, &vl[((ki - iv + 1) - 1) * ldvl], ldvl);
                     iv = 1;
                 } else {
                     iv++;

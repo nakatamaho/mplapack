@@ -137,6 +137,7 @@ void Csytri_3x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     COMPLEX u11_i_j = 0.0;
     COMPLEX u11_ip1_j = 0.0;
     INTEGER ip = 0;
+    INTEGER ldwork = n + nb + 1;
     if (upper) {
         //
         //        Begin Upper

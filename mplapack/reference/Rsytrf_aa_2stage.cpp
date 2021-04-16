@@ -152,7 +152,7 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
                     } else {
                         jb = 2 * nb;
                     }
-                    Rgemm("NoTranspose", "NoTranspose", nb, kb, jb, one, tb[(td + 1 + (i * nb) * ldtb) - 1], ldtb - 1, &a[(((i - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, zero, &work[(i * nb + 1) - 1], n);
+                    Rgemm("NoTranspose", "NoTranspose", nb, kb, jb, one, &tb[(td + 1 + (i * nb) * ldtb) - 1], ldtb - 1, &a[(((i - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, zero, &work[(i * nb + 1) - 1], n);
                 } else {
                     //                 H(I,J) = T(I,I-1)*U(I-1,J) + T(I,I)*U(I,J) + T(I,I+1)*U(I+1,J)
                     if (i == j - 1) {
@@ -160,22 +160,22 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
                     } else {
                         jb = 3 * nb;
                     }
-                    Rgemm("NoTranspose", "NoTranspose", nb, kb, jb, one, tb[(td + nb + 1 + ((i - 1) * nb) * ldtb) - 1], ldtb - 1, &a[(((i - 2) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, zero, &work[(i * nb + 1) - 1], n);
+                    Rgemm("NoTranspose", "NoTranspose", nb, kb, jb, one, &tb[(td + nb + 1 + ((i - 1) * nb) * ldtb) - 1], ldtb - 1, &a[(((i - 2) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, zero, &work[(i * nb + 1) - 1], n);
                 }
             }
             //
             //           Compute T(J,J)
             //
-            Rlacpy("Upper", kb, kb, &a[((j * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
+            Rlacpy("Upper", kb, kb, &a[((j * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
             if (j > 1) {
                 //              T(J,J) = U(1:J,J)'*H(1:J)
-                Rgemm("Transpose", "NoTranspose", kb, kb, (j - 1) * nb, -one, &a[((j * nb + 1) - 1) * lda], lda, &work[(nb + 1) - 1], n, one, tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
+                Rgemm("Transpose", "NoTranspose", kb, kb, (j - 1) * nb, -one, &a[((j * nb + 1) - 1) * lda], lda, &work[(nb + 1) - 1], n, one, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
                 //              T(J,J) += U(J,J)'*T(J,J-1)*U(J-1,J)
-                Rgemm("Transpose", "NoTranspose", kb, nb, kb, one, &a[(((j - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, tb[(td + nb + 1 + ((j - 1) * nb) * ldtb) - 1], ldtb - 1, zero, &work[1 - 1], n);
-                Rgemm("NoTranspose", "NoTranspose", kb, kb, nb, -one, &work[1 - 1], n, &a[(((j - 2) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, one, tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
+                Rgemm("Transpose", "NoTranspose", kb, nb, kb, one, &a[(((j - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &tb[(td + nb + 1 + ((j - 1) * nb) * ldtb) - 1], ldtb - 1, zero, &work[1 - 1], n);
+                Rgemm("NoTranspose", "NoTranspose", kb, kb, nb, -one, &work[1 - 1], n, &a[(((j - 2) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, one, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
             }
             if (j > 0) {
-                Rsygst(1, "Upper", kb, tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1, &a[(((j - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, iinfo);
+                Rsygst(1, "Upper", kb, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1, &a[(((j - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, iinfo);
             }
             //
             //           Expand T(J,J) into full format
@@ -192,9 +192,9 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
                     //                 Compute H(J,J)
                     //
                     if (j == 1) {
-                        Rgemm("NoTranspose", "NoTranspose", kb, kb, kb, one, tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1, &a[(((j - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, zero, &work[(j * nb + 1) - 1], n);
+                        Rgemm("NoTranspose", "NoTranspose", kb, kb, kb, one, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1, &a[(((j - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, zero, &work[(j * nb + 1) - 1], n);
                     } else {
-                        Rgemm("NoTranspose", "NoTranspose", kb, kb, nb + kb, one, tb[(td + nb + 1 + ((j - 1) * nb) * ldtb) - 1], ldtb - 1, &a[(((j - 2) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, zero, &work[(j * nb + 1) - 1], n);
+                        Rgemm("NoTranspose", "NoTranspose", kb, kb, nb + kb, one, &tb[(td + nb + 1 + ((j - 1) * nb) * ldtb) - 1], ldtb - 1, &a[(((j - 2) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, zero, &work[(j * nb + 1) - 1], n);
                     }
                     //
                     //                 Update with the previous column
@@ -224,10 +224,10 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
                 //              Compute T(J+1, J), zero out for GEMM update
                 //
                 kb = min(nb, n - (j + 1) * nb);
-                Rlaset("Full", kb, nb, zero, zero, tb[(td + nb + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
-                Rlacpy("Upper", kb, nb, work, n, tb[(td + nb + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
+                Rlaset("Full", kb, nb, zero, zero, &tb[(td + nb + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
+                Rlacpy("Upper", kb, nb, work, n, &tb[(td + nb + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
                 if (j > 0) {
-                    Rtrsm("R", "U", "N", "U", kb, nb, one, &a[(((j - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, tb[(td + nb + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
+                    Rtrsm("R", "U", "N", "U", kb, nb, one, &a[(((j - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &tb[(td + nb + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
                 }
                 //
                 //              Copy T(J,J+1) into T(J+1, J), both upper/lower for GEMM
@@ -290,7 +290,7 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
                     } else {
                         jb = 2 * nb;
                     }
-                    Rgemm("NoTranspose", "Transpose", nb, kb, jb, one, tb[(td + 1 + (i * nb) * ldtb) - 1], ldtb - 1, &a[((j * nb + 1) - 1) + (((i - 1) * nb + 1) - 1) * lda], lda, zero, &work[(i * nb + 1) - 1], n);
+                    Rgemm("NoTranspose", "Transpose", nb, kb, jb, one, &tb[(td + 1 + (i * nb) * ldtb) - 1], ldtb - 1, &a[((j * nb + 1) - 1) + (((i - 1) * nb + 1) - 1) * lda], lda, zero, &work[(i * nb + 1) - 1], n);
                 } else {
                     //                 H(I,J) = T(I,I-1)*L(J,I-1)' + T(I,I)*L(J,I)' + T(I,I+1)*L(J,I+1)'
                     if (i == j - 1) {
@@ -298,22 +298,23 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
                     } else {
                         jb = 3 * nb;
                     }
-                    Rgemm("NoTranspose", "Transpose", nb, kb, jb, one, tb[(td + nb + 1 + ((i - 1) * nb) * ldtb) - 1], ldtb - 1, &a[((j * nb + 1) - 1) + (((i - 2) * nb + 1) - 1) * lda], lda, zero, &work[(i * nb + 1) - 1], n);
+                    Rgemm("NoTranspose", "Transpose", nb, kb, jb, one, &tb[(td + nb + 1 + ((i - 1) * nb) * ldtb) - 1], ldtb - 1, &a[((j * nb + 1) - 1) + (((i - 2) * nb + 1) - 1) * lda], lda, zero, &work[(i * nb + 1) - 1], n);
                 }
             }
             //
             //           Compute T(J,J)
             //
-            Rlacpy("Lower", kb, kb, &a[((j * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
+            Rlacpy("Lower", kb, kb, &a[((j * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &
+tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
             if (j > 1) {
                 //              T(J,J) = L(J,1:J)*H(1:J)
-                Rgemm("NoTranspose", "NoTranspose", kb, kb, (j - 1) * nb, -one, &a[((j * nb + 1) - 1)], lda, &work[(nb + 1) - 1], n, one, tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
+                Rgemm("NoTranspose", "NoTranspose", kb, kb, (j - 1) * nb, -one, &a[((j * nb + 1) - 1)], lda, &work[(nb + 1) - 1], n, one, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
                 //              T(J,J) += L(J,J)*T(J,J-1)*L(J,J-1)'
-                Rgemm("NoTranspose", "NoTranspose", kb, nb, kb, one, &a[((j * nb + 1) - 1) + (((j - 1) * nb + 1) - 1) * lda], lda, tb[(td + nb + 1 + ((j - 1) * nb) * ldtb) - 1], ldtb - 1, zero, &work[1 - 1], n);
-                Rgemm("NoTranspose", "Transpose", kb, kb, nb, -one, &work[1 - 1], n, &a[((j * nb + 1) - 1) + (((j - 2) * nb + 1) - 1) * lda], lda, one, tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
+                Rgemm("NoTranspose", "NoTranspose", kb, nb, kb, one, &a[((j * nb + 1) - 1) + (((j - 1) * nb + 1) - 1) * lda], lda, &tb[(td + nb + 1 + ((j - 1) * nb) * ldtb) - 1], ldtb - 1, zero, &work[1 - 1], n);
+                Rgemm("NoTranspose", "Transpose", kb, kb, nb, -one, &work[1 - 1], n, &a[((j * nb + 1) - 1) + (((j - 2) * nb + 1) - 1) * lda], lda, one, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
             }
             if (j > 0) {
-                Rsygst(1, "Lower", kb, tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1, &a[((j * nb + 1) - 1) + (((j - 1) * nb + 1) - 1) * lda], lda, iinfo);
+                Rsygst(1, "Lower", kb, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1, &a[((j * nb + 1) - 1) + (((j - 1) * nb + 1) - 1) * lda], lda, iinfo);
             }
             //
             //           Expand T(J,J) into full format
@@ -330,9 +331,9 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
                     //                 Compute H(J,J)
                     //
                     if (j == 1) {
-                        Rgemm("NoTranspose", "Transpose", kb, kb, kb, one, tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1, &a[((j * nb + 1) - 1) + (((j - 1) * nb + 1) - 1) * lda], lda, zero, &work[(j * nb + 1) - 1], n);
+                        Rgemm("NoTranspose", "Transpose", kb, kb, kb, one, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1, &a[((j * nb + 1) - 1) + (((j - 1) * nb + 1) - 1) * lda], lda, zero, &work[(j * nb + 1) - 1], n);
                     } else {
-                        Rgemm("NoTranspose", "Transpose", kb, kb, nb + kb, one, tb[(td + nb + 1 + ((j - 1) * nb) * ldtb) - 1], ldtb - 1, &a[((j * nb + 1) - 1) + (((j - 2) * nb + 1) - 1) * lda], lda, zero, &work[(j * nb + 1) - 1], n);
+                        Rgemm("NoTranspose", "Transpose", kb, kb, nb + kb, one, &tb[(td + nb + 1 + ((j - 1) * nb) * ldtb) - 1], ldtb - 1, &a[((j * nb + 1) - 1) + (((j - 2) * nb + 1) - 1) * lda], lda, zero, &work[(j * nb + 1) - 1], n);
                     }
                     //
                     //                 Update with the previous column
@@ -350,10 +351,10 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
                 //              Compute T(J+1, J), zero out for GEMM update
                 //
                 kb = min(nb, n - (j + 1) * nb);
-                Rlaset("Full", kb, nb, zero, zero, tb[(td + nb + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
-                Rlacpy("Upper", kb, nb, &a[(((j + 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, tb[(td + nb + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
+                Rlaset("Full", kb, nb, zero, zero, &tb[(td + nb + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
+                Rlacpy("Upper", kb, nb, &a[(((j + 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &tb[(td + nb + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
                 if (j > 0) {
-                    Rtrsm("R", "L", "T", "U", kb, nb, one, &a[((j * nb + 1) - 1) + (((j - 1) * nb + 1) - 1) * lda], lda, tb[(td + nb + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
+                    Rtrsm("R", "L", "T", "U", kb, nb, one, &a[((j * nb + 1) - 1) + (((j - 1) * nb + 1) - 1) * lda], lda, &tb[(td + nb + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
                 }
                 //
                 //              Copy T(J+1,J) into T(J, J+1), both upper/lower for GEMM
