@@ -84,6 +84,9 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
+Rlals0.cpp \
+Rlalsa.cpp \
+Rlalsd.cpp \
 Rgelsd.cpp \
 Rlaln2.cpp \
 Ctrevc3.cpp \

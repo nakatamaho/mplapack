@@ -114,7 +114,7 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     minwrk = 1;
     liwork = 1;
     minmn = max((INTEGER)1, minmn);
-    nlvl = max(int(log(minmn.real() / smlsiz + 1.real()) / log(two)) + 1, 0);
+    nlvl = max(castINTEGER(log(castREAL(minmn) / castREAL(smlsiz + 1)) / log(two)) + 1, 0);
     //
     if (info == 0) {
         maxwrk = 0;
@@ -137,7 +137,7 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
             maxwrk = max(maxwrk, 3 * n + (n - 1) * iMlaenv(1, "Rormbr", "PLN", n, nrhs, n, -1));
             wlalsd = 9 * n + 2 * n * smlsiz + 8 * n * nlvl + n * nrhs + pow2((smlsiz + 1));
             maxwrk = max(maxwrk, 3 * n + wlalsd);
-            minwrk = max(3 * n + mm, 3 * n + nrhs, 3 * n + wlalsd);
+            minwrk = max({3 * n + mm, 3 * n + nrhs, 3 * n + wlalsd});
         }
         if (n > m) {
             wlalsd = 9 * m + 2 * m * smlsiz + 8 * m * nlvl + m * nrhs + pow2((smlsiz + 1));
@@ -159,7 +159,7 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                 maxwrk = max(maxwrk, m * m + 4 * m + wlalsd);
                 //     XXX: Ensure the Path 2a case below is triggered.  The workspace
                 //     calculation should use queries for all routines eventually.
-                maxwrk = max(maxwrk, 4 * m + m * m + max(m, 2 * m - 4, nrhs, n - 3 * m));
+                maxwrk = max(maxwrk, 4 * m + m * m + max({m, 2 * m - 4, nrhs, n - 3 * m}));
             } else {
                 //
                 //              Path 2 - remaining underdetermined cases.
@@ -169,7 +169,7 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                 maxwrk = max(maxwrk, 3 * m + m * iMlaenv(1, "Rormbr", "PLN", n, nrhs, m, -1));
                 maxwrk = max(maxwrk, 3 * m + wlalsd);
             }
-            minwrk = max(3 * m + nrhs, 3 * m + m, 3 * m + wlalsd);
+            minwrk = max({3 * m + nrhs, 3 * m + m, 3 * m + wlalsd});
         }
         minwrk = min(minwrk, maxwrk);
         work[1 - 1] = maxwrk;
@@ -310,13 +310,13 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         //
         Rormbr("P", "L", "N", n, nrhs, n, a, lda, &work[itaup - 1], b, ldb, &work[nwork - 1], lwork - nwork + 1, info);
         //
-    } else if (n >= mnthr && lwork >= 4 * m + m * m + max(m, 2 * m - 4, nrhs, n - 3 * m, wlalsd)) {
+    } else if (n >= mnthr && lwork >= 4 * m + m * m + max({m, 2 * m - 4, nrhs, n - 3 * m, wlalsd})) {
         //
         //        Path 2a - underdetermined, with many more columns than rows
         //        and sufficient workspace for an efficient algorithm.
         //
         ldwork = m;
-        if (lwork >= max(4 * m + m * lda + max(m, 2 * m - 4, nrhs, n - 3 * m), m * lda + m + m * nrhs, 4 * m + m * lda + wlalsd)) {
+        if (lwork >= max({4 * m + m * lda + max({m, 2 * m - 4, nrhs, n - 3 * m}), m * lda + m + m * nrhs, 4 * m + m * lda + wlalsd})) {
             ldwork = lda;
         }
         itau = 1;
