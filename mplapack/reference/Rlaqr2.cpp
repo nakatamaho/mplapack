@@ -100,12 +100,12 @@ void Rlaqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         //        ==== Workspace query call to Rgehrd ====
         //
         Rgehrd(jw, 1, jw - 1, t, ldt, work, work, -1, info);
-        lwk1 = int(work[1 - 1]);
+        lwk1 = castINTEGER(work[1 - 1]);
         //
         //        ==== Workspace query call to Rormhr ====
         //
         Rormhr("R", "N", jw, jw, 1, jw - 1, t, ldt, work, v, ldv, work, -1, info);
-        lwk2 = int(work[1 - 1]);
+        lwk2 = castINTEGER(work[1 - 1]);
         //
         //        ==== Optimal workspace ====
         //
@@ -115,7 +115,7 @@ void Rlaqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     //     ==== Quick return in case of workspace query. ====
     //
     if (lwork == -1) {
-        work[1 - 1] = lwkopt.real();
+        work[1 - 1] = castREAL(lwkopt);
         return;
     }
     //
@@ -138,7 +138,7 @@ void Rlaqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     safmax = one / safmin;
     Rlabad(safmin, safmax);
     ulp = Rlamch("PRECISION");
-    smlnum = safmin * (n.real() / ulp);
+    smlnum = safmin * (castREAL(n) / ulp);
     //
     //     ==== Setup deflation window ====
     //
@@ -179,7 +179,7 @@ void Rlaqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     Rcopy(jw - 1, &h[((kwtop + 1) - 1) + (kwtop - 1) * ldh], ldh + 1, &t[(2 - 1)], ldt + 1);
     //
     Rlaset("A", jw, jw, zero, one, v, ldv);
-    Rlahqr(true, true, jw, 1, jw, t, ldt, sr[kwtop - 1], si[kwtop - 1], 1, jw, v, ldv, infqr);
+    Rlahqr(true, true, jw, 1, jw, t, ldt, &sr[kwtop - 1], &si[kwtop - 1], 1, jw, v, ldv, infqr);
     //
     //     ==== Rtrexc needs a clean margin near the diagonal ====
     //
@@ -434,7 +434,7 @@ statement_60:
     //
     //      ==== Return optimal workspace. ====
     //
-    work[1 - 1] = lwkopt.real();
+    work[1 - 1] = castREAL(lwkopt);
     //
     //     ==== End of Rlaqr2 ====
     //

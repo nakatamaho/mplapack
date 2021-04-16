@@ -263,9 +263,9 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                         //                    generate plane rotation to annihilate a(i,i+mu-1)
                         //                    within the band, and apply rotation from the right
                         //
-                        Rlartg(ab[((ku - mu + 3) - 1) + ((i + mu - 2) - 1) * ldab], ab[((ku - mu + 2) - 1) + ((i + mu - 1) - 1) * ldab], &work[(mn + i + mu - 1) - 1], &work[(i + mu - 1) - 1], ra);
+                        Rlartg(ab[((ku - mu + 3) - 1) + ((i + mu - 2) - 1) * ldab], ab[((ku - mu + 2) - 1) + ((i + mu - 1) - 1) * ldab], work[(mn + i + mu - 1) - 1], work[(i + mu - 1) - 1], ra);
                         ab[((ku - mu + 3) - 1) + ((i + mu - 2) - 1) * ldab] = ra;
-                        Rrot(min(kl + mu - 2, m - i), &ab[((ku - mu + 4) - 1) + ((i + mu - 2) - 1) * ldab], 1, &ab[((ku - mu + 3) - 1) + ((i + mu - 1) - 1) * ldab], 1, &work[(mn + i + mu - 1) - 1], &work[(i + mu - 1) - 1]);
+                        Rrot(min(kl + mu - 2, m - i), &ab[((ku - mu + 4) - 1) + ((i + mu - 2) - 1) * ldab], 1, &ab[((ku - mu + 3) - 1) + ((i + mu - 1) - 1) * ldab], 1, work[(mn + i + mu - 1) - 1], work[(i + mu - 1) - 1]);
                     }
                     nr++;
                     j1 = j1 - kb1;
@@ -325,7 +325,7 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                 ab[((i + 1) - 1) * ldab] = rc * ab[((i + 1) - 1) * ldab];
             }
             if (wantq) {
-                Rrot(m, q[(i - 1) * ldq], 1, q[((i + 1) - 1) * ldq], 1, rc, rs);
+                Rrot(m, &q[(i - 1) * ldq], 1, &q[((i + 1) - 1) * ldq], 1, rc, rs);
             }
             if (wantc) {
                 Rrot(ncc, &c[(i - 1)], ldc, &c[((i + 1) - 1)], ldc, rc, rs);
@@ -353,7 +353,7 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                     e[(i - 1) - 1] = rc * ab[(ku - 1) + (i - 1) * ldab];
                 }
                 if (wantpt) {
-                    Rrot(n, pt[(i - 1)], ldpt, pt[((m + 1) - 1)], ldpt, rc, rs);
+                    Rrot(n, &pt[(i - 1)], ldpt, &pt[((m + 1) - 1)], ldpt, rc, rs);
                 }
             }
         } else {
