@@ -84,9 +84,6 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
-Rtgsyl.cpp \
-Rtgsen.cpp \
-Rggesx.cpp \
 Rgelsd.cpp \
 Rlaln2.cpp \
 Ctrevc3.cpp \
