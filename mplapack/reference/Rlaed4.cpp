@@ -66,7 +66,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
     REAL dw = 0.0;
     const REAL three = 3.0;
     REAL temp1 = 0.0;
-    arr_1d<3, REAL> zz(fill0);
+    REAL zz[3];
     REAL prew = 0.0;
     bool swtch = false;
     const REAL ten = 10.0;
@@ -560,7 +560,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
                 zz[3 - 1] = z[iip1 - 1] * z[iip1 - 1];
             }
             zz[2 - 1] = z[ii - 1] * z[ii - 1];
-            Rlaed6(niter, orgati, c, delta[iim1 - 1], zz, w, eta, info);
+            Rlaed6(niter, orgati, c, &delta[iim1 - 1], zz, w, eta, info);
             if (info != 0) {
                 goto statement_250;
             }
@@ -718,7 +718,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
                         zz[3 - 1] = z[iip1 - 1] * z[iip1 - 1];
                     }
                 }
-                Rlaed6(niter, orgati, c, delta[iim1 - 1], zz, w, eta, info);
+                Rlaed6(niter, orgati, c, &delta[iim1 - 1], zz, w, eta, info);
                 if (info != 0) {
                     goto statement_250;
                 }

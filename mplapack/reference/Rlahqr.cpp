@@ -70,7 +70,7 @@ void Rlahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     REAL rtdisc = 0.0;
     INTEGER m = 0;
     REAL h21s = 0.0;
-    arr_1d<3, REAL> v(fill0);
+    REAL v[3];
     INTEGER nr = 0;
     REAL t1 = 0.0;
     REAL v2 = 0.0;
@@ -137,7 +137,7 @@ void Rlahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     safmax = one / safmin;
     Rlabad(safmin, safmax);
     ulp = Rlamch("PRECISION");
-    smlnum = safmin * (nh.real() / ulp);
+    smlnum = safmin * (castREAL(nh) / ulp);
     //
     //     I1 and I2 are the indices of the first row and last column of H
     //     to which transformations must be applied. If eigenvalues only are
@@ -342,7 +342,7 @@ statement_20:
             if (k > m) {
                 Rcopy(nr, &h[(k - 1) + ((k - 1) - 1) * ldh], 1, v, 1);
             }
-            Rlarfg(nr, &v[1 - 1], &v[2 - 1], 1, t1);
+            Rlarfg(nr, v[1 - 1], &v[2 - 1], 1, t1);
             if (k > m) {
                 h[(k - 1) + ((k - 1) - 1) * ldh] = v[1 - 1];
                 h[((k + 1) - 1) + ((k - 1) - 1) * ldh] = zero;
@@ -448,7 +448,7 @@ statement_150:
         //        Transform the 2-by-2 submatrix to standard Schur form,
         //        and compute and store the eigenvalues.
         //
-        Rlanv2(h[((i - 1) - 1) + ((i - 1) - 1) * ldh], &h[((i - 1) - 1) + (i - 1) * ldh], &h[(i - 1) + ((i - 1) - 1) * ldh], &h[(i - 1) + (i - 1) * ldh], wr[(i - 1) - 1], wi[(i - 1) - 1], wr[i - 1], wi[i - 1], cs, sn);
+        Rlanv2(h[((i - 1) - 1) + ((i - 1) - 1) * ldh], h[((i - 1) - 1) + (i - 1) * ldh], h[(i - 1) + ((i - 1) - 1) * ldh], h[(i - 1) + (i - 1) * ldh], wr[(i - 1) - 1], wi[(i - 1) - 1], wr[i - 1], wi[i - 1], cs, sn);
         //
         if (wantt) {
             //

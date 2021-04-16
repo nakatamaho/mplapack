@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
+
 void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *h, INTEGER const ldh, COMPLEX *w, INTEGER const iloz, INTEGER const ihiz, COMPLEX *z, INTEGER const ldz, INTEGER &info) {
     COMPLEX cdum = 0.0;
     INTEGER j = 0;
@@ -71,7 +73,7 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     COMPLEX h22 = 0.0;
     COMPLEX h11s = 0.0;
     REAL h21 = 0.0;
-    arr_1d<2, COMPLEX> v(fill0);
+    COMPLEX v[2];
     REAL h10 = 0.0;
     COMPLEX t1 = 0.0;
     COMPLEX v2 = 0.0;
@@ -107,7 +109,6 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     //     .. Intrinsic Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1[cdum - 1] = abs(cdum.real()) + abs(cdum.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -144,7 +145,7 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
             //           ==== The following redundant normalization
             //           .    avoids problems with both gradual and
             //           .    sudden underflow in ABS(H(I,I-1)) ====
-            sc = h[(i - 1) + ((i - 1) - 1) * ldh] / abs1[(h[(i - 1) + ((i - 1) - 1) * ldh]) - 1];
+            sc = h[(i - 1) + ((i - 1) - 1) * ldh] / abs1(h[(i - 1) + ((i - 1) - 1) * ldh]);
             sc = conj(sc) / abs(sc);
             h[(i - 1) + ((i - 1) - 1) * ldh] = abs(h[(i - 1) + ((i - 1) - 1) * ldh]);
             Cscal(jhi - i + 1, sc, &h[(i - 1) + (i - 1) * ldh], ldh);
@@ -164,7 +165,7 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     safmax = rone / safmin;
     Rlabad(safmin, safmax);
     ulp = Rlamch("PRECISION");
-    smlnum = safmin * (nh.real() / ulp);
+    smlnum = safmin * (castREAL(nh) / ulp);
     //
     //     I1 and I2 are the indices of the first row and last column of H
     //     to which transformations must be applied. If eigenvalues only are
@@ -205,10 +206,10 @@ statement_30:
         //        Look for a single small subdiagonal element.
         //
         for (k = i; k >= l + 1; k = k - 1) {
-            if (abs1[(h[(k - 1) + ((k - 1) - 1) * ldh]) - 1] <= smlnum) {
+            if (abs1(h[(k - 1) + ((k - 1) - 1) * ldh]) <= smlnum) {
                 goto statement_50;
             }
-            tst = abs1[(h[((k - 1) - 1) + ((k - 1) - 1) * ldh]) - 1] + abs1[h[(k - 1) + (k - 1) * ldh] - 1];
+            tst = abs1(h[((k - 1) - 1) + ((k - 1) - 1) * ldh]) + abs1(h[(k - 1) + (k - 1) * ldh]);
             if (tst == zero) {
                 if (k - 2 >= ilo) {
                     tst += abs(h[((k - 1) - 1) + ((k - 2) - 1) * ldh].real());
@@ -222,10 +223,10 @@ statement_30:
             //           .    1997). It has better mathematical foundation and
             //           .    improves accuracy in some examples.  ====
             if (abs(h[(k - 1) + ((k - 1) - 1) * ldh].real()) <= ulp * tst) {
-                ab = max(abs1[(h[(k - 1) + ((k - 1) - 1) * ldh]) - 1], abs1[(h[((k - 1) - 1) + (k - 1) * ldh]) - 1]);
-                ba = min(abs1[(h[(k - 1) + ((k - 1) - 1) * ldh]) - 1], abs1[(h[((k - 1) - 1) + (k - 1) * ldh]) - 1]);
-                aa = max(abs1[h[(k - 1) + (k - 1) * ldh] - 1], abs1[(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh]) - 1]);
-                bb = min(abs1[h[(k - 1) + (k - 1) * ldh] - 1], abs1[(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh]) - 1]);
+                ab = max(abs1(h[(k - 1) + ((k - 1) - 1) * ldh]), abs1(h[((k - 1) - 1) + (k - 1) * ldh]));
+                ba = min(abs1(h[(k - 1) + ((k - 1) - 1) * ldh]), abs1(h[((k - 1) - 1) + (k - 1) * ldh]));
+                aa = max(abs1(h[(k - 1) + (k - 1) * ldh]), abs1(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh]));
+                bb = min(abs1(h[(k - 1) + (k - 1) * ldh]), abs1(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh]));
                 s = aa + ab;
                 if (ba * (ab / s) <= max(smlnum, ulp * (bb * (aa / s)))) {
                     goto statement_50;
@@ -275,14 +276,14 @@ statement_30:
             //
             t = h[(i - 1) + (i - 1) * ldh];
             u = sqrt(h[((i - 1) - 1) + (i - 1) * ldh]) * sqrt(h[(i - 1) + ((i - 1) - 1) * ldh]);
-            s = abs1[u - 1];
+            s = abs1(u);
             if (s != rzero) {
                 x = half * (h[((i - 1) - 1) + ((i - 1) - 1) * ldh] - t);
-                sx = abs1[x - 1];
-                s = max(s, abs1[x - 1]);
-                y = s * sqrt(pow2((x / s)) + pow2((u / s)));
+                sx = abs1(x);
+                s = max(s, abs1(x));
+                y = s * sqrt((x / s) * (x / s) + (u / s) * (u / s));
                 if (sx > rzero) {
-                    if (x / sx.real() * y.real() + x / sx.imag() * y.imag() < rzero) {
+                    if ((x / sx).real() * y.real() + (x / sx).imag() * y.imag() < rzero) {
                         y = -y;
                     }
                 }
@@ -302,13 +303,13 @@ statement_30:
             h22 = h[((m + 1) - 1) + ((m + 1) - 1) * ldh];
             h11s = h11 - t;
             h21 = h[((m + 1) - 1) + (m - 1) * ldh].real();
-            s = abs1[h11s - 1] + abs(h21);
+            s = abs1(h11s) + abs(h21);
             h11s = h11s / s;
             h21 = h21 / s;
             v[1 - 1] = h11s;
             v[2 - 1] = h21;
             h10 = h[(m - 1) + ((m - 1) - 1) * ldh].real();
-            if (abs(h10) * abs(h21) <= ulp * (abs1[h11s - 1] * (abs1[h11 - 1] + abs1[h22 - 1]))) {
+            if (abs(h10) * abs(h21) <= ulp * (abs1(h11s) * (abs1(h11) + abs1(h22)))) {
                 goto statement_70;
             }
         }
@@ -316,7 +317,7 @@ statement_30:
         h22 = h[((l + 1) - 1) + ((l + 1) - 1) * ldh];
         h11s = h11 - t;
         h21 = h[((l + 1) - 1) + (l - 1) * ldh].real();
-        s = abs1[h11s - 1] + abs(h21);
+        s = abs1(h11s) + abs(h21);
         h11s = h11s / s;
         h21 = h21 / s;
         v[1 - 1] = h11s;
@@ -342,13 +343,13 @@ statement_30:
             if (k > m) {
                 Ccopy(2, &h[(k - 1) + ((k - 1) - 1) * ldh], 1, v, 1);
             }
-            Clarfg(2, &v[1 - 1], &v[2 - 1], 1, t1);
+            Clarfg(2, v[1 - 1], &v[2 - 1], 1, t1);
             if (k > m) {
                 h[(k - 1) + ((k - 1) - 1) * ldh] = v[1 - 1];
                 h[((k + 1) - 1) + ((k - 1) - 1) * ldh] = zero;
             }
             v2 = v[2 - 1];
-            t2 = t1 * v2.real();
+            t2 = (t1 * v2).real();
             //
             //           Apply G from the left to transform the rows of the matrix
             //           in columns K to I2.

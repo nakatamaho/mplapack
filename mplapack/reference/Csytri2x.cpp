@@ -134,6 +134,7 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     COMPLEX u11_i_j = 0.0;
     COMPLEX u11_ip1_j = 0.0;
     INTEGER ip = 0;
+    INTEGER ldwork = n + nb + 1;
     if (upper) {
         //
         //        invA = P * inv(U**T)*inv(D)*inv(U)*P**T.
@@ -146,8 +147,8 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         while (k <= n) {
             if (ipiv[k - 1] > 0) {
                 //           1 x 1 diagonal NNB
-                work[(k - 1) + (invd - 1) * ldwork] = 1 / a[(k - 1) + (k - 1) * lda];
-                work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0;
+                work[(k - 1) + (invd - 1) * ldwork] = castREAL(1) / a[(k - 1) + (k - 1) * lda];
+                work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0.0;
                 k++;
             } else {
                 //           2 x 2 diagonal NNB
@@ -325,8 +326,8 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         while (k >= 1) {
             if (ipiv[k - 1] > 0) {
                 //           1 x 1 diagonal NNB
-                work[(k - 1) + (invd - 1) * ldwork] = 1 / a[(k - 1) + (k - 1) * lda];
-                work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0;
+                work[(k - 1) + (invd - 1) * ldwork] = castREAL(1) / a[(k - 1) + (k - 1) * lda];
+                work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0.0;
                 k = k - 1;
             } else {
                 //           2 x 2 diagonal NNB

@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL cabs1(COMPLEX z) { return abs(z.real()) + abs(z.imag()); }
+
 void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info) {
     COMPLEX z = 0.0;
     bool upper = false;
@@ -83,7 +85,6 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1[z - 1] = abs(z.real()) + abs(z.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -127,7 +128,7 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //        Determine rows and columns to be interchanged and whether
         //        a 1-by-1 or 2-by-2 pivot block will be used
         //
-        absakk = abs1[a[(k - 1) + (k - 1) * lda] - 1];
+        absakk = cabs1(a[(k - 1) + (k - 1) * lda]);
         //
         //        IMAX is the row-index of the largest off-diagonal element in
         //        column K, and COLMAX is its absolute value.
@@ -135,7 +136,7 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //
         if (k > 1) {
             imax = iCamax(k - 1, &a[(k - 1) * lda], 1);
-            colmax = abs1[a[(imax - 1) + (k - 1) * lda] - 1];
+            colmax = cabs1(a[(imax - 1) + (k - 1) * lda]);
         } else {
             colmax = zero;
         }
@@ -161,10 +162,10 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 //              element in row IMAX, and ROWMAX is its absolute value
                 //
                 jmax = imax + iCamax(k - imax, &a[(imax - 1) + ((imax + 1) - 1) * lda], lda);
-                rowmax = abs1[a[(imax - 1) + (jmax - 1) * lda] - 1];
+                rowmax = cabs1(a[(imax - 1) + (jmax - 1) * lda]);
                 if (imax > 1) {
                     jmax = iCamax(imax - 1, &a[(imax - 1) * lda], 1);
-                    rowmax = max(rowmax, abs1[a[(jmax - 1) + (imax - 1) * lda] - 1]);
+                    rowmax = max(rowmax, cabs1(a[(jmax - 1) + (imax - 1) * lda]));
                 }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
@@ -172,7 +173,7 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                     //                 no interchange, use 1-by-1 pivot block
                     //
                     kp = k;
-                } else if (abs1[a[(imax - 1) + (imax - 1) * lda] - 1] >= alpha * rowmax) {
+                } else if (cabs1(a[(imax - 1) + (imax - 1) * lda]) >= alpha * rowmax) {
                     //
                     //                 interchange rows and columns K and IMAX, use 1-by-1
                     //                 pivot block
@@ -297,7 +298,7 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //        Determine rows and columns to be interchanged and whether
         //        a 1-by-1 or 2-by-2 pivot block will be used
         //
-        absakk = abs1[a[(k - 1) + (k - 1) * lda] - 1];
+        absakk = cabs1(a[(k - 1) + (k - 1) * lda]);
         //
         //        IMAX is the row-index of the largest off-diagonal element in
         //        column K, and COLMAX is its absolute value.
@@ -305,7 +306,7 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //
         if (k < n) {
             imax = k + iCamax(n - k, &a[((k + 1) - 1) + (k - 1) * lda], 1);
-            colmax = abs1[a[(imax - 1) + (k - 1) * lda] - 1];
+            colmax = cabs1(a[(imax - 1) + (k - 1) * lda]);
         } else {
             colmax = zero;
         }
@@ -331,10 +332,10 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 //              element in row IMAX, and ROWMAX is its absolute value
                 //
                 jmax = k - 1 + iCamax(imax - k, &a[(imax - 1) + (k - 1) * lda], lda);
-                rowmax = abs1[a[(imax - 1) + (jmax - 1) * lda] - 1];
+                rowmax = cabs1(a[(imax - 1) + (jmax - 1) * lda]);
                 if (imax < n) {
                     jmax = imax + iCamax(n - imax, &a[((imax + 1) - 1) + (imax - 1) * lda], 1);
-                    rowmax = max(rowmax, abs1[a[(jmax - 1) + (imax - 1) * lda] - 1]);
+                    rowmax = max(rowmax, cabs1(a[(jmax - 1) + (imax - 1) * lda]));
                 }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
@@ -342,7 +343,7 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                     //                 no interchange, use 1-by-1 pivot block
                     //
                     kp = k;
-                } else if (abs1[a[(imax - 1) + (imax - 1) * lda] - 1] >= alpha * rowmax) {
+                } else if (cabs1(a[(imax - 1) + (imax - 1) * lda]) >= alpha * rowmax) {
                     //
                     //                 interchange rows and columns K and IMAX, use 1-by-1
                     //                 pivot block
