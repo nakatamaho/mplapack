@@ -63,8 +63,8 @@ void Rlasy2(bool const ltranl, bool const ltranr, INTEGER const isgn, INTEGER co
     INTEGER jpsv = 0;
     INTEGER j = 0;
     INTEGER jpiv[4];
-    static INTEGER locl12[4] = {3, 4, 1, 2};
-    static INTEGER locu21[4] = {2, 1, 4, 3};
+    static INTEGER locu12[4] = {3, 4, 1, 2};
+    static INTEGER locl21[4] = {2, 1, 4, 3};
     static INTEGER locu22[4] = {4, 3, 2, 1};
     static bool xswpiv[4] = {false, false, true, true};
     static bool bswpiv[4] = {false, true, false, true};

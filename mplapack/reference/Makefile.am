@@ -23,9 +23,9 @@ endif
 #lib_LTLIBRARIES += libmplapack__Float64x_ref.la
 #endif
 
-#if ENABLE__FLOAT128
-#lib_LTLIBRARIES += libmplapack__Float128_ref.la
-#endif
+if ENABLE__FLOAT128
+lib_LTLIBRARIES += libmplapack__Float128_ref.la
+endif
 
 if ENABLE_GMP
 libmplapack_gmp_ref_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___
@@ -352,7 +352,6 @@ Rgbequb.cpp \
 Rgbrfs.cpp \
 Rgbsv.cpp \
 Rgbsvx.cpp \
-Rgbsvxx.cpp \
 Rgbtf2.cpp \
 Rgbtrf.cpp \
 Rgbtrs.cpp \
