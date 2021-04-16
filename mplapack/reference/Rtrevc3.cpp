@@ -62,14 +62,15 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     INTEGER jnxt = 0;
     INTEGER j1 = 0;
     INTEGER j2 = 0;
-    arr_2d<2, 2, REAL> x(fill0);
+    REAL x[2 * 2];
+    INTEGER ldx = 2;
     REAL scale = 0.0;
     REAL xnorm = 0.0;
     INTEGER ierr = 0;
     REAL beta = 0.0;
     INTEGER ii = 0;
     REAL remax = 0.0;
-    arr_1d<nbmax, int> iscomplex(fill0);
+    INTEGER iscomplex[nbmax];
     REAL rec = 0.0;
     REAL emax = 0.0;
     INTEGER ki2 = 0;
@@ -112,7 +113,12 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     somev = Mlsame(howmny, "S");
     //
     info = 0;
-    nb = iMlaenv(1, "Rtrevc", side + howmny, n, -1, -1, -1);
+
+    char side_howmny[3];
+    side_howmny[0] = side[0];
+    side_howmny[1] = howmny[0];
+    side_howmny[2] = '\0';
+    nb = iMlaenv(1, "Rtrevc", side_howmny, n, -1, -1, -1);
     maxwrk = n + 2 * n * nb;
     work[1 - 1] = maxwrk;
     lquery = (lwork == -1);
@@ -142,22 +148,22 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             for (j = 1; j <= n; j = j + 1) {
                 if (pair) {
                     pair = false;
-                    select(j) = false;
+                    select[j - 1] = false;
                 } else {
                     if (j < n) {
                         if (t[((j + 1) - 1) + (j - 1) * ldt] == zero) {
-                            if (select(j)) {
+                            if (select[j - 1]) {
                                 m++;
                             }
                         } else {
                             pair = true;
-                            if (select(j) || select(j + 1)) {
-                                select(j) = true;
+                            if (select[j - 1] || select[(j + 1) - 1]) {
+                                select[j] = true;
                                 m += 2;
                             }
                         }
                     } else {
-                        if (select(n)) {
+                        if (select[n - 1]) {
                             m++;
                         }
                     }
@@ -257,11 +263,11 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             //
             if (somev) {
                 if (ip == 0) {
-                    if (!select(ki)) {
+                    if (!select[ki - 1]) {
                         goto statement_140;
                     }
                 } else {
-                    if (!select(ki - 1)) {
+                    if (!select[(ki - 1) - 1]) {
                         goto statement_140;
                     }
                 }
@@ -344,7 +350,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         //                    updating the right-hand side.
                         //
                         if (xnorm > one) {
-                            beta = max(work[(j - 1) - 1], &work[j - 1]);
+                            beta = max(work[(j - 1) - 1], work[j - 1]);
                             if (beta > bignum / xnorm) {
                                 x[(1 - 1)] = x[(1 - 1)] / xnorm;
                                 x[(2 - 1)] = x[(2 - 1)] / xnorm;
@@ -373,11 +379,11 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 if (!over) {
                     //                 ------------------------------
                     //                 no back-transform: copy x to VR and normalize.
-                    Rcopy(ki, &work[(1 + iv * n) - 1], 1, vr[(is - 1) * ldvr], 1);
+                    Rcopy(ki, &work[(1 + iv * n) - 1], 1, &vr[(is - 1) * ldvr], 1);
                     //
-                    ii = iRamax(ki, vr[(is - 1) * ldvr], 1);
+                    ii = iRamax(ki, &vr[(is - 1) * ldvr], 1);
                     remax = one / abs(vr[(ii - 1) + (is - 1) * ldvr]);
-                    Rscal(ki, remax, vr[(is - 1) * ldvr], 1);
+                    Rscal(ki, remax, &vr[(is - 1) * ldvr], 1);
                     //
                     for (k = ki + 1; k <= n; k = k + 1) {
                         vr[(k - 1) + (is - 1) * ldvr] = zero;
@@ -387,12 +393,12 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     //                 ------------------------------
                     //                 version 1: back-transform each vector with GEMV, Q*x.
                     if (ki > 1) {
-                        Rgemv("N", n, ki - 1, one, vr, ldvr, &work[(1 + iv * n) - 1], 1, &work[(ki + iv * n) - 1], vr[(ki - 1) * ldvr], 1);
+                        Rgemv("N", n, ki - 1, one, vr, ldvr, &work[(1 + iv * n) - 1], 1, work[(ki + iv * n) - 1], &vr[(ki - 1) * ldvr], 1);
                     }
                     //
-                    ii = iRamax(n, vr[(ki - 1) * ldvr], 1);
+                    ii = iRamax(n, &vr[(ki - 1) * ldvr], 1);
                     remax = one / abs(vr[(ii - 1) + (ki - 1) * ldvr]);
-                    Rscal(n, remax, vr[(ki - 1) * ldvr], 1);
+                    Rscal(n, remax, &vr[(ki - 1) * ldvr], 1);
                     //
                 } else {
                     //                 ------------------------------
@@ -489,7 +495,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         //                    the right-hand side.
                         //
                         if (xnorm > one) {
-                            beta = max(work[(j - 1) - 1], &work[j - 1]);
+                            beta = max(work[(j - 1) - 1], work[j - 1]);
                             if (beta > bignum / xnorm) {
                                 rec = one / xnorm;
                                 x[(1 - 1)] = x[(1 - 1)] * rec;
@@ -526,16 +532,16 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 if (!over) {
                     //                 ------------------------------
                     //                 no back-transform: copy x to VR and normalize.
-                    Rcopy(ki, &work[(1 + (iv - 1) * n) - 1], 1, vr[((is - 1) - 1) * ldvr], 1);
-                    Rcopy(ki, &work[(1 + (iv)*n) - 1], 1, vr[(is - 1) * ldvr], 1);
+                    Rcopy(ki, &work[(1 + (iv - 1) * n) - 1], 1, &vr[((is - 1) - 1) * ldvr], 1);
+                    Rcopy(ki, &work[(1 + (iv)*n) - 1], 1, &vr[(is - 1) * ldvr], 1);
                     //
                     emax = zero;
                     for (k = 1; k <= ki; k = k + 1) {
                         emax = max(emax, abs(vr[(k - 1) + ((is - 1) - 1) * ldvr]) + abs(vr[(k - 1) + (is - 1) * ldvr]));
                     }
                     remax = one / emax;
-                    Rscal(ki, remax, vr[((is - 1) - 1) * ldvr], 1);
-                    Rscal(ki, remax, vr[(is - 1) * ldvr], 1);
+                    Rscal(ki, remax, &vr[((is - 1) - 1) * ldvr], 1);
+                    Rscal(ki, remax, &vr[(is - 1) * ldvr], 1);
                     //
                     for (k = ki + 1; k <= n; k = k + 1) {
                         vr[(k - 1) + ((is - 1) - 1) * ldvr] = zero;
@@ -546,11 +552,11 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     //                 ------------------------------
                     //                 version 1: back-transform each vector with GEMV, Q*x.
                     if (ki > 2) {
-                        Rgemv("N", n, ki - 2, one, vr, ldvr, &work[(1 + (iv - 1) * n) - 1], 1, &work[(ki - 1 + (iv - 1) * n) - 1], vr[((ki - 1) - 1) * ldvr], 1);
-                        Rgemv("N", n, ki - 2, one, vr, ldvr, &work[(1 + (iv)*n) - 1], 1, &work[(ki + (iv)*n) - 1], vr[(ki - 1) * ldvr], 1);
+                        Rgemv("N", n, ki - 2, one, vr, ldvr, &work[(1 + (iv - 1) * n) - 1], 1, work[(ki - 1 + (iv - 1) * n) - 1], &vr[((ki - 1) - 1) * ldvr], 1);
+                        Rgemv("N", n, ki - 2, one, vr, ldvr, &work[(1 + (iv)*n) - 1], 1, work[(ki + (iv)*n) - 1], &vr[(ki - 1) * ldvr], 1);
                     } else {
-                        Rscal(n, &work[(ki - 1 + (iv - 1) * n) - 1], vr[((ki - 1) - 1) * ldvr], 1);
-                        Rscal(n, &work[(ki + (iv)*n) - 1], vr[(ki - 1) * ldvr], 1);
+                        Rscal(n, work[(ki - 1 + (iv - 1) * n) - 1], &vr[((ki - 1) - 1) * ldvr], 1);
+                        Rscal(n, work[(ki + (iv)*n) - 1], &vr[(ki - 1) * ldvr], 1);
                     }
                     //
                     emax = zero;
@@ -558,8 +564,8 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         emax = max(emax, abs(vr[(k - 1) + ((ki - 1) - 1) * ldvr]) + abs(vr[(k - 1) + (ki - 1) * ldvr]));
                     }
                     remax = one / emax;
-                    Rscal(n, remax, vr[((ki - 1) - 1) * ldvr], 1);
-                    Rscal(n, remax, vr[(ki - 1) * ldvr], 1);
+                    Rscal(n, remax, &vr[((ki - 1) - 1) * ldvr], 1);
+                    Rscal(n, remax, &vr[(ki - 1) * ldvr], 1);
                     //
                 } else {
                     //                 ------------------------------
@@ -610,7 +616,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         }
                         Rscal(n, remax, &work[(1 + (nb + k) * n) - 1], 1);
                     }
-                    Rlacpy("F", n, nb - iv + 1, &work[(1 + (nb + iv) * n) - 1], n, vr[(ki2 - 1) * ldvr], ldvr);
+                    Rlacpy("F", n, nb - iv + 1, &work[(1 + (nb + iv) * n) - 1], n, &vr[(ki2 - 1) * ldvr], ldvr);
                     iv = nb;
                 } else {
                     iv = iv - 1;
@@ -657,7 +663,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             }
             //
             if (somev) {
-                if (!select(ki)) {
+                if (!select[ki - 1]) {
                     goto statement_260;
                 }
             }
@@ -741,7 +747,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         //                    Scale if necessary to avoid overflow when forming
                         //                    the right-hand side.
                         //
-                        beta = max(work[j - 1], &work[(j + 1) - 1]);
+                        beta = max(work[j - 1], work[(j + 1) - 1]);
                         if (beta > vcrit) {
                             rec = one / vmax;
                             Rscal(n - ki + 1, rec, &work[(ki + iv * n) - 1], 1);
@@ -767,7 +773,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         work[(j + iv * n) - 1] = x[(1 - 1)];
                         work[(j + 1 + iv * n) - 1] = x[(2 - 1)];
                         //
-                        vmax = max(abs(work[(j + iv * n) - 1]), abs(work[(j + 1 + iv * n) - 1]), vmax);
+                        vmax = max({abs(work[(j + iv * n) - 1]), abs(work[(j + 1 + iv * n) - 1]), vmax});
                         vcrit = bignum / vmax;
                         //
                     }
@@ -779,11 +785,11 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 if (!over) {
                     //                 ------------------------------
                     //                 no back-transform: copy x to VL and normalize.
-                    Rcopy(n - ki + 1, &work[(ki + iv * n) - 1], 1, vl[(ki - 1) + (is - 1) * ldvl], 1);
+                    Rcopy(n - ki + 1, &work[(ki + iv * n) - 1], 1, &vl[(ki - 1) + (is - 1) * ldvl], 1);
                     //
-                    ii = iRamax(n - ki + 1, vl[(ki - 1) + (is - 1) * ldvl], 1) + ki - 1;
+                    ii = iRamax(n - ki + 1, &vl[(ki - 1) + (is - 1) * ldvl], 1) + ki - 1;
                     remax = one / abs(vl[(ii - 1) + (is - 1) * ldvl]);
-                    Rscal(n - ki + 1, remax, vl[(ki - 1) + (is - 1) * ldvl], 1);
+                    Rscal(n - ki + 1, remax, &vl[(ki - 1) + (is - 1) * ldvl], 1);
                     //
                     for (k = 1; k <= ki - 1; k = k + 1) {
                         vl[(k - 1) + (is - 1) * ldvl] = zero;
@@ -793,12 +799,12 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     //                 ------------------------------
                     //                 version 1: back-transform each vector with GEMV, Q*x.
                     if (ki < n) {
-                        Rgemv("N", n, n - ki, one, vl[((ki + 1) - 1) * ldvl], ldvl, &work[(ki + 1 + iv * n) - 1], 1, &work[(ki + iv * n) - 1], vl[(ki - 1) * ldvl], 1);
+                        Rgemv("N", n, n - ki, one, &vl[((ki + 1) - 1) * ldvl], ldvl, &work[(ki + 1 + iv * n) - 1], 1, work[(ki + iv * n) - 1], &vl[(ki - 1) * ldvl], 1);
                     }
                     //
-                    ii = iRamax(n, vl[(ki - 1) * ldvl], 1);
+                    ii = iRamax(n, &vl[(ki - 1) * ldvl], 1);
                     remax = one / abs(vl[(ii - 1) + (ki - 1) * ldvl]);
-                    Rscal(n, remax, vl[(ki - 1) * ldvl], 1);
+                    Rscal(n, remax, &vl[(ki - 1) * ldvl], 1);
                     //
                 } else {
                     //                 ------------------------------
@@ -888,7 +894,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         }
                         work[(j + (iv)*n) - 1] = x[(1 - 1)];
                         work[(j + (iv + 1) * n) - 1] = x[(2 - 1) * ldx];
-                        vmax = max(abs(work[(j + (iv)*n) - 1]), abs(work[(j + (iv + 1) * n) - 1]), vmax);
+                        vmax = max({abs(work[(j + (iv)*n) - 1]), abs(work[(j + (iv + 1) * n) - 1]), vmax});
                         vcrit = bignum / vmax;
                         //
                     } else {
@@ -898,7 +904,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         //                    Scale if necessary to avoid overflow when forming
                         //                    the right-hand side elements.
                         //
-                        beta = max(work[j - 1], &work[(j + 1) - 1]);
+                        beta = max(work[j - 1], work[(j + 1) - 1]);
                         if (beta > vcrit) {
                             rec = one / vmax;
                             Rscal(n - ki + 1, rec, &work[(ki + (iv)*n) - 1], 1);
@@ -931,7 +937,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         work[(j + (iv + 1) * n) - 1] = x[(2 - 1) * ldx];
                         work[(j + 1 + (iv)*n) - 1] = x[(2 - 1)];
                         work[(j + 1 + (iv + 1) * n) - 1] = x[(2 - 1) + (2 - 1) * ldx];
-                        vmax = max(abs(x[(1 - 1)]), abs(x[(2 - 1) * ldx]), abs(x[(2 - 1)]), abs(x[(2 - 1) + (2 - 1) * ldx]), vmax);
+                        vmax = max({abs(x[(1 - 1)]), abs(x[(2 - 1) * ldx]), abs(x[(2 - 1)]), abs(x[(2 - 1) + (2 - 1) * ldx]), vmax});
                         vcrit = bignum / vmax;
                         //
                     }
@@ -943,16 +949,16 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 if (!over) {
                     //                 ------------------------------
                     //                 no back-transform: copy x to VL and normalize.
-                    Rcopy(n - ki + 1, &work[(ki + (iv)*n) - 1], 1, vl[(ki - 1) + (is - 1) * ldvl], 1);
-                    Rcopy(n - ki + 1, &work[(ki + (iv + 1) * n) - 1], 1, vl[(ki - 1) + ((is + 1) - 1) * ldvl], 1);
+                    Rcopy(n - ki + 1, &work[(ki + (iv)*n) - 1], 1, &vl[(ki - 1) + (is - 1) * ldvl], 1);
+                    Rcopy(n - ki + 1, &work[(ki + (iv + 1) * n) - 1], 1, &vl[(ki - 1) + ((is + 1) - 1) * ldvl], 1);
                     //
                     emax = zero;
                     for (k = ki; k <= n; k = k + 1) {
                         emax = max(emax, abs(vl[(k - 1) + (is - 1) * ldvl]) + abs(vl[(k - 1) + ((is + 1) - 1) * ldvl]));
                     }
                     remax = one / emax;
-                    Rscal(n - ki + 1, remax, vl[(ki - 1) + (is - 1) * ldvl], 1);
-                    Rscal(n - ki + 1, remax, vl[(ki - 1) + ((is + 1) - 1) * ldvl], 1);
+                    Rscal(n - ki + 1, remax, &vl[(ki - 1) + (is - 1) * ldvl], 1);
+                    Rscal(n - ki + 1, remax, &vl[(ki - 1) + ((is + 1) - 1) * ldvl], 1);
                     //
                     for (k = 1; k <= ki - 1; k = k + 1) {
                         vl[(k - 1) + (is - 1) * ldvl] = zero;
@@ -963,11 +969,11 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     //                 ------------------------------
                     //                 version 1: back-transform each vector with GEMV, Q*x.
                     if (ki < n - 1) {
-                        Rgemv("N", n, n - ki - 1, one, vl[((ki + 2) - 1) * ldvl], ldvl, &work[(ki + 2 + (iv)*n) - 1], 1, &work[(ki + (iv)*n) - 1], vl[(ki - 1) * ldvl], 1);
-                        Rgemv("N", n, n - ki - 1, one, vl[((ki + 2) - 1) * ldvl], ldvl, &work[(ki + 2 + (iv + 1) * n) - 1], 1, &work[(ki + 1 + (iv + 1) * n) - 1], vl[((ki + 1) - 1) * ldvl], 1);
+                        Rgemv("N", n, n - ki - 1, one, &vl[((ki + 2) - 1) * ldvl], ldvl, &work[(ki + 2 + (iv)*n) - 1], 1, work[(ki + (iv)*n) - 1], &vl[(ki - 1) * ldvl], 1);
+                        Rgemv("N", n, n - ki - 1, one, &vl[((ki + 2) - 1) * ldvl], ldvl, &work[(ki + 2 + (iv + 1) * n) - 1], 1, work[(ki + 1 + (iv + 1) * n) - 1], &vl[((ki + 1) - 1) * ldvl], 1);
                     } else {
-                        Rscal(n, &work[(ki + (iv)*n) - 1], vl[(ki - 1) * ldvl], 1);
-                        Rscal(n, &work[(ki + 1 + (iv + 1) * n) - 1], vl[((ki + 1) - 1) * ldvl], 1);
+                        Rscal(n, work[(ki + (iv)*n) - 1], &vl[(ki - 1) * ldvl], 1);
+                        Rscal(n, work[(ki + 1 + (iv + 1) * n) - 1], &vl[((ki + 1) - 1) * ldvl], 1);
                     }
                     //
                     emax = zero;
@@ -975,8 +981,8 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         emax = max(emax, abs(vl[(k - 1) + (ki - 1) * ldvl]) + abs(vl[(k - 1) + ((ki + 1) - 1) * ldvl]));
                     }
                     remax = one / emax;
-                    Rscal(n, remax, vl[(ki - 1) * ldvl], 1);
-                    Rscal(n, remax, vl[((ki + 1) - 1) * ldvl], 1);
+                    Rscal(n, remax, &vl[(ki - 1) * ldvl], 1);
+                    Rscal(n, remax, &vl[((ki + 1) - 1) * ldvl], 1);
                     //
                 } else {
                     //                 ------------------------------
@@ -1008,7 +1014,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 //              When the number of vectors stored reaches NB-1 or NB,
                 //              or if this was last vector, do the GEMM
                 if ((iv >= nb - 1) || (ki2 == n)) {
-                    Rgemm("N", "N", n, iv, n - ki2 + iv, one, vl[((ki2 - iv + 1) - 1) * ldvl], ldvl, &work[(ki2 - iv + 1 + (1) * n) - 1], n, zero, &work[(1 + (nb + 1) * n) - 1], n);
+                    Rgemm("N", "N", n, iv, n - ki2 + iv, one, &vl[((ki2 - iv + 1) - 1) * ldvl], ldvl, &work[(ki2 - iv + 1 + (1) * n) - 1], n, zero, &work[(1 + (nb + 1) * n) - 1], n);
                     //                 normalize vectors
                     for (k = 1; k <= iv; k = k + 1) {
                         if (iscomplex[k - 1] == 0) {
@@ -1028,7 +1034,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         }
                         Rscal(n, remax, &work[(1 + (nb + k) * n) - 1], 1);
                     }
-                    Rlacpy("F", n, iv, &work[(1 + (nb + 1) * n) - 1], n, vl[((ki2 - iv + 1) - 1) * ldvl], ldvl);
+                    Rlacpy("F", n, iv, &work[(1 + (nb + 1) * n) - 1], n, &vl[((ki2 - iv + 1) - 1) * ldvl], ldvl);
                     iv = 1;
                 } else {
                     iv++;

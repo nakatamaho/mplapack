@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL cabs1(COMPLEX z) { return abs(z.real()) + abs(z.imag()); }
+
 void Clahef_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *w, INTEGER const ldw, INTEGER &info) {
     COMPLEX z = 0.0;
     const REAL one = 1.0;
@@ -89,7 +91,6 @@ void Clahef_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1[z - 1] = abs(z.real()) + abs(z.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -149,7 +150,7 @@ void Clahef_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
         //
         if (k > 1) {
             imax = iCamax(k - 1, &w[(kw - 1) * ldw], 1);
-            colmax = abs1[w[(imax - 1) + (kw - 1) * ldw] - 1];
+            colmax = abs(w[(imax - 1) + (kw - 1) * ldw]);
         } else {
             colmax = zero;
         }
@@ -212,14 +213,14 @@ void Clahef_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 //
                 if (imax != k) {
                     jmax = imax + iCamax(k - imax, &w[((imax + 1) - 1) + ((kw - 1) - 1) * ldw], 1);
-                    rowmax = abs1[(w[(jmax - 1) + ((kw - 1) - 1) * ldw]) - 1];
+                    rowmax = cabs1(w[(jmax - 1) + ((kw - 1) - 1) * ldw]);
                 } else {
                     rowmax = zero;
                 }
                 //
                 if (imax > 1) {
                     itemp = iCamax(imax - 1, &w[((kw - 1) - 1) * ldw], 1);
-                    dtemp = abs1[(w[(itemp - 1) + ((kw - 1) - 1) * ldw]) - 1];
+                    dtemp = cabs1(w[(itemp - 1) + ((kw - 1) - 1) * ldw]);
                     if (dtemp > rowmax) {
                         rowmax = dtemp;
                         jmax = itemp;
@@ -457,7 +458,7 @@ void Clahef_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                     d21 = w[((k - 1) - 1) + (kw - 1) * ldw];
                     d11 = w[(k - 1) + (kw - 1) * ldw] / conj(d21);
                     d22 = w[((k - 1) - 1) + ((kw - 1) - 1) * ldw] / d21;
-                    t = one / (d11 * d22.real() - one);
+                    t = one / ((d11 * d22).real() - one);
                     //
                     //                 Update elements in columns A(k-1) and A(k) as
                     //                 dot products of rows of ( W(kw-1) W(kw) ) and columns
@@ -606,7 +607,7 @@ void Clahef_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
         //
         if (k < n) {
             imax = k + iCamax(n - k, &w[((k + 1) - 1) + (k - 1) * ldw], 1);
-            colmax = abs1[w[(imax - 1) + (k - 1) * ldw] - 1];
+            colmax = cabs1(w[(imax - 1) + (k - 1) * ldw]);
         } else {
             colmax = zero;
         }
@@ -670,14 +671,14 @@ void Clahef_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 //
                 if (imax != k) {
                     jmax = k - 1 + iCamax(imax - k, &w[(k - 1) + ((k + 1) - 1) * ldw], 1);
-                    rowmax = abs1[(w[(jmax - 1) + ((k + 1) - 1) * ldw]) - 1];
+                    rowmax = cabs1(w[(jmax - 1) + ((k + 1) - 1) * ldw]);
                 } else {
                     rowmax = zero;
                 }
                 //
                 if (imax < n) {
                     itemp = imax + iCamax(n - imax, &w[((imax + 1) - 1) + ((k + 1) - 1) * ldw], 1);
-                    dtemp = abs1[(w[(itemp - 1) + ((k + 1) - 1) * ldw]) - 1];
+                    dtemp = cabs1(w[(itemp - 1) + ((k + 1) - 1) * ldw]);
                     if (dtemp > rowmax) {
                         rowmax = dtemp;
                         jmax = itemp;
@@ -911,7 +912,7 @@ void Clahef_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                     d21 = w[((k + 1) - 1) + (k - 1) * ldw];
                     d11 = w[((k + 1) - 1) + ((k + 1) - 1) * ldw] / d21;
                     d22 = w[(k - 1) + (k - 1) * ldw] / conj(d21);
-                    t = one / (d11 * d22.real() - one);
+                    t = one / ((d11 * d22).real() - one);
                     //
                     //                 Update elements in columns A(k) and A(k+1) as
                     //                 dot products of rows of ( W(k) W(k+1) ) and columns

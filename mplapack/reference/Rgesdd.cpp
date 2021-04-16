@@ -92,7 +92,7 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
     INTEGER maxwrk = 0;
     INTEGER bdspac = 0;
     INTEGER mnthr = 0;
-    arr_1d<1, REAL> dum(fill0);
+    REAL dum[1];
     INTEGER ierr = 0;
     INTEGER lwork_Rgebrd_mn = 0;
     INTEGER lwork_Rgebrd_nn = 0;
@@ -130,35 +130,35 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
             }
             //
             //           Compute space preferred for each routine
-            Rgebrd(m, n, dum[1 - 1], m, dum[1 - 1], dum[1 - 1], dum[1 - 1], dum[1 - 1], dum[1 - 1], -1, ierr);
-            lwork_Rgebrd_mn = int(dum[1 - 1]);
+            Rgebrd(m, n, &dum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, ierr);
+            lwork_Rgebrd_mn = castINTEGER(dum[1 - 1]);
             //
-            Rgebrd(n, n, dum[1 - 1], n, dum[1 - 1], dum[1 - 1], dum[1 - 1], dum[1 - 1], dum[1 - 1], -1, ierr);
-            lwork_Rgebrd_nn = int(dum[1 - 1]);
+            Rgebrd(n, n, &dum[1 - 1], n, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, ierr);
+            lwork_Rgebrd_nn = castINTEGER(dum[1 - 1]);
             //
-            Rgeqrf(m, n, dum[1 - 1], m, dum[1 - 1], dum[1 - 1], -1, ierr);
-            lwork_Rgeqrf_mn = int(dum[1 - 1]);
+            Rgeqrf(m, n, &dum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], -1, ierr);
+            lwork_Rgeqrf_mn = castINTEGER(dum[1 - 1]);
             //
-            Rorgbr("Q", n, n, n, dum[1 - 1], n, dum[1 - 1], dum[1 - 1], -1, ierr);
-            lwork_Rorgbr_q_nn = int(dum[1 - 1]);
+            Rorgbr("Q", n, n, n, &dum[1 - 1], n, &dum[1 - 1], &dum[1 - 1], -1, ierr);
+            lwork_Rorgbr_q_nn = castINTEGER(dum[1 - 1]);
             //
-            Rorgqr(m, m, n, dum[1 - 1], m, dum[1 - 1], dum[1 - 1], -1, ierr);
-            lwork_Rorgqr_mm = int(dum[1 - 1]);
+            Rorgqr(m, m, n, &dum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], -1, ierr);
+            lwork_Rorgqr_mm = castINTEGER(dum[1 - 1]);
             //
-            Rorgqr(m, n, n, dum[1 - 1], m, dum[1 - 1], dum[1 - 1], -1, ierr);
-            lwork_Rorgqr_mn = int(dum[1 - 1]);
+            Rorgqr(m, n, n, &dum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], -1, ierr);
+            lwork_Rorgqr_mn = castINTEGER(dum[1 - 1]);
             //
-            Rormbr("P", "R", "T", n, n, n, dum[1 - 1], n, dum[1 - 1], dum[1 - 1], n, dum[1 - 1], -1, ierr);
-            lwork_Rormbr_prt_nn = int(dum[1 - 1]);
+            Rormbr("P", "R", "T", n, n, n, &dum[1 - 1], n, &dum[1 - 1], &dum[1 - 1], n, &dum[1 - 1], -1, ierr);
+            lwork_Rormbr_prt_nn = castINTEGER(dum[1 - 1]);
             //
-            Rormbr("Q", "L", "N", n, n, n, dum[1 - 1], n, dum[1 - 1], dum[1 - 1], n, dum[1 - 1], -1, ierr);
-            lwork_Rormbr_qln_nn = int(dum[1 - 1]);
+            Rormbr("Q", "L", "N", n, n, n, &dum[1 - 1], n, &dum[1 - 1], &dum[1 - 1], n, &dum[1 - 1], -1, ierr);
+            lwork_Rormbr_qln_nn = castINTEGER(dum[1 - 1]);
             //
-            Rormbr("Q", "L", "N", m, n, n, dum[1 - 1], m, dum[1 - 1], dum[1 - 1], m, dum[1 - 1], -1, ierr);
-            lwork_Rormbr_qln_mn = int(dum[1 - 1]);
+            Rormbr("Q", "L", "N", m, n, n, &dum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], m, &dum[1 - 1], -1, ierr);
+            lwork_Rormbr_qln_mn = castINTEGER(dum[1 - 1]);
             //
-            Rormbr("Q", "L", "N", m, m, n, dum[1 - 1], m, dum[1 - 1], dum[1 - 1], m, dum[1 - 1], -1, ierr);
-            lwork_Rormbr_qln_mm = int(dum[1 - 1]);
+            Rormbr("Q", "L", "N", m, m, n, &dum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], m, &dum[1 - 1], -1, ierr);
+            lwork_Rormbr_qln_mm = castINTEGER(dum[1 - 1]);
             //
             if (m >= mnthr) {
                 if (wntqn) {
@@ -249,35 +249,35 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
             }
             //
             //           Compute space preferred for each routine
-            Rgebrd(m, n, dum[1 - 1], m, dum[1 - 1], dum[1 - 1], dum[1 - 1], dum[1 - 1], dum[1 - 1], -1, ierr);
-            lwork_Rgebrd_mn = int(dum[1 - 1]);
+            Rgebrd(m, n, &dum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, ierr);
+            lwork_Rgebrd_mn = castINTEGER(dum[1 - 1]);
             //
-            Rgebrd(m, m, a, m, s, dum[1 - 1], dum[1 - 1], dum[1 - 1], dum[1 - 1], -1, ierr);
-            lwork_Rgebrd_mm = int(dum[1 - 1]);
+            Rgebrd(m, m, a, m, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, ierr);
+            lwork_Rgebrd_mm = castINTEGER(dum[1 - 1]);
             //
-            Rgelqf(m, n, a, m, dum[1 - 1], dum[1 - 1], -1, ierr);
-            lwork_Rgelqf_mn = int(dum[1 - 1]);
+            Rgelqf(m, n, a, m, &dum[1 - 1], &dum[1 - 1], -1, ierr);
+            lwork_Rgelqf_mn = castINTEGER(dum[1 - 1]);
             //
-            Rorglq(n, n, m, dum[1 - 1], n, dum[1 - 1], dum[1 - 1], -1, ierr);
-            lwork_Rorglq_nn = int(dum[1 - 1]);
+            Rorglq(n, n, m, &dum[1 - 1], n, &dum[1 - 1], &dum[1 - 1], -1, ierr);
+            lwork_Rorglq_nn = castINTEGER(dum[1 - 1]);
             //
-            Rorglq(m, n, m, a, m, dum[1 - 1], dum[1 - 1], -1, ierr);
-            lwork_Rorglq_mn = int(dum[1 - 1]);
+            Rorglq(m, n, m, a, m, &dum[1 - 1], &dum[1 - 1], -1, ierr);
+            lwork_Rorglq_mn = castINTEGER(dum[1 - 1]);
             //
-            Rorgbr("P", m, m, m, a, n, dum[1 - 1], dum[1 - 1], -1, ierr);
-            lwork_Rorgbr_p_mm = int(dum[1 - 1]);
+            Rorgbr("P", m, m, m, a, n, &dum[1 - 1], &dum[1 - 1], -1, ierr);
+            lwork_Rorgbr_p_mm = castINTEGER(dum[1 - 1]);
             //
-            Rormbr("P", "R", "T", m, m, m, dum[1 - 1], m, dum[1 - 1], dum[1 - 1], m, dum[1 - 1], -1, ierr);
-            lwork_Rormbr_prt_mm = int(dum[1 - 1]);
+            Rormbr("P", "R", "T", m, m, m, &dum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], m, &dum[1 - 1], -1, ierr);
+            lwork_Rormbr_prt_mm = castINTEGER(dum[1 - 1]);
             //
-            Rormbr("P", "R", "T", m, n, m, dum[1 - 1], m, dum[1 - 1], dum[1 - 1], m, dum[1 - 1], -1, ierr);
-            lwork_Rormbr_prt_mn = int(dum[1 - 1]);
+            Rormbr("P", "R", "T", m, n, m, &dum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], m, &dum[1 - 1], -1, ierr);
+            lwork_Rormbr_prt_mn = castINTEGER(dum[1 - 1]);
             //
-            Rormbr("P", "R", "T", n, n, m, dum[1 - 1], n, dum[1 - 1], dum[1 - 1], n, dum[1 - 1], -1, ierr);
-            lwork_Rormbr_prt_nn = int(dum[1 - 1]);
+            Rormbr("P", "R", "T", n, n, m, &dum[1 - 1], n, &dum[1 - 1], &dum[1 - 1], n, &dum[1 - 1], -1, ierr);
+            lwork_Rormbr_prt_nn = castINTEGER(dum[1 - 1]);
             //
-            Rormbr("Q", "L", "N", m, m, m, dum[1 - 1], m, dum[1 - 1], dum[1 - 1], m, dum[1 - 1], -1, ierr);
-            lwork_Rormbr_qln_mm = int(dum[1 - 1]);
+            Rormbr("Q", "L", "N", m, m, m, &dum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], m, &dum[1 - 1], -1, ierr);
+            lwork_Rormbr_qln_mm = castINTEGER(dum[1 - 1]);
             //
             if (n >= mnthr) {
                 if (wntqn) {
@@ -407,7 +407,7 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
     INTEGER ie = 0;
     INTEGER itauq = 0;
     INTEGER itaup = 0;
-    arr_1d<1, int> idum(fill0);
+    INTEGER idum[1];
     INTEGER ir = 0;
     INTEGER ldwrkr = 0;
     INTEGER iu = 0;
@@ -797,7 +797,7 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                 //              Set the right corner of U to identity matrix
                 //
                 if (m > n) {
-                    Rlaset("F", m - n, m - n, zero, one, u[((n + 1) - 1) + ((n + 1) - 1) * ldu], ldu);
+                    Rlaset("F", m - n, m - n, zero, one, &u[((n + 1) - 1) + ((n + 1) - 1) * ldu], ldu);
                 }
                 //
                 //              Overwrite U by left singular vectors of A and VT
@@ -1186,7 +1186,7 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                 //              Set the right corner of VT to identity matrix
                 //
                 if (n > m) {
-                    Rlaset("F", n - m, n - m, zero, one, vt[((m + 1) - 1) + ((m + 1) - 1) * ldvt], ldvt);
+                    Rlaset("F", n - m, n - m, zero, one, &vt[((m + 1) - 1) + ((m + 1) - 1) * ldvt], ldvt);
                 }
                 //
                 //              Overwrite U by left singular vectors of A and VT

@@ -44,7 +44,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
     INTEGER emptsw = 0;
     INTEGER notrot = 0;
     const REAL zero = 0.0;
-    arr_1d<5, REAL> fastr(fill0);
+    REAL fastr[5];
     INTEGER swband = 0;
     INTEGER kbl = 0;
     INTEGER nbl = 0;
@@ -208,7 +208,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                 for (p = igl; p <= min(igl + kbl - 1, n - 1); p = p + 1) {
                     //
                     //     .. de Rijk's pivoting
-                    q = iRamax(n - p + 1, sva[p - 1], 1) + p - 1;
+                    q = iRamax(n - p + 1, &sva[p - 1], 1) + p - 1;
                     if (p != q) {
                         Rswap(m, &a[(p - 1) * lda], 1, &a[(q - 1) * lda], 1);
                         if (rsvec) {
@@ -266,7 +266,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                         aapq = (Rdot(m, &a[(p - 1) * lda], 1, &a[(q - 1) * lda], 1) * d[p - 1] * d[q - 1] / aaqq) / aapp;
                                     } else {
                                         Rcopy(m, &a[(p - 1) * lda], 1, work, 1);
-                                        Rlascl("G", 0, 0, aapp, &d[p - 1], m, 1, work, lda, ierr);
+                                        Rlascl("G", 0, 0, aapp, d[p - 1], m, 1, work, lda, ierr);
                                         aapq = Rdot(m, work, 1, &a[(q - 1) * lda], 1) * d[q - 1] / aaqq;
                                     }
                                 } else {
@@ -275,7 +275,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                         aapq = (Rdot(m, &a[(p - 1) * lda], 1, &a[(q - 1) * lda], 1) * d[p - 1] * d[q - 1] / aaqq) / aapp;
                                     } else {
                                         Rcopy(m, &a[(q - 1) * lda], 1, work, 1);
-                                        Rlascl("G", 0, 0, aaqq, &d[q - 1], m, 1, work, lda, ierr);
+                                        Rlascl("G", 0, 0, aaqq, d[q - 1], m, 1, work, lda, ierr);
                                         aapq = Rdot(m, work, 1, &a[(p - 1) * lda], 1) * d[p - 1] / aapp;
                                     }
                                 }
@@ -505,7 +505,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                         aapq = (Rdot(m, &a[(p - 1) * lda], 1, &a[(q - 1) * lda], 1) * d[p - 1] * d[q - 1] / aaqq) / aapp;
                                     } else {
                                         Rcopy(m, &a[(p - 1) * lda], 1, work, 1);
-                                        Rlascl("G", 0, 0, aapp, &d[p - 1], m, 1, work, lda, ierr);
+                                        Rlascl("G", 0, 0, aapp, d[p - 1], m, 1, work, lda, ierr);
                                         aapq = Rdot(m, work, 1, &a[(q - 1) * lda], 1) * d[q - 1] / aaqq;
                                     }
                                 } else {
@@ -518,7 +518,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                         aapq = (Rdot(m, &a[(p - 1) * lda], 1, &a[(q - 1) * lda], 1) * d[p - 1] * d[q - 1] / aaqq) / aapp;
                                     } else {
                                         Rcopy(m, &a[(q - 1) * lda], 1, work, 1);
-                                        Rlascl("G", 0, 0, aaqq, &d[q - 1], m, 1, work, lda, ierr);
+                                        Rlascl("G", 0, 0, aaqq, d[q - 1], m, 1, work, lda, ierr);
                                         aapq = Rdot(m, work, 1, &a[(p - 1) * lda], 1) * d[p - 1] / aapp;
                                     }
                                 }
@@ -762,7 +762,7 @@ statement_1995:
     //
     //     Sort the vector D.
     for (p = 1; p <= n - 1; p = p + 1) {
-        q = iRamax(n - p + 1, sva[p - 1], 1) + p - 1;
+        q = iRamax(n - p + 1, &sva[p - 1], 1) + p - 1;
         if (p != q) {
             temp1 = sva[p - 1];
             sva[p - 1] = sva[q - 1];

@@ -54,7 +54,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
     INTEGER lworq = 0;
     INTEGER lwcon = 0;
     INTEGER lwsvd = 0;
-    arr_1d<1, REAL> rdummy(fill0);
+    REAL rdummy[1];
     INTEGER ierr = 0;
     INTEGER lwrk_Rgeqp3 = 0;
     INTEGER lwrk_Rormqr = 0;
@@ -190,13 +190,13 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
         lwsvd = max(5 * n, 1);
         if (lquery) {
             Rgeqp3(m, n, a, lda, iwork, rdummy, rdummy, -1, ierr);
-            lwrk_Rgeqp3 = int(rdummy[1 - 1]);
+            lwrk_Rgeqp3 = castINTEGER(rdummy[1 - 1]);
             if (wntus || wntur) {
                 Rormqr("L", "N", m, n, n, a, lda, rdummy, u, ldu, rdummy, -1, ierr);
-                lwrk_Rormqr = int(rdummy[1 - 1]);
+                lwrk_Rormqr = castINTEGER(rdummy[1 - 1]);
             } else if (wntua) {
                 Rormqr("L", "N", m, m, n, a, lda, rdummy, u, ldu, rdummy, -1, ierr);
-                lwrk_Rormqr = int(rdummy[1 - 1]);
+                lwrk_Rormqr = castINTEGER(rdummy[1 - 1]);
             } else {
                 lwrk_Rormqr = 0;
             }
@@ -207,15 +207,15 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             //            .. minimal and optimal sizes of the workspace if
             //            only the singular values are requested
             if (conda) {
-                minwrk = max(n + lwqp3, lwcon, lwsvd);
+                minwrk = max({n + lwqp3, lwcon, lwsvd});
             } else {
                 minwrk = max(n + lwqp3, lwsvd);
             }
             if (lquery) {
                 Rgesvd("N", "N", n, n, a, lda, s, u, ldu, v, ldv, rdummy, -1, ierr);
-                lwrk_Rgesvd = int(rdummy[1 - 1]);
+                lwrk_Rgesvd = castINTEGER(rdummy[1 - 1]);
                 if (conda) {
-                    optwrk = max(n + lwrk_Rgeqp3, n + lwcon, lwrk_Rgesvd);
+                    optwrk = max({n + lwrk_Rgeqp3, n + lwcon, lwrk_Rgesvd});
                 } else {
                     optwrk = max(n + lwrk_Rgeqp3, lwrk_Rgesvd);
                 }
@@ -224,9 +224,9 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             //            .. minimal and optimal sizes of the workspace if the
             //            singular values and the left singular vectors are requested
             if (conda) {
-                minwrk = n + max(lwqp3, lwcon, lwsvd, lworq);
+                minwrk = n + max({lwqp3, lwcon, lwsvd, lworq});
             } else {
-                minwrk = n + max(lwqp3, lwsvd, lworq);
+                minwrk = n + max({lwqp3, lwsvd, lworq});
             }
             if (lquery) {
                 if (rtrans) {
@@ -234,18 +234,18 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 } else {
                     Rgesvd("O", "N", n, n, a, lda, s, u, ldu, v, ldv, rdummy, -1, ierr);
                 }
-                lwrk_Rgesvd = int(rdummy[1 - 1]);
+                lwrk_Rgesvd = castINTEGER(rdummy[1 - 1]);
                 if (conda) {
-                    optwrk = n + max(lwrk_Rgeqp3, lwcon, lwrk_Rgesvd, lwrk_Rormqr);
+                    optwrk = n + max({lwrk_Rgeqp3, lwcon, lwrk_Rgesvd, lwrk_Rormqr});
                 } else {
-                    optwrk = n + max(lwrk_Rgeqp3, lwrk_Rgesvd, lwrk_Rormqr);
+                    optwrk = n + max({lwrk_Rgeqp3, lwrk_Rgesvd, lwrk_Rormqr});
                 }
             }
         } else if (rsvec && (!lsvec)) {
             //            .. minimal and optimal sizes of the workspace if the
             //            singular values and the right singular vectors are requested
             if (conda) {
-                minwrk = n + max(lwqp3, lwcon, lwsvd);
+                minwrk = n + max({lwqp3, lwcon, lwsvd});
             } else {
                 minwrk = n + max(lwqp3, lwsvd);
             }
@@ -255,9 +255,9 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 } else {
                     Rgesvd("N", "O", n, n, a, lda, s, u, ldu, v, ldv, rdummy, -1, ierr);
                 }
-                lwrk_Rgesvd = int(rdummy[1 - 1]);
+                lwrk_Rgesvd = castINTEGER(rdummy[1 - 1]);
                 if (conda) {
-                    optwrk = n + max(lwrk_Rgeqp3, lwcon, lwrk_Rgesvd);
+                    optwrk = n + max({lwrk_Rgeqp3, lwcon, lwrk_Rgesvd});
                 } else {
                     optwrk = n + max(lwrk_Rgeqp3, lwrk_Rgesvd);
                 }
@@ -266,7 +266,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             //            .. minimal and optimal sizes of the workspace if the
             //            full SVD is requested
             if (rtrans) {
-                minwrk = max(lwqp3, lwsvd, lworq);
+                minwrk = max({lwqp3, lwsvd, lworq});
                 if (conda) {
                     minwrk = max(minwrk, lwcon);
                 }
@@ -277,7 +277,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     //                   .. minimal workspace length for N/2 x N/2 Rgesvd
                     lwsvd2 = max(5 * (n / 2), 1);
                     lworq2 = max(n, 1);
-                    minwrk2 = max(lwqp3, n / 2 + lwqrf, n / 2 + lwsvd2, n / 2 + lworq2, lworq);
+                    minwrk2 = max({lwqp3, n / 2 + lwqrf, n / 2 + lwsvd2, n / 2 + lworq2, lworq});
                     if (conda) {
                         minwrk2 = max(minwrk2, lwcon);
                     }
@@ -285,7 +285,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     minwrk = max(minwrk, minwrk2);
                 }
             } else {
-                minwrk = max(lwqp3, lwsvd, lworq);
+                minwrk = max({lwqp3, lwsvd, lworq});
                 if (conda) {
                     minwrk = max(minwrk, lwcon);
                 }
@@ -295,7 +295,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     lwlqf = max(n / 2, 1);
                     lwsvd2 = max(5 * (n / 2), 1);
                     lworlq = max(n, 1);
-                    minwrk2 = max(lwqp3, n / 2 + lwlqf, n / 2 + lwsvd2, n / 2 + lworlq, lworq);
+                    minwrk2 = max({lwqp3, n / 2 + lwlqf, n / 2 + lwsvd2, n / 2 + lworlq, lworq});
                     if (conda) {
                         minwrk2 = max(minwrk2, lwcon);
                     }
@@ -306,20 +306,20 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             if (lquery) {
                 if (rtrans) {
                     Rgesvd("O", "A", n, n, a, lda, s, u, ldu, v, ldv, rdummy, -1, ierr);
-                    lwrk_Rgesvd = int(rdummy[1 - 1]);
-                    optwrk = max(lwrk_Rgeqp3, lwrk_Rgesvd, lwrk_Rormqr);
+                    lwrk_Rgesvd = castINTEGER(rdummy[1 - 1]);
+                    optwrk = max({lwrk_Rgeqp3, lwrk_Rgesvd, lwrk_Rormqr});
                     if (conda) {
                         optwrk = max(optwrk, lwcon);
                     }
                     optwrk += n;
                     if (wntva) {
                         Rgeqrf(n, n / 2, u, ldu, rdummy, rdummy, -1, ierr);
-                        lwrk_Rgeqrf = int(rdummy[1 - 1]);
+                        lwrk_Rgeqrf = castINTEGER(rdummy[1 - 1]);
                         Rgesvd("S", "O", n / 2, n / 2, v, ldv, s, u, ldu, v, ldv, rdummy, -1, ierr);
-                        lwrk_Rgesvd2 = int(rdummy[1 - 1]);
+                        lwrk_Rgesvd2 = castINTEGER(rdummy[1 - 1]);
                         Rormqr("R", "C", n, n, n / 2, u, ldu, rdummy, v, ldv, rdummy, -1, ierr);
-                        lwrk_Rormqr2 = int(rdummy[1 - 1]);
-                        optwrk2 = max(lwrk_Rgeqp3, n / 2 + lwrk_Rgeqrf, n / 2 + lwrk_Rgesvd2, n / 2 + lwrk_Rormqr2);
+                        lwrk_Rormqr2 = castINTEGER(rdummy[1 - 1]);
+                        optwrk2 = max({lwrk_Rgeqp3, n / 2 + lwrk_Rgeqrf, n / 2 + lwrk_Rgesvd2, n / 2 + lwrk_Rormqr2});
                         if (conda) {
                             optwrk2 = max(optwrk2, lwcon);
                         }
@@ -328,20 +328,20 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     }
                 } else {
                     Rgesvd("S", "O", n, n, a, lda, s, u, ldu, v, ldv, rdummy, -1, ierr);
-                    lwrk_Rgesvd = int(rdummy[1 - 1]);
-                    optwrk = max(lwrk_Rgeqp3, lwrk_Rgesvd, lwrk_Rormqr);
+                    lwrk_Rgesvd = castINTEGER(rdummy[1 - 1]);
+                    optwrk = max({lwrk_Rgeqp3, lwrk_Rgesvd, lwrk_Rormqr});
                     if (conda) {
                         optwrk = max(optwrk, lwcon);
                     }
                     optwrk += n;
                     if (wntva) {
                         Rgelqf(n / 2, n, u, ldu, rdummy, rdummy, -1, ierr);
-                        lwrk_Rgelqf = int(rdummy[1 - 1]);
+                        lwrk_Rgelqf = castINTEGER(rdummy[1 - 1]);
                         Rgesvd("S", "O", n / 2, n / 2, v, ldv, s, u, ldu, v, ldv, rdummy, -1, ierr);
-                        lwrk_Rgesvd2 = int(rdummy[1 - 1]);
+                        lwrk_Rgesvd2 = castINTEGER(rdummy[1 - 1]);
                         Rormlq("R", "N", n, n, n / 2, u, ldu, rdummy, v, ldv, rdummy, -1, ierr);
-                        lwrk_Rormlq = int(rdummy[1 - 1]);
-                        optwrk2 = max(lwrk_Rgeqp3, n / 2 + lwrk_Rgelqf, n / 2 + lwrk_Rgesvd2, n / 2 + lwrk_Rormlq);
+                        lwrk_Rormlq = castINTEGER(rdummy[1 - 1]);
+                        optwrk2 = max({lwrk_Rgeqp3, n / 2 + lwrk_Rgelqf, n / 2 + lwrk_Rgesvd2, n / 2 + lwrk_Rormlq});
                         if (conda) {
                             optwrk2 = max(optwrk2, lwcon);
                         }
@@ -404,7 +404,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             }
         }
         for (p = 1; p <= m - 1; p = p + 1) {
-            q = iRamax(m - p + 1, rwork[p - 1], 1) + p - 1;
+            q = iRamax(m - p + 1, &rwork[p - 1], 1) + p - 1;
             iwork[(n + p) - 1] = q;
             if (p != q) {
                 rtmp = rwork[p - 1];
@@ -445,13 +445,13 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             return;
         }
         //
-        if (rwork[1 - 1] > big / sqrt(m.real())) {
+        if (rwork[1 - 1] > big / sqrt(castREAL(m))) {
             //               .. to prevent overflow in the QR factorization, scale the
             //               matrix by 1/sqrt(M) if too large entry detected
-            Rlascl("G", 0, 0, sqrt(m.real()), one, m, n, a, lda, ierr);
+            Rlascl("G", 0, 0, sqrt(castREAL(m)), one, m, n, a, lda, ierr);
             ascaled = true;
         }
-        Rlaswp(n, a, lda, 1, m - 1, iwork[(n + 1) - 1], 1);
+        Rlaswp(n, a, lda, 1, m - 1, &iwork[(n + 1) - 1], 1);
     }
     //
     //    .. At this stage, preemptive scaling is done only to avoid column
@@ -466,10 +466,10 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             Mxerbla("Rgesvdq", -info);
             return;
         }
-        if (rtmp > big / sqrt(m.real())) {
+        if (rtmp > big / sqrt(castREAL(m))) {
             //             .. to prevent overflow in the QR factorization, scale the
             //             matrix by 1/sqrt(M) if too large entry detected
-            Rlascl("G", 0, 0, sqrt(m.real()), one, m, n, a, lda, ierr);
+            Rlascl("G", 0, 0, sqrt(castREAL(m)), one, m, n, a, lda, ierr);
             ascaled = true;
         }
     }
@@ -501,7 +501,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
         //        aggressive enforcement of lower numerical rank by introducing a
         //        backward error of the order of N*EPS*||A||_F.
         nr = 1;
-        rtmp = sqrt(n.real()) * epsln;
+        rtmp = sqrt(castREAL(n)) * epsln;
         for (p = 2; p <= n; p = p + 1) {
             if (abs(a[(p - 1) + (p - 1) * lda]) < (rtmp * abs(a[(1 - 1)]))) {
                 goto statement_3002;
@@ -555,9 +555,9 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 Rscal(p, one / rtmp, &v[(p - 1) * ldv], 1);
             }
             if (!(lsvec || rsvec)) {
-                Rpocon("U", nr, v, ldv, one, rtmp, work, iwork[(n + iwoff) - 1], ierr);
+                Rpocon("U", nr, v, ldv, one, rtmp, work, &iwork[(n + iwoff) - 1], ierr);
             } else {
-                Rpocon("U", nr, v, ldv, one, rtmp, &work[(n + 1) - 1], iwork[(n + iwoff) - 1], ierr);
+                Rpocon("U", nr, v, ldv, one, rtmp, &work[(n + 1) - 1], &iwork[(n + iwoff) - 1], ierr);
             }
             sconda = one / sqrt(rtmp);
             //           For NR=N, SCONDA is an estimate of SQRT(||(R^* * R)^(-1)||_1),
@@ -620,7 +620,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 }
             }
             if (nr > 1) {
-                Rlaset("U", nr - 1, nr - 1, zero, zero, u[(2 - 1) * ldu], ldu);
+                Rlaset("U", nr - 1, nr - 1, zero, zero, &u[(2 - 1) * ldu], ldu);
             }
             //           .. the left singular vectors not computed, the NR right singular
             //           vectors overwrite [U](1:NR,1:NR) as transposed. These
@@ -640,7 +640,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             //            .. copy R into [U] and overwrite [U] with the left singular vectors
             Rlacpy("U", nr, n, a, lda, u, ldu);
             if (nr > 1) {
-                Rlaset("L", nr - 1, nr - 1, zero, zero, u[(2 - 1)], ldu);
+                Rlaset("L", nr - 1, nr - 1, zero, zero, &u[(2 - 1)], ldu);
             }
             //            .. the right singular vectors not computed, the NR left singular
             //            vectors overwrite [U](1:NR,1:NR)
@@ -652,10 +652,10 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
         //
         //              (M x NR) or (M x N) or (M x M).
         if ((nr < m) && (!wntuf)) {
-            Rlaset("A", m - nr, nr, zero, zero, u[((nr + 1) - 1)], ldu);
+            Rlaset("A", m - nr, nr, zero, zero, &u[((nr + 1) - 1)], ldu);
             if (nr < n1) {
-                Rlaset("A", nr, n1 - nr, zero, zero, u[((nr + 1) - 1) * ldu], ldu);
-                Rlaset("A", m - nr, n1 - nr, zero, one, u[((nr + 1) - 1) + ((nr + 1) - 1) * ldu], ldu);
+                Rlaset("A", nr, n1 - nr, zero, zero, &u[((nr + 1) - 1) * ldu], ldu);
+                Rlaset("A", m - nr, n1 - nr, zero, one, &u[((nr + 1) - 1) + ((nr + 1) - 1) * ldu], ldu);
             }
         }
         //
@@ -666,7 +666,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             Rormqr("L", "N", m, n1, n, a, lda, work, u, ldu, &work[(n + 1) - 1], lwork - n, ierr);
         }
         if (rowprm && !wntuf) {
-            Rlaswp(n1, u, ldu, 1, m - 1, iwork[(n + 1) - 1], -1);
+            Rlaswp(n1, u, ldu, 1, m - 1, &iwork[(n + 1) - 1], -1);
         }
         //
     } else if (rsvec && (!lsvec)) {
@@ -800,10 +800,10 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 }
                 //
                 if ((nr < m) && !(wntuf)) {
-                    Rlaset("A", m - nr, nr, zero, zero, u[((nr + 1) - 1)], ldu);
+                    Rlaset("A", m - nr, nr, zero, zero, &u[((nr + 1) - 1)], ldu);
                     if (nr < n1) {
-                        Rlaset("A", nr, n1 - nr, zero, zero, u[((nr + 1) - 1) * ldu], ldu);
-                        Rlaset("A", m - nr, n1 - nr, zero, one, u[((nr + 1) - 1) + ((nr + 1) - 1) * ldu], ldu);
+                        Rlaset("A", nr, n1 - nr, zero, zero, &u[((nr + 1) - 1) * ldu], ldu);
+                        Rlaset("A", m - nr, n1 - nr, zero, one, &u[((nr + 1) - 1) + ((nr + 1) - 1) * ldu], ldu);
                     }
                 }
                 //
@@ -849,10 +849,10 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     }
                     //
                     if ((n < m) && !(wntuf)) {
-                        Rlaset("A", m - n, n, zero, zero, u[((n + 1) - 1)], ldu);
+                        Rlaset("A", m - n, n, zero, zero, &u[((n + 1) - 1)], ldu);
                         if (n < n1) {
-                            Rlaset("A", n, n1 - n, zero, zero, u[((n + 1) - 1) * ldu], ldu);
-                            Rlaset("A", m - n, n1 - n, zero, one, u[((n + 1) - 1) + ((n + 1) - 1) * ldu], ldu);
+                            Rlaset("A", n, n1 - n, zero, zero, &u[((n + 1) - 1) * ldu], ldu);
+                            Rlaset("A", m - n, n1 - n, zero, one, &u[((n + 1) - 1) + ((n + 1) - 1) * ldu], ldu);
                         }
                     }
                 } else {
@@ -864,9 +864,9 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                         }
                     }
                     if (nr > 1) {
-                        Rlaset("U", nr - 1, nr - 1, zero, zero, u[((nr + 2) - 1) * ldu], ldu);
+                        Rlaset("U", nr - 1, nr - 1, zero, zero, &u[((nr + 2) - 1) * ldu], ldu);
                     }
-                    Rgeqrf(n, nr, u[((nr + 1) - 1) * ldu], ldu, &work[(n + 1) - 1], &work[(n + nr + 1) - 1], lwork - n - nr, ierr);
+                    Rgeqrf(n, nr, &u[((nr + 1) - 1) * ldu], ldu, &work[(n + 1) - 1], &work[(n + nr + 1) - 1], lwork - n - nr, ierr);
                     for (p = 1; p <= nr; p = p + 1) {
                         for (q = 1; q <= n; q = q + 1) {
                             v[(q - 1) + (p - 1) * ldv] = u[(p - 1) + ((nr + q) - 1) * ldu];
@@ -877,14 +877,14 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     Rlaset("A", n - nr, nr, zero, zero, &v[((nr + 1) - 1)], ldv);
                     Rlaset("A", nr, n - nr, zero, zero, &v[((nr + 1) - 1) * ldv], ldv);
                     Rlaset("A", n - nr, n - nr, zero, one, &v[((nr + 1) - 1) + ((nr + 1) - 1) * ldv], ldv);
-                    Rormqr("R", "C", n, n, nr, u[((nr + 1) - 1) * ldu], ldu, &work[(n + 1) - 1], v, ldv, &work[(n + nr + 1) - 1], lwork - n - nr, ierr);
+                    Rormqr("R", "C", n, n, nr, &u[((nr + 1) - 1) * ldu], ldu, &work[(n + 1) - 1], v, ldv, &work[(n + nr + 1) - 1], lwork - n - nr, ierr);
                     Rlapmt(false, n, n, v, ldv, iwork);
                     //                 (M x NR) or (M x N) or (M x M).
                     if ((nr < m) && !(wntuf)) {
-                        Rlaset("A", m - nr, nr, zero, zero, u[((nr + 1) - 1)], ldu);
+                        Rlaset("A", m - nr, nr, zero, zero, &u[((nr + 1) - 1)], ldu);
                         if (nr < n1) {
-                            Rlaset("A", nr, n1 - nr, zero, zero, u[((nr + 1) - 1) * ldu], ldu);
-                            Rlaset("A", m - nr, n1 - nr, zero, one, u[((nr + 1) - 1) + ((nr + 1) - 1) * ldu], ldu);
+                            Rlaset("A", nr, n1 - nr, zero, zero, &u[((nr + 1) - 1) * ldu], ldu);
+                            Rlaset("A", m - nr, n1 - nr, zero, one, &u[((nr + 1) - 1) + ((nr + 1) - 1) * ldu], ldu);
                         }
                     }
                 }
@@ -907,10 +907,10 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 //               .. now [V](1:NR,1:N) contains V(1:N,1:NR)**T
                 //              (M x NR) or (M x N) or (M x M).
                 if ((nr < m) && !(wntuf)) {
-                    Rlaset("A", m - nr, nr, zero, zero, u[((nr + 1) - 1)], ldu);
+                    Rlaset("A", m - nr, nr, zero, zero, &u[((nr + 1) - 1)], ldu);
                     if (nr < n1) {
-                        Rlaset("A", nr, n1 - nr, zero, zero, u[((nr + 1) - 1) * ldu], ldu);
-                        Rlaset("A", m - nr, n1 - nr, zero, one, u[((nr + 1) - 1) + ((nr + 1) - 1) * ldu], ldu);
+                        Rlaset("A", nr, n1 - nr, zero, zero, &u[((nr + 1) - 1) * ldu], ldu);
+                        Rlaset("A", m - nr, n1 - nr, zero, one, &u[((nr + 1) - 1) + ((nr + 1) - 1) * ldu], ldu);
                     }
                 }
                 //
@@ -939,19 +939,19 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     //                 are in [U](1:N,1:N)
                     //                 (M x N1), i.e. (M x N) or (M x M).
                     if ((n < m) && !(wntuf)) {
-                        Rlaset("A", m - n, n, zero, zero, u[((n + 1) - 1)], ldu);
+                        Rlaset("A", m - n, n, zero, zero, &u[((n + 1) - 1)], ldu);
                         if (n < n1) {
-                            Rlaset("A", n, n1 - n, zero, zero, u[((n + 1) - 1) * ldu], ldu);
-                            Rlaset("A", m - n, n1 - n, zero, one, u[((n + 1) - 1) + ((n + 1) - 1) * ldu], ldu);
+                            Rlaset("A", n, n1 - n, zero, zero, &u[((n + 1) - 1) * ldu], ldu);
+                            Rlaset("A", m - n, n1 - n, zero, one, &u[((n + 1) - 1) + ((n + 1) - 1) * ldu], ldu);
                         }
                     }
                 } else {
-                    Rlacpy("U", nr, n, a, lda, u[((nr + 1) - 1)], ldu);
+                    Rlacpy("U", nr, n, a, lda, &u[((nr + 1) - 1)], ldu);
                     if (nr > 1) {
-                        Rlaset("L", nr - 1, nr - 1, zero, zero, u[((nr + 2) - 1)], ldu);
+                        Rlaset("L", nr - 1, nr - 1, zero, zero, &u[((nr + 2) - 1)], ldu);
                     }
-                    Rgelqf(nr, n, u[((nr + 1) - 1)], ldu, &work[(n + 1) - 1], &work[(n + nr + 1) - 1], lwork - n - nr, ierr);
-                    Rlacpy("L", nr, nr, u[((nr + 1) - 1)], ldu, v, ldv);
+                    Rgelqf(nr, n, &u[((nr + 1) - 1)], ldu, &work[(n + 1) - 1], &work[(n + nr + 1) - 1], lwork - n - nr, ierr);
+                    Rlacpy("L", nr, nr, &u[((nr + 1) - 1)], ldu, v, ldv);
                     if (nr > 1) {
                         Rlaset("U", nr - 1, nr - 1, zero, zero, &v[(2 - 1) * ldv], ldv);
                     }
@@ -959,14 +959,14 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     Rlaset("A", n - nr, nr, zero, zero, &v[((nr + 1) - 1)], ldv);
                     Rlaset("A", nr, n - nr, zero, zero, &v[((nr + 1) - 1) * ldv], ldv);
                     Rlaset("A", n - nr, n - nr, zero, one, &v[((nr + 1) - 1) + ((nr + 1) - 1) * ldv], ldv);
-                    Rormlq("R", "N", n, n, nr, u[((nr + 1) - 1)], ldu, &work[(n + 1) - 1], v, ldv, &work[(n + nr + 1) - 1], lwork - n - nr, ierr);
+                    Rormlq("R", "N", n, n, nr, &u[((nr + 1) - 1)], ldu, &work[(n + 1) - 1], v, ldv, &work[(n + nr + 1) - 1], lwork - n - nr, ierr);
                     Rlapmt(false, n, n, v, ldv, iwork);
                     //              (M x NR) or (M x N) or (M x M).
                     if ((nr < m) && !(wntuf)) {
-                        Rlaset("A", m - nr, nr, zero, zero, u[((nr + 1) - 1)], ldu);
+                        Rlaset("A", m - nr, nr, zero, zero, &u[((nr + 1) - 1)], ldu);
                         if (nr < n1) {
-                            Rlaset("A", nr, n1 - nr, zero, zero, u[((nr + 1) - 1) * ldu], ldu);
-                            Rlaset("A", m - nr, n1 - nr, zero, one, u[((nr + 1) - 1) + ((nr + 1) - 1) * ldu], ldu);
+                            Rlaset("A", nr, n1 - nr, zero, zero, &u[((nr + 1) - 1) * ldu], ldu);
+                            Rlaset("A", m - nr, n1 - nr, zero, one, &u[((nr + 1) - 1) + ((nr + 1) - 1) * ldu], ldu);
                         }
                     }
                 }
@@ -981,7 +981,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             Rormqr("L", "N", m, n1, n, a, lda, work, u, ldu, &work[(n + 1) - 1], lwork - n, ierr);
         }
         if (rowprm && !wntuf) {
-            Rlaswp(n1, u, ldu, 1, m - 1, iwork[(n + 1) - 1], -1);
+            Rlaswp(n1, u, ldu, 1, m - 1, &iwork[(n + 1) - 1], -1);
         }
         //
         //     ... end of the "full SVD" branch
@@ -1001,12 +1001,12 @@ statement_4002:
     //     .. if numerical rank deficiency is detected, the truncated
     //     singular values are set to zero.
     if (nr < n) {
-        Rlaset("G", n - nr, 1, zero, zero, s[(nr + 1) - 1], n);
+        Rlaset("G", n - nr, 1, zero, zero, &s[(nr + 1) - 1], n);
     }
     //     .. undo scaling; this may cause overflow in the largest singular
     //     values.
     if (ascaled) {
-        Rlascl("G", 0, 0, one, sqrt(m.real()), nr, 1, s, n, ierr);
+        Rlascl("G", 0, 0, one, sqrt(castREAL(m)), nr, 1, s, n, ierr);
     }
     if (conda) {
         rwork[1 - 1] = sconda;

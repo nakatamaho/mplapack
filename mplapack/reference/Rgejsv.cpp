@@ -136,7 +136,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         info = -13;
     } else if (rsvec && (ldv < n)) {
         info = -15;
-    } else if ((!(lsvec || rsvec || errest) && (lwork < max(7, 4 * n + 1, 2 * m + n))) || (!(lsvec || rsvec) && errest && (lwork < max(7, 4 * n + n * n, 2 * m + n))) || (lsvec && (!rsvec) && (lwork < max(7, 2 * m + n, 4 * n + 1))) || (rsvec && (!lsvec) && (lwork < max(7, 2 * m + n, 4 * n + 1))) || (lsvec && rsvec && (!jracc) && (lwork < max(2 * m + n, 6 * n + 2 * n * n))) || (lsvec && rsvec && jracc && lwork < max(2 * m + n, 4 * n + n * n, 2 * n + n * n + 6))) {
+    } else if ((!(lsvec || rsvec || errest) && (lwork < max({(INTEGER)7, 4 * n + 1, 2 * m + n}))) || (!(lsvec || rsvec) && errest && (lwork < max({(INTEGER)7, 4 * n + n * n, 2 * m + n}))) || (lsvec && (!rsvec) && (lwork < max({(INTEGER)7, 2 * m + n, 4 * n + 1}))) || (rsvec && (!lsvec) && (lwork < max({(INTEGER)7, 2 * m + n, 4 * n + 1}))) || (lsvec && rsvec && (!jracc) && (lwork < max({2 * m + n, 6 * n + 2 * n * n}))) || (lsvec && rsvec && jracc && lwork < max({2 * m + n, 4 * n + n * n, 2 * n + n * n + 6}))) {
         info = -17;
     } else {
         //        #:)
@@ -152,8 +152,8 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //     Quick return for void matrix (Y3K safe)
     // #:)
     if ((m == 0) || (n == 0)) {
-        iwork[(3 - 1) * ldiwork] = 0;
-        work[(7 - 1) * ldwork] = 0;
+        iwork[0] = iwork[1] = iwork[2] = 0;
+        work[0] = work[1] = work[2] = work[3] = work[4] = work[5] = work[6] = 0.0;
         return;
     }
     //
@@ -182,7 +182,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //     overflow. It is possible that this scaling pushes the smallest
     //     column norm left from the underflow threshold (extreme case).
     //
-    scalem = one / sqrt(m.real() * n.real());
+    scalem = one / sqrt(castREAL(m * n));
     noscal = true;
     goscal = true;
     for (p = 1; p <= n; p = p + 1) {
@@ -270,7 +270,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             if (n1 != n) {
                 Rgeqrf(m, n, u, ldu, work, &work[(n + 1) - 1], lwork - n, ierr);
                 Rorgqr(m, n1, 1, u, ldu, work, &work[(n + 1) - 1], lwork - n, ierr);
-                Rcopy(m, &a[(1 - 1)], 1, u[(1 - 1)], 1);
+                Rcopy(m, &a[(1 - 1)], 1, &u[(1 - 1)], 1);
             }
         }
         if (rsvec) {
@@ -330,16 +330,16 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 //              in one pass through the vector
                 work[(m + n + p) - 1] = xsc * scalem;
                 work[(n + p) - 1] = xsc * (scalem * sqrt(temp1));
-                aatmax = max(aatmax, &work[(n + p) - 1]);
+                aatmax = max(aatmax, work[(n + p) - 1]);
                 if (work[(n + p) - 1] != zero) {
-                    aatmin = min(aatmin, &work[(n + p) - 1]);
+                    aatmin = min(aatmin, work[(n + p) - 1]);
                 }
             }
         } else {
             for (p = 1; p <= m; p = p + 1) {
-        work[(m + n + p)-1] = scalem * abs(a[(p-1)+(iRamax(n-1)*lda]);
-        aatmax = max(aatmax, &work[(m + n + p)-1]);
-        aatmin = min(aatmin, &work[(m + n + p)-1]);
+                work[(m + n + p) - 1] = scalem * abs(a[(p - 1) + (iRamax(n, &a[(p - 1)], lda))]);
+                aatmax = max(aatmax, work[(m + n + p) - 1]);
+                aatmin = min(aatmin, work[(m + n + p) - 1]);
             }
         }
         //
@@ -365,10 +365,10 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         for (p = 1; p <= n; p = p + 1) {
             big1 = (pow2((sva[p - 1] / xsc))) * temp1;
             if (big1 != zero) {
-                entra += big1 * dlog[big1 - 1];
+                entra += big1 * log(big);
             }
         }
-        entra = -entra / dlog[n.real() - 1];
+        entra = -entra / log(castREAL(n - 1));
         //
         //        Now, SVA().^2/Trace(A^t * A) is a poINTEGER in the probability simplex.
         //        It is derived from the diagonal of  A^t * A.  Do the same with the
@@ -380,10 +380,10 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         for (p = n + 1; p <= n + m; p = p + 1) {
             big1 = (pow2((work[p - 1] / xsc))) * temp1;
             if (big1 != zero) {
-                entrat += big1 * dlog[big1 - 1];
+                entrat += big1 * log(big1);
             }
         }
-        entrat = -entrat / dlog[m.real() - 1];
+        entrat = -entrat / log(castREAL(m - 1));
         //
         //        Analyze the entropies and decide A or A^t. Smaller entropy
         //        usually means better input for the algorithm.
@@ -436,7 +436,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //     one should use Rgesvj instead of Rgejsv.
     //
     big1 = sqrt(big);
-    temp1 = sqrt(big / n.real());
+    temp1 = sqrt(big / castREAL(n));
     //
     Rlascl("G", 0, 0, aapp, temp1, n, 1, sva, n, ierr);
     if (aaqq > (aapp * sfmin)) {
@@ -500,7 +500,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 work[(m + n + q) - 1] = temp1;
             }
         }
-        Rlaswp(n, a, lda, 1, m - 1, iwork[(2 * n + 1) - 1], 1);
+        Rlaswp(n, a, lda, 1, m - 1, &iwork[(2 * n + 1) - 1], 1);
     }
     //
     //     End of the preparation phase (scaling, optional sorting and
@@ -538,7 +538,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         //        sigma_i < N*EPSLN*||A|| are flushed to zero. This is an
         //        aggressive enforcement of lower numerical rank by introducing a
         //        backward error of the order of N*EPSLN*||A||.
-        temp1 = sqrt(n.real()) * epsln;
+        temp1 = sqrt(castREAL(n)) * epsln;
         for (p = 2; p <= n; p = p + 1) {
             if (abs(a[(p - 1) + (p - 1) * lda]) >= (temp1 * abs(a[(1 - 1)]))) {
                 nr++;
@@ -586,7 +586,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             temp1 = abs(a[(p - 1) + (p - 1) * lda]) / sva[iwork[p - 1] - 1];
             maxprj = min(maxprj, temp1);
         }
-        if (pow2(maxprj) >= one - n.real() * epsln) {
+        if (pow2(maxprj) >= one - castREAL(n) * epsln) {
             almort = true;
         }
     }
@@ -604,15 +604,15 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     temp1 = sva[iwork[p - 1] - 1];
                     Rscal(p, one / temp1, &v[(p - 1) * ldv], 1);
                 }
-                Rpocon("U", n, v, ldv, one, temp1, &work[(n + 1) - 1], iwork[(2 * n + m + 1) - 1], ierr);
+                Rpocon("U", n, v, ldv, one, temp1, &work[(n + 1) - 1], &iwork[(2 * n + m + 1) - 1], ierr);
             } else if (lsvec) {
                 //              .. U is available as workspace
                 Rlacpy("U", n, n, a, lda, u, ldu);
                 for (p = 1; p <= n; p = p + 1) {
                     temp1 = sva[iwork[p - 1] - 1];
-                    Rscal(p, one / temp1, u[(p - 1) * ldu], 1);
+                    Rscal(p, one / temp1, &u[(p - 1) * ldu], 1);
                 }
-                Rpocon("U", n, u, ldu, one, temp1, &work[(n + 1) - 1], iwork[(2 * n + m + 1) - 1], ierr);
+                Rpocon("U", n, u, ldu, one, temp1, &work[(n + 1) - 1], &iwork[(2 * n + m + 1) - 1], ierr);
             } else {
                 Rlacpy("U", n, n, a, lda, &work[(n + 1) - 1], n);
                 for (p = 1; p <= n; p = p + 1) {
@@ -620,7 +620,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     Rscal(p, one / temp1, &work[(n + (p - 1) * n + 1) - 1], 1);
                 }
                 //           .. the columns of R are scaled to have unit Euclidean lengths.
-                Rpocon("U", n, &work[(n + 1) - 1], n, one, temp1, &work[(n + n * n + 1) - 1], iwork[(2 * n + m + 1) - 1], ierr);
+                Rpocon("U", n, &work[(n + 1) - 1], n, one, temp1, &work[(n + n * n + 1) - 1], &iwork[(2 * n + m + 1) - 1], ierr);
             }
             sconda = one / sqrt(temp1);
             //           SCONDA is an estimate of DSQRT(||(R^t * R)^(-1)||_1).
@@ -660,12 +660,12 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             //
             if (l2pert) {
                 //              XSC = DSQRT(SMALL)
-                xsc = epsln / n.real();
+                xsc = epsln / castREAL(n);
                 for (q = 1; q <= nr; q = q + 1) {
                     temp1 = xsc * abs(a[(q - 1) + (q - 1) * lda]);
                     for (p = 1; p <= n; p = p + 1) {
                         if (((p > q) && (abs(a[(p - 1) + (q - 1) * lda]) <= temp1)) || (p < q)) {
-                            a[(p - 1) + (q - 1) * lda] = sign(temp1, &a[(p - 1) + (q - 1) * lda]);
+                            a[(p - 1) + (q - 1) * lda] = sign(temp1, a[(p - 1) + (q - 1) * lda]);
                         }
                     }
                 }
@@ -690,12 +690,12 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         //           to drown denormals
         if (l2pert) {
             //              XSC = DSQRT(SMALL)
-            xsc = epsln / n.real();
+            xsc = epsln / castREAL(n);
             for (q = 1; q <= nr; q = q + 1) {
                 temp1 = xsc * abs(a[(q - 1) + (q - 1) * lda]);
                 for (p = 1; p <= nr; p = p + 1) {
                     if (((p > q) && (abs(a[(p - 1) + (q - 1) * lda]) <= temp1)) || (p < q)) {
-                        a[(p - 1) + (q - 1) * lda] = sign(temp1, &a[(p - 1) + (q - 1) * lda]);
+                        a[(p - 1) + (q - 1) * lda] = sign(temp1, a[(p - 1) + (q - 1) * lda]);
                     }
                 }
             }
@@ -710,7 +710,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         Rgesvj("L", "NoU", "NoV", nr, nr, a, lda, sva, n, v, ldv, work, lwork, info);
         //
         scalem = work[1 - 1];
-        numrank = idnint[work[2 - 1] - 1];
+        numrank = nint(work[2 - 1]);
         //
     } else if (rsvec && (!lsvec)) {
         //
@@ -726,7 +726,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             //
             Rgesvj("L", "U", "N", n, nr, v, ldv, sva, nr, a, lda, work, lwork, info);
             scalem = work[1 - 1];
-            numrank = idnint[work[2 - 1] - 1];
+            numrank = castINTEGER(work[2 - 1]);
             //
         } else {
             //
@@ -745,7 +745,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             //
             Rgesvj("Lower", "U", "N", nr, nr, v, ldv, sva, nr, u, ldu, &work[(n + 1) - 1], lwork, info);
             scalem = work[(n + 1) - 1];
-            numrank = idnint[(work[(n + 2) - 1]) - 1];
+            numrank = nint(work[(n + 2) - 1]);
             if (nr < n) {
                 Rlaset("A", n - nr, nr, zero, zero, &v[((nr + 1) - 1)], ldv);
                 Rlaset("A", nr, n - nr, zero, zero, &v[((nr + 1) - 1) * ldv], ldv);
@@ -772,38 +772,38 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         //        .. second preconditioning step to avoid need to accumulate
         //        Jacobi rotations in the Jacobi iterations.
         for (p = 1; p <= nr; p = p + 1) {
-            Rcopy(n - p + 1, &a[(p - 1) + (p - 1) * lda], lda, u[(p - 1) + (p - 1) * ldu], 1);
+            Rcopy(n - p + 1, &a[(p - 1) + (p - 1) * lda], lda, &u[(p - 1) + (p - 1) * ldu], 1);
         }
-        Rlaset("Upper", nr - 1, nr - 1, zero, zero, u[(2 - 1) * ldu], ldu);
+        Rlaset("Upper", nr - 1, nr - 1, zero, zero, &u[(2 - 1) * ldu], ldu);
         //
         Rgeqrf(n, nr, u, ldu, &work[(n + 1) - 1], &work[(2 * n + 1) - 1], lwork - 2 * n, ierr);
         //
         for (p = 1; p <= nr - 1; p = p + 1) {
-            Rcopy(nr - p, u[(p - 1) + ((p + 1) - 1) * ldu], ldu, u[((p + 1) - 1) + (p - 1) * ldu], 1);
+            Rcopy(nr - p, &u[(p - 1) + ((p + 1) - 1) * ldu], ldu, &u[((p + 1) - 1) + (p - 1) * ldu], 1);
         }
-        Rlaset("Upper", nr - 1, nr - 1, zero, zero, u[(2 - 1) * ldu], ldu);
+        Rlaset("Upper", nr - 1, nr - 1, zero, zero, &u[(2 - 1) * ldu], ldu);
         //
         Rgesvj("Lower", "U", "N", nr, nr, u, ldu, sva, nr, a, lda, &work[(n + 1) - 1], lwork - n, info);
         scalem = work[(n + 1) - 1];
-        numrank = idnint[(work[(n + 2) - 1]) - 1];
+        numrank = nint(work[(n + 2) - 1]);
         //
         if (nr < m) {
-            Rlaset("A", m - nr, nr, zero, zero, u[((nr + 1) - 1)], ldu);
+            Rlaset("A", m - nr, nr, zero, zero, &u[((nr + 1) - 1)], ldu);
             if (nr < n1) {
-                Rlaset("A", nr, n1 - nr, zero, zero, u[((nr + 1) - 1) * ldu], ldu);
-                Rlaset("A", m - nr, n1 - nr, zero, one, u[((nr + 1) - 1) + ((nr + 1) - 1) * ldu], ldu);
+                Rlaset("A", nr, n1 - nr, zero, zero, &u[((nr + 1) - 1) * ldu], ldu);
+                Rlaset("A", m - nr, n1 - nr, zero, one, &u[((nr + 1) - 1) + ((nr + 1) - 1) * ldu], ldu);
             }
         }
         //
         Rormqr("Left", "No Tr", m, n1, n, a, lda, work, u, ldu, &work[(n + 1) - 1], lwork - n, ierr);
         //
         if (rowpiv) {
-            Rlaswp(n1, u, ldu, 1, m - 1, iwork[(2 * n + 1) - 1], -1);
+            Rlaswp(n1, u, ldu, 1, m - 1, &iwork[(2 * n + 1) - 1], -1);
         }
         //
         for (p = 1; p <= n1; p = p + 1) {
-            xsc = one / Rnrm2(m, u[(p - 1) * ldu], 1);
-            Rscal(m, xsc, u[(p - 1) * ldu], 1);
+            xsc = one / Rnrm2(m, &u[(p - 1) * ldu], 1);
+            Rscal(m, xsc, &u[(p - 1) * ldu], 1);
         }
         //
         if (transp) {
@@ -847,7 +847,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                         temp1 = xsc * abs(v[(q - 1) + (q - 1) * ldv]);
                         for (p = 1; p <= n; p = p + 1) {
                             if ((p > q) && (abs(v[(p - 1) + (q - 1) * ldv]) <= temp1) || (p < q)) {
-                                v[(p - 1) + (q - 1) * ldv] = sign(temp1, &v[(p - 1) + (q - 1) * ldv]);
+                                v[(p - 1) + (q - 1) * ldv] = sign(temp1, v[(p - 1) + (q - 1) * ldv]);
                             }
                             if (p < q) {
                                 v[(p - 1) + (q - 1) * ldv] = -v[(p - 1) + (q - 1) * ldv];
@@ -867,14 +867,14 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     temp1 = Rnrm2(nr - p + 1, &work[(2 * n + (p - 1) * nr + p) - 1], 1);
                     Rscal(nr - p + 1, one / temp1, &work[(2 * n + (p - 1) * nr + p) - 1], 1);
                 }
-                Rpocon("Lower", nr, &work[(2 * n + 1) - 1], nr, one, temp1, &work[(2 * n + nr * nr + 1) - 1], iwork[(m + 2 * n + 1) - 1], ierr);
+                Rpocon("Lower", nr, &work[(2 * n + 1) - 1], nr, one, temp1, &work[(2 * n + nr * nr + 1) - 1], &iwork[(m + 2 * n + 1) - 1], ierr);
                 condr1 = one / sqrt(temp1);
                 //           .. here need a second opinion on the condition number
                 //           .. then assume worst case scenario
                 //           R1 is OK for inverse <=> CONDR1 .LT. DBLE(N)
                 //           more conservative    <=> CONDR1 .LT. DSQRT(DBLE(N))
                 //
-                cond_ok = sqrt(nr.real());
+                cond_ok = sqrt(castREAL(nr));
                 //[TP]       COND_OK is a tuning parameter.
                 //
                 if (condr1 < cond_ok) {
@@ -890,7 +890,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                             for (q = 1; q <= p - 1; q = q + 1) {
                                 temp1 = xsc * min(abs(v[(p - 1) + (p - 1) * ldv]), abs(v[(q - 1) + (q - 1) * ldv]));
                                 if (abs(v[(q - 1) + (p - 1) * ldv]) <= temp1) {
-                                    v[(q - 1) + (p - 1) * ldv] = sign(temp1, &v[(q - 1) + (p - 1) * ldv]);
+                                    v[(q - 1) + (p - 1) * ldv] = sign(temp1, v[(q - 1) + (p - 1) * ldv]);
                                 }
                             }
                         }
@@ -921,7 +921,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     for (p = 1; p <= nr; p = p + 1) {
                         iwork[(n + p) - 1] = 0;
                     }
-                    Rgeqp3(n, nr, v, ldv, iwork[(n + 1) - 1], &work[(n + 1) - 1], &work[(2 * n + 1) - 1], lwork - 2 * n, ierr);
+                    Rgeqp3(n, nr, v, ldv, &iwork[(n + 1) - 1], &work[(n + 1) - 1], &work[(2 * n + 1) - 1], lwork - 2 * n, ierr);
                     //*               CALL Rgeqrf( N, NR, V, LDV, WORK(N+1), WORK(2*N+1),
                     //*     $              LWORK-2*N, IERR )
                     if (l2pert) {
@@ -930,7 +930,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                             for (q = 1; q <= p - 1; q = q + 1) {
                                 temp1 = xsc * min(abs(v[(p - 1) + (p - 1) * ldv]), abs(v[(q - 1) + (q - 1) * ldv]));
                                 if (abs(v[(q - 1) + (p - 1) * ldv]) <= temp1) {
-                                    v[(q - 1) + (p - 1) * ldv] = sign(temp1, &v[(q - 1) + (p - 1) * ldv]);
+                                    v[(q - 1) + (p - 1) * ldv] = sign(temp1, v[(q - 1) + (p - 1) * ldv]);
                                 }
                             }
                         }
@@ -943,7 +943,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                         for (p = 2; p <= nr; p = p + 1) {
                             for (q = 1; q <= p - 1; q = q + 1) {
                                 temp1 = xsc * min(abs(v[(p - 1) + (p - 1) * ldv]), abs(v[(q - 1) + (q - 1) * ldv]));
-                                v[(p - 1) + (q - 1) * ldv] = -sign(temp1, &v[(q - 1) + (p - 1) * ldv]);
+                                v[(p - 1) + (q - 1) * ldv] = -sign(temp1, v[(q - 1) + (p - 1) * ldv]);
                             }
                         }
                     } else {
@@ -957,7 +957,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                         temp1 = Rnrm2(p, &work[(2 * n + n * nr + nr + p) - 1], nr);
                         Rscal(p, one / temp1, &work[(2 * n + n * nr + nr + p) - 1], nr);
                     }
-                    Rpocon("L", nr, &work[(2 * n + n * nr + nr + 1) - 1], nr, one, temp1, &work[(2 * n + n * nr + nr + nr * nr + 1) - 1], iwork[(m + 2 * n + 1) - 1], ierr);
+                    Rpocon("L", nr, &work[(2 * n + n * nr + nr + 1) - 1], nr, one, temp1, &work[(2 * n + n * nr + nr + nr * nr + 1) - 1], &iwork[(m + 2 * n + 1) - 1], ierr);
                     condr2 = one / sqrt(temp1);
                     //
                     if (condr2 >= cond_ok) {
@@ -978,7 +978,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                         temp1 = xsc * v[(q - 1) + (q - 1) * ldv];
                         for (p = 1; p <= q - 1; p = p + 1) {
                             //                    V(p,q) = - DSIGN( TEMP1, V(q,p) )
-                            v[(p - 1) + (q - 1) * ldv] = -sign(temp1, &v[(p - 1) + (q - 1) * ldv]);
+                            v[(p - 1) + (q - 1) * ldv] = -sign(temp1, v[(p - 1) + (q - 1) * ldv]);
                         }
                     }
                 } else {
@@ -995,9 +995,9 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     //
                     Rgesvj("L", "U", "N", nr, nr, v, ldv, sva, nr, u, ldu, &work[(2 * n + n * nr + nr + 1) - 1], lwork - 2 * n - n * nr - nr, info);
                     scalem = work[(2 * n + n * nr + nr + 1) - 1];
-                    numrank = idnint[(work[(2 * n + n * nr + nr + 2) - 1]) - 1];
+                    numrank = nint(work[(2 * n + n * nr + nr + 2) - 1]);
                     for (p = 1; p <= nr; p = p + 1) {
-                        Rcopy(nr, &v[(p - 1) * ldv], 1, u[(p - 1) * ldu], 1);
+                        Rcopy(nr, &v[(p - 1) * ldv], 1, &u[(p - 1) * ldu], 1);
                         Rscal(nr, sva[p - 1], &v[(p - 1) * ldv], 1);
                     }
                     //
@@ -1033,10 +1033,10 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     //              R2=L3*Q3), pre-multiplied with the transposed Q3.
                     Rgesvj("L", "U", "N", nr, nr, v, ldv, sva, nr, u, ldu, &work[(2 * n + n * nr + nr + 1) - 1], lwork - 2 * n - n * nr - nr, info);
                     scalem = work[(2 * n + n * nr + nr + 1) - 1];
-                    numrank = idnint[(work[(2 * n + n * nr + nr + 2) - 1]) - 1];
+                    numrank = nint(work[(2 * n + n * nr + nr + 2) - 1]);
                     for (p = 1; p <= nr; p = p + 1) {
-                        Rcopy(nr, &v[(p - 1) * ldv], 1, u[(p - 1) * ldu], 1);
-                        Rscal(nr, sva[p - 1], u[(p - 1) * ldu], 1);
+                        Rcopy(nr, &v[(p - 1) * ldv], 1, &u[(p - 1) * ldu], 1);
+                        Rscal(nr, sva[p - 1], &u[(p - 1) * ldu], 1);
                     }
                     Rtrsm("L", "U", "N", "N", nr, nr, one, &work[(2 * n + 1) - 1], n, u, ldu);
                     //              .. apply the permutation from the second QR factorization
@@ -1068,7 +1068,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     //              accumulation of Jacobi rotations.
                     Rgesvj("L", "U", "V", nr, nr, v, ldv, sva, nr, u, ldu, &work[(2 * n + n * nr + nr + 1) - 1], lwork - 2 * n - n * nr - nr, info);
                     scalem = work[(2 * n + n * nr + nr + 1) - 1];
-                    numrank = idnint[(work[(2 * n + n * nr + nr + 2) - 1]) - 1];
+                    numrank = nint(work[(2 * n + n * nr + nr + 2) - 1]);
                     if (nr < n) {
                         Rlaset("A", n - nr, nr, zero, zero, &v[((nr + 1) - 1)], ldv);
                         Rlaset("A", nr, n - nr, zero, zero, &v[((nr + 1) - 1) * ldv], ldv);
@@ -1092,7 +1092,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 //           first QRF. Also, scale the columns to make them unit in
                 //           Euclidean norm. This applies to all cases.
                 //
-                temp1 = sqrt(n.real()) * epsln;
+                temp1 = sqrt(castREAL(n)) * epsln;
                 for (q = 1; q <= n; q = q + 1) {
                     for (p = 1; p <= n; p = p + 1) {
                         work[(2 * n + n * nr + nr + iwork[p - 1]) - 1] = v[(p - 1) + (q - 1) * ldv];
@@ -1108,10 +1108,10 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 //           At this moment, V contains the right singular vectors of A.
                 //           Next, assemble the left singular vector matrix U (M x N).
                 if (nr < m) {
-                    Rlaset("A", m - nr, nr, zero, zero, u[((nr + 1) - 1)], ldu);
+                    Rlaset("A", m - nr, nr, zero, zero, &u[((nr + 1) - 1)], ldu);
                     if (nr < n1) {
-                        Rlaset("A", nr, n1 - nr, zero, zero, u[((nr + 1) - 1) * ldu], ldu);
-                        Rlaset("A", m - nr, n1 - nr, zero, one, u[((nr + 1) - 1) + ((nr + 1) - 1) * ldu], ldu);
+                        Rlaset("A", nr, n1 - nr, zero, zero, &u[((nr + 1) - 1) * ldu], ldu);
+                        Rlaset("A", m - nr, n1 - nr, zero, one, &u[((nr + 1) - 1) + ((nr + 1) - 1) * ldu], ldu);
                     }
                 }
                 //
@@ -1121,11 +1121,11 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 Rormqr("Left", "No_Tr", m, n1, n, a, lda, work, u, ldu, &work[(n + 1) - 1], lwork - n, ierr);
                 //
                 //           The columns of U are normalized. The cost is O(M*N) flops.
-                temp1 = sqrt(m.real()) * epsln;
+                temp1 = sqrt(castREAL(m)) * epsln;
                 for (p = 1; p <= nr; p = p + 1) {
-                    xsc = one / Rnrm2(m, u[(p - 1) * ldu], 1);
+                    xsc = one / Rnrm2(m, &u[(p - 1) * ldu], 1);
                     if ((xsc < (one - temp1)) || (xsc > (one + temp1))) {
-                        Rscal(m, xsc, u[(p - 1) * ldu], 1);
+                        Rscal(m, xsc, &u[(p - 1) * ldu], 1);
                     }
                 }
                 //
@@ -1133,7 +1133,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 //           singular vectors must be adjusted.
                 //
                 if (rowpiv) {
-                    Rlaswp(n1, u, ldu, 1, m - 1, iwork[(2 * n + 1) - 1], -1);
+                    Rlaswp(n1, u, ldu, 1, m - 1, &iwork[(2 * n + 1) - 1], -1);
                 }
                 //
             } else {
@@ -1147,7 +1147,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     for (p = 2; p <= n; p = p + 1) {
                         temp1 = xsc * work[(n + (p - 1) * n + p) - 1];
                         for (q = 1; q <= p - 1; q = q + 1) {
-                            work[(n + (q - 1) * n + p) - 1] = -sign(temp1, &work[(n + (p - 1) * n + q) - 1]);
+                            work[(n + (q - 1) * n + p) - 1] = -sign(temp1, work[(n + (p - 1) * n + q) - 1]);
                         }
                     }
                 } else {
@@ -1157,9 +1157,9 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 Rgesvj("Upper", "U", "N", n, n, &work[(n + 1) - 1], n, sva, n, u, ldu, &work[(n + n * n + 1) - 1], lwork - n - n * n, info);
                 //
                 scalem = work[(n + n * n + 1) - 1];
-                numrank = idnint[(work[(n + n * n + 2) - 1]) - 1];
+                numrank = nint(work[(n + n * n + 2) - 1]);
                 for (p = 1; p <= n; p = p + 1) {
-                    Rcopy(n, &work[(n + (p - 1) * n + 1) - 1], 1, u[(p - 1) * ldu], 1);
+                    Rcopy(n, &work[(n + (p - 1) * n + 1) - 1], 1, &u[(p - 1) * ldu], 1);
                     Rscal(n, sva[p - 1], &work[(n + (p - 1) * n + 1) - 1], 1);
                 }
                 //
@@ -1167,7 +1167,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 for (p = 1; p <= n; p = p + 1) {
                     Rcopy(n, &work[(n + p) - 1], n, &v[(iwork[p - 1] - 1)], ldv);
                 }
-                temp1 = sqrt(n.real()) * epsln;
+                temp1 = sqrt(castREAL(n)) * epsln;
                 for (p = 1; p <= n; p = p + 1) {
                     xsc = one / Rnrm2(n, &v[(p - 1) * ldv], 1);
                     if ((xsc < (one - temp1)) || (xsc > (one + temp1))) {
@@ -1178,23 +1178,23 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 //           Assemble the left singular vector matrix U (M x N).
                 //
                 if (n < m) {
-                    Rlaset("A", m - n, n, zero, zero, u[((n + 1) - 1)], ldu);
+                    Rlaset("A", m - n, n, zero, zero, &u[((n + 1) - 1)], ldu);
                     if (n < n1) {
-                        Rlaset("A", n, n1 - n, zero, zero, u[((n + 1) - 1) * ldu], ldu);
-                        Rlaset("A", m - n, n1 - n, zero, one, u[((n + 1) - 1) + ((n + 1) - 1) * ldu], ldu);
+                        Rlaset("A", n, n1 - n, zero, zero, &u[((n + 1) - 1) * ldu], ldu);
+                        Rlaset("A", m - n, n1 - n, zero, one, &u[((n + 1) - 1) + ((n + 1) - 1) * ldu], ldu);
                     }
                 }
                 Rormqr("Left", "No Tr", m, n1, n, a, lda, work, u, ldu, &work[(n + 1) - 1], lwork - n, ierr);
-                temp1 = sqrt(m.real()) * epsln;
+                temp1 = sqrt(castREAL(m)) * epsln;
                 for (p = 1; p <= n1; p = p + 1) {
-                    xsc = one / Rnrm2(m, u[(p - 1) * ldu], 1);
+                    xsc = one / Rnrm2(m, &u[(p - 1) * ldu], 1);
                     if ((xsc < (one - temp1)) || (xsc > (one + temp1))) {
-                        Rscal(m, xsc, u[(p - 1) * ldu], 1);
+                        Rscal(m, xsc, &u[(p - 1) * ldu], 1);
                     }
                 }
                 //
                 if (rowpiv) {
-                    Rlaswp(n1, u, ldu, 1, m - 1, iwork[(2 * n + 1) - 1], -1);
+                    Rlaswp(n1, u, ldu, 1, m - 1, &iwork[(2 * n + 1) - 1], -1);
                 }
                 //
             }
@@ -1223,7 +1223,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     temp1 = xsc * abs(v[(q - 1) + (q - 1) * ldv]);
                     for (p = 1; p <= n; p = p + 1) {
                         if ((p > q) && (abs(v[(p - 1) + (q - 1) * ldv]) <= temp1) || (p < q)) {
-                            v[(p - 1) + (q - 1) * ldv] = sign(temp1, &v[(p - 1) + (q - 1) * ldv]);
+                            v[(p - 1) + (q - 1) * ldv] = sign(temp1, v[(p - 1) + (q - 1) * ldv]);
                         }
                         if (p < q) {
                             v[(p - 1) + (q - 1) * ldv] = -v[(p - 1) + (q - 1) * ldv];
@@ -1238,7 +1238,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             Rlacpy("L", n, nr, v, ldv, &work[(2 * n + 1) - 1], n);
             //
             for (p = 1; p <= nr; p = p + 1) {
-                Rcopy(nr - p + 1, &v[(p - 1) + (p - 1) * ldv], ldv, u[(p - 1) + (p - 1) * ldu], 1);
+                Rcopy(nr - p + 1, &v[(p - 1) + (p - 1) * ldv], ldv, &u[(p - 1) + (p - 1) * ldu], 1);
             }
             //
             if (l2pert) {
@@ -1250,12 +1250,12 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     }
                 }
             } else {
-                Rlaset("U", nr - 1, nr - 1, zero, zero, u[(2 - 1) * ldu], ldu);
+                Rlaset("U", nr - 1, nr - 1, zero, zero, &u[(2 - 1) * ldu], ldu);
             }
             //
             Rgesvj("G", "U", "V", nr, nr, u, ldu, sva, n, v, ldv, &work[(2 * n + n * nr + 1) - 1], lwork - 2 * n - n * nr, info);
             scalem = work[(2 * n + n * nr + 1) - 1];
-            numrank = idnint[(work[(2 * n + n * nr + 2) - 1]) - 1];
+            numrank = nint(work[(2 * n + n * nr + 2) - 1]);
             //
             if (nr < n) {
                 Rlaset("A", n - nr, nr, zero, zero, &v[((nr + 1) - 1)], ldv);
@@ -1269,7 +1269,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             //           first QRF. Also, scale the columns to make them unit in
             //           Euclidean norm. This applies to all cases.
             //
-            temp1 = sqrt(n.real()) * epsln;
+            temp1 = sqrt(castREAL(n)) * epsln;
             for (q = 1; q <= n; q = q + 1) {
                 for (p = 1; p <= n; p = p + 1) {
                     work[(2 * n + n * nr + nr + iwork[p - 1]) - 1] = v[(p - 1) + (q - 1) * ldv];
@@ -1287,24 +1287,24 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             //           Next, assemble the left singular vector matrix U (M x N).
             //
             if (nr < m) {
-                Rlaset("A", m - nr, nr, zero, zero, u[((nr + 1) - 1)], ldu);
+                Rlaset("A", m - nr, nr, zero, zero, &u[((nr + 1) - 1)], ldu);
                 if (nr < n1) {
-                    Rlaset("A", nr, n1 - nr, zero, zero, u[((nr + 1) - 1) * ldu], ldu);
-                    Rlaset("A", m - nr, n1 - nr, zero, one, u[((nr + 1) - 1) + ((nr + 1) - 1) * ldu], ldu);
+                    Rlaset("A", nr, n1 - nr, zero, zero, &u[((nr + 1) - 1) * ldu], ldu);
+                    Rlaset("A", m - nr, n1 - nr, zero, one, &u[((nr + 1) - 1) + ((nr + 1) - 1) * ldu], ldu);
                 }
             }
             //
             Rormqr("Left", "No Tr", m, n1, n, a, lda, work, u, ldu, &work[(n + 1) - 1], lwork - n, ierr);
             //
             if (rowpiv) {
-                Rlaswp(n1, u, ldu, 1, m - 1, iwork[(2 * n + 1) - 1], -1);
+                Rlaswp(n1, u, ldu, 1, m - 1, &iwork[(2 * n + 1) - 1], -1);
             }
             //
         }
         if (transp) {
             //           .. swap U and V because the procedure worked on A^t
             for (p = 1; p <= n; p = p + 1) {
-                Rswap(n, u[(p - 1) * ldu], 1, &v[(p - 1) * ldv], 1);
+                Rswap(n, &u[(p - 1) * ldu], 1, &v[(p - 1) * ldv], 1);
             }
         }
         //
