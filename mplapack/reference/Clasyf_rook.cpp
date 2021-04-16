@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL cabs1(COMPLEX z) { return abs(z.real()) + abs(z.imag()); }
+
 void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *w, INTEGER const ldw, INTEGER &info) {
     COMPLEX z = 0.0;
     const REAL one = 1.0;
@@ -91,7 +93,6 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1[z - 1] = abs(z.real()) + abs(z.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -139,7 +140,7 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
         //        Determine rows and columns to be interchanged and whether
         //        a 1-by-1 or 2-by-2 pivot block will be used
         //
-        absakk = abs1[w[(k - 1) + (kw - 1) * ldw] - 1];
+        absakk = cabs1(w[(k - 1) + (kw - 1) * ldw]);
         //
         //        IMAX is the row-index of the largest off-diagonal element in
         //        column K, and COLMAX is its absolute value.
@@ -147,7 +148,7 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
         //
         if (k > 1) {
             imax = iCamax(k - 1, &w[(kw - 1) * ldw], 1);
-            colmax = abs1[w[(imax - 1) + (kw - 1) * ldw] - 1];
+            colmax = cabs1(w[(imax - 1) + (kw - 1) * ldw]);
         } else {
             colmax = zero;
         }
@@ -201,14 +202,14 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 //
                 if (imax != k) {
                     jmax = imax + iCamax(k - imax, &w[((imax + 1) - 1) + ((kw - 1) - 1) * ldw], 1);
-                    rowmax = abs1[(w[(jmax - 1) + ((kw - 1) - 1) * ldw]) - 1];
+                    rowmax = cabs1(w[(jmax - 1) + ((kw - 1) - 1) * ldw]);
                 } else {
                     rowmax = zero;
                 }
                 //
                 if (imax > 1) {
                     itemp = iCamax(imax - 1, &w[((kw - 1) - 1) * ldw], 1);
-                    dtemp = abs1[(w[(itemp - 1) + ((kw - 1) - 1) * ldw]) - 1];
+                    dtemp = cabs1(w[(itemp - 1) + ((kw - 1) - 1) * ldw]);
                     if (dtemp > rowmax) {
                         rowmax = dtemp;
                         jmax = itemp;
@@ -216,10 +217,10 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 }
                 //
                 //                 Equivalent to testing for
-                //                 CABS1( W( IMAX, KW-1 ) ).GE.ALPHA*ROWMAX
+                //                 CCABS1( W( IMAX, KW-1 ) ).GE.ALPHA*ROWMAX
                 //                 (used to handle NaN and Inf)
                 //
-                if (!(abs1[(w[(imax - 1) + ((kw - 1) - 1) * ldw]) - 1] < alpha * rowmax)) {
+                if (!(cabs1(w[(imax - 1) + ((kw - 1) - 1) * ldw]) < alpha * rowmax)) {
                     //
                     //                    interchange rows and columns K and IMAX,
                     //                    use 1-by-1 pivot block
@@ -316,7 +317,7 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 //
                 Ccopy(k, &w[(kw - 1) * ldw], 1, &a[(k - 1) * lda], 1);
                 if (k > 1) {
-                    if (abs1[a[(k - 1) + (k - 1) * lda] - 1] >= sfmin) {
+                    if (cabs1(a[(k - 1) + (k - 1) * lda]) >= sfmin) {
                         r1 = cone / a[(k - 1) + (k - 1) * lda];
                         Cscal(k - 1, r1, &a[(k - 1) * lda], 1);
                     } else if (a[(k - 1) + (k - 1) * lda] != czero) {
@@ -459,7 +460,7 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
         //        Determine rows and columns to be interchanged and whether
         //        a 1-by-1 or 2-by-2 pivot block will be used
         //
-        absakk = abs1[w[(k - 1) + (k - 1) * ldw] - 1];
+        absakk = cabs1(w[(k - 1) + (k - 1) * ldw]);
         //
         //        IMAX is the row-index of the largest off-diagonal element in
         //        column K, and COLMAX is its absolute value.
@@ -467,7 +468,7 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
         //
         if (k < n) {
             imax = k + iCamax(n - k, &w[((k + 1) - 1) + (k - 1) * ldw], 1);
-            colmax = abs1[w[(imax - 1) + (k - 1) * ldw] - 1];
+            colmax = cabs1(w[(imax - 1) + (k - 1) * ldw]);
         } else {
             colmax = zero;
         }
@@ -520,14 +521,14 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 //
                 if (imax != k) {
                     jmax = k - 1 + iCamax(imax - k, &w[(k - 1) + ((k + 1) - 1) * ldw], 1);
-                    rowmax = abs1[(w[(jmax - 1) + ((k + 1) - 1) * ldw]) - 1];
+                    rowmax = cabs1(w[(jmax - 1) + ((k + 1) - 1) * ldw]);
                 } else {
                     rowmax = zero;
                 }
                 //
                 if (imax < n) {
                     itemp = imax + iCamax(n - imax, &w[((imax + 1) - 1) + ((k + 1) - 1) * ldw], 1);
-                    dtemp = abs1[(w[(itemp - 1) + ((k + 1) - 1) * ldw]) - 1];
+                    dtemp = cabs1(w[(itemp - 1) + ((k + 1) - 1) * ldw]);
                     if (dtemp > rowmax) {
                         rowmax = dtemp;
                         jmax = itemp;
@@ -535,10 +536,10 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 }
                 //
                 //                 Equivalent to testing for
-                //                 CABS1( W( IMAX, K+1 ) ).GE.ALPHA*ROWMAX
+                //                 CCABS1( W( IMAX, K+1 ) ).GE.ALPHA*ROWMAX
                 //                 (used to handle NaN and Inf)
                 //
-                if (!(abs1[(w[(imax - 1) + ((k + 1) - 1) * ldw]) - 1] < alpha * rowmax)) {
+                if (!(cabs1((w[(imax - 1) + ((k + 1) - 1) * ldw])) < alpha * rowmax)) {
                     //
                     //                    interchange rows and columns K and IMAX,
                     //                    use 1-by-1 pivot block
@@ -630,7 +631,7 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 //
                 Ccopy(n - k + 1, &w[(k - 1) + (k - 1) * ldw], 1, &a[(k - 1) + (k - 1) * lda], 1);
                 if (k < n) {
-                    if (abs1[a[(k - 1) + (k - 1) * lda] - 1] >= sfmin) {
+                    if (cabs1(a[(k - 1) + (k - 1) * lda]) >= sfmin) {
                         r1 = cone / a[(k - 1) + (k - 1) * lda];
                         Cscal(n - k, r1, &a[((k + 1) - 1) + (k - 1) * lda], 1);
                     } else if (a[(k - 1) + (k - 1) * lda] != czero) {

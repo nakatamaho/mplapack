@@ -105,7 +105,7 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
     REAL safmax = one / safmin;
     Rlabad(safmin, safmax);
     REAL ulp = Rlamch("PRECISION");
-    REAL smlnum = safmin * (n.real() / ulp);
+    REAL smlnum = safmin * (castREAL(n) / ulp);
     //
     //     ==== Use accumulated reflections to update far-from-diagonal
     //     .    entries ? ====
@@ -152,7 +152,7 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
     INTEGER kms = 0;
     INTEGER m = 0;
     REAL alpha = 0.0;
-    arr_1d<3, REAL> vt(fill0);
+    REAL vt[3];
     INTEGER i2 = 0;
     INTEGER i4 = 0;
     INTEGER k1 = 0;
@@ -215,11 +215,11 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                 if (k == ktop - 1) {
                     Rlaqr1(2, &h[((k + 1) - 1) + ((k + 1) - 1) * ldh], ldh, sr[(2 * m22 - 1) - 1], si[(2 * m22 - 1) - 1], sr[(2 * m22) - 1], si[(2 * m22) - 1], &v[(m22 - 1) * ldv]);
                     beta = v[(m22 - 1) * ldv];
-                    Rlarfg(2, beta, &v[(2 - 1) + (m22 - 1) * ldv], 1, &v[(m22 - 1) * ldv]);
+                    Rlarfg(2, beta, &v[(2 - 1) + (m22 - 1) * ldv], 1, v[(m22 - 1) * ldv]);
                 } else {
                     beta = h[((k + 1) - 1) + (k - 1) * ldh];
                     v[(2 - 1) + (m22 - 1) * ldv] = h[((k + 2) - 1) + (k - 1) * ldh];
-                    Rlarfg(2, beta, &v[(2 - 1) + (m22 - 1) * ldv], 1, &v[(m22 - 1) * ldv]);
+                    Rlarfg(2, beta, &v[(2 - 1) + (m22 - 1) * ldv], 1, v[(m22 - 1) * ldv]);
                     h[((k + 1) - 1) + (k - 1) * ldh] = beta;
                     h[((k + 2) - 1) + (k - 1) * ldh] = zero;
                 }
@@ -321,7 +321,7 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                 if (k == ktop - 1) {
                     Rlaqr1(3, &h[(ktop - 1) + (ktop - 1) * ldh], ldh, sr[(2 * m - 1) - 1], si[(2 * m - 1) - 1], sr[(2 * m) - 1], si[(2 * m) - 1], &v[(m - 1) * ldv]);
                     alpha = v[(m - 1) * ldv];
-                    Rlarfg(3, alpha, &v[(2 - 1) + (m - 1) * ldv], 1, &v[(m - 1) * ldv]);
+                    Rlarfg(3, alpha, &v[(2 - 1) + (m - 1) * ldv], 1, v[(m - 1) * ldv]);
                 } else {
                     //
                     //                 ==== Perform delayed transformation of row below
@@ -339,7 +339,7 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                     beta = h[((k + 1) - 1) + (k - 1) * ldh];
                     v[(2 - 1) + (m - 1) * ldv] = h[((k + 2) - 1) + (k - 1) * ldh];
                     v[(3 - 1) + (m - 1) * ldv] = h[((k + 3) - 1) + (k - 1) * ldh];
-                    Rlarfg(3, beta, &v[(2 - 1) + (m - 1) * ldv], 1, &v[(m - 1) * ldv]);
+                    Rlarfg(3, beta, &v[(2 - 1) + (m - 1) * ldv], 1, v[(m - 1) * ldv]);
                     //
                     //                 ==== A Bulge may collapse because of vigilant
                     //                 .    deflation or destructive underflow.  In the
@@ -363,7 +363,7 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                         //
                         Rlaqr1(3, &h[((k + 1) - 1) + ((k + 1) - 1) * ldh], ldh, sr[(2 * m - 1) - 1], si[(2 * m - 1) - 1], sr[(2 * m) - 1], si[(2 * m) - 1], vt);
                         alpha = vt[1 - 1];
-                        Rlarfg(3, alpha, vt[2 - 1], 1, vt[1 - 1]);
+                        Rlarfg(3, alpha, &vt[2 - 1], 1, vt[1 - 1]);
                         refsum = vt[1 - 1] * (h[((k + 1) - 1) + (k - 1) * ldh] + vt[2 - 1] * h[((k + 2) - 1) + (k - 1) * ldh]);
                         //
                         if (abs(h[((k + 2) - 1) + (k - 1) * ldh] - refsum * vt[2 - 1]) + abs(refsum * vt[3 - 1]) > ulp * (abs(h[(k - 1) + (k - 1) * ldh]) + abs(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]) + abs(h[((k + 2) - 1) + ((k + 2) - 1) * ldh]))) {
@@ -543,7 +543,7 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
             //
             for (jcol = min(ndcol, kbot) + 1; jcol <= jbot; jcol = jcol + nh) {
                 jlen = min(nh, jbot - jcol + 1);
-                Rgemm("C", "N", nu, jlen, nu, one, u[(k1 - 1) + (k1 - 1) * ldu], ldu, &h[((incol + k1) - 1) + (jcol - 1) * ldh], ldh, zero, wh, ldwh);
+                Rgemm("C", "N", nu, jlen, nu, one, &u[(k1 - 1) + (k1 - 1) * ldu], ldu, &h[((incol + k1) - 1) + (jcol - 1) * ldh], ldh, zero, wh, ldwh);
                 Rlacpy("ALL", nu, jlen, wh, ldwh, &h[((incol + k1) - 1) + (jcol - 1) * ldh], ldh);
             }
             //
@@ -551,7 +551,7 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
             //
             for (jrow = jtop; jrow <= max(ktop, incol) - 1; jrow = jrow + nv) {
                 jlen = min(nv, max(ktop, incol) - jrow);
-                Rgemm("N", "N", jlen, nu, nu, one, &h[(jrow - 1) + ((incol + k1) - 1) * ldh], ldh, u[(k1 - 1) + (k1 - 1) * ldu], ldu, zero, wv, ldwv);
+                Rgemm("N", "N", jlen, nu, nu, one, &h[(jrow - 1) + ((incol + k1) - 1) * ldh], ldh, &u[(k1 - 1) + (k1 - 1) * ldu], ldu, zero, wv, ldwv);
                 Rlacpy("ALL", jlen, nu, wv, ldwv, &h[(jrow - 1) + ((incol + k1) - 1) * ldh], ldh);
             }
             //
@@ -560,7 +560,7 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
             if (wantz) {
                 for (jrow = iloz; jrow <= ihiz; jrow = jrow + nv) {
                     jlen = min(nv, ihiz - jrow + 1);
-                    Rgemm("N", "N", jlen, nu, nu, one, &z[(jrow - 1) + ((incol + k1) - 1) * ldz], ldz, u[(k1 - 1) + (k1 - 1) * ldu], ldu, zero, wv, ldwv);
+                    Rgemm("N", "N", jlen, nu, nu, one, &z[(jrow - 1) + ((incol + k1) - 1) * ldz], ldz, &u[(k1 - 1) + (k1 - 1) * ldu], ldu, zero, wv, ldwv);
                     Rlacpy("ALL", jlen, nu, wv, ldwv, &z[(jrow - 1) + ((incol + k1) - 1) * ldz], ldz);
                 }
             }

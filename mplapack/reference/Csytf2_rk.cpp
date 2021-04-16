@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL cabs1(COMPLEX z) { return abs(z.real()) + abs(z.imag()); }
+
 void Csytf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *e, INTEGER *ipiv, INTEGER &info) {
     COMPLEX z = 0.0;
     bool upper = false;
@@ -89,7 +91,6 @@ void Csytf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1[z - 1] = abs(z.real()) + abs(z.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -143,7 +144,7 @@ void Csytf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         //        Determine rows and columns to be interchanged and whether
         //        a 1-by-1 or 2-by-2 pivot block will be used
         //
-        absakk = abs1[a[(k - 1) + (k - 1) * lda] - 1];
+        absakk = cabs1(a[(k - 1) + (k - 1) * lda]);
         //
         //        IMAX is the row-index of the largest off-diagonal element in
         //        column K, and COLMAX is its absolute value.
@@ -151,7 +152,7 @@ void Csytf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         //
         if (k > 1) {
             imax = iCamax(k - 1, &a[(k - 1) * lda], 1);
-            colmax = abs1[a[(imax - 1) + (k - 1) * lda] - 1];
+            colmax = cabs1(a[(imax - 1) + (k - 1) * lda]);
         } else {
             colmax = zero;
         }
@@ -200,14 +201,14 @@ void Csytf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
                 //
                 if (imax != k) {
                     jmax = imax + iCamax(k - imax, &a[(imax - 1) + ((imax + 1) - 1) * lda], lda);
-                    rowmax = abs1[a[(imax - 1) + (jmax - 1) * lda] - 1];
+                    rowmax = cabs1(a[(imax - 1) + (jmax - 1) * lda]);
                 } else {
                     rowmax = zero;
                 }
                 //
                 if (imax > 1) {
                     itemp = iCamax(imax - 1, &a[(imax - 1) * lda], 1);
-                    dtemp = abs1[a[(itemp - 1) + (imax - 1) * lda] - 1];
+                    dtemp = cabs1(a[(itemp - 1) + (imax - 1) * lda]);
                     if (dtemp > rowmax) {
                         rowmax = dtemp;
                         jmax = itemp;
@@ -217,7 +218,7 @@ void Csytf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
                 //                 Equivalent to testing for (used to handle NaN and Inf)
                 //                 ABS( A( IMAX, IMAX ) ).GE.ALPHA*ROWMAX
                 //
-                if (!(abs1[a[(imax - 1) + (imax - 1) * lda] - 1] < alpha * rowmax)) {
+                if (!(cabs1(a[(imax - 1) + (imax - 1) * lda]) < alpha * rowmax)) {
                     //
                     //                    interchange rows and columns K and IMAX,
                     //                    use 1-by-1 pivot block
@@ -328,7 +329,7 @@ void Csytf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
                     //                 Perform a rank-1 update of A(1:k-1,1:k-1) and
                     //                 store U(k) in column k
                     //
-                    if (abs1[a[(k - 1) + (k - 1) * lda] - 1] >= sfmin) {
+                    if (cabs1(a[(k - 1) + (k - 1) * lda]) >= sfmin) {
                         //
                         //                    Perform a rank-1 update of A(1:k-1,1:k-1) as
                         //                    A := A - U(k)*D(k)*U(k)**T
@@ -458,7 +459,7 @@ void Csytf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         //        Determine rows and columns to be interchanged and whether
         //        a 1-by-1 or 2-by-2 pivot block will be used
         //
-        absakk = abs1[a[(k - 1) + (k - 1) * lda] - 1];
+        absakk = cabs1(a[(k - 1) + (k - 1) * lda]);
         //
         //        IMAX is the row-index of the largest off-diagonal element in
         //        column K, and COLMAX is its absolute value.
@@ -466,7 +467,7 @@ void Csytf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         //
         if (k < n) {
             imax = k + iCamax(n - k, &a[((k + 1) - 1) + (k - 1) * lda], 1);
-            colmax = abs1[a[(imax - 1) + (k - 1) * lda] - 1];
+            colmax = cabs1(a[(imax - 1) + (k - 1) * lda]);
         } else {
             colmax = zero;
         }
@@ -515,14 +516,14 @@ void Csytf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
                 //
                 if (imax != k) {
                     jmax = k - 1 + iCamax(imax - k, &a[(imax - 1) + (k - 1) * lda], lda);
-                    rowmax = abs1[a[(imax - 1) + (jmax - 1) * lda] - 1];
+                    rowmax = cabs1(a[(imax - 1) + (jmax - 1) * lda]);
                 } else {
                     rowmax = zero;
                 }
                 //
                 if (imax < n) {
                     itemp = imax + iCamax(n - imax, &a[((imax + 1) - 1) + (imax - 1) * lda], 1);
-                    dtemp = abs1[a[(itemp - 1) + (imax - 1) * lda] - 1];
+                    dtemp = cabs1(a[(itemp - 1) + (imax - 1) * lda]);
                     if (dtemp > rowmax) {
                         rowmax = dtemp;
                         jmax = itemp;
@@ -532,7 +533,7 @@ void Csytf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
                 //                 Equivalent to testing for (used to handle NaN and Inf)
                 //                 ABS( A( IMAX, IMAX ) ).GE.ALPHA*ROWMAX
                 //
-                if (!(abs1[a[(imax - 1) + (imax - 1) * lda] - 1] < alpha * rowmax)) {
+                if (!(cabs1(a[(imax - 1) + (imax - 1) * lda]) < alpha * rowmax)) {
                     //
                     //                    interchange rows and columns K and IMAX,
                     //                    use 1-by-1 pivot block
@@ -643,7 +644,7 @@ void Csytf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
                     //              Perform a rank-1 update of A(k+1:n,k+1:n) and
                     //              store L(k) in column k
                     //
-                    if (abs1[a[(k - 1) + (k - 1) * lda] - 1] >= sfmin) {
+                    if (cabs1(a[(k - 1) + (k - 1) * lda]) >= sfmin) {
                         //
                         //                    Perform a rank-1 update of A(k+1:n,k+1:n) as
                         //                    A := A - L(k)*D(k)*L(k)**T

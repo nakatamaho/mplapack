@@ -84,10 +84,7 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
-Rtgex2.cpp \
 Rgsvj1.cpp \
-Csytf2_rook.cpp \
-Rgghd3.cpp \
 Clasyf_rook.cpp \
 Clasyf_rk.cpp \
 Csytf2_rk.cpp \
