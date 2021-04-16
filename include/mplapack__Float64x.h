@@ -77,6 +77,7 @@ _Float64x abs1(std::complex<_Float64x> ff);
 _Float64x abs1(std::complex<_Float64x> ff);
 _Float64x abs1(std::complex<_Float64x> ff);
 _Float64x abs1(std::complex<_Float64x> ff);
+_Float64x abs1(std::complex<_Float64x> ff);
 _Float64x abssq(std::complex<_Float64x> ff);
 _Float64x abssq(std::complex<_Float64x> ff);
 _Float64x abssq(std::complex<_Float64x> ff);

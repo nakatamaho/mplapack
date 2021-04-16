@@ -82,6 +82,7 @@ dd_real abs1(dd_complex ff);
 dd_real abs1(dd_complex ff);
 dd_real abs1(dd_complex ff);
 dd_real abs1(dd_complex ff);
+dd_real abs1(dd_complex ff);
 dd_real abssq(dd_complex ff);
 dd_real abssq(dd_complex ff);
 dd_real abssq(dd_complex ff);

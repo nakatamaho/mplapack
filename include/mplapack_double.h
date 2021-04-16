@@ -79,6 +79,7 @@ double abs1(std::complex<double> ff);
 double abs1(std::complex<double> ff);
 double abs1(std::complex<double> ff);
 double abs1(std::complex<double> ff);
+double abs1(std::complex<double> ff);
 double abssq(std::complex<double> ff);
 double abssq(std::complex<double> ff);
 double abssq(std::complex<double> ff);

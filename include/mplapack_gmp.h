@@ -82,6 +82,7 @@ mpf_class abs1(mpc_class ff);
 mpf_class abs1(mpc_class ff);
 mpf_class abs1(mpc_class ff);
 mpf_class abs1(mpc_class ff);
+mpf_class abs1(mpc_class ff);
 mpf_class abssq(mpc_class ff);
 mpf_class abssq(mpc_class ff);
 mpf_class abssq(mpc_class ff);

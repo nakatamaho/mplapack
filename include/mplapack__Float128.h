@@ -81,6 +81,7 @@ _Float128 abs1(std::complex<_Float128> ff);
 _Float128 abs1(std::complex<_Float128> ff);
 _Float128 abs1(std::complex<_Float128> ff);
 _Float128 abs1(std::complex<_Float128> ff);
+_Float128 abs1(std::complex<_Float128> ff);
 _Float128 abssq(std::complex<_Float128> ff);
 _Float128 abssq(std::complex<_Float128> ff);
 _Float128 abssq(std::complex<_Float128> ff);

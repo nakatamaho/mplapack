@@ -97,6 +97,7 @@ mpreal abs1(mpcomplex ff);
 mpreal abs1(mpcomplex ff);
 mpreal abs1(mpcomplex ff);
 mpreal abs1(mpcomplex ff);
+mpreal abs1(mpcomplex ff);
 mpreal abssq(mpcomplex ff);
 mpreal abssq(mpcomplex ff);
 mpreal abssq(mpcomplex ff);

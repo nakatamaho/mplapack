@@ -93,6 +93,7 @@ qd_real abs1(qd_complex ff);
 qd_real abs1(qd_complex ff);
 qd_real abs1(qd_complex ff);
 qd_real abs1(qd_complex ff);
+qd_real abs1(qd_complex ff);
 qd_real abssq(qd_complex ff);
 qd_real abssq(qd_complex ff);
 qd_real abssq(qd_complex ff);
