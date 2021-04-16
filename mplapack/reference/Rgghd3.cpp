@@ -443,7 +443,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     nh = n;
                 }
                 Rgemm("No Transpose", "No Transpose", nh, nblst, nblst, one, q[(topq - 1) + (j - 1) * ldq], ldq, work, nblst, zero, &work[pw - 1], nh);
-                Rlacpy("All", nh, nblst, &work[pw - 1], nh, q[(topq - 1) + (j - 1) * ldq], ldq);
+                Rlacpy("All", nh, nblst, &work[pw - 1], nh, &q[(topq - 1) + (j - 1) * ldq], ldq);
                 ppwo = nblst * nblst + 1;
                 j0 = j - nnb;
                 for (j = j0; j <= jcol + 1; j = j + -nnb) {

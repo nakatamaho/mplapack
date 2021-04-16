@@ -37,7 +37,7 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     INTEGER maxwrk = 0;
     INTEGER mm = 0;
     INTEGER mnthr = 0;
-    arr_1d<1, REAL> dum(fill0);
+    REAL dum[1];
     INTEGER lwork_Rgeqrf = 0;
     INTEGER lwork_Rormqr = 0;
     INTEGER bdspac = 0;
@@ -130,10 +130,10 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                 //                        columns
                 //
                 //              Compute space needed for Rgeqrf
-                Rgeqrf(m, n, a, lda, dum[1 - 1], dum[1 - 1], -1, info);
+                Rgeqrf(m, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, info);
                 lwork_Rgeqrf = dum[1 - 1];
                 //              Compute space needed for Rormqr
-                Rormqr("L", "T", m, nrhs, n, a, lda, dum[1 - 1], b, ldb, dum[1 - 1], -1, info);
+                Rormqr("L", "T", m, nrhs, n, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                 lwork_Rormqr = dum[1 - 1];
                 mm = n;
                 maxwrk = max(maxwrk, n + lwork_Rgeqrf);
@@ -147,13 +147,13 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                 //
                 bdspac = max((INTEGER)1, 5 * n);
                 //              Compute space needed for Rgebrd
-                Rgebrd(mm, n, a, lda, s, dum[1 - 1], dum[1 - 1], dum[1 - 1], dum[1 - 1], -1, info);
+                Rgebrd(mm, n, a, lda, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, info);
                 lwork_Rgebrd = dum[1 - 1];
                 //              Compute space needed for Rormbr
-                Rormbr("Q", "L", "T", mm, nrhs, n, a, lda, dum[1 - 1], b, ldb, dum[1 - 1], -1, info);
+                Rormbr("Q", "L", "T", mm, nrhs, n, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                 lwork_Rormbr = dum[1 - 1];
                 //              Compute space needed for Rorgbr
-                Rorgbr("P", n, n, n, a, lda, dum[1 - 1], dum[1 - 1], -1, info);
+                Rorgbr("P", n, n, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, info);
                 lwork_Rorgbr = dum[1 - 1];
                 //              Compute total workspace needed
                 maxwrk = max(maxwrk, 3 * n + lwork_Rgebrd);
@@ -161,7 +161,7 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                 maxwrk = max(maxwrk, 3 * n + lwork_Rorgbr);
                 maxwrk = max(maxwrk, bdspac);
                 maxwrk = max(maxwrk, n * nrhs);
-                minwrk = max(3 * n + mm, 3 * n + nrhs, bdspac);
+                minwrk = max({3 * n + mm, 3 * n + nrhs, bdspac});
                 maxwrk = max(minwrk, maxwrk);
             }
             if (n > m) {
@@ -169,26 +169,26 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                 //              Compute workspace needed for Rbdsqr
                 //
                 bdspac = max((INTEGER)1, 5 * m);
-                minwrk = max(3 * m + nrhs, 3 * m + n, bdspac);
+                minwrk = max({3 * m + nrhs, 3 * m + n, bdspac});
                 if (n >= mnthr) {
                     //
                     //                 Path 2a - underdetermined, with many more columns
                     //                 than rows
                     //
                     //                 Compute space needed for Rgelqf
-                    Rgelqf(m, n, a, lda, dum[1 - 1], dum[1 - 1], -1, info);
+                    Rgelqf(m, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, info);
                     lwork_Rgelqf = dum[1 - 1];
                     //                 Compute space needed for Rgebrd
-                    Rgebrd(m, m, a, lda, s, dum[1 - 1], dum[1 - 1], dum[1 - 1], dum[1 - 1], -1, info);
+                    Rgebrd(m, m, a, lda, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, info);
                     lwork_Rgebrd = dum[1 - 1];
                     //                 Compute space needed for Rormbr
-                    Rormbr("Q", "L", "T", m, nrhs, n, a, lda, dum[1 - 1], b, ldb, dum[1 - 1], -1, info);
+                    Rormbr("Q", "L", "T", m, nrhs, n, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                     lwork_Rormbr = dum[1 - 1];
                     //                 Compute space needed for Rorgbr
-                    Rorgbr("P", m, m, m, a, lda, dum[1 - 1], dum[1 - 1], -1, info);
+                    Rorgbr("P", m, m, m, a, lda, &dum[1 - 1], &dum[1 - 1], -1, info);
                     lwork_Rorgbr = dum[1 - 1];
                     //                 Compute space needed for Rormlq
-                    Rormlq("L", "T", n, nrhs, m, a, lda, dum[1 - 1], b, ldb, dum[1 - 1], -1, info);
+                    Rormlq("L", "T", n, nrhs, m, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                     lwork_Rormlq = dum[1 - 1];
                     //                 Compute total workspace needed
                     maxwrk = m + lwork_Rgelqf;
@@ -207,13 +207,13 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                     //                 Path 2 - underdetermined
                     //
                     //                 Compute space needed for Rgebrd
-                    Rgebrd(m, n, a, lda, s, dum[1 - 1], dum[1 - 1], dum[1 - 1], dum[1 - 1], -1, info);
+                    Rgebrd(m, n, a, lda, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, info);
                     lwork_Rgebrd = dum[1 - 1];
                     //                 Compute space needed for Rormbr
-                    Rormbr("Q", "L", "T", m, nrhs, m, a, lda, dum[1 - 1], b, ldb, dum[1 - 1], -1, info);
+                    Rormbr("Q", "L", "T", m, nrhs, m, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                     lwork_Rormbr = dum[1 - 1];
                     //                 Compute space needed for Rorgbr
-                    Rorgbr("P", m, n, m, a, lda, dum[1 - 1], dum[1 - 1], -1, info);
+                    Rorgbr("P", m, n, m, a, lda, &dum[1 - 1], &dum[1 - 1], -1, info);
                     lwork_Rorgbr = dum[1 - 1];
                     maxwrk = 3 * m + lwork_Rgebrd;
                     maxwrk = max(maxwrk, 3 * m + lwork_Rormbr);
@@ -394,13 +394,13 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
             Rcopy(n, work, 1, b, 1);
         }
         //
-    } else if (n >= mnthr && lwork >= 4 * m + m * m + max(m, 2 * m - 4, nrhs, n - 3 * m)) {
+    } else if (n >= mnthr && lwork >= 4 * m + m * m + max({m, 2 * m - 4, nrhs, n - 3 * m})) {
         //
         //        Path 2a - underdetermined, with many more columns than rows
         //        and sufficient workspace for an efficient algorithm
         //
         ldwork = m;
-        if (lwork >= max(4 * m + m * lda + max(m, 2 * m - 4, nrhs, n - 3 * m), m * lda + m + m * nrhs)) {
+        if (lwork >= max({4 * m + m * lda + max({m, 2 * m - 4, nrhs, n - 3 * m}), m * lda + m + m * nrhs})) {
             ldwork = lda;
         }
         itau = 1;
