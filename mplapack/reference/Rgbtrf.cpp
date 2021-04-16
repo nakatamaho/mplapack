@@ -100,6 +100,10 @@ void Rgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     INTEGER i = 0;
     const REAL zero = 0.0;
     const INTEGER ldwork = nbmax + 1;
+    REAL work13[ldwork * nbmax];
+    INTEGER ldwork13 = ldwork;
+    REAL work31[ldwork * nbmax];
+    INTEGER ldwork31 = ldwork;
     INTEGER ju = 0;
     INTEGER jb = 0;
     INTEGER i2 = 0;
@@ -192,7 +196,7 @@ void Rgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 //              subdiagonal elements in the current column.
                 //
                 km = min(kl, m - jj);
-                jp = iRamax(km + 1, ab[((kv + 1) - 1) + (jj - 1) * ldab], 1);
+                jp = iRamax(km + 1, &ab[((kv + 1) - 1) + (jj - 1) * ldab], 1);
                 ipiv[jj - 1] = jp + jj - j;
                 if (ab[((kv + jp) - 1) + (jj - 1) * ldab] != zero) {
                     ju = max(ju, min(jj + ku + jp - 1, n));
@@ -202,20 +206,20 @@ void Rgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                         //
                         if (jp + jj - 1 < j + kl) {
                             //
-                            Rswap(jb, ab[((kv + 1 + jj - j) - 1) + (j - 1) * ldab], ldab - 1, ab[((kv + jp + jj - j) - 1) + (j - 1) * ldab], ldab - 1);
+                            Rswap(jb, &ab[((kv + 1 + jj - j) - 1) + (j - 1) * ldab], ldab - 1, &ab[((kv + jp + jj - j) - 1) + (j - 1) * ldab], ldab - 1);
                         } else {
                             //
                             //                       The interchange affects columns J to JJ-1 of A31
                             //                       which are stored in the work array WORK31
                             //
-                            Rswap(jj - j, ab[((kv + 1 + jj - j) - 1) + (j - 1) * ldab], ldab - 1, work31[((jp + jj - j - kl) - 1)], ldwork);
-                            Rswap(j + jb - jj, ab[((kv + 1) - 1) + (jj - 1) * ldab], ldab - 1, ab[((kv + jp) - 1) + (jj - 1) * ldab], ldab - 1);
+                            Rswap(jj - j, &ab[((kv + 1 + jj - j) - 1) + (j - 1) * ldab], ldab - 1, &work31[((jp + jj - j - kl) - 1)], ldwork);
+                            Rswap(j + jb - jj, &ab[((kv + 1) - 1) + (jj - 1) * ldab], ldab - 1, &ab[((kv + jp) - 1) + (jj - 1) * ldab], ldab - 1);
                         }
                     }
                     //
                     //                 Compute multipliers
                     //
-                    Rscal(km, one / ab[((kv + 1) - 1) + (jj - 1) * ldab], ab[((kv + 2) - 1) + (jj - 1) * ldab], 1);
+                    Rscal(km, one / ab[((kv + 1) - 1) + (jj - 1) * ldab], &ab[((kv + 2) - 1) + (jj - 1) * ldab], 1);
                     //
                     //                 Update trailing submatrix within the band and within
                     //                 the current block. JM is the index of the last column
@@ -223,7 +227,7 @@ void Rgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                     //
                     jm = min(ju, j + jb - 1);
                     if (jm > jj) {
-                        Rger(km, jm - jj, -one, ab[((kv + 2) - 1) + (jj - 1) * ldab], 1, ab[(kv - 1) + ((jj + 1) - 1) * ldab], ldab - 1, ab[((kv + 1) - 1) + ((jj + 1) - 1) * ldab], ldab - 1);
+                        Rger(km, jm - jj, -one, &ab[((kv + 2) - 1) + (jj - 1) * ldab], 1, &ab[(kv - 1) + ((jj + 1) - 1) * ldab], ldab - 1, &ab[((kv + 1) - 1) + ((jj + 1) - 1) * ldab], ldab - 1);
                     }
                 } else {
                     //
@@ -239,7 +243,7 @@ void Rgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 //
                 nw = min(jj - j + 1, i3);
                 if (nw > 0) {
-                    Rcopy(nw, ab[((kv + kl + 1 - jj + j) - 1) + (jj - 1) * ldab], 1, work31[((jj - j + 1) - 1) * ldwork31], 1);
+                    Rcopy(nw, &ab[((kv + kl + 1 - jj + j) - 1) + (jj - 1) * ldab], 1, &work31[((jj - j + 1) - 1) * ldwork31], 1);
                 }
             }
             if (j + jb <= n) {
@@ -252,7 +256,7 @@ void Rgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 //              Use Rlaswp to apply the row interchanges to A12, A22, and
                 //              A32.
                 //
-                Rlaswp(j2, ab[((kv + 1 - jb) - 1) + ((j + jb) - 1) * ldab], ldab - 1, 1, jb, &ipiv[j - 1], 1);
+                Rlaswp(j2, &ab[((kv + 1 - jb) - 1) + ((j + jb) - 1) * ldab], ldab - 1, 1, jb, &ipiv[j - 1], 1);
                 //
                 //              Adjust the pivot indices.
                 //
@@ -282,20 +286,20 @@ void Rgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                     //
                     //                 Update A12
                     //
-                    Rtrsm("Left", "Lower", "No transpose", "Unit", jb, j2, one, ab[((kv + 1) - 1) + (j - 1) * ldab], ldab - 1, ab[((kv + 1 - jb) - 1) + ((j + jb) - 1) * ldab], ldab - 1);
+                    Rtrsm("Left", "Lower", "No transpose", "Unit", jb, j2, one, &ab[((kv + 1) - 1) + (j - 1) * ldab], ldab - 1, &ab[((kv + 1 - jb) - 1) + ((j + jb) - 1) * ldab], ldab - 1);
                     //
                     if (i2 > 0) {
                         //
                         //                    Update A22
                         //
-                        Rgemm("No transpose", "No transpose", i2, j2, jb, -one, ab[((kv + 1 + jb) - 1) + (j - 1) * ldab], ldab - 1, ab[((kv + 1 - jb) - 1) + ((j + jb) - 1) * ldab], ldab - 1, one, ab[((kv + 1) - 1) + ((j + jb) - 1) * ldab], ldab - 1);
+                        Rgemm("No transpose", "No transpose", i2, j2, jb, -one, &ab[((kv + 1 + jb) - 1) + (j - 1) * ldab], ldab - 1, &ab[((kv + 1 - jb) - 1) + ((j + jb) - 1) * ldab], ldab - 1, one, &ab[((kv + 1) - 1) + ((j + jb) - 1) * ldab], ldab - 1);
                     }
                     //
                     if (i3 > 0) {
                         //
                         //                    Update A32
                         //
-                        Rgemm("No transpose", "No transpose", i3, j2, jb, -one, work31, ldwork, ab[((kv + 1 - jb) - 1) + ((j + jb) - 1) * ldab], ldab - 1, one, ab[((kv + kl + 1 - jb) - 1) + ((j + jb) - 1) * ldab], ldab - 1);
+                        Rgemm("No transpose", "No transpose", i3, j2, jb, -one, work31, ldwork, &ab[((kv + 1 - jb) - 1) + ((j + jb) - 1) * ldab], ldab - 1, one, &ab[((kv + kl + 1 - jb) - 1) + ((j + jb) - 1) * ldab], ldab - 1);
                     }
                 }
                 //
@@ -312,20 +316,20 @@ void Rgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                     //
                     //                 Update A13 in the work array
                     //
-                    Rtrsm("Left", "Lower", "No transpose", "Unit", jb, j3, one, ab[((kv + 1) - 1) + (j - 1) * ldab], ldab - 1, work13, ldwork);
+                    Rtrsm("Left", "Lower", "No transpose", "Unit", jb, j3, one, &ab[((kv + 1) - 1) + (j - 1) * ldab], ldab - 1, work13, ldwork);
                     //
                     if (i2 > 0) {
                         //
                         //                    Update A23
                         //
-                        Rgemm("No transpose", "No transpose", i2, j3, jb, -one, ab[((kv + 1 + jb) - 1) + (j - 1) * ldab], ldab - 1, work13, ldwork, one, ab[((1 + jb) - 1) + ((j + kv) - 1) * ldab], ldab - 1);
+                        Rgemm("No transpose", "No transpose", i2, j3, jb, -one, &ab[((kv + 1 + jb) - 1) + (j - 1) * ldab], ldab - 1, work13, ldwork, one, &ab[((1 + jb) - 1) + ((j + kv) - 1) * ldab], ldab - 1);
                     }
                     //
                     if (i3 > 0) {
                         //
                         //                    Update A33
                         //
-                        Rgemm("No transpose", "No transpose", i3, j3, jb, -one, work31, ldwork, work13, ldwork, one, ab[((1 + kl) - 1) + ((j + kv) - 1) * ldab], ldab - 1);
+                        Rgemm("No transpose", "No transpose", i3, j3, jb, -one, work31, ldwork, work13, ldwork, one, &ab[((1 + kl) - 1) + ((j + kv) - 1) * ldab], ldab - 1);
                     }
                     //
                     //                 Copy the lower triangle of A13 back into place
@@ -359,12 +363,12 @@ void Rgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                         //
                         //                    The interchange does not affect A31
                         //
-                        Rswap(jj - j, ab[((kv + 1 + jj - j) - 1) + (j - 1) * ldab], ldab - 1, ab[((kv + jp + jj - j) - 1) + (j - 1) * ldab], ldab - 1);
+                        Rswap(jj - j, &ab[((kv + 1 + jj - j) - 1) + (j - 1) * ldab], ldab - 1, &ab[((kv + jp + jj - j) - 1) + (j - 1) * ldab], ldab - 1);
                     } else {
                         //
                         //                    The interchange does affect A31
                         //
-                        Rswap(jj - j, ab[((kv + 1 + jj - j) - 1) + (j - 1) * ldab], ldab - 1, work31[((jp + jj - j - kl) - 1)], ldwork);
+                        Rswap(jj - j, &ab[((kv + 1 + jj - j) - 1) + (j - 1) * ldab], ldab - 1, &work31[((jp + jj - j - kl) - 1)], ldwork);
                     }
                 }
                 //
@@ -372,7 +376,7 @@ void Rgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 //
                 nw = min(i3, jj - j + 1);
                 if (nw > 0) {
-                    Rcopy(nw, work31[((jj - j + 1) - 1) * ldwork31], 1, ab[((kv + kl + 1 - jj + j) - 1) + (jj - 1) * ldab], 1);
+                    Rcopy(nw, &work31[((jj - j + 1) - 1) * ldwork31], 1, &ab[((kv + kl + 1 - jj + j) - 1) + (jj - 1) * ldab], 1);
                 }
             }
         }

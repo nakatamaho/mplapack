@@ -149,7 +149,7 @@ void Rsbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                         //                    generate plane rotations to annihilate nonzero
                         //                    elements which have been created outside the band
                         //
-                        Rlargv(nr, ab[((j1 - 1) - 1) * ldab], inca, &work[j1 - 1], kd1, &d[j1 - 1], kd1);
+                        Rlargv(nr, &ab[((j1 - 1) - 1) * ldab], inca, &work[j1 - 1], kd1, &d[j1 - 1], kd1);
                         //
                         //                    apply rotations from the right
                         //
@@ -158,13 +158,13 @@ void Rsbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                         //
                         if (nr >= 2 * kd - 1) {
                             for (l = 1; l <= kd - 1; l = l + 1) {
-                                Rlartv(nr, ab[((l + 1) - 1) + ((j1 - 1) - 1) * ldab], inca, ab[(l - 1) + (j1 - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
+                                Rlartv(nr, &ab[((l + 1) - 1) + ((j1 - 1) - 1) * ldab], inca, &ab[(l - 1) + (j1 - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
                             }
                             //
                         } else {
                             jend = j1 + (nr - 1) * kd1;
                             for (jinc = j1; jinc <= jend; jinc = jinc + kd1) {
-                                Rrot(kdm1, ab[(2 - 1) + ((jinc - 1) - 1) * ldab], 1, ab[(jinc - 1) * ldab], 1, &d[jinc - 1], &work[jinc - 1]);
+                                Rrot(kdm1, &ab[(2 - 1) + ((jinc - 1) - 1) * ldab], 1, &ab[(jinc - 1) * ldab], 1, d[jinc - 1], work[jinc - 1]);
                             }
                         }
                     }
@@ -175,12 +175,12 @@ void Rsbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                             //                       generate plane rotation to annihilate a(i,i+k-1)
                             //                       within the band
                             //
-                            Rlartg(ab[((kd - k + 3) - 1) + ((i + k - 2) - 1) * ldab], ab[((kd - k + 2) - 1) + ((i + k - 1) - 1) * ldab], &d[(i + k - 1) - 1], &work[(i + k - 1) - 1], temp);
+                            Rlartg(ab[((kd - k + 3) - 1) + ((i + k - 2) - 1) * ldab], ab[((kd - k + 2) - 1) + ((i + k - 1) - 1) * ldab], d[(i + k - 1) - 1], work[(i + k - 1) - 1], temp);
                             ab[((kd - k + 3) - 1) + ((i + k - 2) - 1) * ldab] = temp;
                             //
                             //                       apply rotation from the right
                             //
-                            Rrot(k - 3, ab[((kd - k + 4) - 1) + ((i + k - 2) - 1) * ldab], 1, ab[((kd - k + 3) - 1) + ((i + k - 1) - 1) * ldab], 1, &d[(i + k - 1) - 1], &work[(i + k - 1) - 1]);
+                            Rrot(k - 3, &ab[((kd - k + 4) - 1) + ((i + k - 2) - 1) * ldab], 1, &ab[((kd - k + 3) - 1) + ((i + k - 1) - 1) * ldab], 1, d[(i + k - 1) - 1], work[(i + k - 1) - 1]);
                         }
                         nr++;
                         j1 = j1 - kdn - 1;
@@ -190,7 +190,7 @@ void Rsbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                     //                 blocks
                     //
                     if (nr > 0) {
-                        Rlar2v(nr, ab[(kd1 - 1) + ((j1 - 1) - 1) * ldab], ab[(kd1 - 1) + (j1 - 1) * ldab], ab[(kd - 1) + (j1 - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
+                        Rlar2v(nr, &ab[(kd1 - 1) + ((j1 - 1) - 1) * ldab], &ab[(kd1 - 1) + (j1 - 1) * ldab], &ab[(kd - 1) + (j1 - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
                     }
                     //
                     //                 apply plane rotations from the left
@@ -208,20 +208,20 @@ void Rsbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                                     nrt = nr;
                                 }
                                 if (nrt > 0) {
-                                    Rlartv(nrt, ab[((kd - l) - 1) + ((j1 + l) - 1) * ldab], inca, ab[((kd - l + 1) - 1) + ((j1 + l) - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
+                                    Rlartv(nrt, &ab[((kd - l) - 1) + ((j1 + l) - 1) * ldab], inca, &ab[((kd - l + 1) - 1) + ((j1 + l) - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
                                 }
                             }
                         } else {
                             j1end = j1 + kd1 * (nr - 2);
                             if (j1end >= j1) {
                                 for (jin = j1; jin <= j1end; jin = jin + kd1) {
-                                    Rrot(kd - 1, ab[((kd - 1) - 1) + ((jin + 1) - 1) * ldab], incx, ab[(kd - 1) + ((jin + 1) - 1) * ldab], incx, &d[jin - 1], &work[jin - 1]);
+                                    Rrot(kd - 1, &ab[((kd - 1) - 1) + ((jin + 1) - 1) * ldab], incx, &ab[(kd - 1) + ((jin + 1) - 1) * ldab], incx, d[jin - 1], work[jin - 1]);
                                 }
                             }
                             lend = min(kdm1, n - j2);
                             last = j1end + kd1;
                             if (lend > 0) {
-                                Rrot(lend, ab[((kd - 1) - 1) + ((last + 1) - 1) * ldab], incx, ab[(kd - 1) + ((last + 1) - 1) * ldab], incx, &d[last - 1], &work[last - 1]);
+                                Rrot(lend, &ab[((kd - 1) - 1) + ((last + 1) - 1) * ldab], incx, &ab[(kd - 1) + ((last + 1) - 1) * ldab], incx, d[last - 1], work[last - 1]);
                             }
                         }
                     }
@@ -248,12 +248,12 @@ void Rsbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                                 iqb = max((INTEGER)1, j - ibl);
                                 nq = 1 + iqaend - iqb;
                                 iqaend = min(iqaend + kd, iqend);
-                                Rrot(nq, q[(iqb - 1) + ((j - 1) - 1) * ldq], 1, q[(iqb - 1) + (j - 1) * ldq], 1, &d[j - 1], &work[j - 1]);
+                                Rrot(nq, &q[(iqb - 1) + ((j - 1) - 1) * ldq], 1, &q[(iqb - 1) + (j - 1) * ldq], 1, d[j - 1], work[j - 1]);
                             }
                         } else {
                             //
                             for (j = j1; j <= j2; j = j + kd1) {
-                                Rrot(n, q[((j - 1) - 1) * ldq], 1, q[(j - 1) * ldq], 1, &d[j - 1], &work[j - 1]);
+                                Rrot(n, &q[((j - 1) - 1) * ldq], 1, &q[(j - 1) * ldq], 1, d[j - 1], work[j - 1]);
                             }
                         }
                         //
@@ -324,7 +324,7 @@ void Rsbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                         //                    generate plane rotations to annihilate nonzero
                         //                    elements which have been created outside the band
                         //
-                        Rlargv(nr, ab[(kd1 - 1) + ((j1 - kd1) - 1) * ldab], inca, &work[j1 - 1], kd1, &d[j1 - 1], kd1);
+                        Rlargv(nr, &ab[(kd1 - 1) + ((j1 - kd1) - 1) * ldab], inca, &work[j1 - 1], kd1, &d[j1 - 1], kd1);
                         //
                         //                    apply plane rotations from one side
                         //
@@ -333,12 +333,12 @@ void Rsbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                         //
                         if (nr > 2 * kd - 1) {
                             for (l = 1; l <= kd - 1; l = l + 1) {
-                                Rlartv(nr, ab[((kd1 - l) - 1) + ((j1 - kd1 + l) - 1) * ldab], inca, ab[((kd1 - l + 1) - 1) + ((j1 - kd1 + l) - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
+                                Rlartv(nr, &ab[((kd1 - l) - 1) + ((j1 - kd1 + l) - 1) * ldab], inca, &ab[((kd1 - l + 1) - 1) + ((j1 - kd1 + l) - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
                             }
                         } else {
                             jend = j1 + kd1 * (nr - 1);
                             for (jinc = j1; jinc <= jend; jinc = jinc + kd1) {
-                                Rrot(kdm1, ab[(kd - 1) + ((jinc - kd) - 1) * ldab], incx, ab[(kd1 - 1) + ((jinc - kd) - 1) * ldab], incx, &d[jinc - 1], &work[jinc - 1]);
+                                Rrot(kdm1, &ab[(kd - 1) + ((jinc - kd) - 1) * ldab], incx, &ab[(kd1 - 1) + ((jinc - kd) - 1) * ldab], incx, d[jinc - 1], work[jinc - 1]);
                             }
                         }
                         //
@@ -350,12 +350,12 @@ void Rsbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                             //                       generate plane rotation to annihilate a(i+k-1,i)
                             //                       within the band
                             //
-                            Rlartg(ab[((k - 1) - 1) + (i - 1) * ldab], ab[(k - 1) + (i - 1) * ldab], &d[(i + k - 1) - 1], &work[(i + k - 1) - 1], temp);
+                            Rlartg(ab[((k - 1) - 1) + (i - 1) * ldab], ab[(k - 1) + (i - 1) * ldab], d[(i + k - 1) - 1], work[(i + k - 1) - 1], temp);
                             ab[((k - 1) - 1) + (i - 1) * ldab] = temp;
                             //
                             //                       apply rotation from the left
                             //
-                            Rrot(k - 3, ab[((k - 2) - 1) + ((i + 1) - 1) * ldab], ldab - 1, ab[((k - 1) - 1) + ((i + 1) - 1) * ldab], ldab - 1, &d[(i + k - 1) - 1], &work[(i + k - 1) - 1]);
+                            Rrot(k - 3, &ab[((k - 2) - 1) + ((i + 1) - 1) * ldab], ldab - 1, &ab[((k - 1) - 1) + ((i + 1) - 1) * ldab], ldab - 1, d[(i + k - 1) - 1], work[(i + k - 1) - 1]);
                         }
                         nr++;
                         j1 = j1 - kdn - 1;
@@ -365,7 +365,7 @@ void Rsbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                     //                 blocks
                     //
                     if (nr > 0) {
-                        Rlar2v(nr, ab[((j1 - 1) - 1) * ldab], ab[(j1 - 1) * ldab], ab[(2 - 1) + ((j1 - 1) - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
+                        Rlar2v(nr, &ab[((j1 - 1) - 1) * ldab], &ab[(j1 - 1) * ldab], &ab[(2 - 1) + ((j1 - 1) - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
                     }
                     //
                     //                 apply plane rotations from the right
@@ -382,20 +382,20 @@ void Rsbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                                     nrt = nr;
                                 }
                                 if (nrt > 0) {
-                                    Rlartv(nrt, ab[((l + 2) - 1) + ((j1 - 1) - 1) * ldab], inca, ab[((l + 1) - 1) + (j1 - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
+                                    Rlartv(nrt, &ab[((l + 2) - 1) + ((j1 - 1) - 1) * ldab], inca, &ab[((l + 1) - 1) + (j1 - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
                                 }
                             }
                         } else {
                             j1end = j1 + kd1 * (nr - 2);
                             if (j1end >= j1) {
                                 for (j1inc = j1; j1inc <= j1end; j1inc = j1inc + kd1) {
-                                    Rrot(kdm1, ab[(3 - 1) + ((j1inc - 1) - 1) * ldab], 1, ab[(2 - 1) + (j1inc - 1) * ldab], 1, &d[j1inc - 1], &work[j1inc - 1]);
+                                    Rrot(kdm1, &ab[(3 - 1) + ((j1inc - 1) - 1) * ldab], 1, &ab[(2 - 1) + (j1inc - 1) * ldab], 1, d[j1inc - 1], work[j1inc - 1]);
                                 }
                             }
                             lend = min(kdm1, n - j2);
                             last = j1end + kd1;
                             if (lend > 0) {
-                                Rrot(lend, ab[(3 - 1) + ((last - 1) - 1) * ldab], 1, ab[(2 - 1) + (last - 1) * ldab], 1, &d[last - 1], &work[last - 1]);
+                                Rrot(lend, &ab[(3 - 1) + ((last - 1) - 1) * ldab], 1, &ab[(2 - 1) + (last - 1) * ldab], 1, d[last - 1], work[last - 1]);
                             }
                         }
                     }
@@ -422,12 +422,12 @@ void Rsbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                                 iqb = max((INTEGER)1, j - ibl);
                                 nq = 1 + iqaend - iqb;
                                 iqaend = min(iqaend + kd, iqend);
-                                Rrot(nq, q[(iqb - 1) + ((j - 1) - 1) * ldq], 1, q[(iqb - 1) + (j - 1) * ldq], 1, &d[j - 1], &work[j - 1]);
+                                Rrot(nq, &q[(iqb - 1) + ((j - 1) - 1) * ldq], 1, &q[(iqb - 1) + (j - 1) * ldq], 1, d[j - 1], work[j - 1]);
                             }
                         } else {
                             //
                             for (j = j1; j <= j2; j = j + kd1) {
-                                Rrot(n, q[((j - 1) - 1) * ldq], 1, q[(j - 1) * ldq], 1, &d[j - 1], &work[j - 1]);
+                                Rrot(n, &q[((j - 1) - 1) * ldq], 1, &q[(j - 1) * ldq], 1, d[j - 1], work[j - 1]);
                             }
                         }
                     }

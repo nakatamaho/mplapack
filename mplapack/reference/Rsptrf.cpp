@@ -131,7 +131,7 @@ void Rsptrf(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, INTEGER 
         //        column K, and COLMAX is its absolute value
         //
         if (k > 1) {
-            imax = iRamax(k - 1, ap[kc - 1], 1);
+            imax = iRamax(k - 1, &ap[kc - 1], 1);
             colmax = abs(ap[(kc + imax - 1) - 1]);
         } else {
             colmax = zero;
@@ -165,7 +165,7 @@ void Rsptrf(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, INTEGER 
                 }
                 kpc = (imax - 1) * imax / 2 + 1;
                 if (imax > 1) {
-                    jmax = iRamax(imax - 1, ap[kpc - 1], 1);
+                    jmax = iRamax(imax - 1, &ap[kpc - 1], 1);
                     rowmax = max(rowmax, abs(ap[(kpc + jmax - 1) - 1]));
                 }
                 //
@@ -199,7 +199,7 @@ void Rsptrf(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, INTEGER 
                 //              Interchange rows and columns KK and KP in the leading
                 //              submatrix A(1:k,1:k)
                 //
-                Rswap(kp - 1, ap[knc - 1], 1, ap[kpc - 1], 1);
+                Rswap(kp - 1, &ap[knc - 1], 1, &ap[kpc - 1], 1);
                 kx = kpc + kp - 1;
                 for (j = kp + 1; j <= kk - 1; j = j + 1) {
                     kx += j - 1;
@@ -232,11 +232,11 @@ void Rsptrf(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, INTEGER 
                 //              A := A - U(k)*D(k)*U(k)**T = A - W(k)*1/D(k)*W(k)**T
                 //
                 r1 = one / ap[(kc + k - 1) - 1];
-                Rspr(uplo, k - 1, -r1, ap[kc - 1], 1, ap);
+                Rspr(uplo, k - 1, -r1, &ap[kc - 1], 1, ap);
                 //
                 //              Store U(k) in column k
                 //
-                Rscal(k - 1, r1, ap[kc - 1], 1);
+                Rscal(k - 1, r1, &ap[kc - 1], 1);
             } else {
                 //
                 //              2-by-2 pivot block D(k): columns k and k-1 now hold
@@ -318,7 +318,7 @@ void Rsptrf(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, INTEGER 
         //        column K, and COLMAX is its absolute value
         //
         if (k < n) {
-            imax = k + iRamax(n - k, ap[(kc + 1) - 1], 1);
+            imax = k + iRamax(n - k, &ap[(kc + 1) - 1], 1);
             colmax = abs(ap[(kc + imax - k) - 1]);
         } else {
             colmax = zero;
@@ -354,7 +354,7 @@ void Rsptrf(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, INTEGER 
                 }
                 kpc = npp - (n - imax + 1) * (n - imax + 2) / 2 + 1;
                 if (imax < n) {
-                    jmax = imax + iRamax(n - imax, ap[(kpc + 1) - 1], 1);
+                    jmax = imax + iRamax(n - imax, &ap[(kpc + 1) - 1], 1);
                     rowmax = max(rowmax, abs(ap[(kpc + jmax - imax) - 1]));
                 }
                 //
@@ -389,7 +389,7 @@ void Rsptrf(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, INTEGER 
                 //              submatrix A(k:n,k:n)
                 //
                 if (kp < n) {
-                    Rswap(n - kp, ap[(knc + kp - kk + 1) - 1], 1, ap[(kpc + 1) - 1], 1);
+                    Rswap(n - kp, &ap[(knc + kp - kk + 1) - 1], 1, &ap[(kpc + 1) - 1], 1);
                 }
                 kx = knc + kp - kk;
                 for (j = kk + 1; j <= kp - 1; j = j + 1) {
@@ -425,11 +425,11 @@ void Rsptrf(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, INTEGER 
                     //                 A := A - L(k)*D(k)*L(k)**T = A - W(k)*(1/D(k))*W(k)**T
                     //
                     r1 = one / ap[kc - 1];
-                    Rspr(uplo, n - k, -r1, ap[(kc + 1) - 1], 1, ap[(kc + n - k + 1) - 1]);
+                    Rspr(uplo, n - k, -r1, &ap[(kc + 1) - 1], 1, &ap[(kc + n - k + 1) - 1]);
                     //
                     //                 Store L(k) in column K
                     //
-                    Rscal(n - k, r1, ap[(kc + 1) - 1], 1);
+                    Rscal(n - k, r1, &ap[(kc + 1) - 1], 1);
                 }
             } else {
                 //

@@ -84,33 +84,37 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
-Rtgsen.cpp \
+Rsptrf.cpp \
+Csptrf.cpp \
+Rgbtrf.cpp \
+Rsbtrd.cpp \
+Rlatrs.cpp \
+Clahqr.cpp \
+Csytf2.cpp \
+Rlahqr.cpp \
+Rsytri2x.cpp \
+Csytri2x.cpp \
+Rlaed4.cpp \
+Clatrs.cpp \
 Rlaqr3.cpp \
+Rgghd3.cpp \
+Rtgsen.cpp \
 Rggesx.cpp \
 Rgelsd.cpp \
 Rlaln2.cpp \
 Ctrevc3.cpp \
-Rgbtrf.cpp \
-Clahqr.cpp \
-Rggevx.cpp \
-Csytf2.cpp \
-Rsptrf.cpp \
-Csptrf.cpp \
-Rlahqr.cpp \
-Rsytri2x.cpp \
-Csytri2x.cpp \
+Rhgeqz.cpp \
 Rsytrf_aa_2stage.cpp \
 Rsytri_3x.cpp \
 Csytri_3x.cpp \
+Clahef_rk.cpp \
+Rgesvdq.cpp \
+Clahef_rook.cpp \
 Rtgex2.cpp \
-Rsbtrd.cpp \
-Rlatrs.cpp \
+Rtrevc3.cpp \
 Rgesvdx.cpp \
 Rgsvj1.cpp \
 Csytf2_rook.cpp \
-Rlaed4.cpp \
-Clatrs.cpp \
-Rgghd3.cpp \
 Clasyf_rook.cpp \
 Clasyf_rk.cpp \
 Csytf2_rk.cpp \
@@ -120,11 +124,7 @@ Rtrsyl.cpp \
 Rtgsy2.cpp \
 Rtgevc.cpp \
 Rgsvj0.cpp \
-Clahef_rk.cpp \
-Rgesvdq.cpp \
-Clahef_rook.cpp \
-Rhgeqz.cpp \
-Rtrevc3.cpp \
 Rgesvj.cpp \
 Rgejsv.cpp \
+Rggevx.cpp \
 Rgesdd.cpp

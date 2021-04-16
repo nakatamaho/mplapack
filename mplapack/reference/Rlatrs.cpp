@@ -434,8 +434,8 @@ void Rlatrs(const char *uplo, const char *trans, const char *diag, const char *n
                         //                    Compute the update
                         //                       x(j+1:n) := x(j+1:n) - x(j) * A(j+1:n,j)
                         //
-                        Raxpy(n - j, -x[j - 1] * tscal, &a[((j + 1) - 1) + (j - 1) * lda], 1, x[(j + 1) - 1], 1);
-                        i = j + iRamax(n - j, x[(j + 1) - 1], 1);
+                        Raxpy(n - j, -x[j - 1] * tscal, &a[((j + 1) - 1) + (j - 1) * lda], 1, &x[(j + 1) - 1], 1);
+                        i = j + iRamax(n - j, &x[(j + 1) - 1], 1);
                         xmax = abs(x[i - 1]);
                     }
                 }
@@ -487,7 +487,7 @@ void Rlatrs(const char *uplo, const char *trans, const char *diag, const char *n
                     if (upper) {
                         sumj = Rdot(j - 1, &a[(j - 1) * lda], 1, x, 1);
                     } else if (j < n) {
-                        sumj = Rdot(n - j, &a[((j + 1) - 1) + (j - 1) * lda], 1, x[(j + 1) - 1], 1);
+                        sumj = Rdot(n - j, &a[((j + 1) - 1) + (j - 1) * lda], 1, &x[(j + 1) - 1], 1);
                     }
                 } else {
                     //
