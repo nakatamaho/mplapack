@@ -29,6 +29,9 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL cabs1(COMPLEX z) { return abs(z.real()) + abs(z.imag()); }
+inline REAL cabs2(COMPLEX z) { return abs(z.real() / 2.0) + abs(z.imag() / 2.0); }
+
 void Clatrs(const char *uplo, const char *trans, const char *diag, const char *normin, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *x, REAL &scale, REAL *cnorm, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool upper = false;
@@ -82,8 +85,6 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1[zdum - 1] = abs(zdum.real()) + abs(zdum.imag());
-    abs2[zdum - 1] = abs(zdum.real() / 2.0) + abs(zdum.imag() / 2.0);
     //     ..
     //     .. Executable Statements ..
     //
@@ -166,7 +167,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
     //
     xmax = zero;
     for (j = 1; j <= n; j = j + 1) {
-        xmax = max(xmax, abs2[x[j - 1] - 1]);
+        xmax = max(xmax, cabs2(x[j - 1]));
     }
     xbnd = xmax;
     //
@@ -207,7 +208,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                 }
                 //
                 tjjs = a[(j - 1) + (j - 1) * lda];
-                tjj = abs1[tjjs - 1];
+                tjj = cabs1(tjjs);
                 //
                 if (tjj >= smlnum) {
                     //
@@ -298,7 +299,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                 grow = min(grow, xbnd / xj);
                 //
                 tjjs = a[(j - 1) + (j - 1) * lda];
-                tjj = abs1[tjjs - 1];
+                tjj = cabs1(tjjs);
                 //
                 if (tjj >= smlnum) {
                     //
@@ -369,7 +370,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                 //
                 //              Compute x(j) = b(j) / A(j,j), scaling x if necessary.
                 //
-                xj = abs1[x[j - 1] - 1];
+                xj = cabs1(x[j - 1]);
                 if (nounit) {
                     tjjs = a[(j - 1) + (j - 1) * lda] * tscal;
                 } else {
@@ -378,7 +379,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                         goto statement_110;
                     }
                 }
-                tjj = abs1[tjjs - 1];
+                tjj = cabs1(tjjs);
                 if (tjj > smlnum) {
                     //
                     //                    abs(A(j,j)) > SMLNUM:
@@ -395,7 +396,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                         }
                     }
                     x[j - 1] = Cladiv(x[j - 1], tjjs);
-                    xj = abs1[x[j - 1] - 1];
+                    xj = cabs1(x[j - 1]);
                 } else if (tjj > zero) {
                     //
                     //                    0 < abs(A(j,j)) <= SMLNUM:
@@ -418,7 +419,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                         xmax = xmax * rec;
                     }
                     x[j - 1] = Cladiv(x[j - 1], tjjs);
-                    xj = abs1[x[j - 1] - 1];
+                    xj = cabs1(x[j - 1]);
                 } else {
                     //
                     //                    A(j,j) = 0:  Set x(1:n) = 0, x(j) = 1, and
@@ -463,7 +464,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                         //
                         Caxpy(j - 1, -x[j - 1] * tscal, &a[(j - 1) * lda], 1, x, 1);
                         i = iCamax(j - 1, x, 1);
-                        xmax = abs1[x[i - 1] - 1];
+                        xmax = cabs1(x[i - 1]);
                     }
                 } else {
                     if (j < n) {
@@ -471,9 +472,9 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                         //                    Compute the update
                         //                       x(j+1:n) := x(j+1:n) - x(j) * A(j+1:n,j)
                         //
-                        Caxpy(n - j, -x[j - 1] * tscal, &a[((j + 1) - 1) + (j - 1) * lda], 1, x[(j + 1) - 1], 1);
-                        i = j + iCamax(n - j, x[(j + 1) - 1], 1);
-                        xmax = abs1[x[i - 1] - 1];
+                        Caxpy(n - j, -x[j - 1] * tscal, &a[((j + 1) - 1) + (j - 1) * lda], 1, &x[(j + 1) - 1], 1);
+                        i = j + iCamax(n - j, &x[(j + 1) - 1], 1);
+                        xmax = cabs1(x[i - 1]);
                     }
                 }
             }
@@ -487,7 +488,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                 //              Compute x(j) = b(j) - sum A(k,j)*x(k).
                 //                                    k<>j
                 //
-                xj = abs1[x[j - 1] - 1];
+                xj = cabs1(x[j - 1]);
                 uscal = tscal;
                 rec = one / max(xmax, one);
                 if (cnorm[j - 1] > (bignum - xj) * rec) {
@@ -500,7 +501,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                     } else {
                         tjjs = tscal;
                     }
-                    tjj = abs1[tjjs - 1];
+                    tjj = cabs1(tjjs);
                     if (tjj > one) {
                         //
                         //                       Divide by A(j,j) when scaling x if A(j,j) > 1.
@@ -524,7 +525,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                     if (upper) {
                         csumj = Cdotu(j - 1, &a[(j - 1) * lda], 1, x, 1);
                     } else if (j < n) {
-                        csumj = Cdotu(n - j, &a[((j + 1) - 1) + (j - 1) * lda], 1, x[(j + 1) - 1], 1);
+                        csumj = Cdotu(n - j, &a[((j + 1) - 1) + (j - 1) * lda], 1, &x[(j + 1) - 1], 1);
                     }
                 } else {
                     //
@@ -547,7 +548,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                     //                 was not used to scale the dotproduct.
                     //
                     x[j - 1] = x[j - 1] - csumj;
-                    xj = abs1[x[j - 1] - 1];
+                    xj = cabs1(x[j - 1]);
                     if (nounit) {
                         tjjs = a[(j - 1) + (j - 1) * lda] * tscal;
                     } else {
@@ -559,7 +560,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                     //
                     //                    Compute x(j) = x(j) / A(j,j), scaling if necessary.
                     //
-                    tjj = abs1[tjjs - 1];
+                    tjj = cabs1(tjjs);
                     if (tjj > smlnum) {
                         //
                         //                       abs(A(j,j)) > SMLNUM:
@@ -610,7 +611,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                     //
                     x[j - 1] = Cladiv(x[j - 1], tjjs) - csumj;
                 }
-                xmax = max(xmax, abs1[x[j - 1] - 1]);
+                xmax = max(xmax, cabs1(x[j - 1]));
             }
             //
         } else {
@@ -622,7 +623,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                 //              Compute x(j) = b(j) - sum A(k,j)*x(k).
                 //                                    k<>j
                 //
-                xj = abs1[x[j - 1] - 1];
+                xj = cabs1(x[j - 1]);
                 uscal = tscal;
                 rec = one / max(xmax, one);
                 if (cnorm[j - 1] > (bignum - xj) * rec) {
@@ -635,7 +636,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                     } else {
                         tjjs = tscal;
                     }
-                    tjj = abs1[tjjs - 1];
+                    tjj = cabs1(tjjs);
                     if (tjj > one) {
                         //
                         //                       Divide by A(j,j) when scaling x if A(j,j) > 1.
@@ -659,7 +660,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                     if (upper) {
                         csumj = Cdotc(j - 1, &a[(j - 1) * lda], 1, x, 1);
                     } else if (j < n) {
-                        csumj = Cdotc(n - j, &a[((j + 1) - 1) + (j - 1) * lda], 1, x[(j + 1) - 1], 1);
+                        csumj = Cdotc(n - j, &a[((j + 1) - 1) + (j - 1) * lda], 1, &x[(j + 1) - 1], 1);
                     }
                 } else {
                     //
@@ -682,7 +683,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                     //                 was not used to scale the dotproduct.
                     //
                     x[j - 1] = x[j - 1] - csumj;
-                    xj = abs1[x[j - 1] - 1];
+                    xj = cabs1(x[j - 1]);
                     if (nounit) {
                         tjjs = conj(a[(j - 1) + (j - 1) * lda]) * tscal;
                     } else {
@@ -694,7 +695,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                     //
                     //                    Compute x(j) = x(j) / A(j,j), scaling if necessary.
                     //
-                    tjj = abs1[tjjs - 1];
+                    tjj = cabs1(tjjs);
                     if (tjj > smlnum) {
                         //
                         //                       abs(A(j,j)) > SMLNUM:
@@ -745,7 +746,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                     //
                     x[j - 1] = Cladiv(x[j - 1], tjjs) - csumj;
                 }
-                xmax = max(xmax, abs1[x[j - 1] - 1]);
+                xmax = max(xmax, cabs1(x[j - 1]));
             }
         }
         scale = scale / tscal;

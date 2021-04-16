@@ -59,7 +59,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
     info = 0;
     INTEGER nb = iMlaenv(1, "Rgghd3", " ", n, ilo, ihi, -1);
     INTEGER lwkopt = max(6 * n * nb, 1);
-    work[1 - 1] = lwkopt.real();
+    work[1 - 1] = castREAL(lwkopt);
     bool initq = Mlsame(compq, "I");
     bool wantq = initq || Mlsame(compq, "V");
     bool initz = Mlsame(compz, "I");
@@ -217,7 +217,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 //
                 for (i = ihi; i >= j + 2; i = i - 1) {
                     temp = a[((i - 1) - 1) + (j - 1) * lda];
-                    Rlartg(temp, &a[(i - 1) + (j - 1) * lda], c, s, &a[((i - 1) - 1) + (j - 1) * lda]);
+                    Rlartg(temp, a[(i - 1) + (j - 1) * lda], c, s, a[((i - 1) - 1) + (j - 1) * lda]);
                     a[(i - 1) + (j - 1) * lda] = c;
                     b[(i - 1) + (j - 1) * ldb] = s;
                 }
@@ -286,7 +286,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     //
                     if (jj < ihi) {
                         temp = b[((jj + 1) - 1) + ((jj + 1) - 1) * ldb];
-                        Rlartg(temp, &b[((jj + 1) - 1) + (jj - 1) * ldb], c, s, &b[((jj + 1) - 1) + ((jj + 1) - 1) * ldb]);
+                        Rlartg(temp, b[((jj + 1) - 1) + (jj - 1) * ldb], c, s, b[((jj + 1) - 1) + ((jj + 1) - 1) * ldb]);
                         b[((jj + 1) - 1) + (jj - 1) * ldb] = zero;
                         Rrot(jj - top, &b[((top + 1) - 1) + ((jj + 1) - 1) * ldb], 1, &b[((top + 1) - 1) + (jj - 1) * ldb], 1, c, s);
                         a[((jj + 1) - 1) + (j - 1) * lda] = c;
@@ -326,7 +326,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 //
                 if (jj > 0) {
                     for (i = jj; i >= 1; i = i - 1) {
-                        Rrot(ihi - top, &a[((top + 1) - 1) + ((j + i + 1) - 1) * lda], 1, &a[((top + 1) - 1) + ((j + i) - 1) * lda], 1, &a[((j + 1 + i) - 1) + (j - 1) * lda], -b[((j + 1 + i) - 1) + (j - 1) * ldb]);
+                        Rrot(ihi - top, &a[((top + 1) - 1) + ((j + i + 1) - 1) * lda], 1, &a[((top + 1) - 1) + ((j + i) - 1) * lda], 1, a[((j + 1 + i) - 1) + (j - 1) * lda], -b[((j + 1 + i) - 1) + (j - 1) * ldb]);
                     }
                 }
                 //
