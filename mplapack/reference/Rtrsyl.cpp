@@ -36,7 +36,7 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
     REAL eps = 0.0;
     REAL smlnum = 0.0;
     REAL bignum = 0.0;
-    arr_1d<1, REAL> dum(fill0);
+    REAL dum[1];
     REAL smin = 0.0;
     REAL sgn = 0.0;
     INTEGER lnext = 0;
@@ -50,12 +50,14 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
     INTEGER k2 = 0;
     REAL suml = 0.0;
     REAL sumr = 0.0;
-    arr_2d<2, 2, REAL> vec(fill0);
+    REAL vec[2 * 2];
+    INTEGER ldvec = 2;
     REAL scaloc = 0.0;
     REAL a11 = 0.0;
     REAL da11 = 0.0;
     REAL db = 0.0;
-    arr_2d<2, 2, REAL> x(fill0);
+    REAL x[4];
+    INTEGER ldx = 2;
     INTEGER j = 0;
     REAL xnorm = 0.0;
     INTEGER ierr = 0;
@@ -126,10 +128,10 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
     smlnum = Rlamch("S");
     bignum = one / smlnum;
     Rlabad(smlnum, bignum);
-    smlnum = smlnum * m * n.real() / eps;
+    smlnum = smlnum * m * castREAL(n) / eps;
     bignum = one / smlnum;
     //
-    smin = max(smlnum, eps * Rlange("M", m, m, a, lda, dum), eps * Rlange("M", n, n, b, ldb, dum));
+    smin = max({smlnum, eps * Rlange("M", m, m, a, lda, dum), eps * Rlange("M", n, n, b, ldb, dum)});
     //
     sgn = isgn;
     //
@@ -194,130 +196,115 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                 }
                 //
                 if (l1 == l2 && k1 == k2) {
-          suml = Rdot(m - k1, &a[(k1-1)+((min(k1 + 1)-1)*lda],
-            lda, &c[((min(k1 + 1)-1)+(m)-1)*ldc], 1);
-          sumr = Rdot(l1 - 1, &c[(k1-1)], ldc, &b[(l1-1)*ldb], 1);
-          vec[(1-1)] = c[(k1-1)+(l1-1)*ldc] - (suml + sgn * sumr);
-          scaloc = one;
-          //
-          a11 = a[(k1-1)+(k1-1)*lda] + sgn * b[(l1-1)+(l1-1)*ldb];
-          da11 = abs(a11);
-          if (da11 <= smin) {
+                    suml = Rdot(m - k1, &a[(k1 - 1) + (min(k1 + 1, m) - 1) * lda], lda, &c[min(k1 + 1, m) - 1 + (l1 - 1) * ldc], 1);
+                    sumr = Rdot(l1 - 1, &c[(k1 - 1)], ldc, &b[(l1 - 1) * ldb], 1);
+                    vec[0] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    scaloc = one;
+                    //
+                    a11 = a[(k1 - 1) + (k1 - 1) * lda] + sgn * b[(l1 - 1) + (l1 - 1) * ldb];
+                    da11 = abs(a11);
+                    if (da11 <= smin) {
                         a11 = smin;
                         da11 = smin;
                         info = 1;
-          }
-          db = abs(vec[(1-1)]);
-          if (da11 < one && db > one) {
+                    }
+                    db = abs(vec[(1 - 1)]);
+                    if (da11 < one && db > one) {
                         if (db > bignum * da11) {
                             scaloc = one / db;
                         }
-          }
-          x[(1-1)] = (vec[(1-1)] * scaloc) / a11;
-          //
-          if (scaloc != one) {
+                    }
+                    x[(1 - 1)] = (vec[(1 - 1)] * scaloc) / a11;
+                    //
+                    if (scaloc != one) {
                         for (j = 1; j <= n; j = j + 1) {
                             Rscal(m, scaloc, &c[(j - 1) * ldc], 1);
                         }
                         scale = scale * scaloc;
-          }
-          c[(k1-1)+(l1-1)*ldc] = x[(1-1)];
-          //
+                    }
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    //
                 } else if (l1 == l2 && k1 != k2) {
                     //
-          suml = Rdot(m - k2, &a[(k1-1)+((min(k2 + 1)-1)*lda],
-            lda, &c[((min(k2 + 1)-1)+(m)-1)*ldc], 1);
-          sumr = Rdot(l1 - 1, &c[(k1-1)], ldc, &b[(l1-1)*ldb], 1);
-          vec[(1-1)] = c[(k1-1)+(l1-1)*ldc] - (suml + sgn * sumr);
-          //
-          suml = Rdot(m - k2, &a[(k2-1)+((min(k2 + 1)-1)*lda],
-            lda, &c[((min(k2 + 1)-1)+(m)-1)*ldc], 1);
-          sumr = Rdot(l1 - 1, &c[(k2-1)], ldc, &b[(l1-1)*ldb], 1);
-          vec[(2-1)] = c[(k2-1)+(l1-1)*ldc] - (suml + sgn * sumr);
-          //
-          Rlaln2(false, 2, 1, smin, one, &a[(k1-1)+(k1-1)*lda], lda,
-            one, one, vec, 2, -sgn * b[(l1-1)+(l1-1)*ldb], zero, x,
-            2, scaloc, xnorm, ierr);
-          if (ierr != 0) {
+                    suml = Rdot(m - k2, &a[(k1 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l1 - 1) * ldc], 1);
+                    sumr = Rdot(l1 - 1, &c[(k1 - 1)], ldc, &b[(l1 - 1) * ldb], 1);
+                    vec[(1 - 1)] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    //
+                    suml = Rdot(m - k2, &a[(k2 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l1 - 1) * ldc], 1);
+                    sumr = Rdot(l1 - 1, &c[(k2 - 1)], ldc, &b[(l1 - 1) * ldb], 1);
+                    vec[(2 - 1)] = c[(k2 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    //
+                    Rlaln2(false, 2, 1, smin, one, &a[(k1 - 1) + (k1 - 1) * lda], lda, one, one, vec, 2, -sgn * b[(l1 - 1) + (l1 - 1) * ldb], zero, x, 2, scaloc, xnorm, ierr);
+                    if (ierr != 0) {
                         info = 1;
-          }
-          //
-          if (scaloc != one) {
+                    }
+                    //
+                    if (scaloc != one) {
                         for (j = 1; j <= n; j = j + 1) {
                             Rscal(m, scaloc, &c[(j - 1) * ldc], 1);
                         }
                         scale = scale * scaloc;
-          }
-          c[(k1-1)+(l1-1)*ldc] = x[(1-1)];
-          c[(k2-1)+(l1-1)*ldc] = x[(2-1)];
-          //
+                    }
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k2 - 1) + (l1 - 1) * ldc] = x[(2 - 1)];
+                    //
                 } else if (l1 != l2 && k1 == k2) {
                     //
-          suml = Rdot(m - k1, &a[(k1-1)+((min(k1 + 1)-1)*lda],
-            lda, &c[((min(k1 + 1)-1)+(m)-1)*ldc], 1);
-          sumr = Rdot(l1 - 1, &c[(k1-1)], ldc, &b[(l1-1)*ldb], 1);
-          vec[(1-1)] = sgn * (c[(k1-1)+(l1-1)*ldc] - (suml + sgn * sumr));
-          //
-          suml = Rdot(m - k1, &a[(k1-1)+((min(k1 + 1)-1)*lda],
-            lda, &c[((min(k1 + 1)-1)+(m)-1)*ldc], 1);
-          sumr = Rdot(l1 - 1, &c[(k1-1)], ldc, &b[(l2-1)*ldb], 1);
-          vec[(2-1)] = sgn * (c[(k1-1)+(l2-1)*ldc] - (suml + sgn * sumr));
-          //
-          Rlaln2(true, 2, 1, smin, one, &b[(l1-1)+(l1-1)*ldb], ldb,
-            one, one, vec, 2, -sgn * a[(k1-1)+(k1-1)*lda], zero, x,
-            2, scaloc, xnorm, ierr);
-          if (ierr != 0) {
+                    suml = Rdot(m - k1, &a[(k1 - 1) + (min(k1 + 1, m) - 1) * lda], lda, &c[(min(k1 + 1, m) - 1) + (l1 - 1) * ldc], 1);
+                    sumr = Rdot(l1 - 1, &c[(k1 - 1)], ldc, &b[(l1 - 1) * ldb], 1);
+                    vec[(1 - 1)] = sgn * (c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr));
+                    //
+                    suml = Rdot(m - k1, &a[(k1 - 1) + (min(k1 + 1, m) - 1) * lda], lda, &c[(min(k1 + 1, m) - 1) + (l2 - 1) * ldc], 1);
+                    sumr = Rdot(l1 - 1, &c[(k1 - 1)], ldc, &b[(l2 - 1) * ldb], 1);
+                    vec[(2 - 1)] = sgn * (c[(k1 - 1) + (l2 - 1) * ldc] - (suml + sgn * sumr));
+                    //
+                    Rlaln2(true, 2, 1, smin, one, &b[(l1 - 1) + (l1 - 1) * ldb], ldb, one, one, vec, 2, -sgn * a[(k1 - 1) + (k1 - 1) * lda], zero, x, 2, scaloc, xnorm, ierr);
+                    if (ierr != 0) {
                         info = 1;
-          }
-          //
-          if (scaloc != one) {
+                    }
+                    //
+                    if (scaloc != one) {
                         for (j = 1; j <= n; j = j + 1) {
                             Rscal(m, scaloc, &c[(j - 1) * ldc], 1);
                         }
                         scale = scale * scaloc;
-          }
-          c[(k1-1)+(l1-1)*ldc] = x[(1-1)];
-          c[(k1-1)+(l2-1)*ldc] = x[(2-1)];
-          //
+                    }
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l2 - 1) * ldc] = x[(2 - 1)];
+                    //
                 } else if (l1 != l2 && k1 != k2) {
                     //
-          suml = Rdot(m - k2, &a[(k1-1)+((min(k2 + 1)-1)*lda],
-            lda, &c[((min(k2 + 1)-1)+(m)-1)*ldc], 1);
-          sumr = Rdot(l1 - 1, &c[(k1-1)], ldc, &b[(l1-1)*ldb], 1);
-          vec[(1-1)] = c[(k1-1)+(l1-1)*ldc] - (suml + sgn * sumr);
-          //
-          suml = Rdot(m - k2, &a[(k1-1)+((min(k2 + 1)-1)*lda],
-            lda, &c[((min(k2 + 1)-1)+(m)-1)*ldc], 1);
-          sumr = Rdot(l1 - 1, &c[(k1-1)], ldc, &b[(l2-1)*ldb], 1);
-          vec[(2-1)*ldvec] = c[(k1-1)+(l2-1)*ldc] - (suml + sgn * sumr);
-          //
-          suml = Rdot(m - k2, &a[(k2-1)+((min(k2 + 1)-1)*lda],
-            lda, &c[((min(k2 + 1)-1)+(m)-1)*ldc], 1);
-          sumr = Rdot(l1 - 1, &c[(k2-1)], ldc, &b[(l1-1)*ldb], 1);
-          vec[(2-1)] = c[(k2-1)+(l1-1)*ldc] - (suml + sgn * sumr);
-          //
-          suml = Rdot(m - k2, &a[(k2-1)+((min(k2 + 1)-1)*lda],
-            lda, &c[((min(k2 + 1)-1)+(m)-1)*ldc], 1);
-          sumr = Rdot(l1 - 1, &c[(k2-1)], ldc, &b[(l2-1)*ldb], 1);
-          vec[(2-1)+(2-1)*ldvec] = c[(k2-1)+(l2-1)*ldc] - (suml + sgn * sumr);
-          //
-          Rlasy2(false, false, isgn, 2, 2, &a[(k1-1)+(k1-1)*lda], lda,
-            b[(l1-1)+(l1-1)*ldb], ldb, vec, 2, scaloc, x, 2, xnorm,
-            ierr);
-          if (ierr != 0) {
+                    suml = Rdot(m - k2, &a[(k1 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l1 - 1) * ldc], 1);
+                    sumr = Rdot(l1 - 1, &c[(k1 - 1)], ldc, &b[(l1 - 1) * ldb], 1);
+                    vec[(1 - 1)] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    //
+                    suml = Rdot(m - k2, &a[(k1 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l2 - 1) * ldc], 1);
+                    sumr = Rdot(l1 - 1, &c[(k1 - 1)], ldc, &b[(l2 - 1) * ldb], 1);
+                    vec[(2 - 1) * ldvec] = c[(k1 - 1) + (l2 - 1) * ldc] - (suml + sgn * sumr);
+                    //
+                    suml = Rdot(m - k2, &a[(k2 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l1 - 1) * ldc], 1);
+                    sumr = Rdot(l1 - 1, &c[(k2 - 1)], ldc, &b[(l1 - 1) * ldb], 1);
+                    vec[(2 - 1)] = c[(k2 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    //
+                    suml = Rdot(m - k2, &a[(k2 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l2 - 1) * ldc], 1);
+                    sumr = Rdot(l1 - 1, &c[(k2 - 1)], ldc, &b[(l2 - 1) * ldb], 1);
+                    vec[(2 - 1) + (2 - 1) * ldvec] = c[(k2 - 1) + (l2 - 1) * ldc] - (suml + sgn * sumr);
+                    //
+                    Rlasy2(false, false, isgn, 2, 2, &a[(k1 - 1) + (k1 - 1) * lda], lda, &b[(l1 - 1) + (l1 - 1) * ldb], ldb, vec, 2, scaloc, x, 2, xnorm, ierr);
+                    if (ierr != 0) {
                         info = 1;
-          }
-          //
-          if (scaloc != one) {
+                    }
+                    //
+                    if (scaloc != one) {
                         for (j = 1; j <= n; j = j + 1) {
                             Rscal(m, scaloc, &c[(j - 1) * ldc], 1);
                         }
                         scale = scale * scaloc;
-          }
-          c[(k1-1)+(l1-1)*ldc] = x[(1-1)];
-          c[(k1-1)+(l2-1)*ldc] = x[(2-1)*ldx];
-          c[(k2-1)+(l1-1)*ldc] = x[(2-1)];
-          c[(k2-1)+(l2-1)*ldc] = x[(2-1)+(2-1)*ldx];
+                    }
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l2 - 1) * ldc] = x[(2 - 1) * ldx];
+                    c[(k2 - 1) + (l1 - 1) * ldc] = x[(2 - 1)];
+                    c[(k2 - 1) + (l2 - 1) * ldc] = x[(2 - 1) + (2 - 1) * ldx];
                 }
             //
             statement_50:;
@@ -565,129 +552,114 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                 //
                 if (l1 == l2 && k1 == k2) {
                     suml = Rdot(k1 - 1, &a[(k1 - 1) * lda], 1, &c[(l1 - 1) * ldc], 1);
-          sumr = Rdot(n - l1, &c[(k1-1)+((min(l1 + 1)-1)*ldc],
-            ldc, &b[(l1-1)+((min(l1 + 1)-1)*ldb], ldb);
-          vec[(1-1)] = c[(k1-1)+(l1-1)*ldc] - (suml + sgn * sumr);
-          scaloc = one;
-          //
-          a11 = a[(k1-1)+(k1-1)*lda] + sgn * b[(l1-1)+(l1-1)*ldb];
-          da11 = abs(a11);
-          if (da11 <= smin) {
+                    sumr = Rdot(n - l1, &c[(k1 - 1) + (min(l1 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l1 + 1, n) - 1) * ldb], ldb);
+                    vec[(1 - 1)] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    scaloc = one;
+                    //
+                    a11 = a[(k1 - 1) + (k1 - 1) * lda] + sgn * b[(l1 - 1) + (l1 - 1) * ldb];
+                    da11 = abs(a11);
+                    if (da11 <= smin) {
                         a11 = smin;
                         da11 = smin;
                         info = 1;
-          }
-          db = abs(vec[(1-1)]);
-          if (da11 < one && db > one) {
+                    }
+                    db = abs(vec[(1 - 1)]);
+                    if (da11 < one && db > one) {
                         if (db > bignum * da11) {
                             scaloc = one / db;
                         }
-          }
-          x[(1-1)] = (vec[(1-1)] * scaloc) / a11;
-          //
-          if (scaloc != one) {
+                    }
+                    x[(1 - 1)] = (vec[(1 - 1)] * scaloc) / a11;
+                    //
+                    if (scaloc != one) {
                         for (j = 1; j <= n; j = j + 1) {
                             Rscal(m, scaloc, &c[(j - 1) * ldc], 1);
                         }
                         scale = scale * scaloc;
-          }
-          c[(k1-1)+(l1-1)*ldc] = x[(1-1)];
-          //
+                    }
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    //
                 } else if (l1 == l2 && k1 != k2) {
                     //
                     suml = Rdot(k1 - 1, &a[(k1 - 1) * lda], 1, &c[(l1 - 1) * ldc], 1);
-          sumr = Rdot(n - l2, &c[(k1-1)+((min(l2 + 1)-1)*ldc],
-            ldc, &b[(l1-1)+((min(l2 + 1)-1)*ldb], ldb);
-          vec[(1-1)] = c[(k1-1)+(l1-1)*ldc] - (suml + sgn * sumr);
-          //
-          suml = Rdot(k1 - 1, &a[(k2-1)*lda], 1, &c[(l1-1)*ldc], 1);
-          sumr = Rdot(n - l2, &c[(k2-1)+((min(l2 + 1)-1)*ldc],
-            ldc, &b[(l1-1)+((min(l2 + 1)-1)*ldb], ldb);
-          vec[(2-1)] = c[(k2-1)+(l1-1)*ldc] - (suml + sgn * sumr);
-          //
-          Rlaln2(true, 2, 1, smin, one, &a[(k1-1)+(k1-1)*lda], lda,
-            one, one, vec, 2, -sgn * b[(l1-1)+(l1-1)*ldb], zero, x,
-            2, scaloc, xnorm, ierr);
-          if (ierr != 0) {
+                    sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
+                    vec[(1 - 1)] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    //
+                    suml = Rdot(k1 - 1, &a[(k2 - 1) * lda], 1, &c[(l1 - 1) * ldc], 1);
+                    sumr = Rdot(n - l2, &c[(k2 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
+                    vec[(2 - 1)] = c[(k2 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    //
+                    Rlaln2(true, 2, 1, smin, one, &a[(k1 - 1) + (k1 - 1) * lda], lda, one, one, vec, 2, -sgn * b[(l1 - 1) + (l1 - 1) * ldb], zero, x, 2, scaloc, xnorm, ierr);
+                    if (ierr != 0) {
                         info = 1;
-          }
-          //
-          if (scaloc != one) {
+                    }
+                    //
+                    if (scaloc != one) {
                         for (j = 1; j <= n; j = j + 1) {
                             Rscal(m, scaloc, &c[(j - 1) * ldc], 1);
                         }
                         scale = scale * scaloc;
-          }
-          c[(k1-1)+(l1-1)*ldc] = x[(1-1)];
-          c[(k2-1)+(l1-1)*ldc] = x[(2-1)];
-          //
+                    }
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k2 - 1) + (l1 - 1) * ldc] = x[(2 - 1)];
+                    //
                 } else if (l1 != l2 && k1 == k2) {
                     //
                     suml = Rdot(k1 - 1, &a[(k1 - 1) * lda], 1, &c[(l1 - 1) * ldc], 1);
-          sumr = Rdot(n - l2, &c[(k1-1)+((min(l2 + 1)-1)*ldc],
-            ldc, &b[(l1-1)+((min(l2 + 1)-1)*ldb], ldb);
-          vec[(1-1)] = sgn * (c[(k1-1)+(l1-1)*ldc] - (suml + sgn * sumr));
-          //
-          suml = Rdot(k1 - 1, &a[(k1-1)*lda], 1, &c[(l2-1)*ldc], 1);
-          sumr = Rdot(n - l2, &c[(k1-1)+((min(l2 + 1)-1)*ldc],
-            ldc, &b[(l2-1)+((min(l2 + 1)-1)*ldb], ldb);
-          vec[(2-1)] = sgn * (c[(k1-1)+(l2-1)*ldc] - (suml + sgn * sumr));
-          //
-          Rlaln2(false, 2, 1, smin, one, &b[(l1-1)+(l1-1)*ldb], ldb,
-            one, one, vec, 2, -sgn * a[(k1-1)+(k1-1)*lda], zero, x,
-            2, scaloc, xnorm, ierr);
-          if (ierr != 0) {
+                    sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
+                    vec[(1 - 1)] = sgn * (c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr));
+                    //
+                    suml = Rdot(k1 - 1, &a[(k1 - 1) * lda], 1, &c[(l2 - 1) * ldc], 1);
+                    sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l2 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
+                    vec[(2 - 1)] = sgn * (c[(k1 - 1) + (l2 - 1) * ldc] - (suml + sgn * sumr));
+                    //
+                    Rlaln2(false, 2, 1, smin, one, &b[(l1 - 1) + (l1 - 1) * ldb], ldb, one, one, vec, 2, -sgn * a[(k1 - 1) + (k1 - 1) * lda], zero, x, 2, scaloc, xnorm, ierr);
+                    if (ierr != 0) {
                         info = 1;
-          }
-          //
-          if (scaloc != one) {
+                    }
+                    //
+                    if (scaloc != one) {
                         for (j = 1; j <= n; j = j + 1) {
                             Rscal(m, scaloc, &c[(j - 1) * ldc], 1);
                         }
                         scale = scale * scaloc;
-          }
-          c[(k1-1)+(l1-1)*ldc] = x[(1-1)];
-          c[(k1-1)+(l2-1)*ldc] = x[(2-1)];
-          //
+                    }
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l2 - 1) * ldc] = x[(2 - 1)];
+                    //
                 } else if (l1 != l2 && k1 != k2) {
                     //
                     suml = Rdot(k1 - 1, &a[(k1 - 1) * lda], 1, &c[(l1 - 1) * ldc], 1);
-          sumr = Rdot(n - l2, &c[(k1-1)+((min(l2 + 1)-1)*ldc],
-            ldc, &b[(l1-1)+((min(l2 + 1)-1)*ldb], ldb);
-          vec[(1-1)] = c[(k1-1)+(l1-1)*ldc] - (suml + sgn * sumr);
-          //
-          suml = Rdot(k1 - 1, &a[(k1-1)*lda], 1, &c[(l2-1)*ldc], 1);
-          sumr = Rdot(n - l2, &c[(k1-1)+((min(l2 + 1)-1)*ldc],
-            ldc, &b[(l2-1)+((min(l2 + 1)-1)*ldb], ldb);
-          vec[(2-1)*ldvec] = c[(k1-1)+(l2-1)*ldc] - (suml + sgn * sumr);
-          //
-          suml = Rdot(k1 - 1, &a[(k2-1)*lda], 1, &c[(l1-1)*ldc], 1);
-          sumr = Rdot(n - l2, &c[(k2-1)+((min(l2 + 1)-1)*ldc],
-            ldc, &b[(l1-1)+((min(l2 + 1)-1)*ldb], ldb);
-          vec[(2-1)] = c[(k2-1)+(l1-1)*ldc] - (suml + sgn * sumr);
-          //
-          suml = Rdot(k1 - 1, &a[(k2-1)*lda], 1, &c[(l2-1)*ldc], 1);
-          sumr = Rdot(n - l2, &c[(k2-1)+((min(l2 + 1)-1)*ldc],
-            ldc, &b[(l2-1)+((min(l2 + 1)-1)*ldb], ldb);
-          vec[(2-1)+(2-1)*ldvec] = c[(k2-1)+(l2-1)*ldc] - (suml + sgn * sumr);
-          //
-          Rlasy2(true, true, isgn, 2, 2, &a[(k1-1)+(k1-1)*lda], lda,
-            b[(l1-1)+(l1-1)*ldb], ldb, vec, 2, scaloc, x, 2, xnorm,
-            ierr);
-          if (ierr != 0) {
+                    sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
+                    vec[(1 - 1)] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    //
+                    suml = Rdot(k1 - 1, &a[(k1 - 1) * lda], 1, &c[(l2 - 1) * ldc], 1);
+                    sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l2 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
+                    vec[(2 - 1) * ldvec] = c[(k1 - 1) + (l2 - 1) * ldc] - (suml + sgn * sumr);
+                    //
+                    suml = Rdot(k1 - 1, &a[(k2 - 1) * lda], 1, &c[(l1 - 1) * ldc], 1);
+                    sumr = Rdot(n - l2, &c[(k2 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
+                    vec[(2 - 1)] = c[(k2 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    //
+                    suml = Rdot(k1 - 1, &a[(k2 - 1) * lda], 1, &c[(l2 - 1) * ldc], 1);
+                    sumr = Rdot(n - l2, &c[(k2 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l2 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
+                    vec[(2 - 1) + (2 - 1) * ldvec] = c[(k2 - 1) + (l2 - 1) * ldc] - (suml + sgn * sumr);
+                    //
+                    Rlasy2(true, true, isgn, 2, 2, &a[(k1 - 1) + (k1 - 1) * lda], lda, &b[(l1 - 1) + (l1 - 1) * ldb], ldb, vec, 2, scaloc, x, 2, xnorm, ierr);
+                    if (ierr != 0) {
                         info = 1;
-          }
-          //
-          if (scaloc != one) {
+                    }
+                    //
+                    if (scaloc != one) {
                         for (j = 1; j <= n; j = j + 1) {
                             Rscal(m, scaloc, &c[(j - 1) * ldc], 1);
                         }
                         scale = scale * scaloc;
-          }
-          c[(k1-1)+(l1-1)*ldc] = x[(1-1)];
-          c[(k1-1)+(l2-1)*ldc] = x[(2-1)*ldx];
-          c[(k2-1)+(l1-1)*ldc] = x[(2-1)];
-          c[(k2-1)+(l2-1)*ldc] = x[(2-1)+(2-1)*ldx];
+                    }
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l2 - 1) * ldc] = x[(2 - 1) * ldx];
+                    c[(k2 - 1) + (l1 - 1) * ldc] = x[(2 - 1)];
+                    c[(k2 - 1) + (l2 - 1) * ldc] = x[(2 - 1) + (2 - 1) * ldx];
                 }
             //
             statement_170:;
@@ -756,139 +728,99 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                 }
                 //
                 if (l1 == l2 && k1 == k2) {
-          suml = Rdot(m - k1, &a[(k1-1)+((min(k1 + 1)-1)*lda],
-            lda, &c[((min(k1 + 1)-1)+(m)-1)*ldc], 1);
-          sumr = Rdot(n - l1, &c[(k1-1)+((min(l1 + 1)-1)*ldc],
-            ldc, &b[(l1-1)+((min(l1 + 1)-1)*ldb], ldb);
-          vec[(1-1)] = c[(k1-1)+(l1-1)*ldc] - (suml + sgn * sumr);
-          scaloc = one;
-          //
-          a11 = a[(k1-1)+(k1-1)*lda] + sgn * b[(l1-1)+(l1-1)*ldb];
-          da11 = abs(a11);
-          if (da11 <= smin) {
+                    suml = Rdot(m - k1, &a[(k1 - 1) + (min(k1 + 1, m) - 1) * lda], lda, &c[(min(k1 + 1, m) - 1) + (l1 - 1) * ldc], 1);
+                    sumr = Rdot(n - l1, &c[(k1 - 1) + (min(l1 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l1 + 1, n) - 1) * ldb], ldb);
+                    vec[(1 - 1)] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    scaloc = one;
+                    //
+                    a11 = a[(k1 - 1) + (k1 - 1) * lda] + sgn * b[(l1 - 1) + (l1 - 1) * ldb];
+                    da11 = abs(a11);
+                    if (da11 <= smin) {
                         a11 = smin;
                         da11 = smin;
                         info = 1;
-          }
-          db = abs(vec[(1-1)]);
-          if (da11 < one && db > one) {
+                    }
+                    db = abs(vec[(1 - 1)]);
+                    if (da11 < one && db > one) {
                         if (db > bignum * da11) {
                             scaloc = one / db;
                         }
-          }
-          x[(1-1)] = (vec[(1-1)] * scaloc) / a11;
-          //
-          if (scaloc != one) {
+                    }
+                    x[(1 - 1)] = (vec[(1 - 1)] * scaloc) / a11;
+                    //
+                    if (scaloc != one) {
                         for (j = 1; j <= n; j = j + 1) {
                             Rscal(m, scaloc, &c[(j - 1) * ldc], 1);
                         }
                         scale = scale * scaloc;
-          }
-          c[(k1-1)+(l1-1)*ldc] = x[(1-1)];
-          //
+                    }
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    //
                 } else if (l1 == l2 && k1 != k2) {
                     //
-          suml = Rdot(m - k2, &a[(k1-1)+((min(k2 + 1)-1)*lda],
-            lda, &c[((min(k2 + 1)-1)+(m)-1)*ldc], 1);
-          sumr = Rdot(n - l2, &c[(k1-1)+((min(l2 + 1)-1)*ldc],
-            ldc, &b[(l1-1)+((min(l2 + 1)-1)*ldb], ldb);
-          vec[(1-1)] = c[(k1-1)+(l1-1)*ldc] - (suml + sgn * sumr);
-          //
-          suml = Rdot(m - k2, &a[(k2-1)+((min(k2 + 1)-1)*lda],
-            lda, &c[((min(k2 + 1)-1)+(m)-1)*ldc], 1);
-          sumr = Rdot(n - l2, &c[(k2-1)+((min(l2 + 1)-1)*ldc],
-            ldc, &b[(l1-1)+((min(l2 + 1)-1)*ldb], ldb);
-          vec[(2-1)] = c[(k2-1)+(l1-1)*ldc] - (suml + sgn * sumr);
-          //
-          Rlaln2(false, 2, 1, smin, one, &a[(k1-1)+(k1-1)*lda], lda,
-            one, one, vec, 2, -sgn * b[(l1-1)+(l1-1)*ldb], zero, x,
-            2, scaloc, xnorm, ierr);
-          if (ierr != 0) {
+                    suml = Rdot(m - k2, &a[(k1 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l1 - 1) * ldc], 1);
+                    sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
+                    vec[(1 - 1)] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    //
+                    suml = Rdot(m - k2, &a[(k2 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l1 - 1) * ldc], 1);
+                    sumr = Rdot(n - l2, &c[(k2 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
+                    vec[(2 - 1)] = c[(k2 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    //
+                    Rlaln2(false, 2, 1, smin, one, &a[(k1 - 1) + (k1 - 1) * lda], lda, one, one, vec, 2, -sgn * b[(l1 - 1) + (l1 - 1) * ldb], zero, x, 2, scaloc, xnorm, ierr);
+                    if (ierr != 0) {
                         info = 1;
-          }
-          //
-          if (scaloc != one) {
+                    }
+                    //
+                    if (scaloc != one) {
                         for (j = 1; j <= n; j = j + 1) {
                             Rscal(m, scaloc, &c[(j - 1) * ldc], 1);
                         }
                         scale = scale * scaloc;
-          }
-          c[(k1-1)+(l1-1)*ldc] = x[(1-1)];
-          c[(k2-1)+(l1-1)*ldc] = x[(2-1)];
-          //
+                    }
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k2 - 1) + (l1 - 1) * ldc] = x[(2 - 1)];
+                    //
                 } else if (l1 != l2 && k1 == k2) {
                     //
-          suml = Rdot(m - k1, &a[(k1-1)+((min(k1 + 1)-1)*lda],
-            lda, &c[((min(k1 + 1)-1)+(m)-1)*ldc], 1);
-          sumr = Rdot(n - l2, &c[(k1-1)+((min(l2 + 1)-1)*ldc],
-            ldc, &b[(l1-1)+((min(l2 + 1)-1)*ldb], ldb);
-          vec[(1-1)] = sgn * (c[(k1-1)+(l1-1)*ldc] - (suml + sgn * sumr));
-          //
-          suml = Rdot(m - k1, &a[(k1-1)+((min(k1 + 1)-1)*lda],
-            lda, &c[((min(k1 + 1)-1)+(m)-1)*ldc], 1);
-          sumr = Rdot(n - l2, &c[(k1-1)+((min(l2 + 1)-1)*ldc],
-            ldc, &b[(l2-1)+((min(l2 + 1)-1)*ldb], ldb);
-          vec[(2-1)] = sgn * (c[(k1-1)+(l2-1)*ldc] - (suml + sgn * sumr));
-          //
-          Rlaln2(false, 2, 1, smin, one, &b[(l1-1)+(l1-1)*ldb], ldb,
-            one, one, vec, 2, -sgn * a[(k1-1)+(k1-1)*lda], zero, x,
-            2, scaloc, xnorm, ierr);
-          if (ierr != 0) {
+                    suml = Rdot(m - k1, &a[(k1 - 1) + (min(k1 + 1, m) - 1) * lda], lda, &c[(min(k1 + 1, m) - 1) + (l1 - 1) * ldc], 1);
+                    sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
+                    vec[(1 - 1)] = sgn * (c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr));
+                    //
+                    suml = Rdot(m - k1, &a[(k1 - 1) + (min(k1 + 1, m) - 1) * lda], lda, &c[(min(k1 + 1, m) - 1) + (l2 - 1) * ldc], 1);
+                    sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l2 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
+                    vec[(2 - 1)] = sgn * (c[(k1 - 1) + (l2 - 1) * ldc] - (suml + sgn * sumr));
+                    //
+                    Rlaln2(false, 2, 1, smin, one, &b[(l1 - 1) + (l1 - 1) * ldb], ldb, one, one, vec, 2, -sgn * a[(k1 - 1) + (k1 - 1) * lda], zero, x, 2, scaloc, xnorm, ierr);
+                    if (ierr != 0) {
                         info = 1;
-          }
-          //
-          if (scaloc != one) {
+                    }
+                    //
+                    if (scaloc != one) {
                         for (j = 1; j <= n; j = j + 1) {
                             Rscal(m, scaloc, &c[(j - 1) * ldc], 1);
                         }
                         scale = scale * scaloc;
-          }
-          c[(k1-1)+(l1-1)*ldc] = x[(1-1)];
-          c[(k1-1)+(l2-1)*ldc] = x[(2-1)];
-          //
+                    }
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l2 - 1) * ldc] = x[(2 - 1)];
+                    //
                 } else if (l1 != l2 && k1 != k2) {
                     //
-          suml = Rdot(m - k2, &a[(k1-1)+((min(k2 + 1)-1)*lda],
-            lda, &c[((min(k2 + 1)-1)+(m)-1)*ldc], 1);
-          sumr = Rdot(n - l2, &c[(k1-1)+((min(l2 + 1)-1)*ldc],
-            ldc, &b[(l1-1)+((min(l2 + 1)-1)*ldb], ldb);
-          vec[(1-1)] = c[(k1-1)+(l1-1)*ldc] - (suml + sgn * sumr);
-          //
-          suml = Rdot(m - k2, &a[(k1-1)+((min(k2 + 1)-1)*lda],
-            lda, &c[((min(k2 + 1)-1)+(m)-1)*ldc], 1);
-          sumr = Rdot(n - l2, &c[(k1-1)+((min(l2 + 1)-1)*ldc],
-            ldc, &b[(l2-1)+((min(l2 + 1)-1)*ldb], ldb);
-          vec[(2-1)*ldvec] = c[(k1-1)+(l2-1)*ldc] - (suml + sgn * sumr);
-          //
-          suml = Rdot(m - k2, &a[(k2-1)+((min(k2 + 1)-1)*lda],
-            lda, &c[((min(k2 + 1)-1)+(m)-1)*ldc], 1);
-          sumr = Rdot(n - l2, &c[(k2-1)+((min(l2 + 1)-1)*ldc],
-            ldc, &b[(l1-1)+((min(l2 + 1)-1)*ldb], ldb);
-          vec[(2-1)] = c[(k2-1)+(l1-1)*ldc] - (suml + sgn * sumr);
-          //
-          suml = Rdot(m - k2, &a[(k2-1)+((min(k2 + 1)-1)*lda],
-            lda, &c[((min(k2 + 1)-1)+(m)-1)*ldc], 1);
-          sumr = Rdot(n - l2, &c[(k2-1)+((min(l2 + 1)-1)*ldc],
-            ldc, &b[(l2-1)+((min(l2 + 1)-1)*ldb], ldb);
-          vec[(2-1)+(2-1)*ldvec] = c[(k2-1)+(l2-1)*ldc] - (suml + sgn * sumr);
-          //
-          Rlasy2(false, true, isgn, 2, 2, &a[(k1-1)+(k1-1)*lda], lda,
-            b[(l1-1)+(l1-1)*ldb], ldb, vec, 2, scaloc, x, 2, xnorm,
-            ierr);
-          if (ierr != 0) {
-                        info = 1;
-          }
-          //
-          if (scaloc != one) {
-                        for (j = 1; j <= n; j = j + 1) {
-                            Rscal(m, scaloc, &c[(j - 1) * ldc], 1);
-                        }
-                        scale = scale * scaloc;
-          }
-          c[(k1-1)+(l1-1)*ldc] = x[(1-1)];
-          c[(k1-1)+(l2-1)*ldc] = x[(2-1)*ldx];
-          c[(k2-1)+(l1-1)*ldc] = x[(2-1)];
-          c[(k2-1)+(l2-1)*ldc] = x[(2-1)+(2-1)*ldx];
+                    suml = Rdot(m - k2, &a[(k1 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l1 - 1) * ldc], 1);
+                    sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
+                    vec[(1 - 1)] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    //
+                    suml = Rdot(m - k2, &a[(k1 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (n - 1) * ldc], 1);
+                    sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l2 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
+                    vec[(2 - 1) * ldvec] = c[(k1 - 1) + (l2 - 1) * ldc] - (suml + sgn * sumr);
+                    //
+                    suml = Rdot(m - k2, &a[(k2 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l2 - 1) * ldc], 1);
+                    sumr = Rdot(n - l2, &c[(k2 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
+                    vec[(2 - 1)] = c[(k2 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    //
+                    suml = Rdot(m - k2, &a[(k2 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l2 - 1) * ldc], 1);
+                    sumr = Rdot(n - l2, &a[(k2 - 1) + (min(l2 + 1, n) - 1) * lda], lda, &b[(l2 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
+                    vec[(3 - 1)] = c[(k2 - 1) + (l2 - 1) * ldc] - (suml + sgn * sumr);
                 }
             //
             statement_230:;

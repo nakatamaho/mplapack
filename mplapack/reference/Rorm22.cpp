@@ -96,7 +96,7 @@ void Rorm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER lwkopt = 0;
     if (info == 0) {
         lwkopt = m * n;
-        work[1 - 1] = lwkopt.real();
+        work[1 - 1] = castREAL(lwkopt);
     }
     //
     if (info != 0) {
@@ -142,7 +142,7 @@ void Rorm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
                 //              Multiply bottom part of C by Q12.
                 //
                 Rlacpy("All", n1, len, &c[((n2 + 1) - 1) + (i - 1) * ldc], ldc, work, ldwork);
-                Rtrmm("Left", "Lower", "No Transpose", "Non-Unit", n1, len, one, q[((n2 + 1) - 1) * ldq], ldq, work, ldwork);
+                Rtrmm("Left", "Lower", "No Transpose", "Non-Unit", n1, len, one, &q[((n2 + 1) - 1) * ldq], ldq, work, ldwork);
                 //
                 //              Multiply top part of C by Q11.
                 //
@@ -151,11 +151,11 @@ void Rorm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
                 //              Multiply top part of C by Q21.
                 //
                 Rlacpy("All", n2, len, &c[(i - 1) * ldc], ldc, &work[(n1 + 1) - 1], ldwork);
-                Rtrmm("Left", "Upper", "No Transpose", "Non-Unit", n2, len, one, q[((n1 + 1) - 1)], ldq, &work[(n1 + 1) - 1], ldwork);
+                Rtrmm("Left", "Upper", "No Transpose", "Non-Unit", n2, len, one, &q[((n1 + 1) - 1)], ldq, &work[(n1 + 1) - 1], ldwork);
                 //
                 //              Multiply bottom part of C by Q22.
                 //
-                Rgemm("No Transpose", "No Transpose", n2, len, n1, one, q[((n1 + 1) - 1) + ((n2 + 1) - 1) * ldq], ldq, &c[((n2 + 1) - 1) + (i - 1) * ldc], ldc, one, &work[(n1 + 1) - 1], ldwork);
+                Rgemm("No Transpose", "No Transpose", n2, len, n1, one, &q[((n1 + 1) - 1) + ((n2 + 1) - 1) * ldq], ldq, &c[((n2 + 1) - 1) + (i - 1) * ldc], ldc, one, &work[(n1 + 1) - 1], ldwork);
                 //
                 //              Copy everything back.
                 //
@@ -169,7 +169,7 @@ void Rorm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
                 //              Multiply bottom part of C by Q21**T.
                 //
                 Rlacpy("All", n2, len, &c[((n1 + 1) - 1) + (i - 1) * ldc], ldc, work, ldwork);
-                Rtrmm("Left", "Upper", "Transpose", "Non-Unit", n2, len, one, q[((n1 + 1) - 1)], ldq, work, ldwork);
+                Rtrmm("Left", "Upper", "Transpose", "Non-Unit", n2, len, one, &q[((n1 + 1) - 1)], ldq, work, ldwork);
                 //
                 //              Multiply top part of C by Q11**T.
                 //
@@ -178,11 +178,11 @@ void Rorm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
                 //              Multiply top part of C by Q12**T.
                 //
                 Rlacpy("All", n1, len, &c[(i - 1) * ldc], ldc, &work[(n2 + 1) - 1], ldwork);
-                Rtrmm("Left", "Lower", "Transpose", "Non-Unit", n1, len, one, q[((n2 + 1) - 1) * ldq], ldq, &work[(n2 + 1) - 1], ldwork);
+                Rtrmm("Left", "Lower", "Transpose", "Non-Unit", n1, len, one, &q[((n2 + 1) - 1) * ldq], ldq, &work[(n2 + 1) - 1], ldwork);
                 //
                 //              Multiply bottom part of C by Q22**T.
                 //
-                Rgemm("Transpose", "No Transpose", n1, len, n2, one, q[((n1 + 1) - 1) + ((n2 + 1) - 1) * ldq], ldq, &c[((n1 + 1) - 1) + (i - 1) * ldc], ldc, one, &work[(n2 + 1) - 1], ldwork);
+                Rgemm("Transpose", "No Transpose", n1, len, n2, one, &q[((n1 + 1) - 1) + ((n2 + 1) - 1) * ldq], ldq, &c[((n1 + 1) - 1) + (i - 1) * ldc], ldc, one, &work[(n2 + 1) - 1], ldwork);
                 //
                 //              Copy everything back.
                 //
@@ -198,7 +198,7 @@ void Rorm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
                 //              Multiply right part of C by Q21.
                 //
                 Rlacpy("All", len, n2, &c[(i - 1) + ((n1 + 1) - 1) * ldc], ldc, work, ldwork);
-                Rtrmm("Right", "Upper", "No Transpose", "Non-Unit", len, n2, one, q[((n1 + 1) - 1)], ldq, work, ldwork);
+                Rtrmm("Right", "Upper", "No Transpose", "Non-Unit", len, n2, one, &q[((n1 + 1) - 1)], ldq, work, ldwork);
                 //
                 //              Multiply left part of C by Q11.
                 //
@@ -207,11 +207,11 @@ void Rorm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
                 //              Multiply left part of C by Q12.
                 //
                 Rlacpy("All", len, n1, &c[(i - 1)], ldc, &work[(1 + n2 * ldwork) - 1], ldwork);
-                Rtrmm("Right", "Lower", "No Transpose", "Non-Unit", len, n1, one, q[((n2 + 1) - 1) * ldq], ldq, &work[(1 + n2 * ldwork) - 1], ldwork);
+                Rtrmm("Right", "Lower", "No Transpose", "Non-Unit", len, n1, one, &q[((n2 + 1) - 1) * ldq], ldq, &work[(1 + n2 * ldwork) - 1], ldwork);
                 //
                 //              Multiply right part of C by Q22.
                 //
-                Rgemm("No Transpose", "No Transpose", len, n1, n2, one, &c[(i - 1) + ((n1 + 1) - 1) * ldc], ldc, q[((n1 + 1) - 1) + ((n2 + 1) - 1) * ldq], ldq, one, &work[(1 + n2 * ldwork) - 1], ldwork);
+                Rgemm("No Transpose", "No Transpose", len, n1, n2, one, &c[(i - 1) + ((n1 + 1) - 1) * ldc], ldc, &q[((n1 + 1) - 1) + ((n2 + 1) - 1) * ldq], ldq, one, &work[(1 + n2 * ldwork) - 1], ldwork);
                 //
                 //              Copy everything back.
                 //
@@ -225,7 +225,7 @@ void Rorm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
                 //              Multiply right part of C by Q12**T.
                 //
                 Rlacpy("All", len, n1, &c[(i - 1) + ((n2 + 1) - 1) * ldc], ldc, work, ldwork);
-                Rtrmm("Right", "Lower", "Transpose", "Non-Unit", len, n1, one, q[((n2 + 1) - 1) * ldq], ldq, work, ldwork);
+                Rtrmm("Right", "Lower", "Transpose", "Non-Unit", len, n1, one, &q[((n2 + 1) - 1) * ldq], ldq, work, ldwork);
                 //
                 //              Multiply left part of C by Q11**T.
                 //
@@ -234,11 +234,11 @@ void Rorm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
                 //              Multiply left part of C by Q21**T.
                 //
                 Rlacpy("All", len, n2, &c[(i - 1)], ldc, &work[(1 + n1 * ldwork) - 1], ldwork);
-                Rtrmm("Right", "Upper", "Transpose", "Non-Unit", len, n2, one, q[((n1 + 1) - 1)], ldq, &work[(1 + n1 * ldwork) - 1], ldwork);
+                Rtrmm("Right", "Upper", "Transpose", "Non-Unit", len, n2, one, &q[((n1 + 1) - 1)], ldq, &work[(1 + n1 * ldwork) - 1], ldwork);
                 //
                 //              Multiply right part of C by Q22**T.
                 //
-                Rgemm("No Transpose", "Transpose", len, n2, n1, one, &c[(i - 1) + ((n2 + 1) - 1) * ldc], ldc, q[((n1 + 1) - 1) + ((n2 + 1) - 1) * ldq], ldq, one, &work[(1 + n1 * ldwork) - 1], ldwork);
+                Rgemm("No Transpose", "Transpose", len, n2, n1, one, &c[(i - 1) + ((n2 + 1) - 1) * ldc], ldc, &q[((n1 + 1) - 1) + ((n2 + 1) - 1) * ldq], ldq, one, &work[(1 + n1 * ldwork) - 1], ldwork);
                 //
                 //              Copy everything back.
                 //
@@ -247,7 +247,7 @@ void Rorm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
         }
     }
     //
-    work[1 - 1] = lwkopt.real();
+    work[1 - 1] = castREAL(lwkopt);
     //
     //     End of Rorm22
     //
