@@ -304,8 +304,7 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
             //
             //           Compute T(J,J)
             //
-            Rlacpy("Lower", kb, kb, &a[((j * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &
-tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
+            Rlacpy("Lower", kb, kb, &a[((j * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
             if (j > 1) {
                 //              T(J,J) = L(J,1:J)*H(1:J)
                 Rgemm("NoTranspose", "NoTranspose", kb, kb, (j - 1) * nb, -one, &a[((j * nb + 1) - 1)], lda, &work[(nb + 1) - 1], n, one, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);

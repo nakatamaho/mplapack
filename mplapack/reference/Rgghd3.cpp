@@ -442,7 +442,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     topq = 1;
                     nh = n;
                 }
-                Rgemm("No Transpose", "No Transpose", nh, nblst, nblst, one, q[(topq - 1) + (j - 1) * ldq], ldq, work, nblst, zero, &work[pw - 1], nh);
+                Rgemm("No Transpose", "No Transpose", nh, nblst, nblst, one, &q[(topq - 1) + (j - 1) * ldq], ldq, work, nblst, zero, &work[pw - 1], nh);
                 Rlacpy("All", nh, nblst, &work[pw - 1], nh, &q[(topq - 1) + (j - 1) * ldq], ldq);
                 ppwo = nblst * nblst + 1;
                 j0 = j - nnb;
@@ -455,13 +455,13 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                         //
                         //                    Exploit the structure of U.
                         //
-                        Rorm22("Right", "No Transpose", nh, 2 * nnb, nnb, nnb, &work[ppwo - 1], 2 * nnb, q[(topq - 1) + (j - 1) * ldq], ldq, &work[pw - 1], lwork - pw + 1, ierr);
+                        Rorm22("Right", "No Transpose", nh, 2 * nnb, nnb, nnb, &work[ppwo - 1], 2 * nnb, &q[(topq - 1) + (j - 1) * ldq], ldq, &work[pw - 1], lwork - pw + 1, ierr);
                     } else {
                         //
                         //                    Ignore the structure of U.
                         //
-                        Rgemm("No Transpose", "No Transpose", nh, 2 * nnb, 2 * nnb, one, q[(topq - 1) + (j - 1) * ldq], ldq, &work[ppwo - 1], 2 * nnb, zero, &work[pw - 1], nh);
-                        Rlacpy("All", nh, 2 * nnb, &work[pw - 1], nh, q[(topq - 1) + (j - 1) * ldq], ldq);
+                        Rgemm("No Transpose", "No Transpose", nh, 2 * nnb, 2 * nnb, one, &q[(topq - 1) + (j - 1) * ldq], ldq, &work[ppwo - 1], 2 * nnb, zero, &work[pw - 1], nh);
+                        Rlacpy("All", nh, 2 * nnb, &work[pw - 1], nh, &q[(topq - 1) + (j - 1) * ldq], ldq);
                     }
                     ppwo += 4 * nnb * nnb;
                 }
@@ -615,21 +615,21 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
     //     Use unblocked code to reduce the rest of the matrix
     //     Avoid re-initialization of modified Q and Z.
     //
-    str<1> compq2 = compq;
-    str<1> compz2 = compz;
+    char compq2 = *compq;
+    char compz2 = *compz;
     if (jcol != ilo) {
         if (wantq) {
-            compq2 = "V";
+            compq2 = 'V';
         }
         if (wantz) {
-            compz2 = "V";
+            compz2 = 'V';
         }
     }
     //
     if (jcol < ihi) {
-        Rgghrd(compq2, compz2, n, jcol, ihi, a, lda, b, ldb, q, ldq, z, ldz, ierr);
+        Rgghrd(&compq2, &compz2, n, jcol, ihi, a, lda, b, ldb, q, ldq, z, ldz, ierr);
     }
-    work[1 - 1] = lwkopt.real();
+    work[1 - 1] = castREAL(lwkopt);
     //
     //     End of Rgghd3
     //

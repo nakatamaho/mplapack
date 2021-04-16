@@ -45,7 +45,7 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
     INTEGER emptsw = 0;
     INTEGER notrot = 0;
     const REAL zero = 0.0;
-    arr_1d<5, REAL> fastr(fill0);
+    REAL fastr[5];
     INTEGER kbl = 0;
     INTEGER nblr = 0;
     INTEGER nblc = 0;
@@ -151,7 +151,7 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
     small = sfmin / eps;
     big = one / sfmin;
     rootbig = one / rootsfmin;
-    large = big / sqrt(m * n.real());
+    large = big / sqrt(castREAL(m * n));
     bigtheta = one / rooteps;
     roottol = sqrt(tol);
     //
@@ -247,7 +247,7 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                                         aapq = (Rdot(m, &a[(p - 1) * lda], 1, &a[(q - 1) * lda], 1) * d[p - 1] * d[q - 1] / aaqq) / aapp;
                                     } else {
                                         Rcopy(m, &a[(p - 1) * lda], 1, work, 1);
-                                        Rlascl("G", 0, 0, aapp, &d[p - 1], m, 1, work, lda, ierr);
+                                        Rlascl("G", 0, 0, aapp, d[p - 1], m, 1, work, lda, ierr);
                                         aapq = Rdot(m, work, 1, &a[(q - 1) * lda], 1) * d[q - 1] / aaqq;
                                     }
                                 } else {
@@ -260,7 +260,7 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                                         aapq = (Rdot(m, &a[(p - 1) * lda], 1, &a[(q - 1) * lda], 1) * d[p - 1] * d[q - 1] / aaqq) / aapp;
                                     } else {
                                         Rcopy(m, &a[(q - 1) * lda], 1, work, 1);
-                                        Rlascl("G", 0, 0, aaqq, &d[q - 1], m, 1, work, lda, ierr);
+                                        Rlascl("G", 0, 0, aaqq, d[q - 1], m, 1, work, lda, ierr);
                                         aapq = Rdot(m, work, 1, &a[(p - 1) * lda], 1) * d[p - 1] / aapp;
                                     }
                                 }
@@ -483,7 +483,7 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
             swband = i;
         }
         //
-        if ((i > swband + 1) && (mxaapq < n.real() * tol) && (n.real() * mxaapq * mxsinj < tol)) {
+        if ((i > swband + 1) && (mxaapq < castREAL(n) * tol) && (castREAL(n) * mxaapq * mxsinj < tol)) {
             goto statement_1994;
         }
         //
@@ -508,7 +508,7 @@ statement_1995:
     //     Sort the vector D
     //
     for (p = 1; p <= n - 1; p = p + 1) {
-        q = iRamax(n - p + 1, sva[p - 1], 1) + p - 1;
+        q = iRamax(n - p + 1, &sva[p - 1], 1) + p - 1;
         if (p != q) {
             temp1 = sva[p - 1];
             sva[p - 1] = sva[q - 1];
