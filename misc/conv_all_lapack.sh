@@ -27,7 +27,7 @@ rm -f LAPACK_LIST LAPACK_LIST_  LAPACK_LIST__
 echo "sed \\" > LAPACK_LIST
 echo "-e 's///g'" >> LAPACK_LIST__
 
-FILES_SUBSET=`ls ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/d*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/z*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/i*.f | grep -v dsdot | grep -v zggsvp3`
+FILES_SUBSET=`ls ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/d*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/z*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/i*.f | grep -v dsdot | grep -v zggsvp3 | grep /lamtsqr`
 
 for _file in $FILES_SUBSET; do
 oldfilename=`basename $_file | sed -e 's/\.f$//'` 
