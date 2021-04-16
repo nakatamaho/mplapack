@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rtgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *c, INTEGER const ldc, REAL *d, INTEGER const ldd, REAL *e, INTEGER const lde, REAL *f, INTEGER const ldf, REAL &scale, REAL const rdsum, REAL const rRscal, INTEGER *iwork, INTEGER &pq, INTEGER &info) {
+void Rtgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *c, INTEGER const ldc, REAL *d, INTEGER const ldd, REAL *e, INTEGER const lde, REAL *f, INTEGER const ldf, REAL &scale, REAL const rdsum, REAL const rdscal, INTEGER *iwork, INTEGER &pq, INTEGER &info) {
     INTEGER ierr = 0;
     bool notran = false;
     INTEGER p = 0;
@@ -49,10 +49,10 @@ void Rtgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
     INTEGER mb = 0;
     INTEGER zdim = 0;
     const INTEGER ldz = 8;
-    arr_2d<ldz, ldz, REAL> z(fill0);
-    arr_1d<ldz, REAL> rhs(fill0);
-    arr_1d<ldz, int> ipiv(fill0);
-    arr_1d<ldz, int> jpiv(fill0);
+    REAL z[ldz * ldz];
+    REAL rhs[ldz];
+    INTEGER ipiv[ldz];
+    INTEGER jpiv[ldz];
     INTEGER k = 0;
     REAL alpha = 0.0;
     INTEGER ii = 0;
@@ -215,12 +215,12 @@ statement_40:
                         if (scaloc != one) {
                             for (k = 1; k <= n; k = k + 1) {
                                 Rscal(m, scaloc, &c[(k - 1) * ldc], 1);
-                                Rscal(m, scaloc, f[(k - 1) * ldf], 1);
+                                Rscal(m, scaloc, &f[(k - 1) * ldf], 1);
                             }
                             scale = scale * scaloc;
                         }
                     } else {
-                        Rlatdf(ijob, zdim, z, ldz, rhs, rdsum, rRscal, ipiv, jpiv);
+                        Rlatdf(ijob, zdim, z, ldz, rhs, rdsum, rdscal, ipiv, jpiv);
                     }
                     //
                     //                 Unpack solution vector(s)
@@ -234,11 +234,11 @@ statement_40:
                     if (i > 1) {
                         alpha = -rhs[1 - 1];
                         Raxpy(is - 1, alpha, &a[(is - 1) * lda], 1, &c[(js - 1) * ldc], 1);
-                        Raxpy(is - 1, alpha, &d[(is - 1) * ldd], 1, f[(js - 1) * ldf], 1);
+                        Raxpy(is - 1, alpha, &d[(is - 1) * ldd], 1, &f[(js - 1) * ldf], 1);
                     }
                     if (j < q) {
                         Raxpy(n - je, rhs[2 - 1], &b[(js - 1) + ((je + 1) - 1) * ldb], ldb, &c[(is - 1) + ((je + 1) - 1) * ldc], ldc);
-                        Raxpy(n - je, rhs[2 - 1], &e[(js - 1) + ((je + 1) - 1) * lde], lde, f[(is - 1) + ((je + 1) - 1) * ldf], ldf);
+                        Raxpy(n - je, rhs[2 - 1], &e[(js - 1) + ((je + 1) - 1) * lde], lde, &f[(is - 1) + ((je + 1) - 1) * ldf], ldf);
                     }
                     //
                 } else if ((mb == 1) && (nb == 2)) {
@@ -284,12 +284,12 @@ statement_40:
                         if (scaloc != one) {
                             for (k = 1; k <= n; k = k + 1) {
                                 Rscal(m, scaloc, &c[(k - 1) * ldc], 1);
-                                Rscal(m, scaloc, f[(k - 1) * ldf], 1);
+                                Rscal(m, scaloc, &f[(k - 1) * ldf], 1);
                             }
                             scale = scale * scaloc;
                         }
                     } else {
-                        Rlatdf(ijob, zdim, z, ldz, rhs, rdsum, rRscal, ipiv, jpiv);
+                        Rlatdf(ijob, zdim, z, ldz, rhs, rdsum, rdscal, ipiv, jpiv);
                     }
                     //
                     //                 Unpack solution vector(s)
@@ -303,14 +303,14 @@ statement_40:
                     //                 equation.
                     //
                     if (i > 1) {
-                        Rger(is - 1, nb, -one, &a[(is - 1) * lda], 1, rhs[1 - 1], 1, &c[(js - 1) * ldc], ldc);
-                        Rger(is - 1, nb, -one, &d[(is - 1) * ldd], 1, rhs[1 - 1], 1, f[(js - 1) * ldf], ldf);
+                        Rger(is - 1, nb, -one, &a[(is - 1) * lda], 1, &rhs[1 - 1], 1, &c[(js - 1) * ldc], ldc);
+                        Rger(is - 1, nb, -one, &d[(is - 1) * ldd], 1, &rhs[1 - 1], 1, &f[(js - 1) * ldf], ldf);
                     }
                     if (j < q) {
                         Raxpy(n - je, rhs[3 - 1], &b[(js - 1) + ((je + 1) - 1) * ldb], ldb, &c[(is - 1) + ((je + 1) - 1) * ldc], ldc);
-                        Raxpy(n - je, rhs[3 - 1], &e[(js - 1) + ((je + 1) - 1) * lde], lde, f[(is - 1) + ((je + 1) - 1) * ldf], ldf);
+                        Raxpy(n - je, rhs[3 - 1], &e[(js - 1) + ((je + 1) - 1) * lde], lde, &f[(is - 1) + ((je + 1) - 1) * ldf], ldf);
                         Raxpy(n - je, rhs[4 - 1], &b[(jsp1 - 1) + ((je + 1) - 1) * ldb], ldb, &c[(is - 1) + ((je + 1) - 1) * ldc], ldc);
-                        Raxpy(n - je, rhs[4 - 1], &e[(jsp1 - 1) + ((je + 1) - 1) * lde], lde, f[(is - 1) + ((je + 1) - 1) * ldf], ldf);
+                        Raxpy(n - je, rhs[4 - 1], &e[(jsp1 - 1) + ((je + 1) - 1) * lde], lde, &f[(is - 1) + ((je + 1) - 1) * ldf], ldf);
                     }
                     //
                 } else if ((mb == 2) && (nb == 1)) {
@@ -355,12 +355,12 @@ statement_40:
                         if (scaloc != one) {
                             for (k = 1; k <= n; k = k + 1) {
                                 Rscal(m, scaloc, &c[(k - 1) * ldc], 1);
-                                Rscal(m, scaloc, f[(k - 1) * ldf], 1);
+                                Rscal(m, scaloc, &f[(k - 1) * ldf], 1);
                             }
                             scale = scale * scaloc;
                         }
                     } else {
-                        Rlatdf(ijob, zdim, z, ldz, rhs, rdsum, rRscal, ipiv, jpiv);
+                        Rlatdf(ijob, zdim, z, ldz, rhs, rdsum, rdscal, ipiv, jpiv);
                     }
                     //
                     //                 Unpack solution vector(s)
@@ -374,12 +374,12 @@ statement_40:
                     //                 equation.
                     //
                     if (i > 1) {
-                        Rgemv("N", is - 1, mb, -one, &a[(is - 1) * lda], lda, rhs[1 - 1], 1, one, &c[(js - 1) * ldc], 1);
-                        Rgemv("N", is - 1, mb, -one, &d[(is - 1) * ldd], ldd, rhs[1 - 1], 1, one, f[(js - 1) * ldf], 1);
+                        Rgemv("N", is - 1, mb, -one, &a[(is - 1) * lda], lda, &rhs[1 - 1], 1, one, &c[(js - 1) * ldc], 1);
+                        Rgemv("N", is - 1, mb, -one, &d[(is - 1) * ldd], ldd, &rhs[1 - 1], 1, one, &f[(js - 1) * ldf], 1);
                     }
                     if (j < q) {
-                        Rger(mb, n - je, one, rhs[3 - 1], 1, &b[(js - 1) + ((je + 1) - 1) * ldb], ldb, &c[(is - 1) + ((je + 1) - 1) * ldc], ldc);
-                        Rger(mb, n - je, one, rhs[3 - 1], 1, &e[(js - 1) + ((je + 1) - 1) * lde], lde, f[(is - 1) + ((je + 1) - 1) * ldf], ldf);
+                        Rger(mb, n - je, one, &rhs[3 - 1], 1, &b[(js - 1) + ((je + 1) - 1) * ldb], ldb, &c[(is - 1) + ((je + 1) - 1) * ldc], ldc);
+                        Rger(mb, n - je, one, &rhs[3 - 1], 1, &e[(js - 1) + ((je + 1) - 1) * lde], lde, &f[(is - 1) + ((je + 1) - 1) * ldf], ldf);
                     }
                     //
                 } else if ((mb == 2) && (nb == 2)) {
@@ -429,8 +429,8 @@ statement_40:
                     k = 1;
                     ii = mb * nb + 1;
                     for (jj = 0; jj <= nb - 1; jj = jj + 1) {
-                        Rcopy(mb, &c[(is - 1) + ((js + jj) - 1) * ldc], 1, rhs[k - 1], 1);
-                        Rcopy(mb, f[(is - 1) + ((js + jj) - 1) * ldf], 1, rhs[ii - 1], 1);
+                        Rcopy(mb, &c[(is - 1) + ((js + jj) - 1) * ldc], 1, &rhs[k - 1], 1);
+                        Rcopy(mb, &f[(is - 1) + ((js + jj) - 1) * ldf], 1, &rhs[ii - 1], 1);
                         k += mb;
                         ii += mb;
                     }
@@ -446,12 +446,12 @@ statement_40:
                         if (scaloc != one) {
                             for (k = 1; k <= n; k = k + 1) {
                                 Rscal(m, scaloc, &c[(k - 1) * ldc], 1);
-                                Rscal(m, scaloc, f[(k - 1) * ldf], 1);
+                                Rscal(m, scaloc, &f[(k - 1) * ldf], 1);
                             }
                             scale = scale * scaloc;
                         }
                     } else {
-                        Rlatdf(ijob, zdim, z, ldz, rhs, rdsum, rRscal, ipiv, jpiv);
+                        Rlatdf(ijob, zdim, z, ldz, rhs, rdsum, rdscal, ipiv, jpiv);
                     }
                     //
                     //                 Unpack solution vector(s)
@@ -459,8 +459,8 @@ statement_40:
                     k = 1;
                     ii = mb * nb + 1;
                     for (jj = 0; jj <= nb - 1; jj = jj + 1) {
-                        Rcopy(mb, rhs[k - 1], 1, &c[(is - 1) + ((js + jj) - 1) * ldc], 1);
-                        Rcopy(mb, rhs[ii - 1], 1, f[(is - 1) + ((js + jj) - 1) * ldf], 1);
+                        Rcopy(mb, &rhs[k - 1], 1, &c[(is - 1) + ((js + jj) - 1) * ldc], 1);
+                        Rcopy(mb, &rhs[ii - 1], 1, &f[(is - 1) + ((js + jj) - 1) * ldf], 1);
                         k += mb;
                         ii += mb;
                     }
@@ -469,13 +469,13 @@ statement_40:
                     //                 equation.
                     //
                     if (i > 1) {
-                        Rgemm("N", "N", is - 1, nb, mb, -one, &a[(is - 1) * lda], lda, rhs[1 - 1], mb, one, &c[(js - 1) * ldc], ldc);
-                        Rgemm("N", "N", is - 1, nb, mb, -one, &d[(is - 1) * ldd], ldd, rhs[1 - 1], mb, one, f[(js - 1) * ldf], ldf);
+                        Rgemm("N", "N", is - 1, nb, mb, -one, &a[(is - 1) * lda], lda, &rhs[1 - 1], mb, one, &c[(js - 1) * ldc], ldc);
+                        Rgemm("N", "N", is - 1, nb, mb, -one, &d[(is - 1) * ldd], ldd, &rhs[1 - 1], mb, one, &f[(js - 1) * ldf], ldf);
                     }
                     if (j < q) {
                         k = mb * nb + 1;
-                        Rgemm("N", "N", mb, n - je, nb, one, rhs[k - 1], mb, &b[(js - 1) + ((je + 1) - 1) * ldb], ldb, one, &c[(is - 1) + ((je + 1) - 1) * ldc], ldc);
-                        Rgemm("N", "N", mb, n - je, nb, one, rhs[k - 1], mb, &e[(js - 1) + ((je + 1) - 1) * lde], lde, one, f[(is - 1) + ((je + 1) - 1) * ldf], ldf);
+                        Rgemm("N", "N", mb, n - je, nb, one, &rhs[k - 1], mb, &b[(js - 1) + ((je + 1) - 1) * ldb], ldb, one, &c[(is - 1) + ((je + 1) - 1) * ldc], ldc);
+                        Rgemm("N", "N", mb, n - je, nb, one, &rhs[k - 1], mb, &e[(js - 1) + ((je + 1) - 1) * lde], lde, one, &f[(is - 1) + ((je + 1) - 1) * ldf], ldf);
                     }
                     //
                 }
@@ -529,7 +529,7 @@ statement_40:
                     if (scaloc != one) {
                         for (k = 1; k <= n; k = k + 1) {
                             Rscal(m, scaloc, &c[(k - 1) * ldc], 1);
-                            Rscal(m, scaloc, f[(k - 1) * ldf], 1);
+                            Rscal(m, scaloc, &f[(k - 1) * ldf], 1);
                         }
                         scale = scale * scaloc;
                     }
@@ -544,9 +544,9 @@ statement_40:
                     //
                     if (j > p + 2) {
                         alpha = rhs[1 - 1];
-                        Raxpy(js - 1, alpha, &b[(js - 1) * ldb], 1, f[(is - 1)], ldf);
+                        Raxpy(js - 1, alpha, &b[(js - 1) * ldb], 1, &f[(is - 1)], ldf);
                         alpha = rhs[2 - 1];
-                        Raxpy(js - 1, alpha, &e[(js - 1) * lde], 1, f[(is - 1)], ldf);
+                        Raxpy(js - 1, alpha, &e[(js - 1) * lde], 1, &f[(is - 1)], ldf);
                     }
                     if (i < p) {
                         alpha = -rhs[1 - 1];
@@ -596,7 +596,7 @@ statement_40:
                     if (scaloc != one) {
                         for (k = 1; k <= n; k = k + 1) {
                             Rscal(m, scaloc, &c[(k - 1) * ldc], 1);
-                            Rscal(m, scaloc, f[(k - 1) * ldf], 1);
+                            Rscal(m, scaloc, &f[(k - 1) * ldf], 1);
                         }
                         scale = scale * scaloc;
                     }
@@ -612,14 +612,14 @@ statement_40:
                     //                 equation.
                     //
                     if (j > p + 2) {
-                        Raxpy(js - 1, rhs[1 - 1], &b[(js - 1) * ldb], 1, f[(is - 1)], ldf);
-                        Raxpy(js - 1, rhs[2 - 1], &b[(jsp1 - 1) * ldb], 1, f[(is - 1)], ldf);
-                        Raxpy(js - 1, rhs[3 - 1], &e[(js - 1) * lde], 1, f[(is - 1)], ldf);
-                        Raxpy(js - 1, rhs[4 - 1], &e[(jsp1 - 1) * lde], 1, f[(is - 1)], ldf);
+                        Raxpy(js - 1, rhs[1 - 1], &b[(js - 1) * ldb], 1, &f[(is - 1)], ldf);
+                        Raxpy(js - 1, rhs[2 - 1], &b[(jsp1 - 1) * ldb], 1, &f[(is - 1)], ldf);
+                        Raxpy(js - 1, rhs[3 - 1], &e[(js - 1) * lde], 1, &f[(is - 1)], ldf);
+                        Raxpy(js - 1, rhs[4 - 1], &e[(jsp1 - 1) * lde], 1, &f[(is - 1)], ldf);
                     }
                     if (i < p) {
-                        Rger(m - ie, nb, -one, &a[(is - 1) + ((ie + 1) - 1) * lda], lda, rhs[1 - 1], 1, &c[((ie + 1) - 1) + (js - 1) * ldc], ldc);
-                        Rger(m - ie, nb, -one, &d[(is - 1) + ((ie + 1) - 1) * ldd], ldd, rhs[3 - 1], 1, &c[((ie + 1) - 1) + (js - 1) * ldc], ldc);
+                        Rger(m - ie, nb, -one, &a[(is - 1) + ((ie + 1) - 1) * lda], lda, &rhs[1 - 1], 1, &c[((ie + 1) - 1) + (js - 1) * ldc], ldc);
+                        Rger(m - ie, nb, -one, &d[(is - 1) + ((ie + 1) - 1) * ldd], ldd, &rhs[3 - 1], 1, &c[((ie + 1) - 1) + (js - 1) * ldc], ldc);
                     }
                     //
                 } else if ((mb == 2) && (nb == 1)) {
@@ -664,7 +664,7 @@ statement_40:
                     if (scaloc != one) {
                         for (k = 1; k <= n; k = k + 1) {
                             Rscal(m, scaloc, &c[(k - 1) * ldc], 1);
-                            Rscal(m, scaloc, f[(k - 1) * ldf], 1);
+                            Rscal(m, scaloc, &f[(k - 1) * ldf], 1);
                         }
                         scale = scale * scaloc;
                     }
@@ -680,12 +680,12 @@ statement_40:
                     //                 equation.
                     //
                     if (j > p + 2) {
-                        Rger(mb, js - 1, one, rhs[1 - 1], 1, &b[(js - 1) * ldb], 1, f[(is - 1)], ldf);
-                        Rger(mb, js - 1, one, rhs[3 - 1], 1, &e[(js - 1) * lde], 1, f[(is - 1)], ldf);
+                        Rger(mb, js - 1, one, &rhs[1 - 1], 1, &b[(js - 1) * ldb], 1, &f[(is - 1)], ldf);
+                        Rger(mb, js - 1, one, &rhs[3 - 1], 1, &e[(js - 1) * lde], 1, &f[(is - 1)], ldf);
                     }
                     if (i < p) {
-                        Rgemv("T", mb, m - ie, -one, &a[(is - 1) + ((ie + 1) - 1) * lda], lda, rhs[1 - 1], 1, one, &c[((ie + 1) - 1) + (js - 1) * ldc], 1);
-                        Rgemv("T", mb, m - ie, -one, &d[(is - 1) + ((ie + 1) - 1) * ldd], ldd, rhs[3 - 1], 1, one, &c[((ie + 1) - 1) + (js - 1) * ldc], 1);
+                        Rgemv("T", mb, m - ie, -one, &a[(is - 1) + ((ie + 1) - 1) * lda], lda, &rhs[1 - 1], 1, one, &c[((ie + 1) - 1) + (js - 1) * ldc], 1);
+                        Rgemv("T", mb, m - ie, -one, &d[(is - 1) + ((ie + 1) - 1) * ldd], ldd, &rhs[3 - 1], 1, one, &c[((ie + 1) - 1) + (js - 1) * ldc], 1);
                     }
                     //
                 } else if ((mb == 2) && (nb == 2)) {
@@ -735,8 +735,8 @@ statement_40:
                     k = 1;
                     ii = mb * nb + 1;
                     for (jj = 0; jj <= nb - 1; jj = jj + 1) {
-                        Rcopy(mb, &c[(is - 1) + ((js + jj) - 1) * ldc], 1, rhs[k - 1], 1);
-                        Rcopy(mb, f[(is - 1) + ((js + jj) - 1) * ldf], 1, rhs[ii - 1], 1);
+                        Rcopy(mb, &c[(is - 1) + ((js + jj) - 1) * ldc], 1, &rhs[k - 1], 1);
+                        Rcopy(mb, &f[(is - 1) + ((js + jj) - 1) * ldf], 1, &rhs[ii - 1], 1);
                         k += mb;
                         ii += mb;
                     }
@@ -752,7 +752,7 @@ statement_40:
                     if (scaloc != one) {
                         for (k = 1; k <= n; k = k + 1) {
                             Rscal(m, scaloc, &c[(k - 1) * ldc], 1);
-                            Rscal(m, scaloc, f[(k - 1) * ldf], 1);
+                            Rscal(m, scaloc, &f[(k - 1) * ldf], 1);
                         }
                         scale = scale * scaloc;
                     }
@@ -762,8 +762,8 @@ statement_40:
                     k = 1;
                     ii = mb * nb + 1;
                     for (jj = 0; jj <= nb - 1; jj = jj + 1) {
-                        Rcopy(mb, rhs[k - 1], 1, &c[(is - 1) + ((js + jj) - 1) * ldc], 1);
-                        Rcopy(mb, rhs[ii - 1], 1, f[(is - 1) + ((js + jj) - 1) * ldf], 1);
+                        Rcopy(mb, &rhs[k - 1], 1, &c[(is - 1) + ((js + jj) - 1) * ldc], 1);
+                        Rcopy(mb, &rhs[ii - 1], 1, &f[(is - 1) + ((js + jj) - 1) * ldf], 1);
                         k += mb;
                         ii += mb;
                     }
@@ -772,12 +772,12 @@ statement_40:
                     //                 equation.
                     //
                     if (j > p + 2) {
-                        Rgemm("N", "T", mb, js - 1, nb, one, &c[(is - 1) + (js - 1) * ldc], ldc, &b[(js - 1) * ldb], ldb, one, f[(is - 1)], ldf);
-                        Rgemm("N", "T", mb, js - 1, nb, one, f[(is - 1) + (js - 1) * ldf], ldf, &e[(js - 1) * lde], lde, one, f[(is - 1)], ldf);
+                        Rgemm("N", "T", mb, js - 1, nb, one, &c[(is - 1) + (js - 1) * ldc], ldc, &b[(js - 1) * ldb], ldb, one, &f[(is - 1)], ldf);
+                        Rgemm("N", "T", mb, js - 1, nb, one, &f[(is - 1) + (js - 1) * ldf], ldf, &e[(js - 1) * lde], lde, one, &f[(is - 1)], ldf);
                     }
                     if (i < p) {
                         Rgemm("T", "N", m - ie, nb, mb, -one, &a[(is - 1) + ((ie + 1) - 1) * lda], lda, &c[(is - 1) + (js - 1) * ldc], ldc, one, &c[((ie + 1) - 1) + (js - 1) * ldc], ldc);
-                        Rgemm("T", "N", m - ie, nb, mb, -one, &d[(is - 1) + ((ie + 1) - 1) * ldd], ldd, f[(is - 1) + (js - 1) * ldf], ldf, one, &c[((ie + 1) - 1) + (js - 1) * ldc], ldc);
+                        Rgemm("T", "N", m - ie, nb, mb, -one, &d[(is - 1) + ((ie + 1) - 1) * ldd], ldd, &f[(is - 1) + (js - 1) * ldf], ldf, one, &c[((ie + 1) - 1) + (js - 1) * ldc], ldc);
                     }
                     //
                 }
