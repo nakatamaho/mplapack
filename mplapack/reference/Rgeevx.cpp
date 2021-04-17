@@ -49,7 +49,7 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     const REAL one = 1.0;
     REAL bignum = 0.0;
     INTEGER icond = 0;
-    REAL dum;
+    REAL dum[1];
     REAL anrm = 0.0;
     bool scalea = false;
     const REAL zero = 0.0;
@@ -209,7 +209,7 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     //     Scale A if max element outside range [SMLNUM,BIGNUM]
     //
     icond = 0;
-    anrm = Rlange("M", n, n, a, lda, &dum);
+    anrm = Rlange("M", n, n, a, lda, dum);
     scalea = false;
     if (anrm > zero && anrm < smlnum) {
         scalea = true;
@@ -225,11 +225,11 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     //     Balance the matrix and compute ABNRM
     //
     Rgebal(balanc, n, a, lda, ilo, ihi, scale, ierr);
-    abnrm = Rlange("1", n, n, a, lda, &dum);
+    abnrm = Rlange("1", n, n, a, lda, dum);
     if (scalea) {
-        dum[1 - 1] = *abnrm;
-        Rlascl("G", 0, 0, cscale, anrm, 1, 1, &dum, 1, ierr);
-        *abnrm = dum[1 - 1];
+        dum[1 - 1] = abnrm;
+        Rlascl("G", 0, 0, cscale, anrm, 1, 1, dum, 1, ierr);
+        abnrm = dum[1 - 1];
     }
     //
     //     Reduce to upper Hessenberg form
@@ -382,8 +382,8 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
 //
 statement_50:
     if (scalea) {
-        Rlascl("G", 0, 0, cscale, anrm, n - info, 1, &wr[(info + 1) - 1], max(n - info, 1), ierr);
-        Rlascl("G", 0, 0, cscale, anrm, n - info, 1, &wi[(info + 1) - 1], max(n - info, 1), ierr);
+        Rlascl("G", 0, 0, cscale, anrm, n - info, 1, &wr[(info + 1) - 1], max(n - info, (INTEGER)1), ierr);
+        Rlascl("G", 0, 0, cscale, anrm, n - info, 1, &wi[(info + 1) - 1], max(n - info, (INTEGER)1), ierr);
         if (info == 0) {
             if ((wntsnv || wntsnb) && icond == 0) {
                 Rlascl("G", 0, 0, cscale, anrm, n, 1, rcondv, n, ierr);

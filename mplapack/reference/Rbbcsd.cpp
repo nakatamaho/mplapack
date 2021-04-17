@@ -137,6 +137,7 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
     REAL tol = tolmul * eps;
     const INTEGER maxitr = 6;
     REAL thresh = max(tol, REAL(maxitr * q * q * unfl));
+    REAL rtmp1, rtmp2;
     //
     //     Test for negligible sines or cosines
     //
@@ -314,7 +315,13 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         //
         //        Compute THETA(IMIN)
         //
-        theta[imin - 1] = atan2(REAL(sqrt(pow2(b21d[imin - 1]) + pow2(b21bulge))), REAL(sqrt(pow2(b11d[imin - 1]) + pow2(b11bulge))));
+        rtmp1 = sqrt(pow2(b21d[imin - 1]) + pow2(b21bulge));
+        rtmp2 = sqrt(pow2(b11d[imin - 1]) + pow2(b11bulge));
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+        theta[imin - 1] = _atan2(rtmp1, rtmp2);
+#else
+        theta[imin - 1] = atan2(rtmp1, rtmp2);
+#endif
         //
         //        Chase the bulges in B11(IMIN+1,IMIN) and B21(IMIN+1,IMIN)
         //
@@ -373,7 +380,14 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             y1 = sin(theta[(i - 1) - 1]) * b12d[(i - 1) - 1] + cos(theta[(i - 1) - 1]) * b22d[(i - 1) - 1];
             y2 = sin(theta[(i - 1) - 1]) * b12bulge + cos(theta[(i - 1) - 1]) * b22bulge;
             //
-            phi[(i - 1) - 1] = atan2(sqrt(pow2(x1) + pow2(x2)), sqrt(pow2(y1) + pow2(y2)));
+            rtmp1 = sqrt(pow2(x1) + pow2(x2));
+            rtmp2 = sqrt(pow2(y1) + pow2(y2));
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+            phi[(i - 1) - 1] = _atan2(rtmp1, rtmp2);
+#else
+            phi[(i - 1) - 1] = atan2(rtmp1, rtmp2);
+#endif
+
             //
             //           Determine if there are bulges to chase or if a new direct
             //           summand has been reached
@@ -440,7 +454,13 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             y1 = cos(phi[(i - 1) - 1]) * b21d[i - 1] + sin(phi[(i - 1) - 1]) * b22e[(i - 1) - 1];
             y2 = cos(phi[(i - 1) - 1]) * b21bulge + sin(phi[(i - 1) - 1]) * b22bulge;
             //
-            theta[i - 1] = atan2(sqrt(pow2(y1) + pow2(y2)), sqrt(pow2(x1) + pow2(x2)));
+            rtmp1 = sqrt(pow2(y1) + pow2(y2));
+            rtmp2 = sqrt(pow2(x1) + pow2(x2));
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+            theta[i - 1] = _atan2(rtmp1, rtmp2);
+#else
+            theta[i - 1] = atan2(rtmp1, rtmp2);
+#endif
             //
             //           Determine if there are bulges to chase or if a new direct
             //           summand has been reached
@@ -512,7 +532,13 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         y1 = sin(theta[(imax - 1) - 1]) * b12d[(imax - 1) - 1] + cos(theta[(imax - 1) - 1]) * b22d[(imax - 1) - 1];
         y2 = sin(theta[(imax - 1) - 1]) * b12bulge + cos(theta[(imax - 1) - 1]) * b22bulge;
         //
-        phi[(imax - 1) - 1] = atan2(abs(x1), sqrt(pow2(y1) + pow2(y2)));
+        rtmp1 = abs(x1);
+        rtmp2 = sqrt(pow2(y1) + pow2(y2));
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+        phi[(imax - 1) - 1] = _atan2(rtmp1, rtmp2);
+#else
+        phi[(imax - 1) - 1] = atan2(rtmp1, rtmp2);
+#endif
         //
         //        Chase bulges from B12(IMAX-1,IMAX) and B22(IMAX-1,IMAX)
         //
@@ -588,7 +614,13 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         x1 = cos(phi[(imax - 1) - 1]) * b11d[imax - 1] + sin(phi[(imax - 1) - 1]) * b12e[(imax - 1) - 1];
         y1 = cos(phi[(imax - 1) - 1]) * b21d[imax - 1] + sin(phi[(imax - 1) - 1]) * b22e[(imax - 1) - 1];
         //
-        theta[imax - 1] = atan2(abs(y1), abs(x1));
+        rtmp1 = abs(y1);
+        rtmp2 = abs(x1);
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+        theta[imax - 1] = _atan2(rtmp1, rtmp2);
+#else
+        theta[imax - 1] = atan2(rtmp1, rtmp2);
+#endif
         //
         //        Fix signs on B11(IMAX,IMAX), B12(IMAX,IMAX-1), B21(IMAX,IMAX),
         //        and B22(IMAX,IMAX-1)

@@ -47,7 +47,7 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
     REAL smlnum = 0.0;
     const REAL one = 1.0;
     REAL bignum = 0.0;
-    REAL dum;
+    REAL dum[1];
     REAL anrm = 0.0;
     bool scalea = false;
     const REAL zero = 0.0;
@@ -195,7 +195,7 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
     //
     //     Scale A if max element outside range [SMLNUM,BIGNUM]
     //
-    anrm = Rlange("M", n, n, a, lda, &dum);
+    anrm = Rlange("M", n, n, a, lda, dum);
     scalea = false;
     if (anrm > zero && anrm < smlnum) {
         scalea = true;
@@ -299,9 +299,9 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
         Rlascl("H", 0, 0, cscale, anrm, n, n, a, lda, ierr);
         Rcopy(n, a, lda + 1, wr, 1);
         if ((wantsv || wantsb) && info == 0) {
-            dum[1 - 1] = *rcondv;
-            Rlascl("G", 0, 0, cscale, anrm, 1, 1, &dum, 1, ierr);
-            *rcondv = dum[1 - 1];
+            dum[1 - 1] = rcondv;
+            Rlascl("G", 0, 0, cscale, anrm, 1, 1, dum, 1, ierr);
+            rcondv = dum[1 - 1];
         }
         if (cscale == smlnum) {
             //
@@ -351,7 +351,7 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
             statement_20:;
             }
         }
-        Rlascl("G", 0, 0, cscale, anrm, n - ieval, 1, &wi[(ieval + 1) - 1], max(n - ieval, 1), ierr);
+        Rlascl("G", 0, 0, cscale, anrm, n - ieval, 1, &wi[(ieval + 1) - 1], max(n - ieval, (INTEGER)1), ierr);
     }
     //
     if (wantst && info == 0) {
