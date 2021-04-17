@@ -32,10 +32,7 @@
 #define _MUTILS_DOUBLE_H_
 
 #if !(_XOPEN_SOURCE >= 600) && !(_ISOC99_SOURCE)
-inline double log2(double x)
-{
-   return log(x) / log(2.0);
-}
+inline double log2(double x) { return log(x) / log(2.0); }
 #endif
 
 #include <complex>
@@ -45,39 +42,34 @@ double sign(double a, double b);
 std::complex<double> Real2Complex(double a, double b);
 double Cabs1(std::complex<double> zdum);
 
-//implementation of sign transfer function.
-inline double sign(double a, double b)
-{
-  double mtmp;
-  mtmp=std::abs(a);
-  if (b<0.0) {
-    mtmp=-mtmp;
-  }
-  return mtmp;
+// implementation of sign transfer function.
+inline double sign(double a, double b) {
+    double mtmp;
+    mtmp = std::abs(a);
+    if (b < 0.0) {
+        mtmp = -mtmp;
+    }
+    return mtmp;
 }
 
-inline double castREAL_double(mplapackint n)
-{
+inline double castREAL_double(mplapackint n) {
     double ret = n;
     return ret;
 }
 
-inline mplapackint castINTEGER_double(double a)
-{
+inline mplapackint castINTEGER_double(double a) {
     mplapackint i = a;
     return i;
 }
 
-inline std::complex<double> Real2Complex(double a, double b)
-{
+inline std::complex<double> Real2Complex(double a, double b) {
     std::complex<double> ret;
     ret.real(a);
     ret.imag(b);
     return ret;
 }
 
-inline double Cabs1(std::complex<double> zdum)
-{
+inline double Cabs1(std::complex<double> zdum) {
     double ret;
     ret = std::abs(zdum.real()) + std::abs(zdum.imag());
     return ret;

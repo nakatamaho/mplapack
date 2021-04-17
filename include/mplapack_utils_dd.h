@@ -39,40 +39,35 @@ dd_real sign(dd_real a, dd_real b);
 dd_complex Real2Complex(dd_real a, dd_real b);
 dd_real Cabs1(dd_complex zdum);
 
-//implementation of sign transfer function.
-inline dd_real sign(dd_real a, dd_real b)
-{
-  dd_real mtmp;
-  mtmp=abs(a);
-  if (b<0.0) {
-    mtmp=-mtmp;
-  }
-  return mtmp;
+// implementation of sign transfer function.
+inline dd_real sign(dd_real a, dd_real b) {
+    dd_real mtmp;
+    mtmp = abs(a);
+    if (b < 0.0) {
+        mtmp = -mtmp;
+    }
+    return mtmp;
 }
 
-inline dd_real castREAL_dd(mplapackint n)
-{
+inline dd_real castREAL_dd(mplapackint n) {
     dd_real ret;
     ret.x[0] = (static_cast<double>(n));
     ret.x[1] = 0.0;
     return ret;
 }
-inline mplapackint castINTEGER_dd(dd_real a)
-{
+inline mplapackint castINTEGER_dd(dd_real a) {
     mplapackint i = a.x[0];
     return i;
 }
-  
-inline dd_complex Real2Complex(dd_real a, dd_real b)
-{
+
+inline dd_complex Real2Complex(dd_real a, dd_real b) {
     dd_complex ret;
     ret.real(a);
     ret.imag(b);
     return ret;
 }
 
-inline dd_real Cabs1(dd_complex zdum)
-{
+inline dd_real Cabs1(dd_complex zdum) {
     dd_real ret;
     ret = abs(zdum.real()) + abs(zdum.imag());
     return ret;

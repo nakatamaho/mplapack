@@ -29,9 +29,9 @@
 #ifndef _MPBLAS_GMP_H_
 #define _MPBLAS_GMP_H_
 
-#include "mplapack_config.h"
 #include "gmpxx.h"
 #include "mpc_class.h"
+#include "mplapack_config.h"
 #include "mplapack_utils_gmp.h"
 #if !defined __MPLAPACK_ERRNO__
 #define _MPLAPACK_EXTERN_ extern

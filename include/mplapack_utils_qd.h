@@ -39,20 +39,17 @@ qd_real sign(qd_real a, qd_real b);
 qd_complex Real2Complex(qd_real a, qd_real b);
 qd_real Cabs1(qd_complex zdum);
 
-//implementation of sign transfer function.
-inline qd_real sign(qd_real a, qd_real b)
-{
-  qd_real mtmp;
-  mtmp=abs(a);
-  if (b<0.0) {
-    mtmp=-mtmp;
-  }
-  return mtmp;
+// implementation of sign transfer function.
+inline qd_real sign(qd_real a, qd_real b) {
+    qd_real mtmp;
+    mtmp = abs(a);
+    if (b < 0.0) {
+        mtmp = -mtmp;
+    }
+    return mtmp;
 }
 
-
-inline qd_real castREAL_qd(mplapackint n)
-{
+inline qd_real castREAL_qd(mplapackint n) {
     qd_real ret;
     ret.x[0] = (static_cast<double>(n));
     ret.x[1] = 0.0;
@@ -60,22 +57,19 @@ inline qd_real castREAL_qd(mplapackint n)
     ret.x[3] = 0.0;
     return ret;
 }
-inline mplapackint castINTEGER_qd(qd_real a)
-{
+inline mplapackint castINTEGER_qd(qd_real a) {
     mplapackint i = (mplapackint)a.x[0];
     return i;
 }
 
-inline qd_complex Real2Complex(qd_real a, qd_real b)
-{
+inline qd_complex Real2Complex(qd_real a, qd_real b) {
     qd_complex ret;
     ret.real(a);
     ret.imag(b);
     return ret;
 }
 
-inline qd_real Cabs1(qd_complex zdum)
-{
+inline qd_real Cabs1(qd_complex zdum) {
     qd_real ret;
     ret = abs(zdum.real()) + abs(zdum.imag());
     return ret;

@@ -31,9 +31,9 @@
 #ifndef _MPBLAS_MPFR_H_
 #define _MPBLAS_MPFR_H_
 
+#include "mpcomplex.h"
 #include "mplapack_config.h"
 #include "mpreal.h"
-#include "mpcomplex.h"
 using namespace mpfr;
 #include "mplapack_utils_mpfr.h"
 #if !defined __MPLAPACK_ERRNO__

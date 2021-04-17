@@ -32,8 +32,8 @@
 #define _MPLAPACK_QD_H_
 
 #include "mplapack_config.h"
-#include <qd/qd_real.h>
 #include "qd_complex.h"
+#include <qd/qd_real.h>
 
 bool Risnan(qd_real const din);
 bool Rlaisnan(qd_real const din1, qd_real const din2);

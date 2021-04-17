@@ -31,8 +31,8 @@
 #ifndef _MUTILS_MPFR_H_
 #define _MUTILS_MPFR_H_
 
-#include "mpreal.h"
 #include "mpcomplex.h"
+#include "mpreal.h"
 
 using namespace mpfr;
 
@@ -41,52 +41,45 @@ mpreal sign(mpreal a, mpreal b);
 mpcomplex Real2Complex(mpreal a, mpreal b);
 mpreal Cabs1(mpcomplex zdum);
 
-//implementation of sign transfer function.
-inline mpreal sign(mpreal a, mpreal b)
-{
+// implementation of sign transfer function.
+inline mpreal sign(mpreal a, mpreal b) {
     mpreal mtmp;
     mtmp = abs(a);
     if (b < 0.0) {
-	mtmp = -mtmp;
+        mtmp = -mtmp;
     }
     return mtmp;
 }
 
-inline mplapackint nint(mpreal a)
-{
-  mplapackint
-    i;
-  mpreal tmp;
-  a = a + 0.5;
-  tmp = floorl(a);
-  i = tmp; //cast to long
-  return i;
+inline mplapackint nint(mpreal a) {
+    mplapackint i;
+    mpreal tmp;
+    a = a + 0.5;
+    tmp = floorl(a);
+    i = tmp; // cast to long
+    return i;
 }
 
-inline mplapackint castINTEGER_mpfr(mpreal a)
-{
+inline mplapackint castINTEGER_mpfr(mpreal a) {
     mplapackint i;
     mpreal tmp;
     a = a + 0.5;
     tmp = floor(a);
-    i = tmp; //cast to long
+    i = tmp; // cast to long
     return i;
 }
 
-inline mpreal castREAL_mpfr(mplapackint a)
-{
+inline mpreal castREAL_mpfr(mplapackint a) {
     mpreal i = a;
     return i;
 }
 
-inline mpcomplex Real2Complex(mpreal a, mpreal b)
-{
-    mpcomplex ret(a,b);
+inline mpcomplex Real2Complex(mpreal a, mpreal b) {
+    mpcomplex ret(a, b);
     return ret;
 }
 
-inline mpreal Cabs1(mpcomplex zdum)
-{
+inline mpreal Cabs1(mpcomplex zdum) {
     mpreal ret;
     ret = abs(zdum.real()) + abs(zdum.imag());
     return ret;

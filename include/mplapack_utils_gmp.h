@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2021
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -31,8 +31,8 @@
 #ifndef _MUTILS_GMP_H_
 #define _MUTILS_GMP_H_
 
-#include <gmpxx.h>
 #include "mpc_class.h"
+#include <gmpxx.h>
 
 mpf_class log(mpf_class x);
 mpf_class log2(mpf_class x);
@@ -40,48 +40,51 @@ mpf_class log10(mpf_class x);
 mpf_class pow(mpf_class x, mpf_class y);
 mpf_class cos(mpf_class x);
 mpf_class sin(mpf_class x);
-mpf_class exp(mpf_class x);
 mpc_class exp(mpc_class x);
 mpf_class pi(mpf_class dummy);
 
 mpf_class sign(mpf_class a, mpf_class b);
+mpf_class atan2(mpf_class a, mpf_class b);
 mpc_class Real2Complex(mpf_class a, mpf_class b);
 mpf_class Cabs1(mpc_class zdum);
 
-inline mpf_class sign(mpf_class a, mpf_class b)
-{
+inline mpf_class sign(mpf_class a, mpf_class b) {
     mpf_class mtmp;
     mpf_abs(mtmp.get_mpf_t(), a.get_mpf_t());
     if (b != 0.0) {
-	mtmp = mpf_sgn(b.get_mpf_t()) * mtmp;
+        mtmp = mpf_sgn(b.get_mpf_t()) * mtmp;
     }
     return mtmp;
 }
 
-inline mpf_class castREAL_gmp(mplapackint n)
-{
+inline mpf_class atan2(mpf_class a, mpf_class b) {
+    double dtemp1, dtemp2;
+    mpf_class mtemp3;
+    ;
+    dtemp1 = a.get_d();
+    dtemp2 = b.get_d();
+    mtemp3 = mpf_class(atan2(a, b));
+    return mtemp3;
+}
+
+inline mpf_class castREAL_gmp(mplapackint n) {
     mpf_class a(n);
     return a;
 }
 
-inline mplapackint castINTEGER_gmp(mpf_class a)
-{
+inline mplapackint castINTEGER_gmp(mpf_class a) {
     mplapackint i;
     i = mpf_get_si(a.get_mpf_t());
     return i;
 }
 
-inline mplapack nint(mpf_class a)
-{
-  mplapack i;
-  mpf_class tmp;
-  a = a + 0.5;
-  mpf_floor(tmp.get_mpf_t(), a.get_mpf_t());
-  i = mpf_get_si(tmp.get_mpf_t());
-  return i;
+inline mplapackint nint(mpf_class a) {
+    mplapackint i;
+    mpf_class tmp;
+    a = a + 0.5;
+    mpf_floor(tmp.get_mpf_t(), a.get_mpf_t());
+    i = mpf_get_si(tmp.get_mpf_t());
+    return i;
 }
 
-
 #endif
-
-

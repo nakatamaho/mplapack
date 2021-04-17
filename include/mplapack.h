@@ -37,10 +37,10 @@ typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
 typedef mpf_class REAL;
 typedef mpc_class COMPLEX;
-#define Mlsame   Mlsame_gmp
-#define Mxerbla  Mxerbla_gmp
-#define Rlamch   Rlamch_gmp
-#define iMlaenv  iMlaenv_gmp
+#define Mlsame Mlsame_gmp
+#define Mxerbla Mxerbla_gmp
+#define Rlamch Rlamch_gmp
+#define iMlaenv iMlaenv_gmp
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
@@ -49,10 +49,10 @@ typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
 typedef mpreal REAL;
 typedef mpcomplex COMPLEX;
-#define Mlsame   Mlsame_mpfr
-#define Mxerbla  Mxerbla_mpfr
-#define Rlamch   Rlamch_mpfr
-#define iMlaenv  iMlaenv_mpfr
+#define Mlsame Mlsame_mpfr
+#define Mxerbla Mxerbla_mpfr
+#define Rlamch Rlamch_mpfr
+#define iMlaenv iMlaenv_mpfr
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_QD___
@@ -64,10 +64,10 @@ typedef qd_complex COMPLEX;
 #if !defined __MUTILS_CPP__
 #define nint __qd_nint
 #endif
-#define Mlsame   Mlsame_qd
-#define Mxerbla  Mxerbla_qd
-#define Rlamch   Rlamch_qd
-#define iMlaenv  iMlaenv_qd
+#define Mlsame Mlsame_qd
+#define Mxerbla Mxerbla_qd
+#define Rlamch Rlamch_qd
+#define iMlaenv iMlaenv_qd
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DD___
@@ -79,10 +79,10 @@ typedef dd_complex COMPLEX;
 #if !defined __MUTILS_CPP__
 #define nint __dd_nint
 #endif
-#define Mlsame   Mlsame_dd
-#define Mxerbla  Mxerbla_dd
-#define Rlamch   Rlamch_dd
-#define iMlaenv  iMlaenv_dd
+#define Mlsame Mlsame_dd
+#define Mxerbla Mxerbla_dd
+#define Rlamch Rlamch_dd
+#define iMlaenv iMlaenv_dd
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
@@ -91,10 +91,10 @@ typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
 typedef double REAL;
 typedef std::complex<double> COMPLEX;
-#define Mlsame   Mlsame_double
-#define Mxerbla  Mxerbla_double
-#define Rlamch   Rlamch_double
-#define iMlaenv  iMlaenv_double
+#define Mlsame Mlsame_double
+#define Mxerbla Mxerbla_double
+#define Rlamch Rlamch_double
+#define iMlaenv iMlaenv_double
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
@@ -103,12 +103,11 @@ typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
 typedef _Float64x REAL;
 typedef std::complex<_Float64x> COMPLEX;
-#define Mlsame   Mlsame__Float64x
-#define Mxerbla  Mxerbla__Float64x
-#define Rlamch   Rlamch__Float64x
-#define iMlaenv  iMlaenv__Float64x
+#define Mlsame Mlsame__Float64x
+#define Mxerbla Mxerbla__Float64x
+#define Rlamch Rlamch__Float64x
+#define iMlaenv iMlaenv__Float64x
 #endif
-
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
 #include <mplapack__Float128.h>
@@ -116,11 +115,10 @@ typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
 typedef _Float128 REAL;
 typedef std::complex<_Float128> COMPLEX;
-#define Mlsame   Mlsame__Float128
-#define Mxerbla  Mxerbla__Float128
-#define Rlamch   Rlamch__Float128
-#define iMlaenv  iMlaenv__Float128
+#define Mlsame Mlsame__Float128
+#define Mxerbla Mxerbla__Float128
+#define Rlamch Rlamch__Float128
+#define iMlaenv iMlaenv__Float128
 #endif
 
 #endif
-

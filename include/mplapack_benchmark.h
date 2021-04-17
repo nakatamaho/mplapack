@@ -28,9 +28,9 @@
  *
  */
 
-#include <sys/types.h>
 #include <sys/time.h>
-#if !defined  _WIN32
+#include <sys/types.h>
+#if !defined _WIN32
 #include <sys/resource.h>
 #endif
 
@@ -40,14 +40,14 @@
 #define TFLOPS 1e-12
 
 #if defined __APPLE__
-#define DYLIB_SUFFIX       ".dylib"
+#define DYLIB_SUFFIX ".dylib"
 #else
-#define DYLIB_SUFFIX       ".so"
+#define DYLIB_SUFFIX ".so"
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 #include "mplapack_benchmark_mpfr.h"
-#define ___MPLAPACK_INITIALIZE___ gmp_randinit_default (uniformrandomstate_mpfr);
+#define ___MPLAPACK_INITIALIZE___ gmp_randinit_default(uniformrandomstate_mpfr);
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
@@ -57,46 +57,43 @@
 
 #if defined ___MPLAPACK_BUILD_WITH_DD___
 #include "mplapack_benchmark_dd.h"
-#define ___MPLAPACK_INITIALIZE___ 
+#define ___MPLAPACK_INITIALIZE___
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_QD___
 #include "mplapack_benchmark_qd.h"
-#define ___MPLAPACK_INITIALIZE___ 
+#define ___MPLAPACK_INITIALIZE___
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
 #include "mplapack_benchmark_double.h"
-#define ___MPLAPACK_INITIALIZE___ 
+#define ___MPLAPACK_INITIALIZE___
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
 #include "mplapack_benchmark__Float128.h"
-#define ___MPLAPACK_INITIALIZE___ 
+#define ___MPLAPACK_INITIALIZE___
 #endif
 
 #if !defined _WIN32
-unsigned long microseconds(void)
-{
-    rusage  t;
+unsigned long microseconds(void) {
+    rusage t;
     timeval tv;
-    getrusage( RUSAGE_SELF, &t );
+    getrusage(RUSAGE_SELF, &t);
     tv = t.ru_utime;
-    return ((unsigned long)tv.tv_sec)*1000000 + tv.tv_usec;
+    return ((unsigned long)tv.tv_sec) * 1000000 + tv.tv_usec;
 }
 #endif
 
-inline double gettime(void)
-{
+inline double gettime(void) {
     struct timeval tv;
     gettimeofday(&tv, NULL);
-    return tv.tv_sec + (double)tv.tv_usec*1e-6;
+    return tv.tv_sec + (double)tv.tv_usec * 1e-6;
 }
 
 #if defined ___DOUBLE_BENCH___
-double randomnumber(double dummy)
-{
-#if defined _WIN32 //XXX
+double randomnumber(double dummy) {
+#if defined _WIN32 // XXX
     double mtmp = (double)rand();
 #else
     double mtmp = drand48();
@@ -104,4 +101,3 @@ double randomnumber(double dummy)
     return mtmp;
 }
 #endif
-

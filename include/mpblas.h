@@ -36,8 +36,8 @@
 typedef mplapackint INTEGER;
 typedef mpreal REAL;
 typedef mpcomplex COMPLEX;
-#define Mlsame   Mlsame_mpfr
-#define Mxerbla  Mxerbla_mpfr
+#define Mlsame Mlsame_mpfr
+#define Mxerbla Mxerbla_mpfr
 #define castINTEGER castINTEGER_mpfr
 #define castREAL castREAL_mpfr
 #endif
@@ -47,8 +47,8 @@ typedef mpcomplex COMPLEX;
 typedef mplapackint INTEGER;
 typedef mpc_class COMPLEX;
 typedef mpf_class REAL;
-#define Mlsame   Mlsame_gmp
-#define Mxerbla  Mxerbla_gmp 
+#define Mlsame Mlsame_gmp
+#define Mxerbla Mxerbla_gmp
 #define castINTEGER castINTEGER_gmp
 #define castREAL castREAL_gmp
 #endif
@@ -58,8 +58,8 @@ typedef mpf_class REAL;
 typedef mplapackint INTEGER;
 typedef qd_real REAL;
 typedef qd_complex COMPLEX;
-#define Mlsame   Mlsame_qd
-#define Mxerbla  Mxerbla_qd
+#define Mlsame Mlsame_qd
+#define Mxerbla Mxerbla_qd
 #define castINTEGER castINTEGER_qd
 #define castREAL castREAL_qd
 #endif
@@ -69,8 +69,8 @@ typedef qd_complex COMPLEX;
 typedef mplapackint INTEGER;
 typedef dd_real REAL;
 typedef dd_complex COMPLEX;
-#define Mlsame   Mlsame_dd
-#define Mxerbla  Mxerbla_dd
+#define Mlsame Mlsame_dd
+#define Mxerbla Mxerbla_dd
 #define castINTEGER castINTEGER_dd
 #define castREAL castREAL_dd
 #endif
@@ -80,8 +80,8 @@ typedef dd_complex COMPLEX;
 typedef mplapackint INTEGER;
 typedef double REAL;
 typedef std::complex<double> COMPLEX;
-#define Mlsame   Mlsame_double
-#define Mxerbla  Mxerbla_double
+#define Mlsame Mlsame_double
+#define Mxerbla Mxerbla_double
 #define castINTEGER castINTEGER_double
 #define castREAL castREAL_double
 #endif
@@ -91,8 +91,8 @@ typedef std::complex<double> COMPLEX;
 typedef mplapackint INTEGER;
 typedef _Float64x REAL;
 typedef std::complex<_Float64x> COMPLEX;
-#define Mlsame   Mlsame__Float64x
-#define Mxerbla  Mxerbla__Float64x
+#define Mlsame Mlsame__Float64x
+#define Mxerbla Mxerbla__Float64x
 #define castINTEGER castINTEGER__Float64x
 #define castREAL castREAL__Float64x
 #endif
@@ -102,25 +102,19 @@ typedef std::complex<_Float64x> COMPLEX;
 typedef mplapackint INTEGER;
 typedef _Float128 REAL;
 typedef std::complex<_Float128> COMPLEX;
-#define Mlsame   Mlsame__Float128
-#define Mxerbla  Mxerbla__Float128
+#define Mlsame Mlsame__Float128
+#define Mxerbla Mxerbla__Float128
 #define castINTEGER castINTEGER__Float128
 #define castREAL castREAL__Float128
 #endif
 
-#include <algorithm>    // std::max
-#include <math.h> // sqrt
+#include <algorithm> // std::max
 #include <cstdlib>
+#include <math.h> // sqrt
 using std::max;
 using std::min;
 
-inline INTEGER mod (INTEGER a, INTEGER b)
-{
-  return a % b;
-}
+inline INTEGER mod(INTEGER a, INTEGER b) { return a % b; }
 
-inline REAL pow2 (REAL a)
-{
-  return a * a;
-}
+inline REAL pow2(REAL a) { return a * a; }
 #endif

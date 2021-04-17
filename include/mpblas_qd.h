@@ -35,8 +35,8 @@
 
 #include <qd/qd_real.h>
 
-#include "qd_complex.h"
 #include "mplapack_utils_qd.h"
+#include "qd_complex.h"
 
 #if !defined __MPLAPACK_ERRNO__
 #define _MPLAPACK_EXTERN_ extern
@@ -44,7 +44,6 @@
 #define _MPLAPACK_EXTERN_
 #endif
 _MPLAPACK_EXTERN_ int mplapack_errno;
-
 
 mplapackint Mlsame_qd(const char *a, const char *b);
 mplapackint iCamax(mplapackint const n, qd_complex *zx, mplapackint const incx);

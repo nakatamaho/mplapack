@@ -31,7 +31,7 @@
 /* work in progress */
 /* put some definitons on mplapack */
 
-/* should depend on C compiler and environment 
+/* should depend on C compiler and environment
    our intention is that use 64bit int when USE64BITINT is set.
    This should be the default on 64bit environment.
 */
@@ -40,12 +40,12 @@
 #define _MPLAPACK_CONFIG_H_
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #endif
 
-#include <stdlib.h>
-#include <inttypes.h>
 #include <complex>
+#include <inttypes.h>
+#include <stdlib.h>
 
 #undef F77_FUNC
 #undef F77_FUNC_
@@ -63,7 +63,7 @@ typedef int mplapackint;
 typedef mplapackint mplapacklogical;
 
 #ifdef __cplusplus
-typedef mplapacklogical(*LFP) (...);
+typedef mplapacklogical (*LFP)(...);
 #else
 typedef mplapacklogical(*LFP);
 #endif

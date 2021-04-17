@@ -31,9 +31,9 @@
 #ifndef _MPLAPACK_DD_H_
 #define _MPLAPACK_DD_H_
 
+#include "dd_complex.h"
 #include "mplapack_config.h"
 #include "qd/dd_real.h"
-#include "dd_complex.h"
 
 bool Risnan(dd_real const din);
 bool Rlaisnan(dd_real const din1, dd_real const din2);

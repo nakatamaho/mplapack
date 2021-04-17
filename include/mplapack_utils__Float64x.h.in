@@ -30,14 +30,14 @@
 #ifndef _MPLAPACK_UTILS__FLOAT64X_H_
 #define _MPLAPACK_UTILS__FLOAT64X_H_
 
-%%MPLAPACK__FLOAT64X___FLOAT80_%%
+% % MPLAPACK__FLOAT64X___FLOAT80_ % %
 
 #ifdef __cplusplus
-extern "C" {
+    extern "C" {
 #endif
-#include <math.h>
 #include <complex.h>
 #include <complex>
+#include <math.h>
 #ifdef __cplusplus
 }
 #endif
@@ -52,57 +52,49 @@ typedef long double _Float64x;
 #if !defined ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___
 
 namespace std {
-inline _Float64x sqrt(const _Float64x &a) {
-   return sqrtl(a);
-}
-inline _Float64x log(const _Float64x &a) {
-   return logl(a);
-}
-inline _Float64x exp(const _Float64x &a) {
-   return expl(a);
-}
-inline _Float64x sin(const _Float64x &a) {
-   return sinl(a);
-}
-inline _Float64x cos(const _Float64x &a) {
-   return cosl(a);
-}
-inline _Float64x log10(const _Float64x &a) {
-   return log10l(a);
-}
-}
+inline _Float64x sqrt(const _Float64x &a) { return sqrtl(a); }
+inline _Float64x log(const _Float64x &a) { return logl(a); }
+inline _Float64x exp(const _Float64x &a) { return expl(a); }
+inline _Float64x sin(const _Float64x &a) { return sinl(a); }
+inline _Float64x cos(const _Float64x &a) { return cosl(a); }
+inline _Float64x log10(const _Float64x &a) { return log10l(a); }
+} // namespace std
 
 #include <complex>
 namespace std {
 
-inline _Float64x abs(const std::complex<_Float64x> &a) {
-  return sqrtl(a.real() * a.real() + a.imag() * a.imag());
-}
+inline _Float64x abs(const std::complex<_Float64x> &a) { return sqrtl(a.real() * a.real() + a.imag() * a.imag()); }
 inline std::complex<_Float64x> sqrt(const std::complex<_Float64x> &a) {
-   _Float64x _Complex b,tmp;
-   std::complex<_Float64x> c;
-   __real__(b) = (a.real()); __imag__(b) = (a.imag());
-   tmp = csqrtl (b);
-   c.real( __real__(tmp)); c.imag(__imag__(tmp));
-   return c;
+    _Float64x _Complex b, tmp;
+    std::complex<_Float64x> c;
+    __real__(b) = (a.real());
+    __imag__(b) = (a.imag());
+    tmp = csqrtl(b);
+    c.real(__real__(tmp));
+    c.imag(__imag__(tmp));
+    return c;
 }
 inline std::complex<_Float64x> exp(const std::complex<_Float64x> &a) {
-   _Float64x _Complex b,tmp;
-   std::complex<_Float64x> c;
-   __real__(b) = (a.real()); __imag__(b) = (a.imag());
-   tmp = cexpl (b);
-   c.real(__real__(tmp)); c.imag(__imag__(tmp));
-   return c;
+    _Float64x _Complex b, tmp;
+    std::complex<_Float64x> c;
+    __real__(b) = (a.real());
+    __imag__(b) = (a.imag());
+    tmp = cexpl(b);
+    c.real(__real__(tmp));
+    c.imag(__imag__(tmp));
+    return c;
 }
 inline std::complex<_Float64x> log(const std::complex<_Float64x> &a) {
-   _Float64x _Complex b,tmp;
-   std::complex<_Float64x> c;
-   __real__(b) = (a.real()); __imag__(b) = (a.imag());
-   tmp = clogl (b);
-   c.real(__real__(tmp)); c.imag(__imag__(tmp));
-   return c;
+    _Float64x _Complex b, tmp;
+    std::complex<_Float64x> c;
+    __real__(b) = (a.real());
+    __imag__(b) = (a.imag());
+    tmp = clogl(b);
+    c.real(__real__(tmp));
+    c.imag(__imag__(tmp));
+    return c;
 }
-}
+} // namespace std
 #endif
 
 #include <complex>
@@ -114,25 +106,19 @@ long nint(_Float64x a);
 std::complex<_Float64x> Real2Complex(_Float64x a, _Float64x b);
 _Float64x Cabs1(std::complex<_Float64x> zdum);
 
-//implementation of sign transfer function.
-inline _Float64x sign(_Float64x a, _Float64x b)
-{
-  _Float64x mtmp;
-  mtmp=std::abs(a);
-  if (b<0.0) {
-    mtmp=-mtmp;
-  }
-  return mtmp;
+// implementation of sign transfer function.
+inline _Float64x sign(_Float64x a, _Float64x b) {
+    _Float64x mtmp;
+    mtmp = std::abs(a);
+    if (b < 0.0) {
+        mtmp = -mtmp;
+    }
+    return mtmp;
 }
 
-inline double
-cast2double(_Float64x a)
-{
-    return (double)a;
-}
+inline double cast2double(_Float64x a) { return (double)a; }
 
-inline long nint(_Float64x a)
-{
+inline long nint(_Float64x a) {
     long i;
     _Float64x tmp;
     a = a + 0.5;
@@ -141,16 +127,14 @@ inline long nint(_Float64x a)
     return i;
 }
 
-inline std::complex<_Float64x> Real2Complex(_Float64x a, _Float64x b)
-{
+inline std::complex<_Float64x> Real2Complex(_Float64x a, _Float64x b) {
     std::complex<_Float64x> ret;
     ret.real(a);
     ret.imag(b);
     return ret;
 }
 
-inline _Float64x Cabs1(std::complex<_Float64x> zdum)
-{
+inline _Float64x Cabs1(std::complex<_Float64x> zdum) {
     _Float64x ret;
     ret = std::abs(zdum.real()) + std::abs(zdum.imag());
     return ret;
