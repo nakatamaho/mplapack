@@ -53,7 +53,7 @@ void Claqge(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     //     Quick return if possible
     //
     if (m <= 0 || n <= 0) {
-      equed = (char *)"N";
+        equed = (char *)"N";
         return;
     }
     //
@@ -75,7 +75,7 @@ void Claqge(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
             //
             //           No column scaling
             //
-	  equed = (char *)"N";
+            equed = (char *)"N";
         } else {
             //
             //           Column scaling

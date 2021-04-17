@@ -251,7 +251,7 @@ void Rgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 //              Apply the row interchanges to the other blocks.
                 //
                 j2 = min(ju - j + 1, kv) - jb;
-                j3 = max(0, ju - j - kv + 1);
+                j3 = max((INTEGER)0, ju - j - kv + 1);
                 //
                 //              Use Rlaswp to apply the row interchanges to A12, A22, and
                 //              A32.

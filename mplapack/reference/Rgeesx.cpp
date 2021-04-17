@@ -144,7 +144,7 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
             minwrk = 3 * n;
             //
             Rhseqr("S", jobvs, n, 1, n, a, lda, wr, wi, vs, ldvs, work, -1, ieval);
-            hswork = work[1 - 1];
+            hswork = castINTEGER(work[1 - 1]);
             //
             if (!wantvs) {
                 maxwrk = max(maxwrk, n + hswork);

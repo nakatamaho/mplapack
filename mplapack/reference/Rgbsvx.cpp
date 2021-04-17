@@ -64,7 +64,7 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
     const REAL one = 1.0;
     REAL bignum = 0.0;
     if (nofact || equil) {
-        equed = "N";
+        equed = (char *)"N";
         rowequ = false;
         colequ = false;
     } else {
@@ -190,7 +190,7 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         //        Compute the LU factorization of the band matrix A.
         //
         for (j = 1; j <= n; j = j + 1) {
-            j1 = max(j - ku, 1);
+            j1 = max(j - ku, (INTEGER)1);
             j2 = min(j + kl, n);
             Rcopy(j2 - j1 + 1, &ab[((ku + 1 - j + j1) - 1) + (j - 1) * ldab], 1, &afb[((kl + ku + 1 - j + j1) - 1) + (j - 1) * ldafb], 1);
         }
@@ -206,11 +206,11 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
             //
             anorm = zero;
             for (j = 1; j <= info; j = j + 1) {
-                for (i = max(ku + 2 - j, 1); i <= min(n + ku + 1 - j, kl + ku + 1); i = i + 1) {
+                for (i = max(ku + 2 - j, (INTEGER)1); i <= min(n + ku + 1 - j, kl + ku + 1); i = i + 1) {
                     anorm = max(anorm, abs(ab[(i - 1) + (j - 1) * ldab]));
                 }
             }
-            rpvgrw = Rlantb("M", "U", "N", info, min(info - 1, kl + ku), &afb[(max(1, kl + ku + 2 - info) - 1) + (1 - 1) * ldafb], ldafb, work);
+            rpvgrw = Rlantb("M", "U", "N", info, min(info - 1, kl + ku), &afb[(max((INTEGER)1, kl + ku + 2 - info) - 1) + (1 - 1) * ldafb], ldafb, work);
             if (rpvgrw == zero) {
                 rpvgrw = one;
             } else {

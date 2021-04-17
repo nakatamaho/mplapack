@@ -1,8 +1,8 @@
 lib_LTLIBRARIES = 
 
-if ENABLE__FLOAT128
-lib_LTLIBRARIES += libmplapack__Float128_ref.la
-endif
+#if ENABLE__FLOAT128
+#lib_LTLIBRARIES += libmplapack__Float128_ref.la
+#endif
 
 #if ENABLE_MPFR
 #lib_LTLIBRARIES += libmplapack_mpfr_ref.la
@@ -16,9 +16,9 @@ endif
 #lib_LTLIBRARIES += libmplapack_qd_ref.la
 #endif
 
-#if ENABLE_DD
-#lib_LTLIBRARIES += libmplapack_dd_ref.la
-#endif
+if ENABLE_DD
+lib_LTLIBRARIES += libmplapack_dd_ref.la
+endif
 
 #if ENABLE_DOUBLE
 #lib_LTLIBRARIES += libmplapack_double_ref.la

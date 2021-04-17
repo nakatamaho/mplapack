@@ -55,7 +55,7 @@ void Claqgb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     //     Quick return if possible
     //
     if (m <= 0 || n <= 0) {
-      equed = (char *)"N";
+        equed = (char *)"N";
         return;
     }
     //
@@ -77,7 +77,7 @@ void Claqgb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
             //
             //           No column scaling
             //
-	  equed = (char *)"N";
+            equed = (char *)"N";
         } else {
             //
             //           Column scaling
