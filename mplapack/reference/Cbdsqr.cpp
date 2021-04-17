@@ -199,10 +199,10 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
     //
     smax = zero;
     for (i = 1; i <= n; i = i + 1) {
-        smax = max(smax, abs(d[i - 1]));
+        smax = max(smax, REAL(abs(d[i - 1])));
     }
     for (i = 1; i <= n - 1; i = i + 1) {
-        smax = max(smax, abs(e[i - 1]));
+        smax = max(smax, REAL(abs(e[i - 1])));
     }
     sminl = zero;
     if (tol >= zero) {
@@ -223,12 +223,12 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
         }
     statement_50:
         sminoa = sminoa / sqrt(castREAL(n));
-        thresh = max(tol * sminoa, maxitr * n * n * unfl);
+        thresh = max(REAL(tol * sminoa), REAL(maxitr * n * n * unfl));
     } else {
         //
         //        Absolute accuracy desired
         //
-        thresh = max(abs(tol) * smax, maxitr * n * n * unfl);
+        thresh = max(REAL(abs(tol) * smax), REAL(maxitr * n * n * unfl));
     }
     //
     //     Prepare for main iteration loop for the singular values
@@ -399,7 +399,7 @@ statement_90:
     //     Compute shift.  First, test if shifting would ruin relative
     //     accuracy, and if so set the shift to zero.
     //
-    if (tol >= zero && n * tol * (sminl / smax) <= max(eps, hndrth * tol)) {
+    if (tol >= zero && n * tol * (sminl / smax) <= max(eps, REAL(hndrth * tol))) {
         //
         //        Use a zero shift to avoid loss of relative accuracy
         //

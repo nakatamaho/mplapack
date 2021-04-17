@@ -228,7 +228,7 @@ statement_30:
                 aa = max(abs1(h[(k - 1) + (k - 1) * ldh]), abs1(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh]));
                 bb = min(abs1(h[(k - 1) + (k - 1) * ldh]), abs1(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh]));
                 s = aa + ab;
-                if (ba * (ab / s) <= max(smlnum, ulp * (bb * (aa / s)))) {
+                if (ba * (ab / s) <= max(smlnum, REAL(ulp * (bb * (aa / s))))) {
                     goto statement_50;
                 }
             }
