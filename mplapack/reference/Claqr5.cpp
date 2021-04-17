@@ -266,7 +266,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                                 tst1 += abs1(h[((k + 4) - 1) + ((k + 1) - 1) * ldh]);
                             }
                         }
-                        if (abs1(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, ulp * tst1)) {
+                        if (abs1(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, REAL(ulp * tst1))) {
                             h12 = max(abs1(h[((k + 1) - 1) + (k - 1) * ldh]), abs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
                             h21 = min(abs1(h[((k + 1) - 1) + (k - 1) * ldh]), abs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
                             h11 = max(abs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), abs1(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
@@ -274,7 +274,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                             scl = h11 + h12;
                             tst2 = h22 * (h11 / scl);
                             //
-                            if (tst2 == rzero || h21 * (h12 / scl) <= max(smlnum, ulp * tst2)) {
+                            if (tst2 == rzero || h21 * (h12 / scl) <= max(smlnum, REAL(ulp * tst2))) {
                                 h[((k + 1) - 1) + (k - 1) * ldh] = zero;
                             }
                         }
@@ -432,7 +432,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                             tst1 += abs1(h[((k + 4) - 1) + ((k + 1) - 1) * ldh]);
                         }
                     }
-                    if (abs1(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, ulp * tst1)) {
+                    if (abs1(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, REAL(ulp * tst1))) {
                         h12 = max(abs1(h[((k + 1) - 1) + (k - 1) * ldh]), abs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
                         h21 = min(abs1(h[((k + 1) - 1) + (k - 1) * ldh]), abs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
                         h11 = max(abs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), abs1(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
@@ -440,7 +440,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                         scl = h11 + h12;
                         tst2 = h22 * (h11 / scl);
                         //
-                        if (tst2 == rzero || h21 * (h12 / scl) <= max(smlnum, ulp * tst2)) {
+                        if (tst2 == rzero || h21 * (h12 / scl) <= max(smlnum, REAL(ulp * tst2))) {
                             h[((k + 1) - 1) + (k - 1) * ldh] = zero;
                         }
                     }

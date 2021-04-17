@@ -143,7 +143,7 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         sh[kwtop - 1] = h[(kwtop - 1) + (kwtop - 1) * ldh];
         ns = 1;
         nd = 0;
-        if (abs1(s) <= max(smlnum, ulp * abs1(h[(kwtop - 1) + (kwtop - 1) * ldh]))) {
+        if (abs1(s) <= max(smlnum, REAL(ulp * abs1(h[(kwtop - 1) + (kwtop - 1) * ldh])))) {
             ns = 0;
             nd = 1;
             if (kwtop > ktop) {
@@ -187,7 +187,7 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         if (foo == rzero) {
             foo = abs1(s);
         }
-        if (abs1(s) * abs1(v[(ns - 1) * ldv]) <= max(smlnum, ulp * foo)) {
+        if (abs1(s) * abs1(v[(ns - 1) * ldv]) <= max(smlnum, REAL(ulp * foo))) {
             //
             //           ==== One more converged eigenvalue ====
             //

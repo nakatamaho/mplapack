@@ -1,11 +1,11 @@
 lib_LTLIBRARIES = 
 
-if ENABLE_MPFR
-lib_LTLIBRARIES += libmplapack_mpfr_ref.la
-endif
-
 if ENABLE_GMP
 lib_LTLIBRARIES += libmplapack_gmp_ref.la
+endif
+
+if ENABLE_MPFR
+lib_LTLIBRARIES += libmplapack_mpfr_ref.la
 endif
 
 if ENABLE_DD
@@ -714,9 +714,9 @@ iCmax1.cpp \
 iMladiag.cpp \
 iMladlc.cpp \
 iMladlr.cpp \
-iMlaenv.cpp \
 iMlaprec.cpp \
 iMlatrans.cpp \
 iMlauplo.cpp \
 iMlazlc.cpp \
 iMlazlr.cpp
+#iMlaenv.cpp

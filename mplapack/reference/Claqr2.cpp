@@ -176,7 +176,7 @@ void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         if (foo == rzero) {
             foo = abs1(s);
         }
-        if (abs1(s) * abs1(v[(ns - 1) * ldv]) <= max(smlnum, ulp * foo)) {
+        if (abs1(s) * abs1(v[(ns - 1) * ldv]) <= max(smlnum, REAL(ulp * foo))) {
             //
             //           ==== One more converged eigenvalue ====
             //

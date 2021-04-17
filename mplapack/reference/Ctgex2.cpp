@@ -123,8 +123,8 @@ void Ctgex2(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
     //     "Bug" reported by Ondra Kamenik, confirmed by Julie Langou, fixed by
     //     Jim Demmel and Guillaume Revy. See forum post 1783.
     //
-    thresha = max(twenty * eps * sa, smlnum);
-    threshb = max(twenty * eps * sb, smlnum);
+    thresha = max(REAL(twenty * eps * sa), smlnum);
+    threshb = max(REAL(twenty * eps * sb), smlnum);
     //
     //     Compute unitary QL and RQ that swap 1-by-1 and 1-by-1 blocks
     //     using Givens rotations and perform the swap tentatively.
