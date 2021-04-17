@@ -155,7 +155,7 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 //           2 x 2 diagonal NNB
                 t = abs(work[((k + 1) - 1)]);
                 ak = (a[(k - 1) + (k - 1) * lda]).real() / t;
-                akp1 = ((a[((k + 1) - 1) + ((k + 1) - 1) * lda]) - 1).real() / t;
+                akp1 = (a[((k + 1) - 1) + ((k + 1) - 1) * lda]).real() / t;
                 akkp1 = work[((k + 1) - 1)] / t;
                 d = t * (ak * akp1 - one);
                 work[(k - 1) + (invd - 1) * ldwork] = akp1 / d;

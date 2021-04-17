@@ -93,7 +93,7 @@ void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     INTEGER nbmin = 0;
     if (nb > 1 && nb < minmn) {
         //
-        //        Set the crossover poINTEGER NX.
+        //        Set the crossover point NX.
         //
         nx = max(nb, iMlaenv(3, "Cgebrd", " ", m, n, -1, -1));
         //

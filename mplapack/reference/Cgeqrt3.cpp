@@ -77,7 +77,7 @@ void Cgeqrt3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
         //
         //        Compute Householder transform when N=1
         //
-        Clarfg(m, a[(1 - 1)], &a[(min(2, m) - 1) + (1 - 1) * lda], 1, t[(1 - 1)]);
+        Clarfg(m, a[(1 - 1)], &a[(min((INTEGER)2, m) - 1) + (1 - 1) * lda], 1, t[(1 - 1)]);
         //
     } else {
         //

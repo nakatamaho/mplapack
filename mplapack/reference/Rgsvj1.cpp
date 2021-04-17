@@ -493,12 +493,12 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
         //
     }
     //     end i=1:NSWEEP loop
-    // #:) Reaching this poINTEGER means that the procedure has completed the given
+    // #:) Reaching this point means that the procedure has completed the given
     //     number of sweeps.
     info = nsweep - 1;
     goto statement_1995;
 statement_1994:
-    // #:) Reaching this poINTEGER means that during the i-th sweep all pivots were
+    // #:) Reaching this point means that during the i-th sweep all pivots were
     //     below the given threshold, causing early exit.
     //
     info = 0;

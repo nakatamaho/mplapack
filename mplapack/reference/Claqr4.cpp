@@ -175,17 +175,17 @@ void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         //        .    NWR.GE.4.) ====
         //
         nwr = iMlaenv(13, "Claqr4", jbcmpz, n, ilo, ihi, lwork);
-        nwr = max(2, nwr);
+        nwr = max((INTEGER)2, nwr);
         nwr = min({ihi - ilo + 1, (n - 1) / 3, nwr});
         //
         //        ==== NSR = recommended number of simultaneous shifts.
-        //        .    At this poINTEGER N .GT. NTINY = 15, so there is at
+        //        .    At this point N .GT. NTINY = 15, so there is at
         //        .    enough subdiagonal workspace for NSR to be even
         //        .    and greater than or equal to two as required. ====
         //
         nsr = iMlaenv(15, "Claqr4", jbcmpz, n, ilo, ihi, lwork);
         nsr = min({nsr, (n - 3) / 6, ihi - ilo});
-        nsr = max(2, nsr - mod(nsr, 2));
+        nsr = max((INTEGER)2, nsr - mod(nsr, 2));
         //
         //        ==== Estimate optimal workspace ====
         //
@@ -204,22 +204,22 @@ void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
             return;
         }
         //
-        //        ==== Clahqr/Claqr0 crossover poINTEGER ====
+        //        ==== Clahqr/Claqr0 crossover point ====
         //
         nmin = iMlaenv(12, "Claqr4", jbcmpz, n, ilo, ihi, lwork);
         nmin = max(ntiny, nmin);
         //
-        //        ==== Nibble crossover poINTEGER ====
+        //        ==== Nibble crossover point ====
         //
         nibble = iMlaenv(14, "Claqr4", jbcmpz, n, ilo, ihi, lwork);
-        nibble = max(0, nibble);
+        nibble = max((INTEGER)0, nibble);
         //
         //        ==== Accumulate reflections during ttswp?  Use block
         //        .    2-by-2 structure during matrix-matrix multiply? ====
         //
         kacc22 = iMlaenv(16, "Claqr4", jbcmpz, n, ilo, ihi, lwork);
-        kacc22 = max(0, kacc22);
-        kacc22 = min(2, kacc22);
+        kacc22 = max((INTEGER)0, kacc22);
+        kacc22 = min((INTEGER)2, kacc22);
         //
         //        ==== NWMAX = the largest possible deflation window for
         //        .    which there is sufficient workspace. ====
@@ -239,7 +239,7 @@ void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         //
         //        ==== ITMAX = iteration limit ====
         //
-        itmax = max(30, 2 * kexsh) * max((INTEGER)10, (ihi - ilo + 1));
+        itmax = max((INTEGER)30, 2 * kexsh) * max((INTEGER)10, (ihi - ilo + 1));
         //
         //        ==== Last row and column in the active block ====
         //
@@ -350,7 +350,7 @@ void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                 //              .    This may be lowered (slightly) if Claqr2
                 //              .    did not provide that many shifts. ====
                 //
-                INTEGER itmp = max(2, kbot - ktop);
+                INTEGER itmp = max((INTEGER)2, kbot - ktop);
                 ns = min({nsmax, nsr, itmp});
                 ns = ns - mod(ns, 2);
                 //

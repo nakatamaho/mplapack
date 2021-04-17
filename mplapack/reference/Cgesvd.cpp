@@ -90,7 +90,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
     //
     //     Compute workspace
     //      (Note: Comments in the code beginning "Workspace:" describe the
-    //       minimal amount of workspace needed at that poINTEGER in the code,
+    //       minimal amount of workspace needed at that point in the code,
     //       as well as the preferred amount for good performance.
     //       CWorkspace refers to complex workspace, and RWorkspace to
     //       real workspace. NB refers to the optimal block size for the

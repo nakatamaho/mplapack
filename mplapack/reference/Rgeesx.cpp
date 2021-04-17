@@ -122,7 +122,7 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
     //
     //     Compute workspace
     //      (Note: Comments in the code beginning "RWorkspace:" describe the
-    //       minimal amount of real workspace needed at that poINTEGER in the
+    //       minimal amount of real workspace needed at that point in the
     //       code, as well as the preferred amount for good performance.
     //       IWorkspace refers to integer workspace.
     //       NB refers to the optimal block size for the immediately

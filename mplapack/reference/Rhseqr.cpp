@@ -154,7 +154,7 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
             return;
         }
         //
-        //        ==== Rlahqr/Rlaqr0 crossover poINTEGER ====
+        //        ==== Rlahqr/Rlaqr0 crossover point ====
         //
         char job_compz[3];
         job_compz[0] = job[0];

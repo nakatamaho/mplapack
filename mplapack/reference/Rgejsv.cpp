@@ -370,7 +370,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         }
         entra = -entra / log(castREAL(n - 1));
         //
-        //        Now, SVA().^2/Trace(A^t * A) is a poINTEGER in the probability simplex.
+        //        Now, SVA().^2/Trace(A^t * A) is a point in the probability simplex.
         //        It is derived from the diagonal of  A^t * A.  Do the same with the
         //        diagonal of A * A^t, compute the entropy of the corresponding
         //        probability distribution. Note that A * A^t and A^t * A have the

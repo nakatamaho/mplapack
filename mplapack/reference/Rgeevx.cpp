@@ -120,7 +120,7 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     //
     //     Compute workspace
     //      (Note: Comments in the code beginning "Workspace:" describe the
-    //       minimal amount of workspace needed at that poINTEGER in the code,
+    //       minimal amount of workspace needed at that point in the code,
     //       as well as the preferred amount for good performance.
     //       NB refers to the optimal block size for the immediately
     //       following subroutine, as returned by iMlaenv.

@@ -1,7 +1,12 @@
 lib_LTLIBRARIES = 
-if ENABLE_MPFR
-lib_LTLIBRARIES += libmplapack_mpfr_ref.la
+
+if ENABLE__FLOAT128
+lib_LTLIBRARIES += libmplapack__Float128_ref.la
 endif
+
+#if ENABLE_MPFR
+#lib_LTLIBRARIES += libmplapack_mpfr_ref.la
+#endif
 
 #if ENABLE_GMP
 #lib_LTLIBRARIES += libmplapack_gmp_ref.la
@@ -22,10 +27,6 @@ endif
 #if ENABLE__FLOAT64X
 #lib_LTLIBRARIES += libmplapack__Float64x_ref.la
 #endif
-
-if ENABLE__FLOAT128
-lib_LTLIBRARIES += libmplapack__Float128_ref.la
-endif
 
 if ENABLE_GMP
 libmplapack_gmp_ref_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___

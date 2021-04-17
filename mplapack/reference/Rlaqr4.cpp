@@ -170,7 +170,7 @@ void Rlaqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         nwr = min({ihi - ilo + 1, (n - 1) / 3, nwr});
         //
         //        ==== NSR = recommended number of simultaneous shifts.
-        //        .    At this poINTEGER N .GT. NTINY = 15, so there is at
+        //        .    At this point N .GT. NTINY = 15, so there is at
         //        .    enough subdiagonal workspace for NSR to be even
         //        .    and greater than or equal to two as required. ====
         //
@@ -195,12 +195,12 @@ void Rlaqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
             return;
         }
         //
-        //        ==== Rlahqr/Rlaqr0 crossover poINTEGER ====
+        //        ==== Rlahqr/Rlaqr0 crossover point ====
         //
         nmin = iMlaenv(12, "Rlaqr4", jbcmpz, n, ilo, ihi, lwork);
         nmin = max(ntiny, nmin);
         //
-        //        ==== Nibble crossover poINTEGER ====
+        //        ==== Nibble crossover point ====
         //
         nibble = iMlaenv(14, "Rlaqr4", jbcmpz, n, ilo, ihi, lwork);
         nibble = max(0, nibble);

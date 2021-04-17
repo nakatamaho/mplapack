@@ -1067,12 +1067,12 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     }
     //     end i=1:NSWEEP loop
     //
-    // #:( Reaching this poINTEGER means that the procedure has not converged.
+    // #:( Reaching this point means that the procedure has not converged.
     info = nsweep - 1;
     goto statement_1995;
 //
 statement_1994:
-    // #:) Reaching this poINTEGER means numerical convergence after the i-th
+    // #:) Reaching this point means numerical convergence after the i-th
     //     sweep.
     //
     info = 0;

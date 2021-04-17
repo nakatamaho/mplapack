@@ -522,7 +522,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                 jbot = kbot;
             }
             k1 = max((INTEGER)1, ktop - incol);
-            nu = (kdu - max(0, ndcol - kbot)) - k1 + 1;
+            nu = (kdu - max((INTEGER)0, ndcol - kbot)) - k1 + 1;
             //
             //           ==== Horizontal Multiply ====
             //

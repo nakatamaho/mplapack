@@ -156,7 +156,7 @@ void Chseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
             return;
         }
         //
-        //        ==== Clahqr/Claqr0 crossover poINTEGER ====
+        //        ==== Clahqr/Claqr0 crossover point ====
         //
         nmin = iMlaenv(12, "Chseqr", job_compz, n, ilo, ihi, lwork);
         nmin = max(ntiny, nmin);
@@ -212,7 +212,7 @@ void Chseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
         //        ==== Ensure reported workspace size is backward-compatible with
         //        .    previous LAPACK versions. ====
         //
-        work[1 - 1] = COMPLEX(max(castREAL(max((INTEGER)1, n)), castINTEGER((work[1 - 1]).real())), rzero);
+        work[1 - 1] = COMPLEX(max(castREAL(max((INTEGER)1, n)), work[1 - 1].real()), rzero);
     }
     //
     //     ==== End of Chseqr ====
