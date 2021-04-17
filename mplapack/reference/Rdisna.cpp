@@ -148,7 +148,7 @@ void Rdisna(const char *job, INTEGER const m, INTEGER const n, REAL *d, REAL *se
     if (anorm == zero) {
         thresh = eps;
     } else {
-        thresh = max(eps * anorm, safmin);
+        thresh = max(REAL(eps * anorm), safmin);
     }
     for (i = 1; i <= k; i = i + 1) {
         sep[i - 1] = max(sep[i - 1], thresh);

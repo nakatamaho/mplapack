@@ -165,7 +165,7 @@ void Rlaqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         si[kwtop - 1] = zero;
         ns = 1;
         nd = 0;
-        if (abs(s) <= max(smlnum, ulp * abs(h[(kwtop - 1) + (kwtop - 1) * ldh]))) {
+        if (abs(s) <= max(smlnum, REAL(ulp * abs(h[(kwtop - 1) + (kwtop - 1) * ldh])))) {
             ns = 0;
             nd = 1;
             if (kwtop > ktop) {
@@ -225,7 +225,7 @@ statement_20:
             if (foo == zero) {
                 foo = abs(s);
             }
-            if (abs(s * v[(ns - 1) * ldv]) <= max(smlnum, ulp * foo)) {
+            if (abs(s * v[(ns - 1) * ldv]) <= max(smlnum, REAL(ulp * foo))) {
                 //
                 //              ==== Deflatable ====
                 //
@@ -247,7 +247,7 @@ statement_20:
             if (foo == zero) {
                 foo = abs(s);
             }
-            if (max(abs(s * v[(ns - 1) * ldv]), abs(s * v[((ns - 1) - 1) * ldv])) <= max(smlnum, ulp * foo)) {
+            if (max(abs(s * v[(ns - 1) * ldv]), abs(s * v[((ns - 1) - 1) * ldv])) <= max(smlnum, REAL(ulp * foo))) {
                 //
                 //              ==== Deflatable ====
                 //

@@ -230,7 +230,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
                 br2 = b[(2 - 1)];
             }
             br2 = br2 - lr21 * br1;
-            bbnd = max(abs(br1 * (ur22 * ur11r)), abs(br2));
+            bbnd = max(REAL(abs(br1 * (ur22 * ur11r))), REAL(abs(br2)));
             if (bbnd > one && abs(ur22) < one) {
                 if (bbnd >= bignum * abs(ur22)) {
                     scale = one / bbnd;
@@ -362,7 +362,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             }
             br2 = br2 - lr21 * br1 + li21 * bi1;
             bi2 = bi2 - li21 * br1 - lr21 * bi1;
-            bbnd = max((abs(br1) + abs(bi1)) * (u22abs * (abs(ur11r) + abs(ui11r))), abs(br2) + abs(bi2));
+            bbnd = max(REAL((abs(br1) + abs(bi1)) * (u22abs * (abs(ur11r) + abs(ui11r)))), REAL(abs(br2) + abs(bi2)));
             if (bbnd > one && u22abs < one) {
                 if (bbnd >= bignum * u22abs) {
                     scale = one / bbnd;

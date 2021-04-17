@@ -57,7 +57,7 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
     //
     //     Scale A
     //
-    REAL anorm = max({abs(a[(1 - 1)]) + abs(a[(2 - 1)]), abs(a[(2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda]), safmin});
+    REAL anorm = max({REAL(abs(a[(1 - 1)]) + abs(a[(2 - 1)])), REAL(abs(a[(2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda])), safmin});
     REAL ascale = one / anorm;
     REAL a11 = ascale * a[(1 - 1)];
     REAL a21 = ascale * a[(2 - 1)];
@@ -69,7 +69,7 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
     REAL b11 = b[(1 - 1)];
     REAL b12 = b[(2 - 1) * ldb];
     REAL b22 = b[(2 - 1) + (2 - 1) * ldb];
-    REAL bmin = rtmin * max({abs(b11), abs(b12), abs(b22), rtmin});
+    REAL bmin = rtmin * max({REAL(abs(b11)), REAL(abs(b12)), REAL(abs(b22)), rtmin});
     if (abs(b11) < bmin) {
         b11 = sign(bmin, b11);
     }
@@ -79,8 +79,8 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
     //
     //     Scale B
     //
-    REAL bnorm = max({abs(b11), abs(b12) + abs(b22), safmin});
-    REAL bsize = max(abs(b11), abs(b22));
+    REAL bnorm = max({REAL(abs(b11)), REAL(abs(b12) + abs(b22)), safmin});
+    REAL bsize = max(REAL(abs(b11)), REAL(abs(b22)));
     REAL bscale = one / bsize;
     b11 = b11 * bscale;
     b12 = b12 * bscale;
@@ -154,7 +154,7 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
         //        Compute smaller eigenvalue
         //
         wsmall = shift + diff;
-        if (half * abs(wbig) > max(abs(wsmall), safmin)) {
+        if (half * abs(wbig) > max(REAL(abs(wsmall)), safmin)) {
             wdet = (a11 * a22 - a12 * a21) * (binv11 * binv22);
             wsmall = wdet / wbig;
         }
@@ -196,13 +196,13 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
     REAL c3 = bsize * safmin;
     REAL c4 = 0.0;
     if (ascale <= one && bsize <= one) {
-        c4 = min(one, (ascale / safmin) * bsize);
+        c4 = min(one, REAL((ascale / safmin) * bsize));
     } else {
         c4 = one;
     }
     REAL c5 = 0.0;
     if (ascale <= one || bsize <= one) {
-        c5 = min(one, ascale * bsize);
+        c5 = min(one, REAL(ascale * bsize));
     } else {
         c5 = one;
     }
@@ -211,7 +211,7 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
     //
     REAL wabs = abs(wr1) + abs(wi);
     const REAL fuzzy1 = one + 1.0e-5;
-    REAL wsize = max({safmin, c1, fuzzy1 * (wabs * c2 + c3), min(c4, half * max(wabs, c5))});
+    REAL wsize = max({safmin, c1, REAL(fuzzy1 * (wabs * c2 + c3)), min(c4, REAL(half * max(wabs, c5)))});
     REAL wscale = 0.0;
     if (wsize != one) {
         wscale = one / wsize;
@@ -234,7 +234,7 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
     //     Scale second eigenvalue (if real)
     //
     if (wi == zero) {
-        wsize = max({safmin, c1, fuzzy1 * (abs(wr2) * c2 + c3), min(c4, half * max(abs(wr2), c5))});
+        wsize = max({safmin, c1, REAL(fuzzy1 * (abs(wr2) * c2 + c3)), min(c4, REAL(half * max(REAL(abs(wr2)), c5)))});
         if (wsize != one) {
             wscale = one / wsize;
             if (wsize > one) {

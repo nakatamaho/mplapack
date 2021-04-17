@@ -175,9 +175,9 @@ void Rgtrfs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
         s = zero;
         for (i = 1; i <= n; i = i + 1) {
             if (work[i - 1] > safe2) {
-                s = max(s, abs(work[(n + i) - 1]) / work[i - 1]);
+                s = max(s, REAL(abs(work[(n + i) - 1]) / work[i - 1]));
             } else {
-                s = max(s, (abs(work[(n + i) - 1]) + safe1) / (work[i - 1] + safe1));
+                s = max(s, REAL((abs(work[(n + i) - 1]) + safe1) / (work[i - 1] + safe1)));
             }
         }
         berr[j - 1] = s;
@@ -257,7 +257,7 @@ void Rgtrfs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
         //
         lstres = zero;
         for (i = 1; i <= n; i = i + 1) {
-            lstres = max(lstres, abs(x[(i - 1) + (j - 1) * ldx]));
+            lstres = max(lstres, REAL(abs(x[(i - 1) + (j - 1) * ldx])));
         }
         if (lstres != zero) {
             ferr[j - 1] = ferr[j - 1] / lstres;

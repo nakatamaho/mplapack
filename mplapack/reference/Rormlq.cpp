@@ -126,7 +126,7 @@ void Rormlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     if (nb > 1 && nb < k) {
         if (lwork < nw * nb + tsize) {
             nb = (lwork - tsize) / ldwork;
-            nbmin = max(2, iMlaenv(2, "Rormlq", side_trans, m, n, k, -1));
+            nbmin = max((INTEGER)2, iMlaenv(2, "Rormlq", side_trans, m, n, k, -1));
         }
     }
     //

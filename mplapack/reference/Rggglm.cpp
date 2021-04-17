@@ -131,7 +131,7 @@ void Rggglm(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER 
     //     orthogonal.
     //
     Rggqrf(n, m, p, a, lda, work, b, ldb, &work[(m + 1) - 1], &work[(m + np + 1) - 1], lwork - m - np, info);
-    INTEGER lopt = work[(m + np + 1) - 1];
+    INTEGER lopt = castINTEGER(work[(m + np + 1) - 1]);
     //
     //     Update left-hand-side vector d = Q**T*d = ( d1 ) M
     //                                               ( d2 ) N-M

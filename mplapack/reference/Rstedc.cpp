@@ -118,10 +118,10 @@ void Rstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
                 lgn++;
             }
             if (icompz == 1) {
-                lwmin = 1 + 3 * n + 2 * n * lgn + 4 * pow2(n);
+                lwmin = 1 + 3 * n + 2 * n * lgn + 4 * n * n;
                 liwmin = 6 + 6 * n + 5 * n * lgn;
             } else if (icompz == 2) {
-                lwmin = 1 + 4 * n + pow2(n);
+                lwmin = 1 + 4 * n + n * n;
                 liwmin = 3 + 5 * n;
             }
         }

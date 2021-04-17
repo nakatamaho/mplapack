@@ -250,7 +250,7 @@ statement_10:
     //     B(1:M,1:NRHS) := Q**T * B(1:M,1:NRHS)
     //
     Rormqr("Left", "Transpose", m, nrhs, mn, a, lda, &work[1 - 1], b, ldb, &work[(2 * mn + 1) - 1], lwork - 2 * mn, info);
-    wsize = max(wsize, 2 * mn + work[(2 * mn + 1) - 1]);
+    wsize = max(wsize, REAL(2 * mn + work[(2 * mn + 1) - 1]));
     //
     //     workspace: 2*MN+NB*NRHS.
     //

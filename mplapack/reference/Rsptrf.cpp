@@ -166,7 +166,7 @@ void Rsptrf(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, INTEGER 
                 kpc = (imax - 1) * imax / 2 + 1;
                 if (imax > 1) {
                     jmax = iRamax(imax - 1, &ap[kpc - 1], 1);
-                    rowmax = max(rowmax, abs(ap[(kpc + jmax - 1) - 1]));
+                    rowmax = max(rowmax, REAL(abs(ap[(kpc + jmax - 1) - 1])));
                 }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
@@ -355,7 +355,7 @@ void Rsptrf(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, INTEGER 
                 kpc = npp - (n - imax + 1) * (n - imax + 2) / 2 + 1;
                 if (imax < n) {
                     jmax = imax + iRamax(n - imax, &ap[(kpc + 1) - 1], 1);
-                    rowmax = max(rowmax, abs(ap[(kpc + jmax - imax) - 1]));
+                    rowmax = max(rowmax, REAL(abs(ap[(kpc + jmax - imax) - 1])));
                 }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {

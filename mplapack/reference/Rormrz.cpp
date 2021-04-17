@@ -132,7 +132,7 @@ void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
     if (nb > 1 && nb < k) {
         if (lwork < nw * nb + tsize) {
             nb = (lwork - tsize) / ldwork;
-            nbmin = max(2, iMlaenv(2, "Rormrq", side_trans, m, n, k, -1));
+            nbmin = max((INTEGER)2, iMlaenv(2, "Rormrq", side_trans, m, n, k, -1));
         }
     }
     //

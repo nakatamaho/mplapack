@@ -148,7 +148,7 @@ void Rsytrf_aa(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, IN
         //
         //        Panel factorization
         //
-        Rlasyf_aa(uplo, 2 - k1, n - j, jb, &a[(max(1, j) - 1) + ((j + 1) - 1) * lda], lda, &ipiv[(j + 1) - 1], work, n, &work[(n * nb + 1) - 1]);
+        Rlasyf_aa(uplo, 2 - k1, n - j, jb, &a[(max((INTEGER)1, j) - 1) + ((j + 1) - 1) * lda], lda, &ipiv[(j + 1) - 1], work, n, &work[(n * nb + 1) - 1]);
         //
         //        Adjust IPIV and apply it back (J-th step picks (J+1)-th pivot)
         //
@@ -257,7 +257,7 @@ void Rsytrf_aa(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, IN
         //
         //        Panel factorization
         //
-        Rlasyf_aa(uplo, 2 - k1, n - j, jb, &a[(max(1, j) - 1) + ((j + 1) - 1) * lda], lda, &ipiv[(j + 1) - 1], work, n, &work[(n * nb + 1) - 1]);
+        Rlasyf_aa(uplo, 2 - k1, n - j, jb, &a[(max((INTEGER)1, j) - 1) + ((j + 1) - 1) * lda], lda, &ipiv[(j + 1) - 1], work, n, &work[(n * nb + 1) - 1]);
         //
         //        Adjust IPIV and apply it back (J-th step picks (J+1)-th pivot)
         //

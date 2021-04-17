@@ -317,11 +317,11 @@ void Rggev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
                 temp = zero;
                 if (alphai[jc - 1] == zero) {
                     for (jr = 1; jr <= n; jr = jr + 1) {
-                        temp = max(temp, abs(vl[(jr - 1) + (jc - 1) * ldvl]));
+                        temp = max(temp, REAL(abs(vl[(jr - 1) + (jc - 1) * ldvl])));
                     }
                 } else {
                     for (jr = 1; jr <= n; jr = jr + 1) {
-                        temp = max(temp, abs(vl[(jr - 1) + (jc - 1) * ldvl]) + abs(vl[(jr - 1) + ((jc + 1) - 1) * ldvl]));
+                        temp = max(temp, REAL(abs(vl[(jr - 1) + (jc - 1) * ldvl]) + abs(vl[(jr - 1) + ((jc + 1) - 1) * ldvl])));
                     }
                 }
                 if (temp < smlnum) {
@@ -350,11 +350,11 @@ void Rggev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
                 temp = zero;
                 if (alphai[jc - 1] == zero) {
                     for (jr = 1; jr <= n; jr = jr + 1) {
-                        temp = max(temp, abs(vr[(jr - 1) + (jc - 1) * ldvr]));
+                        temp = max(temp, REAL(abs(vr[(jr - 1) + (jc - 1) * ldvr])));
                     }
                 } else {
                     for (jr = 1; jr <= n; jr = jr + 1) {
-                        temp = max(temp, abs(vr[(jr - 1) + (jc - 1) * ldvr]) + abs(vr[(jr - 1) + ((jc + 1) - 1) * ldvr]));
+                        temp = max(temp, REAL(abs(vr[(jr - 1) + (jc - 1) * ldvr]) + abs(vr[(jr - 1) + ((jc + 1) - 1) * ldvr])));
                     }
                 }
                 if (temp < smlnum) {

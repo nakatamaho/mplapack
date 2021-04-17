@@ -168,7 +168,7 @@ void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, 
     //
     eps = Rlamch("Epsilon");
     tol = max(abs(alpha), abs(beta));
-    tol = eight * eps * max(abs(d[n - 1]), tol);
+    tol = eight * eps * max(REAL(abs(d[n - 1])), tol);
     //
     //     There are 2 kinds of deflation -- first a value in the z-vector
     //     is small, second two (or more) singular values are very close

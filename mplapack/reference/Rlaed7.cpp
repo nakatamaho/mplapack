@@ -153,7 +153,7 @@ void Rlaed7(INTEGER const icompq, INTEGER const n, INTEGER const qsiz, INTEGER c
         if (icompq == 1) {
             Rgemm("N", "N", qsiz, k, k, one, &work[iq2 - 1], ldq2, &qstore[qptr[curr - 1] - 1], k, zero, q, ldq);
         }
-        qptr[(curr + 1) - 1] = qptr[curr - 1] + pow2(k);
+        qptr[(curr + 1) - 1] = qptr[curr - 1] + k * k;
         //
         //     Prepare the INDXQ sorting permutation.
         //

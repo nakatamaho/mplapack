@@ -158,8 +158,8 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
     //     "Bug" reported by Ondra Kamenik, confirmed by Julie Langou, fixed by
     //     Jim Demmel and Guillaume Revy. See forum post 1783.
     //
-    thresha = max(twenty * eps * dnorma, smlnum);
-    threshb = max(twenty * eps * dnormb, smlnum);
+    thresha = max(REAL(twenty * eps * dnorma), smlnum);
+    threshb = max(REAL(twenty * eps * dnormb), smlnum);
     //
     if (m == 2) {
         //

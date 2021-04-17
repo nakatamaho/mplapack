@@ -80,7 +80,7 @@ REAL log10(REAL x) {
 REAL pow(REAL x, REAL y) {
     REAL mtemp1, mtemp2;
     mtemp1 = y * log(x);
-    mtemp2 = exp(mtemp1);
+    mtemp2 = exp(mtemp1.get_d());
     return mtemp2;
 }
 #endif

@@ -164,7 +164,7 @@ statement_10:
         //
         igivnm = 1;
         iq = igivnm + 2 * n * lgn;
-        iwrem = iq + pow2(n) + 1;
+        iwrem = iq + n * n + 1;
         //
         //        Initialize pointers
         //
@@ -200,7 +200,7 @@ statement_10:
             if (icompq == 1) {
                 Rgemm("N", "N", qsiz, matsiz, matsiz, one, &q[(submat - 1) * ldq], ldq, &work[(iq - 1 + iwork[(iqptr + curr) - 1]) - 1], matsiz, zero, &qstore[(submat - 1) * ldqs], ldqs);
             }
-            iwork[(iqptr + curr + 1) - 1] = iwork[(iqptr + curr) - 1] + pow2(matsiz);
+            iwork[(iqptr + curr + 1) - 1] = iwork[(iqptr + curr) - 1] + matsiz * matsiz;
             curr++;
         }
         k = 1;

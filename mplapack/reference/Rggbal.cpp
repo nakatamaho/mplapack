@@ -432,7 +432,7 @@ statement_350:
         irab = iRamax(n - ilo + 1, &a[(i - 1) + (ilo - 1) * lda], lda);
         rab = abs(a[(i - 1) + ((irab + ilo - 1) - 1) * lda]);
         irab = iRamax(n - ilo + 1, &b[(i - 1) + (ilo - 1) * ldb], ldb);
-        rab = max(rab, abs(b[(i - 1) + ((irab + ilo - 1) - 1) * ldb]));
+        rab = max(rab, REAL(abs(b[(i - 1) + ((irab + ilo - 1) - 1) * ldb])));
         lrab = castINTEGER(log10(rab + sfmin) / basl + one);
         ir = castINTEGER(lscale[i - 1] + sign(half, lscale[i - 1]));
         ir = min({max(ir, lsfmin), lsfmax, lsfmax - lrab});
@@ -440,7 +440,7 @@ statement_350:
         icab = iRamax(ihi, &a[(i - 1) * lda], 1);
         cab = abs(a[(icab - 1) + (i - 1) * lda]);
         icab = iRamax(ihi, &b[(i - 1) * ldb], 1);
-        cab = max(cab, abs(b[(icab - 1) + (i - 1) * ldb]));
+        cab = max(cab, REAL(abs(b[(icab - 1) + (i - 1) * ldb])));
         lcab = castINTEGER(log10((cab + sfmin)) / basl + one);
         jc = castINTEGER(rscale[i - 1] + sign(half, rscale[i - 1]));
         jc = min({max(jc, lsfmin), lsfmax, lsfmax - lcab});

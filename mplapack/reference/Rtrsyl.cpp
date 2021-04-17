@@ -131,7 +131,7 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
     smlnum = smlnum * m * castREAL(n) / eps;
     bignum = one / smlnum;
     //
-    smin = max({smlnum, eps * Rlange("M", m, m, a, lda, dum), eps * Rlange("M", n, n, b, ldb, dum)});
+    smin = max({smlnum, REAL(eps * Rlange("M", m, m, a, lda, dum)), REAL(eps * Rlange("M", n, n, b, ldb, dum))});
     //
     sgn = isgn;
     //

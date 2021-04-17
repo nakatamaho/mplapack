@@ -448,7 +448,7 @@ void Rlasd4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
             tau = tau2 / (d[i - 1] + sqrt(d[i - 1] * d[i - 1] + tau2));
             temp = sqrt(eps);
             if ((d[i - 1] <= temp * d[ip1 - 1]) && (abs(z[i - 1]) <= temp) && (d[i - 1] > zero)) {
-                tau = min(ten * d[i - 1], sgub);
+                tau = min(REAL(ten * d[i - 1]), sgub);
                 geomavg = true;
             }
         } else {

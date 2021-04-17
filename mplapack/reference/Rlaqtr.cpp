@@ -106,9 +106,9 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
     //
     xnorm = Rlange("M", n, n, t, ldt, d);
     if (!lreal) {
-        xnorm = max({xnorm, abs(w), Rlange("M", n, 1, b, n, d)});
+        xnorm = max({xnorm, REAL(abs(w)), REAL(Rlange("M", n, 1, b, n, d))});
     }
-    smin = max(smlnum, eps * xnorm);
+    smin = max(smlnum, REAL(eps * xnorm));
     //
     //     Compute 1-norm of each column of strictly upper triangular
     //     part of T to control overflow in triangular solver.
@@ -310,7 +310,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         }
                     }
                     x[j1 - 1] = x[j1 - 1] / tmp;
-                    xmax = max(xmax, abs(x[j1 - 1]));
+                    xmax = max(xmax, REAL(abs(x[j1 - 1])));
                     //
                 } else {
                     //
@@ -343,7 +343,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     }
                     x[j1 - 1] = v[(1 - 1)];
                     x[j2 - 1] = v[(2 - 1)];
-                    xmax = max({abs(x[j1 - 1]), abs(x[j2 - 1]), xmax});
+                    xmax = max({REAL(abs(x[j1 - 1])), REAL(abs(x[j2 - 1])), xmax});
                     //
                 }
             statement_40:;
@@ -352,7 +352,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
         //
     } else {
         //
-        sminw = max(eps * abs(w), smin);
+        sminw = max(REAL(eps * abs(w)), smin);
         if (notran) {
             //
             //           Solve (T + iB)*(p+iq) = c+id
@@ -428,7 +428,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         //
                         xmax = zero;
                         for (k = 1; k <= j1 - 1; k = k + 1) {
-                            xmax = max(xmax, abs(x[k - 1]) + abs(x[(k + n) - 1]));
+                            xmax = max(xmax, REAL(abs(x[k - 1]) + abs(x[(k + n) - 1])));
                         }
                     }
                     //
@@ -480,7 +480,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         //
                         xmax = zero;
                         for (k = 1; k <= j1 - 1; k = k + 1) {
-                            xmax = max(abs(x[k - 1]) + abs(x[(k + n) - 1]), xmax);
+                            xmax = max(REAL(abs(x[k - 1]) + abs(x[(k + n) - 1])), xmax);
                         }
                     }
                     //
@@ -559,7 +559,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     Rladiv(x[j1 - 1], x[(n + j1) - 1], tmp, -z, sr, si);
                     x[j1 - 1] = sr;
                     x[(j1 + n) - 1] = si;
-                    xmax = max(abs(x[j1 - 1]) + abs(x[(j1 + n) - 1]), xmax);
+                    xmax = max(REAL(abs(x[j1 - 1]) + abs(x[(j1 + n) - 1])), xmax);
                     //
                 } else {
                     //
@@ -600,7 +600,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     x[j2 - 1] = v[(2 - 1)];
                     x[(n + j1) - 1] = v[(2 - 1) * ldv];
                     x[(n + j2) - 1] = v[(2 - 1) + (2 - 1) * ldv];
-                    xmax = max({abs(x[j1 - 1]) + abs(x[(n + j1) - 1]), abs(x[j2 - 1]) + abs(x[(n + j2) - 1]), xmax});
+                    xmax = max({REAL(abs(x[j1 - 1]) + abs(x[(n + j1) - 1])), REAL(abs(x[j2 - 1]) + abs(x[(n + j2) - 1])), xmax});
                     //
                 }
             //

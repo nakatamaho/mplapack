@@ -123,7 +123,7 @@ void Rgglse(INTEGER const m, INTEGER const n, INTEGER const p, REAL *a, INTEGER 
     //     orthogonal.
     //
     Rggrqf(p, m, n, b, ldb, work, a, lda, &work[(p + 1) - 1], &work[(p + mn + 1) - 1], lwork - p - mn, info);
-    INTEGER lopt = work[(p + mn + 1) - 1];
+    INTEGER lopt = castINTEGER(work[(p + mn + 1) - 1]);
     //
     //     Update c = Z**T *c = ( c1 ) N-P
     //                          ( c2 ) M+P-N

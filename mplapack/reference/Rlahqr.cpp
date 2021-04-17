@@ -197,10 +197,10 @@ statement_20:
             if (abs(h[(k - 1) + ((k - 1) - 1) * ldh]) <= ulp * tst) {
                 ab = max(abs(h[(k - 1) + ((k - 1) - 1) * ldh]), abs(h[((k - 1) - 1) + (k - 1) * ldh]));
                 ba = min(abs(h[(k - 1) + ((k - 1) - 1) * ldh]), abs(h[((k - 1) - 1) + (k - 1) * ldh]));
-                aa = max(abs(h[(k - 1) + (k - 1) * ldh]), abs(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh]));
-                bb = min(abs(h[(k - 1) + (k - 1) * ldh]), abs(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh]));
+                aa = max(REAL(abs(h[(k - 1) + (k - 1) * ldh])), REAL(abs(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh])));
+                bb = min(REAL(abs(h[(k - 1) + (k - 1) * ldh])), REAL(abs(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh])));
                 s = aa + ab;
-                if (ba * (ab / s) <= max(smlnum, ulp * (bb * (aa / s)))) {
+                if (ba * (ab / s) <= max(smlnum, REAL(ulp * (bb * (aa / s))))) {
                     goto statement_40;
                 }
             }

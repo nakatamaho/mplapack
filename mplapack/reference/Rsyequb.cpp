@@ -111,21 +111,21 @@ void Rsyequb(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL
     if (up) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j - 1; i = i + 1) {
-                s[i - 1] = max(s[i - 1], abs(a[(i - 1) + (j - 1) * lda]));
-                s[j - 1] = max(s[j - 1], abs(a[(i - 1) + (j - 1) * lda]));
-                amax = max(amax, abs(a[(i - 1) + (j - 1) * lda]));
+                s[i - 1] = max(s[i - 1], REAL(abs(a[(i - 1) + (j - 1) * lda])));
+                s[j - 1] = max(s[j - 1], REAL(abs(a[(i - 1) + (j - 1) * lda])));
+                amax = max(amax, REAL(abs(a[(i - 1) + (j - 1) * lda])));
             }
-            s[j - 1] = max(s[j - 1], abs(a[(j - 1) + (j - 1) * lda]));
-            amax = max(amax, abs(a[(j - 1) + (j - 1) * lda]));
+            s[j - 1] = max(s[j - 1], REAL(abs(a[(j - 1) + (j - 1) * lda])));
+            amax = max(amax, REAL(abs(a[(j - 1) + (j - 1) * lda])));
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            s[j - 1] = max(s[j - 1], abs(a[(j - 1) + (j - 1) * lda]));
-            amax = max(amax, abs(a[(j - 1) + (j - 1) * lda]));
+            s[j - 1] = max(s[j - 1], REAL(abs(a[(j - 1) + (j - 1) * lda])));
+            amax = max(amax, REAL(abs(a[(j - 1) + (j - 1) * lda])));
             for (i = j + 1; i <= n; i = i + 1) {
-                s[i - 1] = max(s[i - 1], abs(a[(i - 1) + (j - 1) * lda]));
-                s[j - 1] = max(s[j - 1], abs(a[(i - 1) + (j - 1) * lda]));
-                amax = max(amax, abs(a[(i - 1) + (j - 1) * lda]));
+                s[i - 1] = max(s[i - 1], REAL(abs(a[(i - 1) + (j - 1) * lda])));
+                s[j - 1] = max(s[j - 1], REAL(abs(a[(i - 1) + (j - 1) * lda])));
+                amax = max(amax, REAL(abs(a[(i - 1) + (j - 1) * lda])));
             }
         }
     }
@@ -233,7 +233,7 @@ statement_999:
     base = Rlamch("B");
     u = one / log(base);
     for (i = 1; i <= n; i = i + 1) {
-        s[i - 1] = pow(base, INTEGER(u * log(s[i - 1] * t)));
+        s[i - 1] = pow(base, castINTEGER(u * log(s[i - 1] * t)));
         smin = min(smin, s[i - 1]);
         smax = max(smax, s[i - 1]);
     }

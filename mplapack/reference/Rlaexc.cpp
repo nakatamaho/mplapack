@@ -150,7 +150,7 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         //
         eps = Rlamch("P");
         smlnum = Rlamch("S") / eps;
-        thresh = max(ten * eps * dnorm, smlnum);
+        thresh = max(REAL(ten * eps * dnorm), smlnum);
         //
         //        Solve T11*X - X*T22 = scale*T12 for X.
         //
@@ -190,7 +190,7 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         //
         //        Test whether to reject swap.
         //
-        if (max({abs(d[(3 - 1)]), abs(d[(3 - 1) + (2 - 1) * ldd]), abs(d[(3 - 1) + (3 - 1) * ldd] - t11)}) > thresh) {
+        if (max({REAL(abs(d[(3 - 1)])), REAL(abs(d[(3 - 1) + (2 - 1) * ldd])), REAL(abs(d[(3 - 1) + (3 - 1) * ldd] - t11))}) > thresh) {
             goto statement_50;
         }
         //
@@ -233,7 +233,7 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         //
         //        Test whether to reject swap.
         //
-        if (max({abs(d[(2 - 1)]), abs(d[(3 - 1)]), abs(d[(1 - 1)] - t33)}) > thresh) {
+        if (max({REAL(abs(d[(2 - 1)])), REAL(abs(d[(3 - 1)])), REAL(abs(d[(1 - 1)] - t33))}) > thresh) {
             goto statement_50;
         }
         //

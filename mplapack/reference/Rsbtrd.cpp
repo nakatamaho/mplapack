@@ -236,7 +236,7 @@ void Rsbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                             //                 initially the Identity matrix
                             //
                             iqend = max(iqend, j2);
-                            i2 = max(0, k - 3);
+                            i2 = max((INTEGER)0, k - 3);
                             iqaend = 1 + i * kd;
                             if (k == 2) {
                                 iqaend += kd;
@@ -410,7 +410,7 @@ void Rsbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                             //                 initially the Identity matrix
                             //
                             iqend = max(iqend, j2);
-                            i2 = max(0, k - 3);
+                            i2 = max((INTEGER)0, k - 3);
                             iqaend = 1 + i * kd;
                             if (k == 2) {
                                 iqaend += kd;

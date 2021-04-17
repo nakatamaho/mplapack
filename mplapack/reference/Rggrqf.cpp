@@ -85,7 +85,7 @@ void Rggrqf(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, INTEGER 
     //     RQ factorization of M-by-N matrix A: A = R*Q
     //
     Rgerqf(m, n, a, lda, taua, work, lwork, info);
-    INTEGER lopt = work[1 - 1];
+    INTEGER lopt = castINTEGER(work[1 - 1]);
     //
     //     Update B := B*Q**T
     //

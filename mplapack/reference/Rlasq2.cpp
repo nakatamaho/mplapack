@@ -363,7 +363,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
                 qmin = min(qmin, z[(i4 - 3) - 1]);
                 emax = max(emax, z[(i4 - 5) - 1]);
             }
-            qmax = max(qmax, z[(i4 - 7) - 1] + z[(i4 - 5) - 1]);
+            qmax = max(qmax, REAL(z[(i4 - 7) - 1] + z[(i4 - 5) - 1]));
             emin = min(emin, z[(i4 - 5) - 1]);
         }
         i4 = 4;
@@ -405,7 +405,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
         //
         //        Put -(initial shift) into DMIN.
         //
-        dmin = -max(zero, qmin - two * sqrt(qmin) * sqrt(emax));
+        dmin = -max(zero, REAL(qmin - two * sqrt(qmin) * sqrt(emax)));
         //
         //        Now I0:N0 is unreduced.
         //        PP = 0 for ping, PP = 1 for pong.

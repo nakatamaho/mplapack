@@ -154,7 +154,7 @@ statement_10:
 //
 statement_20:
     //
-    smin = max(eps * max({abs(tl[(1 - 1)]), abs(tr[(1 - 1)]), abs(tr[(2 - 1) * ldtr]), abs(tr[(2 - 1)]), abs(tr[(2 - 1) + (2 - 1) * ldtr])}), smlnum);
+    smin = max(REAL(eps * max({abs(tl[(1 - 1)]), abs(tr[(1 - 1)]), abs(tr[(2 - 1) * ldtr]), abs(tr[(2 - 1)]), abs(tr[(2 - 1) + (2 - 1) * ldtr])})), smlnum);
     tmp[1 - 1] = tl[(1 - 1)] + sgn * tr[(1 - 1)];
     tmp[4 - 1] = tl[(1 - 1)] + sgn * tr[(2 - 1) + (2 - 1) * ldtr];
     if (ltranr) {
@@ -173,7 +173,7 @@ statement_20:
 //            [TL21 TL22] [X21]         [X21]         [B21]
 //
 statement_30:
-    smin = max(eps * max({abs(tr[(1 - 1)]), abs(tl[(1 - 1)]), abs(tl[(2 - 1) * ldtl]), abs(tl[(2 - 1)]), abs(tl[(2 - 1) + (2 - 1) * ldtl])}), smlnum);
+    smin = max(REAL(eps * max({abs(tr[(1 - 1)]), abs(tl[(1 - 1)]), abs(tl[(2 - 1) * ldtl]), abs(tl[(2 - 1)]), abs(tl[(2 - 1) + (2 - 1) * ldtl])})), smlnum);
     tmp[1 - 1] = tl[(1 - 1)] + sgn * tr[(1 - 1)];
     tmp[4 - 1] = tl[(2 - 1) + (2 - 1) * ldtl] + sgn * tr[(1 - 1)];
     if (ltranl) {
@@ -244,8 +244,8 @@ statement_40:
 //
 statement_50:
     smin = max({abs(tr[(1 - 1)]), abs(tr[(2 - 1) * ldtr]), abs(tr[(2 - 1)]), abs(tr[(2 - 1) + (2 - 1) * ldtr])});
-    smin = max({smin, abs(tl[(1 - 1)]), abs(tl[(2 - 1) * ldtl]), abs(tl[(2 - 1)]), abs(tl[(2 - 1) + (2 - 1) * ldtl])});
-    smin = max(eps * smin, smlnum);
+    smin = max({smin, REAL(abs(tl[(1 - 1)])), REAL(abs(tl[(2 - 1) * ldtl])), REAL(abs(tl[(2 - 1)])), REAL(abs(tl[(2 - 1) + (2 - 1) * ldtl]))});
+    smin = max(REAL(eps * smin), smlnum);
     btmp[1 - 1] = zero;
     Rcopy(16, btmp, 0, t16, 1);
     t16[(1 - 1)] = tl[(1 - 1)] + sgn * tr[(1 - 1)];
