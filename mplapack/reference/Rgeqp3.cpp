@@ -168,7 +168,7 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
             //
             //           Determine when to cross over from blocked to unblocked code.
             //
-            nx = max(0, iMlaenv(ixover, "Rgeqrf", " ", sm, sn, -1, -1));
+            nx = max((INTEGER)0, iMlaenv(ixover, "Rgeqrf", " ", sm, sn, -1, -1));
             //
             if (nx < sminmn) {
                 //
@@ -182,7 +182,7 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
                     //                 determine the minimum value of NB.
                     //
                     nb = (lwork - 2 * sn) / (sn + 1);
-                    nbmin = max(2, iMlaenv(inbmin, "Rgeqrf", " ", sm, sn, -1, -1));
+                    nbmin = max((INTEGER)2, iMlaenv(inbmin, "Rgeqrf", " ", sm, sn, -1, -1));
                     //
                 }
             }

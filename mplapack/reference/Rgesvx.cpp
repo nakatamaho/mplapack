@@ -64,7 +64,7 @@ void Rgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
     const REAL one = 1.0;
     REAL bignum = 0.0;
     if (nofact || equil) {
-        equed = "N";
+        equed = (char *)"N";
         rowequ = false;
         colequ = false;
     } else {

@@ -90,7 +90,7 @@ void Rlaed2(INTEGER &k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q, INT
         info = -2;
     } else if (ldq < max((INTEGER)1, n)) {
         info = -6;
-    } else if (min(1, (n / 2)) > n1 || (n / 2) < n1) {
+    } else if (min((INTEGER)1, (n / 2)) > n1 || (n / 2) < n1) {
         info = -3;
     }
     if (info != 0) {

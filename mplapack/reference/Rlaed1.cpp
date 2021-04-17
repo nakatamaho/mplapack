@@ -72,7 +72,7 @@ void Rlaed1(INTEGER const n, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq
         info = -1;
     } else if (ldq < max((INTEGER)1, n)) {
         info = -4;
-    } else if (min(1, n / 2) > cutpnt || (n / 2) < cutpnt) {
+    } else if (min((INTEGER)1, n / 2) > cutpnt || (n / 2) < cutpnt) {
         info = -7;
     }
     if (info != 0) {

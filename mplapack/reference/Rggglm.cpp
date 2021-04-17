@@ -180,7 +180,7 @@ void Rggglm(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER 
     //
     //     Backward transformation y = Z**T *y
     //
-    Rormrq("Left", "Transpose", p, 1, np, &b[(max(1, n - p + 1) - 1) + (1 - 1) * ldb], ldb, &work[(m + 1) - 1], y, max((INTEGER)1, p), &work[(m + np + 1) - 1], lwork - m - np, info);
+    Rormrq("Left", "Transpose", p, 1, np, &b[(max((INTEGER)1, n - p + 1) - 1) + (1 - 1) * ldb], ldb, &work[(m + 1) - 1], y, max((INTEGER)1, p), &work[(m + np + 1) - 1], lwork - m - np, info);
     work[1 - 1] = m + np + max(lopt, castINTEGER(work[(m + np + 1) - 1]));
     //
     //     End of Rggglm

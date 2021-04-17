@@ -165,7 +165,7 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
     //
     //     .. Row-cyclic pivot strategy with de Rijk's pivoting ..
     //
-    kbl = min(8, n);
+    kbl = min((INTEGER)8, n);
     nblr = n1 / kbl;
     if ((nblr * kbl) != n1) {
         nblr++;
@@ -180,7 +180,7 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
     blskip = (pow2(kbl)) + 1;
     //[TP] BLKSKIP is a tuning parameter that depends on SWBAND and KBL.
     //
-    rowskip = min(5, kbl);
+    rowskip = min((INTEGER)5, kbl);
     //[TP] ROWSKIP is a tuning parameter.
     swband = 0;
     //[TP] SWBAND is a tuning parameter. It is meaningful and effective

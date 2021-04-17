@@ -76,7 +76,7 @@ REAL Rlangb(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
         //
         value = zero;
         for (j = 1; j <= n; j = j + 1) {
-            for (i = max(ku + 2 - j, 1); i <= min(n + ku + 1 - j, kl + ku + 1); i = i + 1) {
+            for (i = max(ku + 2 - j, (INTEGER)1); i <= min(n + ku + 1 - j, kl + ku + 1); i = i + 1) {
                 temp = abs(ab[(i - 1) + (j - 1) * ldab]);
                 if (value < temp || Risnan(temp)) {
                     value = temp;
@@ -90,7 +90,7 @@ REAL Rlangb(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
         value = zero;
         for (j = 1; j <= n; j = j + 1) {
             sum = zero;
-            for (i = max(ku + 2 - j, 1); i <= min(n + ku + 1 - j, kl + ku + 1); i = i + 1) {
+            for (i = max(ku + 2 - j, (INTEGER)1); i <= min(n + ku + 1 - j, kl + ku + 1); i = i + 1) {
                 sum += abs(ab[(i - 1) + (j - 1) * ldab]);
             }
             if (value < sum || Risnan(sum)) {

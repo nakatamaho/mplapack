@@ -132,7 +132,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
         } else {
             iminwrk = max((INTEGER)1, n + m - 1);
         }
-        rminwrk = max(2, m);
+        rminwrk = max((INTEGER)2, m);
     } else {
         if (conda) {
             iminwrk = max((INTEGER)1, n + n);
@@ -180,14 +180,14 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
         lwqp3 = 3 * n + 1;
         //        .. minimal workspace length for Rormqr to build left singular vectors
         if (wntus || wntur) {
-            lworq = max(n, 1);
+            lworq = max(n, (INTEGER)1);
         } else if (wntua) {
-            lworq = max(m, 1);
+            lworq = max(m, (INTEGER)1);
         }
         //        .. minimal workspace length for Rpocon of an N x N matrix
         lwcon = 3 * n;
         //        .. Rgesvd of an N x N matrix
-        lwsvd = max(5 * n, 1);
+        lwsvd = max(5 * n, (INTEGER)1);
         if (lquery) {
             Rgeqp3(m, n, a, lda, iwork, rdummy, rdummy, -1, ierr);
             lwrk_Rgeqp3 = castINTEGER(rdummy[1 - 1]);
@@ -273,10 +273,10 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 minwrk += n;
                 if (wntva) {
                     //                   .. minimal workspace length for N x N/2 Rgeqrf
-                    lwqrf = max(n / 2, 1);
+                    lwqrf = max(n / 2, (INTEGER)1);
                     //                   .. minimal workspace length for N/2 x N/2 Rgesvd
-                    lwsvd2 = max(5 * (n / 2), 1);
-                    lworq2 = max(n, 1);
+                    lwsvd2 = max(5 * (n / 2), (INTEGER)1);
+                    lworq2 = max(n, (INTEGER)1);
                     minwrk2 = max({lwqp3, n / 2 + lwqrf, n / 2 + lwsvd2, n / 2 + lworq2, lworq});
                     if (conda) {
                         minwrk2 = max(minwrk2, lwcon);
@@ -292,9 +292,9 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 minwrk += n;
                 if (wntva) {
                     //                   .. minimal workspace length for N/2 x N Rgelqf
-                    lwlqf = max(n / 2, 1);
-                    lwsvd2 = max(5 * (n / 2), 1);
-                    lworlq = max(n, 1);
+                    lwlqf = max(n / 2, (INTEGER)1);
+                    lwsvd2 = max(5 * (n / 2), (INTEGER)1);
+                    lworlq = max(n, (INTEGER)1);
                     minwrk2 = max({lwqp3, n / 2 + lwlqf, n / 2 + lwsvd2, n / 2 + lworlq, lworq});
                     if (conda) {
                         minwrk2 = max(minwrk2, lwcon);
@@ -352,8 +352,8 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             }
         }
         //
-        minwrk = max(2, minwrk);
-        optwrk = max(2, optwrk);
+        minwrk = max((INTEGER)2, minwrk);
+        optwrk = max((INTEGER)2, optwrk);
         if (lwork < minwrk && (!lquery)) {
             info = -19;
         }

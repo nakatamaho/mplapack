@@ -55,7 +55,7 @@ void Rlaqsb(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
     //     Quick return if possible
     //
     if (n <= 0) {
-        equed = "N";
+        equed = (char *)"N";
         return;
     }
     //
@@ -73,7 +73,7 @@ void Rlaqsb(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
         //
         //        No equilibration
         //
-        equed = "N";
+        equed = (char *)"N";
     } else {
         //
         //        Replace A by diag(S) * A * diag(S).
@@ -99,7 +99,7 @@ void Rlaqsb(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
                 }
             }
         }
-        equed = "Y";
+        equed = (char *)"Y";
     }
     //
     //     End of Rlaqsb

@@ -338,7 +338,7 @@ statement_20:
             //           chases the bulge one step toward the bottom of the active
             //           submatrix. NR is the order of G.
             //
-            nr = min(3, i - k + 1);
+            nr = min((INTEGER)3, i - k + 1);
             if (k > m) {
                 Rcopy(nr, &h[(k - 1) + ((k - 1) - 1) * ldh], 1, v, 1);
             }

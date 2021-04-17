@@ -58,7 +58,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
     //
     info = 0;
     INTEGER nb = iMlaenv(1, "Rgghd3", " ", n, ilo, ihi, -1);
-    INTEGER lwkopt = max(6 * n * nb, 1);
+    INTEGER lwkopt = max(6 * n * nb, (INTEGER)1);
     work[1 - 1] = castREAL(lwkopt);
     bool initq = Mlsame(compq, "I");
     bool wantq = initq || Mlsame(compq, "V");
@@ -138,7 +138,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 //              minimum value of NB, and reduce NB or force use of
                 //              unblocked code.
                 //
-                nbmin = max(2, iMlaenv(2, "Rgghd3", " ", n, ilo, ihi, -1));
+                nbmin = max((INTEGER)2, iMlaenv(2, "Rgghd3", " ", n, ilo, ihi, -1));
                 if (lwork >= 6 * n * nbmin) {
                     nb = lwork / (6 * n);
                 } else {
@@ -436,7 +436,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
             if (wantq) {
                 j = ihi - nblst + 1;
                 if (initq) {
-                    topq = max(2, j - jcol + 1);
+                    topq = max((INTEGER)2, j - jcol + 1);
                     nh = ihi - topq + 1;
                 } else {
                     topq = 1;
@@ -448,7 +448,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 j0 = j - nnb;
                 for (j = j0; j <= jcol + 1; j = j + -nnb) {
                     if (initq) {
-                        topq = max(2, j - jcol + 1);
+                        topq = max((INTEGER)2, j - jcol + 1);
                         nh = ihi - topq + 1;
                     }
                     if (blk22) {
@@ -579,7 +579,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
             if (wantz) {
                 j = ihi - nblst + 1;
                 if (initq) {
-                    topq = max(2, j - jcol + 1);
+                    topq = max((INTEGER)2, j - jcol + 1);
                     nh = ihi - topq + 1;
                 } else {
                     topq = 1;
@@ -591,7 +591,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 j0 = j - nnb;
                 for (j = j0; j <= jcol + 1; j = j + -nnb) {
                     if (initq) {
-                        topq = max(2, j - jcol + 1);
+                        topq = max((INTEGER)2, j - jcol + 1);
                         nh = ihi - topq + 1;
                     }
                     if (blk22) {

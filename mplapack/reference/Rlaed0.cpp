@@ -89,7 +89,7 @@ void Rlaed0(INTEGER const icompq, INTEGER const qsiz, INTEGER const n, REAL *d, 
     //
     if (icompq < 0 || icompq > 2) {
         info = -1;
-    } else if ((icompq == 1) && (qsiz < max(0, n))) {
+    } else if ((icompq == 1) && (qsiz < max((INTEGER)0, n))) {
         info = -2;
     } else if (n < 0) {
         info = -3;

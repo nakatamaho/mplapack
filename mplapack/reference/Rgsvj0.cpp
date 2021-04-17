@@ -166,7 +166,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
     //     Jacobi SVD algorithm SGESVJ. For sweeps i=1:SWBAND the procedure
     //     ......
     //
-    kbl = min(8, n);
+    kbl = min((INTEGER)8, n);
     //[TP] KBL is a tuning parameter that defines the tile size in the
     //     tiling of the p-q loops of pivot pairs. In general, an optimal
     //     parameters of the computer's memory.
@@ -179,7 +179,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
     blskip = (pow2(kbl)) + 1;
     //[TP] BLKSKIP is a tuning parameter that depends on SWBAND and KBL.
     //
-    rowskip = min(5, kbl);
+    rowskip = min((INTEGER)5, kbl);
     //[TP] ROWSKIP is a tuning parameter.
     //
     lkahead = 1;

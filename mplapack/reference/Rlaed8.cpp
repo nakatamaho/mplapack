@@ -90,7 +90,7 @@ void Rlaed8(INTEGER const icompq, INTEGER &k, INTEGER const n, INTEGER const qsi
         info = -4;
     } else if (ldq < max((INTEGER)1, n)) {
         info = -7;
-    } else if (cutpnt < min(1, n) || cutpnt > n) {
+    } else if (cutpnt < min((INTEGER)1, n) || cutpnt > n) {
         info = -10;
     } else if (ldq2 < max((INTEGER)1, n)) {
         info = -14;

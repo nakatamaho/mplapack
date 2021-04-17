@@ -89,7 +89,7 @@ void Rggrqf(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, INTEGER 
     //
     //     Update B := B*Q**T
     //
-    Rormrq("Right", "Transpose", p, n, min(m, n), &a[(max(1, m - n + 1) - 1) + (1 - 1) * lda], lda, taua, b, ldb, work, lwork, info);
+    Rormrq("Right", "Transpose", p, n, min(m, n), &a[(max((INTEGER)1, m - n + 1) - 1) + (1 - 1) * lda], lda, taua, b, ldb, work, lwork, info);
     lopt = max(lopt, castINTEGER(work[1 - 1]));
     //
     //     QR factorization of P-by-N matrix B: B = Z*T

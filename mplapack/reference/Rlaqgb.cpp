@@ -55,7 +55,7 @@ void Rlaqgb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     //     Quick return if possible
     //
     if (m <= 0 || n <= 0) {
-        equed = "N";
+        equed = (char *)"N";
         return;
     }
     //
@@ -77,7 +77,7 @@ void Rlaqgb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
             //
             //           No column scaling
             //
-            equed = "N";
+            equed = (char *)"N";
         } else {
             //
             //           Column scaling
@@ -88,7 +88,7 @@ void Rlaqgb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                     ab[((ku + 1 + i - j) - 1) + (j - 1) * ldab] = cj * ab[((ku + 1 + i - j) - 1) + (j - 1) * ldab];
                 }
             }
-            equed = "C";
+            equed = (char *)"C";
         }
     } else if (colcnd >= thresh) {
         //
@@ -99,7 +99,7 @@ void Rlaqgb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 ab[((ku + 1 + i - j) - 1) + (j - 1) * ldab] = r[i - 1] * ab[((ku + 1 + i - j) - 1) + (j - 1) * ldab];
             }
         }
-        equed = "R";
+        equed = (char *)"R";
     } else {
         //
         //        Row and column scaling
@@ -110,7 +110,7 @@ void Rlaqgb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 ab[((ku + 1 + i - j) - 1) + (j - 1) * ldab] = cj * r[i - 1] * ab[((ku + 1 + i - j) - 1) + (j - 1) * ldab];
             }
         }
-        equed = "B";
+        equed = (char *)"B";
     }
     //
     //     End of Rlaqgb

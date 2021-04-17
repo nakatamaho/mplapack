@@ -82,7 +82,7 @@ void Rlaed7(INTEGER const icompq, INTEGER const n, INTEGER const qsiz, INTEGER c
         info = -3;
     } else if (ldq < max((INTEGER)1, n)) {
         info = -9;
-    } else if (min(1, n) > cutpnt || n < cutpnt) {
+    } else if (min((INTEGER)1, n) > cutpnt || n < cutpnt) {
         info = -12;
     }
     if (info != 0) {

@@ -114,7 +114,7 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     minwrk = 1;
     liwork = 1;
     minmn = max((INTEGER)1, minmn);
-    nlvl = max(castINTEGER(log(castREAL(minmn) / castREAL(smlsiz + 1)) / log(two)) + 1, 0);
+    nlvl = max(castINTEGER(log(castREAL(minmn) / castREAL(smlsiz + 1)) / log(two)) + 1, (INTEGER)0);
     //
     if (info == 0) {
         maxwrk = 0;
