@@ -36,8 +36,8 @@ inline double log2(double x) { return log(x) / log(2.0); }
 #endif
 
 #include <complex>
-double pi(double dummy);
 
+double pi(double dummy);
 double sign(double a, double b);
 std::complex<double> Real2Complex(double a, double b);
 double Cabs1(std::complex<double> zdum);
@@ -73,6 +73,16 @@ inline double Cabs1(std::complex<double> zdum) {
     double ret;
     ret = std::abs(zdum.real()) + std::abs(zdum.imag());
     return ret;
+}
+
+inline long nint(double a)
+{
+    long i;
+    double tmp;
+    a = a + 0.5;
+    tmp = floor(a);
+    i = (long)tmp;
+    return i;
 }
 
 #endif
