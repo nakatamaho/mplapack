@@ -1,4 +1,4 @@
-//https://www.johndcook.com/blog/2019/11/12/rump-floating-point/
+// https://www.johndcook.com/blog/2019/11/12/rump-floating-point/
 /*
  * Copyright (c) 2010-2021
  *	Nakata, Maho
