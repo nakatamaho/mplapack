@@ -105,9 +105,9 @@ class mpreal {
     inline static mp_prec_t _default_prec() {
         char *p = getenv("MPLAPACK_MPFR_PRECISION");
         if (p) {
-	    return (mp_prec_t) atoi(p);
+            return (mp_prec_t)atoi(p);
         } else {
-	    return (mp_prec_t) ___MPREAL_DEFAULT_PRECISION___;
+            return (mp_prec_t)___MPREAL_DEFAULT_PRECISION___;
         }
     }
     inline static mp_prec_t default_prec = _default_prec();
@@ -248,7 +248,7 @@ class mpreal {
     friend const mpreal pow(const mpreal &a, const mpz_t b, mp_rnd_t rnd_mode);
     friend const mpreal pow(const mpreal &a, const unsigned long int b, mp_rnd_t rnd_mode);
     friend const mpreal pow(const mpreal &a, const long int b, mp_rnd_t rnd_mode);
-    friend const mpreal pow(const unsigned long int a, const mpreal& b, mp_rnd_t rnd_mode);
+    friend const mpreal pow(const unsigned long int a, const mpreal &b, mp_rnd_t rnd_mode);
     friend const mpreal fabs(const mpreal &v, mp_rnd_t rnd_mode);
     friend const mpreal abs(const mpreal &v, mp_rnd_t rnd_mode);
     friend const mpreal dim(const mpreal &a, const mpreal &b, mp_rnd_t rnd_mode);
@@ -680,7 +680,7 @@ inline mpreal &mpreal::operator=(const mpq_t v) {
     mpfr_set_q(mp, v, default_rnd);
     return *this;
 }
-//XXX other operator= should add mpfr_init2
+// XXX other operator= should add mpfr_init2
 inline mpreal &mpreal::operator=(const long double v) {
     mpfr_init2(mp, default_prec);
     mpfr_set_ld(mp, v, default_rnd);
@@ -1956,7 +1956,7 @@ inline mpreal::mpreal(const double u, mp_prec_t prec, mp_rnd_t mode) {
 // Operators - Assignment
 inline mpreal &mpreal::operator=(const char *s) {
     mpfr_t t;
-    mpfr_init2 (t, default_prec);
+    mpfr_init2(t, default_prec);
     if (0 == mpfr_set_str(t, s, default_base, default_rnd)) {
         mpfr_set(mp, t, mpreal::default_rnd);
         mpfr_clear(t);
@@ -2194,7 +2194,7 @@ inline std::istream &operator>>(std::istream &is, mpreal &v) {
         if (s.size() != 0) {
             // Protect current value from alternation in case of input error
             // so some error handling(roll back) procedure can be used
-	  if (0 == mpfr_init_set_str(t, s.c_str(), mpreal::default_base, mpreal::default_rnd)) {
+            if (0 == mpfr_init_set_str(t, s.c_str(), mpreal::default_base, mpreal::default_rnd)) {
                 mpfr_set(v.mp, t, mpreal::default_rnd);
                 mpfr_clear(t);
 
@@ -2347,25 +2347,25 @@ inline _Float128 cast2_Float128(const mpreal &b) {
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___ && defined ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___
-  /*
-  inline mpreal &mpreal::operator=(const _Float128 &a) {
-    mpfr_init2((mpfr_ptr)mp, default_prec);
-    mpfr_set_ld((mpfr_ptr)mp, a, default_rnd);
-    return *this;
+/*
+inline mpreal &mpreal::operator=(const _Float128 &a) {
+  mpfr_init2((mpfr_ptr)mp, default_prec);
+  mpfr_set_ld((mpfr_ptr)mp, a, default_rnd);
+  return *this;
 }
 
 inline mpreal::mpreal(const _Float64x &a, mp_prec_t prec, mp_rnd_t mode) {
-    mpfr_init2(mp, prec);
-    mpfr_set_ld(mp, a, mode);
+  mpfr_init2(mp, prec);
+  mpfr_set_ld(mp, a, mode);
 }
 
 inline const mpreal operator-(const _Float64x a, const mpreal b) { return mpreal(a) -= b; }
 
 inline const mpreal operator-(const mpreal &a, const _Float64x &b) {
-    mpreal tmp(b);
-    return -(mpreal(b) -= a);
+  mpreal tmp(b);
+  return -(mpreal(b) -= a);
 }
-  */
+*/
 inline _Float64x cast2_Float64x(const mpreal &b) {
     // mpreal -> mpfr -> long double
     long double q;
