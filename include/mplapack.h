@@ -61,13 +61,13 @@ typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
 typedef qd_real REAL;
 typedef qd_complex COMPLEX;
-#if !defined __MUTILS_CPP__
-#define nint __qd_nint
-#endif
 #define Mlsame Mlsame_qd
 #define Mxerbla Mxerbla_qd
 #define Rlamch Rlamch_qd
 #define iMlaenv iMlaenv_qd
+#if !defined __MUTILS_CPP__
+#define nint __qd_nint
+#endif
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DD___
@@ -76,13 +76,13 @@ typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
 typedef dd_real REAL;
 typedef dd_complex COMPLEX;
-#if !defined __MUTILS_CPP__
-#define nint __dd_nint
-#endif
 #define Mlsame Mlsame_dd
 #define Mxerbla Mxerbla_dd
 #define Rlamch Rlamch_dd
 #define iMlaenv iMlaenv_dd
+#if !defined __MUTILS_CPP__
+#define nint __dd_nint
+#endif
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
@@ -95,6 +95,7 @@ typedef std::complex<double> COMPLEX;
 #define Mxerbla Mxerbla_double
 #define Rlamch Rlamch_double
 #define iMlaenv iMlaenv_double
+
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___

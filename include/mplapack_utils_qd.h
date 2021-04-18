@@ -1,9 +1,8 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2021
  *	Nakata, Maho
  * 	All rights reserved.
  *
- * $Id: mplapack_utils_qd.h,v 1.12 2010/08/07 03:15:46 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -53,12 +52,10 @@ inline qd_real castREAL_qd(mplapackint n) {
     qd_real ret;
     ret.x[0] = (static_cast<double>(n));
     ret.x[1] = 0.0;
-    ret.x[2] = 0.0;
-    ret.x[3] = 0.0;
     return ret;
 }
 inline mplapackint castINTEGER_qd(qd_real a) {
-    mplapackint i = (mplapackint)a.x[0];
+    mplapackint i = a.x[0];
     return i;
 }
 
@@ -67,6 +64,16 @@ inline qd_complex Real2Complex(qd_real a, qd_real b) {
     ret.real(a);
     ret.imag(b);
     return ret;
+}
+
+inline long __qd_nint(qd_real a)
+{
+    long i;
+    qd_real tmp;
+    a = a + 0.5;
+    tmp = floor(a);
+    i = (int)tmp.x[0];
+    return i;
 }
 
 inline qd_real Cabs1(qd_complex zdum) {

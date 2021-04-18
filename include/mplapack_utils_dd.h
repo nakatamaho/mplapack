@@ -67,6 +67,16 @@ inline dd_complex Real2Complex(dd_real a, dd_real b) {
     return ret;
 }
 
+inline long __dd_nint(dd_real a)
+{
+    long i;
+    dd_real tmp;
+    a = a + 0.5;
+    tmp = floor(a);
+    i = (int)tmp.x[0];
+    return i;
+}
+
 inline dd_real Cabs1(dd_complex zdum) {
     dd_real ret;
     ret = abs(zdum.real()) + abs(zdum.imag());

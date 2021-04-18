@@ -35,8 +35,8 @@
 
 #include <qd/qd_real.h>
 
-#include "mplapack_utils_qd.h"
 #include "qd_complex.h"
+#include "mplapack_utils_qd.h"
 
 #if !defined __MPLAPACK_ERRNO__
 #define _MPLAPACK_EXTERN_ extern
