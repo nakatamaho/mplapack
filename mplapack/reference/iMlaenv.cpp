@@ -30,10 +30,22 @@
 #include <mplapack.h>
 #define subnamlen 16
 
+inline int ichar(str_cref c) {
+    if (c.len() == 0) {
+        std::ostringstream o;
+        o << "ichar() argument must be a one-character string,"
+          << " but actual string length is " << c.len() << ".";
+        throw std::runtime_error(o.str());
+    }
+    return static_cast<int>(c[0]);
+}
+
+inline fchar(int i) { return (static_cast<char>(i)); }
+
 INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
     INTEGER return_value = 0;
-    char subnam[subnamlen];
-    memset(subnam, '\0', sizeof(subnam));
+    char subnam[subnumlen];
+    memset(subnum, '\0', sizeof(subnum));
     INTEGER ic = 0;
     INTEGER iz = 0;
     INTEGER i = 0;
@@ -112,24 +124,24 @@ statement_10:
     //     Convert NAME to upper case if the first character is lower case.
     //
     return_value = 1;
-    int namelen=strlen(name);
-    if (namelen < subnamlen) {
-      strncpy (subnam, name, namelen);
+    int namelen = strlen(name);
+    if (namelen < subnumlen) {
+        strncpy(subnam, name, namelen);
     } else {
-      strncpy (subnam, name, subnamlen-1);
+        strncpy(subnam, name, subnumlen - 1);
     }
-    ic = *(unsigned char *)subnam;
-    iz = 'Z';
+    ic = ichar(subnam[(1 - 1)]);
+    iz = ichar("Z" - 1);
     if (iz == 90 || iz == 122) {
         //
         //        ASCII character set
         //
         if (ic >= 97 && ic <= 122) {
-            subnam[(1 - 1)] = fchar[(ic - 32)];
+	  subnam[(1 - 1)] = fchar(ic - 32);
             for (i = 2; i <= 6; i = i + 1) {
-	      ic = ichar[subnam[(i - 1)];
+                ic = ichar[subnam[(i - 1)] - 1];
                 if (ic >= 97 && ic <= 122) {
-                    subnam[(i - 1)] = fchar[(ic - 32)];
+		  subnam[(i - 1)] = fchar(ic - 32);
                 }
             }
         }
@@ -141,9 +153,9 @@ statement_10:
         if ((ic >= 129 && ic <= 137) || (ic >= 145 && ic <= 153) || (ic >= 162 && ic <= 169)) {
             subnam[(1 - 1)] = fchar[(ic + 64) - 1];
             for (i = 2; i <= 6; i = i + 1) {
-                ic = ichar[subnam[(i - 1)];
+                ic = ichar[subnam[(i - 1) + (i - 1) * ldsubnam] - 1];
                 if ((ic >= 129 && ic <= 137) || (ic >= 145 && ic <= 153) || (ic >= 162 && ic <= 169)) {
-                    subnam[(i - 1)] = fchar[(ic + 64)];
+		  subnam[(i - 1)] = fchar(ic + 64);
                 }
             }
         }
@@ -153,11 +165,11 @@ statement_10:
         //        Prime machines:  ASCII+128
         //
         if (ic >= 225 && ic <= 250) {
-            subnam[(1 - 1)] = fchar[(ic - 32)];
+            subnam[(1 - 1)] = fchar[(ic - 32) - 1];
             for (i = 2; i <= 6; i = i + 1) {
-                ic = ichar[subnam[(i - 1)];
+                ic = ichar[subnam[(i - 1) + (i - 1) * ldsubnam] - 1];
                 if (ic >= 225 && ic <= 250) {
-                    subnam[(i - 1)] = fchar[(ic - 32)];
+                    subnam[(i - 1) + (i - 1) * ldsubnam] = fchar[(ic - 32) - 1];
                 }
             }
         }
