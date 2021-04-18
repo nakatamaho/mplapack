@@ -28,24 +28,7 @@
 
 #include <mpblas.h>
 
-void Rrotmg(common &cmn, REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
-    FEM_CMN_SVE(Rrotmg);
-    // SAVE
-    REAL &gam = sve.gam;
-    REAL &gamsq = sve.gamsq;
-    REAL &one = sve.one;
-    REAL &rgamsq = sve.rgamsq;
-    REAL &two = sve.two;
-    REAL &zero = sve.zero;
-    //
-    if (is_called_first_time) {
-        zero = 0.0;
-        one = 1.0;
-        two = 2.0;
-        gam = 4096.0;
-        gamsq = 16777216;
-        rgamsq = 5.9604645e-8;
-    }
+void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
     //
     //  -- Reference BLAS level1 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -62,8 +45,13 @@ void Rrotmg(common &cmn, REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *
     //     ..
     //     .. Intrinsic Functions ..
     //     ..
-    //     .. Data statements ..
     //
+    REAL zero = 0.0;
+    REAL one = 1.0;
+    REAL two = 2.0;
+    REAL gam = 4096.0;
+    REAL gamsq = 16777216;
+    REAL rgamsq = 5.9604645e-8;
     //     ..
     //
     REAL dflag = 0.0;

@@ -1,120 +1,77 @@
 diff --git a/mpblas/reference/Rrotm.cpp b/mpblas/reference/Rrotm.cpp
-index c121545..45794f2 100644
+index 45794f2..c121545 100644
 --- a/mpblas/reference/Rrotm.cpp
 +++ b/mpblas/reference/Rrotm.cpp
-@@ -28,7 +28,16 @@
+@@ -28,16 +28,7 @@
  
  #include <mpblas.h>
  
--void Rrotm(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL *dparam) {
-+void Rrotm(common &cmn, INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL *dparam) {
-+    FEM_CMN_SVE(Rrotm);
-+    // SAVE
-+    REAL &two = sve.two;
-+    REAL &zero = sve.zero;
-+    //
-+    if (is_called_first_time) {
-+        zero = 0.0;
-+        two = 2.0;
-+    }
+-void Rrotm(common &cmn, INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL *dparam) {
+-    FEM_CMN_SVE(Rrotm);
+-    // SAVE
+-    REAL &two = sve.two;
+-    REAL &zero = sve.zero;
+-    //
+-    if (is_called_first_time) {
+-        zero = 0.0;
+-        two = 2.0;
+-    }
++void Rrotm(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL *dparam) {
      //
      //  -- Reference BLAS level1 routine --
      //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-@@ -43,8 +52,7 @@ void Rrotm(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER cons
+@@ -52,7 +43,8 @@ void Rrotm(common &cmn, INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy,
      //
      //     .. Local Scalars ..
      //     ..
--    REAL zero = 0.0;
--    REAL two = 2.0;
-+    //     .. Data statements ..
+-    //     .. Data statements ..
++    REAL zero = 0.0;
++    REAL two = 2.0;
      //     ..
      //
      REAL dflag = dparam[1 - 1];
 diff --git a/mpblas/reference/Rrotmg.cpp b/mpblas/reference/Rrotmg.cpp
-index 3ff870d..ddf0f6d 100644
+index ddf0f6d..3ff870d 100644
 --- a/mpblas/reference/Rrotmg.cpp
 +++ b/mpblas/reference/Rrotmg.cpp
-@@ -28,7 +28,24 @@
+@@ -28,24 +28,7 @@
  
  #include <mpblas.h>
  
--void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
-+void Rrotmg(common &cmn, REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
-+    FEM_CMN_SVE(Rrotmg);
-+    // SAVE
-+    REAL &gam = sve.gam;
-+    REAL &gamsq = sve.gamsq;
-+    REAL &one = sve.one;
-+    REAL &rgamsq = sve.rgamsq;
-+    REAL &two = sve.two;
-+    REAL &zero = sve.zero;
-+    //
-+    if (is_called_first_time) {
-+        zero = 0.0;
-+        one = 1.0;
-+        two = 2.0;
-+        gam = 4096.0;
-+        gamsq = 16777216;
-+        rgamsq = 5.9604645e-8;
-+    }
+-void Rrotmg(common &cmn, REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
+-    FEM_CMN_SVE(Rrotmg);
+-    // SAVE
+-    REAL &gam = sve.gam;
+-    REAL &gamsq = sve.gamsq;
+-    REAL &one = sve.one;
+-    REAL &rgamsq = sve.rgamsq;
+-    REAL &two = sve.two;
+-    REAL &zero = sve.zero;
+-    //
+-    if (is_called_first_time) {
+-        zero = 0.0;
+-        one = 1.0;
+-        two = 2.0;
+-        gam = 4096.0;
+-        gamsq = 16777216;
+-        rgamsq = 5.9604645e-8;
+-    }
++void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
      //
      //  -- Reference BLAS level1 routine --
      //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-@@ -45,13 +62,8 @@ void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
+@@ -62,8 +45,13 @@ void Rrotmg(common &cmn, REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *
      //     ..
      //     .. Intrinsic Functions ..
      //     ..
-+    //     .. Data statements ..
+-    //     .. Data statements ..
      //
--    REAL zero = 0.0;
--    REAL one = 1.0;
--    REAL two = 2.0;
--    REAL gam = 4096.0;
--    REAL gamsq = 16777216;
--    REAL rgamsq = 5.9604645e-8;
++    REAL zero = 0.0;
++    REAL one = 1.0;
++    REAL two = 2.0;
++    REAL gam = 4096.0;
++    REAL gamsq = 16777216;
++    REAL rgamsq = 5.9604645e-8;
      //     ..
      //
      REAL dflag = 0.0;
-diff --git a/mpblas/reference/patch b/mpblas/reference/patch
-index f088267..e69de29 100644
---- a/mpblas/reference/patch
-+++ b/mpblas/reference/patch
-@@ -1,38 +0,0 @@
----- Cherk.cpp
--+++ Cherk.cpp
--@@ -195,7 +195,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const &n, INTEGER const
--                 for (i = 1; i <= j - 1; i = i + 1) {
--                     temp = zero;
--                     for (l = 1; l <= k; l = l + 1) {
---                        temp += conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
--+                        temp += (conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
--                     }
--                     if (beta == zero) {
--                         c[(i - 1) + (j - 1) * ldc] = alpha * temp;
--@@ -205,7 +205,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const &n, INTEGER const
--                 }
--                 rtemp = zero;
--                 for (l = 1; l <= k; l = l + 1) {
---                    rtemp += conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
--+                    rtemp += (conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
--                 }
--                 if (beta == zero) {
--                     c[(j - 1) + (j - 1) * ldc] = alpha * rtemp;
--@@ -217,7 +217,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const &n, INTEGER const
--             for (j = 1; j <= n; j = j + 1) {
--                 rtemp = zero;
--                 for (l = 1; l <= k; l = l + 1) {
---                    rtemp += conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
--+                    rtemp += (conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
--                 }
--                 if (beta == zero) {
--                     c[(j - 1) + (j - 1) * ldc] = alpha * rtemp;
--@@ -227,7 +227,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const &n, INTEGER const
--                 for (i = j + 1; i <= n; i = i + 1) {
--                     temp = zero;
--                     for (l = 1; l <= k; l = l + 1) {
---                        temp += conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
--+                        temp += (conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
--                     }
--                     if (beta == zero) {
--                         c[(i - 1) + (j - 1) * ldc] = alpha * temp;
