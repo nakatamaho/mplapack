@@ -33,7 +33,6 @@
 
 #include "mplapack_config.h"
 #include <qd/qd_real.h>
-
 #include "qd_complex.h"
 #include "mplapack_utils_qd.h"
 

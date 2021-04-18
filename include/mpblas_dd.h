@@ -33,7 +33,6 @@
 
 #include "mplapack_config.h"
 #include "qd/dd_real.h"
-
 #include "dd_complex.h"
 #include "mplapack_utils_dd.h"
 
