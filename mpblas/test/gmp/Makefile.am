@@ -3,93 +3,93 @@
 check_PROGRAMS = $(mpblas_gmp_test_PROGRAMS) 
 TESTS = $(check_PROGRAMS)
 mpblas_gmp_test_PROGRAMS = \
-arithmetic.debug_gmp \
-complex.debug_gmp \
-iCamax.debug.gmp_ref iCamax.debug.gmp   \
-iRamax.debug.gmp_ref iRamax.debug.gmp   \
-Mlsame.debug.gmp_ref Mlsame.debug.gmp   \
-Mxerbla.debug.gmp_ref Mxerbla.debug.gmp \
-CRrot.debug.gmp_ref  CRrot.debug.gmp    \
-CRscal.debug.gmp_ref CRscal.debug.gmp   \
-Caxpy.debug.gmp_ref  Caxpy.debug.gmp    \
-Ccopy.debug.gmp_ref  Ccopy.debug.gmp    \
-Cdotc.debug.gmp_ref  Cdotc.debug.gmp	\
-Cdotu.debug.gmp_ref  Cdotu.debug.gmp	\
-Cgbmv.debug.gmp_ref  Cgbmv.debug.gmp	\
-Cgemm.debug.gmp_ref  Cgemm.debug.gmp	\
-Cgemv.debug.gmp_ref  Cgemv.debug.gmp	\
-Cgerc.debug.gmp_ref  Cgerc.debug.gmp	\
-Cgeru.debug.gmp_ref  Cgeru.debug.gmp    \
-Chbmv.debug.gmp_ref  Chbmv.debug.gmp	\
-Chemm.debug.gmp_ref  Chemm.debug.gmp	\
-Chemv.debug.gmp_ref  Chemv.debug.gmp	\
-Cher.debug.gmp_ref   Cher.debug.gmp 	\
-Cher2.debug.gmp_ref  Cher2.debug.gmp	\
-Cher2k.debug.gmp_ref Cher2k.debug.gmp	\
-Cherk.debug.gmp_ref  Cherk.debug.gmp	\
-Chpmv.debug.gmp_ref  Chpmv.debug.gmp	\
-Chpr.debug.gmp_ref   Chpr.debug.gmp	\
-Chpr2.debug.gmp_ref  Chpr2.debug.gmp	\
-Crotg.debug.gmp_ref  Crotg.debug.gmp	\
-Cscal.debug.gmp_ref  Cscal.debug.gmp	\
-Cswap.debug.gmp_ref  Cswap.debug.gmp	\
-Csymm.debug.gmp_ref  Csymm.debug.gmp    \
-Csyr2k.debug.gmp_ref Csyr2k.debug.gmp	\
-Csyrk.debug.gmp_ref  Csyrk.debug.gmp	\
-Ctbmv.debug.gmp_ref  Ctbmv.debug.gmp	\
-Ctbsv.debug.gmp_ref  Ctbsv.debug.gmp	\
-Ctpmv.debug.gmp_ref  Ctpmv.debug.gmp	\
-Ctpsv.debug.gmp_ref  Ctpsv.debug.gmp	\
-Ctrmm.debug.gmp_ref  Ctrmm.debug.gmp	\
-Ctrmv.debug.gmp_ref  Ctrmv.debug.gmp	\
-Ctrsm.debug.gmp_ref  Ctrsm.debug.gmp	\
-Ctrsv.debug.gmp_ref  Ctrsv.debug.gmp	\
-RCabs1.debug.gmp_ref RCabs1.debug.gmp	\
-RCasum.debug.gmp_ref RCasum.debug.gmp	\
-RCnrm2.debug.gmp_ref RCnrm2.debug.gmp	\
-Rasum.debug.gmp_ref  Rasum.debug.gmp    \
-Raxpy.debug.gmp_ref  Raxpy.debug.gmp	\
-Rcopy.debug.gmp_ref  Rcopy.debug.gmp	\
-Rdot.debug.gmp_ref   Rdot.debug.gmp	\
-Rgbmv.debug.gmp_ref  Rgbmv.debug.gmp	\
-Rgemm.debug.gmp_ref  Rgemm.debug.gmp	\
-Rgemv.debug.gmp_ref  Rgemv.debug.gmp	\
-Rger.debug.gmp_ref   Rger.debug.gmp	\
-Rnrm2.debug.gmp_ref  Rnrm2.debug.gmp	\
-Rrot.debug.gmp_ref   Rrot.debug.gmp	\
-Rrotg.debug.gmp_ref  Rrotg.debug.gmp	\
-Rrotm.debug.gmp_ref  Rrotm.debug.gmp	\
-Rsbmv.debug.gmp_ref  Rsbmv.debug.gmp	\
-Rscal.debug.gmp_ref  Rscal.debug.gmp	\
-Rspmv.debug.gmp_ref  Rspmv.debug.gmp    \
-Rspr.debug.gmp_ref   Rspr.debug.gmp	\
-Rspr2.debug.gmp_ref  Rspr2.debug.gmp	\
-Rswap.debug.gmp_ref  Rswap.debug.gmp	\
-Rsymm.debug.gmp_ref  Rsymm.debug.gmp	\
-Rsymv.debug.gmp_ref  Rsymv.debug.gmp	\
-Rsyr.debug.gmp_ref   Rsyr.debug.gmp	\
-Rsyr2.debug.gmp_ref  Rsyr2.debug.gmp	\
-Rsyr2k.debug.gmp_ref Rsyr2k.debug.gmp	\
-Rsyrk.debug.gmp_ref  Rsyrk.debug.gmp	\
-Rtbmv.debug.gmp_ref  Rtbmv.debug.gmp	\
-Rtbsv.debug.gmp_ref  Rtbsv.debug.gmp	\
-Rtpmv.debug.gmp_ref  Rtpmv.debug.gmp	\
-Rtpsv.debug.gmp_ref  Rtpsv.debug.gmp	\
-Rtrmm.debug.gmp_ref  Rtrmm.debug.gmp    \
-Rtrmv.debug.gmp_ref  Rtrmv.debug.gmp	\
-Rtrsm.debug.gmp_ref  Rtrsm.debug.gmp	\
-Rtrsv.debug.gmp_ref  Rtrsv.debug.gmp
+arithmetic.test_gmp \
+complex.test_gmp \
+iCamax.test.gmp_ref iCamax.test.gmp   \
+iRamax.test.gmp_ref iRamax.test.gmp   \
+Mlsame.test.gmp_ref Mlsame.test.gmp   \
+Mxerbla.test.gmp_ref Mxerbla.test.gmp \
+CRrot.test.gmp_ref  CRrot.test.gmp    \
+CRscal.test.gmp_ref CRscal.test.gmp   \
+Caxpy.test.gmp_ref  Caxpy.test.gmp    \
+Ccopy.test.gmp_ref  Ccopy.test.gmp    \
+Cdotc.test.gmp_ref  Cdotc.test.gmp	\
+Cdotu.test.gmp_ref  Cdotu.test.gmp	\
+Cgbmv.test.gmp_ref  Cgbmv.test.gmp	\
+Cgemm.test.gmp_ref  Cgemm.test.gmp	\
+Cgemv.test.gmp_ref  Cgemv.test.gmp	\
+Cgerc.test.gmp_ref  Cgerc.test.gmp	\
+Cgeru.test.gmp_ref  Cgeru.test.gmp    \
+Chbmv.test.gmp_ref  Chbmv.test.gmp	\
+Chemm.test.gmp_ref  Chemm.test.gmp	\
+Chemv.test.gmp_ref  Chemv.test.gmp	\
+Cher.test.gmp_ref   Cher.test.gmp 	\
+Cher2.test.gmp_ref  Cher2.test.gmp	\
+Cher2k.test.gmp_ref Cher2k.test.gmp	\
+Cherk.test.gmp_ref  Cherk.test.gmp	\
+Chpmv.test.gmp_ref  Chpmv.test.gmp	\
+Chpr.test.gmp_ref   Chpr.test.gmp	\
+Chpr2.test.gmp_ref  Chpr2.test.gmp	\
+Crotg.test.gmp_ref  Crotg.test.gmp	\
+Cscal.test.gmp_ref  Cscal.test.gmp	\
+Cswap.test.gmp_ref  Cswap.test.gmp	\
+Csymm.test.gmp_ref  Csymm.test.gmp    \
+Csyr2k.test.gmp_ref Csyr2k.test.gmp	\
+Csyrk.test.gmp_ref  Csyrk.test.gmp	\
+Ctbmv.test.gmp_ref  Ctbmv.test.gmp	\
+Ctbsv.test.gmp_ref  Ctbsv.test.gmp	\
+Ctpmv.test.gmp_ref  Ctpmv.test.gmp	\
+Ctpsv.test.gmp_ref  Ctpsv.test.gmp	\
+Ctrmm.test.gmp_ref  Ctrmm.test.gmp	\
+Ctrmv.test.gmp_ref  Ctrmv.test.gmp	\
+Ctrsm.test.gmp_ref  Ctrsm.test.gmp	\
+Ctrsv.test.gmp_ref  Ctrsv.test.gmp	\
+RCabs1.test.gmp_ref RCabs1.test.gmp	\
+RCasum.test.gmp_ref RCasum.test.gmp	\
+RCnrm2.test.gmp_ref RCnrm2.test.gmp	\
+Rasum.test.gmp_ref  Rasum.test.gmp    \
+Raxpy.test.gmp_ref  Raxpy.test.gmp	\
+Rcopy.test.gmp_ref  Rcopy.test.gmp	\
+Rdot.test.gmp_ref   Rdot.test.gmp	\
+Rgbmv.test.gmp_ref  Rgbmv.test.gmp	\
+Rgemm.test.gmp_ref  Rgemm.test.gmp	\
+Rgemv.test.gmp_ref  Rgemv.test.gmp	\
+Rger.test.gmp_ref   Rger.test.gmp	\
+Rnrm2.test.gmp_ref  Rnrm2.test.gmp	\
+Rrot.test.gmp_ref   Rrot.test.gmp	\
+Rrotg.test.gmp_ref  Rrotg.test.gmp	\
+Rrotm.test.gmp_ref  Rrotm.test.gmp	\
+Rsbmv.test.gmp_ref  Rsbmv.test.gmp	\
+Rscal.test.gmp_ref  Rscal.test.gmp	\
+Rspmv.test.gmp_ref  Rspmv.test.gmp    \
+Rspr.test.gmp_ref   Rspr.test.gmp	\
+Rspr2.test.gmp_ref  Rspr2.test.gmp	\
+Rswap.test.gmp_ref  Rswap.test.gmp	\
+Rsymm.test.gmp_ref  Rsymm.test.gmp	\
+Rsymv.test.gmp_ref  Rsymv.test.gmp	\
+Rsyr.test.gmp_ref   Rsyr.test.gmp	\
+Rsyr2.test.gmp_ref  Rsyr2.test.gmp	\
+Rsyr2k.test.gmp_ref Rsyr2k.test.gmp	\
+Rsyrk.test.gmp_ref  Rsyrk.test.gmp	\
+Rtbmv.test.gmp_ref  Rtbmv.test.gmp	\
+Rtbsv.test.gmp_ref  Rtbsv.test.gmp	\
+Rtpmv.test.gmp_ref  Rtpmv.test.gmp	\
+Rtpsv.test.gmp_ref  Rtpsv.test.gmp	\
+Rtrmm.test.gmp_ref  Rtrmm.test.gmp    \
+Rtrmv.test.gmp_ref  Rtrmv.test.gmp	\
+Rtrsm.test.gmp_ref  Rtrsm.test.gmp	\
+Rtrsv.test.gmp_ref  Rtrsv.test.gmp
 
-mpblas_gmp_testdir = $(prefix)/share/mplapack/debug/mpblas/gmp
+mpblas_gmp_testdir = $(prefix)/share/mplapack/test/mpblas/gmp
 ref_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_gmp_ref -lmpblas_mpfr_ref
 opt_libdepends = -L$(top_builddir)/mpblas/optimized/gmp -lmpblas_gmp -L$(top_builddir)/mpblas/reference -lmpblas_mpfr_ref
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 
-debug_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_GMP___
+test_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_GMP___
 
 if !IS_MACOSX
-debug_srcdepends = ../common/xerbla.cpp ../common/mplapack.debug.cpp ../common/Mxerbla.override.cpp
+test_srcdepends = ../common/xerbla.cpp ../common/mplapack.test.cpp ../common/Mxerbla.override.cpp
 endif
 
 if IS_MACOSX
@@ -97,608 +97,608 @@ lib_LTLIBRARIES = libmxerbla_override.la
 libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_GMP___
 libmxerbla_override_la_SOURCES =  ../common/Mxerbla.override.cpp
 libmxerbla_override_la_LDFLAGS= -Wl,-flat_namespace,-undefined,dynamic_lookup
-debug_srcdepends = ../common/xerbla.cpp ../common/mplapack.debug.cpp
+test_srcdepends = ../common/xerbla.cpp ../common/mplapack.test.cpp
 mplibs+=-Wl,-flat_namespace,-undefined,dynamic_lookup
 TESTS_ENVIRONMENT=DYLD_INSERT_LIBRARIES=.libs/libmxerbla_override.0.dylib
 endif
 
 ##
-arithmetic_debug_gmp_SOURCES=../common/arithmetic.debug.cpp $(debug_srcdepends)
-arithmetic_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-arithmetic_debug_gmp_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-complex_debug_gmp_SOURCES=../common/complex.debug.cpp $(debug_srcdepends)
-complex_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-complex_debug_gmp_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-iCamax_debug_gmp_ref_SOURCES=../common/iCamax.debug.cpp $(debug_srcdepends)
-iCamax_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-iCamax_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-iCamax_debug_gmp_SOURCES=../common/iCamax.debug.cpp $(debug_srcdepends)
-iCamax_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-iCamax_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-iRamax_debug_gmp_ref_SOURCES=../common/iRamax.debug.cpp $(debug_srcdepends)
-iRamax_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-iRamax_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-iRamax_debug_gmp_SOURCES=../common/iRamax.debug.cpp $(debug_srcdepends)
-iRamax_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-iRamax_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Mlsame_debug_gmp_ref_SOURCES=../common/Mlsame.debug.cpp $(debug_srcdepends)
-Mlsame_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Mlsame_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Mlsame_debug_gmp_SOURCES=../common/Mlsame.debug.cpp $(debug_srcdepends)
-Mlsame_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Mlsame_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Mxerbla_debug_gmp_ref_SOURCES=../common/Mxerbla.debug.cpp $(debug_srcdepends)
-Mxerbla_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Mxerbla_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Mxerbla_debug_gmp_SOURCES=../common/Mxerbla.debug.cpp $(debug_srcdepends)
-Mxerbla_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Mxerbla_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-CRrot_debug_gmp_ref_SOURCES=../common/CRrot.debug.cpp $(debug_srcdepends)
-CRrot_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-CRrot_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-CRrot_debug_gmp_SOURCES=../common/CRrot.debug.cpp $(debug_srcdepends)
-CRrot_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-CRrot_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-CRscal_debug_gmp_ref_SOURCES=../common/CRscal.debug.cpp $(debug_srcdepends)
-CRscal_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-CRscal_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-CRscal_debug_gmp_SOURCES=../common/CRscal.debug.cpp $(debug_srcdepends)
-CRscal_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-CRscal_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Caxpy_debug_gmp_SOURCES=../common/Caxpy.debug.cpp $(debug_srcdepends)
-Caxpy_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Caxpy_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Caxpy_debug_gmp_ref_SOURCES=../common/Caxpy.debug.cpp $(debug_srcdepends)
-Caxpy_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Caxpy_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Ccopy_debug_gmp_SOURCES=../common/Ccopy.debug.cpp $(debug_srcdepends)
-Ccopy_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Ccopy_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Ccopy_debug_gmp_ref_SOURCES=../common/Ccopy.debug.cpp $(debug_srcdepends)
-Ccopy_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Ccopy_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Cdotc_debug_gmp_SOURCES=../common/Cdotc.debug.cpp $(debug_srcdepends)
-Cdotc_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Cdotc_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Cdotc_debug_gmp_ref_SOURCES=../common/Cdotc.debug.cpp $(debug_srcdepends)
-Cdotc_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Cdotc_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Cdotu_debug_gmp_SOURCES=../common/Cdotu.debug.cpp $(debug_srcdepends)
-Cdotu_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Cdotu_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Cdotu_debug_gmp_ref_SOURCES=../common/Cdotu.debug.cpp $(debug_srcdepends)
-Cdotu_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Cdotu_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Cgbmv_debug_gmp_SOURCES=../common/Cgbmv.debug.cpp $(debug_srcdepends)
-Cgbmv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Cgbmv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Cgbmv_debug_gmp_ref_SOURCES=../common/Cgbmv.debug.cpp $(debug_srcdepends)
-Cgbmv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Cgbmv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Cgemm_debug_gmp_SOURCES=../common/Cgemm.debug.cpp $(debug_srcdepends)
-Cgemm_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Cgemm_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Cgemm_debug_gmp_ref_SOURCES=../common/Cgemm.debug.cpp $(debug_srcdepends)
-Cgemm_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Cgemm_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Cgemv_debug_gmp_SOURCES=../common/Cgemv.debug.cpp $(debug_srcdepends)
-Cgemv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Cgemv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Cgemv_debug_gmp_ref_SOURCES=../common/Cgemv.debug.cpp $(debug_srcdepends)
-Cgemv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Cgemv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Cgerc_debug_gmp_SOURCES=../common/Cgerc.debug.cpp $(debug_srcdepends)
-Cgerc_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Cgerc_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Cgerc_debug_gmp_ref_SOURCES=../common/Cgerc.debug.cpp $(debug_srcdepends)
-Cgerc_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Cgerc_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Cgeru_debug_gmp_SOURCES=../common/Cgeru.debug.cpp $(debug_srcdepends)
-Cgeru_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Cgeru_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Cgeru_debug_gmp_ref_SOURCES=../common/Cgeru.debug.cpp $(debug_srcdepends)
-Cgeru_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Cgeru_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Chbmv_debug_gmp_SOURCES=../common/Chbmv.debug.cpp $(debug_srcdepends)
-Chbmv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Chbmv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Chbmv_debug_gmp_ref_SOURCES=../common/Chbmv.debug.cpp $(debug_srcdepends)
-Chbmv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Chbmv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Chemm_debug_gmp_SOURCES=../common/Chemm.debug.cpp $(debug_srcdepends)
-Chemm_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Chemm_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Chemm_debug_gmp_ref_SOURCES=../common/Chemm.debug.cpp $(debug_srcdepends)
-Chemm_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Chemm_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Chemv_debug_gmp_SOURCES=../common/Chemv.debug.cpp $(debug_srcdepends)
-Chemv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Chemv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Chemv_debug_gmp_ref_SOURCES=../common/Chemv.debug.cpp $(debug_srcdepends)
-Chemv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Chemv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Cher_debug_gmp_SOURCES=../common/Cher.debug.cpp $(debug_srcdepends)
-Cher_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Cher_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Cher_debug_gmp_ref_SOURCES=../common/Cher.debug.cpp $(debug_srcdepends)
-Cher_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Cher_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Cher2_debug_gmp_SOURCES=../common/Cher2.debug.cpp $(debug_srcdepends)
-Cher2_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Cher2_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Cher2_debug_gmp_ref_SOURCES=../common/Cher2.debug.cpp $(debug_srcdepends)
-Cher2_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Cher2_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Cher2k_debug_gmp_SOURCES=../common/Cher2k.debug.cpp $(debug_srcdepends)
-Cher2k_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Cher2k_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Cher2k_debug_gmp_ref_SOURCES=../common/Cher2k.debug.cpp $(debug_srcdepends)
-Cher2k_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Cher2k_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Cherk_debug_gmp_SOURCES=../common/Cherk.debug.cpp $(debug_srcdepends)
-Cherk_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Cherk_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Cherk_debug_gmp_ref_SOURCES=../common/Cherk.debug.cpp $(debug_srcdepends)
-Cherk_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Cherk_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Chpmv_debug_gmp_SOURCES=../common/Chpmv.debug.cpp $(debug_srcdepends)
-Chpmv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Chpmv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Chpmv_debug_gmp_ref_SOURCES=../common/Chpmv.debug.cpp $(debug_srcdepends)
-Chpmv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Chpmv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Chpr_debug_gmp_SOURCES=../common/Chpr.debug.cpp $(debug_srcdepends)
-Chpr_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Chpr_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Chpr_debug_gmp_ref_SOURCES=../common/Chpr.debug.cpp $(debug_srcdepends)
-Chpr_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Chpr_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Chpr2_debug_gmp_SOURCES=../common/Chpr2.debug.cpp $(debug_srcdepends)
-Chpr2_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Chpr2_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Chpr2_debug_gmp_ref_SOURCES=../common/Chpr2.debug.cpp $(debug_srcdepends)
-Chpr2_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Chpr2_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Crotg_debug_gmp_SOURCES=../common/Crotg.debug.cpp $(debug_srcdepends)
-Crotg_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Crotg_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Crotg_debug_gmp_ref_SOURCES=../common/Crotg.debug.cpp $(debug_srcdepends)
-Crotg_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Crotg_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Cscal_debug_gmp_SOURCES=../common/Cscal.debug.cpp $(debug_srcdepends)
-Cscal_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Cscal_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Cscal_debug_gmp_ref_SOURCES=../common/Cscal.debug.cpp $(debug_srcdepends)
-Cscal_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Cscal_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Cswap_debug_gmp_SOURCES=../common/Cswap.debug.cpp $(debug_srcdepends)
-Cswap_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Cswap_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Cswap_debug_gmp_ref_SOURCES=../common/Cswap.debug.cpp $(debug_srcdepends)
-Cswap_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Cswap_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Csymm_debug_gmp_SOURCES=../common/Csymm.debug.cpp $(debug_srcdepends)
-Csymm_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Csymm_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Csymm_debug_gmp_ref_SOURCES=../common/Csymm.debug.cpp $(debug_srcdepends)
-Csymm_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Csymm_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Csyr2k_debug_gmp_SOURCES=../common/Csyr2k.debug.cpp $(debug_srcdepends)
-Csyr2k_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Csyr2k_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Csyr2k_debug_gmp_ref_SOURCES=../common/Csyr2k.debug.cpp $(debug_srcdepends)
-Csyr2k_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Csyr2k_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Csyrk_debug_gmp_SOURCES=../common/Csyrk.debug.cpp $(debug_srcdepends)
-Csyrk_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Csyrk_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Csyrk_debug_gmp_ref_SOURCES=../common/Csyrk.debug.cpp $(debug_srcdepends)
-Csyrk_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Csyrk_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Ctbmv_debug_gmp_SOURCES=../common/Ctbmv.debug.cpp $(debug_srcdepends)
-Ctbmv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Ctbmv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Ctbmv_debug_gmp_ref_SOURCES=../common/Ctbmv.debug.cpp $(debug_srcdepends)
-Ctbmv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Ctbmv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Ctbsv_debug_gmp_SOURCES=../common/Ctbsv.debug.cpp $(debug_srcdepends)
-Ctbsv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Ctbsv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Ctbsv_debug_gmp_ref_SOURCES=../common/Ctbsv.debug.cpp $(debug_srcdepends)
-Ctbsv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Ctbsv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Ctpmv_debug_gmp_SOURCES=../common/Ctpmv.debug.cpp $(debug_srcdepends)
-Ctpmv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Ctpmv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Ctpmv_debug_gmp_ref_SOURCES=../common/Ctpmv.debug.cpp $(debug_srcdepends)
-Ctpmv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Ctpmv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Ctpsv_debug_gmp_SOURCES=../common/Ctpsv.debug.cpp $(debug_srcdepends)
-Ctpsv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Ctpsv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Ctpsv_debug_gmp_ref_SOURCES=../common/Ctpsv.debug.cpp $(debug_srcdepends)
-Ctpsv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Ctpsv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Ctrmm_debug_gmp_SOURCES=../common/Ctrmm.debug.cpp $(debug_srcdepends)
-Ctrmm_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Ctrmm_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Ctrmm_debug_gmp_ref_SOURCES=../common/Ctrmm.debug.cpp $(debug_srcdepends)
-Ctrmm_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Ctrmm_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Ctrmv_debug_gmp_SOURCES=../common/Ctrmv.debug.cpp $(debug_srcdepends)
-Ctrmv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Ctrmv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Ctrmv_debug_gmp_ref_SOURCES=../common/Ctrmv.debug.cpp $(debug_srcdepends)
-Ctrmv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Ctrmv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Ctrsm_debug_gmp_SOURCES=../common/Ctrsm.debug.cpp $(debug_srcdepends)
-Ctrsm_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Ctrsm_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Ctrsm_debug_gmp_ref_SOURCES=../common/Ctrsm.debug.cpp $(debug_srcdepends)
-Ctrsm_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Ctrsm_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Ctrsv_debug_gmp_SOURCES=../common/Ctrsv.debug.cpp $(debug_srcdepends)
-Ctrsv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Ctrsv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Ctrsv_debug_gmp_ref_SOURCES=../common/Ctrsv.debug.cpp $(debug_srcdepends)
-Ctrsv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Ctrsv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-RCabs1_debug_gmp_ref_SOURCES=../common/RCabs1.debug.cpp $(debug_srcdepends)
-RCabs1_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-RCabs1_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-RCabs1_debug_gmp_SOURCES=../common/RCabs1.debug.cpp $(debug_srcdepends)
-RCabs1_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-RCabs1_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-RCasum_debug_gmp_ref_SOURCES=../common/RCasum.debug.cpp $(debug_srcdepends)
-RCasum_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-RCasum_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-RCasum_debug_gmp_SOURCES=../common/RCasum.debug.cpp $(debug_srcdepends)
-RCasum_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-RCasum_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-RCnrm2_debug_gmp_ref_SOURCES=../common/RCnrm2.debug.cpp $(debug_srcdepends)
-RCnrm2_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-RCnrm2_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-RCnrm2_debug_gmp_SOURCES=../common/RCnrm2.debug.cpp $(debug_srcdepends)
-RCnrm2_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-RCnrm2_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rasum_debug_gmp_ref_SOURCES=../common/Rasum.debug.cpp $(debug_srcdepends)
-Rasum_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rasum_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rasum_debug_gmp_SOURCES=../common/Rasum.debug.cpp $(debug_srcdepends)
-Rasum_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rasum_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Raxpy_debug_gmp_ref_SOURCES=../common/Raxpy.debug.cpp $(debug_srcdepends)
-Raxpy_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Raxpy_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Raxpy_debug_gmp_SOURCES=../common/Raxpy.debug.cpp $(debug_srcdepends)
-Raxpy_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Raxpy_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rcopy_debug_gmp_ref_SOURCES=../common/Rcopy.debug.cpp $(debug_srcdepends)
-Rcopy_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rcopy_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rcopy_debug_gmp_SOURCES=../common/Rcopy.debug.cpp $(debug_srcdepends)
-Rcopy_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rcopy_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rdot_debug_gmp_ref_SOURCES=../common/Rdot.debug.cpp $(debug_srcdepends)
-Rdot_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rdot_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rdot_debug_gmp_SOURCES=../common/Rdot.debug.cpp $(debug_srcdepends)
-Rdot_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rdot_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rgbmv_debug_gmp_ref_SOURCES=../common/Rgbmv.debug.cpp $(debug_srcdepends)
-Rgbmv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rgbmv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rgbmv_debug_gmp_SOURCES=../common/Rgbmv.debug.cpp $(debug_srcdepends)
-Rgbmv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rgbmv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rgemm_debug_gmp_ref_SOURCES=../common/Rgemm.debug.cpp $(debug_srcdepends)
-Rgemm_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rgemm_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rgemm_debug_gmp_SOURCES=../common/Rgemm.debug.cpp $(debug_srcdepends)
-Rgemm_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rgemm_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rgemv_debug_gmp_ref_SOURCES=../common/Rgemv.debug.cpp $(debug_srcdepends)
-Rgemv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rgemv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rgemv_debug_gmp_SOURCES=../common/Rgemv.debug.cpp $(debug_srcdepends)
-Rgemv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rgemv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rger_debug_gmp_ref_SOURCES=../common/Rger.debug.cpp $(debug_srcdepends)
-Rger_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rger_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rger_debug_gmp_SOURCES=../common/Rger.debug.cpp $(debug_srcdepends)
-Rger_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rger_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rnrm2_debug_gmp_ref_SOURCES=../common/Rnrm2.debug.cpp $(debug_srcdepends)
-Rnrm2_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rnrm2_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rnrm2_debug_gmp_SOURCES=../common/Rnrm2.debug.cpp $(debug_srcdepends)
-Rnrm2_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rnrm2_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rrot_debug_gmp_ref_SOURCES=../common/Rrot.debug.cpp $(debug_srcdepends)
-Rrot_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rrot_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rrot_debug_gmp_SOURCES=../common/Rrot.debug.cpp $(debug_srcdepends)
-Rrot_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rrot_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rrotg_debug_gmp_ref_SOURCES=../common/Rrotg.debug.cpp $(debug_srcdepends)
-Rrotg_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rrotg_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rrotg_debug_gmp_SOURCES=../common/Rrotg.debug.cpp $(debug_srcdepends)
-Rrotg_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rrotg_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rrotm_debug_gmp_ref_SOURCES=../common/Rrotm.debug.cpp $(debug_srcdepends)
-Rrotm_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rrotm_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rrotm_debug_gmp_SOURCES=../common/Rrotm.debug.cpp $(debug_srcdepends)
-Rrotm_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rrotm_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rsbmv_debug_gmp_ref_SOURCES=../common/Rsbmv.debug.cpp $(debug_srcdepends)
-Rsbmv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rsbmv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rsbmv_debug_gmp_SOURCES=../common/Rsbmv.debug.cpp $(debug_srcdepends)
-Rsbmv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rsbmv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rscal_debug_gmp_ref_SOURCES=../common/Rscal.debug.cpp $(debug_srcdepends)
-Rscal_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rscal_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rscal_debug_gmp_SOURCES=../common/Rscal.debug.cpp $(debug_srcdepends)
-Rscal_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rscal_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rspmv_debug_gmp_ref_SOURCES=../common/Rspmv.debug.cpp $(debug_srcdepends)
-Rspmv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rspmv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rspmv_debug_gmp_SOURCES=../common/Rspmv.debug.cpp $(debug_srcdepends)
-Rspmv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rspmv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rspr_debug_gmp_ref_SOURCES=../common/Rspr.debug.cpp $(debug_srcdepends)
-Rspr_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rspr_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rspr_debug_gmp_SOURCES=../common/Rspr.debug.cpp $(debug_srcdepends)
-Rspr_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rspr_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rspr2_debug_gmp_ref_SOURCES=../common/Rspr2.debug.cpp $(debug_srcdepends)
-Rspr2_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rspr2_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rspr2_debug_gmp_SOURCES=../common/Rspr2.debug.cpp $(debug_srcdepends)
-Rspr2_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rspr2_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rswap_debug_gmp_ref_SOURCES=../common/Rswap.debug.cpp $(debug_srcdepends)
-Rswap_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rswap_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rswap_debug_gmp_SOURCES=../common/Rswap.debug.cpp $(debug_srcdepends)
-Rswap_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rswap_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rsymm_debug_gmp_ref_SOURCES=../common/Rsymm.debug.cpp $(debug_srcdepends)
-Rsymm_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rsymm_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rsymm_debug_gmp_SOURCES=../common/Rsymm.debug.cpp $(debug_srcdepends)
-Rsymm_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rsymm_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rsymv_debug_gmp_ref_SOURCES=../common/Rsymv.debug.cpp $(debug_srcdepends)
-Rsymv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rsymv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rsymv_debug_gmp_SOURCES=../common/Rsymv.debug.cpp $(debug_srcdepends)
-Rsymv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rsymv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rsyr_debug_gmp_ref_SOURCES=../common/Rsyr.debug.cpp $(debug_srcdepends)
-Rsyr_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rsyr_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rsyr_debug_gmp_SOURCES=../common/Rsyr.debug.cpp $(debug_srcdepends)
-Rsyr_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rsyr_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rsyr2_debug_gmp_ref_SOURCES=../common/Rsyr2.debug.cpp $(debug_srcdepends)
-Rsyr2_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rsyr2_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rsyr2_debug_gmp_SOURCES=../common/Rsyr2.debug.cpp $(debug_srcdepends)
-Rsyr2_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rsyr2_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rsyr2k_debug_gmp_ref_SOURCES=../common/Rsyr2k.debug.cpp $(debug_srcdepends)
-Rsyr2k_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rsyr2k_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rsyr2k_debug_gmp_SOURCES=../common/Rsyr2k.debug.cpp $(debug_srcdepends)
-Rsyr2k_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rsyr2k_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rsyrk_debug_gmp_ref_SOURCES=../common/Rsyrk.debug.cpp $(debug_srcdepends)
-Rsyrk_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rsyrk_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rsyrk_debug_gmp_SOURCES=../common/Rsyrk.debug.cpp $(debug_srcdepends)
-Rsyrk_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rsyrk_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rtbmv_debug_gmp_ref_SOURCES=../common/Rtbmv.debug.cpp $(debug_srcdepends)
-Rtbmv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rtbmv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rtbmv_debug_gmp_SOURCES=../common/Rtbmv.debug.cpp $(debug_srcdepends)
-Rtbmv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rtbmv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rtbsv_debug_gmp_ref_SOURCES=../common/Rtbsv.debug.cpp $(debug_srcdepends)
-Rtbsv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rtbsv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rtbsv_debug_gmp_SOURCES=../common/Rtbsv.debug.cpp $(debug_srcdepends)
-Rtbsv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rtbsv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rtpmv_debug_gmp_ref_SOURCES=../common/Rtpmv.debug.cpp $(debug_srcdepends)
-Rtpmv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rtpmv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rtpmv_debug_gmp_SOURCES=../common/Rtpmv.debug.cpp $(debug_srcdepends)
-Rtpmv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rtpmv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rtpsv_debug_gmp_ref_SOURCES=../common/Rtpsv.debug.cpp $(debug_srcdepends)
-Rtpsv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rtpsv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rtpsv_debug_gmp_SOURCES=../common/Rtpsv.debug.cpp $(debug_srcdepends)
-Rtpsv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rtpsv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rtrmm_debug_gmp_ref_SOURCES=../common/Rtrmm.debug.cpp $(debug_srcdepends)
-Rtrmm_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rtrmm_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rtrmm_debug_gmp_SOURCES=../common/Rtrmm.debug.cpp $(debug_srcdepends)
-Rtrmm_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rtrmm_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rtrmv_debug_gmp_ref_SOURCES=../common/Rtrmv.debug.cpp $(debug_srcdepends)
-Rtrmv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rtrmv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rtrmv_debug_gmp_SOURCES=../common/Rtrmv.debug.cpp $(debug_srcdepends)
-Rtrmv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rtrmv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rtrsm_debug_gmp_ref_SOURCES=../common/Rtrsm.debug.cpp $(debug_srcdepends)
-Rtrsm_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rtrsm_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rtrsm_debug_gmp_SOURCES=../common/Rtrsm.debug.cpp $(debug_srcdepends)
-Rtrsm_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rtrsm_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
-
-Rtrsv_debug_gmp_ref_SOURCES=../common/Rtrsv.debug.cpp $(debug_srcdepends)
-Rtrsv_debug_gmp_ref_CXXFLAGS=$(debug_cxxflags)
-Rtrsv_debug_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
-
-Rtrsv_debug_gmp_SOURCES=../common/Rtrsv.debug.cpp $(debug_srcdepends)
-Rtrsv_debug_gmp_CXXFLAGS=$(debug_cxxflags)
-Rtrsv_debug_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+arithmetic_test_gmp_SOURCES=../common/arithmetic.test.cpp $(test_srcdepends)
+arithmetic_test_gmp_CXXFLAGS=$(test_cxxflags)
+arithmetic_test_gmp_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+complex_test_gmp_SOURCES=../common/complex.test.cpp $(test_srcdepends)
+complex_test_gmp_CXXFLAGS=$(test_cxxflags)
+complex_test_gmp_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+iCamax_test_gmp_ref_SOURCES=../common/iCamax.test.cpp $(test_srcdepends)
+iCamax_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+iCamax_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+iCamax_test_gmp_SOURCES=../common/iCamax.test.cpp $(test_srcdepends)
+iCamax_test_gmp_CXXFLAGS=$(test_cxxflags)
+iCamax_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+iRamax_test_gmp_ref_SOURCES=../common/iRamax.test.cpp $(test_srcdepends)
+iRamax_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+iRamax_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+iRamax_test_gmp_SOURCES=../common/iRamax.test.cpp $(test_srcdepends)
+iRamax_test_gmp_CXXFLAGS=$(test_cxxflags)
+iRamax_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Mlsame_test_gmp_ref_SOURCES=../common/Mlsame.test.cpp $(test_srcdepends)
+Mlsame_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Mlsame_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Mlsame_test_gmp_SOURCES=../common/Mlsame.test.cpp $(test_srcdepends)
+Mlsame_test_gmp_CXXFLAGS=$(test_cxxflags)
+Mlsame_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Mxerbla_test_gmp_ref_SOURCES=../common/Mxerbla.test.cpp $(test_srcdepends)
+Mxerbla_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Mxerbla_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Mxerbla_test_gmp_SOURCES=../common/Mxerbla.test.cpp $(test_srcdepends)
+Mxerbla_test_gmp_CXXFLAGS=$(test_cxxflags)
+Mxerbla_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+CRrot_test_gmp_ref_SOURCES=../common/CRrot.test.cpp $(test_srcdepends)
+CRrot_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+CRrot_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+CRrot_test_gmp_SOURCES=../common/CRrot.test.cpp $(test_srcdepends)
+CRrot_test_gmp_CXXFLAGS=$(test_cxxflags)
+CRrot_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+CRscal_test_gmp_ref_SOURCES=../common/CRscal.test.cpp $(test_srcdepends)
+CRscal_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+CRscal_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+CRscal_test_gmp_SOURCES=../common/CRscal.test.cpp $(test_srcdepends)
+CRscal_test_gmp_CXXFLAGS=$(test_cxxflags)
+CRscal_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Caxpy_test_gmp_SOURCES=../common/Caxpy.test.cpp $(test_srcdepends)
+Caxpy_test_gmp_CXXFLAGS=$(test_cxxflags)
+Caxpy_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Caxpy_test_gmp_ref_SOURCES=../common/Caxpy.test.cpp $(test_srcdepends)
+Caxpy_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Caxpy_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Ccopy_test_gmp_SOURCES=../common/Ccopy.test.cpp $(test_srcdepends)
+Ccopy_test_gmp_CXXFLAGS=$(test_cxxflags)
+Ccopy_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Ccopy_test_gmp_ref_SOURCES=../common/Ccopy.test.cpp $(test_srcdepends)
+Ccopy_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Ccopy_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Cdotc_test_gmp_SOURCES=../common/Cdotc.test.cpp $(test_srcdepends)
+Cdotc_test_gmp_CXXFLAGS=$(test_cxxflags)
+Cdotc_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Cdotc_test_gmp_ref_SOURCES=../common/Cdotc.test.cpp $(test_srcdepends)
+Cdotc_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Cdotc_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Cdotu_test_gmp_SOURCES=../common/Cdotu.test.cpp $(test_srcdepends)
+Cdotu_test_gmp_CXXFLAGS=$(test_cxxflags)
+Cdotu_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Cdotu_test_gmp_ref_SOURCES=../common/Cdotu.test.cpp $(test_srcdepends)
+Cdotu_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Cdotu_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Cgbmv_test_gmp_SOURCES=../common/Cgbmv.test.cpp $(test_srcdepends)
+Cgbmv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Cgbmv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Cgbmv_test_gmp_ref_SOURCES=../common/Cgbmv.test.cpp $(test_srcdepends)
+Cgbmv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Cgbmv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Cgemm_test_gmp_SOURCES=../common/Cgemm.test.cpp $(test_srcdepends)
+Cgemm_test_gmp_CXXFLAGS=$(test_cxxflags)
+Cgemm_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Cgemm_test_gmp_ref_SOURCES=../common/Cgemm.test.cpp $(test_srcdepends)
+Cgemm_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Cgemm_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Cgemv_test_gmp_SOURCES=../common/Cgemv.test.cpp $(test_srcdepends)
+Cgemv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Cgemv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Cgemv_test_gmp_ref_SOURCES=../common/Cgemv.test.cpp $(test_srcdepends)
+Cgemv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Cgemv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Cgerc_test_gmp_SOURCES=../common/Cgerc.test.cpp $(test_srcdepends)
+Cgerc_test_gmp_CXXFLAGS=$(test_cxxflags)
+Cgerc_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Cgerc_test_gmp_ref_SOURCES=../common/Cgerc.test.cpp $(test_srcdepends)
+Cgerc_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Cgerc_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Cgeru_test_gmp_SOURCES=../common/Cgeru.test.cpp $(test_srcdepends)
+Cgeru_test_gmp_CXXFLAGS=$(test_cxxflags)
+Cgeru_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Cgeru_test_gmp_ref_SOURCES=../common/Cgeru.test.cpp $(test_srcdepends)
+Cgeru_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Cgeru_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Chbmv_test_gmp_SOURCES=../common/Chbmv.test.cpp $(test_srcdepends)
+Chbmv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Chbmv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Chbmv_test_gmp_ref_SOURCES=../common/Chbmv.test.cpp $(test_srcdepends)
+Chbmv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Chbmv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Chemm_test_gmp_SOURCES=../common/Chemm.test.cpp $(test_srcdepends)
+Chemm_test_gmp_CXXFLAGS=$(test_cxxflags)
+Chemm_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Chemm_test_gmp_ref_SOURCES=../common/Chemm.test.cpp $(test_srcdepends)
+Chemm_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Chemm_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Chemv_test_gmp_SOURCES=../common/Chemv.test.cpp $(test_srcdepends)
+Chemv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Chemv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Chemv_test_gmp_ref_SOURCES=../common/Chemv.test.cpp $(test_srcdepends)
+Chemv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Chemv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Cher_test_gmp_SOURCES=../common/Cher.test.cpp $(test_srcdepends)
+Cher_test_gmp_CXXFLAGS=$(test_cxxflags)
+Cher_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Cher_test_gmp_ref_SOURCES=../common/Cher.test.cpp $(test_srcdepends)
+Cher_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Cher_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Cher2_test_gmp_SOURCES=../common/Cher2.test.cpp $(test_srcdepends)
+Cher2_test_gmp_CXXFLAGS=$(test_cxxflags)
+Cher2_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Cher2_test_gmp_ref_SOURCES=../common/Cher2.test.cpp $(test_srcdepends)
+Cher2_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Cher2_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Cher2k_test_gmp_SOURCES=../common/Cher2k.test.cpp $(test_srcdepends)
+Cher2k_test_gmp_CXXFLAGS=$(test_cxxflags)
+Cher2k_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Cher2k_test_gmp_ref_SOURCES=../common/Cher2k.test.cpp $(test_srcdepends)
+Cher2k_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Cher2k_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Cherk_test_gmp_SOURCES=../common/Cherk.test.cpp $(test_srcdepends)
+Cherk_test_gmp_CXXFLAGS=$(test_cxxflags)
+Cherk_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Cherk_test_gmp_ref_SOURCES=../common/Cherk.test.cpp $(test_srcdepends)
+Cherk_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Cherk_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Chpmv_test_gmp_SOURCES=../common/Chpmv.test.cpp $(test_srcdepends)
+Chpmv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Chpmv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Chpmv_test_gmp_ref_SOURCES=../common/Chpmv.test.cpp $(test_srcdepends)
+Chpmv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Chpmv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Chpr_test_gmp_SOURCES=../common/Chpr.test.cpp $(test_srcdepends)
+Chpr_test_gmp_CXXFLAGS=$(test_cxxflags)
+Chpr_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Chpr_test_gmp_ref_SOURCES=../common/Chpr.test.cpp $(test_srcdepends)
+Chpr_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Chpr_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Chpr2_test_gmp_SOURCES=../common/Chpr2.test.cpp $(test_srcdepends)
+Chpr2_test_gmp_CXXFLAGS=$(test_cxxflags)
+Chpr2_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Chpr2_test_gmp_ref_SOURCES=../common/Chpr2.test.cpp $(test_srcdepends)
+Chpr2_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Chpr2_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Crotg_test_gmp_SOURCES=../common/Crotg.test.cpp $(test_srcdepends)
+Crotg_test_gmp_CXXFLAGS=$(test_cxxflags)
+Crotg_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Crotg_test_gmp_ref_SOURCES=../common/Crotg.test.cpp $(test_srcdepends)
+Crotg_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Crotg_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Cscal_test_gmp_SOURCES=../common/Cscal.test.cpp $(test_srcdepends)
+Cscal_test_gmp_CXXFLAGS=$(test_cxxflags)
+Cscal_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Cscal_test_gmp_ref_SOURCES=../common/Cscal.test.cpp $(test_srcdepends)
+Cscal_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Cscal_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Cswap_test_gmp_SOURCES=../common/Cswap.test.cpp $(test_srcdepends)
+Cswap_test_gmp_CXXFLAGS=$(test_cxxflags)
+Cswap_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Cswap_test_gmp_ref_SOURCES=../common/Cswap.test.cpp $(test_srcdepends)
+Cswap_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Cswap_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Csymm_test_gmp_SOURCES=../common/Csymm.test.cpp $(test_srcdepends)
+Csymm_test_gmp_CXXFLAGS=$(test_cxxflags)
+Csymm_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Csymm_test_gmp_ref_SOURCES=../common/Csymm.test.cpp $(test_srcdepends)
+Csymm_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Csymm_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Csyr2k_test_gmp_SOURCES=../common/Csyr2k.test.cpp $(test_srcdepends)
+Csyr2k_test_gmp_CXXFLAGS=$(test_cxxflags)
+Csyr2k_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Csyr2k_test_gmp_ref_SOURCES=../common/Csyr2k.test.cpp $(test_srcdepends)
+Csyr2k_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Csyr2k_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Csyrk_test_gmp_SOURCES=../common/Csyrk.test.cpp $(test_srcdepends)
+Csyrk_test_gmp_CXXFLAGS=$(test_cxxflags)
+Csyrk_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Csyrk_test_gmp_ref_SOURCES=../common/Csyrk.test.cpp $(test_srcdepends)
+Csyrk_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Csyrk_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Ctbmv_test_gmp_SOURCES=../common/Ctbmv.test.cpp $(test_srcdepends)
+Ctbmv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Ctbmv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Ctbmv_test_gmp_ref_SOURCES=../common/Ctbmv.test.cpp $(test_srcdepends)
+Ctbmv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Ctbmv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Ctbsv_test_gmp_SOURCES=../common/Ctbsv.test.cpp $(test_srcdepends)
+Ctbsv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Ctbsv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Ctbsv_test_gmp_ref_SOURCES=../common/Ctbsv.test.cpp $(test_srcdepends)
+Ctbsv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Ctbsv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Ctpmv_test_gmp_SOURCES=../common/Ctpmv.test.cpp $(test_srcdepends)
+Ctpmv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Ctpmv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Ctpmv_test_gmp_ref_SOURCES=../common/Ctpmv.test.cpp $(test_srcdepends)
+Ctpmv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Ctpmv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Ctpsv_test_gmp_SOURCES=../common/Ctpsv.test.cpp $(test_srcdepends)
+Ctpsv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Ctpsv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Ctpsv_test_gmp_ref_SOURCES=../common/Ctpsv.test.cpp $(test_srcdepends)
+Ctpsv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Ctpsv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Ctrmm_test_gmp_SOURCES=../common/Ctrmm.test.cpp $(test_srcdepends)
+Ctrmm_test_gmp_CXXFLAGS=$(test_cxxflags)
+Ctrmm_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Ctrmm_test_gmp_ref_SOURCES=../common/Ctrmm.test.cpp $(test_srcdepends)
+Ctrmm_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Ctrmm_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Ctrmv_test_gmp_SOURCES=../common/Ctrmv.test.cpp $(test_srcdepends)
+Ctrmv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Ctrmv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Ctrmv_test_gmp_ref_SOURCES=../common/Ctrmv.test.cpp $(test_srcdepends)
+Ctrmv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Ctrmv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Ctrsm_test_gmp_SOURCES=../common/Ctrsm.test.cpp $(test_srcdepends)
+Ctrsm_test_gmp_CXXFLAGS=$(test_cxxflags)
+Ctrsm_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Ctrsm_test_gmp_ref_SOURCES=../common/Ctrsm.test.cpp $(test_srcdepends)
+Ctrsm_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Ctrsm_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Ctrsv_test_gmp_SOURCES=../common/Ctrsv.test.cpp $(test_srcdepends)
+Ctrsv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Ctrsv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Ctrsv_test_gmp_ref_SOURCES=../common/Ctrsv.test.cpp $(test_srcdepends)
+Ctrsv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Ctrsv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+RCabs1_test_gmp_ref_SOURCES=../common/RCabs1.test.cpp $(test_srcdepends)
+RCabs1_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+RCabs1_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+RCabs1_test_gmp_SOURCES=../common/RCabs1.test.cpp $(test_srcdepends)
+RCabs1_test_gmp_CXXFLAGS=$(test_cxxflags)
+RCabs1_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+RCasum_test_gmp_ref_SOURCES=../common/RCasum.test.cpp $(test_srcdepends)
+RCasum_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+RCasum_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+RCasum_test_gmp_SOURCES=../common/RCasum.test.cpp $(test_srcdepends)
+RCasum_test_gmp_CXXFLAGS=$(test_cxxflags)
+RCasum_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+RCnrm2_test_gmp_ref_SOURCES=../common/RCnrm2.test.cpp $(test_srcdepends)
+RCnrm2_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+RCnrm2_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+RCnrm2_test_gmp_SOURCES=../common/RCnrm2.test.cpp $(test_srcdepends)
+RCnrm2_test_gmp_CXXFLAGS=$(test_cxxflags)
+RCnrm2_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rasum_test_gmp_ref_SOURCES=../common/Rasum.test.cpp $(test_srcdepends)
+Rasum_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rasum_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rasum_test_gmp_SOURCES=../common/Rasum.test.cpp $(test_srcdepends)
+Rasum_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rasum_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Raxpy_test_gmp_ref_SOURCES=../common/Raxpy.test.cpp $(test_srcdepends)
+Raxpy_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Raxpy_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Raxpy_test_gmp_SOURCES=../common/Raxpy.test.cpp $(test_srcdepends)
+Raxpy_test_gmp_CXXFLAGS=$(test_cxxflags)
+Raxpy_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rcopy_test_gmp_ref_SOURCES=../common/Rcopy.test.cpp $(test_srcdepends)
+Rcopy_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rcopy_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rcopy_test_gmp_SOURCES=../common/Rcopy.test.cpp $(test_srcdepends)
+Rcopy_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rcopy_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rdot_test_gmp_ref_SOURCES=../common/Rdot.test.cpp $(test_srcdepends)
+Rdot_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rdot_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rdot_test_gmp_SOURCES=../common/Rdot.test.cpp $(test_srcdepends)
+Rdot_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rdot_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rgbmv_test_gmp_ref_SOURCES=../common/Rgbmv.test.cpp $(test_srcdepends)
+Rgbmv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rgbmv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rgbmv_test_gmp_SOURCES=../common/Rgbmv.test.cpp $(test_srcdepends)
+Rgbmv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rgbmv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rgemm_test_gmp_ref_SOURCES=../common/Rgemm.test.cpp $(test_srcdepends)
+Rgemm_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rgemm_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rgemm_test_gmp_SOURCES=../common/Rgemm.test.cpp $(test_srcdepends)
+Rgemm_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rgemm_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rgemv_test_gmp_ref_SOURCES=../common/Rgemv.test.cpp $(test_srcdepends)
+Rgemv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rgemv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rgemv_test_gmp_SOURCES=../common/Rgemv.test.cpp $(test_srcdepends)
+Rgemv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rgemv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rger_test_gmp_ref_SOURCES=../common/Rger.test.cpp $(test_srcdepends)
+Rger_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rger_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rger_test_gmp_SOURCES=../common/Rger.test.cpp $(test_srcdepends)
+Rger_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rger_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rnrm2_test_gmp_ref_SOURCES=../common/Rnrm2.test.cpp $(test_srcdepends)
+Rnrm2_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rnrm2_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rnrm2_test_gmp_SOURCES=../common/Rnrm2.test.cpp $(test_srcdepends)
+Rnrm2_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rnrm2_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rrot_test_gmp_ref_SOURCES=../common/Rrot.test.cpp $(test_srcdepends)
+Rrot_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rrot_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rrot_test_gmp_SOURCES=../common/Rrot.test.cpp $(test_srcdepends)
+Rrot_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rrot_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rrotg_test_gmp_ref_SOURCES=../common/Rrotg.test.cpp $(test_srcdepends)
+Rrotg_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rrotg_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rrotg_test_gmp_SOURCES=../common/Rrotg.test.cpp $(test_srcdepends)
+Rrotg_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rrotg_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rrotm_test_gmp_ref_SOURCES=../common/Rrotm.test.cpp $(test_srcdepends)
+Rrotm_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rrotm_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rrotm_test_gmp_SOURCES=../common/Rrotm.test.cpp $(test_srcdepends)
+Rrotm_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rrotm_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rsbmv_test_gmp_ref_SOURCES=../common/Rsbmv.test.cpp $(test_srcdepends)
+Rsbmv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rsbmv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rsbmv_test_gmp_SOURCES=../common/Rsbmv.test.cpp $(test_srcdepends)
+Rsbmv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rsbmv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rscal_test_gmp_ref_SOURCES=../common/Rscal.test.cpp $(test_srcdepends)
+Rscal_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rscal_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rscal_test_gmp_SOURCES=../common/Rscal.test.cpp $(test_srcdepends)
+Rscal_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rscal_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rspmv_test_gmp_ref_SOURCES=../common/Rspmv.test.cpp $(test_srcdepends)
+Rspmv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rspmv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rspmv_test_gmp_SOURCES=../common/Rspmv.test.cpp $(test_srcdepends)
+Rspmv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rspmv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rspr_test_gmp_ref_SOURCES=../common/Rspr.test.cpp $(test_srcdepends)
+Rspr_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rspr_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rspr_test_gmp_SOURCES=../common/Rspr.test.cpp $(test_srcdepends)
+Rspr_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rspr_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rspr2_test_gmp_ref_SOURCES=../common/Rspr2.test.cpp $(test_srcdepends)
+Rspr2_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rspr2_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rspr2_test_gmp_SOURCES=../common/Rspr2.test.cpp $(test_srcdepends)
+Rspr2_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rspr2_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rswap_test_gmp_ref_SOURCES=../common/Rswap.test.cpp $(test_srcdepends)
+Rswap_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rswap_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rswap_test_gmp_SOURCES=../common/Rswap.test.cpp $(test_srcdepends)
+Rswap_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rswap_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rsymm_test_gmp_ref_SOURCES=../common/Rsymm.test.cpp $(test_srcdepends)
+Rsymm_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rsymm_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rsymm_test_gmp_SOURCES=../common/Rsymm.test.cpp $(test_srcdepends)
+Rsymm_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rsymm_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rsymv_test_gmp_ref_SOURCES=../common/Rsymv.test.cpp $(test_srcdepends)
+Rsymv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rsymv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rsymv_test_gmp_SOURCES=../common/Rsymv.test.cpp $(test_srcdepends)
+Rsymv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rsymv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rsyr_test_gmp_ref_SOURCES=../common/Rsyr.test.cpp $(test_srcdepends)
+Rsyr_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rsyr_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rsyr_test_gmp_SOURCES=../common/Rsyr.test.cpp $(test_srcdepends)
+Rsyr_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rsyr_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rsyr2_test_gmp_ref_SOURCES=../common/Rsyr2.test.cpp $(test_srcdepends)
+Rsyr2_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rsyr2_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rsyr2_test_gmp_SOURCES=../common/Rsyr2.test.cpp $(test_srcdepends)
+Rsyr2_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rsyr2_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rsyr2k_test_gmp_ref_SOURCES=../common/Rsyr2k.test.cpp $(test_srcdepends)
+Rsyr2k_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rsyr2k_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rsyr2k_test_gmp_SOURCES=../common/Rsyr2k.test.cpp $(test_srcdepends)
+Rsyr2k_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rsyr2k_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rsyrk_test_gmp_ref_SOURCES=../common/Rsyrk.test.cpp $(test_srcdepends)
+Rsyrk_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rsyrk_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rsyrk_test_gmp_SOURCES=../common/Rsyrk.test.cpp $(test_srcdepends)
+Rsyrk_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rsyrk_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rtbmv_test_gmp_ref_SOURCES=../common/Rtbmv.test.cpp $(test_srcdepends)
+Rtbmv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rtbmv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rtbmv_test_gmp_SOURCES=../common/Rtbmv.test.cpp $(test_srcdepends)
+Rtbmv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rtbmv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rtbsv_test_gmp_ref_SOURCES=../common/Rtbsv.test.cpp $(test_srcdepends)
+Rtbsv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rtbsv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rtbsv_test_gmp_SOURCES=../common/Rtbsv.test.cpp $(test_srcdepends)
+Rtbsv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rtbsv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rtpmv_test_gmp_ref_SOURCES=../common/Rtpmv.test.cpp $(test_srcdepends)
+Rtpmv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rtpmv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rtpmv_test_gmp_SOURCES=../common/Rtpmv.test.cpp $(test_srcdepends)
+Rtpmv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rtpmv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rtpsv_test_gmp_ref_SOURCES=../common/Rtpsv.test.cpp $(test_srcdepends)
+Rtpsv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rtpsv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rtpsv_test_gmp_SOURCES=../common/Rtpsv.test.cpp $(test_srcdepends)
+Rtpsv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rtpsv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rtrmm_test_gmp_ref_SOURCES=../common/Rtrmm.test.cpp $(test_srcdepends)
+Rtrmm_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rtrmm_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rtrmm_test_gmp_SOURCES=../common/Rtrmm.test.cpp $(test_srcdepends)
+Rtrmm_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rtrmm_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rtrmv_test_gmp_ref_SOURCES=../common/Rtrmv.test.cpp $(test_srcdepends)
+Rtrmv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rtrmv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rtrmv_test_gmp_SOURCES=../common/Rtrmv.test.cpp $(test_srcdepends)
+Rtrmv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rtrmv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rtrsm_test_gmp_ref_SOURCES=../common/Rtrsm.test.cpp $(test_srcdepends)
+Rtrsm_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rtrsm_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rtrsm_test_gmp_SOURCES=../common/Rtrsm.test.cpp $(test_srcdepends)
+Rtrsm_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rtrsm_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+
+Rtrsv_test_gmp_ref_SOURCES=../common/Rtrsv.test.cpp $(test_srcdepends)
+Rtrsv_test_gmp_ref_CXXFLAGS=$(test_cxxflags)
+Rtrsv_test_gmp_ref_LDFLAGS=$(ref_libdepends) $(mplibs) $(refblas)
+
+Rtrsv_test_gmp_SOURCES=../common/Rtrsv.test.cpp $(test_srcdepends)
+Rtrsv_test_gmp_CXXFLAGS=$(test_cxxflags)
+Rtrsv_test_gmp_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)

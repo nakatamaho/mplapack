@@ -10,50 +10,50 @@ mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lg
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 reflapack=-L$(top_builddir)/external/i/LAPACK/lib -llapack $(FCLIBS)
 
-debug_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___
+test_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___
 AM_FFLAGS = -x f77-cpp-input -g
 
 if IS_MINGW
-debug_libdepends = $(mplibs) $(reflapack) $(refblas) -Wl,--allow-multiple-definition
+test_libdepends = $(mplibs) $(reflapack) $(refblas) -Wl,--allow-multiple-definition
 else
-debug_libdepends = $(mplibs) $(reflapack) $(refblas)
+test_libdepends = $(mplibs) $(reflapack) $(refblas)
 endif
 
 if !IS_MACOSX
-debug_srcdepends = ../../../mpblas/debug/common/xerbla.cpp ../../../mpblas/debug/common/mplapack.debug.cpp ../../../mpblas/debug/common/Mxerbla.override.cpp
+test_srcdepends = ../../../mpblas/test/common/xerbla.cpp ../../../mpblas/test/common/mplapack.test.cpp ../../../mpblas/test/common/Mxerbla.override.cpp
 endif
 
 if IS_MACOSX
 lib_LTLIBRARIES = libmxerbla_override.la
 libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_MPFR___
-libmxerbla_override_la_SOURCES =  ../../../mpblas/debug/common/Mxerbla.override.cpp
+libmxerbla_override_la_SOURCES =  ../../../mpblas/test/common/Mxerbla.override.cpp
 libmxerbla_override_la_LDFLAGS= -Wl,-flat_namespace,-undefined,dynamic_lookup
-debug_srcdepends = ../../../mpblas/debug/common/xerbla.cpp ../../../mpblas/debug/common/mplapack.debug.cpp
+test_srcdepends = ../../../mpblas/test/common/xerbla.cpp ../../../mpblas/test/common/mplapack.test.cpp
 mplibs+=-Wl,-flat_namespace,-undefined,dynamic_lookup
 TESTS_ENVIRONMENT=DYLD_INSERT_LIBRARIES=.libs/libmxerbla_override.0.dylib
 endif
 
-Mutils_debug_mpfr_SOURCES  = ../common/Mutils.debug.cpp $(debug_srcdepends) ../common/ilaenv.cpp
-Mutils_debug_mpfr_LDFLAGS    = $(opt_libdepends) $(debug_libdepends)
-Mutils_debug_mpfr_CXXFLAGS = $(debug_cxxflags)  
+Mutils_test_mpfr_SOURCES  = ../common/Mutils.test.cpp $(test_srcdepends) ../common/ilaenv.cpp
+Mutils_test_mpfr_LDFLAGS    = $(opt_libdepends) $(test_libdepends)
+Mutils_test_mpfr_CXXFLAGS = $(test_cxxflags)  
 
-Mutils_debug_mpfr_ref_SOURCES  = ../common/Mutils.debug.cpp $(debug_srcdepends)
-Mutils_debug_mpfr_ref_LDFLAGS    = $(ref_libdepends) $(debug_libdepends)
-Mutils_debug_mpfr_ref_CXXFLAGS = $(debug_cxxflags)  
+Mutils_test_mpfr_ref_SOURCES  = ../common/Mutils.test.cpp $(test_srcdepends)
+Mutils_test_mpfr_ref_LDFLAGS    = $(ref_libdepends) $(test_libdepends)
+Mutils_test_mpfr_ref_CXXFLAGS = $(test_cxxflags)  
 
 %%insert here2%%
-%%FUNCTION%%_debug_mpfr_SOURCES  = ../common/%%FUNCTION%%.debug.cpp $(debug_srcdepends)
-%%FUNCTION%%_debug_mpfr_LDFLAGS    = $(opt_libdepends) $(debug_libdepends)
-%%FUNCTION%%_debug_mpfr_CXXFLAGS = $(debug_cxxflags)  
+%%FUNCTION%%_test_mpfr_SOURCES  = ../common/%%FUNCTION%%.test.cpp $(test_srcdepends)
+%%FUNCTION%%_test_mpfr_LDFLAGS    = $(opt_libdepends) $(test_libdepends)
+%%FUNCTION%%_test_mpfr_CXXFLAGS = $(test_cxxflags)  
 
-%%FUNCTION%%_debug_mpfr_ref_SOURCES  = ../common/%%FUNCTION%%.debug.cpp $(debug_srcdepends)
-%%FUNCTION%%_debug_mpfr_ref_LDFLAGS    = $(ref_libdepends) $(debug_libdepends)
-%%FUNCTION%%_debug_mpfr_ref_CXXFLAGS = $(debug_cxxflags)  
+%%FUNCTION%%_test_mpfr_ref_SOURCES  = ../common/%%FUNCTION%%.test.cpp $(test_srcdepends)
+%%FUNCTION%%_test_mpfr_ref_LDFLAGS    = $(ref_libdepends) $(test_libdepends)
+%%FUNCTION%%_test_mpfr_ref_CXXFLAGS = $(test_cxxflags)  
 
-%%TEST%%_test_mpfr_SOURCES  = ../common/%%TEST%%.test.cpp $(debug_srcdepends)
-%%TEST%%_test_mpfr_LDFLAGS    = $(opt_libdepends) $(debug_libdepends)
-%%TEST%%_test_mpfr_CXXFLAGS = $(debug_cxxflags)  
+%%TEST%%_test_mpfr_SOURCES  = ../common/%%TEST%%.test.cpp $(test_srcdepends)
+%%TEST%%_test_mpfr_LDFLAGS    = $(opt_libdepends) $(test_libdepends)
+%%TEST%%_test_mpfr_CXXFLAGS = $(test_cxxflags)  
 
-%%TEST%%_test_mpfr_ref_SOURCES  = ../common/%%TEST%%.test.cpp $(debug_srcdepends)
-%%TEST%%_test_mpfr_ref_LDFLAGS    = $(ref_libdepends) $(debug_libdepends)
-%%TEST%%_test_mpfr_ref_CXXFLAGS = $(debug_cxxflags)
+%%TEST%%_test_mpfr_ref_SOURCES  = ../common/%%TEST%%.test.cpp $(test_srcdepends)
+%%TEST%%_test_mpfr_ref_LDFLAGS    = $(ref_libdepends) $(test_libdepends)
+%%TEST%%_test_mpfr_ref_CXXFLAGS = $(test_cxxflags)
