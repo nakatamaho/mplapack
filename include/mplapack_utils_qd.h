@@ -66,8 +66,7 @@ inline qd_complex Real2Complex(qd_real a, qd_real b) {
     return ret;
 }
 
-inline long __qd_nint(qd_real a)
-{
+inline long __qd_nint(qd_real a) {
     long i;
     qd_real tmp;
     a = a + 0.5;

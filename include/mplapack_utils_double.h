@@ -75,8 +75,7 @@ inline double Cabs1(std::complex<double> zdum) {
     return ret;
 }
 
-inline long nint(double a)
-{
+inline long nint(double a) {
     long i;
     double tmp;
     a = a + 0.5;

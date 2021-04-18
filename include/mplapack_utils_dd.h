@@ -67,8 +67,7 @@ inline dd_complex Real2Complex(dd_real a, dd_real b) {
     return ret;
 }
 
-inline long __dd_nint(dd_real a)
-{
+inline long __dd_nint(dd_real a) {
     long i;
     dd_real tmp;
     a = a + 0.5;
