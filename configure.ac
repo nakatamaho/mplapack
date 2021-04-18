@@ -90,9 +90,9 @@ AM_CONDITIONAL(IS_MIC, test x$IS_MIC = x1)
 dnl enable debug; compare with reference LAPACK and BLAS. 
 dnl when enable this flag, we perform full build;
 dnl all mp versions of mplapack and mpblas, etc.
-AC_ARG_ENABLE(debug,
-[  --enable-debug    Enable debug])
-AM_CONDITIONAL(ENABLE_DEBUG, test x$enable_debug = xyes)
+AC_ARG_ENABLE(test,
+[  --enable-test    Enable test])
+AM_CONDITIONAL(ENABLE_TEST, test x$enable_test = xyes)
 
 AC_ARG_ENABLE(optimization,
 AS_HELP_STRING([--enable-optimization], [Enable compiler level optimization]),
@@ -178,8 +178,8 @@ AC_ARG_ENABLE(mpfr,
 AS_HELP_STRING([--enable-mpfr], [Enable MPFR version]))
 
 dnl We use MPFR version as reference
-dnl so if debug is turned on, 
-if test x$enable_debug = x"yes"; then
+dnl so if test is turned on, 
+if test x$enable_test = x"yes"; then
     enable_mpfr=yes
 fi
 AM_CONDITIONAL(ENABLE_MPFR, test x$enable_mpfr = xyes)
@@ -443,7 +443,7 @@ if test  $GMP_PATHSET = 1 ; then
 	fi
 fi
 
-if test x$enable_gmp = x"yes" -o x$enable_mpfr = x"yes" -o x$enable_debug = x"yes"; then
+if test x$enable_gmp = x"yes" -o x$enable_mpfr = x"yes" -o x$enable_test = x"yes"; then
     if test x$with_system_gmp != x"no"; then
         HAVE_GMP=""
         save_CXXFLAGS=$CXXFLAGS
@@ -490,7 +490,7 @@ if test  $MPFR_PATHSET = 1 ; then
 		MPFR_LIBDIR="$with_system_mpfr/lib"
 	fi
 fi
-if test x$enable_mpfr = x"yes" -o x$enable_debug = x"yes"; then
+if test x$enable_mpfr = x"yes" -o x$enable_test = x"yes"; then
     if test x$with_system_mpfr != x"no"; then
         HAVE_MPFR=""
         save_CFLAGS=$CFLAGS
@@ -537,7 +537,7 @@ if test  $MPC_PATHSET = 1 ; then
 		MPC_LIBDIR="$with_system_mpc/lib"
 	fi
 fi
-if test x$enable_mpfr = x"yes" -o x$enable_debug = x"yes"; then
+if test x$enable_mpfr = x"yes" -o x$enable_test = x"yes"; then
     if test x$with_system_mpc != x"no"; then
         HAVE_MPC=""
         save_CFLAGS=$CFLAGS
@@ -584,7 +584,7 @@ if test  $QD_PATHSET = 1 ; then
 		QD_LIBDIR="$with_system_qd/lib"
 	fi
 fi
-if test x$enable_qd = x"yes" -o x$enable_dd = x"yes" -o x$enable_debug = x"yes"; then
+if test x$enable_qd = x"yes" -o x$enable_dd = x"yes" -o x$enable_test = x"yes"; then
     if test x$with_system_qd != x"no"; then
         HAVE_QD=""
         save_CXXFLAGS=$CXXFLAGS
@@ -707,11 +707,11 @@ else
         AC_MSG_RESULT([disable _Float128])
 fi
 
-if test x$enable_debug = x"yes"; then
-AC_MSG_RESULT([Enable debug])
+if test x$enable_test = x"yes"; then
+AC_MSG_RESULT([Enable test])
 AC_SUBST(LAPACK_DIR, [lapack])
 else
-AC_MSG_RESULT([Disable debug])
+AC_MSG_RESULT([Disable test])
 fi
 if test x$enable_fortranwrapper = x"yes"; then
 AC_MSG_RESULT([Enable fortran wrapper])
@@ -729,7 +729,7 @@ AS_HELP_STRING([--with-external-lapack], [Specify how to link against external L
 
 dnl First we check Fotran 90 compiler stuffs.
 
-if test x"$enable_debug" = x"yes" || test x"$enable_fortranwrapper" = x"yes"; then
+if test x"$enable_test" = x"yes" || test x"$enable_fortranwrapper" = x"yes"; then
     AC_PROG_FC
     AC_FC_LIBRARY_LDFLAGS
     AC_FC_WRAPPERS
@@ -779,13 +779,13 @@ AM_CONDITIONAL(HAVE_EXTERNAL_BLAS, test x$HAVE_EXTERNAL_BLAS = xyes)
 AM_CONDITIONAL(HAVE_EXTERNAL_LAPACK, test x$HAVE_EXTERNAL_LAPACK = xyes)
 
 DO_BLASBENCH=no
-if test x"$enable_debug" = x"yes" || test x"$HAVE_EXTERNAL_BLAS" = x"yes"; then
+if test x"$enable_test" = x"yes" || test x"$HAVE_EXTERNAL_BLAS" = x"yes"; then
 DO_BLASBENCH=yes
 fi
 AM_CONDITIONAL(DO_BLASBENCH, test x$DO_BLASBENCH = xyes)
 
 DO_LAPACKBENCH=no
-if test x"$enable_debug" = x"yes" || test x"$HAVE_EXTERNAL_LAPACK" = x"yes"; then
+if test x"$enable_test" = x"yes" || test x"$HAVE_EXTERNAL_LAPACK" = x"yes"; then
 DO_LAPACKBENCH=yes
 fi
 AM_CONDITIONAL(DO_LAPACKBENCH, test x$DO_LAPACKBENCH = xyes)
@@ -870,23 +870,23 @@ mpblas/optimized/_Float64x/Makefile
 mpblas/optimized/_Float128/Makefile
 mpblas/blaswrapper/Makefile
 mpblas/fortranwrapper/Makefile
-mpblas/debug/Makefile
-mpblas/debug/gmp/Makefile
-mpblas/debug/mpfr/Makefile
-mpblas/debug/qd/Makefile
-mpblas/debug/dd/Makefile
-mpblas/debug/double/Makefile
-mpblas/debug/_Float64x/Makefile
-mpblas/debug/_Float128/Makefile
+mpblas/test/Makefile
+mpblas/test/gmp/Makefile
+mpblas/test/mpfr/Makefile
+mpblas/test/qd/Makefile
+mpblas/test/dd/Makefile
+mpblas/test/double/Makefile
+mpblas/test/_Float64x/Makefile
+mpblas/test/_Float128/Makefile
 mpblas/Makefile
-mplapack/debug/Makefile
-mplapack/debug/gmp/Makefile
-mplapack/debug/mpfr/Makefile
-mplapack/debug/qd/Makefile
-mplapack/debug/dd/Makefile
-mplapack/debug/double/Makefile
-mplapack/debug/_Float64x/Makefile
-mplapack/debug/_Float128/Makefile
+mplapack/test/Makefile
+mplapack/test/gmp/Makefile
+mplapack/test/mpfr/Makefile
+mplapack/test/qd/Makefile
+mplapack/test/dd/Makefile
+mplapack/test/double/Makefile
+mplapack/test/_Float64x/Makefile
+mplapack/test/_Float128/Makefile
 mplapack/optimized/Makefile
 mplapack/optimized/gmp/Makefile
 mplapack/optimized/mpfr/Makefile

@@ -1,0 +1,59 @@
+check_PROGRAMS = $(mplapack_gmp_test_PROGRAMS)
+TESTS = $(check_PROGRAMS)
+mplapack_gmp_test_PROGRAMS = \
+%%insert here1%%
+
+mplapack_gmp_testdir = $(prefix)/share/mplapack/test/mplapack/gmp
+ref_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_gmp_ref -lmplapack_mpfr_ref -L$(top_builddir)/mpblas/reference -lmpblas_gmp_ref -lmpblas_mpfr_ref
+opt_libdepends = -L$(top_builddir)/mplapack/optimized/gmp -lmplapack_gmp -L$(top_builddir)/mplapack/reference -lmplapack_mpfr_ref -L$(top_builddir)/mpblas/optimized/gmp -lmpblas_gmp -L$(top_builddir)/mpblas/reference -lmpblas_mpfr_ref
+mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp 
+refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
+reflapack=-L$(top_builddir)/external/i/LAPACK/lib -llapack $(FCLIBS)
+
+debug_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_GMP___
+AM_FFLAGS = -x f77-cpp-input -g
+
+if IS_MINGW
+debug_libdepends = $(mplibs) $(reflapack) $(refblas) -Wl,--allow-multiple-definition
+else
+debug_libdepends = $(mplibs) $(reflapack) $(refblas)
+endif
+
+if !IS_MACOSX
+debug_srcdepends = ../../../mpblas/debug/common/xerbla.cpp ../../../mpblas/debug/common/mplapack.debug.cpp ../../../mpblas/debug/common/Mxerbla.override.cpp
+endif
+
+if IS_MACOSX
+lib_LTLIBRARIES = libmxerbla_override.la
+libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_GMP___
+libmxerbla_override_la_SOURCES =  ../../../mpblas/debug/common/Mxerbla.override.cpp
+libmxerbla_override_la_LDFLAGS= -Wl,-flat_namespace,-undefined,dynamic_lookup
+debug_srcdepends = ../../../mpblas/debug/common/xerbla.cpp ../../../mpblas/debug/common/mplapack.debug.cpp
+mplibs+=-Wl,-flat_namespace,-undefined,dynamic_lookup
+TESTS_ENVIRONMENT=DYLD_INSERT_LIBRARIES=.libs/libmxerbla_override.0.dylib
+endif
+
+Mutils_debug_gmp_SOURCES  = ../common/Mutils.debug.cpp $(debug_srcdepends) ../common/ilaenv.cpp
+Mutils_debug_gmp_LDFLAGS    = $(opt_libdepends) $(debug_libdepends)
+Mutils_debug_gmp_CXXFLAGS = $(debug_cxxflags)  
+
+Mutils_debug_gmp_ref_SOURCES  = ../common/Mutils.debug.cpp $(debug_srcdepends)
+Mutils_debug_gmp_ref_LDFLAGS    = $(ref_libdepends) $(debug_libdepends)
+Mutils_debug_gmp_ref_CXXFLAGS = $(debug_cxxflags)  
+
+%%insert here2%%
+%%FUNCTION%%_debug_gmp_SOURCES  = ../common/%%FUNCTION%%.debug.cpp $(debug_srcdepends)
+%%FUNCTION%%_debug_gmp_LDFLAGS    = $(opt_libdepends) $(debug_libdepends)
+%%FUNCTION%%_debug_gmp_CXXFLAGS = $(debug_cxxflags)  
+
+%%FUNCTION%%_debug_gmp_ref_SOURCES  = ../common/%%FUNCTION%%.debug.cpp $(debug_srcdepends)
+%%FUNCTION%%_debug_gmp_ref_LDFLAGS    = $(ref_libdepends) $(debug_libdepends)
+%%FUNCTION%%_debug_gmp_ref_CXXFLAGS = $(debug_cxxflags)  
+
+%%TEST%%_test_gmp_SOURCES  = ../common/%%TEST%%.test.cpp $(debug_srcdepends)
+%%TEST%%_test_gmp_LDFLAGS    = $(opt_libdepends) $(debug_libdepends)
+%%TEST%%_test_gmp_CXXFLAGS = $(debug_cxxflags)  
+
+%%TEST%%_test_gmp_ref_SOURCES  = ../common/%%TEST%%.test.cpp $(debug_srcdepends)
+%%TEST%%_test_gmp_ref_LDFLAGS    = $(ref_libdepends) $(debug_libdepends)
+%%TEST%%_test_gmp_ref_CXXFLAGS = $(debug_cxxflags)
