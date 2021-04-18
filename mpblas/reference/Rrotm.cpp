@@ -28,7 +28,16 @@
 
 #include <mpblas.h>
 
-void Rrotm(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL *dparam) {
+void Rrotm(common &cmn, INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL *dparam) {
+    FEM_CMN_SVE(Rrotm);
+    // SAVE
+    REAL &two = sve.two;
+    REAL &zero = sve.zero;
+    //
+    if (is_called_first_time) {
+        zero = 0.0;
+        two = 2.0;
+    }
     //
     //  -- Reference BLAS level1 routine --
     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -43,8 +52,7 @@ void Rrotm(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER cons
     //
     //     .. Local Scalars ..
     //     ..
-    REAL zero = 0.0;
-    REAL two = 2.0;
+    //     .. Data statements ..
     //     ..
     //
     REAL dflag = dparam[1 - 1];
