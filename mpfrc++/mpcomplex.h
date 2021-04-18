@@ -32,8 +32,8 @@ Complex class declare for the MPFR
 #ifndef __MP_COMPLEX_H__
 #define __MP_COMPLEX_H__
 
-#include "mpc.h"
 #include "mpreal.h"
+#include "mpc.h"
 #include <complex>
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___

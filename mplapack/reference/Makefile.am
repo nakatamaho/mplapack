@@ -718,5 +718,5 @@ iMlaprec.cpp \
 iMlatrans.cpp \
 iMlauplo.cpp \
 iMlazlc.cpp \
-iMlazlr.cpp
-#iMlaenv.cpp
+iMlazlr.cpp \
+iMlaenv.cpp

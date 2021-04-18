@@ -1,8 +1,8 @@
-SUBDIRS = optimized
+SUBDIRS = reference 
 
-if !DISABLE_REFERENCE
-SUBDIRS += reference 
-endif
+#if ENABLE_OPTIMIZED
+#SUBDIRS = optimized
+#endif
 
 if ENABLE_WRAPPER
 SUBDIRS+= lapackwrapper
