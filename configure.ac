@@ -2,7 +2,7 @@ dnl
 dnl Configure for MPLAPACK
 dnl
 
-AC_INIT(mplapack, 0.9.0)
+AC_INIT(mplapack, 1.0.0)
 AC_SUBST([PACKAGE_DESCRIPTION], "A multiple precision version of BLAS and LAPACK")
 AC_CONFIG_HEADER(include/config.h) 
 
