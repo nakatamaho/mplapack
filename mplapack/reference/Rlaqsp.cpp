@@ -53,7 +53,7 @@ void Rlaqsp(const char *uplo, INTEGER const n, REAL *ap, REAL *s, REAL const sco
     //     Quick return if possible
     //
     if (n <= 0) {
-        equed = "N";
+        equed = (char *)"N";
         return;
     }
     //
@@ -72,7 +72,7 @@ void Rlaqsp(const char *uplo, INTEGER const n, REAL *ap, REAL *s, REAL const sco
         //
         //        No equilibration
         //
-        equed = "N";
+        equed = (char *)"N";
     } else {
         //
         //        Replace A by diag(S) * A * diag(S).
@@ -102,7 +102,7 @@ void Rlaqsp(const char *uplo, INTEGER const n, REAL *ap, REAL *s, REAL const sco
                 jc += n - j + 1;
             }
         }
-        equed = "Y";
+        equed = (char *)"Y";
     }
     //
     //     End of Rlaqsp

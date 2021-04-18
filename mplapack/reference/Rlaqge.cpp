@@ -53,7 +53,7 @@ void Rlaqge(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     //     Quick return if possible
     //
     if (m <= 0 || n <= 0) {
-        equed = "N";
+        equed = (char *)"N";
         return;
     }
     //
@@ -75,7 +75,7 @@ void Rlaqge(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
             //
             //           No column scaling
             //
-            equed = "N";
+            equed = (char *)"N";
         } else {
             //
             //           Column scaling
@@ -86,7 +86,7 @@ void Rlaqge(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
                     a[(i - 1) + (j - 1) * lda] = cj * a[(i - 1) + (j - 1) * lda];
                 }
             }
-            equed = "C";
+            equed = (char *)"C";
         }
     } else if (colcnd >= thresh) {
         //
@@ -97,7 +97,7 @@ void Rlaqge(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
                 a[(i - 1) + (j - 1) * lda] = r[i - 1] * a[(i - 1) + (j - 1) * lda];
             }
         }
-        equed = "R";
+        equed = (char *)"R";
     } else {
         //
         //        Row and column scaling
@@ -108,7 +108,7 @@ void Rlaqge(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
                 a[(i - 1) + (j - 1) * lda] = cj * r[i - 1] * a[(i - 1) + (j - 1) * lda];
             }
         }
-        equed = "B";
+        equed = (char *)"B";
     }
     //
     //     End of Rlaqge

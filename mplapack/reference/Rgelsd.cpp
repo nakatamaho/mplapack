@@ -135,12 +135,12 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
             maxwrk = max(maxwrk, 3 * n + (mm + n) * iMlaenv(1, "Rgebrd", " ", mm, n, -1, -1));
             maxwrk = max(maxwrk, 3 * n + nrhs * iMlaenv(1, "Rormbr", "QLT", mm, nrhs, n, -1));
             maxwrk = max(maxwrk, 3 * n + (n - 1) * iMlaenv(1, "Rormbr", "PLN", n, nrhs, n, -1));
-            wlalsd = 9 * n + 2 * n * smlsiz + 8 * n * nlvl + n * nrhs + castINTEGER(pow2((smlsiz + 1)));
+            wlalsd = 9 * n + 2 * n * smlsiz + 8 * n * nlvl + n * nrhs + (smlsiz + 1) * (smlsiz + 1);
             maxwrk = max(maxwrk, 3 * n + wlalsd);
             minwrk = max({3 * n + mm, 3 * n + nrhs, 3 * n + wlalsd});
         }
         if (n > m) {
-            wlalsd = 9 * m + 2 * m * smlsiz + 8 * m * nlvl + m * nrhs + castINTEGER(pow2((smlsiz + 1)));
+            wlalsd = 9 * m + 2 * m * smlsiz + 8 * m * nlvl + m * nrhs + (smlsiz + 1) * (smlsiz + 1);
             if (n >= mnthr) {
                 //
                 //              Path 2a - underdetermined, with many more columns

@@ -148,7 +148,7 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
             if (ipiv[k - 1] > 0) {
                 //           1 x 1 diagonal NNB
                 work[(k - 1) + (invd - 1) * ldwork] = one / a[(k - 1) + (k - 1) * lda];
-                work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0;
+                work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0.0;
                 k++;
             } else {
                 //           2 x 2 diagonal NNB
@@ -327,7 +327,7 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
             if (ipiv[k - 1] > 0) {
                 //           1 x 1 diagonal NNB
                 work[(k - 1) + (invd - 1) * ldwork] = one / a[(k - 1) + (k - 1) * lda];
-                work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0;
+                work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0.0;
                 k = k - 1;
             } else {
                 //           2 x 2 diagonal NNB

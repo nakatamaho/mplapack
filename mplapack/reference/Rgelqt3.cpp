@@ -112,7 +112,7 @@ void Rgelqt3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL 
         for (i = 1; i <= m2; i = i + 1) {
             for (j = 1; j <= m1; j = j + 1) {
                 a[((i + m1) - 1) + (j - 1) * lda] = a[((i + m1) - 1) + (j - 1) * lda] - t[((i + m1) - 1) + (j - 1) * ldt];
-                t[((i + m1) - 1) + (j - 1) * ldt] = 0;
+                t[((i + m1) - 1) + (j - 1) * ldt] = 0.0;
             }
         }
         //

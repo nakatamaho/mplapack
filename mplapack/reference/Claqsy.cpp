@@ -53,7 +53,7 @@ void Claqsy(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
     //     Quick return if possible
     //
     if (n <= 0) {
-        equed = "N";
+        equed = (char *)"N";
         return;
     }
     //
@@ -71,7 +71,7 @@ void Claqsy(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
         //
         //        No equilibration
         //
-        equed = "N";
+        equed = (char *)"N";
     } else {
         //
         //        Replace A by diag(S) * A * diag(S).
@@ -97,7 +97,7 @@ void Claqsy(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
                 }
             }
         }
-        equed = "Y";
+        equed = (char *)"Y";
     }
     //
     //     End of Claqsy

@@ -493,7 +493,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
             if (k < n0) {
                 z[(2 * k) - 1] = z[(4 * k - 1) - 1];
             } else {
-                z[(2 * k) - 1] = 0;
+                z[(2 * k) - 1] = 0.0;
             }
         }
         return;
@@ -530,9 +530,9 @@ statement_170:
     //
     z[(2 * n + 1) - 1] = trace;
     z[(2 * n + 2) - 1] = e;
-    z[(2 * n + 3) - 1] = REAL(iter);
-    z[(2 * n + 4) - 1] = REAL(ndiv) / REAL(pow2(n));
-    z[(2 * n + 5) - 1] = hundrd * nfail / REAL(iter);
+    z[(2 * n + 3) - 1] = iter;
+    z[(2 * n + 4) - 1] = castREAL(ndiv) / castREAL(n * n);
+    z[(2 * n + 5) - 1] = hundrd * nfail / castREAL(iter);
     //
     //     End of Rlasq2
     //

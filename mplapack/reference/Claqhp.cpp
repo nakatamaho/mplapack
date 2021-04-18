@@ -55,7 +55,7 @@ void Claqhp(const char *uplo, INTEGER const n, COMPLEX *ap, REAL *s, REAL const 
     //     Quick return if possible
     //
     if (n <= 0) {
-        equed = "N";
+        equed = (char *)"N";
         return;
     }
     //
@@ -74,7 +74,7 @@ void Claqhp(const char *uplo, INTEGER const n, COMPLEX *ap, REAL *s, REAL const 
         //
         //        No equilibration
         //
-        equed = "N";
+        equed = (char *)"N";
     } else {
         //
         //        Replace A by diag(S) * A * diag(S).
@@ -106,7 +106,7 @@ void Claqhp(const char *uplo, INTEGER const n, COMPLEX *ap, REAL *s, REAL const 
                 jc += n - j + 1;
             }
         }
-        equed = "Y";
+        equed = (char *)"Y";
     }
     //
     //     End of Claqhp
