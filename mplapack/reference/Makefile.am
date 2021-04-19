@@ -89,6 +89,17 @@ endif
 # total 648 files
 
 MPLAPACK_SOURCES = \
+Clatps.cpp \
+Cppcon.cpp \
+Cpprfs.cpp \
+Cpocon.cpp \
+Cporfs.cpp \
+Cherfs.cpp \
+Chprfs.cpp \
+Clahef_aa.cpp \
+Chpcon.cpp \
+Checon.cpp \
+Cherfs.cpp \
 Cdrscl.cpp \
 Cgbsv.cpp \
 Cgbtf2.cpp \

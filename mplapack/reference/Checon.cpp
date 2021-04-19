@@ -29,9 +29,16 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Claqsb(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, REAL *s, REAL const scond, REAL const amax, char *equed) {
+void Checon(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, REAL const anorm, REAL &rcond, COMPLEX *work, INTEGER &info) {
+    bool upper = false;
+    const REAL zero = 0.0;
+    const REAL one = 1.0;
+    INTEGER i = 0;
+    INTEGER kase = 0;
+    REAL ainvnm = 0.0;
+    INTEGER isave[3];
     //
-    //  -- LAPACK auxiliary routine --
+    //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
     //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
@@ -46,62 +53,85 @@ void Claqsb(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
     //     ..
     //     .. Local Scalars ..
     //     ..
+    //     .. Local Arrays ..
+    //     ..
     //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
     //     ..
     //     .. Intrinsic Functions ..
     //     ..
     //     .. Executable Statements ..
     //
-    //     Quick return if possible
+    //     Test the input parameters.
     //
-    if (n <= 0) {
-        equed = (char *)"N";
+    info = 0;
+    upper = Mlsame(uplo, "U");
+    if (!upper && !Mlsame(uplo, "L")) {
+        info = -1;
+    } else if (n < 0) {
+        info = -2;
+    } else if (lda < max((INTEGER)1, n)) {
+        info = -4;
+    } else if (anorm < zero) {
+        info = -6;
+    }
+    if (info != 0) {
+        Mxerbla("Checon", -info);
         return;
     }
     //
-    //     Initialize LARGE and SMALL.
+    //     Quick return if possible
     //
-    REAL small = Rlamch("Safe minimum") / Rlamch("Precision");
-    const REAL one = 1.0;
-    REAL large = one / small;
-    //
-    const REAL thresh = 0.1e+0;
-    INTEGER j = 0;
-    REAL cj = 0.0;
-    INTEGER i = 0;
-    if (scond >= thresh && amax >= small && amax <= large) {
-        //
-        //        No equilibration
-        //
-        equed = (char *)"N";
-    } else {
-        //
-        //        Replace A by diag(S) * A * diag(S).
-        //
-        if (Mlsame(uplo, "U")) {
-            //
-            //           Upper triangle of A is stored in band format.
-            //
-            for (j = 1; j <= n; j = j + 1) {
-                cj = s[j - 1];
-                for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
-                    ab[((kd + 1 + i - j) - 1) + (j - 1) * ldab] = cj * s[i - 1] * ab[((kd + 1 + i - j) - 1) + (j - 1) * ldab];
-                }
-            }
-        } else {
-            //
-            //           Lower triangle of A is stored.
-            //
-            for (j = 1; j <= n; j = j + 1) {
-                cj = s[j - 1];
-                for (i = j; i <= min(n, j + kd); i = i + 1) {
-                    ab[((1 + i - j) - 1) + (j - 1) * ldab] = cj * s[i - 1] * ab[((1 + i - j) - 1) + (j - 1) * ldab];
-                }
-            }
-        }
-        equed = (char *)"Y";
+    rcond = zero;
+    if (n == 0) {
+        rcond = one;
+        return;
+    } else if (anorm <= zero) {
+        return;
     }
     //
-    //     End of Claqsb
+    //     Check that the diagonal matrix D is nonsingular.
+    //
+    if (upper) {
+        //
+        //        Upper triangular storage: examine D from bottom to top
+        //
+        for (i = n; i >= 1; i = i - 1) {
+            if (ipiv[i - 1] > 0 && a[(i - 1) + (i - 1) * lda] == zero) {
+                return;
+            }
+        }
+    } else {
+        //
+        //        Lower triangular storage: examine D from top to bottom.
+        //
+        for (i = 1; i <= n; i = i + 1) {
+            if (ipiv[i - 1] > 0 && a[(i - 1) + (i - 1) * lda] == zero) {
+                return;
+            }
+        }
+    }
+    //
+    //     Estimate the 1-norm of the inverse.
+    //
+    kase = 0;
+statement_30:
+    Clacn2(n, &work[(n + 1) - 1], work, ainvnm, kase, isave);
+    if (kase != 0) {
+        //
+        //        Multiply by inv(L*D*L**H) or inv(U*D*U**H).
+        //
+        Chetrs(uplo, n, 1, a, lda, ipiv, work, n, info);
+        goto statement_30;
+    }
+    //
+    //     Compute the estimate of the reciprocal condition number.
+    //
+    if (ainvnm != zero) {
+        rcond = (one / ainvnm) / anorm;
+    }
+    //
+    //     End of Checon
     //
 }
