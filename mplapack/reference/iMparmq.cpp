@@ -141,39 +141,37 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
             //
             //           ASCII character set
             //
-	    if (ic >= 97 && ic <= 122) {
-		*subnam = (char) (ic - 32);
-		for (i = 2; i <= 6; i++) {
-		    ic = *&subnam[i - 1];
-		    if (ic >= 97 && ic <= 122) {
-			*subnam[i - 1] = (char) (ic - 32);
-		    }
-		}
-	    }
+            if (ic >= 97 && ic <= 122) {
+                *subnam = (char)(ic - 32);
+                for (i = 2; i <= 6; i++) {
+                    ic = *&subnam[i - 1];
+                    if (ic >= 97 && ic <= 122) {
+                        *subnam[i - 1] = (char)(ic - 32);
+                    }
+                }
+            }
         }
         //
-	if (strncmp(subnam + 1, "GGHRD", 5) == 0 || strncmp(
-		subnam + 1, "GGHD3", 5) == 0) {
-	    return_value = 1;
-	    if (nh >= 14) {
-		return_value = 2;
-	    }
-	} else if (strncmp(subnam + 3, "EXC", 3) == 0) {
-	    if (nh >= 14) {
-		return_value = 1;
-	    }
-	    if (nh >= 14) {
-		return_value = 2;
-	    }
-	} else if (strncmp(subnam + 1, "HSEQR", 5) == 0 || 
-		strncmp(subnam + 1, "LAQR", 4) == 0) {
-	    if (ns >= 14) {
-		return_value = 1;
-	    }
-	    if (ns >= 14) {
-		return_value = 2;
-	    }
-	}
+        if (strncmp(subnam + 1, "GGHRD", 5) == 0 || strncmp(subnam + 1, "GGHD3", 5) == 0) {
+            return_value = 1;
+            if (nh >= 14) {
+                return_value = 2;
+            }
+        } else if (strncmp(subnam + 3, "EXC", 3) == 0) {
+            if (nh >= 14) {
+                return_value = 1;
+            }
+            if (nh >= 14) {
+                return_value = 2;
+            }
+        } else if (strncmp(subnam + 1, "HSEQR", 5) == 0 || strncmp(subnam + 1, "LAQR", 4) == 0) {
+            if (ns >= 14) {
+                return_value = 1;
+            }
+            if (ns >= 14) {
+                return_value = 2;
+            }
+        }
         //
     } else {
         //        ===== invalid value of ispec =====

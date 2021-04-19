@@ -85,8 +85,8 @@ endif
 endif
 
 # Cdrscl.cpp - iMlazlr.cpp converted by fable + script. build fine with MPFR. 359 files
-# Cbdsqr.cpp - iMlaenv.cpp converted by fable + script + small fix by hand. 319 files
-# total 678
+# Cbdsqr.cpp - iMlaenv.cpp converted by fable + script + small fix by hand. 321 files
+# total 680
 
 MPLAPACK_SOURCES = \
 Cdrscl.cpp \

@@ -130,7 +130,7 @@ L10:
             }
         }
     }
-    
+
     *c1 = *subnam;
     sname = *c1 == 'R';
     cname = *c1 == 'C';
@@ -208,7 +208,7 @@ L50:
         } else if (strncmp(c3, "LQ ", 3) == 0) {
             if (n3 == 2) {
                 if (sname) {
-		    //    M*N
+                    //    M*N
                     if (n1 * n2 <= 131072 || n1 <= 8192) {
                         nb = n1;
                     } else {
@@ -523,7 +523,7 @@ L100:
     //
     return_value = castINTEGER(castREAL(min(n1, n2)) * 1.6);
     return return_value;
- //
+    //
 L110:
     //
     //     ISPEC = 7:  number of processors (not used)
@@ -554,18 +554,18 @@ L140:
     //     iMlaenv = 0
     return_value = 1;
     if (return_value == 1) {
-       return_value = Mieeeck(1, 0.0,  1.0);
+        return_value = Mieeeck(1, 0.0, 1.0);
     }
     return return_value;
-//
- L150:
+    //
+L150:
     //
     //     ISPEC = 11: ieee infinity arithmetic can be trusted not to trap
     //
     //     iMlaenv = 0
     return_value = 1;
     if (return_value == 1) {
-      return_value = iMieeeck(0, 0.0, 1.0);
+        return_value = iMieeeck(0, 0.0, 1.0);
     }
     return return_value;
 //
@@ -578,4 +578,4 @@ L160:
     //
     //     End of iMlaenv
     //
-} 
+}
