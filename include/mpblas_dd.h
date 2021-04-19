@@ -31,10 +31,10 @@
 #ifndef _MPBLAS_DD_H_
 #define _MPBLAS_DD_H_
 
-#include "mplapack_config.h"
-#include "qd/dd_real.h"
 #include "dd_complex.h"
+#include "mplapack_config.h"
 #include "mplapack_utils_dd.h"
+#include "qd/dd_real.h"
 
 #if !defined __MPLAPACK_ERRNO__
 #define _MPLAPACK_EXTERN_ extern
