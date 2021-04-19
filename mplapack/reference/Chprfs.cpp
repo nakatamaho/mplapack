@@ -184,9 +184,9 @@ void Chprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
         s = zero;
         for (i = 1; i <= n; i = i + 1) {
             if (rwork[i - 1] > safe2) {
-                s = max(s, abs1(work[i - 1]) / rwork[i - 1]);
+                s = max(s, REAL(abs1(work[i - 1]) / rwork[i - 1]));
             } else {
-                s = max(s, (abs1(work[i - 1]) + safe1) / (rwork[i - 1] + safe1));
+                s = max(s, REAL((abs1(work[i - 1]) + safe1) / (rwork[i - 1] + safe1)));
             }
         }
         berr[j - 1] = s;

@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#define subnamlen 16
+
 INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER const n, INTEGER const ilo, INTEGER const ihi, INTEGER const lwork) {
     INTEGER return_value = 0;
     //
@@ -51,7 +53,8 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
     const INTEGER iacc22 = 16;
     INTEGER nh = 0;
     INTEGER ns = 0;
-    const float two = 2.0f;
+    INTEGER name_len;
+    const REAL two = 2.0;
     if ((ispec == ishfts) || (ispec == inwin) || (ispec == iacc22)) {
         //
         //        ==== Set the number simultaneous shifts ====
@@ -65,7 +68,7 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
             ns = 10;
         }
         if (nh >= 150) {
-            ns = max((INTEGER)10, nh / nint[(log(castREAL(nh - 1)) / log(two)) - 1]);
+            ns = max((INTEGER)10, nh / nint((log(castREAL(nh - 1)) / log(two)) - 1));
         }
         if (nh >= 590) {
             ns = 64;
@@ -84,7 +87,7 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
     const INTEGER inibl = 14;
     const INTEGER nibble = 14;
     const INTEGER knwswp = 500;
-    str<6> subnam = char0;
+    char subnam[subnamlen];
     INTEGER ic = 0;
     INTEGER iz = 0;
     INTEGER i = 0;
@@ -134,7 +137,8 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //        Convert NAME to upper case if the first character is lower case.
         //
         return_value = 0;
-        subnam = name;
+        name_len = min(int(strlen(name)), subnamlen);
+        strncpy(subnam, name, name_len);
         ic = *subnam;
         iz = 'Z';
         if (iz == 90 || iz == 122) {
@@ -144,9 +148,9 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
             if (ic >= 97 && ic <= 122) {
                 *subnam = (char)(ic - 32);
                 for (i = 2; i <= 6; i++) {
-                    ic = *&subnam[i - 1];
+                    ic = subnam[i - 1];
                     if (ic >= 97 && ic <= 122) {
-                        *subnam[i - 1] = (char)(ic - 32);
+                        subnam[i - 1] = (char)(ic - 32);
                     }
                 }
             }

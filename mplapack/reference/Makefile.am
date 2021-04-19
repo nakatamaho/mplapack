@@ -1,8 +1,8 @@
 lib_LTLIBRARIES = 
 
-if ENABLE_MPFR
-lib_LTLIBRARIES += libmplapack_mpfr.la
-endif
+#if ENABLE_MPFR
+#lib_LTLIBRARIES += libmplapack_mpfr.la
+#endif
 
 if ENABLE_GMP
 lib_LTLIBRARIES += libmplapack_gmp.la
@@ -754,7 +754,6 @@ Rtgsen.cpp \
 Rsprfs.cpp \
 Rspcon.cpp \
 Ropmtr.cpp \
-Rsyrfs.cpp \
 Rlatps.cpp \
 Rppcon.cpp \
 Rpprfs.cpp \
@@ -767,6 +766,5 @@ Clansp.cpp \
 Cspcon.cpp \
 Csprfs.cpp \
 Rlalsa.cpp \
-Cherfs.cpp \
 iMparmq.cpp \
 iMlaenv.cpp

@@ -363,7 +363,7 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 //
                 //              Real eigenvalue
                 //
-                temp = one / max({abs(s[(je - 1) + (je - 1) * lds]) * ascale, abs(p[(je - 1) + (je - 1) * ldp]) * bscale, safmin});
+                temp = one / max({REAL(abs(s[(je - 1) + (je - 1) * lds]) * ascale), REAL(abs(p[(je - 1) + (je - 1) * ldp]) * bscale), safmin});
                 salfar = (temp * s[(je - 1) + (je - 1) * lds]) * ascale;
                 sbeta = (temp * p[(je - 1) + (je - 1) * ldp]) * bscale;
                 acoef = sbeta * ascale;
@@ -379,10 +379,10 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     scale = (small / abs(sbeta)) * min(anorm, big);
                 }
                 if (lsb) {
-                    scale = max(scale, (small / abs(salfar)) * min(bnorm, big));
+                    scale = max(scale, REAL((small / abs(salfar)) * min(bnorm, big)));
                 }
                 if (lsa || lsb) {
-                    scale = min(scale, one / (safmin * max({one, abs(acoef), abs(bcoefr)})));
+                    scale = min(scale, REAL(one / (safmin * max({one, REAL(abs(acoef)), REAL(abs(bcoefr))}))));
                     if (lsa) {
                         acoef = ascale * (scale * sbeta);
                     } else {
@@ -421,13 +421,13 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     scale = (safmin / ulp) / acoefa;
                 }
                 if (bcoefa * ulp < safmin && bcoefa >= safmin) {
-                    scale = max(scale, (safmin / ulp) / bcoefa);
+                    scale = max(scale, REAL((safmin / ulp) / bcoefa));
                 }
                 if (safmin * acoefa > ascale) {
                     scale = ascale / (safmin * acoefa);
                 }
                 if (safmin * bcoefa > bscale) {
-                    scale = min(scale, bscale / (safmin * bcoefa));
+                    scale = min(scale, REAL(bscale / (safmin * bcoefa)));
                 }
                 if (scale != one) {
                     acoef = scale * acoef;
@@ -457,7 +457,7 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 xmax = max(abs(work[(2 * n + je) - 1]) + abs(work[(3 * n + je) - 1]), abs(work[(2 * n + je + 1) - 1]) + abs(work[(3 * n + je + 1) - 1]));
             }
             //
-            dmin = max({ulp * acoefa * anorm, ulp * bcoefa * bnorm, safmin});
+            dmin = max({REAL(ulp * acoefa * anorm), REAL(ulp * bcoefa * bnorm), safmin});
             //
             //                                           T
             //           Triangular solve of  (a A - b B)  y = 0
@@ -486,9 +486,9 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 //              Check whether scaling is necessary for dot products
                 //
                 xscale = one / max(one, xmax);
-                temp = max({work[j - 1], work[(n + j) - 1], acoefa * work[j - 1] + bcoefa * work[(n + j) - 1]});
+                temp = max({work[j - 1], work[(n + j) - 1], REAL(acoefa * work[j - 1] + bcoefa * work[(n + j) - 1])});
                 if (il2by2) {
-                    temp = max({temp, work[(j + 1) - 1], work[(n + j + 1) - 1], acoefa * work[(j + 1) - 1] + bcoefa * work[(n + j + 1) - 1]});
+                    temp = max({temp, work[(j + 1) - 1], work[(n + j + 1) - 1], REAL(acoefa * work[(j + 1) - 1] + bcoefa * work[(n + j + 1) - 1])});
                 }
                 if (temp > bignum * xscale) {
                     for (jw = 0; jw <= nw - 1; jw = jw + 1) {
@@ -572,11 +572,11 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
             xmax = zero;
             if (ilcplx) {
                 for (j = ibeg; j <= n; j = j + 1) {
-                    xmax = max(xmax, abs(vl[(j - 1) + (ieig - 1) * ldvl]) + abs(vl[(j - 1) + ((ieig + 1) - 1) * ldvl]));
+                    xmax = max(xmax, REAL(abs(vl[(j - 1) + (ieig - 1) * ldvl]) + abs(vl[(j - 1) + ((ieig + 1) - 1) * ldvl])));
                 }
             } else {
                 for (j = ibeg; j <= n; j = j + 1) {
-                    xmax = max(xmax, abs(vl[(j - 1) + (ieig - 1) * ldvl]));
+                    xmax = max(xmax, REAL(abs(vl[(j - 1) + (ieig - 1) * ldvl])));
                 }
             }
             //
@@ -668,7 +668,7 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 //
                 //              Real eigenvalue
                 //
-                temp = one / max({abs(s[(je - 1) + (je - 1) * lds]) * ascale, abs(p[(je - 1) + (je - 1) * ldp]) * bscale, safmin});
+                temp = one / max({REAL(abs(s[(je - 1) + (je - 1) * lds]) * ascale), REAL(abs(p[(je - 1) + (je - 1) * ldp]) * bscale), safmin});
                 salfar = (temp * s[(je - 1) + (je - 1) * lds]) * ascale;
                 sbeta = (temp * p[(je - 1) + (je - 1) * ldp]) * bscale;
                 acoef = sbeta * ascale;
@@ -684,10 +684,10 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     scale = (small / abs(sbeta)) * min(anorm, big);
                 }
                 if (lsb) {
-                    scale = max(scale, (small / abs(salfar)) * min(bnorm, big));
+                    scale = max(scale, REAL((small / abs(salfar)) * min(bnorm, big)));
                 }
                 if (lsa || lsb) {
-                    scale = min(scale, one / (safmin * max({one, abs(acoef), abs(bcoefr)})));
+                    scale = min(scale, REAL(one / (safmin * max({one, REAL(abs(acoef)), REAL(abs(bcoefr))}))));
                     if (lsa) {
                         acoef = ascale * (scale * sbeta);
                     } else {
@@ -732,13 +732,13 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     scale = (safmin / ulp) / acoefa;
                 }
                 if (bcoefa * ulp < safmin && bcoefa >= safmin) {
-                    scale = max(scale, (safmin / ulp) / bcoefa);
+                    scale = max(scale, REAL((safmin / ulp) / bcoefa));
                 }
                 if (safmin * acoefa > ascale) {
                     scale = ascale / (safmin * acoefa);
                 }
                 if (safmin * bcoefa > bscale) {
-                    scale = min(scale, bscale / (safmin * bcoefa));
+                    scale = min(scale, REAL(bscale / (safmin * bcoefa)));
                 }
                 if (scale != one) {
                     acoef = scale * acoef;
@@ -786,7 +786,7 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 }
             }
             //
-            dmin = max({ulp * acoefa * anorm, ulp * bcoefa * bnorm, safmin});
+            dmin = max({REAL(ulp * acoefa * anorm), REAL(ulp * bcoefa * bnorm), safmin});
             //
             //           Columnwise triangular solve of  (a A - b B)  x = 0
             //
@@ -821,7 +821,7 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                         }
                     }
                 }
-                xmax = max(scale * xmax, temp);
+                xmax = max(REAL(scale * xmax), temp);
                 //
                 for (jw = 1; jw <= nw; jw = jw + 1) {
                     for (ja = 1; ja <= na; ja = ja + 1) {
@@ -838,7 +838,7 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     xscale = one / max(one, xmax);
                     temp = acoefa * work[j - 1] + bcoefa * work[(n + j) - 1];
                     if (il2by2) {
-                        temp = max(temp, acoefa * work[(j + 1) - 1] + bcoefa * work[(n + j + 1) - 1]);
+                        temp = max(temp, REAL(acoefa * work[(j + 1) - 1] + bcoefa * work[(n + j + 1) - 1]));
                     }
                     temp = max({temp, acoefa, bcoefa});
                     if (temp > bignum * xscale) {
@@ -922,11 +922,11 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
             xmax = zero;
             if (ilcplx) {
                 for (j = 1; j <= iend; j = j + 1) {
-                    xmax = max(xmax, abs(vr[(j - 1) + (ieig - 1) * ldvr]) + abs(vr[(j - 1) + ((ieig + 1) - 1) * ldvr]));
+                    xmax = max(xmax, REAL(abs(vr[(j - 1) + (ieig - 1) * ldvr]) + abs(vr[(j - 1) + ((ieig + 1) - 1) * ldvr])));
                 }
             } else {
                 for (j = 1; j <= iend; j = j + 1) {
-                    xmax = max(xmax, abs(vr[(j - 1) + (ieig - 1) * ldvr]));
+                    xmax = max(xmax, REAL(abs(vr[(j - 1) + (ieig - 1) * ldvr])));
                 }
             }
             //

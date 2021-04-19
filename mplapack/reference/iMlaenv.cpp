@@ -112,7 +112,7 @@ L10:
     //     Convert NAME to upper case if the first character is lower case.
     //
     return_value = 1;
-    name_len = min(strlen(name), subnamlen);
+    name_len = min((int)strlen(name), subnamlen);
     strncpy(subnam, name, name_len);
     ic = *subnam;
     iz = 'Z';
@@ -554,7 +554,7 @@ L140:
     //     iMlaenv = 0
     return_value = 1;
     if (return_value == 1) {
-        return_value = Mieeeck(1, 0.0, 1.0);
+        return_value = iMieeeck(1, 0.0, 1.0);
     }
     return return_value;
     //
@@ -573,7 +573,7 @@ L160:
     //
     //     12 <= ISPEC <= 16: xHSEQR or related subroutines.
     //
-    return_value = iMparmq(ispec, name__, opts, n1, n2, n3, n4, name_len, opts_len);
+    return_value = iMparmq(ispec, name, opts, n1, n2, n3, n4);
     return return_value;
     //
     //     End of iMlaenv

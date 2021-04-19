@@ -201,7 +201,7 @@ void Rlatps(const char *uplo, const char *trans, const char *diag, const char *n
                 //              M(j) = G(j-1) / abs(A(j,j))
                 //
                 tjj = abs(ap[ip - 1]);
-                xbnd = min(xbnd, min(one, tjj) * grow);
+                xbnd = min(xbnd, REAL(min(one, tjj) * grow));
                 if (tjj + cnorm[j - 1] >= smlnum) {
                     //
                     //                 G(j) = G(j-1)*( 1 + CNORM(j) / abs(A(j,j)) )
@@ -223,7 +223,7 @@ void Rlatps(const char *uplo, const char *trans, const char *diag, const char *n
             //
             //           Compute GROW = 1/G(j), where G(0) = max{x(i), i=1,...,n}.
             //
-            grow = min(one, one / max(xbnd, smlnum));
+            grow = min(one, REAL(one / max(xbnd, smlnum)));
             for (j = jfirst; j <= jlast; j = j + jinc) {
                 //
                 //              Exit the loop if the growth factor is too small.
@@ -280,7 +280,7 @@ void Rlatps(const char *uplo, const char *trans, const char *diag, const char *n
                 //              G(j) = max( G(j-1), M(j-1)*( 1 + CNORM(j) ) )
                 //
                 xj = one + cnorm[j - 1];
-                grow = min(grow, xbnd / xj);
+                grow = min(grow, REAL(xbnd / xj));
                 //
                 //              M(j) = M(j-1)*( 1 + CNORM(j) ) / abs(A(j,j))
                 //
@@ -298,7 +298,7 @@ void Rlatps(const char *uplo, const char *trans, const char *diag, const char *n
             //
             //           Compute GROW = 1/G(j), where G(0) = max{x(i), i=1,...,n}.
             //
-            grow = min(one, one / max(xbnd, smlnum));
+            grow = min(one, REAL(one / max(xbnd, smlnum)));
             for (j = jfirst; j <= jlast; j = j + jinc) {
                 //
                 //              Exit the loop if the growth factor is too small.
@@ -485,7 +485,7 @@ void Rlatps(const char *uplo, const char *trans, const char *diag, const char *n
                         //
                         //                       Divide by A(j,j) when scaling x if A(j,j) > 1.
                         //
-                        rec = min(one, rec * tjj);
+                        rec = min(one, REAL(rec * tjj));
                         uscal = uscal / tjjs;
                     }
                     if (rec < one) {
@@ -590,7 +590,7 @@ void Rlatps(const char *uplo, const char *trans, const char *diag, const char *n
                     //
                     x[j - 1] = x[j - 1] / tjjs - sumj;
                 }
-                xmax = max(xmax, abs(x[j - 1]));
+                xmax = max(xmax, REAL(abs(x[j - 1])));
                 jlen++;
                 ip += jinc * jlen;
             }
