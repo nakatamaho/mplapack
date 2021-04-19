@@ -31,11 +31,11 @@
 #ifndef _MPLAPACK_MPFR_H_
 #define _MPLAPACK_MPFR_H_
 
-#include "gmpxx.h"
-#include "mpc_class.h"
-#include "mpcomplex.h"
 #include "mplapack_config.h"
+#include "mpc_class.h"
+#include "gmpxx.h"
 #include "mpreal.h"
+#include "mpcomplex.h"
 
 using namespace mpfr;
 

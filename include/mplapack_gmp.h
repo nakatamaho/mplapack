@@ -31,9 +31,9 @@
 #ifndef _MPLAPACK_GMP_H_
 #define _MPLAPACK_GMP_H_
 
+#include "mplapack_config.h"
 #include "gmpxx.h"
 #include "mpc_class.h"
-#include "mplapack_config.h"
 
 bool Risnan(mpf_class const din);
 bool Rlaisnan(mpf_class const din1, mpf_class const din2);

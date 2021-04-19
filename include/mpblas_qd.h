@@ -31,10 +31,10 @@
 #ifndef _MPBLAS_QD_H_
 #define _MPBLAS_QD_H_
 
+#include <qd/qd_real.h>
+#include "qd_complex.h"
 #include "mplapack_config.h"
 #include "mplapack_utils_qd.h"
-#include "qd_complex.h"
-#include <qd/qd_real.h>
 
 #if !defined __MPLAPACK_ERRNO__
 #define _MPLAPACK_EXTERN_ extern
