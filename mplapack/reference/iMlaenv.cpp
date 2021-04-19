@@ -565,7 +565,7 @@ L140:
     //     iMlaenv = 0
     return_value = 1;
     if (return_value == 1) {
-      return_value = Mieeeck(0, 0.0, 1.0);
+      return_value = iMieeeck(0, 0.0, 1.0);
     }
     return return_value;
 //
@@ -573,7 +573,7 @@ L160:
     //
     //     12 <= ISPEC <= 16: xHSEQR or related subroutines.
     //
-    return_value = Miparmq(ispec, name__, opts, n1, n2, n3, n4, name_len, opts_len);
+    return_value = iMparmq(ispec, name__, opts, n1, n2, n3, n4, name_len, opts_len);
     return return_value;
     //
     //     End of iMlaenv

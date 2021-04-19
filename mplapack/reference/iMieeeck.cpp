@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-INTEGER Mieeeck(INTEGER const &ispec, REAL const &zero, REAL const &one) {
+INTEGER iMieeeck(INTEGER const &ispec, REAL const &zero, REAL const &one) {
     INTEGER return_value = 0;
     //
     //  -- LAPACK auxiliary routine --
