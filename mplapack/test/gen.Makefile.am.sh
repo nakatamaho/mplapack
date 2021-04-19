@@ -16,7 +16,7 @@ for _mplib in $MPLIBS; do
     cp $_mplib/Makefile.am.part ${_mplib}/Makefile.am.part.${_mplib}
     FILES=`cat _tmpfilelist_test`
     for _file in $FILES; do
-        echo "${_file}_${_mplib}_ref ${_file}_${_mplib} \\" | $SED 's/\.cpp//g' >> ${_mplib}/_filelist_test
+        echo "${_file}_${_mplib} \\" | $SED 's/\.cpp//g' >> ${_mplib}/_filelist_test
     done
 
     $SED -i -e "$ s/\\\//g" ${_mplib}/_filelist_test

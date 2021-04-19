@@ -140,4 +140,14 @@ inline _Float64x Cabs1(std::complex<_Float64x> zdum) {
     return ret;
 }
 
+inline _Float64x castREAL__Float64x(mplapackint n) {
+    _Float64x ret = n;
+    return ret;
+}
+
+inline mplapackint castINTEGER__Float64x(_Float64x a) {
+    mplapackint i = a;
+    return i;
+}
+
 #endif

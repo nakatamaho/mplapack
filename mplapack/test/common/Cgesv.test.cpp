@@ -78,9 +78,9 @@ void Cgesv_test()
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 			zgesv_f77(&n, &nrhs, A_ref, &lda, ipiv_ref, B_ref, &ldb, &info_ref);
 #else
-			Cgesv(n, nrhs, A_ref, lda, ipiv_ref, B_ref, ldb, &info_ref);
+			Cgesv(n, nrhs, A_ref, lda, ipiv_ref, B_ref, ldb, info_ref);
 #endif
-			Cgesv(n, nrhs, A, lda, ipiv, B, ldb, &info);
+			Cgesv(n, nrhs, A, lda, ipiv, B, ldb, info);
 
 			if (info < 0) {
 			    printf("info %d error\n", -(int) info);
