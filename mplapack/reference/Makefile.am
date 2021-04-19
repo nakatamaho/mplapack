@@ -85,29 +85,10 @@ endif
 endif
 
 # Cdrscl.cpp - iMlazlr.cpp converted by fable + script. build fine with MPFR. 359 files
-# Cbdsqr.cpp - iMlaenv.cpp converted by fable + script + small fix by hand. 289 files.
-# total 648 files
+# Cbdsqr.cpp - iMlaenv.cpp converted by fable + script + small fix by hand. 319 files
+# total 678
 
 MPLAPACK_SOURCES = \
-Rtgevc.cpp \
-Rlanhs.cpp \
-Rhgeqz.cpp \
-Rtgsen.cpp \
-Rsprfs.cpp \
-Rspcon.cpp \
-Ropmtr.cpp \
-Rsyrfs.cpp \
-Rlatps.cpp \
-Rppcon.cpp \
-Rpprfs.cpp \
-Clags2.cpp \
-Clapll.cpp \
-Csycon.cpp \
-Csyrfs.cpp \
-Clasyf_aa.cpp \
-Clansp.cpp \
-Cspcon.cpp \
-Csprfs.cpp \
 Cdrscl.cpp \
 Cgbsv.cpp \
 Cgbtf2.cpp \
@@ -766,5 +747,25 @@ Clahef_aa.cpp \
 Chpcon.cpp \
 Checon.cpp \
 Cptrfs.cpp \
-Cherfs.cpp
-#iMlaenv.cpp
+Rtgevc.cpp \
+Rlanhs.cpp \
+Rhgeqz.cpp \
+Rtgsen.cpp \
+Rsprfs.cpp \
+Rspcon.cpp \
+Ropmtr.cpp \
+Rsyrfs.cpp \
+Rlatps.cpp \
+Rppcon.cpp \
+Rpprfs.cpp \
+Clags2.cpp \
+Clapll.cpp \
+Csycon.cpp \
+Csyrfs.cpp \
+Clasyf_aa.cpp \
+Clansp.cpp \
+Cspcon.cpp \
+Csprfs.cpp \
+Rlalsa.cpp \
+Cherfs.cpp \
+iMlaenv.cpp
