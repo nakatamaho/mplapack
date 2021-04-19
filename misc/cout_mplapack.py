@@ -599,7 +599,7 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
         else:
           op = "(cmn"
       else:
-        if (prev_tok is not None and prev_tok.is_identifier() and prev_tok.value != "min" and prev_tok.value != "dsign" and prev_tok.value != "dsqrt" and prev_tok.value != "dble" and prev_tok.value != "dimag" and prev_tok.value != "max" and prev_tok.value != "abs"  and prev_tok.value != "sqrt" and prev_tok.value != "log2" and prev_tok.value != "pow2" and prev_tok.value != "dlamch" and prev_tok.value != "int" and prev_tok.value != "lsame" and prev_tok.value != "ddot" and prev_tok.value != "pow2" and prev_tok.value != "disnan" and prev_tok.value != "mod" and prev_tok.value != "dabs" and prev_tok.value != "cdabs" and prev_tok.value != "dconjg" and prev_tok.value != "dcabs1" and prev_tok.value != "dcmplx" and prev_tok.value != "ceiling" and prev_tok.value != "cos" and prev_tok.value != "sin" and prev_tok.value != "ilaenv"  and prev_tok.value != "disnan" and prev_tok.value != "dlaisnan" and prev_tok.value != "idamax" and prev_tok.value != "ladiv2" and prev_tok.value != "zladiv2" and prev_tok.value != "sign" and prev_tok.value != "iladlr" and prev_tok.value != "iladlc" and prev_tok.value != "stack" and prev_tok.value != "log" and prev_tok.value != "dnrm2" and prev_tok.value != "dlapy2" and prev_tok.value != "dlanst" and prev_tok.value != "dlansy" and prev_tok.value != "idamax" and prev_tok.value != "izamax" and prev_tok.value != "conjg" and prev_tok.value != "dznrm2" and prev_tok.value != "dlapy3"  and prev_tok.value != "atan2" and prev_tok.value != "zdotc" and prev_tok.value != "ilazlr" and prev_tok.value != "zladiv" and prev_tok.value != "zlanhp" and prev_tok.value != "dlansb" and prev_tok.value != "zlanhb" and prev_tok.value != "dlansp" and prev_tok.value != "select" and prev_tok.value != "dlange" and prev_tok.value != "dlantb" and prev_tok.value != "dlantp" and prev_tok.value != "dlantr" and prev_tok.value != "zlanhb" and prev_tok.value != "zlanhe" and prev_tok.value != "zlantb" and prev_tok.value != "zlantp" and prev_tok.value != "zlanhp" and prev_tok.value != "zlanht" and prev_tok.value != "zlansp" and prev_tok.value != "zlansy" and prev_tok.value != "zlange" and prev_tok.value !="dasum" and prev_tok.value !="dla_porcond" and prev_tok.value != "zdotu" and prev_tok.value != "zla_gbrcond_c" and prev_tok.value != "zla_gbrcond_x" and prev_tok.value != "zla_gbrpvgrw" and prev_tok.value != "zla_gercond_c" and prev_tok.value != "zla_gercond_x" and prev_tok.value != "zla_gerpvgrw" and prev_tok.value != "zla_hercond_c" and prev_tok.value != "zla_hercond_x" and prev_tok.value != "zla_herpvgrw" and prev_tok.value != "zla_porcond_c" and prev_tok.value != "zla_porcond_x" and prev_tok.value != "zla_porpvgrw" and prev_tok.value != "zla_syrcond_c" and prev_tok.value != "zla_syrcond_x" and prev_tok.value != "zla_syrpvgrw" and prev_tok.value != "zlangb" and prev_tok.value != "zlangt" and prev_tok.value != "zlanhs" and prev_tok.value != "zlantr" and prev_tok.value != "dzasum" and prev_tok.value != "dzsum1" and prev_tok.value != "dla_gbrcond" and prev_tok.value != "dla_gbrpvgrw" and prev_tok.value != "dla_gercond" and prev_tok.value != "dla_gerpvgrw" and prev_tok.value != "dla_porpvgrw" and prev_tok.value != "dla_syrcond" and prev_tok.value != "dla_syrpvgrw" and prev_tok.value != "dladiv2" and prev_tok.value != "dlaneg" and prev_tok.value != "dlangb" and prev_tok.value != "dlangt" and prev_tok.value != "dlanhs" and prev_tok.value != "rpvgrw" and prev_tok.value != "fchar" and prev_tok.value != "ichar"):
+        if (prev_tok is not None and prev_tok.is_identifier() and prev_tok.value != "min" and prev_tok.value != "dsign" and prev_tok.value != "dsqrt" and prev_tok.value != "dble" and prev_tok.value != "dimag" and prev_tok.value != "max" and prev_tok.value != "abs"  and prev_tok.value != "sqrt" and prev_tok.value != "log2" and prev_tok.value != "pow2" and prev_tok.value != "dlamch" and prev_tok.value != "int" and prev_tok.value != "lsame" and prev_tok.value != "ddot" and prev_tok.value != "pow2" and prev_tok.value != "disnan" and prev_tok.value != "mod" and prev_tok.value != "dabs" and prev_tok.value != "cdabs" and prev_tok.value != "dconjg" and prev_tok.value != "dcabs1" and prev_tok.value != "dcmplx" and prev_tok.value != "ceiling" and prev_tok.value != "cos" and prev_tok.value != "sin" and prev_tok.value != "ilaenv"  and prev_tok.value != "disnan" and prev_tok.value != "dlaisnan" and prev_tok.value != "idamax" and prev_tok.value != "ladiv2" and prev_tok.value != "zladiv2" and prev_tok.value != "sign" and prev_tok.value != "iladlr" and prev_tok.value != "iladlc" and prev_tok.value != "stack" and prev_tok.value != "log" and prev_tok.value != "dnrm2" and prev_tok.value != "dlapy2" and prev_tok.value != "dlanst" and prev_tok.value != "dlansy" and prev_tok.value != "idamax" and prev_tok.value != "izamax" and prev_tok.value != "conjg" and prev_tok.value != "dznrm2" and prev_tok.value != "dlapy3"  and prev_tok.value != "atan2" and prev_tok.value != "zdotc" and prev_tok.value != "ilazlr" and prev_tok.value != "zladiv" and prev_tok.value != "zlanhp" and prev_tok.value != "dlansb" and prev_tok.value != "zlanhb" and prev_tok.value != "dlansp" and prev_tok.value != "select" and prev_tok.value != "dlange" and prev_tok.value != "dlantb" and prev_tok.value != "dlantp" and prev_tok.value != "dlantr" and prev_tok.value != "zlanhb" and prev_tok.value != "zlanhe" and prev_tok.value != "zlantb" and prev_tok.value != "zlantp" and prev_tok.value != "zlanhp" and prev_tok.value != "zlanht" and prev_tok.value != "zlansp" and prev_tok.value != "zlansy" and prev_tok.value != "zlange" and prev_tok.value !="dasum" and prev_tok.value !="dla_porcond" and prev_tok.value != "zdotu" and prev_tok.value != "zla_gbrcond_c" and prev_tok.value != "zla_gbrcond_x" and prev_tok.value != "zla_gbrpvgrw" and prev_tok.value != "zla_gercond_c" and prev_tok.value != "zla_gercond_x" and prev_tok.value != "zla_gerpvgrw" and prev_tok.value != "zla_hercond_c" and prev_tok.value != "zla_hercond_x" and prev_tok.value != "zla_herpvgrw" and prev_tok.value != "zla_porcond_c" and prev_tok.value != "zla_porcond_x" and prev_tok.value != "zla_porpvgrw" and prev_tok.value != "zla_syrcond_c" and prev_tok.value != "zla_syrcond_x" and prev_tok.value != "zla_syrpvgrw" and prev_tok.value != "zlangb" and prev_tok.value != "zlangt" and prev_tok.value != "zlanhs" and prev_tok.value != "zlantr" and prev_tok.value != "dzasum" and prev_tok.value != "dzsum1" and prev_tok.value != "dla_gbrcond" and prev_tok.value != "dla_gbrpvgrw" and prev_tok.value != "dla_gercond" and prev_tok.value != "dla_gerpvgrw" and prev_tok.value != "dla_porpvgrw" and prev_tok.value != "dla_syrcond" and prev_tok.value != "dla_syrpvgrw" and prev_tok.value != "dladiv2" and prev_tok.value != "dlaneg" and prev_tok.value != "dlangb" and prev_tok.value != "dlangt" and prev_tok.value != "dlanhs" and prev_tok.value != "rpvgrw" and prev_tok.value != "fchar" and prev_tok.value != "ichar" and prev_tok.value != "cabs1" and prev_tok.value != "abs1" and prev_tok.value != "iparam2stage"): 
           a=convert_tokens(conv_info=conv_info,tokens=tok.value,commas=True)
           aa = a.split(',')
           if (len(aa)==1):  # one dimensional array
@@ -613,11 +613,17 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
           else:
             aa0=aa[0].split()
             aa1=aa[1].split()
-            if (len(aa)==2 and len(aa0) ==1 and len(aa1)==1): # two dimensional array with i,j
+            if (len(aa)==2): # two dimensional array with i,j
               op = "["
               ed ="]"
-              aaa="(" + aa[0].strip() + "-1)"
-              bbb="(" + aa[1].strip() + "-1)*ld" + prev_tok.value
+              if len(aa0)!=1:
+                aaa="((" + aa[0].strip() + ")-1)"
+              else:
+                aaa="(" + aa[0].strip() + "-1)"
+              if len(aa1)!=1:
+                bbb="((" + aa[1].strip() + ")-1)*ld" + prev_tok.value
+              else:
+                bbb="(" + aa[1].strip() + "-1)*ld" + prev_tok.value
               remove0= "+(1-1)*ld" + prev_tok.value
               remove1= "(1-1)+"
               final = op + aaa + "+" + bbb + ed
@@ -625,23 +631,39 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
               __final = _final.replace(remove1,'')
               rapp(__final)
               continue
-            else: # two dimensional array with some tokens.
+            elif (len(aa)==3): # XXX two dimensional array with A[max(i,j),k] , A[max(i, max(j,k)] type
+              aa2=aa[2].split()
               op = "["
-              ed = "]"
-              if len(aa0)!=1:
-                aaaa = "(" + aa[0] + ")"
+              ed ="]"
+              if '(' in aa[0] and ')' in aa[1]:
+                aaaa = aa[0].strip() + ',' + aa[1].strip()
+                if len(aa2)!=1:
+                  bbbb = '(' + aa[2].strip() + ')'
+                else:
+                  bbbb = aa[2].strip()
+              elif '(' in aa[1] and ')' in aa[2]:
+                if len(aa0)!=1:
+                  aaaa = '(' + aa[0].strip() + ')'
+                else:
+                  aaaa = aa[0].strip()
+                bbbb = aa[1].strip() + ',' + aa[2].strip()
               else:
-                aaaa = aa[0]
-              if len(aa1)!=1:
-                bbbb = "(" + aa[1].strip() + ")"
-              else:
-                bbbb = aa[1].strip()
+                final = aa[0].strip() + ',' + aa[1].strip() + ',' + aa[2].strip()
+                rapp(final)
+                continue
               final =op + "(" + aaaa + "-1)" + "+" + "(" + bbbb + "-1)*ld" + prev_tok.value + ed
               remove0= "+(1-1)*ld" + prev_tok.value
               remove1= "(1-1)+"
               _final = final.replace(remove0,'')
               __final = _final.replace(remove1,'')
               rapp(__final)
+              continue
+            else:
+              aaa=','.join(aa)
+              op = "("
+              ed = ")"
+              final = op + aaa + ed
+              rapp(final)
               continue
         elif (prev_tok is not None and prev_tok.is_identifier() and prev_tok.value == "dble"):
           a=convert_tokens(conv_info=conv_info,tokens=tok.value,commas=True)
