@@ -79,7 +79,7 @@ void Rspevd(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL 
         } else {
             if (wantz) {
                 liwmin = 3 + 5 * n;
-                lwmin = 1 + 6 * n + pow2(n);
+                lwmin = 1 + 6 * n + n * n;
             } else {
                 liwmin = 1;
                 lwmin = 2 * n;
