@@ -28,6 +28,7 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
+#include <string.h>
 
 #define subnamlen 16
 

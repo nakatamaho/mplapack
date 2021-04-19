@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL abs1(COMPLEX ff) { return (abs(ff.real()) + abs(ff.imag())); }
+
 void Cppcon(const char *uplo, INTEGER const n, COMPLEX *ap, REAL const anorm, REAL &rcond, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool upper = false;
@@ -70,7 +72,6 @@ void Cppcon(const char *uplo, INTEGER const n, COMPLEX *ap, REAL const anorm, RE
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1(zdum) = abs(zdum.real()) + abs(zdum.imag());
     //     ..
     //     .. Executable Statements ..
     //

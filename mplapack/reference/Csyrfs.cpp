@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL abs1(COMPLEX zdum) { return (abs(zdum.real()) + abs(zdum.imag())); }
+
 void Csyrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *af, INTEGER const ldaf, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, REAL *ferr, REAL *berr, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool upper = false;
@@ -78,7 +80,6 @@ void Csyrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1(zdum) = abs(zdum.real()) + abs(zdum.imag());
     //     ..
     //     .. Executable Statements ..
     //

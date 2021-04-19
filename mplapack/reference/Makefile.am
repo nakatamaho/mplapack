@@ -1,8 +1,8 @@
 lib_LTLIBRARIES = 
 
-#if ENABLE_MPFR
-#lib_LTLIBRARIES += libmplapack_mpfr.la
-#endif
+if ENABLE_MPFR
+lib_LTLIBRARIES += libmplapack_mpfr.la
+endif
 
 if ENABLE_GMP
 lib_LTLIBRARIES += libmplapack_gmp.la
