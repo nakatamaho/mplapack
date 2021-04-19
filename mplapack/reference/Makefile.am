@@ -89,6 +89,7 @@ endif
 # total 648 files
 
 MPLAPACK_SOURCES = \
+Rtgevc.cpp \
 Rlanhs.cpp \
 Rhgeqz.cpp \
 Rtgsen.cpp \
