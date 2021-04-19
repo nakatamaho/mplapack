@@ -137,11 +137,11 @@ statement_10:
         //        ASCII character set
         //
         if (ic >= 97 && ic <= 122) {
-	  subnam[(1 - 1)] = fchar(ic - 32);
+            subnam[(1 - 1)] = fchar(ic - 32);
             for (i = 2; i <= 6; i = i + 1) {
                 ic = ichar[subnam[(i - 1)] - 1];
                 if (ic >= 97 && ic <= 122) {
-		  subnam[(i - 1)] = fchar(ic - 32);
+                    subnam[(i - 1)] = fchar(ic - 32);
                 }
             }
         }
@@ -155,7 +155,7 @@ statement_10:
             for (i = 2; i <= 6; i = i + 1) {
                 ic = ichar[subnam[(i - 1) + (i - 1) * ldsubnam] - 1];
                 if ((ic >= 129 && ic <= 137) || (ic >= 145 && ic <= 153) || (ic >= 162 && ic <= 169)) {
-		  subnam[(i - 1)] = fchar(ic + 64);
+                    subnam[(i - 1)] = fchar(ic + 64);
                 }
             }
         }
