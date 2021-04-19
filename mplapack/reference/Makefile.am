@@ -89,17 +89,19 @@ endif
 # total 648 files
 
 MPLAPACK_SOURCES = \
-Clatps.cpp \
-Cppcon.cpp \
-Cpprfs.cpp \
-Cpocon.cpp \
-Cporfs.cpp \
-Cherfs.cpp \
-Chprfs.cpp \
-Clahef_aa.cpp \
-Chpcon.cpp \
-Checon.cpp \
-Cherfs.cpp \
+Ropmtr.cpp \
+Rsyrfs.cpp \
+Rlatps.cpp \
+Rppcon.cpp \
+Rpprfs.cpp \
+Clags2.cpp \
+Clapll.cpp \
+Csycon.cpp \
+Csyrfs.cpp \
+Clasyf_aa.cpp \
+Clansp.cpp \
+Cspcon.cpp \
+Csprfs.cpp \
 Cdrscl.cpp \
 Cgbsv.cpp \
 Cgbtf2.cpp \
@@ -746,5 +748,17 @@ Rtrevc3.cpp \
 Rtrsen.cpp \
 Rtrsna.cpp \
 Rtrsyl.cpp \
-Rtrtri.cpp
+Rtrtri.cpp \
+Clatps.cpp \
+Cppcon.cpp \
+Cpprfs.cpp \
+Cpocon.cpp \
+Cporfs.cpp \
+Cherfs.cpp \
+Chprfs.cpp \
+Clahef_aa.cpp \
+Chpcon.cpp \
+Checon.cpp \
+Cptrfs.cpp \
+Cherfs.cpp
 #iMlaenv.cpp

@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rsyrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *af, INTEGER const ldaf, INTEGER *ipiv, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL *ferr, REAL *berr, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rpprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REAL *afp, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL *ferr, REAL *berr, REAL *work, INTEGER *iwork, INTEGER &info) {
     bool upper = false;
     INTEGER j = 0;
     const REAL zero = 0.0;
@@ -43,9 +43,11 @@ void Rsyrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
     REAL lstres = 0.0;
     const REAL one = 1.0;
     INTEGER i = 0;
+    INTEGER kk = 0;
     INTEGER k = 0;
     REAL s = 0.0;
     REAL xk = 0.0;
+    INTEGER ik = 0;
     const REAL two = 2.0e+0;
     const INTEGER itmax = 5;
     INTEGER kase = 0;
@@ -86,17 +88,13 @@ void Rsyrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
         info = -2;
     } else if (nrhs < 0) {
         info = -3;
-    } else if (lda < max((INTEGER)1, n)) {
-        info = -5;
-    } else if (ldaf < max((INTEGER)1, n)) {
-        info = -7;
     } else if (ldb < max((INTEGER)1, n)) {
-        info = -10;
+        info = -7;
     } else if (ldx < max((INTEGER)1, n)) {
-        info = -12;
+        info = -9;
     }
     if (info != 0) {
-        Mxerbla("RsyrFS", -info);
+        Mxerbla("Rpprfs", -info);
         return;
     }
     //
@@ -131,7 +129,7 @@ void Rsyrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
         //        Compute residual R = B - A * X
         //
         Rcopy(n, &b[(j - 1) * ldb], 1, &work[(n + 1) - 1], 1);
-        Rsymv(uplo, n, -one, a, lda, &x[(j - 1) * ldx], 1, one, &work[(n + 1) - 1], 1);
+        Rspmv(uplo, n, -one, ap, &x[(j - 1) * ldx], 1, one, &work[(n + 1) - 1], 1);
         //
         //        Compute componentwise relative backward error from formula
         //
@@ -148,26 +146,33 @@ void Rsyrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
         //
         //        Compute abs(A)*abs(X) + abs(B).
         //
+        kk = 1;
         if (upper) {
             for (k = 1; k <= n; k = k + 1) {
                 s = zero;
                 xk = abs(x[(k - 1) + (j - 1) * ldx]);
+                ik = kk;
                 for (i = 1; i <= k - 1; i = i + 1) {
-                    work[i - 1] += abs(a[(i - 1) + (k - 1) * lda]) * xk;
-                    s += abs(a[(i - 1) + (k - 1) * lda]) * abs(x[(i - 1) + (j - 1) * ldx]);
+                    work[i - 1] += abs(ap[ik - 1]) * xk;
+                    s += abs(ap[ik - 1]) * abs(x[(i - 1) + (j - 1) * ldx]);
+                    ik++;
                 }
-                work[k - 1] += abs(a[(k - 1) + (k - 1) * lda]) * xk + s;
+                work[k - 1] += abs(ap[(kk + k - 1) - 1]) * xk + s;
+                kk += k;
             }
         } else {
             for (k = 1; k <= n; k = k + 1) {
                 s = zero;
                 xk = abs(x[(k - 1) + (j - 1) * ldx]);
-                work[k - 1] += abs(a[(k - 1) + (k - 1) * lda]) * xk;
+                work[k - 1] += abs(ap[kk - 1]) * xk;
+                ik = kk + 1;
                 for (i = k + 1; i <= n; i = i + 1) {
-                    work[i - 1] += abs(a[(i - 1) + (k - 1) * lda]) * xk;
-                    s += abs(a[(i - 1) + (k - 1) * lda]) * abs(x[(i - 1) + (j - 1) * ldx]);
+                    work[i - 1] += abs(ap[ik - 1]) * xk;
+                    s += abs(ap[ik - 1]) * abs(x[(i - 1) + (j - 1) * ldx]);
+                    ik++;
                 }
                 work[k - 1] += s;
+                kk += (n - k + 1);
             }
         }
         s = zero;
@@ -190,7 +195,7 @@ void Rsyrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
             //
             //           Update solution and try again.
             //
-            Rsytrs(uplo, n, 1, af, ldaf, ipiv, &work[(n + 1) - 1], n, info);
+            Rpptrs(uplo, n, 1, afp, &work[(n + 1) - 1], n, info);
             Raxpy(n, one, &work[(n + 1) - 1], 1, &x[(j - 1) * ldx], 1);
             lstres = berr[j - 1];
             count++;
@@ -235,7 +240,7 @@ void Rsyrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
                 //
                 //              Multiply by diag(W)*inv(A**T).
                 //
-                Rsytrs(uplo, n, 1, af, ldaf, ipiv, &work[(n + 1) - 1], n, info);
+                Rpptrs(uplo, n, 1, afp, &work[(n + 1) - 1], n, info);
                 for (i = 1; i <= n; i = i + 1) {
                     work[(n + i) - 1] = work[i - 1] * work[(n + i) - 1];
                 }
@@ -246,7 +251,7 @@ void Rsyrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
                 for (i = 1; i <= n; i = i + 1) {
                     work[(n + i) - 1] = work[i - 1] * work[(n + i) - 1];
                 }
-                Rsytrs(uplo, n, 1, af, ldaf, ipiv, &work[(n + 1) - 1], n, info);
+                Rpptrs(uplo, n, 1, afp, &work[(n + 1) - 1], n, info);
             }
             goto statement_100;
         }
@@ -263,6 +268,6 @@ void Rsyrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
         //
     }
     //
-    //     End of RsyrFS
+    //     End of Rpprfs
     //
 }
