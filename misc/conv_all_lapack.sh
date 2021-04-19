@@ -37,7 +37,6 @@ cat ${oldfilename}.cpp | bash BLAS_LIST | bash LAPACK_LIST | sed 's/dlamch/Rlamc
 mv ${newfilename}.cpp_  ${newfilename}.cpp
 sed -i -e 's/const &/const /g' ${newfilename}.cpp
 sed -i -e 's/, a\[/, \&a\[/g' ${newfilename}.cpp
-sed -i -e 's/, ab\[/, \&ab\[/g' ${newfilename}.cpp
 sed -i -e 's/, b\[/, \&b\[/g' ${newfilename}.cpp
 sed -i -e 's/, c\[/, \&c\[/g' ${newfilename}.cpp
 sed -i -e 's/, d\[/, \&d\[/g' ${newfilename}.cpp
@@ -48,7 +47,10 @@ sed -i -e 's/, u\[/, \&u\[/g' ${newfilename}.cpp
 sed -i -e 's/, q\[/, \&q\[/g' ${newfilename}.cpp
 sed -i -e 's/, t\[/, \&t\[/g' ${newfilename}.cpp
 sed -i -e 's/, w\[/, \&w\[/g' ${newfilename}.cpp
+sed -i -e 's/, x\[/, \&x\[/g' ${newfilename}.cpp
 sed -i -e 's/, z\[/, \&z\[/g' ${newfilename}.cpp
+sed -i -e 's/, ab\[/, \&ab\[/g' ${newfilename}.cpp
+sed -i -e 's/, ap\[/, \&ap\[/g' ${newfilename}.cpp
 sed -i -e 's/, vt\[/, \&vt\[/g' ${newfilename}.cpp
 sed -i -e 's/, tau\[/, \&tau\[/g' ${newfilename}.cpp
 sed -i -e 's/, dum\[/, \&dum\[/g' ${newfilename}.cpp

@@ -31,9 +31,9 @@
 #ifndef _MPLAPACK_GMP_H_
 #define _MPLAPACK_GMP_H_
 
+#include "mplapack_config.h"
 #include "gmpxx.h"
 #include "mpc_class.h"
-#include "mplapack_config.h"
 
 bool Risnan(mpf_class const din);
 bool Rlaisnan(mpf_class const din1, mpf_class const din2);
@@ -44,6 +44,7 @@ mpf_class Clanhb(const char *norm, const char *uplo, mplapackint const n, mplapa
 mpf_class Clanhe(const char *norm, const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mpf_class *work);
 mpf_class Clanhp(const char *norm, const char *uplo, mplapackint const n, mpc_class *ap, mpf_class *work);
 mpf_class Clanht(const char *norm, mplapackint const n, mpf_class *d, mpc_class *e);
+mpf_class Clansp(const char *norm, const char *uplo, mplapackint const n, mpc_class *ap, mpf_class *work);
 mpf_class Clansy(const char *norm, const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mpf_class *work);
 mpf_class RCsum1(mplapackint const n, mpc_class *cx, mplapackint const incx);
 mpf_class Rla_gbrpvgrw(mplapackint const n, mplapackint const kl, mplapackint const ku, mplapackint const ncols, mpf_class *ab, mplapackint const ldab, mpf_class *afb, mplapackint const ldafb);
@@ -64,6 +65,8 @@ mpf_class Rlantr(const char *norm, const char *uplo, const char *diag, mplapacki
 mpf_class Rlapy2(mpf_class const x, mpf_class const y);
 mpf_class Rlapy3(mpf_class const x, mpf_class const y, mpf_class const z);
 mpf_class abs1(mpc_class ff);
+mpf_class abs1(mpc_class z);
+mpf_class abs2(mpc_class z);
 mpf_class abssq(mpc_class ff);
 mpf_class cabs1(mpc_class z);
 mpf_class cabs2(mpc_class z);
@@ -125,11 +128,14 @@ void Cgttrs(const char *trans, mplapackint const n, mplapackint const nrhs, mpc_
 void Cgtts2(mplapackint const itrans, mplapackint const n, mplapackint const nrhs, mpc_class *dl, mpc_class *d, mpc_class *du, mpc_class *du2, mplapackint *ipiv, mpc_class *b, mplapackint const ldb);
 void Chbev(const char *jobz, const char *uplo, mplapackint const n, mplapackint const kd, mpc_class *ab, mplapackint const ldab, mpf_class *w, mpc_class *z, mplapackint const ldz, mpc_class *work, mpf_class *rwork, mplapackint &info);
 void Chbtrd(const char *vect, const char *uplo, mplapackint const n, mplapackint const kd, mpc_class *ab, mplapackint const ldab, mpf_class *d, mpf_class *e, mpc_class *q, mplapackint const ldq, mpc_class *work, mplapackint &info);
+void Checon(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpf_class const anorm, mpf_class &rcond, mpc_class *work, mplapackint &info);
 void Cheev(const char *jobz, const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mpf_class *w, mpc_class *work, mplapackint const lwork, mpf_class *rwork, mplapackint &info);
 void Chegs2(mplapackint const itype, const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb, mplapackint &info);
 void Chegst(mplapackint const itype, const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb, mplapackint &info);
+void Cherfs(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *a, mplapackint const lda, mpc_class *af, mplapackint const ldaf, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mpc_class *x, mplapackint const ldx, mpf_class *ferr, mpf_class *berr, mpc_class *work, mpf_class *rwork, mplapackint &info);
 void Chesv(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mpc_class *work, mplapackint const lwork, mplapackint &info);
 void Chesv_rook(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mpc_class *work, mplapackint const lwork, mplapackint &info);
+void Chesvx(const char *fact, const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *a, mplapackint const lda, mpc_class *af, mplapackint const ldaf, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mpc_class *x, mplapackint const ldx, mpf_class &rcond, mpf_class *ferr, mpf_class *berr, mpc_class *work, mplapackint const lwork, mpf_class *rwork, mplapackint &info);
 void Cheswapr(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint const i1, mplapackint const i2);
 void Chetd2(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mpf_class *d, mpf_class *e, mpc_class *tau, mplapackint &info);
 void Chetf2(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mplapackint &info);
@@ -137,6 +143,7 @@ void Chetf2_rk(const char *uplo, mplapackint const n, mpc_class *a, mplapackint 
 void Chetf2_rook(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mplapackint &info);
 void Chetrd(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mpf_class *d, mpf_class *e, mpc_class *tau, mpc_class *work, mplapackint const lwork, mplapackint &info);
 void Chetrf(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *work, mplapackint const lwork, mplapackint &info);
+void Chetrf_aa(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *work, mplapackint const lwork, mplapackint &info);
 void Chetrf_rk(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *e, mplapackint *ipiv, mpc_class *work, mplapackint const lwork, mplapackint &info);
 void Chetrf_rook(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *work, mplapackint const lwork, mplapackint &info);
 void Chetri(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *work, mplapackint &info);
@@ -151,8 +158,11 @@ void Chetrs_3(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc
 void Chetrs_aa(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mpc_class *work, mplapackint const lwork, mplapackint &info);
 void Chetrs_rook(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mplapackint &info);
 void Chfrk(const char *transr, const char *uplo, const char *trans, mplapackint const n, mplapackint const k, mpf_class const alpha, mpc_class *a, mplapackint const lda, mpf_class const beta, mpc_class *c);
+void Chpcon(const char *uplo, mplapackint const n, mpc_class *ap, mplapackint *ipiv, mpf_class const anorm, mpf_class &rcond, mpc_class *work, mplapackint &info);
 void Chpev(const char *jobz, const char *uplo, mplapackint const n, mpc_class *ap, mpf_class *w, mpc_class *z, mplapackint const ldz, mpc_class *work, mpf_class *rwork, mplapackint &info);
+void Chprfs(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *ap, mpc_class *afp, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mpc_class *x, mplapackint const ldx, mpf_class *ferr, mpf_class *berr, mpc_class *work, mpf_class *rwork, mplapackint &info);
 void Chpsv(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *ap, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mplapackint &info);
+void Chpsvx(const char *fact, const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *ap, mpc_class *afp, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mpc_class *x, mplapackint const ldx, mpf_class &rcond, mpf_class *ferr, mpf_class *berr, mpc_class *work, mpf_class *rwork, mplapackint &info);
 void Chptrd(const char *uplo, mplapackint const n, mpc_class *ap, mpf_class *d, mpf_class *e, mpc_class *tau, mplapackint &info);
 void Chptrf(const char *uplo, mplapackint const n, mpc_class *ap, mplapackint *ipiv, mplapackint &info);
 void Chptrs(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *ap, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mplapackint &info);
@@ -167,13 +177,16 @@ void Clacrm(mplapackint const m, mplapackint const n, mpc_class *a, mplapackint 
 void Clacrt(mplapackint const n, mpc_class *cx, mplapackint const incx, mpc_class *cy, mplapackint const incy, mpc_class const c, mpc_class const s);
 void Claesy(mpc_class const a, mpc_class const b, mpc_class const c, mpc_class &rt1, mpc_class &rt2, mpc_class &evscal, mpc_class &cs1, mpc_class &sn1);
 void Claev2(mpc_class const a, mpc_class const b, mpc_class const c, mpf_class &rt1, mpf_class &rt2, mpf_class &cs1, mpc_class &sn1);
+void Clags2(bool const upper, mpf_class const a1, mpc_class const a2, mpf_class const a3, mpf_class const b1, mpc_class const b2, mpf_class const b3, mpf_class &csu, mpc_class &snu, mpf_class &csv, mpc_class &snv, mpf_class csq, mpc_class snq);
 void Clagtm(const char *trans, mplapackint const n, mplapackint const nrhs, mpf_class const alpha, mpc_class *dl, mpc_class *d, mpc_class *du, mpc_class *x, mplapackint const ldx, mpf_class const beta, mpc_class *b, mplapackint const ldb);
 void Clahef(const char *uplo, mplapackint const n, mplapackint const nb, mplapackint &kb, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *w, mplapackint const ldw, mplapackint &info);
+void Clahef_aa(const char *uplo, mplapackint const j1, mplapackint const m, mplapackint const nb, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *h, mplapackint const ldh, mpc_class *work);
 void Clahef_rk(const char *uplo, mplapackint const n, mplapackint const nb, mplapackint &kb, mpc_class *a, mplapackint const lda, mpc_class *e, mplapackint *ipiv, mpc_class *w, mplapackint const ldw, mplapackint &info);
 void Clahef_rook(const char *uplo, mplapackint const n, mplapackint const nb, mplapackint &kb, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *w, mplapackint const ldw, mplapackint &info);
 void Clahqr(bool const wantt, bool const wantz, mplapackint const n, mplapackint const ilo, mplapackint const ihi, mpc_class *h, mplapackint const ldh, mpc_class *w, mplapackint const iloz, mplapackint const ihiz, mpc_class *z, mplapackint const ldz, mplapackint &info);
 void Clahr2(mplapackint const n, mplapackint const k, mplapackint const nb, mpc_class *a, mplapackint const lda, mpc_class *tau, mpc_class *t, mplapackint const ldt, mpc_class *y, mplapackint const ldy);
 void Clamtsqr(const char *side, const char *trans, mplapackint const m, mplapackint const n, mplapackint const k, mplapackint const mb, mplapackint const nb, mpc_class *a, mplapackint const lda, mpc_class *t, mplapackint const ldt, mpc_class *c, mplapackint const ldc, mpc_class *work, mplapackint const lwork, mplapackint &info);
+void Clapll(mplapackint const n, mpc_class *x, mplapackint const incx, mpc_class *y, mplapackint const incy, mpf_class &ssmin);
 void Clapmr(bool const forwrd, mplapackint const m, mplapackint const n, mpc_class *x, mplapackint const ldx, mplapackint *k);
 void Clapmt(bool const forwrd, mplapackint const m, mplapackint const n, mpc_class *x, mplapackint const ldx, mplapackint *k);
 void Claqgb(mplapackint const m, mplapackint const n, mplapackint const kl, mplapackint const ku, mpc_class *ab, mplapackint const ldab, mpf_class *r, mpf_class *c, mpf_class const rowcnd, mpf_class const colcnd, mpf_class const amax, char *equed);
@@ -214,8 +227,10 @@ void Classq(mplapackint const n, mpc_class *x, mplapackint const incx, mpf_class
 void Claswlq(mplapackint const m, mplapackint const n, mplapackint const mb, mplapackint const nb, mpc_class *a, mplapackint const lda, mpc_class *t, mplapackint const ldt, mpc_class *work, mplapackint const lwork, mplapackint &info);
 void Claswp(mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint const k1, mplapackint const k2, mplapackint *ipiv, mplapackint const incx);
 void Clasyf(const char *uplo, mplapackint const n, mplapackint const nb, mplapackint &kb, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *w, mplapackint const ldw, mplapackint &info);
+void Clasyf_aa(const char *uplo, mplapackint const j1, mplapackint const m, mplapackint const nb, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *h, mplapackint const ldh, mpc_class *work);
 void Clasyf_rk(const char *uplo, mplapackint const n, mplapackint const nb, mplapackint &kb, mpc_class *a, mplapackint const lda, mpc_class *e, mplapackint *ipiv, mpc_class *w, mplapackint const ldw, mplapackint &info);
 void Clasyf_rook(const char *uplo, mplapackint const n, mplapackint const nb, mplapackint &kb, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *w, mplapackint const ldw, mplapackint &info);
+void Clatps(const char *uplo, const char *trans, const char *diag, const char *normin, mplapackint const n, mpc_class *ap, mpc_class *x, mpf_class &scale, mpf_class *cnorm, mplapackint &info);
 void Clatrd(const char *uplo, mplapackint const n, mplapackint const nb, mpc_class *a, mplapackint const lda, mpf_class *e, mpc_class *tau, mpc_class *w, mplapackint const ldw);
 void Clatrs(const char *uplo, const char *trans, const char *diag, const char *normin, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *x, mpf_class &scale, mpf_class *cnorm, mplapackint &info);
 void Clatrz(mplapackint const m, mplapackint const n, mplapackint const l, mpc_class *a, mplapackint const lda, mpc_class *tau, mpc_class *work);
@@ -225,43 +240,59 @@ void Claunhr_col_getrfnp2(mplapackint const m, mplapackint const n, mpc_class *a
 void Clauu2(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint &info);
 void Clauum(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint &info);
 void Cpbequ(const char *uplo, mplapackint const n, mplapackint const kd, mpc_class *ab, mplapackint const ldab, mpf_class *s, mpf_class &scond, mpf_class &amax, mplapackint &info);
+void Cpbstf(const char *uplo, mplapackint const n, mplapackint const kd, mpc_class *ab, mplapackint const ldab, mplapackint &info);
 void Cpbsv(const char *uplo, mplapackint const n, mplapackint const kd, mplapackint const nrhs, mpc_class *ab, mplapackint const ldab, mpc_class *b, mplapackint const ldb, mplapackint &info);
 void Cpbtf2(const char *uplo, mplapackint const n, mplapackint const kd, mpc_class *ab, mplapackint const ldab, mplapackint &info);
 void Cpbtrf(const char *uplo, mplapackint const n, mplapackint const kd, mpc_class *ab, mplapackint const ldab, mplapackint &info);
 void Cpbtrs(const char *uplo, mplapackint const n, mplapackint const kd, mplapackint const nrhs, mpc_class *ab, mplapackint const ldab, mpc_class *b, mplapackint const ldb, mplapackint &info);
+void Cpocon(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mpf_class const anorm, mpf_class &rcond, mpc_class *work, mpf_class *rwork, mplapackint &info);
 void Cpoequ(mplapackint const n, mpc_class *a, mplapackint const lda, mpf_class *s, mpf_class &scond, mpf_class &amax, mplapackint &info);
+void Cporfs(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *a, mplapackint const lda, mpc_class *af, mplapackint const ldaf, mpc_class *b, mplapackint const ldb, mpc_class *x, mplapackint const ldx, mpf_class *ferr, mpf_class *berr, mpc_class *work, mpf_class *rwork, mplapackint &info);
 void Cposv(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb, mplapackint &info);
+void Cposvx(const char *fact, const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *a, mplapackint const lda, mpc_class *af, mplapackint const ldaf, char *equed, mpf_class *s, mpc_class *b, mplapackint const ldb, mpc_class *x, mplapackint const ldx, mpf_class &rcond, mpf_class *ferr, mpf_class *berr, mpc_class *work, mpf_class *rwork, mplapackint &info);
 void Cpotf2(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint &info);
 void Cpotrf(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint &info);
 void Cpotrf2(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint &info);
 void Cpotri(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint &info);
 void Cpotrs(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb, mplapackint &info);
+void Cppcon(const char *uplo, mplapackint const n, mpc_class *ap, mpf_class const anorm, mpf_class &rcond, mpc_class *work, mpf_class *rwork, mplapackint &info);
 void Cppequ(const char *uplo, mplapackint const n, mpc_class *ap, mpf_class *s, mpf_class &scond, mpf_class &amax, mplapackint &info);
+void Cpprfs(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *ap, mpc_class *afp, mpc_class *b, mplapackint const ldb, mpc_class *x, mplapackint const ldx, mpf_class *ferr, mpf_class *berr, mpc_class *work, mpf_class *rwork, mplapackint &info);
 void Cppsv(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *ap, mpc_class *b, mplapackint const ldb, mplapackint &info);
+void Cppsvx(const char *fact, const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *ap, mpc_class *afp, char *equed, mpf_class *s, mpc_class *b, mplapackint const ldb, mpc_class *x, mplapackint const ldx, mpf_class &rcond, mpf_class *ferr, mpf_class *berr, mpc_class *work, mpf_class *rwork, mplapackint &info);
 void Cpptrf(const char *uplo, mplapackint const n, mpc_class *ap, mplapackint &info);
 void Cpptrs(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *ap, mpc_class *b, mplapackint const ldb, mplapackint &info);
 void Cptcon(mplapackint const n, mpf_class *d, mpc_class *e, mpf_class const anorm, mpf_class &rcond, mpf_class *rwork, mplapackint &info);
+void Cptrfs(const char *uplo, mplapackint const n, mplapackint const nrhs, mpf_class *d, mpc_class *e, mpf_class *df, mpc_class *ef, mpc_class *b, mplapackint const ldb, mpc_class *x, mplapackint const ldx, mpf_class *ferr, mpf_class *berr, mpc_class *work, mpf_class *rwork, mplapackint &info);
 void Cptsv(mplapackint const n, mplapackint const nrhs, mpf_class *d, mpc_class *e, mpc_class *b, mplapackint const ldb, mplapackint &info);
+void Cptsvx(const char *fact, mplapackint const n, mplapackint const nrhs, mpf_class *d, mpc_class *e, mpf_class *df, mpc_class *ef, mpc_class *b, mplapackint const ldb, mpc_class *x, mplapackint const ldx, mpf_class &rcond, mpf_class *ferr, mpf_class *berr, mpc_class *work, mpf_class *rwork, mplapackint &info);
 void Cpttrf(mplapackint const n, mpf_class *d, mpc_class *e, mplapackint &info);
 void Cpttrs(const char *uplo, mplapackint const n, mplapackint const nrhs, mpf_class *d, mpc_class *e, mpc_class *b, mplapackint const ldb, mplapackint &info);
 void Cptts2(mplapackint const iuplo, mplapackint const n, mplapackint const nrhs, mpf_class *d, mpc_class *e, mpc_class *b, mplapackint const ldb);
 void Crot(mplapackint const n, mpc_class *cx, mplapackint const incx, mpc_class *cy, mplapackint const incy, mpf_class const c, mpc_class const s);
+void Cspcon(const char *uplo, mplapackint const n, mpc_class *ap, mplapackint *ipiv, mpf_class const anorm, mpf_class &rcond, mpc_class *work, mplapackint &info);
 void Cspmv(const char *uplo, mplapackint const n, mpc_class const alpha, mpc_class *ap, mpc_class *x, mplapackint const incx, mpc_class const beta, mpc_class *y, mplapackint const incy);
 void Cspr(const char *uplo, mplapackint const n, mpc_class const alpha, mpc_class *x, mplapackint const incx, mpc_class *ap);
+void Csprfs(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *ap, mpc_class *afp, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mpc_class *x, mplapackint const ldx, mpf_class *ferr, mpf_class *berr, mpc_class *work, mpf_class *rwork, mplapackint &info);
 void Cspsv(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *ap, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mplapackint &info);
+void Cspsvx(const char *fact, const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *ap, mpc_class *afp, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mpc_class *x, mplapackint const ldx, mpf_class &rcond, mpf_class *ferr, mpf_class *berr, mpc_class *work, mpf_class *rwork, mplapackint &info);
 void Csptrf(const char *uplo, mplapackint const n, mpc_class *ap, mplapackint *ipiv, mplapackint &info);
 void Csptrs(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *ap, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mplapackint &info);
 void Csteqr(const char *compz, mplapackint const n, mpf_class *d, mpf_class *e, mpc_class *z, mplapackint const ldz, mpf_class *work, mplapackint &info);
+void Csycon(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpf_class const anorm, mpf_class &rcond, mpc_class *work, mplapackint &info);
 void Csyconv(const char *uplo, const char *way, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *e, mplapackint &info);
 void Csyconvf(const char *uplo, const char *way, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *e, mplapackint *ipiv, mplapackint &info);
 void Csyconvf_rook(const char *uplo, const char *way, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *e, mplapackint *ipiv, mplapackint &info);
 void Csymv(const char *uplo, mplapackint const n, mpc_class const alpha, mpc_class *a, mplapackint const lda, mpc_class *x, mplapackint const incx, mpc_class const beta, mpc_class *y, mplapackint const incy);
 void Csyr(const char *uplo, mplapackint const n, mpc_class const alpha, mpc_class *x, mplapackint const incx, mpc_class *a, mplapackint const lda);
+void Csyrfs(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *a, mplapackint const lda, mpc_class *af, mplapackint const ldaf, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mpc_class *x, mplapackint const ldx, mpf_class *ferr, mpf_class *berr, mpc_class *work, mpf_class *rwork, mplapackint &info);
+void Csysvx(const char *fact, const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *a, mplapackint const lda, mpc_class *af, mplapackint const ldaf, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mpc_class *x, mplapackint const ldx, mpf_class &rcond, mpf_class *ferr, mpf_class *berr, mpc_class *work, mplapackint const lwork, mpf_class *rwork, mplapackint &info);
 void Csyswapr(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint const i1, mplapackint const i2);
 void Csytf2(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mplapackint &info);
 void Csytf2_rk(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *e, mplapackint *ipiv, mplapackint &info);
 void Csytf2_rook(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mplapackint &info);
 void Csytrf(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *work, mplapackint const lwork, mplapackint &info);
+void Csytrf_aa(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *work, mplapackint const lwork, mplapackint &info);
 void Csytrf_rk(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *e, mplapackint *ipiv, mpc_class *work, mplapackint const lwork, mplapackint &info);
 void Csytrf_rook(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *work, mplapackint const lwork, mplapackint &info);
 void Csytri(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *work, mplapackint &info);
@@ -269,6 +300,7 @@ void Csytri2(const char *uplo, mplapackint const n, mpc_class *a, mplapackint co
 void Csytri2x(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *work, mplapackint const nb, mplapackint &info);
 void Csytri_3(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *e, mplapackint *ipiv, mpc_class *work, mplapackint const lwork, mplapackint &info);
 void Csytri_3x(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *e, mplapackint *ipiv, mpc_class *work, mplapackint const nb, mplapackint &info);
+void Csytri_rook(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *work, mplapackint &info);
 void Csytrs(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mplapackint &info);
 void Csytrs2(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mpc_class *work, mplapackint &info);
 void Csytrs_3(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *a, mplapackint const lda, mpc_class *e, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mplapackint &info);
@@ -277,6 +309,7 @@ void Csytrs_rook(const char *uplo, mplapackint const n, mplapackint const nrhs, 
 void Ctbtrs(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const kd, mplapackint const nrhs, mpc_class *ab, mplapackint const ldab, mpc_class *b, mplapackint const ldb, mplapackint &info);
 void Ctgex2(bool const wantq, bool const wantz, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb, mpc_class *q, mplapackint const ldq, mpc_class *z, mplapackint const ldz, mplapackint const j1, mplapackint &info);
 void Ctgexc(bool const wantq, bool const wantz, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb, mpc_class *q, mplapackint const ldq, mpc_class *z, mplapackint const ldz, mplapackint const ifst, mplapackint &ilst, mplapackint &info);
+void Ctgsja(const char *jobu, const char *jobv, const char *jobq, mplapackint const m, mplapackint const p, mplapackint const n, mplapackint const k, mplapackint const l, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb, mpf_class const tola, mpf_class const tolb, mpf_class *alpha, mpf_class *beta, mpc_class *u, mplapackint const ldu, mpc_class *v, mplapackint const ldv, mpc_class *q, mplapackint const ldq, mpc_class *work, mplapackint &ncycle, mplapackint &info);
 void Ctplqt(mplapackint const m, mplapackint const n, mplapackint const l, mplapackint const mb, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb, mpc_class *t, mplapackint const ldt, mpc_class *work, mplapackint &info);
 void Ctplqt2(mplapackint const m, mplapackint const n, mplapackint const l, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb, mpc_class *t, mplapackint const ldt, mplapackint &info);
 void Ctpmlqt(const char *side, const char *trans, mplapackint const m, mplapackint const n, mplapackint const k, mplapackint const l, mplapackint const mb, mpc_class *v, mplapackint const ldv, mpc_class *t, mplapackint const ldt, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb, mpc_class *work, mplapackint &info);
@@ -310,6 +343,7 @@ void Cungrq(mplapackint const m, mplapackint const n, mplapackint const k, mpc_c
 void Cungtr(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *tau, mpc_class *work, mplapackint const lwork, mplapackint &info);
 void Cungtsqr(mplapackint const m, mplapackint const n, mplapackint const mb, mplapackint const nb, mpc_class *a, mplapackint const lda, mpc_class *t, mplapackint const ldt, mpc_class *work, mplapackint const lwork, mplapackint &info);
 void Cunhr_col(mplapackint const m, mplapackint const n, mplapackint const nb, mpc_class *a, mplapackint const lda, mpc_class *t, mplapackint const ldt, mpc_class *d, mplapackint &info);
+void Cunm22(const char *side, const char *trans, mplapackint const m, mplapackint const n, mplapackint const n1, mplapackint const n2, mpc_class *q, mplapackint const ldq, mpc_class *c, mplapackint const ldc, mpc_class *work, mplapackint const lwork, mplapackint &info);
 void Cunm2l(const char *side, const char *trans, mplapackint const m, mplapackint const n, mplapackint const k, mpc_class *a, mplapackint const lda, mpc_class *tau, mpc_class *c, mplapackint const ldc, mpc_class *work, mplapackint &info);
 void Cunm2r(const char *side, const char *trans, mplapackint const m, mplapackint const n, mplapackint const k, mpc_class *a, mplapackint const lda, mpc_class *tau, mpc_class *c, mplapackint const ldc, mpc_class *work, mplapackint &info);
 void Cunmbr(const char *vect, const char *side, const char *trans, mplapackint const m, mplapackint const n, mplapackint const k, mpc_class *a, mplapackint const lda, mpc_class *tau, mpc_class *c, mplapackint const ldc, mpc_class *work, mplapackint const lwork, mplapackint &info);
@@ -445,7 +479,6 @@ void Rlahr2(mplapackint const n, mplapackint const k, mplapackint const nb, mpf_
 void Rlaic1(mplapackint const job, mplapackint const j, mpf_class *x, mpf_class const sest, mpf_class *w, mpf_class const gamma, mpf_class &sestpr, mpf_class &s, mpf_class &c);
 void Rlaln2(bool const ltrans, mplapackint const na, mplapackint const nw, mpf_class const smin, mpf_class const ca, mpf_class *a, mplapackint const lda, mpf_class const d1, mpf_class const d2, mpf_class *b, mplapackint const ldb, mpf_class const wr, mpf_class const wi, mpf_class *x, mplapackint const ldx, mpf_class &scale, mpf_class &xnorm, mplapackint &info);
 void Rlals0(mplapackint const icompq, mplapackint const nl, mplapackint const nr, mplapackint const sqre, mplapackint const nrhs, mpf_class *b, mplapackint const ldb, mpf_class *bx, mplapackint const ldbx, mplapackint *perm, mplapackint const givptr, mplapackint *givcol, mplapackint const ldgcol, mpf_class *givnum, mplapackint const ldgnum, mpf_class *poles, mpf_class *difl, mpf_class *difr, mpf_class *z, mplapackint const k, mpf_class const c, mpf_class const s, mpf_class *work, mplapackint &info);
-void Rlalsa(mplapackint const icompq, mplapackint const smlsiz, mplapackint const n, mplapackint const nrhs, mpf_class *b, mplapackint const ldb, mpf_class *bx, mplapackint const ldbx, mpf_class *u, mplapackint const ldu, mpf_class *vt, mplapackint *k, mpf_class *difl, mpf_class *difr, mpf_class *z, mpf_class *poles, mplapackint *givptr, mplapackint *givcol, mplapackint const ldgcol, mplapackint *perm, mpf_class *givnum, mpf_class *c, mpf_class *s, mpf_class *work, mplapackint *iwork, mplapackint &info);
 void Rlalsd(const char *uplo, mplapackint const smlsiz, mplapackint const n, mplapackint const nrhs, mpf_class *d, mpf_class *e, mpf_class *b, mplapackint const ldb, mpf_class const rcond, mplapackint &rank, mpf_class *work, mplapackint *iwork, mplapackint &info);
 void Rlamrg(mplapackint const n1, mplapackint const n2, mpf_class *a, mplapackint const dtrd1, mplapackint const dtrd2, mplapackint *index);
 void Rlamswlq(const char *side, const char *trans, mplapackint const m, mplapackint const n, mplapackint const k, mplapackint const mb, mplapackint const nb, mpf_class *a, mplapackint const lda, mpf_class *t, mplapackint const ldt, mpf_class *c, mplapackint const ldc, mpf_class *work, mplapackint const lwork, mplapackint &info);
@@ -528,6 +561,7 @@ void Rlasyf_rk(const char *uplo, mplapackint const n, mplapackint const nb, mpla
 void Rlasyf_rook(const char *uplo, mplapackint const n, mplapackint const nb, mplapackint &kb, mpf_class *a, mplapackint const lda, mplapackint *ipiv, mpf_class *w, mplapackint const ldw, mplapackint &info);
 void Rlatbs(const char *uplo, const char *trans, const char *diag, const char *normin, mplapackint const n, mplapackint const kd, mpf_class *ab, mplapackint const ldab, mpf_class *x, mpf_class &scale, mpf_class *cnorm, mplapackint &info);
 void Rlatdf(mplapackint const ijob, mplapackint const n, mpf_class *z, mplapackint const ldz, mpf_class *rhs, mpf_class rdsum, mpf_class rdscal, mplapackint *ipiv, mplapackint *jpiv);
+void Rlatps(const char *uplo, const char *trans, const char *diag, const char *normin, mplapackint const n, mpf_class *ap, mpf_class *x, mpf_class &scale, mpf_class *cnorm, mplapackint &info);
 void Rlatrd(const char *uplo, mplapackint const n, mplapackint const nb, mpf_class *a, mplapackint const lda, mpf_class *e, mpf_class *tau, mpf_class *w, mplapackint const ldw);
 void Rlatrs(const char *uplo, const char *trans, const char *diag, const char *normin, mplapackint const n, mpf_class *a, mplapackint const lda, mpf_class *x, mpf_class &scale, mpf_class *cnorm, mplapackint &info);
 void Rlatrz(mplapackint const m, mplapackint const n, mplapackint const l, mpf_class *a, mplapackint const lda, mpf_class *tau, mpf_class *work);
@@ -535,6 +569,7 @@ void Rlatsqr(mplapackint const m, mplapackint const n, mplapackint const mb, mpl
 void Rlauu2(const char *uplo, mplapackint const n, mpf_class *a, mplapackint const lda, mplapackint &info);
 void Rlauum(const char *uplo, mplapackint const n, mpf_class *a, mplapackint const lda, mplapackint &info);
 void Ropgtr(const char *uplo, mplapackint const n, mpf_class *ap, mpf_class *tau, mpf_class *q, mplapackint const ldq, mpf_class *work, mplapackint &info);
+void Ropmtr(const char *side, const char *uplo, const char *trans, mplapackint const m, mplapackint const n, mpf_class *ap, mpf_class *tau, mpf_class *c, mplapackint const ldc, mpf_class *work, mplapackint &info);
 void Rorbdb5(mplapackint const m1, mplapackint const m2, mplapackint const n, mpf_class *x1, mplapackint const incx1, mpf_class *x2, mplapackint const incx2, mpf_class *q1, mplapackint const ldq1, mpf_class *q2, mplapackint const ldq2, mpf_class *work, mplapackint const lwork, mplapackint &info);
 void Rorbdb6(mplapackint const m1, mplapackint const m2, mplapackint const n, mpf_class *x1, mplapackint const incx1, mpf_class *x2, mplapackint const incx2, mpf_class *q1, mplapackint const ldq1, mpf_class *q2, mplapackint const ldq2, mpf_class *work, mplapackint const lwork, mplapackint &info);
 void Rorg2l(mplapackint const m, mplapackint const n, mplapackint const k, mpf_class *a, mplapackint const lda, mpf_class *tau, mpf_class *work, mplapackint &info);
@@ -564,6 +599,7 @@ void Rormrq(const char *side, const char *trans, mplapackint const m, mplapackin
 void Rormrz(const char *side, const char *trans, mplapackint const m, mplapackint const n, mplapackint const k, mplapackint const l, mpf_class *a, mplapackint const lda, mpf_class *tau, mpf_class *c, mplapackint const ldc, mpf_class *work, mplapackint const lwork, mplapackint &info);
 void Rormtr(const char *side, const char *uplo, const char *trans, mplapackint const m, mplapackint const n, mpf_class *a, mplapackint const lda, mpf_class *tau, mpf_class *c, mplapackint const ldc, mpf_class *work, mplapackint const lwork, mplapackint &info);
 void Rpbequ(const char *uplo, mplapackint const n, mplapackint const kd, mpf_class *ab, mplapackint const ldab, mpf_class *s, mpf_class &scond, mpf_class &amax, mplapackint &info);
+void Rpbstf(const char *uplo, mplapackint const n, mplapackint const kd, mpf_class *ab, mplapackint const ldab, mplapackint &info);
 void Rpbsv(const char *uplo, mplapackint const n, mplapackint const kd, mplapackint const nrhs, mpf_class *ab, mplapackint const ldab, mpf_class *b, mplapackint const ldb, mplapackint &info);
 void Rpbtf2(const char *uplo, mplapackint const n, mplapackint const kd, mpf_class *ab, mplapackint const ldab, mplapackint &info);
 void Rpbtrf(const char *uplo, mplapackint const n, mplapackint const kd, mpf_class *ab, mplapackint const ldab, mplapackint &info);
@@ -579,8 +615,11 @@ void Rpotrf(const char *uplo, mplapackint const n, mpf_class *a, mplapackint con
 void Rpotrf2(const char *uplo, mplapackint const n, mpf_class *a, mplapackint const lda, mplapackint &info);
 void Rpotri(const char *uplo, mplapackint const n, mpf_class *a, mplapackint const lda, mplapackint &info);
 void Rpotrs(const char *uplo, mplapackint const n, mplapackint const nrhs, mpf_class *a, mplapackint const lda, mpf_class *b, mplapackint const ldb, mplapackint &info);
+void Rppcon(const char *uplo, mplapackint const n, mpf_class *ap, mpf_class const anorm, mpf_class &rcond, mpf_class *work, mplapackint *iwork, mplapackint &info);
 void Rppequ(const char *uplo, mplapackint const n, mpf_class *ap, mpf_class *s, mpf_class &scond, mpf_class &amax, mplapackint &info);
+void Rpprfs(const char *uplo, mplapackint const n, mplapackint const nrhs, mpf_class *ap, mpf_class *afp, mpf_class *b, mplapackint const ldb, mpf_class *x, mplapackint const ldx, mpf_class *ferr, mpf_class *berr, mpf_class *work, mplapackint *iwork, mplapackint &info);
 void Rppsv(const char *uplo, mplapackint const n, mplapackint const nrhs, mpf_class *ap, mpf_class *b, mplapackint const ldb, mplapackint &info);
+void Rppsvx(const char *fact, const char *uplo, mplapackint const n, mplapackint const nrhs, mpf_class *ap, mpf_class *afp, char *equed, mpf_class *s, mpf_class *b, mplapackint const ldb, mpf_class *x, mplapackint const ldx, mpf_class &rcond, mpf_class *ferr, mpf_class *berr, mpf_class *work, mplapackint *iwork, mplapackint &info);
 void Rpptrf(const char *uplo, mplapackint const n, mpf_class *ap, mplapackint &info);
 void Rpptrs(const char *uplo, mplapackint const n, mplapackint const nrhs, mpf_class *ap, mpf_class *b, mplapackint const ldb, mplapackint &info);
 void Rptcon(mplapackint const n, mpf_class *d, mpf_class *e, mpf_class const anorm, mpf_class &rcond, mpf_class *work, mplapackint &info);
@@ -592,10 +631,15 @@ void Rpttrs(mplapackint const n, mplapackint const nrhs, mpf_class *d, mpf_class
 void Rptts2(mplapackint const n, mplapackint const nrhs, mpf_class *d, mpf_class *e, mpf_class *b, mplapackint const ldb);
 void Rrscl(mplapackint const n, mpf_class const sa, mpf_class *sx, mplapackint const incx);
 void Rsbev(const char *jobz, const char *uplo, mplapackint const n, mplapackint const kd, mpf_class *ab, mplapackint const ldab, mpf_class *w, mpf_class *z, mplapackint const ldz, mpf_class *work, mplapackint &info);
+void Rsbevd(const char *jobz, const char *uplo, mplapackint const n, mplapackint const kd, mpf_class *ab, mplapackint const ldab, mpf_class *w, mpf_class *z, mplapackint const ldz, mpf_class *work, mplapackint const lwork, mplapackint *iwork, mplapackint const liwork, mplapackint &info);
 void Rsbtrd(const char *vect, const char *uplo, mplapackint const n, mplapackint const kd, mpf_class *ab, mplapackint const ldab, mpf_class *d, mpf_class *e, mpf_class *q, mplapackint const ldq, mpf_class *work, mplapackint &info);
 void Rsfrk(const char *transr, const char *uplo, const char *trans, mplapackint const n, mplapackint const k, mpf_class const alpha, mpf_class *a, mplapackint const lda, mpf_class const beta, mpf_class *c);
+void Rspcon(const char *uplo, mplapackint const n, mpf_class *ap, mplapackint *ipiv, mpf_class const anorm, mpf_class &rcond, mpf_class *work, mplapackint *iwork, mplapackint &info);
 void Rspev(const char *jobz, const char *uplo, mplapackint const n, mpf_class *ap, mpf_class *w, mpf_class *z, mplapackint const ldz, mpf_class *work, mplapackint &info);
+void Rspevd(const char *jobz, const char *uplo, mplapackint const n, mpf_class *ap, mpf_class *w, mpf_class *z, mplapackint const ldz, mpf_class *work, mplapackint const lwork, mplapackint *iwork, mplapackint const liwork, mplapackint &info);
+void Rsprfs(const char *uplo, mplapackint const n, mplapackint const nrhs, mpf_class *ap, mpf_class *afp, mplapackint *ipiv, mpf_class *b, mplapackint const ldb, mpf_class *x, mplapackint const ldx, mpf_class *ferr, mpf_class *berr, mpf_class *work, mplapackint *iwork, mplapackint &info);
 void Rspsv(const char *uplo, mplapackint const n, mplapackint const nrhs, mpf_class *ap, mplapackint *ipiv, mpf_class *b, mplapackint const ldb, mplapackint &info);
+void Rspsvx(const char *fact, const char *uplo, mplapackint const n, mplapackint const nrhs, mpf_class *ap, mpf_class *afp, mplapackint *ipiv, mpf_class *b, mplapackint const ldb, mpf_class *x, mplapackint const ldx, mpf_class &rcond, mpf_class *ferr, mpf_class *berr, mpf_class *work, mplapackint *iwork, mplapackint &info);
 void Rsptrd(const char *uplo, mplapackint const n, mpf_class *ap, mpf_class *d, mpf_class *e, mpf_class *tau, mplapackint &info);
 void Rsptrf(const char *uplo, mplapackint const n, mpf_class *ap, mplapackint *ipiv, mplapackint &info);
 void Rsptrs(const char *uplo, mplapackint const n, mplapackint const nrhs, mpf_class *ap, mplapackint *ipiv, mpf_class *b, mplapackint const ldb, mplapackint &info);
