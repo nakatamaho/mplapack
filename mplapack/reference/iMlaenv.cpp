@@ -28,37 +28,26 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
+
 #define subnamlen 16
-
-inline int ichar(str_cref c) {
-    if (c.len() == 0) {
-        std::ostringstream o;
-        o << "ichar() argument must be a one-character string,"
-          << " but actual string length is " << c.len() << ".";
-        throw std::runtime_error(o.str());
-    }
-    return static_cast<int>(c[0]);
-}
-
-inline fchar(int i) { return (static_cast<char>(i)); }
 
 INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
     INTEGER return_value = 0;
-    char subnam[subnumlen];
-    memset(subnum, '\0', sizeof(subnum));
+    char subnam[subnamlen];
     INTEGER ic = 0;
     INTEGER iz = 0;
     INTEGER i = 0;
-    char c1;
     bool sname = false;
     bool cname = false;
-    char c2;
-    char c3;
-    char c4;
+    char c1[1];
+    char c2[2];
+    char c3[3];
+    char c4[2];
     bool twostage = false;
     INTEGER nb = 0;
     INTEGER nbmin = 0;
     INTEGER nx = 0;
+    INTEGER name_len;
     //
     //  -- LAPACK auxiliary routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -77,127 +66,91 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
     //     ..
     //     .. Executable Statements ..
     //
+
     switch (ispec) {
     case 1:
-        goto statement_10;
+        goto L10;
     case 2:
-        goto statement_10;
+        goto L10;
     case 3:
-        goto statement_10;
+        goto L10;
     case 4:
-        goto statement_80;
+        goto L80;
     case 5:
-        goto statement_90;
+        goto L90;
     case 6:
-        goto statement_100;
+        goto L100;
     case 7:
-        goto statement_110;
+        goto L110;
     case 8:
-        goto statement_120;
+        goto L120;
     case 9:
-        goto statement_130;
+        goto L130;
     case 10:
-        goto statement_140;
+        goto L140;
     case 11:
-        goto statement_150;
+        goto L150;
     case 12:
-        goto statement_160;
+        goto L160;
     case 13:
-        goto statement_160;
+        goto L160;
     case 14:
-        goto statement_160;
+        goto L160;
     case 15:
-        goto statement_160;
+        goto L160;
     case 16:
-        goto statement_160;
-    default:
-        break;
+        goto L160;
     }
     //
     //     Invalid value for ISPEC
     //
     return_value = -1;
     return return_value;
-//
-statement_10:
+    //
+L10:
     //
     //     Convert NAME to upper case if the first character is lower case.
     //
     return_value = 1;
-    int namelen = strlen(name);
-    if (namelen < subnumlen) {
-        strncpy(subnam, name, namelen);
-    } else {
-        strncpy(subnam, name, subnumlen - 1);
-    }
-    ic = ichar(subnam[(1 - 1)]);
-    iz = ichar("Z" - 1);
+    name_len = min(strlen(name), subnamlen);
+    strncpy(subnam, name, name_len);
+    ic = *subnam;
+    iz = 'Z';
     if (iz == 90 || iz == 122) {
         //
         //        ASCII character set
         //
         if (ic >= 97 && ic <= 122) {
-            subnam[(1 - 1)] = fchar(ic - 32);
-            for (i = 2; i <= 6; i = i + 1) {
-                ic = ichar[subnam[(i - 1)] - 1];
+            *subnam = (char)(ic - 32);
+            for (i = 2; i <= 6; i++) {
+                ic = subnam[i - 1];
                 if (ic >= 97 && ic <= 122) {
-                    subnam[(i - 1)] = fchar(ic - 32);
-                }
-            }
-        }
-        //
-    } else if (iz == 233 || iz == 169) {
-        //
-        //        EBCDIC character set
-        //
-        if ((ic >= 129 && ic <= 137) || (ic >= 145 && ic <= 153) || (ic >= 162 && ic <= 169)) {
-            subnam[(1 - 1)] = fchar[(ic + 64) - 1];
-            for (i = 2; i <= 6; i = i + 1) {
-                ic = ichar[subnam[(i - 1) + (i - 1) * ldsubnam] - 1];
-                if ((ic >= 129 && ic <= 137) || (ic >= 145 && ic <= 153) || (ic >= 162 && ic <= 169)) {
-                    subnam[(i - 1)] = fchar(ic + 64);
-                }
-            }
-        }
-        //
-    } else if (iz == 218 || iz == 250) {
-        //
-        //        Prime machines:  ASCII+128
-        //
-        if (ic >= 225 && ic <= 250) {
-            subnam[(1 - 1)] = fchar[(ic - 32) - 1];
-            for (i = 2; i <= 6; i = i + 1) {
-                ic = ichar[subnam[(i - 1) + (i - 1) * ldsubnam] - 1];
-                if (ic >= 225 && ic <= 250) {
-                    subnam[(i - 1) + (i - 1) * ldsubnam] = fchar[(ic - 32) - 1];
+                    subnam[i - 1] = (char)(ic - 32);
                 }
             }
         }
     }
-    //
-    c1 = subnam[(1 - 1)];
-    sname = c1 == "S" || c1 == "D";
-    cname = c1 == "C" || c1 == "Z";
+    
+    *c1 = *subnam;
+    sname = *c1 == 'R';
+    cname = *c1 == 'C';
     if (!(cname || sname)) {
         return return_value;
     }
-    c2 = subnam[(2 - 1) + (3 - 1) * ldsubnam];
-    c3 = subnam[(4 - 1) + (6 - 1) * ldsubnam];
-    c4 = c3[(2 - 1) + (3 - 1) * ldc3];
-    twostage = len[subnam - 1] >= 11 && subnam[(11 - 1) + (11 - 1) * ldsubnam] == "2";
-    //
+    strncpy(c2, subnam + 1, 2);
+    strncpy(c3, subnam + 3, 3);
+    strncpy(c4, c3 + 1, 2);
+    twostage = strlen(subnam) >= 11 && subnam[10] == '2';
+
     switch (ispec) {
     case 1:
-        goto statement_50;
+        goto L50;
     case 2:
-        goto statement_60;
+        goto L60;
     case 3:
-        goto statement_70;
-    default:
-        break;
+        goto L70;
     }
-//
-statement_50:
+L50:
     //
     //     ISPEC = 1:  block size
     //
@@ -207,7 +160,7 @@ statement_50:
     //
     nb = 1;
     //
-    if (subnam[(2 - 1) + (6 - 1) * ldsubnam] == "LAORH") {
+    if (strncmp(subnam + 1, "LAORH", 5) == 0) {
         //
         //        This is for *LAORHR_GETRFNP routine
         //
@@ -216,30 +169,30 @@ statement_50:
         } else {
             nb = 32;
         }
-    } else if (c2 == "GE") {
-        if (c3 == "TRF") {
+    } else if (strncmp(c2, "GE", 2) == 0) {
+        if (strncmp(c3, "TRF", 3) == 0) {
             if (sname) {
                 nb = 64;
             } else {
                 nb = 64;
             }
-        } else if (c3 == "QRF" || c3 == "RQF" || c3 == "LQF" || c3 == "QLF") {
+        } else if (strncmp(c3, "QRF", 3) == 0 || strncmp(c3, "RQF", 3) == 0 || strncmp(c3, "LQF", 3) == 0 || strncmp(c3, "QLF", 3) == 0) {
             if (sname) {
                 nb = 32;
             } else {
                 nb = 32;
             }
-        } else if (c3 == "QR ") {
+        } else if (strncmp(c3, "QR ", 3) == 0) {
             if (n3 == 1) {
                 if (sname) {
-                    //     M*N
-                    if ((n1 * n2 <= 131072) || (n1 <= 8192)) {
+                    //    M*N
+                    if (n1 * n2 <= 131072 || n1 <= 8192) {
                         nb = n1;
                     } else {
                         nb = 32768 / n2;
                     }
                 } else {
-                    if ((n1 * n2 <= 131072) || (n1 <= 8192)) {
+                    if (n1 * n2 <= 131072 || n1 <= 8192) {
                         nb = n1;
                     } else {
                         nb = 32768 / n2;
@@ -252,17 +205,17 @@ statement_50:
                     nb = 1;
                 }
             }
-        } else if (c3 == "LQ ") {
+        } else if (strncmp(c3, "LQ ", 3) == 0) {
             if (n3 == 2) {
                 if (sname) {
-                    //     M*N
-                    if ((n1 * n2 <= 131072) || (n1 <= 8192)) {
+		    //    M*N
+                    if (n1 * n2 <= 131072 || n1 <= 8192) {
                         nb = n1;
                     } else {
                         nb = 32768 / n2;
                     }
                 } else {
-                    if ((n1 * n2 <= 131072) || (n1 <= 8192)) {
+                    if (n1 * n2 <= 131072 || n1 <= 8192) {
                         nb = n1;
                     } else {
                         nb = 32768 / n2;
@@ -275,35 +228,35 @@ statement_50:
                     nb = 1;
                 }
             }
-        } else if (c3 == "HRD") {
+        } else if (strncmp(c3, "HRD", 3) == 0) {
             if (sname) {
                 nb = 32;
             } else {
                 nb = 32;
             }
-        } else if (c3 == "BRD") {
+        } else if (strncmp(c3, "BRD", 3) == 0) {
             if (sname) {
                 nb = 32;
             } else {
                 nb = 32;
             }
-        } else if (c3 == "TRI") {
-            if (sname) {
-                nb = 64;
-            } else {
-                nb = 64;
-            }
-        }
-    } else if (c2 == "PO") {
-        if (c3 == "TRF") {
+        } else if (strncmp(c3, "TRI", 3) == 0) {
             if (sname) {
                 nb = 64;
             } else {
                 nb = 64;
             }
         }
-    } else if (c2 == "SY") {
-        if (c3 == "TRF") {
+    } else if (strncmp(c2, "PO", 2) == 0) {
+        if (strncmp(c3, "TRF", 3) == 0) {
+            if (sname) {
+                nb = 64;
+            } else {
+                nb = 64;
+            }
+        }
+    } else if (strncmp(c2, "SY", 2) == 0) {
+        if (strncmp(c3, "TRF", 3) == 0) {
             if (sname) {
                 if (twostage) {
                     nb = 192;
@@ -317,45 +270,45 @@ statement_50:
                     nb = 64;
                 }
             }
-        } else if (sname && c3 == "TRD") {
+        } else if (sname && strncmp(c3, "TRD", 3) == 0) {
             nb = 32;
-        } else if (sname && c3 == "GST") {
+        } else if (sname && strncmp(c3, "GST", 3) == 0) {
             nb = 64;
         }
-    } else if (cname && c2 == "HE") {
-        if (c3 == "TRF") {
+    } else if (cname && strncmp(c2, "HE", 2) == 0) {
+        if (strncmp(c3, "TRF", 3) == 0) {
             if (twostage) {
                 nb = 192;
             } else {
                 nb = 64;
             }
-        } else if (c3 == "TRD") {
+        } else if (strncmp(c3, "TRD", 3) == 0) {
             nb = 32;
-        } else if (c3 == "GST") {
+        } else if (strncmp(c3, "GST", 3) == 0) {
             nb = 64;
         }
-    } else if (sname && c2 == "OR") {
-        if (c3[(1 - 1)] == "G") {
-            if (c4 == "QR" || c4 == "RQ" || c4 == "LQ" || c4 == "QL" || c4 == "HR" || c4 == "TR" || c4 == "BR") {
+    } else if (sname && strncmp(c2, "OR", 2) == 0) {
+        if (*c3 == 'G') {
+            if (strncmp(c4, "QR", 2) == 0 || strncmp(c4, "RQ", 2) == 0 || strncmp(c4, "LQ", 2) == 0 || strncmp(c4, "QL", 2) == 0 || strncmp(c4, "HR", 2) == 0 || strncmp(c4, "TR", 2) == 0 || strncmp(c4, "BR", 2) == 0) {
                 nb = 32;
             }
-        } else if (c3[(1 - 1)] == "M") {
-            if (c4 == "QR" || c4 == "RQ" || c4 == "LQ" || c4 == "QL" || c4 == "HR" || c4 == "TR" || c4 == "BR") {
-                nb = 32;
-            }
-        }
-    } else if (cname && c2 == "UN") {
-        if (c3[(1 - 1)] == "G") {
-            if (c4 == "QR" || c4 == "RQ" || c4 == "LQ" || c4 == "QL" || c4 == "HR" || c4 == "TR" || c4 == "BR") {
-                nb = 32;
-            }
-        } else if (c3[(1 - 1)] == "M") {
-            if (c4 == "QR" || c4 == "RQ" || c4 == "LQ" || c4 == "QL" || c4 == "HR" || c4 == "TR" || c4 == "BR") {
+        } else if (*c3 == 'M') {
+            if (strncmp(c4, "QR", 2) == 0 || strncmp(c4, "RQ", 2) == 0 || strncmp(c4, "LQ", 2) == 0 || strncmp(c4, "QL", 2) == 0 || strncmp(c4, "HR", 2) == 0 || strncmp(c4, "TR", 2) == 0 || strncmp(c4, "BR", 2) == 0) {
                 nb = 32;
             }
         }
-    } else if (c2 == "GB") {
-        if (c3 == "TRF") {
+    } else if (cname && strncmp(c2, "UN", 2) == 0) {
+        if (*c3 == 'G') {
+            if (strncmp(c4, "QR", 2) == 0 || strncmp(c4, "RQ", 2) == 0 || strncmp(c4, "LQ", 2) == 0 || strncmp(c4, "QL", 2) == 0 || strncmp(c4, "HR", 2) == 0 || strncmp(c4, "TR", 2) == 0 || strncmp(c4, "BR", 2) == 0) {
+                nb = 32;
+            }
+        } else if (*c3 == 'M') {
+            if (strncmp(c4, "QR", 2) == 0 || strncmp(c4, "RQ", 2) == 0 || strncmp(c4, "LQ", 2) == 0 || strncmp(c4, "QL", 2) == 0 || strncmp(c4, "HR", 2) == 0 || strncmp(c4, "TR", 2) == 0 || strncmp(c4, "BR", 2) == 0) {
+                nb = 32;
+            }
+        }
+    } else if (strncmp(c2, "GB", 2) == 0) {
+        if (strncmp(c3, "TRF", 3) == 0) {
             if (sname) {
                 if (n4 <= 64) {
                     nb = 1;
@@ -370,8 +323,8 @@ statement_50:
                 }
             }
         }
-    } else if (c2 == "PB") {
-        if (c3 == "TRF") {
+    } else if (strncmp(c2, "PB", 2) == 0) {
+        if (strncmp(c3, "TRF", 3) == 0) {
             if (sname) {
                 if (n2 <= 64) {
                     nb = 1;
@@ -386,35 +339,35 @@ statement_50:
                 }
             }
         }
-    } else if (c2 == "TR") {
-        if (c3 == "TRI") {
+    } else if (strncmp(c2, "TR", 2) == 0) {
+        if (strncmp(c3, "TRI", 3) == 0) {
             if (sname) {
                 nb = 64;
             } else {
                 nb = 64;
             }
-        } else if (c3 == "EVC") {
-            if (sname) {
-                nb = 64;
-            } else {
-                nb = 64;
-            }
-        }
-    } else if (c2 == "LA") {
-        if (c3 == "UUM") {
+        } else if (strncmp(c3, "EVC", 3) == 0) {
             if (sname) {
                 nb = 64;
             } else {
                 nb = 64;
             }
         }
-    } else if (sname && c2 == "ST") {
-        if (c3 == "EBZ") {
+    } else if (strncmp(c2, "LA", 2) == 0) {
+        if (strncmp(c3, "UUM", 3) == 0) {
+            if (sname) {
+                nb = 64;
+            } else {
+                nb = 64;
+            }
+        }
+    } else if (sname && strncmp(c2, "ST", 2) == 0) {
+        if (strncmp(c3, "EBZ", 3) == 0) {
             nb = 1;
         }
-    } else if (c2 == "GG") {
+    } else if (strncmp(c2, "GG", 2) == 0) {
         nb = 32;
-        if (c3 == "HD3") {
+        if (strncmp(c3, "HD3", 3) == 0) {
             if (sname) {
                 nb = 32;
             } else {
@@ -425,169 +378,167 @@ statement_50:
     return_value = nb;
     return return_value;
 //
-statement_60:
+L60:
     //
     //     ISPEC = 2:  minimum block size
     //
     nbmin = 2;
-    if (c2 == "GE") {
-        if (c3 == "QRF" || c3 == "RQF" || c3 == "LQF" || c3 == "QLF") {
+    if (strncmp(c2, "GE", 2) == 0) {
+        if (strncmp(c3, "QRF", 3) == 0 || strncmp(c3, "RQF", 3) == 0 || strncmp(c3, "LQF", 3) == 0 || strncmp(c3, "QLF", 3) == 0) {
             if (sname) {
                 nbmin = 2;
             } else {
                 nbmin = 2;
             }
-        } else if (c3 == "HRD") {
+        } else if (strncmp(c3, "HRD", 3) == 0) {
             if (sname) {
                 nbmin = 2;
             } else {
                 nbmin = 2;
             }
-        } else if (c3 == "BRD") {
+        } else if (strncmp(c3, "BRD", 3) == 0) {
             if (sname) {
                 nbmin = 2;
             } else {
                 nbmin = 2;
             }
-        } else if (c3 == "TRI") {
+        } else if (strncmp(c3, "TRI", 3) == 0) {
             if (sname) {
                 nbmin = 2;
             } else {
                 nbmin = 2;
             }
         }
-    } else if (c2 == "SY") {
-        if (c3 == "TRF") {
+    } else if (strncmp(c2, "SY", 2) == 0) {
+        if (strncmp(c3, "TRF", 3) == 0) {
             if (sname) {
                 nbmin = 8;
             } else {
                 nbmin = 8;
             }
-        } else if (sname && c3 == "TRD") {
+        } else if (sname && strncmp(c3, "TRD", 3) == 0) {
             nbmin = 2;
         }
-    } else if (cname && c2 == "HE") {
-        if (c3 == "TRD") {
+    } else if (cname && strncmp(c2, "HE", 2) == 0) {
+        if (strncmp(c3, "TRD", 3) == 0) {
             nbmin = 2;
         }
-    } else if (sname && c2 == "OR") {
-        if (c3[(1 - 1)] == "G") {
-            if (c4 == "QR" || c4 == "RQ" || c4 == "LQ" || c4 == "QL" || c4 == "HR" || c4 == "TR" || c4 == "BR") {
+    } else if (sname && strncmp(c2, "OR", 2) == 0) {
+        if (*c3 == 'G') {
+            if (strncmp(c4, "QR", 2) == 0 || strncmp(c4, "RQ", 2) == 0 || strncmp(c4, "LQ", 2) == 0 || strncmp(c4, "QL", 2) == 0 || strncmp(c4, "HR", 2) == 0 || strncmp(c4, "TR", 2) == 0 || strncmp(c4, "BR", 2) == 0) {
                 nbmin = 2;
             }
-        } else if (c3[(1 - 1)] == "M") {
-            if (c4 == "QR" || c4 == "RQ" || c4 == "LQ" || c4 == "QL" || c4 == "HR" || c4 == "TR" || c4 == "BR") {
-                nbmin = 2;
-            }
-        }
-    } else if (cname && c2 == "UN") {
-        if (c3[(1 - 1)] == "G") {
-            if (c4 == "QR" || c4 == "RQ" || c4 == "LQ" || c4 == "QL" || c4 == "HR" || c4 == "TR" || c4 == "BR") {
-                nbmin = 2;
-            }
-        } else if (c3[(1 - 1)] == "M") {
-            if (c4 == "QR" || c4 == "RQ" || c4 == "LQ" || c4 == "QL" || c4 == "HR" || c4 == "TR" || c4 == "BR") {
+        } else if (*c3 == 'M') {
+            if (strncmp(c4, "QR", 2) == 0 || strncmp(c4, "RQ", 2) == 0 || strncmp(c4, "LQ", 2) == 0 || strncmp(c4, "QL", 2) == 0 || strncmp(c4, "HR", 2) == 0 || strncmp(c4, "TR", 2) == 0 || strncmp(c4, "BR", 2) == 0) {
                 nbmin = 2;
             }
         }
-    } else if (c2 == "GG") {
+    } else if (cname && strncmp(c2, "UN", 2) == 0) {
+        if (*c3 == 'G') {
+            if (strncmp(c4, "QR", 2) == 0 || strncmp(c4, "RQ", 2) == 0 || strncmp(c4, "LQ", 2) == 0 || strncmp(c4, "QL", 2) == 0 || strncmp(c4, "HR", 2) == 0 || strncmp(c4, "TR", 2) == 0 || strncmp(c4, "BR", 2) == 0) {
+                nbmin = 2;
+            }
+        } else if (*c3 == 'M') {
+            if (strncmp(c4, "QR", 2) == 0 || strncmp(c4, "RQ", 2) == 0 || strncmp(c4, "LQ", 2) == 0 || strncmp(c4, "QL", 2) == 0 || strncmp(c4, "HR", 2) == 0 || strncmp(c4, "TR", 2) == 0 || strncmp(c4, "BR", 2) == 0) {
+                nbmin = 2;
+            }
+        }
+    } else if (strncmp(c2, "GG", 2) == 0) {
         nbmin = 2;
-        if (c3 == "HD3") {
+        if (strncmp(c3, "HD3", 3) == 0) {
             nbmin = 2;
         }
     }
     return_value = nbmin;
     return return_value;
 //
-statement_70:
+L70:
     //
     //     ISPEC = 3:  crossover point
     //
     nx = 0;
-    if (c2 == "GE") {
-        if (c3 == "QRF" || c3 == "RQF" || c3 == "LQF" || c3 == "QLF") {
+    if (strncmp(c2, "GE", 2) == 0) {
+        if (strncmp(c3, "QRF", 3) == 0 || strncmp(c3, "RQF", 3) == 0 || strncmp(c3, "LQF", 3) == 0 || strncmp(c3, "QLF", 3) == 0) {
             if (sname) {
                 nx = 128;
             } else {
                 nx = 128;
             }
-        } else if (c3 == "HRD") {
+        } else if (strncmp(c3, "HRD", 3) == 0) {
             if (sname) {
                 nx = 128;
             } else {
                 nx = 128;
             }
-        } else if (c3 == "BRD") {
+        } else if (strncmp(c3, "BRD", 3) == 0) {
             if (sname) {
                 nx = 128;
             } else {
                 nx = 128;
             }
         }
-    } else if (c2 == "SY") {
-        if (sname && c3 == "TRD") {
+    } else if (strncmp(c2, "SY", 2) == 0) {
+        if (sname && strncmp(c3, "TRD", 3) == 0) {
             nx = 32;
         }
-    } else if (cname && c2 == "HE") {
-        if (c3 == "TRD") {
+    } else if (cname && strncmp(c2, "HE", 2) == 0) {
+        if (strncmp(c3, "TRD", 3) == 0) {
             nx = 32;
         }
-    } else if (sname && c2 == "OR") {
-        if (c3[(1 - 1)] == "G") {
-            if (c4 == "QR" || c4 == "RQ" || c4 == "LQ" || c4 == "QL" || c4 == "HR" || c4 == "TR" || c4 == "BR") {
+    } else if (sname && strncmp(c2, "OR", 2) == 0) {
+        if (*c3 == 'G') {
+            if (strncmp(c4, "QR", 2) == 0 || strncmp(c4, "RQ", 2) == 0 || strncmp(c4, "LQ", 2) == 0 || strncmp(c4, "QL", 2) == 0 || strncmp(c4, "HR", 2) == 0 || strncmp(c4, "TR", 2) == 0 || strncmp(c4, "BR", 2) == 0) {
                 nx = 128;
             }
         }
-    } else if (cname && c2 == "UN") {
-        if (c3[(1 - 1)] == "G") {
-            if (c4 == "QR" || c4 == "RQ" || c4 == "LQ" || c4 == "QL" || c4 == "HR" || c4 == "TR" || c4 == "BR") {
+    } else if (cname && strncmp(c2, "UN", 2) == 0) {
+        if (*c3 == 'G') {
+            if (strncmp(c4, "QR", 2) == 0 || strncmp(c4, "RQ", 2) == 0 || strncmp(c4, "LQ", 2) == 0 || strncmp(c4, "QL", 2) == 0 || strncmp(c4, "HR", 2) == 0 || strncmp(c4, "TR", 2) == 0 || strncmp(c4, "BR", 2) == 0) {
                 nx = 128;
             }
         }
-    } else if (c2 == "GG") {
+    } else if (strncmp(c2, "GG", 2) == 0) {
         nx = 128;
-        if (c3 == "HD3") {
+        if (strncmp(c3, "HD3", 3) == 0) {
             nx = 128;
         }
     }
     return_value = nx;
     return return_value;
 //
-statement_80:
+L80:
     //
     //     ISPEC = 4:  number of shifts (used by xHSEQR)
     //
     return_value = 6;
     return return_value;
 //
-statement_90:
-    //
-    //
+L90:
     return_value = 2;
     return return_value;
-//
-statement_100:
+
+L100:
     //
-    //     ISPEC = 6:  crossover poINTEGER for SVD (used by xGELSS and xGESVD)
+    //     ISPEC = 6:  crossover point for SVD (used by xGELSS and xGESVD)
     //
-    return_value = int(real[(min(n1 - 1) + (n2)-1) * ldreal] * 1.6e0f);
+    return_value = castINTEGER(castREAL(min(n1, n2)) * 1.6);
     return return_value;
-//
-statement_110:
+ //
+L110:
     //
     //     ISPEC = 7:  number of processors (not used)
     //
     return_value = 1;
     return return_value;
 //
-statement_120:
+L120:
     //
-    //     ISPEC = 8:  crossover poINTEGER for multishift (used by xHSEQR)
+    //     ISPEC = 8:  crossover point for multishift (used by xHSEQR)
     //
     return_value = 50;
     return return_value;
 //
-statement_130:
+L130:
     //
     //     ISPEC = 9:  maximum size of the subproblems at the bottom of the
     //                 computation tree in the divide-and-conquer algorithm
@@ -596,35 +547,35 @@ statement_130:
     return_value = 25;
     return return_value;
 //
-statement_140:
+L140:
     //
     //     ISPEC = 10: ieee and infinity NaN arithmetic can be trusted not to trap
     //
     //     iMlaenv = 0
     return_value = 1;
     if (return_value == 1) {
-        return_value = ieeeck[(0.0f - 1) * ldieeeck];
+       return_value = Mieeeck(1, 0.0,  1.0);
     }
     return return_value;
 //
-statement_150:
+ L150:
     //
     //     ISPEC = 11: ieee infinity arithmetic can be trusted not to trap
     //
     //     iMlaenv = 0
     return_value = 1;
     if (return_value == 1) {
-        return_value = ieeeck[(0 - 1) + (0.0f - 1) * ldieeeck];
+      return_value = Mieeeck(0, 0.0, 1.0);
     }
     return return_value;
 //
-statement_160:
+L160:
     //
     //     12 <= ISPEC <= 16: xHSEQR or related subroutines.
     //
-    return_value = iparmq[(ispec - 1) + (name - 1) * ldiparmq];
+    return_value = Miparmq(ispec, name__, opts, n1, n2, n3, n4, name_len, opts_len);
     return return_value;
     //
     //     End of iMlaenv
     //
-}
+} 
