@@ -1,3 +1,6 @@
+2021/4/20   Nakata Maho <maho@riken.jp> 1.0.0
+            * MPLAPACK 1.0.0 build successfully on Ubuntu 18.04, amd64.
+
 2021/4/19   Nakata Maho <maho@riken.jp> 1.0.0
             * 680 LAPACK subroutines are rewriteen using fable.
               * 359 routines are rewritten using fable without modifications.
