@@ -1,55 +1,55 @@
 bench_PROGRAMS += \
-Raxpy.qd Raxpy.qd_ref \
-Rcopy.qd Rcopy.qd_ref \
-Rdot.qd  Rdot.qd_ref \
-Rgemm.qd Rgemm.qd_ref \
-Rgemv.qd Rgemv.qd_ref
+Raxpy.qd Raxpy.qd_opt \
+Rcopy.qd Rcopy.qd_opt \
+Rdot.qd  Rdot.qd_opt \
+Rgemm.qd Rgemm.qd_opt \
+Rgemv.qd Rgemv.qd_opt
 
 #lapack is needed for Rlange
 qdcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___
-qdlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_qd_ref
-qdref_libdepends = $(qdlapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_qd_ref -L$(QD_LIBDIR) -lqd $(DYLD)
-qdopt_libdepends = $(qdlapack_libdepends) -L$(top_builddir)/mpblas/optimized/qd -lmpblas_qd -L$(QD_LIBDIR) -lqd $(DYLD)
+qdlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_qd
+qd_libdepends = $(qdlapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_qd -L$(QD_LIBDIR) -lqd $(DYLD)
+qdopt_libdepends = $(qdlapack_libdepends) -L$(top_builddir)/mpblas/optimized/qd -lmpblas_qd_opt -L$(QD_LIBDIR) -lqd $(DYLD)
 
-Raxpy_qd_ref_SOURCES= Raxpy.cpp
-Raxpy_qd_ref_CXXFLAGS= $(qdcxxflags)
-Raxpy_qd_ref_LDFLAGS= $(qdref_libdepends)
+Raxpy_qd_opt_SOURCES= Raxpy.cpp
+Raxpy_qd_opt_CXXFLAGS= $(qdcxxflags)
+Raxpy_qd_opt_LDFLAGS= $(qdopt_libdepends)
 
 Raxpy_qd_SOURCES= Raxpy.cpp
 Raxpy_qd_CXXFLAGS= $(qdcxxflags)
-Raxpy_qd_LDFLAGS= $(qdopt_libdepends)
+Raxpy_qd_LDFLAGS= $(qd_libdepends)
 
-Rcopy_qd_ref_SOURCES= Rcopy.cpp
-Rcopy_qd_ref_CXXFLAGS= $(qdcxxflags)
-Rcopy_qd_ref_LDFLAGS= $(qdref_libdepends)
+Rcopy_qd_opt_SOURCES= Rcopy.cpp
+Rcopy_qd_opt_CXXFLAGS= $(qdcxxflags)
+Rcopy_qd_opt_LDFLAGS= $(qdopt_libdepends)
 
 Rcopy_qd_SOURCES= Rcopy.cpp
 Rcopy_qd_CXXFLAGS= $(qdcxxflags)
-Rcopy_qd_LDFLAGS= $(qdopt_libdepends)
+Rcopy_qd_LDFLAGS= $(qd_libdepends)
 
-Rdot_qd_ref_SOURCES= Rdot.cpp
-Rdot_qd_ref_CXXFLAGS= $(qdcxxflags)
-Rdot_qd_ref_LDFLAGS= $(qdref_libdepends)
+Rdot_qd_opt_SOURCES= Rdot.cpp
+Rdot_qd_opt_CXXFLAGS= $(qdcxxflags)
+Rdot_qd_opt_LDFLAGS= $(qdopt_libdepends)
 
 Rdot_qd_SOURCES= Rdot.cpp
 Rdot_qd_CXXFLAGS= $(qdcxxflags)
-Rdot_qd_LDFLAGS= $(qdopt_libdepends)
+Rdot_qd_LDFLAGS= $(qd_libdepends)
 
-Rgemm_qd_ref_SOURCES= Rgemm.cpp
-Rgemm_qd_ref_CXXFLAGS= $(qdcxxflags)
-Rgemm_qd_ref_LDFLAGS= $(qdref_libdepends)
+Rgemm_qd_opt_SOURCES= Rgemm.cpp
+Rgemm_qd_opt_CXXFLAGS= $(qdcxxflags)
+Rgemm_qd_opt_LDFLAGS= $(qdopt_libdepends)
 
 Rgemm_qd_SOURCES= Rgemm.cpp
 Rgemm_qd_CXXFLAGS= $(qdcxxflags)
-Rgemm_qd_LDFLAGS= $(qdopt_libdepends)
+Rgemm_qd_LDFLAGS= $(qd_libdepends)
 
-Rgemv_qd_ref_SOURCES= Rgemv.cpp
-Rgemv_qd_ref_CXXFLAGS= $(qdcxxflags)
-Rgemv_qd_ref_LDFLAGS= $(qdref_libdepends)
+Rgemv_qd_opt_SOURCES= Rgemv.cpp
+Rgemv_qd_opt_CXXFLAGS= $(qdcxxflags)
+Rgemv_qd_opt_LDFLAGS= $(qdopt_libdepends)
 
 Rgemv_qd_SOURCES= Rgemv.cpp
 Rgemv_qd_CXXFLAGS= $(qdcxxflags)
-Rgemv_qd_LDFLAGS= $(qdopt_libdepends)
+Rgemv_qd_LDFLAGS= $(qd_libdepends)
 
 
 

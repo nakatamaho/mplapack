@@ -1,53 +1,53 @@
 bench_PROGRAMS += \
-Raxpy.mpfr Raxpy.mpfr_ref \
-Rcopy.mpfr Rcopy.mpfr_ref \
-Rdot.mpfr  Rdot.mpfr_ref \
-Rgemm.mpfr Rgemm.mpfr_ref \
-Rgemv.mpfr Rgemv.mpfr_ref
+Raxpy.mpfr Raxpy.mpfr_opt \
+Rcopy.mpfr Rcopy.mpfr_opt \
+Rdot.mpfr  Rdot.mpfr_opt \
+Rgemm.mpfr Rgemm.mpfr_opt \
+Rgemv.mpfr Rgemv.mpfr_opt
 
 mpfrcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_MPFR___
-mpfrlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_mpfr_ref
-mpfrref_libdepends = $(mpfrlapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_mpfr_ref -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp $(DYLD)
-mpfropt_libdepends = $(mpfrlapack_libdepends) -L$(top_builddir)/mpblas/optimized/mpfr -lmpblas_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp $(DYLD)
+mpfrlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_mpfr
+mpfr_libdepends = $(mpfrlapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp $(DYLD)
+mpfropt_libdepends = $(mpfrlapack_libdepends) -L$(top_builddir)/mpblas/optimized/mpfr -lmpblas_mpfr_opt -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp $(DYLD)
 
-Raxpy_mpfr_ref_SOURCES= Raxpy.cpp
-Raxpy_mpfr_ref_CXXFLAGS= $(mpfrcxxflags)
-Raxpy_mpfr_ref_LDFLAGS= $(mpfrref_libdepends)
+Raxpy_mpfr_opt_SOURCES= Raxpy.cpp
+Raxpy_mpfr_opt_CXXFLAGS= $(mpfrcxxflags)
+Raxpy_mpfr_opt_LDFLAGS= $(mpfropt_libdepends)
 
 Raxpy_mpfr_SOURCES= Raxpy.cpp
 Raxpy_mpfr_CXXFLAGS= $(mpfrcxxflags)
-Raxpy_mpfr_LDFLAGS= $(mpfropt_libdepends)
+Raxpy_mpfr_LDFLAGS= $(mpfr_libdepends)
 
-Rcopy_mpfr_ref_SOURCES= Rcopy.cpp
-Rcopy_mpfr_ref_CXXFLAGS= $(mpfrcxxflags)
-Rcopy_mpfr_ref_LDFLAGS= $(mpfrref_libdepends)
+Rcopy_mpfr_opt_SOURCES= Rcopy.cpp
+Rcopy_mpfr_opt_CXXFLAGS= $(mpfrcxxflags)
+Rcopy_mpfr_opt_LDFLAGS= $(mpfropt_libdepends)
 
 Rcopy_mpfr_SOURCES= Rcopy.cpp
 Rcopy_mpfr_CXXFLAGS= $(mpfrcxxflags)
-Rcopy_mpfr_LDFLAGS= $(mpfropt_libdepends)
+Rcopy_mpfr_LDFLAGS= $(mpfr_libdepends)
 
-Rdot_mpfr_ref_SOURCES= Rdot.cpp
-Rdot_mpfr_ref_CXXFLAGS= $(mpfrcxxflags)
-Rdot_mpfr_ref_LDFLAGS= $(mpfrref_libdepends)
+Rdot_mpfr_opt_SOURCES= Rdot.cpp
+Rdot_mpfr_opt_CXXFLAGS= $(mpfrcxxflags)
+Rdot_mpfr_opt_LDFLAGS= $(mpfropt_libdepends)
 
 Rdot_mpfr_SOURCES= Rdot.cpp
 Rdot_mpfr_CXXFLAGS= $(mpfrcxxflags)
-Rdot_mpfr_LDFLAGS= $(mpfropt_libdepends)
+Rdot_mpfr_LDFLAGS= $(mpfr_libdepends)
 
-Rgemm_mpfr_ref_SOURCES= Rgemm.cpp
-Rgemm_mpfr_ref_CXXFLAGS= $(mpfrcxxflags)
-Rgemm_mpfr_ref_LDFLAGS= $(mpfrref_libdepends)
+Rgemm_mpfr_opt_SOURCES= Rgemm.cpp
+Rgemm_mpfr_opt_CXXFLAGS= $(mpfrcxxflags)
+Rgemm_mpfr_opt_LDFLAGS= $(mpfropt_libdepends)
 
 Rgemm_mpfr_SOURCES= Rgemm.cpp
 Rgemm_mpfr_CXXFLAGS= $(mpfrcxxflags)
-Rgemm_mpfr_LDFLAGS= $(mpfropt_libdepends)
+Rgemm_mpfr_LDFLAGS= $(mpfr_libdepends)
 
-Rgemv_mpfr_ref_SOURCES= Rgemv.cpp
-Rgemv_mpfr_ref_CXXFLAGS= $(mpfrcxxflags)
-Rgemv_mpfr_ref_LDFLAGS= $(mpfrref_libdepends)
+Rgemv_mpfr_opt_SOURCES= Rgemv.cpp
+Rgemv_mpfr_opt_CXXFLAGS= $(mpfrcxxflags)
+Rgemv_mpfr_opt_LDFLAGS= $(mpfropt_libdepends)
 
 Rgemv_mpfr_SOURCES= Rgemv.cpp
 Rgemv_mpfr_CXXFLAGS= $(mpfrcxxflags)
-Rgemv_mpfr_LDFLAGS= $(mpfropt_libdepends)
+Rgemv_mpfr_LDFLAGS= $(mpfr_libdepends)
 
 

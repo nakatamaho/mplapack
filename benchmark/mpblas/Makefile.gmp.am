@@ -1,54 +1,54 @@
 bench_PROGRAMS += \
-Raxpy.gmp Raxpy.gmp_ref \
-Rcopy.gmp Rcopy.gmp_ref \
-Rdot.gmp  Rdot.gmp_ref \
-Rgemm.gmp Rgemm.gmp_ref \
-Rgemv.gmp Rgemv.gmp_ref
+Raxpy.gmp Raxpy.gmp_opt \
+Rcopy.gmp Rcopy.gmp_opt \
+Rdot.gmp  Rdot.gmp_opt \
+Rgemm.gmp Rgemm.gmp_opt \
+Rgemv.gmp Rgemv.gmp_opt
 
 #lapack is needed for Rlange
 gmpcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___
-gmplapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_gmp_ref
-gmpref_libdepends = $(gmplapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_gmp_ref -L$(GMP_LIBDIR) -lgmpxx -lgmp $(DYLD)
-gmpopt_libdepends = $(gmplapack_libdepends) -L$(top_builddir)/mpblas/optimized/gmp -lmpblas_gmp -L$(GMP_LIBDIR) -lgmpxx -lgmp $(DYLD)
+gmplapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_gmp
+gmp_libdepends = $(gmplapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_gmp -L$(GMP_LIBDIR) -lgmpxx -lgmp $(DYLD)
+gmpopt_libdepends = $(gmplapack_libdepends) -L$(top_builddir)/mpblas/optimized/gmp -lmpblas_gmp_opt -L$(GMP_LIBDIR) -lgmpxx -lgmp $(DYLD)
 
-Raxpy_gmp_ref_SOURCES= Raxpy.cpp
-Raxpy_gmp_ref_CXXFLAGS= $(gmpcxxflags)
-Raxpy_gmp_ref_LDFLAGS= $(gmpref_libdepends)
+Raxpy_gmp_opt_SOURCES= Raxpy.cpp
+Raxpy_gmp_opt_CXXFLAGS= $(gmpcxxflags)
+Raxpy_gmp_opt_LDFLAGS= $(gmpopt_libdepends)
 
 Raxpy_gmp_SOURCES= Raxpy.cpp
 Raxpy_gmp_CXXFLAGS= $(gmpcxxflags)
-Raxpy_gmp_LDFLAGS= $(gmpopt_libdepends)
+Raxpy_gmp_LDFLAGS= $(gmp_libdepends)
 
-Rcopy_gmp_ref_SOURCES= Rcopy.cpp
-Rcopy_gmp_ref_CXXFLAGS= $(gmpcxxflags)
-Rcopy_gmp_ref_LDFLAGS= $(gmpref_libdepends)
+Rcopy_gmp_opt_SOURCES= Rcopy.cpp
+Rcopy_gmp_opt_CXXFLAGS= $(gmpcxxflags)
+Rcopy_gmp_opt_LDFLAGS= $(gmpopt_libdepends)
 
 Rcopy_gmp_SOURCES= Rcopy.cpp
 Rcopy_gmp_CXXFLAGS= $(gmpcxxflags)
-Rcopy_gmp_LDFLAGS= $(gmpopt_libdepends)
+Rcopy_gmp_LDFLAGS= $(gmp_libdepends)
 
-Rdot_gmp_ref_SOURCES= Rdot.cpp
-Rdot_gmp_ref_CXXFLAGS= $(gmpcxxflags)
-Rdot_gmp_ref_LDFLAGS= $(gmpref_libdepends)
+Rdot_gmp_opt_SOURCES= Rdot.cpp
+Rdot_gmp_opt_CXXFLAGS= $(gmpcxxflags)
+Rdot_gmp_opt_LDFLAGS= $(gmpopt_libdepends)
 
 Rdot_gmp_SOURCES= Rdot.cpp
 Rdot_gmp_CXXFLAGS= $(gmpcxxflags)
-Rdot_gmp_LDFLAGS= $(gmpopt_libdepends)
+Rdot_gmp_LDFLAGS= $(gmp_libdepends)
 
-Rgemm_gmp_ref_SOURCES= Rgemm.cpp
-Rgemm_gmp_ref_CXXFLAGS= $(gmpcxxflags)
-Rgemm_gmp_ref_LDFLAGS= $(gmpref_libdepends)
+Rgemm_gmp_opt_SOURCES= Rgemm.cpp
+Rgemm_gmp_opt_CXXFLAGS= $(gmpcxxflags)
+Rgemm_gmp_opt_LDFLAGS= $(gmpopt_libdepends)
 
 Rgemm_gmp_SOURCES= Rgemm.cpp
 Rgemm_gmp_CXXFLAGS= $(gmpcxxflags)
-Rgemm_gmp_LDFLAGS= $(gmpopt_libdepends)
+Rgemm_gmp_LDFLAGS= $(gmp_libdepends)
 
-Rgemv_gmp_ref_SOURCES= Rgemv.cpp
-Rgemv_gmp_ref_CXXFLAGS= $(gmpcxxflags)
-Rgemv_gmp_ref_LDFLAGS= $(gmpref_libdepends)
+Rgemv_gmp_opt_SOURCES= Rgemv.cpp
+Rgemv_gmp_opt_CXXFLAGS= $(gmpcxxflags)
+Rgemv_gmp_opt_LDFLAGS= $(gmpopt_libdepends)
 
 Rgemv_gmp_SOURCES= Rgemv.cpp
 Rgemv_gmp_CXXFLAGS= $(gmpcxxflags)
-Rgemv_gmp_LDFLAGS= $(gmpopt_libdepends)
+Rgemv_gmp_LDFLAGS= $(gmp_libdepends)
 
 

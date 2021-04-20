@@ -1,9 +1,9 @@
 bench_PROGRAMS += \
-Raxpy.dd Raxpy.dd_ref \
-Rcopy.dd Rcopy.dd_ref \
-Rdot.dd  Rdot.dd_ref \
-Rgemm.dd Rgemm.dd_ref \
-Rgemv.dd Rgemv.dd_ref
+Raxpy.dd Raxpy.dd_opt \
+Rcopy.dd Rcopy.dd_opt \
+Rdot.dd  Rdot.dd_opt \
+Rgemm.dd Rgemm.dd_opt \
+Rgemv.dd Rgemv.dd_opt
 
 if ENABLE_CUDA
 include Makefile.dd.cuda.am
@@ -11,48 +11,48 @@ endif
 
 #lapack is needed for Rlange
 ddcxxflags = -Wall $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___
-ddlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_dd_ref
-ddref_libdepends = $(ddlapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_dd_ref -L$(QD_LIBDIR) -lqd $(DYLD)
-ddopt_libdepends = $(ddlapack_libdepends) -L$(top_builddir)/mpblas/optimized/dd -lmpblas_dd -L$(QD_LIBDIR) -lqd $(DYLD)
-
-Raxpy_dd_ref_SOURCES= Raxpy.cpp
-Raxpy_dd_ref_CXXFLAGS= $(ddcxxflags)
-Raxpy_dd_ref_LDFLAGS= $(ddref_libdepends)
+ddlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_dd
+dd_libdepends = $(ddlapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_dd -L$(QD_LIBDIR) -lqd $(DYLD)
+ddopt_libdepends = $(ddlapack_libdepends) -L$(top_builddir)/mpblas/optimized/dd -lmpblas_dd_opt -L$(QD_LIBDIR) -lqd $(DYLD)
 
 Raxpy_dd_SOURCES= Raxpy.cpp
 Raxpy_dd_CXXFLAGS= $(ddcxxflags)
-Raxpy_dd_LDFLAGS= $(ddopt_libdepends)
+Raxpy_dd_LDFLAGS= $(dd_libdepends)
 
-Rcopy_dd_ref_SOURCES= Rcopy.cpp
-Rcopy_dd_ref_CXXFLAGS= $(ddcxxflags)
-Rcopy_dd_ref_LDFLAGS= $(ddref_libdepends)
+Raxpy_dd_opt_SOURCES= Raxpy.cpp
+Raxpy_dd_opt_CXXFLAGS= $(ddcxxflags)
+Raxpy_dd_opt_LDFLAGS= $(ddopt_libdepends)
 
 Rcopy_dd_SOURCES= Rcopy.cpp
 Rcopy_dd_CXXFLAGS= $(ddcxxflags)
-Rcopy_dd_LDFLAGS= $(ddopt_libdepends)
+Rcopy_dd_LDFLAGS= $(dd_libdepends)
 
-Rdot_dd_ref_SOURCES= Rdot.cpp
-Rdot_dd_ref_CXXFLAGS= $(ddcxxflags)
-Rdot_dd_ref_LDFLAGS= $(ddref_libdepends)
+Rcopy_dd_opt_SOURCES= Rcopy.cpp
+Rcopy_dd_opt_CXXFLAGS= $(ddcxxflags)
+Rcopy_dd_opt_LDFLAGS= $(ddopt_libdepends)
 
 Rdot_dd_SOURCES= Rdot.cpp
 Rdot_dd_CXXFLAGS= $(ddcxxflags)
-Rdot_dd_LDFLAGS= $(ddopt_libdepends)
+Rdot_dd_LDFLAGS= $(dd_libdepends)
 
-Rgemm_dd_ref_SOURCES= Rgemm.cpp
-Rgemm_dd_ref_CXXFLAGS= $(ddcxxflags)
-Rgemm_dd_ref_LDFLAGS= $(ddref_libdepends)
+Rdot_dd_opt_SOURCES= Rdot.cpp
+Rdot_dd_opt_CXXFLAGS= $(ddcxxflags)
+Rdot_dd_opt_LDFLAGS= $(ddopt_libdepends)
 
 Rgemm_dd_SOURCES= Rgemm.cpp
 Rgemm_dd_CXXFLAGS= $(ddcxxflags)
-Rgemm_dd_LDFLAGS= $(ddopt_libdepends)
+Rgemm_dd_LDFLAGS= $(dd_libdepends)
 
-Rgemv_dd_ref_SOURCES= Rgemv.cpp
-Rgemv_dd_ref_CXXFLAGS= $(ddcxxflags)
-Rgemv_dd_ref_LDFLAGS= $(ddref_libdepends)
+Rgemm_dd_opt_SOURCES= Rgemm.cpp
+Rgemm_dd_opt_CXXFLAGS= $(ddcxxflags)
+Rgemm_dd_opt_LDFLAGS= $(ddopt_libdepends)
 
 Rgemv_dd_SOURCES= Rgemv.cpp
 Rgemv_dd_CXXFLAGS= $(ddcxxflags)
-Rgemv_dd_LDFLAGS= $(ddopt_libdepends)
+Rgemv_dd_LDFLAGS= $(dd_libdepends)
+
+Rgemv_dd_opt_SOURCES= Rgemv.cpp
+Rgemv_dd_opt_CXXFLAGS= $(ddcxxflags)
+Rgemv_dd_opt_LDFLAGS= $(ddopt_libdepends)
 
 
