@@ -38,18 +38,17 @@
 #include <iostream>
 #endif
 
-#define MIN_N      1
-#define MAX_N      8
-#define MIN_NRHS   1
-#define MAX_NRHS   8
-#define MAX_LDA    8
-#define MAX_LDB    8
-#define MAX_ITER   3
+#define MIN_N 1
+#define MAX_N 8
+#define MIN_NRHS 1
+#define MAX_NRHS 8
+#define MAX_LDA 8
+#define MAX_LDB 8
+#define MAX_ITER 3
 
 REAL_REF maxdiff = 0.0;
 
-void Cgetrs_test2(const char *trans)
-{
+void Cgetrs_test2(const char *trans) {
     int errorflag = FALSE;
     int j = 0;
     INTEGER_REF info_ref;
@@ -57,78 +56,80 @@ void Cgetrs_test2(const char *trans)
     REAL_REF diff;
 
     for (int n = MIN_N; n <= MAX_N; n++) {
-	for (int nrhs = MIN_NRHS; nrhs <= n; nrhs++) {
-	    for (int lda = max(n, 1); lda <= MAX_LDA; lda++) {
-		for (int ldb = max(n, 1); ldb <= MAX_LDB; ldb++) {
+        for (int nrhs = MIN_NRHS; nrhs <= n; nrhs++) {
+            for (int lda = max(n, 1); lda <= MAX_LDA; lda++) {
+                for (int ldb = max(n, 1); ldb <= MAX_LDB; ldb++) {
 
-		    COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
-		    COMPLEX_REF *B_ref = new COMPLEX_REF[matlen(ldb, nrhs)];
-		    INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(n, 1)];
+                    COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
+                    COMPLEX_REF *B_ref = new COMPLEX_REF[matlen(ldb, nrhs)];
+                    INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(n, 1)];
 
-		    COMPLEX *A = new COMPLEX[matlen(lda, n)];
-		    COMPLEX *B = new COMPLEX[matlen(ldb, nrhs)];
-		    INTEGER *ipiv = new INTEGER[veclen(n, 1)];
+                    COMPLEX *A = new COMPLEX[matlen(lda, n)];
+                    COMPLEX *B = new COMPLEX[matlen(ldb, nrhs)];
+                    INTEGER *ipiv = new INTEGER[veclen(n, 1)];
 #if defined VERBOSE_TEST
-		    printf("#trans %s n:%d lda %d nrhs %d ldb %d\n", trans, n, lda, nrhs, ldb);
+                    printf("#trans %s n:%d lda %d nrhs %d ldb %d\n", trans, n, lda, nrhs, ldb);
 #endif
-		    j = 0;
-		    while (j < MAX_ITER) {
-			set_random_vector(A_ref, A, matlen(lda, n));
-			set_random_vector(B_ref, B, matlen(ldb, nrhs));
+                    j = 0;
+                    while (j < MAX_ITER) {
+                        set_random_vector(A_ref, A, matlen(lda, n));
+                        set_random_vector(B_ref, B, matlen(ldb, nrhs));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-			zgetrf_f77(&n, &n, A_ref, &lda, ipiv_ref, &info_ref);
-			zgetrs_f77(trans, &n, &nrhs, A_ref, &lda, ipiv_ref, B_ref, &ldb, &info_ref);
+                        zgetrf_f77(&n, &n, A_ref, &lda, ipiv_ref, &info_ref);
+                        zgetrs_f77(trans, &n, &nrhs, A_ref, &lda, ipiv_ref, B_ref, &ldb, &info_ref);
 #else
-			Cgetrf(n, n, A_ref, lda, ipiv_ref, &info_ref);
-			Cgetrs(trans, n, nrhs, A_ref, lda, ipiv_ref, B_ref, ldb, &info_ref);
+                        Cgetrf(n, n, A_ref, lda, ipiv_ref, &info_ref);
+                        Cgetrs(trans, n, nrhs, A_ref, lda, ipiv_ref, B_ref, ldb, &info_ref);
 #endif
-			Cgetrf(n, n, A, lda, ipiv, &info);
-			Cgetrs(trans, n, nrhs, A, lda, ipiv, B, ldb, &info);
+                        Cgetrf(n, n, A, lda, ipiv, &info);
+                        Cgetrs(trans, n, nrhs, A, lda, ipiv, B, ldb, &info);
 
-			if (info < 0) {
-			    printf("info %d error\n", -(int) info);
-			}
-			if (info_ref != info) {
-			    printf("info differ! %d, %d\n", (int) info_ref, (int) info);
-			    errorflag = TRUE;
-			}
-			diff = infnorm(B_ref, B, matlen(ldb, nrhs), 1);
-			if (diff > EPSILON7) {
-			    printf("error: "); printnum(diff); printf("\n");
-			    errorflag = TRUE;
-		       	}
-		        if (maxdiff < diff)
-			  maxdiff = diff;
+                        if (info < 0) {
+                            printf("info %d error\n", -(int)info);
+                        }
+                        if (info_ref != info) {
+                            printf("info differ! %d, %d\n", (int)info_ref, (int)info);
+                            errorflag = TRUE;
+                        }
+                        diff = infnorm(B_ref, B, matlen(ldb, nrhs), 1);
+                        if (diff > EPSILON7) {
+                            printf("error: ");
+                            printnum(diff);
+                            printf("\n");
+                            errorflag = TRUE;
+                        }
+                        if (maxdiff < diff)
+                            maxdiff = diff;
 #if defined VERBOSE_TEST
-			printf("max error: "); printnum(maxdiff); printf("\n");
+                        printf("max error: ");
+                        printnum(maxdiff);
+                        printf("\n");
 #endif
-			j++;
-		    }
-		    delete[]ipiv_ref;
-		    delete[]B_ref;
-		    delete[]A_ref;
-		    delete[]ipiv;
-		    delete[]B;
-		    delete[]A;
-		}
-		if (errorflag == TRUE) {
-		    printf("*** Testing Cgetrs failed ***\n");
-		    exit(1);
-		}
-	    }
-	}
+                        j++;
+                    }
+                    delete[] ipiv_ref;
+                    delete[] B_ref;
+                    delete[] A_ref;
+                    delete[] ipiv;
+                    delete[] B;
+                    delete[] A;
+                }
+                if (errorflag == TRUE) {
+                    printf("*** Testing Cgetrs failed ***\n");
+                    exit(1);
+                }
+            }
+        }
     }
 }
 
-void Cgetrs_test()
-{
+void Cgetrs_test() {
     Cgetrs_test2("N");
     Cgetrs_test2("C");
     Cgetrs_test2("T");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Cgetrs start ***\n");
     Cgetrs_test();
     printf("*** Testing Cgetrs successful ***\n");

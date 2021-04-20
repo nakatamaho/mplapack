@@ -38,67 +38,69 @@
 #include <iostream>
 #endif
 
-#define MIN_N     0
-#define MAX_N     30
-#define MAX_LDA   32
-#define MAX_ITER  2
+#define MIN_N 0
+#define MAX_N 30
+#define MAX_LDA 32
+#define MAX_ITER 2
 
 REAL_REF maxdiff = 0.0;
 
-void Clansy_test2(const char *norm, const char *uplo)
-{
+void Clansy_test2(const char *norm, const char *uplo) {
     int errorflag = FALSE;
     int j = 0;
     REAL_REF zlansy_ret;
     REAL Clansy_ret;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-	for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
+        for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
-	    printf("n:%d lda %d, uplo %s, norm %s\n", n, lda, uplo, norm);
+            printf("n:%d lda %d, uplo %s, norm %s\n", n, lda, uplo, norm);
 #endif
-	    COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
-	    REAL_REF *work_ref = new REAL_REF[max(1, n)];
-	    COMPLEX *A = new COMPLEX[matlen(lda, n)];
-	    REAL *work = new REAL[max(1, n)];
-	    j = 0;
-	    while (j < MAX_ITER) {
-		set_random_vector(A_ref, A, matlen(lda, n));
+            COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
+            REAL_REF *work_ref = new REAL_REF[max(1, n)];
+            COMPLEX *A = new COMPLEX[matlen(lda, n)];
+            REAL *work = new REAL[max(1, n)];
+            j = 0;
+            while (j < MAX_ITER) {
+                set_random_vector(A_ref, A, matlen(lda, n));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		zlansy_ret = zlansy_f77(norm, uplo, &n, A_ref, &lda, work_ref);
+                zlansy_ret = zlansy_f77(norm, uplo, &n, A_ref, &lda, work_ref);
 #else
-		zlansy_ret = Clansy(norm, uplo, n, A_ref, lda, work_ref);
+                zlansy_ret = Clansy(norm, uplo, n, A_ref, lda, work_ref);
 #endif
-	        Clansy_ret = Clansy(norm, uplo, n, A, lda, work);
+                Clansy_ret = Clansy(norm, uplo, n, A, lda, work);
 
-		REAL_REF diff = abs(zlansy_ret - Clansy_ret);
+                REAL_REF diff = abs(zlansy_ret - Clansy_ret);
 
-		if (diff > EPSILON) {
-		    printf("n:%d lda %d, uplo %s, norm %s\n", n, lda, uplo, norm);
-		    printf("error: "); printnum(diff); printf("\n");
-		    errorflag = TRUE;
-		}
-	        if (maxdiff < diff)
-		    maxdiff = diff;
+                if (diff > EPSILON) {
+                    printf("n:%d lda %d, uplo %s, norm %s\n", n, lda, uplo, norm);
+                    printf("error: ");
+                    printnum(diff);
+                    printf("\n");
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
 #if defined VERBOSE_TEST
-	        printf("max error: "); printnum(maxdiff); printf("\n");
+                printf("max error: ");
+                printnum(maxdiff);
+                printf("\n");
 #endif
-		j++;
-	    }
-	    delete[]A;
-	    delete[]A_ref;
-	    delete[]work;
-	    delete[]work_ref;
-	}
-	if (errorflag == TRUE) {
+                j++;
+            }
+            delete[] A;
+            delete[] A_ref;
+            delete[] work;
+            delete[] work_ref;
+        }
+        if (errorflag == TRUE) {
             printf("*** Testing Clansy failed ***\n");
-	    exit(1);
-	}
+            exit(1);
+        }
     }
 }
 
-void Clansy_test(void)
-{
+void Clansy_test(void) {
     Clansy_test2("M", "U");
     Clansy_test2("m", "U");
     Clansy_test2("1", "U");
@@ -124,8 +126,7 @@ void Clansy_test(void)
     Clansy_test2("e", "L");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Clansy start ***\n");
     Clansy_test();
     printf("*** Testing Clansy successful ***\n");

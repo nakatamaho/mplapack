@@ -49,91 +49,94 @@
 
 REAL_REF maxdiff = 0.0;
 
-void Rlarft_test2(const char *direct, const char *storev)
-{
+void Rlarft_test2(const char *direct, const char *storev) {
     int errorflag = FALSE;
     int n, k, ldvmin, v_column, ldt, iter, ldv;
     REAL_REF diff;
 
     for (k = MIN_K; k <= MAX_K; k++) {
-	for (n = k; n <= MAX_N; n++) {
-	    if (Mlsame(storev, "C"))
-		ldvmin = max(1, n);
-	    else //storev ="R"
-		ldvmin = k;
-	    for (ldv = ldvmin; ldv <= MAX_LDV; ldv++) {
-		for (ldt = k; ldt <= MAX_LDT; ldt++) {
-		    if (Mlsame(storev, "C"))
-			v_column = k;
-		    else  //storev ="R"
-			v_column = n;
+        for (n = k; n <= MAX_N; n++) {
+            if (Mlsame(storev, "C"))
+                ldvmin = max(1, n);
+            else // storev ="R"
+                ldvmin = k;
+            for (ldv = ldvmin; ldv <= MAX_LDV; ldv++) {
+                for (ldt = k; ldt <= MAX_LDT; ldt++) {
+                    if (Mlsame(storev, "C"))
+                        v_column = k;
+                    else // storev ="R"
+                        v_column = n;
 #if defined VERBOSE_TEST
-		    printf("#direct %s: storev %s, n %d, k %d, ldv %d, ldt %d\n", direct, storev, n, k, ldv, ldt);
+                    printf("#direct %s: storev %s, n %d, k %d, ldv %d, ldt %d\n", direct, storev, n, k, ldv, ldt);
 #endif
-		    REAL *T = new REAL[matlen(ldt, k)];
-		    REAL *V = new REAL[matlen(ldv, v_column)];
-		    REAL *tau = new REAL[veclen(k, 1)];
+                    REAL *T = new REAL[matlen(ldt, k)];
+                    REAL *V = new REAL[matlen(ldv, v_column)];
+                    REAL *tau = new REAL[veclen(k, 1)];
 
-		    REAL_REF *T_ref = new REAL_REF[matlen(ldt, k)];
-		    REAL_REF *V_ref = new REAL_REF[matlen(ldv, v_column)];
-		    REAL_REF *tau_ref = new REAL_REF[veclen(k, 1)];
+                    REAL_REF *T_ref = new REAL_REF[matlen(ldt, k)];
+                    REAL_REF *V_ref = new REAL_REF[matlen(ldv, v_column)];
+                    REAL_REF *tau_ref = new REAL_REF[veclen(k, 1)];
 
-		    for (iter = 0; iter < MAX_ITER; iter++) {
-			set_random_vector(T_ref, T, matlen(ldt, k));
-			set_random_vector(V_ref, V, matlen(ldv, v_column));
-			set_random_vector(tau_ref, tau, veclen(k, 1));
+                    for (iter = 0; iter < MAX_ITER; iter++) {
+                        set_random_vector(T_ref, T, matlen(ldt, k));
+                        set_random_vector(V_ref, V, matlen(ldv, v_column));
+                        set_random_vector(tau_ref, tau, veclen(k, 1));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-			dlarft_f77(direct, storev, &n, &k, V_ref, &ldv, tau_ref, T_ref, &ldt);
+                        dlarft_f77(direct, storev, &n, &k, V_ref, &ldv, tau_ref, T_ref, &ldt);
 #else
-			Rlarft(direct, storev, n, k, V_ref, ldv, tau_ref, T_ref, ldt);
+                        Rlarft(direct, storev, n, k, V_ref, ldv, tau_ref, T_ref, ldt);
 #endif
-			Rlarft(direct, storev, n, k, V, ldv, tau, T, ldt);
+                        Rlarft(direct, storev, n, k, V, ldv, tau, T, ldt);
 
-			diff = infnorm(T_ref, T, matlen(ldt, k), 1);
-		        if (diff > EPSILON) {
-		            printf("error in T: "); printnum(diff); printf("\n");
-		            errorflag = TRUE;
-		        }
-	                if (maxdiff < diff)
-		            maxdiff = diff;
+                        diff = infnorm(T_ref, T, matlen(ldt, k), 1);
+                        if (diff > EPSILON) {
+                            printf("error in T: ");
+                            printnum(diff);
+                            printf("\n");
+                            errorflag = TRUE;
+                        }
+                        if (maxdiff < diff)
+                            maxdiff = diff;
 
-			diff = infnorm(V_ref, V, matlen(ldv, v_column), 1);
-		        if (diff > EPSILON) {
-		            printf("error in V: "); printnum(diff); printf("\n");
-		            errorflag = TRUE;
-		        }
-	                if (maxdiff < diff)
-		            maxdiff = diff;
+                        diff = infnorm(V_ref, V, matlen(ldv, v_column), 1);
+                        if (diff > EPSILON) {
+                            printf("error in V: ");
+                            printnum(diff);
+                            printf("\n");
+                            errorflag = TRUE;
+                        }
+                        if (maxdiff < diff)
+                            maxdiff = diff;
 #if defined VERBOSE_TEST
-                        printf("max error: "); printnum(maxdiff); printf("\n");
+                        printf("max error: ");
+                        printnum(maxdiff);
+                        printf("\n");
 #endif
-		    }
-		    delete[]tau_ref;
-		    delete[]V_ref;
-		    delete[]T_ref;
-		    delete[]tau;
-		    delete[]V;
-		    delete[]T;
-		}
-	    }
-	}
+                    }
+                    delete[] tau_ref;
+                    delete[] V_ref;
+                    delete[] T_ref;
+                    delete[] tau;
+                    delete[] V;
+                    delete[] T;
+                }
+            }
+        }
     }
     if (errorflag == TRUE) {
-	printf("*** Testing Rlarft failed ***\n");
-	exit(1);
+        printf("*** Testing Rlarft failed ***\n");
+        exit(1);
     }
 }
 
-void Rlarft_test()
-{
+void Rlarft_test() {
     Rlarft_test2("B", "C");
     Rlarft_test2("B", "R");
     Rlarft_test2("F", "C");
     Rlarft_test2("F", "R");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rlarft start ***\n");
     Rlarft_test();
     printf("*** Testing Rlarft successful ***\n");

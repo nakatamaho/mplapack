@@ -39,17 +39,16 @@
 #include <iostream>
 #endif
 
-#define MIN_N     0
-#define MAX_N     15
-#define MIN_M     0
-#define MAX_M     15
-#define MAX_LDA   18
-#define MAX_ITER  3
+#define MIN_N 0
+#define MAX_N 15
+#define MIN_M 0
+#define MAX_M 15
+#define MAX_LDA 18
+#define MAX_ITER 3
 
 REAL_REF maxdiff = 0.0;
 
-void Rgetf2_test()
-{
+void Rgetf2_test() {
     int errorflag = FALSE;
     int j = 0, i;
     REAL_REF diff;
@@ -58,65 +57,68 @@ void Rgetf2_test()
     INTEGER info;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-	for (int m = MIN_M; m < MAX_M; m++) {
-	    for (int lda = max(m, 1); lda < MAX_LDA; lda++) {
+        for (int m = MIN_M; m < MAX_M; m++) {
+            for (int lda = max(m, 1); lda < MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
-		printf("# n:%d m:%d lda:%d\n", n, m, lda);
+                printf("# n:%d m:%d lda:%d\n", n, m, lda);
 #endif
-		REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
-		INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(min(m, n), 1)];
+                REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
+                INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(min(m, n), 1)];
 
-		REAL *A = new REAL[matlen(lda, n)];
-		INTEGER *ipiv = new INTEGER[veclen(min(m, n), 1)];
+                REAL *A = new REAL[matlen(lda, n)];
+                INTEGER *ipiv = new INTEGER[veclen(min(m, n), 1)];
 
-		j = 0;
-		while (j < MAX_ITER) {
-		    set_random_vector(A_ref, A, matlen(lda, n));
-//initialize ipiv, ipivd.
-		    for (i = 0; i < veclen(min(m, n), 1); i++) {
-			ipiv_ref[i] = 0;
-			ipiv[i] = 0;
-		    }
+                j = 0;
+                while (j < MAX_ITER) {
+                    set_random_vector(A_ref, A, matlen(lda, n));
+                    // initialize ipiv, ipivd.
+                    for (i = 0; i < veclen(min(m, n), 1); i++) {
+                        ipiv_ref[i] = 0;
+                        ipiv[i] = 0;
+                    }
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		    dgetf2_f77(&m, &n, A_ref, &lda, ipiv_ref, &info_ref);
+                    dgetf2_f77(&m, &n, A_ref, &lda, ipiv_ref, &info_ref);
 #else
-		    Rgetf2(m, n, A_ref, lda, ipiv_ref, &info_ref);
+                    Rgetf2(m, n, A_ref, lda, ipiv_ref, &info_ref);
 #endif
-		    Rgetf2(m, n, A, lda, ipiv, &info);
+                    Rgetf2(m, n, A, lda, ipiv, &info);
 
                     diff = infnorm(A_ref, A, matlen(lda, n), 1);
-		    if (diff > EPSILON) {
-		       printf("error: "); printnum(diff); printf("\n");
-		       errorflag = TRUE;
-		    }
-	            if (maxdiff < diff)
-		        maxdiff = diff;
-		    idiff = infnorm(ipiv_ref, ipiv, veclen(min(m, n), 1), 1);
-//          for(i=0;i<min(m,n);i++){ printf("%d %d\n",ipiv[i],ipivd[i]);} 
-		    if (idiff > 0) {
-			printf("error pivoting %d!!\n", (int)idiff);
-			errorflag = TRUE;
-		    }
-		    j++;
+                    if (diff > EPSILON) {
+                        printf("error: ");
+                        printnum(diff);
+                        printf("\n");
+                        errorflag = TRUE;
+                    }
+                    if (maxdiff < diff)
+                        maxdiff = diff;
+                    idiff = infnorm(ipiv_ref, ipiv, veclen(min(m, n), 1), 1);
+                    //          for(i=0;i<min(m,n);i++){ printf("%d %d\n",ipiv[i],ipivd[i]);}
+                    if (idiff > 0) {
+                        printf("error pivoting %d!!\n", (int)idiff);
+                        errorflag = TRUE;
+                    }
+                    j++;
 #if defined VERBOSE_TEST
-                    printf("max error: "); printnum(maxdiff); printf("\n");
+                    printf("max error: ");
+                    printnum(maxdiff);
+                    printf("\n");
 #endif
-		}
-		delete[]ipiv_ref;
-		delete[]ipiv;
-		delete[]A_ref;
-		delete[]A;
-	    }
-	}
+                }
+                delete[] ipiv_ref;
+                delete[] ipiv;
+                delete[] A_ref;
+                delete[] A;
+            }
+        }
     }
     if (errorflag == TRUE) {
         printf("*** Testing Rgetf2 failed ***\n");
-	exit(1);
+        exit(1);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rgetf2 start ***\n");
     Rgetf2_test();
     printf("*** Testing Rgetf2 successful ***\n");

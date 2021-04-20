@@ -38,64 +38,66 @@
 #include <iostream>
 #endif
 
-#define MIN_N     0
-#define MAX_N     100
-#define MAX_ITER  10
+#define MIN_N 0
+#define MAX_N 100
+#define MAX_ITER 10
 
 REAL_REF maxdiff = 0.0;
 
-void Rlanst_test2(const char *norm)
-{
+void Rlanst_test2(const char *norm) {
     int errorflag = FALSE;
     int j = 0, ni;
     REAL_REF dlanst_ret, diff;
     REAL Rlanst_ret;
 
     for (mplapackint n = MIN_N; n < MAX_N; n++) {
-	ni = n;
+        ni = n;
 #if defined VERBOSE_TEST
-	printf("n:%d norm %s\n", (int) n, norm);
+        printf("n:%d norm %s\n", (int)n, norm);
 #endif
-	REAL_REF *d_ref = new REAL_REF[veclen(n, 1)];
-	REAL_REF *e_ref = new REAL_REF[veclen(n - 1, 1)];
-	REAL *d = new REAL[veclen(n, 1)];
-	REAL *e = new REAL[veclen(n - 1, 1)];
-	j = 0;
-	while (j < MAX_ITER) {
-	    set_random_vector(d_ref, d, veclen(n, 1));
-	    set_random_vector(e_ref, e, veclen(n - 1, 1));
+        REAL_REF *d_ref = new REAL_REF[veclen(n, 1)];
+        REAL_REF *e_ref = new REAL_REF[veclen(n - 1, 1)];
+        REAL *d = new REAL[veclen(n, 1)];
+        REAL *e = new REAL[veclen(n - 1, 1)];
+        j = 0;
+        while (j < MAX_ITER) {
+            set_random_vector(d_ref, d, veclen(n, 1));
+            set_random_vector(e_ref, e, veclen(n - 1, 1));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-	    dlanst_ret = dlanst_f77(norm, &ni, d_ref, e_ref);
+            dlanst_ret = dlanst_f77(norm, &ni, d_ref, e_ref);
 #else
-	    dlanst_ret = Rlanst(norm, ni, d_ref, e_ref);
+            dlanst_ret = Rlanst(norm, ni, d_ref, e_ref);
 #endif
-	    Rlanst_ret = Rlanst(norm, n, d, e);
+            Rlanst_ret = Rlanst(norm, n, d, e);
 
-	    diff = abs(Rlanst_ret - dlanst_ret);
-	    if (diff > EPSILON) {
-		printf("error: "); printnum(diff); printf("\n");
-		errorflag = TRUE;
-	    }
-	    if (maxdiff < diff)
-		maxdiff = diff;
+            diff = abs(Rlanst_ret - dlanst_ret);
+            if (diff > EPSILON) {
+                printf("error: ");
+                printnum(diff);
+                printf("\n");
+                errorflag = TRUE;
+            }
+            if (maxdiff < diff)
+                maxdiff = diff;
 #if defined VERBOSE_TEST
-	    printf("max error: "); printnum(maxdiff); printf("\n");
+            printf("max error: ");
+            printnum(maxdiff);
+            printf("\n");
 #endif
-	    j++;
-	}
-	delete[]d;
-	delete[]d_ref;
-	delete[]e;
-	delete[]e_ref;
+            j++;
+        }
+        delete[] d;
+        delete[] d_ref;
+        delete[] e;
+        delete[] e_ref;
     }
     if (errorflag == TRUE) {
         printf("*** Testing Rlanst failed ***\n");
-	exit(1);
+        exit(1);
     }
 }
 
-void Rlanst_test(void)
-{
+void Rlanst_test(void) {
     Rlanst_test2("M");
     Rlanst_test2("m");
     Rlanst_test2("1");
@@ -109,8 +111,7 @@ void Rlanst_test(void)
     Rlanst_test2("e");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rlanst start ***\n");
     Rlanst_test();
     printf("*** Testing Rlanst successful ***\n");

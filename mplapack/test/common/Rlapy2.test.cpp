@@ -40,8 +40,7 @@
 
 REAL_REF maxdiff = 0.0;
 
-void Rlapy2_test()
-{
+void Rlapy2_test() {
     int errorflag = FALSE;
     REAL_REF dlapy2_ret, x_ref, y_ref, diff;
     REAL Rlapy2_ret, x, y;
@@ -49,41 +48,54 @@ void Rlapy2_test()
     int count = 100;
 
     while (count--) {
-	set_random_number(x_ref, x);
-	set_random_number(y_ref, y);
+        set_random_number(x_ref, x);
+        set_random_number(y_ref, y);
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-	dlapy2_ret = dlapy2_f77(&x_ref, &y_ref);
+        dlapy2_ret = dlapy2_f77(&x_ref, &y_ref);
 #else
-	dlapy2_ret = Rlapy2(x_ref, y_ref);
+        dlapy2_ret = Rlapy2(x_ref, y_ref);
 #endif
-	Rlapy2_ret = Rlapy2(x, y);
+        Rlapy2_ret = Rlapy2(x, y);
 
 #if defined VERBOSE_TEST
-	cout << "x      "; printnum(x); cout << endl;
-	cout << "y      "; printnum(y); cout << endl;
-	cout << "Rlapy2 "; printnum(Rlapy2_ret); cout << endl;
-	cout << "x_ref  "; printnum(x_ref); cout << endl;
-	cout << "y_ref  "; printnum(y_ref); cout << endl;
-	cout << "dlapy2 "; printnum(dlapy2_ret); cout << endl;
+        cout << "x      ";
+        printnum(x);
+        cout << endl;
+        cout << "y      ";
+        printnum(y);
+        cout << endl;
+        cout << "Rlapy2 ";
+        printnum(Rlapy2_ret);
+        cout << endl;
+        cout << "x_ref  ";
+        printnum(x_ref);
+        cout << endl;
+        cout << "y_ref  ";
+        printnum(y_ref);
+        cout << endl;
+        cout << "dlapy2 ";
+        printnum(dlapy2_ret);
+        cout << endl;
 #endif
-        diff = abs (dlapy2_ret - Rlapy2_ret);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	}
-	if (maxdiff < diff)
-	    maxdiff = diff;
+        diff = abs(dlapy2_ret - Rlapy2_ret);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+        }
+        if (maxdiff < diff)
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-	printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
     }
     if (errorflag == TRUE) {
-	printf("*** Testing Rlapy2 failed ***\n");
-	exit(1);
+        printf("*** Testing Rlapy2 failed ***\n");
+        exit(1);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rlapy2 start ***\n");
     Rlapy2_test();
     printf("*** Testing Rlapy2 successful ***\n");

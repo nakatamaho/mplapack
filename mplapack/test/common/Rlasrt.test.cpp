@@ -38,15 +38,14 @@
 #include <iostream>
 #endif
 
-#define MIN_N     0
-#define MAX_N     50
-#define MAX_LDA   60
-#define MAX_ITER  10
+#define MIN_N 0
+#define MAX_N 50
+#define MAX_LDA 60
+#define MAX_ITER 10
 
 REAL_REF maxdiff = 0.0;
 
-void Rlasrt_test2(const char *id)
-{
+void Rlasrt_test2(const char *id) {
     int errorflag = FALSE;
     int j;
     INTEGER_REF info_ref;
@@ -55,55 +54,57 @@ void Rlasrt_test2(const char *id)
 
     for (int n = MIN_N; n < MAX_N; n++) {
 #if defined VERBOSE_TEST
-	printf("#n:%d id %s\n", n, id);
+        printf("#n:%d id %s\n", n, id);
 #endif
-	REAL_REF *d_ref = new REAL_REF[veclen(n, 1)];
-	REAL *d = new REAL[veclen(n, 1)];
+        REAL_REF *d_ref = new REAL_REF[veclen(n, 1)];
+        REAL *d = new REAL[veclen(n, 1)];
 
-	j = 0;
-	while (j < MAX_ITER) {
-	    set_random_vector(d_ref, d, veclen(n, 1));
+        j = 0;
+        while (j < MAX_ITER) {
+            set_random_vector(d_ref, d, veclen(n, 1));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-	    dlasrt_f77(id, &n, d_ref, &info_ref);
+            dlasrt_f77(id, &n, d_ref, &info_ref);
 #else
-	    Rlasrt(id, n, d_ref, &info_ref);
+            Rlasrt(id, n, d_ref, &info_ref);
 #endif
-	    Rlasrt(id, n, d, &info);
+            Rlasrt(id, n, d, &info);
 
-	    if (info_ref != info) {
-		printf("#error info info:%d info:%d\n", (int) info_ref, (int)info);
-		errorflag = TRUE;
-	    }
-	    diff = infnorm(d_ref, d, veclen(n, 1), 1);
-	    if (diff > EPSILON) {
-	        printf("error2: "); printnum(diff); printf("\n");
-	        errorflag = TRUE;
-                  exit(1);
-	    }
-	    if (maxdiff < diff)
-	        maxdiff = diff;
+            if (info_ref != info) {
+                printf("#error info info:%d info:%d\n", (int)info_ref, (int)info);
+                errorflag = TRUE;
+            }
+            diff = infnorm(d_ref, d, veclen(n, 1), 1);
+            if (diff > EPSILON) {
+                printf("error2: ");
+                printnum(diff);
+                printf("\n");
+                errorflag = TRUE;
+                exit(1);
+            }
+            if (maxdiff < diff)
+                maxdiff = diff;
 #if defined VERBOSE_TEST
-	    printf("max error: "); printnum(maxdiff); printf("\n");
+            printf("max error: ");
+            printnum(maxdiff);
+            printf("\n");
 #endif
-	    j++;
+            j++;
         }
-	delete[]d;
-	delete[]d_ref;
+        delete[] d;
+        delete[] d_ref;
     }
     if (errorflag == TRUE) {
-	printf("*** Testing Rlasrt start ***\n");
-	exit(1);
+        printf("*** Testing Rlasrt start ***\n");
+        exit(1);
     }
 }
 
-void Rlasrt_test(void)
-{
+void Rlasrt_test(void) {
     Rlasrt_test2("I");
     Rlasrt_test2("D");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rlasrt start ***\n");
     Rlasrt_test();
     printf("*** Testing Rlasrt successful ***\n");

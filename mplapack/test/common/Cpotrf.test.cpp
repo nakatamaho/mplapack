@@ -38,15 +38,14 @@
 #include <iostream>
 #endif
 
-#define MIN_N      0
-#define MAX_N     10		//should not be so large
-#define MAX_LDA   10		//should not be so large
-#define MAX_ITER  10
+#define MIN_N 0
+#define MAX_N 10   // should not be so large
+#define MAX_LDA 10 // should not be so large
+#define MAX_ITER 10
 
 REAL_REF maxdiff = 0.0;
 
-void Cpotrf_test2(const char *uplo)
-{
+void Cpotrf_test2(const char *uplo) {
     int errorflag = FALSE;
     int j = 0;
     INTEGER_REF info_ref;
@@ -54,100 +53,106 @@ void Cpotrf_test2(const char *uplo)
     REAL_REF diff;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-	for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
-	    COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
-	    COMPLEX *A = new COMPLEX[matlen(lda, n)];
+        for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
+            COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
+            COMPLEX *A = new COMPLEX[matlen(lda, n)];
 #if defined VERBOSE_TEST
-	    printf("n:%d lda %d, uplo %s\n", n, lda, uplo);
+            printf("n:%d lda %d, uplo %s\n", n, lda, uplo);
 #endif
-	    j = 0;
-	    while (j < MAX_ITER) {
-//general (not necessary psd) case
-		set_random_vector(A_ref, A, matlen(lda, n));
+            j = 0;
+            while (j < MAX_ITER) {
+                // general (not necessary psd) case
+                set_random_vector(A_ref, A, matlen(lda, n));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		zpotf2_f77(uplo, &n, A_ref, &lda, &info_ref); //not zpotrf
+                zpotf2_f77(uplo, &n, A_ref, &lda, &info_ref); // not zpotrf
 #else
-		Cpotrf(uplo, n, A_ref, lda, &info_ref);
+                Cpotrf(uplo, n, A_ref, lda, &info_ref);
 #endif
-		Cpotrf(uplo, n, A, lda, &info);
+                Cpotrf(uplo, n, A, lda, &info);
 
-		if (info < 0) {
-		    printf("info %d error\n", -(int) info);
-		    errorflag = TRUE;
-		}
-		if (info > 0) {
+                if (info < 0) {
+                    printf("info %d error\n", -(int)info);
+                    errorflag = TRUE;
+                }
+                if (info > 0) {
 #if defined VERBOSE_TEST
-		    printf("non psd matrix in %d-th (not an error)\n", (int) info);
+                    printf("non psd matrix in %d-th (not an error)\n", (int)info);
 #endif
-		}
-		if (info_ref != info) {
-		    printf("info error! %d, %d\n", (int)info_ref, (int)info);
-		    errorflag = TRUE;
-		}
+                }
+                if (info_ref != info) {
+                    printf("info error! %d, %d\n", (int)info_ref, (int)info);
+                    errorflag = TRUE;
+                }
                 diff = infnorm(A_ref, A, matlen(lda, n), 1);
-		if (diff > EPSILON7) {
-		    printf("n:%d lda %d, uplo %s\n", n, lda, uplo);
-		    printf("error1: "); printnum(diff); printf("\n");
-		    errorflag = TRUE;
-		}
-	        if (maxdiff < diff)
-		    maxdiff = diff;
+                if (diff > EPSILON7) {
+                    printf("n:%d lda %d, uplo %s\n", n, lda, uplo);
+                    printf("error1: ");
+                    printnum(diff);
+                    printf("\n");
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
 #if defined VERBOSE_TEST
-	        printf("max error: "); printnum(maxdiff); printf("\n");
+                printf("max error: ");
+                printnum(maxdiff);
+                printf("\n");
 #endif
-//psd case
-		set_random_psdmat(A_ref, A, lda, n);
+                // psd case
+                set_random_psdmat(A_ref, A, lda, n);
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		zpotf2_f77(uplo, &n, A_ref, &lda, &info_ref);
+                zpotf2_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else
-		Cpotrf(uplo, n, A_ref, lda, &info_ref);
+                Cpotrf(uplo, n, A_ref, lda, &info_ref);
 #endif
-		Cpotrf(uplo, n, A, lda, &info);
+                Cpotrf(uplo, n, A, lda, &info);
 
-		if (info < 0) {
-		    printf("info %d error\n", -(int) info);
-		    errorflag = TRUE;
-		}
-		if (info > 0) {
+                if (info < 0) {
+                    printf("info %d error\n", -(int)info);
+                    errorflag = TRUE;
+                }
+                if (info > 0) {
 #if defined VERBOSE_TEST
-		    printf("non psd matrix in %d-th (not an error)\n", (int) info);
+                    printf("non psd matrix in %d-th (not an error)\n", (int)info);
 #endif
-		}
-		if (info_ref != info) {
-		    printf("info error! %d, %d\n", (int) info_ref, (int)info);
-		    errorflag = TRUE;
-		}
+                }
+                if (info_ref != info) {
+                    printf("info error! %d, %d\n", (int)info_ref, (int)info);
+                    errorflag = TRUE;
+                }
                 diff = infnorm(A_ref, A, matlen(lda, n), 1);
-		if (diff > EPSILON7) {
-		    printf("n:%d lda %d, uplo %s\n", n, lda, uplo);
-		    printf("error2: "); printnum(diff); printf("\n");
-		    errorflag = TRUE;
-		}
-	        if (maxdiff < diff)
-		    maxdiff = diff;
+                if (diff > EPSILON7) {
+                    printf("n:%d lda %d, uplo %s\n", n, lda, uplo);
+                    printf("error2: ");
+                    printnum(diff);
+                    printf("\n");
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
 #if defined VERBOSE_TEST
-	        printf("max error: "); printnum(maxdiff); printf("\n");
+                printf("max error: ");
+                printnum(maxdiff);
+                printf("\n");
 #endif
-		j++;
-	    }
-	    delete[]A;
-	    delete[]A_ref;
-	}
-	if (errorflag == TRUE) {
-	    printf("*** Testing Cpotrf failed ***\n");
-	    exit(1);
-	}
+                j++;
+            }
+            delete[] A;
+            delete[] A_ref;
+        }
+        if (errorflag == TRUE) {
+            printf("*** Testing Cpotrf failed ***\n");
+            exit(1);
+        }
     }
 }
 
-void Cpotrf_test(void)
-{
+void Cpotrf_test(void) {
     Cpotrf_test2("U");
     Cpotrf_test2("L");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Cpotrf start ***\n");
     Cpotrf_test();
     printf("*** Testing Cpotrf successful ***\n");

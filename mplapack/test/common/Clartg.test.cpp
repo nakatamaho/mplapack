@@ -40,8 +40,7 @@
 
 REAL_REF maxdiff = 0.0;
 
-void Clartg_test()
-{
+void Clartg_test() {
     int errorflag = FALSE;
 
     COMPLEX_REF f_ref, g_ref, sn_ref, r_ref;
@@ -52,135 +51,152 @@ void Clartg_test()
     int count = 100;
 
     while (count--) {
-	set_random_number(f_ref, f);
-	set_random_number(g_ref, g);
+        set_random_number(f_ref, f);
+        set_random_number(g_ref, g);
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-	zlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
+        zlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
 #else
-	Clartg(f_ref, g_ref, &cs_ref, &sn_ref, &r_ref);
+        Clartg(f_ref, g_ref, &cs_ref, &sn_ref, &r_ref);
 #endif
-	Clartg(f, g, &cs, &sn, &r);
+        Clartg(f, g, &cs, &sn, &r);
 
-        diff = abs (cs_ref - cs);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("Error1\n");
-	}
+        diff = abs(cs_ref - cs);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("Error1\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
-        diff = abs (sn_ref - sn);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("Error1\n");
-	}
+        diff = abs(sn_ref - sn);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("Error1\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
-        diff = abs (r_ref - r);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("Error1\n");
-	}
+        diff = abs(r_ref - r);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("Error1\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
-	f = 0.0;
-	f_ref = 0.0;
-	set_random_number(g_ref, g);
+        f = 0.0;
+        f_ref = 0.0;
+        set_random_number(g_ref, g);
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-	zlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
+        zlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
 #else
-	Clartg(f_ref, g_ref, &cs_ref, &sn_ref, &r_ref);
+        Clartg(f_ref, g_ref, &cs_ref, &sn_ref, &r_ref);
 #endif
-	Clartg(f, g, &cs, &sn, &r);
+        Clartg(f, g, &cs, &sn, &r);
 
-        diff = abs (cs_ref - cs);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("Error1\n");
-	}
+        diff = abs(cs_ref - cs);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("Error1\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
-        diff = abs (sn_ref - sn);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("Error1\n");
-	}
+        diff = abs(sn_ref - sn);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("Error1\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
-        diff = abs (r_ref - r);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("Error1\n");
-	}
+        diff = abs(r_ref - r);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("Error1\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
-	g = 0.0;
-	g_ref = 0.0;
-	set_random_number(f_ref, f);
+        g = 0.0;
+        g_ref = 0.0;
+        set_random_number(f_ref, f);
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-	zlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
+        zlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
 #else
-	Clartg(f_ref, g_ref, &cs_ref, &sn_ref, &r_ref);
+        Clartg(f_ref, g_ref, &cs_ref, &sn_ref, &r_ref);
 #endif
-	Clartg(f, g, &cs, &sn, &r);
+        Clartg(f, g, &cs, &sn, &r);
 
-        diff = abs (cs_ref - cs);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("Error1\n");
-	}
+        diff = abs(cs_ref - cs);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("Error1\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
-        diff = abs (sn_ref - sn);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("Error1\n");
-	}
+        diff = abs(sn_ref - sn);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("Error1\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
-        diff = abs (r_ref - r);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("Error1\n");
-	}
+        diff = abs(r_ref - r);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("Error1\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
 
-	if (errorflag == TRUE) {
-	    printf("*** Testing Clartg failed ***\n");
-	    exit(1);
-	}
+        if (errorflag == TRUE) {
+            printf("*** Testing Clartg failed ***\n");
+            exit(1);
+        }
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Clartg start ***\n");
     Clartg_test();
     printf("*** Testing Clartg successful ***\n");

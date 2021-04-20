@@ -38,56 +38,54 @@
 #include <iostream>
 #endif
 
-#define MIN_INCX  1
-#define MAX_INCX  2
-#define MIN_N     1
-#define MAX_N     10
+#define MIN_INCX 1
+#define MAX_INCX 2
+#define MIN_N 1
+#define MAX_N 10
 #define MAX_ITER 10
 
-void iCmax1_test()
-{
+void iCmax1_test() {
     int errorflag = FALSE;
     INTEGER_REF izmax1_ret;
     INTEGER iCmax1_ret;
 
     for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
-	for (int n = MIN_N; n < MAX_N; n++) {
+        for (int n = MIN_N; n < MAX_N; n++) {
 #if defined VERBOSE_TEST
-	    printf("#n:%d incx:%d \n", n, incx);
+            printf("#n:%d incx:%d \n", n, incx);
 #endif
-	    COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
-	    COMPLEX *x = new COMPLEX[veclen(n, incx)];
-	    int j = 0;
-	    while (j < MAX_ITER) {
-		set_random_vector(x_ref, x, veclen(n, incx));
+            COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
+            COMPLEX *x = new COMPLEX[veclen(n, incx)];
+            int j = 0;
+            while (j < MAX_ITER) {
+                set_random_vector(x_ref, x, veclen(n, incx));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		izmax1_ret = izmax1_f77(&n, x_ref, &incx);
+                izmax1_ret = izmax1_f77(&n, x_ref, &incx);
 #else
-		izmax1_ret = iCmax1(n, x_ref, incx);
+                izmax1_ret = iCmax1(n, x_ref, incx);
 #endif
-		iCmax1_ret = iCmax1(n, x, incx);
+                iCmax1_ret = iCmax1(n, x, incx);
 #if defined VERBOSE_TEST
-		cout << "iCmax1:" << iCmax1_ret << endl;
-		cout << "izmax1:" << izmax1_ret << endl;
+                cout << "iCmax1:" << iCmax1_ret << endl;
+                cout << "izmax1:" << izmax1_ret << endl;
 #endif
-		if (iCmax1_ret != izmax1_ret) {
-		    printf("error!!\n");
-		    errorflag = TRUE;
-		}
-		j++;
-	    }
-	    delete[]x;
-	    delete[]x_ref;
-	}
+                if (iCmax1_ret != izmax1_ret) {
+                    printf("error!!\n");
+                    errorflag = TRUE;
+                }
+                j++;
+            }
+            delete[] x;
+            delete[] x_ref;
+        }
     }
     if (errorflag == TRUE) {
-	printf("*** Testing iCmax1 failed ***\n");
-	exit(1);
+        printf("*** Testing iCmax1 failed ***\n");
+        exit(1);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing iCmax1 start ***\n");
     iCmax1_test();
     printf("*** Testing iCmax1 successful ***\n");

@@ -40,14 +40,13 @@
 
 #define MIN_N 2
 #define MAX_N 20
-#define MIN_INCX  1
-#define MAX_INCX  3
+#define MIN_INCX 1
+#define MAX_INCX 3
 #define MAX_ITER 10
 
 REAL_REF maxdiff = 0.0;
 
-void Rlarfg_test()
-{
+void Rlarfg_test() {
     int errorflag = FALSE;
     int incx, n, iter;
     REAL_REF alpha_ref, tau_ref, diff;
@@ -56,57 +55,64 @@ void Rlarfg_test()
     REAL *x;
 
     for (incx = MIN_INCX; incx <= MAX_INCX; incx++) {
-	for (n = MIN_N; n <= MAX_N; n++) {
+        for (n = MIN_N; n <= MAX_N; n++) {
 #if defined VERBOSE_TEST
-	    printf("# n: %d, incx: %d \n", n, incx);
+            printf("# n: %d, incx: %d \n", n, incx);
 #endif
-	    x_ref = new REAL_REF[veclen(n, incx)];
-	    x = new REAL[veclen(n, incx)];
+            x_ref = new REAL_REF[veclen(n, incx)];
+            x = new REAL[veclen(n, incx)];
 
-	    for (iter = 0; iter < MAX_ITER; iter++) {
-		set_random_vector(x_ref, x, veclen(n, incx));
-		set_random_number(alpha_ref, alpha);
+            for (iter = 0; iter < MAX_ITER; iter++) {
+                set_random_vector(x_ref, x, veclen(n, incx));
+                set_random_number(alpha_ref, alpha);
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		dlarfg_f77(&n, &alpha_ref, x_ref, &incx, &tau_ref);
+                dlarfg_f77(&n, &alpha_ref, x_ref, &incx, &tau_ref);
 #else
-		Rlarfg(n, &alpha_ref, x_ref, incx, &tau_ref);
+                Rlarfg(n, &alpha_ref, x_ref, incx, &tau_ref);
 #endif
-		Rlarfg(n, &alpha, x, incx, &tau);
+                Rlarfg(n, &alpha, x, incx, &tau);
 
-		diff = abs(alpha_ref - alpha);
-		if (diff > EPSILON) {
-		    printf("error: in eps "); printnum(diff); printf("\n");
-		    errorflag = TRUE;
-		}
-	        if (maxdiff < diff)
-		    maxdiff = diff;
+                diff = abs(alpha_ref - alpha);
+                if (diff > EPSILON) {
+                    printf("error: in eps ");
+                    printnum(diff);
+                    printf("\n");
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
 #if defined VERBOSE_TEST
-	        printf("max error: "); printnum(maxdiff); printf("\n");
+                printf("max error: ");
+                printnum(maxdiff);
+                printf("\n");
 #endif
-		diff = abs(tau_ref - tau);
-		if (diff > EPSILON) {
-		    printf("error: in tau "); printnum(diff); printf("\n");
-		    errorflag = TRUE;
-		}
-	        if (maxdiff < diff)
-		    maxdiff = diff;
+                diff = abs(tau_ref - tau);
+                if (diff > EPSILON) {
+                    printf("error: in tau ");
+                    printnum(diff);
+                    printf("\n");
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
 #if defined VERBOSE_TEST
-	        printf("max error: "); printnum(maxdiff); printf("\n");
+                printf("max error: ");
+                printnum(maxdiff);
+                printf("\n");
 #endif
-	    }
-	    delete[]x_ref;
-	    delete[]x;
-	}
+            }
+            delete[] x_ref;
+            delete[] x;
+        }
     }
     if (errorflag == TRUE) {
-	printf("*** Testing Rlarfg failed ***\n");
-	exit(1);
+        printf("*** Testing Rlarfg failed ***\n");
+        exit(1);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rlarfg start ***\n");
     Rlarfg_test();
     printf("*** Testing Rlarfg successful ***\n");

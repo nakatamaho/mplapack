@@ -38,18 +38,17 @@
 #include <iostream>
 #endif
 
-#define MIN_N     5
-#define MAX_N     10
-#define MIN_M     5
-#define MAX_M     10
-#define MIN_LDA   5
-#define MAX_LDA   10
-#define MAX_ITER   2
+#define MIN_N 5
+#define MAX_N 10
+#define MIN_M 5
+#define MAX_M 10
+#define MIN_LDA 5
+#define MAX_LDA 10
+#define MAX_ITER 2
 
 REAL_REF maxdiff = 0.0;
 
-void Clascl_test2(const char *type)
-{
+void Clascl_test2(const char *type) {
     int errorflag = FALSE;
     INTEGER_REF j, m, n, lda, ku, kl, info_ref;
     INTEGER info;
@@ -57,58 +56,61 @@ void Clascl_test2(const char *type)
     REAL cto, cfrom;
 
     for (n = MIN_N; n <= MAX_N; n++) {
-	for (m = MIN_M; m <= MAX_M; m++) {
-	    for (lda = m; lda <= MAX_LDA; lda++) {
-		for (kl = 0; kl <= n; kl++) {
-		    for (ku = 0; ku <= m; ku++) {
-			COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
-			COMPLEX *A = new COMPLEX[matlen(lda, n)];
+        for (m = MIN_M; m <= MAX_M; m++) {
+            for (lda = m; lda <= MAX_LDA; lda++) {
+                for (kl = 0; kl <= n; kl++) {
+                    for (ku = 0; ku <= m; ku++) {
+                        COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
+                        COMPLEX *A = new COMPLEX[matlen(lda, n)];
 #if defined VERBOSE_TEST
-			printf("#type %s, n %d, m %d, lda %d, ku %d, kl %d\n", type, (int)n, (int)m, (int)lda, (int)ku, (int)kl);
+                        printf("#type %s, n %d, m %d, lda %d, ku %d, kl %d\n", type, (int)n, (int)m, (int)lda, (int)ku, (int)kl);
 #endif
-			j = 0;
-			while (j < MAX_ITER) {
-			    set_random_vector(A_ref, A, matlen(lda, n));
-			    set_random_number(cto_ref, cto);
-			    set_random_number(cfrom_ref, cfrom);
+                        j = 0;
+                        while (j < MAX_ITER) {
+                            set_random_vector(A_ref, A, matlen(lda, n));
+                            set_random_number(cto_ref, cto);
+                            set_random_number(cfrom_ref, cfrom);
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-			    zlascl_f77(type, &kl, &ku, &cfrom_ref, &cto_ref, &m, &n, A_ref, &lda, &info_ref);
+                            zlascl_f77(type, &kl, &ku, &cfrom_ref, &cto_ref, &m, &n, A_ref, &lda, &info_ref);
 #else
-			    Clascl(type, kl, ku, cfrom_ref, cto_ref, m, n, A_ref, lda, &info_ref);
+                            Clascl(type, kl, ku, cfrom_ref, cto_ref, m, n, A_ref, lda, &info_ref);
 #endif
-			    Clascl(type, kl, ku, cfrom, cto, m, n, A, lda, &info);
+                            Clascl(type, kl, ku, cfrom, cto, m, n, A, lda, &info);
 
-			    if (info_ref != info) {
-				printf("error in info %d %d!!\n", (int) info_ref, (int) info);
-				errorflag = TRUE;
-			    }
+                            if (info_ref != info) {
+                                printf("error in info %d %d!!\n", (int)info_ref, (int)info);
+                                errorflag = TRUE;
+                            }
                             diff = infnorm(A_ref, A, matlen(lda, n), 1);
-			    if (diff > EPSILON10) {
-		                printf("error: "); printnum(diff); printf("\n");
-		                errorflag = TRUE;
-			    }
-	                    if (maxdiff < diff)
-		                maxdiff = diff;
+                            if (diff > EPSILON10) {
+                                printf("error: ");
+                                printnum(diff);
+                                printf("\n");
+                                errorflag = TRUE;
+                            }
+                            if (maxdiff < diff)
+                                maxdiff = diff;
 #if defined VERBOSE_TEST
-	                    printf("max error: "); printnum(maxdiff); printf("\n");
+                            printf("max error: ");
+                            printnum(maxdiff);
+                            printf("\n");
 #endif
-			    j++;
-			}
-			delete[]A_ref;
-			delete[]A;
-		    }
-		}
-	    }
-	}
+                            j++;
+                        }
+                        delete[] A_ref;
+                        delete[] A;
+                    }
+                }
+            }
+        }
     }
     if (errorflag == TRUE) {
         printf("*** Testing Clascl failed ***\n");
-	exit(1);
+        exit(1);
     }
 }
 
-void Clascl_test(void)
-{
+void Clascl_test(void) {
     Clascl_test2("G");
     Clascl_test2("L");
     Clascl_test2("U");
@@ -118,8 +120,7 @@ void Clascl_test(void)
     Clascl_test2("Z");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Clascl start ***\n");
     Clascl_test();
     printf("*** Testing Clascl successful ***\n");

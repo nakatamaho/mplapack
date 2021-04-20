@@ -38,74 +38,76 @@
 #include <iostream>
 #endif
 
-#define MAX_INCX  10
+#define MAX_INCX 10
 #define MIN_INCX -10
-#define MAX_INCY  10
+#define MAX_INCY 10
 #define MIN_INCY -10
-#define MAX_N     10
-#define MAX_ITER  1
+#define MAX_N 10
+#define MAX_ITER 1
 
 REAL_REF maxdiff = 0.0;
 
-void Clacrt_test()
-{
+void Clacrt_test() {
     int errorflag = FALSE;
     REAL_REF diff;
     COMPLEX ctemp;
     for (int incx = MAX_INCX; incx >= MIN_INCX; incx--) {
-	for (int incy = MAX_INCY; incy >= MIN_INCY; incy--) {
-	    for (int n = 3; n < MAX_N; n++) {
+        for (int incy = MAX_INCY; incy >= MIN_INCY; incy--) {
+            for (int n = 3; n < MAX_N; n++) {
 #if defined VERBOSE
-		printf("# n:%d incx:%d, incy:%d\n", n, incx, incy);
+                printf("# n:%d incx:%d, incy:%d\n", n, incx, incy);
 #endif
-		COMPLEX_REF *cx_ref = new COMPLEX_REF[veclen(n, incx)];
-		COMPLEX_REF *cy_ref = new COMPLEX_REF[veclen(n, incy)];
-		COMPLEX_REF c_ref, s_ref;
+                COMPLEX_REF *cx_ref = new COMPLEX_REF[veclen(n, incx)];
+                COMPLEX_REF *cy_ref = new COMPLEX_REF[veclen(n, incy)];
+                COMPLEX_REF c_ref, s_ref;
 
-		COMPLEX *cx = new COMPLEX[veclen(n, incx)];
-		COMPLEX *cy = new COMPLEX[veclen(n, incy)];
-		COMPLEX c, s;
+                COMPLEX *cx = new COMPLEX[veclen(n, incx)];
+                COMPLEX *cy = new COMPLEX[veclen(n, incy)];
+                COMPLEX c, s;
 
-		set_random_number(c_ref, c);
-		set_random_number(s_ref, s);
-		int j = 0;
-		while (j < MAX_ITER) {
-		    set_random_vector(cx_ref, cx, veclen(n, incx));
-		    set_random_vector(cy_ref, cy, veclen(n, incy));
+                set_random_number(c_ref, c);
+                set_random_number(s_ref, s);
+                int j = 0;
+                while (j < MAX_ITER) {
+                    set_random_vector(cx_ref, cx, veclen(n, incx));
+                    set_random_vector(cy_ref, cy, veclen(n, incy));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		    zlacrt_f77(&n, cx_ref, &incx, cy_ref, &incy, &c_ref, &s_ref);
+                    zlacrt_f77(&n, cx_ref, &incx, cy_ref, &incy, &c_ref, &s_ref);
 #else
-		    Clacrt(n, cx_ref, incx, cy_ref, incy, c_ref, s_ref);
+                    Clacrt(n, cx_ref, incx, cy_ref, incy, c_ref, s_ref);
 #endif
-		    Clacrt(n, cx, incx, cy, incy, c, s);
+                    Clacrt(n, cx, incx, cy, incy, c, s);
 
-		    diff = infnorm(cx_ref, cx, veclen(n, incx), 1);
-		    if (diff > EPSILON) {
-			printf("error: "); printnum(diff); printf("\n");
-			errorflag = TRUE;
-		    }
-		    if (maxdiff < diff)
-			maxdiff = diff;
+                    diff = infnorm(cx_ref, cx, veclen(n, incx), 1);
+                    if (diff > EPSILON) {
+                        printf("error: ");
+                        printnum(diff);
+                        printf("\n");
+                        errorflag = TRUE;
+                    }
+                    if (maxdiff < diff)
+                        maxdiff = diff;
 #if defined VERBOSE
-		    printf("max error: "); printnum(maxdiff); printf("\n");
+                    printf("max error: ");
+                    printnum(maxdiff);
+                    printf("\n");
 #endif
-		    j++;
-		}
-		delete[]cx;
-		delete[]cy;
-		delete[]cx_ref;
-		delete[]cy_ref;
-	    }
-	}
+                    j++;
+                }
+                delete[] cx;
+                delete[] cy;
+                delete[] cx_ref;
+                delete[] cy_ref;
+            }
+        }
     }
     if (errorflag == TRUE) {
-	printf("*** Testing Clacrt failed ***\n");
-	exit(1);
+        printf("*** Testing Clacrt failed ***\n");
+        exit(1);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Clacrt start ***\n");
     Clacrt_test();
     printf("*** Testing Clacrt successful ***\n");

@@ -38,69 +38,69 @@
 #include <iostream>
 #endif
 
-#define MIN_INCX  -2
-#define MAX_INCX  2
-#define MIN_LDA   5
-#define MAX_LDA   10
-#define MIN_N     5
-#define MAX_N     10
-#define MAX_ITER  100
+#define MIN_INCX -2
+#define MAX_INCX 2
+#define MIN_LDA 5
+#define MAX_LDA 10
+#define MIN_N 5
+#define MAX_N 10
+#define MAX_ITER 100
 
-void Claswp_test()
-{
+void Claswp_test() {
     int errorflag = FALSE;
     int i, iter;
     REAL_REF diff;
 
     for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
-	for (int n = MIN_N; n <= MAX_N; n++) {
-	    for (int lda = MIN_LDA; lda <= MAX_LDA; lda++) {
-		for (int k1 = lda - 1; k1 <= lda; k1++) {
-		    for (int k2 = k1 + 1; k2 <= lda; k2++) {
+        for (int n = MIN_N; n <= MAX_N; n++) {
+            for (int lda = MIN_LDA; lda <= MAX_LDA; lda++) {
+                for (int k1 = lda - 1; k1 <= lda; k1++) {
+                    for (int k2 = k1 + 1; k2 <= lda; k2++) {
 #if defined VERBOSE_TEST
-			printf("# n:%d, lda: %d, incx:%d k1:%d k2: %d\n", n, lda, incx, k1, k2);
+                        printf("# n:%d, lda: %d, incx:%d k1:%d k2: %d\n", n, lda, incx, k1, k2);
 #endif
-			COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
-			INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(k2, incx)];
+                        COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
+                        INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(k2, incx)];
 
-			COMPLEX *A = new COMPLEX[matlen(lda, n)];
-			INTEGER *ipiv = new INTEGER[veclen(k2, incx)];
+                        COMPLEX *A = new COMPLEX[matlen(lda, n)];
+                        INTEGER *ipiv = new INTEGER[veclen(k2, incx)];
 
-			for (iter = 0; iter < MAX_ITER; iter++) {
-			    set_random_vector(A_ref, A, matlen(lda, n));
-			    set_random_vector(ipiv_ref, ipiv, veclen(k2, incx), lda);
+                        for (iter = 0; iter < MAX_ITER; iter++) {
+                            set_random_vector(A_ref, A, matlen(lda, n));
+                            set_random_vector(ipiv_ref, ipiv, veclen(k2, incx), lda);
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-			    zlaswp_f77(&n, A_ref, &lda, &k1, &k2, ipiv_ref, &incx);
+                            zlaswp_f77(&n, A_ref, &lda, &k1, &k2, ipiv_ref, &incx);
 #else
-			    Claswp(n, A_ref, lda, k1, k2, ipiv_ref, incx);
+                            Claswp(n, A_ref, lda, k1, k2, ipiv_ref, incx);
 #endif
-			    Claswp(n, A, lda, k1, k2, ipiv, incx);
-			    diff = infnorm(A_ref, A, matlen(lda, n), 1);
-			    if (diff > EPSILON) {
-				for (i = 0; i < veclen(k2, incx); i++) {
-				    printf("%d %d\n", (int) ipiv_ref[i], (int)ipiv[i]);
-				}
-		                printf("error: "); printnum(diff); printf("\n");
-				errorflag = TRUE;
-			    }
-			}
-			delete[]ipiv_ref;
-			delete[]ipiv;
-			delete[]A_ref;
-			delete[]A;
-		    }
-		}
-	    }
-	}
+                            Claswp(n, A, lda, k1, k2, ipiv, incx);
+                            diff = infnorm(A_ref, A, matlen(lda, n), 1);
+                            if (diff > EPSILON) {
+                                for (i = 0; i < veclen(k2, incx); i++) {
+                                    printf("%d %d\n", (int)ipiv_ref[i], (int)ipiv[i]);
+                                }
+                                printf("error: ");
+                                printnum(diff);
+                                printf("\n");
+                                errorflag = TRUE;
+                            }
+                        }
+                        delete[] ipiv_ref;
+                        delete[] ipiv;
+                        delete[] A_ref;
+                        delete[] A;
+                    }
+                }
+            }
+        }
     }
     if (errorflag == TRUE) {
         printf("*** Testing Claswp start ***\n");
-	exit(1);
+        exit(1);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Claswp start ***\n");
     Claswp_test();
     printf("*** Testing Claswp successful ***\n");

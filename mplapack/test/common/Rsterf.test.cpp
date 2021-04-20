@@ -38,14 +38,13 @@
 #include <iostream>
 #endif
 
-#define MIN_N      0
-#define MAX_N     20
-#define MAX_ITER   3
+#define MIN_N 0
+#define MAX_N 20
+#define MAX_ITER 3
 
 REAL_REF maxdiff = 0.0;
 
-void Rsterf_test(void)
-{
+void Rsterf_test(void) {
     int errorflag = FALSE;
     int j = 0;
     INTEGER_REF info_ref;
@@ -53,57 +52,60 @@ void Rsterf_test(void)
     INTEGER info;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-	REAL_REF *D_ref = new REAL_REF[veclen(n, 1)];
-	REAL_REF *E_ref = new REAL_REF[veclen(n - 1, 1)];
-	REAL *D = new REAL[veclen(n, 1)];
-	REAL *E = new REAL[veclen(n - 1, 1)];
+        REAL_REF *D_ref = new REAL_REF[veclen(n, 1)];
+        REAL_REF *E_ref = new REAL_REF[veclen(n - 1, 1)];
+        REAL *D = new REAL[veclen(n, 1)];
+        REAL *E = new REAL[veclen(n - 1, 1)];
 #if defined VERBOSE_TEST
-	printf("# n:%d\n", n);
+        printf("# n:%d\n", n);
 #endif
-	j = 0;
-	while (j < MAX_ITER) {
-	    set_random_vector(D_ref, D, veclen(n, 1));
-	    set_random_vector(E_ref, E, veclen(n - 1, 1));
+        j = 0;
+        while (j < MAX_ITER) {
+            set_random_vector(D_ref, D, veclen(n, 1));
+            set_random_vector(E_ref, E, veclen(n - 1, 1));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-	    dsterf_f77(&n, D_ref, E_ref, &info_ref);
+            dsterf_f77(&n, D_ref, E_ref, &info_ref);
 #else
-	    Rsterf(n, D_ref, E_ref, &info_ref);
+            Rsterf(n, D_ref, E_ref, &info_ref);
 #endif
-	    Rsterf(n, D, E, &info);
+            Rsterf(n, D, E, &info);
 
-	    if (info < 0) {
-		printf("info %d error\n", -(int) info);
-		errorflag = TRUE;
-	    }
-	    if (info_ref != info) {
-		printf("info differ! %d, %d\n", (int) info_ref, (int) info);
-		errorflag = TRUE;
-	    }
-	    diff = infnorm(D_ref, D, veclen(n, 1), 1);
-	    if (diff > EPSILON) {
-		printf("error: "); printnum(diff); printf("\n");
-		errorflag = TRUE;
-	    }
-	    if (maxdiff < diff)
-		maxdiff = diff;
+            if (info < 0) {
+                printf("info %d error\n", -(int)info);
+                errorflag = TRUE;
+            }
+            if (info_ref != info) {
+                printf("info differ! %d, %d\n", (int)info_ref, (int)info);
+                errorflag = TRUE;
+            }
+            diff = infnorm(D_ref, D, veclen(n, 1), 1);
+            if (diff > EPSILON) {
+                printf("error: ");
+                printnum(diff);
+                printf("\n");
+                errorflag = TRUE;
+            }
+            if (maxdiff < diff)
+                maxdiff = diff;
 #if defined VERBOSE_TEST
-	    printf("max error: "); printnum(maxdiff); printf("\n");
+            printf("max error: ");
+            printnum(maxdiff);
+            printf("\n");
 #endif
-	    j++;
-	}
-	delete[]D;
-	delete[]E;
-	delete[]D_ref;
-	delete[]E_ref;
+            j++;
+        }
+        delete[] D;
+        delete[] E;
+        delete[] D_ref;
+        delete[] E_ref;
     }
     if (errorflag == TRUE) {
-	printf("*** Testing Rsterf failed ***\n");
-	exit(1);
+        printf("*** Testing Rsterf failed ***\n");
+        exit(1);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rsterf start ***\n");
     Rsterf_test();
     printf("*** Testing Rsterf successful ***\n");

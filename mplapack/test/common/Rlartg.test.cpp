@@ -40,8 +40,7 @@
 
 REAL_REF maxdiff = 0.0;
 
-void Rlartg_test()
-{
+void Rlartg_test() {
     int errorflag = FALSE;
     REAL_REF f_ref, g_ref, cs_ref, sn_ref, r_ref, diff;
     REAL f, g, cs, sn, r;
@@ -49,134 +48,151 @@ void Rlartg_test()
     int count = 100;
 
     while (count--) {
-	set_random_number(f_ref, f);
-	set_random_number(g_ref, g);
+        set_random_number(f_ref, f);
+        set_random_number(g_ref, g);
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-	dlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
+        dlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
 #else
-	Rlartg(f_ref, g_ref, &cs_ref, &sn_ref, &r_ref);
+        Rlartg(f_ref, g_ref, &cs_ref, &sn_ref, &r_ref);
 #endif
-	Rlartg(f, g, &cs, &sn, &r);
+        Rlartg(f, g, &cs, &sn, &r);
 
-        diff = abs (cs_ref - cs);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("Error1\n");
-	}
+        diff = abs(cs_ref - cs);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("Error1\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
-        diff = abs (sn_ref - sn);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("Error1\n");
-	}
+        diff = abs(sn_ref - sn);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("Error1\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
-        diff = abs (r_ref - r);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("Error1\n");
-	}
+        diff = abs(r_ref - r);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("Error1\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
-	f = 0.0;
-	f_ref = 0.0;
-	set_random_number(g_ref, g);
+        f = 0.0;
+        f_ref = 0.0;
+        set_random_number(g_ref, g);
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-	dlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
+        dlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
 #else
-	Rlartg(f_ref, g_ref, &cs_ref, &sn_ref, &r_ref);
+        Rlartg(f_ref, g_ref, &cs_ref, &sn_ref, &r_ref);
 #endif
-	Rlartg(f, g, &cs, &sn, &r);
+        Rlartg(f, g, &cs, &sn, &r);
 
-        diff = abs (cs_ref - cs);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("Error1\n");
-	}
+        diff = abs(cs_ref - cs);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("Error1\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
-        diff = abs (sn_ref - sn);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("Error1\n");
-	}
+        diff = abs(sn_ref - sn);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("Error1\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
-        diff = abs (r_ref - r);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("Error1\n");
-	}
+        diff = abs(r_ref - r);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("Error1\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
-	g = 0.0;
-	g_ref = 0.0;
-	set_random_number(f_ref, f);
+        g = 0.0;
+        g_ref = 0.0;
+        set_random_number(f_ref, f);
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-	dlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
+        dlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
 #else
-	Rlartg(f_ref, g_ref, &cs_ref, &sn_ref, &r_ref);
+        Rlartg(f_ref, g_ref, &cs_ref, &sn_ref, &r_ref);
 #endif
-	Rlartg(f, g, &cs, &sn, &r);
+        Rlartg(f, g, &cs, &sn, &r);
 
-        diff = abs (cs_ref - cs);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("Error1\n");
-	}
+        diff = abs(cs_ref - cs);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("Error1\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
-        diff = abs (sn_ref - sn);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("Error1\n");
-	}
+        diff = abs(sn_ref - sn);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("Error1\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
-        diff = abs (r_ref - r);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("Error1\n");
-	}
+        diff = abs(r_ref - r);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("Error1\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
-	if (errorflag == TRUE) {
-	    printf("*** Testing Rlartg failed ***\n");
-	    exit(1);
-	}
+        if (errorflag == TRUE) {
+            printf("*** Testing Rlartg failed ***\n");
+            exit(1);
+        }
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rlartg start ***\n");
     Rlartg_test();
     printf("*** Testing Rlartg successful ***\n");

@@ -38,67 +38,71 @@
 #include <iostream>
 #endif
 
-#define MIN_N     0
-#define MAX_N     100
-#define MAX_ITER  10
+#define MIN_N 0
+#define MAX_N 100
+#define MAX_ITER 10
 
 REAL_REF maxdiff = 0.0;
 
-void Clanht_test2(const char *norm)
-{
+void Clanht_test2(const char *norm) {
     int errorflag = FALSE;
     int j = 0, ni;
     REAL_REF zlanht_ret, diff;
     REAL Clanht_ret;
 
     for (mplapackint n = MIN_N; n < MAX_N; n++) {
-	ni = n;
+        ni = n;
 #if defined VERBOSE_TEST
-	printf("n:%d norm %s\n", (int) n, norm);
+        printf("n:%d norm %s\n", (int)n, norm);
 #endif
-	REAL_REF *d_ref = new REAL_REF[veclen(n, 1)];
-	COMPLEX_REF *e_ref = new COMPLEX_REF[veclen(n - 1, 1)];
-	REAL *d = new REAL[veclen(n, 1)];
-	COMPLEX *e = new COMPLEX[veclen(n - 1, 1)];
-	j = 0;
-	while (j < MAX_ITER) {
-	    set_random_vector(d_ref, d, veclen(n, 1));
-	    set_random_vector(e_ref, e, veclen(n - 1, 1));
+        REAL_REF *d_ref = new REAL_REF[veclen(n, 1)];
+        COMPLEX_REF *e_ref = new COMPLEX_REF[veclen(n - 1, 1)];
+        REAL *d = new REAL[veclen(n, 1)];
+        COMPLEX *e = new COMPLEX[veclen(n - 1, 1)];
+        j = 0;
+        while (j < MAX_ITER) {
+            set_random_vector(d_ref, d, veclen(n, 1));
+            set_random_vector(e_ref, e, veclen(n - 1, 1));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-	    zlanht_ret = zlanht_f77(norm, &ni, d_ref, e_ref);
+            zlanht_ret = zlanht_f77(norm, &ni, d_ref, e_ref);
 #else
-	    zlanht_ret = Clanht(norm, n, d_ref, e_ref);
+            zlanht_ret = Clanht(norm, n, d_ref, e_ref);
 #endif
-	    Clanht_ret = Clanht(norm, n, d, e);
+            Clanht_ret = Clanht(norm, n, d, e);
 
-	    diff = abs(Clanht_ret - zlanht_ret);
-	    if (diff > EPSILON) {
-		printf("error: "); printnum(diff); printf("\n");
-		errorflag = TRUE;
-	    }
-	    if (maxdiff < diff)
-		maxdiff = diff;
+            diff = abs(Clanht_ret - zlanht_ret);
+            if (diff > EPSILON) {
+                printf("error: ");
+                printnum(diff);
+                printf("\n");
+                errorflag = TRUE;
+            }
+            if (maxdiff < diff)
+                maxdiff = diff;
 #if defined VERBOSE_TEST
-	    printf("max error: "); printnum(maxdiff); printf("\n");
+            printf("max error: ");
+            printnum(maxdiff);
+            printf("\n");
 #endif
-	    j++;
-	}
-	delete[]d;
-	delete[]d_ref;
-	delete[]e;
-	delete[]e_ref;
+            j++;
+        }
+        delete[] d;
+        delete[] d_ref;
+        delete[] e;
+        delete[] e_ref;
     }
     if (errorflag == TRUE) {
-	printf("*** Testing Clanht failed ***\n");
-	exit(1);
+        printf("*** Testing Clanht failed ***\n");
+        exit(1);
     }
 #if defined VERBOSE_TEST
-    printf("max error: "); printnum(maxdiff); printf("\n");
+    printf("max error: ");
+    printnum(maxdiff);
+    printf("\n");
 #endif
 }
 
-void Clanht_test(void)
-{
+void Clanht_test(void) {
     Clanht_test2("M");
     Clanht_test2("m");
     Clanht_test2("1");
@@ -112,8 +116,7 @@ void Clanht_test(void)
     Clanht_test2("e");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Clanht start ***\n");
     Clanht_test();
     printf("*** Testing Clanht successful ***\n");

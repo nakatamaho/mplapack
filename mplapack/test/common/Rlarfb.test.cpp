@@ -44,15 +44,14 @@
 #define MAX_N 6
 #define MIN_M 1
 #define MAX_M 6
-#define MAX_LDT  7
-#define MAX_LDC  7
-#define MAX_LDV  7
+#define MAX_LDT 7
+#define MAX_LDC 7
+#define MAX_LDV 7
 #define MAX_ITER 1
 
 REAL_REF maxdiff = 0.0;
 
-void Rlarfb_test2(const char *side, const char *trans, const char *direct, const char *storev)
-{
+void Rlarfb_test2(const char *side, const char *trans, const char *direct, const char *storev) {
     int errorflag = FALSE;
     int iter;
     int k, m, n;
@@ -61,93 +60,94 @@ void Rlarfb_test2(const char *side, const char *trans, const char *direct, const
     REAL_REF diff;
 
     for (n = MIN_N; n <= MAX_N; n++) {
-	for (m = MIN_M; m <= MAX_M; m++) {
-	    if (Mlsame(side, "L"))
-		kmax = m;
-	    if (Mlsame(side, "R"))
-		kmax = n;
-	    for (k = MIN_K; k <= kmax; k++) {
+        for (m = MIN_M; m <= MAX_M; m++) {
+            if (Mlsame(side, "L"))
+                kmax = m;
+            if (Mlsame(side, "R"))
+                kmax = n;
+            for (k = MIN_K; k <= kmax; k++) {
 
-		for (ldt = k; ldt <= MAX_LDT; ldt++) {
-		    for (ldc = max(1, m); ldc <= MAX_LDC; ldc++) {
-			if (Mlsame(storev, "C") && Mlsame(side, "L"))
-			    ldvmin = max(1, m);
-			if (Mlsame(storev, "C") && Mlsame(side, "R"))
-			    ldvmin = max(1, n);
-			if (Mlsame(storev, "R"))
-			    ldvmin = k;
+                for (ldt = k; ldt <= MAX_LDT; ldt++) {
+                    for (ldc = max(1, m); ldc <= MAX_LDC; ldc++) {
+                        if (Mlsame(storev, "C") && Mlsame(side, "L"))
+                            ldvmin = max(1, m);
+                        if (Mlsame(storev, "C") && Mlsame(side, "R"))
+                            ldvmin = max(1, n);
+                        if (Mlsame(storev, "R"))
+                            ldvmin = k;
 
-			for (ldv = ldvmin; ldv <= MAX_LDV; ldv++) {
+                        for (ldv = ldvmin; ldv <= MAX_LDV; ldv++) {
 
-			    if (Mlsame(side, "L"))
-				ldwork = max(1, n);
-			    if (Mlsame(side, "R"))
-				ldwork = max(1, m);
-			    if (Mlsame(storev, "C"))
-				v_column = k;
-			    if (Mlsame(storev, "R") && Mlsame(side, "L"))
-				v_column = m;
-			    if (Mlsame(storev, "R") && Mlsame(side, "R"))
-				v_column = n;
+                            if (Mlsame(side, "L"))
+                                ldwork = max(1, n);
+                            if (Mlsame(side, "R"))
+                                ldwork = max(1, m);
+                            if (Mlsame(storev, "C"))
+                                v_column = k;
+                            if (Mlsame(storev, "R") && Mlsame(side, "L"))
+                                v_column = m;
+                            if (Mlsame(storev, "R") && Mlsame(side, "R"))
+                                v_column = n;
 #if defined VERBOSE_TEST
-			    printf("# side %s: trans %s: direct %s: storev %s, m %d, n %d, k %d, ldv %d, ldt %d, ldc %d, ldwork %d\n",
-				 side, trans, direct, storev, m, n, k, ldv, ldt, ldc, ldwork);
+                            printf("# side %s: trans %s: direct %s: storev %s, m %d, n %d, k %d, ldv %d, ldt %d, ldc %d, ldwork %d\n", side, trans, direct, storev, m, n, k, ldv, ldt, ldc, ldwork);
 #endif
-			    REAL_REF *T_ref = new REAL_REF[matlen(ldt, k)];
-			    REAL_REF *C_ref = new REAL_REF[matlen(ldc, n)];
-			    REAL_REF *V_ref = new REAL_REF[matlen(ldv, v_column)];
-			    REAL_REF *work_ref = new REAL_REF[matlen(ldwork, k)];
+                            REAL_REF *T_ref = new REAL_REF[matlen(ldt, k)];
+                            REAL_REF *C_ref = new REAL_REF[matlen(ldc, n)];
+                            REAL_REF *V_ref = new REAL_REF[matlen(ldv, v_column)];
+                            REAL_REF *work_ref = new REAL_REF[matlen(ldwork, k)];
 
-			    REAL *T = new REAL[matlen(ldt, k)];
-			    REAL *C = new REAL[matlen(ldc, n)];
-			    REAL *V = new REAL[matlen(ldv, v_column)];
-			    REAL *work = new REAL[matlen(ldwork, k)];
+                            REAL *T = new REAL[matlen(ldt, k)];
+                            REAL *C = new REAL[matlen(ldc, n)];
+                            REAL *V = new REAL[matlen(ldv, v_column)];
+                            REAL *work = new REAL[matlen(ldwork, k)];
 
-			    for (iter = 0; iter < MAX_ITER; iter++) {
-				set_random_vector(T_ref, T, matlen(ldt, k));
-				set_random_vector(C_ref, C, matlen(ldc, n));
-				set_random_vector(V_ref, V, matlen(ldv, v_column));
+                            for (iter = 0; iter < MAX_ITER; iter++) {
+                                set_random_vector(T_ref, T, matlen(ldt, k));
+                                set_random_vector(C_ref, C, matlen(ldc, n));
+                                set_random_vector(V_ref, V, matlen(ldv, v_column));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-				dlarfb_f77(side, trans, direct, storev, &m, &n, &k, V_ref, &ldv, T_ref, &ldt, C_ref, &ldc, work_ref,
-					   &ldwork);
+                                dlarfb_f77(side, trans, direct, storev, &m, &n, &k, V_ref, &ldv, T_ref, &ldt, C_ref, &ldc, work_ref, &ldwork);
 #else
-				Rlarfb(side, trans, direct, storev, m, n, k, V_ref, ldv, T_ref, ldt, C_ref, ldc, work_ref, ldwork);
+                                Rlarfb(side, trans, direct, storev, m, n, k, V_ref, ldv, T_ref, ldt, C_ref, ldc, work_ref, ldwork);
 #endif
-				Rlarfb(side, trans, direct, storev, m, n, k, V, ldv, T, ldt, C, ldc, work, ldwork);
+                                Rlarfb(side, trans, direct, storev, m, n, k, V, ldv, T, ldt, C, ldc, work, ldwork);
 
-				diff = infnorm(C_ref, C, matlen(ldc, n), 1);
-				if (diff > EPSILON) {
-				    printf("error: ");  printnum(diff); printf("\n");
-				    errorflag = TRUE;
-				}
-				if (maxdiff < diff)
-				    maxdiff = diff;
+                                diff = infnorm(C_ref, C, matlen(ldc, n), 1);
+                                if (diff > EPSILON) {
+                                    printf("error: ");
+                                    printnum(diff);
+                                    printf("\n");
+                                    errorflag = TRUE;
+                                }
+                                if (maxdiff < diff)
+                                    maxdiff = diff;
 #if defined VERBOSE_TEST
-				printf("max error: "); printnum(maxdiff); printf("\n");
+                                printf("max error: ");
+                                printnum(maxdiff);
+                                printf("\n");
 #endif
-			    }
-			    delete[]work_ref;
-			    delete[]V_ref;
-			    delete[]C_ref;
-			    delete[]T_ref;
-			    delete[]work;
-			    delete[]V;
-			    delete[]C;
-			    delete[]T;
-			}
-		    }
-		}
-	    }
-	}
+                            }
+                            delete[] work_ref;
+                            delete[] V_ref;
+                            delete[] C_ref;
+                            delete[] T_ref;
+                            delete[] work;
+                            delete[] V;
+                            delete[] C;
+                            delete[] T;
+                        }
+                    }
+                }
+            }
+        }
     }
     if (errorflag == TRUE) {
-	printf("*** Testing Rlarfb failed ***\n");
-	exit(1);
+        printf("*** Testing Rlarfb failed ***\n");
+        exit(1);
     }
 }
 
-void Rlarfb_test()
-{
+void Rlarfb_test() {
     Rlarfb_test2("L", "N", "F", "C");
     Rlarfb_test2("L", "T", "F", "C");
     Rlarfb_test2("L", "N", "B", "C");
@@ -167,8 +167,7 @@ void Rlarfb_test()
     Rlarfb_test2("R", "T", "B", "R");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rlarfb start ***\n");
     Rlarfb_test();
     printf("*** Testing Rlarfb successful ***\n");

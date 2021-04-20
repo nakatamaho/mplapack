@@ -38,15 +38,14 @@
 #include <iostream>
 #endif
 
-#define MIN_N      2
-#define MAX_N     15
-#define MAX_LDA   15
-#define MAX_ITER   2
+#define MIN_N 2
+#define MAX_N 15
+#define MAX_LDA 15
+#define MAX_ITER 2
 
 REAL_REF maxdiff = 0.0;
 
-void Rgetri_test()
-{
+void Rgetri_test() {
     int errorflag = FALSE;
     int j = 0;
     INTEGER_REF info_ref, lwork_ref;
@@ -54,90 +53,93 @@ void Rgetri_test()
     INTEGER info, lwork;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-	for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
-	    REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
-	    INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(n, 1)];
+        for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
+            REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
+            INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(n, 1)];
 
-	    REAL *A = new REAL[matlen(lda, n)];
-	    INTEGER *ipiv = new INTEGER[veclen(n, 1)];
+            REAL *A = new REAL[matlen(lda, n)];
+            INTEGER *ipiv = new INTEGER[veclen(n, 1)];
 #if defined VERBOSE_TEST
-	    printf("#n:%d lda %d\n", n, lda);
+            printf("#n:%d lda %d\n", n, lda);
 #endif
-//these workspace query might not be the same value.
-	    lwork_ref = -1;
-	    lwork = -1;
-	    REAL_REF *work_ref = new REAL_REF[1];
-	    REAL *work = new REAL[1];
+            // these workspace query might not be the same value.
+            lwork_ref = -1;
+            lwork = -1;
+            REAL_REF *work_ref = new REAL_REF[1];
+            REAL *work = new REAL[1];
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-	    dgetri_f77(&n, A_ref, &lda, ipiv_ref, work_ref, &lwork_ref, &info_ref);
+            dgetri_f77(&n, A_ref, &lda, ipiv_ref, work_ref, &lwork_ref, &info_ref);
 #else
-	    Rgetri(n, A_ref, lda, ipiv_ref, work_ref, lwork_ref, &info_ref);
+            Rgetri(n, A_ref, lda, ipiv_ref, work_ref, lwork_ref, &info_ref);
 #endif
-	    Rgetri(n, A, lda, ipiv, work, lwork, &info);
+            Rgetri(n, A, lda, ipiv, work, lwork, &info);
 
-	    lwork_ref = (int) cast2double (work_ref[0]);
-	    lwork = (int) cast2double (work[0]);
+            lwork_ref = (int)cast2double(work_ref[0]);
+            lwork = (int)cast2double(work[0]);
 #if defined VERBOSE_TEST
-	    printf("optimized worksize by Rgetri %d : by dgetri %d.\n", (int) lwork_ref, (int) lwork);
+            printf("optimized worksize by Rgetri %d : by dgetri %d.\n", (int)lwork_ref, (int)lwork);
 #endif
 #ifdef DUMMY
-//comparison of workspace is nonsense...
-	    if (worksize != worksize_ref)
-		printf("error in worksize\n");
+            // comparison of workspace is nonsense...
+            if (worksize != worksize_ref)
+                printf("error in worksize\n");
 #endif
-	    delete[]work;
-	    delete[]work_ref;
-	    work_ref = new REAL_REF[max(1, (int)lwork_ref)];
-	    work = new REAL[max(1, (int) lwork)];
-	    j = 0;
-	    while (j < MAX_ITER) {
-		set_random_vector(A_ref, A, matlen(lda, n));
-		set_random_vector(work_ref, work, veclen(lwork, 1));
+            delete[] work;
+            delete[] work_ref;
+            work_ref = new REAL_REF[max(1, (int)lwork_ref)];
+            work = new REAL[max(1, (int)lwork)];
+            j = 0;
+            while (j < MAX_ITER) {
+                set_random_vector(A_ref, A, matlen(lda, n));
+                set_random_vector(work_ref, work, veclen(lwork, 1));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		dgetrf_f77(&n, &n, A_ref, &lda, ipiv_ref, &info_ref);
-		dgetri_f77(&n, A_ref, &lda, ipiv_ref, work_ref, &lwork_ref, &info_ref);
+                dgetrf_f77(&n, &n, A_ref, &lda, ipiv_ref, &info_ref);
+                dgetri_f77(&n, A_ref, &lda, ipiv_ref, work_ref, &lwork_ref, &info_ref);
 #else
-		Rgetrf(n, n, A_ref, lda, ipiv_ref, &info_ref);
-		Rgetri(n, A_ref, lda, ipiv_ref, work_ref, lwork_ref, &info_ref);
+                Rgetrf(n, n, A_ref, lda, ipiv_ref, &info_ref);
+                Rgetri(n, A_ref, lda, ipiv_ref, work_ref, lwork_ref, &info_ref);
 #endif
-		Rgetrf(n, n, A, lda, ipiv, &info);
-		Rgetri(n, A, lda, ipiv, work, lwork, &info);
+                Rgetrf(n, n, A, lda, ipiv, &info);
+                Rgetri(n, A, lda, ipiv, work, lwork, &info);
 
-		if (info < 0) {
-		    printf("info %d error\n", -(int) info);
-		}
-		if (info_ref != info) {
-		    printf("info differ! %d, %d\n", (int) info_ref, (int) info);
-		    errorflag = TRUE;
-		}
-		diff = infnorm(A_ref, A, matlen(lda, n), 1);
-		if (diff > EPSILON2) {
-		    printf("error: "); printnum(diff); printf("\n");
-		    errorflag = TRUE;
-		}
-	        if (maxdiff < diff)
-		    maxdiff = diff;
+                if (info < 0) {
+                    printf("info %d error\n", -(int)info);
+                }
+                if (info_ref != info) {
+                    printf("info differ! %d, %d\n", (int)info_ref, (int)info);
+                    errorflag = TRUE;
+                }
+                diff = infnorm(A_ref, A, matlen(lda, n), 1);
+                if (diff > EPSILON2) {
+                    printf("error: ");
+                    printnum(diff);
+                    printf("\n");
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
 #if defined VERBOSE_TEST
-	        printf("max error: "); printnum(maxdiff); printf("\n");
+                printf("max error: ");
+                printnum(maxdiff);
+                printf("\n");
 #endif
-		j++;
-	    }
-	    delete[]work;
-	    delete[]work_ref;
-	    delete[]ipiv_ref;
-	    delete[]A_ref;
-	    delete[]ipiv;
-	    delete[]A;
-	}
-	if (errorflag == TRUE) {
+                j++;
+            }
+            delete[] work;
+            delete[] work_ref;
+            delete[] ipiv_ref;
+            delete[] A_ref;
+            delete[] ipiv;
+            delete[] A;
+        }
+        if (errorflag == TRUE) {
             printf("*** Testing Rgetri failed ***\n");
-	    exit(1);
-	}
+            exit(1);
+        }
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rgetri start ***\n");
     Rgetri_test();
     printf("*** Testing Rgetri successful ***\n");

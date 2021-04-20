@@ -50,8 +50,7 @@
 
 REAL_REF maxdiff = 0.0;
 
-void Clatrd_test2(const char *uplo)
-{
+void Clatrd_test2(const char *uplo) {
     int errorflag = FALSE;
     int iter;
     int n, nb;
@@ -59,95 +58,103 @@ void Clatrd_test2(const char *uplo)
     REAL_REF diff;
 
     for (n = MIN_N; n <= MAX_N; n++) {
-      for (lda = max(1, n); lda <= MAX_LDA; lda++) {
-	  for (nb = MIN_NB; nb <= lda && nb <=n ; nb++) {
-		for (ldw = max(1, n); ldw <= MAX_LDW; ldw++) {
+        for (lda = max(1, n); lda <= MAX_LDA; lda++) {
+            for (nb = MIN_NB; nb <= lda && nb <= n; nb++) {
+                for (ldw = max(1, n); ldw <= MAX_LDW; ldw++) {
 #if defined VERBOSE_TEST
-		    printf("# uplo %s, n %d, lda %d, nb %d\n", uplo, n, (int)lda, nb);
+                    printf("# uplo %s, n %d, lda %d, nb %d\n", uplo, n, (int)lda, nb);
 #endif
-		    COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
-		    COMPLEX_REF *W_ref = new COMPLEX_REF[matlen(ldw, nb)];
-		    REAL_REF *e_ref = new REAL_REF[veclen(n - 1, 1)];
-		    COMPLEX_REF *tau_ref = new COMPLEX_REF[veclen(n - 1, 1)];
+                    COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
+                    COMPLEX_REF *W_ref = new COMPLEX_REF[matlen(ldw, nb)];
+                    REAL_REF *e_ref = new REAL_REF[veclen(n - 1, 1)];
+                    COMPLEX_REF *tau_ref = new COMPLEX_REF[veclen(n - 1, 1)];
 
-		    COMPLEX *A = new COMPLEX[matlen(lda, n)];
-		    COMPLEX *W = new COMPLEX[matlen(ldw, nb)];
-		    REAL *e = new REAL[veclen(n - 1, 1)];
-		    COMPLEX *tau = new COMPLEX[veclen(n - 1, 1)];
+                    COMPLEX *A = new COMPLEX[matlen(lda, n)];
+                    COMPLEX *W = new COMPLEX[matlen(ldw, nb)];
+                    REAL *e = new REAL[veclen(n - 1, 1)];
+                    COMPLEX *tau = new COMPLEX[veclen(n - 1, 1)];
 
-		    for (iter = 0; iter < MAX_ITER; iter++) {
-			set_random_vector(A_ref, A, matlen(lda, n));
-			set_random_vector(W_ref, W, matlen(ldw, nb));
-			set_random_vector(e_ref, e, veclen(n - 1, 1));
-			set_random_vector(tau_ref, tau, veclen(n - 1, 1));
+                    for (iter = 0; iter < MAX_ITER; iter++) {
+                        set_random_vector(A_ref, A, matlen(lda, n));
+                        set_random_vector(W_ref, W, matlen(ldw, nb));
+                        set_random_vector(e_ref, e, veclen(n - 1, 1));
+                        set_random_vector(tau_ref, tau, veclen(n - 1, 1));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-			zlatrd_f77(uplo, &n, &nb, A_ref, &lda, e_ref, tau_ref, W_ref, &ldw);
+                        zlatrd_f77(uplo, &n, &nb, A_ref, &lda, e_ref, tau_ref, W_ref, &ldw);
 #else
-			Clatrd(uplo, n, nb, A_ref, lda, e_ref, tau_ref, W_ref, ldw);
+                        Clatrd(uplo, n, nb, A_ref, lda, e_ref, tau_ref, W_ref, ldw);
 #endif
-			Clatrd(uplo, n, nb, A, lda, e, tau, W, ldw);
+                        Clatrd(uplo, n, nb, A, lda, e, tau, W, ldw);
 
-			diff = infnorm(A_ref, A, matlen(lda, n), 1);
-		        if (diff > EPSILON12) {
-		            printf("error in A: "); printnum(diff); printf("\n");
-		            errorflag = TRUE;
-		        }
-	                if (maxdiff < diff)
-		            maxdiff = diff;
+                        diff = infnorm(A_ref, A, matlen(lda, n), 1);
+                        if (diff > EPSILON12) {
+                            printf("error in A: ");
+                            printnum(diff);
+                            printf("\n");
+                            errorflag = TRUE;
+                        }
+                        if (maxdiff < diff)
+                            maxdiff = diff;
 
-			diff = infnorm(W_ref, W, matlen(ldw, nb), 1);
-		        if (diff > EPSILON12) {
-		            printf("error in W: "); printnum(diff); printf("\n");
-		            errorflag = TRUE;
-		        }
-	                if (maxdiff < diff)
-		            maxdiff = diff;
+                        diff = infnorm(W_ref, W, matlen(ldw, nb), 1);
+                        if (diff > EPSILON12) {
+                            printf("error in W: ");
+                            printnum(diff);
+                            printf("\n");
+                            errorflag = TRUE;
+                        }
+                        if (maxdiff < diff)
+                            maxdiff = diff;
 
-			diff = infnorm(e_ref, e, veclen(n - 1, 1), 1);
-		        if (diff > EPSILON12) {
-		            printf("error in e: "); printnum(diff); printf("\n");
-		            errorflag = TRUE;
-		        }
-	                if (maxdiff < diff)
-		            maxdiff = diff;
+                        diff = infnorm(e_ref, e, veclen(n - 1, 1), 1);
+                        if (diff > EPSILON12) {
+                            printf("error in e: ");
+                            printnum(diff);
+                            printf("\n");
+                            errorflag = TRUE;
+                        }
+                        if (maxdiff < diff)
+                            maxdiff = diff;
 
-			diff = infnorm(tau_ref, tau, veclen(n - 1, 1), 1);
-		        if (diff > EPSILON12) {
-		            printf("error in tau:"); printnum(diff); printf("\n");
-		            errorflag = TRUE;
-		        }
-	                if (maxdiff < diff)
-		            maxdiff = diff;
+                        diff = infnorm(tau_ref, tau, veclen(n - 1, 1), 1);
+                        if (diff > EPSILON12) {
+                            printf("error in tau:");
+                            printnum(diff);
+                            printf("\n");
+                            errorflag = TRUE;
+                        }
+                        if (maxdiff < diff)
+                            maxdiff = diff;
 #if defined VERBOSE_TEST
-                        printf("max error: "); printnum(maxdiff); printf("\n");
+                        printf("max error: ");
+                        printnum(maxdiff);
+                        printf("\n");
 #endif
-		    }
-		    delete[]tau_ref;
-		    delete[]e_ref;
-		    delete[]W_ref;
-		    delete[]A_ref;
-		    delete[]tau;
-		    delete[]e;
-		    delete[]W;
-		    delete[]A;
-		}
-	    }
-	}
+                    }
+                    delete[] tau_ref;
+                    delete[] e_ref;
+                    delete[] W_ref;
+                    delete[] A_ref;
+                    delete[] tau;
+                    delete[] e;
+                    delete[] W;
+                    delete[] A;
+                }
+            }
+        }
     }
     if (errorflag == TRUE) {
-	printf("*** Testing Clatrd failed ***\n");
-	exit(1);
+        printf("*** Testing Clatrd failed ***\n");
+        exit(1);
     }
 }
 
-void Clatrd_test()
-{
+void Clatrd_test() {
     Clatrd_test2("L");
     Clatrd_test2("U");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Clatrd start ***\n");
     Clatrd_test();
     printf("*** Testing Clatrd successful ***\n");

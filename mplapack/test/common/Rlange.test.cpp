@@ -38,17 +38,16 @@
 #include <iostream>
 #endif
 
-#define MIN_N     0
-#define MAX_N     10
-#define MIN_M     0
-#define MAX_M     10
-#define MAX_LDA   15
-#define MAX_ITER  10
+#define MIN_N 0
+#define MAX_N 10
+#define MIN_M 0
+#define MAX_M 10
+#define MAX_LDA 15
+#define MAX_ITER 10
 
 REAL_REF maxdiff = 0.0;
 
-void Rlange_test2(const char *norm)
-{
+void Rlange_test2(const char *norm) {
     int errorflag = FALSE;
     int j = 0;
     REAL_REF diff;
@@ -56,51 +55,55 @@ void Rlange_test2(const char *norm)
     REAL Rlange_ret;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-	for (int m = MIN_M; m < MAX_M; m++) {
-	    for (int lda = max(1, m); lda < MAX_LDA; lda++) {
-		REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
-		REAL_REF *work_ref = new REAL_REF[veclen(m, 1)];
-		REAL *A = new REAL[matlen(lda, n)];
-		REAL *work = new REAL[veclen(m, 1)];
+        for (int m = MIN_M; m < MAX_M; m++) {
+            for (int lda = max(1, m); lda < MAX_LDA; lda++) {
+                REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
+                REAL_REF *work_ref = new REAL_REF[veclen(m, 1)];
+                REAL *A = new REAL[matlen(lda, n)];
+                REAL *work = new REAL[veclen(m, 1)];
 
-		j = 0;
+                j = 0;
 #if defined VERBOSE_TEST
-		printf("#n:%d m:%d lda: %d norm %s\n", n, m, lda, norm);
+                printf("#n:%d m:%d lda: %d norm %s\n", n, m, lda, norm);
 #endif
-		while (j < MAX_ITER) {
-		    set_random_vector(A_ref, A, matlen(lda, n));
+                while (j < MAX_ITER) {
+                    set_random_vector(A_ref, A, matlen(lda, n));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		    Rlange_ref_ret = dlange_f77(norm, &m, &n, A_ref, &lda, work_ref);
+                    Rlange_ref_ret = dlange_f77(norm, &m, &n, A_ref, &lda, work_ref);
 #else
-		    Rlange_ref_ret = Rlange(norm, m, n, A_ref, lda, work_ref);
+                    Rlange_ref_ret = Rlange(norm, m, n, A_ref, lda, work_ref);
 #endif
-		    Rlange_ret = Rlange(norm, m, n, A, lda, work);
+                    Rlange_ret = Rlange(norm, m, n, A, lda, work);
 
-		    diff = abs(Rlange_ref_ret - Rlange_ret);
-		    if (diff > EPSILON) {
-			errorflag = TRUE; printf("Error\n"); exit(1);
-		    }
-	            if (maxdiff < diff) maxdiff = diff;
+                    diff = abs(Rlange_ref_ret - Rlange_ret);
+                    if (diff > EPSILON) {
+                        errorflag = TRUE;
+                        printf("Error\n");
+                        exit(1);
+                    }
+                    if (maxdiff < diff)
+                        maxdiff = diff;
 #if defined VERBOSE_TEST
-	            printf("max error: "); printnum(maxdiff); printf("\n");
+                    printf("max error: ");
+                    printnum(maxdiff);
+                    printf("\n");
 #endif
-		    j++;
-		}
-		delete[]work_ref;
-		delete[]A_ref;
-		delete[]work;
-		delete[]A;
-	    }
-	}
+                    j++;
+                }
+                delete[] work_ref;
+                delete[] A_ref;
+                delete[] work;
+                delete[] A;
+            }
+        }
     }
     if (errorflag == TRUE) {
         printf("*** Testing Rlange failed ***\n");
-	exit(1);
+        exit(1);
     }
 }
 
-void Rlange_test(void)
-{
+void Rlange_test(void) {
     Rlange_test2("M");
     Rlange_test2("m");
     Rlange_test2("1");
@@ -114,8 +117,7 @@ void Rlange_test(void)
     Rlange_test2("e");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rlange start ***\n");
     Rlange_test();
     printf("*** Testing Rlange successful ***\n");

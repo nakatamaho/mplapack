@@ -38,15 +38,14 @@
 #include <iostream>
 #endif
 
-#define MIN_N      0
-#define MAX_N     25		//should not be so large
-#define MAX_LDA   25		//should not be so large
-#define MAX_ITER  3
+#define MIN_N 0
+#define MAX_N 25   // should not be so large
+#define MAX_LDA 25 // should not be so large
+#define MAX_ITER 3
 
 REAL_REF maxdiff = 0.0;
 
-void Rlauum_test2(const char *uplo)
-{
+void Rlauum_test2(const char *uplo) {
     int errorflag = FALSE;
     int j = 0;
     INTEGER_REF info_ref;
@@ -54,60 +53,63 @@ void Rlauum_test2(const char *uplo)
     REAL_REF diff;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-	for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
-	    REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
-	    REAL *A = new REAL[matlen(lda, n)];
+        for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
+            REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
+            REAL *A = new REAL[matlen(lda, n)];
 #if defined VERBOSE_TEST
-	    printf("n:%d lda %d, uplo %s\n", n, lda, uplo);
+            printf("n:%d lda %d, uplo %s\n", n, lda, uplo);
 #endif
-	    j = 0;
-	    while (j < MAX_ITER) {
-		set_random_vector(A_ref, A, matlen(lda, n));
+            j = 0;
+            while (j < MAX_ITER) {
+                set_random_vector(A_ref, A, matlen(lda, n));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		dlauum_f77(uplo, &n, A_ref, &lda, &info_ref);
+                dlauum_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else
-		Rlauum(uplo, n, A_ref, lda, &info_ref);
+                Rlauum(uplo, n, A_ref, lda, &info_ref);
 #endif
-		Rlauum(uplo, n, A, lda, &info);
+                Rlauum(uplo, n, A, lda, &info);
 
-		if (info < 0) {
-		    printf("info %d error\n", -(int) info);
-		    errorflag = TRUE;
-		}
-		if (info_ref != info) {
-		    printf("info error! %d, %d\n", (int)info_ref, (int)info);
-		    errorflag = TRUE;
-		}
+                if (info < 0) {
+                    printf("info %d error\n", -(int)info);
+                    errorflag = TRUE;
+                }
+                if (info_ref != info) {
+                    printf("info error! %d, %d\n", (int)info_ref, (int)info);
+                    errorflag = TRUE;
+                }
                 diff = infnorm(A_ref, A, matlen(lda, n), 1);
-		if (diff > EPSILON10) {
-		    printf("n:%d lda %d, uplo %s\n", n, lda, uplo);
-		    printf("error1: "); printnum(diff); printf("\n");
-		    errorflag = TRUE;
-		}
-	        if (maxdiff < diff) maxdiff = diff;
+                if (diff > EPSILON10) {
+                    printf("n:%d lda %d, uplo %s\n", n, lda, uplo);
+                    printf("error1: ");
+                    printnum(diff);
+                    printf("\n");
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
 #if defined VERBOSE_TEST
-	        printf("max error: "); printnum(maxdiff); printf("\n");
+                printf("max error: ");
+                printnum(maxdiff);
+                printf("\n");
 #endif
-		j++;
-	    }
-	    delete[]A;
-	    delete[]A_ref;
-	}
-	if (errorflag == TRUE) {
+                j++;
+            }
+            delete[] A;
+            delete[] A_ref;
+        }
+        if (errorflag == TRUE) {
             printf("*** Testing Rlauum failed ***\n");
-	    exit(1);
-	}
+            exit(1);
+        }
     }
 }
 
-void Rlauum_test(void)
-{
+void Rlauum_test(void) {
     Rlauum_test2("U");
     Rlauum_test2("L");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rlauum start ***\n");
     Rlauum_test();
     printf("*** Testing Rlauum successful ***\n");

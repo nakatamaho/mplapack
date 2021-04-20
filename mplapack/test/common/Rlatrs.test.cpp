@@ -46,8 +46,7 @@
 
 REAL_REF maxdiff = 0.0;
 
-void Rlatrs_test2(const char *uplo, const char *trans, const char *diag, const char *normin)
-{
+void Rlatrs_test2(const char *uplo, const char *trans, const char *diag, const char *normin) {
     int errorflag = FALSE;
     REAL_REF scale_ref;
     REAL scale;
@@ -60,67 +59,68 @@ void Rlatrs_test2(const char *uplo, const char *trans, const char *diag, const c
     REAL_REF rtmp_ref;
 
     for (n = MIN_N; n <= MAX_N; n++) {
-	for (lda = max(1, (int)n); lda <= MAX_LDA; lda++) {
+        for (lda = max(1, (int)n); lda <= MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
-	    printf("# n %d, lda %d, uplo %s, trans %s, diag %s, normin %s\n", (int) n, (int) lda, uplo, trans, diag, normin);
+            printf("# n %d, lda %d, uplo %s, trans %s, diag %s, normin %s\n", (int)n, (int)lda, uplo, trans, diag, normin);
 #endif
-	    REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
-	    REAL_REF *B_ref = new REAL_REF[matlen(lda, n)];
-	    REAL_REF *x_ref = new REAL_REF[veclen(n, 1)];
-	    REAL_REF *cnorm_ref = new REAL_REF[veclen(n, 1)];
-	    REAL *A = new REAL[matlen(lda, n)];
-	    REAL *x = new REAL[veclen(n, 1)];
-	    REAL *cnorm = new REAL[veclen(n, 1)];
+            REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
+            REAL_REF *B_ref = new REAL_REF[matlen(lda, n)];
+            REAL_REF *x_ref = new REAL_REF[veclen(n, 1)];
+            REAL_REF *cnorm_ref = new REAL_REF[veclen(n, 1)];
+            REAL *A = new REAL[matlen(lda, n)];
+            REAL *x = new REAL[veclen(n, 1)];
+            REAL *cnorm = new REAL[veclen(n, 1)];
 
-	    REAL_REF *y_ref = new REAL_REF[veclen(n, 1)];
-	    REAL *y = new REAL[veclen(n, 1)];
+            REAL_REF *y_ref = new REAL_REF[veclen(n, 1)];
+            REAL *y = new REAL[veclen(n, 1)];
 
-	    for (iter = 0; iter < MAX_ITER; iter++) {
-		set_random_vector(A_ref, A, matlen(lda, n));
-		set_random_vector(A_ref, A, matlen(lda, n));
-		set_random_vector(x_ref, x, veclen(n, 1));
-		set_random_vector(cnorm_ref, cnorm, veclen(n, 1));
-/* A*x=b; b would be very large. so we choose x as the answer. */
-		for (int p = 0; p < n; p++) {
-		    for (int q = 0; q < n; q++) {
-			B_ref[p + q * lda] = 0.0;
-		    }
-		}
-		if (Mlsame(uplo, "U")) {
-		    for (int p = 0; p < n; p++) {
-			for (int q = p; q < n; q++) {
-			    B_ref[p + q * lda] = A_ref[p + q * lda];
-			}
-		    }
-		}
-		if (Mlsame(uplo, "L")) {
-		    for (int p = 0; p < n; p++) {
-			for (int q = 0; q <= p; q++) {
-			    B_ref[p + q * lda] = A_ref[p + q * lda];
-			}
-		    }
-		}
-	       if (Mlsame(diag, "U")) {
-		   for (int p = 0; p < n; p++) {
-		       B_ref[p + p * lda] = 1.0;
-		   }
-	       }
-//printf("A"); printmat(n, n, B_ref, lda); printf("\n");
-		for (int p = 0; p < n; p++) {
-		    rtmp = 0.0; rtmp_ref = 0.0;
-		    for (int q = 0; q < n; q++) {
-			if (Mlsame(trans, "N")) {
-			    rtmp_ref += B_ref[p + q * lda] * x_ref[q];
-			} else {
-			    rtmp_ref += B_ref[q + p * lda] * x_ref[q];
-			}
-		    }
-		    y_ref[p] = rtmp_ref;
-		}
-//printf("ans"); printvec(x_ref, veclen(n, 1)); printf("\n");
-//printf("A"); printmat(n, n, B_ref, lda); printf("\n");
-		for (int p = 0; p < n; p++) {
-		    x_ref[p] = y_ref[p]; 
+            for (iter = 0; iter < MAX_ITER; iter++) {
+                set_random_vector(A_ref, A, matlen(lda, n));
+                set_random_vector(A_ref, A, matlen(lda, n));
+                set_random_vector(x_ref, x, veclen(n, 1));
+                set_random_vector(cnorm_ref, cnorm, veclen(n, 1));
+                /* A*x=b; b would be very large. so we choose x as the answer. */
+                for (int p = 0; p < n; p++) {
+                    for (int q = 0; q < n; q++) {
+                        B_ref[p + q * lda] = 0.0;
+                    }
+                }
+                if (Mlsame(uplo, "U")) {
+                    for (int p = 0; p < n; p++) {
+                        for (int q = p; q < n; q++) {
+                            B_ref[p + q * lda] = A_ref[p + q * lda];
+                        }
+                    }
+                }
+                if (Mlsame(uplo, "L")) {
+                    for (int p = 0; p < n; p++) {
+                        for (int q = 0; q <= p; q++) {
+                            B_ref[p + q * lda] = A_ref[p + q * lda];
+                        }
+                    }
+                }
+                if (Mlsame(diag, "U")) {
+                    for (int p = 0; p < n; p++) {
+                        B_ref[p + p * lda] = 1.0;
+                    }
+                }
+                // printf("A"); printmat(n, n, B_ref, lda); printf("\n");
+                for (int p = 0; p < n; p++) {
+                    rtmp = 0.0;
+                    rtmp_ref = 0.0;
+                    for (int q = 0; q < n; q++) {
+                        if (Mlsame(trans, "N")) {
+                            rtmp_ref += B_ref[p + q * lda] * x_ref[q];
+                        } else {
+                            rtmp_ref += B_ref[q + p * lda] * x_ref[q];
+                        }
+                    }
+                    y_ref[p] = rtmp_ref;
+                }
+                // printf("ans"); printvec(x_ref, veclen(n, 1)); printf("\n");
+                // printf("A"); printmat(n, n, B_ref, lda); printf("\n");
+                for (int p = 0; p < n; p++) {
+                    x_ref[p] = y_ref[p];
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                     x[p] = y_ref[p];
 #elif defined ___MPLAPACK_BUILD_WITH_GMP___
@@ -134,55 +134,66 @@ void Rlatrs_test2(const char *uplo, const char *trans, const char *diag, const c
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
                     x[p] = cast2_Float128(y_ref[p]);
 #endif
-		}
-//printf("y_ref"); printvec(y_ref, veclen(n, 1)); printf("\n");
+                }
+                // printf("y_ref"); printvec(y_ref, veclen(n, 1)); printf("\n");
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		dlatrs_f77(uplo, trans, diag, normin, &n, A_ref, &lda, x_ref, &scale_ref, cnorm_ref, &info_ref);
+                dlatrs_f77(uplo, trans, diag, normin, &n, A_ref, &lda, x_ref, &scale_ref, cnorm_ref, &info_ref);
 #else
-		Rlatrs(uplo, trans, diag, normin, n, A_ref, lda, x_ref, &scale_ref, cnorm_ref, &info_ref);
+                Rlatrs(uplo, trans, diag, normin, n, A_ref, lda, x_ref, &scale_ref, cnorm_ref, &info_ref);
 #endif
-		Rlatrs(uplo, trans, diag, normin, n, A, lda, x, &scale, cnorm, &info);
-		if (info != info_ref) {
-		    printf("info differ! %d, %d\n", (int) info, (int) info_ref);
-		    errorflag = TRUE;
-		}
-		diff = infnorm(x_ref, x, veclen(n, 1), 1);
-		if (diff > EPSILON10) {
-		    printf("error in x: "); printnum(diff); printf("\n");
-		    printf("x_ref"); printvec(x_ref, veclen(n, 1)); printf("\n");
-		    printf("x"); printvec(x, veclen(n, 1)); printf("\n");
-		    errorflag = TRUE;
-		}
-		if (maxdiff < diff) maxdiff = diff;
+                Rlatrs(uplo, trans, diag, normin, n, A, lda, x, &scale, cnorm, &info);
+                if (info != info_ref) {
+                    printf("info differ! %d, %d\n", (int)info, (int)info_ref);
+                    errorflag = TRUE;
+                }
+                diff = infnorm(x_ref, x, veclen(n, 1), 1);
+                if (diff > EPSILON10) {
+                    printf("error in x: ");
+                    printnum(diff);
+                    printf("\n");
+                    printf("x_ref");
+                    printvec(x_ref, veclen(n, 1));
+                    printf("\n");
+                    printf("x");
+                    printvec(x, veclen(n, 1));
+                    printf("\n");
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
 
-		diff = infnorm(cnorm_ref, cnorm, veclen(n, 1), 1);
-		if (diff > EPSILON10) {
-		    printf("error in cnorm: "); printnum(diff); printf("\n");
-		    errorflag = TRUE;
-		}
-		if (maxdiff < diff) maxdiff = diff;
+                diff = infnorm(cnorm_ref, cnorm, veclen(n, 1), 1);
+                if (diff > EPSILON10) {
+                    printf("error in cnorm: ");
+                    printnum(diff);
+                    printf("\n");
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
 #if defined VERBOSE_TEST
-                printf("max error: "); printnum(maxdiff); printf("\n");
+                printf("max error: ");
+                printnum(maxdiff);
+                printf("\n");
 #endif
-	    }
-	    delete[]cnorm;
-	    delete[]x;
-	    delete[]A;
-	    delete[]cnorm_ref;
-	    delete[]x_ref;
-	    delete[]B_ref;
-	    delete[]A_ref;
-	}
+            }
+            delete[] cnorm;
+            delete[] x;
+            delete[] A;
+            delete[] cnorm_ref;
+            delete[] x_ref;
+            delete[] B_ref;
+            delete[] A_ref;
+        }
     }
     if (errorflag == TRUE) {
         printf("*** Testing Rlatrs failed ***\n");
-	exit(1);
+        exit(1);
     }
 }
 
-void Rlatrs_test()
-{
+void Rlatrs_test() {
     Rlatrs_test2("U", "N", "N", "Y");
     Rlatrs_test2("U", "N", "N", "N");
     Rlatrs_test2("U", "N", "U", "Y");
@@ -214,8 +225,7 @@ void Rlatrs_test()
     Rlatrs_test2("L", "C", "U", "N");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rlatrs start ***\n");
     Rlatrs_test();
     printf("*** Testing Rlatrs successful ***\n");

@@ -38,67 +38,69 @@
 #include <iostream>
 #endif
 
-#define MIN_N     0
-#define MAX_N     20
-#define MAX_LDA   25
-#define MAX_ITER  3
+#define MIN_N 0
+#define MAX_N 20
+#define MAX_LDA 25
+#define MAX_ITER 3
 
 REAL_REF maxdiff = 0.0;
 
-void Clanhe_test2(const char *norm, const char *uplo)
-{
+void Clanhe_test2(const char *norm, const char *uplo) {
     int errorflag = FALSE;
     int j = 0;
     REAL_REF zlanhe_ret;
     REAL Clanhe_ret;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-	for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
+        for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
-	    printf("n:%d lda %d, uplo %s, norm %s\n", n, lda, uplo, norm);
+            printf("n:%d lda %d, uplo %s, norm %s\n", n, lda, uplo, norm);
 #endif
-	    COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
-	    REAL_REF *work_ref = new REAL_REF[max(1, n)];
-	    COMPLEX *A = new COMPLEX[matlen(lda, n)];
-	    REAL *work = new REAL[max(1, n)];
-	    j = 0;
-	    while (j < MAX_ITER) {
-		set_random_vector(A_ref, A, matlen(lda, n));
+            COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
+            REAL_REF *work_ref = new REAL_REF[max(1, n)];
+            COMPLEX *A = new COMPLEX[matlen(lda, n)];
+            REAL *work = new REAL[max(1, n)];
+            j = 0;
+            while (j < MAX_ITER) {
+                set_random_vector(A_ref, A, matlen(lda, n));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		zlanhe_ret = zlanhe_f77(norm, uplo, &n, A_ref, &lda, work_ref);
+                zlanhe_ret = zlanhe_f77(norm, uplo, &n, A_ref, &lda, work_ref);
 #else
-		zlanhe_ret = Clanhe(norm, uplo, n, A_ref, lda, work_ref);
+                zlanhe_ret = Clanhe(norm, uplo, n, A_ref, lda, work_ref);
 #endif
-		Clanhe_ret = Clanhe(norm, uplo, n, A, lda, work);
+                Clanhe_ret = Clanhe(norm, uplo, n, A, lda, work);
 
-		REAL_REF diff = abs(zlanhe_ret - Clanhe_ret);
+                REAL_REF diff = abs(zlanhe_ret - Clanhe_ret);
 
-		if (diff > EPSILON) {
-		    printf("n:%d lda %d, uplo %s, norm %s\n", n, lda, uplo, norm);
-		    printf("error: "); printnum(diff); printf("\n");
-		    errorflag = TRUE;
-		}
-	        if (maxdiff < diff)
-		    maxdiff = diff;
+                if (diff > EPSILON) {
+                    printf("n:%d lda %d, uplo %s, norm %s\n", n, lda, uplo, norm);
+                    printf("error: ");
+                    printnum(diff);
+                    printf("\n");
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
 #if defined VERBOSE_TEST
-	        printf("max error: "); printnum(maxdiff); printf("\n");
+                printf("max error: ");
+                printnum(maxdiff);
+                printf("\n");
 #endif
-		j++;
-	    }
-	    delete[]A;
-	    delete[]A_ref;
-	    delete[]work;
-	    delete[]work_ref;
-	}
-	if (errorflag == TRUE) {
-	    printf("*** Testing Clanhe failed ***\n");
-	    exit(1);
-	}
+                j++;
+            }
+            delete[] A;
+            delete[] A_ref;
+            delete[] work;
+            delete[] work_ref;
+        }
+        if (errorflag == TRUE) {
+            printf("*** Testing Clanhe failed ***\n");
+            exit(1);
+        }
     }
 }
 
-void Clanhe_test(void)
-{
+void Clanhe_test(void) {
     Clanhe_test2("M", "U");
     Clanhe_test2("m", "U");
     Clanhe_test2("1", "U");
@@ -124,8 +126,7 @@ void Clanhe_test(void)
     Clanhe_test2("e", "L");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Clanhe start ***\n");
     Clanhe_test();
     printf("*** Testing Clanhe successful ***\n");

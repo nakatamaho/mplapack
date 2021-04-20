@@ -38,91 +38,93 @@
 #include <iostream>
 #endif
 
-#define MIN_INCX   -2
-#define MAX_INCX   10
-#define MIN_N      -2
-#define MAX_N      40
-#define MAX_LDA    40
-#define MAX_ITER   10
+#define MIN_INCX -2
+#define MAX_INCX 10
+#define MIN_N -2
+#define MAX_N 40
+#define MAX_LDA 40
+#define MAX_ITER 10
 
 REAL_REF maxdiff = 0.0;
 
-void Csyr_test2(const char *uplo)
-{
+void Csyr_test2(const char *uplo) {
     int errorflag = FALSE;
     int mplapack_errno1, mplapack_errno2;
     for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
-	for (int n = MIN_N; n < MAX_N; n++) {
-	    for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
+        for (int n = MIN_N; n < MAX_N; n++) {
+            for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
-		printf("#n is %d, incx is %d, uplo is %s lda is %d.\n", n, incx, uplo, lda);
+                printf("#n is %d, incx is %d, uplo is %s lda is %d.\n", n, incx, uplo, lda);
 #endif
-		COMPLEX_REF alpha_ref;
-		COMPLEX_REF *x_ref;
-		COMPLEX_REF *A_ref;
-		COMPLEX alpha;
-		COMPLEX *x;
-		COMPLEX *A;
+                COMPLEX_REF alpha_ref;
+                COMPLEX_REF *x_ref;
+                COMPLEX_REF *A_ref;
+                COMPLEX alpha;
+                COMPLEX *x;
+                COMPLEX *A;
 
-		x_ref = new COMPLEX_REF[veclen(n, incx)];
-		A_ref = new COMPLEX_REF[matlen(lda, n)];
-		x = new COMPLEX[veclen(n, incx)];
-		A = new COMPLEX[matlen(lda, n)];
+                x_ref = new COMPLEX_REF[veclen(n, incx)];
+                A_ref = new COMPLEX_REF[matlen(lda, n)];
+                x = new COMPLEX[veclen(n, incx)];
+                A = new COMPLEX[matlen(lda, n)];
 
-		for (int i = 0; i < MAX_ITER; i++) {
-		    set_random_vector(A_ref, A, matlen(lda, n));
-		    set_random_vector(x_ref, x, veclen(n, incx));
-		    set_random_number(alpha_ref, alpha);
+                for (int i = 0; i < MAX_ITER; i++) {
+                    set_random_vector(A_ref, A, matlen(lda, n));
+                    set_random_vector(x_ref, x, veclen(n, incx));
+                    set_random_number(alpha_ref, alpha);
 
-		    mplapack_errno = 0; blas_errno = 0;
+                    mplapack_errno = 0;
+                    blas_errno = 0;
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		    zsyr_f77(uplo, &n, &alpha_ref, x_ref, &incx, A_ref, &lda);
-		    mplapack_errno1 = blas_errno;
+                    zsyr_f77(uplo, &n, &alpha_ref, x_ref, &incx, A_ref, &lda);
+                    mplapack_errno1 = blas_errno;
 #else
-		    Csyr(uplo, n, alpha_ref, x_ref, incx, A_ref, lda);
-		    mplapack_errno1 = mplapack_errno;
+                    Csyr(uplo, n, alpha_ref, x_ref, incx, A_ref, lda);
+                    mplapack_errno1 = mplapack_errno;
 #endif
-		    Csyr(uplo, n, alpha, x, incx, A, lda);
-		    mplapack_errno2 = mplapack_errno;
+                    Csyr(uplo, n, alpha, x, incx, A, lda);
+                    mplapack_errno2 = mplapack_errno;
 
 #if defined VERBOSE_TEST
-		    printf("errno: mplapack %d, ref %d\n", mplapack_errno1, mplapack_errno2);
+                    printf("errno: mplapack %d, ref %d\n", mplapack_errno1, mplapack_errno2);
 #endif
-		    if (mplapack_errno1 != mplapack_errno2) {
-			printf("error in Mxerbla!!\n");
-		    }
-		    REAL_REF diff = infnorm(A_ref, A, matlen(lda, n), 1);
-		    if (diff > EPSILON) {
-			printf("error: "); printnum(diff); printf("\n");
-			errorflag = TRUE;
-		    }
-		    if (maxdiff < diff)
-			maxdiff = diff;
+                    if (mplapack_errno1 != mplapack_errno2) {
+                        printf("error in Mxerbla!!\n");
+                    }
+                    REAL_REF diff = infnorm(A_ref, A, matlen(lda, n), 1);
+                    if (diff > EPSILON) {
+                        printf("error: ");
+                        printnum(diff);
+                        printf("\n");
+                        errorflag = TRUE;
+                    }
+                    if (maxdiff < diff)
+                        maxdiff = diff;
 #if defined VERBOSE_TEST
-		    printf("max error: "); printnum(maxdiff); printf("\n");
+                    printf("max error: ");
+                    printnum(maxdiff);
+                    printf("\n");
 #endif
-		}
-		delete[]A_ref;
-		delete[]x_ref;
-		delete[]A;
-		delete[]x;
-	    }
-	}
+                }
+                delete[] A_ref;
+                delete[] x_ref;
+                delete[] A;
+                delete[] x;
+            }
+        }
     }
     if (errorflag == TRUE) {
         printf("*** Testing Csyr failed ***\n");
-	exit(1);
+        exit(1);
     }
 }
 
-void Csyr_test()
-{
+void Csyr_test() {
     Csyr_test2("L");
     Csyr_test2("U");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Csyr start ***\n");
     Csyr_test();
     printf("*** Testing Csyr successful ***\n");

@@ -40,67 +40,95 @@
 
 REAL_REF maxdiff = 0.0;
 
-void Rladiv_test()
-{
+void Rladiv_test() {
     int errorflag = FALSE;
     REAL_REF a_ref, b_ref, c_ref, d_ref, p_ref, q_ref, diff;
     REAL a, b, c, d, p, q;
 
     int count = 100;
     while (count--) {
-	set_random_number(a_ref, a);
-	set_random_number(b_ref, b);
-	set_random_number(c_ref, c);
-	set_random_number(d_ref, d);
+        set_random_number(a_ref, a);
+        set_random_number(b_ref, b);
+        set_random_number(c_ref, c);
+        set_random_number(d_ref, d);
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-	dladiv_f77(&a_ref, &b_ref, &c_ref, &d_ref, &p_ref, &q_ref);
+        dladiv_f77(&a_ref, &b_ref, &c_ref, &d_ref, &p_ref, &q_ref);
 #else
-	Rladiv(a_ref, b_ref, c_ref, d_ref, &p_ref, &q_ref);
+        Rladiv(a_ref, b_ref, c_ref, d_ref, &p_ref, &q_ref);
 #endif
         Rladiv(a, b, c, d, &p, &q);
 
 #if defined VERBOSE_TEST
-	cout << "a      "; printnum(a); cout << endl;
-	cout << "b      "; printnum(b); cout << endl;
-	cout << "c      "; printnum(c); cout << endl;
-	cout << "d      "; printnum(d); cout << endl;
-	cout << "p      "; printnum(p);	cout << endl;
-	cout << "q      "; printnum(q); cout << endl;
+        cout << "a      ";
+        printnum(a);
+        cout << endl;
+        cout << "b      ";
+        printnum(b);
+        cout << endl;
+        cout << "c      ";
+        printnum(c);
+        cout << endl;
+        cout << "d      ";
+        printnum(d);
+        cout << endl;
+        cout << "p      ";
+        printnum(p);
+        cout << endl;
+        cout << "q      ";
+        printnum(q);
+        cout << endl;
 
-	cout << "a_ref  "; printnum(a_ref); cout << endl;
-	cout << "b_ref  "; printnum(b_ref); cout << endl;
-	cout << "c_ref  "; printnum(c_ref); cout << endl;
-	cout << "d_ref  "; printnum(d_ref); cout << endl;
-	cout << "p_ref  "; printnum(p_ref); cout << endl;
-	cout << "q_ref  "; printnum(q_ref); cout << endl;
+        cout << "a_ref  ";
+        printnum(a_ref);
+        cout << endl;
+        cout << "b_ref  ";
+        printnum(b_ref);
+        cout << endl;
+        cout << "c_ref  ";
+        printnum(c_ref);
+        cout << endl;
+        cout << "d_ref  ";
+        printnum(d_ref);
+        cout << endl;
+        cout << "p_ref  ";
+        printnum(p_ref);
+        cout << endl;
+        cout << "q_ref  ";
+        printnum(q_ref);
+        cout << endl;
 #endif
-        diff = abs (p_ref - p);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("error1: "); printnum(diff); printf("\n");
-	}
+        diff = abs(p_ref - p);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("error1: ");
+            printnum(diff);
+            printf("\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
-        diff = abs (q_ref - q);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("error2: "); printnum(diff); printf("\n");
-	}
+            maxdiff = diff;
+        diff = abs(q_ref - q);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("error2: ");
+            printnum(diff);
+            printf("\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
     }
     if (errorflag == TRUE) {
-	printf("*** Testing Rladiv failed ***\n");
-	exit(1);
+        printf("*** Testing Rladiv failed ***\n");
+        exit(1);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rladiv start ***\n");
     Rladiv_test();
     printf("*** Testing Rladiv successful ***\n");

@@ -38,71 +38,71 @@
 #include <iostream>
 #endif
 
-#define MIN_INCX  -2
-#define MAX_INCX  2
-#define MIN_LDA   5
-#define MAX_LDA   10
-#define MIN_N     5
-#define MAX_N     10
-#define MAX_ITER  100
+#define MIN_INCX -2
+#define MAX_INCX 2
+#define MIN_LDA 5
+#define MAX_LDA 10
+#define MIN_N 5
+#define MAX_N 10
+#define MAX_ITER 100
 
-void Rlaswp_test()
-{
+void Rlaswp_test() {
     int errorflag = FALSE;
     int i, iter;
     REAL_REF diff;
 
     for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
-	for (int n = MIN_N; n <= MAX_N; n++) {
-	    for (int lda = MIN_LDA; lda <= MAX_LDA; lda++) {
-		for (int k1 = lda - 1; k1 <= lda; k1++) {
-		    for (int k2 = k1 + 1; k2 <= lda; k2++) {
+        for (int n = MIN_N; n <= MAX_N; n++) {
+            for (int lda = MIN_LDA; lda <= MAX_LDA; lda++) {
+                for (int k1 = lda - 1; k1 <= lda; k1++) {
+                    for (int k2 = k1 + 1; k2 <= lda; k2++) {
 #if defined VERBOSE_TEST
-			printf("# n:%d, lda: %d, incx:%d k1:%d k2: %d\n", n, lda, incx, k1, k2);
+                        printf("# n:%d, lda: %d, incx:%d k1:%d k2: %d\n", n, lda, incx, k1, k2);
 #endif
-			REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
-			INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(k2, incx)];
+                        REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
+                        INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(k2, incx)];
 
-			REAL *A = new REAL[matlen(lda, n)];
-			INTEGER *ipiv = new INTEGER[veclen(k2, incx)];
+                        REAL *A = new REAL[matlen(lda, n)];
+                        INTEGER *ipiv = new INTEGER[veclen(k2, incx)];
 
-			for (iter = 0; iter < MAX_ITER; iter++) {
-			    set_random_vector(A_ref, A, matlen(lda, n));
-			    set_random_vector(ipiv_ref, ipiv, veclen(k2, incx), lda);
+                        for (iter = 0; iter < MAX_ITER; iter++) {
+                            set_random_vector(A_ref, A, matlen(lda, n));
+                            set_random_vector(ipiv_ref, ipiv, veclen(k2, incx), lda);
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-			    dlaswp_f77(&n, A_ref, &lda, &k1, &k2, ipiv_ref, &incx);
+                            dlaswp_f77(&n, A_ref, &lda, &k1, &k2, ipiv_ref, &incx);
 #else
-			    Rlaswp(n, A_ref, lda, k1, k2, ipiv_ref, incx);
+                            Rlaswp(n, A_ref, lda, k1, k2, ipiv_ref, incx);
 #endif
-			    Rlaswp(n, A, lda, k1, k2, ipiv, incx);
-			    diff = infnorm(A_ref, A, matlen(lda, n), 1);
-			    if (diff > EPSILON) {
-				for (i = 0; i < veclen(k2, incx); i++) {
-				    printf("%d %d\n", (int) ipiv_ref[i], (int)ipiv[i]);
-				}
+                            Rlaswp(n, A, lda, k1, k2, ipiv, incx);
+                            diff = infnorm(A_ref, A, matlen(lda, n), 1);
+                            if (diff > EPSILON) {
+                                for (i = 0; i < veclen(k2, incx); i++) {
+                                    printf("%d %d\n", (int)ipiv_ref[i], (int)ipiv[i]);
+                                }
 #if defined VERBOSE_TEST
-		                printf("error: "); printnum(diff); printf("\n");
+                                printf("error: ");
+                                printnum(diff);
+                                printf("\n");
 #endif
-				errorflag = TRUE;
-			    }
-			}
-			delete[]ipiv_ref;
-			delete[]ipiv;
-			delete[]A_ref;
-			delete[]A;
-		    }
-		}
-	    }
-	}
+                                errorflag = TRUE;
+                            }
+                        }
+                        delete[] ipiv_ref;
+                        delete[] ipiv;
+                        delete[] A_ref;
+                        delete[] A;
+                    }
+                }
+            }
+        }
     }
     if (errorflag == TRUE) {
-	printf("*** Testing Rlaswp failed ***\n");
-	exit(1);
+        printf("*** Testing Rlaswp failed ***\n");
+        exit(1);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rlaswp start ***\n");
     Rlaswp_test();
     printf("*** Testing Rlaswp successful ***\n");

@@ -50,8 +50,7 @@
 
 REAL_REF maxdiff = 0.0;
 
-void Rorg2r_test()
-{
+void Rorg2r_test() {
     int errorflag = FALSE;
     int iter;
     int m, n, k, lda;
@@ -60,74 +59,81 @@ void Rorg2r_test()
     INTEGER info;
 
     for (m = MIN_M; m <= MAX_M; m++) {
-	for (n = MIN_N; n <= m; n++) {
-	    for (k = MIN_K; k <= n; k++) {
-		for (lda = max(1, m); lda <= MAX_LDA; lda++) {
+        for (n = MIN_N; n <= m; n++) {
+            for (k = MIN_K; k <= n; k++) {
+                for (lda = max(1, m); lda <= MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
-		    printf("# m %d n %d k %d lda %d\n", (int)m, (int)n, (int)k, (int)lda);
+                    printf("# m %d n %d k %d lda %d\n", (int)m, (int)n, (int)k, (int)lda);
 #endif
-		    REAL *A = new REAL[matlen(lda, n)];
-		    REAL *tau = new REAL[veclen(k, 1)];
-		    REAL *work = new REAL[veclen(n, 1)];
+                    REAL *A = new REAL[matlen(lda, n)];
+                    REAL *tau = new REAL[veclen(k, 1)];
+                    REAL *work = new REAL[veclen(n, 1)];
 
-		    REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
-		    REAL_REF *tau_ref = new REAL_REF[veclen(k, 1)];
-		    REAL_REF *work_ref = new REAL_REF[veclen(n, 1)];
+                    REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
+                    REAL_REF *tau_ref = new REAL_REF[veclen(k, 1)];
+                    REAL_REF *work_ref = new REAL_REF[veclen(n, 1)];
 
-		    for (iter = 0; iter < MAX_ITER; iter++) {
-			set_random_vector(A_ref, A, matlen(lda, n));
-			set_random_vector(tau_ref, tau, veclen(k, 1));
-			set_random_vector(work_ref, work, veclen(n, 1));
+                    for (iter = 0; iter < MAX_ITER; iter++) {
+                        set_random_vector(A_ref, A, matlen(lda, n));
+                        set_random_vector(tau_ref, tau, veclen(k, 1));
+                        set_random_vector(work_ref, work, veclen(n, 1));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-			dorg2r_f77(&m, &n, &k, A_ref, &lda, tau_ref, work_ref, &info_ref);
+                        dorg2r_f77(&m, &n, &k, A_ref, &lda, tau_ref, work_ref, &info_ref);
 #else
                         Rorg2r(m, n, k, A_ref, lda, tau_ref, work_ref, &info_ref);
 #endif
-			Rorg2r(m, n, k, A, lda, tau, work, &info);
+                        Rorg2r(m, n, k, A, lda, tau, work, &info);
 
-			diff = infnorm(A_ref, A, matlen(lda, n), 1);
-		        if (diff > EPSILON) {
-		            printf("error in A: "); printnum(diff); printf("\n");
-		            errorflag = TRUE;
-		        }
-	                if (maxdiff < diff)
-		            maxdiff = diff;
-			diff = infnorm(tau_ref, tau, veclen(k, 1), 1);
-		        if (diff > EPSILON) {
-		            printf("error in t: "); printnum(diff); printf("\n");
-		            errorflag = TRUE;
-		        }
-	                if (maxdiff < diff)
-		            maxdiff = diff;
+                        diff = infnorm(A_ref, A, matlen(lda, n), 1);
+                        if (diff > EPSILON) {
+                            printf("error in A: ");
+                            printnum(diff);
+                            printf("\n");
+                            errorflag = TRUE;
+                        }
+                        if (maxdiff < diff)
+                            maxdiff = diff;
+                        diff = infnorm(tau_ref, tau, veclen(k, 1), 1);
+                        if (diff > EPSILON) {
+                            printf("error in t: ");
+                            printnum(diff);
+                            printf("\n");
+                            errorflag = TRUE;
+                        }
+                        if (maxdiff < diff)
+                            maxdiff = diff;
 
-			diff = infnorm(work_ref, work, veclen(n, 1), 1);
-		        if (diff > EPSILON) {
-		            printf("error in t: "); printnum(diff); printf("\n");
-		        }
-	                if (maxdiff < diff)
-		            maxdiff = diff;
+                        diff = infnorm(work_ref, work, veclen(n, 1), 1);
+                        if (diff > EPSILON) {
+                            printf("error in t: ");
+                            printnum(diff);
+                            printf("\n");
+                        }
+                        if (maxdiff < diff)
+                            maxdiff = diff;
 #if defined VERBOSE_TEST
-	                printf("max error: "); printnum(maxdiff); printf("\n");
+                        printf("max error: ");
+                        printnum(maxdiff);
+                        printf("\n");
 #endif
-		    }
-		    delete[]tau_ref;
-		    delete[]work_ref;
-		    delete[]A_ref;
-		    delete[]tau;
-		    delete[]work;
-		    delete[]A;
-		}
-	    }
-	}
+                    }
+                    delete[] tau_ref;
+                    delete[] work_ref;
+                    delete[] A_ref;
+                    delete[] tau;
+                    delete[] work;
+                    delete[] A;
+                }
+            }
+        }
     }
     if (errorflag == TRUE) {
-	printf("*** Testing Rorg2r failed ***\n");
-	exit(1);
+        printf("*** Testing Rorg2r failed ***\n");
+        exit(1);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rorg2r start ***\n");
     Rorg2r_test();
     printf("*** Testing Rorg2r successful ***\n");

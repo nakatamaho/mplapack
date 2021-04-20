@@ -37,17 +37,16 @@
 #include <iostream>
 #endif
 
-#define MIN_N      2
-#define MAX_N     10
-#define MAX_NB    10
-#define MAX_LDA    9
-#define MAX_LDW    9
-#define MAX_ITER   2
+#define MIN_N 2
+#define MAX_N 10
+#define MAX_NB 10
+#define MAX_LDA 9
+#define MAX_LDW 9
+#define MAX_ITER 2
 
 REAL_REF maxdiff = 0.0;
 
-void Clahef_test2(const char *uplo)
-{
+void Clahef_test2(const char *uplo) {
     int errorflag = FALSE;
     int j = 0;
     REAL_REF diff;
@@ -55,84 +54,98 @@ void Clahef_test2(const char *uplo)
     INTEGER info;
 
     for (int n = MIN_N; n <= MAX_N; n++) {
-	for (int nb = 2; nb < MAX_NB; nb++) {
-	    for (int k = 0; k < 4; k++) {
-		if (k == 0) { kb = nb - 1; }
-		if (k == 1) { kb = nb; }
-		if (k == 2) {
-		  if (n <= nb) { kb = n; } else { kb = nb - 1; }
-		}
-		if (k == 3) {
-		    if (n <= nb) { kb = n; } else { kb = nb; }
-		}
+        for (int nb = 2; nb < MAX_NB; nb++) {
+            for (int k = 0; k < 4; k++) {
+                if (k == 0) {
+                    kb = nb - 1;
+                }
+                if (k == 1) {
+                    kb = nb;
+                }
+                if (k == 2) {
+                    if (n <= nb) {
+                        kb = n;
+                    } else {
+                        kb = nb - 1;
+                    }
+                }
+                if (k == 3) {
+                    if (n <= nb) {
+                        kb = n;
+                    } else {
+                        kb = nb;
+                    }
+                }
 
-		for (int lda = max(n, 1); lda <= MAX_LDA; lda++) {
-		    for (int ldw = max(n, 1); ldw <= MAX_LDW; ldw++) {
+                for (int lda = max(n, 1); lda <= MAX_LDA; lda++) {
+                    for (int ldw = max(n, 1); ldw <= MAX_LDW; ldw++) {
 
-			COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
-			COMPLEX_REF *W_ref = new COMPLEX_REF[matlen(ldw, nb)];
-			INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(n, 1)];
+                        COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
+                        COMPLEX_REF *W_ref = new COMPLEX_REF[matlen(ldw, nb)];
+                        INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(n, 1)];
 
-			COMPLEX *A = new COMPLEX[matlen(lda, n)];
-			COMPLEX *W = new COMPLEX[matlen(ldw, nb)];
-			INTEGER *ipiv = new INTEGER[veclen(n, 1)];
+                        COMPLEX *A = new COMPLEX[matlen(lda, n)];
+                        COMPLEX *W = new COMPLEX[matlen(ldw, nb)];
+                        INTEGER *ipiv = new INTEGER[veclen(n, 1)];
 #if defined VERBOSE_TEST
-			printf("#uplo %s n:%d nb:%d kb:%d ldw:%d\n", uplo, (int)n, (int)nb, (int)kb, (int)ldw);
+                        printf("#uplo %s n:%d nb:%d kb:%d ldw:%d\n", uplo, (int)n, (int)nb, (int)kb, (int)ldw);
 #endif
-			j = 0;
-			while (j < MAX_ITER) {
-			    set_random_vector(A_ref, A, matlen(lda, n));
+                        j = 0;
+                        while (j < MAX_ITER) {
+                            set_random_vector(A_ref, A, matlen(lda, n));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-			    zlahef_f77(uplo, &n, &nb, &kb, A_ref, &lda, ipiv_ref, W_ref, &ldw, &info_ref);
+                            zlahef_f77(uplo, &n, &nb, &kb, A_ref, &lda, ipiv_ref, W_ref, &ldw, &info_ref);
 #else
-			    Clahef(uplo, n, nb, kb, A_ref, lda, ipiv_ref, W_ref, ldw, &info_ref);
+                            Clahef(uplo, n, nb, kb, A_ref, lda, ipiv_ref, W_ref, ldw, &info_ref);
 #endif
-			    Clahef(uplo, n, nb, kb, A, lda, ipiv, W, ldw, &info);
+                            Clahef(uplo, n, nb, kb, A, lda, ipiv, W, ldw, &info);
 
-			    if (info < 0) {
-				printf("info %d error\n", -(int) info);
-			    }
-			    if (info != info_ref) {
-				printf("info differ! %d, %d\n", (int) info, (int) info_ref);
-				errorflag = TRUE;
-			    }
-			    diff = infnorm(A_ref, A, matlen(lda, n), 1);
-			    if (diff > EPSILON) {
-				printf("error: "); printnum(diff); printf("\n");
-				errorflag = TRUE;
-			    }
-			    if (maxdiff < diff)
-				maxdiff = diff;
+                            if (info < 0) {
+                                printf("info %d error\n", -(int)info);
+                            }
+                            if (info != info_ref) {
+                                printf("info differ! %d, %d\n", (int)info, (int)info_ref);
+                                errorflag = TRUE;
+                            }
+                            diff = infnorm(A_ref, A, matlen(lda, n), 1);
+                            if (diff > EPSILON) {
+                                printf("error: ");
+                                printnum(diff);
+                                printf("\n");
+                                errorflag = TRUE;
+                            }
+                            if (maxdiff < diff)
+                                maxdiff = diff;
 #if defined VERBOSE_TEST
-			    printf("max error: "); printnum(maxdiff); printf("\n");
+                            printf("max error: ");
+                            printnum(maxdiff);
+                            printf("\n");
 #endif
-			    j++;
-			}
-			delete[]ipiv_ref;
-			delete[]W_ref;
-			delete[]A_ref;
-			delete[]ipiv;
-			delete[]W;
-			delete[]A;
-		    }
-		}
-	    }
-	}
+                            j++;
+                        }
+                        delete[] ipiv_ref;
+                        delete[] W_ref;
+                        delete[] A_ref;
+                        delete[] ipiv;
+                        delete[] W;
+                        delete[] A;
+                    }
+                }
+            }
+        }
     }
     if (errorflag == TRUE) {
         printf("*** Testing Clahef failed ***\n");
-	exit(1);
+        exit(1);
     }
 }
 
-void Clahef_test()
-{
+void Clahef_test() {
     Clahef_test2("L");
     Clahef_test2("U");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Clahef start ***\n");
     Clahef_test();
     printf("*** Testing Clahef successful ***\n");

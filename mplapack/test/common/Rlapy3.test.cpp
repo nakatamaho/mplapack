@@ -40,8 +40,7 @@
 
 REAL_REF maxdiff = 0.0;
 
-void Rlapy3_test()
-{
+void Rlapy3_test() {
     int errorflag = FALSE;
     REAL_REF dlapy3_ret, x_ref, y_ref, z_ref, diff;
     REAL Rlapy3_ret, x, y, z;
@@ -49,45 +48,62 @@ void Rlapy3_test()
     int count = 100;
 
     while (count--) {
-	set_random_number(x_ref, x);
-	set_random_number(y_ref, y);
-	set_random_number(z_ref, z);
+        set_random_number(x_ref, x);
+        set_random_number(y_ref, y);
+        set_random_number(z_ref, z);
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-	dlapy3_ret = dlapy3_f77(&x_ref, &y_ref, &z_ref);
+        dlapy3_ret = dlapy3_f77(&x_ref, &y_ref, &z_ref);
 #else
-	dlapy3_ret = Rlapy3(x_ref, y_ref, z_ref);
+        dlapy3_ret = Rlapy3(x_ref, y_ref, z_ref);
 #endif
-	Rlapy3_ret = Rlapy3(x, y, z);
+        Rlapy3_ret = Rlapy3(x, y, z);
 
 #if defined VERBOSE_TEST
-	cout << "x      "; printnum(x); cout << endl;
-	cout << "y      "; printnum(y); cout << endl;
-	cout << "z      "; printnum(z); cout << endl;
-	cout << "Rlapy3 "; printnum(Rlapy3_ret); cout << endl;
-	cout << "x_ref  "; printnum(x_ref); cout << endl;
-	cout << "y_ref  "; printnum(y_ref); cout << endl;
-	cout << "z_ref  "; printnum(z_ref); cout << endl;
-	cout << "dlapy3 "; printnum(dlapy3_ret); cout << endl;
+        cout << "x      ";
+        printnum(x);
+        cout << endl;
+        cout << "y      ";
+        printnum(y);
+        cout << endl;
+        cout << "z      ";
+        printnum(z);
+        cout << endl;
+        cout << "Rlapy3 ";
+        printnum(Rlapy3_ret);
+        cout << endl;
+        cout << "x_ref  ";
+        printnum(x_ref);
+        cout << endl;
+        cout << "y_ref  ";
+        printnum(y_ref);
+        cout << endl;
+        cout << "z_ref  ";
+        printnum(z_ref);
+        cout << endl;
+        cout << "dlapy3 ";
+        printnum(dlapy3_ret);
+        cout << endl;
 #endif
-        diff = abs (dlapy3_ret - Rlapy3_ret);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("Error1\n");
-	}
-	if (maxdiff < diff)
-	    maxdiff = diff;
+        diff = abs(dlapy3_ret - Rlapy3_ret);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("Error1\n");
+        }
+        if (maxdiff < diff)
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-	printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
     }
     if (errorflag == TRUE) {
-	printf("*** Testing Rlapy3 failed ***\n");
-	exit(1);
+        printf("*** Testing Rlapy3 failed ***\n");
+        exit(1);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rlapy3 start ***\n");
     Rlapy3_test();
     printf("*** Testing Rlapy3 successful ***\n");

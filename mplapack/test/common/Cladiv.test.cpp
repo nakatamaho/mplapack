@@ -40,8 +40,7 @@
 
 REAL_REF maxdiff = 0.0;
 
-void Cladiv_test()
-{
+void Cladiv_test() {
     int errorflag = FALSE;
     REAL_REF diff;
     COMPLEX_REF x_ref, y_ref, ret_ref;
@@ -49,44 +48,59 @@ void Cladiv_test()
 
     int count = 100;
     while (count--) {
-	set_random_number(x_ref, x);
-	set_random_number(y_ref, y);
+        set_random_number(x_ref, x);
+        set_random_number(y_ref, y);
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-	ret_ref = zladiv_f77(&x_ref, &y_ref);
+        ret_ref = zladiv_f77(&x_ref, &y_ref);
 #else
-	ret_ref = Cladiv(x_ref, y_ref);
+        ret_ref = Cladiv(x_ref, y_ref);
 #endif
-	ret = Cladiv(x, y);
+        ret = Cladiv(x, y);
 
 #if defined VERBOSE_TEST
-        cout << "x_ref  " ; printnum (x_ref) ; cout << endl;
-        cout << "y_ref  " ; printnum (y_ref) ; cout << endl;
-        cout << "ret_ref" ; printnum (ret_ref) ; cout << endl;
+        cout << "x_ref  ";
+        printnum(x_ref);
+        cout << endl;
+        cout << "y_ref  ";
+        printnum(y_ref);
+        cout << endl;
+        cout << "ret_ref";
+        printnum(ret_ref);
+        cout << endl;
 
-        cout << "x      " ; printnum (x) ; cout << endl;
-        cout << "y      " ; printnum (y) ; cout << endl;
-        cout << "ret    " ; printnum (ret) ; cout << endl;
+        cout << "x      ";
+        printnum(x);
+        cout << endl;
+        cout << "y      ";
+        printnum(y);
+        cout << endl;
+        cout << "ret    ";
+        printnum(ret);
+        cout << endl;
 #endif
-        diff = abs (ret_ref - ret);
-	if (diff > EPSILON) {
-	    errorflag = TRUE;
-	    printf("error1: "); printnum(diff); printf("\n");
-	}
+        diff = abs(ret_ref - ret);
+        if (diff > EPSILON) {
+            errorflag = TRUE;
+            printf("error1: ");
+            printnum(diff);
+            printf("\n");
+        }
         if (maxdiff < diff)
-	    maxdiff = diff;
+            maxdiff = diff;
 #if defined VERBOSE_TEST
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
 #endif
     }
     if (errorflag == TRUE) {
-	printf("*** Testing Cladiv failed ***\n");
-	exit(1);
+        printf("*** Testing Cladiv failed ***\n");
+        exit(1);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Cladiv start ***\n");
     Cladiv_test();
     printf("*** Testing Cladiv successful ***\n");

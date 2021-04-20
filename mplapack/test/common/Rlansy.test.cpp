@@ -38,67 +38,69 @@
 #include <iostream>
 #endif
 
-#define MIN_N     0
-#define MAX_N     30
-#define MAX_LDA   32
-#define MAX_ITER  5
+#define MIN_N 0
+#define MAX_N 30
+#define MAX_LDA 32
+#define MAX_ITER 5
 
 REAL_REF maxdiff = 0.0;
 
-void Rlansy_test2(const char *norm, const char *uplo)
-{
+void Rlansy_test2(const char *norm, const char *uplo) {
     int errorflag = FALSE;
     int j = 0;
     REAL_REF dlansy_ret;
     REAL Rlansy_ret;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-	for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
+        for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
-	    printf("n:%d lda %d, uplo %s, norm %s\n", n, lda, uplo, norm);
+            printf("n:%d lda %d, uplo %s, norm %s\n", n, lda, uplo, norm);
 #endif
-	    REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
-	    REAL_REF *work_ref = new REAL_REF[max(1, n)];
-	    REAL *A = new REAL[matlen(lda, n)];
-	    REAL *work = new REAL[max(1, n)];
-	    j = 0;
-	    while (j < MAX_ITER) {
-		set_random_vector(A_ref, A, matlen(lda, n));
+            REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
+            REAL_REF *work_ref = new REAL_REF[max(1, n)];
+            REAL *A = new REAL[matlen(lda, n)];
+            REAL *work = new REAL[max(1, n)];
+            j = 0;
+            while (j < MAX_ITER) {
+                set_random_vector(A_ref, A, matlen(lda, n));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		dlansy_ret = dlansy_f77(norm, uplo, &n, A_ref, &lda, work_ref);
+                dlansy_ret = dlansy_f77(norm, uplo, &n, A_ref, &lda, work_ref);
 #else
-		dlansy_ret = Rlansy(norm, uplo, n, A_ref, lda, work_ref);
+                dlansy_ret = Rlansy(norm, uplo, n, A_ref, lda, work_ref);
 #endif
-	        Rlansy_ret = Rlansy(norm, uplo, n, A, lda, work);
+                Rlansy_ret = Rlansy(norm, uplo, n, A, lda, work);
 
-		REAL_REF diff = abs(dlansy_ret - Rlansy_ret );
+                REAL_REF diff = abs(dlansy_ret - Rlansy_ret);
 
-		if (diff > EPSILON) {
-		    printf("n:%d lda %d, uplo %s, norm %s\n", n, lda, uplo, norm);
-		    printf("error: "); printnum(diff); printf("\n");
-		    errorflag = TRUE;
-		}
-	        if (maxdiff < diff)
-		    maxdiff = diff;
+                if (diff > EPSILON) {
+                    printf("n:%d lda %d, uplo %s, norm %s\n", n, lda, uplo, norm);
+                    printf("error: ");
+                    printnum(diff);
+                    printf("\n");
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
 #if defined VERBOSE_TEST
-	        printf("max error: "); printnum(maxdiff); printf("\n");
+                printf("max error: ");
+                printnum(maxdiff);
+                printf("\n");
 #endif
-		j++;
-	    }
-	    delete[]A;
-	    delete[]A_ref;
-	    delete[]work;
-	    delete[]work_ref;
-	}
-	if (errorflag == TRUE) {
+                j++;
+            }
+            delete[] A;
+            delete[] A_ref;
+            delete[] work;
+            delete[] work_ref;
+        }
+        if (errorflag == TRUE) {
             printf("*** Testing Rlansy failed ***\n");
-	    exit(1);
-	}
+            exit(1);
+        }
     }
 }
 
-void Rlansy_test(void)
-{
+void Rlansy_test(void) {
     Rlansy_test2("M", "U");
     Rlansy_test2("m", "U");
     Rlansy_test2("1", "U");
@@ -124,8 +126,7 @@ void Rlansy_test(void)
     Rlansy_test2("e", "L");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rlansy start ***\n");
     Rlansy_test();
     printf("*** Testing Rlansy successful ***\n");

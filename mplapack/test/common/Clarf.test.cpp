@@ -45,13 +45,12 @@
 #define MIN_LDC 2
 #define MAX_LDC 15
 #define MAX_ITER 2
-#define MIN_INCV  1
-#define MAX_INCV  3
+#define MIN_INCV 1
+#define MAX_INCV 3
 
 REAL_REF maxdiff = 0.0;
 
-void Clarf_test2(const char *side)
-{
+void Clarf_test2(const char *side) {
     int errorflag = FALSE;
     INTEGER_REF dimv;
     INTEGER_REF n, m, ldc, incv, iter;
@@ -62,106 +61,112 @@ void Clarf_test2(const char *side)
     COMPLEX *C, *v, *work;
 
     for (incv = MIN_INCV; incv <= MAX_INCV; incv++) {
-	if (incv == 0)
-	    continue;
-	for (n = MIN_N; n <= MAX_N; n++) {
-	    for (m = MIN_M; m <= MAX_M; m++) {
-		for (ldc = max((INTEGER_REF)1, m); ldc <= MAX_LDC; ldc++) {
+        if (incv == 0)
+            continue;
+        for (n = MIN_N; n <= MAX_N; n++) {
+            for (m = MIN_M; m <= MAX_M; m++) {
+                for (ldc = max((INTEGER_REF)1, m); ldc <= MAX_LDC; ldc++) {
 
-		    if (Mlsame(side, "L"))
-			dimv = (1 + (m - 1) * abs(incv));
-		    else //side = R
-			dimv = (1 + (n - 1) * abs(incv));
+                    if (Mlsame(side, "L"))
+                        dimv = (1 + (m - 1) * abs(incv));
+                    else // side = R
+                        dimv = (1 + (n - 1) * abs(incv));
 
-		    C_ref = new COMPLEX_REF[matlen(ldc, n)];
-		    v_ref = new COMPLEX_REF[dimv];
-		    if (Mlsame(side, "L"))
-			work_ref = new COMPLEX_REF[n];
-		    else //side = R
-			work_ref = new COMPLEX_REF[m];
+                    C_ref = new COMPLEX_REF[matlen(ldc, n)];
+                    v_ref = new COMPLEX_REF[dimv];
+                    if (Mlsame(side, "L"))
+                        work_ref = new COMPLEX_REF[n];
+                    else // side = R
+                        work_ref = new COMPLEX_REF[m];
 
-		    C = new COMPLEX[matlen(ldc, n)];
-		    v = new COMPLEX[dimv];
-		    if (Mlsame(side, "L"))
-			work = new COMPLEX[n];
-		    else  //side = R
-			work = new COMPLEX[m];
+                    C = new COMPLEX[matlen(ldc, n)];
+                    v = new COMPLEX[dimv];
+                    if (Mlsame(side, "L"))
+                        work = new COMPLEX[n];
+                    else // side = R
+                        work = new COMPLEX[m];
 
 #if defined VERBOSE_TEST
-		    printf("# m: %d, n: %d, incv: %d, ldc: %d, side %s\n", (int)m, (int)n, (int)incv, (int)ldc, side);
+                    printf("# m: %d, n: %d, incv: %d, ldc: %d, side %s\n", (int)m, (int)n, (int)incv, (int)ldc, side);
 #endif
-		    for (iter = 0; iter < MAX_ITER; iter++) {
-			set_random_vector(C_ref, C, matlen(ldc, n));
-			set_random_vector(v_ref, v, dimv);
-			set_random_number(tau_ref, tau);
+                    for (iter = 0; iter < MAX_ITER; iter++) {
+                        set_random_vector(C_ref, C, matlen(ldc, n));
+                        set_random_vector(v_ref, v, dimv);
+                        set_random_number(tau_ref, tau);
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-			zlarf_f77(side, &m, &n, v_ref, &incv, &tau_ref, C_ref, &ldc, work_ref);
+                        zlarf_f77(side, &m, &n, v_ref, &incv, &tau_ref, C_ref, &ldc, work_ref);
 #else
-			Clarf(side, m, n, v_ref, incv, tau_ref, C_ref, ldc, work_ref);
+                        Clarf(side, m, n, v_ref, incv, tau_ref, C_ref, ldc, work_ref);
 #endif
-			Clarf(side, m, n, v, incv, tau, C, ldc, work);
+                        Clarf(side, m, n, v, incv, tau, C, ldc, work);
 
-			diff = infnorm(C_ref, C, matlen(ldc, n), 1);
-			if (diff > EPSILON) {
-			    printf("error: "); printnum(diff); printf("\n");
-			    printf("# tau != 0.0\n");
-			    printf("# m: %d, n: %d, incv: %d, ldc: %d, side %s\n", (int)m, (int)n, (int)incv, (int)ldc, side);
-			    errorflag = TRUE;
-			}
-	                if (maxdiff < diff)
-		            maxdiff = diff;
+                        diff = infnorm(C_ref, C, matlen(ldc, n), 1);
+                        if (diff > EPSILON) {
+                            printf("error: ");
+                            printnum(diff);
+                            printf("\n");
+                            printf("# tau != 0.0\n");
+                            printf("# m: %d, n: %d, incv: %d, ldc: %d, side %s\n", (int)m, (int)n, (int)incv, (int)ldc, side);
+                            errorflag = TRUE;
+                        }
+                        if (maxdiff < diff)
+                            maxdiff = diff;
 #if defined VERBOSE_TEST
- 	                printf("max error: "); printnum(maxdiff); printf("\n");
+                        printf("max error: ");
+                        printnum(maxdiff);
+                        printf("\n");
 #endif
-		    }
-//tau = 0 case
-		    for (iter = 0; iter < MAX_ITER; iter++) {
-			set_random_vector(C_ref, C, matlen(ldc, n));
-			set_random_vector(v_ref, v, dimv);
-			tau_ref = 0.0;
-			tau = 0.0;
+                    }
+                    // tau = 0 case
+                    for (iter = 0; iter < MAX_ITER; iter++) {
+                        set_random_vector(C_ref, C, matlen(ldc, n));
+                        set_random_vector(v_ref, v, dimv);
+                        tau_ref = 0.0;
+                        tau = 0.0;
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-			zlarf_f77(side, &m, &n, v_ref, &incv, &tau_ref, C_ref, &ldc, work_ref);
+                        zlarf_f77(side, &m, &n, v_ref, &incv, &tau_ref, C_ref, &ldc, work_ref);
 #else
-			Clarf(side, m, n, v_ref, incv, tau_ref, C_ref, ldc, work_ref);
+                        Clarf(side, m, n, v_ref, incv, tau_ref, C_ref, ldc, work_ref);
 #endif
-			Clarf(side, m, n, v, incv, tau, C, ldc, work);
+                        Clarf(side, m, n, v, incv, tau, C, ldc, work);
 
-			diff = infnorm(C_ref, C, matlen(ldc, n), 1);
-			if (diff > EPSILON) {
-			    printf("error: "); printnum(diff); printf("\n");
-			    printf("# tau = 0.0\n");
-			    printf("# m: %d, n: %d, incv: %d, ldc: %d, side %s\n", (int)m, (int)n, (int)incv, (int)ldc, side);
-			    errorflag = TRUE;
-			}
-	                if (maxdiff < diff)
-		            maxdiff = diff;
+                        diff = infnorm(C_ref, C, matlen(ldc, n), 1);
+                        if (diff > EPSILON) {
+                            printf("error: ");
+                            printnum(diff);
+                            printf("\n");
+                            printf("# tau = 0.0\n");
+                            printf("# m: %d, n: %d, incv: %d, ldc: %d, side %s\n", (int)m, (int)n, (int)incv, (int)ldc, side);
+                            errorflag = TRUE;
+                        }
+                        if (maxdiff < diff)
+                            maxdiff = diff;
 #if defined VERBOSE_TEST
- 	                printf("max error: "); printnum(maxdiff); printf("\n");
+                        printf("max error: ");
+                        printnum(maxdiff);
+                        printf("\n");
 #endif
-		    }
-		    delete[]v_ref;
-		    delete[]C_ref;
-		    delete[]v;
-		    delete[]C;
-		}
-	    }
-	}
+                    }
+                    delete[] v_ref;
+                    delete[] C_ref;
+                    delete[] v;
+                    delete[] C;
+                }
+            }
+        }
     }
     if (errorflag == TRUE) {
         printf("*** Testing Clarf failed ***\n");
-	exit(1);
+        exit(1);
     }
 }
 
-void Clarf_test()
-{
+void Clarf_test() {
     Clarf_test2("L");
     Clarf_test2("R");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Clarf start ***\n");
     Clarf_test();
     printf("*** Testing Clarf successful ***\n");

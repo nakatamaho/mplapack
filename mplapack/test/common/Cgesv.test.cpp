@@ -38,18 +38,17 @@
 #include <iostream>
 #endif
 
-#define MIN_N      1
-#define MAX_N     10
-#define MIN_NRHS   1
-#define MAX_NRHS  10
-#define MAX_LDA   9
-#define MAX_LDB   9
-#define MAX_ITER  10
+#define MIN_N 1
+#define MAX_N 10
+#define MIN_NRHS 1
+#define MAX_NRHS 10
+#define MAX_LDA 9
+#define MAX_LDB 9
+#define MAX_ITER 10
 
 REAL_REF maxdiff = 0.0;
 
-void Cgesv_test()
-{
+void Cgesv_test() {
     int errorflag = FALSE;
     int j = 0;
     INTEGER_REF info_ref;
@@ -57,68 +56,71 @@ void Cgesv_test()
     REAL_REF diff;
 
     for (int n = MIN_N; n <= MAX_N; n++) {
-	for (int nrhs = MIN_NRHS; nrhs <= n; nrhs++) {
-	    for (int lda = max(n, 1); lda <= MAX_LDA; lda++) {
-		for (int ldb = max(n, 1); ldb <= MAX_LDB; ldb++) {
+        for (int nrhs = MIN_NRHS; nrhs <= n; nrhs++) {
+            for (int lda = max(n, 1); lda <= MAX_LDA; lda++) {
+                for (int ldb = max(n, 1); ldb <= MAX_LDB; ldb++) {
 
-		    COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
-		    COMPLEX_REF *B_ref = new COMPLEX_REF[matlen(ldb, nrhs)];
-		    INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(n, 1)];
+                    COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
+                    COMPLEX_REF *B_ref = new COMPLEX_REF[matlen(ldb, nrhs)];
+                    INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(n, 1)];
 
-		    COMPLEX *A = new COMPLEX[matlen(lda, n)];
-		    COMPLEX *B = new COMPLEX[matlen(ldb, nrhs)];
-		    INTEGER *ipiv = new INTEGER[veclen(n, 1)];
+                    COMPLEX *A = new COMPLEX[matlen(lda, n)];
+                    COMPLEX *B = new COMPLEX[matlen(ldb, nrhs)];
+                    INTEGER *ipiv = new INTEGER[veclen(n, 1)];
 #if defined VERBOSE_TEST
-		    printf("#n:%d lda %d nrhs %d ldb %d\n", n, lda, nrhs, ldb);
+                    printf("#n:%d lda %d nrhs %d ldb %d\n", n, lda, nrhs, ldb);
 #endif
-		    j = 0;
-		    while (j < MAX_ITER) {
-			set_random_vector(A_ref, A, matlen(lda, n));
-			set_random_vector(B_ref, B, matlen(ldb, nrhs));
+                    j = 0;
+                    while (j < MAX_ITER) {
+                        set_random_vector(A_ref, A, matlen(lda, n));
+                        set_random_vector(B_ref, B, matlen(ldb, nrhs));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-			zgesv_f77(&n, &nrhs, A_ref, &lda, ipiv_ref, B_ref, &ldb, &info_ref);
+                        zgesv_f77(&n, &nrhs, A_ref, &lda, ipiv_ref, B_ref, &ldb, &info_ref);
 #else
-			Cgesv(n, nrhs, A_ref, lda, ipiv_ref, B_ref, ldb, info_ref);
+                        Cgesv(n, nrhs, A_ref, lda, ipiv_ref, B_ref, ldb, info_ref);
 #endif
-			Cgesv(n, nrhs, A, lda, ipiv, B, ldb, info);
+                        Cgesv(n, nrhs, A, lda, ipiv, B, ldb, info);
 
-			if (info < 0) {
-			    printf("info %d error\n", -(int) info);
-			}
-			if (info_ref != info) {
-			    printf("info differ! %d, %d\n", (int) info_ref, (int) info);
-			    errorflag = TRUE;
-			}
-			diff = infnorm(B_ref, B, matlen(ldb, nrhs), 1);
-			if (diff > EPSILON7) {
-			    printf("error: "); printnum(diff); printf("\n");
-			    errorflag = TRUE;
-		       	}
-		        if (maxdiff < diff)
-			  maxdiff = diff;
+                        if (info < 0) {
+                            printf("info %d error\n", -(int)info);
+                        }
+                        if (info_ref != info) {
+                            printf("info differ! %d, %d\n", (int)info_ref, (int)info);
+                            errorflag = TRUE;
+                        }
+                        diff = infnorm(B_ref, B, matlen(ldb, nrhs), 1);
+                        if (diff > EPSILON7) {
+                            printf("error: ");
+                            printnum(diff);
+                            printf("\n");
+                            errorflag = TRUE;
+                        }
+                        if (maxdiff < diff)
+                            maxdiff = diff;
 #if defined VERBOSE_TEST
- 			printf("max error: "); printnum(maxdiff); printf("\n");
+                        printf("max error: ");
+                        printnum(maxdiff);
+                        printf("\n");
 #endif
-			j++;
-		    }
-		    delete[]ipiv_ref;
-		    delete[]B_ref;
-		    delete[]A_ref;
-		    delete[]ipiv;
-		    delete[]B;
-		    delete[]A;
-		}
-		if (errorflag == TRUE) {
+                        j++;
+                    }
+                    delete[] ipiv_ref;
+                    delete[] B_ref;
+                    delete[] A_ref;
+                    delete[] ipiv;
+                    delete[] B;
+                    delete[] A;
+                }
+                if (errorflag == TRUE) {
                     printf("*** Testing Cgesv failed ***\n");
-		    exit(1);
-		}
-	    }
-	}
+                    exit(1);
+                }
+            }
+        }
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Cgesv start ***\n");
     Cgesv_test();
     printf("*** Testing Cgesv successful ***\n");

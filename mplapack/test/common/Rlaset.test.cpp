@@ -38,75 +38,74 @@
 #include <iostream>
 #endif
 
-#define MIN_N     0
-#define MAX_N     10
-#define MIN_M     0
-#define MAX_M     10
-#define MAX_LDA   15
-#define MAX_ITER  10
+#define MIN_N 0
+#define MAX_N 10
+#define MIN_M 0
+#define MAX_M 10
+#define MAX_LDA 15
+#define MAX_ITER 10
 
 REAL_REF maxdiff = 0.0;
 
-void Rlaset_test2(const char *uplo)
-{
+void Rlaset_test2(const char *uplo) {
     int errorflag = FALSE;
     int j = 0;
     REAL_REF diff;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-	for (int m = MIN_M; m < MAX_M; m++) {
-	    for (int lda = max(1, m); lda < MAX_LDA; lda++) {
-		REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
-		REAL_REF alpha_ref, beta_ref;
-		REAL *A = new REAL[matlen(lda, n)];
-		REAL alpha, beta;
+        for (int m = MIN_M; m < MAX_M; m++) {
+            for (int lda = max(1, m); lda < MAX_LDA; lda++) {
+                REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
+                REAL_REF alpha_ref, beta_ref;
+                REAL *A = new REAL[matlen(lda, n)];
+                REAL alpha, beta;
 
-		j = 0;
+                j = 0;
 #if defined VERBOSE_TEST
-		printf("#n:%d m:%d lda: %d uplo %s\n", n, m, lda, uplo);
+                printf("#n:%d m:%d lda: %d uplo %s\n", n, m, lda, uplo);
 #endif
-		while (j < MAX_ITER) {
-		    set_random_vector(A_ref, A, matlen(lda, n));
-		    set_random_number(alpha_ref, alpha);
-		    set_random_number(beta_ref, beta);
+                while (j < MAX_ITER) {
+                    set_random_vector(A_ref, A, matlen(lda, n));
+                    set_random_number(alpha_ref, alpha);
+                    set_random_number(beta_ref, beta);
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		    dlaset_f77(uplo, &m, &n, &alpha_ref, &beta_ref, A_ref, &lda);
+                    dlaset_f77(uplo, &m, &n, &alpha_ref, &beta_ref, A_ref, &lda);
 #else
-		    Rlaset(uplo, m, n, alpha_ref, beta_ref, A_ref, lda);
+                    Rlaset(uplo, m, n, alpha_ref, beta_ref, A_ref, lda);
 #endif
-		    Rlaset(uplo, m, n, alpha, beta, A, lda);
+                    Rlaset(uplo, m, n, alpha, beta, A, lda);
 
-		    diff = infnorm(A_ref, A, matlen(lda, n), 1);
-		    if (diff > EPSILON) {
-			errorflag = TRUE;
+                    diff = infnorm(A_ref, A, matlen(lda, n), 1);
+                    if (diff > EPSILON) {
+                        errorflag = TRUE;
                         printf("Error\n");
-		    }
-	            if (maxdiff < diff)
-		        maxdiff = diff;
+                    }
+                    if (maxdiff < diff)
+                        maxdiff = diff;
 #if defined VERBOSE_TEST
-	            printf("max error: "); printnum(maxdiff); printf("\n");
+                    printf("max error: ");
+                    printnum(maxdiff);
+                    printf("\n");
 #endif
-		    j++;
-		}
-		delete[]A;
-		delete[]A_ref;
-	    }
-	}
+                    j++;
+                }
+                delete[] A;
+                delete[] A_ref;
+            }
+        }
     }
     if (errorflag == TRUE) {
-	printf("*** Testing Rlaset failed ***\n");
-	exit(1);
+        printf("*** Testing Rlaset failed ***\n");
+        exit(1);
     }
 }
 
-void Rlaset_test(void)
-{
+void Rlaset_test(void) {
     Rlaset_test2("U");
     Rlaset_test2("L");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rlaset start ***\n");
     Rlaset_test();
     printf("*** Testing Rlaset successful ***\n");

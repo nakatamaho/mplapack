@@ -38,75 +38,74 @@
 #include <iostream>
 #endif
 
-#define MIN_N     0
-#define MAX_N     10
-#define MIN_M     0
-#define MAX_M     10
-#define MAX_LDA   15
-#define MAX_ITER  10
+#define MIN_N 0
+#define MAX_N 10
+#define MIN_M 0
+#define MAX_M 10
+#define MAX_LDA 15
+#define MAX_ITER 10
 
 REAL_REF maxdiff = 0.0;
 
-void Claset_test2(const char *uplo)
-{
+void Claset_test2(const char *uplo) {
     int errorflag = FALSE;
     int j = 0;
     REAL_REF diff;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-	for (int m = MIN_M; m < MAX_M; m++) {
-	    for (int lda = max(1, m); lda < MAX_LDA; lda++) {
-		COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
-		COMPLEX_REF alpha_ref, beta_ref;
-		COMPLEX *A = new COMPLEX[matlen(lda, n)];
-		COMPLEX alpha, beta;
+        for (int m = MIN_M; m < MAX_M; m++) {
+            for (int lda = max(1, m); lda < MAX_LDA; lda++) {
+                COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
+                COMPLEX_REF alpha_ref, beta_ref;
+                COMPLEX *A = new COMPLEX[matlen(lda, n)];
+                COMPLEX alpha, beta;
 
-		j = 0;
+                j = 0;
 #if defined VERBOSE_TEST
-		printf("#n:%d m:%d lda: %d uplo %s\n", n, m, lda, uplo);
+                printf("#n:%d m:%d lda: %d uplo %s\n", n, m, lda, uplo);
 #endif
-		while (j < MAX_ITER) {
-		    set_random_vector(A_ref, A, matlen(lda, n));
-		    set_random_number(alpha_ref, alpha);
-		    set_random_number(beta_ref, beta);
+                while (j < MAX_ITER) {
+                    set_random_vector(A_ref, A, matlen(lda, n));
+                    set_random_number(alpha_ref, alpha);
+                    set_random_number(beta_ref, beta);
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		    zlaset_f77(uplo, &m, &n, &alpha_ref, &beta_ref, A_ref, &lda);
+                    zlaset_f77(uplo, &m, &n, &alpha_ref, &beta_ref, A_ref, &lda);
 #else
-		    Claset(uplo, m, n, alpha_ref, beta_ref, A_ref, lda);
+                    Claset(uplo, m, n, alpha_ref, beta_ref, A_ref, lda);
 #endif
-		    Claset(uplo, m, n, alpha, beta, A, lda);
+                    Claset(uplo, m, n, alpha, beta, A, lda);
 
-		    diff = infnorm(A_ref, A, matlen(lda, n), 1);
-		    if (diff > EPSILON) {
-			errorflag = TRUE;
+                    diff = infnorm(A_ref, A, matlen(lda, n), 1);
+                    if (diff > EPSILON) {
+                        errorflag = TRUE;
                         printf("Error\n");
-		    }
-	            if (maxdiff < diff)
-		        maxdiff = diff;
+                    }
+                    if (maxdiff < diff)
+                        maxdiff = diff;
 #if defined VERBOSE_TEST
-	                printf("max error: "); printnum(maxdiff); printf("\n");
+                    printf("max error: ");
+                    printnum(maxdiff);
+                    printf("\n");
 #endif
-		    j++;
-		}
-		delete[]A;
-		delete[]A_ref;
-	    }
-	}
+                    j++;
+                }
+                delete[] A;
+                delete[] A_ref;
+            }
+        }
     }
     if (errorflag == TRUE) {
-	printf("*** Testing Claset failed ***\n");
-	exit(1);
+        printf("*** Testing Claset failed ***\n");
+        exit(1);
     }
 }
 
-void Claset_test(void)
-{
+void Claset_test(void) {
     Claset_test2("U");
     Claset_test2("L");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Claset start ***\n");
     Claset_test();
     printf("*** Testing Claset successful ***\n");

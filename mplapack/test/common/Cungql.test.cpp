@@ -50,8 +50,7 @@
 
 REAL_REF maxdiff = 0.0;
 
-void Cungql_test()
-{
+void Cungql_test() {
     int errorflag = FALSE;
     int iter;
     int m, n, k;
@@ -61,95 +60,102 @@ void Cungql_test()
     INTEGER info, worksize;
 
     for (m = MIN_M; m <= MAX_M; m++) {
-	for (n = MIN_N; n <= m; n++) {
-	    for (k = MIN_K; k <= n; k++) {
-		for (lda = max(1, m); lda <= MAX_LDA; lda++) {
+        for (n = MIN_N; n <= m; n++) {
+            for (k = MIN_K; k <= n; k++) {
+                for (lda = max(1, m); lda <= MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
-		    printf("# m %d n %d k %d lda %d\n", m, n, k, lda);
+                    printf("# m %d n %d k %d lda %d\n", m, n, k, lda);
 #endif
-		    COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
-		    COMPLEX_REF *tau_ref = new COMPLEX_REF[veclen(k, 1)];
-		    COMPLEX_REF *work_ref = new COMPLEX_REF[veclen(n, 1) * 1024];
+                    COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
+                    COMPLEX_REF *tau_ref = new COMPLEX_REF[veclen(k, 1)];
+                    COMPLEX_REF *work_ref = new COMPLEX_REF[veclen(n, 1) * 1024];
 
-		    COMPLEX *A = new COMPLEX[matlen(lda, n)];
-		    COMPLEX *tau = new COMPLEX[veclen(k, 1)];
-		    COMPLEX *work = new COMPLEX[veclen(n, 1) * 1024];
+                    COMPLEX *A = new COMPLEX[matlen(lda, n)];
+                    COMPLEX *tau = new COMPLEX[veclen(k, 1)];
+                    COMPLEX *work = new COMPLEX[veclen(n, 1) * 1024];
 
-		    for (iter = 0; iter < MAX_ITER; iter++) {
-			set_random_vector(A_ref, A, matlen(lda, n));
-			set_random_vector(tau_ref, tau, veclen(k, 1));
-			set_random_vector(work_ref, work, veclen(n, 1) * 1024);
-// these workspace query might not be the same value.
-			lwork = -1;
+                    for (iter = 0; iter < MAX_ITER; iter++) {
+                        set_random_vector(A_ref, A, matlen(lda, n));
+                        set_random_vector(tau_ref, tau, veclen(k, 1));
+                        set_random_vector(work_ref, work, veclen(n, 1) * 1024);
+                        // these workspace query might not be the same value.
+                        lwork = -1;
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-			zungql_f77(&m, &n, &k, A_ref, &lda, tau_ref, work_ref, &lwork, &info_ref);
+                        zungql_f77(&m, &n, &k, A_ref, &lda, tau_ref, work_ref, &lwork, &info_ref);
 #else
-			Cungql(m, n, k, A_ref, lda, tau_ref, work_ref, lwork, &info_ref);
+                        Cungql(m, n, k, A_ref, lda, tau_ref, work_ref, lwork, &info_ref);
 #endif
-			Cungql(m, n, k, A, lda, tau, work, lwork, &info);
-			worksize_ref = (INTEGER_REF) work_ref[0].real();
-			worksize = (INTEGER) cast2double(work[0].real());
+                        Cungql(m, n, k, A, lda, tau, work, lwork, &info);
+                        worksize_ref = (INTEGER_REF)work_ref[0].real();
+                        worksize = (INTEGER)cast2double(work[0].real());
 #if defined VERBOSE_TEST
-			printf("optimized worksize by dorgql %d : by Cungql %d.\n", (int)worksize_ref, (int)worksize);
+                        printf("optimized worksize by dorgql %d : by Cungql %d.\n", (int)worksize_ref, (int)worksize);
 #endif
 #ifdef DUMMY
-//comparison of workspace is nonsense...
-			if (worksize != worksize_ref)
-			    printf("error in worksize\n");
+                        // comparison of workspace is nonsense...
+                        if (worksize != worksize_ref)
+                            printf("error in worksize\n");
 #endif
-			lwork = worksize;
+                        lwork = worksize;
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-			zungql_f77(&m, &n, &k, A_ref, &lda, tau_ref, work_ref, &lwork, &info_ref);
+                        zungql_f77(&m, &n, &k, A_ref, &lda, tau_ref, work_ref, &lwork, &info_ref);
 #else
-			Cungql(m, n, k, A_ref, lda, tau_ref, work_ref, lwork, &info_ref);
+                        Cungql(m, n, k, A_ref, lda, tau_ref, work_ref, lwork, &info_ref);
 #endif
-			Cungql(m, n, k, A, lda, tau, work, lwork, &info);
+                        Cungql(m, n, k, A, lda, tau, work, lwork, &info);
 
-			diff = infnorm(A_ref, A, matlen(lda, n), 1);
-		        if (diff > EPSILON11) {
-		            printf("error in A: "); printnum(diff); printf("\n");
-		            errorflag = TRUE;
-		        }
-			diff = infnorm(tau_ref, tau, veclen(k, 1), 1);
-		        if (diff > EPSILON11) {
-		            printf("error in t: "); printnum(diff); printf("\n");
-		            errorflag = TRUE;
-		        }
-	                if (maxdiff < diff)
-		            maxdiff = diff;
+                        diff = infnorm(A_ref, A, matlen(lda, n), 1);
+                        if (diff > EPSILON11) {
+                            printf("error in A: ");
+                            printnum(diff);
+                            printf("\n");
+                            errorflag = TRUE;
+                        }
+                        diff = infnorm(tau_ref, tau, veclen(k, 1), 1);
+                        if (diff > EPSILON11) {
+                            printf("error in t: ");
+                            printnum(diff);
+                            printf("\n");
+                            errorflag = TRUE;
+                        }
+                        if (maxdiff < diff)
+                            maxdiff = diff;
 #ifdef DUMMY
-//comparison of workspace is nonsense...
-			diff = infnorm(work_ref, work, veclen(n, 1), 1);
-		        if (diff > EPSILON) {
-		            printf("error in t: "); printnum(diff); printf("\n");
-		            errorflag = TRUE;
+                        // comparison of workspace is nonsense...
+                        diff = infnorm(work_ref, work, veclen(n, 1), 1);
+                        if (diff > EPSILON) {
+                            printf("error in t: ");
+                            printnum(diff);
+                            printf("\n");
+                            errorflag = TRUE;
                             exit(1);
-		        }
-	                if (maxdiff < diff)
-		            maxdiff = diff;
+                        }
+                        if (maxdiff < diff)
+                            maxdiff = diff;
 #endif
 #if defined VERBOSE_TEST
-	                printf("max error: "); printnum(maxdiff); printf("\n");
+                        printf("max error: ");
+                        printnum(maxdiff);
+                        printf("\n");
 #endif
-		    }
-		    delete[]tau_ref;
-		    delete[]work_ref;
-		    delete[]A_ref;
-		    delete[]tau;
-		    delete[]work;
-		    delete[]A;
-		}
-	    }
-	}
+                    }
+                    delete[] tau_ref;
+                    delete[] work_ref;
+                    delete[] A_ref;
+                    delete[] tau;
+                    delete[] work;
+                    delete[] A;
+                }
+            }
+        }
     }
     if (errorflag == TRUE) {
-	printf("*** Testing Cungql failed ***\n");
-	exit(1);
+        printf("*** Testing Cungql failed ***\n");
+        exit(1);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Cungql start ***\n");
     Cungql_test();
     printf("*** Testing Cungql successful ***\n");

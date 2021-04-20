@@ -40,57 +40,59 @@
 #endif
 
 #define MIN_INCX -10
-#define MAX_INCX  10
-#define MAX_N     100
-#define MAX_ITER  10
+#define MAX_INCX 10
+#define MAX_N 100
+#define MAX_ITER 10
 
 REAL_REF maxdiff = 0.0;
 
-void Clacgv_test()
-{
+void Clacgv_test() {
     int errorflag = FALSE;
     REAL_REF diff;
     for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
-	for (int n = 0; n < MAX_N; n++) {
+        for (int n = 0; n < MAX_N; n++) {
 #if defined VERBOSE_TEST
-	    printf("# n:%d incx:%d\n", n, incx);
+            printf("# n:%d incx:%d\n", n, incx);
 #endif
-	    COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
-	    COMPLEX *x = new COMPLEX[veclen(n, incx)];
-	    int j = 0;
-	    while (j < MAX_ITER) {
-		set_random_vector(x_ref, x, veclen(n, incx));
+            COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
+            COMPLEX *x = new COMPLEX[veclen(n, incx)];
+            int j = 0;
+            while (j < MAX_ITER) {
+                set_random_vector(x_ref, x, veclen(n, incx));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		zlacgv_f77(&n, x_ref, &incx);
+                zlacgv_f77(&n, x_ref, &incx);
 #else
-		Clacgv(n, x_ref, incx);
+                Clacgv(n, x_ref, incx);
 #endif
-		Clacgv(n, x, incx);
+                Clacgv(n, x, incx);
 
-		diff = infnorm(x_ref, x, veclen(n, incx), 1);
-		if (diff > EPSILON) {
-		    printf("error: "); printnum(diff); printf("\n");
-		    errorflag = TRUE;
-		}
-	        if (maxdiff < diff)
-		    maxdiff = diff;
+                diff = infnorm(x_ref, x, veclen(n, incx), 1);
+                if (diff > EPSILON) {
+                    printf("error: ");
+                    printnum(diff);
+                    printf("\n");
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
 #if defined VERBOSE_TEST
-	        printf("max error: "); printnum(maxdiff); printf("\n");
+                printf("max error: ");
+                printnum(maxdiff);
+                printf("\n");
 #endif
-		j++;
-	    }
-	    delete[]x_ref;
-	    delete[]x;
-	}
+                j++;
+            }
+            delete[] x_ref;
+            delete[] x;
+        }
     }
     if (errorflag == TRUE) {
-	printf("*** Testing Clacgv failed ***\n");
-	exit(1);
+        printf("*** Testing Clacgv failed ***\n");
+        exit(1);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Clacgv start ***\n");
     Clacgv_test();
     printf("*** Testing Clacgv successful ***\n");

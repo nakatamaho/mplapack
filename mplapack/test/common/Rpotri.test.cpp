@@ -38,15 +38,14 @@
 #include <iostream>
 #endif
 
-#define MIN_N      1
-#define MAX_N     12
-#define MAX_LDA   12
-#define MAX_ITER   5
+#define MIN_N 1
+#define MAX_N 12
+#define MAX_LDA 12
+#define MAX_ITER 5
 
 REAL_REF maxdiff = 0.0;
 
-void Rpotri_test2(const char *uplo)
-{
+void Rpotri_test2(const char *uplo) {
     int errorflag = FALSE;
     int j = 0;
     INTEGER_REF info_ref;
@@ -54,90 +53,97 @@ void Rpotri_test2(const char *uplo)
     INTEGER info;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-	for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
-	    REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
-	    REAL *A = new REAL[matlen(lda, n)];
+        for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
+            REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
+            REAL *A = new REAL[matlen(lda, n)];
 
 #if defined VERBOSE_TEST
-	    printf("#n:%d lda %d\n", n, lda);
+            printf("#n:%d lda %d\n", n, lda);
 #endif
-	    j = 0;
-	    while (j < MAX_ITER) {
-		set_random_symmmat_cond(A_ref, A, lda, n, 2);
+            j = 0;
+            while (j < MAX_ITER) {
+                set_random_symmmat_cond(A_ref, A, lda, n, 2);
 //		set_random_psdmat(A_ref, A, lda, n);
-//numerical error measure: first do inversion
+// numerical error measure: first do inversion
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		dpotf2_f77(uplo, &n, A_ref, &lda, &info_ref);
-		dpotri_f77(uplo, &n, A_ref, &lda, &info_ref);
+                dpotf2_f77(uplo, &n, A_ref, &lda, &info_ref);
+                dpotri_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else
-		Rpotrf(uplo, n, A_ref, lda, &info_ref);
-		Rpotri(uplo, n, A_ref, lda, &info_ref);
+                Rpotrf(uplo, n, A_ref, lda, &info_ref);
+                Rpotri(uplo, n, A_ref, lda, &info_ref);
 #endif
-	      for (int p = 0; p < matlen(lda, n); p++ ) {
+                for (int p = 0; p < matlen(lda, n); p++) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		 A[p] = A_ref[p];
+                    A[p] = A_ref[p];
 #elif defined ___MPLAPACK_BUILD_WITH_GMP___
-		 A[p] = cast2mpf_class(A_ref[p]);
+                    A[p] = cast2mpf_class(A_ref[p]);
 #elif defined ___MPLAPACK_BUILD_WITH_QD___
-		 A[p] = cast2qd_real(A_ref[p]);
+                    A[p] = cast2qd_real(A_ref[p]);
 #elif defined ___MPLAPACK_BUILD_WITH_DD___
-		 A[p] = cast2dd_real(A_ref[p]);
+                    A[p] = cast2dd_real(A_ref[p]);
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
-		 A[p] = cast2double(A_ref[p]);
+                    A[p] = cast2double(A_ref[p]);
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-		 A[p] = cast2_Float128(A_ref[p]);
+                    A[p] = cast2_Float128(A_ref[p]);
 #endif
-	      }
-//doing inversion twice.
+                }
+// doing inversion twice.
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		dpotf2_f77(uplo, &n, A_ref, &lda, &info_ref);
-		dpotri_f77(uplo, &n, A_ref, &lda, &info_ref);
+                dpotf2_f77(uplo, &n, A_ref, &lda, &info_ref);
+                dpotri_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else
-		Rpotrf(uplo, n, A_ref, lda, &info_ref);
-		Rpotri(uplo, n, A_ref, lda, &info_ref);
+                Rpotrf(uplo, n, A_ref, lda, &info_ref);
+                Rpotri(uplo, n, A_ref, lda, &info_ref);
 #endif
-		Rpotrf(uplo, n, A, lda, &info);
-		Rpotri(uplo, n, A, lda, &info);
+                Rpotrf(uplo, n, A, lda, &info);
+                Rpotri(uplo, n, A, lda, &info);
 
-		if (info < 0) {
+                if (info < 0) {
 #if defined VERBOSE_TEST
-		    printf("info %d error\n", -(int) info);
+                    printf("info %d error\n", -(int)info);
 #endif
-		}
-		if (info_ref != info) {
-		    printf("info differ! %d, %d\n", (int) info_ref, (int) info);
-		    errorflag = TRUE;
-		}
-		diff = infnorm_mat(A_ref, A, n, n, lda);
-		if (diff > EPSILON6) {
-		    printf("error: "); printnum(diff); printf("\n");
-		    errorflag = TRUE;
-                printf("A_ref = "); printmat (n,n,A_ref,lda); printf("\n");
-                printf("A ="); printmat (n,n,A,lda); printf("\n");
-		}
-	        if (maxdiff < diff)  maxdiff = diff;
+                }
+                if (info_ref != info) {
+                    printf("info differ! %d, %d\n", (int)info_ref, (int)info);
+                    errorflag = TRUE;
+                }
+                diff = infnorm_mat(A_ref, A, n, n, lda);
+                if (diff > EPSILON6) {
+                    printf("error: ");
+                    printnum(diff);
+                    printf("\n");
+                    errorflag = TRUE;
+                    printf("A_ref = ");
+                    printmat(n, n, A_ref, lda);
+                    printf("\n");
+                    printf("A =");
+                    printmat(n, n, A, lda);
+                    printf("\n");
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
 #if defined VERBOSE_TEST
-	        printf("max error: "); printnum(maxdiff); printf("\n");
+                printf("max error: ");
+                printnum(maxdiff);
+                printf("\n");
 #endif
-		j++;
-	    }
-	    delete[]A_ref;
-	    delete[]A;
-	}
-	if (errorflag == TRUE) {
+                j++;
+            }
+            delete[] A_ref;
+            delete[] A;
+        }
+        if (errorflag == TRUE) {
             printf("*** Testing Rpotri failed ***\n");
-	    exit(1);
-	}
+            exit(1);
+        }
     }
 }
-void Rpotri_test()
-{
-     Rpotri_test2("U");
-     Rpotri_test2("L");
+void Rpotri_test() {
+    Rpotri_test2("U");
+    Rpotri_test2("L");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rpotri start ***\n");
     Rpotri_test();
     printf("*** Testing Rpotri successful ***\n");

@@ -39,18 +39,17 @@
 #endif
 
 #define MIN_N 1
-#define MAX_N 8		//shold not be so large
+#define MAX_N 8 // shold not be so large
 #define MIN_LDA 1
-#define MAX_LDA 8		//shold not be so large
+#define MAX_LDA 8 // shold not be so large
 #define MIN_LDB 1
-#define MAX_LDB 8		//shold not be so large
-#define MAX_NRHS 8		//shold not be so large
+#define MAX_LDB 8  // shold not be so large
+#define MAX_NRHS 8 // shold not be so large
 #define MAX_ITER 3
 
 REAL_REF maxdiff = 0.0;
 
-void Rtrtrs_test2(const char *uplo, const char *trans, const char *diag)
-{
+void Rtrtrs_test2(const char *uplo, const char *trans, const char *diag) {
     int errorflag = FALSE;
     int iter;
     INTEGER_REF n, lda, ldb, nrhs;
@@ -59,61 +58,64 @@ void Rtrtrs_test2(const char *uplo, const char *trans, const char *diag)
     INTEGER info;
 
     for (n = MIN_N; n <= MAX_N; n++) {
-	for (lda = max(1, (int)n); lda <= MAX_LDA; lda++) {
-	    for (ldb = max(1, (int)n); ldb <= MAX_LDB; ldb++) {
-		for (nrhs = 1; nrhs <= MAX_NRHS; nrhs++) {
+        for (lda = max(1, (int)n); lda <= MAX_LDA; lda++) {
+            for (ldb = max(1, (int)n); ldb <= MAX_LDB; ldb++) {
+                for (nrhs = 1; nrhs <= MAX_NRHS; nrhs++) {
 #if defined VERBOSE_TEST
-		    printf("# uplo %s, trans %s, diag %s, n %d, lda %d, ldb %d, nrhs %d\n", uplo, trans, diag, (int) n, (int) lda, (int) ldb, (int) nrhs);
+                    printf("# uplo %s, trans %s, diag %s, n %d, lda %d, ldb %d, nrhs %d\n", uplo, trans, diag, (int)n, (int)lda, (int)ldb, (int)nrhs);
 #endif
-		    REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
-		    REAL_REF *B_ref = new REAL_REF[matlen(ldb, nrhs)];
+                    REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
+                    REAL_REF *B_ref = new REAL_REF[matlen(ldb, nrhs)];
 
-		    REAL *A = new REAL[matlen(lda, n)];
-		    REAL *B = new REAL[matlen(ldb, nrhs)];
+                    REAL *A = new REAL[matlen(lda, n)];
+                    REAL *B = new REAL[matlen(ldb, nrhs)];
 
-		    for (iter = 0; iter < MAX_ITER; iter++) {
-			set_random_vector(A_ref, A, matlen(lda, n));
-			set_random_vector(B_ref, B, matlen(ldb, nrhs));
+                    for (iter = 0; iter < MAX_ITER; iter++) {
+                        set_random_vector(A_ref, A, matlen(lda, n));
+                        set_random_vector(B_ref, B, matlen(ldb, nrhs));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-			dtrtrs_f77(uplo, trans, diag, &n, &nrhs, A_ref, &lda, B_ref, &ldb, &info_ref);
+                        dtrtrs_f77(uplo, trans, diag, &n, &nrhs, A_ref, &lda, B_ref, &ldb, &info_ref);
 #else
-			Rtrtrs(uplo, trans, diag, n, nrhs, A_ref, lda, B_ref, ldb, &info_ref);
+                        Rtrtrs(uplo, trans, diag, n, nrhs, A_ref, lda, B_ref, ldb, &info_ref);
 #endif
-			Rtrtrs(uplo, trans, diag, n, nrhs, A, lda, B, ldb, &info);
+                        Rtrtrs(uplo, trans, diag, n, nrhs, A, lda, B, ldb, &info);
 
-			if (info != info_ref) {
-			    printf("info differ! %d, %d\n", (int) info, (int) info_ref);
-			    errorflag = TRUE;
-			}
-			diff = infnorm(B_ref, B, matlen(ldb, nrhs), 1);
+                        if (info != info_ref) {
+                            printf("info differ! %d, %d\n", (int)info, (int)info_ref);
+                            errorflag = TRUE;
+                        }
+                        diff = infnorm(B_ref, B, matlen(ldb, nrhs), 1);
 
-			if (diff > EPSILON7) {
-			    printf("error: "); printnum(diff); printf("\n");
-			    errorflag = TRUE;
-			    exit(1);
-			}
-			if (maxdiff < diff)
-			    maxdiff = diff;
+                        if (diff > EPSILON7) {
+                            printf("error: ");
+                            printnum(diff);
+                            printf("\n");
+                            errorflag = TRUE;
+                            exit(1);
+                        }
+                        if (maxdiff < diff)
+                            maxdiff = diff;
 #if defined VERBOSE_TEST
-			printf("max error: "); printnum(maxdiff); printf("\n");
+                        printf("max error: ");
+                        printnum(maxdiff);
+                        printf("\n");
 #endif
-		    }
-		    delete[]A_ref;
-		    delete[]B_ref;
-		    delete[]A;
-		    delete[]B;
-		}
-	    }
-	}
+                    }
+                    delete[] A_ref;
+                    delete[] B_ref;
+                    delete[] A;
+                    delete[] B;
+                }
+            }
+        }
     }
     if (errorflag == TRUE) {
         printf("*** Testing Rtrtrs failed ***\n");
-	exit(1);
+        exit(1);
     }
 }
 
-void Rtrtrs_test()
-{
+void Rtrtrs_test() {
     Rtrtrs_test2("U", "N", "N");
     Rtrtrs_test2("U", "N", "U");
     Rtrtrs_test2("U", "T", "N");
@@ -128,8 +130,7 @@ void Rtrtrs_test()
     Rtrtrs_test2("L", "C", "U");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rtrtrs start ***\n");
     Rtrtrs_test();
     printf("*** Testing Rtrtrs successful ***\n");

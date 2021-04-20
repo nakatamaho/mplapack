@@ -38,17 +38,16 @@
 #include <iostream>
 #endif
 
-#define MIN_N     0
-#define MAX_N     20
-#define MIN_M     0
-#define MAX_M     20
-#define MAX_LDA   20
-#define MAX_ITER  2
+#define MIN_N 0
+#define MAX_N 20
+#define MIN_M 0
+#define MAX_M 20
+#define MAX_LDA 20
+#define MAX_ITER 2
 
 REAL_REF maxdiff = 0.0;
 
-void Cgetrf_test()
-{
+void Cgetrf_test() {
     int errorflag = FALSE;
     int j = 0, i;
     REAL_REF diff;
@@ -56,66 +55,69 @@ void Cgetrf_test()
     INTEGER info;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-	for (int m = MIN_M; m < MAX_M; m++) {
-	    for (int lda = max(m, 1); lda < MAX_LDA; lda++) {
+        for (int m = MIN_M; m < MAX_M; m++) {
+            for (int lda = max(m, 1); lda < MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
-		printf("# n:%d m:%d lda:%d\n", n, m, lda);
+                printf("# n:%d m:%d lda:%d\n", n, m, lda);
 #endif
-		COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
-		INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(min(m, n), 1)];
+                COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
+                INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(min(m, n), 1)];
 
-		COMPLEX *A = new COMPLEX[matlen(lda, n)];
-		INTEGER *ipiv = new INTEGER[veclen(min(m, n), 1)];
+                COMPLEX *A = new COMPLEX[matlen(lda, n)];
+                INTEGER *ipiv = new INTEGER[veclen(min(m, n), 1)];
 
-		j = 0;
-		while (j < MAX_ITER) {
-		    set_random_vector(A_ref, A, matlen(lda, n));
-		    ipiv_ref[0] = 0;
-		    ipiv[0] = 0;
-		    for (i = 0; i < min(m, n); i++) {
-			ipiv_ref[i] = 0;
-			ipiv[i] = 0;
-		    }
+                j = 0;
+                while (j < MAX_ITER) {
+                    set_random_vector(A_ref, A, matlen(lda, n));
+                    ipiv_ref[0] = 0;
+                    ipiv[0] = 0;
+                    for (i = 0; i < min(m, n); i++) {
+                        ipiv_ref[i] = 0;
+                        ipiv[i] = 0;
+                    }
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		    zgetrf_f77(&m, &n, A_ref, &lda, ipiv_ref, &info_ref);
+                    zgetrf_f77(&m, &n, A_ref, &lda, ipiv_ref, &info_ref);
 #else
-		    Cgetrf(m, n, A_ref, lda, ipiv_ref, &info_ref);
+                    Cgetrf(m, n, A_ref, lda, ipiv_ref, info_ref);
 #endif
-		    Cgetrf(m, n, A, lda, ipiv, &info);
+                    Cgetrf(m, n, A, lda, ipiv, info);
 
-		    diff = infnorm(A_ref, A, matlen(lda, n), 1);
-		    if (diff > EPSILON) {
-			printf("error: "); printnum(diff); printf("\n");
-			errorflag = TRUE;
-		    }
-		    if (maxdiff < diff)
-			maxdiff = diff;
+                    diff = infnorm(A_ref, A, matlen(lda, n), 1);
+                    if (diff > EPSILON) {
+                        printf("error: ");
+                        printnum(diff);
+                        printf("\n");
+                        errorflag = TRUE;
+                    }
+                    if (maxdiff < diff)
+                        maxdiff = diff;
 #if defined VERBOSE_TEST
-		    printf("max error: "); printnum(maxdiff); printf("\n");
+                    printf("max error: ");
+                    printnum(maxdiff);
+                    printf("\n");
 #endif
-		    int idiff = infnorm(ipiv_ref, ipiv, veclen(min(m, n), 1), 1);
-//          for(i=0;i<min(m,n);i++){ printf("%d %d\n",ipiv[i],ipivd[i]);} 
-		    if (idiff > 0) {
-			printf("error pivoting %d!!\n", (int) idiff);
-			errorflag = TRUE;
-		    }
-		    j++;
-		}
-		delete[]ipiv_ref;
-		delete[]ipiv;
-		delete[]A_ref;
-		delete[]A;
-	    }
-	}
+                    int idiff = infnorm(ipiv_ref, ipiv, veclen(min(m, n), 1), 1);
+                    //          for(i=0;i<min(m,n);i++){ printf("%d %d\n",ipiv[i],ipivd[i]);}
+                    if (idiff > 0) {
+                        printf("error pivoting %d!!\n", (int)idiff);
+                        errorflag = TRUE;
+                    }
+                    j++;
+                }
+                delete[] ipiv_ref;
+                delete[] ipiv;
+                delete[] A_ref;
+                delete[] A;
+            }
+        }
     }
     if (errorflag == TRUE) {
         printf("*** Testing Cgetrf failed ***\n");
-	exit(1);
+        exit(1);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Cgetrf start ***\n");
     Cgetrf_test();
     printf("*** Testing Cgetrf successful ***\n");

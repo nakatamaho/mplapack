@@ -38,16 +38,15 @@
 #include <iostream>
 #endif
 
-#define MIN_N      2
-#define MIN_M      2
-#define MAX_N      10
-#define MAX_M      10
-#define MAX_LDA    10
-#define MAX_ITER   10
+#define MIN_N 2
+#define MIN_M 2
+#define MAX_N 10
+#define MAX_M 10
+#define MAX_LDA 10
+#define MAX_ITER 10
 REAL_REF maxdiff = 0.0;
 
-void Rgeequ_test(void)
-{
+void Rgeequ_test(void) {
     int errorflag = FALSE;
     int j = 0;
     INTEGER_REF info_ref;
@@ -60,106 +59,134 @@ void Rgeequ_test(void)
     REAL rowcnd, colcnd, amax;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-	for (int m = MIN_M; m < MAX_M; m++) {
-	    for (int lda = max(m, 1); lda < MAX_LDA; lda++) {
-		REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
-		REAL_REF *R_ref = new REAL_REF[veclen(m, 1)];
-		REAL_REF *C_ref = new REAL_REF[veclen(n, 1)];
+        for (int m = MIN_M; m < MAX_M; m++) {
+            for (int lda = max(m, 1); lda < MAX_LDA; lda++) {
+                REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
+                REAL_REF *R_ref = new REAL_REF[veclen(m, 1)];
+                REAL_REF *C_ref = new REAL_REF[veclen(n, 1)];
 
-		REAL *A = new REAL[matlen(lda, n)];
-		REAL *R = new REAL[veclen(m, 1)];
-		REAL *C = new REAL[veclen(n, 1)];
+                REAL *A = new REAL[matlen(lda, n)];
+                REAL *R = new REAL[veclen(m, 1)];
+                REAL *C = new REAL[veclen(n, 1)];
 
 #if defined VERBOSE_TEST
-		printf("n:%d m:%d lda %d\n", n, m, lda);
+                printf("n:%d m:%d lda %d\n", n, m, lda);
 #endif
-		j = 0;
-		while (j < MAX_ITER) {
-		    set_random_vector(A_ref, A, matlen(lda, n));
-		    set_random_vector(R_ref, R, veclen(m, 1));
-		    set_random_vector(C_ref, C, veclen(n, 1));
+                j = 0;
+                while (j < MAX_ITER) {
+                    set_random_vector(A_ref, A, matlen(lda, n));
+                    set_random_vector(R_ref, R, veclen(m, 1));
+                    set_random_vector(C_ref, C, veclen(n, 1));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		    dgeequ_f77(&m, &n, A_ref, &lda, R_ref, C_ref, &rowcnd_ref, &colcnd_ref, &amax_ref, &info_ref);
+                    dgeequ_f77(&m, &n, A_ref, &lda, R_ref, C_ref, &rowcnd_ref, &colcnd_ref, &amax_ref, &info_ref);
 #else
-		    Rgeequ(m, n, A_ref, lda, R_ref, C_ref, &rowcnd_ref, &colcnd_ref, &amax_ref, &info_ref);
+                    Rgeequ(m, n, A_ref, lda, R_ref, C_ref, &rowcnd_ref, &colcnd_ref, &amax_ref, &info_ref);
 #endif
-		    Rgeequ(m, n, A, lda, R, C, &rowcnd, &colcnd, &amax, &info);
+                    Rgeequ(m, n, A, lda, R, C, &rowcnd, &colcnd, &amax, &info);
 
- 		    if (info != info_ref ) {
-		 	printf("Diff info: n:%d m:%d lda %d\n", n, m, lda);
-			errorflag = TRUE;
-		    }
+                    if (info != info_ref) {
+                        printf("Diff info: n:%d m:%d lda %d\n", n, m, lda);
+                        errorflag = TRUE;
+                    }
 
-		    diff = infnorm(R_ref, R, veclen(m, 1), 1);
-		    if (diff > EPSILON) {
-			printf("Diff R: n:%d m:%d lda %d\n", n, m, lda); printnum(diff); printf("\n");
-		        printf("R_ref = ");printvec(R_ref, veclen(m,1));printf("\n");
-		        printf("R = ");printvec(R, veclen(m,1));printf("\n");
-			errorflag = TRUE;
-		    }
-		    if (maxdiff < diff) maxdiff = diff;
+                    diff = infnorm(R_ref, R, veclen(m, 1), 1);
+                    if (diff > EPSILON) {
+                        printf("Diff R: n:%d m:%d lda %d\n", n, m, lda);
+                        printnum(diff);
+                        printf("\n");
+                        printf("R_ref = ");
+                        printvec(R_ref, veclen(m, 1));
+                        printf("\n");
+                        printf("R = ");
+                        printvec(R, veclen(m, 1));
+                        printf("\n");
+                        errorflag = TRUE;
+                    }
+                    if (maxdiff < diff)
+                        maxdiff = diff;
 #if defined VERBOSE_TEST
-		    printf("max error: "); printnum(maxdiff); printf("\n");
+                    printf("max error: ");
+                    printnum(maxdiff);
+                    printf("\n");
 #endif
-		    diff = infnorm(C_ref, C, veclen(n, 1), 1);
-		    if (diff > EPSILON) {
-			printf("Diff C: n:%d m:%d lda %d\n", n, m, lda);
-			errorflag = TRUE;
-		    }
-		    if (maxdiff < diff) maxdiff = diff;
+                    diff = infnorm(C_ref, C, veclen(n, 1), 1);
+                    if (diff > EPSILON) {
+                        printf("Diff C: n:%d m:%d lda %d\n", n, m, lda);
+                        errorflag = TRUE;
+                    }
+                    if (maxdiff < diff)
+                        maxdiff = diff;
 #if defined VERBOSE_TEST
-		    printf("max error: "); printnum(maxdiff); printf("\n");
-                    printf("rowcnd_ref"); printnum(rowcnd_ref); printf("\n");
+                    printf("max error: ");
+                    printnum(maxdiff);
+                    printf("\n");
+                    printf("rowcnd_ref");
+                    printnum(rowcnd_ref);
+                    printf("\n");
 #endif
-		    diff = abs(rowcnd_ref - rowcnd);
-		    if (diff > EPSILON) {
-			printf("Diff rowcnd: n:%d m:%d lda %d\n", n, m, lda);
-			errorflag = TRUE;
-		    }
-		    if (maxdiff < diff) maxdiff = diff;
+                    diff = abs(rowcnd_ref - rowcnd);
+                    if (diff > EPSILON) {
+                        printf("Diff rowcnd: n:%d m:%d lda %d\n", n, m, lda);
+                        errorflag = TRUE;
+                    }
+                    if (maxdiff < diff)
+                        maxdiff = diff;
 #if defined VERBOSE_TEST
-		    printf("max error: "); printnum(maxdiff); printf("\n");
-                    printf("colcnd_ref"); printnum(colcnd_ref); printf("\n");
+                    printf("max error: ");
+                    printnum(maxdiff);
+                    printf("\n");
+                    printf("colcnd_ref");
+                    printnum(colcnd_ref);
+                    printf("\n");
 #endif
-		    diff = abs(colcnd_ref - colcnd);
-		    if (diff > EPSILON) {
-			printf("Diff colcnd: n:%d m:%d lda %d\n", n, m, lda);
-			errorflag = TRUE;
-		    }
-		    if (maxdiff < diff) maxdiff = diff;
+                    diff = abs(colcnd_ref - colcnd);
+                    if (diff > EPSILON) {
+                        printf("Diff colcnd: n:%d m:%d lda %d\n", n, m, lda);
+                        errorflag = TRUE;
+                    }
+                    if (maxdiff < diff)
+                        maxdiff = diff;
 #if defined VERBOSE_TEST
-		    printf("max error: "); printnum(maxdiff); printf("\n");
+                    printf("max error: ");
+                    printnum(maxdiff);
+                    printf("\n");
 #endif
-		    diff = abs(amax_ref - amax);
-		    if (diff > EPSILON) {
-			printf("Diff amax: n:%d m:%d lda %d\n", n, m, lda);
-		        printf("amax_ref = ");printnum(amax_ref);printf("\n");
-		        printf("amax = ");printnum(amax);printf("\n");
-			errorflag = TRUE;
-		    }
-		    if (maxdiff < diff) maxdiff = diff;
+                    diff = abs(amax_ref - amax);
+                    if (diff > EPSILON) {
+                        printf("Diff amax: n:%d m:%d lda %d\n", n, m, lda);
+                        printf("amax_ref = ");
+                        printnum(amax_ref);
+                        printf("\n");
+                        printf("amax = ");
+                        printnum(amax);
+                        printf("\n");
+                        errorflag = TRUE;
+                    }
+                    if (maxdiff < diff)
+                        maxdiff = diff;
 #if defined VERBOSE_TEST
-		    printf("max error: "); printnum(maxdiff); printf("\n");
+                    printf("max error: ");
+                    printnum(maxdiff);
+                    printf("\n");
 #endif
-		    j++;
-		}
-		delete[]A;
-		delete[]R;
-		delete[]C;
-		delete[]A_ref;
-		delete[]R_ref;
-		delete[]C_ref;
-	    }
-	}
+                    j++;
+                }
+                delete[] A;
+                delete[] R;
+                delete[] C;
+                delete[] A_ref;
+                delete[] R_ref;
+                delete[] C_ref;
+            }
+        }
     }
     if (errorflag == TRUE) {
         printf("*** Testing Rgeequ failed ***\n");
-	exit(1);
+        exit(1);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rgeequ start ***\n");
     Rgeequ_test();
     printf("*** Testing Rgeequ successful ***\n");

@@ -38,18 +38,17 @@
 #include <iostream>
 #endif
 
-#define MIN_N     5
-#define MAX_N     10
-#define MIN_M     5
-#define MAX_M     10
-#define MIN_LDA   5
-#define MAX_LDA   10
-#define MAX_ITER  5
+#define MIN_N 5
+#define MAX_N 10
+#define MIN_M 5
+#define MAX_M 10
+#define MIN_LDA 5
+#define MAX_LDA 10
+#define MAX_ITER 5
 
 REAL_REF maxdiff = 0.0;
 
-void Rlascl_test2(const char *type)
-{
+void Rlascl_test2(const char *type) {
     int errorflag = FALSE;
     INTEGER_REF j, m, n, lda, ku, kl, info_ref;
     INTEGER info;
@@ -57,58 +56,61 @@ void Rlascl_test2(const char *type)
     REAL cto, cfrom;
 
     for (n = MIN_N; n <= MAX_N; n++) {
-	for (m = MIN_M; m <= MAX_M; m++) {
-	    for (lda = m; lda <= MAX_LDA; lda++) {
-		for (kl = 0; kl <= n; kl++) {
-		    for (ku = 0; ku <= m; ku++) {
-			REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
-			REAL *A = new REAL[matlen(lda, n)];
+        for (m = MIN_M; m <= MAX_M; m++) {
+            for (lda = m; lda <= MAX_LDA; lda++) {
+                for (kl = 0; kl <= n; kl++) {
+                    for (ku = 0; ku <= m; ku++) {
+                        REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
+                        REAL *A = new REAL[matlen(lda, n)];
 #if defined VERBOSE_TEST
-			printf("#type %s, n %d, m %d, lda %d, ku %d, kl %d\n", type, (int)n, (int)m, (int)lda, (int)ku, (int)kl);
+                        printf("#type %s, n %d, m %d, lda %d, ku %d, kl %d\n", type, (int)n, (int)m, (int)lda, (int)ku, (int)kl);
 #endif
-			j = 0;
-			while (j < MAX_ITER) {
-			    set_random_vector(A_ref, A, matlen(lda, n));
-			    set_random_number(cto_ref, cto);
-			    set_random_number(cfrom_ref, cfrom);
+                        j = 0;
+                        while (j < MAX_ITER) {
+                            set_random_vector(A_ref, A, matlen(lda, n));
+                            set_random_number(cto_ref, cto);
+                            set_random_number(cfrom_ref, cfrom);
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-			    dlascl_f77(type, &kl, &ku, &cfrom_ref, &cto_ref, &m, &n, A_ref, &lda, &info_ref);
+                            dlascl_f77(type, &kl, &ku, &cfrom_ref, &cto_ref, &m, &n, A_ref, &lda, &info_ref);
 #else
-			    Rlascl(type, kl, ku, cfrom_ref, cto_ref, m, n, A_ref, lda, &info_ref);
+                            Rlascl(type, kl, ku, cfrom_ref, cto_ref, m, n, A_ref, lda, &info_ref);
 #endif
-			    Rlascl(type, kl, ku, cfrom, cto, m, n, A, lda, &info);
+                            Rlascl(type, kl, ku, cfrom, cto, m, n, A, lda, &info);
 
-			    if (info_ref != info) {
-				printf("error in info %d %d!!\n", (int) info_ref, (int) info);
-				errorflag = TRUE;
-			    }
+                            if (info_ref != info) {
+                                printf("error in info %d %d!!\n", (int)info_ref, (int)info);
+                                errorflag = TRUE;
+                            }
                             diff = infnorm(A_ref, A, matlen(lda, n), 1);
-			    if (diff > EPSILON2) {
-		                printf("error: "); printnum(diff); printf("\n");
-		                errorflag = TRUE;
-			    }
-	                    if (maxdiff < diff)
-		                maxdiff = diff;
+                            if (diff > EPSILON2) {
+                                printf("error: ");
+                                printnum(diff);
+                                printf("\n");
+                                errorflag = TRUE;
+                            }
+                            if (maxdiff < diff)
+                                maxdiff = diff;
 #if defined VERBOSE_TEST
-	                    printf("max error: "); printnum(maxdiff); printf("\n");
+                            printf("max error: ");
+                            printnum(maxdiff);
+                            printf("\n");
 #endif
-			    j++;
-			}
-			delete[]A_ref;
-			delete[]A;
-		    }
-		}
-	    }
-	}
+                            j++;
+                        }
+                        delete[] A_ref;
+                        delete[] A;
+                    }
+                }
+            }
+        }
     }
     if (errorflag == TRUE) {
-	printf("*** Testing Rlascl failed ***\n");
-	exit(1);
+        printf("*** Testing Rlascl failed ***\n");
+        exit(1);
     }
 }
 
-void Rlascl_test(void)
-{
+void Rlascl_test(void) {
     Rlascl_test2("G");
     Rlascl_test2("L");
     Rlascl_test2("U");
@@ -118,8 +120,7 @@ void Rlascl_test(void)
     Rlascl_test2("Z");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rlascl start ***\n");
     Rlascl_test();
     printf("*** Testing Rlascl successful ***\n");

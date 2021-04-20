@@ -38,15 +38,14 @@
 #include <iostream>
 #endif
 
-#define MIN_N     3
-#define MAX_N     20
-#define MAX_LDA   20
-#define MAX_ITER  5
+#define MIN_N 3
+#define MAX_N 20
+#define MAX_LDA 20
+#define MAX_ITER 5
 
 REAL_REF maxdiff = 0.0;
 
-void Rgecon_test2(const char *norm)
-{
+void Rgecon_test2(const char *norm) {
     int errorflag = FALSE;
     int j = 0;
     REAL_REF anorm_ref;
@@ -58,30 +57,30 @@ void Rgecon_test2(const char *norm)
     INTEGER info;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-	for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
+        for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
-	    printf("n:%d lda %d, norm %s\n", n, lda, norm);
+            printf("n:%d lda %d, norm %s\n", n, lda, norm);
 #endif
-	    REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
-	    REAL_REF *work_ref = new REAL_REF[max(1, n * 4)];
-	    INTEGER_REF *iwork_ref = new INTEGER_REF[max(1, n)];
+            REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
+            REAL_REF *work_ref = new REAL_REF[max(1, n * 4)];
+            INTEGER_REF *iwork_ref = new INTEGER_REF[max(1, n)];
             INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(n, 1)];
 
-	    REAL *A = new REAL[matlen(lda, n)];
-	    REAL *work = new REAL[max(1, n * 4)];
-	    INTEGER *iwork = new INTEGER[max(1, n)];
+            REAL *A = new REAL[matlen(lda, n)];
+            REAL *work = new REAL[max(1, n * 4)];
+            INTEGER *iwork = new INTEGER[max(1, n)];
             INTEGER *ipiv = new INTEGER[veclen(n, 1)];
 
-	    j = 0;
-	    while (j < MAX_ITER) {
-		set_random_vector(A_ref, A, matlen(lda, n));
+            j = 0;
+            while (j < MAX_ITER) {
+                set_random_vector(A_ref, A, matlen(lda, n));
 /* First, calculate norm of matrix*/
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-	        anorm_ref = dlange_f77(norm, &n, &n, A_ref, &lda, work_ref); 
+                anorm_ref = dlange_f77(norm, &n, &n, A_ref, &lda, work_ref);
 #else
-		anorm_ref = Rlange(norm, n, n, A_ref, lda, work_ref); 
+                anorm_ref = Rlange(norm, n, n, A_ref, lda, work_ref);
 #endif
-		anorm = Rlange(norm, n, n, A, lda, work); 
+                anorm = Rlange(norm, n, n, A, lda, work);
 /* second, do LU factorization vir Rgetrf */
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 dgetrf_f77(&n, &n, A_ref, &lda, ipiv_ref, &info_ref);
@@ -91,56 +90,63 @@ void Rgecon_test2(const char *norm)
                 Rgetrf(n, n, A, lda, ipiv, &info);
 /* third, calculate condition number */
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		dgecon_f77(norm, &n, A_ref, &lda, &anorm_ref, &rcond_ref, work_ref, iwork_ref, &info_ref);
+                dgecon_f77(norm, &n, A_ref, &lda, &anorm_ref, &rcond_ref, work_ref, iwork_ref, &info_ref);
 #else
-		Rgecon(norm, n, A_ref, lda, anorm_ref, &rcond_ref, work_ref, iwork_ref, &info_ref);
+                Rgecon(norm, n, A_ref, lda, anorm_ref, &rcond_ref, work_ref, iwork_ref, &info_ref);
 #endif
-	        Rgecon(norm, n, A, lda, anorm, &rcond, work, iwork, &info);
-	        if (info_ref != info) {
-                     printf("info differ! %d, %d\n", (int) info_ref, (int) info);
-                     errorflag = TRUE;
-	        }
-	        diff = (rcond_ref - rcond);
+                Rgecon(norm, n, A, lda, anorm, &rcond, work, iwork, &info);
+                if (info_ref != info) {
+                    printf("info differ! %d, %d\n", (int)info_ref, (int)info);
+                    errorflag = TRUE;
+                }
+                diff = (rcond_ref - rcond);
 #if defined VERBOSE_TEST
-	        printf("reciprocal to cond num:"); printnum(rcond_ref); printf("\n");
-	        printf("reciprocal to cond num:"); printnum(rcond); printf("\n");
+                printf("reciprocal to cond num:");
+                printnum(rcond_ref);
+                printf("\n");
+                printf("reciprocal to cond num:");
+                printnum(rcond);
+                printf("\n");
 #endif
-		if (diff > EPSILON) {
-		    printf("n:%d lda %d, norm %s\n", n, lda, norm);
-		    printf("error: "); printnum(diff); printf("\n");
-		    errorflag = TRUE;
-		}
-	        if (maxdiff < diff) maxdiff = diff;
+                if (diff > EPSILON) {
+                    printf("n:%d lda %d, norm %s\n", n, lda, norm);
+                    printf("error: ");
+                    printnum(diff);
+                    printf("\n");
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
 #if defined VERBOSE_TEST
-	        printf("max error: "); printnum(maxdiff); printf("\n");
+                printf("max error: ");
+                printnum(maxdiff);
+                printf("\n");
 #endif
-		j++;
-	    }
-	    delete[]ipiv;
-	    delete[]iwork;
-	    delete[]work;
-	    delete[]A;
-	    delete[]ipiv_ref;
-	    delete[]iwork_ref;
-	    delete[]work_ref;
-	    delete[]A_ref;
-	}
-	if (errorflag == TRUE) {
+                j++;
+            }
+            delete[] ipiv;
+            delete[] iwork;
+            delete[] work;
+            delete[] A;
+            delete[] ipiv_ref;
+            delete[] iwork_ref;
+            delete[] work_ref;
+            delete[] A_ref;
+        }
+        if (errorflag == TRUE) {
             printf("*** Testing Rgecon failed ***\n");
-	    exit(1);
-	}
+            exit(1);
+        }
     }
 }
 
-void Rgecon_test(void)
-{
+void Rgecon_test(void) {
     Rgecon_test2("1");
     Rgecon_test2("I");
     Rgecon_test2("O");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rgecon start ***\n");
     Rgecon_test();
     printf("*** Testing Rgecon successful ***\n");
