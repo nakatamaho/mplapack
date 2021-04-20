@@ -135,7 +135,7 @@ int main (int argc, char *argv[])
 
     if (check_flag) {
       t1 = gettime ();
-      Rgetrf (m, n, A, lda, ipiv, &info);
+      Rgetrf (m, n, A, lda, ipiv, info);
       t2 = gettime ();
       elapsedtime = (t2 - t1);
       (*mplapack_ref) (m, n, Ad, lda, ipivd, &info);
@@ -147,7 +147,7 @@ int main (int argc, char *argv[])
     }
     else {
       t1 = gettime ();
-      Rgetrf (m, n, A, lda, ipiv, &info);
+      Rgetrf (m, n, A, lda, ipiv, info);
       t2 = gettime ();
       elapsedtime = (t2 - t1);
       printf ("    n     MFLOPS   uplo\n");
