@@ -4,7 +4,7 @@ mplapack__Float64x_test_PROGRAMS = \
 %%insert here1%%
 
 mplapack__Float64x_testdir = $(prefix)/share/mplapack/test/mplapack/_Float64x
-ref_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas__Float64x -lmpblas_mpfr
+libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas__Float64x -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 reflapack=-L$(top_builddir)/external/i/LAPACK/lib -llapack $(FCLIBS)
@@ -38,9 +38,9 @@ Mutils_test__Float64x_CXXFLAGS = $(test_cxxflags)
 
 %%insert here2%%
 %%FUNCTION%%_test__Float64x_SOURCES  = ../common/%%FUNCTION%%.test.cpp $(test_srcdepends)
-%%FUNCTION%%_test__Float64x_LDFLAGS    = $(ref_libdepends) $(test_libdepends)
+%%FUNCTION%%_test__Float64x_LDFLAGS  = $(libdepends) $(test_libdepends)
 %%FUNCTION%%_test__Float64x_CXXFLAGS = $(test_cxxflags)
 
 %%TEST%%_test__Float64x_SOURCES  = ../common/%%TEST%%.test.cpp $(test_srcdepends)
-%%TEST%%_test__Float64x_LDFLAGS    = $(ref_libdepends) $(test_libdepends)
+%%TEST%%_test__Float64x_LDFLAGS  = $(libdepends) $(test_libdepends)
 %%TEST%%_test__Float64x_CXXFLAGS = $(test_cxxflags)
