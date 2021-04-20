@@ -1,8 +1,8 @@
-lib_LTLIBRARIES = libmpblas_mpfr.la
+lib_LTLIBRARIES = libmpblas_mpfr_opt.la
 
-libmpblas_mpfr_la_CPPFLAGS = -g -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPLAPACK_BUILD_WITH_MPFR___ -finline-functions
+libmpblas_mpfr_opt_la_CPPFLAGS = -g -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPLAPACK_BUILD_WITH_MPFR___ -finline-functions
 
-libmpblas_mpfr_la_SOURCES = \
+libmpblas_mpfr_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \
 Rgemm.cpp Rgemm_ref.cpp openmp/Rgemm_NN_omp.cpp openmp/Rgemm_NT_omp.cpp openmp/Rgemm_TN_omp.cpp openmp/Rgemm_TT_omp.cpp \
@@ -81,5 +81,5 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../../reference/mplapackinit.cpp
 
 if IS_MACOSX
-libmpblas_mpfr_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmpblas_mpfr_opt_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
