@@ -36,13 +36,13 @@ void getAinv(mplapackint n, mplapackint lda, qd_real * A)
     lwork = -1;
     qd_real *work = new qd_real[1];
     /* query work space */
-    Rgetri(n, A, lda, ipiv, work, lwork, &info);
+    Rgetri(n, A, lda, ipiv, work, lwork, info);
     lwork = (int) cast2double(work[0]);
     delete[]work;
     work = new qd_real[std::max((mplapackint) 1, lwork)];
     /* do inversion */
-    Rgetrf(n, n, A, lda, ipiv, &info);
-    Rgetri(n, A, lda, ipiv, work, lwork, &info);
+    Rgetrf(n, n, A, lda, ipiv, info);
+    Rgetri(n, A, lda, ipiv, work, lwork, info);
     delete[]ipiv;
 
     if (info == 0)
@@ -65,9 +65,9 @@ qd_real get_estimated_condition_num(const char *norm, mplapackint n, mplapackint
     /* First, calculate norm */
     anorm = Rlange(norm, n, n, A, lda, work);
     /* Second, do LU factorization */
-    Rgetrf(n, n, A, lda, iwork, &info);
+    Rgetrf(n, n, A, lda, iwork, info);
     /* Third, calculate estimated condition number */
-    Rgecon(norm, n, A, lda, anorm, &rcond, work, iwork, &info);
+    Rgecon(norm, n, A, lda, anorm, rcond, work, iwork, info);
 
     cond = 1.0 / rcond;
 

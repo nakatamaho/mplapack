@@ -55,13 +55,13 @@ void inv_hilbert_matrix(int n)
     lwork = -1;
     dd_real *work = new dd_real[1];
 
-    Rgetri(n, A, n, ipiv, work, lwork, &info);
+    Rgetri(n, A, n, ipiv, work, lwork, info);
     lwork = int (work[0].x[0]);
     delete[]work;
     work = new dd_real[std::max(1, (int) lwork)];
 //inverse matrix
-    Rgetrf(n, n, A, n, ipiv, &info);
-    Rgetri(n, A, n, ipiv, work, lwork, &info);
+    Rgetrf(n, n, A, n, ipiv, info);
+    Rgetri(n, A, n, ipiv, work, lwork, info);
 
     printf("invA = ");
     printmat(n, n, A, n);

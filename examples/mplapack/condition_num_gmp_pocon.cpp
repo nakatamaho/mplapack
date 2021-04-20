@@ -35,13 +35,13 @@ void getAinv(mplapackint n, mplapackint lda, mpf_class * A)
     lwork = -1;
     mpf_class *work = new mpf_class[1];
     /* query work space */
-    Rgetri(n, A, lda, ipiv, work, lwork, &info);
+    Rgetri(n, A, lda, ipiv, work, lwork, info);
     lwork = (int) cast2double(work[0]);
     delete[]work;
     work = new mpf_class[std::max((mplapackint) 1, lwork)];
     /* do inversion */
-    Rgetrf(n, n, A, lda, ipiv, &info);
-    Rgetri(n, A, lda, ipiv, work, lwork, &info);
+    Rgetrf(n, n, A, lda, ipiv, info);
+    Rgetri(n, A, lda, ipiv, work, lwork, info);
     delete[]ipiv;
 
     if (info == 0)
@@ -64,9 +64,9 @@ mpf_class get_estimated_condition_num_psd(mplapackint n, mplapackint lda, mpf_cl
     /* First, calculate norm */
     anorm = Rlange("1", n, n, A, lda, work);
     /* Second, do Cholesky factorization */
-    Rpotrf("U", n, A, lda, &info);
+    Rpotrf("U", n, A, lda, info);
     /* Third, calculate estimated condition number */
-    Rpocon("U", n, A, lda, anorm, &rcond, work, iwork, &info);
+    Rpocon("U", n, A, lda, anorm, rcond, work, iwork, info);
 
     cond = 1.0 / rcond;
 

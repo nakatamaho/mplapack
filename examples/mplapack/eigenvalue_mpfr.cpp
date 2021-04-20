@@ -51,12 +51,12 @@ int main()
     lwork = -1;
     mpreal *work = new mpreal[1];
 
-    Rsyev("V", "U", n, A, n, w, work, lwork, &info);
+    Rsyev("V", "U", n, A, n, w, work, lwork, info);
     lwork = (int) double (work[0]);
     delete[]work;
     work = new mpreal[std::max((mplapackint) 1, lwork)];
 //inverse matrix
-    Rsyev("V", "U", n, A, n, w, work, lwork, &info);
+    Rsyev("V", "U", n, A, n, w, work, lwork, info);
 //print out some results.
     printf("#eigenvalues \n");
     printf("w =");

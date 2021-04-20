@@ -49,12 +49,12 @@ int main()
     lwork = -1;
     qd_real *work = new qd_real[1];
 
-    Rsyev("V", "U", n, A, n, w, work, lwork, &info);
+    Rsyev("V", "U", n, A, n, w, work, lwork, info);
     lwork = (int) work[0].x[0];
     delete[]work;
     work = new qd_real[std::max((mplapackint) 1, lwork)];
 //inverse matrix
-    Rsyev("V", "U", n, A, n, w, work, lwork, &info);
+    Rsyev("V", "U", n, A, n, w, work, lwork, info);
 //print out some results.
     printf("#eigenvalues \n");
     printf("w =");

@@ -55,13 +55,13 @@ void getAinv(mplapackint n, mplapackint lda, _Float128 *A)
     lwork = -1;
     _Float128 *work = new _Float128[1];
     /* query work space */
-    Rgetri(n, A, lda, ipiv, work, lwork, &info);
+    Rgetri(n, A, lda, ipiv, work, lwork, info);
     lwork = (int) (work[0]);
     delete[]work;
     work = new _Float128[std::max((mplapackint) 1, lwork)];
     /* do inversion */
-    Rgetrf(n, n, A, lda, ipiv, &info);
-    Rgetri(n, A, lda, ipiv, work, lwork, &info);
+    Rgetrf(n, n, A, lda, ipiv, info);
+    Rgetri(n, A, lda, ipiv, work, lwork, info);
     delete[]ipiv;
 
     if (info == 0)
@@ -84,9 +84,9 @@ _Float128 get_estimated_condition_num(const char *norm, mplapackint n, mplapacki
     /* First, calculate norm */
     anorm = Rlange(norm, n, n, A, lda, work);
     /* Second, do LU factorization */
-    Rgetrf(n, n, A, lda, iwork, &info);
+    Rgetrf(n, n, A, lda, iwork, info);
     /* Third, calculate estimated condition number */
-    Rgecon(norm, n, A, lda, anorm, &rcond, work, iwork, &info);
+    Rgecon(norm, n, A, lda, anorm, rcond, work, iwork, info);
 
     cond = 1.0 / rcond;
 

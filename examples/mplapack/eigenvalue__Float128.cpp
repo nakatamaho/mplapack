@@ -69,12 +69,12 @@ int main()
     lwork = -1;
     _Float128 *work = new _Float128[1];
 
-    Rsyev("V", "U", n, A, n, w, work, lwork, &info);
+    Rsyev("V", "U", n, A, n, w, work, lwork, info);
     lwork = (int) work[0];
     delete[]work;
     work = new _Float128[std::max((mplapackint) 1, lwork)];
 //inverse matrix
-    Rsyev("V", "U", n, A, n, w, work, lwork, &info);
+    Rsyev("V", "U", n, A, n, w, work, lwork, info);
 //print out some results.
     printf("#eigenvalues \n");
     printf("w =");

@@ -51,12 +51,12 @@ int main()
     lwork = -1;
     mpf_class *work = new mpf_class[1];
 
-    Rsyev("V", "U", n, A, n, w, work, lwork, &info);
+    Rsyev("V", "U", n, A, n, w, work, lwork, info);
     lwork = (int) work[0].get_d();
     delete[]work;
     work = new mpf_class[std::max((mplapackint) 1, lwork)];
 //inverse matrix
-    Rsyev("V", "U", n, A, n, w, work, lwork, &info);
+    Rsyev("V", "U", n, A, n, w, work, lwork, info);
 //print out some results.
     printf("#eigenvalues \n");
     printf("w =");
