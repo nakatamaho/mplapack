@@ -74,7 +74,7 @@ void Rspr2(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER
         return;
     }
     //
-    //     Set up the start poINTEGERs in X and Y if the increments are not both
+    //     Set up the start points in X and Y if the increments are not both
     //     unity.
     //
     INTEGER kx = 0;

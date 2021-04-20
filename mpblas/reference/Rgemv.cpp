@@ -82,7 +82,7 @@ void Rgemv(const char *trans, INTEGER const m, INTEGER const n, REAL const alpha
     }
     //
     //     Set  LENX  and  LENY, the lengths of the vectors x and y, and set
-    //     up the start poINTEGERs in  X  and  Y.
+    //     up the start points in  X  and  Y.
     //
     INTEGER lenx = 0;
     INTEGER leny = 0;

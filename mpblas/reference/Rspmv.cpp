@@ -75,7 +75,7 @@ void Rspmv(const char *uplo, INTEGER const n, REAL const alpha, REAL *ap, REAL *
         return;
     }
     //
-    //     Set up the start poINTEGERs in  X  and  Y.
+    //     Set up the start points in  X  and  Y.
     //
     INTEGER kx = 0;
     if (incx > 0) {
