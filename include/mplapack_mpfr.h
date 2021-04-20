@@ -32,8 +32,8 @@
 #define _MPLAPACK_MPFR_H_
 
 #include "mplapack_config.h"
-#include "mpc_class.h"
-#include "gmpxx.h"
+//#include "mpc_class.h"
+//#include "gmpxx.h"
 #include "mpreal.h"
 #include "mpcomplex.h"
 

@@ -78,10 +78,4 @@ inline mpcomplex Real2Complex(mpreal a, mpreal b) {
     return ret;
 }
 
-inline double cast2double(mpreal a) {
-    double tmp;
-    tmp = a;
-    return a;
-}
-
 #endif
