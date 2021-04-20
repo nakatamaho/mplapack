@@ -144,15 +144,6 @@ AC_SUBST(CUDA_VERSION_MAJOR)
 AC_SUBST(IS_CUDA_VERSION_MAJOR_3)
 AC_SUBST(NVCC)
 
-dnl enable FORTRAN warpper
-AC_ARG_ENABLE(fortranwrapper,
-AS_HELP_STRING([--enable-fortranwrapper], [Enable fortranwrapper]))
-AM_CONDITIONAL(ENABLE_FORTRANWRAPPER, test x$enable_fortranwrapper = xyes)
-
-AC_ARG_ENABLE(wrapper,
-AS_HELP_STRING([--enable-wrapper], [Enable wrapper for BLAS and LAPACK. xBLAS like approach]))
-AM_CONDITIONAL(ENABLE_WRAPPER, test x$enable_wrapper = xyes)
-
 dnl disable benchmark
 AC_ARG_ENABLE(benchmark,
 AS_HELP_STRING([--disable-benchmark], [Disable benchmark]))
@@ -713,11 +704,6 @@ AC_SUBST(LAPACK_DIR, [lapack])
 else
 AC_MSG_RESULT([Disable test])
 fi
-if test x$enable_fortranwrapper = x"yes"; then
-AC_MSG_RESULT([Enable fortran wrapper])
-else
-AC_MSG_RESULT([Disable fortran wrapper])
-fi
 
 dnl print status...end
 
@@ -729,7 +715,7 @@ AS_HELP_STRING([--with-external-lapack], [Specify how to link against external L
 
 dnl First we check Fotran 90 compiler stuffs.
 
-if test x"$enable_test" = x"yes" || test x"$enable_fortranwrapper" = x"yes"; then
+if test x"$enable_test" = x"yes"; then
     AC_PROG_FC
     AC_FC_LIBRARY_LDFLAGS
     AC_FC_WRAPPERS
@@ -868,8 +854,6 @@ mpblas/optimized/dd/cuda/Makefile
 mpblas/optimized/double/Makefile
 mpblas/optimized/_Float64x/Makefile
 mpblas/optimized/_Float128/Makefile
-mpblas/blaswrapper/Makefile
-mpblas/fortranwrapper/Makefile
 mpblas/test/Makefile
 mpblas/test/gmp/Makefile
 mpblas/test/mpfr/Makefile
@@ -895,8 +879,6 @@ mplapack/optimized/dd/Makefile
 mplapack/optimized/double/Makefile
 mplapack/optimized/_Float64x/Makefile
 mplapack/optimized/_Float128/Makefile
-mplapack/lapackwrapper/Makefile
-mplapack/fortranwrapper/Makefile
 mplapack/Makefile
 external/Makefile
 external/gmp/Makefile
