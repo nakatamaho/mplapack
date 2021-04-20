@@ -777,9 +777,9 @@ fi
 AM_CONDITIONAL(DO_LAPACKBENCH, test x$DO_LAPACKBENCH = xyes)
 
 if test x"$enable_optimization" = x"yes"; then
-    CFLAGS="$CFLAGS -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
-    CXXFLAGS="$CXXFLAGS -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
-    FCFLAGS="$FCFLAGS -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
+    CFLAGS="$CFLAGS -O2 -march=native -fomit-frame-pointer -finline-functions -funroll-all-loops"
+    CXXFLAGS="$CXXFLAGS -march=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
+    FCFLAGS="$FCFLAGS -march=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
     if test x$__ICC = x"icc"; then
         CFLAGS="$CFLAGS -xHost -O3"
         CXXFLAGS="$CXXFLAGS -xHost -O3"
