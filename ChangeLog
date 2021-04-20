@@ -2,6 +2,7 @@
             * 680 LAPACK subroutines are rewriteen using fable.
               * 359 routines are rewritten using fable without modifications.
             * remove fortranwrapper and blaswrapper
+            * remove optimized for mplapack
 
 2021/4/18   Nakata Maho <maho@riken.jp> 1.0.0
             * rename debug to test
