@@ -51,7 +51,7 @@ void Rlasyf_test2(const char *uplo) {
     int j = 0;
     REAL_REF diff;
     INTEGER_REF info_ref, kb = 0;
-    INTEGER info;
+    INTEGER info, kbl;
 
     for (int n = MIN_N; n <= MAX_N; n++) {
         for (int nb = 2; nb < MAX_NB; nb++) {
@@ -93,12 +93,13 @@ void Rlasyf_test2(const char *uplo) {
                         j = 0;
                         while (j < MAX_ITER) {
                             set_random_vector(A_ref, A, matlen(lda, n));
+			    kbl = kb;
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                             dlasyf_f77(uplo, &n, &nb, &kb, A_ref, &lda, ipiv_ref, W_ref, &ldw, &info_ref);
 #else
-                            Rlasyf(uplo, n, nb, kb, A_ref, lda, ipiv_ref, W_ref, ldw, info_ref);
+                            Rlasyf(uplo, n, nb, kbl, A_ref, lda, ipiv_ref, W_ref, ldw, info_ref);
 #endif
-                            Rlasyf(uplo, n, nb, kb, A, lda, ipiv, W, ldw, info);
+                            Rlasyf(uplo, n, nb, kbl, A, lda, ipiv, W, ldw, info);
 
                             if (info < 0) {
                                 printf("info %d error\n", -(int)info);
