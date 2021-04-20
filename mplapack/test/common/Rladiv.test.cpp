@@ -55,9 +55,9 @@ void Rladiv_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         dladiv_f77(&a_ref, &b_ref, &c_ref, &d_ref, &p_ref, &q_ref);
 #else
-        Rladiv(a_ref, b_ref, c_ref, d_ref, &p_ref, &q_ref);
+        Rladiv(a_ref, b_ref, c_ref, d_ref, p_ref, q_ref);
 #endif
-        Rladiv(a, b, c, d, &p, &q);
+        Rladiv(a, b, c, d, p, q);
 
 #if defined VERBOSE_TEST
         cout << "a      ";

@@ -40,7 +40,6 @@ inline double log2(double x) { return log(x) / log(2.0); }
 double pi(double dummy);
 double sign(double a, double b);
 std::complex<double> Real2Complex(double a, double b);
-double Cabs1(std::complex<double> zdum);
 
 // implementation of sign transfer function.
 inline double sign(double a, double b) {
@@ -69,12 +68,6 @@ inline std::complex<double> Real2Complex(double a, double b) {
     return ret;
 }
 
-inline double Cabs1(std::complex<double> zdum) {
-    double ret;
-    ret = std::abs(zdum.real()) + std::abs(zdum.imag());
-    return ret;
-}
-
 inline long nint(double a) {
     long i;
     double tmp;
@@ -83,5 +76,7 @@ inline long nint(double a) {
     i = (long)tmp;
     return i;
 }
+
+inline double cast2double(double a) { return a; }
 
 #endif

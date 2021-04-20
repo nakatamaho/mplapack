@@ -56,9 +56,9 @@ void Clartg_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         zlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
 #else
-        Clartg(f_ref, g_ref, &cs_ref, &sn_ref, &r_ref);
+        Clartg(f_ref, g_ref, cs_ref, sn_ref, r_ref);
 #endif
-        Clartg(f, g, &cs, &sn, &r);
+        Clartg(f, g, cs, sn, r);
 
         diff = abs(cs_ref - cs);
         if (diff > EPSILON) {
@@ -102,9 +102,9 @@ void Clartg_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         zlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
 #else
-        Clartg(f_ref, g_ref, &cs_ref, &sn_ref, &r_ref);
+        Clartg(f_ref, g_ref, cs_ref, sn_ref, r_ref);
 #endif
-        Clartg(f, g, &cs, &sn, &r);
+        Clartg(f, g, cs, sn, r);
 
         diff = abs(cs_ref - cs);
         if (diff > EPSILON) {
@@ -148,9 +148,9 @@ void Clartg_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         zlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
 #else
-        Clartg(f_ref, g_ref, &cs_ref, &sn_ref, &r_ref);
+        Clartg(f_ref, g_ref, cs_ref, sn_ref, r_ref);
 #endif
-        Clartg(f, g, &cs, &sn, &r);
+        Clartg(f, g, cs, sn, r);
 
         diff = abs(cs_ref - cs);
         if (diff > EPSILON) {

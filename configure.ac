@@ -871,14 +871,6 @@ mplapack/test/dd/Makefile
 mplapack/test/double/Makefile
 mplapack/test/_Float64x/Makefile
 mplapack/test/_Float128/Makefile
-mplapack/optimized/Makefile
-mplapack/optimized/gmp/Makefile
-mplapack/optimized/mpfr/Makefile
-mplapack/optimized/qd/Makefile
-mplapack/optimized/dd/Makefile
-mplapack/optimized/double/Makefile
-mplapack/optimized/_Float64x/Makefile
-mplapack/optimized/_Float128/Makefile
 mplapack/Makefile
 external/Makefile
 external/gmp/Makefile

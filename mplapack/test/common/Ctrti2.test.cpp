@@ -67,9 +67,9 @@ void Ctrti2_test2(const char *uplo, const char *diag) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 ztrti2_f77(uplo, diag, &n, A_ref, &lda, &info_ref);
 #else
-                Ctrti2(uplo, diag, n, A_ref, lda, &info_ref);
+                Ctrti2(uplo, diag, n, A_ref, lda, info_ref);
 #endif
-                Ctrti2(uplo, diag, n, A, lda, &info);
+                Ctrti2(uplo, diag, n, A, lda, info);
 
                 if (info_ref != info) {
                     printf("info differ! %d, %d\n", (int)info_ref, (int)info);

@@ -65,9 +65,9 @@ void Rlauum_test2(const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 dlauum_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else
-                Rlauum(uplo, n, A_ref, lda, &info_ref);
+                Rlauum(uplo, n, A_ref, lda, info_ref);
 #endif
-                Rlauum(uplo, n, A, lda, &info);
+                Rlauum(uplo, n, A, lda, info);
 
                 if (info < 0) {
                     printf("info %d error\n", -(int)info);

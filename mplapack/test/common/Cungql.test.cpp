@@ -83,9 +83,9 @@ void Cungql_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                         zungql_f77(&m, &n, &k, A_ref, &lda, tau_ref, work_ref, &lwork, &info_ref);
 #else
-                        Cungql(m, n, k, A_ref, lda, tau_ref, work_ref, lwork, &info_ref);
+                        Cungql(m, n, k, A_ref, lda, tau_ref, work_ref, lwork, info_ref);
 #endif
-                        Cungql(m, n, k, A, lda, tau, work, lwork, &info);
+                        Cungql(m, n, k, A, lda, tau, work, lwork, info);
                         worksize_ref = (INTEGER_REF)work_ref[0].real();
                         worksize = (INTEGER)cast2double(work[0].real());
 #if defined VERBOSE_TEST
@@ -100,9 +100,9 @@ void Cungql_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                         zungql_f77(&m, &n, &k, A_ref, &lda, tau_ref, work_ref, &lwork, &info_ref);
 #else
-                        Cungql(m, n, k, A_ref, lda, tau_ref, work_ref, lwork, &info_ref);
+                        Cungql(m, n, k, A_ref, lda, tau_ref, work_ref, lwork, info_ref);
 #endif
-                        Cungql(m, n, k, A, lda, tau, work, lwork, &info);
+                        Cungql(m, n, k, A, lda, tau, work, lwork, info);
 
                         diff = infnorm(A_ref, A, matlen(lda, n), 1);
                         if (diff > EPSILON11) {

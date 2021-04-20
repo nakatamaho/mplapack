@@ -138,9 +138,9 @@ void Rsyev_test2(const char *jobz, const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
             dsyev_f77(jobz, uplo, &n, A_ref, &lda, w_ref, work_ref, &lwork_ref, &info_ref);
 #else
-            Rsyev(jobz, uplo, n, A_ref, lda, w_ref, work_ref, lwork_ref, &info_ref);
+            Rsyev(jobz, uplo, n, A_ref, lda, w_ref, work_ref, lwork_ref, info_ref);
 #endif
-            Rsyev(jobz, uplo, n, A, lda, w, work, lwork, &info);
+            Rsyev(jobz, uplo, n, A, lda, w, work, lwork, info);
 
             lwork_ref = (int)cast2double(work_ref[0]);
             lwork = (int)cast2double(work[0]);
@@ -175,9 +175,9 @@ void Rsyev_test2(const char *jobz, const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 dsyev_f77(jobz, uplo, &n, A_ref, &lda, w_ref, work_ref, &lwork_ref, &info_ref);
 #else
-                Rsyev(jobz, uplo, n, A_ref, lda, w_ref, work_ref, lwork_ref, &info_ref);
+                Rsyev(jobz, uplo, n, A_ref, lda, w_ref, work_ref, lwork_ref, info_ref);
 #endif
-                Rsyev(jobz, uplo, n, A, lda, w, work, lwork, &info);
+                Rsyev(jobz, uplo, n, A, lda, w, work, lwork, info);
 
                 if (info < 0) {
                     printf("info %d error\n", -(int)info);

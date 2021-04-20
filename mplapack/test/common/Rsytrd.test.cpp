@@ -75,9 +75,9 @@ void Rsytrd_test2(const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
             dsytrd_f77(uplo, &n, A_ref, &lda, d_ref, e_ref, tau_ref, work_ref, &lwork_ref, &info_ref);
 #else
-            Rsytrd(uplo, n, A_ref, lda, d_ref, e_ref, tau_ref, work_ref, lwork_ref, &info_ref);
+            Rsytrd(uplo, n, A_ref, lda, d_ref, e_ref, tau_ref, work_ref, lwork_ref, info_ref);
 #endif
-            Rsytrd(uplo, n, A, lda, d, e, tau, work, lwork, &info);
+            Rsytrd(uplo, n, A, lda, d, e, tau, work, lwork, info);
             lwork_ref = (int)cast2double(work_ref[0]);
             lwork = (int)cast2double(work[0]);
 #if defined VERBOSE_TEST
@@ -103,9 +103,9 @@ void Rsytrd_test2(const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 dsytrd_f77(uplo, &n, A_ref, &lda, d_ref, e_ref, tau_ref, work_ref, &lwork_ref, &info_ref);
 #else
-                Rsytrd(uplo, n, A_ref, lda, d_ref, e_ref, tau_ref, work_ref, lwork_ref, &info_ref);
+                Rsytrd(uplo, n, A_ref, lda, d_ref, e_ref, tau_ref, work_ref, lwork_ref, info_ref);
 #endif
-                Rsytrd(uplo, n, A, lda, d, e, tau, work, lwork, &info);
+                Rsytrd(uplo, n, A, lda, d, e, tau, work, lwork, info);
 
                 if (info != info_ref) {
                     printf("info differ! %d, %d\n", (int)info, (int)info_ref);

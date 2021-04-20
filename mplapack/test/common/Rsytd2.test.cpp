@@ -73,9 +73,9 @@ void Rsytd2_test2(const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 dsytd2_f77(uplo, &n, A_ref, &lda, d_ref, e_ref, tau_ref, &info_ref);
 #else
-                Rsytd2(uplo, n, A_ref, lda, d_ref, e_ref, tau_ref, &info_ref);
+                Rsytd2(uplo, n, A_ref, lda, d_ref, e_ref, tau_ref, info_ref);
 #endif
-                Rsytd2(uplo, n, A, lda, d, e, tau, &info);
+                Rsytd2(uplo, n, A, lda, d, e, tau, info);
 
                 if (info < 0) {
                     printf("info %d error\n", -(int)info);

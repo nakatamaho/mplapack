@@ -67,9 +67,9 @@ void Ctrtri_test2(const char *uplo, const char *diag) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 ztrtri_f77(uplo, diag, &n, A_ref, &lda, &info_ref);
 #else
-                Ctrtri(uplo, diag, n, A_ref, lda, &info_ref);
+                Ctrtri(uplo, diag, n, A_ref, lda, info_ref);
 #endif
-                Ctrtri(uplo, diag, n, A, lda, &info);
+                Ctrtri(uplo, diag, n, A, lda, info);
 
                 if (info_ref != info) {
                     printf("info differ! %d, %d\n", (int)info_ref, (int)info);

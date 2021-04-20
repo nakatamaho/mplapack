@@ -73,9 +73,9 @@ void Chetd2_test2(const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 zhetd2_f77(uplo, &n, A_ref, &lda, d_ref, e_ref, tau_ref, &info_ref);
 #else
-                Chetd2(uplo, n, A_ref, lda, d_ref, e_ref, tau_ref, &info_ref);
+                Chetd2(uplo, n, A_ref, lda, d_ref, e_ref, tau_ref, info_ref);
 #endif
-                Chetd2(uplo, n, A, lda, d, e, tau, &info);
+                Chetd2(uplo, n, A, lda, d, e, tau, info);
 
                 if (info < 0) {
                     printf("info %d error\n", -(int)info);

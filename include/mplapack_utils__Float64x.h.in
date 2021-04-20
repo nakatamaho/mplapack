@@ -104,7 +104,6 @@ _Float64x sign(_Float64x a, _Float64x b);
 double cast2double(_Float64x a);
 long nint(_Float64x a);
 std::complex<_Float64x> Real2Complex(_Float64x a, _Float64x b);
-_Float64x Cabs1(std::complex<_Float64x> zdum);
 
 // implementation of sign transfer function.
 inline _Float64x sign(_Float64x a, _Float64x b) {
@@ -131,12 +130,6 @@ inline std::complex<_Float64x> Real2Complex(_Float64x a, _Float64x b) {
     std::complex<_Float64x> ret;
     ret.real(a);
     ret.imag(b);
-    return ret;
-}
-
-inline _Float64x Cabs1(std::complex<_Float64x> zdum) {
-    _Float64x ret;
-    ret = std::abs(zdum.real()) + std::abs(zdum.imag());
     return ret;
 }
 

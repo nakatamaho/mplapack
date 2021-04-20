@@ -66,9 +66,9 @@ void Classq_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 zlassq_f77(&n, x_ref, &incx, &scale_ref, &sumsq_ref);
 #else
-                Classq(n, x_ref, incx, &scale_ref, &sumsq_ref);
+                Classq(n, x_ref, incx, scale_ref, sumsq_ref);
 #endif
-                Classq(n, x, incx, &scale, &sumsq);
+                Classq(n, x, incx, scale, sumsq);
 
                 diff = abs(scale_ref - scale);
                 if (diff > EPSILON) {

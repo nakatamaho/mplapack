@@ -53,9 +53,9 @@ void Rlartg_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         dlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
 #else
-        Rlartg(f_ref, g_ref, &cs_ref, &sn_ref, &r_ref);
+        Rlartg(f_ref, g_ref, cs_ref, sn_ref, r_ref);
 #endif
-        Rlartg(f, g, &cs, &sn, &r);
+        Rlartg(f, g, cs, sn, r);
 
         diff = abs(cs_ref - cs);
         if (diff > EPSILON) {
@@ -99,9 +99,9 @@ void Rlartg_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         dlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
 #else
-        Rlartg(f_ref, g_ref, &cs_ref, &sn_ref, &r_ref);
+        Rlartg(f_ref, g_ref, cs_ref, sn_ref, r_ref);
 #endif
-        Rlartg(f, g, &cs, &sn, &r);
+        Rlartg(f, g, cs, sn, r);
 
         diff = abs(cs_ref - cs);
         if (diff > EPSILON) {
@@ -145,9 +145,9 @@ void Rlartg_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         dlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
 #else
-        Rlartg(f_ref, g_ref, &cs_ref, &sn_ref, &r_ref);
+        Rlartg(f_ref, g_ref, cs_ref, sn_ref, r_ref);
 #endif
-        Rlartg(f, g, &cs, &sn, &r);
+        Rlartg(f, g, cs, sn, r);
 
         diff = abs(cs_ref - cs);
         if (diff > EPSILON) {

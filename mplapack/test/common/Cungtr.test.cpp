@@ -76,9 +76,9 @@ void Cungtr_test2(const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
             zungtr_f77(uplo, &n, A_ref, &lda, tau_ref, work_ref, &lwork, &info_ref);
 #else
-            Cungtr(uplo, n, A_ref, lda, tau_ref, work_ref, lwork, &info_ref);
+            Cungtr(uplo, n, A_ref, lda, tau_ref, work_ref, lwork, info_ref);
 #endif
-            Cungtr(uplo, n, A, lda, tau, work, lwork, &info);
+            Cungtr(uplo, n, A, lda, tau, work, lwork, info);
 
             worksize_ref = (int)cast2double(work_ref[0].real());
             worksize = (int)cast2double(work[0].real());
@@ -100,9 +100,9 @@ void Cungtr_test2(const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 zungtr_f77(uplo, &n, A_ref, &lda, tau_ref, work_ref, &lwork, &info_ref);
 #else
-                Cungtr(uplo, n, A_ref, lda, tau_ref, work_ref, lwork, &info_ref);
+                Cungtr(uplo, n, A_ref, lda, tau_ref, work_ref, lwork, info_ref);
 #endif
-                Cungtr(uplo, n, A, lda, tau, work, lwork, &info);
+                Cungtr(uplo, n, A, lda, tau, work, lwork, info);
 
                 diff = infnorm(A_ref, A, matlen(lda, n), 1);
                 if (diff > EPSILON2) {

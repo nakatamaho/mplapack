@@ -76,9 +76,9 @@ void Rtrtrs_test2(const char *uplo, const char *trans, const char *diag) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                         dtrtrs_f77(uplo, trans, diag, &n, &nrhs, A_ref, &lda, B_ref, &ldb, &info_ref);
 #else
-                        Rtrtrs(uplo, trans, diag, n, nrhs, A_ref, lda, B_ref, ldb, &info_ref);
+                        Rtrtrs(uplo, trans, diag, n, nrhs, A_ref, lda, B_ref, ldb, info_ref);
 #endif
-                        Rtrtrs(uplo, trans, diag, n, nrhs, A, lda, B, ldb, &info);
+                        Rtrtrs(uplo, trans, diag, n, nrhs, A, lda, B, ldb, info);
 
                         if (info != info_ref) {
                             printf("info differ! %d, %d\n", (int)info, (int)info_ref);

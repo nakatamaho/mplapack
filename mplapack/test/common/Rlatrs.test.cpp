@@ -140,9 +140,9 @@ void Rlatrs_test2(const char *uplo, const char *trans, const char *diag, const c
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 dlatrs_f77(uplo, trans, diag, normin, &n, A_ref, &lda, x_ref, &scale_ref, cnorm_ref, &info_ref);
 #else
-                Rlatrs(uplo, trans, diag, normin, n, A_ref, lda, x_ref, &scale_ref, cnorm_ref, &info_ref);
+                Rlatrs(uplo, trans, diag, normin, n, A_ref, lda, x_ref, scale_ref, cnorm_ref, info_ref);
 #endif
-                Rlatrs(uplo, trans, diag, normin, n, A, lda, x, &scale, cnorm, &info);
+                Rlatrs(uplo, trans, diag, normin, n, A, lda, x, scale, cnorm, info);
                 if (info != info_ref) {
                     printf("info differ! %d, %d\n", (int)info, (int)info_ref);
                     errorflag = TRUE;

@@ -78,11 +78,11 @@ void Cgetrs_test2(const char *trans) {
                         zgetrf_f77(&n, &n, A_ref, &lda, ipiv_ref, &info_ref);
                         zgetrs_f77(trans, &n, &nrhs, A_ref, &lda, ipiv_ref, B_ref, &ldb, &info_ref);
 #else
-                        Cgetrf(n, n, A_ref, lda, ipiv_ref, &info_ref);
-                        Cgetrs(trans, n, nrhs, A_ref, lda, ipiv_ref, B_ref, ldb, &info_ref);
+                        Cgetrf(n, n, A_ref, lda, ipiv_ref, info_ref);
+                        Cgetrs(trans, n, nrhs, A_ref, lda, ipiv_ref, B_ref, ldb, info_ref);
 #endif
-                        Cgetrf(n, n, A, lda, ipiv, &info);
-                        Cgetrs(trans, n, nrhs, A, lda, ipiv, B, ldb, &info);
+                        Cgetrf(n, n, A, lda, ipiv, info);
+                        Cgetrs(trans, n, nrhs, A, lda, ipiv, B, ldb, info);
 
                         if (info < 0) {
                             printf("info %d error\n", -(int)info);

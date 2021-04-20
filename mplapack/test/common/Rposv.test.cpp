@@ -91,9 +91,9 @@ void Rposv_test2(const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                         dposv_f77(uplo, &n, &nrhs, A_ref, &lda, B_ref, &ldb, &info_ref);
 #else
-                        Rposv(uplo, n, nrhs, A_ref, lda, B_ref, ldb, &info_ref);
+                        Rposv(uplo, n, nrhs, A_ref, lda, B_ref, ldb, info_ref);
 #endif
-                        Rposv(uplo, n, nrhs, A, lda, B, ldb, &info);
+                        Rposv(uplo, n, nrhs, A, lda, B, ldb, info);
                         if (info < 0) {
                             printf("info %d error\n", -(int)info);
                             errorflag = TRUE;

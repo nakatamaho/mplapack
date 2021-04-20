@@ -65,9 +65,9 @@ void Rlasrt_test2(const char *id) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
             dlasrt_f77(id, &n, d_ref, &info_ref);
 #else
-            Rlasrt(id, n, d_ref, &info_ref);
+            Rlasrt(id, n, d_ref, info_ref);
 #endif
-            Rlasrt(id, n, d, &info);
+            Rlasrt(id, n, d, info);
 
             if (info_ref != info) {
                 printf("#error info info:%d info:%d\n", (int)info_ref, (int)info);

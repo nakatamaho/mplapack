@@ -120,9 +120,9 @@ void Claev2_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         zlaev2_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
 #else
-        Claev2(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
+        Claev2(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, cs1_ref, sn1_ref);
 #endif
-        Claev2(a, b, c, &rt1, &rt2, &cs1, &sn1);
+        Claev2(a, b, c, rt1, rt2, cs1, sn1);
         errorcheck(rt1_ref, rt2_ref, cs1_ref, sn1_ref, rt1, rt2, cs1, sn1);
 
 /* checking adf = ab case (|a-c| = 2|b|) */
@@ -136,9 +136,9 @@ void Claev2_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         zlaev2_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
 #else
-        Claev2(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
+        Claev2(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, cs1_ref, sn1_ref);
 #endif
-        Claev2(a, b, c, &rt1, &rt2, &cs1, &sn1);
+        Claev2(a, b, c, rt1, rt2, cs1, sn1);
         errorcheck(rt1_ref, rt2_ref, cs1_ref, sn1_ref, rt1, rt2, cs1, sn1);
 
 /* checking sm = 0 case */
@@ -152,9 +152,9 @@ void Claev2_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         zlaev2_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
 #else
-        Claev2(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
+        Claev2(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, cs1_ref, sn1_ref);
 #endif
-        Claev2(a, b, c, &rt1, &rt2, &cs1, &sn1);
+        Claev2(a, b, c, rt1, rt2, cs1, sn1);
         errorcheck(rt1_ref, rt2_ref, cs1_ref, sn1_ref, rt1, rt2, cs1, sn1);
 
 /*zero eigenvalue case */
@@ -167,9 +167,9 @@ void Claev2_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         zlaev2_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
 #else
-        Claev2(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
+        Claev2(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, cs1_ref, sn1_ref);
 #endif
-        Claev2(a, b, c, &rt1, &rt2, &cs1, &sn1);
+        Claev2(a, b, c, rt1, rt2, cs1, sn1);
         errorcheck(rt1_ref, rt2_ref, cs1_ref, sn1_ref, rt1, rt2, cs1, sn1);
 
 /*zero matrix case */
@@ -181,9 +181,9 @@ void Claev2_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         zlaev2_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
 #else
-        Claev2(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
+        Claev2(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, cs1_ref, sn1_ref);
 #endif
-        Claev2(a, b, c, &rt1, &rt2, &cs1, &sn1);
+        Claev2(a, b, c, rt1, rt2, cs1, sn1);
         errorcheck(rt1_ref, rt2_ref, cs1_ref, sn1_ref, rt1, rt2, cs1, sn1);
 
 /*Identity matrix case */
@@ -197,9 +197,9 @@ void Claev2_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         zlaev2_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
 #else
-        Claev2(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
+        Claev2(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, cs1_ref, sn1_ref);
 #endif
-        Claev2(a, b, c, &rt1, &rt2, &cs1, &sn1);
+        Claev2(a, b, c, rt1, rt2, cs1, sn1);
         errorcheck(rt1_ref, rt2_ref, cs1_ref, sn1_ref, rt1, rt2, cs1, sn1);
     }
 }

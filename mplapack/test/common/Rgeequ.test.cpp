@@ -80,9 +80,9 @@ void Rgeequ_test(void) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                     dgeequ_f77(&m, &n, A_ref, &lda, R_ref, C_ref, &rowcnd_ref, &colcnd_ref, &amax_ref, &info_ref);
 #else
-                    Rgeequ(m, n, A_ref, lda, R_ref, C_ref, &rowcnd_ref, &colcnd_ref, &amax_ref, &info_ref);
+                    Rgeequ(m, n, A_ref, lda, R_ref, C_ref, rowcnd_ref, colcnd_ref, amax_ref, info_ref);
 #endif
-                    Rgeequ(m, n, A, lda, R, C, &rowcnd, &colcnd, &amax, &info);
+                    Rgeequ(m, n, A, lda, R, C, rowcnd, colcnd, amax, info);
 
                     if (info != info_ref) {
                         printf("Diff info: n:%d m:%d lda %d\n", n, m, lda);

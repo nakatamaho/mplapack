@@ -66,9 +66,9 @@ void Rlauu2_test2(const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 dlauu2_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else
-                Rlauu2(uplo, n, A_ref, lda, &info_ref);
+                Rlauu2(uplo, n, A_ref, lda, info_ref);
 #endif
-                Rlauu2(uplo, n, A, lda, &info);
+                Rlauu2(uplo, n, A, lda, info);
 
                 if (info < 0) {
                     printf("info %d error\n", -(int)info);
@@ -98,9 +98,9 @@ void Rlauu2_test2(const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 dlauu2_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else
-                Rlauu2(uplo, n, A_ref, lda, &info_ref);
+                Rlauu2(uplo, n, A_ref, lda, info_ref);
 #endif
-                Rlauu2(uplo, n, A, lda, &info);
+                Rlauu2(uplo, n, A, lda, info);
 
                 if (info < 0) {
                     printf("info %d error\n", -(int)info);

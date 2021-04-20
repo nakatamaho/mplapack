@@ -75,9 +75,9 @@ void Chetrd_test2(const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
             zhetrd_f77(uplo, &n, A_ref, &lda, d_ref, e_ref, tau_ref, work_ref, &lwork_ref, &info_ref);
 #else
-            Chetrd(uplo, n, A_ref, lda, d_ref, e_ref, tau_ref, work_ref, lwork_ref, &info_ref);
+            Chetrd(uplo, n, A_ref, lda, d_ref, e_ref, tau_ref, work_ref, lwork_ref, info_ref);
 #endif
-            Chetrd(uplo, n, A, lda, d, e, tau, work, lwork, &info);
+            Chetrd(uplo, n, A, lda, d, e, tau, work, lwork, info);
             lwork_ref = (int)cast2double(work_ref[0].real());
             lwork = (int)cast2double(work[0].real());
 #if defined VERBOSE_TEST
@@ -103,9 +103,9 @@ void Chetrd_test2(const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 zhetrd_f77(uplo, &n, A_ref, &lda, d_ref, e_ref, tau_ref, work_ref, &lwork_ref, &info_ref);
 #else
-                Chetrd(uplo, n, A_ref, lda, d_ref, e_ref, tau_ref, work_ref, lwork_ref, &info_ref);
+                Chetrd(uplo, n, A_ref, lda, d_ref, e_ref, tau_ref, work_ref, lwork_ref, info_ref);
 #endif
-                Chetrd(uplo, n, A, lda, d, e, tau, work, lwork, &info);
+                Chetrd(uplo, n, A, lda, d, e, tau, work, lwork, info);
 
                 if (info != info_ref) {
                     printf("info differ! %d, %d\n", (int)info, (int)info_ref);

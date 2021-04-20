@@ -152,9 +152,9 @@ void Csteqr_test2(const char *compz) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 zsteqr_f77(compz, &n_ref, D_ref, E_ref, Z_ref, &ldz_ref, work_ref, &info_ref);
 #else
-                Csteqr(compz, n_ref, D_ref, E_ref, Z_ref, ldz_ref, work_ref, &info_ref);
+                Csteqr(compz, n_ref, D_ref, E_ref, Z_ref, ldz_ref, work_ref, info_ref);
 #endif
-                Csteqr(compz, n, D, E, Z, ldz, work, &info);
+                Csteqr(compz, n, D, E, Z, ldz, work, info);
 
                 if (info < 0) {
                     printf("info %d error\n", -(int)info);

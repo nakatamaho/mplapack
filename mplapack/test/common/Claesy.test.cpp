@@ -59,9 +59,9 @@ void Claesy_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
-        Claesy(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
+        Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);
 #endif
-        Claesy(a, b, c, &rt1, &rt2, &evscal, &cs1, &sn1);
+        Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
         if (abs(rt1_ref - rt1) > EPSILON) {
             errorflag = TRUE;
@@ -95,9 +95,9 @@ void Claesy_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
-        Claesy(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
+        Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);
 #endif
-        Claesy(a, b, c, &rt1, &rt2, &evscal, &cs1, &sn1);
+        Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
         if (abs(rt1_ref - rt1) > EPSILON) {
             errorflag = TRUE;
@@ -130,9 +130,9 @@ void Claesy_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
-        Claesy(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
+        Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);
 #endif
-        Claesy(a, b, c, &rt1, &rt2, &evscal, &cs1, &sn1);
+        Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
         if (abs(rt1_ref - rt1) > EPSILON) {
             errorflag = TRUE;
@@ -164,9 +164,9 @@ void Claesy_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
-        Claesy(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
+        Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);
 #endif
-        Claesy(a, b, c, &rt1, &rt2, &evscal, &cs1, &sn1);
+        Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
         if (abs(rt1_ref - rt1) > EPSILON) {
             errorflag = TRUE;
@@ -197,9 +197,9 @@ void Claesy_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
-        Claesy(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
+        Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);
 #endif
-        Claesy(a, b, c, &rt1, &rt2, &evscal, &cs1, &sn1);
+        Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
         if (abs(rt1_ref - rt1) > EPSILON) {
             errorflag = TRUE;
@@ -232,9 +232,9 @@ void Claesy_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
-        Claesy(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
+        Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);
 #endif
-        Claesy(a, b, c, &rt1, &rt2, &evscal, &cs1, &sn1);
+        Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
         if (abs(rt1_ref - rt1) > EPSILON) {
             errorflag = TRUE;
@@ -272,9 +272,9 @@ void Claesy_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
     zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
-    Claesy(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
+    Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);
 #endif
-    Claesy(a, b, c, &rt1, &rt2, &evscal, &cs1, &sn1);
+    Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
     if (abs(rt1_ref - rt1) > EPSILON) {
         errorflag = TRUE;

@@ -39,7 +39,6 @@ using namespace mpfr;
 mpreal pi(mpreal dummy);
 mpreal sign(mpreal a, mpreal b);
 mpcomplex Real2Complex(mpreal a, mpreal b);
-mpreal Cabs1(mpcomplex zdum);
 
 // implementation of sign transfer function.
 inline mpreal sign(mpreal a, mpreal b) {
@@ -79,10 +78,10 @@ inline mpcomplex Real2Complex(mpreal a, mpreal b) {
     return ret;
 }
 
-inline mpreal Cabs1(mpcomplex zdum) {
-    mpreal ret;
-    ret = abs(zdum.real()) + abs(zdum.imag());
-    return ret;
+inline double cast2double(mpreal a) {
+    double tmp;
+    tmp = a;
+    return a;
 }
 
 #endif

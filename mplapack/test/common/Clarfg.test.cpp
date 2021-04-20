@@ -68,9 +68,9 @@ void Clarfg_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 zlarfg_f77(&n, &alpha_ref, x_ref, &incx, &tau_ref);
 #else
-                Clarfg(n, &alpha_ref, x_ref, incx, &tau_ref);
+                Clarfg(n, alpha_ref, x_ref, incx, tau_ref);
 #endif
-                Clarfg(n, &alpha, x, incx, &tau);
+                Clarfg(n, alpha, x, incx, tau);
 
                 diff = abs(alpha_ref - alpha);
                 if (diff > EPSILON) {

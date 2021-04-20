@@ -83,9 +83,9 @@ void Rorgql_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                         dorgql_f77(&m, &n, &k, A_ref, &lda, tau_ref, work_ref, &lwork, &info_ref);
 #else
-                        Rorgql(m, n, k, A_ref, lda, tau_ref, work_ref, lwork, &info_ref);
+                        Rorgql(m, n, k, A_ref, lda, tau_ref, work_ref, lwork, info_ref);
 #endif
-                        Rorgql(m, n, k, A, lda, tau, work, lwork, &info);
+                        Rorgql(m, n, k, A, lda, tau, work, lwork, info);
                         worksize_ref = (INTEGER_REF)work_ref[0];
                         worksize = (INTEGER)cast2double(work[0]);
 #if defined VERBOSE_TEST
@@ -100,9 +100,9 @@ void Rorgql_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                         dorgql_f77(&m, &n, &k, A_ref, &lda, tau_ref, work_ref, &lwork, &info_ref);
 #else
-                        Rorgql(m, n, k, A_ref, lda, tau_ref, work_ref, lwork, &info_ref);
+                        Rorgql(m, n, k, A_ref, lda, tau_ref, work_ref, lwork, info_ref);
 #endif
-                        Rorgql(m, n, k, A, lda, tau, work, lwork, &info);
+                        Rorgql(m, n, k, A, lda, tau, work, lwork, info);
 
                         diff = infnorm(A_ref, A, matlen(lda, n), 1);
                         if (diff > EPSILON2) {

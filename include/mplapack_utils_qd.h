@@ -36,7 +36,6 @@ qd_real pi(qd_real dummy);
 
 qd_real sign(qd_real a, qd_real b);
 qd_complex Real2Complex(qd_real a, qd_real b);
-qd_real Cabs1(qd_complex zdum);
 
 // implementation of sign transfer function.
 inline qd_real sign(qd_real a, qd_real b) {
@@ -75,10 +74,6 @@ inline long __qd_nint(qd_real a) {
     return i;
 }
 
-inline qd_real Cabs1(qd_complex zdum) {
-    qd_real ret;
-    ret = abs(zdum.real()) + abs(zdum.imag());
-    return ret;
-}
+inline double cast2double(qd_real a) { return a.x[0]; }
 
 #endif

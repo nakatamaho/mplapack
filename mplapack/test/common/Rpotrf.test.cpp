@@ -66,9 +66,9 @@ void Rpotrf_test2(const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 dpotf2_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else
-                Rpotrf(uplo, n, A_ref, lda, &info_ref);
+                Rpotrf(uplo, n, A_ref, lda, info_ref);
 #endif
-                Rpotrf(uplo, n, A, lda, &info);
+                Rpotrf(uplo, n, A, lda, info);
 
                 if (info < 0) {
                     printf("info %d error\n", -(int)info);
@@ -103,9 +103,9 @@ void Rpotrf_test2(const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 dpotrf_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else
-                Rpotrf(uplo, n, A_ref, lda, &info_ref);
+                Rpotrf(uplo, n, A_ref, lda, info_ref);
 #endif
-                Rpotrf(uplo, n, A, lda, &info);
+                Rpotrf(uplo, n, A, lda, info);
 
                 if (info < 0) {
                     printf("info %d error\n", -(int)info);

@@ -66,9 +66,9 @@ void Rlassq_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 dlassq_f77(&n, x_ref, &incx, &scale_ref, &sumsq_ref);
 #else
-                Rlassq(n, x_ref, incx, &scale_ref, &sumsq_ref);
+                Rlassq(n, x_ref, incx, scale_ref, sumsq_ref);
 #endif
-                Rlassq(n, x, incx, &scale, &sumsq);
+                Rlassq(n, x, incx, scale, sumsq);
 
                 diff = abs(scale_ref - scale);
                 if (diff > EPSILON2) {

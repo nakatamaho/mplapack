@@ -78,11 +78,11 @@ void Rgetrs_test2(const char *trans) {
                         dgetrf_f77(&n, &n, A_ref, &lda, ipiv_ref, &info_ref);
                         dgetrs_f77(trans, &n, &nrhs, A_ref, &lda, ipiv_ref, B_ref, &ldb, &info_ref);
 #else
-                        Rgetrf(n, n, A_ref, lda, ipiv_ref, &info_ref);
-                        Rgetrs(trans, n, nrhs, A_ref, lda, ipiv_ref, B_ref, ldb, &info_ref);
+                        Rgetrf(n, n, A_ref, lda, ipiv_ref, info_ref);
+                        Rgetrs(trans, n, nrhs, A_ref, lda, ipiv_ref, B_ref, ldb, info_ref);
 #endif
-                        Rgetrf(n, n, A, lda, ipiv, &info);
-                        Rgetrs(trans, n, nrhs, A, lda, ipiv, B, ldb, &info);
+                        Rgetrf(n, n, A, lda, ipiv, info);
+                        Rgetrs(trans, n, nrhs, A, lda, ipiv, B, ldb, info);
 
                         if (info < 0) {
                             printf("info %d error\n", -(int)info);

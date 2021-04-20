@@ -151,9 +151,9 @@ void Rsteqr_test2(const char *compz) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 dsteqr_f77(compz, &n_ref, D_ref, E_ref, Z_ref, &ldz_ref, work_ref, &info_ref);
 #else
-                Rsteqr(compz, n_ref, D_ref, E_ref, Z_ref, ldz_ref, work_ref, &info_ref);
+                Rsteqr(compz, n_ref, D_ref, E_ref, Z_ref, ldz_ref, work_ref, info_ref);
 #endif
-                Rsteqr(compz, n, D, E, Z, ldz, work, &info);
+                Rsteqr(compz, n, D, E, Z, ldz, work, info);
 
                 if (info < 0) {
                     printf("info %d error\n", -(int)info);

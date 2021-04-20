@@ -83,9 +83,9 @@ void Rpocon_test2(const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 dpotrf_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else
-                Rpotrf(uplo, n, A_ref, lda, &info_ref);
+                Rpotrf(uplo, n, A_ref, lda, info_ref);
 #endif
-                Rpotrf(uplo, n, A, lda, &info);
+                Rpotrf(uplo, n, A, lda, info);
                 if (info > 0) {
 #if defined VERBOSE_TEST
                     printf("non psd matrix in %d-th (not an error)\n", (int)info);
@@ -96,9 +96,9 @@ void Rpocon_test2(const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 dpocon_f77(uplo, &n, A_ref, &lda, &anorm_ref, &rcond_ref, work_ref, iwork_ref, &info_ref);
 #else
-                Rpocon(uplo, n, A_ref, lda, anorm_ref, &rcond_ref, work_ref, iwork_ref, &info_ref);
+                Rpocon(uplo, n, A_ref, lda, anorm_ref, rcond_ref, work_ref, iwork_ref, info_ref);
 #endif
-                Rpocon(uplo, n, A, lda, anorm, &rcond, work, iwork, &info);
+                Rpocon(uplo, n, A, lda, anorm, rcond, work, iwork, info);
                 if (info_ref != info) {
                     printf("info differ! %d, %d\n", (int)info_ref, (int)info);
                     errorflag = TRUE;

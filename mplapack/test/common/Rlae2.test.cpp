@@ -59,9 +59,9 @@ void Rlae2_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         dlae2_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref);
 #else
-        Rlae2(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref);
+        Rlae2(a_ref, b_ref, c_ref, rt1_ref, rt2_ref);
 #endif
-        Rlae2(a, b, c, &rt1, &rt2);
+        Rlae2(a, b, c, rt1, rt2);
 
         diff = abs(rt1_ref - rt1);
 #if defined VERBOSE_TEST
@@ -97,9 +97,9 @@ void Rlae2_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         dlae2_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref);
 #else
-        Rlae2(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref);
+        Rlae2(a_ref, b_ref, c_ref, rt1_ref, rt2_ref);
 #endif
-        Rlae2(a, b, c, &rt1, &rt2);
+        Rlae2(a, b, c, rt1, rt2);
 
         diff = abs(rt1_ref - rt1);
 #if defined VERBOSE_TEST
@@ -136,9 +136,9 @@ void Rlae2_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         dlae2_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref);
 #else
-        Rlae2(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref);
+        Rlae2(a_ref, b_ref, c_ref, rt1_ref, rt2_ref);
 #endif
-        Rlae2(a, b, c, &rt1, &rt2);
+        Rlae2(a, b, c, rt1, rt2);
 
         diff = abs(rt1_ref - rt1);
 #if defined VERBOSE_TEST

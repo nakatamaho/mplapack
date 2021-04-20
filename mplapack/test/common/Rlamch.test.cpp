@@ -67,12 +67,12 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <blas.h>
 #include <iostream>
-#include <lapack.h>
 #include <mpblas.h>
 #include <mplapack.h>
 #include <mplapack_debug.h>
+#include <blas.h>
+#include <lapack.h>
 
 #define VERBOSE_TEST
 

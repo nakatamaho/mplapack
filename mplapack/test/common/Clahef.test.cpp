@@ -96,9 +96,9 @@ void Clahef_test2(const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                             zlahef_f77(uplo, &n, &nb, &kb, A_ref, &lda, ipiv_ref, W_ref, &ldw, &info_ref);
 #else
-                            Clahef(uplo, n, nb, kb, A_ref, lda, ipiv_ref, W_ref, ldw, &info_ref);
+                            Clahef(uplo, n, nb, kb, A_ref, lda, ipiv_ref, W_ref, ldw, info_ref);
 #endif
-                            Clahef(uplo, n, nb, kb, A, lda, ipiv, W, ldw, &info);
+                            Clahef(uplo, n, nb, kb, A, lda, ipiv, W, ldw, info);
 
                             if (info < 0) {
                                 printf("info %d error\n", -(int)info);

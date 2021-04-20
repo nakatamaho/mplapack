@@ -70,9 +70,9 @@ void Rgetri_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
             dgetri_f77(&n, A_ref, &lda, ipiv_ref, work_ref, &lwork_ref, &info_ref);
 #else
-            Rgetri(n, A_ref, lda, ipiv_ref, work_ref, lwork_ref, &info_ref);
+            Rgetri(n, A_ref, lda, ipiv_ref, work_ref, lwork_ref, info_ref);
 #endif
-            Rgetri(n, A, lda, ipiv, work, lwork, &info);
+            Rgetri(n, A, lda, ipiv, work, lwork, info);
 
             lwork_ref = (int)cast2double(work_ref[0]);
             lwork = (int)cast2double(work[0]);
@@ -96,11 +96,11 @@ void Rgetri_test() {
                 dgetrf_f77(&n, &n, A_ref, &lda, ipiv_ref, &info_ref);
                 dgetri_f77(&n, A_ref, &lda, ipiv_ref, work_ref, &lwork_ref, &info_ref);
 #else
-                Rgetrf(n, n, A_ref, lda, ipiv_ref, &info_ref);
-                Rgetri(n, A_ref, lda, ipiv_ref, work_ref, lwork_ref, &info_ref);
+                Rgetrf(n, n, A_ref, lda, ipiv_ref, info_ref);
+                Rgetri(n, A_ref, lda, ipiv_ref, work_ref, lwork_ref, info_ref);
 #endif
-                Rgetrf(n, n, A, lda, ipiv, &info);
-                Rgetri(n, A, lda, ipiv, work, lwork, &info);
+                Rgetrf(n, n, A, lda, ipiv, info);
+                Rgetri(n, A, lda, ipiv, work, lwork, info);
 
                 if (info < 0) {
                     printf("info %d error\n", -(int)info);

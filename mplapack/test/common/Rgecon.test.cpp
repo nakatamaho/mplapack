@@ -85,16 +85,16 @@ void Rgecon_test2(const char *norm) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 dgetrf_f77(&n, &n, A_ref, &lda, ipiv_ref, &info_ref);
 #else
-                Rgetrf(n, n, A_ref, lda, ipiv_ref, &info_ref);
+                Rgetrf(n, n, A_ref, lda, ipiv_ref, info_ref);
 #endif
-                Rgetrf(n, n, A, lda, ipiv, &info);
+                Rgetrf(n, n, A, lda, ipiv, info);
 /* third, calculate condition number */
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 dgecon_f77(norm, &n, A_ref, &lda, &anorm_ref, &rcond_ref, work_ref, iwork_ref, &info_ref);
 #else
-                Rgecon(norm, n, A_ref, lda, anorm_ref, &rcond_ref, work_ref, iwork_ref, &info_ref);
+                Rgecon(norm, n, A_ref, lda, anorm_ref, rcond_ref, work_ref, iwork_ref, info_ref);
 #endif
-                Rgecon(norm, n, A, lda, anorm, &rcond, work, iwork, &info);
+                Rgecon(norm, n, A, lda, anorm, rcond, work, iwork, info);
                 if (info_ref != info) {
                     printf("info differ! %d, %d\n", (int)info_ref, (int)info);
                     errorflag = TRUE;

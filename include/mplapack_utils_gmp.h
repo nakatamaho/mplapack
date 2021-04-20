@@ -41,12 +41,12 @@ mpf_class pow(mpf_class x, mpf_class y);
 mpf_class cos(mpf_class x);
 mpf_class sin(mpf_class x);
 mpc_class exp(mpc_class x);
+mpf_class exp(mpf_class x);
 mpf_class pi(mpf_class dummy);
 
 mpf_class sign(mpf_class a, mpf_class b);
 mpf_class atan2(mpf_class a, mpf_class b);
 mpc_class Real2Complex(mpf_class a, mpf_class b);
-mpf_class Cabs1(mpc_class zdum);
 
 inline mpf_class sign(mpf_class a, mpf_class b) {
     mpf_class mtmp;
@@ -86,5 +86,7 @@ inline mplapackint nint(mpf_class a) {
     i = mpf_get_si(tmp.get_mpf_t());
     return i;
 }
+
+inline double cast2double(mpf_class a) { return a.get_d(); }
 
 #endif

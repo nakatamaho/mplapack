@@ -73,9 +73,9 @@ void Clascl_test2(const char *type) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                             zlascl_f77(type, &kl, &ku, &cfrom_ref, &cto_ref, &m, &n, A_ref, &lda, &info_ref);
 #else
-                            Clascl(type, kl, ku, cfrom_ref, cto_ref, m, n, A_ref, lda, &info_ref);
+                            Clascl(type, kl, ku, cfrom_ref, cto_ref, m, n, A_ref, lda, info_ref);
 #endif
-                            Clascl(type, kl, ku, cfrom, cto, m, n, A, lda, &info);
+                            Clascl(type, kl, ku, cfrom, cto, m, n, A, lda, info);
 
                             if (info_ref != info) {
                                 printf("error in info %d %d!!\n", (int)info_ref, (int)info);

@@ -37,7 +37,6 @@ dd_real pi(dd_real dummy);
 
 dd_real sign(dd_real a, dd_real b);
 dd_complex Real2Complex(dd_real a, dd_real b);
-dd_real Cabs1(dd_complex zdum);
 
 // implementation of sign transfer function.
 inline dd_real sign(dd_real a, dd_real b) {
@@ -76,10 +75,5 @@ inline long __dd_nint(dd_real a) {
     return i;
 }
 
-inline dd_real Cabs1(dd_complex zdum) {
-    dd_real ret;
-    ret = abs(zdum.real()) + abs(zdum.imag());
-    return ret;
-}
-
+inline double cast2double(dd_real a) { return a.x[0]; }
 #endif

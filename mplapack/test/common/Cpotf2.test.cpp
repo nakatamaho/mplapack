@@ -66,9 +66,9 @@ void Cpotf2_test2(const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 zpotf2_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else
-                Cpotf2(uplo, n, A_ref, lda, &info_ref);
+                Cpotf2(uplo, n, A_ref, lda, info_ref);
 #endif
-                Cpotf2(uplo, n, A, lda, &info);
+                Cpotf2(uplo, n, A, lda, info);
 
                 if (info < 0) {
                     printf("info %d error\n", -(int)info);
@@ -107,9 +107,9 @@ void Cpotf2_test2(const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 zpotf2_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else
-                Cpotf2(uplo, n, A_ref, lda, &info_ref);
+                Cpotf2(uplo, n, A_ref, lda, info_ref);
 #endif
-                Cpotf2(uplo, n, A, lda, &info);
+                Cpotf2(uplo, n, A, lda, info);
 
                 if (info < 0) {
                     printf("info %d error\n", -(int)info);

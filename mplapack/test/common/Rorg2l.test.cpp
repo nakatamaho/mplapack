@@ -80,9 +80,9 @@ void Rorg2l_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                         dorg2l_f77(&m, &n, &k, A_ref, &lda, tau_ref, work_ref, &info_ref);
 #else
-                        Rorg2l(m, n, k, A_ref, lda, tau_ref, work_ref, &info_ref);
+                        Rorg2l(m, n, k, A_ref, lda, tau_ref, work_ref, info_ref);
 #endif
-                        Rorg2l(m, n, k, A, lda, tau, work, &info);
+                        Rorg2l(m, n, k, A, lda, tau, work, info);
 
                         diff = infnorm(A_ref, A, matlen(lda, n), 1);
                         if (diff > EPSILON) {

@@ -118,9 +118,9 @@ void Rlaev2_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         dlaev2_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
 #else
-        Rlaev2(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
+        Rlaev2(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, cs1_ref, sn1_ref);
 #endif
-        Rlaev2(a, b, c, &rt1, &rt2, &cs1, &sn1);
+        Rlaev2(a, b, c, rt1, rt2, cs1, sn1);
         errorcheck(rt1_ref, rt2_ref, cs1_ref, sn1_ref, rt1, rt2, cs1, sn1);
 
 /* checking adf = ab case (|a-c| = 2|b|) */
@@ -134,9 +134,9 @@ void Rlaev2_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         dlaev2_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
 #else
-        Rlaev2(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
+        Rlaev2(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, cs1_ref, sn1_ref);
 #endif
-        Rlaev2(a, b, c, &rt1, &rt2, &cs1, &sn1);
+        Rlaev2(a, b, c, rt1, rt2, cs1, sn1);
         errorcheck(rt1_ref, rt2_ref, cs1_ref, sn1_ref, rt1, rt2, cs1, sn1);
 
 /* checking sm = 0 case */
@@ -150,9 +150,9 @@ void Rlaev2_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         dlaev2_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
 #else
-        Rlaev2(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
+        Rlaev2(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, cs1_ref, sn1_ref);
 #endif
-        Rlaev2(a, b, c, &rt1, &rt2, &cs1, &sn1);
+        Rlaev2(a, b, c, rt1, rt2, cs1, sn1);
         errorcheck(rt1_ref, rt2_ref, cs1_ref, sn1_ref, rt1, rt2, cs1, sn1);
 
 /*zero eigenvalue case */
@@ -165,9 +165,9 @@ void Rlaev2_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         dlaev2_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
 #else
-        Rlaev2(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
+        Rlaev2(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, cs1_ref, sn1_ref);
 #endif
-        Rlaev2(a, b, c, &rt1, &rt2, &cs1, &sn1);
+        Rlaev2(a, b, c, rt1, rt2, cs1, sn1);
         errorcheck(rt1_ref, rt2_ref, cs1_ref, sn1_ref, rt1, rt2, cs1, sn1);
 
 /*zero matrix case */
@@ -179,9 +179,9 @@ void Rlaev2_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         dlaev2_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
 #else
-        Rlaev2(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
+        Rlaev2(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, cs1_ref, sn1_ref);
 #endif
-        Rlaev2(a, b, c, &rt1, &rt2, &cs1, &sn1);
+        Rlaev2(a, b, c, rt1, rt2, cs1, sn1);
         errorcheck(rt1_ref, rt2_ref, cs1_ref, sn1_ref, rt1, rt2, cs1, sn1);
 
 /*Identity matrix case */
@@ -195,9 +195,9 @@ void Rlaev2_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
         dlaev2_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
 #else
-        Rlaev2(a_ref, b_ref, c_ref, &rt1_ref, &rt2_ref, &cs1_ref, &sn1_ref);
+        Rlaev2(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, cs1_ref, sn1_ref);
 #endif
-        Rlaev2(a, b, c, &rt1, &rt2, &cs1, &sn1);
+        Rlaev2(a, b, c, rt1, rt2, cs1, sn1);
         errorcheck(rt1_ref, rt2_ref, cs1_ref, sn1_ref, rt1, rt2, cs1, sn1);
     }
 }

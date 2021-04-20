@@ -66,9 +66,9 @@ void Rsterf_test(void) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
             dsterf_f77(&n, D_ref, E_ref, &info_ref);
 #else
-            Rsterf(n, D_ref, E_ref, &info_ref);
+            Rsterf(n, D_ref, E_ref, info_ref);
 #endif
-            Rsterf(n, D, E, &info);
+            Rsterf(n, D, E, info);
 
             if (info < 0) {
                 printf("info %d error\n", -(int)info);

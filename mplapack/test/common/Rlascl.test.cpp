@@ -73,9 +73,9 @@ void Rlascl_test2(const char *type) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                             dlascl_f77(type, &kl, &ku, &cfrom_ref, &cto_ref, &m, &n, A_ref, &lda, &info_ref);
 #else
-                            Rlascl(type, kl, ku, cfrom_ref, cto_ref, m, n, A_ref, lda, &info_ref);
+                            Rlascl(type, kl, ku, cfrom_ref, cto_ref, m, n, A_ref, lda, info_ref);
 #endif
-                            Rlascl(type, kl, ku, cfrom, cto, m, n, A, lda, &info);
+                            Rlascl(type, kl, ku, cfrom, cto, m, n, A, lda, info);
 
                             if (info_ref != info) {
                                 printf("error in info %d %d!!\n", (int)info_ref, (int)info);

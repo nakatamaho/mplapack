@@ -69,8 +69,8 @@ void Rpotri_test2(const char *uplo) {
                 dpotf2_f77(uplo, &n, A_ref, &lda, &info_ref);
                 dpotri_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else
-                Rpotrf(uplo, n, A_ref, lda, &info_ref);
-                Rpotri(uplo, n, A_ref, lda, &info_ref);
+                Rpotrf(uplo, n, A_ref, lda, info_ref);
+                Rpotri(uplo, n, A_ref, lda, info_ref);
 #endif
                 for (int p = 0; p < matlen(lda, n); p++) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
@@ -92,11 +92,11 @@ void Rpotri_test2(const char *uplo) {
                 dpotf2_f77(uplo, &n, A_ref, &lda, &info_ref);
                 dpotri_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else
-                Rpotrf(uplo, n, A_ref, lda, &info_ref);
-                Rpotri(uplo, n, A_ref, lda, &info_ref);
+                Rpotrf(uplo, n, A_ref, lda, info_ref);
+                Rpotri(uplo, n, A_ref, lda, info_ref);
 #endif
-                Rpotrf(uplo, n, A, lda, &info);
-                Rpotri(uplo, n, A, lda, &info);
+                Rpotrf(uplo, n, A, lda, info);
+                Rpotri(uplo, n, A, lda, info);
 
                 if (info < 0) {
 #if defined VERBOSE_TEST

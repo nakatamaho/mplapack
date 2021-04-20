@@ -96,9 +96,9 @@ void Clasyf_test2(const char *uplo) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                             zlasyf_f77(uplo, &n, &nb, &kb, A_ref, &lda, ipiv_ref, W_ref, &ldw, &info_ref);
 #else
-                            Clasyf(uplo, n, nb, kb, A_ref, lda, ipiv_ref, W_ref, ldw, &info_ref);
+                            Clasyf(uplo, n, nb, kb, A_ref, lda, ipiv_ref, W_ref, ldw, info_ref);
 #endif
-                            Clasyf(uplo, n, nb, kb, A, lda, ipiv, W, ldw, &info);
+                            Clasyf(uplo, n, nb, kb, A, lda, ipiv, W, ldw, info);
 
                             if (info < 0) {
                                 printf("info %d error\n", -(int)info);

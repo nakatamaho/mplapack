@@ -69,9 +69,9 @@ void Rlarfg_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 dlarfg_f77(&n, &alpha_ref, x_ref, &incx, &tau_ref);
 #else
-                Rlarfg(n, &alpha_ref, x_ref, incx, &tau_ref);
+                Rlarfg(n, alpha_ref, x_ref, incx, tau_ref);
 #endif
-                Rlarfg(n, &alpha, x, incx, &tau);
+                Rlarfg(n, alpha, x, incx, tau);
 
                 diff = abs(alpha_ref - alpha);
                 if (diff > EPSILON) {

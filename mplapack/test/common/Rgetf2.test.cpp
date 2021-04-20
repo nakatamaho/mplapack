@@ -79,9 +79,9 @@ void Rgetf2_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                     dgetf2_f77(&m, &n, A_ref, &lda, ipiv_ref, &info_ref);
 #else
-                    Rgetf2(m, n, A_ref, lda, ipiv_ref, &info_ref);
+                    Rgetf2(m, n, A_ref, lda, ipiv_ref, info_ref);
 #endif
-                    Rgetf2(m, n, A, lda, ipiv, &info);
+                    Rgetf2(m, n, A, lda, ipiv, info);
 
                     diff = infnorm(A_ref, A, matlen(lda, n), 1);
                     if (diff > EPSILON) {

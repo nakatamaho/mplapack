@@ -77,9 +77,9 @@ void Rgesv_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                         dgesv_f77(&n, &nrhs, A_ref, &lda, ipiv_ref, B_ref, &ldb, &info_ref);
 #else
-                        Rgesv(n, nrhs, A_ref, lda, ipiv_ref, B_ref, ldb, &info_ref);
+                        Rgesv(n, nrhs, A_ref, lda, ipiv_ref, B_ref, ldb, info_ref);
 #endif
-                        Rgesv(n, nrhs, A, lda, ipiv, B, ldb, &info);
+                        Rgesv(n, nrhs, A, lda, ipiv, B, ldb, info);
 
                         if (info < 0) {
                             printf("info %d error\n", -(int)info);

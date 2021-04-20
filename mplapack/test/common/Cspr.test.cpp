@@ -27,11 +27,13 @@
  * SUCH DAMAGE.
  *
  */
-#include <blas.h>
-#include <lapack.h>
+
 #include <mpblas.h>
 #include <mplapack.h>
 #include <mplapack_debug.h>
+
+#include <blas.h>
+#include <lapack.h>
 
 #if defined VERBOSE_TEST
 #include <iostream>
