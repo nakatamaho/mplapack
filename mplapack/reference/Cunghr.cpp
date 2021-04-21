@@ -99,7 +99,7 @@ void Cunghr(INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, I
     //
     INTEGER j = 0;
     INTEGER i = 0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     for (j = ihi; j >= ilo + 1; j = j - 1) {
         for (i = 1; i <= j - 1; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = zero;
@@ -111,7 +111,7 @@ void Cunghr(INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, I
             a[(i - 1) + (j - 1) * lda] = zero;
         }
     }
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     for (j = 1; j <= ilo; j = j + 1) {
         for (i = 1; i <= n; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = zero;

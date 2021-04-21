@@ -82,7 +82,7 @@ void Cgetrf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
     INTEGER jb = 0;
     INTEGER iinfo = 0;
     INTEGER i = 0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     if (nb <= 1 || nb >= min(m, n)) {
         //
         //        Use unblocked code.

@@ -80,7 +80,7 @@ void Chegs2(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *a, 
     const REAL one = 1.0;
     const REAL half = 0.5e+0;
     COMPLEX ct = 0.0;
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (itype == 1) {
         if (upper) {
             //

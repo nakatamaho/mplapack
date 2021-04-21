@@ -31,7 +31,7 @@
 
 void Csteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, INTEGER const ldz, REAL *work, INTEGER &info) {
     INTEGER icompz = 0;
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     REAL eps = 0.0;
     REAL eps2 = 0.0;
     REAL safmin = 0.0;
@@ -40,7 +40,7 @@ void Csteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
     const REAL three = 3.0;
     REAL ssfmax = 0.0;
     REAL ssfmin = 0.0;
-    const COMPLEX czero = (0.0, 0.0);
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
     const INTEGER maxit = 30;
     INTEGER nmaxit = 0;
     INTEGER jtot = 0;

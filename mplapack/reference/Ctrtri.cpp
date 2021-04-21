@@ -81,7 +81,7 @@ void Ctrtri(const char *uplo, const char *diag, INTEGER const n, COMPLEX *a, INT
     //
     //     Check for singularity if non-unit.
     //
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (nounit) {
         for (info = 1; info <= n; info = info + 1) {
             if (a[(info - 1) + (info - 1) * lda] == zero) {
@@ -100,7 +100,7 @@ void Ctrtri(const char *uplo, const char *diag, INTEGER const n, COMPLEX *a, INT
     INTEGER nb = iMlaenv(1, "Ctrtri", uplo_diag, n, -1, -1, -1);
     INTEGER j = 0;
     INTEGER jb = 0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER nn = 0;
     if (nb <= 1 || nb >= n) {
         //

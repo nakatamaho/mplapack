@@ -97,8 +97,8 @@ void Cungtr(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     //
     INTEGER j = 0;
     INTEGER i = 0;
-    const COMPLEX zero = (0.0, 0.0);
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER iinfo = 0;
     if (upper) {
         //

@@ -46,7 +46,7 @@ void Clasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
     REAL alpha = 0.0;
     INTEGER k = 0;
     INTEGER kw = 0;
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     INTEGER kstep = 0;
     REAL absakk = 0.0;
     INTEGER imax = 0;

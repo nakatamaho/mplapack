@@ -78,7 +78,7 @@ void Clauu2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     //
     INTEGER i = 0;
     REAL aii = 0.0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     if (upper) {
         //
         //        Compute the product U * U**H.

@@ -86,7 +86,7 @@ void Ctrtrs(const char *uplo, const char *trans, const char *diag, INTEGER const
     //
     //     Check for singularity.
     //
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (nounit) {
         for (info = 1; info <= n; info = info + 1) {
             if (a[(info - 1) + (info - 1) * lda] == zero) {
@@ -98,7 +98,7 @@ void Ctrtrs(const char *uplo, const char *trans, const char *diag, INTEGER const
     //
     //     Solve A * x = b,  A**T * x = b,  or  A**H * x = b.
     //
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     Ctrsm("Left", uplo, trans, diag, n, nrhs, one, a, lda, b, ldb);
     //
     //     End of Ctrtrs

@@ -75,11 +75,11 @@ void Cgetrf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         return;
     }
     //
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     REAL sfmin = 0.0;
     INTEGER i = 0;
     COMPLEX temp = 0.0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER n1 = 0;
     INTEGER n2 = 0;
     INTEGER iinfo = 0;

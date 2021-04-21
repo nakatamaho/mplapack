@@ -79,7 +79,7 @@ void Clarzb(const char *side, const char *trans, const char *direct, const char 
     }
     //
     INTEGER j = 0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER i = 0;
     if (Mlsame(side, "L")) {
         //

@@ -78,9 +78,9 @@ void Chptrd(const char *uplo, INTEGER const n, COMPLEX *ap, REAL *d, REAL *e, CO
     INTEGER i = 0;
     COMPLEX alpha = 0.0;
     COMPLEX taui = 0.0;
-    const COMPLEX zero = (0.0, 0.0);
-    const COMPLEX one = (1.0, 0.0);
-    const COMPLEX half = (0.5e+0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
+    const COMPLEX half = COMPLEX(0.5e+0, 0.0);
     INTEGER ii = 0;
     INTEGER i1i1 = 0;
     if (upper) {

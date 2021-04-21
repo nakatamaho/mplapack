@@ -86,7 +86,7 @@ void Ctptrs(const char *uplo, const char *trans, const char *diag, INTEGER const
     //     Check for singularity.
     //
     INTEGER jc = 0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (nounit) {
         if (upper) {
             jc = 1;

@@ -92,8 +92,8 @@ void Cunbdb6(INTEGER const m1, INTEGER const m2, INTEGER const n, COMPLEX *x1, I
     REAL normsq1 = pow2(scl1) * ssq1 + pow2(scl2) * ssq2;
     //
     INTEGER i = 0;
-    const COMPLEX zero = (0.0, 0.0);
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     if (m1 == 0) {
         for (i = 1; i <= n; i = i + 1) {
             work[i - 1] = zero;
@@ -104,7 +104,7 @@ void Cunbdb6(INTEGER const m1, INTEGER const m2, INTEGER const n, COMPLEX *x1, I
     //
     Cgemv("C", m2, n, one, q2, ldq2, x2, incx2, one, work, 1);
     //
-    const COMPLEX negone = (-1.0, 0.0);
+    const COMPLEX negone = COMPLEX(-1.0, 0.0);
     Cgemv("N", m1, n, negone, q1, ldq1, work, 1, one, x1, incx1);
     Cgemv("N", m2, n, negone, q2, ldq2, work, 1, one, x2, incx2);
     //

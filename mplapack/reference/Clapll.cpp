@@ -67,7 +67,7 @@ void Clapll(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER
     COMPLEX tau = 0.0;
     Clarfg(n, x[1 - 1], &x[(1 + incx) - 1], incx, tau);
     COMPLEX a11 = x[1 - 1];
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     x[1 - 1] = cone;
     //
     COMPLEX c = -conj(tau) * Cdotc(n, x, incx, y, incy);

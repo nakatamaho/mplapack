@@ -90,7 +90,7 @@ void Cgbtrs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
     INTEGER j = 0;
     INTEGER lm = 0;
     INTEGER l = 0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER i = 0;
     if (notran) {
         //

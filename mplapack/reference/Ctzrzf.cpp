@@ -98,7 +98,7 @@ void Ctzrzf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     //     Quick return if possible
     //
     INTEGER i = 0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (m == 0) {
         return;
     } else if (m == n) {

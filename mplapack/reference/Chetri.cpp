@@ -31,10 +31,10 @@
 
 void Chetri(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *work, INTEGER &info) {
     bool upper = false;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     INTEGER k = 0;
     const REAL one = 1.0;
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     INTEGER kstep = 0;
     REAL t = 0.0;
     REAL ak = 0.0;

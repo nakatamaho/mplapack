@@ -80,7 +80,7 @@ void Csytrs_3(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
     //
     INTEGER k = 0;
     INTEGER kp = 0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER i = 0;
     COMPLEX akm1k = 0.0;
     COMPLEX akm1 = 0.0;

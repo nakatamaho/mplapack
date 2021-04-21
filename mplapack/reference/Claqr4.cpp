@@ -33,7 +33,7 @@ inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
 
 void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *h, INTEGER const ldh, COMPLEX *w, INTEGER const iloz, INTEGER const ihiz, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     COMPLEX cdum = 0.0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     const INTEGER ntiny = 15;
     INTEGER lwkopt = 0;
     char jbcmpz[2];
@@ -53,7 +53,7 @@ void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     INTEGER kbot = 0;
     INTEGER it = 0;
     INTEGER k = 0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     INTEGER ktop = 0;
     INTEGER nh = 0;
     INTEGER nwupbd = 0;

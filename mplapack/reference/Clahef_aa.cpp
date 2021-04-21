@@ -34,12 +34,12 @@ void Clahef_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
     INTEGER k1 = 0;
     INTEGER k = 0;
     INTEGER mj = 0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     COMPLEX alpha = 0.0;
     INTEGER i2 = 0;
     COMPLEX piv = 0.0;
     INTEGER i1 = 0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

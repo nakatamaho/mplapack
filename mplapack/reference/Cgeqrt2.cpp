@@ -71,8 +71,8 @@ void Cgeqrt2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     //
     INTEGER i = 0;
     COMPLEX aii = 0.0;
-    const COMPLEX one = (1.00, 0.00);
-    const COMPLEX zero = (0.00, 0.00);
+    const COMPLEX one = COMPLEX(1.00, 0.00);
+    const COMPLEX zero = COMPLEX(0.00, 0.00);
     COMPLEX alpha = 0.0;
     for (i = 1; i <= k; i = i + 1) {
         //

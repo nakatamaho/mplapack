@@ -65,7 +65,7 @@ void Claqr1(INTEGER const n, COMPLEX *h, INTEGER const ldh, COMPLEX const s1, CO
     //
     REAL s = 0.0;
     const REAL rzero = 0.0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     COMPLEX h21s = 0.0;
     COMPLEX h31s = 0.0;
     if (n == 2) {

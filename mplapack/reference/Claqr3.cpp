@@ -105,7 +105,7 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     //     ... for an empty active block ... ====
     ns = 0;
     nd = 0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     work[1 - 1] = one;
     if (ktop > kbot) {
         return;
@@ -128,7 +128,7 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     //
     jw = min(nw, kbot - ktop + 1);
     INTEGER kwtop = kbot - jw + 1;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     COMPLEX s = 0.0;
     if (kwtop == ktop) {
         s = zero;

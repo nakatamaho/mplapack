@@ -55,7 +55,7 @@ void Clatrz(INTEGER const m, INTEGER const n, INTEGER const l, COMPLEX *a, INTEG
     //     Quick return if possible
     //
     INTEGER i = 0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (m == 0) {
         return;
     } else if (m == n) {

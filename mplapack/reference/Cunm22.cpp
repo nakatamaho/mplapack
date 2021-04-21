@@ -115,7 +115,7 @@ void Cunm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
     //
     //     Degenerate cases (N1 = 0 or N2 = 0) are handled using Ctrmm.
     //
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     if (n1 == 0) {
         Ctrmm(side, "Upper", trans, "Non-Unit", m, n, one, q, ldq, c, ldc);
         work[1 - 1] = one;

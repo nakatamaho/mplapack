@@ -59,9 +59,9 @@ void Clabrd(INTEGER const m, INTEGER const n, INTEGER const nb, COMPLEX *a, INTE
     }
     //
     INTEGER i = 0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     COMPLEX alpha = 0.0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (m >= n) {
         //
         //        Reduce to upper bidiagonal form

@@ -115,9 +115,9 @@ void Cungbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
     }
     //
     INTEGER j = 0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     INTEGER i = 0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     if (wantq) {
         //
         //        Form Q, determined by a call to Cgebrd to reduce an m-by-k

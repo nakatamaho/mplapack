@@ -89,7 +89,7 @@ void Ctbtrs(const char *uplo, const char *trans, const char *diag, INTEGER const
     //
     //     Check for singularity.
     //
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (nounit) {
         if (upper) {
             for (info = 1; info <= n; info = info + 1) {

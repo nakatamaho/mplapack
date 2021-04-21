@@ -54,7 +54,7 @@ void Csytf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
     REAL dtemp = 0.0;
     COMPLEX t = 0.0;
     INTEGER kk = 0;
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     COMPLEX d11 = 0.0;
     INTEGER ii = 0;
     COMPLEX d12 = 0.0;

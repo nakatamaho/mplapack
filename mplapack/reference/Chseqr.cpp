@@ -99,8 +99,8 @@ void Chseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
         info = -12;
     }
     //
-    const COMPLEX zero = (0.0, 0.0);
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER nmin = 0;
     const INTEGER ntiny = 15;
     INTEGER kbot = 0;

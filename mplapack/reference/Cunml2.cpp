@@ -122,7 +122,7 @@ void Cunml2(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER i = 0;
     COMPLEX taui = 0.0;
     COMPLEX aii = 0.0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     for (i = i1; i <= i2; i = i + i3) {
         if (left) {
             //

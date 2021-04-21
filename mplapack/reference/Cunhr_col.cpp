@@ -98,7 +98,7 @@ void Cunhr_col(INTEGER const m, INTEGER const n, INTEGER const nb, COMPLEX *a, I
     //
     //     (1-2) Solve for V2.
     //
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (m > n) {
         Ctrsm("R", "U", "N", "N", m - n, n, cone, a, lda, &a[((n + 1) - 1)], lda);
     }
@@ -118,7 +118,7 @@ void Cunhr_col(INTEGER const m, INTEGER const n, INTEGER const nb, COMPLEX *a, I
     INTEGER j = 0;
     INTEGER jbtemp2 = 0;
     INTEGER i = 0;
-    const COMPLEX czero = (0.0, 0.0);
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
     for (jb = 1; jb <= n; jb = jb + nb) {
         //
         //        (2-0) Determine the column block size JNB.

@@ -30,8 +30,8 @@
 #include <mplapack.h>
 
 void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMPLEX const tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work) {
-    const COMPLEX zero = (0.0, 0.0);
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     COMPLEX t1 = 0.0;
     INTEGER j = 0;
     COMPLEX v1 = 0.0;

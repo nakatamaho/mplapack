@@ -120,7 +120,7 @@ void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     }
     //
     INTEGER i = 0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER j = 0;
     for (i = 1; i <= minmn - nx; i = i + nb) {
         //

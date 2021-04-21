@@ -131,8 +131,8 @@ void Cungtsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const 
     //     (1a) Form M-by-N matrix in the array WORK(1:LDC*N) with ones
     //     on the diagonal and zeros elsewhere.
     //
-    const COMPLEX czero = (0.0, 0.0);
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     Claset("F", m, n, czero, cone, work, ldc);
     //
     //     (1b)  On input, WORK(1:LDC*N) stores ( I );

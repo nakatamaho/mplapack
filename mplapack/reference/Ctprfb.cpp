@@ -105,8 +105,8 @@ void Ctprfb(const char *side, const char *trans, const char *direct, const char 
     INTEGER kp = 0;
     INTEGER j = 0;
     INTEGER i = 0;
-    const COMPLEX one = (1.0f, 0.0f);
-    const COMPLEX zero = (0.0f, 0.0f);
+    const COMPLEX one = COMPLEX(1.0f, 0.0f);
+    const COMPLEX zero = COMPLEX(0.0f, 0.0f);
     INTEGER np = 0;
     if (column && forward && left) {
         //

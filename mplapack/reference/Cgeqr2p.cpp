@@ -71,7 +71,7 @@ void Cgeqr2p(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     //
     INTEGER i = 0;
     COMPLEX alpha = 0.0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     for (i = 1; i <= k; i = i + 1) {
         //
         //        Generate elementary reflector H(i) to annihilate A(i+1:m,i)

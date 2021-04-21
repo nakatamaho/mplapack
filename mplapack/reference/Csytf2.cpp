@@ -49,7 +49,7 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     REAL rowmax = 0.0;
     INTEGER kk = 0;
     COMPLEX t = 0.0;
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     COMPLEX r1 = 0.0;
     COMPLEX d12 = 0.0;
     COMPLEX d22 = 0.0;

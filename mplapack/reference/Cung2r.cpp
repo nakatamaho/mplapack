@@ -79,8 +79,8 @@ void Cung2r(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
     //
     INTEGER j = 0;
     INTEGER l = 0;
-    const COMPLEX zero = (0.0, 0.0);
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     for (j = k + 1; j <= n; j = j + 1) {
         for (l = 1; l <= m; l = l + 1) {
             a[(l - 1) + (j - 1) * lda] = zero;

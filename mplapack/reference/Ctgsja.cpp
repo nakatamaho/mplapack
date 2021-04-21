@@ -36,8 +36,8 @@ void Ctgsja(const char *jobu, const char *jobv, const char *jobq, INTEGER const 
     bool wantv = false;
     bool initq = false;
     bool wantq = false;
-    const COMPLEX czero = (0.0, 0.0);
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     bool upper = false;
     INTEGER kcycle = 0;
     const INTEGER maxit = 40;

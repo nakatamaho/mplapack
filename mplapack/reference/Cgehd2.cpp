@@ -71,7 +71,7 @@ void Cgehd2(INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, I
     //
     INTEGER i = 0;
     COMPLEX alpha = 0.0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     for (i = ilo; i <= ihi - 1; i = i + 1) {
         //
         //        Compute elementary reflector H(i) to annihilate A(i+2:ihi,i)

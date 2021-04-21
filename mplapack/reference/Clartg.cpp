@@ -50,7 +50,7 @@ void Clartg(COMPLEX const f, COMPLEX const g, REAL &cs, COMPLEX &sn, COMPLEX &r)
     COMPLEX fs = 0.0;
     COMPLEX gs = 0.0;
     INTEGER count = 0;
-    const COMPLEX czero = (0.0, 0.0);
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
     REAL f2 = 0.0;
     REAL g2 = 0.0;
     const REAL zero = 0.0;

@@ -34,8 +34,8 @@ void Clacn2(INTEGER const n, COMPLEX *v, COMPLEX *x, REAL &est, INTEGER &kase, I
     INTEGER i = 0;
     const REAL one = 1.0;
     REAL absxi = 0.0;
-    const COMPLEX cone = (1.0, 0.0);
-    const COMPLEX czero = (0.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
     REAL estold = 0.0;
     INTEGER jlast = 0;
     const INTEGER itmax = 5;

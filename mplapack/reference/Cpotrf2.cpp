@@ -83,7 +83,7 @@ void Cpotrf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, I
     INTEGER n1 = 0;
     INTEGER n2 = 0;
     INTEGER iinfo = 0;
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     const REAL one = 1.0;
     if (n == 1) {
         //

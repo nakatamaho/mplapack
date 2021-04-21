@@ -66,7 +66,7 @@ void Clarzt(const char *direct, const char *storev, INTEGER const n, INTEGER con
     }
     //
     INTEGER i = 0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     INTEGER j = 0;
     for (i = k; i >= 1; i = i - 1) {
         if (tau[i - 1] == zero) {

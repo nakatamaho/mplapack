@@ -38,9 +38,9 @@ void Ctgex2(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
     COMPLEX t[ldst * ldst];
     REAL eps = 0.0;
     REAL smlnum = 0.0;
-    const COMPLEX czero = (0.0, 0.0);
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
     REAL scale = 0.0;
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     REAL sum = 0.0;
     COMPLEX work[8];
     REAL sa = 0.0;

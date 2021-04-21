@@ -452,7 +452,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
     //
     INTEGER itau = 0;
     INTEGER iwork = 0;
-    const COMPLEX czero = (0.0, 0.0);
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
     INTEGER ie = 0;
     INTEGER itauq = 0;
     INTEGER itaup = 0;
@@ -464,7 +464,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
     INTEGER iu = 0;
     INTEGER i = 0;
     INTEGER chunk = 0;
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     INTEGER ncu = 0;
     INTEGER nru = 0;
     INTEGER blk = 0;

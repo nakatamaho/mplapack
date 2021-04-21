@@ -82,7 +82,7 @@ void Clauum(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     //
     INTEGER i = 0;
     INTEGER ib = 0;
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     const REAL one = 1.0;
     if (nb <= 1 || nb >= n) {
         //

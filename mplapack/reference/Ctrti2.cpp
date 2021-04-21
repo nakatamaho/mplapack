@@ -74,7 +74,7 @@ void Ctrti2(const char *uplo, const char *diag, INTEGER const n, COMPLEX *a, INT
     }
     //
     INTEGER j = 0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     COMPLEX ajj = 0.0;
     if (upper) {
         //

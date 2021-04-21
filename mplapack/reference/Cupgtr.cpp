@@ -79,8 +79,8 @@ void Cupgtr(const char *uplo, INTEGER const n, COMPLEX *ap, COMPLEX *tau, COMPLE
     INTEGER ij = 0;
     INTEGER j = 0;
     INTEGER i = 0;
-    const COMPLEX czero = (0.0, 0.0);
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     INTEGER iinfo = 0;
     if (upper) {
         //

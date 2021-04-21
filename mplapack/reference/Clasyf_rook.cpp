@@ -42,7 +42,7 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
     INTEGER kw = 0;
     INTEGER kstep = 0;
     INTEGER p = 0;
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     REAL absakk = 0.0;
     INTEGER imax = 0;
     REAL colmax = 0.0;
@@ -56,7 +56,7 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
     INTEGER kk = 0;
     INTEGER kkw = 0;
     COMPLEX r1 = 0.0;
-    const COMPLEX czero = (0.0, 0.0);
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
     INTEGER ii = 0;
     COMPLEX d12 = 0.0;
     COMPLEX d11 = 0.0;

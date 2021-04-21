@@ -55,7 +55,7 @@ void Clargv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER
     COMPLEX fs = 0.0;
     COMPLEX gs = 0.0;
     INTEGER count = 0;
-    const COMPLEX czero = (0.0, 0.0);
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
     REAL cs = 0.0;
     COMPLEX sn = 0.0;
     COMPLEX r = 0.0;

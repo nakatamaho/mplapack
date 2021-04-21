@@ -77,8 +77,8 @@ void Cungl2(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
     //
     INTEGER j = 0;
     INTEGER l = 0;
-    const COMPLEX zero = (0.0, 0.0);
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     if (k < m) {
         //
         //        Initialise rows k+1:m to rows of the unit matrix

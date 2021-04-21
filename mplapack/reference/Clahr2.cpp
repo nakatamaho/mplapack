@@ -59,9 +59,9 @@ void Clahr2(INTEGER const n, INTEGER const k, INTEGER const nb, COMPLEX *a, INTE
     }
     //
     INTEGER i = 0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     COMPLEX ei = 0.0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     for (i = 1; i <= nb; i = i + 1) {
         if (i > 1) {
             //

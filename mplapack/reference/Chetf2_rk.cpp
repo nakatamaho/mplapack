@@ -39,7 +39,7 @@ void Chetf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     const REAL eight = 8.0e+0;
     REAL alpha = 0.0;
     REAL sfmin = 0.0;
-    const COMPLEX czero = (0.0, 0.0);
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
     INTEGER k = 0;
     INTEGER kstep = 0;
     INTEGER p = 0;

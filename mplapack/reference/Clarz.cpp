@@ -50,8 +50,8 @@ void Clarz(const char *side, INTEGER const m, INTEGER const n, INTEGER const l, 
     //     ..
     //     .. Executable Statements ..
     //
-    const COMPLEX zero = (0.0, 0.0);
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     if (Mlsame(side, "L")) {
         //
         //        Form  H * C

@@ -131,7 +131,7 @@ void Chetrd(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
     //
     INTEGER kk = 0;
     INTEGER i = 0;
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     const REAL one = 1.0;
     INTEGER j = 0;
     INTEGER iinfo = 0;

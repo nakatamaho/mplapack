@@ -60,7 +60,7 @@ void Claesy(COMPLEX const a, COMPLEX const b, COMPLEX const c, COMPLEX &rt1, COM
     REAL babs = 0.0;
     REAL tabs = 0.0;
     REAL z = 0.0;
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     REAL evnorm = 0.0;
     const REAL thresh = 0.1e0;
     if (abs(b) == zero) {

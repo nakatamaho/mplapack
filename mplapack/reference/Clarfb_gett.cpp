@@ -70,7 +70,7 @@ void Clarfb_gett(const char *ident, INTEGER const m, INTEGER const n, INTEGER co
     //     ------------------------------------------------------------------
     //
     INTEGER j = 0;
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     INTEGER i = 0;
     if (n > k) {
         //
@@ -149,7 +149,7 @@ void Clarfb_gett(const char *ident, INTEGER const m, INTEGER const n, INTEGER co
     //
     //     Set the subdiagonal elements of W1 to zero column-by-column.
     //
-    const COMPLEX czero = (0.0, 0.0);
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
     for (j = 1; j <= k - 1; j = j + 1) {
         for (i = j + 1; i <= k; i = i + 1) {
             work[(i - 1) + (j - 1) * ldwork] = czero;

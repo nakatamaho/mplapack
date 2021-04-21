@@ -76,7 +76,7 @@ void Csyconvf(const char *uplo, const char *way, INTEGER const n, COMPLEX *a, IN
     }
     //
     INTEGER i = 0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     INTEGER ip = 0;
     if (upper) {
         //

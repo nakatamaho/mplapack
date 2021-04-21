@@ -96,7 +96,7 @@ void Cheev(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTE
         return;
     }
     //
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (n == 1) {
         w[1 - 1] = a[(1 - 1)].real();
         work[1 - 1] = 1;

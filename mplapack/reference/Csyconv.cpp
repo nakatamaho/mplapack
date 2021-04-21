@@ -76,7 +76,7 @@ void Csyconv(const char *uplo, const char *way, INTEGER const n, COMPLEX *a, INT
     }
     //
     INTEGER i = 0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     INTEGER ip = 0;
     INTEGER j = 0;
     COMPLEX temp = 0.0;

@@ -45,7 +45,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     bool lquery = false;
     const INTEGER nbmin = 8;
     const INTEGER nbmax = 128;
-    const COMPLEX czero = (0.0, 0.0);
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
     REAL unfl = 0.0;
     const REAL one = 1.0;
     REAL ovfl = 0.0;
@@ -57,7 +57,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     INTEGER is = 0;
     INTEGER ki = 0;
     REAL smin = 0.0;
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     INTEGER k = 0;
     REAL scale = 0.0;
     INTEGER ii = 0;

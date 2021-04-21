@@ -90,7 +90,7 @@ void Cgbtf2(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     //
     INTEGER j = 0;
     INTEGER i = 0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     for (j = ku + 2; j <= min(kv, n); j = j + 1) {
         for (i = kv - j + 2; i <= kl; i = i + 1) {
             ab[(i - 1) + (j - 1) * ldab] = zero;
@@ -104,7 +104,7 @@ void Cgbtf2(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     //
     INTEGER km = 0;
     INTEGER jp = 0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     for (j = 1; j <= min(m, n); j = j + 1) {
         //
         //        Set fill-in elements in column J+KV to zero.

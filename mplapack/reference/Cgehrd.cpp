@@ -94,7 +94,7 @@ void Cgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, I
     //     Set elements 1:ILO-1 and IHI:N-1 of TAU to zero
     //
     INTEGER i = 0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     for (i = 1; i <= ilo - 1; i = i + 1) {
         tau[i - 1] = zero;
     }
@@ -145,7 +145,7 @@ void Cgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, I
     INTEGER iwt = 0;
     INTEGER ib = 0;
     COMPLEX ei = 0.0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER j = 0;
     if (nb < nbmin || nb >= nh) {
         //

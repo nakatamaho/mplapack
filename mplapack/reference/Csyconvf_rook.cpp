@@ -76,7 +76,7 @@ void Csyconvf_rook(const char *uplo, const char *way, INTEGER const n, COMPLEX *
     }
     //
     INTEGER i = 0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     INTEGER ip = 0;
     INTEGER ip2 = 0;
     if (upper) {

@@ -86,8 +86,8 @@ void Chegst(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *a, 
     //
     INTEGER k = 0;
     INTEGER kb = 0;
-    const COMPLEX cone = (1.0, 0.0);
-    const COMPLEX half = (0.5e+0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
+    const COMPLEX half = COMPLEX(0.5e+0, 0.0);
     const REAL one = 1.0;
     if (nb <= 1 || nb >= n) {
         //

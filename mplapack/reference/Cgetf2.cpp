@@ -81,8 +81,8 @@ void Cgetf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
     //
     INTEGER j = 0;
     INTEGER jp = 0;
-    const COMPLEX zero = (0.0, 0.0);
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER i = 0;
     for (j = 1; j <= min(m, n); j = j + 1) {
         //

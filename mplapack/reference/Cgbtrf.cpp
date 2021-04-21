@@ -98,7 +98,7 @@ void Cgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     //
     INTEGER j = 0;
     INTEGER i = 0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     const INTEGER ldwork = nbmax + 1;
     COMPLEX work13[ldwork * nbmax];
     COMPLEX work31[ldwork * nbmax];
@@ -111,7 +111,7 @@ void Cgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     INTEGER jj = 0;
     INTEGER km = 0;
     INTEGER jp = 0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER jm = 0;
     INTEGER nw = 0;
     INTEGER j2 = 0;

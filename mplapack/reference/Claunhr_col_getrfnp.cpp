@@ -82,7 +82,7 @@ void Claunhr_col_getrfnp(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER c
     INTEGER j = 0;
     INTEGER jb = 0;
     INTEGER iinfo = 0;
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (nb <= 1 || nb >= min(m, n)) {
         //
         //        Use unblocked code.

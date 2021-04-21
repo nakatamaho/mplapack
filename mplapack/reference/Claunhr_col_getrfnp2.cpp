@@ -84,7 +84,7 @@ void Claunhr_col_getrfnp2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER 
     //
     const REAL one = 1.0;
     REAL sfmin = 0.0;
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     INTEGER i = 0;
     INTEGER n1 = 0;
     INTEGER n2 = 0;

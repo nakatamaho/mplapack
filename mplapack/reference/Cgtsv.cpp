@@ -77,7 +77,7 @@ void Cgtsv(INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX
     }
     //
     INTEGER k = 0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     COMPLEX mult = 0.0;
     INTEGER j = 0;
     COMPLEX temp = 0.0;

@@ -34,7 +34,7 @@ inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
 void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *h, INTEGER const ldh, COMPLEX *w, INTEGER const iloz, INTEGER const ihiz, COMPLEX *z, INTEGER const ldz, INTEGER &info) {
     COMPLEX cdum = 0.0;
     INTEGER j = 0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     INTEGER jlo = 0;
     INTEGER jhi = 0;
     INTEGER i = 0;
@@ -79,7 +79,7 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     COMPLEX v2 = 0.0;
     REAL t2 = 0.0;
     COMPLEX sum = 0.0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     COMPLEX temp = 0.0;
     REAL rtemp = 0.0;
     //

@@ -91,8 +91,8 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
     //
     //     Initialize Q to the unit matrix, if needed
     //
-    const COMPLEX czero = (0.0, 0.0);
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (initq) {
         Claset("Full", n, n, czero, cone, q, ldq);
     }

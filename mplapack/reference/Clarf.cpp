@@ -55,7 +55,7 @@ void Clarf(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, INTEG
     bool applyleft = Mlsame(side, "L");
     INTEGER lastv = 0;
     INTEGER lastc = 0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     INTEGER i = 0;
     if (tau != zero) {
         //     Set up variables for scanning V.  LASTV begins pointing to the end
@@ -85,7 +85,7 @@ void Clarf(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, INTEG
     }
     //     Note that lastc.eq.0 renders the BLAS operations null; no special
     //     case is needed at this level.
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     if (applyleft) {
         //
         //        Form  H * C

@@ -87,7 +87,7 @@ void Cunbdb5(INTEGER const m1, INTEGER const m2, INTEGER const n, COMPLEX *x1, I
     //
     //     If the projection is nonzero, then return
     //
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (RCnrm2(m1, x1, incx1) != zero || RCnrm2(m2, x2, incx2) != zero) {
         return;
     }
@@ -97,7 +97,7 @@ void Cunbdb5(INTEGER const m1, INTEGER const m2, INTEGER const n, COMPLEX *x1, I
     //
     INTEGER i = 0;
     INTEGER j = 0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     for (i = 1; i <= m1; i = i + 1) {
         for (j = 1; j <= m1; j = j + 1) {
             x1[j - 1] = zero;

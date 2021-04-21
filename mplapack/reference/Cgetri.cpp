@@ -106,8 +106,8 @@ void Cgetri(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPL
     //
     INTEGER j = 0;
     INTEGER i = 0;
-    const COMPLEX zero = (0.0, 0.0);
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER nn = 0;
     INTEGER jb = 0;
     INTEGER jj = 0;

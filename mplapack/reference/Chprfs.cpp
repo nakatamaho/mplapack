@@ -44,7 +44,7 @@ void Chprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
     INTEGER count = 0;
     const REAL three = 3.0e+0;
     REAL lstres = 0.0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER i = 0;
     INTEGER kk = 0;
     INTEGER k = 0;

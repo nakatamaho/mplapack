@@ -51,7 +51,7 @@ iMlazlr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda) {
     //     .. Executable Statements ..
     //
     //     Quick test for the common case where one corner is non-zero.
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     INTEGER j = 0;
     INTEGER i = 0;
     if (m == 0) {

@@ -33,7 +33,7 @@ void Chetrs_rook(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX 
     bool upper = false;
     INTEGER k = 0;
     INTEGER kp = 0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     REAL s = 0.0;
     COMPLEX akm1k = 0.0;
     COMPLEX akm1 = 0.0;

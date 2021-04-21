@@ -86,7 +86,7 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     //
     //     Check that the diagonal matrix D is nonsingular.
     //
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (upper) {
         //
         //        Upper triangular storage: examine D from bottom to top
@@ -130,7 +130,7 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     INTEGER count = 0;
     INTEGER i = 0;
     INTEGER j = 0;
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     COMPLEX u01_i_j = 0.0;
     COMPLEX u01_ip1_j = 0.0;
     COMPLEX u11_i_j = 0.0;

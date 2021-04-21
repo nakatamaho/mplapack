@@ -85,7 +85,7 @@ void Csytri_3x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     //
     //     Check that the diagonal matrix D is nonsingular.
     //
-    const COMPLEX czero = (0.0, 0.0);
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
     if (upper) {
         //
         //        Upper triangular storage: examine D from bottom to top
@@ -121,7 +121,7 @@ void Csytri_3x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     //
     INTEGER invd = nb + 2;
     //
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     COMPLEX t = 0.0;
     COMPLEX ak = 0.0;
     COMPLEX akp1 = 0.0;

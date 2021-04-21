@@ -98,7 +98,7 @@ void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
     }
     //
     INTEGER j = 0;
-    const COMPLEX czero = (0.0, 0.0);
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
     if ((alpha == zero) && (beta == zero)) {
         for (j = 1; j <= ((n * (n + 1)) / 2); j = j + 1) {
             c[j - 1] = czero;

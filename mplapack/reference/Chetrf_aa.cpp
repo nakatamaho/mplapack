@@ -40,7 +40,7 @@ void Chetrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     INTEGER k1 = 0;
     INTEGER j2 = 0;
     COMPLEX alpha = 0.0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER k2 = 0;
     INTEGER nj = 0;
     INTEGER j3 = 0;

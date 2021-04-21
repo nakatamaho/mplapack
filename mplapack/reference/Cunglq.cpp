@@ -116,7 +116,7 @@ void Cunglq(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
     INTEGER kk = 0;
     INTEGER j = 0;
     INTEGER i = 0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (nb >= nbmin && nb < k && nx < k) {
         //
         //        Use blocked code after the last block.

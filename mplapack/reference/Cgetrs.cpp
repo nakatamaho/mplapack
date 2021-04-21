@@ -80,7 +80,7 @@ void Cgetrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
         return;
     }
     //
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     if (notran) {
         //
         //        Solve A * X = B.

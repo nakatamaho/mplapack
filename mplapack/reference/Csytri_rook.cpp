@@ -31,9 +31,9 @@
 
 void Csytri_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *work, INTEGER &info) {
     bool upper = false;
-    const COMPLEX czero = (0.0, 0.0);
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
     INTEGER k = 0;
-    const COMPLEX cone = (1.0, 0.0);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     INTEGER kstep = 0;
     COMPLEX t = 0.0;
     COMPLEX ak = 0.0;

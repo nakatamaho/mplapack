@@ -97,7 +97,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
     //
     //     ==== clear trash ====
     //
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (ktop + 2 <= kbot) {
         h[((ktop + 2) - 1) + (ktop - 1) * ldh] = zero;
     }
@@ -115,7 +115,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
     INTEGER incol = 0;
     INTEGER jtop = 0;
     INTEGER ndcol = 0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER krcol = 0;
     INTEGER mtop = 0;
     INTEGER mbot = 0;
