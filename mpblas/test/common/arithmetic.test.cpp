@@ -146,6 +146,18 @@ void subst_test2()
   printf("*** Substitution test 2 successful ***\n");
 }
 
+void subst_test3()
+{
+  COMPLEX ctemp1 = COMPLEX(1.0, 0.0);
+  COMPLEX_REF ctemp1r = COMPLEX_REF(1.0, 0.0);
+  printf("*** Substitution test 3 ***\n");
+
+  cout << "C1R  = "; printnum(ctemp1); cout << endl;
+  cout << "C1   = "; printnum(ctemp1r);  cout << endl;
+  printf("%lf, %lf\n", ctemp1r.real(), ctemp1r.imag());
+  printf("*** Substitution test 3 successful ***\n");
+}
+
 void mp_sub_test_complex()
 {
     COMPLEX_REF Ctemp1r, Ctemp2r, dummy;
@@ -436,6 +448,7 @@ int main(int argc, char *argv[])
 
     subst_test1();
     subst_test2();
+    subst_test3();
 
     addition_real_test();
     subtraction_real_test();
