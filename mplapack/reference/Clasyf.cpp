@@ -29,14 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
-
-inline REAL abssq(COMPLEX ff) {
-    REAL temp;
-
-    temp = (ff.real() * ff.real()) + (ff.imag() * ff.imag());
-    return temp;
-}
+inline REAL cabs1(COMPLEX z) { return (abs(z.real()) + abs(z.imag())); }
 
 void Clasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *w, INTEGER const ldw, INTEGER &info) {
     COMPLEX z = 0.0;
@@ -130,13 +123,13 @@ void Clasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
         //        Determine rows and columns to be interchanged and whether
         //        a 1-by-1 or 2-by-2 pivot block will be used
         //
-        absakk = abs1(w[(k - 1) + (kw - 1) * ldw]);
+        absakk = cabs1(w[(k - 1) + (kw - 1) * ldw]);
         //
         //        IMAX is the row-index of the largest off-diagonal element in
         //
         if (k > 1) {
             imax = iCamax(k - 1, &w[(kw - 1) * ldw], 1);
-            colmax = abs1(w[(imax - 1) + (kw - 1) * ldw]);
+            colmax = cabs1(w[(imax - 1) + (kw - 1) * ldw]);
         } else {
             colmax = zero;
         }
@@ -169,10 +162,10 @@ void Clasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
                 //              element in row IMAX, and ROWMAX is its absolute value
                 //
                 jmax = imax + iCamax(k - imax, &w[((imax + 1) - 1) + ((kw - 1) - 1) * ldw], 1);
-                rowmax = abs1((w[(jmax - 1) + ((kw - 1) - 1) * ldw]));
+                rowmax = cabs1((w[(jmax - 1) + ((kw - 1) - 1) * ldw]));
                 if (imax > 1) {
                     jmax = iCamax(imax - 1, &w[((kw - 1) - 1) * ldw], 1);
-                    rowmax = max(rowmax, abs1(w[(jmax - 1) + ((kw - 1) - 1) * ldw]));
+                    rowmax = max(rowmax, cabs1(w[(jmax - 1) + ((kw - 1) - 1) * ldw]));
                 }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
@@ -180,7 +173,7 @@ void Clasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
                     //                 no interchange, use 1-by-1 pivot block
                     //
                     kp = k;
-                } else if (abs1(w[(imax - 1) + ((kw - 1) - 1) * ldw]) >= alpha * rowmax) {
+                } else if (cabs1(w[(imax - 1) + ((kw - 1) - 1) * ldw]) >= alpha * rowmax) {
                     //
                     //                 interchange rows and columns K and IMAX, use 1-by-1
                     //                 pivot block
@@ -420,13 +413,13 @@ void Clasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
         //        Determine rows and columns to be interchanged and whether
         //        a 1-by-1 or 2-by-2 pivot block will be used
         //
-        absakk = abs1(w[(k - 1) + (k - 1) * ldw]);
+        absakk = cabs1(w[(k - 1) + (k - 1) * ldw]);
         //
         //        IMAX is the row-index of the largest off-diagonal element in
         //
         if (k < n) {
             imax = k + iCamax(n - k, &w[((k + 1) - 1) + (k - 1) * ldw], 1);
-            colmax = abs1(w[(imax - 1) + (k - 1) * ldw]);
+            colmax = cabs1(w[(imax - 1) + (k - 1) * ldw]);
         } else {
             colmax = zero;
         }
@@ -457,10 +450,10 @@ void Clasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
                 //              element in row IMAX, and ROWMAX is its absolute value
                 //
                 jmax = k - 1 + iCamax(imax - k, &w[(k - 1) + ((k + 1) - 1) * ldw], 1);
-                rowmax = abs1(w[(jmax - 1) + ((k + 1) - 1) * ldw]);
+                rowmax = cabs1(w[(jmax - 1) + ((k + 1) - 1) * ldw]);
                 if (imax < n) {
                     jmax = imax + iCamax(n - imax, &w[((imax + 1) - 1) + ((k + 1) - 1) * ldw], 1);
-                    rowmax = max(rowmax, abs1(w[(jmax - 1) + ((k + 1) - 1) * ldw]));
+                    rowmax = max(rowmax, cabs1(w[(jmax - 1) + ((k + 1) - 1) * ldw]));
                 }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
@@ -468,7 +461,7 @@ void Clasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
                     //                 no interchange, use 1-by-1 pivot block
                     //
                     kp = k;
-                } else if (abs1(w[(imax - 1) + ((k + 1) - 1) * ldw]) >= alpha * rowmax) {
+                } else if (cabs1(w[(imax - 1) + ((k + 1) - 1) * ldw]) >= alpha * rowmax) {
                     //
                     //                 interchange rows and columns K and IMAX, use 1-by-1
                     //                 pivot block

@@ -31,7 +31,7 @@
 
 COMPLEX
 Cladiv(COMPLEX const x, COMPLEX const y) {
-    COMPLEX return_value = (0.0, 0.0);
+    COMPLEX return_value = 0.0;
     //
     //  -- LAPACK auxiliary routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

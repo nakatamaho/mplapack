@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX zdum) { return (abs(zdum.real()) + abs(zdum.imag())); }
+inline REAL cabs1(COMPLEX zdum) { return (abs(zdum.real()) + abs(zdum.imag())); }
 
 void Csprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, COMPLEX *afp, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, REAL *ferr, REAL *berr, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
@@ -148,7 +148,7 @@ void Csprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
         //        numerator and denominator before dividing.
         //
         for (i = 1; i <= n; i = i + 1) {
-            rwork[i - 1] = abs1(b[(i - 1) + (j - 1) * ldb]);
+            rwork[i - 1] = cabs1(b[(i - 1) + (j - 1) * ldb]);
         }
         //
         //        Compute abs(A)*abs(X) + abs(B).
@@ -157,25 +157,25 @@ void Csprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
         if (upper) {
             for (k = 1; k <= n; k = k + 1) {
                 s = zero;
-                xk = abs1(x[(k - 1) + (j - 1) * ldx]);
+                xk = cabs1(x[(k - 1) + (j - 1) * ldx]);
                 ik = kk;
                 for (i = 1; i <= k - 1; i = i + 1) {
-                    rwork[i - 1] += abs1(ap[ik - 1]) * xk;
-                    s += abs1(ap[ik - 1]) * abs1(x[(i - 1) + (j - 1) * ldx]);
+                    rwork[i - 1] += cabs1(ap[ik - 1]) * xk;
+                    s += cabs1(ap[ik - 1]) * cabs1(x[(i - 1) + (j - 1) * ldx]);
                     ik++;
                 }
-                rwork[k - 1] += abs1(ap[(kk + k - 1) - 1]) * xk + s;
+                rwork[k - 1] += cabs1(ap[(kk + k - 1) - 1]) * xk + s;
                 kk += k;
             }
         } else {
             for (k = 1; k <= n; k = k + 1) {
                 s = zero;
-                xk = abs1(x[(k - 1) + (j - 1) * ldx]);
-                rwork[k - 1] += abs1(ap[kk - 1]) * xk;
+                xk = cabs1(x[(k - 1) + (j - 1) * ldx]);
+                rwork[k - 1] += cabs1(ap[kk - 1]) * xk;
                 ik = kk + 1;
                 for (i = k + 1; i <= n; i = i + 1) {
-                    rwork[i - 1] += abs1(ap[ik - 1]) * xk;
-                    s += abs1(ap[ik - 1]) * abs1(x[(i - 1) + (j - 1) * ldx]);
+                    rwork[i - 1] += cabs1(ap[ik - 1]) * xk;
+                    s += cabs1(ap[ik - 1]) * cabs1(x[(i - 1) + (j - 1) * ldx]);
                     ik++;
                 }
                 rwork[k - 1] += s;
@@ -185,9 +185,9 @@ void Csprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
         s = zero;
         for (i = 1; i <= n; i = i + 1) {
             if (rwork[i - 1] > safe2) {
-                s = max(s, REAL(abs1(work[i - 1]) / rwork[i - 1]));
+                s = max(s, REAL(cabs1(work[i - 1]) / rwork[i - 1]));
             } else {
-                s = max(s, REAL((abs1(work[i - 1]) + safe1) / (rwork[i - 1] + safe1)));
+                s = max(s, REAL((cabs1(work[i - 1]) + safe1) / (rwork[i - 1] + safe1)));
             }
         }
         berr[j - 1] = s;
@@ -233,9 +233,9 @@ void Csprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
         //
         for (i = 1; i <= n; i = i + 1) {
             if (rwork[i - 1] > safe2) {
-                rwork[i - 1] = abs1(work[i - 1]) + nz * eps * rwork[i - 1];
+                rwork[i - 1] = cabs1(work[i - 1]) + nz * eps * rwork[i - 1];
             } else {
-                rwork[i - 1] = abs1(work[i - 1]) + nz * eps * rwork[i - 1] + safe1;
+                rwork[i - 1] = cabs1(work[i - 1]) + nz * eps * rwork[i - 1] + safe1;
             }
         }
         //
@@ -267,7 +267,7 @@ void Csprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
         //
         lstres = zero;
         for (i = 1; i <= n; i = i + 1) {
-            lstres = max(lstres, abs1(x[(i - 1) + (j - 1) * ldx]));
+            lstres = max(lstres, cabs1(x[(i - 1) + (j - 1) * ldx]));
         }
         if (lstres != zero) {
             ferr[j - 1] = ferr[j - 1] / lstres;

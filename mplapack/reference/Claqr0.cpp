@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
+inline REAL cabs1(COMPLEX cdum) { return (abs(cdum.real()) + abs(cdum.imag())); }
 
 void Claqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *h, INTEGER const ldh, COMPLEX *w, INTEGER const iloz, INTEGER const ihiz, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     COMPLEX cdum = 0.0;
@@ -294,7 +294,7 @@ void Claqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                     nw = nh;
                 } else {
                     kwtop = kbot - nw + 1;
-                    if (abs1(h[(kwtop - 1) + ((kwtop - 1) - 1) * ldh]) > abs1(h[((kwtop - 1) - 1) + ((kwtop - 2) - 1) * ldh])) {
+                    if (cabs1(h[(kwtop - 1) + ((kwtop - 1) - 1) * ldh]) > cabs1(h[((kwtop - 1) - 1) + ((kwtop - 2) - 1) * ldh])) {
                         nw++;
                     }
                 }
@@ -364,7 +364,7 @@ void Claqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                 if (mod(ndfl, kexsh) == 0) {
                     ks = kbot - ns + 1;
                     for (i = kbot; i >= ks + 1; i = i - 2) {
-                        w[i - 1] = h[(i - 1) + (i - 1) * ldh] + wilk1 * abs1(h[(i - 1) + ((i - 1) - 1) * ldh]);
+                        w[i - 1] = h[(i - 1) + (i - 1) * ldh] + wilk1 * cabs1(h[(i - 1) + ((i - 1) - 1) * ldh]);
                         w[(i - 1) - 1] = w[i - 1];
                     }
                 } else {
@@ -394,7 +394,7 @@ void Claqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                         //                    .    because H(KBOT,KBOT-1) is nonzero.) ====
                         //
                         if (ks >= kbot) {
-                            s = abs1(h[((kbot - 1) - 1) + ((kbot - 1) - 1) * ldh]) + abs1(h[(kbot - 1) + ((kbot - 1) - 1) * ldh]) + abs1(h[((kbot - 1) - 1) + (kbot - 1) * ldh]) + abs1(h[(kbot - 1) + (kbot - 1) * ldh]);
+                            s = cabs1(h[((kbot - 1) - 1) + ((kbot - 1) - 1) * ldh]) + cabs1(h[(kbot - 1) + ((kbot - 1) - 1) * ldh]) + cabs1(h[((kbot - 1) - 1) + (kbot - 1) * ldh]) + cabs1(h[(kbot - 1) + (kbot - 1) * ldh]);
                             aa = h[((kbot - 1) - 1) + ((kbot - 1) - 1) * ldh] / s;
                             cc = h[(kbot - 1) + ((kbot - 1) - 1) * ldh] / s;
                             bb = h[((kbot - 1) - 1) + (kbot - 1) * ldh] / s;
@@ -420,7 +420,7 @@ void Claqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                             }
                             sorted = true;
                             for (i = ks; i <= k - 1; i = i + 1) {
-                                if (abs1(w[i - 1]) < abs1(w[(i + 1) - 1])) {
+                                if (cabs1(w[i - 1]) < cabs1(w[(i + 1) - 1])) {
                                     sorted = false;
                                     swap = w[i - 1];
                                     w[i - 1] = w[(i + 1) - 1];
@@ -436,7 +436,7 @@ void Claqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                 //              .    only one.  ====
                 //
                 if (kbot - ks + 1 == 2) {
-                    if (abs1(w[kbot - 1] - h[(kbot - 1) + (kbot - 1) * ldh]) < abs1(w[(kbot - 1) - 1] - h[(kbot - 1) + (kbot - 1) * ldh])) {
+                    if (cabs1(w[kbot - 1] - h[(kbot - 1) + (kbot - 1) * ldh]) < cabs1(w[(kbot - 1) - 1] - h[(kbot - 1) + (kbot - 1) * ldh])) {
                         w[(kbot - 1) - 1] = w[kbot - 1];
                     } else {
                         w[kbot - 1] = w[(kbot - 1) - 1];

@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX z) { return abs(z.real()) + abs(z.imag()); }
+inline REAL abs1(COMPLEX t) { return abs(t.real()) + abs(t.imag()); }
 
 void Clags2(bool const upper, REAL const a1, COMPLEX const a2, REAL const a3, REAL const b1, COMPLEX const b2, REAL const b3, REAL &csu, COMPLEX &snu, REAL &csv, COMPLEX &snv, REAL csq, COMPLEX snq) {
     //

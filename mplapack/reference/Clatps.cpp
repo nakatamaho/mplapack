@@ -29,8 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX z) { return abs(z.real()) + abs(z.imag()); }
-inline REAL abs2(COMPLEX z) { return abs(z.real() / 2.0) + abs(z.imag() / 2.0); }
+inline REAL cabs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
+inline REAL cabs2(COMPLEX zdum) { return abs(zdum.real() / 2.0) + abs(zdum.imag() / 2.0); }
 
 void Clatps(const char *uplo, const char *trans, const char *diag, const char *normin, INTEGER const n, COMPLEX *ap, COMPLEX *x, REAL &scale, REAL *cnorm, INTEGER &info) {
     COMPLEX zdum = 0.0;
@@ -171,7 +171,7 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
     //
     xmax = zero;
     for (j = 1; j <= n; j = j + 1) {
-        xmax = max(xmax, abs2(x[j - 1]));
+        xmax = max(xmax, cabs2(x[j - 1]));
     }
     xbnd = xmax;
     if (notran) {
@@ -213,7 +213,7 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
                 }
                 //
                 tjjs = ap[ip - 1];
-                tjj = abs1(tjjs);
+                tjj = cabs1(tjjs);
                 //
                 if (tjj >= smlnum) {
                     //
@@ -308,7 +308,7 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
                 grow = min(grow, REAL(xbnd / xj));
                 //
                 tjjs = ap[ip - 1];
-                tjj = abs1(tjjs);
+                tjj = cabs1(tjjs);
                 //
                 if (tjj >= smlnum) {
                     //
@@ -382,7 +382,7 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
                 //
                 //              Compute x(j) = b(j) / A(j,j), scaling x if necessary.
                 //
-                xj = abs1(x[j - 1]);
+                xj = cabs1(x[j - 1]);
                 if (nounit) {
                     tjjs = ap[ip - 1] * tscal;
                 } else {
@@ -391,7 +391,7 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
                         goto statement_110;
                     }
                 }
-                tjj = abs1(tjjs);
+                tjj = cabs1(tjjs);
                 if (tjj > smlnum) {
                     //
                     //                    abs(A(j,j)) > SMLNUM:
@@ -408,7 +408,7 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
                         }
                     }
                     x[j - 1] = Cladiv(x[j - 1], tjjs);
-                    xj = abs1(x[j - 1]);
+                    xj = cabs1(x[j - 1]);
                 } else if (tjj > zero) {
                     //
                     //                    0 < abs(A(j,j)) <= SMLNUM:
@@ -431,7 +431,7 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
                         xmax = xmax * rec;
                     }
                     x[j - 1] = Cladiv(x[j - 1], tjjs);
-                    xj = abs1(x[j - 1]);
+                    xj = cabs1(x[j - 1]);
                 } else {
                     //
                     //                    A(j,j) = 0:  Set x(1:n) = 0, x(j) = 1, and
@@ -476,7 +476,7 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
                         //
                         Caxpy(j - 1, -x[j - 1] * tscal, &ap[(ip - j + 1) - 1], 1, x, 1);
                         i = iCamax(j - 1, x, 1);
-                        xmax = abs1(x[i - 1]);
+                        xmax = cabs1(x[i - 1]);
                     }
                     ip = ip - j;
                 } else {
@@ -487,7 +487,7 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
                         //
                         Caxpy(n - j, -x[j - 1] * tscal, &ap[(ip + 1) - 1], 1, &x[(j + 1) - 1], 1);
                         i = j + iCamax(n - j, &x[(j + 1) - 1], 1);
-                        xmax = abs1(x[i - 1]);
+                        xmax = cabs1(x[i - 1]);
                     }
                     ip += n - j + 1;
                 }
@@ -504,7 +504,7 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
                 //              Compute x(j) = b(j) - sum A(k,j)*x(k).
                 //                                    k<>j
                 //
-                xj = abs1(x[j - 1]);
+                xj = cabs1(x[j - 1]);
                 uscal = tscal;
                 rec = one / max(xmax, one);
                 if (cnorm[j - 1] > (bignum - xj) * rec) {
@@ -517,7 +517,7 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
                     } else {
                         tjjs = tscal;
                     }
-                    tjj = abs1(tjjs);
+                    tjj = cabs1(tjjs);
                     if (tjj > one) {
                         //
                         //                       Divide by A(j,j) when scaling x if A(j,j) > 1.
@@ -564,7 +564,7 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
                     //                 was not used to scale the dotproduct.
                     //
                     x[j - 1] = x[j - 1] - csumj;
-                    xj = abs1(x[j - 1]);
+                    xj = cabs1(x[j - 1]);
                     if (nounit) {
                         //
                         //                    Compute x(j) = x(j) / A(j,j), scaling if necessary.
@@ -576,7 +576,7 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
                             goto statement_160;
                         }
                     }
-                    tjj = abs1(tjjs);
+                    tjj = cabs1(tjjs);
                     if (tjj > smlnum) {
                         //
                         //                       abs(A(j,j)) > SMLNUM:
@@ -627,7 +627,7 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
                     //
                     x[j - 1] = Cladiv(x[j - 1], tjjs) - csumj;
                 }
-                xmax = max(xmax, abs1(x[j - 1]));
+                xmax = max(xmax, cabs1(x[j - 1]));
                 jlen++;
                 ip += jinc * jlen;
             }
@@ -643,7 +643,7 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
                 //              Compute x(j) = b(j) - sum A(k,j)*x(k).
                 //                                    k<>j
                 //
-                xj = abs1(x[j - 1]);
+                xj = cabs1(x[j - 1]);
                 uscal = tscal;
                 rec = one / max(xmax, one);
                 if (cnorm[j - 1] > (bignum - xj) * rec) {
@@ -656,7 +656,7 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
                     } else {
                         tjjs = tscal;
                     }
-                    tjj = abs1(tjjs);
+                    tjj = cabs1(tjjs);
                     if (tjj > one) {
                         //
                         //                       Divide by A(j,j) when scaling x if A(j,j) > 1.
@@ -703,7 +703,7 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
                     //                 was not used to scale the dotproduct.
                     //
                     x[j - 1] = x[j - 1] - csumj;
-                    xj = abs1(x[j - 1]);
+                    xj = cabs1(x[j - 1]);
                     if (nounit) {
                         //
                         //                    Compute x(j) = x(j) / A(j,j), scaling if necessary.
@@ -715,7 +715,7 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
                             goto statement_210;
                         }
                     }
-                    tjj = abs1(tjjs);
+                    tjj = cabs1(tjjs);
                     if (tjj > smlnum) {
                         //
                         //                       abs(A(j,j)) > SMLNUM:
@@ -766,7 +766,7 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
                     //
                     x[j - 1] = Cladiv(x[j - 1], tjjs) - csumj;
                 }
-                xmax = max(xmax, abs1(x[j - 1]));
+                xmax = max(xmax, cabs1(x[j - 1]));
                 jlen++;
                 ip += jinc * jlen;
             }

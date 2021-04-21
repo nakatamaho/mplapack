@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
+inline REAL cabs1(COMPLEX cdum) { return (abs(cdum.real()) + abs(cdum.imag())); }
 
 void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const ktop, INTEGER const kbot, INTEGER const nw, COMPLEX *h, INTEGER const ldh, INTEGER const iloz, INTEGER const ihiz, COMPLEX *z, INTEGER const ldz, INTEGER &ns, INTEGER &nd, COMPLEX *sh, COMPLEX *v, INTEGER const ldv, INTEGER const nh, COMPLEX *t, INTEGER const ldt, INTEGER const nv, COMPLEX *wv, INTEGER const ldwv, COMPLEX *work, INTEGER const lwork) {
     //
@@ -136,7 +136,7 @@ void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         sh[kwtop - 1] = h[(kwtop - 1) + (kwtop - 1) * ldh];
         ns = 1;
         nd = 0;
-        if (abs1(s) <= max(smlnum, REAL(ulp * abs1(h[(kwtop - 1) + (kwtop - 1) * ldh])))) {
+        if (cabs1(s) <= max(smlnum, REAL(ulp * cabs1(h[(kwtop - 1) + (kwtop - 1) * ldh])))) {
             ns = 0;
             nd = 1;
             if (kwtop > ktop) {
@@ -172,11 +172,11 @@ void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         //
         //        ==== Small spike tip deflation test ====
         //
-        foo = abs1(t[(ns - 1) + (ns - 1) * ldt]);
+        foo = cabs1(t[(ns - 1) + (ns - 1) * ldt]);
         if (foo == rzero) {
-            foo = abs1(s);
+            foo = cabs1(s);
         }
-        if (abs1(s) * abs1(v[(ns - 1) * ldv]) <= max(smlnum, REAL(ulp * foo))) {
+        if (cabs1(s) * cabs1(v[(ns - 1) * ldv]) <= max(smlnum, REAL(ulp * foo))) {
             //
             //           ==== One more converged eigenvalue ====
             //
@@ -208,7 +208,7 @@ void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         for (i = infqr + 1; i <= ns; i = i + 1) {
             ifst = i;
             for (j = i + 1; j <= ns; j = j + 1) {
-                if (abs1(t[(j - 1) + (j - 1) * ldt]) > abs1(t[(ifst - 1) + (ifst - 1) * ldt])) {
+                if (cabs1(t[(j - 1) + (j - 1) * ldt]) > cabs1(t[(ifst - 1) + (ifst - 1) * ldt])) {
                     ifst = j;
                 }
             }

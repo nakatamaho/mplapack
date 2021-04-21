@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
+inline REAL cabs1(COMPLEX zdum) { return (abs(zdum.real()) + abs(zdum.imag())); }
 
 void Csptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEGER &info) {
     COMPLEX zdum = 0.0;
@@ -133,14 +133,14 @@ void Csptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
         //        Determine rows and columns to be interchanged and whether
         //        a 1-by-1 or 2-by-2 pivot block will be used
         //
-        absakk = abs1(ap[(kc + k - 1) - 1]);
+        absakk = cabs1(ap[(kc + k - 1) - 1]);
         //
         //        IMAX is the row-index of the largest off-diagonal element in
         //        column K, and COLMAX is its absolute value
         //
         if (k > 1) {
             imax = iCamax(k - 1, &ap[kc - 1], 1);
-            colmax = abs1(ap[(kc + imax - 1) - 1]);
+            colmax = cabs1(ap[(kc + imax - 1) - 1]);
         } else {
             colmax = zero;
         }
@@ -165,8 +165,8 @@ void Csptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
                 jmax = imax;
                 kx = imax * (imax + 1) / 2 + imax;
                 for (j = imax + 1; j <= k; j = j + 1) {
-                    if (abs1(ap[kx - 1]) > rowmax) {
-                        rowmax = abs1(ap[kx - 1]);
+                    if (cabs1(ap[kx - 1]) > rowmax) {
+                        rowmax = cabs1(ap[kx - 1]);
                         jmax = j;
                     }
                     kx += j;
@@ -174,7 +174,7 @@ void Csptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
                 kpc = (imax - 1) * imax / 2 + 1;
                 if (imax > 1) {
                     jmax = iCamax(imax - 1, &ap[kpc - 1], 1);
-                    rowmax = max(rowmax, abs1(ap[(kpc + jmax - 1) - 1]));
+                    rowmax = max(rowmax, cabs1(ap[(kpc + jmax - 1) - 1]));
                 }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
@@ -182,7 +182,7 @@ void Csptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
                     //                 no interchange, use 1-by-1 pivot block
                     //
                     kp = k;
-                } else if (abs1(ap[(kpc + imax - 1) - 1]) >= alpha * rowmax) {
+                } else if (cabs1(ap[(kpc + imax - 1) - 1]) >= alpha * rowmax) {
                     //
                     //                 interchange rows and columns K and IMAX, use 1-by-1
                     //                 pivot block
@@ -319,14 +319,14 @@ void Csptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
         //        Determine rows and columns to be interchanged and whether
         //        a 1-by-1 or 2-by-2 pivot block will be used
         //
-        absakk = abs1(ap[kc - 1]);
+        absakk = cabs1(ap[kc - 1]);
         //
         //        IMAX is the row-index of the largest off-diagonal element in
         //        column K, and COLMAX is its absolute value
         //
         if (k < n) {
             imax = k + iCamax(n - k, &ap[(kc + 1) - 1], 1);
-            colmax = abs1(ap[(kc + imax - k) - 1]);
+            colmax = cabs1(ap[(kc + imax - k) - 1]);
         } else {
             colmax = zero;
         }
@@ -353,8 +353,8 @@ void Csptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
                 rowmax = zero;
                 kx = kc + imax - k;
                 for (j = k; j <= imax - 1; j = j + 1) {
-                    if (abs1(ap[kx - 1]) > rowmax) {
-                        rowmax = abs1(ap[kx - 1]);
+                    if (cabs1(ap[kx - 1]) > rowmax) {
+                        rowmax = cabs1(ap[kx - 1]);
                         jmax = j;
                     }
                     kx += n - j;
@@ -362,7 +362,7 @@ void Csptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
                 kpc = npp - (n - imax + 1) * (n - imax + 2) / 2 + 1;
                 if (imax < n) {
                     jmax = imax + iCamax(n - imax, &ap[(kpc + 1) - 1], 1);
-                    rowmax = max(rowmax, abs1(ap[(kpc + jmax - imax) - 1]));
+                    rowmax = max(rowmax, cabs1(ap[(kpc + jmax - imax) - 1]));
                 }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
@@ -370,7 +370,7 @@ void Csptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
                     //                 no interchange, use 1-by-1 pivot block
                     //
                     kp = k;
-                } else if (abs1(ap[kpc - 1]) >= alpha * rowmax) {
+                } else if (cabs1(ap[kpc - 1]) >= alpha * rowmax) {
                     //
                     //                 interchange rows and columns K and IMAX, use 1-by-1
                     //                 pivot block

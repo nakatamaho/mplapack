@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
+inline REAL cabs1(COMPLEX cdum) { return (abs(cdum.real()) + abs(cdum.imag())); }
 
 void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER const n, INTEGER const ktop, INTEGER const kbot, INTEGER const nshfts, COMPLEX *s, COMPLEX *h, INTEGER const ldh, INTEGER const iloz, INTEGER const ihiz, COMPLEX *z, INTEGER const ldz, COMPLEX *v, INTEGER const ldv, COMPLEX *u, INTEGER const ldu, INTEGER const nv, COMPLEX *wv, INTEGER const ldwv, INTEGER const nh, COMPLEX *wh, INTEGER const ldwh) {
     //
@@ -245,32 +245,32 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                 //
                 if (k >= ktop) {
                     if (h[((k + 1) - 1) + (k - 1) * ldh] != zero) {
-                        tst1 = abs1(h[(k - 1) + (k - 1) * ldh]) + abs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]);
+                        tst1 = cabs1(h[(k - 1) + (k - 1) * ldh]) + cabs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]);
                         if (tst1 == rzero) {
                             if (k >= ktop + 1) {
-                                tst1 += abs1(h[(k - 1) + ((k - 1) - 1) * ldh]);
+                                tst1 += cabs1(h[(k - 1) + ((k - 1) - 1) * ldh]);
                             }
                             if (k >= ktop + 2) {
-                                tst1 += abs1(h[(k - 1) + ((k - 2) - 1) * ldh]);
+                                tst1 += cabs1(h[(k - 1) + ((k - 2) - 1) * ldh]);
                             }
                             if (k >= ktop + 3) {
-                                tst1 += abs1(h[(k - 1) + ((k - 3) - 1) * ldh]);
+                                tst1 += cabs1(h[(k - 1) + ((k - 3) - 1) * ldh]);
                             }
                             if (k <= kbot - 2) {
-                                tst1 += abs1(h[((k + 2) - 1) + ((k + 1) - 1) * ldh]);
+                                tst1 += cabs1(h[((k + 2) - 1) + ((k + 1) - 1) * ldh]);
                             }
                             if (k <= kbot - 3) {
-                                tst1 += abs1(h[((k + 3) - 1) + ((k + 1) - 1) * ldh]);
+                                tst1 += cabs1(h[((k + 3) - 1) + ((k + 1) - 1) * ldh]);
                             }
                             if (k <= kbot - 4) {
-                                tst1 += abs1(h[((k + 4) - 1) + ((k + 1) - 1) * ldh]);
+                                tst1 += cabs1(h[((k + 4) - 1) + ((k + 1) - 1) * ldh]);
                             }
                         }
-                        if (abs1(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, REAL(ulp * tst1))) {
-                            h12 = max(abs1(h[((k + 1) - 1) + (k - 1) * ldh]), abs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
-                            h21 = min(abs1(h[((k + 1) - 1) + (k - 1) * ldh]), abs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
-                            h11 = max(abs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), abs1(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
-                            h22 = min(abs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), abs1(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
+                        if (cabs1(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, REAL(ulp * tst1))) {
+                            h12 = max(cabs1(h[((k + 1) - 1) + (k - 1) * ldh]), cabs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
+                            h21 = min(cabs1(h[((k + 1) - 1) + (k - 1) * ldh]), cabs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
+                            h11 = max(cabs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), cabs1(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
+                            h22 = min(cabs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), cabs1(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
                             scl = h11 + h12;
                             tst2 = h22 * (h11 / scl);
                             //
@@ -351,7 +351,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                         Clarfg(3, alpha, &vt[2 - 1], 1, vt[1 - 1]);
                         refsum = conj(vt[1 - 1]) * (h[((k + 1) - 1) + (k - 1) * ldh] + conj(vt[2 - 1]) * h[((k + 2) - 1) + (k - 1) * ldh]);
                         //
-                        if (abs1(h[((k + 2) - 1) + (k - 1) * ldh] - refsum * vt[2 - 1]) + abs1(refsum * vt[3 - 1]) > ulp * (abs1(h[(k - 1) + (k - 1) * ldh]) + abs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]) + abs1(h[((k + 2) - 1) + ((k + 2) - 1) * ldh]))) {
+                        if (cabs1(h[((k + 2) - 1) + (k - 1) * ldh] - refsum * vt[2 - 1]) + cabs1(refsum * vt[3 - 1]) > ulp * (cabs1(h[(k - 1) + (k - 1) * ldh]) + cabs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]) + cabs1(h[((k + 2) - 1) + ((k + 2) - 1) * ldh]))) {
                             //
                             //                       ==== Starting a new bulge here would
                             //                       .    create non-negligible fill.  Use
@@ -411,32 +411,32 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                     continue;
                 }
                 if (h[((k + 1) - 1) + (k - 1) * ldh] != zero) {
-                    tst1 = abs1(h[(k - 1) + (k - 1) * ldh]) + abs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]);
+                    tst1 = cabs1(h[(k - 1) + (k - 1) * ldh]) + cabs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]);
                     if (tst1 == rzero) {
                         if (k >= ktop + 1) {
-                            tst1 += abs1(h[(k - 1) + ((k - 1) - 1) * ldh]);
+                            tst1 += cabs1(h[(k - 1) + ((k - 1) - 1) * ldh]);
                         }
                         if (k >= ktop + 2) {
-                            tst1 += abs1(h[(k - 1) + ((k - 2) - 1) * ldh]);
+                            tst1 += cabs1(h[(k - 1) + ((k - 2) - 1) * ldh]);
                         }
                         if (k >= ktop + 3) {
-                            tst1 += abs1(h[(k - 1) + ((k - 3) - 1) * ldh]);
+                            tst1 += cabs1(h[(k - 1) + ((k - 3) - 1) * ldh]);
                         }
                         if (k <= kbot - 2) {
-                            tst1 += abs1(h[((k + 2) - 1) + ((k + 1) - 1) * ldh]);
+                            tst1 += cabs1(h[((k + 2) - 1) + ((k + 1) - 1) * ldh]);
                         }
                         if (k <= kbot - 3) {
-                            tst1 += abs1(h[((k + 3) - 1) + ((k + 1) - 1) * ldh]);
+                            tst1 += cabs1(h[((k + 3) - 1) + ((k + 1) - 1) * ldh]);
                         }
                         if (k <= kbot - 4) {
-                            tst1 += abs1(h[((k + 4) - 1) + ((k + 1) - 1) * ldh]);
+                            tst1 += cabs1(h[((k + 4) - 1) + ((k + 1) - 1) * ldh]);
                         }
                     }
-                    if (abs1(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, REAL(ulp * tst1))) {
-                        h12 = max(abs1(h[((k + 1) - 1) + (k - 1) * ldh]), abs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
-                        h21 = min(abs1(h[((k + 1) - 1) + (k - 1) * ldh]), abs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
-                        h11 = max(abs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), abs1(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
-                        h22 = min(abs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), abs1(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
+                    if (cabs1(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, REAL(ulp * tst1))) {
+                        h12 = max(cabs1(h[((k + 1) - 1) + (k - 1) * ldh]), cabs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
+                        h21 = min(cabs1(h[((k + 1) - 1) + (k - 1) * ldh]), cabs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
+                        h11 = max(cabs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), cabs1(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
+                        h22 = min(cabs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), cabs1(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
                         scl = h11 + h12;
                         tst2 = h22 * (h11 / scl);
                         //

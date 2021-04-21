@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
+inline REAL cabs1(COMPLEX z) { return abs(z.real()) + abs(z.imag()); }
 
 void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info) {
     COMPLEX z = 0.0;
@@ -149,7 +149,7 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
         //
         if (k > 1) {
             imax = iCamax(k - 1, &a[(k - 1) * lda], 1);
-            colmax = abs1(a[(imax - 1) + (k - 1) * lda]);
+            colmax = cabs1(a[(imax - 1) + (k - 1) * lda]);
         } else {
             colmax = zero;
         }
@@ -195,14 +195,14 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
                 //
                 if (imax != k) {
                     jmax = imax + iCamax(k - imax, &a[(imax - 1) + ((imax + 1) - 1) * lda], lda);
-                    rowmax = abs1(a[(imax - 1) + (jmax - 1) * lda]);
+                    rowmax = cabs1(a[(imax - 1) + (jmax - 1) * lda]);
                 } else {
                     rowmax = zero;
                 }
                 //
                 if (imax > 1) {
                     itemp = iCamax(imax - 1, &a[(imax - 1) * lda], 1);
-                    dtemp = abs1(a[(itemp - 1) + (imax - 1) * lda]);
+                    dtemp = cabs1(a[(itemp - 1) + (imax - 1) * lda]);
                     if (dtemp > rowmax) {
                         rowmax = dtemp;
                         jmax = itemp;
@@ -460,7 +460,7 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
         //
         if (k < n) {
             imax = k + iCamax(n - k, &a[((k + 1) - 1) + (k - 1) * lda], 1);
-            colmax = abs1(a[(imax - 1) + (k - 1) * lda]);
+            colmax = cabs1(a[(imax - 1) + (k - 1) * lda]);
         } else {
             colmax = zero;
         }
@@ -506,14 +506,14 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
                 //
                 if (imax != k) {
                     jmax = k - 1 + iCamax(imax - k, &a[(imax - 1) + (k - 1) * lda], lda);
-                    rowmax = abs1(a[(imax - 1) + (jmax - 1) * lda]);
+                    rowmax = cabs1(a[(imax - 1) + (jmax - 1) * lda]);
                 } else {
                     rowmax = zero;
                 }
                 //
                 if (imax < n) {
                     itemp = imax + iCamax(n - imax, &a[((imax + 1) - 1) + (imax - 1) * lda], 1);
-                    dtemp = abs1(a[(itemp - 1) + (imax - 1) * lda]);
+                    dtemp = cabs1(a[(itemp - 1) + (imax - 1) * lda]);
                     if (dtemp > rowmax) {
                         rowmax = dtemp;
                         jmax = itemp;

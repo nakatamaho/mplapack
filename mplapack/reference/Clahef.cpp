@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
+inline REAL cabs1(COMPLEX z) { return (abs(z.real()) + abs(z.imag())); }
 
 void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *w, INTEGER const ldw, INTEGER &info) {
     COMPLEX z = 0.0;
@@ -133,7 +133,7 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
         //
         if (k > 1) {
             imax = iCamax(k - 1, &w[(kw - 1) * ldw], 1);
-            colmax = abs1(w[(imax - 1) + (kw - 1) * ldw]);
+            colmax = cabs1(w[(imax - 1) + (kw - 1) * ldw]);
         } else {
             colmax = zero;
         }
@@ -179,10 +179,10 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
                 //              Determine only ROWMAX.
                 //
                 jmax = imax + iCamax(k - imax, &w[((imax + 1) - 1) + ((kw - 1) - 1) * ldw], 1);
-                rowmax = abs1(w[(jmax - 1) + ((kw - 1) - 1) * ldw]);
+                rowmax = cabs1(w[(jmax - 1) + ((kw - 1) - 1) * ldw]);
                 if (imax > 1) {
                     jmax = iCamax(imax - 1, &w[((kw - 1) - 1) * ldw], 1);
-                    rowmax = max(rowmax, abs1(w[(jmax - 1) + ((kw - 1) - 1) * ldw]));
+                    rowmax = max(rowmax, cabs1(w[(jmax - 1) + ((kw - 1) - 1) * ldw]));
                 }
                 //
                 //              Case(2)
@@ -492,7 +492,7 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
         //
         if (k < n) {
             imax = k + iCamax(n - k, &w[((k + 1) - 1) + (k - 1) * ldw], 1);
-            colmax = abs1(w[(imax - 1) + (k - 1) * ldw]);
+            colmax = cabs1(w[(imax - 1) + (k - 1) * ldw]);
         } else {
             colmax = zero;
         }
@@ -538,10 +538,10 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
                 //              Determine only ROWMAX.
                 //
                 jmax = k - 1 + iCamax(imax - k, &w[(k - 1) + ((k + 1) - 1) * ldw], 1);
-                rowmax = abs1(w[(jmax - 1) + ((k + 1) - 1) * ldw]);
+                rowmax = cabs1(w[(jmax - 1) + ((k + 1) - 1) * ldw]);
                 if (imax < n) {
                     jmax = imax + iCamax(n - imax, &w[((imax + 1) - 1) + ((k + 1) - 1) * ldw], 1);
-                    rowmax = max(rowmax, abs1(w[(jmax - 1) + ((k + 1) - 1) * ldw]));
+                    rowmax = max(rowmax, cabs1(w[(jmax - 1) + ((k + 1) - 1) * ldw]));
                 }
                 //
                 //              Case(2)

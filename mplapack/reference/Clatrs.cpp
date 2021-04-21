@@ -29,8 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX z) { return abs(z.real()) + abs(z.imag()); }
-inline REAL cabs2(COMPLEX z) { return abs(z.real() / 2.0) + abs(z.imag() / 2.0); }
+inline REAL cabs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
+inline REAL cabs2(COMPLEX zdum) { return abs(zdum.real() / 2.0) + abs(zdum.imag() / 2.0); }
 
 void Clatrs(const char *uplo, const char *trans, const char *diag, const char *normin, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *x, REAL &scale, REAL *cnorm, INTEGER &info) {
     COMPLEX zdum = 0.0;

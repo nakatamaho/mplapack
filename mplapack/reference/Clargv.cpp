@@ -32,7 +32,6 @@
 inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
 inline REAL abssq(COMPLEX ff) {
     REAL temp;
-
     temp = (ff.real() * ff.real()) + (ff.imag() * ff.imag());
     return temp;
 }
