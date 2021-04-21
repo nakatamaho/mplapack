@@ -32,8 +32,8 @@
 #define _MPLAPACK_MPFR_H_
 
 #include "mplapack_config.h"
-//#include "mpc_class.h"
-//#include "gmpxx.h"
+#include "mpc_class.h"
+#include "gmpxx.h"
 #include "mpreal.h"
 #include "mpcomplex.h"
 
@@ -81,12 +81,6 @@ mpreal Rlantb(const char *norm, const char *uplo, const char *diag, mplapackint 
 mpreal Rlantr(const char *norm, const char *uplo, const char *diag, mplapackint const m, mplapackint const n, mpreal *a, mplapackint const lda, mpreal *work);
 mpreal Rlapy2(mpreal const x, mpreal const y);
 mpreal Rlapy3(mpreal const x, mpreal const y, mpreal const z);
-mpreal abs1(mpcomplex ff);
-mpreal abs1(mpcomplex z);
-mpreal abs2(mpcomplex z);
-mpreal abssq(mpcomplex ff);
-mpreal cabs1(mpcomplex z);
-mpreal cabs2(mpcomplex z);
 void CRrscl(mplapackint const n, mpreal const sa, mpcomplex *sx, mplapackint const incx);
 void Cbdsqr(const char *uplo, mplapackint const n, mplapackint const ncvt, mplapackint const nru, mplapackint const ncc, mpreal *d, mpreal *e, mpcomplex *vt, mplapackint const ldvt, mpcomplex *u, mplapackint const ldu, mpcomplex *c, mplapackint const ldc, mpreal *rwork, mplapackint &info);
 void Cgbsv(mplapackint const n, mplapackint const kl, mplapackint const ku, mplapackint const nrhs, mpcomplex *ab, mplapackint const ldab, mplapackint *ipiv, mpcomplex *b, mplapackint const ldb, mplapackint &info);

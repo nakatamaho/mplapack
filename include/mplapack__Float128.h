@@ -63,12 +63,6 @@ _Float128 Rlantb(const char *norm, const char *uplo, const char *diag, mplapacki
 _Float128 Rlantr(const char *norm, const char *uplo, const char *diag, mplapackint const m, mplapackint const n, _Float128 *a, mplapackint const lda, _Float128 *work);
 _Float128 Rlapy2(_Float128 const x, _Float128 const y);
 _Float128 Rlapy3(_Float128 const x, _Float128 const y, _Float128 const z);
-_Float128 abs1(std::complex<_Float128> ff);
-_Float128 abs1(std::complex<_Float128> z);
-_Float128 abs2(std::complex<_Float128> z);
-_Float128 abssq(std::complex<_Float128> ff);
-_Float128 cabs1(std::complex<_Float128> z);
-_Float128 cabs2(std::complex<_Float128> z);
 bool Risnan(_Float128 const din);
 bool Rlaisnan(_Float128 const din1, _Float128 const din2);
 mplapackint Rlaneg(mplapackint const n, _Float128 *d, _Float128 *lld, _Float128 const sigma, _Float128 const, mplapackint const r);

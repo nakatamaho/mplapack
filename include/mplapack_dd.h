@@ -64,12 +64,6 @@ dd_real Rlantb(const char *norm, const char *uplo, const char *diag, mplapackint
 dd_real Rlantr(const char *norm, const char *uplo, const char *diag, mplapackint const m, mplapackint const n, dd_real *a, mplapackint const lda, dd_real *work);
 dd_real Rlapy2(dd_real const x, dd_real const y);
 dd_real Rlapy3(dd_real const x, dd_real const y, dd_real const z);
-dd_real abs1(dd_complex ff);
-dd_real abs1(dd_complex z);
-dd_real abs2(dd_complex z);
-dd_real abssq(dd_complex ff);
-dd_real cabs1(dd_complex z);
-dd_real cabs2(dd_complex z);
 mplapackint Rlaneg(mplapackint const n, dd_real *d, dd_real *lld, dd_real const sigma, dd_real const, mplapackint const r);
 mplapackint iCmax1(mplapackint const n, dd_complex *zx, mplapackint const incx);
 mplapackint iMieeeck_dd(mplapackint const &ispec, dd_real const &zero, dd_real const &one);

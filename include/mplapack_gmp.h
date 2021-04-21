@@ -64,12 +64,6 @@ mpf_class Rlantb(const char *norm, const char *uplo, const char *diag, mplapacki
 mpf_class Rlantr(const char *norm, const char *uplo, const char *diag, mplapackint const m, mplapackint const n, mpf_class *a, mplapackint const lda, mpf_class *work);
 mpf_class Rlapy2(mpf_class const x, mpf_class const y);
 mpf_class Rlapy3(mpf_class const x, mpf_class const y, mpf_class const z);
-mpf_class abs1(mpc_class ff);
-mpf_class abs1(mpc_class z);
-mpf_class abs2(mpc_class z);
-mpf_class abssq(mpc_class ff);
-mpf_class cabs1(mpc_class z);
-mpf_class cabs2(mpc_class z);
 mplapackint Rlaneg(mplapackint const n, mpf_class *d, mpf_class *lld, mpf_class const sigma, mpf_class const, mplapackint const r);
 mplapackint iCmax1(mplapackint const n, mpc_class *zx, mplapackint const incx);
 mplapackint iMieeeck_gmp(mplapackint const &ispec, mpf_class const &zero, mpf_class const &one);

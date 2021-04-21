@@ -59,12 +59,6 @@ _Float64x Rlantb(const char *norm, const char *uplo, const char *diag, mplapacki
 _Float64x Rlantr(const char *norm, const char *uplo, const char *diag, mplapackint const m, mplapackint const n, _Float64x *a, mplapackint const lda, _Float64x *work);
 _Float64x Rlapy2(_Float64x const x, _Float64x const y);
 _Float64x Rlapy3(_Float64x const x, _Float64x const y, _Float64x const z);
-_Float64x abs1(std::complex<_Float64x> ff);
-_Float64x abs1(std::complex<_Float64x> z);
-_Float64x abs2(std::complex<_Float64x> z);
-_Float64x abssq(std::complex<_Float64x> ff);
-_Float64x cabs1(std::complex<_Float64x> z);
-_Float64x cabs2(std::complex<_Float64x> z);
 bool Risnan(_Float64x const din);
 bool Rlaisnan(_Float64x const din1, _Float64x const din2);
 mplapackint Rlaneg(mplapackint const n, _Float64x *d, _Float64x *lld, _Float64x const sigma, _Float64x const, mplapackint const r);

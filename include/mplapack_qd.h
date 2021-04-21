@@ -77,12 +77,6 @@ qd_real Rlantb(const char *norm, const char *uplo, const char *diag, mplapackint
 qd_real Rlantr(const char *norm, const char *uplo, const char *diag, mplapackint const m, mplapackint const n, qd_real *a, mplapackint const lda, qd_real *work);
 qd_real Rlapy2(qd_real const x, qd_real const y);
 qd_real Rlapy3(qd_real const x, qd_real const y, qd_real const z);
-qd_real abs1(qd_complex ff);
-qd_real abs1(qd_complex z);
-qd_real abs2(qd_complex z);
-qd_real abssq(qd_complex ff);
-qd_real cabs1(qd_complex z);
-qd_real cabs2(qd_complex z);
 void CRrscl(mplapackint const n, qd_real const sa, qd_complex *sx, mplapackint const incx);
 void Cbdsqr(const char *uplo, mplapackint const n, mplapackint const ncvt, mplapackint const nru, mplapackint const ncc, qd_real *d, qd_real *e, qd_complex *vt, mplapackint const ldvt, qd_complex *u, mplapackint const ldu, qd_complex *c, mplapackint const ldc, qd_real *rwork, mplapackint &info);
 void Cgbsv(mplapackint const n, mplapackint const kl, mplapackint const ku, mplapackint const nrhs, qd_complex *ab, mplapackint const ldab, mplapackint *ipiv, qd_complex *b, mplapackint const ldb, mplapackint &info);
