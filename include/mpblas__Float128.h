@@ -45,7 +45,7 @@ _Float128 RCnrm2(mplapackint const n, std::complex<_Float128> *x, mplapackint co
 _Float128 Rasum(mplapackint const n, _Float128 *dx, mplapackint const incx);
 _Float128 Rdot(mplapackint const n, _Float128 *dx, mplapackint const incx, _Float128 *dy, mplapackint const incy);
 _Float128 Rnrm2(mplapackint const n, _Float128 *x, mplapackint const incx);
-mplapackint Mlsame__Float128(const char *a, const char *b);
+bool Mlsame__Float128(const char *a, const char *b);
 mplapackint iCamax(mplapackint const n, std::complex<_Float128> *zx, mplapackint const incx);
 mplapackint iRamax(mplapackint const n, _Float128 *dx, mplapackint const incx);
 std::complex<_Float128> Cdotc(mplapackint const n, std::complex<_Float128> *zx, mplapackint const incx, std::complex<_Float128> *zy, mplapackint const incy);

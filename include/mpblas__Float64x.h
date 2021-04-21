@@ -45,7 +45,7 @@ _Float64x RCnrm2(mplapackint const n, std::complex<_Float64x> *x, mplapackint co
 _Float64x Rasum(mplapackint const n, _Float64x *dx, mplapackint const incx);
 _Float64x Rdot(mplapackint const n, _Float64x *dx, mplapackint const incx, _Float64x *dy, mplapackint const incy);
 _Float64x Rnrm2(mplapackint const n, _Float64x *x, mplapackint const incx);
-mplapackint Mlsame__Float64x(const char *a, const char *b);
+bool Mlsame__Float64x(const char *a, const char *b);
 mplapackint iCamax(mplapackint const n, std::complex<_Float64x> *zx, mplapackint const incx);
 mplapackint iRamax(mplapackint const n, _Float64x *dx, mplapackint const incx);
 std::complex<_Float64x> Cdotc(mplapackint const n, std::complex<_Float64x> *zx, mplapackint const incx, std::complex<_Float64x> *zy, mplapackint const incy);

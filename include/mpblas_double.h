@@ -41,13 +41,13 @@
 #endif
 _MPLAPACK_EXTERN_ int mplapack_errno;
 
+bool Mlsame_double(const char *a, const char *b);
 double RCabs1(std::complex<double> const z);
 double RCasum(mplapackint const n, std::complex<double> *zx, mplapackint const incx);
 double RCnrm2(mplapackint const n, std::complex<double> *x, mplapackint const incx);
 double Rasum(mplapackint const n, double *dx, mplapackint const incx);
 double Rdot(mplapackint const n, double *dx, mplapackint const incx, double *dy, mplapackint const incy);
 double Rnrm2(mplapackint const n, double *x, mplapackint const incx);
-mplapackint Mlsame_double(const char *a, const char *b);
 mplapackint iCamax(mplapackint const n, std::complex<double> *zx, mplapackint const incx);
 mplapackint iRamax(mplapackint const n, double *dx, mplapackint const incx);
 std::complex<double> Cdotc(mplapackint const n, std::complex<double> *zx, mplapackint const incx, std::complex<double> *zy, mplapackint const incy);

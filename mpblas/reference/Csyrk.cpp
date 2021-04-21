@@ -83,8 +83,8 @@ void Csyrk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
     //
     //     Quick return if possible.
     //
-    const COMPLEX zero = (0.0, 0.0);
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     if ((n == 0) || (((alpha == zero) || (k == 0)) && (beta == one))) {
         return;
     }

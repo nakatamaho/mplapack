@@ -101,8 +101,8 @@ void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER cons
     //
     //     Quick return if possible.
     //
-    const COMPLEX zero = (0.0, 0.0);
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     if ((m == 0) || (n == 0) || (((alpha == zero) || (k == 0)) && (beta == one))) {
         return;
     }

@@ -43,7 +43,7 @@
 #endif
 _MPLAPACK_EXTERN_ int mplapack_errno;
 
-mplapackint Mlsame_qd(const char *a, const char *b);
+bool Mlsame_qd(const char *a, const char *b);
 mplapackint iCamax(mplapackint const n, qd_complex *zx, mplapackint const incx);
 mplapackint iRamax(mplapackint const n, qd_real *dx, mplapackint const incx);
 qd_complex Cdotc(mplapackint const n, qd_complex *zx, mplapackint const incx, qd_complex *zy, mplapackint const incy);

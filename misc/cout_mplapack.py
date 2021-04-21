@@ -769,10 +769,16 @@ def convert_data_type(conv_info, fdecl, crhs):
           ctype = "std::complex<float>"
           if (crhs is None):
             crhs = "fem::float0"
+          else:
+            if crhs[0] == '(' and crhs[-1] == ')':
+              crhs = "COMPLEX" + crhs
         elif (sz == 16):
           ctype = "std::complex<double>"
           if (crhs is None):
             crhs = "fem::double0"
+          else:
+            if crhs[0] == '(' and crhs[-1] == ')':
+              crhs = "COMPLEX" + crhs
         elif (sz == 32):
           ctype = "std::complex<long double>"
           if (crhs is None):

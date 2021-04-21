@@ -43,6 +43,7 @@
 #endif
 _MPLAPACK_EXTERN_ int mplapack_errno;
 
+bool Mlsame_dd(const char *a, const char *b);
 dd_complex Cdotc(mplapackint const n, dd_complex *zx, mplapackint const incx, dd_complex *zy, mplapackint const incy);
 dd_complex Cdotu(mplapackint const n, dd_complex *zx, mplapackint const incx, dd_complex *zy, mplapackint const incy);
 dd_real RCabs1(dd_complex const z);
@@ -51,7 +52,6 @@ dd_real RCnrm2(mplapackint const n, dd_complex *x, mplapackint const incx);
 dd_real Rasum(mplapackint const n, dd_real *dx, mplapackint const incx);
 dd_real Rdot(mplapackint const n, dd_real *dx, mplapackint const incx, dd_real *dy, mplapackint const incy);
 dd_real Rnrm2(mplapackint const n, dd_real *x, mplapackint const incx);
-mplapackint Mlsame_dd(const char *a, const char *b);
 mplapackint iCamax(mplapackint const n, dd_complex *zx, mplapackint const incx);
 mplapackint iRamax(mplapackint const n, dd_real *dx, mplapackint const incx);
 void CRrot(mplapackint const n, dd_complex *zx, mplapackint const incx, dd_complex *zy, mplapackint const incy, dd_real const c, dd_real const s);

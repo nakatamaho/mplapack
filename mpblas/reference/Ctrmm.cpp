@@ -96,7 +96,7 @@ void Ctrmm(const char *side, const char *uplo, const char *transa, const char *d
     //
     //     And when  alpha.eq.zero.
     //
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     INTEGER j = 0;
     INTEGER i = 0;
     if (alpha == zero) {
@@ -112,7 +112,7 @@ void Ctrmm(const char *side, const char *uplo, const char *transa, const char *d
     //
     INTEGER k = 0;
     COMPLEX temp = 0.0;
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     if (lside) {
         if (Mlsame(transa, "N")) {
             //

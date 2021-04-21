@@ -41,6 +41,7 @@
 #endif
 _MPLAPACK_EXTERN_ int mplapack_errno;
 
+bool Mlsame_gmp(const char *a, const char *b);
 mpc_class Cdotc(mplapackint const n, mpc_class *zx, mplapackint const incx, mpc_class *zy, mplapackint const incy);
 mpc_class Cdotu(mplapackint const n, mpc_class *zx, mplapackint const incx, mpc_class *zy, mplapackint const incy);
 mpf_class RCabs1(mpc_class const z);
@@ -49,7 +50,6 @@ mpf_class RCnrm2(mplapackint const n, mpc_class *x, mplapackint const incx);
 mpf_class Rasum(mplapackint const n, mpf_class *dx, mplapackint const incx);
 mpf_class Rdot(mplapackint const n, mpf_class *dx, mplapackint const incx, mpf_class *dy, mplapackint const incy);
 mpf_class Rnrm2(mplapackint const n, mpf_class *x, mplapackint const incx);
-mplapackint Mlsame_gmp(const char *a, const char *b);
 mplapackint iCamax(mplapackint const n, mpc_class *zx, mplapackint const incx);
 mplapackint iRamax(mplapackint const n, mpf_class *dx, mplapackint const incx);
 void CRrot(mplapackint const n, mpc_class *zx, mplapackint const incx, mpc_class *zy, mplapackint const incy, mpf_class const c, mpf_class const s);

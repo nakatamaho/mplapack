@@ -84,7 +84,7 @@ void Ctbsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
     bool noconj = Mlsame(trans, "T");
     bool nounit = Mlsame(diag, "N");
     //
-    //     Set up the start poINTEGER in X if the increment is not unity. This
+    //     Set up the start point in X if the increment is not unity. This
     //     will be  ( N - 1 )*INCX  too small for descending loops.
     //
     INTEGER kx = 0;
@@ -99,7 +99,7 @@ void Ctbsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
     //
     INTEGER kplus1 = 0;
     INTEGER j = 0;
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     INTEGER l = 0;
     COMPLEX temp = 0.0;
     INTEGER i = 0;

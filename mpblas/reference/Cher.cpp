@@ -71,12 +71,12 @@ void Cher(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEG
     //
     //     Quick return if possible.
     //
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     if ((n == 0) || (alpha == zero.real())) {
         return;
     }
     //
-    //     Set the start poINTEGER in X if the increment is not unity.
+    //     Set the start point in X if the increment is not unity.
     //
     INTEGER kx = 0;
     if (incx <= 0) {

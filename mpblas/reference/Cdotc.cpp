@@ -47,7 +47,7 @@ Cdotc(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER con
     //     ..
     //     .. Intrinsic Functions ..
     //     ..
-    COMPLEX ztemp = (0.0, 0.0);
+    COMPLEX ztemp = COMPLEX(0.0, 0.0);
     return_value = (0.0, 0.0);
     if (n <= 0) {
         return return_value;

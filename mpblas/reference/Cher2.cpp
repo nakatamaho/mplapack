@@ -73,7 +73,7 @@ void Cher2(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, I
     //
     //     Quick return if possible.
     //
-    const COMPLEX zero = (0.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     if ((n == 0) || (alpha == zero)) {
         return;
     }

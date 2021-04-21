@@ -45,7 +45,7 @@ Cdotu(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER con
     //
     //     .. Local Scalars ..
     //     ..
-    COMPLEX ztemp = (0.0, 0.0);
+    COMPLEX ztemp = COMPLEX(0.0, 0.0);
     return_value = (0.0, 0.0);
     if (n <= 0) {
         return return_value;

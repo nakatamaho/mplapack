@@ -76,7 +76,7 @@ void Rsyr(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER 
         return;
     }
     //
-    //     Set the start poINTEGER in X if the increment is not unity.
+    //     Set the start point in X if the increment is not unity.
     //
     INTEGER kx = 0;
     if (incx <= 0) {

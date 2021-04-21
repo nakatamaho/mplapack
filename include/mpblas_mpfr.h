@@ -44,9 +44,9 @@ using namespace mpfr;
 #endif
 _MPLAPACK_EXTERN_ int mplapack_errno;
 
+bool Mlsame_mpfr(const char *a, const char *b);
 mpcomplex Cdotc(mplapackint const n, mpcomplex *zx, mplapackint const incx, mpcomplex *zy, mplapackint const incy);
 mpcomplex Cdotu(mplapackint const n, mpcomplex *zx, mplapackint const incx, mpcomplex *zy, mplapackint const incy);
-mplapackint Mlsame_mpfr(const char *a, const char *b);
 mplapackint iCamax(mplapackint const n, mpcomplex *zx, mplapackint const incx);
 mplapackint iRamax(mplapackint const n, mpreal *dx, mplapackint const incx);
 mpreal RCabs1(mpcomplex const z);

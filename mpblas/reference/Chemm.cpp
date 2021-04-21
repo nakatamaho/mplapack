@@ -87,8 +87,8 @@ void Chemm(const char *side, const char *uplo, INTEGER const m, INTEGER const n,
     //
     //     Quick return if possible.
     //
-    const COMPLEX zero = (0.0, 0.0);
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     if ((m == 0) || (n == 0) || ((alpha == zero) && (beta == one))) {
         return;
     }

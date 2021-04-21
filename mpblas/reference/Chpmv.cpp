@@ -71,8 +71,8 @@ void Chpmv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *ap, 
     //
     //     Quick return if possible.
     //
-    const COMPLEX zero = (0.0, 0.0);
-    const COMPLEX one = (1.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     if ((n == 0) || ((alpha == zero) && (beta == one))) {
         return;
     }

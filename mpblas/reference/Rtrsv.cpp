@@ -81,7 +81,7 @@ void Rtrsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
     //
     bool nounit = Mlsame(diag, "N");
     //
-    //     Set up the start poINTEGER in X if the increment is not unity. This
+    //     Set up the start point in X if the increment is not unity. This
     //     will be  ( N - 1 )*INCX  too small for descending loops.
     //
     INTEGER kx = 0;
