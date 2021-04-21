@@ -122,9 +122,9 @@ void Cher2(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, I
                     for (i = 1; i <= j - 1; i = i + 1) {
                         a[(i - 1) + (j - 1) * lda] += x[i - 1] * temp1 + y[i - 1] * temp2;
                     }
-                    a[(j - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda].real() + x[j - 1] * temp1 + y[j - 1] * temp2.real();
+                    a[(j - 1) + (j - 1) * lda] = (a[(j - 1) + (j - 1) * lda]).real() + (x[j - 1] * temp1 + y[j - 1] * temp2).real();
                 } else {
-                    a[(j - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda].real();
+                    a[(j - 1) + (j - 1) * lda] = (a[(j - 1) + (j - 1) * lda]).real();
                 }
             }
         } else {
@@ -139,9 +139,9 @@ void Cher2(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, I
                         ix += incx;
                         iy += incy;
                     }
-                    a[(j - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda].real() + x[jx - 1] * temp1 + y[jy - 1] * temp2.real();
+                    a[(j - 1) + (j - 1) * lda] = (a[(j - 1) + (j - 1) * lda]).real() + (x[jx - 1] * temp1 + y[jy - 1] * temp2).real();
                 } else {
-                    a[(j - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda].real();
+                    a[(j - 1) + (j - 1) * lda] = (a[(j - 1) + (j - 1) * lda]).real();
                 }
                 jx += incx;
                 jy += incy;
@@ -156,12 +156,12 @@ void Cher2(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, I
                 if ((x[j - 1] != zero) || (y[j - 1] != zero)) {
                     temp1 = alpha * conj(y[j - 1]);
                     temp2 = conj(alpha * x[j - 1]);
-                    a[(j - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda].real() + x[j - 1] * temp1 + y[j - 1] * temp2.real();
+                    a[(j - 1) + (j - 1) * lda] = (a[(j - 1) + (j - 1) * lda]).real() + (x[j - 1] * temp1 + y[j - 1] * temp2).real();
                     for (i = j + 1; i <= n; i = i + 1) {
                         a[(i - 1) + (j - 1) * lda] += x[i - 1] * temp1 + y[i - 1] * temp2;
                     }
                 } else {
-                    a[(j - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda].real();
+                    a[(j - 1) + (j - 1) * lda] = (a[(j - 1) + (j - 1) * lda]).real();
                 }
             }
         } else {
@@ -169,7 +169,7 @@ void Cher2(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, I
                 if ((x[jx - 1] != zero) || (y[jy - 1] != zero)) {
                     temp1 = alpha * conj(y[jy - 1]);
                     temp2 = conj(alpha * x[jx - 1]);
-                    a[(j - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda].real() + x[jx - 1] * temp1 + y[jy - 1] * temp2.real();
+                    a[(j - 1) + (j - 1) * lda] = (a[(j - 1) + (j - 1) * lda]).real() + (x[jx - 1] * temp1 + y[jy - 1] * temp2).real();
                     ix = jx;
                     iy = jy;
                     for (i = j + 1; i <= n; i = i + 1) {
@@ -178,7 +178,7 @@ void Cher2(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, I
                         a[(i - 1) + (j - 1) * lda] += x[ix - 1] * temp1 + y[iy - 1] * temp2;
                     }
                 } else {
-                    a[(j - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda].real();
+                    a[(j - 1) + (j - 1) * lda] = (a[(j - 1) + (j - 1) * lda]).real();
                 }
                 jx += incx;
                 jy += incy;

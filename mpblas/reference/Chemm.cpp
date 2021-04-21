@@ -133,9 +133,9 @@ void Chemm(const char *side, const char *uplo, INTEGER const m, INTEGER const n,
                         temp2 += b[(k - 1) + (j - 1) * ldb] * conj(a[(k - 1) + (i - 1) * lda]);
                     }
                     if (beta == zero) {
-                        c[(i - 1) + (j - 1) * ldc] = temp1 * a[(i - 1) + (i - 1) * lda].real() + alpha * temp2;
+                        c[(i - 1) + (j - 1) * ldc] = temp1 * (a[(i - 1) + (i - 1) * lda]).real() + alpha * temp2;
                     } else {
-                        c[(i - 1) + (j - 1) * ldc] = beta * c[(i - 1) + (j - 1) * ldc] + temp1 * a[(i - 1) + (i - 1) * lda].real() + alpha * temp2;
+                        c[(i - 1) + (j - 1) * ldc] = beta * c[(i - 1) + (j - 1) * ldc] + temp1 * (a[(i - 1) + (i - 1) * lda]).real() + alpha * temp2;
                     }
                 }
             }
@@ -149,9 +149,9 @@ void Chemm(const char *side, const char *uplo, INTEGER const m, INTEGER const n,
                         temp2 += b[(k - 1) + (j - 1) * ldb] * conj(a[(k - 1) + (i - 1) * lda]);
                     }
                     if (beta == zero) {
-                        c[(i - 1) + (j - 1) * ldc] = temp1 * a[(i - 1) + (i - 1) * lda].real() + alpha * temp2;
+                        c[(i - 1) + (j - 1) * ldc] = temp1 * (a[(i - 1) + (i - 1) * lda]).real() + alpha * temp2;
                     } else {
-                        c[(i - 1) + (j - 1) * ldc] = beta * c[(i - 1) + (j - 1) * ldc] + temp1 * a[(i - 1) + (i - 1) * lda].real() + alpha * temp2;
+                        c[(i - 1) + (j - 1) * ldc] = beta * c[(i - 1) + (j - 1) * ldc] + temp1 * (a[(i - 1) + (i - 1) * lda]).real() + alpha * temp2;
                     }
                 }
             }
@@ -161,7 +161,7 @@ void Chemm(const char *side, const char *uplo, INTEGER const m, INTEGER const n,
         //        Form  C := alpha*B*A + beta*C.
         //
         for (j = 1; j <= n; j = j + 1) {
-            temp1 = alpha * a[(j - 1) + (j - 1) * lda].real();
+            temp1 = alpha * (a[(j - 1) + (j - 1) * lda]).real();
             if (beta == zero) {
                 for (i = 1; i <= m; i = i + 1) {
                     c[(i - 1) + (j - 1) * ldc] = temp1 * b[(i - 1) + (j - 1) * ldb];

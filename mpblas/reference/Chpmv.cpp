@@ -150,7 +150,7 @@ void Chpmv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *ap, 
                     temp2 += conj(ap[k - 1]) * x[i - 1];
                     k++;
                 }
-                y[j - 1] += temp1 * ap[(kk + j - 1) - 1].real() + alpha * temp2;
+                y[j - 1] += temp1 * (ap[(kk + j - 1) - 1]).real() + alpha * temp2;
                 kk += j;
             }
         } else {
@@ -167,7 +167,7 @@ void Chpmv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *ap, 
                     ix += incx;
                     iy += incy;
                 }
-                y[jy - 1] += temp1 * ap[(kk + j - 1) - 1].real() + alpha * temp2;
+                y[jy - 1] += temp1 * (ap[(kk + j - 1) - 1]).real() + alpha * temp2;
                 jx += incx;
                 jy += incy;
                 kk += j;
@@ -181,7 +181,7 @@ void Chpmv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *ap, 
             for (j = 1; j <= n; j = j + 1) {
                 temp1 = alpha * x[j - 1];
                 temp2 = zero;
-                y[j - 1] += temp1 * ap[kk - 1].real();
+                y[j - 1] += temp1 * (ap[kk - 1]).real();
                 k = kk + 1;
                 for (i = j + 1; i <= n; i = i + 1) {
                     y[i - 1] += temp1 * ap[k - 1];
@@ -197,7 +197,7 @@ void Chpmv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *ap, 
             for (j = 1; j <= n; j = j + 1) {
                 temp1 = alpha * x[jx - 1];
                 temp2 = zero;
-                y[jy - 1] += temp1 * ap[kk - 1].real();
+                y[jy - 1] += temp1 * (ap[kk - 1]).real();
                 ix = jx;
                 iy = jy;
                 for (k = kk + 1; k <= kk + n - j; k = k + 1) {

@@ -32,11 +32,10 @@ Based on http://www.netlib.org/blas/xerbla.f
 Mxerbla is an error handler for the Mplapack routines.
 */
 
-#include <stdio.h>
 #include <mpblas.h>
+#include <stdio.h>
 
-void Mxerbla(const char *srname, int info)
-{
+void Mxerbla(const char *srname, int info) {
     fprintf(stderr, " ** On entry to %s parameter number %2d had an illegal value\n", srname, info);
     exit(info);
 }

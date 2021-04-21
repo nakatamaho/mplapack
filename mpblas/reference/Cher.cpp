@@ -72,7 +72,7 @@ void Cher(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEG
     //     Quick return if possible.
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
-    if ((n == 0) || (alpha == zero.real())) {
+    if ((n == 0) || (alpha == (zero).real())) {
         return;
     }
     //
@@ -105,9 +105,9 @@ void Cher(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEG
                     for (i = 1; i <= j - 1; i = i + 1) {
                         a[(i - 1) + (j - 1) * lda] += x[i - 1] * temp;
                     }
-                    a[(j - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda].real() + x[j - 1] * temp.real();
+                    a[(j - 1) + (j - 1) * lda] = (a[(j - 1) + (j - 1) * lda]).real() + (x[j - 1] * temp).real();
                 } else {
-                    a[(j - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda].real();
+                    a[(j - 1) + (j - 1) * lda] = (a[(j - 1) + (j - 1) * lda]).real();
                 }
             }
         } else {
@@ -120,9 +120,9 @@ void Cher(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEG
                         a[(i - 1) + (j - 1) * lda] += x[ix - 1] * temp;
                         ix += incx;
                     }
-                    a[(j - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda].real() + x[jx - 1] * temp.real();
+                    a[(j - 1) + (j - 1) * lda] = (a[(j - 1) + (j - 1) * lda]).real() + (x[jx - 1] * temp).real();
                 } else {
-                    a[(j - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda].real();
+                    a[(j - 1) + (j - 1) * lda] = (a[(j - 1) + (j - 1) * lda]).real();
                 }
                 jx += incx;
             }
@@ -135,12 +135,12 @@ void Cher(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEG
             for (j = 1; j <= n; j = j + 1) {
                 if (x[j - 1] != zero) {
                     temp = alpha * conj(x[j - 1]);
-                    a[(j - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda].real() + temp * x[j - 1].real();
+                    a[(j - 1) + (j - 1) * lda] = (a[(j - 1) + (j - 1) * lda]).real() + (temp * x[j - 1]).real();
                     for (i = j + 1; i <= n; i = i + 1) {
                         a[(i - 1) + (j - 1) * lda] += x[i - 1] * temp;
                     }
                 } else {
-                    a[(j - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda].real();
+                    a[(j - 1) + (j - 1) * lda] = (a[(j - 1) + (j - 1) * lda]).real();
                 }
             }
         } else {
@@ -148,14 +148,14 @@ void Cher(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEG
             for (j = 1; j <= n; j = j + 1) {
                 if (x[jx - 1] != zero) {
                     temp = alpha * conj(x[jx - 1]);
-                    a[(j - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda].real() + temp * x[jx - 1].real();
+                    a[(j - 1) + (j - 1) * lda] = (a[(j - 1) + (j - 1) * lda]).real() + (temp * x[jx - 1]).real();
                     ix = jx;
                     for (i = j + 1; i <= n; i = i + 1) {
                         ix += incx;
                         a[(i - 1) + (j - 1) * lda] += x[ix - 1] * temp;
                     }
                 } else {
-                    a[(j - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda].real();
+                    a[(j - 1) + (j - 1) * lda] = (a[(j - 1) + (j - 1) * lda]).real();
                 }
                 jx += incx;
             }
