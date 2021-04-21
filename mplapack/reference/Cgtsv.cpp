@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
+inline REAL cabs1(COMPLEX zdum) { return (abs(zdum.real()) + abs(zdum.imag())); }
 
 void Cgtsv(INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
@@ -94,7 +94,7 @@ void Cgtsv(INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX
                 info = k;
                 return;
             }
-        } else if (abs1(d[k - 1]) >= abs1(dl[k - 1])) {
+        } else if (cabs1(d[k - 1]) >= cabs1(dl[k - 1])) {
             //
             //           No row interchange required
             //
