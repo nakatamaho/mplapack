@@ -671,10 +671,10 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
           ed = ")"
           ed2 = ".real()"
           aa = a.split(',')
-          if (len(aa)==1):
-            final = a + ed2
-          else:
-            final = op + a + ed + ed2
+#          if (len(aa)==1):
+#            final = a + ed2
+#          else:
+          final = op + a + ed + ed2
           rapp(final)
           continue
         elif (prev_tok is not None and prev_tok.is_identifier() and prev_tok.value == "dimag"):
@@ -683,10 +683,10 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
           ed = ")"
           ed2 = ".imag()"
           aa = a.split(',')
-          if (len(aa)==1):
-            final = a + ed2
-          else:
-            final = op + a + ed + ed2
+#          if (len(aa)==1):
+#            final = a + ed2
+#          else:
+          final = op + a + ed + ed2
           rapp(final)
           continue
         else: # not an array

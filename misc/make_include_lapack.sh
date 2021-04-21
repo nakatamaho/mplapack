@@ -13,7 +13,7 @@ for filename in $FILES; do
 /usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' ${filename} |  tr ':' ' ' | sed -e 's/^typename //' >  ${filename%.*}.hpp
 done
 
-cat hand/*hpp *hpp ~/mplapack/misc/special.hpp | grep -v arr_c | grep -v common | grep -v UNHANDLED_function | grep -v arr_ref | sort  |uniq > header_all
+cat hand/*hpp *hpp ~/mplapack/misc/special.hpp | grep -v abs1 | grep -v abs2 | grep -v abssq | grep -v arr_c | grep -v common | grep -v UNHANDLED_function | grep -v arr_ref | sort  |uniq > header_all
 
 rm *hpp
 
