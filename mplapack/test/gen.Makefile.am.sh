@@ -36,4 +36,4 @@ for _mplib in $MPLIBS; do
     rm ${_mplib}/Makefile.am.part.* ${_mplib}/_filelist_test
 done
 
-#rm -f _tmpfilelist_test
+rm -f _tmpfilelist_test
