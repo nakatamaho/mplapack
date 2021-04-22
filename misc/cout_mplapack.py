@@ -1066,8 +1066,12 @@ def convert_to_fem_do(conv_info, parent_scope, i_tok, fls_tokens):
         return parent_scope.open_nested_scope(
          opening_text=["for(%s=%s; %s>=%s; %s=%s%s) {" % (i, f, i, l, i, i, s)])
     else:
-      return parent_scope.open_nested_scope(
-               opening_text=["for(%s=%s; %s<=%s; %s=%s+%s) {" % (i, f, i, l, i, i, s)]) #danger!!!
+      if '-' in s:
+        return parent_scope.open_nested_scope(
+               opening_text=["for(%s=%s; %s>=%s; %s=%s%s) {" % (i, f, i, l, i, i, s)])
+      else:
+        return parent_scope.open_nested_scope(
+               opening_text=["for(%s=%s; %s<=%s; %s=%s+%s) {" % (i, f, i, l, i, i, s)])
   if (conv_info.fem_do_safe):
     return parent_scope.open_nested_scope(
       opening_text=["for(%s=%s; %s<=%s; %s=%s+1) {" % (i, f, i, l, i, i)])

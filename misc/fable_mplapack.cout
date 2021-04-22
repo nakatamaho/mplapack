@@ -90,9 +90,9 @@ fi
 LIBTBX_PYEXE="$LIBTBX_BUILD/../miniconda2/envs/fable36/bin/$LIBTBX_PYEXE_BASENAME"
 export LIBTBX_PYEXE
 if [ -n "$LIBTBX__VALGRIND_FLAG__" ]; then
-  exec $LIBTBX_VALGRIND "$LIBTBX_PYEXE" "$LIBTBX_BUILD/../modules/cctbx_project/fable/command_line/cout_mplapack.py" "$@"
+  exec $LIBTBX_VALGRIND "$LIBTBX_PYEXE" "$LIBTBX_BUILD/../modules/cctbx_project/fable/command_line/cout.py" "$@"
 elif [ $# -eq 0 ]; then
-  exec "$LIBTBX_PYEXE" "$LIBTBX_BUILD/../modules/cctbx_project/fable/command_line/cout_mplapack.py"
+  exec "$LIBTBX_PYEXE" "$LIBTBX_BUILD/../modules/cctbx_project/fable/command_line/cout.py"
 else
-  exec "$LIBTBX_PYEXE" "$LIBTBX_BUILD/../modules/cctbx_project/fable/command_line/cout_mplapack.py" "$@"
+  exec "$LIBTBX_PYEXE" "$LIBTBX_BUILD/../modules/cctbx_project/fable/command_line/cout.py" "$@"
 fi

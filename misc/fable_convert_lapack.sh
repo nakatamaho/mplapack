@@ -1,11 +1,11 @@
+
 if [ $# -ne 1 ]; then
   echo "need a fortran file to convert"
   exit 1
 fi
 
 cp /home/docker/mplapack/misc/cout_mplapack.py /home/docker/modules/cctbx_project/fable/
-cp /home/docker/mplapack/misc/fable_mplapack.cout /home/docker/modules/cctbx_project/fable/command_line/
-#cp /home/docker/mplapack/misc/read.py          /home/docker/modules/cctbx_project/fable/
+cp /home/docker/mplapack/misc/fable_mplapack.cout /home/docker/build36/bin/
 
 __output=${1%.*}.cpp
 output=`basename $__output`
