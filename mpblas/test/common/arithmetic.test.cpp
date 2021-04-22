@@ -84,6 +84,8 @@ void subst_test1()
   if (strncmp(buf1, buf2, 19)==0 && strncmp(buf2, buf3, 19)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
   if (strncmp(buf1, buf2, 37)==0 && strncmp(buf2, buf3, 37)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
+  if (strncmp(buf1, buf2, 21)==0 && strncmp(buf2, buf3, 21)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
 #endif
   printf("*** Substitution test 1 successful ***\n");
 }

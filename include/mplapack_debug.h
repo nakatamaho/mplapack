@@ -118,16 +118,16 @@ using namespace mpfr;
 #define EPSILON11 1e-7
 #define EPSILON12 1e-6
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-#define EPSILON 1e-12
-#define EPSILON2 1e-10
-#define EPSILON3 1e-9
-#define EPSILON4 1e-8
-#define EPSILON6 1e-7
-#define EPSILON7 1e-7
-#define EPSILON8 1e-7
-#define EPSILON10 1e-7
-#define EPSILON11 1e-7
-#define EPSILON12 1e-6
+#define EPSILON 1e-13
+#define EPSILON2 1e-11
+#define EPSILON3 1e-10
+#define EPSILON4 1e-9
+#define EPSILON6 1e-8
+#define EPSILON7 1e-8
+#define EPSILON8 1e-8
+#define EPSILON10 1e-8
+#define EPSILON11 1e-8
+#define EPSILON12 1e-7
 #endif
 
 #define TRUE 1

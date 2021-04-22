@@ -424,6 +424,7 @@ class mpreal {
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_DD___
     mpreal(const dd_real &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
+    mpreal &operator=(const dd_real &a);
 #endif
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
     mpreal(const _Float128 &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
@@ -2283,8 +2284,16 @@ inline qd_real cast2qd_real(const mpreal &b) {
 
 #if defined ___MPLAPACK_BUILD_WITH_DD___
 inline mpreal::mpreal(const dd_real &a, mp_prec_t prec, mp_rnd_t mode) {
-    mpfr_init_set_d(mp, a.x[0], mode);
-    mpfr_add_d(mp, mp, a.x[1], mode);
+    mpfr_init2(mp, default_prec);
+    mpfr_set_d(mp, a.x[0], default_rnd);
+    mpfr_add_d(mp, mp, a.x[1], default_rnd);
+}
+
+inline mpreal &mpreal::operator=(const dd_real &a) {
+    mpfr_init2(mp, default_prec);
+    mpfr_set_d(mp, a.x[0], default_rnd);
+    mpfr_add_d(mp, mp, a.x[1], default_rnd);
+    return *this;
 }
 
 inline const mpreal operator-(const dd_real a, const mpreal b) { return mpreal(a) -= b; }
