@@ -1,3 +1,6 @@
+2021/4/22   Nakata Maho <maho@riken.jp> 1.0.0
+            * MPBLAS passed all tests for all precisions on Ubuntu 18.04, amd64.
+
 2021/4/20   Nakata Maho <maho@riken.jp> 1.0.0
             * MPLAPACK 1.0.0 build successfully on Ubuntu 18.04, amd64.
 
