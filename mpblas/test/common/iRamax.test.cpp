@@ -77,7 +77,7 @@ void iRamax_test()
 	}
     }
     if (errorflag == TRUE) {
-	printf("iRamax test failed...\n");
+	printf("*** Testing iRamax test failed... ***\n");
 	exit(1);
     }
 }
