@@ -148,7 +148,7 @@ void Rtzrzf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         ki = ((m - nx - 1) / nb) * nb;
         kk = min(m, ki + nb);
         //
-        for (i = m - kk + ki + 1; i <= m - kk + 1; i = i + -nb) {
+        for (i = m - kk + ki + 1; i >= m - kk + 1; i = i - nb) {
             ib = min(m - i + 1, nb);
             //
             //           Compute the TZ factorization of the current block
