@@ -9,6 +9,8 @@ AC_CONFIG_HEADER(include/config.h)
 AC_CONFIG_FILES([ Makefile mplapack.pc ])
 AC_CONFIG_FILES([packaging/PKGBUILD packaging/mplapack.spec])
 
+AC_CANONICAL_TARGET
+
 AC_PROG_CC
 IS_INTELCC=0
 AC_COMPILE_IFELSE([
@@ -777,15 +779,18 @@ fi
 AM_CONDITIONAL(DO_LAPACKBENCH, test x$DO_LAPACKBENCH = xyes)
 
 if test x"$enable_optimization" = x"yes"; then
-    if  [ `echo "$target" | grep 'ppc64'` ]; then
-        CFLAGS="$CFLAGS -O2 -mcpu=native -fomit-frame-pointer -finline-functions -funroll-all-loops"
-        CXXFLAGS="$CXXFLAGS -mcpu=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
-        FCFLAGS="$FCFLAGS -mcpu=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
-    else
-        CFLAGS="$CFLAGS -O2 -march=native -fomit-frame-pointer -finline-functions -funroll-all-loops"
-        CXXFLAGS="$CXXFLAGS -march=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
-        FCFLAGS="$FCFLAGS -march=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
-    fi
+    case $target in
+       powerpc*-*-*)
+           CFLAGS="$CFLAGS -O2 -mcpu=native -fomit-frame-pointer -finline-functions -funroll-all-loops"
+           CXXFLAGS="$CXXFLAGS -mcpu=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
+           FCFLAGS="$FCFLAGS -mcpu=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
+       ;;
+       * ) 
+           CFLAGS="$CFLAGS -O2 -march=native -fomit-frame-pointer -finline-functions -funroll-all-loops"
+           CXXFLAGS="$CXXFLAGS -march=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
+           FCFLAGS="$FCFLAGS -march=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
+       ;;
+    esac
     if test x$__ICC = x"icc"; then
         CFLAGS="$CFLAGS -xHost -O3"
         CXXFLAGS="$CXXFLAGS -xHost -O3"
