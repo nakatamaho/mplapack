@@ -135,7 +135,7 @@ void Cgetri(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPL
         //        Use blocked code.
         //
         nn = ((n - 1) / nb) * nb + 1;
-        for (j = nn; j <= 1; j = j + -nb) {
+        for (j = nn; j >= 1; j = j - nb) {
             jb = min(nb, n - j + 1);
             //
             //           Copy current block column of L to WORK and replace with
