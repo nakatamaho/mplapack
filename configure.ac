@@ -777,9 +777,15 @@ fi
 AM_CONDITIONAL(DO_LAPACKBENCH, test x$DO_LAPACKBENCH = xyes)
 
 if test x"$enable_optimization" = x"yes"; then
-    CFLAGS="$CFLAGS -O2 -march=native -fomit-frame-pointer -finline-functions -funroll-all-loops"
-    CXXFLAGS="$CXXFLAGS -march=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
-    FCFLAGS="$FCFLAGS -march=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
+    if  [ `echo "$target" | grep 'ppc64'` ]; then
+        CFLAGS="$CFLAGS -O2 -mcpu=native -fomit-frame-pointer -finline-functions -funroll-all-loops"
+        CXXFLAGS="$CXXFLAGS -mcpu=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
+        FCFLAGS="$FCFLAGS -mcpu=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
+    else
+        CFLAGS="$CFLAGS -O2 -march=native -fomit-frame-pointer -finline-functions -funroll-all-loops"
+        CXXFLAGS="$CXXFLAGS -march=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
+        FCFLAGS="$FCFLAGS -march=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
+    fi
     if test x$__ICC = x"icc"; then
         CFLAGS="$CFLAGS -xHost -O3"
         CXXFLAGS="$CXXFLAGS -xHost -O3"
