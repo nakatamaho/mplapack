@@ -139,7 +139,7 @@ void Rtpmqrt(const char *side, const char *trans, INTEGER const m, INTEGER const
     } else if (left && notran) {
         //
         kf = ((k - 1) / nb) * nb + 1;
-        for (i = kf; i <= 1; i = i + -nb) {
+        for (i = kf; i >= 1; i = i - nb) {
             ib = min(nb, k - i + 1);
             mb = min(m - l + i + ib - 1, m);
             if (i >= l) {
@@ -153,7 +153,7 @@ void Rtpmqrt(const char *side, const char *trans, INTEGER const m, INTEGER const
     } else if (right && tran) {
         //
         kf = ((k - 1) / nb) * nb + 1;
-        for (i = kf; i <= 1; i = i + -nb) {
+        for (i = kf; i >= 1; i = i - nb) {
             ib = min(nb, k - i + 1);
             mb = min(n - l + i + ib - 1, n);
             if (i >= l) {
