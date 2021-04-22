@@ -9,7 +9,7 @@ from six.moves import zip
 import re
 
 def delete_brackets(s):
-  l = [ '\([^()]+\)', '\[[^\[\]]+\]' ]
+  l = [ '\([^()]+\)', '\[[^\[\]]+\]', '\[\]' , '\(\)' ]
   for _l in l:
     s = re.sub(_l, "", s)
   return delete_brackets(s) if sum([1 if re.search(_l, s) else 0 for _l in l]) > 0 else s
