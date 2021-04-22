@@ -1,0 +1,98 @@
+#! /bin/sh
+# LIBTBX_DISPATCHER DO NOT EDIT
+#
+# THIS IS AN AUTOMATICALLY GENERATED FILE.
+# DO NOT EDIT! CHANGES WILL BE LOST.
+# To customize this auto-generated script create
+#
+#   dispatcher_include*.sh
+#
+# files in "/home/docker/build36" and run
+#
+#   libtbx.refresh
+#
+# to re-generate the dispatchers (libtbx.refresh is a subset
+# of the functionality of the libtbx/configure.py command).
+#
+# See also:
+#   "/home/docker/build36/dispatcher_include_template.sh"
+#
+
+# ----------------------------------------------------------------------------
+# The shellrealpath function resolves an absolute physical path of its
+# first argument and stores it in a global shell variable RESULT.
+# The function returns nonzero for unreadable or invalid symlinks
+# and resets the RESULT to an empty string.
+
+shellrealpath() {
+    local ORGDIR="$PWD"
+    local TARGET="$1"
+    RESULT=""
+    # This test fails for a symlink loop.  We can do without resolution
+    # of symlinks that point to existing unreadable files.
+    [ -r "$TARGET" ] || return $?
+    # Check if the readlink command exists.
+    type readlink >/dev/null || return $?
+    while true; do
+        cd "$(dirname "$TARGET")"
+        TARGET="$(basename "$TARGET")"
+        if [ -L "$TARGET" ]; then
+            TARGET="$(readlink "$TARGET")"
+            continue
+        fi
+        RESULT="$(pwd -P)/$TARGET"
+        break
+    done
+    cd "$ORGDIR"
+}
+# ----------------------------------------------------------------------------
+
+unset PYTHONHOME
+LC_ALL=en_US.UTF-8
+export LC_ALL
+LIBTBX_BUILD="$(shellrealpath "$0" && cd "$(dirname "$RESULT")/.." && pwd)"
+export LIBTBX_BUILD
+LIBTBX_PYEXE_BASENAME="python3.6"
+export LIBTBX_PYEXE_BASENAME
+LIBTBX_DISPATCHER_NAME="fable.cout"
+export LIBTBX_DISPATCHER_NAME
+SSL_CERT_FILE="$LIBTBX_BUILD/../miniconda2/envs/fable36/lib/python3.6/site-packages/certifi/cacert.pem"
+export SSL_CERT_FILE
+OPENBLAS_NUM_THREADS="1"
+export OPENBLAS_NUM_THREADS
+if [ -n "$PYTHONPATH" ]; then
+  PYTHONPATH="$LIBTBX_BUILD/../modules/cctbx_project:$LIBTBX_BUILD/../modules/cctbx_project/boost_adaptbx:$LIBTBX_BUILD/lib:$LIBTBX_BUILD/../miniconda2/envs/fable36/lib/python3.6/site-packages:$PYTHONPATH"
+  export PYTHONPATH
+else
+  PYTHONPATH="$LIBTBX_BUILD/../modules/cctbx_project:$LIBTBX_BUILD/../modules/cctbx_project/boost_adaptbx:$LIBTBX_BUILD/lib:$LIBTBX_BUILD/../miniconda2/envs/fable36/lib/python3.6/site-packages"
+  export PYTHONPATH
+fi
+if [ -n "$LD_LIBRARY_PATH" ]; then
+  LD_LIBRARY_PATH="$LIBTBX_BUILD/lib:$LIBTBX_BUILD/../miniconda2/envs/fable36/lib:$LD_LIBRARY_PATH"
+  export LD_LIBRARY_PATH
+else
+  LD_LIBRARY_PATH="$LIBTBX_BUILD/lib:$LIBTBX_BUILD/../miniconda2/envs/fable36/lib"
+  export LD_LIBRARY_PATH
+fi
+if [ -n "$PATH" ]; then
+  PATH="$LIBTBX_BUILD/bin:$PATH"
+  export PATH
+else
+  PATH="$LIBTBX_BUILD/bin"
+  export PATH
+fi
+# ---------------------------------------------
+# lines marked LIBTBX_PRE_DISPATCHER_INCLUDE_SH
+# ---------------------------------------------
+# ----------------------------------------------
+# lines marked LIBTBX_POST_DISPATCHER_INCLUDE_SH
+# ----------------------------------------------
+LIBTBX_PYEXE="$LIBTBX_BUILD/../miniconda2/envs/fable36/bin/$LIBTBX_PYEXE_BASENAME"
+export LIBTBX_PYEXE
+if [ -n "$LIBTBX__VALGRIND_FLAG__" ]; then
+  exec $LIBTBX_VALGRIND "$LIBTBX_PYEXE" "$LIBTBX_BUILD/../modules/cctbx_project/fable/command_line/cout_mplapack.py" "$@"
+elif [ $# -eq 0 ]; then
+  exec "$LIBTBX_PYEXE" "$LIBTBX_BUILD/../modules/cctbx_project/fable/command_line/cout_mplapack.py"
+else
+  exec "$LIBTBX_PYEXE" "$LIBTBX_BUILD/../modules/cctbx_project/fable/command_line/cout_mplapack.py" "$@"
+fi
