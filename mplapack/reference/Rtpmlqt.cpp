@@ -136,7 +136,7 @@ void Rtpmlqt(const char *side, const char *trans, INTEGER const m, INTEGER const
     } else if (left && tran) {
         //
         kf = ((k - 1) / mb) * mb + 1;
-        for (i = kf; i <= 1; i = i + -mb) {
+        for (i = kf; i >= 1; i = i - mb) {
             ib = min(mb, k - i + 1);
             nb = min(m - l + i + ib - 1, m);
             if (i >= l) {
@@ -150,7 +150,7 @@ void Rtpmlqt(const char *side, const char *trans, INTEGER const m, INTEGER const
     } else if (right && notran) {
         //
         kf = ((k - 1) / mb) * mb + 1;
-        for (i = kf; i <= 1; i = i + -mb) {
+        for (i = kf; i >= 1; i = i - mb) {
             ib = min(mb, k - i + 1);
             nb = min(n - l + i + ib - 1, n);
             if (i >= l) {

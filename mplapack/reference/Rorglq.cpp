@@ -149,7 +149,7 @@ void Rorglq(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
         //
         //        Use blocked code
         //
-        for (i = ki + 1; i <= 1; i = i + -nb) {
+        for (i = ki + 1; i >= 1; i = i - nb) {
             ib = min(nb, k - i + 1);
             if (i + ib <= m) {
                 //

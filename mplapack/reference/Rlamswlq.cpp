@@ -122,7 +122,7 @@ void Rlamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
             ii = m + 1;
         }
         //
-        for (i = ii - (nb - k); i <= nb + 1; i = i + -(nb - k)) {
+        for (i = ii - (nb - k); i >= nb + 1; i = i - (nb - k)) {
             //
             //         Multiply Q to the current block of C (1:M,I:I+NB)
             //
@@ -173,7 +173,7 @@ void Rlamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
             ii = n + 1;
         }
         //
-        for (i = ii - (nb - k); i <= nb + 1; i = i + -(nb - k)) {
+        for (i = ii - (nb - k); i >= nb + 1; i = i - (nb - k)) {
             //
             //         Multiply Q to the current block of C (1:M,I:I+MB)
             //

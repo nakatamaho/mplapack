@@ -121,7 +121,7 @@ void Rgemqrt(const char *side, const char *trans, INTEGER const m, INTEGER const
     } else if (left && notran) {
         //
         kf = ((k - 1) / nb) * nb + 1;
-        for (i = kf; i <= 1; i = i + -nb) {
+        for (i = kf; i >= 1; i = i - nb) {
             ib = min(nb, k - i + 1);
             Rlarfb("L", "N", "F", "C", m - i + 1, n, ib, &v[(i - 1) + (i - 1) * ldv], ldv, &t[(i - 1) * ldt], ldt, &c[(i - 1)], ldc, work, ldwork);
         }
@@ -129,7 +129,7 @@ void Rgemqrt(const char *side, const char *trans, INTEGER const m, INTEGER const
     } else if (right && tran) {
         //
         kf = ((k - 1) / nb) * nb + 1;
-        for (i = kf; i <= 1; i = i + -nb) {
+        for (i = kf; i >= 1; i = i - nb) {
             ib = min(nb, k - i + 1);
             Rlarfb("R", "T", "F", "C", m, n - i + 1, ib, &v[(i - 1) + (i - 1) * ldv], ldv, &t[(i - 1) * ldt], ldt, &c[(i - 1) * ldc], ldc, work, ldwork);
         }

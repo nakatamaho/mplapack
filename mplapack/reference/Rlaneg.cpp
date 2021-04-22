@@ -29,8 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-INTEGER
-Rlaneg(INTEGER const n, REAL *d, REAL *lld, REAL const sigma, REAL const /* pivmin */, INTEGER const r) {
+INTEGER Rlaneg(INTEGER const n, REAL *d, REAL *lld, REAL const sigma, REAL const  /* pivmin */, INTEGER const r) {
     INTEGER return_value = 0;
     //
     //  -- LAPACK auxiliary routine --
@@ -111,7 +110,7 @@ Rlaneg(INTEGER const n, REAL *d, REAL *lld, REAL const sigma, REAL const /* pivm
     REAL p = d[n - 1] - sigma;
     INTEGER neg2 = 0;
     REAL dminus = 0.0;
-    for (bj = n - 1; bj <= r; bj = bj + -blklen) {
+    for (bj = n - 1; bj >= r; bj = bj - blklen) {
         neg2 = 0;
         bsav = p;
         for (j = bj; j >= max(bj - blklen + 1, r); j = j - 1) {

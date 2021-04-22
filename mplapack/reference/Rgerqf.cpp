@@ -136,7 +136,7 @@ void Rgerqf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         ki = ((k - nx - 1) / nb) * nb;
         kk = min(k, ki + nb);
         //
-        for (i = k - kk + ki + 1; i <= k - kk + 1; i = i + -nb) {
+        for (i = k - kk + ki + 1; i >= k - kk + 1; i = i - nb) {
             ib = min(k - i + 1, nb);
             //
             //           Compute the RQ factorization of the current block

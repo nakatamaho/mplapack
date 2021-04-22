@@ -241,7 +241,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 //
                 ppwo = nblst * nblst + (nnb + j - jcol - 1) * 2 * nnb + nnb;
                 j0 = jrow - nnb;
-                for (jrow = j0; jrow <= j + 2; jrow = jrow + -nnb) {
+                for (jrow = j0; jrow >= j + 2; jrow = jrow - nnb) {
                     ppw = ppwo;
                     len = 2 + j - jcol;
                     for (i = jrow + nnb - 1; i >= jrow; i = i - 1) {

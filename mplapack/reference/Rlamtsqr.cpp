@@ -126,7 +126,7 @@ void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER con
             ii = m + 1;
         }
         //
-        for (i = ii - (mb - k); i <= mb + 1; i = i + -(mb - k)) {
+        for (i = ii - (mb - k); i >= mb + 1; i = i - (mb - k)) {
             //
             //         Multiply Q to the current block of C (I:I+MB,1:N)
             //
@@ -177,7 +177,7 @@ void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER con
             ii = n + 1;
         }
         //
-        for (i = ii - (mb - k); i <= mb + 1; i = i + -(mb - k)) {
+        for (i = ii - (mb - k); i >= mb + 1; i = i - (mb - k)) {
             //
             //         Multiply Q to the current block of C (1:M,I:I+MB)
             //

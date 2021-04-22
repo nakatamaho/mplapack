@@ -395,7 +395,7 @@ void Rlasyf_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
         //
         //        computing blocks of NB columns at a time
         //
-        for (j = ((k - 1) / nb) * nb + 1; j <= 1; j = j + -nb) {
+        for (j = ((k - 1) / nb) * nb + 1; j >= 1; j = j - nb) {
             jb = min(nb, k - j + 1);
             //
             //           Update the upper triangle of the diagonal block
