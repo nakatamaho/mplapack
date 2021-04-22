@@ -129,6 +129,8 @@ void Csyrk_test3(const char *uplo, const char *trans, COMPLEX_REF alpha_ref, COM
 	printf("error: "); printnum(maxdiff); printf("\n");
         printf("*** Testing Csyrk failed ***\n");
 	exit(1);
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
     }
 }
 

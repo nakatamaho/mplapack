@@ -152,6 +152,8 @@ void Cgemm_test3(const char *transa, const char *transb, COMPLEX_REF alpha_ref, 
 	printf("max error: "); printnum(maxdiff); printf("\n");
         printf("*** Testing Cgemm failed ***\n");
 	exit(1);
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
     }
 }
 

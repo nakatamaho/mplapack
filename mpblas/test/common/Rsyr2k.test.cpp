@@ -141,6 +141,8 @@ void Rsyr2k_test3(const char *uplo, const char *trans, REAL_REF alpha_ref, REAL_
 	printf("error: "); printnum(maxdiff); printf("\n");
         printf("*** Testing Rsyr2k failed ***\n");
 	exit(1);
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
     }
 }
 

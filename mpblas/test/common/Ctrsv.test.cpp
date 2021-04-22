@@ -88,7 +88,7 @@ void Ctrsv_test2(const char *uplo, const char *trans, const char *diag)
 			errorflag = TRUE;
 		    }
 		    REAL_REF diff = infnorm(x_ref, x, veclen(n, incx), 1);
-		    if (diff > EPSILON) {
+		    if (diff > EPSILON3) {
 #if defined VERBOSE_TEST
 			printf("error: "); printnum(diff); printf("\n");
 #endif
@@ -108,6 +108,8 @@ void Ctrsv_test2(const char *uplo, const char *trans, const char *diag)
 	printf("error: "); printnum(maxdiff); printf("\n");
         printf("*** Testing Ctrsv failed ***\n");
 	exit(1);
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
     }
 }
 

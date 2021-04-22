@@ -90,7 +90,9 @@ void Raxpy_test2(REAL_REF alpha_ref, REAL alpha)
 	    printf("error: "); printnum(maxdiff); printf("\n");
             printf("*** Testing Raxpy failed ***\n");
 	    exit(1);
-	}
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
+    }
     }
 }
 

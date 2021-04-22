@@ -114,6 +114,8 @@ void Chbmv_test3(const char *uplo, COMPLEX_REF alpha_ref, COMPLEX_REF beta_ref, 
 	printf("error: "); printnum(maxdiff); printf("\n");
         printf("*** Testing Chbmv failed ***\n");
 	exit(1);
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
     }
 }
 

@@ -82,6 +82,8 @@ void CRscal_test()
         printf("max error "); printnum(maxdiff); printf("\n");
 	printf("*** Testing CRrot failed ***\n");
 	exit(1);
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
     }
 }
 

@@ -144,6 +144,8 @@ void Cgemv_test3(const char *trans, COMPLEX_REF alpha_ref, COMPLEX_REF beta_ref,
         printf("max error: "); printnum(maxdiff); printf("\n");
         printf("*** Testing Cgemv failed ***\n");
 	exit(1);
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
     }
 }
 

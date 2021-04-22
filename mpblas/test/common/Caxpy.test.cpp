@@ -92,6 +92,8 @@ void Caxpy_test2(COMPLEX_REF alpha_ref, COMPLEX alpha)
         printf("max error: "); printnum(maxdiff); printf("\n");
         printf("*** Testing Caxpy failed ***\n");
 	exit(1);
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
     }
 }
 

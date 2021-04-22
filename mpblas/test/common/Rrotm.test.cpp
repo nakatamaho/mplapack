@@ -119,7 +119,9 @@ void Rrotm_test2(INTEGER dflag)
    	        printf("error: "); printnum(maxdiff); printf("\n");
                 printf("*** Testing Rrotm failed ***\n");
 		exit(1);
-	    }
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
+    }
 	}
     }
 }

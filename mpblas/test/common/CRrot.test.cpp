@@ -106,6 +106,9 @@ void CRrot_test()
 	printf("cy:error "); printnum(maxdiffy); printf("\n");
    	printf("*** Testing CRrot failed ***\n");
 	exit(1);
+    } else {
+        printf("maxerror: "); printnum(maxdiffx); printf("\n");
+        printf("maxerror: "); printnum(maxdiffy); printf("\n");
     }
 }
 

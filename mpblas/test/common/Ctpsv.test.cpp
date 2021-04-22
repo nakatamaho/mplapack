@@ -100,6 +100,8 @@ void Ctpsv_test2(const char *uplo, const char *trans, const char *diag)
 	printf("error: "); printnum(maxdiff); printf("\n");
         printf("*** Testing Ctpsv failed ***\n");
 	exit(1);
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
     }
 }
 

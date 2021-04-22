@@ -118,6 +118,8 @@ void Crotg_test()
 	printf("error: "); printnum(diff4); printf("\n");
 	printf("*** Testing Crotg failed ***\n");
 	exit(1);
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
     }
 }
 

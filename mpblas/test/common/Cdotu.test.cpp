@@ -89,6 +89,8 @@ void Cdotu_test()
 	printf("error: "); printnum(maxdiff); printf("\n");
 	printf("*** Testing Cdotu failed ***\n");
 	exit(1);
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
     }
 }
 

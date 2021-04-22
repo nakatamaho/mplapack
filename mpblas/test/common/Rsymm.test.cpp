@@ -134,6 +134,8 @@ void Rsymm_test3(const char *side, const char *uplo, REAL_REF alpha_ref, REAL_RE
 	printf("error: "); printnum(maxdiff); printf("\n");
         printf("*** Testing Rsymm failed ***\n");
 	exit(1);
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
     }
 }
 

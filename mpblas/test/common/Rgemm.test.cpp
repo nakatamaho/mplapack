@@ -154,6 +154,8 @@ void Rgemm_test3(const char *transa, const char *transb, REAL_REF alpha_ref, REA
         printf("error: "); printnum(maxdiff); printf("\n");
         printf("*** Testing Rgemm failed ***\n");
 	exit(1);
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
     }
 }
 

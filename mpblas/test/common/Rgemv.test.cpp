@@ -143,6 +143,8 @@ void Rgemv_test3(const char *trans, REAL_REF alpha_ref, REAL_REF beta_ref, REAL 
 	printf("error: "); printnum(maxdiff); printf("\n");
         printf("*** Testing Rgemv failed ***\n");
 	exit(1);
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
     }
 }
 

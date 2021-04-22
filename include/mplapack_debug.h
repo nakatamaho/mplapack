@@ -99,7 +99,7 @@ using namespace mpfr;
 #define EPSILON 1e-29
 #define EPSILON2 1e-26
 #define EPSILON3 1e-26
-#define EPSILON4 1e-26
+#define EPSILON4 1e-25
 #define EPSILON6 1e-24
 #define EPSILON7 1e-23
 #define EPSILON8 1e-23

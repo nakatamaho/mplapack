@@ -80,6 +80,8 @@ void RCabs1_test()
 	printf("error: "); printnum(maxdiff); printf("\n");
 	printf("*** Testing RCabs1 failed ***\n");
         exit(1);
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
     }
 }
 

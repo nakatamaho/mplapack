@@ -111,6 +111,8 @@ void Cher_test2(const char *uplo)
 	printf("error: "); printnum(maxdiff); printf("\n");
         printf("*** Testing Cher failed ***\n");
 	exit(1);
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
     }
 }
 

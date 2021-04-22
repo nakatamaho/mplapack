@@ -112,6 +112,8 @@ void Rsymv_test3(const char *uplo, REAL_REF alpha_ref, REAL_REF beta_ref, REAL a
 	printf("error: "); printnum(maxdiff); printf("\n");
         printf("*** Testing Rsymv failed ***\n");
 	exit(1);
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
     }
 }
 

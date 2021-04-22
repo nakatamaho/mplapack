@@ -116,6 +116,8 @@ void Chpr2_test2(const char *uplo)
 	printf("error: "); printnum(maxdiff); printf("\n");
 	printf("*** Testing Chpr2 failed ***\n");
 	exit(1);
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
     }
 }
 

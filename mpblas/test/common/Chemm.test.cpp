@@ -134,6 +134,8 @@ void Chemm_test3(const char *side, const char *uplo, COMPLEX_REF alpha_ref, COMP
 	printf("error: "); printnum(maxdiff); printf("\n");
         printf("*** Testing Chemm failed ***\n");
 	exit(1);
+    } else {
+        printf("maxerror: "); printnum(maxdiff); printf("\n");
     }
 }
 
