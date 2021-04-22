@@ -375,7 +375,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     //
                     ppwo = 1 + nblst * nblst;
                     j0 = jrow - nnb;
-                    for (jrow = j0; jrow <= jcol + 1; jrow = jrow + -nnb) {
+                    for (jrow = j0; jrow >= jcol + 1; jrow = jrow - nnb) {
                         ppw = pw + len;
                         for (i = jrow; i <= jrow + nnb - 1; i = i + 1) {
                             work[ppw - 1] = a[(i - 1) + ((j + 1) - 1) * lda];
@@ -408,7 +408,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
             Rlacpy("All", nblst, cola, &work[pw - 1], nblst, &a[(j - 1) + ((jcol + nnb) - 1) * lda], lda);
             ppwo = nblst * nblst + 1;
             j0 = j - nnb;
-            for (j = j0; j <= jcol + 1; j = j + -nnb) {
+            for (j = j0; j >= jcol + 1; j = j - nnb) {
                 if (blk22) {
                     //
                     //                 Exploit the structure of
@@ -446,7 +446,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 Rlacpy("All", nh, nblst, &work[pw - 1], nh, &q[(topq - 1) + (j - 1) * ldq], ldq);
                 ppwo = nblst * nblst + 1;
                 j0 = j - nnb;
-                for (j = j0; j <= jcol + 1; j = j + -nnb) {
+                for (j = j0; j >= jcol + 1; j = j - nnb) {
                     if (initq) {
                         topq = max((INTEGER)2, j - jcol + 1);
                         nh = ihi - topq + 1;
@@ -503,7 +503,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     //
                     ppwo = nblst * nblst + (nnb + j - jcol - 1) * 2 * nnb + nnb;
                     j0 = jrow - nnb;
-                    for (jrow = j0; jrow <= j + 2; jrow = jrow + -nnb) {
+                    for (jrow = j0; jrow >= j + 2; jrow = jrow - nnb) {
                         ppw = ppwo;
                         len = 2 + j - jcol;
                         for (i = jrow + nnb - 1; i >= jrow; i = i - 1) {
@@ -536,7 +536,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 Rlacpy("All", top, nblst, &work[pw - 1], top, &a[(j - 1) * lda], lda);
                 ppwo = nblst * nblst + 1;
                 j0 = j - nnb;
-                for (j = j0; j <= jcol + 1; j = j + -nnb) {
+                for (j = j0; j >= jcol + 1; j = j - nnb) {
                     if (blk22) {
                         //
                         //                    Exploit the structure of U.
@@ -557,7 +557,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 Rlacpy("All", top, nblst, &work[pw - 1], top, &b[(j - 1) * ldb], ldb);
                 ppwo = nblst * nblst + 1;
                 j0 = j - nnb;
-                for (j = j0; j <= jcol + 1; j = j + -nnb) {
+                for (j = j0; j >= jcol + 1; j = j - nnb) {
                     if (blk22) {
                         //
                         //                    Exploit the structure of U.
@@ -589,7 +589,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 Rlacpy("All", nh, nblst, &work[pw - 1], nh, &z[(topq - 1) + (j - 1) * ldz], ldz);
                 ppwo = nblst * nblst + 1;
                 j0 = j - nnb;
-                for (j = j0; j <= jcol + 1; j = j + -nnb) {
+                for (j = j0; j >= jcol + 1; j = j - nnb) {
                     if (initq) {
                         topq = max((INTEGER)2, j - jcol + 1);
                         nh = ihi - topq + 1;
