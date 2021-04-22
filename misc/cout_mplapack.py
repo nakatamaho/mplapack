@@ -6,7 +6,14 @@ from libtbx import mutable
 from libtbx import Auto
 import os.path
 from six.moves import zip
+import re
 
+def delete_brackets(s):
+  l = [ '\([^()]+\)', '\[[^\[\]]+\]' ]
+  for _l in l:
+    s = re.sub(_l, "", s)
+  return delete_brackets(s) if sum([1 if re.search(_l, s) else 0 for _l in l]) > 0 else s
+																 
 fmt_comma_placeholder = chr(255)
 
 def break_line_if_necessary(callback, line, max_len=80, min_len=70):
@@ -670,11 +677,11 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
           op = "("
           ed = ")"
           ed2 = ".real()"
-          aa = a.split(',')
-#          if (len(aa)==1):
-#            final = a + ed2
-#          else:
-          final = op + a + ed + ed2
+          aa = delete_brackets(a)
+          if aa.isalnum():
+            final = a + ed2
+          else:
+            final = op + a + ed + ed2
           rapp(final)
           continue
         elif (prev_tok is not None and prev_tok.is_identifier() and prev_tok.value == "dimag"):
@@ -682,11 +689,11 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
           op = "("
           ed = ")"
           ed2 = ".imag()"
-          aa = a.split(',')
-#          if (len(aa)==1):
-#            final = a + ed2
-#          else:
-          final = op + a + ed + ed2
+          aa = delete_brackets(a)
+          if aa.isalnum():
+            final = a + ed2
+          else:
+            final = op + a + ed + ed2
           rapp(final)
           continue
         else: # not an array
