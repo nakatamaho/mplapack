@@ -140,7 +140,7 @@ void Rsytrd(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
         //        Columns 1:kk are handled by the unblocked method.
         //
         kk = n - ((n - nx + nb - 1) / nb) * nb;
-        for (i = n - nb + 1; i <= kk + 1; i = i + -nb) {
+        for (i = n - nb + 1; i >= kk + 1; i = i - nb) {
             //
             //           Reduce columns i:i+nb-1 to tridiagonal form and form the
             //           matrix W which is needed to update the unreduced part of
