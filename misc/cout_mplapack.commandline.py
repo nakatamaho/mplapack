@@ -1,5 +1,5 @@
 from __future__ import absolute_import, division, print_function
-import fable.cout
+import fable.cout_mplapack
 
 import hashlib
 import optparse
@@ -47,7 +47,7 @@ class process(object):
     if (options.dynamic_parameter is None):
       O.dynamic_parameters = None
     else:
-      from fable.cout import dynamic_parameter_props
+      from fable.cout_mplapack import dynamic_parameter_props
       from libtbx.utils import Sorry
       O.dynamic_parameters = []
       for opt_dp in options.dynamic_parameter:
@@ -67,7 +67,7 @@ class process(object):
       print()
     O.n_calls += 1
     opts = O.options
-    lines = fable.cout.process(
+    lines = fable.cout_mplapack.process(
       file_names=file_names,
       top_procedures=opts.top_procedure,
       include_guard_suffix=opts.include_guard_suffix,
@@ -126,7 +126,7 @@ def run(args):
   parser.add_option("--fortran-file-comments", action="store_true", help=optparse.SUPPRESS_HELP)
   parser.add_option("--no_fem_do_safe", action="store_true", default=False)
   parser.add_option("--no-fem-do-safe", action="store_true", help=optparse.SUPPRESS_HELP)
-  parser.add_option("--arr_nd_size_max", action="store", type="int", default=fable.cout.default_arr_nd_size_max, metavar='INTEGER (default: %d)' % fable.cout.default_arr_nd_size_max)
+  parser.add_option("--arr_nd_size_max", action="store", type="int", default=fable.cout_mplapack.default_arr_nd_size_max, metavar='INTEGER (default: %d)' % fable.cout_mplapack.default_arr_nd_size_max)
   parser.add_option("--arr-nd-size-max", action="store", type="int", help=optparse.SUPPRESS_HELP)
   parser.add_option("--inline_all", action="store_true", default=False)
   parser.add_option("--inline-all", action="store_true", help=optparse.SUPPRESS_HELP)
