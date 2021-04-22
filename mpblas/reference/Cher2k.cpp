@@ -97,7 +97,7 @@ void Cher2k(const char *uplo, const char *trans, INTEGER const n, INTEGER const 
     INTEGER i = 0;
     if (alpha == zero) {
         if (upper) {
-            if (beta == (zero).real()) {
+            if (beta == zero.real()) {
                 for (j = 1; j <= n; j = j + 1) {
                     for (i = 1; i <= j; i = i + 1) {
                         c[(i - 1) + (j - 1) * ldc] = zero;
@@ -108,11 +108,11 @@ void Cher2k(const char *uplo, const char *trans, INTEGER const n, INTEGER const 
                     for (i = 1; i <= j - 1; i = i + 1) {
                         c[(i - 1) + (j - 1) * ldc] = beta * c[(i - 1) + (j - 1) * ldc];
                     }
-                    c[(j - 1) + (j - 1) * ldc] = beta * (c[(j - 1) + (j - 1) * ldc]).real();
+                    c[(j - 1) + (j - 1) * ldc] = beta * c[(j - 1) + (j - 1) * ldc].real();
                 }
             }
         } else {
-            if (beta == (zero).real()) {
+            if (beta == zero.real()) {
                 for (j = 1; j <= n; j = j + 1) {
                     for (i = j; i <= n; i = i + 1) {
                         c[(i - 1) + (j - 1) * ldc] = zero;
@@ -120,7 +120,7 @@ void Cher2k(const char *uplo, const char *trans, INTEGER const n, INTEGER const 
                 }
             } else {
                 for (j = 1; j <= n; j = j + 1) {
-                    c[(j - 1) + (j - 1) * ldc] = beta * (c[(j - 1) + (j - 1) * ldc]).real();
+                    c[(j - 1) + (j - 1) * ldc] = beta * c[(j - 1) + (j - 1) * ldc].real();
                     for (i = j + 1; i <= n; i = i + 1) {
                         c[(i - 1) + (j - 1) * ldc] = beta * c[(i - 1) + (j - 1) * ldc];
                     }
@@ -142,7 +142,7 @@ void Cher2k(const char *uplo, const char *trans, INTEGER const n, INTEGER const 
         //
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
-                if (beta == (zero).real()) {
+                if (beta == zero.real()) {
                     for (i = 1; i <= j; i = i + 1) {
                         c[(i - 1) + (j - 1) * ldc] = zero;
                     }
@@ -150,9 +150,9 @@ void Cher2k(const char *uplo, const char *trans, INTEGER const n, INTEGER const 
                     for (i = 1; i <= j - 1; i = i + 1) {
                         c[(i - 1) + (j - 1) * ldc] = beta * c[(i - 1) + (j - 1) * ldc];
                     }
-                    c[(j - 1) + (j - 1) * ldc] = beta * (c[(j - 1) + (j - 1) * ldc]).real();
+                    c[(j - 1) + (j - 1) * ldc] = beta * c[(j - 1) + (j - 1) * ldc].real();
                 } else {
-                    c[(j - 1) + (j - 1) * ldc] = (c[(j - 1) + (j - 1) * ldc]).real();
+                    c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc].real();
                 }
                 for (l = 1; l <= k; l = l + 1) {
                     if ((a[(j - 1) + (l - 1) * lda] != zero) || (b[(j - 1) + (l - 1) * ldb] != zero)) {
@@ -161,13 +161,13 @@ void Cher2k(const char *uplo, const char *trans, INTEGER const n, INTEGER const 
                         for (i = 1; i <= j - 1; i = i + 1) {
                             c[(i - 1) + (j - 1) * ldc] += a[(i - 1) + (l - 1) * lda] * temp1 + b[(i - 1) + (l - 1) * ldb] * temp2;
                         }
-                        c[(j - 1) + (j - 1) * ldc] = (c[(j - 1) + (j - 1) * ldc]).real() + (a[(j - 1) + (l - 1) * lda] * temp1 + b[(j - 1) + (l - 1) * ldb] * temp2).real();
+                        c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc].real() + (a[(j - 1) + (l - 1) * lda] * temp1 + b[(j - 1) + (l - 1) * ldb] * temp2).real();
                     }
                 }
             }
         } else {
             for (j = 1; j <= n; j = j + 1) {
-                if (beta == (zero).real()) {
+                if (beta == zero.real()) {
                     for (i = j; i <= n; i = i + 1) {
                         c[(i - 1) + (j - 1) * ldc] = zero;
                     }
@@ -175,9 +175,9 @@ void Cher2k(const char *uplo, const char *trans, INTEGER const n, INTEGER const 
                     for (i = j + 1; i <= n; i = i + 1) {
                         c[(i - 1) + (j - 1) * ldc] = beta * c[(i - 1) + (j - 1) * ldc];
                     }
-                    c[(j - 1) + (j - 1) * ldc] = beta * (c[(j - 1) + (j - 1) * ldc]).real();
+                    c[(j - 1) + (j - 1) * ldc] = beta * c[(j - 1) + (j - 1) * ldc].real();
                 } else {
-                    c[(j - 1) + (j - 1) * ldc] = (c[(j - 1) + (j - 1) * ldc]).real();
+                    c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc].real();
                 }
                 for (l = 1; l <= k; l = l + 1) {
                     if ((a[(j - 1) + (l - 1) * lda] != zero) || (b[(j - 1) + (l - 1) * ldb] != zero)) {
@@ -186,7 +186,7 @@ void Cher2k(const char *uplo, const char *trans, INTEGER const n, INTEGER const 
                         for (i = j + 1; i <= n; i = i + 1) {
                             c[(i - 1) + (j - 1) * ldc] += a[(i - 1) + (l - 1) * lda] * temp1 + b[(i - 1) + (l - 1) * ldb] * temp2;
                         }
-                        c[(j - 1) + (j - 1) * ldc] = (c[(j - 1) + (j - 1) * ldc]).real() + (a[(j - 1) + (l - 1) * lda] * temp1 + b[(j - 1) + (l - 1) * ldb] * temp2).real();
+                        c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc].real() + (a[(j - 1) + (l - 1) * lda] * temp1 + b[(j - 1) + (l - 1) * ldb] * temp2).real();
                     }
                 }
             }
@@ -206,13 +206,13 @@ void Cher2k(const char *uplo, const char *trans, INTEGER const n, INTEGER const 
                         temp2 += conj(b[(l - 1) + (i - 1) * ldb]) * a[(l - 1) + (j - 1) * lda];
                     }
                     if (i == j) {
-                        if (beta == (zero).real()) {
+                        if (beta == zero.real()) {
                             c[(j - 1) + (j - 1) * ldc] = (alpha * temp1 + conj(alpha) * temp2).real();
                         } else {
-                            c[(j - 1) + (j - 1) * ldc] = beta * (c[(j - 1) + (j - 1) * ldc]).real() + (alpha * temp1 + conj(alpha) * temp2).real();
+                            c[(j - 1) + (j - 1) * ldc] = beta * c[(j - 1) + (j - 1) * ldc].real() + (alpha * temp1 + conj(alpha) * temp2).real();
                         }
                     } else {
-                        if (beta == (zero).real()) {
+                        if (beta == zero.real()) {
                             c[(i - 1) + (j - 1) * ldc] = alpha * temp1 + conj(alpha) * temp2;
                         } else {
                             c[(i - 1) + (j - 1) * ldc] = beta * c[(i - 1) + (j - 1) * ldc] + alpha * temp1 + conj(alpha) * temp2;
@@ -230,13 +230,13 @@ void Cher2k(const char *uplo, const char *trans, INTEGER const n, INTEGER const 
                         temp2 += conj(b[(l - 1) + (i - 1) * ldb]) * a[(l - 1) + (j - 1) * lda];
                     }
                     if (i == j) {
-                        if (beta == (zero).real()) {
+                        if (beta == zero.real()) {
                             c[(j - 1) + (j - 1) * ldc] = (alpha * temp1 + conj(alpha) * temp2).real();
                         } else {
-                            c[(j - 1) + (j - 1) * ldc] = beta * (c[(j - 1) + (j - 1) * ldc]).real() + (alpha * temp1 + conj(alpha) * temp2).real();
+                            c[(j - 1) + (j - 1) * ldc] = beta * c[(j - 1) + (j - 1) * ldc].real() + (alpha * temp1 + conj(alpha) * temp2).real();
                         }
                     } else {
-                        if (beta == (zero).real()) {
+                        if (beta == zero.real()) {
                             c[(i - 1) + (j - 1) * ldc] = alpha * temp1 + conj(alpha) * temp2;
                         } else {
                             c[(i - 1) + (j - 1) * ldc] = beta * c[(i - 1) + (j - 1) * ldc] + alpha * temp1 + conj(alpha) * temp2;

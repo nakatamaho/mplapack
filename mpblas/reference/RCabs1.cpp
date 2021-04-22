@@ -41,6 +41,6 @@ REAL RCabs1(COMPLEX const z) {
     //
     //     .. Intrinsic Functions ..
     //
-    return_value = abs((z).real()) + abs((z).imag());
+    return_value = abs(z.real()) + abs(z.imag());
     return return_value;
 }

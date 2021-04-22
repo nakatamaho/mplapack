@@ -154,7 +154,7 @@ void Chbmv(const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alp
                     y[i - 1] += temp1 * a[((l + i) - 1) + (j - 1) * lda];
                     temp2 += conj(a[((l + i) - 1) + (j - 1) * lda]) * x[i - 1];
                 }
-                y[j - 1] += temp1 * (a[(kplus1 - 1) + (j - 1) * lda]).real() + alpha * temp2;
+                y[j - 1] += temp1 * a[(kplus1 - 1) + (j - 1) * lda].real() + alpha * temp2;
             }
         } else {
             jx = kx;
@@ -171,7 +171,7 @@ void Chbmv(const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alp
                     ix += incx;
                     iy += incy;
                 }
-                y[jy - 1] += temp1 * (a[(kplus1 - 1) + (j - 1) * lda]).real() + alpha * temp2;
+                y[jy - 1] += temp1 * a[(kplus1 - 1) + (j - 1) * lda].real() + alpha * temp2;
                 jx += incx;
                 jy += incy;
                 if (j > k) {
@@ -188,7 +188,7 @@ void Chbmv(const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alp
             for (j = 1; j <= n; j = j + 1) {
                 temp1 = alpha * x[j - 1];
                 temp2 = zero;
-                y[j - 1] += temp1 * (a[(j - 1) * lda]).real();
+                y[j - 1] += temp1 * a[(j - 1) * lda].real();
                 l = 1 - j;
                 for (i = j + 1; i <= min(n, j + k); i = i + 1) {
                     y[i - 1] += temp1 * a[((l + i) - 1) + (j - 1) * lda];
@@ -202,7 +202,7 @@ void Chbmv(const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alp
             for (j = 1; j <= n; j = j + 1) {
                 temp1 = alpha * x[jx - 1];
                 temp2 = zero;
-                y[jy - 1] += temp1 * (a[(j - 1) * lda]).real();
+                y[jy - 1] += temp1 * a[(j - 1) * lda].real();
                 l = 1 - j;
                 ix = jx;
                 iy = jy;

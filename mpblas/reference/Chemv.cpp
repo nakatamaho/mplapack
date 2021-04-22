@@ -149,7 +149,7 @@ void Chemv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, I
                     y[i - 1] += temp1 * a[(i - 1) + (j - 1) * lda];
                     temp2 += conj(a[(i - 1) + (j - 1) * lda]) * x[i - 1];
                 }
-                y[j - 1] += temp1 * (a[(j - 1) + (j - 1) * lda]).real() + alpha * temp2;
+                y[j - 1] += temp1 * a[(j - 1) + (j - 1) * lda].real() + alpha * temp2;
             }
         } else {
             jx = kx;
@@ -165,7 +165,7 @@ void Chemv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, I
                     ix += incx;
                     iy += incy;
                 }
-                y[jy - 1] += temp1 * (a[(j - 1) + (j - 1) * lda]).real() + alpha * temp2;
+                y[jy - 1] += temp1 * a[(j - 1) + (j - 1) * lda].real() + alpha * temp2;
                 jx += incx;
                 jy += incy;
             }
@@ -178,7 +178,7 @@ void Chemv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, I
             for (j = 1; j <= n; j = j + 1) {
                 temp1 = alpha * x[j - 1];
                 temp2 = zero;
-                y[j - 1] += temp1 * (a[(j - 1) + (j - 1) * lda]).real();
+                y[j - 1] += temp1 * a[(j - 1) + (j - 1) * lda].real();
                 for (i = j + 1; i <= n; i = i + 1) {
                     y[i - 1] += temp1 * a[(i - 1) + (j - 1) * lda];
                     temp2 += conj(a[(i - 1) + (j - 1) * lda]) * x[i - 1];
@@ -191,7 +191,7 @@ void Chemv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, I
             for (j = 1; j <= n; j = j + 1) {
                 temp1 = alpha * x[jx - 1];
                 temp2 = zero;
-                y[jy - 1] += temp1 * (a[(j - 1) + (j - 1) * lda]).real();
+                y[jy - 1] += temp1 * a[(j - 1) + (j - 1) * lda].real();
                 ix = jx;
                 iy = jy;
                 for (i = j + 1; i <= n; i = i + 1) {

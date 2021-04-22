@@ -46,6 +46,12 @@ void Mxerbla__Float128(const char *srname, int info)
     return;
 }
 
+void Mxerbla__Float64x(const char *srname, int info)
+{
+    mplapack_errno = info;
+    return;
+}
+
 void Mxerbla_mpfr(const char *srname, int info)
 {
     mplapack_errno = info;

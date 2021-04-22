@@ -106,7 +106,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
                     for (i = 1; i <= j - 1; i = i + 1) {
                         c[(i - 1) + (j - 1) * ldc] = beta * c[(i - 1) + (j - 1) * ldc];
                     }
-                    c[(j - 1) + (j - 1) * ldc] = beta * (c[(j - 1) + (j - 1) * ldc]).real();
+                    c[(j - 1) + (j - 1) * ldc] = beta * c[(j - 1) + (j - 1) * ldc].real();
                 }
             }
         } else {
@@ -118,7 +118,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
                 }
             } else {
                 for (j = 1; j <= n; j = j + 1) {
-                    c[(j - 1) + (j - 1) * ldc] = beta * (c[(j - 1) + (j - 1) * ldc]).real();
+                    c[(j - 1) + (j - 1) * ldc] = beta * c[(j - 1) + (j - 1) * ldc].real();
                     for (i = j + 1; i <= n; i = i + 1) {
                         c[(i - 1) + (j - 1) * ldc] = beta * c[(i - 1) + (j - 1) * ldc];
                     }
@@ -147,9 +147,9 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
                     for (i = 1; i <= j - 1; i = i + 1) {
                         c[(i - 1) + (j - 1) * ldc] = beta * c[(i - 1) + (j - 1) * ldc];
                     }
-                    c[(j - 1) + (j - 1) * ldc] = beta * (c[(j - 1) + (j - 1) * ldc]).real();
+                    c[(j - 1) + (j - 1) * ldc] = beta * c[(j - 1) + (j - 1) * ldc].real();
                 } else {
-                    c[(j - 1) + (j - 1) * ldc] = (c[(j - 1) + (j - 1) * ldc]).real();
+                    c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc].real();
                 }
                 for (l = 1; l <= k; l = l + 1) {
                     if (a[(j - 1) + (l - 1) * lda] != COMPLEX(zero)) {
@@ -157,7 +157,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
                         for (i = 1; i <= j - 1; i = i + 1) {
                             c[(i - 1) + (j - 1) * ldc] += temp * a[(i - 1) + (l - 1) * lda];
                         }
-                        c[(j - 1) + (j - 1) * ldc] = (c[(j - 1) + (j - 1) * ldc]).real() + (temp * a[(i - 1) + (l - 1) * lda]).real();
+                        c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc].real() + (temp * a[(i - 1) + (l - 1) * lda]).real();
                     }
                 }
             }
@@ -168,17 +168,17 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
                         c[(i - 1) + (j - 1) * ldc] = zero;
                     }
                 } else if (beta != one) {
-                    c[(j - 1) + (j - 1) * ldc] = beta * (c[(j - 1) + (j - 1) * ldc]).real();
+                    c[(j - 1) + (j - 1) * ldc] = beta * c[(j - 1) + (j - 1) * ldc].real();
                     for (i = j + 1; i <= n; i = i + 1) {
                         c[(i - 1) + (j - 1) * ldc] = beta * c[(i - 1) + (j - 1) * ldc];
                     }
                 } else {
-                    c[(j - 1) + (j - 1) * ldc] = (c[(j - 1) + (j - 1) * ldc]).real();
+                    c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc].real();
                 }
                 for (l = 1; l <= k; l = l + 1) {
                     if (a[(j - 1) + (l - 1) * lda] != COMPLEX(zero)) {
                         temp = alpha * conj(a[(j - 1) + (l - 1) * lda]);
-                        c[(j - 1) + (j - 1) * ldc] = (c[(j - 1) + (j - 1) * ldc]).real() + (temp * a[(j - 1) + (l - 1) * lda]).real();
+                        c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc].real() + (temp * a[(j - 1) + (l - 1) * lda]).real();
                         for (i = j + 1; i <= n; i = i + 1) {
                             c[(i - 1) + (j - 1) * ldc] += temp * a[(i - 1) + (l - 1) * lda];
                         }
@@ -210,7 +210,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
                 if (beta == zero) {
                     c[(j - 1) + (j - 1) * ldc] = alpha * rtemp;
                 } else {
-                    c[(j - 1) + (j - 1) * ldc] = alpha * rtemp + beta * (c[(j - 1) + (j - 1) * ldc]).real();
+                    c[(j - 1) + (j - 1) * ldc] = alpha * rtemp + beta * c[(j - 1) + (j - 1) * ldc].real();
                 }
             }
         } else {
@@ -222,7 +222,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
                 if (beta == zero) {
                     c[(j - 1) + (j - 1) * ldc] = alpha * rtemp;
                 } else {
-                    c[(j - 1) + (j - 1) * ldc] = alpha * rtemp + beta * (c[(j - 1) + (j - 1) * ldc]).real();
+                    c[(j - 1) + (j - 1) * ldc] = alpha * rtemp + beta * c[(j - 1) + (j - 1) * ldc].real();
                 }
                 for (i = j + 1; i <= n; i = i + 1) {
                     temp = zero;

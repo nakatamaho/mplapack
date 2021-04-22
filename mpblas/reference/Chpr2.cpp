@@ -123,9 +123,9 @@ void Chpr2(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, I
                         ap[k - 1] += x[i - 1] * temp1 + y[i - 1] * temp2;
                         k++;
                     }
-                    ap[(kk + j - 1) - 1] = (ap[(kk + j - 1) - 1]).real() + (x[j - 1] * temp1 + y[j - 1] * temp2).real();
+                    ap[(kk + j - 1) - 1] = ap[(kk + j - 1) - 1].real() + (x[j - 1] * temp1 + y[j - 1] * temp2).real();
                 } else {
-                    ap[(kk + j - 1) - 1] = (ap[(kk + j - 1) - 1]).real();
+                    ap[(kk + j - 1) - 1] = ap[(kk + j - 1) - 1].real();
                 }
                 kk += j;
             }
@@ -141,9 +141,9 @@ void Chpr2(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, I
                         ix += incx;
                         iy += incy;
                     }
-                    ap[(kk + j - 1) - 1] = (ap[(kk + j - 1) - 1]).real() + (x[jx - 1] * temp1 + y[jy - 1] * temp2).real();
+                    ap[(kk + j - 1) - 1] = ap[(kk + j - 1) - 1].real() + (x[jx - 1] * temp1 + y[jy - 1] * temp2).real();
                 } else {
-                    ap[(kk + j - 1) - 1] = (ap[(kk + j - 1) - 1]).real();
+                    ap[(kk + j - 1) - 1] = ap[(kk + j - 1) - 1].real();
                 }
                 jx += incx;
                 jy += incy;
@@ -159,14 +159,14 @@ void Chpr2(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, I
                 if ((x[j - 1] != zero) || (y[j - 1] != zero)) {
                     temp1 = alpha * conj(y[j - 1]);
                     temp2 = conj(alpha * x[j - 1]);
-                    ap[kk - 1] = (ap[kk - 1]).real() + (x[j - 1] * temp1 + y[j - 1] * temp2).real();
+                    ap[kk - 1] = ap[kk - 1].real() + (x[j - 1] * temp1 + y[j - 1] * temp2).real();
                     k = kk + 1;
                     for (i = j + 1; i <= n; i = i + 1) {
                         ap[k - 1] += x[i - 1] * temp1 + y[i - 1] * temp2;
                         k++;
                     }
                 } else {
-                    ap[kk - 1] = (ap[kk - 1]).real();
+                    ap[kk - 1] = ap[kk - 1].real();
                 }
                 kk += n - j + 1;
             }
@@ -175,7 +175,7 @@ void Chpr2(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, I
                 if ((x[jx - 1] != zero) || (y[jy - 1] != zero)) {
                     temp1 = alpha * conj(y[jy - 1]);
                     temp2 = conj(alpha * x[jx - 1]);
-                    ap[kk - 1] = (ap[kk - 1]).real() + (x[jx - 1] * temp1 + y[jy - 1] * temp2).real();
+                    ap[kk - 1] = ap[kk - 1].real() + (x[jx - 1] * temp1 + y[jy - 1] * temp2).real();
                     ix = jx;
                     iy = jy;
                     for (k = kk + 1; k <= kk + n - j; k = k + 1) {
@@ -184,7 +184,7 @@ void Chpr2(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, I
                         ap[k - 1] += x[ix - 1] * temp1 + y[iy - 1] * temp2;
                     }
                 } else {
-                    ap[kk - 1] = (ap[kk - 1]).real();
+                    ap[kk - 1] = ap[kk - 1].real();
                 }
                 jx += incx;
                 jy += incy;
