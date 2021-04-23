@@ -35,8 +35,8 @@
 INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
     INTEGER return_value = 0;
     char subnam[subnamlen];
+    memset(subnam, '\0', sizeof(subnam));
     INTEGER ic = 0;
-    INTEGER iz = 0;
     INTEGER i = 0;
     bool sname = false;
     bool cname = false;
@@ -116,22 +116,11 @@ L10:
     name_len = min((int)strlen(name), subnamlen);
     strncpy(subnam, name, name_len);
     ic = *subnam;
-    iz = 'Z';
-    if (iz == 90 || iz == 122) {
-        //
-        //        ASCII character set
-        //
-        if (ic >= 97 && ic <= 122) {
-            *subnam = (char)(ic - 32);
-            for (i = 2; i <= 6; i++) {
-                ic = subnam[i - 1];
-                if (ic >= 97 && ic <= 122) {
-                    subnam[i - 1] = (char)(ic - 32);
-                }
-            }
-        }
-    }
 
+    for (int i=0 ; i < strlen(subnam) ; i++)
+    {
+	subnam[i] = toupper(subnam[i]);
+    }
     *c1 = *subnam;
     sname = *c1 == 'R';
     cname = *c1 == 'C';
