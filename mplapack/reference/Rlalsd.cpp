@@ -107,7 +107,7 @@ void Rlalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
     REAL sn = 0.0;
     REAL r = 0.0;
     INTEGER j = 0;
-    if (uplo == "L") {
+    if (Mlsame(uplo, "L")) {
         for (i = 1; i <= n - 1; i = i + 1) {
             Rlartg(d[i - 1], e[i - 1], cs, sn, r);
             d[i - 1] = r;
