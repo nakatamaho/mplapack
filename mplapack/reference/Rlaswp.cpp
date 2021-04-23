@@ -77,7 +77,7 @@ void Rlaswp(INTEGER const n, REAL *a, INTEGER const lda, INTEGER const k1, INTEG
     if (n32 != 0) {
         for (j = 1; j <= n32; j = j + 32) {
             ix = ix0;
-            for (i = i1; i <= i2; i = i + inc) {
+            for (i = i1; inc > 0 ? i <= i2 : i >= i2; i = i + inc) {
                 ip = ipiv[ix - 1];
                 if (ip != i) {
                     for (k = j; k <= j + 31; k = k + 1) {
@@ -93,7 +93,7 @@ void Rlaswp(INTEGER const n, REAL *a, INTEGER const lda, INTEGER const k1, INTEG
     if (n32 != n) {
         n32++;
         ix = ix0;
-        for (i = i1; i <= i2; i = i + inc) {
+        for (i = i1; inc > 0 ? i <= i2 : i >= i2; i = i + inc) {
             ip = ipiv[ix - 1];
             if (ip != i) {
                 for (k = n32; k <= n; k = k + 1) {
