@@ -101,7 +101,7 @@ REAL Clanhb(const char *norm, const char *uplo, INTEGER const n, INTEGER const k
                 }
             }
         }
-    } else if ((Mlsame(norm, "I")) || (Mlsame(norm, "O")) || (norm == "1")) {
+    } else if ((Mlsame(norm, "I")) || (Mlsame(norm, "O")) || ((Mlsame(norm, "1")))) {
         //
         //        Find normI(A) ( = norm1(A), since A is hermitian).
         //

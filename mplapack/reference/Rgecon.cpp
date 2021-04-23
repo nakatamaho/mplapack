@@ -72,7 +72,7 @@ void Rgecon(const char *norm, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     //     Test the input parameters.
     //
     info = 0;
-    onenrm = norm == "1" || Mlsame(norm, "O");
+    onenrm = (Mlsame(norm, "1")) || Mlsame(norm, "O");
     if (!onenrm && !Mlsame(norm, "I")) {
         info = -1;
     } else if (n < 0) {

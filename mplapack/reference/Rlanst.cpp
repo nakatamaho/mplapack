@@ -78,7 +78,7 @@ REAL Rlanst(const char *norm, INTEGER const n, REAL *d, REAL *e) {
                 anorm = sum;
             }
         }
-    } else if (Mlsame(norm, "O") || norm == "1" || Mlsame(norm, "I")) {
+    } else if (Mlsame(norm, "O") || (Mlsame(norm, "1")) || Mlsame(norm, "I")) {
         //
         //        Find norm1(A).
         //

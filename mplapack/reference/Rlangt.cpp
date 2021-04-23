@@ -80,7 +80,7 @@ REAL Rlangt(const char *norm, INTEGER const n, REAL *dl, REAL *d, REAL *du) {
                 anorm = abs(du[i - 1]);
             }
         }
-    } else if (Mlsame(norm, "O") || norm == "1") {
+    } else if (Mlsame(norm, "O") || (Mlsame(norm, "1"))) {
         //
         //        Find norm1(A).
         //

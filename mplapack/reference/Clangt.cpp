@@ -80,7 +80,7 @@ REAL Clangt(const char *norm, INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX 
                 anorm = abs(du[i - 1]);
             }
         }
-    } else if (Mlsame(norm, "O") || norm == "1") {
+    } else if (Mlsame(norm, "O") || (Mlsame(norm, "1"))) {
         //
         //        Find norm1(A).
         //

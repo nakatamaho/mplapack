@@ -115,7 +115,7 @@ REAL Rlantr(const char *norm, const char *uplo, const char *diag, INTEGER const 
                 }
             }
         }
-    } else if ((Mlsame(norm, "O")) || (norm == "1")) {
+    } else if ((Mlsame(norm, "O")) || ((Mlsame(norm, "1")))) {
         //
         //        Find norm1(A).
         //

@@ -81,7 +81,7 @@ REAL Clange(const char *norm, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                 }
             }
         }
-    } else if ((Mlsame(norm, "O")) || (norm == "1")) {
+    } else if ((Mlsame(norm, "O")) || ((Mlsame(norm, "1")))) {
         //
         //        Find norm1(A).
         //

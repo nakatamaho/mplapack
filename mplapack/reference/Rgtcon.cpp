@@ -65,7 +65,7 @@ void Rgtcon(const char *norm, INTEGER const n, REAL *dl, REAL *d, REAL *du, REAL
     //     Test the input arguments.
     //
     info = 0;
-    onenrm = norm == "1" || Mlsame(norm, "O");
+    onenrm = (Mlsame(norm, "1")) || Mlsame(norm, "O");
     if (!onenrm && !Mlsame(norm, "I")) {
         info = -1;
     } else if (n < 0) {

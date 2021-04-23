@@ -80,7 +80,7 @@ REAL Rlanhs(const char *norm, INTEGER const n, REAL *a, INTEGER const lda, REAL 
                 }
             }
         }
-    } else if ((Mlsame(norm, "O")) || (norm == "1")) {
+    } else if ((Mlsame(norm, "O")) || ((Mlsame(norm, "1")))) {
         //
         //        Find norm1(A).
         //

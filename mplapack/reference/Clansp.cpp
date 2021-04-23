@@ -97,7 +97,7 @@ REAL Clansp(const char *norm, const char *uplo, INTEGER const n, COMPLEX *ap, RE
                 k += n - j + 1;
             }
         }
-    } else if ((Mlsame(norm, "I")) || (Mlsame(norm, "O")) || (norm == "1")) {
+    } else if ((Mlsame(norm, "I")) || (Mlsame(norm, "O")) || ((Mlsame(norm, "1")))) {
         //
         //        Find normI(A) ( = norm1(A), since A is symmetric).
         //
