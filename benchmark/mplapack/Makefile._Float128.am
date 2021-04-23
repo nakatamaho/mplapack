@@ -5,8 +5,14 @@ Rgetrf._Float128 Rgetrf._Float128_opt
 
 _Float128cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT128___
 _Float128lapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float128
+
+if WANT_QUADMATH
+_Float128_libdepends = $(_Float128lapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas__Float128 -lquadmath $(DYLD)
+_Float128opt_libdepends = $(_Float128lapack_libdepends) -L$(top_builddir)/mpblas/optimized/_Float128 -lmpblas__Float128_opt -lquadmath $(DYLD)
+else
 _Float128_libdepends = $(_Float128lapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas__Float128 $(DYLD)
 _Float128opt_libdepends = $(_Float128lapack_libdepends) -L$(top_builddir)/mpblas/optimized/_Float128 -lmpblas__Float128_opt $(DYLD)
+endif
 
 Rpotrf__Float128_opt_SOURCES= Rpotrf.cpp
 Rpotrf__Float128_opt_CXXFLAGS= $(_Float128cxxflags)
