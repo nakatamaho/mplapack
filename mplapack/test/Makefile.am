@@ -1,1 +1,1 @@
-SUBDIRS = compare #eig lin matgen
+SUBDIRS = compare matgen #eig lin 
