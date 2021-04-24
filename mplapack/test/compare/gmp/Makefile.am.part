@@ -19,15 +19,15 @@ test_libdepends = $(mplibs) $(reflapack) $(refblas)
 endif
 
 if !IS_MACOSX
-test_srcdepends = ../../../mpblas/test/common/xerbla.cpp ../../../mpblas/test/common/mplapack.test.cpp ../../../mpblas/test/common/Mxerbla.override.cpp
+test_srcdepends = ../../../../mpblas/test/common/xerbla.cpp ../../../../mpblas/test/common/mplapack.test.cpp ../../../../mpblas/test/common/Mxerbla.override.cpp
 endif
 
 if IS_MACOSX
 lib_LTLIBRARIES = libmxerbla_override.la
 libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_GMP___
-libmxerbla_override_la_SOURCES =  ../../../mpblas/test/common/Mxerbla.override.cpp
+libmxerbla_override_la_SOURCES =  ../../../../mpblas/test/common/Mxerbla.override.cpp
 libmxerbla_override_la_LDFLAGS= -Wl,-flat_namespace,-undefined,dynamic_lookup
-test_srcdepends = ../../../mpblas/test/common/xerbla.cpp ../../../mpblas/test/common/mplapack.test.cpp
+test_srcdepends = ../../../../mpblas/test/common/xerbla.cpp ../../../../mpblas/test/common/mplapack.test.cpp
 mplibs+=-Wl,-flat_namespace,-undefined,dynamic_lookup
 TESTS_ENVIRONMENT=DYLD_INSERT_LIBRARIES=.libs/libmxerbla_override.0.dylib
 endif
