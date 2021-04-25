@@ -55,12 +55,14 @@ mplapackint iMlauplo(const char *uplo);
 mplapackint iMlazlc(mplapackint const m, mplapackint const n, mpcomplex *a, mplapackint const lda);
 mplapackint iMlazlr(mplapackint const m, mplapackint const n, mpcomplex *a, mplapackint const lda);
 mplapackint iMparmq_mpfr(mplapackint const ispec, const char *name, const char *opts, mplapackint const n, mplapackint const ilo, mplapackint const ihi, mplapackint const lwork);
+mpreal Clangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, mpcomplex *ab, mplapackint const ldab, mpreal *work);
 mpreal Clange(const char *norm, mplapackint const m, mplapackint const n, mpcomplex *a, mplapackint const lda, mpreal *work);
 mpreal Clangt(const char *norm, mplapackint const n, mpcomplex *dl, mpcomplex *d, mpcomplex *du);
 mpreal Clanhb(const char *norm, const char *uplo, mplapackint const n, mplapackint const k, mpcomplex *ab, mplapackint const ldab, mpreal *work);
 mpreal Clanhe(const char *norm, const char *uplo, mplapackint const n, mpcomplex *a, mplapackint const lda, mpreal *work);
 mpreal Clanhp(const char *norm, const char *uplo, mplapackint const n, mpcomplex *ap, mpreal *work);
 mpreal Clanht(const char *norm, mplapackint const n, mpreal *d, mpcomplex *e);
+mpreal Clansb(const char *norm, const char *uplo, mplapackint const n, mplapackint const k, mpcomplex *ab, mplapackint const ldab, mpreal *work);
 mpreal Clansp(const char *norm, const char *uplo, mplapackint const n, mpcomplex *ap, mpreal *work);
 mpreal Clansy(const char *norm, const char *uplo, mplapackint const n, mpcomplex *a, mplapackint const lda, mpreal *work);
 mpreal RCsum1(mplapackint const n, mpcomplex *cx, mplapackint const incx);
@@ -718,4 +720,5 @@ void Rtrtri(const char *uplo, const char *diag, mplapackint const n, mpreal *a, 
 void Rtrtrs(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const nrhs, mpreal *a, mplapackint const lda, mpreal *b, mplapackint const ldb, mplapackint &info);
 void Rtrttp(const char *uplo, mplapackint const n, mpreal *a, mplapackint const lda, mpreal *ap, mplapackint &info);
 void Rtzrzf(mplapackint const m, mplapackint const n, mpreal *a, mplapackint const lda, mpreal *tau, mpreal *work, mplapackint const lwork, mplapackint &info);
+void mplapack_Rlaruv_mpfr_initialize(void);
 #endif

@@ -38,12 +38,14 @@
 bool Risnan(dd_real const din);
 bool Rlaisnan(dd_real const din1, dd_real const din2);
 dd_complex Cladiv(dd_complex const x, dd_complex const y);
+dd_real Clangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, dd_complex *ab, mplapackint const ldab, dd_real *work);
 dd_real Clange(const char *norm, mplapackint const m, mplapackint const n, dd_complex *a, mplapackint const lda, dd_real *work);
 dd_real Clangt(const char *norm, mplapackint const n, dd_complex *dl, dd_complex *d, dd_complex *du);
 dd_real Clanhb(const char *norm, const char *uplo, mplapackint const n, mplapackint const k, dd_complex *ab, mplapackint const ldab, dd_real *work);
 dd_real Clanhe(const char *norm, const char *uplo, mplapackint const n, dd_complex *a, mplapackint const lda, dd_real *work);
 dd_real Clanhp(const char *norm, const char *uplo, mplapackint const n, dd_complex *ap, dd_real *work);
 dd_real Clanht(const char *norm, mplapackint const n, dd_real *d, dd_complex *e);
+dd_real Clansb(const char *norm, const char *uplo, mplapackint const n, mplapackint const k, dd_complex *ab, mplapackint const ldab, dd_real *work);
 dd_real Clansp(const char *norm, const char *uplo, mplapackint const n, dd_complex *ap, dd_real *work);
 dd_real Clansy(const char *norm, const char *uplo, mplapackint const n, dd_complex *a, mplapackint const lda, dd_real *work);
 dd_real RCsum1(mplapackint const n, dd_complex *cx, mplapackint const incx);

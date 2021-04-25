@@ -37,12 +37,14 @@
 #include "quadmath.h"
 #endif
 
+_Float128 Clangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, std::complex<_Float128> *ab, mplapackint const ldab, _Float128 *work);
 _Float128 Clange(const char *norm, mplapackint const m, mplapackint const n, std::complex<_Float128> *a, mplapackint const lda, _Float128 *work);
 _Float128 Clangt(const char *norm, mplapackint const n, std::complex<_Float128> *dl, std::complex<_Float128> *d, std::complex<_Float128> *du);
 _Float128 Clanhb(const char *norm, const char *uplo, mplapackint const n, mplapackint const k, std::complex<_Float128> *ab, mplapackint const ldab, _Float128 *work);
 _Float128 Clanhe(const char *norm, const char *uplo, mplapackint const n, std::complex<_Float128> *a, mplapackint const lda, _Float128 *work);
 _Float128 Clanhp(const char *norm, const char *uplo, mplapackint const n, std::complex<_Float128> *ap, _Float128 *work);
 _Float128 Clanht(const char *norm, mplapackint const n, _Float128 *d, std::complex<_Float128> *e);
+_Float128 Clansb(const char *norm, const char *uplo, mplapackint const n, mplapackint const k, std::complex<_Float128> *ab, mplapackint const ldab, _Float128 *work);
 _Float128 Clansp(const char *norm, const char *uplo, mplapackint const n, std::complex<_Float128> *ap, _Float128 *work);
 _Float128 Clansy(const char *norm, const char *uplo, mplapackint const n, std::complex<_Float128> *a, mplapackint const lda, _Float128 *work);
 _Float128 RCsum1(mplapackint const n, std::complex<_Float128> *cx, mplapackint const incx);

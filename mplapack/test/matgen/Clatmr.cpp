@@ -28,6 +28,7 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
+#include <mplapack_matgen.h>
 
 void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, const char *sym, COMPLEX *d, INTEGER const mode, REAL const cond, COMPLEX const dmax, const char *rsign, const char *grade, COMPLEX *dl, INTEGER const model, REAL const condl, COMPLEX *dr, INTEGER const moder, REAL const condr, const char *pivtng, INTEGER *ipivot, INTEGER const kl, INTEGER const ku, REAL const sparse, REAL const anorm, const char *pack, COMPLEX *a, INTEGER const lda, INTEGER *iwork, INTEGER &info) {
     //
@@ -728,7 +729,7 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     //
     //     5)      Scaling the norm
     //
-    arr_1d<1, REAL> tempa(fill0);
+    REAL tempa[1];
     REAL onorm = 0.0;
     if (ipack == 0) {
         onorm = Clange("M", m, n, a, lda, tempa);

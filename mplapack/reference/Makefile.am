@@ -771,4 +771,6 @@ Clarnv.cpp \
 Rlalsa.cpp \
 iMparmq.cpp \
 iMieeeck.cpp \
-iMlaenv.cpp
+iMlaenv.cpp \
+Clangb.cpp \
+Clansb.cpp

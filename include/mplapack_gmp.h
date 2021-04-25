@@ -37,13 +37,16 @@
 
 bool Risnan(mpf_class const din);
 bool Rlaisnan(mpf_class const din1, mpf_class const din2);
+gmp_randclass random_mplapack_gmp(gmp_randinit_default);
 mpc_class Cladiv(mpc_class const x, mpc_class const y);
+mpf_class Clangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, mpc_class *ab, mplapackint const ldab, mpf_class *work);
 mpf_class Clange(const char *norm, mplapackint const m, mplapackint const n, mpc_class *a, mplapackint const lda, mpf_class *work);
 mpf_class Clangt(const char *norm, mplapackint const n, mpc_class *dl, mpc_class *d, mpc_class *du);
 mpf_class Clanhb(const char *norm, const char *uplo, mplapackint const n, mplapackint const k, mpc_class *ab, mplapackint const ldab, mpf_class *work);
 mpf_class Clanhe(const char *norm, const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mpf_class *work);
 mpf_class Clanhp(const char *norm, const char *uplo, mplapackint const n, mpc_class *ap, mpf_class *work);
 mpf_class Clanht(const char *norm, mplapackint const n, mpf_class *d, mpc_class *e);
+mpf_class Clansb(const char *norm, const char *uplo, mplapackint const n, mplapackint const k, mpc_class *ab, mplapackint const ldab, mpf_class *work);
 mpf_class Clansp(const char *norm, const char *uplo, mplapackint const n, mpc_class *ap, mpf_class *work);
 mpf_class Clansy(const char *norm, const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mpf_class *work);
 mpf_class RCsum1(mplapackint const n, mpc_class *cx, mplapackint const incx);
@@ -714,4 +717,5 @@ void Rtrtri(const char *uplo, const char *diag, mplapackint const n, mpf_class *
 void Rtrtrs(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const nrhs, mpf_class *a, mplapackint const lda, mpf_class *b, mplapackint const ldb, mplapackint &info);
 void Rtrttp(const char *uplo, mplapackint const n, mpf_class *a, mplapackint const lda, mpf_class *ap, mplapackint &info);
 void Rtzrzf(mplapackint const m, mplapackint const n, mpf_class *a, mplapackint const lda, mpf_class *tau, mpf_class *work, mplapackint const lwork, mplapackint &info);
+void mplapack_Rlaruv_gmp_initialize(void);
 #endif

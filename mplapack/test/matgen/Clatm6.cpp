@@ -28,6 +28,7 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
+#include <mplapack_matgen.h>
 
 void Clatm6(INTEGER const type, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *x, INTEGER const ldx, COMPLEX *y, INTEGER const ldy, COMPLEX const alpha, COMPLEX const beta, COMPLEX const wx, COMPLEX const wy, REAL *s, REAL *dif) {
     //
@@ -59,6 +60,7 @@ void Clatm6(INTEGER const type, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     //
     INTEGER i = 0;
     INTEGER j = 0;
+    INTEGER ldb = lda;
     const COMPLEX one = COMPLEX(1.0, 0.0);
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     for (i = 1; i <= n; i = i + 1) {
@@ -126,16 +128,16 @@ void Clatm6(INTEGER const type, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     s[4 - 1] = rone / sqrt((rone + two * abs(wx) * abs(wx)) / (rone + abs(a[(4 - 1) + (4 - 1) * lda]) * abs(a[(4 - 1) + (4 - 1) * lda])));
     s[5 - 1] = rone / sqrt((rone + two * abs(wx) * abs(wx)) / (rone + abs(a[(5 - 1) + (5 - 1) * lda]) * abs(a[(5 - 1) + (5 - 1) * lda])));
     //
-    arr_2d<8, 8, COMPLEX> z(fill0);
+    COMPLEX z[8*8];
     Clakf2(1, 4, a, lda, &a[(2 - 1) + (2 - 1) * lda], b, &b[(2 - 1) + (2 - 1) * ldb], z, 8);
-    arr_1d<50, REAL> rwork(fill0);
-    arr_1d<26, COMPLEX> work(fill0);
+    REAL rwork[50];
+    COMPLEX work[26];
     INTEGER info = 0;
-    zgesvd("N", "N", 8, 8, z, 8, rwork, work, 1, &work[2 - 1], 1, &work[3 - 1], 24, &rwork[9 - 1], info);
+    Cgesvd("N", "N", 8, 8, z, 8, rwork, work, 1, &work[2 - 1], 1, &work[3 - 1], 24, &rwork[9 - 1], info);
     dif[1 - 1] = rwork[8 - 1];
     //
     Clakf2(4, 1, a, lda, &a[(5 - 1) + (5 - 1) * lda], b, &b[(5 - 1) + (5 - 1) * ldb], z, 8);
-    zgesvd("N", "N", 8, 8, z, 8, rwork, work, 1, &work[2 - 1], 1, &work[3 - 1], 24, &rwork[9 - 1], info);
+    Cgesvd("N", "N", 8, 8, z, 8, rwork, work, 1, &work[2 - 1], 1, &work[3 - 1], 24, &rwork[9 - 1], info);
     dif[5 - 1] = rwork[8 - 1];
     //
     //     End of Clatm6

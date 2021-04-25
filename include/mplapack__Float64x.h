@@ -33,12 +33,14 @@
 
 #include "mplapack_config.h"
 
+_Float64x Clangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, std::complex<_Float64x> *ab, mplapackint const ldab, _Float64x *work);
 _Float64x Clange(const char *norm, mplapackint const m, mplapackint const n, std::complex<_Float64x> *a, mplapackint const lda, _Float64x *work);
 _Float64x Clangt(const char *norm, mplapackint const n, std::complex<_Float64x> *dl, std::complex<_Float64x> *d, std::complex<_Float64x> *du);
 _Float64x Clanhb(const char *norm, const char *uplo, mplapackint const n, mplapackint const k, std::complex<_Float64x> *ab, mplapackint const ldab, _Float64x *work);
 _Float64x Clanhe(const char *norm, const char *uplo, mplapackint const n, std::complex<_Float64x> *a, mplapackint const lda, _Float64x *work);
 _Float64x Clanhp(const char *norm, const char *uplo, mplapackint const n, std::complex<_Float64x> *ap, _Float64x *work);
 _Float64x Clanht(const char *norm, mplapackint const n, _Float64x *d, std::complex<_Float64x> *e);
+_Float64x Clansb(const char *norm, const char *uplo, mplapackint const n, mplapackint const k, std::complex<_Float64x> *ab, mplapackint const ldab, _Float64x *work);
 _Float64x Clansp(const char *norm, const char *uplo, mplapackint const n, std::complex<_Float64x> *ap, _Float64x *work);
 _Float64x Clansy(const char *norm, const char *uplo, mplapackint const n, std::complex<_Float64x> *a, mplapackint const lda, _Float64x *work);
 _Float64x RCsum1(mplapackint const n, std::complex<_Float64x> *cx, mplapackint const incx);
