@@ -765,6 +765,9 @@ Clasyf_aa.cpp \
 Clansp.cpp \
 Cspcon.cpp \
 Csprfs.cpp \
+Rlaruv.cpp \
+Rlarnv.cpp \
+Clarnv.cpp \
 Rlalsa.cpp \
 iMparmq.cpp \
 iMieeeck.cpp \

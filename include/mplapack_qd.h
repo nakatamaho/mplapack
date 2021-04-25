@@ -209,6 +209,7 @@ void Clarft(const char *direct, const char *storev, mplapackint const n, mplapac
 void Clarfx(const char *side, mplapackint const m, mplapackint const n, qd_complex *v, qd_complex const tau, qd_complex *c, mplapackint const ldc, qd_complex *work);
 void Clarfy(const char *uplo, mplapackint const n, qd_complex *v, mplapackint const incv, qd_complex const tau, qd_complex *c, mplapackint const ldc, qd_complex *work);
 void Clargv(mplapackint const n, qd_complex *x, mplapackint const incx, qd_complex *y, mplapackint const incy, qd_real *c, mplapackint const incc);
+void Clarnv(mplapackint const idist, mplapackint *iseed, mplapackint const n, qd_complex *x);
 void Clarscl2(mplapackint const m, mplapackint const n, qd_real *d, qd_complex *x, mplapackint const ldx);
 void Clartg(qd_complex const f, qd_complex const g, qd_real &cs, qd_complex &sn, qd_complex &r);
 void Clartv(mplapackint const n, qd_complex *x, mplapackint const incx, qd_complex *y, mplapackint const incy, qd_real *c, qd_complex *s, mplapackint const incc);
@@ -511,6 +512,7 @@ void Rlarft(const char *direct, const char *storev, mplapackint const n, mplapac
 void Rlarfx(const char *side, mplapackint const m, mplapackint const n, qd_real *v, qd_real const tau, qd_real *c, mplapackint const ldc, qd_real *work);
 void Rlarfy(const char *uplo, mplapackint const n, qd_real *v, mplapackint const incv, qd_real const tau, qd_real *c, mplapackint const ldc, qd_real *work);
 void Rlargv(mplapackint const n, qd_real *x, mplapackint const incx, qd_real *y, mplapackint const incy, qd_real *c, mplapackint const incc);
+void Rlarnv(mplapackint const idist, mplapackint *iseed, mplapackint const n, qd_real *x);
 void Rlarra(mplapackint const n, qd_real *d, qd_real *e, qd_real *e2, qd_real const spltol, qd_real const tnrm, mplapackint &nsplit, mplapackint *isplit, mplapackint &info);
 void Rlarrc(const char *jobt, mplapackint const n, qd_real const vl, qd_real const vu, qd_real *d, qd_real *e, qd_real const, mplapackint &eigcnt, mplapackint &lcnt, mplapackint &rcnt, mplapackint &info);
 void Rlarrj(mplapackint const n, qd_real *d, qd_real *e2, mplapackint const ifirst, mplapackint const ilast, qd_real const rtol, mplapackint const offset, qd_real *w, qd_real *werr, qd_real *work, mplapackint *iwork, qd_real const pivmin, qd_real const spdiam, mplapackint &info);
@@ -520,6 +522,7 @@ void Rlartg(qd_real const f, qd_real const g, qd_real &cs, qd_real &sn, qd_real 
 void Rlartgp(qd_real const f, qd_real const g, qd_real &cs, qd_real &sn, qd_real &r);
 void Rlartgs(qd_real const x, qd_real const y, qd_real const sigma, qd_real cs, qd_real sn);
 void Rlartv(mplapackint const n, qd_real *x, mplapackint const incx, qd_real *y, mplapackint const incy, qd_real *c, qd_real *s, mplapackint const incc);
+void Rlaruv(mplapackint *iseed, mplapackint const n, qd_real *x);
 void Rlarz(const char *side, mplapackint const m, mplapackint const n, mplapackint const l, qd_real *v, mplapackint const incv, qd_real const tau, qd_real *c, mplapackint const ldc, qd_real *work);
 void Rlarzb(const char *side, const char *trans, const char *direct, const char *storev, mplapackint const m, mplapackint const n, mplapackint const k, mplapackint const l, qd_real *v, mplapackint const ldv, qd_real *t, mplapackint const ldt, qd_real *c, mplapackint const ldc, qd_real *work, mplapackint const ldwork);
 void Rlarzt(const char *direct, const char *storev, mplapackint const n, mplapackint const k, qd_real *v, mplapackint const ldv, qd_real *tau, qd_real *t, mplapackint const ldt);

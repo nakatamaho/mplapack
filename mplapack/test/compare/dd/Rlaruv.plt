@@ -14,6 +14,6 @@ hist(x,width)=width*floor(x/width)+width/2.0
 set boxwidth width*0.9
 set style fill solid 0.5 # fill style
 
-plot "Rlaruv.txt" u (hist($1,width)):(1.0) smooth freq w boxes lc rgb"green" notitle
+plot "Rlaruv.txt" u (hist($2,width)):(1.0) smooth freq w boxes lc rgb"green" notitle
 
 

@@ -79,13 +79,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define MAX_N 128
 
-#define outname "Rlaruv_mpfr.txt"
+#define outname "Rlaruv.txt"
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
-    mpreal::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
-    mpcomplex::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
+//    mpreal::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
+//    mpcomplex::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
     printf("*** Testing Rlaruv start ***\n");
     INTEGER *seed; // ignored
     for (int n = 0; n < MAX_N; n++) {
@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
     }
     delete[] x;
     outputfile.close();
-    printf("*** Please check Rlaruv_mpfr.txt by plotting "gnuplot Rlaruv_mpfr.plt" ***\n");
+    printf("*** Please check by plotting ***\n");
     printf("*** Testing Rlaruv successful ***\n");
     return (0);
 }

@@ -105,7 +105,7 @@ void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
             //
             //           generate random reflection
             //
-            zlarnv(3, iseed, m - i + 1, work);
+            Clarnv(3, iseed, m - i + 1, work);
             wn = RCnrm2(m - i + 1, work, 1);
             wa = (wn / abs(work[1 - 1])) * work[1 - 1];
             if (wn == zero) {
@@ -126,7 +126,7 @@ void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
             //
             //           generate random reflection
             //
-            zlarnv(3, iseed, n - i + 1, work);
+            Clarnv(3, iseed, n - i + 1, work);
             wn = RCnrm2(n - i + 1, work, 1);
             wa = (wn / abs(work[1 - 1])) * work[1 - 1];
             if (wn == zero) {
@@ -192,7 +192,7 @@ void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 //
                 //              apply reflection to A(i+1:m,ku+i:n) from the right
                 //
-                zlacgv(n - ku - i + 1, &a[(i - 1) + ((ku + i) - 1) * lda], lda);
+                Clacgv(n - ku - i + 1, &a[(i - 1) + ((ku + i) - 1) * lda], lda);
                 Cgemv("No transpose", m - i, n - ku - i + 1, one, &a[((i + 1) - 1) + ((ku + i) - 1) * lda], lda, &a[(i - 1) + ((ku + i) - 1) * lda], lda, zero, work, 1);
                 Cgerc(m - i, n - ku - i + 1, -tau, work, 1, &a[(i - 1) + ((ku + i) - 1) * lda], lda, &a[((i + 1) - 1) + ((ku + i) - 1) * lda], lda);
                 a[(i - 1) + ((ku + i) - 1) * lda] = -wa;
@@ -219,7 +219,7 @@ void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 //
                 //              apply reflection to A(i+1:m,ku+i:n) from the right
                 //
-                zlacgv(n - ku - i + 1, &a[(i - 1) + ((ku + i) - 1) * lda], lda);
+                Clacgv(n - ku - i + 1, &a[(i - 1) + ((ku + i) - 1) * lda], lda);
                 Cgemv("No transpose", m - i, n - ku - i + 1, one, &a[((i + 1) - 1) + ((ku + i) - 1) * lda], lda, &a[(i - 1) + ((ku + i) - 1) * lda], lda, zero, work, 1);
                 Cgerc(m - i, n - ku - i + 1, -tau, work, 1, &a[(i - 1) + ((ku + i) - 1) * lda], lda, &a[((i + 1) - 1) + ((ku + i) - 1) * lda], lda);
                 a[(i - 1) + ((ku + i) - 1) * lda] = -wa;

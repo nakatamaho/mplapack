@@ -207,6 +207,7 @@ void Clarft(const char *direct, const char *storev, mplapackint const n, mplapac
 void Clarfx(const char *side, mplapackint const m, mplapackint const n, std::complex<_Float64x> *v, std::complex<_Float64x> const tau, std::complex<_Float64x> *c, mplapackint const ldc, std::complex<_Float64x> *work);
 void Clarfy(const char *uplo, mplapackint const n, std::complex<_Float64x> *v, mplapackint const incv, std::complex<_Float64x> const tau, std::complex<_Float64x> *c, mplapackint const ldc, std::complex<_Float64x> *work);
 void Clargv(mplapackint const n, std::complex<_Float64x> *x, mplapackint const incx, std::complex<_Float64x> *y, mplapackint const incy, _Float64x *c, mplapackint const incc);
+void Clarnv(mplapackint const idist, mplapackint *iseed, mplapackint const n, std::complex<_Float64x> *x);
 void Clarscl2(mplapackint const m, mplapackint const n, _Float64x *d, std::complex<_Float64x> *x, mplapackint const ldx);
 void Clartg(std::complex<_Float64x> const f, std::complex<_Float64x> const g, _Float64x &cs, std::complex<_Float64x> &sn, std::complex<_Float64x> &r);
 void Clartv(mplapackint const n, std::complex<_Float64x> *x, mplapackint const incx, std::complex<_Float64x> *y, mplapackint const incy, _Float64x *c, std::complex<_Float64x> *s, mplapackint const incc);
@@ -509,6 +510,7 @@ void Rlarft(const char *direct, const char *storev, mplapackint const n, mplapac
 void Rlarfx(const char *side, mplapackint const m, mplapackint const n, _Float64x *v, _Float64x const tau, _Float64x *c, mplapackint const ldc, _Float64x *work);
 void Rlarfy(const char *uplo, mplapackint const n, _Float64x *v, mplapackint const incv, _Float64x const tau, _Float64x *c, mplapackint const ldc, _Float64x *work);
 void Rlargv(mplapackint const n, _Float64x *x, mplapackint const incx, _Float64x *y, mplapackint const incy, _Float64x *c, mplapackint const incc);
+void Rlarnv(mplapackint const idist, mplapackint *iseed, mplapackint const n, _Float64x *x);
 void Rlarra(mplapackint const n, _Float64x *d, _Float64x *e, _Float64x *e2, _Float64x const spltol, _Float64x const tnrm, mplapackint &nsplit, mplapackint *isplit, mplapackint &info);
 void Rlarrc(const char *jobt, mplapackint const n, _Float64x const vl, _Float64x const vu, _Float64x *d, _Float64x *e, _Float64x const, mplapackint &eigcnt, mplapackint &lcnt, mplapackint &rcnt, mplapackint &info);
 void Rlarrj(mplapackint const n, _Float64x *d, _Float64x *e2, mplapackint const ifirst, mplapackint const ilast, _Float64x const rtol, mplapackint const offset, _Float64x *w, _Float64x *werr, _Float64x *work, mplapackint *iwork, _Float64x const pivmin, _Float64x const spdiam, mplapackint &info);
@@ -518,6 +520,7 @@ void Rlartg(_Float64x const f, _Float64x const g, _Float64x &cs, _Float64x &sn, 
 void Rlartgp(_Float64x const f, _Float64x const g, _Float64x &cs, _Float64x &sn, _Float64x &r);
 void Rlartgs(_Float64x const x, _Float64x const y, _Float64x const sigma, _Float64x cs, _Float64x sn);
 void Rlartv(mplapackint const n, _Float64x *x, mplapackint const incx, _Float64x *y, mplapackint const incy, _Float64x *c, _Float64x *s, mplapackint const incc);
+void Rlaruv(mplapackint *iseed, mplapackint const n, _Float64x *x);
 void Rlarz(const char *side, mplapackint const m, mplapackint const n, mplapackint const l, _Float64x *v, mplapackint const incv, _Float64x const tau, _Float64x *c, mplapackint const ldc, _Float64x *work);
 void Rlarzb(const char *side, const char *trans, const char *direct, const char *storev, mplapackint const m, mplapackint const n, mplapackint const k, mplapackint const l, _Float64x *v, mplapackint const ldv, _Float64x *t, mplapackint const ldt, _Float64x *c, mplapackint const ldc, _Float64x *work, mplapackint const ldwork);
 void Rlarzt(const char *direct, const char *storev, mplapackint const n, mplapackint const k, _Float64x *v, mplapackint const ldv, _Float64x *tau, _Float64x *t, mplapackint const ldt);
