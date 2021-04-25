@@ -291,7 +291,7 @@ void Clatme(INTEGER const n, const char *dist, INTEGER *iseed, COMPLEX *d, INTEG
             Clarfg(irows, xnorms, &work[2 - 1], 1, tau);
             tau = conj(tau);
             work[1 - 1] = cone;
-            alpha = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
+            alpha = Clarnd(5, iseed);
             //
             Cgemv("C", irows, icols, cone, &a[(jcr - 1) + ((ic + 1) - 1) * lda], lda, work, 1, czero, &work[(irows + 1) - 1], 1);
             Cgerc(irows, icols, -tau, work, 1, &work[(irows + 1) - 1], 1, &a[(jcr - 1) + ((ic + 1) - 1) * lda], lda);
@@ -320,7 +320,7 @@ void Clatme(INTEGER const n, const char *dist, INTEGER *iseed, COMPLEX *d, INTEG
             tau = conj(tau);
             work[1 - 1] = cone;
             Clacgv(icols - 1, &work[2 - 1], 1);
-            alpha = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
+            alpha = Clarnd(5, iseed);
             //
             Cgemv("N", irows, icols, cone, &a[((ir + 1) - 1) + (jcr - 1) * lda], lda, work, 1, czero, &work[(icols + 1) - 1], 1);
             Cgerc(irows, icols, -tau, &work[(icols + 1) - 1], 1, work, 1, &a[((ir + 1) - 1) + (jcr - 1) * lda], lda);

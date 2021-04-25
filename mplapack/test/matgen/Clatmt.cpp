@@ -358,8 +358,8 @@ void Clatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                     for (jr = 1; jr <= min(m + jku, n) + jkl - 1; jr = jr + 1) {
                         extra = czero;
                         angle = twopi * Rlarnd[(iseed - 1) * ldRlarnd];
-                        c = cos(angle) * Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
-                        s = sin(angle) * Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
+                        c = cos(angle) * Clarnd(5, iseed);
+                        s = sin(angle) * Clarnd(5, iseed);
                         icol = max((INTEGER)1, jr - jkl);
                         if (jr < m) {
                             il = min(n, jr + jku) + 1 - icol;
@@ -384,7 +384,7 @@ void Clatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                             Clarot(false, iltemp, true, il, c, s, &a[((irow - iskew * ic + ioffst) - 1) + (ic - 1) * lda], ilda, ztemp, extra);
                             if (iltemp) {
                                 Clartg(a[((irow + 1 - iskew * (ic + 1) + ioffst) - 1) + ((ic + 1) - 1) * lda], ztemp, realc, s, dummy);
-                                dummy = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
+                                dummy = Clarnd(5, iseed);
                                 c = conj(realc * dummy);
                                 s = conj(-s * dummy);
                                 //
@@ -407,8 +407,8 @@ void Clatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                     for (jc = 1; jc <= min(n + jkl, m) + jku - 1; jc = jc + 1) {
                         extra = czero;
                         angle = twopi * Rlarnd[(iseed - 1) * ldRlarnd];
-                        c = cos(angle) * Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
-                        s = sin(angle) * Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
+                        c = cos(angle) * Clarnd(5, iseed);
+                        s = sin(angle) * Clarnd(5, iseed);
                         irow = max((INTEGER)1, jc - jku);
                         if (jc < n) {
                             il = min(m, jc + jkl) + 1 - irow;
@@ -422,7 +422,7 @@ void Clatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         for (jch = jc - jku; jch >= 1; jch = jch - jkl - jku) {
                             if (ic < n) {
                                 Clartg(a[((ir + 1 - iskew * (ic + 1) + ioffst) - 1) + ((ic + 1) - 1) * lda], extra, realc, s, dummy);
-                                dummy = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
+                                dummy = Clarnd(5, iseed);
                                 c = conj(realc * dummy);
                                 s = conj(-s * dummy);
                             }
@@ -433,7 +433,7 @@ void Clatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                             Clarot(true, iltemp, true, il, c, s, &a[((ir - iskew * icol + ioffst) - 1) + (icol - 1) * lda], ilda, ztemp, extra);
                             if (iltemp) {
                                 Clartg(a[((ir + 1 - iskew * (icol + 1) + ioffst) - 1) + ((icol + 1) - 1) * lda], ztemp, realc, s, dummy);
-                                dummy = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
+                                dummy = Clarnd(5, iseed);
                                 c = conj(realc * dummy);
                                 s = conj(-s * dummy);
                                 irow = max((INTEGER)1, jch - jkl - jku);
@@ -463,8 +463,8 @@ void Clatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                     for (jc = min(m + jku, n) - 1; jc >= 1 - jkl; jc = jc - 1) {
                         extra = czero;
                         angle = twopi * Rlarnd[(iseed - 1) * ldRlarnd];
-                        c = cos(angle) * Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
-                        s = sin(angle) * Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
+                        c = cos(angle) * Clarnd(5, iseed);
+                        s = sin(angle) * Clarnd(5, iseed);
                         irow = max((INTEGER)1, jc - jku + 1);
                         if (jc > 0) {
                             il = min(m, jc + jkl + 1) + 1 - irow;
@@ -478,7 +478,7 @@ void Clatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                             ilextr = ic > 0;
                             if (ilextr) {
                                 Clartg(a[((jch - iskew * ic + ioffst) - 1) + (ic - 1) * lda], extra, realc, s, dummy);
-                                dummy = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
+                                dummy = Clarnd(5, iseed);
                                 c = realc * dummy;
                                 s = s * dummy;
                             }
@@ -489,7 +489,7 @@ void Clatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                             Clarot(true, ilextr, iltemp, icol + 2 - ic, c, s, &a[((jch - iskew * ic + ioffst) - 1) + (ic - 1) * lda], ilda, extra, ztemp);
                             if (iltemp) {
                                 Clartg(a[((jch - iskew * icol + ioffst) - 1) + (icol - 1) * lda], ztemp, realc, s, dummy);
-                                dummy = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
+                                dummy = Clarnd(5, iseed);
                                 c = realc * dummy;
                                 s = s * dummy;
                                 il = min(iendch, jch + jkl + jku) + 2 - jch;
@@ -513,8 +513,8 @@ void Clatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                     for (jr = min(n + jkl, m) - 1; jr >= 1 - jku; jr = jr - 1) {
                         extra = czero;
                         angle = twopi * Rlarnd[(iseed - 1) * ldRlarnd];
-                        c = cos(angle) * Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
-                        s = sin(angle) * Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
+                        c = cos(angle) * Clarnd(5, iseed);
+                        s = sin(angle) * Clarnd(5, iseed);
                         icol = max((INTEGER)1, jr - jkl + 1);
                         if (jr > 0) {
                             il = min(n, jr + jku + 1) + 1 - icol;
@@ -528,7 +528,7 @@ void Clatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                             ilextr = ir > 0;
                             if (ilextr) {
                                 Clartg(a[((ir - iskew * jch + ioffst) - 1) + (jch - 1) * lda], extra, realc, s, dummy);
-                                dummy = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
+                                dummy = Clarnd(5, iseed);
                                 c = realc * dummy;
                                 s = s * dummy;
                             }
@@ -539,7 +539,7 @@ void Clatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                             Clarot(false, ilextr, iltemp, irow + 2 - ir, c, s, &a[((ir - iskew * jch + ioffst) - 1) + (jch - 1) * lda], ilda, extra, ztemp);
                             if (iltemp) {
                                 Clartg(a[((irow - iskew * jch + ioffst) - 1) + (jch - 1) * lda], ztemp, realc, s, dummy);
-                                dummy = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
+                                dummy = Clarnd(5, iseed);
                                 c = realc * dummy;
                                 s = s * dummy;
                                 il = min(iendch, jch + jkl + jku) + 2 - jch;
@@ -583,8 +583,8 @@ void Clatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         extra = czero;
                         ztemp = a[((jc - iskew * (jc + 1) + ioffg) - 1) + ((jc + 1) - 1) * lda];
                         angle = twopi * Rlarnd[(iseed - 1) * ldRlarnd];
-                        c = cos(angle) * Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
-                        s = sin(angle) * Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
+                        c = cos(angle) * Clarnd(5, iseed);
+                        s = sin(angle) * Clarnd(5, iseed);
                         if (csym) {
                             ct = c;
                             st = s;
@@ -601,7 +601,7 @@ void Clatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         icol = jc;
                         for (jch = jc - k; jch >= 1; jch = jch - k) {
                             Clartg(a[((jch + 1 - iskew * (icol + 1) + ioffg) - 1) + ((icol + 1) - 1) * lda], extra, realc, s, dummy);
-                            dummy = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
+                            dummy = Clarnd(5, iseed);
                             c = conj(realc * dummy);
                             s = conj(-s * dummy);
                             ztemp = a[((jch - iskew * (jch + 1) + ioffg) - 1) + ((jch + 1) - 1) * lda];
@@ -675,8 +675,8 @@ void Clatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         extra = czero;
                         ztemp = a[((1 + (1 - iskew) * jc + ioffg) - 1) + (jc - 1) * lda];
                         angle = twopi * Rlarnd[(iseed - 1) * ldRlarnd];
-                        c = cos(angle) * Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
-                        s = sin(angle) * Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
+                        c = cos(angle) * Clarnd(5, iseed);
+                        s = sin(angle) * Clarnd(5, iseed);
                         if (csym) {
                             ct = c;
                             st = s;
@@ -694,7 +694,7 @@ void Clatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         icol = jc;
                         for (jch = jc + k; jch <= n - 1; jch = jch + k) {
                             Clartg(a[((jch - iskew * icol + ioffg) - 1) + (icol - 1) * lda], extra, realc, s, dummy);
-                            dummy = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
+                            dummy = Clarnd(5, iseed);
                             c = realc * dummy;
                             s = s * dummy;
                             ztemp = a[((1 + (1 - iskew) * jch + ioffg) - 1) + (jch - 1) * lda];

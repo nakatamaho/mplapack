@@ -67,8 +67,8 @@ void Clarot(bool const lrows, bool const lleft, bool const lright, INTEGER const
     INTEGER nt = 0;
     INTEGER ix = 0;
     INTEGER iy = 0;
-    arr_1d<2, COMPLEX> xt(fill0);
-    arr_1d<2, COMPLEX> yt(fill0);
+    COMPLEX xt[2];
+    COMPLEX yt[2];
     if (lleft) {
         nt = 1;
         ix = 1 + iinc;
