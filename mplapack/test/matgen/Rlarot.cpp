@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_matgen.h>
+
 void Rlarot(bool const lrows, bool const lleft, bool const lright, INTEGER const nl, REAL const c, REAL const s, REAL *a, INTEGER const lda, REAL &xleft, REAL &xright) {
     //
     //  -- LAPACK auxiliary routine --
@@ -65,8 +67,8 @@ void Rlarot(bool const lrows, bool const lleft, bool const lright, INTEGER const
     INTEGER nt = 0;
     INTEGER ix = 0;
     INTEGER iy = 0;
-    arr_1d<2, REAL> xt(fill0);
-    arr_1d<2, REAL> yt(fill0);
+    REAL xt[2];
+    REAL yt[2];
     if (lleft) {
         nt = 1;
         ix = 1 + iinc;

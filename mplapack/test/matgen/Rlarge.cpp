@@ -82,7 +82,7 @@ void Rlarge(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *iseed, REAL *w
         //
         Rlarnv(3, iseed, n - i + 1, work);
         wn = Rnrm2(n - i + 1, work, 1);
-        wa = sign(wn, &work[1 - 1]);
+        wa = sign(wn, work[1 - 1]);
         if (wn == zero) {
             tau = zero;
         } else {

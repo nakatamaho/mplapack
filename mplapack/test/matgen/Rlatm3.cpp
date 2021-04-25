@@ -110,7 +110,7 @@ REAL Rlatm3(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, 
     if (i == j) {
         temp = d[i - 1];
     } else {
-        temp = Rlarnd[(idist - 1) + (iseed - 1) * ldRlarnd];
+        temp = Rlarnd(idist, iseed);
     }
     if (igrade == 1) {
         temp = temp * dl[i - 1];

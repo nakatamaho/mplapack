@@ -340,7 +340,7 @@ void Rlatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                     //
                     for (jr = 1; jr <= min(m + jku, n) + jkl - 1; jr = jr + 1) {
                         extra = zero;
-                        angle = twopi * Rlarnd[(iseed - 1) * ldRlarnd];
+                        angle = twopi * Rlarnd(1, iseed);
                         c = cos(angle);
                         s = sin(angle);
                         icol = max((INTEGER)1, jr - jkl);
@@ -382,7 +382,7 @@ void Rlatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                     //
                     for (jc = 1; jc <= min(n + jkl, m) + jku - 1; jc = jc + 1) {
                         extra = zero;
-                        angle = twopi * Rlarnd[(iseed - 1) * ldRlarnd];
+                        angle = twopi * Rlarnd(1, iseed);
                         c = cos(angle);
                         s = sin(angle);
                         irow = max((INTEGER)1, jc - jku);
@@ -432,7 +432,7 @@ void Rlatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                     iendch = min(m, n + jkl) - 1;
                     for (jc = min(m + jku, n) - 1; jc >= 1 - jkl; jc = jc - 1) {
                         extra = zero;
-                        angle = twopi * Rlarnd[(iseed - 1) * ldRlarnd];
+                        angle = twopi * Rlarnd(1, iseed);
                         c = cos(angle);
                         s = sin(angle);
                         irow = max((INTEGER)1, jc - jku + 1);
@@ -476,7 +476,7 @@ void Rlatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                     iendch = min(n, m + jku) - 1;
                     for (jr = min(n + jkl, m) - 1; jr >= 1 - jku; jr = jr - 1) {
                         extra = zero;
-                        angle = twopi * Rlarnd[(iseed - 1) * ldRlarnd];
+                        angle = twopi * Rlarnd(1, iseed);
                         c = cos(angle);
                         s = sin(angle);
                         icol = max((INTEGER)1, jr - jkl + 1);
@@ -535,7 +535,7 @@ void Rlatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         il = min(jc + 1, k + 2);
                         extra = zero;
                         temp = a[((jc - iskew * (jc + 1) + ioffg) - 1) + ((jc + 1) - 1) * lda];
-                        angle = twopi * Rlarnd[(iseed - 1) * ldRlarnd];
+                        angle = twopi * Rlarnd(1, iseed);
                         c = cos(angle);
                         s = sin(angle);
                         Rlarot(false, jc > k, true, il, c, s, &a[((irow - iskew * jc + ioffg) - 1) + (jc - 1) * lda], ilda, extra, temp);
@@ -599,7 +599,7 @@ void Rlatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         il = min(n + 1 - jc, k + 2);
                         extra = zero;
                         temp = a[((1 + (1 - iskew) * jc + ioffg) - 1) + (jc - 1) * lda];
-                        angle = twopi * Rlarnd[(iseed - 1) * ldRlarnd];
+                        angle = twopi * Rlarnd(1, iseed);
                         c = cos(angle);
                         s = -sin(angle);
                         Rlarot(false, true, n - jc > k, il, c, s, &a[(((1 - iskew) * jc + ioffg) - 1) + (jc - 1) * lda], ilda, temp, extra);

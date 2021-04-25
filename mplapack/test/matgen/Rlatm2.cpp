@@ -110,7 +110,7 @@ REAL Rlatm2(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, 
     if (isub == jsub) {
         temp = d[isub - 1];
     } else {
-        temp = Rlarnd[(idist - 1) + (iseed - 1) * ldRlarnd];
+        temp = Rlarnd(idist, iseed);
     }
     if (igrade == 1) {
         temp = temp * dl[isub - 1];

@@ -98,7 +98,7 @@ void Rlagsy(INTEGER const n, INTEGER const k, REAL *d, REAL *a, INTEGER const ld
         //
         Rlarnv(3, iseed, n - i + 1, work);
         wn = Rnrm2(n - i + 1, work, 1);
-        wa = sign(wn, &work[1 - 1]);
+        wa = sign(wn, work[1 - 1]);
         if (wn == zero) {
             tau = zero;
         } else {
@@ -132,7 +132,7 @@ void Rlagsy(INTEGER const n, INTEGER const k, REAL *d, REAL *a, INTEGER const ld
         //        generate reflection to annihilate A(k+i+1:n,i)
         //
         wn = Rnrm2(n - k - i + 1, &a[((k + i) - 1) + (i - 1) * lda], 1);
-        wa = sign(wn, &a[((k + i) - 1) + (i - 1) * lda]);
+        wa = sign(wn, a[((k + i) - 1) + (i - 1) * lda]);
         if (wn == zero) {
             tau = zero;
         } else {

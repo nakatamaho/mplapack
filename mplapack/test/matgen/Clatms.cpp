@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_matgen.h>
+
 void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, const char *sym, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, INTEGER const kl, INTEGER const ku, const char *pack, COMPLEX *a, INTEGER const lda, COMPLEX *work, INTEGER &info) {
     //
     //  -- LAPACK computational routine --
@@ -155,11 +157,11 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     //
     bool givens = false;
     if (isym == 1) {
-        if ((llb + uub).real() < 0.3e0 * (max((INTEGER)1, mr + nc)).real()) {
+        if (castREAL(llb + uub) < 0.3 * castREAL(max((INTEGER)1, mr + nc))) {
             givens = true;
         }
     } else {
-        if (2 * llb < m) {
+        if ((INTEGER)2 * llb < m) {
             givens = true;
         }
     }
@@ -357,7 +359,7 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                     //
                     for (jr = 1; jr <= min(m + jku, n) + jkl - 1; jr = jr + 1) {
                         extra = czero;
-                        angle = twopi * Rlarnd[(iseed - 1) * ldRlarnd];
+                        angle = twopi * Rlarnd(1, iseed);
                         c = cos(angle) * Clarnd(5, iseed);
                         s = sin(angle) * Clarnd(5, iseed);
                         icol = max((INTEGER)1, jr - jkl);
@@ -406,7 +408,7 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                     //
                     for (jc = 1; jc <= min(n + jkl, m) + jku - 1; jc = jc + 1) {
                         extra = czero;
-                        angle = twopi * Rlarnd[(iseed - 1) * ldRlarnd];
+                        angle = twopi * Rlarnd(1, iseed);
                         c = cos(angle) * Clarnd(5, iseed);
                         s = sin(angle) * Clarnd(5, iseed);
                         irow = max((INTEGER)1, jc - jku);
@@ -462,7 +464,7 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                     iendch = min(m, n + jkl) - 1;
                     for (jc = min(m + jku, n) - 1; jc >= 1 - jkl; jc = jc - 1) {
                         extra = czero;
-                        angle = twopi * Rlarnd[(iseed - 1) * ldRlarnd];
+                        angle = twopi * Rlarnd(1, iseed);
                         c = cos(angle) * Clarnd(5, iseed);
                         s = sin(angle) * Clarnd(5, iseed);
                         irow = max((INTEGER)1, jc - jku + 1);
@@ -512,7 +514,7 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                     iendch = min(n, m + jku) - 1;
                     for (jr = min(n + jkl, m) - 1; jr >= 1 - jku; jr = jr - 1) {
                         extra = czero;
-                        angle = twopi * Rlarnd[(iseed - 1) * ldRlarnd];
+                        angle = twopi * Rlarnd(1, iseed);
                         c = cos(angle) * Clarnd(5, iseed);
                         s = sin(angle) * Clarnd(5, iseed);
                         icol = max((INTEGER)1, jr - jkl + 1);
@@ -582,7 +584,7 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         il = min(jc + 1, k + 2);
                         extra = czero;
                         ctemp = a[((jc - iskew * (jc + 1) + ioffg) - 1) + ((jc + 1) - 1) * lda];
-                        angle = twopi * Rlarnd[(iseed - 1) * ldRlarnd];
+                        angle = twopi * Rlarnd(1, iseed);
                         c = cos(angle) * Clarnd(5, iseed);
                         s = sin(angle) * Clarnd(5, iseed);
                         if (zsym) {
@@ -674,7 +676,7 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         il = min(n + 1 - jc, k + 2);
                         extra = czero;
                         ctemp = a[((1 + (1 - iskew) * jc + ioffg) - 1) + (jc - 1) * lda];
-                        angle = twopi * Rlarnd[(iseed - 1) * ldRlarnd];
+                        angle = twopi * Rlarnd(1, iseed);
                         c = cos(angle) * Clarnd(5, iseed);
                         s = sin(angle) * Clarnd(5, iseed);
                         if (zsym) {

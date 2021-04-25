@@ -107,7 +107,7 @@ void Rlagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
             //
             Rlarnv(3, iseed, m - i + 1, work);
             wn = Rnrm2(m - i + 1, work, 1);
-            wa = sign(wn, &work[1 - 1]);
+            wa = sign(wn, work[1 - 1]);
             if (wn == zero) {
                 tau = zero;
             } else {
@@ -128,7 +128,7 @@ void Rlagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
             //
             Rlarnv(3, iseed, n - i + 1, work);
             wn = Rnrm2(n - i + 1, work, 1);
-            wa = sign(wn, &work[1 - 1]);
+            wa = sign(wn, work[1 - 1]);
             if (wn == zero) {
                 tau = zero;
             } else {
@@ -158,7 +158,7 @@ void Rlagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 //              generate reflection to annihilate A(kl+i+1:m,i)
                 //
                 wn = Rnrm2(m - kl - i + 1, &a[((kl + i) - 1) + (i - 1) * lda], 1);
-                wa = sign(wn, &a[((kl + i) - 1) + (i - 1) * lda]);
+                wa = sign(wn, a[((kl + i) - 1) + (i - 1) * lda]);
                 if (wn == zero) {
                     tau = zero;
                 } else {
@@ -180,7 +180,7 @@ void Rlagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 //              generate reflection to annihilate A(i,ku+i+1:n)
                 //
                 wn = Rnrm2(n - ku - i + 1, &a[(i - 1) + ((ku + i) - 1) * lda], lda);
-                wa = sign(wn, &a[(i - 1) + ((ku + i) - 1) * lda]);
+                wa = sign(wn, a[(i - 1) + ((ku + i) - 1) * lda]);
                 if (wn == zero) {
                     tau = zero;
                 } else {
@@ -206,7 +206,7 @@ void Rlagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 //              generate reflection to annihilate A(i,ku+i+1:n)
                 //
                 wn = Rnrm2(n - ku - i + 1, &a[(i - 1) + ((ku + i) - 1) * lda], lda);
-                wa = sign(wn, &a[(i - 1) + ((ku + i) - 1) * lda]);
+                wa = sign(wn, a[(i - 1) + ((ku + i) - 1) * lda]);
                 if (wn == zero) {
                     tau = zero;
                 } else {
@@ -228,7 +228,7 @@ void Rlagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 //              generate reflection to annihilate A(kl+i+1:m,i)
                 //
                 wn = Rnrm2(m - kl - i + 1, &a[((kl + i) - 1) + (i - 1) * lda], 1);
-                wa = sign(wn, &a[((kl + i) - 1) + (i - 1) * lda]);
+                wa = sign(wn, a[((kl + i) - 1) + (i - 1) * lda]);
                 if (wn == zero) {
                     tau = zero;
                 } else {
