@@ -116,7 +116,7 @@ void Clagsy(INTEGER const n, INTEGER const k, REAL *d, COMPLEX *a, INTEGER const
         //        compute  y := tau * A * conj(u)
         //
         Clacgv(n - i + 1, work, 1);
-        zsymv("Lower", n - i + 1, tau, &a[(i - 1) + (i - 1) * lda], lda, work, 1, zero, &work[(n + 1) - 1], 1);
+        Csymv("Lower", n - i + 1, tau, &a[(i - 1) + (i - 1) * lda], lda, work, 1, zero, &work[(n + 1) - 1], 1);
         Clacgv(n - i + 1, work, 1);
         //
         //        compute  v := y - 1/2 * tau * ( u, y ) * u
@@ -163,7 +163,7 @@ void Clagsy(INTEGER const n, INTEGER const k, REAL *d, COMPLEX *a, INTEGER const
         //        compute  y := tau * A * conj(u)
         //
         Clacgv(n - k - i + 1, &a[((k + i) - 1) + (i - 1) * lda], 1);
-        zsymv("Lower", n - k - i + 1, tau, &a[((k + i) - 1) + ((k + i) - 1) * lda], lda, &a[((k + i) - 1) + (i - 1) * lda], 1, zero, work, 1);
+        Csymv("Lower", n - k - i + 1, tau, &a[((k + i) - 1) + ((k + i) - 1) * lda], lda, &a[((k + i) - 1) + (i - 1) * lda], 1, zero, work, 1);
         Clacgv(n - k - i + 1, &a[((k + i) - 1) + (i - 1) * lda], 1);
         //
         //        compute  v := y - 1/2 * tau * ( u, y ) * u
