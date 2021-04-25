@@ -720,5 +720,4 @@ void Rtrtri(const char *uplo, const char *diag, mplapackint const n, mpreal *a, 
 void Rtrtrs(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const nrhs, mpreal *a, mplapackint const lda, mpreal *b, mplapackint const ldb, mplapackint &info);
 void Rtrttp(const char *uplo, mplapackint const n, mpreal *a, mplapackint const lda, mpreal *ap, mplapackint &info);
 void Rtzrzf(mplapackint const m, mplapackint const n, mpreal *a, mplapackint const lda, mpreal *tau, mpreal *work, mplapackint const lwork, mplapackint &info);
-void mplapack_Rlaruv_mpfr_initialize(void);
 #endif
