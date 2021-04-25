@@ -80,7 +80,7 @@ REAL Rlatm2(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, 
     //     Check for sparsity
     //
     if (sparse > zero) {
-        if (Rlaran[iseed - 1] < sparse) {
+        if (Rlaran(iseed) < sparse) {
             return_value = zero;
             return return_value;
         }

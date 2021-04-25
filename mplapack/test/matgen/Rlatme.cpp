@@ -253,7 +253,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
     } else if (abs(mode) == 5) {
         //
         for (j = 2; j <= n; j = j + 2) {
-            if (Rlaran[iseed - 1] > half) {
+            if (Rlaran(iseed) > half) {
                 a[((j - 1) - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda];
                 a[(j - 1) + ((j - 1) - 1) * lda] = -a[(j - 1) + (j - 1) * lda];
                 a[(j - 1) + (j - 1) * lda] = a[((j - 1) - 1) + ((j - 1) - 1) * lda];

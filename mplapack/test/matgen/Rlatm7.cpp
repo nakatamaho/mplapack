@@ -166,7 +166,7 @@ void Rlatm7(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER c
     statement_210:
         alpha = log(one / cond);
         for (i = 1; i <= n; i = i + 1) {
-            d[i - 1] = exp(alpha * Rlaran[iseed - 1]);
+            d[i - 1] = exp(alpha * Rlaran(iseed));
         }
         goto statement_240;
     //
@@ -182,7 +182,7 @@ void Rlatm7(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER c
         //
         if ((mode != -6 && mode != 0 && mode != 6) && irsign == 1) {
             for (i = 1; i <= n; i = i + 1) {
-                temp = Rlaran[iseed - 1];
+                temp = Rlaran(iseed);
                 if (temp > half) {
                     d[i - 1] = -d[i - 1];
                 }
