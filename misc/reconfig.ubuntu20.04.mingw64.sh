@@ -21,7 +21,7 @@ RANLIB="x86_64-w64-mingw32-ranlib" ; export NM
 AR="x86_64-w64-mingw32-ar" ; export NM
 fi
 
-pushd mplapack/debug ; bash gen.Makefile.am.sh ; popd
+pushd mplapack/test ; bash gen.Makefile.am.sh ; popd
 
 aclocal ; autoconf ; automake --add-missing
 autoreconf --force --install

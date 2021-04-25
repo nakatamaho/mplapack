@@ -15,7 +15,7 @@ FC="/opt/rh/devtoolset-9/root/usr/bin/gfortran"; export FC
 F77="/opt/rh/devtoolset-9/root/usr/bin/gfortran"; export F77
 fi
 
-pushd mplapack/debug ; bash gen.Makefile.am.sh ; popd
+pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd
 
 aclocal ; autoconf ; automake --add-missing
 autoreconf --force --install

@@ -15,7 +15,7 @@ FC="gfortran-9"; export FC
 F77="gfortran-9"; export F77
 fi
 
-pushd mplapack/test ; bash gen.Makefile.am.sh ; popd
+pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd
 
 aclocal ; autoconf ; automake --add-missing
 autoreconf --force --install

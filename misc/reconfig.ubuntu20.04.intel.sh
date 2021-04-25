@@ -16,7 +16,7 @@ FC="ifort"; export FC
 F77="ifort"; export F77
 fi
 
-pushd mplapack/debug ; bash gen.Makefile.am.sh ; popd
+pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd
 
 aclocal ; autoconf ; automake --add-missing
 autoreconf --force --install
