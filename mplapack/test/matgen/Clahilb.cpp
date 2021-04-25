@@ -131,7 +131,7 @@ void Clahilb(common &cmn, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEG
     //     Generate matrix B as simply the first NRHS columns of M * the
     //     identity.
     COMPLEX tmp = m.real();
-    zlaset("Full", n, nrhs, (0.0, 0.0), tmp, b, ldb);
+    Claset("Full", n, nrhs, (0.0, 0.0), tmp, b, ldb);
     //
     //     Generate the true solutions in X.  Because B = the first NRHS
     //     columns of M*I, the true solutions are just the first NRHS columns

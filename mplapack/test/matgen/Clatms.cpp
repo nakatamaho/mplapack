@@ -255,7 +255,7 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     }
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
-    zlaset("Full", lda, n, czero, czero, a, lda);
+    Claset("Full", lda, n, czero, czero, a, lda);
     //
     //     3)      Generate Banded Matrix using Givens rotations.
     //             Also the special case of UUB=LLB=0
@@ -372,7 +372,7 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         ic = icol;
                         for (jch = jr - jkl; jch >= 1; jch = jch - jkl - jku) {
                             if (ir < m) {
-                                zlartg(a[((ir + 1 - iskew * (ic + 1) + ioffst) - 1) + ((ic + 1) - 1) * lda], extra, realc, s, dummy);
+                                Clartg(a[((ir + 1 - iskew * (ic + 1) + ioffst) - 1) + ((ic + 1) - 1) * lda], extra, realc, s, dummy);
                                 dummy = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
                                 c = conj(realc * dummy);
                                 s = conj(-s * dummy);
@@ -383,7 +383,7 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                             iltemp = jch > jku;
                             Clarot(false, iltemp, true, il, c, s, &a[((irow - iskew * ic + ioffst) - 1) + (ic - 1) * lda], ilda, ctemp, extra);
                             if (iltemp) {
-                                zlartg(a[((irow + 1 - iskew * (ic + 1) + ioffst) - 1) + ((ic + 1) - 1) * lda], ctemp, realc, s, dummy);
+                                Clartg(a[((irow + 1 - iskew * (ic + 1) + ioffst) - 1) + ((ic + 1) - 1) * lda], ctemp, realc, s, dummy);
                                 dummy = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
                                 c = conj(realc * dummy);
                                 s = conj(-s * dummy);
@@ -421,7 +421,7 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         ir = irow;
                         for (jch = jc - jku; jch >= 1; jch = jch - jkl - jku) {
                             if (ic < n) {
-                                zlartg(a[((ir + 1 - iskew * (ic + 1) + ioffst) - 1) + ((ic + 1) - 1) * lda], extra, realc, s, dummy);
+                                Clartg(a[((ir + 1 - iskew * (ic + 1) + ioffst) - 1) + ((ic + 1) - 1) * lda], extra, realc, s, dummy);
                                 dummy = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
                                 c = conj(realc * dummy);
                                 s = conj(-s * dummy);
@@ -432,7 +432,7 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                             iltemp = jch > jkl;
                             Clarot(true, iltemp, true, il, c, s, &a[((ir - iskew * icol + ioffst) - 1) + (icol - 1) * lda], ilda, ctemp, extra);
                             if (iltemp) {
-                                zlartg(a[((ir + 1 - iskew * (icol + 1) + ioffst) - 1) + ((icol + 1) - 1) * lda], ctemp, realc, s, dummy);
+                                Clartg(a[((ir + 1 - iskew * (icol + 1) + ioffst) - 1) + ((icol + 1) - 1) * lda], ctemp, realc, s, dummy);
                                 dummy = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
                                 c = conj(realc * dummy);
                                 s = conj(-s * dummy);
@@ -477,7 +477,7 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         for (jch = jc + jkl; jch <= iendch; jch = jch + jkl + jku) {
                             ilextr = ic > 0;
                             if (ilextr) {
-                                zlartg(a[((jch - iskew * ic + ioffst) - 1) + (ic - 1) * lda], extra, realc, s, dummy);
+                                Clartg(a[((jch - iskew * ic + ioffst) - 1) + (ic - 1) * lda], extra, realc, s, dummy);
                                 dummy = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
                                 c = realc * dummy;
                                 s = s * dummy;
@@ -488,7 +488,7 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                             ctemp = czero;
                             Clarot(true, ilextr, iltemp, icol + 2 - ic, c, s, &a[((jch - iskew * ic + ioffst) - 1) + (ic - 1) * lda], ilda, extra, ctemp);
                             if (iltemp) {
-                                zlartg(a[((jch - iskew * icol + ioffst) - 1) + (icol - 1) * lda], ctemp, realc, s, dummy);
+                                Clartg(a[((jch - iskew * icol + ioffst) - 1) + (icol - 1) * lda], ctemp, realc, s, dummy);
                                 dummy = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
                                 c = realc * dummy;
                                 s = s * dummy;
@@ -527,7 +527,7 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         for (jch = jr + jku; jch <= iendch; jch = jch + jkl + jku) {
                             ilextr = ir > 0;
                             if (ilextr) {
-                                zlartg(a[((ir - iskew * jch + ioffst) - 1) + (jch - 1) * lda], extra, realc, s, dummy);
+                                Clartg(a[((ir - iskew * jch + ioffst) - 1) + (jch - 1) * lda], extra, realc, s, dummy);
                                 dummy = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
                                 c = realc * dummy;
                                 s = s * dummy;
@@ -538,7 +538,7 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                             ctemp = czero;
                             Clarot(false, ilextr, iltemp, irow + 2 - ir, c, s, &a[((ir - iskew * jch + ioffst) - 1) + (jch - 1) * lda], ilda, extra, ctemp);
                             if (iltemp) {
-                                zlartg(a[((irow - iskew * jch + ioffst) - 1) + (jch - 1) * lda], ctemp, realc, s, dummy);
+                                Clartg(a[((irow - iskew * jch + ioffst) - 1) + (jch - 1) * lda], ctemp, realc, s, dummy);
                                 dummy = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
                                 c = realc * dummy;
                                 s = s * dummy;
@@ -600,7 +600,7 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         //
                         icol = jc;
                         for (jch = jc - k; jch >= 1; jch = jch - k) {
-                            zlartg(a[((jch + 1 - iskew * (icol + 1) + ioffg) - 1) + ((icol + 1) - 1) * lda], extra, realc, s, dummy);
+                            Clartg(a[((jch + 1 - iskew * (icol + 1) + ioffg) - 1) + ((icol + 1) - 1) * lda], extra, realc, s, dummy);
                             dummy = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
                             c = conj(realc * dummy);
                             s = conj(-s * dummy);
@@ -693,7 +693,7 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         //
                         icol = jc;
                         for (jch = jc + k; jch <= n - 1; jch = jch + k) {
-                            zlartg(a[((jch - iskew * icol + ioffg) - 1) + (icol - 1) * lda], extra, realc, s, dummy);
+                            Clartg(a[((jch - iskew * icol + ioffg) - 1) + (icol - 1) * lda], extra, realc, s, dummy);
                             dummy = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
                             c = realc * dummy;
                             s = s * dummy;

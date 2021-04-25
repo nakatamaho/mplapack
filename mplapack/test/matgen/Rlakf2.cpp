@@ -55,7 +55,7 @@ void Rlakf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     INTEGER mn = m * n;
     INTEGER mn2 = 2 * mn;
     const REAL zero = 0.0;
-    dlaset("Full", mn2, mn2, zero, zero, z, ldz);
+    Rlaset("Full", mn2, mn2, zero, zero, z, ldz);
     //
     INTEGER ik = 1;
     INTEGER l = 0;

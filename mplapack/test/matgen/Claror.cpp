@@ -98,7 +98,7 @@ void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (Mlsame(init, "I")) {
-        zlaset("Full", m, n, czero, cone, a, lda);
+        Claset("Full", m, n, czero, cone, a, lda);
     }
     //
     //     If no rotation possible, still multiply by
@@ -168,7 +168,7 @@ void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n
             //           Apply H(k)* (or H(k)') on the right of A
             //
             if (itype == 4) {
-                zlacgv(ixfrm, &x[kbeg - 1], 1);
+                Clacgv(ixfrm, &x[kbeg - 1], 1);
             }
             //
             Cgemv("N", m, ixfrm, cone, &a[(kbeg - 1) * lda], lda, &x[kbeg - 1], 1, czero, &x[(2 * nxfrm + 1) - 1], 1);

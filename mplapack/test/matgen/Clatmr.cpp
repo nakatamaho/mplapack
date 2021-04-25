@@ -731,21 +731,21 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     arr_1d<1, REAL> tempa(fill0);
     REAL onorm = 0.0;
     if (ipack == 0) {
-        onorm = zlange("M", m, n, a, lda, tempa);
+        onorm = Clange("M", m, n, a, lda, tempa);
     } else if (ipack == 1) {
-        onorm = zlansy("M", "U", n, a, lda, tempa);
+        onorm = Clansy("M", "U", n, a, lda, tempa);
     } else if (ipack == 2) {
-        onorm = zlansy("M", "L", n, a, lda, tempa);
+        onorm = Clansy("M", "L", n, a, lda, tempa);
     } else if (ipack == 3) {
-        onorm = zlansp("M", "U", n, a, tempa);
+        onorm = Clansp("M", "U", n, a, tempa);
     } else if (ipack == 4) {
-        onorm = zlansp("M", "L", n, a, tempa);
+        onorm = Clansp("M", "L", n, a, tempa);
     } else if (ipack == 5) {
-        onorm = zlansb("M", "L", n, kll, a, lda, tempa);
+        onorm = Clansb("M", "L", n, kll, a, lda, tempa);
     } else if (ipack == 6) {
-        onorm = zlansb("M", "U", n, kuu, a, lda, tempa);
+        onorm = Clansb("M", "U", n, kuu, a, lda, tempa);
     } else if (ipack == 7) {
-        onorm = zlangb("M", n, kll, kuu, a, lda, tempa);
+        onorm = Clangb("M", n, kll, kuu, a, lda, tempa);
     }
     //
     if (anorm >= zero) {

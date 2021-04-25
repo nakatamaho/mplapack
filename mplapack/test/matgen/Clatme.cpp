@@ -208,7 +208,7 @@ void Clatme(INTEGER const n, const char *dist, INTEGER *iseed, COMPLEX *d, INTEG
     }
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
-    zlaset("Full", n, n, czero, czero, a, lda);
+    Claset("Full", n, n, czero, czero, a, lda);
     Ccopy(n, d, 1, a, lda + 1);
     //
     //     3)      If UPPER='T', set upper triangle of A to random numbers.
@@ -216,7 +216,7 @@ void Clatme(INTEGER const n, const char *dist, INTEGER *iseed, COMPLEX *d, INTEG
     INTEGER jc = 0;
     if (iupper != 0) {
         for (jc = 2; jc <= n; jc = jc + 1) {
-            zlarnv(idist, iseed, jc - 1, &a[(jc - 1) * lda]);
+            Clarnv(idist, iseed, jc - 1, &a[(jc - 1) * lda]);
         }
     }
     //
@@ -288,7 +288,7 @@ void Clatme(INTEGER const n, const char *dist, INTEGER *iseed, COMPLEX *d, INTEG
             //
             Ccopy(irows, &a[(jcr - 1) + (ic - 1) * lda], 1, work, 1);
             xnorms = work[1 - 1];
-            zlarfg(irows, xnorms, &work[2 - 1], 1, tau);
+            Clarfg(irows, xnorms, &work[2 - 1], 1, tau);
             tau = conj(tau);
             work[1 - 1] = cone;
             alpha = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
@@ -300,7 +300,7 @@ void Clatme(INTEGER const n, const char *dist, INTEGER *iseed, COMPLEX *d, INTEG
             Cgerc(n, irows, -conj(tau), &work[(irows + 1) - 1], 1, work, 1, &a[(jcr - 1) * lda], lda);
             //
             a[(jcr - 1) + (ic - 1) * lda] = xnorms;
-            zlaset("Full", irows - 1, 1, czero, czero, &a[((jcr + 1) - 1) + (ic - 1) * lda], lda);
+            Claset("Full", irows - 1, 1, czero, czero, &a[((jcr + 1) - 1) + (ic - 1) * lda], lda);
             //
             Cscal(icols + 1, alpha, &a[(jcr - 1) + (ic - 1) * lda], lda);
             Cscal(n, conj(alpha), &a[(jcr - 1) * lda], 1);
@@ -316,10 +316,10 @@ void Clatme(INTEGER const n, const char *dist, INTEGER *iseed, COMPLEX *d, INTEG
             //
             Ccopy(icols, &a[(ir - 1) + (jcr - 1) * lda], lda, work, 1);
             xnorms = work[1 - 1];
-            zlarfg(icols, xnorms, &work[2 - 1], 1, tau);
+            Clarfg(icols, xnorms, &work[2 - 1], 1, tau);
             tau = conj(tau);
             work[1 - 1] = cone;
-            zlacgv(icols - 1, &work[2 - 1], 1);
+            Clacgv(icols - 1, &work[2 - 1], 1);
             alpha = Clarnd[(5 - 1) + (iseed - 1) * ldClarnd];
             //
             Cgemv("N", irows, icols, cone, &a[((ir + 1) - 1) + (jcr - 1) * lda], lda, work, 1, czero, &work[(icols + 1) - 1], 1);
@@ -329,7 +329,7 @@ void Clatme(INTEGER const n, const char *dist, INTEGER *iseed, COMPLEX *d, INTEG
             Cgerc(icols, n, -conj(tau), work, 1, &work[(icols + 1) - 1], 1, &a[(jcr - 1)], lda);
             //
             a[(ir - 1) + (jcr - 1) * lda] = xnorms;
-            zlaset("Full", 1, icols - 1, czero, czero, &a[(ir - 1) + ((jcr + 1) - 1) * lda], lda);
+            Claset("Full", 1, icols - 1, czero, czero, &a[(ir - 1) + ((jcr + 1) - 1) * lda], lda);
             //
             Cscal(irows + 1, alpha, &a[(ir - 1) + (jcr - 1) * lda], 1);
             Cscal(n, conj(alpha), &a[(jcr - 1)], lda);
@@ -341,7 +341,7 @@ void Clatme(INTEGER const n, const char *dist, INTEGER *iseed, COMPLEX *d, INTEG
     arr_1d<1, REAL> tempa(fill0);
     REAL ralpha = 0.0;
     if (anorm >= zero) {
-        temp = zlange("M", n, n, a, lda, tempa);
+        temp = Clange("M", n, n, a, lda, tempa);
         if (temp > zero) {
             ralpha = anorm / temp;
             for (j = 1; j <= n; j = j + 1) {

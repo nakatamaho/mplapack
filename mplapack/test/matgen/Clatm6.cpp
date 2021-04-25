@@ -85,7 +85,7 @@ void Clatm6(INTEGER const type, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     //
     //     Form X and Y
     //
-    zlacpy("F", n, n, b, lda, y, ldy);
+    Clacpy("F", n, n, b, lda, y, ldy);
     y[(3 - 1)] = -conj(wy);
     y[(4 - 1)] = conj(wy);
     y[(5 - 1)] = -conj(wy);
@@ -93,7 +93,7 @@ void Clatm6(INTEGER const type, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     y[(4 - 1) + (2 - 1) * ldy] = conj(wy);
     y[(5 - 1) + (2 - 1) * ldy] = -conj(wy);
     //
-    zlacpy("F", n, n, b, lda, x, ldx);
+    Clacpy("F", n, n, b, lda, x, ldx);
     x[(3 - 1) * ldx] = -wx;
     x[(4 - 1) * ldx] = -wx;
     x[(5 - 1) * ldx] = wx;

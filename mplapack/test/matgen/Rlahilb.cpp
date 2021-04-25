@@ -105,7 +105,7 @@ void Rlahilb(INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, RE
     //
     //     Generate matrix B as simply the first NRHS columns of M * the
     //     identity.
-    dlaset("Full", n, nrhs, 0.0, m.real(), b, ldb);
+    Rlaset("Full", n, nrhs, 0.0, m.real(), b, ldb);
     //
     //     Generate the true solutions in X.  Because B = the first NRHS
     //     columns of M*I, the true solutions are just the first NRHS columns

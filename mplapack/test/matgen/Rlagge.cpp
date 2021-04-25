@@ -105,7 +105,7 @@ void Rlagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
             //
             //           generate random reflection
             //
-            dlarnv(3, iseed, m - i + 1, work);
+            Rlarnv(3, iseed, m - i + 1, work);
             wn = Rnrm2(m - i + 1, work, 1);
             wa = sign(wn, &work[1 - 1]);
             if (wn == zero) {
@@ -126,7 +126,7 @@ void Rlagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
             //
             //           generate random reflection
             //
-            dlarnv(3, iseed, n - i + 1, work);
+            Rlarnv(3, iseed, n - i + 1, work);
             wn = Rnrm2(n - i + 1, work, 1);
             wa = sign(wn, &work[1 - 1]);
             if (wn == zero) {

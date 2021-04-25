@@ -77,7 +77,7 @@ void Rlatm6(INTEGER const type, INTEGER const n, REAL *a, INTEGER const lda, REA
     //
     //     Form X and Y
     //
-    dlacpy("F", n, n, b, lda, y, ldy);
+    Rlacpy("F", n, n, b, lda, y, ldy);
     y[(3 - 1)] = -wy;
     y[(4 - 1)] = wy;
     y[(5 - 1)] = -wy;
@@ -85,7 +85,7 @@ void Rlatm6(INTEGER const type, INTEGER const n, REAL *a, INTEGER const lda, REA
     y[(4 - 1) + (2 - 1) * ldy] = wy;
     y[(5 - 1) + (2 - 1) * ldy] = -wy;
     //
-    dlacpy("F", n, n, b, lda, x, ldx);
+    Rlacpy("F", n, n, b, lda, x, ldx);
     x[(3 - 1) * ldx] = -wx;
     x[(4 - 1) * ldx] = -wx;
     x[(5 - 1) * ldx] = wx;

@@ -96,7 +96,7 @@ void Rlaror(const char *side, const char *init, INTEGER const m, INTEGER const n
     const REAL zero = 0.0;
     const REAL one = 1.0;
     if (Mlsame(init, "I")) {
-        dlaset("Full", m, n, zero, one, a, lda);
+        Rlaset("Full", m, n, zero, one, a, lda);
     }
     //
     //     If no rotation possible, multiply by random +/-1

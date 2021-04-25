@@ -280,7 +280,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     //     end.  It also signals how to compute the norm, for scaling.
     //
     INTEGER ipackg = 0;
-    dlaset("Full", lda, n, zero, zero, a, lda);
+    Rlaset("Full", lda, n, zero, zero, a, lda);
     //
     //     Diagonal Matrix -- We are done, unless it
     //     is to be stored SP/PP/TP (PACK='R' or 'C')
@@ -355,7 +355,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         ic = icol;
                         for (jch = jr - jkl; jch >= 1; jch = jch - jkl - jku) {
                             if (ir < m) {
-                                dlartg(a[((ir + 1 - iskew * (ic + 1) + ioffst) - 1) + ((ic + 1) - 1) * lda], extra, c, s, dummy);
+                                Rlartg(a[((ir + 1 - iskew * (ic + 1) + ioffst) - 1) + ((ic + 1) - 1) * lda], extra, c, s, dummy);
                             }
                             irow = max((INTEGER)1, jch - jku);
                             il = ir + 2 - irow;
@@ -363,7 +363,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                             iltemp = jch > jku;
                             Rlarot(false, iltemp, true, il, c, -s, &a[((irow - iskew * ic + ioffst) - 1) + (ic - 1) * lda], ilda, temp, extra);
                             if (iltemp) {
-                                dlartg(a[((irow + 1 - iskew * (ic + 1) + ioffst) - 1) + ((ic + 1) - 1) * lda], temp, c, s, dummy);
+                                Rlartg(a[((irow + 1 - iskew * (ic + 1) + ioffst) - 1) + ((ic + 1) - 1) * lda], temp, c, s, dummy);
                                 icol = max((INTEGER)1, jch - jku - jkl);
                                 il = ic + 2 - icol;
                                 extra = zero;
@@ -397,7 +397,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         ir = irow;
                         for (jch = jc - jku; jch >= 1; jch = jch - jkl - jku) {
                             if (ic < n) {
-                                dlartg(a[((ir + 1 - iskew * (ic + 1) + ioffst) - 1) + ((ic + 1) - 1) * lda], extra, c, s, dummy);
+                                Rlartg(a[((ir + 1 - iskew * (ic + 1) + ioffst) - 1) + ((ic + 1) - 1) * lda], extra, c, s, dummy);
                             }
                             icol = max((INTEGER)1, jch - jkl);
                             il = ic + 2 - icol;
@@ -405,7 +405,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                             iltemp = jch > jkl;
                             Rlarot(true, iltemp, true, il, c, -s, &a[((ir - iskew * icol + ioffst) - 1) + (icol - 1) * lda], ilda, temp, extra);
                             if (iltemp) {
-                                dlartg(a[((ir + 1 - iskew * (icol + 1) + ioffst) - 1) + ((icol + 1) - 1) * lda], temp, c, s, dummy);
+                                Rlartg(a[((ir + 1 - iskew * (icol + 1) + ioffst) - 1) + ((icol + 1) - 1) * lda], temp, c, s, dummy);
                                 irow = max((INTEGER)1, jch - jkl - jku);
                                 il = ir + 2 - irow;
                                 extra = zero;
@@ -447,7 +447,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         for (jch = jc + jkl; jch <= iendch; jch = jch + jkl + jku) {
                             ilextr = ic > 0;
                             if (ilextr) {
-                                dlartg(a[((jch - iskew * ic + ioffst) - 1) + (ic - 1) * lda], extra, c, s, dummy);
+                                Rlartg(a[((jch - iskew * ic + ioffst) - 1) + (ic - 1) * lda], extra, c, s, dummy);
                             }
                             ic = max((INTEGER)1, ic);
                             icol = min(n - 1, jch + jku);
@@ -455,7 +455,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                             temp = zero;
                             Rlarot(true, ilextr, iltemp, icol + 2 - ic, c, s, &a[((jch - iskew * ic + ioffst) - 1) + (ic - 1) * lda], ilda, extra, temp);
                             if (iltemp) {
-                                dlartg(a[((jch - iskew * icol + ioffst) - 1) + (icol - 1) * lda], temp, c, s, dummy);
+                                Rlartg(a[((jch - iskew * icol + ioffst) - 1) + (icol - 1) * lda], temp, c, s, dummy);
                                 il = min(iendch, jch + jkl + jku) + 2 - jch;
                                 extra = zero;
                                 Rlarot(false, true, jch + jkl + jku <= iendch, il, c, s, &a[((jch - iskew * icol + ioffst) - 1) + (icol - 1) * lda], ilda, temp, extra);
@@ -491,7 +491,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         for (jch = jr + jku; jch <= iendch; jch = jch + jkl + jku) {
                             ilextr = ir > 0;
                             if (ilextr) {
-                                dlartg(a[((ir - iskew * jch + ioffst) - 1) + (jch - 1) * lda], extra, c, s, dummy);
+                                Rlartg(a[((ir - iskew * jch + ioffst) - 1) + (jch - 1) * lda], extra, c, s, dummy);
                             }
                             ir = max((INTEGER)1, ir);
                             irow = min(m - 1, jch + jkl);
@@ -499,7 +499,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                             temp = zero;
                             Rlarot(false, ilextr, iltemp, irow + 2 - ir, c, s, &a[((ir - iskew * jch + ioffst) - 1) + (jch - 1) * lda], ilda, extra, temp);
                             if (iltemp) {
-                                dlartg(a[((irow - iskew * jch + ioffst) - 1) + (jch - 1) * lda], temp, c, s, dummy);
+                                Rlartg(a[((irow - iskew * jch + ioffst) - 1) + (jch - 1) * lda], temp, c, s, dummy);
                                 il = min(iendch, jch + jkl + jku) + 2 - jch;
                                 extra = zero;
                                 Rlarot(true, true, jch + jkl + jku <= iendch, il, c, s, &a[((irow - iskew * jch + ioffst) - 1) + (jch - 1) * lda], ilda, temp, extra);
@@ -545,7 +545,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         //
                         icol = jc;
                         for (jch = jc - k; jch >= 1; jch = jch - k) {
-                            dlartg(a[((jch + 1 - iskew * (icol + 1) + ioffg) - 1) + ((icol + 1) - 1) * lda], extra, c, s, dummy);
+                            Rlartg(a[((jch + 1 - iskew * (icol + 1) + ioffg) - 1) + ((icol + 1) - 1) * lda], extra, c, s, dummy);
                             temp = a[((jch - iskew * (jch + 1) + ioffg) - 1) + ((jch + 1) - 1) * lda];
                             Rlarot(true, true, true, k + 2, c, -s, &a[(((1 - iskew) * jch + ioffg) - 1) + (jch - 1) * lda], ilda, temp, extra);
                             irow = max((INTEGER)1, jch - k);
@@ -610,7 +610,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         //
                         icol = jc;
                         for (jch = jc + k; jch <= n - 1; jch = jch + k) {
-                            dlartg(a[((jch - iskew * icol + ioffg) - 1) + (icol - 1) * lda], extra, c, s, dummy);
+                            Rlartg(a[((jch - iskew * icol + ioffg) - 1) + (icol - 1) * lda], extra, c, s, dummy);
                             temp = a[((1 + (1 - iskew) * jch + ioffg) - 1) + (jch - 1) * lda];
                             Rlarot(true, true, true, k + 2, c, s, &a[((jch - iskew * icol + ioffg) - 1) + (icol - 1) * lda], ilda, extra, temp);
                             il = min(n + 1 - jch, k + 2);

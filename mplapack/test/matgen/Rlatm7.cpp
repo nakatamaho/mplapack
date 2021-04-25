@@ -166,14 +166,14 @@ void Rlatm7(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER c
     statement_210:
         alpha = log(one / cond);
         for (i = 1; i <= n; i = i + 1) {
-            d[i - 1] = exp[(alpha * Rlaran[iseed - 1]) - 1];
+            d[i - 1] = exp(alpha * Rlaran[iseed - 1]);
         }
         goto statement_240;
     //
     //        Randomly distributed D values from IDIST
     //
     statement_230:
-        dlarnv(idist, iseed, n, d);
+        Rlarnv(idist, iseed, n, d);
     //
     statement_240:
         //

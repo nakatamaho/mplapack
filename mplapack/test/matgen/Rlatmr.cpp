@@ -654,21 +654,21 @@ void Rlatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     arr_1d<1, REAL> tempa(fill0);
     REAL onorm = 0.0;
     if (ipack == 0) {
-        onorm = dlange("M", m, n, a, lda, tempa);
+        onorm = Rlange("M", m, n, a, lda, tempa);
     } else if (ipack == 1) {
-        onorm = dlansy("M", "U", n, a, lda, tempa);
+        onorm = Rlansy("M", "U", n, a, lda, tempa);
     } else if (ipack == 2) {
-        onorm = dlansy("M", "L", n, a, lda, tempa);
+        onorm = Rlansy("M", "L", n, a, lda, tempa);
     } else if (ipack == 3) {
-        onorm = dlansp("M", "U", n, a, tempa);
+        onorm = Rlansp("M", "U", n, a, tempa);
     } else if (ipack == 4) {
-        onorm = dlansp("M", "L", n, a, tempa);
+        onorm = Rlansp("M", "L", n, a, tempa);
     } else if (ipack == 5) {
-        onorm = dlansb("M", "L", n, kll, a, lda, tempa);
+        onorm = Rlansb("M", "L", n, kll, a, lda, tempa);
     } else if (ipack == 6) {
-        onorm = dlansb("M", "U", n, kuu, a, lda, tempa);
+        onorm = Rlansb("M", "U", n, kuu, a, lda, tempa);
     } else if (ipack == 7) {
-        onorm = dlangb("M", n, kll, kuu, a, lda, tempa);
+        onorm = Rlangb("M", n, kll, kuu, a, lda, tempa);
     }
     //
     if (anorm >= zero) {

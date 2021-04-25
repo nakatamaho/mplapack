@@ -78,17 +78,17 @@ Clarnd(INTEGER const idist, INTEGER *iseed) {
         //
         //        real and imaginary parts each normal (0,1)
         //
-        return_value = sqrt(-two * log(t1)) * exp[(COMPLEX(zero - 1) + ((twopi * t2)) - 1) * ldexp];
+        return_value = sqrt(-two * log(t1)) * exp(COMPLEX(zero, twopi * t2));
     } else if (idist == 4) {
         //
         //        uniform distribution on the unit disc abs(z) <= 1
         //
-        return_value = sqrt(t1) * exp[(COMPLEX(zero - 1) + ((twopi * t2)) - 1) * ldexp];
+        return_value = sqrt(t1) * exp(COMPLEX(zero, twopi * t2));
     } else if (idist == 5) {
         //
         //        uniform distribution on the unit circle abs(z) = 1
         //
-        return_value = exp[(COMPLEX(zero - 1) + ((twopi * t2)) - 1) * ldexp];
+        return_value = exp(COMPLEX(zero, twopi * t2));
     }
     return return_value;
     //
