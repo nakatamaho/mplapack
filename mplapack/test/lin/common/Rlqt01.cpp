@@ -63,7 +63,7 @@ void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     REAL eps = Rlamch("Epsilon");
     char srnamt[32];
     INTEGER ldaf = lda;
-    INTEGER ldq = lda;    
+    INTEGER ldq = lda;
     //
     //     Copy the matrix A to the array AF.
     //
@@ -71,7 +71,7 @@ void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //
     //     Factorize the matrix A in the array AF.
     //
-    strncpy(srnamt,"RGELQF", strlen("RGELQF"));
+    strncpy(srnamt, "RGELQF", strlen("RGELQF"));
     INTEGER info = 0;
     Rgelqf(m, n, af, lda, tau, work, lwork, info);
     //
@@ -85,7 +85,7 @@ void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //
     //     Generate the n-by-n matrix Q
     //
-    strncpy(srnamt,"RORGLQ", strlen("RORGLQ"));
+    strncpy(srnamt, "RORGLQ", strlen("RORGLQ"));
     Rorglq(n, n, minmn, q, lda, tau, work, lwork, info);
     //
     //     Copy L
@@ -104,7 +104,7 @@ void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     REAL anorm = Rlange("1", m, n, a, lda, rwork);
     REAL resid = Rlange("1", m, n, l, lda, rwork);
     if (anorm > zero) {
-      result[1 - 1] = ((resid / castREAL(max((INTEGER)1, n))) / anorm) / eps;
+        result[1 - 1] = ((resid / castREAL(max((INTEGER)1, n))) / anorm) / eps;
     } else {
         result[1 - 1] = zero;
     }

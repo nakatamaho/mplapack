@@ -29,19 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlatb4(common &cmn, const char *path, INTEGER const imat, INTEGER const m, INTEGER const n, char *type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, char *dist) {
-    FEM_CMN_SVE(Rlatb4);
-    // SAVE
-    REAL &badc1 = sve.badc1;
-    REAL &badc2 = sve.badc2;
-    REAL &eps = sve.eps;
-    bool &first = sve.first;
-    REAL &large = sve.large;
-    REAL &small = sve.small;
-    //
-    if (is_called_first_time) {
-        first = true;
-    }
+void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const n, char *type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, char *dist) {
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -73,27 +61,19 @@ void Rlatb4(common &cmn, const char *path, INTEGER const imat, INTEGER const m, 
     const REAL tenth = 0.1e+0;
     const REAL one = 1.0;
     const REAL shrink = 0.25e0;
-    if (first) {
-        first = false;
-        eps = Rlamch("Precision");
-        badc2 = tenth / eps;
-        badc1 = sqrt(badc2);
-        small = Rlamch("Safe minimum");
-        large = one / small;
-        //
-        //        If it looks like we're on a Cray, take the square root of
-        //        SMALL and LARGE to avoid overflow and underflow problems.
-        //
-        dlabad(small, large);
-        small = shrink * (small / eps);
-        large = one / small;
-    }
+    char c2[2];
+    REAL eps = Rlamch("Precision");
+    REAL badc2 = tenth / eps;
+    REAL badc1 = sqrt(badc2);
+    REAL small = Rlamch("Safe minimum");
+    REAL large = one / small;
     //
-    str<2> c2 = path[(2 - 1) + (3 - 1) * ldpath];
     //
     //     Set some parameters we don't plan to change.
     //
-    dist = "S";
+    c2[0] = path[1];
+    c2[1] = path[2];
+    dist = (char *)"S";
     mode = 3;
     //
     const REAL two = 2.0e+0;
@@ -105,7 +85,7 @@ void Rlatb4(common &cmn, const char *path, INTEGER const imat, INTEGER const m, 
         //
         //        Set TYPE, the type of matrix to be generated.
         //
-        type = "N";
+        type = (char *)"N";
         //
         //        Set the lower and upper bandwidths.
         //
@@ -147,7 +127,7 @@ void Rlatb4(common &cmn, const char *path, INTEGER const imat, INTEGER const m, 
         //
         //        Set TYPE, the type of matrix to be generated.
         //
-        type = "N";
+        type = (char *)"N";
         //
         //        Set the lower and upper bandwidths.
         //
@@ -189,7 +169,7 @@ void Rlatb4(common &cmn, const char *path, INTEGER const imat, INTEGER const m, 
         //
         //        Set TYPE, the type of matrix to be generated.
         //
-        type = "N";
+        type = (char *)"N";
         //
         //        Set the condition number and norm.
         //
@@ -215,7 +195,7 @@ void Rlatb4(common &cmn, const char *path, INTEGER const imat, INTEGER const m, 
         //
         //        Set TYPE, the type of matrix to be generated.
         //
-        type = "N";
+        type = (char *)"N";
         //
         //        Set the lower and upper bandwidths.
         //
@@ -251,7 +231,7 @@ void Rlatb4(common &cmn, const char *path, INTEGER const imat, INTEGER const m, 
         //
         //        Set TYPE, the type of matrix to be generated.
         //
-        type = c2[(1 - 1)];
+        *type = c2[(1 - 1)];
         //
         //        Set the lower and upper bandwidths.
         //
@@ -287,7 +267,7 @@ void Rlatb4(common &cmn, const char *path, INTEGER const imat, INTEGER const m, 
         //
         //        Set TYPE, the type of matrix to be generated.
         //
-        type = c2[(1 - 1)];
+        *type = c2[(1 - 1)];
         //
         //        Set the lower and upper bandwidths.
         //
@@ -322,7 +302,7 @@ void Rlatb4(common &cmn, const char *path, INTEGER const imat, INTEGER const m, 
         //
         //        Set TYPE, the type of matrix to be generated.
         //
-        type = "P";
+        type = (char *)"P";
         //
         //        Set the norm and condition number.
         //
@@ -347,7 +327,7 @@ void Rlatb4(common &cmn, const char *path, INTEGER const imat, INTEGER const m, 
         //        xPT:  Set parameters to generate a symmetric positive definite
         //        tridiagonal matrix.
         //
-        type = "P";
+        type = (char *)"P";
         if (imat == 1) {
             kl = 0;
         } else {
@@ -379,7 +359,7 @@ void Rlatb4(common &cmn, const char *path, INTEGER const imat, INTEGER const m, 
         //
         //        Set TYPE, the type of matrix to be generated.
         //
-        type = "N";
+        type = (char *)"N";
         //
         //        Set the lower and upper bandwidths.
         //
@@ -421,7 +401,7 @@ void Rlatb4(common &cmn, const char *path, INTEGER const imat, INTEGER const m, 
         //
         //        Set TYPE, the type of matrix to be generated.
         //
-        type = "N";
+        type = (char *)"N";
         //
         //        Set the norm and condition number.
         //

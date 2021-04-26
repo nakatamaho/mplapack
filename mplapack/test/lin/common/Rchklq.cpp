@@ -37,6 +37,7 @@ void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER nerrs = 0;
     INTEGER i = 0;
     INTEGER iseed[4];
+    INTEGER iseedy[4];
     INTEGER lda = 0;
     INTEGER lwork = 0;
     INTEGER im = 0;
@@ -46,13 +47,13 @@ void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER minmn = 0;
     INTEGER imat = 0;
     const INTEGER ntypes = 8;
-    char type = char0;
+    char type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist = char0;
+    char dist;
     INTEGER info = 0;
     INTEGER kval[4];
     INTEGER nk = 0;
@@ -97,8 +98,9 @@ void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Initialize constants and the random number seed.
     //
-    path[(1 - 1)] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "LQ";
+    path[0] = 'D'; // Double precision
+    path[1] = 'L';
+    path[2] = 'Q';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -111,8 +113,6 @@ void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     if (tsterr) {
         Rerrlq(path, nout);
     }
-    cmn.infot = 0;
-    xlaenv(2, 2);
     //
     lda = nmax;
     lwork = nmax * max(nmax, nrhs);
@@ -141,12 +141,12 @@ void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 Rlatb4(path, imat, m, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
                 srnamt = "DLATMS";
-                dlatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
+                Rlatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
                 //
                 //              Check error code from DLATMS.
                 //
                 if (info != 0) {
-                    Alaerh(path, "DLATMS", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "RLATMS", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_50;
                 }
                 //
@@ -219,7 +219,7 @@ void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 srnamt = "Rlarhs";
                                 Rlarhs(path, "New", "Full", "No transpose", m, n, 0, 0, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                                 //
-                                dlacpy("Full", m, nrhs, b, lda, x, lda);
+                                Rlacpy("Full", m, nrhs, b, lda, x, lda);
                                 srnamt = "Rgelqs";
                                 Rgelqs(m, n, nrhs, af, lda, tau, x, lda, work, lwork, info);
                                 //
