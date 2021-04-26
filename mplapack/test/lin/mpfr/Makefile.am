@@ -5,6 +5,7 @@ liblin_mpfr_la_SOURCES = $(LIN_SOURCES)
 
 LIN_SOURCES = \
 ../common/Rlqt01.cpp \
+../common/Rchkge.cpp \
 ../common/Rlatb4.cpp \
 ../common/Rchklq.cpp
 

@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_matgen.h>
+
 void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *afac, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
   //seeds are ignored
     static const char *values[] = {"N", "T", "C"};
@@ -233,6 +235,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     Rlacpy("Full", m, n, afac, lda, ainv, lda);
                     Rget01(m, n, a, lda, ainv, lda, iwork, rwork, result[1 - 1]);
                     nt = 1;
+#ifdef MAHO
                     //
                     //+    TEST 2
                     //                 Form the inverse if the factorization was successful
@@ -417,17 +420,19 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         "i2,') =',g12.5)"),
                                 norm, n, imat, 8, result(8);
                             nfail++;
-                        }
+			}
                         nrun++;
-                    }
+		    }
+#endif
                 statement_90:;
-                }
+		}
+
             statement_100:;
             }
-        }
+	}
     }
     //
-    //     PrINTEGER a summary of the results.
+    //     Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //

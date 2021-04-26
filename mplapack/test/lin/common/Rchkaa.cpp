@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -32,15 +32,15 @@
 
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 using namespace std;
 
 void Rchkaa(void) {
     char intstr[] = "0123456789";
     static REAL threq = 2.0;
-    REAL s1 = 0.0;
+    time_t s1;
     const int nmax = 132;
-    INTEGER lda = 0;
     bool fatal = false;
     const INTEGER nin = 5;
     int vers_major = 0;
@@ -62,9 +62,9 @@ void Rchkaa(void) {
     INTEGER nb = 0;
     INTEGER j = 0;
     INTEGER nbval2[maxin];
-    INTEGER nxval[maxin];
-    INTEGER nrank = 0;
-    INTEGER rankval[maxin];
+    int nxval[maxin];
+    int nrank = 0;
+    int rankval[maxin];
     REAL thresh = 0.0;
     bool tstchk = false;
     bool tstdrv = false;
@@ -81,12 +81,22 @@ void Rchkaa(void) {
     INTEGER nrhs = 0;
     INTEGER ntypes = 0;
     bool dotype[matmax];
+    INTEGER iwork[25 * nmax];
     const INTEGER kdmax = nmax + (nmax + 1) / 4;
     INTEGER la = 0;
     INTEGER lafac = 0;
     INTEGER piv[nmax];
-    INTEGER e[nmax];
-    REAL s2 = 0.0;
+    REAL a[((kdmax + 1) * nmax) * 7];
+    INTEGER lda = ((kdmax + 1) * nmax);
+    REAL b[(nmax * maxrhs) * 4];
+    INTEGER ldb = (nmax * maxrhs);
+    REAL e[nmax];
+    REAL rwork[5 * nmax + 2 * maxrhs];
+    REAL work[(nmax) * (3 * nmax + maxrhs + 30)];
+    INTEGER lwork = 3 * nmax + maxrhs + 30;
+    REAL s[2 * nmax];
+
+    time_t s2;
     std::string str;
 
     s1 = time(NULL);
@@ -252,7 +262,6 @@ void Rchkaa(void) {
         }
     }
     printf("\n");
-#ifdef MAHO
     //
     //     Set NBVAL2 to be the set of unique values of NB
     //
@@ -271,154 +280,149 @@ void Rchkaa(void) {
     //
     //     Read the values of NX
     //
-    {
-        read_loop rloop(cmn, nin, star);
-        for (i = 1; i <= nnb; i = i + 1) {
-            rloop, nxval(i);
-        }
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    for (i = 1; i <= nnb; i = i + 1) {
+        ss >> nxval[i - 1];
     }
     for (i = 1; i <= nnb; i = i + 1) {
         if (nxval[i - 1] < 0) {
-            write(nout, format_9996), " NX ", nxval(i), 0;
+            printf(" Invalid input value: %4s = %6d; must be >= %6d\n", "NX", nxval[i - 1], 0);
             fatal = true;
         }
     }
     if (nnb > 0) {
-        {
-            write_loop wloop(cmn, nout, format_9993);
-            wloop, "NX  ";
-            for (i = 1; i <= nnb; i = i + 1) {
-                wloop, nxval(i);
-            }
-        }
+        printf("     %4s  :", "NX");
+        for (i = 1; i <= nnb; i = i + 1)  printf("%6d", nxval[i - 1]);
     }
+    printf("\n");
     //
     //     Read the values of RANKVAL
     //
-    read(nin, star), nrank;
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    ss >> nrank;
     if (nn < 1) {
-        write(nout, format_9996), " NRANK ", nrank, 1;
+        printf(" Invalid input value: %4s = %6d ; must be >= %6d", "NRANK", nrank, 1);
         nrank = 0;
         fatal = true;
     } else if (nn > maxin) {
-        write(nout, format_9995), " NRANK ", nrank, maxin;
+        printf(" Invalid input value: %4s = %6d ; must be <= %6d", "NRANK", nrank, maxin);
         nrank = 0;
         fatal = true;
     }
-    {
-        read_loop rloop(cmn, nin, star);
-        for (i = 1; i <= nrank; i = i + 1) {
-            rloop, rankval(i);
-        }
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    for (i = 1; i <= nrank; i = i + 1) {
+        ss >> rankval[i - 1];
     }
+
     for (i = 1; i <= nrank; i = i + 1) {
         if (rankval[i - 1] < 0) {
-            write(nout, format_9996), " RANK  ", rankval(i), 0;
+            printf(" Invalid input value: %4s = %6d ; must be >= %6d", "RANK", rankval[i - 1], 0);
             fatal = true;
         } else if (rankval[i - 1] > 100) {
-            write(nout, format_9995), " RANK  ", rankval(i), 100;
+            printf(" Invalid input value: %4s = %6d ; must be <= %6d", "RANK", rankval[i - 1], 100);
             fatal = true;
         }
     }
     if (nrank > 0) {
-        {
-            write_loop wloop(cmn, nout, format_9993);
-            wloop, "RANK % OF N";
-            for (i = 1; i <= nrank; i = i + 1) {
-                wloop, rankval(i);
-            }
-        }
+        printf("     %4s  :", "RANK");
+        for (i = 1; i <= nrank; i = i + 1) printf("%6d", rankval[i - 1]);
     }
+    printf("\n");
     //
     //     Read the threshold value for the test ratios.
     //
-    read(nin, star), thresh;
-    write(nout, "(/,' Routines pass computational tests if test ratio is ','less than',"
-                "f8.2,/)"),
-        thresh;
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    ss >> thresh;
+    printf(" Routines pass computational tests if test ratio is less than %.2f \n", double(thresh));
+
     //
     //     Read the flag that indicates whether to test the LAPACK routines.
     //
-    read(nin, star), tstchk;
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    ss >> tstchk;
     //
     //     Read the flag that indicates whether to test the driver routines.
     //
-    read(nin, star), tstdrv;
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    ss >> tstdrv;
     //
     //     Read the flag that indicates whether to test the error exits.
     //
-    read(nin, star), tsterr;
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    ss >> tsterr;
     //
     if (fatal) {
-        write(nout, "(/,' Execution not attempted due to input errors')");
-        FEM_STOP(0);
+        printf(" Execution not attempted due to input errors \n");
+        exit(0);
     }
     //
-    //     Calculate and prINTEGER the machine dependent constants.
+    //     Calculate and print the machine dependent constants.
     //
     eps = Rlamch("Underflow threshold");
-    write(nout, format_9991), "underflow", eps;
+    cout << " Relative machine underflow is taken to be : " << eps << endl;
     eps = Rlamch("Overflow threshold");
-    write(nout, format_9991), "overflow ", eps;
+    cout << " Relative machine overflow  is taken to be : " << eps << endl;
     eps = Rlamch("Epsilon");
-    write(nout, format_9991), "precision", eps;
-    write(nout, star);
-//
-statement_80:
+    cout << " Relative machine precision is taken to be : " << eps << endl;
+
     //
     //     Read a test path and the number of matrix types to use.
     //
-    try {
-        read(nin, "(a72)"), aline;
-    } catch (read_end const) {
-        goto statement_140;
-    }
-    path = aline[(3 - 1) * ldaline];
-    nmats = matmax;
-    i = 3;
-statement_90:
-    i++;
-    if (i > 72) {
-        nmats = matmax;
-        goto statement_130;
-    }
-    if (aline[(i - 1) + (i - 1) * ldaline] == " ") {
-        goto statement_90;
-    }
-    nmats = 0;
-statement_100:
-    c1 = aline[(i - 1) + (i - 1) * ldaline];
-    for (k = 1; k <= 10; k = k + 1) {
-        if (c1 == intstr[(k - 1) + (k - 1) * ldintstr]) {
-            ic = k - 1;
-            goto statement_120;
+    while (getline(cin, str)) {
+        istringstream iss(str);
+        vector<string> result;
+        for (string s; iss >> s;)
+            result.push_back(s);
+        int n = result.size();
+        //      for(int i=0;i<n;i++)
+        //	cout<<result[i]<<endl;
+        if (n >= 1) {
+            if (result[0].length() == 3) {
+                path[0] = result[0][0];
+                path[1] = result[0][1];
+                path[2] = result[0][2];
+                c1[0] = result[0][0];
+                c2[0] = result[0][1];
+                c2[1] = result[0][2];
+            } else {
+                printf("wrong three letters\n");
+                exit(0);
+            }
+            if (n >= 2) {
+                nmats = stoi(result[1]);
+            }
         }
+        cout << c1[0] << endl;
+        cout << c2[0] << c2[1] << endl;
+        cout << nmats << endl;
+        nrhs = nsval[1 - 1];
     }
-    goto statement_130;
-statement_120:
-    nmats = nmats * 10 + ic;
-    i++;
-    if (i > 72) {
-        goto statement_130;
-    }
-    goto statement_100;
-statement_130:
-    c1 = path[(1 - 1)];
-    c2 = path[(2 - 1) + (3 - 1) * ldpath];
-    nrhs = nsval[1 - 1];
     //
     //     Check first character for correct precision.
     //
     if (!Mlsame(c1, "Double precision")) {
-        write(nout, format_9990), path;
-        //
+        printf(" %3s :  Unrecognized path name\n", path);
     } else if (nmats <= 0) {
         //
         //        Check for a positive number of tests requested.
         //
-        write(nout, format_9989), path;
+        printf(" %3s   routines were not tested\n", path);
         //
-    } else if (Mlsamen2, c2, "GE") {
+    } else if (Mlsamen(2, c2, "GE")) {
         //
         //        GE:  general matrices
         //
@@ -428,16 +432,18 @@ statement_130:
         if (tstchk) {
             Rchkge(dotype, nm, mval, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
         } else {
-            write(nout, format_9989), path;
+            printf(" %3s   routines were not tested\n", path);
         }
-        //
+        #ifdef DODRV
         if (tstdrv) {
             Rdrvge(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], s, work, rwork, iwork, nout);
         } else {
-            write(nout, format_9988), path;
+            printf(" %3s   driver routines were not tested\n", path);
         }
-        //
-    } else if (Mlsamen2, c2, "GB") {
+        #endif 
+    }
+#ifdef MAHO
+    else if (Mlsamen2, c2, "GB") {
         //
         //        GB:  general banded matrices
         //
@@ -892,23 +898,23 @@ statement_130:
     } else {
         //
         write(nout, format_9990), path;
+#endif
     }
+
     //
     //     Go back to get another input line.
     //
-    goto statement_80;
+}
+
 //
 //     Branch to this line when the last record is read.
 //
-statement_140:
-    cmn.io.close(nin);
-    s2 = dsecnd[-1];
-    write(nout, "(/,' End of tests')");
-    write(nout, "(' Total time used = ',f12.2,' seconds',/)"), s2 - s1;
-    //
-    //     End of Rchkaa
-    //
-#endif
+statement_140 : s2 = time(NULL);
+printf(" End of tests\n");
+printf(" Total time used =  %d seconds\n", int(s2 - s1));
+//
+//     End of Rchkaa
+//
 }
 
 int main(int argc, char const *argv[]) { Rchkaa(); }
