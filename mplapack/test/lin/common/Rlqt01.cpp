@@ -29,9 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlqt01(common &cmn, INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *l, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    // COMMON srnamc
-    str<32> &srnamt = cmn.srnamt;
+void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *l, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
     //
     //  -- LAPACK test routine --
@@ -63,35 +61,38 @@ void Rlqt01(common &cmn, INTEGER const m, INTEGER const n, REAL *a, REAL *af, RE
     //
     INTEGER minmn = min(m, n);
     REAL eps = Rlamch("Epsilon");
+    char srnamt[32];
+    INTEGER ldaf = lda;
+    INTEGER ldq = lda;    
     //
     //     Copy the matrix A to the array AF.
     //
-    dlacpy("Full", m, n, a, lda, af, lda);
+    Rlacpy("Full", m, n, a, lda, af, lda);
     //
     //     Factorize the matrix A in the array AF.
     //
-    srnamt = "DGELQF";
+    strncpy(srnamt,"RGELQF", strlen("RGELQF"));
     INTEGER info = 0;
-    dgelqf(m, n, af, lda, tau, work, lwork, info);
+    Rgelqf(m, n, af, lda, tau, work, lwork, info);
     //
     //     Copy details of Q
     //
     const REAL rogue = -1.0e+10;
-    dlaset("Full", n, n, rogue, rogue, q, lda);
+    Rlaset("Full", n, n, rogue, rogue, q, lda);
     if (n > 1) {
-        dlacpy("Upper", m, n - 1, af[(2 - 1) * ldaf], lda, &q[(2 - 1) * ldq], lda);
+        Rlacpy("Upper", m, n - 1, &af[(2 - 1) * ldaf], lda, &q[(2 - 1) * ldq], lda);
     }
     //
     //     Generate the n-by-n matrix Q
     //
-    srnamt = "DORGLQ";
-    dorglq(n, n, minmn, q, lda, tau, work, lwork, info);
+    strncpy(srnamt,"RORGLQ", strlen("RORGLQ"));
+    Rorglq(n, n, minmn, q, lda, tau, work, lwork, info);
     //
     //     Copy L
     //
     const REAL zero = 0.0;
-    dlaset("Full", m, n, zero, zero, l, lda);
-    dlacpy("Lower", m, n, af, lda, l, lda);
+    Rlaset("Full", m, n, zero, zero, l, lda);
+    Rlacpy("Lower", m, n, af, lda, l, lda);
     //
     //     Compute L - A*Q'
     //
@@ -100,24 +101,24 @@ void Rlqt01(common &cmn, INTEGER const m, INTEGER const n, REAL *a, REAL *af, RE
     //
     //     Compute norm( L - Q'*A ) / ( N * norm(A) * EPS ) .
     //
-    REAL anorm = dlange("1", m, n, a, lda, rwork);
-    REAL resid = dlange("1", m, n, l, lda, rwork);
+    REAL anorm = Rlange("1", m, n, a, lda, rwork);
+    REAL resid = Rlange("1", m, n, l, lda, rwork);
     if (anorm > zero) {
-        result[1 - 1] = ((resid / (max((INTEGER)1, n)).real()) / anorm) / eps;
+      result[1 - 1] = ((resid / castREAL(max((INTEGER)1, n))) / anorm) / eps;
     } else {
         result[1 - 1] = zero;
     }
     //
     //     Compute I - Q*Q'
     //
-    dlaset("Full", n, n, zero, one, l, lda);
+    Rlaset("Full", n, n, zero, one, l, lda);
     Rsyrk("Upper", "No transpose", n, n, -one, q, lda, one, l, lda);
     //
     //     Compute norm( I - Q*Q' ) / ( N * EPS ) .
     //
-    resid = dlansy("1", "Upper", n, l, lda, rwork);
+    resid = Rlansy("1", "Upper", n, l, lda, rwork);
     //
-    result[2 - 1] = (resid / (max((INTEGER)1, n)).real()) / eps;
+    result[2 - 1] = (resid / castREAL(max((INTEGER)1, n))) / eps;
     //
     //     End of Rlqt01
     //
