@@ -28,8 +28,11 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
-
 #include <time.h>
+
+#include <iostream>
+
+using namespace std;
 
 void Rchkaa(void) {
     char intstr[] = "0123456789";
@@ -43,7 +46,7 @@ void Rchkaa(void) {
     int vers_minor = 0;
     int vers_patch = 0;
     const INTEGER nout = 6;
-    INTEGER nm = 0;
+    int nm = 0;
     const INTEGER maxin = 12;
     INTEGER mval[maxin];
     INTEGER i = 0;
@@ -83,6 +86,7 @@ void Rchkaa(void) {
     INTEGER piv[nmax];
     INTEGER e[nmax];
     REAL s2 = 0.0;
+    char buf[1024];
 /*
     static const char *format_9988 = "(/,1x,a3,' driver routines were not tested')";
     static const char *format_9989 = "(/,1x,a3,' routines were not tested')";
@@ -90,7 +94,7 @@ void Rchkaa(void) {
     static const char *format_9991 = "(' Relative machine ',a,' is taken to be',d16.6)";
     static const char *format_9993 = "(4x,a4,':  ',10i6,/,11x,10i6)";
     static const char *format_9995 = "(' Invalid input value: ',a4,'=',i6,'; must be <=',i6)";
-    static const char *format_9996 = "(' Invalid input value: ',a4,'=',i6,'; must be >=',i6)";
+
     //
 */
     s1 = time(NULL);
@@ -99,31 +103,32 @@ void Rchkaa(void) {
     //
     //     Read a dummy line.
     //
-//    read(nin, star);
+    cin.getline(buf, sizeof(buf));
     //
     //     Report values of parameters.
     //
     iMlaver(vers_major, vers_minor, vers_patch);
     printf("Tests of the DOUBLE PRECISION MPLAPACK routines \n");
-    printf("LAPACK VERSION  %d.%d.%d\n", vers_major, vers_minor, vers_patch);
+    printf("MPLAPACK VERSION  %d.%d.%d\n", vers_major, vers_minor, vers_patch);
     printf("The following parameter values will be used:\n");
 
-#ifdef MAHO
+
     //
     //     Read the values of M
     //
-    read(nin, star), nm;
+    cin.getline(buf, sizeof(buf));
+    sscanf (buf, "%d", &nm);
     if (nm < 1) {
-        write(nout, format_9996), " NM ", nm, 1;
+        printf(" Invalid input value: %s = %d ; must be >= %d)", "NM", nm, 1);
         nm = 0;
         fatal = true;
     } else if (nm > maxin) {
-        write(nout, format_9995), " NM ", nm, maxin;
+        printf(" Invalid input value: %s = %d ; must be >= %d)", " NM ", nm, maxin);
         nm = 0;
         fatal = true;
     }
 
-
+#ifdef MAHO
     {
         read_loop rloop(cmn, nin, star);
         for (i = 1; i <= nm; i = i + 1) {
