@@ -55,12 +55,15 @@ void Rlakf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     INTEGER mn = m * n;
     INTEGER mn2 = 2 * mn;
     const REAL zero = 0.0;
-    dlaset("Full", mn2, mn2, zero, zero, z, ldz);
+    Rlaset("Full", mn2, mn2, zero, zero, z, ldz);
     //
     INTEGER ik = 1;
     INTEGER l = 0;
     INTEGER i = 0;
     INTEGER j = 0;
+    INTEGER ldb = lda;
+    INTEGER ldd = lda;
+    INTEGER lde = lda;
     for (l = 1; l <= n; l = l + 1) {
         //
         //        form kron(In, A)

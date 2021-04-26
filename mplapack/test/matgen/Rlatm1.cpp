@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_matgen.h>
+
 void Rlatm1(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER const idist, INTEGER *iseed, REAL *d, INTEGER const n, INTEGER &info) {
     const REAL one = 1.0;
     INTEGER i = 0;
@@ -131,9 +133,9 @@ void Rlatm1(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER c
     statement_50:
         d[1 - 1] = one;
         if (n > 1) {
-            alpha = pow(cond, [(-one / (n - 1).real()) - 1]);
+            alpha = pow(cond, (-one / castREAL(n - 1)));
             for (i = 2; i <= n; i = i + 1) {
-                d[i - 1] = pow(alpha, [(i - 1) - 1]);
+                d[i - 1] = pow(alpha, (i - 1));
             }
         }
         goto statement_120;
@@ -144,9 +146,9 @@ void Rlatm1(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER c
         d[1 - 1] = one;
         if (n > 1) {
             temp = one / cond;
-            alpha = (one - temp) / (n - 1).real();
+            alpha = (one - temp) / castREAL(n - 1);
             for (i = 2; i <= n; i = i + 1) {
-                d[i - 1] = (n - i).real() * alpha + temp;
+                d[i - 1] = castREAL(n - i) * alpha + temp;
             }
         }
         goto statement_120;
@@ -156,14 +158,14 @@ void Rlatm1(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER c
     statement_90:
         alpha = log(one / cond);
         for (i = 1; i <= n; i = i + 1) {
-            d[i - 1] = exp[(alpha * Rlaran[iseed - 1]) - 1];
+            d[i - 1] = exp(alpha * Rlaran(iseed));
         }
         goto statement_120;
     //
     //        Randomly distributed D values from IDIST
     //
     statement_110:
-        dlarnv(idist, iseed, n, d);
+        Rlarnv(idist, iseed, n, d);
     //
     statement_120:
         //
@@ -172,7 +174,7 @@ void Rlatm1(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER c
         //
         if ((mode != -6 && mode != 0 && mode != 6) && irsign == 1) {
             for (i = 1; i <= n; i = i + 1) {
-                temp = Rlaran[iseed - 1];
+                temp = Rlaran(iseed);
                 if (temp > half) {
                     d[i - 1] = -d[i - 1];
                 }

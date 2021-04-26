@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_matgen.h>
+
 void Rlaror(const char *side, const char *init, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *iseed, REAL *x, INTEGER &info) {
     //
     //  -- LAPACK auxiliary routine --
@@ -96,7 +98,7 @@ void Rlaror(const char *side, const char *init, INTEGER const m, INTEGER const n
     const REAL zero = 0.0;
     const REAL one = 1.0;
     if (Mlsame(init, "I")) {
-        dlaset("Full", m, n, zero, one, a, lda);
+        Rlaset("Full", m, n, zero, one, a, lda);
     }
     //
     //     If no rotation possible, multiply by random +/-1
@@ -121,13 +123,13 @@ void Rlaror(const char *side, const char *init, INTEGER const m, INTEGER const n
         //        Generate independent normal( 0, 1 ) random numbers
         //
         for (j = kbeg; j <= nxfrm; j = j + 1) {
-            x[j - 1] = Rlarnd[(3 - 1) + (iseed - 1) * ldRlarnd];
+            x[j - 1] = Rlarnd(3, iseed);
         }
         //
         //        Generate a Householder transformation from the random vector X
         //
         xnorm = Rnrm2(ixfrm, &x[kbeg - 1], 1);
-        xnorms = sign(xnorm, &x[kbeg - 1]);
+        xnorms = sign(xnorm, x[kbeg - 1]);
         x[(kbeg + nxfrm) - 1] = sign(one, -x[kbeg - 1]);
         factor = xnorms * (xnorms + x[kbeg - 1]);
         if (abs(factor) < toosml) {
@@ -160,21 +162,21 @@ void Rlaror(const char *side, const char *init, INTEGER const m, INTEGER const n
         }
     }
     //
-    x[(2 * nxfrm) - 1] = sign(one, Rlarnd[(3 - 1) + (iseed - 1) * ldRlarnd]);
+    x[(2 * nxfrm) - 1] = sign(one, Rlarnd(3, iseed));
     //
     //     Scale the matrix A by D.
     //
     INTEGER irow = 0;
     if (itype == 1 || itype == 3) {
         for (irow = 1; irow <= m; irow = irow + 1) {
-            Rscal(n, &x[(nxfrm + irow) - 1], &a[(irow - 1)], lda);
+            Rscal(n, x[(nxfrm + irow) - 1], &a[(irow - 1)], lda);
         }
     }
     //
     INTEGER jcol = 0;
     if (itype == 2 || itype == 3) {
         for (jcol = 1; jcol <= n; jcol = jcol + 1) {
-            Rscal(m, &x[(nxfrm + jcol) - 1], &a[(jcol - 1) * lda], 1);
+            Rscal(m, x[(nxfrm + jcol) - 1], &a[(jcol - 1) * lda], 1);
         }
     }
     //

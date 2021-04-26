@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_matgen.h>
+
 REAL Rlatm3(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, INTEGER &isub, INTEGER &jsub, INTEGER const kl, INTEGER const ku, INTEGER const idist, INTEGER *iseed, REAL *d, INTEGER const igrade, REAL *dl, REAL *dr, INTEGER const ipvtng, INTEGER *iwork, REAL const sparse) {
     REAL return_value = 0.0;
     //
@@ -98,7 +100,7 @@ REAL Rlatm3(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, 
     //     Check for sparsity
     //
     if (sparse > zero) {
-        if (Rlaran[iseed - 1] < sparse) {
+        if (Rlaran(iseed) < sparse) {
             return_value = zero;
             return return_value;
         }
@@ -110,7 +112,7 @@ REAL Rlatm3(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, 
     if (i == j) {
         temp = d[i - 1];
     } else {
-        temp = Rlarnd[(idist - 1) + (iseed - 1) * ldRlarnd];
+        temp = Rlarnd(idist, iseed);
     }
     if (igrade == 1) {
         temp = temp * dl[i - 1];

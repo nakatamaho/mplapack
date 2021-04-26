@@ -38,9 +38,11 @@ typedef mplapacklogical LOGICAL;
 typedef mpf_class REAL;
 typedef mpc_class COMPLEX;
 #define Mlsame Mlsame_gmp
+#define Mlsamen Mlsamen_gmp
 #define Mxerbla Mxerbla_gmp
 #define Rlamch Rlamch_gmp
 #define iMlaenv iMlaenv_gmp
+#define iMlaver iMlaver_gmp
 #define iMieeeck iMieeeck_gmp
 #define iMparmq iMparmq_gmp
 #endif
@@ -52,9 +54,11 @@ typedef mplapacklogical LOGICAL;
 typedef mpreal REAL;
 typedef mpcomplex COMPLEX;
 #define Mlsame Mlsame_mpfr
+#define Mlsamen Mlsamen_mpfr
 #define Mxerbla Mxerbla_mpfr
 #define Rlamch Rlamch_mpfr
 #define iMlaenv iMlaenv_mpfr
+#define iMlaver iMlaver_mpfr
 #define iMieeeck iMieeeck_mpfr
 #define iMparmq iMparmq_mpfr
 #endif
@@ -66,9 +70,11 @@ typedef mplapacklogical LOGICAL;
 typedef qd_real REAL;
 typedef qd_complex COMPLEX;
 #define Mlsame Mlsame_qd
+#define Mlsamen Mlsamen_qd
 #define Mxerbla Mxerbla_qd
 #define Rlamch Rlamch_qd
 #define iMlaenv iMlaenv_qd
+#define iMlaver iMlaver_qd
 #define iMieeeck iMieeeck_qd
 #define iMparmq iMparmq_qd
 #if !defined __MUTILS_CPP__
@@ -83,9 +89,11 @@ typedef mplapacklogical LOGICAL;
 typedef dd_real REAL;
 typedef dd_complex COMPLEX;
 #define Mlsame Mlsame_dd
+#define Mlsamen Mlsamen_dd
 #define Mxerbla Mxerbla_dd
 #define Rlamch Rlamch_dd
 #define iMlaenv iMlaenv_dd
+#define iMlaver iMlaver_dd
 #define iMieeeck iMieeeck_dd
 #define iMparmq iMparmq_dd
 #if !defined __MUTILS_CPP__
@@ -100,9 +108,11 @@ typedef mplapacklogical LOGICAL;
 typedef double REAL;
 typedef std::complex<double> COMPLEX;
 #define Mlsame Mlsame_double
+#define Mlsamen Mlsamen_double
 #define Mxerbla Mxerbla_double
 #define Rlamch Rlamch_double
 #define iMlaenv iMlaenv_double
+#define iMlaver iMlaver_double
 #define iMieeeck iMieeeck_double
 #define iMparmq iMparmq_double
 #endif
@@ -114,6 +124,7 @@ typedef mplapacklogical LOGICAL;
 typedef _Float64x REAL;
 typedef std::complex<_Float64x> COMPLEX;
 #define Mlsame Mlsame__Float64x
+#define Mlsamen Mlsamen__Float64x
 #define Mxerbla Mxerbla__Float64x
 #define Rlamch Rlamch__Float64x
 #define iMlaenv iMlaenv__Float64x
@@ -128,8 +139,10 @@ typedef mplapacklogical LOGICAL;
 typedef _Float128 REAL;
 typedef std::complex<_Float128> COMPLEX;
 #define Mlsame Mlsame__Float128
+#define Mlsamen Mlsamen__Float128
 #define Mxerbla Mxerbla__Float128
 #define Rlamch Rlamch__Float128
+#define iMlaenv iMlaenv__Float128
 #define iMlaenv iMlaenv__Float128
 #define iMieeeck iMieeeck__Float128
 #define iMparmq iMparmq__Float128

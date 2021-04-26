@@ -28,82 +28,70 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
+#include <random>
+
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+extern gmp_randstate_t random_mplapack_mpfr_state;
+#endif
+
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+extern gmp_randstate_t random_mplapack_gmp_state;
+extern gmp_randclass random_mplapack_gmp(gmp_randinit_default);
+#endif
 
 REAL Rlaran(INTEGER *iseed) {
-    REAL return_value = 0.0;
-    const INTEGER m4 = 2549;
-    INTEGER it4 = 0;
-    const INTEGER ipw2 = 4096;
-    INTEGER it3 = 0;
-    const INTEGER m3 = 2508;
-    INTEGER it2 = 0;
-    const INTEGER m2 = 322;
-    INTEGER it1 = 0;
-    const INTEGER m1 = 494;
-    const REAL one = 1.0;
-    const REAL r = one / ipw2;
-    REAL rndout = 0.0;
-//
-//  -- LAPACK auxiliary routine --
-//  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-//  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-//
-//     .. Array Arguments ..
-//     ..
-//
-//  =====================================================================
-//
-//     .. Parameters ..
-//     ..
-//     .. Local Scalars ..
-//     ..
-//     .. Intrinsic Functions ..
-//     ..
-//     .. Executable Statements ..
-statement_10:
-    //
-    //     multiply the seed by the multiplier modulo 2**48
-    //
-    it4 = iseed[4 - 1] * m4;
-    it3 = it4 / ipw2;
-    it4 = it4 - ipw2 * it3;
-    it3 += iseed[3 - 1] * m4 + iseed[4 - 1] * m3;
-    it2 = it3 / ipw2;
-    it3 = it3 - ipw2 * it2;
-    it2 += iseed[2 - 1] * m4 + iseed[3 - 1] * m3 + iseed[4 - 1] * m2;
-    it1 = it2 / ipw2;
-    it2 = it2 - ipw2 * it1;
-    it1 += iseed[1 - 1] * m4 + iseed[2 - 1] * m3 + iseed[3 - 1] * m2 + iseed[4 - 1] * m1;
-    it1 = mod(it1, ipw2);
-    //
-    //     return updated seed
-    //
-    iseed[1 - 1] = it1;
-    iseed[2 - 1] = it2;
-    iseed[3 - 1] = it3;
-    iseed[4 - 1] = it4;
-    //
-    //     convert 48-bit integer to a real number in the interval (0,1)
-    //
-    rndout = r * (it1.real() + r * (it2.real() + r * (it3.real() + r * (it4.real()))));
-    //
-    if (rndout == 1.0) {
-        //        If a real number has n bits of precision, and the first
-        //        n bits of the 48-bit integer above happen to be all 1 (which
-        //        will occur about once every 2**n calls), then Rlaran will
-        //        be rounded to exactly 1.0.
-        //        Since Rlaran is not supposed to return exactly 0.0 or 1.0
-        //        (and some callers of Rlaran, such as CLARND, depend on that),
-        //        the statistically correct thing to do in this situation is
-        //        simply to iterate again.
-        //        N.B. the case Rlaran = 0.0 should not be possible.
-        //
-        goto statement_10;
-    }
-    //
-    return_value = rndout;
-    return return_value;
-    //
-    //     End of Rlaran
-    //
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+    mpreal x = urandom(random_mplapack_mpfr_state);
+#endif
+
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+    mpf_class x;
+    x = random_mplapack_gmp.get_f();
+#endif
+
+#if defined ___MPLAPACK_BUILD_WITH_DD___
+    dd_real x;
+    std::random_device rd;
+    std::mt19937_64 mt(rd());
+    std::uniform_real_distribution<double> dist(0.0, 1.0);
+    x.x[0] = dist(mt);
+    x.x[1] = dist(mt) * 0x1p-53;
+#endif
+
+#if defined ___MPLAPACK_BUILD_WITH_QD___
+    qd_real x;
+    std::random_device rd;
+    std::mt19937_64 mt(rd());
+    std::uniform_real_distribution<double> dist(0.0, 1.0);
+    x[i].x[0] = dist(mt);
+    x[i].x[1] = dist(mt) * 0x1p-53;
+    x[i].x[2] = dist(mt) * 0x1p-106;
+    x[i].x[3] = dist(mt) * 0x1p-159;
+#endif
+
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+    _Float128 x;
+    std::random_device rd;
+    std::mt19937_64 mt(rd());
+    std::uniform_real_distribution<double> dist(0.0, 1.0);
+    x = dist(mt) + dist(mt) * 0x1p-53 + dist(mt) * 0x1p-106;
+#endif
+
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
+    _Float64x x;
+    std::random_device rd;
+    std::mt19937_64 mt(rd());
+    std::uniform_real_distribution<double> dist(0, 1.0);
+    x = dist(mt) + dist(mt) * 0x1p-64;
+#endif
+
+#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+    double x;
+    std::random_device rd;
+    std::mt19937_64 mt(rd());
+    std::uniform_real_distribution<double> dist(0.0, 1.0);
+    for (int i = 0; i < n; i++)
+        x = dist(mt);
+#endif
+    return x;
 }

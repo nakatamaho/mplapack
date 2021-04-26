@@ -40,9 +40,7 @@ void mplapack_Rlaruv_mpfr_initialize(void) { gmp_randinit_default(random_mplapac
 gmp_randstate_t random_mplapack_gmp_state;
 gmp_randclass random_mplapack_gmp(gmp_randinit_default);
 void __attribute__((constructor)) mplapack_Rlaruv_gmp_initialize(void);
-void mplapack_Rlaruv_gmp_initialize(void) {
-    //    random_mplapack_gmp.seed(time(NULL));
-}
+void mplapack_Rlaruv_gmp_initialize(void) { random_mplapack_gmp.seed((unsigned long int)time(NULL)); } // XXX better initializaition req'ed
 #endif
 
 void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
@@ -61,16 +59,22 @@ void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
     std::random_device rd;
     std::mt19937_64 mt(rd());
     std::uniform_real_distribution<double> dist(0.0, 1.0);
-    for (int i = 0; i < n; i++)
-        x[i] = dist(mt) + dist(mt) * 0x1p-53;
+    for (int i = 0; i < n; i++) {
+        x[i].x[0] = dist(mt);
+        x[i].x[1] = dist(mt) * 0x1p-53;
+    }
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_QD___
     std::random_device rd;
     std::mt19937_64 mt(rd());
     std::uniform_real_distribution<double> dist(0.0, 1.0);
-    for (int i = 0; i < n; i++)
-        x[i] = dist(mt) + dist(mt) * 0x1p-53 + dist(mt) * 0x1p-106 + dist(mt) * 0x1p-159;
+    for (int i = 0; i < n; i++) {
+        x[i].x[0] = dist(mt);
+        x[i].x[1] = dist(mt) * 0x1p-53;
+        x[i].x[2] = dist(mt) * 0x1p-106;
+        x[i].x[3] = dist(mt) * 0x1p-159;
+    }
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
@@ -96,5 +100,4 @@ void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
     for (int i = 0; i < n; i++)
         x[i] = dist(mt);
 #endif
-
 }

@@ -33,12 +33,14 @@
 
 #include "mplapack_config.h"
 
+_Float64x Clangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, std::complex<_Float64x> *ab, mplapackint const ldab, _Float64x *work);
 _Float64x Clange(const char *norm, mplapackint const m, mplapackint const n, std::complex<_Float64x> *a, mplapackint const lda, _Float64x *work);
 _Float64x Clangt(const char *norm, mplapackint const n, std::complex<_Float64x> *dl, std::complex<_Float64x> *d, std::complex<_Float64x> *du);
 _Float64x Clanhb(const char *norm, const char *uplo, mplapackint const n, mplapackint const k, std::complex<_Float64x> *ab, mplapackint const ldab, _Float64x *work);
 _Float64x Clanhe(const char *norm, const char *uplo, mplapackint const n, std::complex<_Float64x> *a, mplapackint const lda, _Float64x *work);
 _Float64x Clanhp(const char *norm, const char *uplo, mplapackint const n, std::complex<_Float64x> *ap, _Float64x *work);
 _Float64x Clanht(const char *norm, mplapackint const n, _Float64x *d, std::complex<_Float64x> *e);
+_Float64x Clansb(const char *norm, const char *uplo, mplapackint const n, mplapackint const k, std::complex<_Float64x> *ab, mplapackint const ldab, _Float64x *work);
 _Float64x Clansp(const char *norm, const char *uplo, mplapackint const n, std::complex<_Float64x> *ap, _Float64x *work);
 _Float64x Clansy(const char *norm, const char *uplo, mplapackint const n, std::complex<_Float64x> *a, mplapackint const lda, _Float64x *work);
 _Float64x RCsum1(mplapackint const n, std::complex<_Float64x> *cx, mplapackint const incx);
@@ -59,6 +61,7 @@ _Float64x Rlantb(const char *norm, const char *uplo, const char *diag, mplapacki
 _Float64x Rlantr(const char *norm, const char *uplo, const char *diag, mplapackint const m, mplapackint const n, _Float64x *a, mplapackint const lda, _Float64x *work);
 _Float64x Rlapy2(_Float64x const x, _Float64x const y);
 _Float64x Rlapy3(_Float64x const x, _Float64x const y, _Float64x const z);
+bool Mlsamen__Float64x(mplapackint n, const char *a, const char *b);
 bool Risnan(_Float64x const din);
 bool Rlaisnan(_Float64x const din1, _Float64x const din2);
 mplapackint Rlaneg(mplapackint const n, _Float64x *d, _Float64x *lld, _Float64x const sigma, _Float64x const, mplapackint const r);
@@ -712,4 +715,5 @@ void Rtrtri(const char *uplo, const char *diag, mplapackint const n, _Float64x *
 void Rtrtrs(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const nrhs, _Float64x *a, mplapackint const lda, _Float64x *b, mplapackint const ldb, mplapackint &info);
 void Rtrttp(const char *uplo, mplapackint const n, _Float64x *a, mplapackint const lda, _Float64x *ap, mplapackint &info);
 void Rtzrzf(mplapackint const m, mplapackint const n, _Float64x *a, mplapackint const lda, _Float64x *tau, _Float64x *work, mplapackint const lwork, mplapackint &info);
+void iMlaver__Float64x(int &vers_major, int &vers_minor, int &vers_patch);
 #endif

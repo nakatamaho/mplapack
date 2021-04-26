@@ -96,7 +96,7 @@ void Claghe(INTEGER const n, INTEGER const k, REAL *d, COMPLEX *a, INTEGER const
         //
         //        generate random reflection
         //
-        zlarnv(3, iseed, n - i + 1, work);
+        Clarnv(3, iseed, n - i + 1, work);
         wn = RCnrm2(n - i + 1, work, 1);
         wa = (wn / abs(work[1 - 1])) * work[1 - 1];
         if (wn == zero) {

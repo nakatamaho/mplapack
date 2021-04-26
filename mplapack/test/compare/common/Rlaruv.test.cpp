@@ -100,14 +100,14 @@ int main(int argc, char *argv[]) {
         delete[] x;
         printf("%d-th random vector done\n", n);
     }
-    int n = 1024;
+    int n = 100000;
     REAL *x = new REAL[n];
     char *buf = new char[n * 1024];
     ofstream outputfile(outname);
     Rlaruv(seed, n, x);
     for (int i = 0; i < n; i++) {
         sprintnum(buf, x[i]);
-        outputfile << i << " " << buf << "\n";
+        outputfile << buf << "\n";
     }
     delete[] x;
     outputfile.close();

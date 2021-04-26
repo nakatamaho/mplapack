@@ -95,7 +95,7 @@ void Rlatm5(INTEGER const prtype, INTEGER const m, INTEGER const n, REAL *a, INT
         //
         for (i = 1; i <= m; i = i + 1) {
             for (j = 1; j <= n; j = j + 1) {
-                r[(i - 1) + (j - 1) * ldr] = (half - sin((i / j).real())) * twenty;
+                r[(i - 1) + (j - 1) * ldr] = (half - sin(castREAL(i / j))) * twenty;
                 l[(i - 1) + (j - 1) * ldl] = r[(i - 1) + (j - 1) * ldr];
             }
         }
@@ -104,8 +104,8 @@ void Rlatm5(INTEGER const prtype, INTEGER const m, INTEGER const n, REAL *a, INT
         for (i = 1; i <= m; i = i + 1) {
             for (j = 1; j <= m; j = j + 1) {
                 if (i <= j) {
-                    a[(i - 1) + (j - 1) * lda] = (half - sin(i.real())) * two;
-                    d[(i - 1) + (j - 1) * ldd] = (half - sin((i * j).real())) * two;
+                    a[(i - 1) + (j - 1) * lda] = (half - sin(castREAL(i))) * two;
+                    d[(i - 1) + (j - 1) * ldd] = (half - sin(castREAL(i * j))) * two;
                 } else {
                     a[(i - 1) + (j - 1) * lda] = zero;
                     d[(i - 1) + (j - 1) * ldd] = zero;
@@ -116,8 +116,8 @@ void Rlatm5(INTEGER const prtype, INTEGER const m, INTEGER const n, REAL *a, INT
         for (i = 1; i <= n; i = i + 1) {
             for (j = 1; j <= n; j = j + 1) {
                 if (i <= j) {
-                    b[(i - 1) + (j - 1) * ldb] = (half - sin((i + j).real())) * two;
-                    e[(i - 1) + (j - 1) * lde] = (half - sin(j.real())) * two;
+                    b[(i - 1) + (j - 1) * ldb] = (half - sin(castREAL(i + j))) * two;
+                    e[(i - 1) + (j - 1) * lde] = (half - sin(castREAL(j))) * two;
                 } else {
                     b[(i - 1) + (j - 1) * ldb] = zero;
                     e[(i - 1) + (j - 1) * lde] = zero;
@@ -127,8 +127,8 @@ void Rlatm5(INTEGER const prtype, INTEGER const m, INTEGER const n, REAL *a, INT
         //
         for (i = 1; i <= m; i = i + 1) {
             for (j = 1; j <= n; j = j + 1) {
-                r[(i - 1) + (j - 1) * ldr] = (half - sin((i * j).real())) * twenty;
-                l[(i - 1) + (j - 1) * ldl] = (half - sin((i + j).real())) * twenty;
+                r[(i - 1) + (j - 1) * ldr] = (half - sin(castREAL(i * j))) * twenty;
+                l[(i - 1) + (j - 1) * ldl] = (half - sin(castREAL(i + j))) * twenty;
             }
         }
         //
@@ -153,22 +153,22 @@ void Rlatm5(INTEGER const prtype, INTEGER const m, INTEGER const n, REAL *a, INT
     } else if (prtype == 4) {
         for (i = 1; i <= m; i = i + 1) {
             for (j = 1; j <= m; j = j + 1) {
-                a[(i - 1) + (j - 1) * lda] = (half - sin((i * j).real())) * twenty;
-                d[(i - 1) + (j - 1) * ldd] = (half - sin((i + j).real())) * two;
+                a[(i - 1) + (j - 1) * lda] = (half - sin(castREAL(i * j))) * twenty;
+                d[(i - 1) + (j - 1) * ldd] = (half - sin(castREAL(i + j))) * two;
             }
         }
         //
         for (i = 1; i <= n; i = i + 1) {
             for (j = 1; j <= n; j = j + 1) {
-                b[(i - 1) + (j - 1) * ldb] = (half - sin((i + j).real())) * twenty;
-                e[(i - 1) + (j - 1) * lde] = (half - sin((i * j).real())) * two;
+                b[(i - 1) + (j - 1) * ldb] = (half - castREAL(sin((i + j)))) * twenty;
+                e[(i - 1) + (j - 1) * lde] = (half - castREAL(sin((i * j)))) * two;
             }
         }
         //
         for (i = 1; i <= m; i = i + 1) {
             for (j = 1; j <= n; j = j + 1) {
-                r[(i - 1) + (j - 1) * ldr] = (half - sin((j / i).real())) * twenty;
-                l[(i - 1) + (j - 1) * ldl] = (half - sin((i * j).real())) * two;
+                r[(i - 1) + (j - 1) * ldr] = (half - sin(castREAL(j / i))) * twenty;
+                l[(i - 1) + (j - 1) * ldl] = (half - sin(castREAL(i * j))) * two;
             }
         }
         //
@@ -177,8 +177,8 @@ void Rlatm5(INTEGER const prtype, INTEGER const m, INTEGER const n, REAL *a, INT
         imeps = (half - two) / alpha;
         for (i = 1; i <= m; i = i + 1) {
             for (j = 1; j <= n; j = j + 1) {
-                r[(i - 1) + (j - 1) * ldr] = (half - sin((i * j).real())) * alpha / twenty;
-                l[(i - 1) + (j - 1) * ldl] = (half - sin((i + j).real())) * alpha / twenty;
+                r[(i - 1) + (j - 1) * ldr] = (half - sin(castREAL(i * j))) * alpha / twenty;
+                l[(i - 1) + (j - 1) * ldl] = (half - sin(castREAL(i + j))) * alpha / twenty;
             }
         }
         //

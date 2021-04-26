@@ -29,7 +29,9 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, str_arr_cref<> ei, const char *rsign, const char *upper, const char *sim, REAL *ds, INTEGER const modes, REAL const conds, INTEGER const kl, INTEGER const ku, REAL const anorm, REAL *a, INTEGER const lda, REAL *work, INTEGER &info) {
+#include <mplapack_matgen.h>
+
+void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, const char *ei, const char *rsign, const char *upper, const char *sim, REAL *ds, INTEGER const modes, REAL const conds, INTEGER const kl, INTEGER const ku, REAL const anorm, REAL *a, INTEGER const lda, REAL *work, INTEGER &info) {
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -85,17 +87,17 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
     bool useei = true;
     bool badei = false;
     INTEGER j = 0;
-    if (Mlsame(ei[1 - 1], " ") || mode != 0) {
+    if (Mlsame(&ei[1 - 1], " ") || mode != 0) {
         useei = false;
     } else {
-        if (Mlsame(ei[1 - 1], "R")) {
+        if (Mlsame(&ei[1 - 1], "R")) {
             for (j = 2; j <= n; j = j + 1) {
-                if (Mlsame(ei[j - 1], "I")) {
-                    if (Mlsame(ei[(j - 1) - 1], "I")) {
+                if (Mlsame(&ei[j - 1], "I")) {
+                    if (Mlsame(&ei[(j - 1) - 1], "I")) {
                         badei = true;
                     }
                 } else {
-                    if (!Mlsame(ei[j - 1], "R")) {
+                    if (!Mlsame(&ei[j - 1], "R")) {
                         badei = true;
                     }
                 }
@@ -233,7 +235,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
         //
     }
     //
-    dlaset("Full", n, n, zero, zero, a, lda);
+    Rlaset("Full", n, n, zero, zero, a, lda);
     Rcopy(n, d, 1, a, lda + 1);
     //
     //     Set up complex conjugate pairs
@@ -242,7 +244,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
     if (mode == 0) {
         if (useei) {
             for (j = 2; j <= n; j = j + 1) {
-                if (Mlsame(ei[j - 1], "I")) {
+                if (Mlsame(&ei[j - 1], "I")) {
                     a[((j - 1) - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda];
                     a[(j - 1) + ((j - 1) - 1) * lda] = -a[(j - 1) + (j - 1) * lda];
                     a[(j - 1) + (j - 1) * lda] = a[((j - 1) - 1) + ((j - 1) - 1) * lda];
@@ -253,7 +255,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
     } else if (abs(mode) == 5) {
         //
         for (j = 2; j <= n; j = j + 2) {
-            if (Rlaran[iseed - 1] > half) {
+            if (Rlaran(iseed) > half) {
                 a[((j - 1) - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda];
                 a[(j - 1) + ((j - 1) - 1) * lda] = -a[(j - 1) + (j - 1) * lda];
                 a[(j - 1) + (j - 1) * lda] = a[((j - 1) - 1) + ((j - 1) - 1) * lda];
@@ -273,7 +275,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
             } else {
                 jr = jc - 1;
             }
-            dlarnv(idist, iseed, jr, &a[(jc - 1) * lda]);
+            Rlarnv(idist, iseed, jr, &a[(jc - 1) * lda]);
         }
     }
     //
@@ -344,7 +346,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
             //
             Rcopy(irows, &a[(jcr - 1) + (ic - 1) * lda], 1, work, 1);
             xnorms = work[1 - 1];
-            dlarfg(irows, xnorms, &work[2 - 1], 1, tau);
+            Rlarfg(irows, xnorms, &work[2 - 1], 1, tau);
             work[1 - 1] = one;
             //
             Rgemv("T", irows, icols, one, &a[(jcr - 1) + ((ic + 1) - 1) * lda], lda, work, 1, zero, &work[(irows + 1) - 1], 1);
@@ -354,7 +356,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
             Rger(n, irows, -tau, &work[(irows + 1) - 1], 1, work, 1, &a[(jcr - 1) * lda], lda);
             //
             a[(jcr - 1) + (ic - 1) * lda] = xnorms;
-            dlaset("Full", irows - 1, 1, zero, zero, &a[((jcr + 1) - 1) + (ic - 1) * lda], lda);
+            Rlaset("Full", irows - 1, 1, zero, zero, &a[((jcr + 1) - 1) + (ic - 1) * lda], lda);
         }
     } else if (ku < n - 1) {
         //
@@ -367,7 +369,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
             //
             Rcopy(icols, &a[(ir - 1) + (jcr - 1) * lda], lda, work, 1);
             xnorms = work[1 - 1];
-            dlarfg(icols, xnorms, &work[2 - 1], 1, tau);
+            Rlarfg(icols, xnorms, &work[2 - 1], 1, tau);
             work[1 - 1] = one;
             //
             Rgemv("N", irows, icols, one, &a[((ir + 1) - 1) + (jcr - 1) * lda], lda, work, 1, zero, &work[(icols + 1) - 1], 1);
@@ -377,15 +379,15 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
             Rger(icols, n, -tau, work, 1, &work[(icols + 1) - 1], 1, &a[(jcr - 1)], lda);
             //
             a[(ir - 1) + (jcr - 1) * lda] = xnorms;
-            dlaset("Full", 1, icols - 1, zero, zero, &a[(ir - 1) + ((jcr + 1) - 1) * lda], lda);
+            Rlaset("Full", 1, icols - 1, zero, zero, &a[(ir - 1) + ((jcr + 1) - 1) * lda], lda);
         }
     }
     //
     //     Scale the matrix to have norm ANORM
     //
-    arr_1d<1, REAL> tempa(fill0);
+    REAL tempa[1];
     if (anorm >= zero) {
-        temp = dlange("M", n, n, a, lda, tempa);
+        temp = Rlange("M", n, n, a, lda, tempa);
         if (temp > zero) {
             alpha = anorm / temp;
             for (j = 1; j <= n; j = j + 1) {

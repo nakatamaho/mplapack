@@ -29,16 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clahilb(common &cmn, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL *work, INTEGER &info, const char *path) {
-    FEM_CMN_SVE(Clahilb);
-    // SAVE
-    //
-    if (is_called_first_time) {
-        data((values, cmplx(-1, 0), cmplx(0, 1), cmplx(-1, -1), cmplx(0, -1), cmplx(1, 0), cmplx(-1, 1), cmplx(1, 1), cmplx(1, -1))), d1;
-        data((values, cmplx(-1, 0), cmplx(0, -1), cmplx(-1, 1), cmplx(0, 1), cmplx(1, 0), cmplx(-1, -1), cmplx(1, -1), cmplx(1, 1))), d2;
-        data((values, cmplx(-1, 0), cmplx(0, -1), cmplx(-.5f, .5f), cmplx(0, 1), cmplx(1, 0), cmplx(-.5f, -.5f), cmplx(.5f, -.5f), cmplx(.5f, .5f))), invd1;
-        data((values, cmplx(-1, 0), cmplx(0, 1), cmplx(-.5f, -.5f), cmplx(0, -1), cmplx(1, 0), cmplx(-.5f, .5f), cmplx(.5f, .5f), cmplx(.5f, -.5f))), invd2;
-    }
+void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL *work, INTEGER &info, const char *path) {
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -64,14 +55,20 @@ void Clahilb(common &cmn, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEG
     //     .. External Functions
     //     ..
     //     .. Executable Statements ..
-    str<2> c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    COMPLEX d1[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, 1.0), COMPLEX(-1.0, -1.0), COMPLEX(0.0, -1.0), COMPLEX(1.0, 0.0), COMPLEX(-1.0, 1.0), COMPLEX(1.0, 1.0), COMPLEX(1.0, -1.0)};
+    COMPLEX d2[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, -1.0), COMPLEX(-1.0, 1.0), COMPLEX(0.0, 1.0), COMPLEX(1.0, 0.0), COMPLEX(-1.0, -1.0), COMPLEX(1.0, -1.0), COMPLEX(1.0, 1.0)};
+    COMPLEX invd1[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, -1.0), COMPLEX(-0.5, 0.5), COMPLEX(0.0, 1.0), COMPLEX(1.0, 0.0), COMPLEX(-0.5, -0.5), COMPLEX(0.5, -0.5), COMPLEX(0.5, 0.5)};
+    COMPLEX invd2[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, 1.0), COMPLEX(-0.5, -0.5), COMPLEX(0.0, -1.0), COMPLEX(1.0, 0.0), COMPLEX(-0.5, 0.5), COMPLEX(0.5, 0.5), COMPLEX(0.5, -0.5)};
+    char c2[2];
+    c2[0] = path[(2 - 1)];
+    c2[1] = path[(3 - 1)];
     //
     //     Test the input arguments
     //
     info = 0;
     const INTEGER nmax_approx = 11;
     if (n < 0 || n > nmax_approx) {
-        info = -1;
+        info = -1.0;
     } else if (nrhs < 0) {
         info = -2;
     } else if (lda < n) {
@@ -114,24 +111,24 @@ void Clahilb(common &cmn, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEG
     //        take D1_i = D2_i, else, D1_i = D2_i*
     INTEGER j = 0;
     const INTEGER size_d = 8;
-    if (Mlsamen2, c2, "SY") {
+    if (Mlsamen(2, c2, "SY")) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= n; i = i + 1) {
-                a[(i - 1) + (j - 1) * lda] = d1[(mod(j - 1) + ((size_d) + 1) - 1) * ldd1] * (m.real() / (i + j - 1)) * d1[(mod(i - 1) + ((size_d) + 1) - 1) * ldd1];
+                a[(i - 1) + (j - 1) * lda] = d1[(mod(j, size_d) + 1) - 1] * (castREAL(m) / (i + j - 1)) * d1[(mod(i, size_d) + 1) - 1];
             }
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= n; i = i + 1) {
-                a[(i - 1) + (j - 1) * lda] = d1[(mod(j - 1) + ((size_d) + 1) - 1) * ldd1] * (m.real() / (i + j - 1)) * d2[(mod(i - 1) + ((size_d) + 1) - 1) * ldd2];
+                a[(i - 1) + (j - 1) * lda] = d1[(mod(j, size_d) + 1) - 1] * (castREAL(m) / (i + j - 1)) * d2[(mod(i, size_d) + 1) - 1];
             }
         }
     }
     //
     //     Generate matrix B as simply the first NRHS columns of M * the
     //     identity.
-    COMPLEX tmp = m.real();
-    zlaset("Full", n, nrhs, (0.0, 0.0), tmp, b, ldb);
+    COMPLEX tmp = castREAL(m);
+    Claset("Full", n, nrhs, (0.0, 0.0), tmp, b, ldb);
     //
     //     Generate the true solutions in X.  Because B = the first NRHS
     //     columns of M*I, the true solutions are just the first NRHS columns
@@ -143,16 +140,16 @@ void Clahilb(common &cmn, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEG
     //
     //     If we are testing SY routines,
     //           take D1_i = D2_i, else, D1_i = D2_i*
-    if (Mlsamen2, c2, "SY") {
+    if (Mlsamen(2, c2, "SY")) {
         for (j = 1; j <= nrhs; j = j + 1) {
             for (i = 1; i <= n; i = i + 1) {
-                x[(i - 1) + (j - 1) * ldx] = invd1[(mod(j - 1) + ((size_d) + 1) - 1) * ldinvd1] * ((work[i - 1] * work[j - 1]) / (i + j - 1)) * invd1[(mod(i - 1) + ((size_d) + 1) - 1) * ldinvd1];
+                x[(i - 1) + (j - 1) * ldx] = invd1[(mod(j, size_d) + 1) - 1] * ((work[i - 1] * work[j - 1]) / (i + j - 1)) * invd1[(mod(i, size_d) + 1) - 1];
             }
         }
     } else {
         for (j = 1; j <= nrhs; j = j + 1) {
             for (i = 1; i <= n; i = i + 1) {
-                x[(i - 1) + (j - 1) * ldx] = invd2[(mod(j - 1) + ((size_d) + 1) - 1) * ldinvd2] * ((work[i - 1] * work[j - 1]) / (i + j - 1)) * invd1[(mod(i - 1) + ((size_d) + 1) - 1) * ldinvd1];
+                x[(i - 1) + (j - 1) * ldx] = invd2[(mod(j, size_d) + 1) - 1] * ((work[i - 1] * work[j - 1]) / (i + j - 1)) * invd1[(mod(i, size_d) + 1) - 1];
             }
         }
     }

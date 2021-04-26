@@ -28,6 +28,7 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
+#include <mplapack_matgen.h>
 
 void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *iseed, COMPLEX *x, INTEGER &info) {
     //
@@ -98,7 +99,7 @@ void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (Mlsame(init, "I")) {
-        zlaset("Full", m, n, czero, cone, a, lda);
+        Claset("Full", m, n, czero, cone, a, lda);
     }
     //
     //     If no rotation possible, still multiply by
@@ -128,7 +129,7 @@ void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n
         //        Generate independent normal( 0, 1 ) random numbers
         //
         for (j = kbeg; j <= nxfrm; j = j + 1) {
-            x[j - 1] = Clarnd[(3 - 1) + (iseed - 1) * ldClarnd];
+            x[j - 1] = Clarnd(3, iseed);
         }
         //
         //        Generate a Householder transformation from the random vector X
@@ -168,7 +169,7 @@ void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n
             //           Apply H(k)* (or H(k)') on the right of A
             //
             if (itype == 4) {
-                zlacgv(ixfrm, &x[kbeg - 1], 1);
+                Clacgv(ixfrm, &x[kbeg - 1], 1);
             }
             //
             Cgemv("N", m, ixfrm, cone, &a[(kbeg - 1) * lda], lda, &x[kbeg - 1], 1, czero, &x[(2 * nxfrm + 1) - 1], 1);
@@ -177,7 +178,7 @@ void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n
         }
     }
     //
-    x[1 - 1] = Clarnd[(3 - 1) + (iseed - 1) * ldClarnd];
+    x[1 - 1] = Clarnd(3, iseed);
     xabs = abs(x[1 - 1]);
     const REAL zero = 0.0;
     if (xabs != zero) {
@@ -199,7 +200,7 @@ void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n
     INTEGER jcol = 0;
     if (itype == 2 || itype == 3) {
         for (jcol = 1; jcol <= n; jcol = jcol + 1) {
-            Cscal(m, &x[(nxfrm + jcol) - 1], &a[(jcol - 1) * lda], 1);
+            Cscal(m, x[(nxfrm + jcol) - 1], &a[(jcol - 1) * lda], 1);
         }
     }
     //

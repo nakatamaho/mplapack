@@ -35,6 +35,7 @@
 #include <qd/qd_real.h>
 #include "qd_complex.h"
 
+bool Mlsamen_qd(mplapackint n, const char *a, const char *b);
 bool Risnan(qd_real const din);
 bool Rlaisnan(qd_real const din1, qd_real const din2);
 mplapackint Rlaneg(mplapackint const n, qd_real *d, qd_real *lld, qd_real const sigma, qd_real const, mplapackint const r);
@@ -51,12 +52,14 @@ mplapackint iMlazlc(mplapackint const m, mplapackint const n, qd_complex *a, mpl
 mplapackint iMlazlr(mplapackint const m, mplapackint const n, qd_complex *a, mplapackint const lda);
 mplapackint iMparmq_qd(mplapackint const ispec, const char *name, const char *opts, mplapackint const n, mplapackint const ilo, mplapackint const ihi, mplapackint const lwork);
 qd_complex Cladiv(qd_complex const x, qd_complex const y);
+qd_real Clangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, qd_complex *ab, mplapackint const ldab, qd_real *work);
 qd_real Clange(const char *norm, mplapackint const m, mplapackint const n, qd_complex *a, mplapackint const lda, qd_real *work);
 qd_real Clangt(const char *norm, mplapackint const n, qd_complex *dl, qd_complex *d, qd_complex *du);
 qd_real Clanhb(const char *norm, const char *uplo, mplapackint const n, mplapackint const k, qd_complex *ab, mplapackint const ldab, qd_real *work);
 qd_real Clanhe(const char *norm, const char *uplo, mplapackint const n, qd_complex *a, mplapackint const lda, qd_real *work);
 qd_real Clanhp(const char *norm, const char *uplo, mplapackint const n, qd_complex *ap, qd_real *work);
 qd_real Clanht(const char *norm, mplapackint const n, qd_real *d, qd_complex *e);
+qd_real Clansb(const char *norm, const char *uplo, mplapackint const n, mplapackint const k, qd_complex *ab, mplapackint const ldab, qd_real *work);
 qd_real Clansp(const char *norm, const char *uplo, mplapackint const n, qd_complex *ap, qd_real *work);
 qd_real Clansy(const char *norm, const char *uplo, mplapackint const n, qd_complex *a, mplapackint const lda, qd_real *work);
 qd_real RCsum1(mplapackint const n, qd_complex *cx, mplapackint const incx);
@@ -714,4 +717,5 @@ void Rtrtri(const char *uplo, const char *diag, mplapackint const n, qd_real *a,
 void Rtrtrs(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const nrhs, qd_real *a, mplapackint const lda, qd_real *b, mplapackint const ldb, mplapackint &info);
 void Rtrttp(const char *uplo, mplapackint const n, qd_real *a, mplapackint const lda, qd_real *ap, mplapackint &info);
 void Rtzrzf(mplapackint const m, mplapackint const n, qd_real *a, mplapackint const lda, qd_real *tau, qd_real *work, mplapackint const lwork, mplapackint &info);
+void iMlaver_qd(int &vers_major, int &vers_minor, int &vers_patch);
 #endif

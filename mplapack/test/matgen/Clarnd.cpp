@@ -28,6 +28,7 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
+#include <mplapack_matgen.h>
 
 COMPLEX
 Clarnd(INTEGER const idist, INTEGER *iseed) {
@@ -57,13 +58,13 @@ Clarnd(INTEGER const idist, INTEGER *iseed) {
     //     Generate a pair of real random numbers from a uniform (0,1)
     //     distribution
     //
-    REAL t1 = Rlaran[iseed - 1];
-    REAL t2 = Rlaran[iseed - 1];
+    REAL t1 = Rlaran(iseed);
+    REAL t2 = Rlaran(iseed);
     //
     const REAL two = 2.0e+0;
     const REAL one = 1.0;
     const REAL zero = 0.0;
-    const REAL twopi = 6.28318530717958647692528676655900576839e+0;
+    const REAL twopi = two * pi(zero);
     if (idist == 1) {
         //
         //        real and imaginary parts each uniform (0,1)
@@ -78,17 +79,17 @@ Clarnd(INTEGER const idist, INTEGER *iseed) {
         //
         //        real and imaginary parts each normal (0,1)
         //
-        return_value = sqrt(-two * log(t1)) * exp[(COMPLEX(zero - 1) + ((twopi * t2)) - 1) * ldexp];
+        return_value = sqrt(-two * log(t1)) * exp(COMPLEX(zero, twopi * t2));
     } else if (idist == 4) {
         //
         //        uniform distribution on the unit disc abs(z) <= 1
         //
-        return_value = sqrt(t1) * exp[(COMPLEX(zero - 1) + ((twopi * t2)) - 1) * ldexp];
+        return_value = sqrt(t1) * exp(COMPLEX(zero, twopi * t2));
     } else if (idist == 5) {
         //
         //        uniform distribution on the unit circle abs(z) = 1
         //
-        return_value = exp[(COMPLEX(zero - 1) + ((twopi * t2)) - 1) * ldexp];
+        return_value = exp(COMPLEX(zero, twopi * t2));
     }
     return return_value;
     //

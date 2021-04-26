@@ -33,14 +33,17 @@
 
 #include "mplapack_config.h"
 
+bool Mlsamen_double(mplapackint n, const char *a, const char *b);
 bool Risnan(double const din);
 bool Rlaisnan(double const din1, double const din2);
+double Clangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, std::complex<double> *ab, mplapackint const ldab, double *work);
 double Clange(const char *norm, mplapackint const m, mplapackint const n, std::complex<double> *a, mplapackint const lda, double *work);
 double Clangt(const char *norm, mplapackint const n, std::complex<double> *dl, std::complex<double> *d, std::complex<double> *du);
 double Clanhb(const char *norm, const char *uplo, mplapackint const n, mplapackint const k, std::complex<double> *ab, mplapackint const ldab, double *work);
 double Clanhe(const char *norm, const char *uplo, mplapackint const n, std::complex<double> *a, mplapackint const lda, double *work);
 double Clanhp(const char *norm, const char *uplo, mplapackint const n, std::complex<double> *ap, double *work);
 double Clanht(const char *norm, mplapackint const n, double *d, std::complex<double> *e);
+double Clansb(const char *norm, const char *uplo, mplapackint const n, mplapackint const k, std::complex<double> *ab, mplapackint const ldab, double *work);
 double Clansp(const char *norm, const char *uplo, mplapackint const n, std::complex<double> *ap, double *work);
 double Clansy(const char *norm, const char *uplo, mplapackint const n, std::complex<double> *a, mplapackint const lda, double *work);
 double RCsum1(mplapackint const n, std::complex<double> *cx, mplapackint const incx);
@@ -712,4 +715,5 @@ void Rtrtri(const char *uplo, const char *diag, mplapackint const n, double *a, 
 void Rtrtrs(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const nrhs, double *a, mplapackint const lda, double *b, mplapackint const ldb, mplapackint &info);
 void Rtrttp(const char *uplo, mplapackint const n, double *a, mplapackint const lda, double *ap, mplapackint &info);
 void Rtzrzf(mplapackint const m, mplapackint const n, double *a, mplapackint const lda, double *tau, double *work, mplapackint const lwork, mplapackint &info);
+void iMlaver_double(int &vers_major, int &vers_minor, int &vers_patch);
 #endif

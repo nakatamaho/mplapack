@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_matgen.h>
+
 void Rlatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, const char *sym, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, const char *rsign, const char *grade, REAL *dl, INTEGER const model, REAL const condl, REAL *dr, INTEGER const moder, REAL const condr, const char *pivtng, INTEGER *ipivot, INTEGER const kl, INTEGER const ku, REAL const sparse, REAL const anorm, const char *pack, REAL *a, INTEGER const lda, INTEGER *iwork, INTEGER &info) {
     //
     //  -- LAPACK computational routine --
@@ -651,24 +653,24 @@ void Rlatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     //
     //     5)      Scaling the norm
     //
-    arr_1d<1, REAL> tempa(fill0);
+    REAL tempa[1];
     REAL onorm = 0.0;
     if (ipack == 0) {
-        onorm = dlange("M", m, n, a, lda, tempa);
+        onorm = Rlange("M", m, n, a, lda, tempa);
     } else if (ipack == 1) {
-        onorm = dlansy("M", "U", n, a, lda, tempa);
+        onorm = Rlansy("M", "U", n, a, lda, tempa);
     } else if (ipack == 2) {
-        onorm = dlansy("M", "L", n, a, lda, tempa);
+        onorm = Rlansy("M", "L", n, a, lda, tempa);
     } else if (ipack == 3) {
-        onorm = dlansp("M", "U", n, a, tempa);
+        onorm = Rlansp("M", "U", n, a, tempa);
     } else if (ipack == 4) {
-        onorm = dlansp("M", "L", n, a, tempa);
+        onorm = Rlansp("M", "L", n, a, tempa);
     } else if (ipack == 5) {
-        onorm = dlansb("M", "L", n, kll, a, lda, tempa);
+        onorm = Rlansb("M", "L", n, kll, a, lda, tempa);
     } else if (ipack == 6) {
-        onorm = dlansb("M", "U", n, kuu, a, lda, tempa);
+        onorm = Rlansb("M", "U", n, kuu, a, lda, tempa);
     } else if (ipack == 7) {
-        onorm = dlangb("M", n, kll, kuu, a, lda, tempa);
+        onorm = Rlangb("M", n, kll, kuu, a, lda, tempa);
     }
     //
     if (anorm >= zero) {

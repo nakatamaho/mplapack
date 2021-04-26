@@ -53,8 +53,8 @@ void Rgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
     //     .. Executable Statements ..
     //
     info = 0;
-    bool notran = ( Mlsame(trans, "N") || Mlsame(trans, "n"));
-    if (!notran && !( Mlsame(trans, "T") || Mlsame(trans, "t")) && !( Mlsame(trans, "C") || Mlsame(trans, "c"))) {
+    bool notran = (Mlsame(trans, "N") || Mlsame(trans, "n"));
+    if (!notran && !(Mlsame(trans, "T") || Mlsame(trans, "t")) && !(Mlsame(trans, "C") || Mlsame(trans, "c"))) {
         info = -1;
     } else if (n < 0) {
         info = -2;

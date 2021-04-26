@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_matgen.h>
+
 void Rlatm6(INTEGER const type, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, REAL *x, INTEGER const ldx, REAL *y, INTEGER const ldy, REAL const alpha, REAL const beta, REAL const wx, REAL const wy, REAL *s, REAL *dif) {
     //
     //  -- LAPACK computational routine --
@@ -61,11 +63,12 @@ void Rlatm6(INTEGER const type, INTEGER const n, REAL *a, INTEGER const lda, REA
     INTEGER j = 0;
     const REAL one = 1.0;
     const REAL zero = 0.0;
+    INTEGER ldb = lda;
     for (i = 1; i <= n; i = i + 1) {
         for (j = 1; j <= n; j = j + 1) {
             //
             if (i == j) {
-                a[(i - 1) + (i - 1) * lda] = i.real() + alpha;
+                a[(i - 1) + (i - 1) * lda] = castREAL(i) + alpha;
                 b[(i - 1) + (i - 1) * ldb] = one;
             } else {
                 a[(i - 1) + (j - 1) * lda] = zero;
@@ -77,7 +80,7 @@ void Rlatm6(INTEGER const type, INTEGER const n, REAL *a, INTEGER const lda, REA
     //
     //     Form X and Y
     //
-    dlacpy("F", n, n, b, lda, y, ldy);
+    Rlacpy("F", n, n, b, lda, y, ldy);
     y[(3 - 1)] = -wy;
     y[(4 - 1)] = wy;
     y[(5 - 1)] = -wy;
@@ -85,7 +88,7 @@ void Rlatm6(INTEGER const type, INTEGER const n, REAL *a, INTEGER const lda, REA
     y[(4 - 1) + (2 - 1) * ldy] = wy;
     y[(5 - 1) + (2 - 1) * ldy] = -wy;
     //
-    dlacpy("F", n, n, b, lda, x, ldx);
+    Rlacpy("F", n, n, b, lda, x, ldx);
     x[(3 - 1) * ldx] = -wx;
     x[(4 - 1) * ldx] = -wx;
     x[(5 - 1) * ldx] = wx;
@@ -130,8 +133,8 @@ void Rlatm6(INTEGER const type, INTEGER const n, REAL *a, INTEGER const lda, REA
     //     Compute condition numbers
     //
     const REAL three = 3.0e+0;
-    arr_2d<12, 12, REAL> z(fill0);
-    arr_1d<100, REAL> work(fill0);
+    REAL z[12 * 12];
+    REAL work[100];
     INTEGER info = 0;
     if (type == 1) {
         //
@@ -142,11 +145,11 @@ void Rlatm6(INTEGER const type, INTEGER const n, REAL *a, INTEGER const lda, REA
         s[5 - 1] = one / sqrt((one + two * wx * wx) / (one + a[(5 - 1) + (5 - 1) * lda] * a[(5 - 1) + (5 - 1) * lda]));
         //
         Rlakf2(1, 4, a, lda, &a[(2 - 1) + (2 - 1) * lda], b, &b[(2 - 1) + (2 - 1) * ldb], z, 12);
-        dgesvd("N", "N", 8, 8, z, 12, work, &work[9 - 1], 1, &work[10 - 1], 1, &work[11 - 1], 40, info);
+        Rgesvd("N", "N", 8, 8, z, 12, work, &work[9 - 1], 1, &work[10 - 1], 1, &work[11 - 1], 40, info);
         dif[1 - 1] = work[8 - 1];
         //
         Rlakf2(4, 1, a, lda, &a[(5 - 1) + (5 - 1) * lda], b, &b[(5 - 1) + (5 - 1) * ldb], z, 12);
-        dgesvd("N", "N", 8, 8, z, 12, work, &work[9 - 1], 1, &work[10 - 1], 1, &work[11 - 1], 40, info);
+        Rgesvd("N", "N", 8, 8, z, 12, work, &work[9 - 1], 1, &work[10 - 1], 1, &work[11 - 1], 40, info);
         dif[5 - 1] = work[8 - 1];
         //
     } else if (type == 2) {
@@ -158,11 +161,11 @@ void Rlatm6(INTEGER const type, INTEGER const n, REAL *a, INTEGER const lda, REA
         s[5 - 1] = s[4 - 1];
         //
         Rlakf2(2, 3, a, lda, &a[(3 - 1) + (3 - 1) * lda], b, &b[(3 - 1) + (3 - 1) * ldb], z, 12);
-        dgesvd("N", "N", 12, 12, z, 12, work, &work[13 - 1], 1, &work[14 - 1], 1, &work[15 - 1], 60, info);
+        Rgesvd("N", "N", 12, 12, z, 12, work, &work[13 - 1], 1, &work[14 - 1], 1, &work[15 - 1], 60, info);
         dif[1 - 1] = work[12 - 1];
         //
         Rlakf2(3, 2, a, lda, &a[(4 - 1) + (4 - 1) * lda], b, &b[(4 - 1) + (4 - 1) * ldb], z, 12);
-        dgesvd("N", "N", 12, 12, z, 12, work, &work[13 - 1], 1, &work[14 - 1], 1, &work[15 - 1], 60, info);
+        Rgesvd("N", "N", 12, 12, z, 12, work, &work[13 - 1], 1, &work[14 - 1], 1, &work[15 - 1], 60, info);
         dif[5 - 1] = work[12 - 1];
         //
     }

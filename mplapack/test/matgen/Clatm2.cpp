@@ -28,6 +28,7 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
+#include <mplapack_matgen.h>
 
 COMPLEX
 Clatm2(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, INTEGER const kl, INTEGER const ku, INTEGER const idist, INTEGER *iseed, COMPLEX *d, INTEGER const igrade, COMPLEX *dl, COMPLEX *dr, INTEGER const ipvtng, INTEGER *iwork, REAL const sparse) {
@@ -86,7 +87,7 @@ Clatm2(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, INTEG
     //
     const REAL zero = 0.0;
     if (sparse > zero) {
-        if (Rlaran[iseed - 1] < sparse) {
+        if (Rlaran(iseed) < sparse) {
             return_value = czero;
             return return_value;
         }
@@ -116,7 +117,7 @@ Clatm2(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, INTEG
     if (isub == jsub) {
         ctemp = d[isub - 1];
     } else {
-        ctemp = Clarnd[(idist - 1) + (iseed - 1) * ldClarnd];
+        ctemp = Clarnd(idist, iseed);
     }
     if (igrade == 1) {
         ctemp = ctemp * dl[isub - 1];

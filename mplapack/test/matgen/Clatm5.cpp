@@ -28,6 +28,7 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
+#include <mplapack_matgen.h>
 
 void Clatm5(INTEGER const prtype, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *c, INTEGER const ldc, COMPLEX *d, INTEGER const ldd, COMPLEX *e, INTEGER const lde, COMPLEX *f, INTEGER const ldf, COMPLEX *r, INTEGER const ldr, COMPLEX *l, INTEGER const ldl, REAL const alpha, INTEGER &qblcka, INTEGER &qblckb) {
     //
@@ -59,6 +60,7 @@ void Clatm5(INTEGER const prtype, INTEGER const m, INTEGER const n, COMPLEX *a, 
     const COMPLEX half = COMPLEX(0.5e+0, 0.0);
     const COMPLEX twenty = COMPLEX(2.0e+1, 0.0);
     const COMPLEX two = COMPLEX(2.0e+0, 0.0);
+    const REAL rtwo = 2.0;
     INTEGER k = 0;
     COMPLEX reeps = 0.0;
     COMPLEX imeps = 0.0;
@@ -211,9 +213,9 @@ void Clatm5(INTEGER const prtype, INTEGER const m, INTEGER const n, COMPLEX *a, 
             } else {
                 a[(i - 1) + (i - 1) * lda] = one;
                 if (mod(i, 2) != 0 && i < m) {
-                    a[(i - 1) + ((i + 1) - 1) * lda] = imeps * 2;
+                    a[(i - 1) + ((i + 1) - 1) * lda] = imeps * rtwo;
                 } else if (i > 1) {
-                    a[(i - 1) + ((i - 1) - 1) * lda] = -imeps * 2;
+                    a[(i - 1) + ((i - 1) - 1) * lda] = -imeps * rtwo;
                 }
             }
         }
@@ -244,9 +246,9 @@ void Clatm5(INTEGER const prtype, INTEGER const m, INTEGER const n, COMPLEX *a, 
             } else {
                 b[(i - 1) + (i - 1) * ldb] = one - reeps;
                 if (mod(i, 2) != 0 && i < n) {
-                    b[(i - 1) + ((i + 1) - 1) * ldb] = imeps * 2;
+                    b[(i - 1) + ((i + 1) - 1) * ldb] = imeps * rtwo;
                 } else if (i > 1) {
-                    b[(i - 1) + ((i - 1) - 1) * ldb] = -imeps * 2;
+                    b[(i - 1) + ((i - 1) - 1) * ldb] = -imeps * rtwo;
                 }
             }
         }

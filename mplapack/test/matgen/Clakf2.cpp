@@ -54,8 +54,11 @@ void Clakf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     //
     INTEGER mn = m * n;
     INTEGER mn2 = 2 * mn;
+    INTEGER ldb = lda;
+    INTEGER ldd = lda;
+    INTEGER lde = lda;
     const COMPLEX zero = COMPLEX(0.0, 0.0);
-    zlaset("Full", mn2, mn2, zero, zero, z, ldz);
+    Claset("Full", mn2, mn2, zero, zero, z, ldz);
     //
     INTEGER ik = 1;
     INTEGER l = 0;

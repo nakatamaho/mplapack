@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_matgen.h>
+
 REAL Rlarnd(INTEGER const idist, INTEGER *iseed) {
     REAL return_value = 0.0;
     //
@@ -55,12 +57,12 @@ REAL Rlarnd(INTEGER const idist, INTEGER *iseed) {
     //
     //     Generate a real random number from a uniform (0,1) distribution
     //
-    REAL t1 = Rlaran[iseed - 1];
+    REAL t1 = Rlaran(iseed);
     //
     const REAL two = 2.0e+0;
     const REAL one = 1.0;
     REAL t2 = 0.0;
-    const REAL twopi = 6.28318530717958647692528676655900576839e+0;
+    const REAL twopi = pi(one);
     if (idist == 1) {
         //
         //        uniform (0,1)
@@ -75,7 +77,7 @@ REAL Rlarnd(INTEGER const idist, INTEGER *iseed) {
         //
         //        normal (0,1)
         //
-        t2 = Rlaran[iseed - 1];
+        t2 = Rlaran(iseed);
         return_value = sqrt(-two * log(t1)) * cos(twopi * t2);
     }
     return return_value;

@@ -37,12 +37,14 @@
 #include "quadmath.h"
 #endif
 
+_Float128 Clangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, std::complex<_Float128> *ab, mplapackint const ldab, _Float128 *work);
 _Float128 Clange(const char *norm, mplapackint const m, mplapackint const n, std::complex<_Float128> *a, mplapackint const lda, _Float128 *work);
 _Float128 Clangt(const char *norm, mplapackint const n, std::complex<_Float128> *dl, std::complex<_Float128> *d, std::complex<_Float128> *du);
 _Float128 Clanhb(const char *norm, const char *uplo, mplapackint const n, mplapackint const k, std::complex<_Float128> *ab, mplapackint const ldab, _Float128 *work);
 _Float128 Clanhe(const char *norm, const char *uplo, mplapackint const n, std::complex<_Float128> *a, mplapackint const lda, _Float128 *work);
 _Float128 Clanhp(const char *norm, const char *uplo, mplapackint const n, std::complex<_Float128> *ap, _Float128 *work);
 _Float128 Clanht(const char *norm, mplapackint const n, _Float128 *d, std::complex<_Float128> *e);
+_Float128 Clansb(const char *norm, const char *uplo, mplapackint const n, mplapackint const k, std::complex<_Float128> *ab, mplapackint const ldab, _Float128 *work);
 _Float128 Clansp(const char *norm, const char *uplo, mplapackint const n, std::complex<_Float128> *ap, _Float128 *work);
 _Float128 Clansy(const char *norm, const char *uplo, mplapackint const n, std::complex<_Float128> *a, mplapackint const lda, _Float128 *work);
 _Float128 RCsum1(mplapackint const n, std::complex<_Float128> *cx, mplapackint const incx);
@@ -63,6 +65,7 @@ _Float128 Rlantb(const char *norm, const char *uplo, const char *diag, mplapacki
 _Float128 Rlantr(const char *norm, const char *uplo, const char *diag, mplapackint const m, mplapackint const n, _Float128 *a, mplapackint const lda, _Float128 *work);
 _Float128 Rlapy2(_Float128 const x, _Float128 const y);
 _Float128 Rlapy3(_Float128 const x, _Float128 const y, _Float128 const z);
+bool Mlsamen__Float128(mplapackint n, const char *a, const char *b);
 bool Risnan(_Float128 const din);
 bool Rlaisnan(_Float128 const din1, _Float128 const din2);
 mplapackint Rlaneg(mplapackint const n, _Float128 *d, _Float128 *lld, _Float128 const sigma, _Float128 const, mplapackint const r);
@@ -716,4 +719,5 @@ void Rtrtri(const char *uplo, const char *diag, mplapackint const n, _Float128 *
 void Rtrtrs(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const nrhs, _Float128 *a, mplapackint const lda, _Float128 *b, mplapackint const ldb, mplapackint &info);
 void Rtrttp(const char *uplo, mplapackint const n, _Float128 *a, mplapackint const lda, _Float128 *ap, mplapackint &info);
 void Rtzrzf(mplapackint const m, mplapackint const n, _Float128 *a, mplapackint const lda, _Float128 *tau, _Float128 *work, mplapackint const lwork, mplapackint &info);
+void iMlaver__Float128(int &vers_major, int &vers_minor, int &vers_patch);
 #endif
