@@ -33,6 +33,7 @@
 
 #include "mplapack_config.h"
 
+bool Mlsamen_double(mplapackint n, const char *a, const char *b);
 bool Risnan(double const din);
 bool Rlaisnan(double const din1, double const din2);
 double Clangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, std::complex<double> *ab, mplapackint const ldab, double *work);

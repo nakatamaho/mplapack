@@ -39,6 +39,7 @@
 
 using namespace mpfr;
 
+bool Mlsamen_mpfr(mplapackint n, const char *a, const char *b);
 bool Risnan(mpreal const din);
 bool Rlaisnan(mpreal const din1, mpreal const din2);
 mpcomplex Cladiv(mpcomplex const x, mpcomplex const y);

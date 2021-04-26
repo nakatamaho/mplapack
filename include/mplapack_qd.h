@@ -35,6 +35,7 @@
 #include <qd/qd_real.h>
 #include "qd_complex.h"
 
+bool Mlsamen_qd(mplapackint n, const char *a, const char *b);
 bool Risnan(qd_real const din);
 bool Rlaisnan(qd_real const din1, qd_real const din2);
 mplapackint Rlaneg(mplapackint const n, qd_real *d, qd_real *lld, qd_real const sigma, qd_real const, mplapackint const r);

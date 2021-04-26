@@ -117,9 +117,8 @@ L10:
     strncpy(subnam, name, name_len);
     ic = *subnam;
 
-    for (int i=0 ; i < strlen(subnam) ; i++)
-    {
-	subnam[i] = toupper(subnam[i]);
+    for (int i = 0; i < strlen(subnam); i++) {
+        subnam[i] = toupper(subnam[i]);
     }
     *c1 = *subnam;
     sname = *c1 == 'R';

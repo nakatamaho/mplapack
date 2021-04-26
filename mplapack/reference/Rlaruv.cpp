@@ -40,7 +40,7 @@ void mplapack_Rlaruv_mpfr_initialize(void) { gmp_randinit_default(random_mplapac
 gmp_randstate_t random_mplapack_gmp_state;
 gmp_randclass random_mplapack_gmp(gmp_randinit_default);
 void __attribute__((constructor)) mplapack_Rlaruv_gmp_initialize(void);
-void mplapack_Rlaruv_gmp_initialize(void) { random_mplapack_gmp.seed((unsigned long int)time(NULL)); } //XXX better initializaition req'ed
+void mplapack_Rlaruv_gmp_initialize(void) { random_mplapack_gmp.seed((unsigned long int)time(NULL)); } // XXX better initializaition req'ed
 #endif
 
 void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
@@ -100,5 +100,4 @@ void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
     for (int i = 0; i < n; i++)
         x[i] = dist(mt);
 #endif
-
 }

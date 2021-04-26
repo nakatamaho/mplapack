@@ -35,6 +35,7 @@
 #include "qd/dd_real.h"
 #include "dd_complex.h"
 
+bool Mlsamen_dd(mplapackint n, const char *a, const char *b);
 bool Risnan(dd_real const din);
 bool Rlaisnan(dd_real const din1, dd_real const din2);
 dd_complex Cladiv(dd_complex const x, dd_complex const y);
