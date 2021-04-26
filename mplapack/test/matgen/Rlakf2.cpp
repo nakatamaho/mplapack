@@ -63,7 +63,7 @@ void Rlakf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     INTEGER j = 0;
     INTEGER ldb = lda;
     INTEGER ldd = lda;
-    INTEGER lde = lda;        
+    INTEGER lde = lda;
     for (l = 1; l <= n; l = l + 1) {
         //
         //        form kron(In, A)

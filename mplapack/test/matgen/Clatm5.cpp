@@ -213,9 +213,9 @@ void Clatm5(INTEGER const prtype, INTEGER const m, INTEGER const n, COMPLEX *a, 
             } else {
                 a[(i - 1) + (i - 1) * lda] = one;
                 if (mod(i, 2) != 0 && i < m) {
-		  a[(i - 1) + ((i + 1) - 1) * lda] = imeps * rtwo;
+                    a[(i - 1) + ((i + 1) - 1) * lda] = imeps * rtwo;
                 } else if (i > 1) {
-		  a[(i - 1) + ((i - 1) - 1) * lda] = -imeps * rtwo;
+                    a[(i - 1) + ((i - 1) - 1) * lda] = -imeps * rtwo;
                 }
             }
         }

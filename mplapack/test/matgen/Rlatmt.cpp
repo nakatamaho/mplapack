@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_matgen.h>
+
 void Rlatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, const char *sym, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, INTEGER const rank, INTEGER const kl, INTEGER const ku, const char *pack, REAL *a, INTEGER const lda, REAL *work, INTEGER &info) {
     //
     //  -- LAPACK computational routine --
@@ -150,7 +152,7 @@ void Rlatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     //
     bool givens = false;
     if (isym == 1) {
-        if ((llb + uub).real() < 0.3e0 * (max((INTEGER)1, mr + nc)).real()) {
+        if (castREAL(llb + uub) < 0.3e0 * castREAL(max((INTEGER)1, mr + nc))) {
             givens = true;
         }
     } else {

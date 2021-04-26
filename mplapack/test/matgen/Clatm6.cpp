@@ -128,7 +128,7 @@ void Clatm6(INTEGER const type, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     s[4 - 1] = rone / sqrt((rone + two * abs(wx) * abs(wx)) / (rone + abs(a[(4 - 1) + (4 - 1) * lda]) * abs(a[(4 - 1) + (4 - 1) * lda])));
     s[5 - 1] = rone / sqrt((rone + two * abs(wx) * abs(wx)) / (rone + abs(a[(5 - 1) + (5 - 1) * lda]) * abs(a[(5 - 1) + (5 - 1) * lda])));
     //
-    COMPLEX z[8*8];
+    COMPLEX z[8 * 8];
     Clakf2(1, 4, a, lda, &a[(2 - 1) + (2 - 1) * lda], b, &b[(2 - 1) + (2 - 1) * ldb], z, 8);
     REAL rwork[50];
     COMPLEX work[26];

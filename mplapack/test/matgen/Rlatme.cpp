@@ -29,7 +29,9 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, str_arr_cref<> ei, const char *rsign, const char *upper, const char *sim, REAL *ds, INTEGER const modes, REAL const conds, INTEGER const kl, INTEGER const ku, REAL const anorm, REAL *a, INTEGER const lda, REAL *work, INTEGER &info) {
+#include <mplapack_matgen.h>
+
+void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, const char *ei, const char *rsign, const char *upper, const char *sim, REAL *ds, INTEGER const modes, REAL const conds, INTEGER const kl, INTEGER const ku, REAL const anorm, REAL *a, INTEGER const lda, REAL *work, INTEGER &info) {
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -85,17 +87,17 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
     bool useei = true;
     bool badei = false;
     INTEGER j = 0;
-    if (Mlsame(ei[1 - 1], " ") || mode != 0) {
+    if (Mlsame(&ei[1 - 1], " ") || mode != 0) {
         useei = false;
     } else {
-        if (Mlsame(ei[1 - 1], "R")) {
+        if (Mlsame(&ei[1 - 1], "R")) {
             for (j = 2; j <= n; j = j + 1) {
-                if (Mlsame(ei[j - 1], "I")) {
-                    if (Mlsame(ei[(j - 1) - 1], "I")) {
+                if (Mlsame(&ei[j - 1], "I")) {
+                    if (Mlsame(&ei[(j - 1) - 1], "I")) {
                         badei = true;
                     }
                 } else {
-                    if (!Mlsame(ei[j - 1], "R")) {
+                    if (!Mlsame(&ei[j - 1], "R")) {
                         badei = true;
                     }
                 }
@@ -242,7 +244,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
     if (mode == 0) {
         if (useei) {
             for (j = 2; j <= n; j = j + 1) {
-                if (Mlsame(ei[j - 1], "I")) {
+                if (Mlsame(&ei[j - 1], "I")) {
                     a[((j - 1) - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda];
                     a[(j - 1) + ((j - 1) - 1) * lda] = -a[(j - 1) + (j - 1) * lda];
                     a[(j - 1) + (j - 1) * lda] = a[((j - 1) - 1) + ((j - 1) - 1) * lda];
@@ -383,7 +385,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
     //
     //     Scale the matrix to have norm ANORM
     //
-    arr_1d<1, REAL> tempa(fill0);
+    REAL tempa[1];
     if (anorm >= zero) {
         temp = Rlange("M", n, n, a, lda, tempa);
         if (temp > zero) {

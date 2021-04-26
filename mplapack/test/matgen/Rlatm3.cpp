@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_matgen.h>
+
 REAL Rlatm3(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, INTEGER &isub, INTEGER &jsub, INTEGER const kl, INTEGER const ku, INTEGER const idist, INTEGER *iseed, REAL *d, INTEGER const igrade, REAL *dl, REAL *dr, INTEGER const ipvtng, INTEGER *iwork, REAL const sparse) {
     REAL return_value = 0.0;
     //
