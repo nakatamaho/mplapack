@@ -35,8 +35,14 @@
 #include <qd/qd_real.h>
 #include "qd_complex.h"
 
+void Alaerh(const char *path, const char *subnam, mplapackint const info, mplapackint const infoe, const char *opts, mplapackint const m, mplapackint const n, mplapackint const kl, mplapackint const ku, mplapackint const n5, mplapackint const imat, mplapackint const nfail, mplapackint &nerrs, mplapackint const nout);
+void Alareq(const char *path, mplapackint const nmats, bool *dotype, mplapackint const ntypes, mplapackint const nin, mplapackint const nout);
+void Alasum(const char *type, mplapackint const nout, mplapackint const nfail, mplapackint const nrun, mplapackint const nerrs);
+void Rchkaa(void);
+void Rchkge(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nns, mplapackint *nsval, qd_real const thresh, bool const tsterr, mplapackint const nmax, qd_real *a, qd_real *afac, qd_real *ainv, qd_real *b, qd_real *x, qd_real *xact, qd_real *work, qd_real *rwork, mplapackint *iwork, mplapackint const nout);
 void Rchklq(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint *nxval, mplapackint const nrhs, qd_real const thresh, bool const tsterr, mplapackint const nmax, qd_real *a, qd_real *af, qd_real *aq, qd_real *al, qd_real *ac, qd_real *b, qd_real *x, qd_real *xact, qd_real *tau, qd_real *work, qd_real *rwork, mplapackint const nout);
 void Rerrlq(const char *path, mplapackint const nunit);
+void Rget01(mplapackint const m, mplapackint const n, qd_real *a, mplapackint const lda, qd_real *afac, mplapackint const ldafac, mplapackint *ipiv, qd_real *rwork, qd_real &resid);
 void Rlatb4(const char *path, mplapackint const imat, mplapackint const m, mplapackint const n, char *type, mplapackint &kl, mplapackint &ku, qd_real &anorm, mplapackint &mode, qd_real &cndnum, char *dist);
 void Rlqt01(mplapackint const m, mplapackint const n, qd_real *a, qd_real *af, qd_real *q, qd_real *l, mplapackint const lda, qd_real *tau, qd_real *work, mplapackint const lwork, qd_real *rwork, qd_real *result);
 #endif
