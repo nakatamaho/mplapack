@@ -114,6 +114,7 @@ void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         Rerrlq(path, nout);
     }
     //
+#ifdef HOMA
     lda = nmax;
     lwork = nmax * max(nmax, nrhs);
     //
@@ -263,10 +264,11 @@ void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         }
     }
     //
-    //     PrINTEGER a summary of the results.
+    //     Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
     //     End of Rchklq
     //
+#endif
 }
