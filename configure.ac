@@ -884,6 +884,8 @@ mplapack/test/compare/double/Makefile
 mplapack/test/compare/_Float64x/Makefile
 mplapack/test/compare/_Float128/Makefile
 mplapack/test/matgen/Makefile
+mplapack/test/lin/Makefile
+mplapack/test/lin/mpfr/Makefile
 mplapack/Makefile
 external/Makefile
 external/gmp/Makefile
