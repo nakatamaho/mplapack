@@ -18,7 +18,7 @@ mplapack_mpfr_lintestdir = $(prefix)/share/mplapack/test/mplapack/lin/mpfr
 mplapack_mpfr_lintest_PROGRAMS = \
 Rchkaa_mpfr
 
-Rchkaa_mpfr_SOURCES  = Rchkaa.cpp
+Rchkaa_mpfr_SOURCES  = ../common/Rchkaa.cpp
 Rchkaa_mpfr_LDFLAGS  = $(libdepends) $(mplibs)
 Rchkaa_mpfr_CXXFLAGS = $(cxxflags)
 

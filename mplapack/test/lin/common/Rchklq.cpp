@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_lin.h>
+
 void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *af, REAL *aq, REAL *al, REAL *ac, REAL *b, REAL *x, REAL *xact, REAL *tau, REAL *work, REAL *rwork, INTEGER const nout) {
     char srnamt[32];
     char path[3];

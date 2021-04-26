@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void program_Rchkaa(INTEGER argc, char const *argv[]) {
+void Rchkaa(void) {
     common cmn(argc, argv);
     FEM_CMN_SVE(program_Rchkaa);
     common_read read(cmn);
