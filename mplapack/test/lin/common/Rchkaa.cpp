@@ -31,6 +31,7 @@
 #include <time.h>
 
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -38,7 +39,7 @@ void Rchkaa(void) {
     char intstr[] = "0123456789";
     static REAL threq = 2.0;
     REAL s1 = 0.0;
-    const INTEGER nmax = 132;
+    const int nmax = 132;
     INTEGER lda = 0;
     bool fatal = false;
     const INTEGER nin = 5;
@@ -47,16 +48,16 @@ void Rchkaa(void) {
     int vers_patch = 0;
     const INTEGER nout = 6;
     int nm = 0;
-    const INTEGER maxin = 12;
-    INTEGER mval[maxin];
-    INTEGER i = 0;
-    INTEGER nn = 0;
-    INTEGER nval[maxin];
-    INTEGER nns = 0;
-    INTEGER nsval[maxin];
-    const INTEGER maxrhs = 16;
-    INTEGER nnb = 0;
-    INTEGER nbval[maxin];
+    const int maxin = 12;
+    int mval[maxin];
+    int i = 0;
+    int nn = 0;
+    int nval[maxin];
+    int nns = 0;
+    int nsval[maxin];
+    const int maxrhs = 16;
+    int nnb = 0;
+    int nbval[maxin];
     INTEGER nnb2 = 0;
     INTEGER nb = 0;
     INTEGER j = 0;
@@ -86,24 +87,15 @@ void Rchkaa(void) {
     INTEGER piv[nmax];
     INTEGER e[nmax];
     REAL s2 = 0.0;
-    char buf[1024];
-/*
-    static const char *format_9988 = "(/,1x,a3,' driver routines were not tested')";
-    static const char *format_9989 = "(/,1x,a3,' routines were not tested')";
-    static const char *format_9990 = "(/,1x,a3,':  Unrecognized path name')";
-    static const char *format_9991 = "(' Relative machine ',a,' is taken to be',d16.6)";
-    static const char *format_9993 = "(4x,a4,':  ',10i6,/,11x,10i6)";
-    static const char *format_9995 = "(' Invalid input value: ',a4,'=',i6,'; must be <=',i6)";
+    std::string str;
 
-    //
-*/
     s1 = time(NULL);
     lda = nmax;
     fatal = false;
     //
     //     Read a dummy line.
     //
-    cin.getline(buf, sizeof(buf));
+    getline(cin, str);
     //
     //     Report values of parameters.
     //
@@ -111,156 +103,156 @@ void Rchkaa(void) {
     printf("Tests of the DOUBLE PRECISION MPLAPACK routines \n");
     printf("MPLAPACK VERSION  %d.%d.%d\n", vers_major, vers_minor, vers_patch);
     printf("The following parameter values will be used:\n");
-
-
     //
     //     Read the values of M
     //
-    cin.getline(buf, sizeof(buf));
-    sscanf (buf, "%d", &nm);
+    getline(cin, str);
+    stringstream ss(str);
+    ss >> nm;
     if (nm < 1) {
-        printf(" Invalid input value: %s = %d ; must be >= %d)", "NM", nm, 1);
+        printf(" Invalid input value: %4s = %6d ; must be >= %6d", "NM", nm, 1);
         nm = 0;
         fatal = true;
     } else if (nm > maxin) {
-        printf(" Invalid input value: %s = %d ; must be >= %d)", " NM ", nm, maxin);
+        printf(" Invalid input value: %4s = %6d ; must be <= %6d", "NM", nm, maxin);
         nm = 0;
         fatal = true;
     }
-
-#ifdef MAHO
-    {
-        read_loop rloop(cmn, nin, star);
-        for (i = 1; i <= nm; i = i + 1) {
-            rloop, mval(i);
-        }
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    for (i = 1; i <= nm; i = i + 1) {
+        ss >> mval[i - 1];
     }
     for (i = 1; i <= nm; i = i + 1) {
         if (mval[i - 1] < 0) {
-            write(nout, format_9996), " M  ", mval(i), 0;
+            printf(" Invalid input value: %4s = %6d; must be >= %6d\n", "M", mval[i - 1], 0);
             fatal = true;
         } else if (mval[i - 1] > nmax) {
-            write(nout, format_9995), " M  ", mval(i), nmax;
+            printf(" Invalid input value: %4s = %6d; must be <= %6d\n", "M", mval[i - 1], nmax);
             fatal = true;
         }
     }
     if (nm > 0) {
-        {
-            write_loop wloop(cmn, nout, format_9993);
-            wloop, "M   ";
-            for (i = 1; i <= nm; i = i + 1) {
-                wloop, mval(i);
-            }
+        printf("     %4s  :", "M");
+        for (i = 1; i <= nm; i = i + 1) {
+            printf("%6d", mval[i - 1]);
         }
+        printf("\n");
     }
+
     //
     //     Read the values of N
     //
-    read(nin, star), nn;
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    ss >> nn;
     if (nn < 1) {
-        write(nout, format_9996), " NN ", nn, 1;
+        printf(" Invalid input value: %4s = %6d; must be >= %6d\n", " NN ", nn, 1);
         nn = 0;
         fatal = true;
     } else if (nn > maxin) {
-        write(nout, format_9995), " NN ", nn, maxin;
+        printf(" Invalid input value: %4s = %6d; must be <= %6d\n", " NN ", nn, 1);
         nn = 0;
         fatal = true;
     }
-    {
-        read_loop rloop(cmn, nin, star);
-        for (i = 1; i <= nn; i = i + 1) {
-            rloop, nval(i);
-        }
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    for (i = 1; i <= nn; i = i + 1) {
+        ss >> nval[i - 1];
     }
     for (i = 1; i <= nn; i = i + 1) {
         if (nval[i - 1] < 0) {
-            write(nout, format_9996), " N  ", nval(i), 0;
+            printf(" Invalid input value: %4s = %6d; must be >= %6d\n", " N ", nval[i - 1], 0);
             fatal = true;
         } else if (nval[i - 1] > nmax) {
-            write(nout, format_9995), " N  ", nval(i), nmax;
+            printf(" Invalid input value: %4s = %6d; must be <= %6d\n", " N ", nval[i - 1], nmax);
             fatal = true;
         }
     }
     if (nn > 0) {
-        {
-            write_loop wloop(cmn, nout, format_9993);
-            wloop, "N   ";
-            for (i = 1; i <= nn; i = i + 1) {
-                wloop, nval(i);
-            }
+        printf("     %4s  :", "N");
+        for (i = 1; i <= nn; i = i + 1) {
+            printf("%6d", nval[i - 1]);
         }
+        printf("\n");
     }
     //
     //     Read the values of NRHS
     //
-    read(nin, star), nns;
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    ss >> nns;
     if (nns < 1) {
-        write(nout, format_9996), " NNS", nns, 1;
+        printf(" Invalid input value: %4s = %6d; must be >= %6d\n", "NNS", nns, 1);
         nns = 0;
         fatal = true;
     } else if (nns > maxin) {
-        write(nout, format_9995), " NNS", nns, maxin;
+        printf(" Invalid input value: %4s = %6d; must be <= %6d\n", "NNS", nns, maxin);
         nns = 0;
         fatal = true;
     }
-    {
-        read_loop rloop(cmn, nin, star);
-        for (i = 1; i <= nns; i = i + 1) {
-            rloop, nsval(i);
-        }
-    }
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    for (i = 1; i <= nns; i = i + 1)
+        ss >> nsval[i - 1];
     for (i = 1; i <= nns; i = i + 1) {
         if (nsval[i - 1] < 0) {
-            write(nout, format_9996), "NRHS", nsval(i), 0;
+            printf(" Invalid input value: %4s = %6d; must be >= %6d\n", "NRHS", nsval[i - 1], 0);
             fatal = true;
         } else if (nsval[i - 1] > maxrhs) {
-            write(nout, format_9995), "NRHS", nsval(i), maxrhs;
+            printf(" Invalid input value: %4s = %6d; must be <= %6d\n", "NRHS", nsval[i - 1], maxrhs);
             fatal = true;
         }
     }
     if (nns > 0) {
-        {
-            write_loop wloop(cmn, nout, format_9993);
-            wloop, "NRHS";
-            for (i = 1; i <= nns; i = i + 1) {
-                wloop, nsval(i);
-            }
+        printf("     %4s  :", "NRHS");
+        for (i = 1; i <= nns; i = i + 1) {
+            printf("%6d", nsval[i - 1]);
         }
     }
+    printf("\n");
     //
     //     Read the values of NB
     //
-    read(nin, star), nnb;
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    ss >> nnb;
     if (nnb < 1) {
-        write(nout, format_9996), "NNB ", nnb, 1;
+        printf(" Invalid input value: %4s = %6d; must be >= %6d\n", "NNB ", nnb, 1);
         nnb = 0;
         fatal = true;
     } else if (nnb > maxin) {
-        write(nout, format_9995), "NNB ", nnb, maxin;
+        printf(" Invalid input value: %4s = %6d; must be <= %6d\n", "NNB ", nnb, maxin);
         nnb = 0;
         fatal = true;
     }
-    {
-        read_loop rloop(cmn, nin, star);
-        for (i = 1; i <= nnb; i = i + 1) {
-            rloop, nbval(i);
-        }
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    for (i = 1; i <= nnb; i = i + 1) {
+        ss >> nbval[i - 1];
     }
+
     for (i = 1; i <= nnb; i = i + 1) {
         if (nbval[i - 1] < 0) {
-            write(nout, format_9996), " NB ", nbval(i), 0;
+            printf(" Invalid input value: %4s = %6d; must be >= %6d\n", " NB ", nbval[i - 1], 0);
             fatal = true;
         }
     }
     if (nnb > 0) {
-        {
-            write_loop wloop(cmn, nout, format_9993);
-            wloop, "NB  ";
-            for (i = 1; i <= nnb; i = i + 1) {
-                wloop, nbval(i);
-            }
+        printf("     %4s  :", "NB");
+        for (i = 1; i <= nnb; i = i + 1) {
+            printf("%6d", nbval[i - 1]);
         }
     }
+    printf("\n");
+#ifdef MAHO
     //
     //     Set NBVAL2 to be the set of unique values of NB
     //
@@ -919,7 +911,4 @@ statement_140:
 #endif
 }
 
-int main(int argc, char const *argv[]) 
-{ 
-  Rchkaa(); 
-}
+int main(int argc, char const *argv[]) { Rchkaa(); }
