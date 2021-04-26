@@ -30,16 +30,8 @@
 #include <mplapack.h>
 
 void Rchkaa(void) {
-    common cmn(argc, argv);
-    FEM_CMN_SVE(program_Rchkaa);
-    common_read read(cmn);
-    common_write write(cmn);
-    str<10> &intstr = sve.intstr;
-    REAL &threq = sve.threq;
-    if (is_called_first_time) {
-        threq = 2.0;
-        intstr = "0123456789";
-    }
+    char intstr[10] = {"0123456789"};
+    static REAL threq = 2.0;
     REAL s1 = 0.0;
     const INTEGER nmax = 132;
     INTEGER lda = 0;
@@ -51,44 +43,45 @@ void Rchkaa(void) {
     const INTEGER nout = 6;
     INTEGER nm = 0;
     const INTEGER maxin = 12;
-    arr_1d<maxin, int> mval(fill0);
+    INTEGER mval[maxin];
     INTEGER i = 0;
     INTEGER nn = 0;
-    arr_1d<maxin, int> nval(fill0);
+    INTEGER nval[maxin];
     INTEGER nns = 0;
-    arr_1d<maxin, int> nsval(fill0);
+    INTEGER nsval[maxin];
     const INTEGER maxrhs = 16;
     INTEGER nnb = 0;
-    arr_1d<maxin, int> nbval(fill0);
+    INTEGER nbval[maxi];
     INTEGER nnb2 = 0;
     INTEGER nb = 0;
     INTEGER j = 0;
-    arr_1d<maxin, int> nbval2(fill0);
-    arr_1d<maxin, int> nxval(fill0);
+    INTEGER nbval2[maxin];
+    INTEGER nxval[maxin];
     INTEGER nrank = 0;
-    arr_1d<maxin, int> rankval(fill0);
+    INTEGER rankval[maxin];
     REAL thresh = 0.0;
     bool tstchk = false;
     bool tstdrv = false;
     bool tsterr = false;
     REAL eps = 0.0;
-    str<72> aline = char0;
-    str<3> path = char0;
+    char aline[72];
+    char path[3];
     const INTEGER matmax = 30;
     INTEGER nmats = 0;
-    char c1 = char0;
+    char c1[1];
     INTEGER k = 0;
     INTEGER ic = 0;
-    str<2> c2 = char0;
+    char c2[2];
     INTEGER nrhs = 0;
     INTEGER ntypes = 0;
-    arr_1d<matmax, bool> dotype(fill0);
+    bool dotype[matmax];
     const INTEGER kdmax = nmax + (nmax + 1) / 4;
     INTEGER la = 0;
     INTEGER lafac = 0;
-    arr_1d<nmax, int> piv(fill0);
-    arr_1d<nmax, REAL> e(fill0);
+    INTEGER piv[nmax];
+    INTEGER e[nmax];
     REAL s2 = 0.0;
+/*
     static const char *format_9988 = "(/,1x,a3,' driver routines were not tested')";
     static const char *format_9989 = "(/,1x,a3,' routines were not tested')";
     static const char *format_9990 = "(/,1x,a3,':  Unrecognized path name')";
@@ -97,47 +90,23 @@ void Rchkaa(void) {
     static const char *format_9995 = "(' Invalid input value: ',a4,'=',i6,'; must be <=',i6)";
     static const char *format_9996 = "(' Invalid input value: ',a4,'=',i6,'; must be >=',i6)";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //     Novemebr 2019
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Arrays in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
+*/
     s1 = dsecnd[-1];
     lda = nmax;
     fatal = false;
     //
     //     Read a dummy line.
     //
-    read(nin, star);
+//    read(nin, star);
     //
     //     Report values of parameters.
     //
-    ilaver(vers_major, vers_minor, vers_patch);
-    write(nout, "(' Tests of the DOUBLE PRECISION LAPACK routines ',/,' LAPACK VERSION ',"
-                "i1,'.',i1,'.',i1,/,/,' The following parameter values will be used:')"),
-        vers_major, vers_minor, vers_patch;
+    iMlaver(vers_major, vers_minor, vers_patch);
+    printf("Tests of the DOUBLE PRECISION MPLAPACK routines \n");
+    printf("LAPACK VERSION  %d.%d.%d\n", vers_major, vers_minor, vers_patch);
+    printf("The following parameter values will be used:\n");
+
+#ifdef MAHO
     //
     //     Read the values of M
     //
@@ -151,6 +120,8 @@ void Rchkaa(void) {
         nm = 0;
         fatal = true;
     }
+
+
     {
         read_loop rloop(cmn, nin, star);
         for (i = 1; i <= nm; i = i + 1) {
@@ -938,6 +909,10 @@ statement_140:
     //
     //     End of Rchkaa
     //
+#endif
 }
 
-INTEGER main(INTEGER argc, char const *argv[]) { return main_with_catch(argc, argv, placeholder_please_replace::program_Rchkaa); }
+int main(int argc, char const *argv[]) 
+{ 
+  Rchkaa(); 
+}

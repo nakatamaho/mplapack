@@ -27,6 +27,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/iMlaenv/iMlaenv_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
     fi
@@ -39,6 +40,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/iMlaenv/iMlaenv_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
     fi
@@ -51,6 +53,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/iMlaenv/iMlaenv_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
     fi
@@ -63,6 +66,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/iMlaenv/iMlaenv_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
     fi
@@ -75,6 +79,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/iMlaenv/iMlaenv_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
     fi
@@ -87,6 +92,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/iMlaenv/iMlaenv_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
     fi
@@ -99,6 +105,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/iMlaenv/iMlaenv_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
     fi

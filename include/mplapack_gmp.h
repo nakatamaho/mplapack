@@ -717,4 +717,5 @@ void Rtrtri(const char *uplo, const char *diag, mplapackint const n, mpf_class *
 void Rtrtrs(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const nrhs, mpf_class *a, mplapackint const lda, mpf_class *b, mplapackint const ldb, mplapackint &info);
 void Rtrttp(const char *uplo, mplapackint const n, mpf_class *a, mplapackint const lda, mpf_class *ap, mplapackint &info);
 void Rtzrzf(mplapackint const m, mplapackint const n, mpf_class *a, mplapackint const lda, mpf_class *tau, mpf_class *work, mplapackint const lwork, mplapackint &info);
+void iMlaver_gmp(int &vers_major, int &vers_minor, int &vers_patch);
 #endif
