@@ -6,7 +6,7 @@ OPTFLAGS= -O2
 LIBFLAGS= -L/home/docker/mplapack/external/i/MPFR/lib -L/home/docker/mplapack/external/i/MPC/lib -L/home/docker/mplapack/external/i/GMP/lib
 MPLIBS=-lmpfr -lmpc -lgmp -lgmpxx -lgmp
 
-programs=example example2 example3
+programs=example1 example2 example3 example4
 
 all: $(programs)
 
