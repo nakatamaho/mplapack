@@ -30,9 +30,10 @@
 #include <mplapack.h>
 
 #include <mplapack_matgen.h>
+#include <mplapack_lin.h>
 
 void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *afac, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
-  //seeds are ignored
+    // seeds are ignored
     static const char *values[] = {"N", "T", "C"};
     char path[3];
     INTEGER nrun = 0;
@@ -45,18 +46,18 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER lda = 0;
     INTEGER in = 0;
     INTEGER n = 0;
-    char xtype = char0;
+    char xtype;
     const INTEGER ntypes = 11;
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char type = char0;
+    char type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist = char0;
+    char dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
@@ -78,9 +79,9 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER k = 0;
     INTEGER irhs = 0;
     INTEGER itran = 0;
-    char trans = char0;
+    char trans;
     REAL rcondc = 0.0;
-    char norm = char0;
+    char norm;
     REAL rcond = 0.0;
     REAL dummy = 0.0;
     //
@@ -117,22 +118,22 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Initialize constants and the random number seed.
     //
-    path[(1 - 1)] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "GE";
+    path[0] = 'D';
+    path[1] = 'G';
+    path[2] = 'E';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
     for (i = 1; i <= 4; i = i + 1) {
-        iseed[i - 1] = iseedy[i - 1];
+        iseed[i - 1] = 0; // seed is dummy in MPLAPACK
     }
     //
     //     Test the error exits
     //
-    xlaenv(1, 1);
+    iMlaenv(1, 1);
     if (tsterr) {
         Rerrge(path, nout);
     }
-    cmn.infot = 0;
     xlaenv(2, 2);
     //
     //     Do for each value of M in MVAL
@@ -420,16 +421,16 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         "i2,') =',g12.5)"),
                                 norm, n, imat, 8, result(8);
                             nfail++;
-			}
+                        }
                         nrun++;
-		    }
+                    }
 #endif
                 statement_90:;
-		}
+                }
 
             statement_100:;
             }
-	}
+        }
     }
     //
     //     Print a summary of the results.
