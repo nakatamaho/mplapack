@@ -42,6 +42,7 @@ typedef mpc_class COMPLEX;
 #define Mxerbla Mxerbla_gmp
 #define Rlamch Rlamch_gmp
 #define iMlaenv iMlaenv_gmp
+#define iMlaver iMlaver_gmp
 #define iMieeeck iMieeeck_gmp
 #define iMparmq iMparmq_gmp
 #endif
@@ -57,6 +58,7 @@ typedef mpcomplex COMPLEX;
 #define Mxerbla Mxerbla_mpfr
 #define Rlamch Rlamch_mpfr
 #define iMlaenv iMlaenv_mpfr
+#define iMlaver iMlaver_mpfr
 #define iMieeeck iMieeeck_mpfr
 #define iMparmq iMparmq_mpfr
 #endif
@@ -72,6 +74,7 @@ typedef qd_complex COMPLEX;
 #define Mxerbla Mxerbla_qd
 #define Rlamch Rlamch_qd
 #define iMlaenv iMlaenv_qd
+#define iMlaver iMlaver_qd
 #define iMieeeck iMieeeck_qd
 #define iMparmq iMparmq_qd
 #if !defined __MUTILS_CPP__
@@ -90,6 +93,7 @@ typedef dd_complex COMPLEX;
 #define Mxerbla Mxerbla_dd
 #define Rlamch Rlamch_dd
 #define iMlaenv iMlaenv_dd
+#define iMlaver iMlaver_dd
 #define iMieeeck iMieeeck_dd
 #define iMparmq iMparmq_dd
 #if !defined __MUTILS_CPP__
@@ -108,6 +112,7 @@ typedef std::complex<double> COMPLEX;
 #define Mxerbla Mxerbla_double
 #define Rlamch Rlamch_double
 #define iMlaenv iMlaenv_double
+#define iMlaver iMlaver_double
 #define iMieeeck iMieeeck_double
 #define iMparmq iMparmq_double
 #endif
@@ -137,6 +142,7 @@ typedef std::complex<_Float128> COMPLEX;
 #define Mlsamen Mlsamen__Float128
 #define Mxerbla Mxerbla__Float128
 #define Rlamch Rlamch__Float128
+#define iMlaenv iMlaenv__Float128
 #define iMlaenv iMlaenv__Float128
 #define iMieeeck iMieeeck__Float128
 #define iMparmq iMparmq__Float128

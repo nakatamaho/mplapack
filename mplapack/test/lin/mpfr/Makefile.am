@@ -16,9 +16,9 @@ check_PROGRAMS = $(mplapack_mpfr_lintest_PROGRAMS)
 TESTS = $(check_PROGRAMS)
 mplapack_mpfr_lintestdir = $(prefix)/share/mplapack/test/mplapack/lin/mpfr
 mplapack_mpfr_lintest_PROGRAMS = \
-Rchkaa_mpfr
+xlintstR_mpfr
 
-Rchkaa_mpfr_SOURCES  = ../common/Rchkaa.cpp
-Rchkaa_mpfr_LDFLAGS  = $(libdepends) $(mplibs)
-Rchkaa_mpfr_CXXFLAGS = $(cxxflags)
+xlintstR_mpfr_SOURCES  = ../common/Rchkaa.cpp
+xlintstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs)
+xlintstR_mpfr_CXXFLAGS = $(cxxflags)
 

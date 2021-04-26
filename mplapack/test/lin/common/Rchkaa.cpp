@@ -29,17 +29,19 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <time.h>
+
 void Rchkaa(void) {
-    char intstr[10] = {"0123456789"};
+    char intstr[] = "0123456789";
     static REAL threq = 2.0;
     REAL s1 = 0.0;
     const INTEGER nmax = 132;
     INTEGER lda = 0;
     bool fatal = false;
     const INTEGER nin = 5;
-    INTEGER vers_major = 0;
-    INTEGER vers_minor = 0;
-    INTEGER vers_patch = 0;
+    int vers_major = 0;
+    int vers_minor = 0;
+    int vers_patch = 0;
     const INTEGER nout = 6;
     INTEGER nm = 0;
     const INTEGER maxin = 12;
@@ -51,7 +53,7 @@ void Rchkaa(void) {
     INTEGER nsval[maxin];
     const INTEGER maxrhs = 16;
     INTEGER nnb = 0;
-    INTEGER nbval[maxi];
+    INTEGER nbval[maxin];
     INTEGER nnb2 = 0;
     INTEGER nb = 0;
     INTEGER j = 0;
@@ -91,7 +93,7 @@ void Rchkaa(void) {
     static const char *format_9996 = "(' Invalid input value: ',a4,'=',i6,'; must be >=',i6)";
     //
 */
-    s1 = dsecnd[-1];
+    s1 = time(NULL);
     lda = nmax;
     fatal = false;
     //
