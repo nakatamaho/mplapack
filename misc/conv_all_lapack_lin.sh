@@ -51,6 +51,7 @@ sed -i -e 's/, w\[/, \&w\[/g' ${newfilename}.cpp
 sed -i -e 's/, x\[/, \&x\[/g' ${newfilename}.cpp
 sed -i -e 's/, z\[/, \&z\[/g' ${newfilename}.cpp
 sed -i -e 's/, ab\[/, \&ab\[/g' ${newfilename}.cpp
+sed -i -e 's/, afac\[/, \&afac\[/g' ${newfilename}.cpp
 sed -i -e 's/, ap\[/, \&ap\[/g' ${newfilename}.cpp
 sed -i -e 's/, vt\[/, \&vt\[/g' ${newfilename}.cpp
 sed -i -e 's/, tau\[/, \&tau\[/g' ${newfilename}.cpp
