@@ -10,6 +10,7 @@ MATGEN_SOURCES = \
 Clagge.cpp \
 Claghe.cpp \
 Clagsy.cpp \
+Clahilb.cpp \
 Clakf2.cpp \
 Clarge.cpp \
 Clarnd.cpp \
