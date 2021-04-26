@@ -5,6 +5,7 @@ liblin_mpfr_la_SOURCES = $(LIN_SOURCES)
 
 LIN_SOURCES = \
 ../common/Rlqt01.cpp \
+../common/Rlatb4.cpp \
 ../common/Rchklq.cpp
 
 libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr
