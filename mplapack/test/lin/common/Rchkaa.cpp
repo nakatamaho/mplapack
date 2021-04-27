@@ -29,7 +29,9 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+
 #include <time.h>
 
 #include <iostream>
@@ -380,7 +382,6 @@ void Rchkaa(void) {
     cout << " Relative machine overflow  is taken to be : " << eps << endl;
     eps = Rlamch("Epsilon");
     cout << " Relative machine precision is taken to be : " << eps << endl;
-
     //
     //     Read a test path and the number of matrix types to use.
     //
@@ -426,7 +427,7 @@ void Rchkaa(void) {
             //        GE:  general matrices
             //
             ntypes = 11;
-            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchkge(dotype, nm, mval, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
@@ -441,7 +442,7 @@ void Rchkaa(void) {
             }
 #endif
         }
-#ifdef MAHO
+#ifdef NOTYET
         else if (Mlsamen2, c2, "GB") {
             //
             //        GB:  general banded matrices
