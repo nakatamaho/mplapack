@@ -41,8 +41,10 @@ void Alasum(const char *type, mplapackint const nout, mplapackint const nfail, m
 void Rchkaa(void);
 void Rchkge(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nns, mplapackint *nsval, mpf_class const thresh, bool const tsterr, mplapackint const nmax, mpf_class *a, mpf_class *afac, mpf_class *ainv, mpf_class *b, mpf_class *x, mpf_class *xact, mpf_class *work, mpf_class *rwork, mplapackint *iwork, mplapackint const nout);
 void Rchklq(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint *nxval, mplapackint const nrhs, mpf_class const thresh, bool const tsterr, mplapackint const nmax, mpf_class *a, mpf_class *af, mpf_class *aq, mpf_class *al, mpf_class *ac, mpf_class *b, mpf_class *x, mpf_class *xact, mpf_class *tau, mpf_class *work, mpf_class *rwork, mplapackint const nout);
+void Rerrge(const char *path, mplapackint const nunit);
 void Rerrlq(const char *path, mplapackint const nunit);
 void Rget01(mplapackint const m, mplapackint const n, mpf_class *a, mplapackint const lda, mpf_class *afac, mplapackint const ldafac, mplapackint *ipiv, mpf_class *rwork, mpf_class &resid);
 void Rlatb4(const char *path, mplapackint const imat, mplapackint const m, mplapackint const n, char *type, mplapackint &kl, mplapackint &ku, mpf_class &anorm, mplapackint &mode, mpf_class &cndnum, char *dist);
 void Rlqt01(mplapackint const m, mplapackint const n, mpf_class *a, mpf_class *af, mpf_class *q, mpf_class *l, mplapackint const lda, mpf_class *tau, mpf_class *work, mplapackint const lwork, mpf_class *rwork, mpf_class *result);
+void chkxer(const char *srnamt, mplapackint const &infot, mplapackint const &nout, bool &lerr, bool &ok);
 #endif

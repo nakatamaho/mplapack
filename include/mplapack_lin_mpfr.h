@@ -45,8 +45,10 @@ void Alasum(const char *type, mplapackint const nout, mplapackint const nfail, m
 void Rchkaa(void);
 void Rchkge(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nns, mplapackint *nsval, mpreal const thresh, bool const tsterr, mplapackint const nmax, mpreal *a, mpreal *afac, mpreal *ainv, mpreal *b, mpreal *x, mpreal *xact, mpreal *work, mpreal *rwork, mplapackint *iwork, mplapackint const nout);
 void Rchklq(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint *nxval, mplapackint const nrhs, mpreal const thresh, bool const tsterr, mplapackint const nmax, mpreal *a, mpreal *af, mpreal *aq, mpreal *al, mpreal *ac, mpreal *b, mpreal *x, mpreal *xact, mpreal *tau, mpreal *work, mpreal *rwork, mplapackint const nout);
+void Rerrge(const char *path, mplapackint const nunit);
 void Rerrlq(const char *path, mplapackint const nunit);
 void Rget01(mplapackint const m, mplapackint const n, mpreal *a, mplapackint const lda, mpreal *afac, mplapackint const ldafac, mplapackint *ipiv, mpreal *rwork, mpreal &resid);
 void Rlatb4(const char *path, mplapackint const imat, mplapackint const m, mplapackint const n, char *type, mplapackint &kl, mplapackint &ku, mpreal &anorm, mplapackint &mode, mpreal &cndnum, char *dist);
 void Rlqt01(mplapackint const m, mplapackint const n, mpreal *a, mpreal *af, mpreal *q, mpreal *l, mplapackint const lda, mpreal *tau, mpreal *work, mplapackint const lwork, mpreal *rwork, mpreal *result);
+void chkxer(const char *srnamt, mplapackint const &infot, mplapackint const &nout, bool &lerr, bool &ok);
 #endif

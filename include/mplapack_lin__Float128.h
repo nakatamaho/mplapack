@@ -43,8 +43,10 @@ void Alasum(const char *type, mplapackint const nout, mplapackint const nfail, m
 void Rchkaa(void);
 void Rchkge(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nns, mplapackint *nsval, _Float128 const thresh, bool const tsterr, mplapackint const nmax, _Float128 *a, _Float128 *afac, _Float128 *ainv, _Float128 *b, _Float128 *x, _Float128 *xact, _Float128 *work, _Float128 *rwork, mplapackint *iwork, mplapackint const nout);
 void Rchklq(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint *nxval, mplapackint const nrhs, _Float128 const thresh, bool const tsterr, mplapackint const nmax, _Float128 *a, _Float128 *af, _Float128 *aq, _Float128 *al, _Float128 *ac, _Float128 *b, _Float128 *x, _Float128 *xact, _Float128 *tau, _Float128 *work, _Float128 *rwork, mplapackint const nout);
+void Rerrge(const char *path, mplapackint const nunit);
 void Rerrlq(const char *path, mplapackint const nunit);
 void Rget01(mplapackint const m, mplapackint const n, _Float128 *a, mplapackint const lda, _Float128 *afac, mplapackint const ldafac, mplapackint *ipiv, _Float128 *rwork, _Float128 &resid);
 void Rlatb4(const char *path, mplapackint const imat, mplapackint const m, mplapackint const n, char *type, mplapackint &kl, mplapackint &ku, _Float128 &anorm, mplapackint &mode, _Float128 &cndnum, char *dist);
 void Rlqt01(mplapackint const m, mplapackint const n, _Float128 *a, _Float128 *af, _Float128 *q, _Float128 *l, mplapackint const lda, _Float128 *tau, _Float128 *work, mplapackint const lwork, _Float128 *rwork, _Float128 *result);
+void chkxer(const char *srnamt, mplapackint const &infot, mplapackint const &nout, bool &lerr, bool &ok);
 #endif
