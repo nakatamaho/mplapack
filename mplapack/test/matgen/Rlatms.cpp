@@ -291,7 +291,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     INTEGER jku = 0;
     INTEGER jr = 0;
     REAL extra = 0.0;
-    const REAL twopi = 6.28318530717958647692528676655900576839e+0;
+    const REAL twopi = pi(zero);
     REAL angle = 0.0;
     REAL c = 0.0;
     REAL s = 0.0;
