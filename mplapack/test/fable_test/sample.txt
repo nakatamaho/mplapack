@@ -1,0 +1,1 @@
+g++ -o test -Wall -Wno-sign-compare -Winvalid-pch -g -O0 -I/home/docker/mplapack/mplapack/test/fable sample.cpp

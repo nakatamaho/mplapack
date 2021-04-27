@@ -29,7 +29,9 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *l, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
+void Rlqt01(common &cmn, INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *l, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
+    // COMMON srnamc
+    str<32> &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -61,9 +63,6 @@ void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //
     INTEGER minmn = min(m, n);
     REAL eps = Rlamch("Epsilon");
-    char srnamt[32];
-    INTEGER ldaf = lda;
-    INTEGER ldq = lda;
     //
     //     Copy the matrix A to the array AF.
     //
@@ -71,7 +70,7 @@ void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //
     //     Factorize the matrix A in the array AF.
     //
-    strncpy(srnamt, "RGELQF", strlen("RGELQF"));
+    srnamt = "Rgelqf";
     INTEGER info = 0;
     Rgelqf(m, n, af, lda, tau, work, lwork, info);
     //
@@ -80,12 +79,12 @@ void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     const REAL rogue = -1.0e+10;
     Rlaset("Full", n, n, rogue, rogue, q, lda);
     if (n > 1) {
-        Rlacpy("Upper", m, n - 1, &af[(2 - 1) * ldaf], lda, &q[(2 - 1) * ldq], lda);
+        Rlacpy("Upper", m, n - 1, af[(2 - 1) * ldaf], lda, &q[(2 - 1) * ldq], lda);
     }
     //
     //     Generate the n-by-n matrix Q
     //
-    strncpy(srnamt, "RORGLQ", strlen("RORGLQ"));
+    srnamt = "Rorglq";
     Rorglq(n, n, minmn, q, lda, tau, work, lwork, info);
     //
     //     Copy L
@@ -104,7 +103,7 @@ void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     REAL anorm = Rlange("1", m, n, a, lda, rwork);
     REAL resid = Rlange("1", m, n, l, lda, rwork);
     if (anorm > zero) {
-        result[1 - 1] = ((resid / castREAL(max((INTEGER)1, n))) / anorm) / eps;
+        result[1 - 1] = ((resid / (max((INTEGER)1, n)).real()) / anorm) / eps;
     } else {
         result[1 - 1] = zero;
     }
@@ -118,7 +117,7 @@ void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //
     resid = Rlansy("1", "Upper", n, l, lda, rwork);
     //
-    result[2 - 1] = (resid / castREAL(max((INTEGER)1, n))) / eps;
+    result[2 - 1] = (resid / (max((INTEGER)1, n)).real()) / eps;
     //
     //     End of Rlqt01
     //

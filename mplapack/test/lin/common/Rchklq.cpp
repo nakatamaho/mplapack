@@ -29,18 +29,21 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-#include <mplapack_matgen.h>
-#include <mplapack_lin.h>
-
-void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *af, REAL *aq, REAL *al, REAL *ac, REAL *b, REAL *x, REAL *xact, REAL *tau, REAL *work, REAL *rwork, INTEGER const nout) {
-    char srnamt[32];
-    char path[3];
+void Rchklq(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *af, REAL *aq, REAL *al, REAL *ac, REAL *b, REAL *x, REAL *xact, REAL *tau, REAL *work, REAL *rwork, INTEGER const nout) {
+    FEM_CMN_SVE(Rchklq);
+    common_write write(cmn);
+    str<32> &srnamt = cmn.srnamt;
+    //
+    if (is_called_first_time) {
+        static const INTEGER values[] = {1988, 1989, 1990, 1991};
+        data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
+    }
+    str<3> path = char0;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    INTEGER iseed[4];
-    INTEGER iseedy[4];
+    arr_1d<4, int> iseed(fill0);
     INTEGER lda = 0;
     INTEGER lwork = 0;
     INTEGER im = 0;
@@ -50,15 +53,15 @@ void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER minmn = 0;
     INTEGER imat = 0;
     const INTEGER ntypes = 8;
-    char type;
+    char type = char0;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    char dist = char0;
     INTEGER info = 0;
-    INTEGER kval[4];
+    arr_1d<4, int> kval(fill0);
     INTEGER nk = 0;
     INTEGER ik = 0;
     INTEGER k = 0;
@@ -67,7 +70,7 @@ void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER nx = 0;
     const INTEGER ntests = 7;
     const REAL zero = 0.0;
-    REAL result[ntests];
+    arr_1d<ntests, REAL> result(fill0);
     INTEGER nt = 0;
     //
     //  -- LAPACK test routine --
@@ -101,9 +104,8 @@ void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Initialize constants and the random number seed.
     //
-    path[0] = 'D'; // Double precision
-    path[1] = 'L';
-    path[2] = 'Q';
+    path[(1 - 1)] = "Double precision";
+    path[(2 - 1) + (3 - 1) * ldpath] = "LQ";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -116,8 +118,9 @@ void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     if (tsterr) {
         Rerrlq(path, nout);
     }
+    cmn.infot = 0;
+    xlaenv(2, 2);
     //
-#ifdef NOTYET
     lda = nmax;
     lwork = nmax * max(nmax, nrhs);
     //
@@ -145,12 +148,12 @@ void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 Rlatb4(path, imat, m, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
                 srnamt = "DLATMS";
-                Rlatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
+                dlatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
                 //
                 //              Check error code from DLATMS.
                 //
                 if (info != 0) {
-                    Alaerh(path, "RLATMS", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "DLATMS", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_50;
                 }
                 //
@@ -190,12 +193,12 @@ void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         nt = 2;
                         if (ik == 1) {
                             //
-                            //                       Test DGELQF
+                            //                       Test Rgelqf
                             //
                             Rlqt01(m, n, a, af, aq, al, lda, tau, work, lwork, rwork, result[1 - 1]);
                         } else if (m <= n) {
                             //
-                            //                       Test DORGLQ, using factorization
+                            //                       Test Rorglq, using factorization
                             //                       returned by Rlqt01
                             //
                             Rlqt02(m, n, k, a, af, aq, al, lda, tau, work, lwork, rwork, result[1 - 1]);
@@ -205,7 +208,7 @@ void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         }
                         if (m >= k) {
                             //
-                            //                       Test DORMLQ, using factorization returned
+                            //                       Test Rormlq, using factorization returned
                             //                       by Rlqt01
                             //
                             Rlqt03(m, n, k, af, ac, al, aq, lda, tau, work, lwork, rwork, result[3 - 1]);
@@ -267,11 +270,10 @@ void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         }
     }
     //
-    //     Print a summary of the results.
+    //     PrINTEGER a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
     //     End of Rchklq
     //
-#endif
 }
