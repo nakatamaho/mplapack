@@ -248,7 +248,7 @@ void Rchklq(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
                             result[6 - 1] = zero;
                         }
                         //
-                        //                    PrINTEGER information about the tests that did not
+                        //                    Print information about the tests that did not
                         //                    pass the threshold.
                         //
                         for (i = 1; i <= nt; i = i + 1) {
@@ -270,7 +270,7 @@ void Rchklq(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
         }
     }
     //
-    //     PrINTEGER a summary of the results.
+    //     Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //

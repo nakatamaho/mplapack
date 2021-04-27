@@ -292,7 +292,7 @@ void Rchkge(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
                         rcondi = zero;
                     }
                     //
-                    //                 PrINTEGER information about the tests so far that did not
+                    //                 Print information about the tests so far that did not
                     //                 pass the threshold.
                     //
                     for (k = 1; k <= nt; k = k + 1) {
@@ -372,7 +372,7 @@ void Rchkge(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
                             Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
                             Rget07(trans, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, true, &rwork[(nrhs + 1) - 1], result[6 - 1]);
                             //
-                            //                       PrINTEGER information about the tests that did not
+                            //                       Print information about the tests that did not
                             //                       pass the threshold.
                             //
                             for (k = 3; k <= 7; k = k + 1) {
@@ -419,7 +419,7 @@ void Rchkge(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
                         //
                         result[8 - 1] = Rget06[(rcond - 1) + (rcondc - 1) * ldRget06];
                         //
-                        //                    PrINTEGER information about the tests that did not pass
+                        //                    Print information about the tests that did not pass
                         //                    the threshold.
                         //
                         if (result[8 - 1] >= thresh) {
@@ -440,7 +440,7 @@ void Rchkge(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
         }
     }
     //
-    //     PrINTEGER a summary of the results.
+    //     Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
