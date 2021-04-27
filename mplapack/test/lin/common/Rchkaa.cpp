@@ -72,6 +72,9 @@ void Rchkaa(void) {
     bool tstchk = false;
     bool tstdrv = false;
     bool tsterr = false;
+    char tstchk_str[1];
+    char tstdrv_str[1];
+    char tsterr_str[1];
     REAL eps = 0.0;
     char aline[72];
     char path[3];
@@ -353,14 +356,22 @@ void Rchkaa(void) {
     ss.str("");
     getline(cin, str);
     ss.str(str);
-    ss >> tstchk;
+    ss >> tstchk_str;
+    if (Mlsame(tstchk_str, "T"))
+        tstchk = true;
+    else
+        tstchk = false;
     //
     //     Read the flag that indicates whether to test the driver routines.
     //
     ss.str("");
     getline(cin, str);
     ss.str(str);
-    ss >> tstdrv;
+    ss >> tstdrv_str;
+    if (Mlsame(tstdrv_str, "T"))
+        tstdrv = true;
+    else
+        tstdrv = false;
     //
     //     Read the flag that indicates whether to test the error exits.
     //
@@ -368,6 +379,10 @@ void Rchkaa(void) {
     getline(cin, str);
     ss.str(str);
     ss >> tsterr;
+    if (Mlsame(tsterr_str, "T"))
+        tsterr = true;
+    else
+        tsterr = false;
     //
     if (fatal) {
         printf(" Execution not attempted due to input errors \n");
@@ -407,9 +422,6 @@ void Rchkaa(void) {
                 nmats = stoi(result[1]);
             }
         }
-        cout << c1[0] << endl;
-        cout << c2[0] << c2[1] << endl;
-        cout << nmats << endl;
         nrhs = nsval[1 - 1];
         //
         //     Check first character for correct precision.
@@ -427,7 +439,7 @@ void Rchkaa(void) {
             //        GE:  general matrices
             //
             ntypes = 11;
-            //            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchkge(dotype, nm, mval, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);

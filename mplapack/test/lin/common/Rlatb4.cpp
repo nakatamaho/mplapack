@@ -73,7 +73,7 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
     //
     c2[0] = path[1];
     c2[1] = path[2];
-    dist = (char *)"S";
+    *dist = 'S';
     mode = 3;
     //
     const REAL two = 2.0e+0;
@@ -85,7 +85,7 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         //
         //        Set TYPE, the type of matrix to be generated.
         //
-        type = (char *)"N";
+        *type = 'N';
         //
         //        Set the lower and upper bandwidths.
         //
@@ -127,7 +127,7 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         //
         //        Set TYPE, the type of matrix to be generated.
         //
-        type = (char *)"N";
+        *type = 'N';
         //
         //        Set the lower and upper bandwidths.
         //
@@ -169,7 +169,7 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         //
         //        Set TYPE, the type of matrix to be generated.
         //
-        type = (char *)"N";
+        *type = 'N';
         //
         //        Set the condition number and norm.
         //
@@ -195,7 +195,7 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         //
         //        Set TYPE, the type of matrix to be generated.
         //
-        type = (char *)"N";
+        *type = 'N';
         //
         //        Set the lower and upper bandwidths.
         //
@@ -302,7 +302,7 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         //
         //        Set TYPE, the type of matrix to be generated.
         //
-        type = (char *)"P";
+        *type = 'P';
         //
         //        Set the norm and condition number.
         //
@@ -327,7 +327,7 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         //        xPT:  Set parameters to generate a symmetric positive definite
         //        tridiagonal matrix.
         //
-        type = (char *)"P";
+        *type = 'P';
         if (imat == 1) {
             kl = 0;
         } else {
@@ -359,7 +359,7 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         //
         //        Set TYPE, the type of matrix to be generated.
         //
-        type = (char *)"N";
+        *type = 'N';
         //
         //        Set the lower and upper bandwidths.
         //
@@ -401,7 +401,7 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         //
         //        Set TYPE, the type of matrix to be generated.
         //
-        type = (char *)"N";
+        *type = 'N';
         //
         //        Set the norm and condition number.
         //

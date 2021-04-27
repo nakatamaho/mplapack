@@ -32,6 +32,8 @@
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *afac, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     // seeds are ignored
     static const char *values[] = {"N", "T", "C"};
@@ -156,14 +158,14 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 //              Do the tests only if DOTYPE( IMAT ) is true.
                 //
                 if (!dotype[imat - 1]) {
-                    goto statement_100;
+                    continue;
                 }
                 //
                 //              Skip types 5, 6, or 7 if the matrix size is too small.
                 //
                 zerot = imat >= 5 && imat <= 7;
                 if (zerot && n < imat - 4) {
-                    goto statement_100;
+                    continue;
                 }
                 //
                 //              Set up parameters with Rlatb4 and generate a test matrix
@@ -172,8 +174,11 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 Rlatb4(path, imat, m, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                 //
                 Rlatms(m, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, nopacking, a, lda, work, info);
+                printf("prepared matrix A is\n");
+                printmat(m, n, a, lda);
+                printf("\n");
                 //
-                //              Check error code from DLATMS.
+                //              Check error code from Rlatms.
                 //
                 if (info != 0) {
                     Alaerh(path, "Rlatms", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
@@ -217,11 +222,22 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //                 Compute the LU factorization of the matrix.
                     //
                     Rlacpy("Full", m, n, a, lda, afac, lda);
+
+                    printf("A is\n");
+                    printmat(m, n, afac, lda);
+                    printf("\n");
                     Rgetrf(m, n, afac, lda, iwork, info);
                     //
                     //                 Check error code from Rgetrf.
                     //
+                    printf("LU factrized A is\n");
+                    printmat(m, n, afac, lda);
+                    printf("\n");
+                    printf("homa9 %ld %ld\n", m, n);
+                    printf("info %ld\n", info);
+
                     if (info != izero) {
+                        printf("Rgetrf failed %ld\n", info);
                         Alaerh(path, "Rgetrf", info, izero, " ", m, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     trfcon = false;
@@ -232,6 +248,10 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     Rlacpy("Full", m, n, afac, lda, ainv, lda);
                     Rget01(m, n, a, lda, ainv, lda, iwork, rwork, result[1 - 1]);
                     nt = 1;
+                    printf("reconstruct A is\n");
+                    printmat(m, n, afac, lda);
+                    printf("\n");
+
 #ifdef NOTYET
                     //
                     //+    TEST 2
