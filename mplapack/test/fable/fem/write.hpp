@@ -403,8 +403,25 @@ namespace fem {
           prev_was_string = false;
         }
         else {
-          out.reset();
-          throw TBXX_NOT_IMPLEMENTED();
+          std::string const& ed = next_edit_descriptor();
+          if (ed[0] == 'i') {
+            int n = ed.size();
+            TBXX_ASSERT(n+3 < 64);
+            char fmt[64];
+            fmt[0] = '%';
+            std::strncpy(fmt+1, ed.data()+1, n-1);
+            fmt[n] = 'l';
+            fmt[n+1] = 'd';
+            fmt[n+2] = '\0';
+            char buf[64];
+            n = std::sprintf(buf, fmt, val);
+            to_stream_fmt(buf, n);
+          }
+          else {
+            char buf[64];
+            int n = std::sprintf(buf, " %ld", val);
+            to_stream_fmt(buf, n);
+          }
         }
         return *this;
       }
