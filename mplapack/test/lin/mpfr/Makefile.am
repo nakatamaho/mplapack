@@ -14,7 +14,13 @@ LIN_SOURCES = \
 ../common/Alaesm.cpp \
 ../common/Alaerh.cpp \
 ../common/Rget01.cpp \
+../common/Rget02.cpp \
+../common/Rget03.cpp \
+../common/Rget04.cpp \
+../common/Rget06.cpp \
+../common/Rget07.cpp \
 ../common/Rlatb4.cpp \
+../common/Rlarhs.cpp \
 ../common/mplapack.test.cpp
 
 libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr -L. -llin_mpfr -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr 

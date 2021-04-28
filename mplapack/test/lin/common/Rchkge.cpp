@@ -94,7 +94,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     REAL dummy = 0.0;
     char nopacking[] = "No packing";
     INTEGER ntran = 3;
-    char transs[ntran];
+    char transs[ntran] = {'N', 'T', 'C'};
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

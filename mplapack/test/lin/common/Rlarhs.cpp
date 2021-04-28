@@ -94,7 +94,6 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
     } else if ((notran && ldb < max((INTEGER)1, m)) || (tran && ldb < max((INTEGER)1, n))) {
         info = -15;
     }
-    printf("Info is %ld\n", -info);
     if (info != 0) {
         Mxerbla("Rlarhs", -info);
         return;
