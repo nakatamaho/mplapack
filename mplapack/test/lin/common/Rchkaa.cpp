@@ -29,6 +29,10 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
@@ -40,7 +44,8 @@
 
 using namespace std;
 
-void Rchkaa(void) {
+void Rchkaa(common &cmn) {
+    common_write write(cmn);
     static REAL threq = 2.0;
     time_t s1;
     const INTEGER nmax = 132;
@@ -927,4 +932,8 @@ void Rchkaa(void) {
     //
 }
 
-int main(int argc, char const *argv[]) { Rchkaa(); }
+int main(int argc, char const *argv[]) {
+  common cmn(argc, argv);
+  common_write write(cmn);
+  Rchkaa(cmn);
+}

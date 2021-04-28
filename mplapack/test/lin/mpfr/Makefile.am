@@ -1,8 +1,7 @@
 lib_LTLIBRARIES = liblin_mpfr.la
 
-liblin_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___
+liblin_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mplapack/test/fable
 liblin_mpfr_la_SOURCES = $(LIN_SOURCES)
-
 
 LIN_SOURCES = \
 ../common/Aladhd.cpp \
@@ -409,7 +408,7 @@ LIN_SOURCES = \
 
 libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr -L. -llin_mpfr -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr 
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mplapack/test/fable
 
 check_PROGRAMS = $(mplapack_mpfr_lintest_PROGRAMS)
 TESTS = $(check_PROGRAMS)
@@ -420,4 +419,3 @@ xlintstR_mpfr
 xlintstR_mpfr_SOURCES  = ../common/Rchkaa.cpp ../common/mplapack.test.cpp
 xlintstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs)
 xlintstR_mpfr_CXXFLAGS = $(cxxflags)
-

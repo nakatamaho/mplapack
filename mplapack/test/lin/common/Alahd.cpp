@@ -119,18 +119,18 @@ void Alahd(common &cmn, INTEGER const iounit, const char *path) {
     if (iounit <= 0) {
         return;
     }
-    char c1 = path[(1 - 1)];
-    char c3 = path[(3 - 1) + (3 - 1) * ldpath];
-    str<2> p2 = path[(2 - 1) + (3 - 1) * ldpath];
-    bool sord = Mlsame(c1, "S") || Mlsame(c1, "D");
-    bool corz = Mlsame(c1, "C") || Mlsame(c1, "Z");
+    char c1[1]; //= path[(1 - 1)];
+    char c3[3]; //= path[(3 - 1) + (3 - 1) * ldpath];
+    char p2[2]; //= path[(2 - 1) + (3 - 1) * ldpath];
+    bool sord = Mlsame(c1, "R");
+    bool corz = Mlsame(c1, "C");
     if (!(sord || corz)) {
         return;
     }
     //
-    str<9> sym = char0;
-    str<4> eigcnm = char0;
-    str<32> subnam = char0;
+    char sym[9];
+    char eigcnm[4];
+    char subnam [32];
     if (Mlsamen(2, p2, "GE")) {
         //
         //        GE: General dense
