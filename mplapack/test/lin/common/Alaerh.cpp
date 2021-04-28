@@ -28,9 +28,11 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
 #include <mplapack_lin.h>
 
 void Alaerh(common &cmn, const char *path, const char *subnam, INTEGER const info, INTEGER const infoe, const char *opts, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const n5, INTEGER const imat, INTEGER const nfail, INTEGER &nerrs, INTEGER const nout) {
@@ -105,29 +107,31 @@ void Alaerh(common &cmn, const char *path, const char *subnam, INTEGER const inf
         return;
     }
     char p2[2];
-    p2[0]= path[1];
-    p2[1]= path[2];
     char c3[3];
+    char c5[5];
+    p2[0] = path[1];
+    p2[1] = path[2];
     c3[0] = subnam[3];
     c3[1] = subnam[4];
     c3[2] = subnam[5];
-    char c5[5];
+
     c5[0] = subnam[1];
     c5[1] = subnam[2];
     c5[2] = subnam[3];
     c5[3] = subnam[4];
-    c5[4] = subnam[5];            
+    c5[4] = subnam[5];
     char subnam_trimmed[32];
-    memset(subnam_trimmed, 0, sizeof(subnam_trimmed)); 
-    strncpy (subnam_trimmed, subnam, (strlen(subnam) >= 16) ? 16 : strlen(subnam)); 
+    INTEGER subnam_trimmed_len = 0;
+    subnam_trimmed_len = strlen(subnam) > 30 ? 30 : strlen(subnam);
+    strncpy(subnam_trimmed, subnam, subnam_trimmed_len);
     //
     //     Print the header if this is the first error message.
     //
     if (nfail == 0 && nerrs == 0) {
         if (Mlsamen(3, c3, "SV ") || Mlsamen(3, c3, "SVX")) {
- 	    Aladhd(cmn, nout, path);
+            Aladhd(cmn, nout, path);
         } else {
-	    Alahd(cmn, nout, path);
+            Alahd(cmn, nout, path);
         }
     }
     nerrs++;
@@ -300,7 +304,7 @@ void Alaerh(common &cmn, const char *path, const char *subnam, INTEGER const inf
         //
         //        xPO:  Symmetric or Hermitian positive definite matrices
         //
-        uplo[0] = opts[0];
+        uplo[0] = opts[(1 - 1)];
         if (Mlsamen(3, c3, "TRF")) {
             if (info != infoe && infoe != 0) {
                 write(nout, format_9980), subnam_trimmed, info, infoe, uplo, m, n5, imat;
@@ -344,7 +348,7 @@ void Alaerh(common &cmn, const char *path, const char *subnam, INTEGER const inf
         //
         //        xPS:  Symmetric or Hermitian positive semi-definite matrices
         //
-        uplo[0] = opts[0];
+        uplo[0] = opts[(1 - 1)];
         if (Mlsamen(3, c3, "TRF")) {
             if (info != infoe && infoe != 0) {
                 write(nout, format_9980), subnam, info, infoe, uplo, m, n5, imat;
@@ -403,7 +407,7 @@ void Alaerh(common &cmn, const char *path, const char *subnam, INTEGER const inf
         //        xHA: Hermitian matrices
         //             Aasen Algorithm
         //
-        uplo[0]=opts[0];
+        uplo[0] = opts[(1 - 1)];
         if (Mlsamen(3, c3, "TRF")) {
             if (info != infoe && infoe != 0) {
                 write(nout, format_9980), subnam_trimmed, info, infoe, uplo, m, n5, imat;
@@ -443,7 +447,7 @@ void Alaerh(common &cmn, const char *path, const char *subnam, INTEGER const inf
         //
         //        xPP, xHP, or xSP:  Symmetric or Hermitian packed matrices
         //
-        uplo[0]=opts[0];
+        uplo[0] = opts[(1 - 1)];
         if (Mlsamen(3, c3, "TRF")) {
             if (info != infoe && infoe != 0) {
                 write(nout, "(' *** ',a,' returned with INFO =',i5,' instead of ',i2,/,"
@@ -485,7 +489,7 @@ void Alaerh(common &cmn, const char *path, const char *subnam, INTEGER const inf
         //
         //        xPB:  Symmetric (Hermitian) positive definite band matrix
         //
-        uplo[0]=opts[0];
+        uplo[0] = opts[(1 - 1)];
         if (Mlsamen(3, c3, "TRF")) {
             if (info != infoe && infoe != 0) {
                 write(nout, "(' *** ',a,' returned with INFO =',i5,' instead of ',i2,/,"
@@ -572,7 +576,7 @@ void Alaerh(common &cmn, const char *path, const char *subnam, INTEGER const inf
             //
         } else if (Mlsamen(3, c3, "CON")) {
             //
-            if (Mlsame(&subnam[(1 - 1)], "R") || Mlsame(&subnam[(1 - 1)], "D")) {
+            if (Mlsame(&subnam[0], "R")) {
                 write(nout, format_9973), subnam_trimmed, info, m, imat;
             } else {
                 write(nout, format_9969), subnam_trimmed, info, opts[0], m, imat;

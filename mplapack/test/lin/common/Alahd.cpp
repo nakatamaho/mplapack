@@ -28,6 +28,7 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
+#include <string>
 
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
@@ -128,9 +129,9 @@ void Alahd(common &cmn, INTEGER const iounit, const char *path) {
         return;
     }
     //
-    char sym[9];
-    char eigcnm[4];
-    char subnam [32];
+    char sym[10];
+    char eigcnm[5];
+    std::string subnam;
     if (Mlsamen(2, p2, "GE")) {
         //
         //        GE: General dense
@@ -197,9 +198,9 @@ void Alahd(common &cmn, INTEGER const iounit, const char *path) {
         //        PP: Positive definite packed
         //
         if (sord) {
-            sym = "Symmetric";
+            strncpy(sym, "Symmetric", strlen(sym) - 1);
         } else {
-            sym = "Hermitian";
+            strncpy(sym, "Hermitian", strlen(sym) - 1);
         }
         if (Mlsame(c3, "O")) {
             write(iounit, "(/,1x,a3,':  ',a9,' positive definite matrices')"), path, sym;
@@ -230,14 +231,14 @@ void Alahd(common &cmn, INTEGER const iounit, const char *path) {
         //        PS: Positive semi-definite full
         //
         if (sord) {
-            sym = "Symmetric";
+            strncpy(sym, "Symmetric", strlen(sym) - 1);
         } else {
-            sym = "Hermitian";
+            strncpy(sym, "Hermitian", strlen(sym) - 1);
         }
         if (Mlsame(c1, "S") || Mlsame(c1, "C")) {
-            eigcnm = "1E04";
+            strncpy(eigcnm, "1E04", strlen(eigcnm) - 1);
         } else {
-            eigcnm = "1D12";
+            strncpy(eigcnm, "1D12", strlen(eigcnm) - 1);
         }
         write(iounit, format_9995), path, sym;
         write(iounit, "(' Matrix types:')");
@@ -498,10 +499,10 @@ void Alahd(common &cmn, INTEGER const iounit, const char *path) {
         //
         if (Mlsame(c3, "R")) {
             write(iounit, "(/,1x,a3,':  Triangular matrices')"), path;
-            subnam = path[(1 - 1)] + const char * ("LATRS");
+            subnam = std::string(&path[0]) + std::string("LATRS");
         } else {
             write(iounit, "(/,1x,a3,':  Triangular packed matrices')"), path;
-            subnam = path[(1 - 1)] + const char * ("LATPS");
+            subnam = std::string(&path[0]) + std::string("LATPS");
         }
         write(iounit, "(' Matrix types for ',a3,' routines:',/,4x,'1. Diagonal',24x,"
                       "'6. Scaled near overflow',/,4x,'2. Random, CNDNUM = 2',14x,"
@@ -510,6 +511,7 @@ void Alahd(common &cmn, INTEGER const iounit, const char *path) {
                       "'9. Unit, CNDNUM = sqrt(0.1/EPS)',/,4x,'5. Scaled near underflow',10x,"
                       "'10. Unit, CNDNUM = 0.1/EPS')"),
             path;
+
         write(iounit, "(' Special types for testing ',a,':',/,3x,"
                       "'11. Matrix elements are O(1), large right hand side',/,3x,"
                       "'12. First diagonal causes overflow,',' offdiagonal column norms < 1',"
@@ -520,7 +522,7 @@ void Alahd(common &cmn, INTEGER const iounit, const char *path) {
                       "'16. One zero diagonal element',/,3x,"
                       "'17. Large offdiagonals cause overflow when adding a column',/,3x,"
                       "'18. Unit triangular with large right hand side')"),
-            subnam(1, len_trim(subnam));
+            subnam;
         write(iounit, "(' Test ratios:')");
         write(iounit, format_9961), 1;
         write(iounit, format_9960), 2;
@@ -529,7 +531,7 @@ void Alahd(common &cmn, INTEGER const iounit, const char *path) {
         write(iounit, format_9957), 5;
         write(iounit, format_9956), 6;
         write(iounit, format_9955), 7;
-        write(iounit, format_9951), subnam(1, len_trim(subnam)), 8;
+        write(iounit, format_9951), subnam, 8;
         write(iounit, "(' Messages:')");
         //
     } else if (Mlsamen(2, p2, "TB")) {
@@ -537,7 +539,7 @@ void Alahd(common &cmn, INTEGER const iounit, const char *path) {
         //        TB: Triangular band
         //
         write(iounit, "(/,1x,a3,':  Triangular band matrices')"), path;
-        subnam = path[(1 - 1)] + const char * ("LATBS");
+        subnam = std::string(&path[0]) + std::string("LATBS");
         write(iounit, "(' Matrix types for ',a3,' routines:',/,4x,'1. Random, CNDNUM = 2',14x,"
                       "'6. Identity',/,4x,'2. Random, CNDNUM = sqrt(0.1/EPS)  ',"
                       "'7. Unit triangular, CNDNUM = 2',/,4x,'3. Random, CNDNUM = 0.1/EPS',8x,"
@@ -554,7 +556,7 @@ void Alahd(common &cmn, INTEGER const iounit, const char *path) {
                       "'15. One zero diagonal element',/,3x,"
                       "'16. Large offdiagonals cause overflow when adding a column',/,3x,"
                       "'17. Unit triangular with large right hand side')"),
-            subnam(1, len_trim(subnam));
+            subnam;
         write(iounit, "(' Test ratios:')");
         write(iounit, format_9960), 1;
         write(iounit, format_9959), 2;
@@ -562,7 +564,7 @@ void Alahd(common &cmn, INTEGER const iounit, const char *path) {
         write(iounit, format_9957), 4;
         write(iounit, format_9956), 5;
         write(iounit, format_9955), 6;
-        write(iounit, format_9951), subnam(1, len_trim(subnam)), 7;
+        write(iounit, format_9951), subnam, 7;
         write(iounit, "(' Messages:')");
         //
     } else if (Mlsamen(2, p2, "QR")) {

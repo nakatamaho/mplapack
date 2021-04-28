@@ -29,22 +29,22 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const ntypes, INTEGER const nin, INTEGER const nout) {
-    FEM_CMN_SVE(Alareq);
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+
+void Alareq(common &cmn, const char *path, INTEGER const nmats, bool *dotype, INTEGER const ntypes, INTEGER const nin, INTEGER const nout) {
     common_read read(cmn);
     common_write write(cmn);
-    str<10> &intstr = sve.intstr;
-    if (is_called_first_time) {
-        intstr = "0123456789";
-    }
+
     INTEGER i = 0;
     bool firstt = false;
-    str<80> line = char0;
+    char line[80];
     INTEGER lenp = 0;
     INTEGER j = 0;
-    arr_1d<100, int> nreq(fill0);
+    INTEGER nreq[100];
     INTEGER i1 = 0;
-    char c1 = char0;
+    char c1;
     INTEGER k = 0;
     INTEGER ic = 0;
     INTEGER nt = 0;
@@ -80,6 +80,9 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
             dotype[i - 1] = true;
         }
     } else {
+        printf("not yet : Rlareq.cpp\n");
+        exit(1);
+#ifdef NOTYET
         for (i = 1; i <= ntypes; i = i + 1) {
             dotype[i - 1] = false;
         }
@@ -90,7 +93,7 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
         if (nmats > 0) {
             try {
                 read(nin, "(a80)"), line;
-            } catch (read_end const ) {
+            } catch (read_end const) {
                 goto statement_90;
             }
             lenp = len[line - 1];
@@ -148,7 +151,7 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
                     write(nout, "(' *** Warning:  duplicate request of matrix type ',i2,' for ',"
                                 "a3)"),
 
-		      nt, path;
+                        nt, path;
                 }
                 dotype[nt - 1] = true;
             } else {
@@ -158,6 +161,7 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
             }
         }
     statement_80:;
+#endif
     }
     return;
 //
@@ -167,7 +171,6 @@ statement_90:
                 "' right number of types for each path',/)"),
         path;
     write(nout, star);
-    FEM_STOP(0);
     //
     //     End of Alareq
     //

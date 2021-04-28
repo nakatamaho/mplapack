@@ -117,7 +117,7 @@ void Rget01(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
             resid = one / eps;
         }
     } else {
-        resid = ((resid / n.real()) / anorm) / eps;
+        resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
     //     End of Rget01

@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cdrvac(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, INTEGER *nsval, REAL const thresh, INTEGER const  /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *b, COMPLEX *x, COMPLEX *work, REAL *rwork, arr_cref<std::complex<float>> swork, INTEGER const nout) {
+void Cdrvac(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, INTEGER *nsval, REAL const thresh, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *b, COMPLEX *x, COMPLEX *work, REAL *rwork, arr_cref<std::complex<float>> swork, INTEGER const nout) {
     FEM_CMN_SVE(Cdrvac);
     common_write write(cmn);
     str<32> &srnamt = cmn.srnamt;

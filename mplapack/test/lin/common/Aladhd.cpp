@@ -88,7 +88,7 @@ void Aladhd(common &cmn, INTEGER const iounit, const char *path) {
     c3[0] = path[2];
     char p2[2];
     p2[0] = path[1];
-    p2[1] = path[2];    
+    p2[1] = path[2];
     bool sord = Mlsame(c1, "S") || Mlsame(c1, "D");
     bool corz = Mlsame(c1, "C") || Mlsame(c1, "Z");
     if (!(sord || corz)) {
@@ -103,11 +103,11 @@ void Aladhd(common &cmn, INTEGER const iounit, const char *path) {
         write(6, "(/,1x,a3,' drivers:  General dense matrices')"), path;
         write(6, "(' Matrix types:')");
         write(6, "(4x,'1. Diagonal',24x,'7. Last n/2 columns zero',/,4x,"
-                      "'2. Upper triangular',16x,'8. Random, CNDNUM = sqrt(0.1/EPS)',/,4x,"
-                      "'3. Lower triangular',16x,'9. Random, CNDNUM = 0.1/EPS',/,4x,"
-                      "'4. Random, CNDNUM = 2',13x,'10. Scaled near underflow',/,4x,"
-                      "'5. First column zero',14x,'11. Scaled near overflow',/,4x,"
-                      "'6. Last column zero')");
+                 "'2. Upper triangular',16x,'8. Random, CNDNUM = sqrt(0.1/EPS)',/,4x,"
+                 "'3. Lower triangular',16x,'9. Random, CNDNUM = 0.1/EPS',/,4x,"
+                 "'4. Random, CNDNUM = 2',13x,'10. Scaled near underflow',/,4x,"
+                 "'5. First column zero',14x,'11. Scaled near overflow',/,4x,"
+                 "'6. Last column zero')");
         write(6, "(' Test ratios:')");
         write(6, format_9981), 1;
         write(6, format_9980), 2;
@@ -125,9 +125,9 @@ void Aladhd(common &cmn, INTEGER const iounit, const char *path) {
         write(6, "(/,1x,a3,' drivers:  General band matrices')"), path;
         write(6, "(' Matrix types:')");
         write(6, "(4x,'1. Random, CNDNUM = 2',14x,'5. Random, CNDNUM = sqrt(0.1/EPS)',/,"
-                      "4x,'2. First column zero',15x,'6. Random, CNDNUM = 0.1/EPS',/,4x,"
-                      "'3. Last column zero',16x,'7. Scaled near underflow',/,4x,"
-                      "'4. Last n/2 columns zero',11x,'8. Scaled near overflow')");
+                 "4x,'2. First column zero',15x,'6. Random, CNDNUM = 0.1/EPS',/,4x,"
+                 "'3. Last column zero',16x,'7. Scaled near underflow',/,4x,"
+                 "'4. Last n/2 columns zero',11x,'8. Scaled near overflow')");
         write(6, "(' Test ratios:')");
         write(6, format_9981), 1;
         write(6, format_9980), 2;
@@ -144,12 +144,12 @@ void Aladhd(common &cmn, INTEGER const iounit, const char *path) {
         //
         write(6, "(/,1x,a3,' drivers:  General tridiagonal')"), path;
         write(6, "(' Matrix types (1-6 have specified condition numbers):',/,4x,"
-                      "'1. Diagonal',24x,'7. Random, unspecified CNDNUM',/,4x,"
-                      "'2. Random, CNDNUM = 2',14x,'8. First column zero',/,4x,"
-                      "'3. Random, CNDNUM = sqrt(0.1/EPS)',2x,'9. Last column zero',/,4x,"
-                      "'4. Random, CNDNUM = 0.1/EPS',7x,'10. Last n/2 columns zero',/,4x,"
-                      "'5. Scaled near underflow',10x,'11. Scaled near underflow',/,4x,"
-                      "'6. Scaled near overflow',11x,'12. Scaled near overflow')");
+                 "'1. Diagonal',24x,'7. Random, unspecified CNDNUM',/,4x,"
+                 "'2. Random, CNDNUM = 2',14x,'8. First column zero',/,4x,"
+                 "'3. Random, CNDNUM = sqrt(0.1/EPS)',2x,'9. Last column zero',/,4x,"
+                 "'4. Random, CNDNUM = 0.1/EPS',7x,'10. Last n/2 columns zero',/,4x,"
+                 "'5. Scaled near underflow',10x,'11. Scaled near underflow',/,4x,"
+                 "'6. Scaled near overflow',11x,'12. Scaled near overflow')");
         write(6, "(' Test ratios:')");
         write(6, format_9981), 1;
         write(6, format_9980), 2;
@@ -166,9 +166,9 @@ void Aladhd(common &cmn, INTEGER const iounit, const char *path) {
         //        PP: Positive definite packed
         //
         if (sord) {
-	  strncpy(sym, "Symmetric", strlen(sym));
+            strncpy(sym, "Symmetric", strlen(sym));
         } else {
-	  strncpy(sym, "Hermitian", strlen(sym)); 
+            strncpy(sym, "Hermitian", strlen(sym));
         }
         if (Mlsame(c3, "O")) {
             write(6, "(/,1x,a3,' drivers:  ',a9,' positive definite matrices')"), path, sym;
@@ -177,11 +177,11 @@ void Aladhd(common &cmn, INTEGER const iounit, const char *path) {
         }
         write(6, "(' Matrix types:')");
         write(6, "(4x,'1. Diagonal',24x,'6. Random, CNDNUM = sqrt(0.1/EPS)',/,4x,"
-                      "'2. Random, CNDNUM = 2',14x,'7. Random, CNDNUM = 0.1/EPS',/,3x,"
-                      "'*3. First row and column zero',7x,'8. Scaled near underflow',/,3x,"
-                      "'*4. Last row and column zero',8x,'9. Scaled near overflow',/,3x,"
-                      "'*5. Middle row and column zero',/,3x,'(* - tests error exits from ',"
-                      "a3,'TRF, no test ratios are computed)')"),
+                 "'2. Random, CNDNUM = 2',14x,'7. Random, CNDNUM = 0.1/EPS',/,3x,"
+                 "'*3. First row and column zero',7x,'8. Scaled near underflow',/,3x,"
+                 "'*4. Last row and column zero',8x,'9. Scaled near overflow',/,3x,"
+                 "'*5. Middle row and column zero',/,3x,'(* - tests error exits from ',"
+                 "a3,'TRF, no test ratios are computed)')"),
             path;
         write(6, "(' Test ratios:')");
         write(6, format_9975), 1;
@@ -203,10 +203,10 @@ void Aladhd(common &cmn, INTEGER const iounit, const char *path) {
         }
         write(6, "(' Matrix types:')");
         write(6, "(4x,'1. Random, CNDNUM = 2',14x,'5. Random, CNDNUM = sqrt(0.1/EPS)',/,"
-                      "3x,'*2. First row and column zero',7x,'6. Random, CNDNUM = 0.1/EPS',/,"
-                      "3x,'*3. Last row and column zero',8x,'7. Scaled near underflow',/,3x,"
-                      "'*4. Middle row and column zero',6x,'8. Scaled near overflow',/,3x,"
-                      "'(* - tests error exits from ',a3,'TRF, no test ratios are computed)')"),
+                 "3x,'*2. First row and column zero',7x,'6. Random, CNDNUM = 0.1/EPS',/,"
+                 "3x,'*3. Last row and column zero',8x,'7. Scaled near underflow',/,3x,"
+                 "'*4. Middle row and column zero',6x,'8. Scaled near overflow',/,3x,"
+                 "'(* - tests error exits from ',a3,'TRF, no test ratios are computed)')"),
             path;
         write(6, "(' Test ratios:')");
         write(6, format_9975), 1;
@@ -227,15 +227,15 @@ void Aladhd(common &cmn, INTEGER const iounit, const char *path) {
             write(6, format_9993), path, "Hermitian";
         }
         write(6, "(' Matrix types (1-6 have specified condition numbers):',/,4x,"
-                      "'1. Diagonal',24x,'7. Random, unspecified CNDNUM',/,4x,"
-                      "'2. Random, CNDNUM = 2',14x,'8. First row and column zero',/,4x,"
-                      "'3. Random, CNDNUM = sqrt(0.1/EPS)',2x,'9. Last row and column zero',/,"
-                      "4x,'4. Random, CNDNUM = 0.1/EPS',7x,'10. Middle row and column zero',/,"
-                      "4x,'5. Scaled near underflow',10x,'11. Scaled near underflow',/,4x,"
-                      "'6. Scaled near overflow',11x,'12. Scaled near overflow')");
+                 "'1. Diagonal',24x,'7. Random, unspecified CNDNUM',/,4x,"
+                 "'2. Random, CNDNUM = 2',14x,'8. First row and column zero',/,4x,"
+                 "'3. Random, CNDNUM = sqrt(0.1/EPS)',2x,'9. Last row and column zero',/,"
+                 "4x,'4. Random, CNDNUM = 0.1/EPS',7x,'10. Middle row and column zero',/,"
+                 "4x,'5. Scaled near underflow',10x,'11. Scaled near underflow',/,4x,"
+                 "'6. Scaled near overflow',11x,'12. Scaled near overflow')");
         write(6, "(' Test ratios:')");
         write(6, "(3x,i2,': norm( U''*D*U - A ) / ( N * norm(A) * EPS )',', or',/,7x,"
-                      "'norm( L*D*L'' - A ) / ( N * norm(A) * EPS )')"),
+                 "'norm( L*D*L'' - A ) / ( N * norm(A) * EPS )')"),
             1;
         write(6, format_9980), 2;
         write(6, format_9979), 3;
@@ -302,7 +302,7 @@ void Aladhd(common &cmn, INTEGER const iounit, const char *path) {
         //        HA: Hermitian
         //            Aasen algorithm
         write(6, "(/,1x,a3,' drivers:  ',a9,' indefinite matrices',"
-                      "', \"Aasen\" Algorithm')"),
+                 "', \"Aasen\" Algorithm')"),
             path, "Hermitian";
         //
         write(6, "(' Matrix types:')");

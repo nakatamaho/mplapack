@@ -29,13 +29,18 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mpblas.h>
+#include <mplapack.h>
+#include <string>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
 
 #include <mplapack_lin.h>
 
-void Alaesm(common& cmn, const char *path, bool const ok, INTEGER const nout) {
+void Alaesm(common &cmn, const char *path, bool const ok, INTEGER const nout) {
+    common_write write(cmn);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -48,7 +53,6 @@ void Alaesm(common& cmn, const char *path, bool const ok, INTEGER const nout) {
     //
     //     .. Executable Statements ..
     //
-    common_write write(cmn);
     if (ok) {
         write(nout, "(1x,a3,' routines passed the tests of the error exits')"), path;
     } else {
