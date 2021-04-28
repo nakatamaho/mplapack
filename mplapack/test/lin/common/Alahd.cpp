@@ -118,7 +118,7 @@ void Alahd(INTEGER const iounit, const char *path) {
     //     ..
     //     .. Executable Statements ..
     //
-	if (iounit <= 0) {
+    if (iounit <= 0) {
         return;
     }
     char c1[1];
@@ -128,7 +128,7 @@ void Alahd(INTEGER const iounit, const char *path) {
     c3[0] = path[2];
     c3[1] = path[3];
     c3[2] = path[4];
-    p2[0] = path[1];            
+    p2[0] = path[1];
     p2[1] = path[2];
     bool sord = Mlsame(c1, "R");
     bool corz = Mlsame(c1, "C");
@@ -139,7 +139,7 @@ void Alahd(INTEGER const iounit, const char *path) {
     char sym[10];
     char eigcnm[5];
     std::string subnam;
-      if (Mlsamen(2, p2, "GE")) {
+    if (Mlsamen(2, p2, "GE")) {
         //
         //        GE: General dense
         //

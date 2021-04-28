@@ -931,6 +931,4 @@ void Rchkaa(void) {
     //
 }
 
-int main(int argc, char const *argv[]) {
-    Rchkaa();
-}
+int main(int argc, char const *argv[]) { Rchkaa(); }
