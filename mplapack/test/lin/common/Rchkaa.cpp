@@ -120,7 +120,7 @@ void Rchkaa(void) {
     //     Report values of parameters.
     //
     iMlaver(vers_major, vers_minor, vers_patch);
-    printf("Tests of the DOUBLE PRECISION MPLAPACK routines \n");
+    printf("Tests of the Multiple precision version of LAPACK (MPLAPACK) routines \n");
     printf("MPLAPACK VERSION  %d.%d.%d\n", vers_major, vers_minor, vers_patch);
     printf("The following parameter values will be used:\n");
     //
@@ -430,7 +430,7 @@ void Rchkaa(void) {
         //
         //     Check first character for correct precision.
         //
-        if (!Mlsame(c1, "Double precision")) {
+        if (!Mlsame(c1, "Double")) {
             printf(" %3s :  Unrecognized path name\n", path);
         } else if (nmats <= 0) {
             //

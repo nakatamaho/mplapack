@@ -88,7 +88,7 @@ void Rget03(INTEGER const n, REAL *a, INTEGER const lda, REAL *ainv, INTEGER con
     //
     resid = Rlange("1", n, n, work, ldwork, rwork);
     //
-    resid = ((resid * rcond) / eps) / n.real();
+    resid = ((resid * rcond) / eps) / castREAL(n);
     //
     //     End of Rget03
     //
