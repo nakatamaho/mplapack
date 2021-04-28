@@ -38,7 +38,8 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
-void Rchkge(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *afac, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *afac, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+    common cmn; 
     common_write write(cmn);
     // seeds are ignored
     static const char *values[] = {"N", "T", "C"};
@@ -126,7 +127,7 @@ void Rchkge(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
     //
     //     Initialize constants and the random number seed.
     //
-    path[0] = 'D';
+    path[0] = 'R'; //Real
     path[1] = 'G';
     path[2] = 'E';
     nrun = 0;
@@ -139,7 +140,7 @@ void Rchkge(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
     //     Test the error exits
     //
     if (tsterr) {
-        Rerrge(cmn, path, nout);
+        Rerrge(path, nout);
     }
     //
     //     Do for each value of M in MVAL
@@ -179,14 +180,11 @@ void Rchkge(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
                 Rlatb4(path, imat, m, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                 //
                 Rlatms(m, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, nopacking, a, lda, work, info);
-                printf("prepared matrix A is\n");
-                printmat(m, n, a, lda);
-                printf("\n");
                 //
                 //              Check error code from Rlatms.
                 //
                 if (info != 0) {
-                    Alaerh(cmn, path, "Rlatms", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rlatms", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_100;
                 }
                 //
@@ -227,23 +225,13 @@ void Rchkge(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
                     //                 Compute the LU factorization of the matrix.
                     //
                     Rlacpy("Full", m, n, a, lda, afac, lda);
-
-                    printf("A is\n");
-                    printmat(m, n, afac, lda);
-                    printf("\n");
                     Rgetrf(m, n, afac, lda, iwork, info);
                     //
                     //                 Check error code from Rgetrf.
                     //
-                    printf("LU factrized A is\n");
-                    printmat(m, n, afac, lda);
-                    printf("\n");
-                    printf("homa9 %ld %ld\n", m, n);
-                    printf("info %ld\n", info);
-
+  		    printf("Rgetrf m:%ld n:%ld lda:%ld info: %ld infoe: %ld \n", m, n, lda, info, izero);
                     if (info != izero) {
-                        printf("Rgetrf failed %ld\n", info);
-                        Alaerh(cmn, path, "Rgetrf", info, izero, " ", m, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rgetrf", info, izero, " ", m, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     trfcon = false;
                     //
@@ -253,10 +241,6 @@ void Rchkge(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
                     Rlacpy("Full", m, n, afac, lda, ainv, lda);
                     Rget01(m, n, a, lda, ainv, lda, iwork, rwork, result[1 - 1]);
                     nt = 1;
-                    printf("reconstruct A is\n");
-                    printmat(m, n, afac, lda);
-                    printf("\n");
-
 #ifdef NOTYET
                     //
                     //+    TEST 2
@@ -450,7 +434,7 @@ void Rchkge(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
     //
     //     Print a summary of the results.
     //
-    Alasum(cmn, path, nout, nfail, nrun, nerrs);
+    Alasum(path, nout, nfail, nrun, nerrs);
     //
     //     End of Rchkge
     //

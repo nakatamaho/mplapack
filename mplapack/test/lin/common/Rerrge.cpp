@@ -36,7 +36,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rerrge(common &cmn, const char *path, INTEGER const nunit) {
+void Rerrge(const char *path, INTEGER const nunit) {
     //
     //
     //  -- LAPACK test routine --
@@ -347,7 +347,7 @@ void Rerrge(common &cmn, const char *path, INTEGER const nunit) {
     //
     //     Print a summary line.
     //
-    Alaesm(cmn, path, ok, nout);
+    Alaesm(path, ok, nout);
     //
     //     End of Rerrge
     //

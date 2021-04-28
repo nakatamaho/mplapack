@@ -35,7 +35,8 @@ using fem::common;
 
 #include <mplapack_lin.h>
 
-void Alaerh(common &cmn, const char *path, const char *subnam, INTEGER const info, INTEGER const infoe, const char *opts, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const n5, INTEGER const imat, INTEGER const nfail, INTEGER &nerrs, INTEGER const nout) {
+void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER const infoe, const char *opts, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const n5, INTEGER const imat, INTEGER const nfail, INTEGER &nerrs, INTEGER const nout) {
+    common cmn;
     common_write write(cmn);
     static const char *format_9949 = "(' ==> Doing only the condition estimate for this case')";
     static const char *format_9952 = "(' *** Error code from ',a,' =',i5,/,' ==> UPLO=''',a1,''', TRANS=''',a1,"
@@ -129,9 +130,9 @@ void Alaerh(common &cmn, const char *path, const char *subnam, INTEGER const inf
     //
     if (nfail == 0 && nerrs == 0) {
         if (Mlsamen(3, c3, "SV ") || Mlsamen(3, c3, "SVX")) {
-            Aladhd(cmn, nout, path);
+            Aladhd(nout, path);
         } else {
-            Alahd(cmn, nout, path);
+            Alahd(nout, path);
         }
     }
     nerrs++;

@@ -44,8 +44,7 @@ using fem::common;
 
 using namespace std;
 
-void Rchkaa(common &cmn) {
-    common_write write(cmn);
+void Rchkaa(void) {
     static REAL threq = 2.0;
     time_t s1;
     const INTEGER nmax = 132;
@@ -444,10 +443,10 @@ void Rchkaa(common &cmn) {
             //        GE:  general matrices
             //
             ntypes = 11;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Rchkge(cmn, dotype, nm, mval, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+                Rchkge(dotype, nm, mval, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 printf(" %3s   routines were not tested\n", path);
             }
@@ -467,7 +466,7 @@ void Rchkaa(common &cmn) {
             la = (2 * kdmax + 1) * nmax;
             lafac = (3 * kdmax + 1) * nmax;
             ntypes = 8;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchkgb(dotype, nm, mval, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, &a[(1 - 1)], la, &a[(3 - 1) * lda], lafac, &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
@@ -486,7 +485,7 @@ void Rchkaa(common &cmn) {
             //        GT:  general tridiagonal matrices
             //
             ntypes = 12;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchkgt(dotype, nn, nval, nns, nsval, thresh, tsterr, &a[(1 - 1)], &a[(2 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
@@ -505,7 +504,7 @@ void Rchkaa(common &cmn) {
             //        PO:  positive definite matrices
             //
             ntypes = 9;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchkpo(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
@@ -525,7 +524,7 @@ void Rchkaa(common &cmn) {
             //
             ntypes = 9;
             //
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchkps(dotype, nn, nval, nnb2, nbval2, nrank, rankval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], piv, work, rwork, nout);
@@ -538,7 +537,7 @@ void Rchkaa(common &cmn) {
             //        PP:  positive definite packed matrices
             //
             ntypes = 9;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchkpp(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
@@ -557,7 +556,7 @@ void Rchkaa(common &cmn) {
             //        PB:  positive definite banded matrices
             //
             ntypes = 8;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchkpb(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
@@ -576,7 +575,7 @@ void Rchkaa(common &cmn) {
             //        PT:  positive definite tridiagonal matrices
             //
             ntypes = 12;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchkpt(dotype, nn, nval, nns, nsval, thresh, tsterr, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, nout);
@@ -596,7 +595,7 @@ void Rchkaa(common &cmn) {
             //             with partial (Bunch-Kaufman) pivoting algorithm
             //
             ntypes = 10;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchksy(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
@@ -616,7 +615,7 @@ void Rchkaa(common &cmn) {
             //             with bounded Bunch-Kaufman (rook) pivoting algorithm
             //
             ntypes = 10;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchksy_rook(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
@@ -637,7 +636,7 @@ void Rchkaa(common &cmn) {
             //             different matrix storage format than SR path version.
             //
             ntypes = 10;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchksy_rk(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * lda], e, &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
@@ -657,7 +656,7 @@ void Rchkaa(common &cmn) {
             //             with partial (Aasen's) pivoting algorithm
             //
             ntypes = 10;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchksy_aa(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
@@ -677,7 +676,7 @@ void Rchkaa(common &cmn) {
             //             with partial (Aasen's) pivoting algorithm
             //
             ntypes = 10;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchksy_aa_2stage(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
@@ -697,7 +696,7 @@ void Rchkaa(common &cmn) {
             //             with partial (Bunch-Kaufman) pivoting algorithm
             //
             ntypes = 10;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchksp(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
@@ -716,7 +715,7 @@ void Rchkaa(common &cmn) {
             //        TR:  triangular matrices
             //
             ntypes = 18;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchktr(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
@@ -729,7 +728,7 @@ void Rchkaa(common &cmn) {
             //        TP:  triangular packed matrices
             //
             ntypes = 18;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchktp(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
@@ -742,7 +741,7 @@ void Rchkaa(common &cmn) {
             //        TB:  triangular banded matrices
             //
             ntypes = 17;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchktb(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
@@ -755,7 +754,7 @@ void Rchkaa(common &cmn) {
             //        QR:  QR factorization
             //
             ntypes = 8;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchkqr(dotype, nm, mval, nn, nval, nnb, nbval, nxval, nrhs, thresh, tsterr, nmax, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], work, rwork, iwork, nout);
@@ -768,7 +767,7 @@ void Rchkaa(common &cmn) {
             //        LQ:  LQ factorization
             //
             ntypes = 8;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchklq(dotype, nm, mval, nn, nval, nnb, nbval, nxval, nrhs, thresh, tsterr, nmax, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], work, rwork, nout);
@@ -781,7 +780,7 @@ void Rchkaa(common &cmn) {
             //        QL:  QL factorization
             //
             ntypes = 8;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchkql(dotype, nm, mval, nn, nval, nnb, nbval, nxval, nrhs, thresh, tsterr, nmax, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], work, rwork, nout);
@@ -794,7 +793,7 @@ void Rchkaa(common &cmn) {
             //        RQ:  RQ factorization
             //
             ntypes = 8;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchkrq(dotype, nm, mval, nn, nval, nnb, nbval, nxval, nrhs, thresh, tsterr, nmax, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], work, rwork, iwork, nout);
@@ -807,7 +806,7 @@ void Rchkaa(common &cmn) {
             //        QP:  QR factorization with pivoting
             //
             ntypes = 6;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchkq3(dotype, nm, mval, nn, nval, nnb, nbval, nxval, thresh, &a[(1 - 1)], &a[(2 - 1) * lda], &b[(1 - 1)], &b[(3 - 1) * ldb], work, iwork, nout);
@@ -820,7 +819,7 @@ void Rchkaa(common &cmn) {
             //        TZ:  Trapezoidal matrix
             //
             ntypes = 3;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
                 Rchktz(dotype, nm, mval, nn, nval, thresh, tsterr, &a[(1 - 1)], &a[(2 - 1) * lda], &b[(1 - 1)], &b[(3 - 1) * ldb], work, nout);
@@ -833,7 +832,7 @@ void Rchkaa(common &cmn) {
             //        LS:  Least squares drivers
             //
             ntypes = 6;
-            Alareq(cmn, path, nmats, dotype, ntypes, nin, nout);
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstdrv) {
                 Rdrvls(dotype, nm, mval, nn, nval, nns, nsval, nnb, nbval, nxval, thresh, tsterr, &a[(1 - 1)], &a[(2 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], rwork, &rwork[(nmax + 1) - 1], nout);
@@ -933,7 +932,5 @@ void Rchkaa(common &cmn) {
 }
 
 int main(int argc, char const *argv[]) {
-    common cmn(argc, argv);
-    common_write write(cmn);
-    Rchkaa(cmn);
+    Rchkaa();
 }

@@ -33,7 +33,8 @@
 using namespace fem::major_types;
 using fem::common;
 
-void Alareq(common &cmn, const char *path, INTEGER const nmats, bool *dotype, INTEGER const ntypes, INTEGER const nin, INTEGER const nout) {
+void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const ntypes, INTEGER const nin, INTEGER const nout) {
+    common cmn;
     common_read read(cmn);
     common_write write(cmn);
 

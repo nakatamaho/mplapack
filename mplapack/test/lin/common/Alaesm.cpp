@@ -39,7 +39,8 @@ using fem::common;
 
 #include <mplapack_lin.h>
 
-void Alaesm(common &cmn, const char *path, bool const ok, INTEGER const nout) {
+void Alaesm(const char *path, bool const ok, INTEGER const nout) {
+    common cmn;
     common_write write(cmn);
     //
     //  -- LAPACK test routine --

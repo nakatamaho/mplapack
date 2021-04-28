@@ -36,7 +36,8 @@ using fem::common;
 
 #include <mplapack_lin.h>
 
-void Alahd(common &cmn, INTEGER const iounit, const char *path) {
+void Alahd(INTEGER const iounit, const char *path) {
+    common cmn;
     common_write write(cmn);
     static const char *format_9892 = "(/,1x,a3,':  ',a9,' indefinite matrices',"
                                      "', \"rook\" (bounded Bunch-Kaufman) pivoting')";
@@ -117,12 +118,18 @@ void Alahd(common &cmn, INTEGER const iounit, const char *path) {
     //     ..
     //     .. Executable Statements ..
     //
-    if (iounit <= 0) {
+	if (iounit <= 0) {
         return;
     }
-    char c1[1]; //= path[(1 - 1)];
-    char c3[3]; //= path[(3 - 1) + (3 - 1) * ldpath];
-    char p2[2]; //= path[(2 - 1) + (3 - 1) * ldpath];
+    char c1[1];
+    char c3[3];
+    char p2[2];
+    c1[0] = path[0];
+    c3[0] = path[2];
+    c3[1] = path[3];
+    c3[2] = path[4];
+    p2[0] = path[1];            
+    p2[1] = path[2];
     bool sord = Mlsame(c1, "R");
     bool corz = Mlsame(c1, "C");
     if (!(sord || corz)) {
@@ -132,7 +139,7 @@ void Alahd(common &cmn, INTEGER const iounit, const char *path) {
     char sym[10];
     char eigcnm[5];
     std::string subnam;
-    if (Mlsamen(2, p2, "GE")) {
+      if (Mlsamen(2, p2, "GE")) {
         //
         //        GE: General dense
         //

@@ -33,7 +33,8 @@
 using namespace fem::major_types;
 using fem::common;
 
-void Aladhd(common &cmn, INTEGER const iounit, const char *path) {
+void Aladhd(INTEGER const iounit, const char *path) {
+    common cmn;
     common_write write(cmn);
     static const char *format_9972 = "(3x,i2,': abs( WORK(1) - RPVGRW ) /',' ( max( WORK(1), RPVGRW ) * EPS )')";
     static const char *format_9974 = "(3x,i2,': norm( U*D*U'' - A ) / ( N * norm(A) * EPS )',', or',/,7x,"
