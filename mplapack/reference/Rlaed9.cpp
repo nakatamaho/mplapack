@@ -29,11 +29,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL Rlamc3(REAL a, REAL b) {
-    REAL c = a + b;
-    return c;
-}
-
 void Rlaed9(INTEGER const k, INTEGER const kstart, INTEGER const kstop, INTEGER const n, REAL *d, REAL *q, INTEGER const ldq, REAL const rho, REAL *dlamda, REAL *w, REAL *s, INTEGER const lds, INTEGER &info) {
     INTEGER i = 0;
     INTEGER j = 0;
@@ -106,11 +101,11 @@ void Rlaed9(INTEGER const k, INTEGER const kstart, INTEGER const kstop, INTEGER 
     //     this code.
     //
     for (i = 1; i <= n; i = i + 1) {
-        dlamda[i - 1] = Rlamc3(dlamda[i - 1], dlamda[i - 1]) - dlamda[i - 1];
+        dlamda[i - 1] = dlamc3[(dlamda[i - 1] - 1) + (dlamda[i - 1] - 1) * lddlamc3] - dlamda[i - 1];
     }
     //
     for (j = kstart; j <= kstop; j = j + 1) {
-        Rlaed4(k, j, dlamda, w, &q[(j - 1) * ldq], rho, d[j - 1], info);
+        Rlaed4(k, j, dlamda, w, &q[(j - 1) * ldq], rho, &d[j - 1], info);
         //
         //        If the zero finder fails, the computation is terminated.
         //

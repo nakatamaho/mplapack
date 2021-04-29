@@ -274,7 +274,7 @@ statement_10:
                     //
                     //                 generate rotation to annihilate a(i,i-k+ka+1)
                     //
-                    Rlartg(&ab[((k + 1) - 1) + ((i - k + ka) - 1) * ldab], ra1, &work[(n + i - k + ka - m) - 1], &work[(i - k + ka - m) - 1], ra);
+                    Rlartg(ab[((k + 1) - 1) + ((i - k + ka) - 1) * ldab], ra1, work[(n + i - k + ka - m) - 1], work[(i - k + ka - m) - 1], ra);
                     //
                     //                 create nonzero element a(i-k,i-k+ka+1) outside the
                     //                 band and store it in WORK(i-k)
@@ -338,7 +338,7 @@ statement_10:
                 //              post-multiply X by product of rotations in 1st set
                 //
                 for (j = j2; j <= j1; j = j + ka1) {
-                    Rrot(n - m, &x[((m + 1) - 1) + (j - 1) * ldx], 1, &x[((m + 1) - 1) + ((j + 1) - 1) * ldx], 1, &work[(n + j - m) - 1], &work[(j - m) - 1]);
+                    Rrot(n - m, &x[((m + 1) - 1) + (j - 1) * ldx], 1, &x[((m + 1) - 1) + ((j + 1) - 1) * ldx], 1, work[(n + j - m) - 1], work[(j - m) - 1]);
                 }
             }
         }
@@ -427,7 +427,7 @@ statement_10:
                 //              post-multiply X by product of rotations in 2nd set
                 //
                 for (j = j2; j <= j1; j = j + ka1) {
-                    Rrot(n - m, &x[((m + 1) - 1) + (j - 1) * ldx], 1, &x[((m + 1) - 1) + ((j + 1) - 1) * ldx], 1, &work[(n + j) - 1], &work[j - 1]);
+                    Rrot(n - m, &x[((m + 1) - 1) + (j - 1) * ldx], 1, &x[((m + 1) - 1) + ((j + 1) - 1) * ldx], 1, work[(n + j) - 1], work[j - 1]);
                 }
             }
         }
@@ -487,7 +487,7 @@ statement_10:
                 //
                 Rscal(n - m, one / bii, &x[((m + 1) - 1) + (i - 1) * ldx], 1);
                 if (kbt > 0) {
-                    Rger(n - m, kbt, -one, &x[((m + 1) - 1) + (i - 1) * ldx], 1, bb[((kbt + 1) - 1) + ((i - kbt) - 1) * ldbb], ldbb - 1, &x[((m + 1) - 1) + ((i - kbt) - 1) * ldx], ldx);
+                    Rger(n - m, kbt, -one, &x[((m + 1) - 1) + (i - 1) * ldx], 1, &bb[((kbt + 1) - 1) + ((i - kbt) - 1) * ldbb], ldbb - 1, &x[((m + 1) - 1) + ((i - kbt) - 1) * ldx], ldx);
                 }
             }
             //
@@ -510,7 +510,7 @@ statement_10:
                     //
                     //                 generate rotation to annihilate a(i-k+ka+1,i)
                     //
-                    Rlartg(ab[((ka1 - k) - 1) + (i - 1) * ldab], ra1, &work[(n + i - k + ka - m) - 1], &work[(i - k + ka - m) - 1], ra);
+                    Rlartg(ab[((ka1 - k) - 1) + (i - 1) * ldab], ra1, work[(n + i - k + ka - m) - 1], work[(i - k + ka - m) - 1], ra);
                     //
                     //                 create nonzero element a(i-k+ka+1,i-k) outside the
                     //                 band and store it in WORK(i-k)
@@ -574,7 +574,7 @@ statement_10:
                 //              post-multiply X by product of rotations in 1st set
                 //
                 for (j = j2; j <= j1; j = j + ka1) {
-                    Rrot(n - m, &x[((m + 1) - 1) + (j - 1) * ldx], 1, &x[((m + 1) - 1) + ((j + 1) - 1) * ldx], 1, &work[(n + j - m) - 1], &work[(j - m) - 1]);
+                    Rrot(n - m, &x[((m + 1) - 1) + (j - 1) * ldx], 1, &x[((m + 1) - 1) + ((j + 1) - 1) * ldx], 1, work[(n + j - m) - 1], work[(j - m) - 1]);
                 }
             }
         }
@@ -663,7 +663,7 @@ statement_10:
                 //              post-multiply X by product of rotations in 2nd set
                 //
                 for (j = j2; j <= j1; j = j + ka1) {
-                    Rrot(n - m, &x[((m + 1) - 1) + (j - 1) * ldx], 1, &x[((m + 1) - 1) + ((j + 1) - 1) * ldx], 1, &work[(n + j) - 1], &work[j - 1]);
+                    Rrot(n - m, &x[((m + 1) - 1) + (j - 1) * ldx], 1, &x[((m + 1) - 1) + ((j + 1) - 1) * ldx], 1, work[(n + j) - 1], work[j - 1]);
                 }
             }
         }
@@ -776,7 +776,7 @@ statement_490:
                 //
                 Rscal(nx, one / bii, &x[(i - 1) * ldx], 1);
                 if (kbt > 0) {
-                    Rger(nx, kbt, -one, &x[(i - 1) * ldx], 1, bb[(kb - 1) + ((i + 1) - 1) * ldbb], ldbb - 1, &x[((i + 1) - 1) * ldx], ldx);
+                    Rger(nx, kbt, -one, &x[(i - 1) * ldx], 1, &bb[(kb - 1) + ((i + 1) - 1) * ldbb], ldbb - 1, &x[((i + 1) - 1) * ldx], ldx);
                 }
             }
             //
@@ -798,7 +798,7 @@ statement_490:
                     //
                     //                 generate rotation to annihilate a(i+k-ka-1,i)
                     //
-                    Rlartg(ab[((k + 1) - 1) + (i - 1) * ldab], ra1, &work[(n + i + k - ka) - 1], &work[(i + k - ka) - 1], ra);
+                    Rlartg(ab[((k + 1) - 1) + (i - 1) * ldab], ra1, work[(n + i + k - ka) - 1], work[(i + k - ka) - 1], ra);
                     //
                     //                 create nonzero element a(i+k-ka-1,i+k) outside the
                     //                 band and store it in WORK(m-kb+i+k)
@@ -863,7 +863,7 @@ statement_490:
                 //              post-multiply X by product of rotations in 1st set
                 //
                 for (j = j1; j <= j2; j = j + ka1) {
-                    Rrot(nx, &x[(j - 1) * ldx], 1, &x[((j - 1) - 1) * ldx], 1, &work[(n + j) - 1], &work[j - 1]);
+                    Rrot(nx, &x[(j - 1) * ldx], 1, &x[((j - 1) - 1) * ldx], 1, work[(n + j) - 1], work[j - 1]);
                 }
             }
         }
@@ -954,7 +954,7 @@ statement_490:
                 //              post-multiply X by product of rotations in 2nd set
                 //
                 for (j = j1; j <= j2; j = j + ka1) {
-                    Rrot(nx, &x[(j - 1) * ldx], 1, &x[((j - 1) - 1) * ldx], 1, &work[(n + m - kb + j) - 1], &work[(m - kb + j) - 1]);
+                    Rrot(nx, &x[(j - 1) * ldx], 1, &x[((j - 1) - 1) * ldx], 1, work[(n + m - kb + j) - 1], work[(m - kb + j) - 1]);
                 }
             }
         }
@@ -1015,7 +1015,7 @@ statement_490:
                 //
                 Rscal(nx, one / bii, &x[(i - 1) * ldx], 1);
                 if (kbt > 0) {
-                    Rger(nx, kbt, -one, &x[(i - 1) * ldx], 1, bb[(2 - 1) + (i - 1) * ldbb], 1, &x[((i + 1) - 1) * ldx], ldx);
+                    Rger(nx, kbt, -one, &x[(i - 1) * ldx], 1, &bb[(2 - 1) + (i - 1) * ldbb], 1, &x[((i + 1) - 1) * ldx], ldx);
                 }
             }
             //
@@ -1037,7 +1037,7 @@ statement_490:
                     //
                     //                 generate rotation to annihilate a(i,i+k-ka-1)
                     //
-                    Rlartg(ab[((ka1 - k) - 1) + ((i + k - ka) - 1) * ldab], ra1, &work[(n + i + k - ka) - 1], &work[(i + k - ka) - 1], ra);
+                    Rlartg(ab[((ka1 - k) - 1) + ((i + k - ka) - 1) * ldab], ra1, work[(n + i + k - ka) - 1], work[(i + k - ka) - 1], ra);
                     //
                     //                 create nonzero element a(i+k,i+k-ka-1) outside the
                     //                 band and store it in WORK(m-kb+i+k)
@@ -1102,7 +1102,7 @@ statement_490:
                 //              post-multiply X by product of rotations in 1st set
                 //
                 for (j = j1; j <= j2; j = j + ka1) {
-                    Rrot(nx, &x[(j - 1) * ldx], 1, &x[((j - 1) - 1) * ldx], 1, &work[(n + j) - 1], &work[j - 1]);
+                    Rrot(nx, &x[(j - 1) * ldx], 1, &x[((j - 1) - 1) * ldx], 1, work[(n + j) - 1], work[j - 1]);
                 }
             }
         }
@@ -1193,7 +1193,7 @@ statement_490:
                 //              post-multiply X by product of rotations in 2nd set
                 //
                 for (j = j1; j <= j2; j = j + ka1) {
-                    Rrot(nx, &x[(j - 1) * ldx], 1, &x[((j - 1) - 1) * ldx], 1, &work[(n + m - kb + j) - 1], &work[(m - kb + j) - 1]);
+                    Rrot(nx, &x[(j - 1) * ldx], 1, &x[((j - 1) - 1) * ldx], 1, work[(n + m - kb + j) - 1], work[(m - kb + j) - 1]);
                 }
             }
         }

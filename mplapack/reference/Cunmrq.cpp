@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cunmrz(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, INTEGER const l, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
+void Cunmrq(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -81,14 +81,12 @@ void Cunmrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
         info = -4;
     } else if (k < 0 || k > nq) {
         info = -5;
-    } else if (l < 0 || (left && (l > m)) || (!left && (l > n))) {
-        info = -6;
     } else if (lda < max((INTEGER)1, k)) {
-        info = -8;
+        info = -7;
     } else if (ldc < max((INTEGER)1, m)) {
-        info = -11;
-    } else if (lwork < max((INTEGER)1, nw) && !lquery) {
-        info = -13;
+        info = -10;
+    } else if (lwork < nw && !lquery) {
+        info = -12;
     }
     //
     INTEGER lwkopt = 0;
@@ -114,7 +112,7 @@ void Cunmrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
     }
     //
     if (info != 0) {
-        Mxerbla("Cunmrz", -info);
+        Mxerbla("Cunmrq", -info);
         return;
     } else if (lquery) {
         return;
@@ -126,10 +124,6 @@ void Cunmrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
         return;
     }
     //
-    //     Determine the block size.  NB may be at most NBMAX, where NBMAX
-    //     is used to define the local array T.
-    //
-    nb = min({nbmax, iMlaenv(1, "Cunmrq", side_trans, m, n, k, -1)});
     INTEGER nbmin = 2;
     INTEGER ldwork = nw;
     if (nb > 1 && nb < k) {
@@ -145,10 +139,7 @@ void Cunmrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER i2 = 0;
     INTEGER i3 = 0;
     INTEGER ni = 0;
-    INTEGER jc = 0;
-    INTEGER ja = 0;
     INTEGER mi = 0;
-    INTEGER ic = 0;
     char transt;
     INTEGER i = 0;
     INTEGER ib = 0;
@@ -156,7 +147,7 @@ void Cunmrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
         //
         //        Use unblocked code
         //
-        Cunmr3(side, trans, m, n, k, l, a, lda, tau, c, ldc, work, iinfo);
+        Cunmr2(side, trans, m, n, k, a, lda, tau, c, ldc, work, iinfo);
     } else {
         //
         //        Use blocked code
@@ -174,12 +165,8 @@ void Cunmrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
         //
         if (left) {
             ni = n;
-            jc = 1;
-            ja = m - l + 1;
         } else {
             mi = m;
-            ic = 1;
-            ja = n - l + 1;
         }
         //
         if (notran) {
@@ -194,31 +181,26 @@ void Cunmrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
             //           Form the triangular factor of the block reflector
             //           H = H(i+ib-1) . . . H(i+1) H(i)
             //
-            Clarzt("Backward", "Rowwise", l, ib, &a[(i - 1) + (ja - 1) * lda], lda, &tau[i - 1], &work[iwt - 1], ldt);
-            //
+            Clarft("Backward", "Rowwise", nq - k + i + ib - 1, ib, &a[(i - 1)], lda, &tau[i - 1], &work[iwt - 1], ldt);
             if (left) {
                 //
-                //              H or H**H is applied to C(i:m,1:n)
+                //              H or H**H is applied to C(1:m-k+i+ib-1,1:n)
                 //
-                mi = m - i + 1;
-                ic = i;
+                mi = m - k + i + ib - 1;
             } else {
                 //
-                //              H or H**H is applied to C(1:m,i:n)
+                //              H or H**H is applied to C(1:m,1:n-k+i+ib-1)
                 //
-                ni = n - i + 1;
-                jc = i;
+                ni = n - k + i + ib - 1;
             }
             //
             //           Apply H or H**H
             //
-            Clarzb(side, &transt, "Backward", "Rowwise", mi, ni, ib, l, &a[(i - 1) + (ja - 1) * lda], lda, &work[iwt - 1], ldt, &c[(ic - 1) + (jc - 1) * ldc], ldc, work, ldwork);
+            Clarfb(side, &transt, "Backward", "Rowwise", mi, ni, ib, &a[(i - 1)], lda, &work[iwt - 1], ldt, c, ldc, work, ldwork);
         }
-        //
     }
-    //
     work[1 - 1] = lwkopt;
     //
-    //     End of Cunmrz
+    //     End of Cunmrq
     //
 }

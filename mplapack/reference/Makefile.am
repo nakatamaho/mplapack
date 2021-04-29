@@ -830,9 +830,7 @@ Ctgsyl.cpp \
 Ctpcon.cpp \
 Ctprfs.cpp \
 Ctptri.cpp \
-Ctpttf.cpp
-
-MPLAPACK_SOURCES_NOTYET= \
+Ctpttf.cpp \
 Ctrcon.cpp \
 Ctrevc.cpp \
 Ctrrfs.cpp \
@@ -860,17 +858,18 @@ Rpbrfs.cpp \
 Rpbsvx.cpp \
 Rpftrf.cpp \
 Rpftri.cpp \
-Rpftrs.cpp \
-Claed0.cpp \
-Claed7.cpp \
-Claed8.cpp \
-Claein.cpp \
-Clag2c.cpp \
-Claic1.cpp \
-Clals0.cpp \
-Clalsa.cpp \
-Clalsd.cpp \
-Clangb.cpp \
+Rpftrs.cpp
+
+MPLAPACK_SOURCES_NOTYET= \
+Rsptri.cpp \
+Rstein.cpp \
+Rpptri.cpp \
+Rpstf2.cpp \
+Rpstrf.cpp \
+Rpteqr.cpp \
+Cpftrf.cpp \
+Cpftri.cpp \
+Cpftrs.cpp \
 Clanhf.cpp \
 Clanhs.cpp \
 Clansb.cpp \
@@ -879,6 +878,16 @@ Clantp.cpp \
 Clantr.cpp \
 Claqp2.cpp \
 Claqps.cpp \
+Claed8.cpp \
+Claed7.cpp \
+Claed0.cpp \
+Claein.cpp \
+Clag2c.cpp \
+Claic1.cpp \
+Clals0.cpp \
+Clalsa.cpp \
+Clalsd.cpp \
+Clangb.cpp \
 Clarcm.cpp \
 Clarrv.cpp \
 Clat2c.cpp \
@@ -887,9 +896,6 @@ Clatdf.cpp \
 Cpbcon.cpp \
 Cpbrfs.cpp \
 Cpbsvx.cpp \
-Cpftrf.cpp \
-Cpftri.cpp \
-Cpftrs.cpp \
 Cpoequb.cpp \
 Cporfsx.cpp \
 Cposvxx.cpp \
@@ -1053,10 +1059,6 @@ Rorgtsqr.cpp \
 Rorgtsqr_row.cpp \
 Rporfsx.cpp \
 Rposvxx.cpp \
-Rpptri.cpp \
-Rpstf2.cpp \
-Rpstrf.cpp \
-Rpteqr.cpp \
 Rsb2st_kernels.cpp \
 Rsbev_2stage.cpp \
 Rsbevd_2stage.cpp \
@@ -1071,10 +1073,8 @@ Rspgv.cpp \
 Rspgvd.cpp \
 Rspgvx.cpp \
 Rsposv.cpp \
-Rsptri.cpp \
 Rstebz.cpp \
 Rstegr.cpp \
-Rstein.cpp \
 Rstemr.cpp \
 Rstevr.cpp \
 Rstevx.cpp \

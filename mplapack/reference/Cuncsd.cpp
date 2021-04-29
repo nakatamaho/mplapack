@@ -202,7 +202,7 @@ void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         lorglqworkmin = max((INTEGER)1, m - q);
         iorbdb = itauq2 + max((INTEGER)1, m - q);
         Cunbdb(trans, signs, m, p, q, x11, ldx11, x12, ldx12, x21, ldx21, x22, ldx22, theta, theta, u1, u2, v1t, v2t, work, -1, childinfo);
-        lorbdbworkopt = castINTEGER(work[1 - 1]);
+        lorbdbworkopt = castINTEGER(work[1 - 1].real());
         lorbdbworkmin = lorbdbworkopt;
         lworkopt = max({iorgqr + lorgqrworkopt, iorglq + lorglqworkopt, iorbdb + lorbdbworkopt}) - 1;
         lworkmin = max({iorgqr + lorgqrworkmin, iorglq + lorglqworkmin, iorbdb + lorbdbworkmin}) - 1;
@@ -250,18 +250,18 @@ void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             Cungqr(m - p, m - p, q, u2, ldu2, &work[itaup2 - 1], &work[iorgqr - 1], lorgqrwork, info);
         }
         if (wantv1t && q > 0) {
-            Clacpy("U", q - 1, q - 1, x11[(2 - 1) * ldx11], ldx11, v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t);
+            Clacpy("U", q - 1, q - 1, &x11[(2 - 1) * ldx11], ldx11, &v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t);
             v1t[(1 - 1)] = one;
             for (j = 2; j <= q; j = j + 1) {
                 v1t[(j - 1) * ldv1t] = zero;
                 v1t[(j - 1)] = zero;
             }
-            Cunglq(q - 1, q - 1, q - 1, v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t, &work[itauq1 - 1], &work[iorglq - 1], lorglqwork, info);
+            Cunglq(q - 1, q - 1, q - 1, &v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t, &work[itauq1 - 1], &work[iorglq - 1], lorglqwork, info);
         }
         if (wantv2t && m - q > 0) {
             Clacpy("U", p, m - q, x12, ldx12, v2t, ldv2t);
             if (m - p > q) {
-                Clacpy("U", m - p - q, m - p - q, x22[((q + 1) - 1) + ((p + 1) - 1) * ldx22], ldx22, v2t[((p + 1) - 1) + ((p + 1) - 1) * ldv2t], ldv2t);
+                Clacpy("U", m - p - q, m - p - q, &x22[((q + 1) - 1) + ((p + 1) - 1) * ldx22], ldx22, &v2t[((p + 1) - 1) + ((p + 1) - 1) * ldv2t], ldv2t);
             }
             if (m > q) {
                 Cunglq(m - q, m - q, m - q, v2t, ldv2t, &work[itauq2 - 1], &work[iorglq - 1], lorglqwork, info);
@@ -277,20 +277,20 @@ void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             Cunglq(m - p, m - p, q, u2, ldu2, &work[itaup2 - 1], &work[iorglq - 1], lorglqwork, info);
         }
         if (wantv1t && q > 0) {
-            Clacpy("L", q - 1, q - 1, x11[(2 - 1)], ldx11, v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t);
+            Clacpy("L", q - 1, q - 1, &x11[(2 - 1)], ldx11, &v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t);
             v1t[(1 - 1)] = one;
             for (j = 2; j <= q; j = j + 1) {
                 v1t[(j - 1) * ldv1t] = zero;
                 v1t[(j - 1)] = zero;
             }
-            Cungqr(q - 1, q - 1, q - 1, v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t, &work[itauq1 - 1], &work[iorgqr - 1], lorgqrwork, info);
+            Cungqr(q - 1, q - 1, q - 1, &v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t, &work[itauq1 - 1], &work[iorgqr - 1], lorgqrwork, info);
         }
         if (wantv2t && m - q > 0) {
             p1 = min(p + 1, m);
             q1 = min(q + 1, m);
             Clacpy("L", m - q, p, x12, ldx12, v2t, ldv2t);
             if (m > p + q) {
-                Clacpy("L", m - p - q, m - p - q, x22[(p1 - 1) + (q1 - 1) * ldx22], ldx22, v2t[((p + 1) - 1) + ((p + 1) - 1) * ldv2t], ldv2t);
+                Clacpy("L", m - p - q, m - p - q, &x22[(p1 - 1) + (q1 - 1) * ldx22], ldx22, &v2t[((p + 1) - 1) + ((p + 1) - 1) * ldv2t], ldv2t);
             }
             Cungqr(m - q, m - q, m - q, v2t, ldv2t, &work[itauq2 - 1], &work[iorgqr - 1], lorgqrwork, info);
         }
