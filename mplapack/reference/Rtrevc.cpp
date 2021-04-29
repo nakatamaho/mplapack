@@ -130,22 +130,22 @@ void Rtrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
             for (j = 1; j <= n; j = j + 1) {
                 if (pair) {
                     pair = false;
-                    select[j-1] = false;
+                    select[j - 1] = false;
                 } else {
                     if (j < n) {
                         if (t[((j + 1) - 1) + (j - 1) * ldt] == zero) {
-                            if (select[j-1]) {
+                            if (select[j - 1]) {
                                 m++;
                             }
                         } else {
                             pair = true;
-                            if (select[j-1] || select[(j + 1)-1]) {
-                                select[j-1] = true;
+                            if (select[j - 1] || select[(j + 1) - 1]) {
+                                select[j - 1] = true;
                                 m += 2;
                             }
                         }
                     } else {
-                        if (select[n-1]) {
+                        if (select[n - 1]) {
                             m++;
                         }
                     }
@@ -219,11 +219,11 @@ void Rtrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
         statement_40:
             if (somev) {
                 if (ip == 0) {
-                    if (!select[ki-1]) {
+                    if (!select[ki - 1]) {
                         goto statement_130;
                     }
                 } else {
-		  if (!select[(ki - 1)-1]) {
+                    if (!select[(ki - 1) - 1]) {
                         goto statement_130;
                     }
                 }
@@ -542,7 +542,7 @@ void Rtrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
         //
         statement_150:
             if (somev) {
-                if (!select[ki-1]) {
+                if (!select[ki - 1]) {
                     goto statement_250;
                 }
             }

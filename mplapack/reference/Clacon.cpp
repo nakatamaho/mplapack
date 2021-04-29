@@ -30,16 +30,16 @@
 #include <mplapack.h>
 
 void Clacon(INTEGER const n, COMPLEX *v, COMPLEX *x, REAL &est, INTEGER &kase) {
-    REAL &absxi = sve.absxi;
-    REAL &altsgn = sve.altsgn;
-    REAL &estold = sve.estold;
-    INTEGER &i = sve.i;
-    INTEGER &iter = sve.iter;
-    INTEGER &j = sve.j;
-    INTEGER &jlast = sve.jlast;
-    INTEGER &jump = sve.jump;
-    REAL &safmin = sve.safmin;
-    REAL &temp = sve.temp;
+    REAL absxi;
+    REAL altsgn;
+    REAL estold;
+    INTEGER i;
+    INTEGER iter;
+    INTEGER j;
+    INTEGER jlast;
+    INTEGER jump;
+    REAL safmin;
+    REAL temp;
     const REAL one = 1.0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const COMPLEX czero = COMPLEX(0.0, 0.0);
@@ -74,7 +74,7 @@ void Clacon(INTEGER const n, COMPLEX *v, COMPLEX *x, REAL &est, INTEGER &kase) {
     safmin = Rlamch("Safe minimum");
     if (kase == 0) {
         for (i = 1; i <= n; i = i + 1) {
-            x[i - 1] = COMPLEX(one / n.real());
+            x[i - 1] = COMPLEX(one / castREAL(n));
         }
         kase = 1;
         jump = 1;
@@ -111,7 +111,7 @@ statement_20:
     for (i = 1; i <= n; i = i + 1) {
         absxi = abs(x[i - 1]);
         if (absxi > safmin) {
-            x[i - 1] = COMPLEX(x[i - 1].real() / absxi, &x[i - 1].imag() / absxi);
+            x[i - 1] = COMPLEX(x[i - 1].real() / absxi, x[i - 1].imag() / absxi);
         } else {
             x[i - 1] = cone;
         }
@@ -124,7 +124,7 @@ statement_20:
 //     FIRST ITERATION.  X HAS BEEN OVERWRITTEN BY CTRANS(A)*X.
 //
 statement_40:
-    j = iCmax1n, x, 1;
+    j = iCmax1(n, x, 1);
     iter = 2;
 //
 //     MAIN LOOP - ITERATIONS 2,3,...,ITMAX.
@@ -154,7 +154,7 @@ statement_70:
     for (i = 1; i <= n; i = i + 1) {
         absxi = abs(x[i - 1]);
         if (absxi > safmin) {
-            x[i - 1] = COMPLEX(x[i - 1].real() / absxi, &x[i - 1].imag() / absxi);
+            x[i - 1] = COMPLEX(x[i - 1].real() / absxi, x[i - 1].imag() / absxi);
         } else {
             x[i - 1] = cone;
         }
@@ -168,7 +168,7 @@ statement_70:
 //
 statement_90:
     jlast = j;
-    j = iCmax1n, x, 1;
+    j = iCmax1(n, x, 1);
     if ((abs(x[jlast - 1]) != abs(x[j - 1])) && (iter < itmax)) {
         iter++;
         goto statement_50;
@@ -179,7 +179,7 @@ statement_90:
 statement_100:
     altsgn = one;
     for (i = 1; i <= n; i = i + 1) {
-        x[i - 1] = COMPLEX(altsgn * (one + (i - 1).real() / (n - 1).real()));
+        x[i - 1] = COMPLEX(altsgn * (one + castREAL(i - 1) / castREAL(n - 1)));
         altsgn = -altsgn;
     }
     kase = 1;
@@ -190,7 +190,7 @@ statement_100:
 //     X HAS BEEN OVERWRITTEN BY A*X.
 //
 statement_120:
-    temp = two * (RCsum1(n, x, 1) / (3 * n).real());
+    temp = two * (RCsum1(n, x, 1) / castREAL(3 * n));
     if (temp > est) {
         Ccopy(n, x, 1, v, 1);
         est = temp;
