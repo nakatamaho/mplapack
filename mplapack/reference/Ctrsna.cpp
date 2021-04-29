@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
+
 void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, COMPLEX *t, INTEGER const ldt, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, REAL *s, REAL *sep, INTEGER const mm, INTEGER &m, COMPLEX *work, INTEGER const ldwork, REAL *rwork, INTEGER &info) {
     COMPLEX cdum = 0.0;
     bool wantbh = false;
@@ -45,13 +47,13 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     COMPLEX prod = 0.0;
     REAL rnrm = 0.0;
     REAL lnrm = 0.0;
-    arr_1d<1, COMPLEX> dummy(fill0);
+    COMPLEX dummy[1];
     INTEGER ierr = 0;
     INTEGER i = 0;
     const REAL zero = 0.0;
     REAL est = 0.0;
     INTEGER kase = 0;
-    char normin = char0;
+    char normin;
     INTEGER isave[3];
     REAL scale = 0.0;
     INTEGER ix = 0;
@@ -101,7 +103,7 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     if (somcon) {
         m = 0;
         for (j = 1; j <= n; j = j + 1) {
-            if (select(j)) {
+            if (select[j - 1]) {
                 m++;
             }
         }
@@ -140,7 +142,7 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     //
     if (n == 1) {
         if (somcon) {
-            if (!select(1)) {
+            if (!select[1 - 1]) {
                 return;
             }
         }
@@ -164,7 +166,7 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     for (k = 1; k <= n; k = k + 1) {
         //
         if (somcon) {
-            if (!select(k)) {
+            if (!select[k - 1]) {
                 goto statement_50;
             }
         }
@@ -174,9 +176,9 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
             //           Compute the reciprocal condition number of the k-th
             //           eigenvalue.
             //
-            prod = Cdotc(n, vr[(ks - 1) * ldvr], 1, vl[(ks - 1) * ldvl], 1);
-            rnrm = RCnrm2(n, vr[(ks - 1) * ldvr], 1);
-            lnrm = RCnrm2(n, vl[(ks - 1) * ldvl], 1);
+            prod = Cdotc(n, &vr[(ks - 1) * ldvr], 1, &vl[(ks - 1) * ldvl], 1);
+            rnrm = RCnrm2(n, &vr[(ks - 1) * ldvr], 1);
+            lnrm = RCnrm2(n, &vl[(ks - 1) * ldvl], 1);
             s[ks - 1] = abs(prod) / (rnrm * lnrm);
             //
         }
@@ -204,7 +206,7 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
             sep[ks - 1] = zero;
             est = zero;
             kase = 0;
-            normin = "N";
+            normin = 'N';
         statement_30:
             Clacn2(n - 1, &work[((n + 1) - 1) * ldwork], work, est, kase, isave);
             //
@@ -213,14 +215,14 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                     //
                     //                 Solve C**H*x = scale*b
                     //
-                    Clatrs("Upper", "Conjugate transpose", "Nonunit", normin, n - 1, &work[(2 - 1) + (2 - 1) * ldwork], ldwork, work, scale, rwork, ierr);
+                    Clatrs("Upper", "Conjugate transpose", "Nonunit", &normin, n - 1, &work[(2 - 1) + (2 - 1) * ldwork], ldwork, work, scale, rwork, ierr);
                 } else {
                     //
                     //                 Solve C*x = scale*b
                     //
-                    Clatrs("Upper", "No transpose", "Nonunit", normin, n - 1, &work[(2 - 1) + (2 - 1) * ldwork], ldwork, work, scale, rwork, ierr);
+                    Clatrs("Upper", "No transpose", "Nonunit", &normin, n - 1, &work[(2 - 1) + (2 - 1) * ldwork], ldwork, work, scale, rwork, ierr);
                 }
-                normin = "Y";
+                normin = 'Y';
                 if (scale != one) {
                     //
                     //                 Multiply by 1/SCALE if doing so will not cause

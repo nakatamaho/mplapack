@@ -826,13 +826,13 @@ Ctgevc.cpp \
 Ctgsen.cpp \
 Ctgsna.cpp \
 Ctgsy2.cpp \
-Ctgsyl.cpp
-
-MPLAPACK_SOURCES_NOTYET= \
+Ctgsyl.cpp \
 Ctpcon.cpp \
 Ctprfs.cpp \
 Ctptri.cpp \
-Ctpttf.cpp \
+Ctpttf.cpp
+
+MPLAPACK_SOURCES_NOTYET= \
 Ctrcon.cpp \
 Ctrevc.cpp \
 Ctrrfs.cpp \
