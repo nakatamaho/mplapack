@@ -814,9 +814,7 @@ Rtptri.cpp \
 Rtpttf.cpp \
 Rtrcon.cpp \
 Rtrevc.cpp \
-Rtrrfs.cpp
-
-MPLAPACK_SOURCES_NOTYET= \
+Rtrrfs.cpp \
 Clacon.cpp \
 Ctbcon.cpp \
 Ctbrfs.cpp \
@@ -826,7 +824,9 @@ Ctfttp.cpp \
 Ctfttr.cpp \
 Ctgevc.cpp \
 Ctgsen.cpp \
-Ctgsna.cpp \
+Ctgsna.cpp
+
+MPLAPACK_SOURCES_NOTYET= \
 Ctgsy2.cpp \
 Ctgsyl.cpp \
 Ctpcon.cpp \
