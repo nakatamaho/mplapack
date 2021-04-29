@@ -41,6 +41,7 @@ sed -i -e 's/, b\[/, \&b\[/g' ${newfilename}.cpp
 sed -i -e 's/, c\[/, \&c\[/g' ${newfilename}.cpp
 sed -i -e 's/, d\[/, \&d\[/g' ${newfilename}.cpp
 sed -i -e 's/, e\[/, \&e\[/g' ${newfilename}.cpp
+sed -i -e 's/, f\[/, \&f\[/g' ${newfilename}.cpp
 sed -i -e 's/, h\[/, \&h\[/g' ${newfilename}.cpp
 sed -i -e 's/, v\[/, \&v\[/g' ${newfilename}.cpp
 sed -i -e 's/, u\[/, \&u\[/g' ${newfilename}.cpp
