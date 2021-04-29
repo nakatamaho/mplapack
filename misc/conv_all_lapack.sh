@@ -53,6 +53,8 @@ sed -i -e 's/, z\[/, \&z\[/g' ${newfilename}.cpp
 sed -i -e 's/, ab\[/, \&ab\[/g' ${newfilename}.cpp
 sed -i -e 's/, ap\[/, \&ap\[/g' ${newfilename}.cpp
 sed -i -e 's/, vt\[/, \&vt\[/g' ${newfilename}.cpp
+sed -i -e 's/, vr\[/, \&vr\[/g' ${newfilename}.cpp
+sed -i -e 's/, vl\[/, \&vl\[/g' ${newfilename}.cpp
 sed -i -e 's/, tau\[/, \&tau\[/g' ${newfilename}.cpp
 sed -i -e 's/, dum\[/, \&dum\[/g' ${newfilename}.cpp
 sed -i -e 's/, cdum\[/, \&cdum\[/g' ${newfilename}.cpp
@@ -61,6 +63,10 @@ sed -i -e 's/, work\[/, \&work\[/g' ${newfilename}.cpp
 sed -i -e 's/, rwork\[/, \&rwork\[/g' ${newfilename}.cpp
 sed -i -e 's/, lwork\[/, \&lwork\[/g' ${newfilename}.cpp
 sed -i -e 's/, iwork\[/, \&iwork\[/g' ${newfilename}.cpp
+sed -i -e 's/, x11\[/, \&x11\[/g' ${newfilename}.cpp
+sed -i -e 's/, x12\[/, \&x12\[/g' ${newfilename}.cpp
+sed -i -e 's/, x21\[/, \&x21\[/g' ${newfilename}.cpp
+sed -i -e 's/, x22\[/, \&x22\[/g' ${newfilename}.cpp
 sed -i -e 's/ == "1"/Mlsame( , "1")/g' ${newfilename}.cpp
 sed -i -e 's/ == "0"/Mlsame( , "0")/g' ${newfilename}.cpp
 fi
