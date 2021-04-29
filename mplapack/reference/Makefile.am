@@ -824,11 +824,11 @@ Ctfttp.cpp \
 Ctfttr.cpp \
 Ctgevc.cpp \
 Ctgsen.cpp \
-Ctgsna.cpp
+Ctgsna.cpp \
+Ctgsy2.cpp \
+Ctgsyl.cpp
 
 MPLAPACK_SOURCES_NOTYET= \
-Ctgsy2.cpp \
-Ctgsyl.cpp \
 Ctpcon.cpp \
 Ctprfs.cpp \
 Ctptri.cpp \
