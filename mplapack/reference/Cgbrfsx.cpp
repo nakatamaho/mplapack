@@ -57,7 +57,7 @@ void Cgbrfsx(const char *trans, const char *equed, INTEGER const n, INTEGER cons
     //     Check the input parameters.
     //
     INTEGER lderr_bnds_norm = nrhs;
-    INTEGER lderr_bnds_comp = nrhs;  
+    INTEGER lderr_bnds_comp = nrhs;
     info = 0;
     INTEGER trans_type = iMlatrans(trans);
     const REAL itref_default = 1.0;
@@ -192,7 +192,7 @@ void Cgbrfsx(const char *trans, const char *equed, INTEGER const n, INTEGER cons
     //     Compute the norm of A and the reciprocal of the condition
     //     number of A.
     //
-    char norm ;
+    char norm;
     if (notran) {
         norm = 'I';
     } else {
@@ -207,7 +207,7 @@ void Cgbrfsx(const char *trans, const char *equed, INTEGER const n, INTEGER cons
     const REAL zero = 0.0;
     if (ref_type != 0 && info == 0) {
         //
-       g prec_type = iMlaprec("E");
+        g prec_type = iMlaprec("E");
         //
         if (notran) {
             Cla_gbrfsx_extended(prec_type, trans_type, n, kl, ku, nrhs, ab, ldab, afb, ldafb, ipiv, colequ, c, b, ldb, x, ldx, berr, n_norms, err_bnds_norm, err_bnds_comp, work, rwork, &work[(n + 1) - 1], transfer(rwork[((2 * n) - 1) * ldrwork], (/ (zero, zero) /), n), rcond, ithresh, rthresh, unstable_thresh, ignore_cwise, info);

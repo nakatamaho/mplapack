@@ -29,9 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX zdum) {
-   return abs(zdum.real()) + abs(zdum.imag());
-}
+inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
 
 void Cgbequb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX *ab, INTEGER const ldab, REAL *r, REAL *c, REAL &rowcnd, REAL &colcnd, REAL &amax, INTEGER &info) {
     //

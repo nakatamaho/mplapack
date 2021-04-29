@@ -38,7 +38,7 @@ void Cgbcon(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
     const REAL one = 1.0;
     REAL smlnum = 0.0;
     REAL ainvnm = 0.0;
-    char normin ;
+    char normin;
     INTEGER kase1 = 0;
     INTEGER kd = 0;
     bool lnoti = false;
@@ -83,7 +83,7 @@ void Cgbcon(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
     //     Test the input parameters.
     //
     info = 0;
-    onenrm = Mlsame(norm , "1") || Mlsame(norm, "O");
+    onenrm = Mlsame(norm, "1") || Mlsame(norm, "O");
     if (!onenrm && !Mlsame(norm, "I")) {
         info = -1;
     } else if (n < 0) {

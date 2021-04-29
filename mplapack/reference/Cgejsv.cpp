@@ -221,7 +221,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             //             .. minimal and optimal sizes of the complex workspace if
             //             only the singular values are requested
             if (errest) {
-                minwrk = max({n + lwqp3, n*n + lwcon, n + lwqrf, lwsvdj});
+                minwrk = max({n + lwqp3, n * n + lwcon, n + lwqrf, lwsvdj});
             } else {
                 minwrk = max({n + lwqp3, n + lwqrf, lwsvdj});
             }
@@ -229,14 +229,14 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 Cgesvj("L", "N", "N", n, n, a, lda, sva, n, v, ldv, cdummy, -1, rdummy, -1, ierr);
                 lwrk_Cgesvj = castINTEGER(cdummy[1 - 1].real());
                 if (errest) {
-                    optwrk = max({n + lwrk_Cgeqp3, n*n + lwcon, n + lwrk_Cgeqrf, lwrk_Cgesvj});
+                    optwrk = max({n + lwrk_Cgeqp3, n * n + lwcon, n + lwrk_Cgeqrf, lwrk_Cgesvj});
                 } else {
                     optwrk = max({n + lwrk_Cgeqp3, n + lwrk_Cgeqrf, lwrk_Cgesvj});
                 }
             }
             if (l2tran || rowpiv) {
                 if (errest) {
-		  minrwrk = max({(INTEGER)7, 2 * m, lrwqp3, lrwcon, lrwsvdj});
+                    minrwrk = max({(INTEGER)7, 2 * m, lrwqp3, lrwcon, lrwsvdj});
                 } else {
                     minrwrk = max({(INTEGER)7, 2 * m, lrwqp3, lrwsvdj});
                 }
@@ -325,9 +325,9 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             //            full SVD is requested
             if (!jracc) {
                 if (errest) {
-                    minwrk = max({n + lwqp3, n + lwcon, 2 * n + n*n + lwcon, 2 * n + lwqrf, 2 * n + lwqp3, 2 * n + n*n + n + lwlqf, 2 * n + n*n + n + n*n + lwcon, 2 * n + n*n + n + lwsvdj, 2 * n + n*n + n + lwsvdjv, 2 * n + n*n + n + lwunmqr, 2 * n + n*n + n + lwunmlq, n + n*n + lwsvdj, n + lwunmqrm});
+                    minwrk = max({n + lwqp3, n + lwcon, 2 * n + n * n + lwcon, 2 * n + lwqrf, 2 * n + lwqp3, 2 * n + n * n + n + lwlqf, 2 * n + n * n + n + n * n + lwcon, 2 * n + n * n + n + lwsvdj, 2 * n + n * n + n + lwsvdjv, 2 * n + n * n + n + lwunmqr, 2 * n + n * n + n + lwunmlq, n + n * n + lwsvdj, n + lwunmqrm});
                 } else {
-                    minwrk = max({n + lwqp3, 2 * n + n*n + lwcon, 2 * n + lwqrf, 2 * n + lwqp3, 2 * n + n*n + n + lwlqf, 2 * n + n*n + n + n*n + lwcon, 2 * n + n*n + n + lwsvdj, 2 * n + n*n + n + lwsvdjv, 2 * n + n*n + n + lwunmqr, 2 * n + n*n + n + lwunmlq, n + n*n + lwsvdj, n + lwunmqrm});
+                    minwrk = max({n + lwqp3, 2 * n + n * n + lwcon, 2 * n + lwqrf, 2 * n + lwqp3, 2 * n + n * n + n + lwlqf, 2 * n + n * n + n + n * n + lwcon, 2 * n + n * n + n + lwsvdj, 2 * n + n * n + n + lwsvdjv, 2 * n + n * n + n + lwunmqr, 2 * n + n * n + n + lwunmlq, n + n * n + lwsvdj, n + lwunmqrm});
                 }
                 miniwrk += n;
                 if (rowpiv || l2tran) {
@@ -335,9 +335,9 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 }
             } else {
                 if (errest) {
-                    minwrk = max({n + lwqp3, n + lwcon, 2 * n + lwqrf, 2 * n + n*n + lwsvdjv, 2 * n + n*n + n + lwunmqr, n + lwunmqrm});
+                    minwrk = max({n + lwqp3, n + lwcon, 2 * n + lwqrf, 2 * n + n * n + lwsvdjv, 2 * n + n * n + n + lwunmqr, n + lwunmqrm});
                 } else {
-                    minwrk = max({n + lwqp3, 2 * n + lwqrf, 2 * n + n*n + lwsvdjv, 2 * n + n*n + n + lwunmqr, n + lwunmqrm});
+                    minwrk = max({n + lwqp3, 2 * n + lwqrf, 2 * n + n * n + lwsvdjv, 2 * n + n * n + n + lwunmqr, n + lwunmqrm});
                 }
                 if (rowpiv || l2tran) {
                     miniwrk += m;
@@ -360,9 +360,9 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     Cunmlq("L", "C", n, n, n, a, lda, cdummy, v, ldv, cdummy, -1, ierr);
                     lwrk_Cunmlq = castINTEGER(cdummy[1 - 1].real());
                     if (errest) {
-                        optwrk = max({n + lwrk_Cgeqp3, n + lwcon, 2 * n + n*n + lwcon, 2 * n + lwrk_Cgeqrf, 2 * n + lwrk_Cgeqp3n, 2 * n + n*n + n + lwrk_Cgelqf, 2 * n + n*n + n + n*n + lwcon, 2 * n + n*n + n + lwrk_Cgesvj, 2 * n + n*n + n + lwrk_Cgesvjv, 2 * n + n*n + n + lwrk_Cunmqr, 2 * n + n*n + n + lwrk_Cunmlq, n + n*n + lwrk_Cgesvju, n + lwrk_Cunmqrm});
+                        optwrk = max({n + lwrk_Cgeqp3, n + lwcon, 2 * n + n * n + lwcon, 2 * n + lwrk_Cgeqrf, 2 * n + lwrk_Cgeqp3n, 2 * n + n * n + n + lwrk_Cgelqf, 2 * n + n * n + n + n * n + lwcon, 2 * n + n * n + n + lwrk_Cgesvj, 2 * n + n * n + n + lwrk_Cgesvjv, 2 * n + n * n + n + lwrk_Cunmqr, 2 * n + n * n + n + lwrk_Cunmlq, n + n * n + lwrk_Cgesvju, n + lwrk_Cunmqrm});
                     } else {
-                        optwrk = max({n + lwrk_Cgeqp3, 2 * n + n*n + lwcon, 2 * n + lwrk_Cgeqrf, 2 * n + lwrk_Cgeqp3n, 2 * n + n*n + n + lwrk_Cgelqf, 2 * n + n*n + n + n*n + lwcon, 2 * n + n*n + n + lwrk_Cgesvj, 2 * n + n*n + n + lwrk_Cgesvjv, 2 * n + n*n + n + lwrk_Cunmqr, 2 * n + n*n + n + lwrk_Cunmlq, n + n*n + lwrk_Cgesvju, n + lwrk_Cunmqrm});
+                        optwrk = max({n + lwrk_Cgeqp3, 2 * n + n * n + lwcon, 2 * n + lwrk_Cgeqrf, 2 * n + lwrk_Cgeqp3n, 2 * n + n * n + n + lwrk_Cgelqf, 2 * n + n * n + n + n * n + lwcon, 2 * n + n * n + n + lwrk_Cgesvj, 2 * n + n * n + n + lwrk_Cgesvjv, 2 * n + n * n + n + lwrk_Cunmqr, 2 * n + n * n + n + lwrk_Cunmlq, n + n * n + lwrk_Cgesvju, n + lwrk_Cunmqrm});
                     }
                 } else {
                     Cgesvj("L", "U", "V", n, n, u, ldu, sva, n, v, ldv, cdummy, -1, rdummy, -1, ierr);
@@ -372,9 +372,9 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     Cunmqr("L", "N", m, n, n, a, lda, cdummy, u, ldu, cdummy, -1, ierr);
                     lwrk_Cunmqrm = castINTEGER(cdummy[1 - 1].real());
                     if (errest) {
-                        optwrk = max({n + lwrk_Cgeqp3, n + lwcon, 2 * n + lwrk_Cgeqrf, 2 * n + n*n, 2 * n + n*n + lwrk_Cgesvjv, 2 * n + n*n + n + lwrk_Cunmqr, n + lwrk_Cunmqrm});
+                        optwrk = max({n + lwrk_Cgeqp3, n + lwcon, 2 * n + lwrk_Cgeqrf, 2 * n + n * n, 2 * n + n * n + lwrk_Cgesvjv, 2 * n + n * n + n + lwrk_Cunmqr, n + lwrk_Cunmqrm});
                     } else {
-                        optwrk = max({n + lwrk_Cgeqp3, 2 * n + lwrk_Cgeqrf, 2 * n + n*n, 2 * n + n*n + lwrk_Cgesvjv, 2 * n + n*n + n + lwrk_Cunmqr, n + lwrk_Cunmqrm});
+                        optwrk = max({n + lwrk_Cgeqp3, 2 * n + lwrk_Cgeqrf, 2 * n + n * n, 2 * n + n * n + lwrk_Cgesvjv, 2 * n + n * n + n + lwrk_Cunmqr, n + lwrk_Cunmqrm});
                     }
                 }
             }
@@ -409,8 +409,10 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //     Quick return for void matrix (Y3K safe)
     // #:)
     if ((m == 0) || (n == 0)) {
-      for (p=0; p<4; p++) iwork[p] = 0;
-      for (p=0; p<7; p++) rwork[p] = 0.0;      
+        for (p = 0; p < 4; p++)
+            iwork[p] = 0;
+        for (p = 0; p < 7; p++)
+            rwork[p] = 0.0;
         return;
     }
     //
@@ -595,7 +597,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             }
         } else {
             for (p = 1; p <= m; p = p + 1) {
-	        rwork[(m + p) - 1] = scalem * abs(a[(p - 1) + (iCamax(n, &a[(p - 1)], lda) - 1) * lda]);
+                rwork[(m + p) - 1] = scalem * abs(a[(p - 1) + (iCamax(n, &a[(p - 1)], lda) - 1) * lda]);
                 aatmax = max(aatmax, rwork[(m + p) - 1]);
                 aatmin = min(aatmin, rwork[(m + p) - 1]);
             }
@@ -623,7 +625,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         for (p = 1; p <= n; p = p + 1) {
             big1 = (pow2((sva[p - 1] / xsc))) * temp1;
             if (big1 != zero) {
-	      entra += big1 * log(big1);
+                entra += big1 * log(big1);
             }
         }
         entra = -entra / log(castREAL(n));
@@ -638,7 +640,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         for (p = 1; p <= m; p = p + 1) {
             big1 = (pow2((rwork[p - 1] / xsc))) * temp1;
             if (big1 != zero) {
-	      entrat += big1 * log(big1);
+                entrat += big1 * log(big1);
             }
         }
         entrat = -entrat / log(castREAL(m));

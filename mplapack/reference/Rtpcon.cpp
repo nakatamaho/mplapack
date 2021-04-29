@@ -29,23 +29,22 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
-
-void Cgecon(const char *norm, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL const anorm, REAL &rcond, COMPLEX *work, REAL *rwork, INTEGER &info) {
-    COMPLEX zdum = 0.0;
+void Rtpcon(const char *norm, const char *uplo, const char *diag, INTEGER const n, REAL *ap, REAL &rcond, REAL *work, INTEGER *iwork, INTEGER &info) {
+    bool upper = false;
     bool onenrm = false;
-    const REAL zero = 0.0;
+    bool nounit = false;
     const REAL one = 1.0;
+    const REAL zero = 0.0;
     REAL smlnum = 0.0;
+    REAL anorm = 0.0;
     REAL ainvnm = 0.0;
     char normin;
     INTEGER kase1 = 0;
     INTEGER kase = 0;
     INTEGER isave[3];
-    REAL sl = 0.0;
-    REAL su = 0.0;
     REAL scale = 0.0;
     INTEGER ix = 0;
+    REAL xnorm = 0.0;
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -70,97 +69,95 @@ void Cgecon(const char *norm, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
     //     ..
     //     .. Intrinsic Functions ..
     //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
     //     .. Executable Statements ..
     //
     //     Test the input parameters.
     //
     info = 0;
+    upper = Mlsame(uplo, "U");
     onenrm = Mlsame(norm, "1") || Mlsame(norm, "O");
+    nounit = Mlsame(diag, "N");
+    //
     if (!onenrm && !Mlsame(norm, "I")) {
         info = -1;
-    } else if (n < 0) {
+    } else if (!upper && !Mlsame(uplo, "L")) {
         info = -2;
-    } else if (lda < max((INTEGER)1, n)) {
+    } else if (!nounit && !Mlsame(diag, "U")) {
+        info = -3;
+    } else if (n < 0) {
         info = -4;
-    } else if (anorm < zero) {
-        info = -5;
     }
     if (info != 0) {
-        Mxerbla("Cgecon", -info);
+        Mxerbla("Rtpcon", -info);
         return;
     }
     //
     //     Quick return if possible
     //
-    rcond = zero;
     if (n == 0) {
         rcond = one;
         return;
-    } else if (anorm == zero) {
-        return;
     }
     //
-    smlnum = Rlamch("Safe minimum");
+    rcond = zero;
+    smlnum = Rlamch("Safe minimum") * castREAL(max((INTEGER)1, n));
     //
-    //     Estimate the norm of inv(A).
+    //     Compute the norm of the triangular matrix A.
     //
-    ainvnm = zero;
-    normin = 'N';
-    if (onenrm) {
-        kase1 = 1;
-    } else {
-        kase1 = 2;
-    }
-    kase = 0;
-statement_10:
-    Clacn2(n, &work[(n + 1) - 1], work, ainvnm, kase, isave);
-    if (kase != 0) {
-        if (kase == kase1) {
-            //
-            //           Multiply by inv(L).
-            //
-            Clatrs("Lower", "No transpose", "Unit", &normin, n, a, lda, work, sl, rwork, info);
-            //
-            //           Multiply by inv(U).
-            //
-            Clatrs("Upper", "No transpose", "Non-unit", &normin, n, a, lda, work, su, &rwork[(n + 1) - 1], info);
+    anorm = Rlantp(norm, uplo, diag, n, ap, work);
+    //
+    //     Continue only if ANORM > 0.
+    //
+    if (anorm > zero) {
+        //
+        //        Estimate the norm of the inverse of A.
+        //
+        ainvnm = zero;
+        normin = 'N';
+        if (onenrm) {
+            kase1 = 1;
         } else {
-            //
-            //           Multiply by inv(U**H).
-            //
-            Clatrs("Upper", "Conjugate transpose", "Non-unit", &normin, n, a, lda, work, su, &rwork[(n + 1) - 1], info);
-            //
-            //           Multiply by inv(L**H).
-            //
-            Clatrs("Lower", "Conjugate transpose", "Unit", &normin, n, a, lda, work, sl, rwork, info);
+            kase1 = 2;
         }
-        //
-        //        Divide X by 1/(SL*SU) if doing so will not cause overflow.
-        //
-        scale = sl * su;
-        normin = 'Y';
-        if (scale != one) {
-            ix = iCamax(n, work, 1);
-            if (scale < abs1(work[ix - 1]) * smlnum || scale == zero) {
-                goto statement_20;
+        kase = 0;
+    statement_10:
+        Rlacn2(n, &work[(n + 1) - 1], work, iwork, ainvnm, kase, isave);
+        if (kase != 0) {
+            if (kase == kase1) {
+                //
+                //              Multiply by inv(A).
+                //
+                Rlatps(uplo, "No transpose", diag, &normin, n, ap, work, scale, &work[(2 * n + 1) - 1], info);
+            } else {
+                //
+                //              Multiply by inv(A**T).
+                //
+                Rlatps(uplo, "Transpose", diag, &normin, n, ap, work, scale, &work[(2 * n + 1) - 1], info);
             }
-            CRrscl(n, scale, work, 1);
+            normin = 'Y';
+            //
+            //           Multiply by 1/SCALE if doing so will not cause overflow.
+            //
+            if (scale != one) {
+                ix = iRamax(n, work, 1);
+                xnorm = abs(work[ix - 1]);
+                if (scale < xnorm * smlnum || scale == zero) {
+                    goto statement_20;
+                }
+                Rrscl(n, scale, work, 1);
+            }
+            goto statement_10;
         }
-        goto statement_10;
-    }
-    //
-    //     Compute the estimate of the reciprocal condition number.
-    //
-    if (ainvnm != zero) {
-        rcond = (one / ainvnm) / anorm;
+        //
+        //        Compute the estimate of the reciprocal condition number.
+        //
+        if (ainvnm != zero) {
+            rcond = (one / anorm) / ainvnm;
+        }
     }
 //
 statement_20:;
     //
-    //     End of Cgecon
+    //     End of Rtpcon
     //
 }

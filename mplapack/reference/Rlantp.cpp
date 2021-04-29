@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-REAL Clantb(const char *norm, const char *uplo, const char *diag, INTEGER const n, INTEGER const k, COMPLEX *ab, INTEGER const ldab, REAL *work) {
+REAL Rlantp(const char *norm, const char *uplo, const char *diag, INTEGER const n, REAL *ap, REAL *work) {
     REAL return_value = 0.0;
     //
     //  -- LAPACK auxiliary routine --
@@ -59,12 +59,12 @@ REAL Clantb(const char *norm, const char *uplo, const char *diag, INTEGER const 
     //
     const REAL zero = 0.0;
     REAL value = 0.0;
+    INTEGER k = 0;
     const REAL one = 1.0;
     INTEGER j = 0;
     INTEGER i = 0;
     REAL sum = 0.0;
     bool udiag = false;
-    INTEGER l = 0;
     REAL ssq[2];
     REAL colssq[2];
     if (n == 0) {
@@ -73,46 +73,51 @@ REAL Clantb(const char *norm, const char *uplo, const char *diag, INTEGER const 
         //
         //        Find max(abs(A(i,j))).
         //
+        k = 1;
         if (Mlsame(diag, "U")) {
             value = one;
             if (Mlsame(uplo, "U")) {
                 for (j = 1; j <= n; j = j + 1) {
-                    for (i = max(k + 2 - j, 1); i <= k; i = i + 1) {
-                        sum = abs(ab[(i - 1) + (j - 1) * ldab]);
+                    for (i = k; i <= k + j - 2; i = i + 1) {
+                        sum = abs(ap[i - 1]);
                         if (value < sum || Risnan(sum)) {
                             value = sum;
                         }
                     }
+                    k += j;
                 }
             } else {
                 for (j = 1; j <= n; j = j + 1) {
-                    for (i = 2; i <= min(n + 1 - j, k + 1); i = i + 1) {
-                        sum = abs(ab[(i - 1) + (j - 1) * ldab]);
+                    for (i = k + 1; i <= k + n - j; i = i + 1) {
+                        sum = abs(ap[i - 1]);
                         if (value < sum || Risnan(sum)) {
                             value = sum;
                         }
                     }
+                    k += n - j + 1;
                 }
             }
         } else {
             value = zero;
             if (Mlsame(uplo, "U")) {
                 for (j = 1; j <= n; j = j + 1) {
-                    for (i = max(k + 2 - j, 1); i <= k + 1; i = i + 1) {
-                        sum = abs(ab[(i - 1) + (j - 1) * ldab]);
+                    for (i = k; i <= k + j - 1; i = i + 1) {
+                        sum = abs(ap[i - 1]);
                         if (value < sum || Risnan(sum)) {
                             value = sum;
                         }
                     }
+                    k += j;
                 }
             } else {
                 for (j = 1; j <= n; j = j + 1) {
-                    for (i = 1; i <= min(n + 1 - j, k + 1); i = i + 1) {
-                        sum = abs(ab[(i - 1) + (j - 1) * ldab]);
+                    for (i = k; i <= k + n - j; i = i + 1) {
+                        sum = abs(ap[i - 1]);
                         if (value < sum || Risnan(sum)) {
                             value = sum;
                         }
                     }
+                    k += n - j + 1;
                 }
             }
         }
@@ -121,20 +126,22 @@ REAL Clantb(const char *norm, const char *uplo, const char *diag, INTEGER const 
         //        Find norm1(A).
         //
         value = zero;
+        k = 1;
         udiag = Mlsame(diag, "U");
         if (Mlsame(uplo, "U")) {
             for (j = 1; j <= n; j = j + 1) {
                 if (udiag) {
                     sum = one;
-                    for (i = max(k + 2 - j, 1); i <= k; i = i + 1) {
-                        sum += abs(ab[(i - 1) + (j - 1) * ldab]);
+                    for (i = k; i <= k + j - 2; i = i + 1) {
+                        sum += abs(ap[i - 1]);
                     }
                 } else {
                     sum = zero;
-                    for (i = max(k + 2 - j, 1); i <= k + 1; i = i + 1) {
-                        sum += abs(ab[(i - 1) + (j - 1) * ldab]);
+                    for (i = k; i <= k + j - 1; i = i + 1) {
+                        sum += abs(ap[i - 1]);
                     }
                 }
+                k += j;
                 if (value < sum || Risnan(sum)) {
                     value = sum;
                 }
@@ -143,15 +150,16 @@ REAL Clantb(const char *norm, const char *uplo, const char *diag, INTEGER const 
             for (j = 1; j <= n; j = j + 1) {
                 if (udiag) {
                     sum = one;
-                    for (i = 2; i <= min(n + 1 - j, k + 1); i = i + 1) {
-                        sum += abs(ab[(i - 1) + (j - 1) * ldab]);
+                    for (i = k + 1; i <= k + n - j; i = i + 1) {
+                        sum += abs(ap[i - 1]);
                     }
                 } else {
                     sum = zero;
-                    for (i = 1; i <= min(n + 1 - j, k + 1); i = i + 1) {
-                        sum += abs(ab[(i - 1) + (j - 1) * ldab]);
+                    for (i = k; i <= k + n - j; i = i + 1) {
+                        sum += abs(ap[i - 1]);
                     }
                 }
+                k += n - j + 1;
                 if (value < sum || Risnan(sum)) {
                     value = sum;
                 }
@@ -161,26 +169,27 @@ REAL Clantb(const char *norm, const char *uplo, const char *diag, INTEGER const 
         //
         //        Find normI(A).
         //
-        value = zero;
+        k = 1;
         if (Mlsame(uplo, "U")) {
             if (Mlsame(diag, "U")) {
                 for (i = 1; i <= n; i = i + 1) {
                     work[i - 1] = one;
                 }
                 for (j = 1; j <= n; j = j + 1) {
-                    l = k + 1 - j;
-                    for (i = max((INTEGER)1, j - k); i <= j - 1; i = i + 1) {
-                        work[i - 1] += abs(ab[((l + i) - 1) + (j - 1) * ldab]);
+                    for (i = 1; i <= j - 1; i = i + 1) {
+                        work[i - 1] += abs(ap[k - 1]);
+                        k++;
                     }
+                    k++;
                 }
             } else {
                 for (i = 1; i <= n; i = i + 1) {
                     work[i - 1] = zero;
                 }
                 for (j = 1; j <= n; j = j + 1) {
-                    l = k + 1 - j;
-                    for (i = max((INTEGER)1, j - k); i <= j; i = i + 1) {
-                        work[i - 1] += abs(ab[((l + i) - 1) + (j - 1) * ldab]);
+                    for (i = 1; i <= j; i = i + 1) {
+                        work[i - 1] += abs(ap[k - 1]);
+                        k++;
                     }
                 }
             }
@@ -190,9 +199,10 @@ REAL Clantb(const char *norm, const char *uplo, const char *diag, INTEGER const 
                     work[i - 1] = one;
                 }
                 for (j = 1; j <= n; j = j + 1) {
-                    l = 1 - j;
-                    for (i = j + 1; i <= min(n, j + k); i = i + 1) {
-                        work[i - 1] += abs(ab[((l + i) - 1) + (j - 1) * ldab]);
+                    k++;
+                    for (i = j + 1; i <= n; i = i + 1) {
+                        work[i - 1] += abs(ap[k - 1]);
+                        k++;
                     }
                 }
             } else {
@@ -200,13 +210,14 @@ REAL Clantb(const char *norm, const char *uplo, const char *diag, INTEGER const 
                     work[i - 1] = zero;
                 }
                 for (j = 1; j <= n; j = j + 1) {
-                    l = 1 - j;
-                    for (i = j; i <= min(n, j + k); i = i + 1) {
-                        work[i - 1] += abs(ab[((l + i) - 1) + (j - 1) * ldab]);
+                    for (i = j; i <= n; i = i + 1) {
+                        work[i - 1] += abs(ap[k - 1]);
+                        k++;
                     }
                 }
             }
         }
+        value = zero;
         for (i = 1; i <= n; i = i + 1) {
             sum = work[i - 1];
             if (value < sum || Risnan(sum)) {
@@ -224,44 +235,48 @@ REAL Clantb(const char *norm, const char *uplo, const char *diag, INTEGER const 
             if (Mlsame(diag, "U")) {
                 ssq[1 - 1] = one;
                 ssq[2 - 1] = n;
-                if (k > 0) {
-                    for (j = 2; j <= n; j = j + 1) {
-                        colssq[1 - 1] = zero;
-                        colssq[2 - 1] = one;
-                        Classq(min(j - 1, k), &ab[(max(k + 2 - j, 1) - 1) + (j - 1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
-                        Rcombssq(ssq, colssq);
-                    }
+                k = 2;
+                for (j = 2; j <= n; j = j + 1) {
+                    colssq[1 - 1] = zero;
+                    colssq[2 - 1] = one;
+                    Rlassq(j - 1, &ap[k - 1], 1, colssq[1 - 1], colssq[2 - 1]);
+                    Rcombssq(ssq, colssq);
+                    k += j;
                 }
             } else {
                 ssq[1 - 1] = zero;
                 ssq[2 - 1] = one;
+                k = 1;
                 for (j = 1; j <= n; j = j + 1) {
                     colssq[1 - 1] = zero;
                     colssq[2 - 1] = one;
-                    Classq(min(j, k + 1), &ab[(max(k + 2 - j, 1) - 1) + (j - 1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
+                    Rlassq(j, &ap[k - 1], 1, colssq[1 - 1], colssq[2 - 1]);
                     Rcombssq(ssq, colssq);
+                    k += j;
                 }
             }
         } else {
             if (Mlsame(diag, "U")) {
                 ssq[1 - 1] = one;
                 ssq[2 - 1] = n;
-                if (k > 0) {
-                    for (j = 1; j <= n - 1; j = j + 1) {
-                        colssq[1 - 1] = zero;
-                        colssq[2 - 1] = one;
-                        Classq(min(n - j, k), &ab[(2 - 1) + (j - 1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
-                        Rcombssq(ssq, colssq);
-                    }
+                k = 2;
+                for (j = 1; j <= n - 1; j = j + 1) {
+                    colssq[1 - 1] = zero;
+                    colssq[2 - 1] = one;
+                    Rlassq(n - j, &ap[k - 1], 1, colssq[1 - 1], colssq[2 - 1]);
+                    Rcombssq(ssq, colssq);
+                    k += n - j + 1;
                 }
             } else {
                 ssq[1 - 1] = zero;
                 ssq[2 - 1] = one;
+                k = 1;
                 for (j = 1; j <= n; j = j + 1) {
                     colssq[1 - 1] = zero;
                     colssq[2 - 1] = one;
-                    Classq(min(n - j + 1, k + 1), &ab[(j - 1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
+                    Rlassq(n - j + 1, &ap[k - 1], 1, colssq[1 - 1], colssq[2 - 1]);
                     Rcombssq(ssq, colssq);
+                    k += n - j + 1;
                 }
             }
         }
@@ -271,6 +286,6 @@ REAL Clantb(const char *norm, const char *uplo, const char *diag, INTEGER const 
     return_value = value;
     return return_value;
     //
-    //     End of Clantb
+    //     End of Rlantp
     //
 }

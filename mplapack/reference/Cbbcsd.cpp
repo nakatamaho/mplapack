@@ -284,7 +284,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
                 }
             } else {
                 nu = sigma21;
-                mu = sqrt(one - nu*nu);
+                mu = sqrt(one - nu * nu);
                 if (nu < thresh) {
                     mu = one;
                     nu = zero;

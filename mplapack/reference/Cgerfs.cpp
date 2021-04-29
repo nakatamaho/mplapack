@@ -31,7 +31,7 @@
 
 inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
 
-void Cgbrfs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, COMPLEX *ab, INTEGER const ldab, COMPLEX *afb, INTEGER const ldafb, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, REAL *ferr, REAL *berr, COMPLEX *work, REAL *rwork, INTEGER &info) {
+void Cgerfs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *af, INTEGER const ldaf, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, REAL *ferr, REAL *berr, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool notran = false;
     INTEGER j = 0;
@@ -46,10 +46,9 @@ void Cgbrfs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
     INTEGER count = 0;
     const REAL three = 3.0e+0;
     REAL lstres = 0.0;
-    const COMPLEX cone = COMPLEX(1.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER i = 0;
     INTEGER k = 0;
-    INTEGER kk = 0;
     REAL xk = 0.0;
     REAL s = 0.0;
     const REAL two = 2.0e+0;
@@ -74,16 +73,15 @@ void Cgbrfs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
     //     ..
     //     .. Local Arrays ..
     //     ..
+    //     .. External Functions ..
+    //     ..
     //     .. External Subroutines ..
     //     ..
     //     .. Intrinsic Functions ..
     //     ..
-    //     .. External Functions ..
-    //     ..
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1(zdum) = abs(zdum.real()) + abs(zdum.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -95,23 +93,19 @@ void Cgbrfs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
         info = -1;
     } else if (n < 0) {
         info = -2;
-    } else if (kl < 0) {
-        info = -3;
-    } else if (ku < 0) {
-        info = -4;
     } else if (nrhs < 0) {
+        info = -3;
+    } else if (lda < max((INTEGER)1, n)) {
         info = -5;
-    } else if (ldab < kl + ku + 1) {
+    } else if (ldaf < max((INTEGER)1, n)) {
         info = -7;
-    } else if (ldafb < 2 * kl + ku + 1) {
-        info = -9;
     } else if (ldb < max((INTEGER)1, n)) {
-        info = -12;
+        info = -10;
     } else if (ldx < max((INTEGER)1, n)) {
-        info = -14;
+        info = -12;
     }
     if (info != 0) {
-        Mxerbla("Cgbrfs", -info);
+        Mxerbla("Cgerfs", -info);
         return;
     }
     //
@@ -135,7 +129,7 @@ void Cgbrfs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
     //
     //     NZ = maximum number of nonzero elements in each row of A, plus 1
     //
-    nz = min(kl + ku + 2, n + 1);
+    nz = n + 1;
     eps = Rlamch("Epsilon");
     safmin = Rlamch("Safe minimum");
     safe1 = nz * safmin;
@@ -155,7 +149,7 @@ void Cgbrfs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
         //        where op(A) = A, A**T, or A**H, depending on TRANS.
         //
         Ccopy(n, &b[(j - 1) * ldb], 1, work, 1);
-        Cgbmv(trans, n, n, kl, ku, -cone, ab, ldab, &x[(j - 1) * ldx], 1, cone, work, 1);
+        Cgemv(trans, n, n, -one, a, lda, &x[(j - 1) * ldx], 1, one, work, 1);
         //
         //        Compute componentwise relative backward error from formula
         //
@@ -174,18 +168,16 @@ void Cgbrfs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
         //
         if (notran) {
             for (k = 1; k <= n; k = k + 1) {
-                kk = ku + 1 - k;
                 xk = abs1(x[(k - 1) + (j - 1) * ldx]);
-                for (i = max((INTEGER)1, k - ku); i <= min(n, k + kl); i = i + 1) {
-                    rwork[i - 1] += abs1(ab[((kk + i) - 1) + (k - 1) * ldab]) * xk;
+                for (i = 1; i <= n; i = i + 1) {
+                    rwork[i - 1] += abs1(a[(i - 1) + (k - 1) * lda]) * xk;
                 }
             }
         } else {
             for (k = 1; k <= n; k = k + 1) {
                 s = zero;
-                kk = ku + 1 - k;
-                for (i = max((INTEGER)1, k - ku); i <= min(n, k + kl); i = i + 1) {
-                    s += abs1(ab[((kk + i) - 1) + (k - 1) * ldab]) * abs1(x[(i - 1) + (j - 1) * ldx]);
+                for (i = 1; i <= n; i = i + 1) {
+                    s += abs1(a[(i - 1) + (k - 1) * lda]) * abs1(x[(i - 1) + (j - 1) * ldx]);
                 }
                 rwork[k - 1] += s;
             }
@@ -210,8 +202,8 @@ void Cgbrfs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
             //
             //           Update solution and try again.
             //
-            Cgbtrs(trans, n, kl, ku, 1, afb, ldafb, ipiv, work, n, info);
-            Caxpy(n, cone, work, 1, &x[(j - 1) * ldx], 1);
+            Cgetrs(trans, n, 1, af, ldaf, ipiv, work, n, info);
+            Caxpy(n, one, work, 1, &x[(j - 1) * ldx], 1);
             lstres = berr[j - 1];
             count++;
             goto statement_20;
@@ -255,7 +247,7 @@ void Cgbrfs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
                 //
                 //              Multiply by diag(W)*inv(op(A)**H).
                 //
-                Cgbtrs(&transt, n, kl, ku, 1, afb, ldafb, ipiv, work, n, info);
+                Cgetrs(&transt, n, 1, af, ldaf, ipiv, work, n, info);
                 for (i = 1; i <= n; i = i + 1) {
                     work[i - 1] = rwork[i - 1] * work[i - 1];
                 }
@@ -266,7 +258,7 @@ void Cgbrfs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
                 for (i = 1; i <= n; i = i + 1) {
                     work[i - 1] = rwork[i - 1] * work[i - 1];
                 }
-                Cgbtrs(&transn, n, kl, ku, 1, afb, ldafb, ipiv, work, n, info);
+                Cgetrs(&transn, n, 1, af, ldaf, ipiv, work, n, info);
             }
             goto statement_100;
         }
@@ -283,6 +275,6 @@ void Cgbrfs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
         //
     }
     //
-    //     End of Cgbrfs
+    //     End of Cgerfs
     //
 }
