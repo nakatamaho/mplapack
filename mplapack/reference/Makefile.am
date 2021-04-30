@@ -991,9 +991,7 @@ Rstevx.cpp \
 Rsbgvx.cpp \
 Claein.cpp \
 Cheequb.cpp \
-Csyequb.cpp
-
-MPLAPACK_SOURCES_NOTYET= \
+Csyequb.cpp \
 Rgbsvxx.cpp \
 Chbgvx.cpp \
 Rla_geamv.cpp \
@@ -1003,7 +1001,9 @@ Cla_geamv.cpp \
 Claed0.cpp \
 Cla_herpvgrw.cpp \
 Cla_syrpvgrw.cpp \
-Rla_gbamv.cpp \
+Rla_gbamv.cpp
+
+MPLAPACK_SOURCES_NOTYET= \
 Rlarrb.cpp \
 Claic1.cpp \
 Cla_gbamv.cpp \

@@ -91,7 +91,7 @@ void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COM
             } else {
                 s = alpha / s1;
                 c = gamma / s1;
-                tmp = sqrt(s * conj(s) + c * conj(c));
+                tmp = sqrt((s * conj(s) + c * conj(c)).real());
                 s = s / tmp;
                 c = c / tmp;
                 sestpr = s1 * tmp;
@@ -145,14 +145,14 @@ void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COM
             b = (one - zeta1 * zeta1 - zeta2 * zeta2) * half;
             c = zeta1 * zeta1;
             if (b > zero) {
-                t = c / (b + sqrt(b * b + c));
+                t = (c / (b + sqrt(b * b) + c)).real();
             } else {
-                t = sqrt(b * b + c) - b;
+                t = (sqrt(b * b + c) - b).real();
             }
             //
             sine = -(alpha / absest) / t;
             cosine = -(gamma / absest) / (one + t);
-            tmp = sqrt(sine * conj(sine) + cosine * conj(cosine));
+            tmp = sqrt((sine * conj(sine) + cosine * conj(cosine)).real());
             s = sine / tmp;
             c = cosine / tmp;
             sestpr = sqrt(t + one) * absest;
@@ -177,7 +177,7 @@ void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COM
             s1 = max(abs(sine), abs(cosine));
             s = sine / s1;
             c = cosine / s1;
-            tmp = sqrt(s * conj(s) + c * conj(c));
+            tmp = sqrt((s * conj(s) + c * conj(c)).real());
             s = s / tmp;
             c = c / tmp;
             return;
@@ -234,7 +234,7 @@ void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COM
                 //
                 b = (zeta1 * zeta1 + zeta2 * zeta2 + one) * half;
                 c = zeta2 * zeta2;
-                t = c / (b + sqrt(abs(b * b - c)));
+                t = (c / (b + sqrt(abs(b * b - c)))).real();
                 sine = (alpha / absest) / (one - t);
                 cosine = -(gamma / absest) / t;
                 sestpr = sqrt(t + four * eps * eps * norma) * absest;
@@ -245,15 +245,15 @@ void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COM
                 b = (zeta2 * zeta2 + zeta1 * zeta1 - one) * half;
                 c = zeta1 * zeta1;
                 if (b >= zero) {
-                    t = -c / (b + sqrt(b * b + c));
+                    t = (-c / (b + sqrt(b * b + c))).real();
                 } else {
-                    t = b - sqrt(b * b + c);
+                    t = (b - sqrt(b * b + c)).real();
                 }
                 sine = -(alpha / absest) / t;
                 cosine = -(gamma / absest) / (one + t);
                 sestpr = sqrt(one + t + four * eps * eps * norma) * absest;
             }
-            tmp = sqrt(sine * conj(sine) + cosine * conj(cosine));
+            tmp = sqrt((sine * conj(sine) + cosine * conj(cosine)).real());
             s = sine / tmp;
             c = cosine / tmp;
             return;

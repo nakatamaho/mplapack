@@ -209,11 +209,11 @@ void Cgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
     //
     char norm;
     if (notran) {
-        norm = "1";
+        norm = '1';
     } else {
-        norm = "I";
+        norm = 'I';
     }
-    REAL anorm = Clange(norm, n, n, a, lda, rwork);
+    REAL anorm = Clange(&norm, n, n, a, lda, rwork);
     rpvgrw = Clantr("M", "U", "N", n, n, af, ldaf, rwork);
     if (rpvgrw == zero) {
         rpvgrw = one;
@@ -223,7 +223,7 @@ void Cgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
     //
     //     Compute the reciprocal of the condition number of A.
     //
-    Cgecon(norm, n, af, ldaf, anorm, rcond, work, rwork, info);
+    Cgecon(&norm, n, af, ldaf, anorm, rcond, work, rwork, info);
     //
     //     Compute the solution matrix X.
     //

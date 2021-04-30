@@ -171,13 +171,13 @@ void Cheequb(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, R
         //        avg = s^T beta / n
         avg = 0.0;
         for (i = 1; i <= n; i = i + 1) {
-	    avg += s[i - 1] * work[i - 1].real();
+            avg += s[i - 1] * work[i - 1].real();
         }
         avg = avg / n;
         //
         std = 0.0;
         for (i = n + 1; i <= 2 * n; i = i + 1) {
-	  work[i - 1] = s[(i - n) - 1] * work[(i - n) - 1].real() - avg;
+            work[i - 1] = s[(i - n) - 1] * work[(i - n) - 1].real() - avg;
         }
         Classq(n, &work[(n + 1) - 1], 1, scale, sumsq);
         std = scale * sqrt(sumsq / n);
