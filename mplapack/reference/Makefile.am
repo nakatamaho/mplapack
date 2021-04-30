@@ -929,9 +929,7 @@ Chegv_2stage.cpp \
 Chetrs_aa_2stage.cpp \
 Csytrs_aa_2stage.cpp \
 Rsygvd.cpp \
-Rlacon.cpp
-
-MPLAPACK_SOURCES_NOTYET= \
+Rlacon.cpp \
 Rspgvd.cpp \
 Chbgvd.cpp \
 Claed7.cpp \
@@ -946,11 +944,14 @@ Rsbev_2stage.cpp \
 Rsygvx.cpp \
 Chegvx.cpp \
 Chbev_2stage.cpp \
+Cggsvp3.cpp \
 Cla_porcond_x.cpp \
 Cggsvd3.cpp \
 Cla_hercond_x.cpp \
 Cla_syrcond_x.cpp \
-Chpevd.cpp \
+Chpevd.cpp
+
+MPLAPACK_SOURCES_NOTYET= \
 Cla_gbrcond_x.cpp \
 Cgghrd.cpp \
 Rsbevd_2stage.cpp \

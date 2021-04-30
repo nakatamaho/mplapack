@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *w, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
+void Chpgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, COMPLEX *bp, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
     //  -- LAPACK driver routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -42,8 +42,6 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     //
     //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
     //     .. Local Scalars ..
     //     ..
     //     .. External Functions ..
@@ -61,25 +59,6 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     bool lquery = (lwork == -1 || lrwork == -1 || liwork == -1);
     //
     info = 0;
-    INTEGER lwmin = 0;
-    INTEGER lrwmin = 0;
-    INTEGER liwmin = 0;
-    if (n <= 1) {
-        lwmin = 1;
-        lrwmin = 1;
-        liwmin = 1;
-    } else if (wantz) {
-        lwmin = 2 * n + n * n;
-        lrwmin = 1 + 5 * n + 2 * n * n;
-        liwmin = 3 + 5 * n;
-    } else {
-        lwmin = n + 1;
-        lrwmin = n;
-        liwmin = 1;
-    }
-    INTEGER lopt = lwmin;
-    INTEGER lropt = lrwmin;
-    INTEGER liopt = liwmin;
     if (itype < 1 || itype > 3) {
         info = -1;
     } else if (!(wantz || Mlsame(jobz, "N"))) {
@@ -88,17 +67,33 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         info = -3;
     } else if (n < 0) {
         info = -4;
-    } else if (lda < max((INTEGER)1, n)) {
-        info = -6;
-    } else if (ldb < max((INTEGER)1, n)) {
-        info = -8;
+    } else if (ldz < 1 || (wantz && ldz < n)) {
+        info = -9;
     }
     //
+    INTEGER lwmin = 0;
+    INTEGER liwmin = 0;
+    INTEGER lrwmin = 0;
     if (info == 0) {
-        work[1 - 1] = lopt;
-        rwork[1 - 1] = lropt;
-        iwork[1 - 1] = liopt;
+        if (n <= 1) {
+            lwmin = 1;
+            liwmin = 1;
+            lrwmin = 1;
+        } else {
+            if (wantz) {
+                lwmin = 2 * n;
+                lrwmin = 1 + 5 * n + 2 * pow2(n);
+                liwmin = 3 + 5 * n;
+            } else {
+                lwmin = n;
+                lrwmin = n;
+                liwmin = 1;
+            }
+        }
         //
+        work[1 - 1] = lwmin;
+        rwork[1 - 1] = lrwmin;
+        iwork[1 - 1] = liwmin;
         if (lwork < lwmin && !lquery) {
             info = -11;
         } else if (lrwork < lrwmin && !lquery) {
@@ -109,7 +104,7 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     }
     //
     if (info != 0) {
-        Mxerbla("Chegvd", -info);
+        Mxerbla("Chpgvd", -info);
         return;
     } else if (lquery) {
         return;
@@ -123,7 +118,7 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     //
     //     Form a Cholesky factorization of B.
     //
-    Cpotrf(uplo, n, b, ldb, info);
+    Cpptrf(uplo, n, bp, info);
     if (info != 0) {
         info += n;
         return;
@@ -131,18 +126,23 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     //
     //     Transform problem to standard eigenvalue problem and solve.
     //
-    Chegst(itype, uplo, n, a, lda, b, ldb, info);
-    Cheevd(jobz, uplo, n, a, lda, w, work, lwork, rwork, lrwork, iwork, liwork, info);
-    lopt = max(lopt, castINTEGER(work[1 - 1].real()));
-    lropt = max(lropt, castINTEGER(rwork[1 - 1]));
-    liopt = max(liopt, iwork[1 - 1]);
+    Chpgst(itype, uplo, n, ap, bp, info);
+    Chpevd(jobz, uplo, n, ap, w, z, ldz, work, lwork, rwork, lrwork, iwork, liwork, info);
+    lwmin = max(lwmin, castINTEGER(work[1 - 1].real()));
+    lrwmin = max(lrwmin, castINTEGER(rwork[1 - 1]));
+    liwmin = max(liwmin, iwork[1 - 1]);
     //
+    INTEGER neig = 0;
     char trans;
-    const COMPLEX cone = COMPLEX(1.0, 0.0);
-    if (wantz && info == 0) {
+    INTEGER j = 0;
+    if (wantz) {
         //
         //        Backtransform eigenvectors to the original problem.
         //
+        neig = n;
+        if (info > 0) {
+            neig = info - 1;
+        }
         if (itype == 1 || itype == 2) {
             //
             //           For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
@@ -154,7 +154,9 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
                 trans = 'C';
             }
             //
-            Ctrsm("Left", uplo, &trans, "Non-unit", n, n, cone, b, ldb, a, lda);
+            for (j = 1; j <= neig; j = j + 1) {
+                Ctpsv(uplo, &trans, "Non-unit", n, bp, &z[(j - 1) * ldz], 1);
+            }
             //
         } else if (itype == 3) {
             //
@@ -167,14 +169,16 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
                 trans = 'N';
             }
             //
-            Ctrmm("Left", uplo, &trans, "Non-unit", n, n, cone, b, ldb, a, lda);
+            for (j = 1; j <= neig; j = j + 1) {
+                Ctpmv(uplo, &trans, "Non-unit", n, bp, &z[(j - 1) * ldz], 1);
+            }
         }
     }
     //
-    work[1 - 1] = lopt;
-    rwork[1 - 1] = lropt;
-    iwork[1 - 1] = liopt;
+    work[1 - 1] = lwmin;
+    rwork[1 - 1] = lrwmin;
+    iwork[1 - 1] = liwmin;
     //
-    //     End of Chegvd
+    //     End of Chpgvd
     //
 }
