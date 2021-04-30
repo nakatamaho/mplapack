@@ -84,6 +84,11 @@ libmplapack__Float128_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
+
+MPLAPACK_SOURCES = \
+iMlaenv2stage.cpp \
+iMparam2stage.cpp
+
 MPLAPACK_SOURCES = \
 Cbbcsd.cpp \
 Cbdsqr.cpp \
@@ -95,7 +100,6 @@ Cgbequb.cpp \
 Cgbrfs.cpp \
 Cgbsv.cpp \
 Cgbsvx.cpp \
-Cgbsvxx.cpp \
 Cgbtf2.cpp \
 Cgbtrf.cpp \
 Cgbtrs.cpp \
@@ -148,7 +152,6 @@ Cgesvdq.cpp \
 Cgesvdx.cpp \
 Cgesvj.cpp \
 Cgesvx.cpp \
-Cgesvxx.cpp \
 Cgetc2.cpp \
 Cgetf2.cpp \
 Cgetrf.cpp \
@@ -209,7 +212,6 @@ Cherfs.cpp \
 Chesv.cpp \
 Chesv_rook.cpp \
 Chesvx.cpp \
-Chesvxx.cpp \
 Cheswapr.cpp \
 Chetd2.cpp \
 Chetf2.cpp \
@@ -397,7 +399,6 @@ Cpoequb.cpp \
 Cporfs.cpp \
 Cposv.cpp \
 Cposvx.cpp \
-Cposvxx.cpp \
 Cpotf2.cpp \
 Cpotrf.cpp \
 Cpotrf2.cpp \
@@ -442,7 +443,6 @@ Csymv.cpp \
 Csyr.cpp \
 Csyrfs.cpp \
 Csysvx.cpp \
-Csysvxx.cpp \
 Csyswapr.cpp \
 Csytf2.cpp \
 Csytf2_rk.cpp \
@@ -562,7 +562,6 @@ Rgbequb.cpp \
 Rgbrfs.cpp \
 Rgbsv.cpp \
 Rgbsvx.cpp \
-Rgbsvxx.cpp \
 Rgbtf2.cpp \
 Rgbtrf.cpp \
 Rgbtrs.cpp \
@@ -615,7 +614,6 @@ Rgesvdq.cpp \
 Rgesvdx.cpp \
 Rgesvj.cpp \
 Rgesvx.cpp \
-Rgesvxx.cpp \
 Rgetc2.cpp \
 Rgetf2.cpp \
 Rgetrf.cpp \
@@ -869,7 +867,6 @@ Rpoequb.cpp \
 Rporfs.cpp \
 Rposv.cpp \
 Rposvx.cpp \
-Rposvxx.cpp \
 Rpotf2.cpp \
 Rpotrf.cpp \
 Rpotrf2.cpp \
@@ -954,7 +951,6 @@ Rsysv_aa_2stage.cpp \
 Rsysv_rk.cpp \
 Rsysv_rook.cpp \
 Rsysvx.cpp \
-Rsysvxx.cpp \
 Rsyswapr.cpp \
 Rsytd2.cpp \
 Rsytf2.cpp \
@@ -1029,12 +1025,10 @@ iMladiag.cpp \
 iMladlc.cpp \
 iMladlr.cpp \
 iMlaenv.cpp \
-iMlaenv2stage.cpp \
 iMlaprec.cpp \
 iMlatrans.cpp \
 iMlauplo.cpp \
 iMlaver.cpp \
 iMlazlc.cpp \
 iMlazlr.cpp \
-iMparam2stage.cpp \
 iMparmq.cpp

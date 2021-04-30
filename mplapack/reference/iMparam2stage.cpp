@@ -69,56 +69,20 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
     char stag[3];
     bool rprec = false;
     bool cprec = false;
+
     if (ispec != 19) {
         //
         //        Convert NAME to upper case if the first character is lower case.
         //
         return_value = -1;
-        subnam = name;
-        ic = ichar(subnam[(1 - 1)]);
-        iz = ichar("Z");
-        if (iz == 90 || iz == 122) {
-            //
-            //           ASCII character set
-            //
-            if (ic >= 97 && ic <= 122) {
-                subnam[(1 - 1)] = fchar[(ic - 32) - 1];
-                for (i = 2; i <= 12; i = i + 1) {
-                    ic = ichar(subnam[(i - 1) + (i - 1) * ldsubnam]);
-                    if (ic >= 97 && ic <= 122) {
-                        subnam[(i - 1) + (i - 1) * ldsubnam] = fchar[(ic - 32) - 1];
-                    }
-                }
-            }
-            //
-        } else if (iz == 233 || iz == 169) {
-            //
-            //           EBCDIC character set
-            //
-            if ((ic >= 129 && ic <= 137) || (ic >= 145 && ic <= 153) || (ic >= 162 && ic <= 169)) {
-                subnam[(1 - 1)] = fchar[(ic + 64) - 1];
-                for (i = 2; i <= 12; i = i + 1) {
-                    ic = ichar(subnam[(i - 1) + (i - 1) * ldsubnam]);
-                    if ((ic >= 129 && ic <= 137) || (ic >= 145 && ic <= 153) || (ic >= 162 && ic <= 169)) {
-                        subnam[(i - 1) + (i - 1) * ldsubnam] = fchar[(ic + 64) - 1];
-                    }
-                }
-            }
-            //
-        } else if (iz == 218 || iz == 250) {
-            //
-            //           Prime machines:  ASCII+128
-            //
-            if (ic >= 225 && ic <= 250) {
-                subnam[(1 - 1)] = fchar[(ic - 32) - 1];
-                for (i = 2; i <= 12; i = i + 1) {
-                    ic = ichar(subnam[(i - 1) + (i - 1) * ldsubnam]);
-                    if (ic >= 225 && ic <= 250) {
-                        subnam[(i - 1) + (i - 1) * ldsubnam] = fchar[(ic - 32) - 1];
-                    }
-                }
-            }
+        name_len = min((int)strlen(name), subnamlen);
+        strncpy(subnam, name, name_len);
+        ic = *subnam;
+
+        for (int i = 0; i < strlen(subnam); i++) {
+            subnam[i] = toupper(subnam[i]);
         }
+
         //
         prec = subnam[(1 - 1)];
         algo = subnam[(4 - 1) + (6 - 1) * ldsubnam];
@@ -220,6 +184,7 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
         lwork = -1;
         subnam[(1 - 1)] = prec;
         subnam[(2 - 1) + (6 - 1) * ldsubnam] = "GEQRF";
+
         qroptnb = iMlaenv(1, subnam, " ", ni, nbi, -1, -1);
         subnam[(2 - 1) + (6 - 1) * ldsubnam] = "GELQF";
         lqoptnb = iMlaenv(1, subnam, " ", nbi, ni, -1, -1);
