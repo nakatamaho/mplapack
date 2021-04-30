@@ -1049,18 +1049,20 @@ Cggbal.cpp \
 Rlaebz.cpp \
 Clalsa.cpp \
 Cggevx.cpp \
-Rggesx.cpp
-
-MPLAPACK_SOURCES_NOTYET= \
+Rggesx.cpp \
 Rggevx.cpp \
 Rstebz.cpp \
 Cstemr.cpp \
 Rstemr.cpp \
+Cunbdb1.cpp \
+Cunbdb6.cpp \
 Rorbdb.cpp \
 Clalsd.cpp \
 Rlaein.cpp \
 Cgsvj1.cpp \
-Rorcsd2by1.cpp \
+Rorcsd2by1.cpp
+
+MPLAPACK_SOURCES_NOTYET= \
 Cuncsd2by1.cpp \
 Chetrf_aa_2stage.cpp \
 Csytrf_aa_2stage.cpp \

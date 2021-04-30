@@ -95,7 +95,7 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
             Claset("A", 1, nrhs, czero, czero, b, ldb);
         } else {
             rank = 1;
-            Clascl("G", 0, 0, &d[1 - 1], one, 1, nrhs, b, ldb, info);
+            Clascl("G", 0, 0, d[1 - 1], one, 1, nrhs, b, ldb, info);
             d[1 - 1] = abs(d[1 - 1]);
         }
         return;
@@ -110,7 +110,7 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
     INTEGER j = 0;
     if (uplo == "L") {
         for (i = 1; i <= n - 1; i = i + 1) {
-            Rlartg(d[i - 1], &e[i - 1], cs, sn, r);
+            Rlartg(d[i - 1], e[i - 1], cs, sn, r);
             d[i - 1] = r;
             e[i - 1] = sn * d[(i + 1) - 1];
             d[(i + 1) - 1] = cs * d[(i + 1) - 1];
@@ -198,16 +198,16 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
             for (jrow = 1; jrow <= n; jrow = jrow + 1) {
                 jreal++;
                 jimag++;
-                b[(jrow - 1) + (jcol - 1) * ldb] = COMPLEX(rwork[jreal - 1], &rwork[jimag - 1]);
+                b[(jrow - 1) + (jcol - 1) * ldb] = COMPLEX(rwork[jreal - 1], rwork[jimag - 1]);
             }
         }
         //
-        tol = rcnd * abs(diRamax(n, d, 1));
+        tol = rcnd * abs(d[iRamax(n, d, 1) - 1]);
         for (i = 1; i <= n; i = i + 1) {
             if (d[i - 1] <= tol) {
                 Claset("A", 1, nrhs, czero, czero, &b[(i - 1)], ldb);
             } else {
-                Clascl("G", 0, 0, &d[i - 1], one, 1, nrhs, &b[(i - 1)], ldb, info);
+                Clascl("G", 0, 0, d[i - 1], one, 1, nrhs, &b[(i - 1)], ldb, info);
                 rank++;
             }
         }
@@ -241,7 +241,7 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
             for (jrow = 1; jrow <= n; jrow = jrow + 1) {
                 jreal++;
                 jimag++;
-                b[(jrow - 1) + (jcol - 1) * ldb] = COMPLEX(rwork[jreal - 1], &rwork[jimag - 1]);
+                b[(jrow - 1) + (jcol - 1) * ldb] = COMPLEX(rwork[jreal - 1], rwork[jimag - 1]);
             }
         }
         //
@@ -257,7 +257,7 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
     //     Book-keeping and setting up some constants.
     //
     const REAL two = 2.0;
-    INTEGER nlvl = int(log(n.real() / (smlsiz + 1).real()) / log(two)) + 1;
+    INTEGER nlvl = castINTEGER(log(castREAL(n) / castREAL(smlsiz + 1)) / log(two)) + 1;
     //
     INTEGER smlszp = smlsiz + 1;
     //
@@ -292,7 +292,7 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
     //
     for (i = 1; i <= n; i = i + 1) {
         if (abs(d[i - 1]) < eps) {
-            d[i - 1] = sign(eps, &d[i - 1]);
+            d[i - 1] = sign(eps, d[i - 1]);
         }
     }
     //
@@ -376,7 +376,7 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
                     for (jrow = st; jrow <= st + nsize - 1; jrow = jrow + 1) {
                         jreal++;
                         jimag++;
-                        b[(jrow - 1) + (jcol - 1) * ldb] = COMPLEX(rwork[jreal - 1], &rwork[jimag - 1]);
+                        b[(jrow - 1) + (jcol - 1) * ldb] = COMPLEX(rwork[jreal - 1], rwork[jimag - 1]);
                     }
                 }
                 //
@@ -401,7 +401,7 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
     //
     //     Apply the singular values and treat the tiny ones as zero.
     //
-    tol = rcnd * abs(diRamax(n, d, 1));
+    tol = rcnd * abs(d[iRamax(n, d, 1) - 1]);
     //
     for (i = 1; i <= n; i = i + 1) {
         //
@@ -412,7 +412,7 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
             Claset("A", 1, nrhs, czero, czero, &work[(bx + i - 1) - 1], n);
         } else {
             rank++;
-            Clascl("G", 0, 0, &d[i - 1], one, 1, nrhs, &work[(bx + i - 1) - 1], n, info);
+            Clascl("G", 0, 0, d[i - 1], one, 1, nrhs, &work[(bx + i - 1) - 1], n, info);
         }
         d[i - 1] = abs(d[i - 1]);
     }
@@ -462,7 +462,7 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
                 for (jrow = st; jrow <= st + nsize - 1; jrow = jrow + 1) {
                     jreal++;
                     jimag++;
-                    b[(jrow - 1) + (jcol - 1) * ldb] = COMPLEX(rwork[jreal - 1], &rwork[jimag - 1]);
+                    b[(jrow - 1) + (jcol - 1) * ldb] = COMPLEX(rwork[jreal - 1], rwork[jimag - 1]);
                 }
             }
         } else {

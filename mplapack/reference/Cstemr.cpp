@@ -242,9 +242,9 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     //
     if (n == 2) {
         if (!wantz) {
-            Rlae2(d[1 - 1], &e[1 - 1], &d[2 - 1], r1, r2);
+            Rlae2(d[1 - 1], e[1 - 1], d[2 - 1], r1, r2);
         } else if (wantz && (!zquery)) {
-            Rlaev2(d[1 - 1], &e[1 - 1], &d[2 - 1], r1, r2, cs, sn);
+            Rlaev2(d[1 - 1], e[1 - 1], d[2 - 1], r1, r2, cs, sn);
         }
         if (alleig || (valeig && (r2 > wl) && (r2 <= wu)) || (indeig && (iil == 1))) {
             m++;

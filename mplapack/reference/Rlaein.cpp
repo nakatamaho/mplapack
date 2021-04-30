@@ -91,7 +91,7 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
     //     GROWTO is the threshold used in the acceptance test for an
     //     eigenvector.
     //
-    rootn = sqrt(n.real());
+    rootn = sqrt(castREAL(n));
     growto = tenth / rootn;
     nrmsml = max(one, eps3 * rootn) * smlnum;
     //
@@ -204,15 +204,15 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
             //
         }
         //
-        normin = "N";
+        normin = 'N';
         for (its = 1; its <= n; its = its + 1) {
             //
             //           Solve U*x = scale*v for a right eigenvector
             //             or U**T*x = scale*v for a left eigenvector,
             //           overwriting x on v.
             //
-            Rlatrs("Upper", trans, "Nonunit", normin, n, b, ldb, vr, scale, work, ierr);
-            normin = "Y";
+            Rlatrs("Upper", &trans, "Nonunit", &normin, n, b, ldb, vr, scale, work, ierr);
+            normin = 'Y';
             //
             //           Test for sufficient growth in the norm of v.
             //
@@ -277,7 +277,7 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
             }
             //
             for (i = 1; i <= n - 1; i = i + 1) {
-                absbii = Rlapy2(b[(i - 1) + (i - 1) * ldb], &b[((i + 1) - 1) + (i - 1) * ldb]);
+                absbii = Rlapy2(b[(i - 1) + (i - 1) * ldb], b[((i + 1) - 1) + (i - 1) * ldb]);
                 ei = h[((i + 1) - 1) + (i - 1) * ldh];
                 if (absbii < abs(ei)) {
                     //
@@ -343,7 +343,7 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
             //
             for (j = n; j >= 2; j = j - 1) {
                 ej = h[(j - 1) + ((j - 1) - 1) * ldh];
-                absbjj = Rlapy2(b[(j - 1) + (j - 1) * ldb], &b[((j + 1) - 1) + (j - 1) * ldb]);
+                absbjj = Rlapy2(b[(j - 1) + (j - 1) * ldb], b[((j + 1) - 1) + (j - 1) * ldb]);
                 if (absbjj < abs(ej)) {
                     //
                     //                 Interchange columns and eliminate
@@ -446,7 +446,7 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
                     //
                     //                 Divide by diagonal element of B.
                     //
-                    Rladiv(xr, xi, &b[(i - 1) + (i - 1) * ldb], &b[((i + 1) - 1) + (i - 1) * ldb], &vr[i - 1], vi[i - 1]);
+                    Rladiv(xr, xi, b[(i - 1) + (i - 1) * ldb], b[((i + 1) - 1) + (i - 1) * ldb], vr[i - 1], vi[i - 1]);
                     vmax = max(abs(vr[i - 1]) + abs(vi[i - 1]), vmax);
                     vcrit = bignum / vmax;
                 } else {
