@@ -957,9 +957,7 @@ Rorbdb3.cpp \
 Cla_gercond_c.cpp \
 Chbevd.cpp \
 Cggglm.cpp \
-Rorbdb2.cpp
-
-MPLAPACK_SOURCES_NOTYET= \
+Rorbdb2.cpp \
 Cgglse.cpp \
 Rsyevd_2stage.cpp \
 Rposvxx.cpp \
@@ -988,14 +986,14 @@ Cungtsqr_row.cpp \
 Rgesvxx.cpp \
 Cgesvxx.cpp \
 Chb2st_kernels.cpp \
-Rsposv.cpp \
-Rsgesv.cpp \
 Rorbdb4.cpp \
 Rstevx.cpp \
 Rsbgvx.cpp \
 Claein.cpp \
 Cheequb.cpp \
-Csyequb.cpp \
+Csyequb.cpp
+
+MPLAPACK_SOURCES_NOTYET= \
 Rgbsvxx.cpp \
 Chbgvx.cpp \
 Rla_geamv.cpp \

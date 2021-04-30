@@ -58,6 +58,7 @@ void Claed0(INTEGER const qsiz, INTEGER const n, REAL *d, REAL *e, COMPLEX *q, I
     INTEGER spm2 = 0;
     INTEGER msd2 = 0;
     INTEGER curprb = 0;
+    INTEGER ldqstore = ldqs;
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -150,8 +151,8 @@ statement_10:
     //     Set up workspaces for eigenvalues only/accumulate new vectors
     //     routine
     //
-    temp = log(n.real()) / log(two);
-    lgn = int(temp);
+    temp = log(castREAL(n)) / log(two);
+    lgn = castINTEGER(temp);
     if (pow(2, lgn) < n) {
         lgn++;
     }
@@ -188,7 +189,7 @@ statement_10:
         }
         ll = iq - 1 + iwork[(iqptr + curr) - 1];
         Rsteqr("I", matsiz, &d[submat - 1], &e[submat - 1], &rwork[ll - 1], matsiz, rwork, info);
-        Clacrm(qsiz, matsiz, &q[(submat - 1) * ldq], ldq, &rwork[ll - 1], matsiz, qstore[(submat - 1) * ldqstore], ldqs, &rwork[iwrem - 1]);
+        Clacrm(qsiz, matsiz, &q[(submat - 1) * ldq], ldq, &rwork[ll - 1], matsiz, &qstore[(submat - 1) * ldqstore], ldqs, &rwork[iwrem - 1]);
         iwork[(iqptr + curr + 1) - 1] = iwork[(iqptr + curr) - 1] + pow2(matsiz);
         curr++;
         if (info > 0) {
@@ -231,7 +232,7 @@ statement_80:
             //
             //     I am free to use Q as a valuable working space until Loop 150.
             //
-            Claed7(matsiz, msd2, qsiz, tlvls, curlvl, curprb, &d[submat - 1], qstore[(submat - 1) * ldqstore], ldqs, &e[(submat + msd2 - 1) - 1], &iwork[(indxq + submat) - 1], &rwork[iq - 1], &iwork[iqptr - 1], &iwork[iprmpt - 1], &iwork[iperm - 1], &iwork[igivpt - 1], &iwork[igivcl - 1], &rwork[igivnm - 1], &q[(submat - 1) * ldq], &rwork[iwrem - 1], &iwork[(subpbs + 1) - 1], info);
+            Claed7(matsiz, msd2, qsiz, tlvls, curlvl, curprb, &d[submat - 1], &qstore[(submat - 1) * ldqstore], ldqs, e[(submat + msd2 - 1) - 1], &iwork[(indxq + submat) - 1], &rwork[iq - 1], &iwork[iqptr - 1], &iwork[iprmpt - 1], &iwork[iperm - 1], &iwork[igivpt - 1], &iwork[igivcl - 1], &rwork[igivnm - 1], &q[(submat - 1) * ldq], &rwork[iwrem - 1], &iwork[(subpbs + 1) - 1], info);
             if (info > 0) {
                 info = submat * (n + 1) + submat + matsiz - 1;
                 return;
@@ -251,7 +252,7 @@ statement_80:
     for (i = 1; i <= n; i = i + 1) {
         j = iwork[(indxq + i) - 1];
         rwork[i - 1] = d[j - 1];
-        Ccopy(qsiz, qstore[(j - 1) * ldqstore], 1, &q[(i - 1) * ldq], 1);
+        Ccopy(qsiz, &qstore[(j - 1) * ldqstore], 1, &q[(i - 1) * ldq], 1);
     }
     Rcopy(n, rwork, 1, d, 1);
     //

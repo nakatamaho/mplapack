@@ -101,11 +101,11 @@ void Chpgst(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *ap,
                 //              Compute the j-th column of the upper triangle of A
                 //
                 ap[jj - 1] = ap[jj - 1].real();
-                bjj = bp[jj - 1];
+                bjj = bp[jj - 1].real();
                 Ctpsv(uplo, "Conjugate transpose", "Non-unit", j, bp, &ap[j1 - 1], 1);
-                Chpmv(uplo, j - 1, -cone, ap, bp[j1 - 1], 1, cone, &ap[j1 - 1], 1);
+                Chpmv(uplo, j - 1, -cone, ap, &bp[j1 - 1], 1, cone, &ap[j1 - 1], 1);
                 CRscal(j - 1, one / bjj, &ap[j1 - 1], 1);
-                ap[jj - 1] = (ap[jj - 1] - Cdotc(j - 1, &ap[j1 - 1], 1, bp[j1 - 1], 1)) / bjj;
+                ap[jj - 1] = (ap[jj - 1] - Cdotc(j - 1, &ap[j1 - 1], 1, &bp[j1 - 1], 1)) / bjj;
             }
         } else {
             //
@@ -119,17 +119,17 @@ void Chpgst(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *ap,
                 //
                 //              Update the lower triangle of A(k:n,k:n)
                 //
-                akk = ap[kk - 1];
-                bkk = bp[kk - 1];
+                akk = ap[kk - 1].real();
+                bkk = bp[kk - 1].real();
                 akk = akk / pow2(bkk);
                 ap[kk - 1] = akk;
                 if (k < n) {
                     CRscal(n - k, one / bkk, &ap[(kk + 1) - 1], 1);
                     ct = -half * akk;
-                    Caxpy(n - k, ct, bp[(kk + 1) - 1], 1, &ap[(kk + 1) - 1], 1);
-                    Chpr2(uplo, n - k, -cone, &ap[(kk + 1) - 1], 1, bp[(kk + 1) - 1], 1, &ap[k1k1 - 1]);
-                    Caxpy(n - k, ct, bp[(kk + 1) - 1], 1, &ap[(kk + 1) - 1], 1);
-                    Ctpsv(uplo, "No transpose", "Non-unit", n - k, bp[k1k1 - 1], &ap[(kk + 1) - 1], 1);
+                    Caxpy(n - k, ct, &bp[(kk + 1) - 1], 1, &ap[(kk + 1) - 1], 1);
+                    Chpr2(uplo, n - k, -cone, &ap[(kk + 1) - 1], 1, &bp[(kk + 1) - 1], 1, &ap[k1k1 - 1]);
+                    Caxpy(n - k, ct, &bp[(kk + 1) - 1], 1, &ap[(kk + 1) - 1], 1);
+                    Ctpsv(uplo, "No transpose", "Non-unit", n - k, &bp[k1k1 - 1], &ap[(kk + 1) - 1], 1);
                 }
                 kk = k1k1;
             }
@@ -148,13 +148,13 @@ void Chpgst(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *ap,
                 //
                 //              Update the upper triangle of A(1:k,1:k)
                 //
-                akk = ap[kk - 1];
-                bkk = bp[kk - 1];
+                akk = ap[kk - 1].real();
+                bkk = bp[kk - 1].real();
                 Ctpmv(uplo, "No transpose", "Non-unit", k - 1, bp, &ap[k1 - 1], 1);
                 ct = half * akk;
-                Caxpy(k - 1, ct, bp[k1 - 1], 1, &ap[k1 - 1], 1);
-                Chpr2(uplo, k - 1, cone, &ap[k1 - 1], 1, bp[k1 - 1], 1, ap);
-                Caxpy(k - 1, ct, bp[k1 - 1], 1, &ap[k1 - 1], 1);
+                Caxpy(k - 1, ct, &bp[k1 - 1], 1, &ap[k1 - 1], 1);
+                Chpr2(uplo, k - 1, cone, &ap[k1 - 1], 1, &bp[k1 - 1], 1, ap);
+                Caxpy(k - 1, ct, &bp[k1 - 1], 1, &ap[k1 - 1], 1);
                 CRscal(k - 1, bkk, &ap[k1 - 1], 1);
                 ap[kk - 1] = akk * pow2(bkk);
             }
@@ -170,12 +170,12 @@ void Chpgst(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *ap,
                 //
                 //              Compute the j-th column of the lower triangle of A
                 //
-                ajj = ap[jj - 1];
-                bjj = bp[jj - 1];
-                ap[jj - 1] = ajj * bjj + Cdotc(n - j, &ap[(jj + 1) - 1], 1, bp[(jj + 1) - 1], 1);
+                ajj = ap[jj - 1].real();
+                bjj = bp[jj - 1].real();
+                ap[jj - 1] = ajj * bjj + Cdotc(n - j, &ap[(jj + 1) - 1], 1, &bp[(jj + 1) - 1], 1);
                 CRscal(n - j, bjj, &ap[(jj + 1) - 1], 1);
-                Chpmv(uplo, n - j, cone, &ap[j1j1 - 1], bp[(jj + 1) - 1], 1, cone, &ap[(jj + 1) - 1], 1);
-                Ctpmv(uplo, "Conjugate transpose", "Non-unit", n - j + 1, bp[jj - 1], &ap[jj - 1], 1);
+                Chpmv(uplo, n - j, cone, &ap[j1j1 - 1], &bp[(jj + 1) - 1], 1, cone, &ap[(jj + 1) - 1], 1);
+                Ctpmv(uplo, "Conjugate transpose", "Non-unit", n - j + 1, &bp[jj - 1], &ap[jj - 1], 1);
                 jj = j1j1;
             }
         }

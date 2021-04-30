@@ -99,9 +99,9 @@ void Rspgst(INTEGER const itype, const char *uplo, INTEGER const n, REAL *ap, RE
                 //
                 bjj = bp[jj - 1];
                 Rtpsv(uplo, "Transpose", "Nonunit", j, bp, &ap[j1 - 1], 1);
-                Rspmv(uplo, j - 1, -one, ap, bp[j1 - 1], 1, one, &ap[j1 - 1], 1);
+                Rspmv(uplo, j - 1, -one, ap, &bp[j1 - 1], 1, one, &ap[j1 - 1], 1);
                 Rscal(j - 1, one / bjj, &ap[j1 - 1], 1);
-                ap[jj - 1] = (ap[jj - 1] - Rdot(j - 1, &ap[j1 - 1], 1, bp[j1 - 1], 1)) / bjj;
+                ap[jj - 1] = (ap[jj - 1] - Rdot(j - 1, &ap[j1 - 1], 1, &bp[j1 - 1], 1)) / bjj;
             }
         } else {
             //
@@ -122,10 +122,10 @@ void Rspgst(INTEGER const itype, const char *uplo, INTEGER const n, REAL *ap, RE
                 if (k < n) {
                     Rscal(n - k, one / bkk, &ap[(kk + 1) - 1], 1);
                     ct = -half * akk;
-                    Raxpy(n - k, ct, bp[(kk + 1) - 1], 1, &ap[(kk + 1) - 1], 1);
-                    Rspr2(uplo, n - k, -one, &ap[(kk + 1) - 1], 1, bp[(kk + 1) - 1], 1, &ap[k1k1 - 1]);
-                    Raxpy(n - k, ct, bp[(kk + 1) - 1], 1, &ap[(kk + 1) - 1], 1);
-                    Rtpsv(uplo, "No transpose", "Non-unit", n - k, bp[k1k1 - 1], &ap[(kk + 1) - 1], 1);
+                    Raxpy(n - k, ct, &bp[(kk + 1) - 1], 1, &ap[(kk + 1) - 1], 1);
+                    Rspr2(uplo, n - k, -one, &ap[(kk + 1) - 1], 1, &bp[(kk + 1) - 1], 1, &ap[k1k1 - 1]);
+                    Raxpy(n - k, ct, &bp[(kk + 1) - 1], 1, &ap[(kk + 1) - 1], 1);
+                    Rtpsv(uplo, "No transpose", "Non-unit", n - k, &bp[k1k1 - 1], &ap[(kk + 1) - 1], 1);
                 }
                 kk = k1k1;
             }
@@ -148,9 +148,9 @@ void Rspgst(INTEGER const itype, const char *uplo, INTEGER const n, REAL *ap, RE
                 bkk = bp[kk - 1];
                 Rtpmv(uplo, "No transpose", "Non-unit", k - 1, bp, &ap[k1 - 1], 1);
                 ct = half * akk;
-                Raxpy(k - 1, ct, bp[k1 - 1], 1, &ap[k1 - 1], 1);
-                Rspr2(uplo, k - 1, one, &ap[k1 - 1], 1, bp[k1 - 1], 1, ap);
-                Raxpy(k - 1, ct, bp[k1 - 1], 1, &ap[k1 - 1], 1);
+                Raxpy(k - 1, ct, &bp[k1 - 1], 1, &ap[k1 - 1], 1);
+                Rspr2(uplo, k - 1, one, &ap[k1 - 1], 1, &bp[k1 - 1], 1, ap);
+                Raxpy(k - 1, ct, &bp[k1 - 1], 1, &ap[k1 - 1], 1);
                 Rscal(k - 1, bkk, &ap[k1 - 1], 1);
                 ap[kk - 1] = akk * pow2(bkk);
             }
@@ -168,10 +168,10 @@ void Rspgst(INTEGER const itype, const char *uplo, INTEGER const n, REAL *ap, RE
                 //
                 ajj = ap[jj - 1];
                 bjj = bp[jj - 1];
-                ap[jj - 1] = ajj * bjj + Rdot(n - j, &ap[(jj + 1) - 1], 1, bp[(jj + 1) - 1], 1);
+                ap[jj - 1] = ajj * bjj + Rdot(n - j, &ap[(jj + 1) - 1], 1, &bp[(jj + 1) - 1], 1);
                 Rscal(n - j, bjj, &ap[(jj + 1) - 1], 1);
-                Rspmv(uplo, n - j, one, &ap[j1j1 - 1], bp[(jj + 1) - 1], 1, one, &ap[(jj + 1) - 1], 1);
-                Rtpmv(uplo, "Transpose", "Non-unit", n - j + 1, bp[jj - 1], &ap[jj - 1], 1);
+                Rspmv(uplo, n - j, one, &ap[j1j1 - 1], &bp[(jj + 1) - 1], 1, one, &ap[(jj + 1) - 1], 1);
+                Rtpmv(uplo, "Transpose", "Non-unit", n - j + 1, &bp[jj - 1], &ap[jj - 1], 1);
                 jj = j1j1;
             }
         }

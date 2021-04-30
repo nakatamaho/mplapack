@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clatdf(INTEGER const ijob, INTEGER const n, COMPLEX *z, INTEGER const ldz, COMPLEX *rhs, REAL const rdsum, REAL const rRscal, INTEGER *ipiv, INTEGER *jpiv) {
+void Clatdf(INTEGER const ijob, INTEGER const n, COMPLEX *z, INTEGER const ldz, COMPLEX *rhs, REAL rdsum, REAL rdscal, INTEGER *ipiv, INTEGER *jpiv) {
     //
     //  -- LAPACK auxiliary routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -66,7 +66,7 @@ void Clatdf(INTEGER const ijob, INTEGER const n, COMPLEX *z, INTEGER const ldz, 
     REAL sminu = 0.0;
     COMPLEX temp = 0.0;
     const INTEGER maxdim = 2;
-    arr_1d<4 * maxdim, COMPLEX> work(fill0);
+    COMPLEX work[4 * maxdim];
     const REAL zero = 0.0;
     INTEGER i = 0;
     INTEGER k = 0;
@@ -88,7 +88,7 @@ void Clatdf(INTEGER const ijob, INTEGER const n, COMPLEX *z, INTEGER const ldz, 
             //           SPLUS and SMIN computed more efficiently than in BSOLVE[1].
             //
             splus += Cdotc(n - j, &z[((j + 1) - 1) + (j - 1) * ldz], 1, &z[((j + 1) - 1) + (j - 1) * ldz], 1).real();
-            sminu = Cdotc(n - j, &z[((j + 1) - 1) + (j - 1) * ldz], 1, rhs[(j + 1) - 1], 1).real();
+            sminu = Cdotc(n - j, &z[((j + 1) - 1) + (j - 1) * ldz], 1, &rhs[(j + 1) - 1], 1).real();
             splus = splus * rhs[j - 1].real();
             if (splus > sminu) {
                 rhs[j - 1] = bp;
@@ -109,7 +109,7 @@ void Clatdf(INTEGER const ijob, INTEGER const n, COMPLEX *z, INTEGER const ldz, 
             //           Compute the remaining r.h.s.
             //
             temp = -rhs[j - 1];
-            Caxpy(n - j, temp, &z[((j + 1) - 1) + (j - 1) * ldz], 1, rhs[(j + 1) - 1], 1);
+            Caxpy(n - j, temp, &z[((j + 1) - 1) + (j - 1) * ldz], 1, &rhs[(j + 1) - 1], 1);
         }
         //
         //        Solve for U- part, lockahead for RHS(N) = +-1. This is not done
@@ -143,7 +143,7 @@ void Clatdf(INTEGER const ijob, INTEGER const n, COMPLEX *z, INTEGER const ldz, 
         //
         //        Compute the sum of squares
         //
-        Classq(n, rhs, 1, rRscal, rdsum);
+        Classq(n, rhs, 1, rdscal, rdsum);
         return;
     }
     //
@@ -152,10 +152,10 @@ void Clatdf(INTEGER const ijob, INTEGER const n, COMPLEX *z, INTEGER const ldz, 
     //     Compute approximate nullvector XM of Z
     //
     REAL rtemp = 0.0;
-    arr_1d<maxdim, REAL> rwork(fill0);
+    REAL rwork[maxdim];
     INTEGER info = 0;
     Cgecon("I", n, z, ldz, one, rtemp, work, rwork, info);
-    arr_1d<maxdim, COMPLEX> xm(fill0);
+    COMPLEX xm[maxdim];
     Ccopy(n, &work[(n + 1) - 1], 1, xm, 1);
     //
     //     Compute RHS
@@ -163,7 +163,7 @@ void Clatdf(INTEGER const ijob, INTEGER const n, COMPLEX *z, INTEGER const ldz, 
     Claswp(1, xm, ldz, 1, n - 1, ipiv, -1);
     temp = cone / sqrt(Cdotc(n, xm, 1, xm, 1));
     Cscal(n, temp, xm, 1);
-    arr_1d<maxdim, COMPLEX> xp(fill0);
+    COMPLEX xp[maxdim];
     Ccopy(n, xm, 1, xp, 1);
     Caxpy(n, cone, rhs, 1, xp, 1);
     Caxpy(n, -cone, xm, 1, rhs, 1);
@@ -176,7 +176,7 @@ void Clatdf(INTEGER const ijob, INTEGER const n, COMPLEX *z, INTEGER const ldz, 
     //
     //     Compute the sum of squares
     //
-    Classq(n, rhs, 1, rRscal, rdsum);
+    Classq(n, rhs, 1, rdscal, rdsum);
     //
     //     End of Clatdf
     //

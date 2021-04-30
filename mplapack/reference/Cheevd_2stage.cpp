@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *w, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
+void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *w, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
     //  -- LAPACK driver routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -45,6 +45,7 @@ void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INT
     //     .. Parameters ..
     //     ..
     //     .. Local Scalars ..
+    //
     //     ..
     //     .. External Functions ..
     //     ..
@@ -61,7 +62,7 @@ void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INT
     bool lquery = (lwork == -1 || lrwork == -1 || liwork == -1);
     //
     info = 0;
-    if (!(wantz || Mlsame(jobz, "N"))) {
+    if (!(Mlsame(jobz, "N"))) {
         info = -1;
     } else if (!(lower || Mlsame(uplo, "U"))) {
         info = -2;
@@ -74,34 +75,33 @@ void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INT
     INTEGER lwmin = 0;
     INTEGER lrwmin = 0;
     INTEGER liwmin = 0;
-    INTEGER lopt = 0;
-    INTEGER lropt = 0;
-    INTEGER liopt = 0;
+    INTEGER kd = 0;
+    INTEGER ib = 0;
+    INTEGER lhtrd = 0;
+    INTEGER lwtrd = 0;
     if (info == 0) {
         if (n <= 1) {
             lwmin = 1;
             lrwmin = 1;
             liwmin = 1;
-            lopt = lwmin;
-            lropt = lrwmin;
-            liopt = liwmin;
         } else {
+            kd = iMlaenv2stage(1, "Chetrd_2stage", jobz, n, -1, -1, -1);
+            ib = iMlaenv2stage(2, "Chetrd_2stage", jobz, n, kd, -1, -1);
+            lhtrd = iMlaenv2stage(3, "Chetrd_2stage", jobz, n, kd, ib, -1);
+            lwtrd = iMlaenv2stage(4, "Chetrd_2stage", jobz, n, kd, ib, -1);
             if (wantz) {
                 lwmin = 2 * n + n * n;
                 lrwmin = 1 + 5 * n + 2 * pow2(n);
                 liwmin = 3 + 5 * n;
             } else {
-                lwmin = n + 1;
+                lwmin = n + 1 + lhtrd + lwtrd;
                 lrwmin = n;
                 liwmin = 1;
             }
-            lopt = max({lwmin, n + iMlaenv(1, "Chetrd", uplo, n, -1, -1, -1)});
-            lropt = lrwmin;
-            liopt = liwmin;
         }
-        work[1 - 1] = lopt;
-        rwork[1 - 1] = lropt;
-        iwork[1 - 1] = liopt;
+        work[1 - 1] = lwmin;
+        rwork[1 - 1] = lrwmin;
+        iwork[1 - 1] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
             info = -8;
@@ -113,7 +113,7 @@ void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INT
     }
     //
     if (info != 0) {
-        Mxerbla("Cheevd", -info);
+        Mxerbla("Cheevd_2stage", -info);
         return;
     } else if (lquery) {
         return;
@@ -161,18 +161,20 @@ void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INT
         Clascl(uplo, 0, 0, one, sigma, n, n, a, lda, info);
     }
     //
-    //     Call Chetrd to reduce Hermitian matrix to tridiagonal form.
+    //     Call Chetrd_2stage to reduce Hermitian matrix to tridiagonal form.
     //
     INTEGER inde = 1;
-    INTEGER indtau = 1;
-    INTEGER indwrk = indtau + n;
     INTEGER indrwk = inde + n;
-    INTEGER indwk2 = indwrk + n * n;
-    INTEGER llwork = lwork - indwrk + 1;
-    INTEGER llwrk2 = lwork - indwk2 + 1;
     INTEGER llrwk = lrwork - indrwk + 1;
+    INTEGER indtau = 1;
+    INTEGER indhous = indtau + n;
+    INTEGER indwrk = indhous + lhtrd;
+    INTEGER llwork = lwork - indwrk + 1;
+    INTEGER indwk2 = indwrk + n * n;
+    INTEGER llwrk2 = lwork - indwk2 + 1;
+    //
     INTEGER iinfo = 0;
-    Chetrd(uplo, n, a, lda, w, &rwork[inde - 1], &work[indtau - 1], &work[indwrk - 1], llwork, iinfo);
+    Chetrd_2stage(jobz, uplo, n, a, lda, w, &rwork[inde - 1], &work[indtau - 1], &work[indhous - 1], lhtrd, &work[indwrk - 1], llwork, iinfo);
     //
     //     For eigenvalues only, call Rsterf.  For eigenvectors, first call
     //     Cstedc to generate the eigenvector matrix, WORK(INDWRK), of the
@@ -200,10 +202,10 @@ void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INT
         Rscal(imax, one / sigma, w, 1);
     }
     //
-    work[1 - 1] = lopt;
-    rwork[1 - 1] = lropt;
-    iwork[1 - 1] = liopt;
+    work[1 - 1] = lwmin;
+    rwork[1 - 1] = lrwmin;
+    iwork[1 - 1] = liwmin;
     //
-    //     End of Cheevd
+    //     End of Cheevd_2stage
     //
 }
