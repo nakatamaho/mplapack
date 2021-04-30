@@ -17,8 +17,8 @@ atan
 atan2
 cabs
 cdabs
-ceiling
 char
+ceiling
 cmplx
 conjg
 cos

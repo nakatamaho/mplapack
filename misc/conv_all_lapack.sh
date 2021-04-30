@@ -6,7 +6,7 @@ rm -f LAPACK_LIST LAPACK_LIST_  LAPACK_LIST__
 echo "sed \\" > LAPACK_LIST
 echo "-e 's///g'" >> LAPACK_LIST__
 
-FILES_SUBSET=`ls ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/d*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/z*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/i*.f | grep -v dsdot | grep -v zggsvp3`
+FILES_SUBSET=`ls ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/d*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/z*.f ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/i*.f | grep -v dsdot`
 
 for _file in $FILES_SUBSET; do
 oldfilename=`basename $_file | sed -e 's/\.f$//'` 
@@ -35,6 +35,13 @@ newfilename=`basename $_file | sed -e 's/^dzsum1/RCsum1/g' -e 's/^zdscal/CRscal/
 if [ ! -e $newfilename ]; then
 cat ${oldfilename}.cpp | bash BLAS_LIST | bash LAPACK_LIST | sed 's/dlamch/Rlamch/g' > ${newfilename}.cpp_
 mv ${newfilename}.cpp_  ${newfilename}.cpp
+sed -i -e 's/vect = "N";/vect = \'\'N\'';/g' ${newfilename}.cpp
+sed -i -e 's/vect = "U";/vect = \'\'U\'';/g' ${newfilename}.cpp
+sed -i -e 's/trans = "N";/trans = \'\'N\'';/g' ${newfilename}.cpp
+sed -i -e 's/trans = "C";/trans = \'\'C\'';/g' ${newfilename}.cpp
+sed -i -e 's/trans = "T";/trans = \'\'T\'';/g' ${newfilename}.cpp
+sed -i -e 's/norm = "1";/norm = \'\'1\'';/g' ${newfilename}.cpp
+sed -i -e 's/norm = "I";/norm = \'\'I\'';/g' ${newfilename}.cpp
 sed -i -e 's/const &/const /g' ${newfilename}.cpp
 sed -i -e 's/, a\[/, \&a\[/g' ${newfilename}.cpp
 sed -i -e 's/, b\[/, \&b\[/g' ${newfilename}.cpp

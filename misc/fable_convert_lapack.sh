@@ -5,6 +5,7 @@ if [ $# -ne 1 ]; then
 fi
 
 cp /home/docker/mplapack/misc/cout_mplapack.py /home/docker/modules/cctbx_project/fable/
+cp /home/docker/mplapack/misc/intrinsics.py  /home/docker/modules/cctbx_project/fable/
 cp /home/docker/mplapack/misc/cout_mplapack.commandline.py /home/docker/modules/cctbx_project/fable/command_line/cout_mplapack.py
 cp /home/docker/mplapack/misc/fable_mplapack.cout /home/docker/build36/bin/
 
