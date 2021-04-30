@@ -213,7 +213,7 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
                 lorgqropt = max(lorgqropt, castINTEGER(work[1 - 1].real()));
             }
             if (wantu2 && m - p > 0) {
-                Cungqr(m - p - 1, m - p - 1, m - p - 1, u2[(2 - 1) + (2 - 1) * ldu2], ldu2, cdum, &work[1 - 1], -1, childinfo);
+                Cungqr(m - p - 1, m - p - 1, m - p - 1, &u2[(2 - 1) + (2 - 1) * ldu2], ldu2, cdum, &work[1 - 1], -1, childinfo);
                 lorgqrmin = max(lorgqrmin, m - p - 1);
                 lorgqropt = max(lorgqropt, castINTEGER(work[1 - 1].real()));
             }
@@ -223,7 +223,7 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
                 lorglqopt = max(lorglqopt, castINTEGER(work[1 - 1].real()));
             }
             Cbbcsd("N", jobv1t, jobu2, jobu1, "T", m, m - q, m - p, theta, dum, cdum, 1, v1t, ldv1t, u2, ldu2, u1, ldu1, dum, dum, dum, dum, dum, dum, dum, dum, &rwork[1 - 1], -1, childinfo);
-            lbbcsd = int(rwork[1 - 1]);
+            lbbcsd = castINTEGER(rwork[1 - 1]);
         } else {
             Cunbdb4(m, p, q, x11, ldx11, x21, ldx21, theta, dum, cdum, cdum, cdum, cdum, &work[1 - 1], -1, childinfo);
             lorbdb = m + castINTEGER(work[1 - 1].real());
@@ -243,7 +243,7 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
                 lorglqopt = max(lorglqopt, castINTEGER(work[1 - 1].real()));
             }
             Cbbcsd(jobu2, jobu1, "N", jobv1t, "N", m, m - p, m - q, theta, dum, u2, ldu2, u1, ldu1, cdum, 1, v1t, ldv1t, dum, dum, dum, dum, dum, dum, dum, dum, &rwork[1 - 1], -1, childinfo);
-            lbbcsd = int(rwork[1 - 1]);
+            lbbcsd = castINTEGER(rwork[1 - 1]);
         }
         lrworkmin = ibbcsd + lbbcsd - 1;
         lrworkopt = lrworkmin;
@@ -298,8 +298,8 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
                 v1t[(j - 1) * ldv1t] = zero;
                 v1t[(j - 1)] = zero;
             }
-            Clacpy("U", q - 1, q - 1, &x21[(2 - 1) * ldx21], ldx21, v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t);
-            Cunglq(q - 1, q - 1, q - 1, v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t, &work[itauq1 - 1], &work[iorglq - 1], lorglq, childinfo);
+            Clacpy("U", q - 1, q - 1, &x21[(2 - 1) * ldx21], ldx21, &v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t);
+            Cunglq(q - 1, q - 1, q - 1, &v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t, &work[itauq1 - 1], &work[iorglq - 1], lorglq, childinfo);
         }
         //
         //        Simultaneously diagonalize X11 and X21.
@@ -334,8 +334,8 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
                 u1[(j - 1) * ldu1] = zero;
                 u1[(j - 1)] = zero;
             }
-            Clacpy("L", p - 1, p - 1, &x11[(2 - 1)], ldx11, u1[(2 - 1) + (2 - 1) * ldu1], ldu1);
-            Cungqr(p - 1, p - 1, p - 1, u1[(2 - 1) + (2 - 1) * ldu1], ldu1, &work[itaup1 - 1], &work[iorgqr - 1], lorgqr, childinfo);
+            Clacpy("L", p - 1, p - 1, &x11[(2 - 1)], ldx11, &u1[(2 - 1) + (2 - 1) * ldu1], ldu1);
+            Cungqr(p - 1, p - 1, p - 1, &u1[(2 - 1) + (2 - 1) * ldu1], ldu1, &work[itaup1 - 1], &work[iorgqr - 1], lorgqr, childinfo);
         }
         if (wantu2 && m - p > 0) {
             Clacpy("L", m - p, q, x21, ldx21, u2, ldu2);
@@ -382,8 +382,8 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
                 u2[(j - 1) * ldu2] = zero;
                 u2[(j - 1)] = zero;
             }
-            Clacpy("L", m - p - 1, m - p - 1, &x21[(2 - 1)], ldx21, u2[(2 - 1) + (2 - 1) * ldu2], ldu2);
-            Cungqr(m - p - 1, m - p - 1, m - p - 1, u2[(2 - 1) + (2 - 1) * ldu2], ldu2, &work[itaup2 - 1], &work[iorgqr - 1], lorgqr, childinfo);
+            Clacpy("L", m - p - 1, m - p - 1, &x21[(2 - 1)], ldx21, &u2[(2 - 1) + (2 - 1) * ldu2], ldu2);
+            Cungqr(m - p - 1, m - p - 1, m - p - 1, &u2[(2 - 1) + (2 - 1) * ldu2], ldu2, &work[itaup2 - 1], &work[iorgqr - 1], lorgqr, childinfo);
         }
         if (wantv1t && q > 0) {
             Clacpy("U", m - p, q, x21, ldx21, v1t, ldv1t);
@@ -429,20 +429,20 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
             for (j = 2; j <= p; j = j + 1) {
                 u1[(j - 1) * ldu1] = zero;
             }
-            Clacpy("L", p - 1, m - q - 1, &x11[(2 - 1)], ldx11, u1[(2 - 1) + (2 - 1) * ldu1], ldu1);
+            Clacpy("L", p - 1, m - q - 1, &x11[(2 - 1)], ldx11, &u1[(2 - 1) + (2 - 1) * ldu1], ldu1);
             Cungqr(p, p, m - q, u1, ldu1, &work[itaup1 - 1], &work[iorgqr - 1], lorgqr, childinfo);
         }
         if (wantu2 && m - p > 0) {
             for (j = 2; j <= m - p; j = j + 1) {
                 u2[(j - 1) * ldu2] = zero;
             }
-            Clacpy("L", m - p - 1, m - q - 1, &x21[(2 - 1)], ldx21, u2[(2 - 1) + (2 - 1) * ldu2], ldu2);
+            Clacpy("L", m - p - 1, m - q - 1, &x21[(2 - 1)], ldx21, &u2[(2 - 1) + (2 - 1) * ldu2], ldu2);
             Cungqr(m - p, m - p, m - q, u2, ldu2, &work[itaup2 - 1], &work[iorgqr - 1], lorgqr, childinfo);
         }
         if (wantv1t && q > 0) {
             Clacpy("U", m - q, q, x21, ldx21, v1t, ldv1t);
-            Clacpy("U", p - (m - q), q - (m - q), &x11[((m - q + 1) - 1) + ((m - q + 1) - 1) * ldx11], ldx11, v1t[((m - q + 1) - 1) + ((m - q + 1) - 1) * ldv1t], ldv1t);
-            Clacpy("U", -p + q, q - p, &x21[((m - q + 1) - 1) + ((p + 1) - 1) * ldx21], ldx21, v1t[((p + 1) - 1) + ((p + 1) - 1) * ldv1t], ldv1t);
+            Clacpy("U", p - (m - q), q - (m - q), &x11[((m - q + 1) - 1) + ((m - q + 1) - 1) * ldx11], ldx11, &v1t[((m - q + 1) - 1) + ((m - q + 1) - 1) * ldv1t], ldv1t);
+            Clacpy("U", -p + q, q - p, &x21[((m - q + 1) - 1) + ((p + 1) - 1) * ldx21], ldx21, &v1t[((p + 1) - 1) + ((p + 1) - 1) * ldv1t], ldv1t);
             Cunglq(q, q, q, v1t, ldv1t, &work[itauq1 - 1], &work[iorglq - 1], lorglq, childinfo);
         }
         //

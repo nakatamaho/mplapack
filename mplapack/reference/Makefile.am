@@ -1060,12 +1060,12 @@ Rorbdb.cpp \
 Clalsd.cpp \
 Rlaein.cpp \
 Cgsvj1.cpp \
-Rorcsd2by1.cpp
-
-MPLAPACK_SOURCES_NOTYET= \
+Rorcsd2by1.cpp \
 Cuncsd2by1.cpp \
 Chetrf_aa_2stage.cpp \
-Csytrf_aa_2stage.cpp \
+Csytrf_aa_2stage.cpp
+
+MPLAPACK_SOURCES_NOTYET= \
 Rlarrd.cpp \
 Rgesvdx.cpp \
 Chgeqz.cpp \

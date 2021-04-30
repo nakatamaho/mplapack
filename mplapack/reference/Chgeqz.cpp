@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
+
 void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *h, INTEGER const ldh, COMPLEX *t, INTEGER const ldt, COMPLEX *alpha, COMPLEX *beta, COMPLEX *q, INTEGER const ldq, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     COMPLEX x = 0.0;
     bool ilschr = false;
@@ -111,7 +113,6 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1(x) = abs(x.real()) + abs(x.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -350,7 +351,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 if (ilazro || ilazr2) {
                     for (jch = j; jch <= ilast - 1; jch = jch + 1) {
                         ctemp = h[(jch - 1) + (jch - 1) * ldh];
-                        Clartg(ctemp, &h[((jch + 1) - 1) + (jch - 1) * ldh], c, s, &h[(jch - 1) + (jch - 1) * ldh]);
+                        Clartg(ctemp, h[((jch + 1) - 1) + (jch - 1) * ldh], c, s, h[(jch - 1) + (jch - 1) * ldh]);
                         h[((jch + 1) - 1) + (jch - 1) * ldh] = czero;
                         Crot(ilastm - jch, &h[(jch - 1) + ((jch + 1) - 1) * ldh], ldh, &h[((jch + 1) - 1) + ((jch + 1) - 1) * ldh], ldh, c, s);
                         Crot(ilastm - jch, &t[(jch - 1) + ((jch + 1) - 1) * ldt], ldt, &t[((jch + 1) - 1) + ((jch + 1) - 1) * ldt], ldt, c, s);
@@ -379,7 +380,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                     //
                     for (jch = j; jch <= ilast - 1; jch = jch + 1) {
                         ctemp = t[(jch - 1) + ((jch + 1) - 1) * ldt];
-                        Clartg(ctemp, &t[((jch + 1) - 1) + ((jch + 1) - 1) * ldt], c, s, &t[(jch - 1) + ((jch + 1) - 1) * ldt]);
+                        Clartg(ctemp, t[((jch + 1) - 1) + ((jch + 1) - 1) * ldt], c, s, t[(jch - 1) + ((jch + 1) - 1) * ldt]);
                         t[((jch + 1) - 1) + ((jch + 1) - 1) * ldt] = czero;
                         if (jch < ilastm - 1) {
                             Crot(ilastm - jch - 1, &t[(jch - 1) + ((jch + 2) - 1) * ldt], ldt, &t[((jch + 1) - 1) + ((jch + 2) - 1) * ldt], ldt, c, s);
@@ -389,7 +390,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                             Crot(n, &q[(jch - 1) * ldq], 1, &q[((jch + 1) - 1) * ldq], 1, c, conj(s));
                         }
                         ctemp = h[((jch + 1) - 1) + (jch - 1) * ldh];
-                        Clartg(ctemp, &h[((jch + 1) - 1) + ((jch - 1) - 1) * ldh], c, s, &h[((jch + 1) - 1) + (jch - 1) * ldh]);
+                        Clartg(ctemp, h[((jch + 1) - 1) + ((jch - 1) - 1) * ldh], c, s, h[((jch + 1) - 1) + (jch - 1) * ldh]);
                         h[((jch + 1) - 1) + ((jch - 1) - 1) * ldh] = czero;
                         Crot(jch + 1 - ifrstm, &h[(ifrstm - 1) + (jch - 1) * ldh], 1, &h[(ifrstm - 1) + ((jch - 1) - 1) * ldh], 1, c, s);
                         Crot(jch - ifrstm, &t[(ifrstm - 1) + (jch - 1) * ldt], 1, &t[(ifrstm - 1) + ((jch - 1) - 1) * ldt], 1, c, s);
@@ -421,7 +422,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     //
     statement_50:
         ctemp = h[(ilast - 1) + (ilast - 1) * ldh];
-        Clartg(ctemp, &h[(ilast - 1) + ((ilast - 1) - 1) * ldh], c, s, &h[(ilast - 1) + (ilast - 1) * ldh]);
+        Clartg(ctemp, h[(ilast - 1) + ((ilast - 1) - 1) * ldh], c, s, h[(ilast - 1) + (ilast - 1) * ldh]);
         h[(ilast - 1) + ((ilast - 1) - 1) * ldh] = czero;
         Crot(ilast - ifrstm, &h[(ifrstm - 1) + (ilast - 1) * ldh], 1, &h[(ifrstm - 1) + ((ilast - 1) - 1) * ldh], 1, c, s);
         Crot(ilast - ifrstm, &t[(ifrstm - 1) + (ilast - 1) * ldt], 1, &t[(ifrstm - 1) + ((ilast - 1) - 1) * ldt], 1, c, s);
@@ -511,7 +512,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 x = half * (ad11 - shift);
                 temp2 = abs1(x);
                 temp = max(temp, abs1(x));
-                y = temp * sqrt(pow2((x / temp)) + pow2((ctemp / temp)));
+                y = temp * sqrt((x / temp) * (x / temp) + (ctemp / temp) * (ctemp / temp));
                 if (temp2 > zero) {
                     if ((x / temp2).real() * y.real() + (x / temp2).imag() * y.imag() < zero) {
                         y = -y;
@@ -564,7 +565,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         for (j = istart; j <= ilast - 1; j = j + 1) {
             if (j > istart) {
                 ctemp = h[(j - 1) + ((j - 1) - 1) * ldh];
-                Clartg(ctemp, &h[((j + 1) - 1) + ((j - 1) - 1) * ldh], c, s, &h[(j - 1) + ((j - 1) - 1) * ldh]);
+                Clartg(ctemp, h[((j + 1) - 1) + ((j - 1) - 1) * ldh], c, s, h[(j - 1) + ((j - 1) - 1) * ldh]);
                 h[((j + 1) - 1) + ((j - 1) - 1) * ldh] = czero;
             }
             //
@@ -585,7 +586,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             }
             //
             ctemp = t[((j + 1) - 1) + ((j + 1) - 1) * ldt];
-            Clartg(ctemp, &t[((j + 1) - 1) + (j - 1) * ldt], c, s, &t[((j + 1) - 1) + ((j + 1) - 1) * ldt]);
+            Clartg(ctemp, t[((j + 1) - 1) + (j - 1) * ldt], c, s, t[((j + 1) - 1) + ((j + 1) - 1) * ldt]);
             t[((j + 1) - 1) + (j - 1) * ldt] = czero;
             //
             for (jr = ifrstm; jr <= min(j + 2, ilast); jr = jr + 1) {
