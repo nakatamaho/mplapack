@@ -86,10 +86,6 @@ endif
 
 
 MPLAPACK_SOURCES = \
-iMlaenv2stage.cpp \
-iMparam2stage.cpp
-
-MPLAPACK_SOURCES = \
 Cbbcsd.cpp \
 Cbdsqr.cpp \
 Cdrscl.cpp \
@@ -1025,10 +1021,12 @@ iMladiag.cpp \
 iMladlc.cpp \
 iMladlr.cpp \
 iMlaenv.cpp \
+iMlaenv2stage.cpp \
 iMlaprec.cpp \
 iMlatrans.cpp \
 iMlauplo.cpp \
 iMlaver.cpp \
 iMlazlc.cpp \
 iMlazlr.cpp \
-iMparmq.cpp
+iMparmq.cpp \
+iMparam2stage.cpp

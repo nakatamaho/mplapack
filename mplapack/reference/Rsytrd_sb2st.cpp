@@ -202,9 +202,9 @@ void Rsytrd_sb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
     INTEGER thgrsiz = n;
     INTEGER grsiz = 1;
     INTEGER shift = 3;
-    INTEGER nbtiles = ceiling(real[n - 1] / real[kd - 1]);
-    INTEGER stepercol = ceiling(real[shift - 1] / real[grsiz - 1]);
-    INTEGER thgrnb = ceiling(real[(n - 1) - 1] / real[thgrsiz - 1]);
+    INTEGER nbtiles = ceil(double(n) / double(kd));
+    INTEGER stepercol = ceil(double(shift) / double(grsiz));
+    INTEGER thgrnb = ceil(double(n - 1) /double(thgrsiz));
     //
     Rlacpy("A", kd + 1, n, ab, ldab, &work[apos - 1], lda);
     const REAL zero = 0.0;

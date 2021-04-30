@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -64,29 +64,35 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
     INTEGER ic = 0;
     INTEGER iz = 0;
     INTEGER i = 0;
+    INTEGER name_len;
     char prec;
     char algo[3];
     char stag[3];
     bool rprec = false;
     bool cprec = false;
 
+    name_len = min((int)strlen(name), subnamlen);
+    strncpy(subnam, name, name_len);
+    for (int i = 0; i < strlen(subnam); i++) {
+        subnam[i] = toupper(subnam[i]);
+    }
+
     if (ispec != 19) {
         //
         //        Convert NAME to upper case if the first character is lower case.
         //
         return_value = -1;
-        name_len = min((int)strlen(name), subnamlen);
-        strncpy(subnam, name, name_len);
-        ic = *subnam;
-
-        for (int i = 0; i < strlen(subnam); i++) {
-            subnam[i] = toupper(subnam[i]);
-        }
-
         //
-        prec = subnam[(1 - 1)];
-        algo = subnam[(4 - 1) + (6 - 1) * ldsubnam];
-        stag = subnam[(8 - 1) + (12 - 1) * ldsubnam];
+        prec = subnam[0];
+        algo[0] = subnam[3];
+        algo[1] = subnam[4];
+        algo[2] = subnam[5];
+
+        stag[0] = subnam[7];
+        algo[1] = subnam[8];
+        algo[2] = subnam[9];
+        algo[3] = subnam[10];
+        algo[4] = subnam[11];
         rprec = prec == "R";
         cprec = prec == "C";
         //
@@ -183,27 +189,35 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
         //                    + (KD+1)*N
         lwork = -1;
         subnam[(1 - 1)] = prec;
-        subnam[(2 - 1) + (6 - 1) * ldsubnam] = "GEQRF";
+        subnam[(2 - 1)] = "G";
+        subnam[(3 - 1)] = "E";
+        subnam[(4 - 1)] = "Q";
+        subnam[(5 - 1)] = "R";
+        subnam[(6 - 1)] = "F";
 
         qroptnb = iMlaenv(1, subnam, " ", ni, nbi, -1, -1);
-        subnam[(2 - 1) + (6 - 1) * ldsubnam] = "GELQF";
+        subnam[(2 - 1)] = "G";
+        subnam[(3 - 1)] = "E";
+        subnam[(4 - 1)] = "L";
+        subnam[(5 - 1)] = "Q";
+        subnam[(6 - 1)] = "F";
         lqoptnb = iMlaenv(1, subnam, " ", nbi, ni, -1, -1);
         //        Could be QR or LQ for TRD and the max for BRD
         factoptnb = max(qroptnb, lqoptnb);
-        if (algo == "TRD") {
-            if (stag == "2STAG") {
+        if (strncmp(algo, "TRD", 3)) {
+            if (strncmp(stag, "2STAG", 4)) {
                 lwork = ni * nbi + ni * max(nbi + 1, factoptnb) + max((INTEGER)2 * nbi * nbi, nbi * nthreads) + (nbi + 1) * ni;
-            } else if ((stag == "HE2HB") || (stag == "SY2SB")) {
+          } else if ((strncmp(stag, "HE2HB",4) || (strncmp(stag, "SY2SB",4)) {
                 lwork = ni * nbi + ni * max(nbi, factoptnb) + 2 * nbi * nbi;
-            } else if ((stag == "HB2ST") || (stag == "SB2ST")) {
+	      } else if ((strncmp(stag, "HB2ST",4) || (strncmp(stag,"SB2ST",4)) {
                 lwork = (2 * nbi + 1) * ni + nbi * nthreads;
             }
-        } else if (algo == "BRD") {
-            if (stag == "2STAG") {
+        } else if (strncmp(algo, "BRD", 3)) {
+            if (strncmp(stag, "2STAG", 4)) {
                 lwork = 2 * ni * nbi + ni * max(nbi + 1, factoptnb) + max((INTEGER)2 * nbi * nbi, nbi * nthreads) + (nbi + 1) * ni;
-            } else if (stag == "GE2GB") {
+            } else if (strncmp(stag, "GE2GB", 4)) {
                 lwork = ni * nbi + ni * max(nbi, factoptnb) + 2 * nbi * nbi;
-            } else if (stag == "GB2BD") {
+            } else if (strncmp(stag, "GB2BD", 4)) {
                 lwork = (3 * nbi + 1) * ni + nbi * nthreads;
             }
         }

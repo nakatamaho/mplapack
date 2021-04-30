@@ -85,17 +85,17 @@ void Cggqrf(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, INTEG
     //     QR factorization of N-by-M matrix A: A = Q*R
     //
     Cgeqrf(n, m, a, lda, taua, work, lwork, info);
-    INTEGER lopt = work[1 - 1];
+    INTEGER lopt = castINTEGER(work[1 - 1].real());
     //
     //     Update B := Q**H*B.
     //
     Cunmqr("Left", "Conjugate Transpose", n, p, min(n, m), a, lda, taua, b, ldb, work, lwork, info);
-    lopt = max(lopt, int(work[1 - 1]));
+    lopt = max(lopt, castINTEGER(work[1 - 1].real()));
     //
     //     RQ factorization of N-by-P matrix B: B = T*Z.
     //
     Cgerqf(n, p, b, ldb, taub, work, lwork, info);
-    work[1 - 1] = max(lopt, int(work[1 - 1]));
+    work[1 - 1] = max(lopt, castINTEGER(work[1 - 1].real()));
     //
     //     End of Cggqrf
     //

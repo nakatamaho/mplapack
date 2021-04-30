@@ -235,9 +235,9 @@ void Chetrd_hb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
     INTEGER thgrsiz = n;
     INTEGER grsiz = 1;
     INTEGER shift = 3;
-    INTEGER nbtiles = ceiling(real[n - 1] / real[kd - 1]);
-    INTEGER stepercol = ceiling(real[shift - 1] / real[grsiz - 1]);
-    INTEGER thgrnb = ceiling(real[(n - 1) - 1] / real[thgrsiz - 1]);
+    INTEGER nbtiles = ceil(double(n) / double(kd));
+    INTEGER stepercol = ceil(double(shift) / double(grsiz));
+    INTEGER thgrnb = ceil(double(n - 1) / double(thgrsiz));
     //
     Clacpy("A", kd + 1, n, ab, ldab, &work[apos - 1], lda);
     const COMPLEX zero = COMPLEX(0.0, 0.0);
@@ -296,7 +296,7 @@ void Chetrd_hb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
                         //
                         //                         Call the kernel
                         //
-                        Chb2st_kernels(uplo, wantq, ttype, stind, edind, sweepid, n, kd, ib, &work[inda - 1], lda, hous[indv - 1], hous[indtau - 1], ldv, &work[(indw + tid * kd) - 1]);
+                        Chb2st_kernels(uplo, wantq, ttype, stind, edind, sweepid, n, kd, ib, &work[inda - 1], lda, &hous[indv - 1], &hous[indtau - 1], ldv, &work[(indw + tid * kd) - 1]);
                         if (blklastind >= (n - 1)) {
                             stt++;
                             break;
