@@ -66,7 +66,7 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
     INTEGER ibegin = 0;
     INTEGER in = 0;
     REAL bnorm = 0.0;
-    arr_1d<1, int> idumma(fill0);
+    INTEGER idumma[1];
     INTEGER im = 0;
     INTEGER iwoff = 0;
     const REAL half = 1.0 / two;
@@ -234,20 +234,20 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         //
         for (j = 1; j <= n - 1; j = j + 1) {
             tmp2 = sqrt(work[j - 1]);
-            gu = max(gu, &d[j - 1] + tmp1 + tmp2);
-            gl = min(gl, &d[j - 1] - tmp1 - tmp2);
+            gu = max(gu, d[j - 1] + tmp1 + tmp2);
+            gl = min(gl, d[j - 1] - tmp1 - tmp2);
             tmp1 = tmp2;
         }
         //
-        gu = max(gu, &d[n - 1] + tmp1);
-        gl = min(gl, &d[n - 1] - tmp1);
+        gu = max(gu, d[n - 1] + tmp1);
+        gl = min(gl, d[n - 1] - tmp1);
         tnorm = max(abs(gl), abs(gu));
         gl = gl - fudge * tnorm * ulp * n - fudge * two * pivmin;
         gu += fudge * tnorm * ulp * n + fudge * pivmin;
         //
         //        Compute Iteration parameters
         //
-        itmax = int((log(tnorm + pivmin) - log(pivmin)) / log(two)) + 2;
+        itmax = castINTEGER((log(tnorm + pivmin) - log(pivmin)) / log(two)) + 2;
         if (abstol <= zero) {
             atoli = ulp * tnorm;
         } else {
@@ -358,13 +358,13 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
             //
             for (j = ibegin; j <= iend - 1; j = j + 1) {
                 tmp2 = abs(e[j - 1]);
-                gu = max(gu, &d[j - 1] + tmp1 + tmp2);
-                gl = min(gl, &d[j - 1] - tmp1 - tmp2);
+                gu = max(gu, d[j - 1] + tmp1 + tmp2);
+                gl = min(gl, d[j - 1] - tmp1 - tmp2);
                 tmp1 = tmp2;
             }
             //
-            gu = max(gu, &d[iend - 1] + tmp1);
-            gl = min(gl, &d[iend - 1] - tmp1);
+            gu = max(gu, d[iend - 1] + tmp1);
+            gl = min(gl, d[iend - 1] - tmp1);
             bnorm = max(abs(gl), abs(gu));
             gl = gl - fudge * bnorm * ulp * in - fudge * pivmin;
             gu += fudge * bnorm * ulp * in + fudge * pivmin;
@@ -394,7 +394,7 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
             //
             work[(n + 1) - 1] = gl;
             work[(n + in + 1) - 1] = gu;
-            Rlaebz(1, 0, in, in, 1, nb, atoli, rtoli, pivmin, &d[ibegin - 1], &e[ibegin - 1], &work[ibegin - 1], idumma, &work[(n + 1) - 1], &work[(n + 2 * in + 1) - 1], im, iwork, &w[(m + 1) - 1], iblock[(m + 1) - 1], iinfo);
+            Rlaebz(1, 0, in, in, 1, nb, atoli, rtoli, pivmin, &d[ibegin - 1], &e[ibegin - 1], &work[ibegin - 1], idumma, &work[(n + 1) - 1], &work[(n + 2 * in + 1) - 1], im, iwork, &w[(m + 1) - 1], &iblock[(m + 1) - 1], iinfo);
             //
             nwl += iwork[1 - 1];
             nwu += iwork[(in + 1) - 1];
@@ -402,8 +402,8 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
             //
             //           Compute Eigenvalues
             //
-            itmax = int((log(gu - gl + pivmin) - log(pivmin)) / log(two)) + 2;
-            Rlaebz(2, itmax, in, in, 1, nb, atoli, rtoli, pivmin, &d[ibegin - 1], &e[ibegin - 1], &work[ibegin - 1], idumma, &work[(n + 1) - 1], &work[(n + 2 * in + 1) - 1], iout, iwork, &w[(m + 1) - 1], iblock[(m + 1) - 1], iinfo);
+            itmax = castINTEGER((log(gu - gl + pivmin) - log(pivmin)) / log(two)) + 2;
+            Rlaebz(2, itmax, in, in, 1, nb, atoli, rtoli, pivmin, &d[ibegin - 1], &e[ibegin - 1], &work[ibegin - 1], idumma, &work[(n + 1) - 1], &work[(n + 2 * in + 1) - 1], iout, iwork, &w[(m + 1) - 1], &iblock[(m + 1) - 1], iinfo);
             //
             //           Copy Eigenvalues Into W and IBLOCK
             //           Use -JB for block number for unconverged eigenvalues.

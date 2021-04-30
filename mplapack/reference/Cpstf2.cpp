@@ -99,7 +99,7 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     for (i = 1; i <= n; i = i + 1) {
         work[i - 1] = a[(i - 1) + (i - 1) * lda].real();
     }
-    pvt = Mmaxloc(work, 1, n,  1);
+    pvt = Mmaxloc(work, 1, n, 1);
     ajj = a[(pvt - 1) + (pvt - 1) * lda].real();
     if (ajj <= zero || Risnan(ajj)) {
         rank = 0;
@@ -141,7 +141,7 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             }
             //
             if (j > 1) {
-	      itemp = Mmaxloc(work, n + j, 2 * n, 1);
+                itemp = Mmaxloc(work, n + j, 2 * n, 1);
                 pvt = itemp + j - 1;
                 ajj = work[(n + pvt) - 1];
                 if (ajj <= dstop || Risnan(ajj)) {
@@ -210,7 +210,7 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             }
             //
             if (j > 1) {
-	      itemp = Mmaxloc(work, n + j, 2 * n, 1);
+                itemp = Mmaxloc(work, n + j, 2 * n, 1);
                 pvt = itemp + j - 1;
                 ajj = work[(n + pvt) - 1];
                 if (ajj <= dstop || Risnan(ajj)) {

@@ -162,7 +162,7 @@ void Chbevx(const char *jobz, const char *range, const char *uplo, INTEGER const
             }
         }
         if (m == 1) {
-	    w[1 - 1] = ctmp1.real();
+            w[1 - 1] = ctmp1.real();
             if (wantz) {
                 z[(1 - 1)] = cone;
             }

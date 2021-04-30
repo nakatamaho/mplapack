@@ -29,19 +29,15 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selctg)(COMPLEX, COMPLEX), INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, INTEGER &sdim, COMPLEX *alpha, COMPLEX *beta, COMPLEX *vsl, INTEGER const ldvsl, COMPLEX *vsr, INTEGER const ldvsr, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
+void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selctg)(COMPLEX, COMPLEX), INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, INTEGER &sdim, COMPLEX *alpha, COMPLEX *beta, COMPLEX *vsl, INTEGER const ldvsl, COMPLEX *vsr, INTEGER const ldvsr, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
     INTEGER ijobvl = 0;
     bool ilvsl = false;
     INTEGER ijobvr = 0;
     bool ilvsr = false;
     bool wantst = false;
     bool lquery = false;
-    INTEGER ierr = 0;
+    INTEGER lwkmin = 0;
     INTEGER lwkopt = 0;
-    REAL pvsl = 0.0;
-    REAL pvsr = 0.0;
-    REAL dif[2];
-    INTEGER idum[1];
     REAL eps = 0.0;
     REAL smlnum = 0.0;
     const REAL one = 1.0;
@@ -50,6 +46,7 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     bool ilascl = false;
     const REAL zero = 0.0;
     REAL anrmto = 0.0;
+    INTEGER ierr = 0;
     REAL bnrm = 0.0;
     bool ilbscl = false;
     REAL bnrmto = 0.0;
@@ -65,6 +62,10 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     INTEGER i = 0;
+    REAL pvsl = 0.0;
+    REAL pvsr = 0.0;
+    REAL dif[2];
+    INTEGER idum[1];
     bool lastsl = false;
     bool cursl = false;
     //
@@ -141,34 +142,31 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         info = -14;
     } else if (ldvsr < 1 || (ilvsr && ldvsr < n)) {
         info = -16;
-    } else if (lwork < max((INTEGER)1, 2 * n) && !lquery) {
-        info = -18;
     }
     //
     //     Compute workspace
+    //      (Note: Comments in the code beginning "Workspace:" describe the
+    //       minimal amount of workspace needed at that point in the code,
+    //       as well as the preferred amount for good performance.
+    //       NB refers to the optimal block size for the immediately
+    //       following subroutine, as returned by iMlaenv.)
     //
     if (info == 0) {
-        Cgeqrf(n, n, b, ldb, work, work, -1, ierr);
-        lwkopt = max((INTEGER)1, n + castINTEGER(work[1 - 1].real()));
-        Cunmqr("L", "C", n, n, n, b, ldb, work, a, lda, work, -1, ierr);
-        lwkopt = max(lwkopt, n + castINTEGER(work[1 - 1].real()));
+        lwkmin = max((INTEGER)1, 2 * n);
+        lwkopt = max({(INTEGER)1, n + n * iMlaenv(1, "Cgeqrf", " ", n, 1, n, 0)});
+        lwkopt = max({lwkopt, n + n * iMlaenv(1, "Cunmqr", " ", n, 1, n, -1)});
         if (ilvsl) {
-            Cungqr(n, n, n, vsl, ldvsl, work, work, -1, ierr);
-            lwkopt = max(lwkopt, n + castINTEGER(work[1 - 1].real()));
+            lwkopt = max({lwkopt, n + n * iMlaenv(1, "Cungqr", " ", n, 1, n, -1)});
         }
-        Cgghd3(jobvsl, jobvsr, n, 1, n, a, lda, b, ldb, vsl, ldvsl, vsr, ldvsr, work, -1, ierr);
-        lwkopt = max(lwkopt, n + castINTEGER(work[1 - 1].real()));
-        Chgeqz("S", jobvsl, jobvsr, n, 1, n, a, lda, b, ldb, alpha, beta, vsl, ldvsl, vsr, ldvsr, work, -1, rwork, ierr);
-        lwkopt = max(lwkopt, castINTEGER(work[1 - 1].real()));
-        if (wantst) {
-            Ctgsen(0, ilvsl, ilvsr, bwork, n, a, lda, b, ldb, alpha, beta, vsl, ldvsl, vsr, ldvsr, sdim, pvsl, pvsr, dif, work, -1, idum, 1, ierr);
-            lwkopt = max(lwkopt, castINTEGER(work[1 - 1].real()));
+        work[1 - 1] = lwkopt;
+        //
+        if (lwork < lwkmin && !lquery) {
+            info = -18;
         }
-        work[1 - 1] = COMPLEX(lwkopt);
     }
     //
     if (info != 0) {
-        Mxerbla("Cgges3 ", -info);
+        Mxerbla("Cgges ", -info);
         return;
     } else if (lquery) {
         return;
@@ -223,6 +221,7 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     }
     //
     //     Permute the matrix to make it more nearly triangular
+    //     (Real Workspace: need 6*N)
     //
     ileft = 1;
     iright = n + 1;
@@ -230,6 +229,7 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     Cggbal("P", n, a, lda, b, ldb, ilo, ihi, &rwork[ileft - 1], &rwork[iright - 1], &rwork[irwrk - 1], ierr);
     //
     //     Reduce B to triangular form (QR decomposition of B)
+    //     (Complex Workspace: need N, prefer N*NB)
     //
     irows = ihi + 1 - ilo;
     icols = n + 1 - ilo;
@@ -238,10 +238,12 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     Cgeqrf(irows, icols, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
     //     Apply the orthogonal transformation to matrix A
+    //     (Complex Workspace: need N, prefer N*NB)
     //
     Cunmqr("L", "C", irows, icols, irows, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau - 1], &a[(ilo - 1) + (ilo - 1) * lda], lda, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
     //     Initialize VSL
+    //     (Complex Workspace: need N, prefer N*NB)
     //
     if (ilvsl) {
         Claset("Full", n, n, czero, cone, vsl, ldvsl);
@@ -258,12 +260,15 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     }
     //
     //     Reduce to generalized Hessenberg form
+    //     (Workspace: none needed)
     //
-    Cgghd3(jobvsl, jobvsr, n, ilo, ihi, a, lda, b, ldb, vsl, ldvsl, vsr, ldvsr, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
+    Cgghrd(jobvsl, jobvsr, n, ilo, ihi, a, lda, b, ldb, vsl, ldvsl, vsr, ldvsr, ierr);
     //
     sdim = 0;
     //
     //     Perform QZ algorithm, computing Schur vectors if desired
+    //     (Complex Workspace: need N)
+    //     (Real Workspace: need N)
     //
     iwrk = itau;
     Chgeqz("S", jobvsl, jobvsr, n, ilo, ihi, a, lda, b, ldb, alpha, beta, vsl, ldvsl, vsr, ldvsr, &work[iwrk - 1], lwork + 1 - iwrk, &rwork[irwrk - 1], ierr);
@@ -279,6 +284,7 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     }
     //
     //     Sort eigenvalues ALPHA/BETA if desired
+    //     (Workspace: none needed)
     //
     if (wantst) {
         //
@@ -305,6 +311,7 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     }
     //
     //     Apply back-permutation to VSL and VSR
+    //     (Workspace: none needed)
     //
     if (ilvsl) {
         Cggbak("P", "L", n, ilo, ihi, &rwork[ileft - 1], &rwork[iright - 1], n, vsl, ldvsl, ierr);
@@ -346,8 +353,8 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
 //
 statement_30:
     //
-    work[1 - 1] = COMPLEX(lwkopt);
+    work[1 - 1] = lwkopt;
     //
-    //     End of Cgges3
+    //     End of Cgges
     //
 }

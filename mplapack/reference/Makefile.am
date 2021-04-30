@@ -1001,9 +1001,7 @@ Cla_geamv.cpp \
 Claed0.cpp \
 Cla_herpvgrw.cpp \
 Cla_syrpvgrw.cpp \
-Rla_gbamv.cpp
-
-MPLAPACK_SOURCES_NOTYET= \
+Rla_gbamv.cpp \
 Rlarrb.cpp \
 Claic1.cpp \
 Cla_gbamv.cpp \
@@ -1036,26 +1034,10 @@ Cgges3.cpp \
 Cgetsls.cpp \
 Cgges.cpp \
 Chptri.cpp \
-Rla_porfsx_extended.cpp \
-Rporfsx.cpp \
-Cla_porfsx_extended.cpp \
-Rsyrfsx.cpp \
-Cherfsx.cpp \
-Rla_gerfsx_extended.cpp \
-Cporfsx.cpp \
-Csyrfsx.cpp \
-Rla_syrfsx_extended.cpp \
-Rla_gbrfsx_extended.cpp \
 Cggev.cpp \
 Cggev3.cpp \
-Cla_gerfsx_extended.cpp \
-Cla_gbrfsx_extended.cpp \
-Cla_syrfsx_extended.cpp \
-Cla_herfsx_extended.cpp \
 Rlarrf.cpp \
 Clals0.cpp \
-Rgerfsx.cpp \
-Rgbrfsx.cpp \
 Rsyevr.cpp \
 Rorcsd.cpp \
 Cggesx.cpp \
@@ -1067,7 +1049,9 @@ Cggbal.cpp \
 Rlaebz.cpp \
 Clalsa.cpp \
 Cggevx.cpp \
-Rggesx.cpp \
+Rggesx.cpp
+
+MPLAPACK_SOURCES_NOTYET= \
 Rggevx.cpp \
 Rstebz.cpp \
 Cstemr.cpp \
@@ -1091,6 +1075,6 @@ Rlansf.cpp \
 Rlarrv.cpp \
 Clarrv.cpp \
 Chbgst.cpp \
-iMlaenv2stage.cpp
-
+iMlaenv2stage.cpp \
+iMlauplo.cpp
 MPLAPACK_SOURCES = $(MPLAPACK_SOURCES_NOTYET) # $(MPLAPACK_SOURCES_AUTO) $(MPLAPACK_SOURCES_HAND) 
