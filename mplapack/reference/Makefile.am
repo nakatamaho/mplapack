@@ -949,9 +949,7 @@ Cla_porcond_x.cpp \
 Cggsvd3.cpp \
 Cla_hercond_x.cpp \
 Cla_syrcond_x.cpp \
-Chpevd.cpp
-
-MPLAPACK_SOURCES_NOTYET= \
+Chpevd.cpp \
 Cla_gbrcond_x.cpp \
 Cgghrd.cpp \
 Rsbevd_2stage.cpp \
@@ -959,7 +957,9 @@ Rorbdb3.cpp \
 Cla_gercond_c.cpp \
 Chbevd.cpp \
 Cggglm.cpp \
-Rorbdb2.cpp \
+Rorbdb2.cpp
+
+MPLAPACK_SOURCES_NOTYET= \
 Cgglse.cpp \
 Rsyevd_2stage.cpp \
 Rposvxx.cpp \
