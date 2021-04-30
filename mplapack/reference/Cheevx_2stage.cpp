@@ -29,16 +29,18 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, INTEGER &m, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
+void Cheevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, INTEGER &m, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
     bool lower = false;
     bool wantz = false;
     bool alleig = false;
     bool valeig = false;
     bool indeig = false;
     bool lquery = false;
-    INTEGER lwkmin = 0;
-    INTEGER nb = 0;
-    INTEGER lwkopt = 0;
+    INTEGER lwmin = 0;
+    INTEGER kd = 0;
+    INTEGER ib = 0;
+    INTEGER lhtrd = 0;
+    INTEGER lwtrd = 0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     REAL safmin = 0.0;
     REAL eps = 0.0;
@@ -59,6 +61,7 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     INTEGER inde = 0;
     INTEGER indrwk = 0;
     INTEGER indtau = 0;
+    INTEGER indhous = 0;
     INTEGER indwrk = 0;
     INTEGER llwork = 0;
     INTEGER iinfo = 0;
@@ -108,7 +111,7 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     lquery = (lwork == -1);
     //
     info = 0;
-    if (!(wantz || Mlsame(jobz, "N"))) {
+    if (!(Mlsame(jobz, "N"))) {
         info = -1;
     } else if (!(alleig || valeig || indeig)) {
         info = -2;
@@ -139,23 +142,24 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     //
     if (info == 0) {
         if (n <= 1) {
-            lwkmin = 1;
-            work[1 - 1] = lwkmin;
+            lwmin = 1;
+            work[1 - 1] = lwmin;
         } else {
-            lwkmin = 2 * n;
-            nb = iMlaenv(1, "Chetrd", uplo, n, -1, -1, -1);
-            nb = max({nb, iMlaenv(1, "Cunmtr", uplo, n, -1, -1, -1)});
-            lwkopt = max((INTEGER)1, (nb + 1) * n);
-            work[1 - 1] = lwkopt;
+            kd = iMlaenv2stage(1, "Chetrd_2stage", jobz, n, -1, -1, -1);
+            ib = iMlaenv2stage(2, "Chetrd_2stage", jobz, n, kd, -1, -1);
+            lhtrd = iMlaenv2stage(3, "Chetrd_2stage", jobz, n, kd, ib, -1);
+            lwtrd = iMlaenv2stage(4, "Chetrd_2stage", jobz, n, kd, ib, -1);
+            lwmin = n + lhtrd + lwtrd;
+            work[1 - 1] = lwmin;
         }
         //
-        if (lwork < lwkmin && !lquery) {
+        if (lwork < lwmin && !lquery) {
             info = -17;
         }
     }
     //
     if (info != 0) {
-        Mxerbla("Cheevx", -info);
+        Mxerbla("Cheevx_2stage", -info);
         return;
     } else if (lquery) {
         return;
@@ -228,15 +232,17 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
         }
     }
     //
-    //     Call Chetrd to reduce Hermitian matrix to tridiagonal form.
+    //     Call Chetrd_2stage to reduce Hermitian matrix to tridiagonal form.
     //
     indd = 1;
     inde = indd + n;
     indrwk = inde + n;
     indtau = 1;
-    indwrk = indtau + n;
+    indhous = indtau + n;
+    indwrk = indhous + lhtrd;
     llwork = lwork - indwrk + 1;
-    Chetrd(uplo, n, a, lda, &rwork[indd - 1], &rwork[inde - 1], &work[indtau - 1], &work[indwrk - 1], llwork, iinfo);
+    //
+    Chetrd_2stage(jobz, uplo, n, a, lda, &rwork[indd - 1], &rwork[inde - 1], &work[indtau - 1], &work[indhous - 1], lhtrd, &work[indwrk - 1], llwork, iinfo);
     //
     //     If all eigenvalues are desired and ABSTOL is less than or equal to
     //     zero, then call Rsterf or Cungtr and Csteqr.  If this fails for
@@ -337,8 +343,8 @@ statement_40:
     //
     //     Set WORK(1) to optimal complex workspace size.
     //
-    work[1 - 1] = lwkopt;
+    work[1 - 1] = lwmin;
     //
-    //     End of Cheevx
+    //     End of Cheevx_2stage
     //
 }

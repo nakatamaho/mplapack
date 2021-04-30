@@ -142,11 +142,11 @@ void Chpevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     if (n == 1) {
         if (alleig || indeig) {
             m = 1;
-            w[1 - 1] = ap[1 - 1];
+            w[1 - 1] = ap[1 - 1].real();
         } else {
             if (vl < ap[1 - 1].real() && vu >= ap[1 - 1].real()) {
                 m = 1;
-                w[1 - 1] = ap[1 - 1];
+                w[1 - 1] = ap[1 - 1].real();
             }
         }
         if (wantz) {
@@ -239,14 +239,14 @@ void Chpevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     //     Otherwise, call Rstebz and, if eigenvectors are desired, Cstein.
     //
     if (wantz) {
-        order = "B";
+        order = 'B';
     } else {
-        order = "E";
+        order = 'E';
     }
     indibl = 1;
     indisp = indibl + n;
     indiwk = indisp + n;
-    Rstebz(range, order, n, vll, vuu, il, iu, abstll, &rwork[indd - 1], &rwork[inde - 1], m, nsplit, w, &iwork[indibl - 1], &iwork[indisp - 1], &rwork[indrwk - 1], &iwork[indiwk - 1], info);
+    Rstebz(range, &order, n, vll, vuu, il, iu, abstll, &rwork[indd - 1], &rwork[inde - 1], m, nsplit, w, &iwork[indibl - 1], &iwork[indisp - 1], &rwork[indrwk - 1], &iwork[indiwk - 1], info);
     //
     if (wantz) {
         Cstein(n, &rwork[indd - 1], &rwork[inde - 1], m, w, &iwork[indibl - 1], &iwork[indisp - 1], z, ldz, &rwork[indrwk - 1], &iwork[indiwk - 1], ifail, info);

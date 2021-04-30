@@ -29,48 +29,40 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, INTEGER &m, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
-    bool lower = false;
+void Rstevr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL *e, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, INTEGER &m, REAL *w, REAL *z, INTEGER const ldz, INTEGER *isuppz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
+    INTEGER ieeeok = 0;
     bool wantz = false;
     bool alleig = false;
     bool valeig = false;
     bool indeig = false;
     bool lquery = false;
-    INTEGER lwkmin = 0;
-    INTEGER nb = 0;
-    INTEGER lwkopt = 0;
-    const COMPLEX cone = COMPLEX(1.0, 0.0);
+    INTEGER lwmin = 0;
+    INTEGER liwmin = 0;
+    const REAL one = 1.0;
     REAL safmin = 0.0;
     REAL eps = 0.0;
     REAL smlnum = 0.0;
-    const REAL one = 1.0;
     REAL bignum = 0.0;
     REAL rmin = 0.0;
     REAL rmax = 0.0;
     INTEGER iscale = 0;
-    REAL abstll = 0.0;
     REAL vll = 0.0;
     REAL vuu = 0.0;
-    REAL anrm = 0.0;
+    REAL tnrm = 0.0;
     const REAL zero = 0.0;
     REAL sigma = 0.0;
-    INTEGER j = 0;
-    INTEGER indd = 0;
-    INTEGER inde = 0;
-    INTEGER indrwk = 0;
-    INTEGER indtau = 0;
-    INTEGER indwrk = 0;
-    INTEGER llwork = 0;
-    INTEGER iinfo = 0;
-    bool test = false;
-    INTEGER indee = 0;
-    INTEGER i = 0;
-    char order;
     INTEGER indibl = 0;
     INTEGER indisp = 0;
-    INTEGER indiwk = 0;
+    INTEGER indifl = 0;
+    INTEGER indiwo = 0;
+    bool test = false;
+    const REAL two = 2.0e+0;
+    bool tryrac = false;
+    char order;
     INTEGER nsplit = 0;
     INTEGER imax = 0;
+    INTEGER j = 0;
+    INTEGER i = 0;
     REAL tmp1 = 0.0;
     INTEGER jj = 0;
     INTEGER itmp1 = 0;
@@ -100,62 +92,56 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     //
     //     Test the input parameters.
     //
-    lower = Mlsame(uplo, "L");
+    ieeeok = iMlaenv(10, "Rstevr", "N", 1, 2, 3, 4);
+    //
     wantz = Mlsame(jobz, "V");
     alleig = Mlsame(range, "A");
     valeig = Mlsame(range, "V");
     indeig = Mlsame(range, "I");
-    lquery = (lwork == -1);
+    //
+    lquery = ((lwork == -1) || (liwork == -1));
+    lwmin = max((INTEGER)1, 20 * n);
+    liwmin = max((INTEGER)1, 10 * n);
     //
     info = 0;
     if (!(wantz || Mlsame(jobz, "N"))) {
         info = -1;
     } else if (!(alleig || valeig || indeig)) {
         info = -2;
-    } else if (!(lower || Mlsame(uplo, "U"))) {
-        info = -3;
     } else if (n < 0) {
-        info = -4;
-    } else if (lda < max((INTEGER)1, n)) {
-        info = -6;
+        info = -3;
     } else {
         if (valeig) {
             if (n > 0 && vu <= vl) {
-                info = -8;
+                info = -7;
             }
         } else if (indeig) {
             if (il < 1 || il > max((INTEGER)1, n)) {
-                info = -9;
+                info = -8;
             } else if (iu < min(n, il) || iu > n) {
-                info = -10;
+                info = -9;
             }
         }
     }
     if (info == 0) {
         if (ldz < 1 || (wantz && ldz < n)) {
-            info = -15;
+            info = -14;
         }
     }
     //
     if (info == 0) {
-        if (n <= 1) {
-            lwkmin = 1;
-            work[1 - 1] = lwkmin;
-        } else {
-            lwkmin = 2 * n;
-            nb = iMlaenv(1, "Chetrd", uplo, n, -1, -1, -1);
-            nb = max({nb, iMlaenv(1, "Cunmtr", uplo, n, -1, -1, -1)});
-            lwkopt = max((INTEGER)1, (nb + 1) * n);
-            work[1 - 1] = lwkopt;
-        }
+        work[1 - 1] = lwmin;
+        iwork[1 - 1] = liwmin;
         //
-        if (lwork < lwkmin && !lquery) {
+        if (lwork < lwmin && !lquery) {
             info = -17;
+        } else if (liwork < liwmin && !lquery) {
+            info = -19;
         }
     }
     //
     if (info != 0) {
-        Mxerbla("Cheevx", -info);
+        Mxerbla("Rstevr", -info);
         return;
     } else if (lquery) {
         return;
@@ -171,15 +157,15 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     if (n == 1) {
         if (alleig || indeig) {
             m = 1;
-            w[1 - 1] = a[(1 - 1)].real();
-        } else if (valeig) {
-            if (vl < a[(1 - 1)].real() && vu >= a[(1 - 1)].real()) {
+            w[1 - 1] = d[1 - 1];
+        } else {
+            if (vl < d[1 - 1] && vu >= d[1 - 1]) {
                 m = 1;
-                w[1 - 1] = a[(1 - 1)].real();
+                w[1 - 1] = d[1 - 1];
             }
         }
         if (wantz) {
-            z[(1 - 1)] = cone;
+            z[(1 - 1)] = one;
         }
         return;
     }
@@ -196,51 +182,48 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     //     Scale matrix to allowable range, if necessary.
     //
     iscale = 0;
-    abstll = abstol;
     if (valeig) {
         vll = vl;
         vuu = vu;
     }
-    anrm = Clanhe("M", uplo, n, a, lda, rwork);
-    if (anrm > zero && anrm < rmin) {
+    //
+    tnrm = Rlanst("M", n, d, e);
+    if (tnrm > zero && tnrm < rmin) {
         iscale = 1;
-        sigma = rmin / anrm;
-    } else if (anrm > rmax) {
+        sigma = rmin / tnrm;
+    } else if (tnrm > rmax) {
         iscale = 1;
-        sigma = rmax / anrm;
+        sigma = rmax / tnrm;
     }
     if (iscale == 1) {
-        if (lower) {
-            for (j = 1; j <= n; j = j + 1) {
-                CRscal(n - j + 1, sigma, &a[(j - 1) + (j - 1) * lda], 1);
-            }
-        } else {
-            for (j = 1; j <= n; j = j + 1) {
-                CRscal(j, sigma, &a[(j - 1) * lda], 1);
-            }
-        }
-        if (abstol > 0) {
-            abstll = abstol * sigma;
-        }
+        Rscal(n, sigma, d, 1);
+        Rscal(n - 1, sigma, &e[1 - 1], 1);
         if (valeig) {
             vll = vl * sigma;
             vuu = vu * sigma;
         }
     }
     //
-    //     Call Chetrd to reduce Hermitian matrix to tridiagonal form.
+    //     Initialize indices into workspaces.  Note: These indices are used only
+    //     if Rsterf or Rstemr fail.
     //
-    indd = 1;
-    inde = indd + n;
-    indrwk = inde + n;
-    indtau = 1;
-    indwrk = indtau + n;
-    llwork = lwork - indwrk + 1;
-    Chetrd(uplo, n, a, lda, &rwork[indd - 1], &rwork[inde - 1], &work[indtau - 1], &work[indwrk - 1], llwork, iinfo);
+    //     IWORK(INDIBL:INDIBL+M-1) corresponds to IBLOCK in Rstebz and
+    //     stores the block indices of each of the M<=N eigenvalues.
+    indibl = 1;
+    //     IWORK(INDISP:INDISP+NSPLIT-1) corresponds to ISPLIT in Rstebz and
+    //     stores the starting and finishing indices of each block.
+    indisp = indibl + n;
+    //     IWORK(INDIFL:INDIFL+N-1) stores the indices of eigenvectors
+    //     that corresponding to eigenvectors that fail to converge in
+    //     Rstein.  This information is discarded; if any fail, the driver
+    //     returns INFO > 0.
+    indifl = indisp + n;
+    //     INDIWO is the offset of the remaining integer workspace.
+    indiwo = indisp + n;
     //
-    //     If all eigenvalues are desired and ABSTOL is less than or equal to
-    //     zero, then call Rsterf or Cungtr and Csteqr.  If this fails for
-    //     some eigenvalue, then try Rstebz.
+    //     If all eigenvalues are desired, then
+    //     call Rsterf or Rstemr.  If this fails for some eigenvalue, then
+    //     try Rstebz.
     //
     test = false;
     if (indeig) {
@@ -248,54 +231,45 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
             test = true;
         }
     }
-    if ((alleig || test) && (abstol <= zero)) {
-        Rcopy(n, &rwork[indd - 1], 1, w, 1);
-        indee = indrwk + 2 * n;
+    if ((alleig || test) && ieeeok == 1) {
+        Rcopy(n - 1, &e[1 - 1], 1, &work[1 - 1], 1);
         if (!wantz) {
-            Rcopy(n - 1, &rwork[inde - 1], 1, &rwork[indee - 1], 1);
-            Rsterf(n, w, &rwork[indee - 1], info);
+            Rcopy(n, d, 1, w, 1);
+            Rsterf(n, w, work, info);
         } else {
-            Clacpy("A", n, n, a, lda, z, ldz);
-            Cungtr(uplo, n, z, ldz, &work[indtau - 1], &work[indwrk - 1], llwork, iinfo);
-            Rcopy(n - 1, &rwork[inde - 1], 1, &rwork[indee - 1], 1);
-            Csteqr(jobz, n, w, &rwork[indee - 1], z, ldz, &rwork[indrwk - 1], info);
-            if (info == 0) {
-                for (i = 1; i <= n; i = i + 1) {
-                    ifail[i - 1] = 0;
-                }
+            Rcopy(n, d, 1, &work[(n + 1) - 1], 1);
+            if (abstol <= two * n * eps) {
+                tryrac = true;
+            } else {
+                tryrac = false;
             }
+            Rstemr(jobz, "A", n, &work[(n + 1) - 1], work, vl, vu, il, iu, m, w, z, ldz, n, isuppz, tryrac, &work[(2 * n + 1) - 1], lwork - 2 * n, iwork, liwork, info);
+            //
         }
         if (info == 0) {
             m = n;
-            goto statement_40;
+            goto statement_10;
         }
         info = 0;
     }
     //
-    //     Otherwise, call Rstebz and, if eigenvectors are desired, Cstein.
+    //     Otherwise, call Rstebz and, if eigenvectors are desired, Rstein.
     //
     if (wantz) {
         order = 'B';
     } else {
         order = 'E';
     }
-    indibl = 1;
-    indisp = indibl + n;
-    indiwk = indisp + n;
-    Rstebz(range, &order, n, vll, vuu, il, iu, abstll, &rwork[indd - 1], &rwork[inde - 1], m, nsplit, w, &iwork[indibl - 1], &iwork[indisp - 1], &rwork[indrwk - 1], &iwork[indiwk - 1], info);
+    //
+    Rstebz(range, &order, n, vll, vuu, il, iu, abstol, d, e, m, nsplit, w, &iwork[indibl - 1], &iwork[indisp - 1], work, &iwork[indiwo - 1], info);
     //
     if (wantz) {
-        Cstein(n, &rwork[indd - 1], &rwork[inde - 1], m, w, &iwork[indibl - 1], &iwork[indisp - 1], z, ldz, &rwork[indrwk - 1], &iwork[indiwk - 1], ifail, info);
-        //
-        //        Apply unitary matrix used in reduction to tridiagonal
-        //        form to eigenvectors returned by Cstein.
-        //
-        Cunmtr("L", uplo, "N", n, m, a, lda, &work[indtau - 1], z, ldz, &work[indwrk - 1], llwork, iinfo);
+        Rstein(n, d, e, m, w, &iwork[indibl - 1], &iwork[indisp - 1], z, ldz, work, &iwork[indiwo - 1], &iwork[indifl - 1], info);
     }
 //
 //     If matrix was scaled, then rescale eigenvalues appropriately.
 //
-statement_40:
+statement_10:
     if (iscale == 1) {
         if (info == 0) {
             imax = m;
@@ -320,25 +294,22 @@ statement_40:
             }
             //
             if (i != 0) {
-                itmp1 = iwork[(indibl + i - 1) - 1];
+                itmp1 = iwork[i - 1];
                 w[i - 1] = w[j - 1];
-                iwork[(indibl + i - 1) - 1] = iwork[(indibl + j - 1) - 1];
+                iwork[i - 1] = iwork[j - 1];
                 w[j - 1] = tmp1;
-                iwork[(indibl + j - 1) - 1] = itmp1;
-                Cswap(n, &z[(i - 1) * ldz], 1, &z[(j - 1) * ldz], 1);
-                if (info != 0) {
-                    itmp1 = ifail[i - 1];
-                    ifail[i - 1] = ifail[j - 1];
-                    ifail[j - 1] = itmp1;
-                }
+                iwork[j - 1] = itmp1;
+                Rswap(n, &z[(i - 1) * ldz], 1, &z[(j - 1) * ldz], 1);
             }
         }
     }
     //
-    //     Set WORK(1) to optimal complex workspace size.
+    //      Causes problems with tests 19 & 20:
+    //      IF (wantz .and. INDEIG ) Z( 1,1) = Z(1,1) / 1.002 + .002
     //
-    work[1 - 1] = lwkopt;
+    work[1 - 1] = lwmin;
+    iwork[1 - 1] = liwmin;
     //
-    //     End of Cheevx
+    //     End of Rstevr
     //
 }

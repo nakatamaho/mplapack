@@ -53,14 +53,14 @@ void Cgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
     //     .. Executable Statements ..
     //
     info = 0;
-    bool notran = (Mlsame(trans, "N") || Mlsame(trans, "n"));
-    if (!notran && !(Mlsame(trans, "T") || Mlsame(trans, "t")) && !(Mlsame(trans, "C") || Mlsame(trans, "c"))) {
+    bool notran = (trans == "N" || trans == "n");
+    if (!notran && !(trans == "T" || trans == "t") && !(trans == "C" || trans == "c")) {
         info = -1;
     } else if (n < 0) {
         info = -2;
     } else if (nrhs < 0) {
         info = -3;
-    } else if (ldb < max(n, (INTEGER)1)) {
+    } else if (ldb < max(n, 1)) {
         info = -10;
     }
     if (info != 0) {
@@ -79,7 +79,7 @@ void Cgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
     INTEGER itrans = 0;
     if (notran) {
         itrans = 0;
-    } else if (Mlsame(trans, "T") || Mlsame(trans, "t")) {
+    } else if (trans == "T" || trans == "t") {
         itrans = 1;
     } else {
         itrans = 2;
@@ -91,7 +91,7 @@ void Cgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
     if (nrhs == 1) {
         nb = 1;
     } else {
-        nb = max((INTEGER)1, iMlaenv(1, "Cgttrs", trans, n, nrhs, -1, -1));
+        nb = max({(INTEGER)1, iMlaenv(1, "Cgttrs", trans, n, nrhs, -1, -1)});
     }
     //
     INTEGER j = 0;

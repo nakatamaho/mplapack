@@ -31,11 +31,13 @@
 
 inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
 
-void Cpbrfs(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const nrhs, COMPLEX *ab, INTEGER const ldab, COMPLEX *afb, INTEGER const ldafb, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, REAL *ferr, REAL *berr, COMPLEX *work, REAL *rwork, INTEGER &info) {
+void Cgtrfs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *dlf, COMPLEX *df, COMPLEX *duf, COMPLEX *du2, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, REAL *ferr, REAL *berr, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
-    bool upper = false;
+    bool notran = false;
     INTEGER j = 0;
     const REAL zero = 0.0;
+    char transn;
+    char transt;
     INTEGER nz = 0;
     REAL eps = 0.0;
     REAL safmin = 0.0;
@@ -44,12 +46,9 @@ void Cpbrfs(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
     INTEGER count = 0;
     const REAL three = 3.0e+0;
     REAL lstres = 0.0;
-    const COMPLEX one = COMPLEX(1.0, 0.0);
+    const REAL one = 1.0;
     INTEGER i = 0;
-    INTEGER k = 0;
     REAL s = 0.0;
-    REAL xk = 0.0;
-    INTEGER l = 0;
     const REAL two = 2.0e+0;
     const INTEGER itmax = 5;
     INTEGER kase = 0;
@@ -87,26 +86,20 @@ void Cpbrfs(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
     //     Test the input parameters.
     //
     info = 0;
-    upper = Mlsame(uplo, "U");
-    if (!upper && !Mlsame(uplo, "L")) {
+    notran = Mlsame(trans, "N");
+    if (!notran && !Mlsame(trans, "T") && !Mlsame(trans, "C")) {
         info = -1;
     } else if (n < 0) {
         info = -2;
-    } else if (kd < 0) {
-        info = -3;
     } else if (nrhs < 0) {
-        info = -4;
-    } else if (ldab < kd + 1) {
-        info = -6;
-    } else if (ldafb < kd + 1) {
-        info = -8;
+        info = -3;
     } else if (ldb < max((INTEGER)1, n)) {
-        info = -10;
+        info = -13;
     } else if (ldx < max((INTEGER)1, n)) {
-        info = -12;
+        info = -15;
     }
     if (info != 0) {
-        Mxerbla("Cpbrfs", -info);
+        Mxerbla("Cgtrfs", -info);
         return;
     }
     //
@@ -120,9 +113,17 @@ void Cpbrfs(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
         return;
     }
     //
+    if (notran) {
+        transn = 'N';
+        transt = 'C';
+    } else {
+        transn = 'C';
+        transt = 'N';
+    }
+    //
     //     NZ = maximum number of nonzero elements in each row of A, plus 1
     //
-    nz = min(n + 1, 2 * kd + 2);
+    nz = 4;
     eps = Rlamch("Epsilon");
     safmin = Rlamch("Safe minimum");
     safe1 = nz * safmin;
@@ -138,50 +139,46 @@ void Cpbrfs(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
         //
         //        Loop until stopping criterion is satisfied.
         //
-        //        Compute residual R = B - A * X
+        //        Compute residual R = B - op(A) * X,
+        //        where op(A) = A, A**T, or A**H, depending on TRANS.
         //
         Ccopy(n, &b[(j - 1) * ldb], 1, work, 1);
-        Chbmv(uplo, n, kd, -one, ab, ldab, &x[(j - 1) * ldx], 1, one, work, 1);
+        Clagtm(trans, n, 1, -one, dl, d, du, &x[(j - 1) * ldx], ldx, one, work, n);
+        //
+        //        Compute abs(op(A))*abs(x) + abs(b) for use in the backward
+        //        error bound.
+        //
+        if (notran) {
+            if (n == 1) {
+                rwork[1 - 1] = abs1(b[(j - 1) * ldb]) + abs1(d[1 - 1]) * abs1(x[(j - 1) * ldx]);
+            } else {
+                rwork[1 - 1] = abs1(b[(j - 1) * ldb]) + abs1(d[1 - 1]) * abs1(x[(j - 1) * ldx]) + abs1(du[1 - 1]) * abs1(x[(2 - 1) + (j - 1) * ldx]);
+                for (i = 2; i <= n - 1; i = i + 1) {
+                    rwork[i - 1] = abs1(b[(i - 1) + (j - 1) * ldb]) + abs1(dl[(i - 1) - 1]) * abs1(x[((i - 1) - 1) + (j - 1) * ldx]) + abs1(d[i - 1]) * abs1(x[(i - 1) + (j - 1) * ldx]) + abs1(du[i - 1]) * abs1(x[((i + 1) - 1) + (j - 1) * ldx]);
+                }
+                rwork[n - 1] = abs1(b[(n - 1) + (j - 1) * ldb]) + abs1(dl[(n - 1) - 1]) * abs1(x[((n - 1) - 1) + (j - 1) * ldx]) + abs1(d[n - 1]) * abs1(x[(n - 1) + (j - 1) * ldx]);
+            }
+        } else {
+            if (n == 1) {
+                rwork[1 - 1] = abs1(b[(j - 1) * ldb]) + abs1(d[1 - 1]) * abs1(x[(j - 1) * ldx]);
+            } else {
+                rwork[1 - 1] = abs1(b[(j - 1) * ldb]) + abs1(d[1 - 1]) * abs1(x[(j - 1) * ldx]) + abs1(dl[1 - 1]) * abs1(x[(2 - 1) + (j - 1) * ldx]);
+                for (i = 2; i <= n - 1; i = i + 1) {
+                    rwork[i - 1] = abs1(b[(i - 1) + (j - 1) * ldb]) + abs1(du[(i - 1) - 1]) * abs1(x[((i - 1) - 1) + (j - 1) * ldx]) + abs1(d[i - 1]) * abs1(x[(i - 1) + (j - 1) * ldx]) + abs1(dl[i - 1]) * abs1(x[((i + 1) - 1) + (j - 1) * ldx]);
+                }
+                rwork[n - 1] = abs1(b[(n - 1) + (j - 1) * ldb]) + abs1(du[(n - 1) - 1]) * abs1(x[((n - 1) - 1) + (j - 1) * ldx]) + abs1(d[n - 1]) * abs1(x[(n - 1) + (j - 1) * ldx]);
+            }
+        }
         //
         //        Compute componentwise relative backward error from formula
         //
-        //        max(i) ( abs(R(i)) / ( abs(A)*abs(X) + abs(B) )(i) )
+        //        max(i) ( abs(R(i)) / ( abs(op(A))*abs(X) + abs(B) )(i) )
         //
         //        where abs(Z) is the componentwise absolute value of the matrix
         //        or vector Z.  If the i-th component of the denominator is less
         //        than SAFE2, then SAFE1 is added to the i-th components of the
         //        numerator and denominator before dividing.
         //
-        for (i = 1; i <= n; i = i + 1) {
-            rwork[i - 1] = abs1(b[(i - 1) + (j - 1) * ldb]);
-        }
-        //
-        //        Compute abs(A)*abs(X) + abs(B).
-        //
-        if (upper) {
-            for (k = 1; k <= n; k = k + 1) {
-                s = zero;
-                xk = abs1(x[(k - 1) + (j - 1) * ldx]);
-                l = kd + 1 - k;
-                for (i = max((INTEGER)1, k - kd); i <= k - 1; i = i + 1) {
-                    rwork[i - 1] += abs1(ab[((l + i) - 1) + (k - 1) * ldab]) * xk;
-                    s += abs1(ab[((l + i) - 1) + (k - 1) * ldab]) * abs1(x[(i - 1) + (j - 1) * ldx]);
-                }
-                rwork[k - 1] += abs(ab[((kd + 1) - 1) + (k - 1) * ldab].real()) * xk + s;
-            }
-        } else {
-            for (k = 1; k <= n; k = k + 1) {
-                s = zero;
-                xk = abs1(x[(k - 1) + (j - 1) * ldx]);
-                rwork[k - 1] += abs(ab[(k - 1) * ldab].real()) * xk;
-                l = 1 - k;
-                for (i = k + 1; i <= min(n, k + kd); i = i + 1) {
-                    rwork[i - 1] += abs1(ab[((l + i) - 1) + (k - 1) * ldab]) * xk;
-                    s += abs1(ab[((l + i) - 1) + (k - 1) * ldab]) * abs1(x[(i - 1) + (j - 1) * ldx]);
-                }
-                rwork[k - 1] += s;
-            }
-        }
         s = zero;
         for (i = 1; i <= n; i = i + 1) {
             if (rwork[i - 1] > safe2) {
@@ -202,8 +199,8 @@ void Cpbrfs(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
             //
             //           Update solution and try again.
             //
-            Cpbtrs(uplo, n, kd, 1, afb, ldafb, work, n, info);
-            Caxpy(n, one, work, 1, &x[(j - 1) * ldx], 1);
+            Cgttrs(trans, n, 1, dlf, df, duf, du2, ipiv, work, n, info);
+            Caxpy(n, COMPLEX(one), work, 1, &x[(j - 1) * ldx], 1);
             lstres = berr[j - 1];
             count++;
             goto statement_20;
@@ -212,24 +209,24 @@ void Cpbrfs(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
         //        Bound error from formula
         //
         //        norm(X - XTRUE) / norm(X) .le. FERR =
-        //        norm( abs(inv(A))*
-        //           ( abs(R) + NZ*EPS*( abs(A)*abs(X)+abs(B) ))) / norm(X)
+        //        norm( abs(inv(op(A)))*
+        //           ( abs(R) + NZ*EPS*( abs(op(A))*abs(X)+abs(B) ))) / norm(X)
         //
         //        where
         //          norm(Z) is the magnitude of the largest component of Z
-        //          inv(A) is the inverse of A
+        //          inv(op(A)) is the inverse of op(A)
         //          abs(Z) is the componentwise absolute value of the matrix or
         //             vector Z
         //          NZ is the maximum number of nonzeros in any row of A, plus 1
         //          EPS is machine epsilon
         //
-        //        The i-th component of abs(R)+NZ*EPS*(abs(A)*abs(X)+abs(B))
+        //        The i-th component of abs(R)+NZ*EPS*(abs(op(A))*abs(X)+abs(B))
         //        is incremented by SAFE1 if the i-th component of
-        //        abs(A)*abs(X) + abs(B) is less than SAFE2.
+        //        abs(op(A))*abs(X) + abs(B) is less than SAFE2.
         //
         //        Use Clacn2 to estimate the infinity-norm of the matrix
-        //           inv(A) * diag(W),
-        //        where W = abs(R) + NZ*EPS*( abs(A)*abs(X)+abs(B) )))
+        //           inv(op(A)) * diag(W),
+        //        where W = abs(R) + NZ*EPS*( abs(op(A))*abs(X)+abs(B) )))
         //
         for (i = 1; i <= n; i = i + 1) {
             if (rwork[i - 1] > safe2) {
@@ -240,27 +237,27 @@ void Cpbrfs(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
         }
         //
         kase = 0;
-    statement_100:
+    statement_70:
         Clacn2(n, &work[(n + 1) - 1], work, ferr[j - 1], kase, isave);
         if (kase != 0) {
             if (kase == 1) {
                 //
-                //              Multiply by diag(W)*inv(A**H).
+                //              Multiply by diag(W)*inv(op(A)**H).
                 //
-                Cpbtrs(uplo, n, kd, 1, afb, ldafb, work, n, info);
+                Cgttrs(&transt, n, 1, dlf, df, duf, du2, ipiv, work, n, info);
                 for (i = 1; i <= n; i = i + 1) {
                     work[i - 1] = rwork[i - 1] * work[i - 1];
                 }
-            } else if (kase == 2) {
+            } else {
                 //
-                //              Multiply by inv(A)*diag(W).
+                //              Multiply by inv(op(A))*diag(W).
                 //
                 for (i = 1; i <= n; i = i + 1) {
                     work[i - 1] = rwork[i - 1] * work[i - 1];
                 }
-                Cpbtrs(uplo, n, kd, 1, afb, ldafb, work, n, info);
+                Cgttrs(&transn, n, 1, dlf, df, duf, du2, ipiv, work, n, info);
             }
-            goto statement_100;
+            goto statement_70;
         }
         //
         //        Normalize error.
@@ -275,6 +272,6 @@ void Cpbrfs(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
         //
     }
     //
-    //     End of Cpbrfs
+    //     End of Cgtrfs
     //
 }

@@ -112,7 +112,7 @@ void Cstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
             liwmin = 1;
             lrwmin = 2 * (n - 1);
         } else if (icompz == 1) {
-            lgn = int(log(n.real()) / log(two));
+	    lgn = castINTEGER(log(castREAL(n)) / log(two));
             if (pow(2, lgn) < n) {
                 lgn++;
             }

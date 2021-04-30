@@ -34,7 +34,7 @@ void Cstein(INTEGER const n, REAL *d, REAL *e, INTEGER const m, REAL *w, INTEGER
     INTEGER j = 0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     REAL eps = 0.0;
-    arr_1d<4, int> iseed(fill0);
+    INTEGER iseed[4];
     INTEGER indrv1 = 0;
     INTEGER indrv2 = 0;
     INTEGER indrv3 = 0;
