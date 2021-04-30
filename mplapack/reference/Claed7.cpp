@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Claed7(INTEGER const n, INTEGER const cutpnt, INTEGER const qsiz, INTEGER const tlvls, INTEGER const curlvl, INTEGER const curpbm, REAL *d, COMPLEX *q, INTEGER const ldq, REAL const rho, INTEGER *indxq, REAL *qstore, INTEGER *qptr, INTEGER *prmptr, INTEGER *perm, INTEGER *givptr, INTEGER *givcol, REAL *givnum, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER &info) {
+void Claed7(INTEGER const n, INTEGER const cutpnt, INTEGER const qsiz, INTEGER const tlvls, INTEGER const curlvl, INTEGER const curpbm, REAL *d, COMPLEX *q, INTEGER const ldq, REAL rho, INTEGER *indxq, REAL *qstore, INTEGER *qptr, INTEGER *prmptr, INTEGER *perm, INTEGER *givptr, INTEGER *givcol, REAL *givnum, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER &info) {
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -117,7 +117,7 @@ void Claed7(INTEGER const n, INTEGER const cutpnt, INTEGER const qsiz, INTEGER c
     //     Sort and Deflate eigenvalues.
     //
     INTEGER k = 0;
-    Claed8(k, n, qsiz, q, ldq, d, &rho, cutpnt, &rwork[iz - 1], &rwork[idlmda - 1], work, qsiz, &rwork[iw - 1], &iwork[indxp - 1], &iwork[indx - 1], indxq, perm[prmptr[curr - 1] - 1], givptr[(curr + 1) - 1], givcol[(givptr[curr - 1] - 1) * ldgivcol], givnum[(givptr[curr - 1] - 1) * ldgivnum], info);
+    Claed8(k, n, qsiz, q, ldq, d, rho, cutpnt, &rwork[iz - 1], &rwork[idlmda - 1], work, qsiz, &rwork[iw - 1], &iwork[indxp - 1], &iwork[indx - 1], indxq, &perm[prmptr[curr - 1] - 1], givptr[(curr + 1) - 1], &givcol[(givptr[curr - 1] - 1) * ldgivcol], &givnum[(givptr[curr - 1] - 1) * ldgivnum], info);
     prmptr[(curr + 1) - 1] = prmptr[curr - 1] + n;
     givptr[(curr + 1) - 1] += givptr[curr - 1];
     //
@@ -126,8 +126,8 @@ void Claed7(INTEGER const n, INTEGER const cutpnt, INTEGER const qsiz, INTEGER c
     INTEGER n1 = 0;
     INTEGER n2 = 0;
     if (k != 0) {
-        Rlaed9(k, 1, k, n, d, &rwork[iq - 1], k, rho, &rwork[idlmda - 1], &rwork[iw - 1], qstore[qptr[curr - 1] - 1], k, info);
-        Clacrm(qsiz, k, work, qsiz, qstore[qptr[curr - 1] - 1], k, q, ldq, &rwork[iq - 1]);
+        Rlaed9(k, 1, k, n, d, &rwork[iq - 1], k, rho, &rwork[idlmda - 1], &rwork[iw - 1], &qstore[qptr[curr - 1] - 1], k, info);
+        Clacrm(qsiz, k, work, qsiz, &qstore[qptr[curr - 1] - 1], k, q, ldq, &rwork[iq - 1]);
         qptr[(curr + 1) - 1] = qptr[curr - 1] + pow2(k);
         if (info != 0) {
             return;
