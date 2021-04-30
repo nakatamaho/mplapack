@@ -93,7 +93,6 @@ Cgbcon.cpp \
 Cgbequ.cpp \
 Cgbequb.cpp \
 Cgbrfs.cpp \
-Cgbrfsx.cpp \
 Cgbsv.cpp \
 Cgbsvx.cpp \
 Cgbsvxx.cpp \
@@ -139,7 +138,6 @@ Cgeqrt.cpp \
 Cgeqrt2.cpp \
 Cgeqrt3.cpp \
 Cgerfs.cpp \
-Cgerfsx.cpp \
 Cgerq2.cpp \
 Cgerqf.cpp \
 Cgesc2.cpp \
@@ -208,7 +206,6 @@ Chegv_2stage.cpp \
 Chegvd.cpp \
 Chegvx.cpp \
 Cherfs.cpp \
-Cherfsx.cpp \
 Chesv.cpp \
 Chesv_rook.cpp \
 Chesvx.cpp \
@@ -398,7 +395,6 @@ Cpocon.cpp \
 Cpoequ.cpp \
 Cpoequb.cpp \
 Cporfs.cpp \
-Cporfsx.cpp \
 Cposv.cpp \
 Cposvx.cpp \
 Cposvxx.cpp \
@@ -445,7 +441,6 @@ Csyequb.cpp \
 Csymv.cpp \
 Csyr.cpp \
 Csyrfs.cpp \
-Csyrfsx.cpp \
 Csysvx.cpp \
 Csysvxx.cpp \
 Csyswapr.cpp \
@@ -565,7 +560,6 @@ Rgbcon.cpp \
 Rgbequ.cpp \
 Rgbequb.cpp \
 Rgbrfs.cpp \
-Rgbrfsx.cpp \
 Rgbsv.cpp \
 Rgbsvx.cpp \
 Rgbsvxx.cpp \
@@ -611,7 +605,6 @@ Rgeqrt.cpp \
 Rgeqrt2.cpp \
 Rgeqrt3.cpp \
 Rgerfs.cpp \
-Rgerfsx.cpp \
 Rgerq2.cpp \
 Rgerqf.cpp \
 Rgesc2.cpp \
@@ -666,7 +659,6 @@ Rla_geamv.cpp \
 Rla_gercond.cpp \
 Rla_gerpvgrw.cpp \
 Rla_porcond.cpp \
-Rla_porfsx_extended.cpp \
 Rla_porpvgrw.cpp \
 Rla_syamv.cpp \
 Rla_syrcond.cpp \
@@ -956,7 +948,6 @@ Rsygv_2stage.cpp \
 Rsygvd.cpp \
 Rsygvx.cpp \
 Rsyrfs.cpp \
-Rsyrfsx.cpp \
 Rsysv.cpp \
 Rsysv_aa.cpp \
 Rsysv_aa_2stage.cpp \
