@@ -11,7 +11,7 @@ FILES_SUBSET=`ls ~/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC/d*.f 
 for _file in $FILES_SUBSET; do
 oldfilename=`basename $_file | sed -e 's/\.f$//'` 
 oldfilenameUP=`basename $_file | sed -e 's/\.f$//' | tr a-z A-Z`
-newfilename=`basename $_file | sed -e 's/^dzsum1/RCsum1/g' -e 's/^zdscal/CRscal/g' -e 's/^zdrot/CRrot/g' -e 's/^dcabs/RCabs/g' -e 's/^dzasum/RCasum/g' -e 's/^dznrm2/RCnrm2/g' | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^iz/iC/' -e 's/^ila/iMla/' -e 's/\.f$//'`
+newfilename=`basename $_file | sed -e 's/^dzsum1/RCsum1/g' -e 's/^zdscal/CRscal/g' -e 's/^zdrot/CRrot/g' -e 's/^dcabs/RCabs/g' -e 's/^dzasum/RCasum/g' -e 's/^dznrm2/RCnrm2/g' | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^iz/iC/' -e 's/^ila/iMla/' -e 's/^ip/iMp/' -e 's/\.f$//'`
 echo "-e 's/$oldfilename/$newfilename/g' \\" >> LAPACK_LIST_
 echo "-e 's/$oldfilenameUP/$newfilename/g' \\" >> LAPACK_LIST_
 done
@@ -30,7 +30,7 @@ for _file in $FILES_SUBSET ; do
 perl -i.bk -pe 's/[^[:ascii:]]//g;' $_file
 bash ~/mplapack/misc/fable_convert_lapack.sh $_file
 oldfilename=`basename $_file | sed -e 's/\.f$//'`
-newfilename=`basename $_file | sed -e 's/^dzsum1/RCsum1/g' -e 's/^zdscal/CRscal/g' -e 's/^zdrot/CRrot/g' -e 's/^dcabs/RCabs/g' -e 's/^dzasum/RCasum/g' -e 's/^dznrm2/RCnrm2/g' | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^iz/iC/' -e 's/^ila/iMla/' -e 's/\.f$//'`
+newfilename=`basename $_file | sed -e 's/^dzsum1/RCsum1/g' -e 's/^zdscal/CRscal/g' -e 's/^zdrot/CRrot/g' -e 's/^dcabs/RCabs/g' -e 's/^dzasum/RCasum/g' -e 's/^dznrm2/RCnrm2/g' | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^iz/iC/' -e 's/^ila/iMla/' -e 's/^ip/iMp/' -e 's/\.f$//'`
 
 if [ ! -e $newfilename ]; then
 cat ${oldfilename}.cpp | bash BLAS_LIST | bash LAPACK_LIST | sed 's/dlamch/Rlamch/g' > ${newfilename}.cpp_
