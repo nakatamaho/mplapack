@@ -29,6 +29,9 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
+inline REAL abs2(COMPLEX zdum) { return abs(zdum.real() / 2.0) + abs(zdum.imag() / 2.0); }
+
 void Clatbs(const char *uplo, const char *trans, const char *diag, const char *normin, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, COMPLEX *x, REAL &scale, REAL *cnorm, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool upper = false;
@@ -84,8 +87,6 @@ void Clatbs(const char *uplo, const char *trans, const char *diag, const char *n
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1(zdum) = abs(zdum.real()) + abs(zdum.imag());
-    abs2(zdum) = abs(zdum.real() / 2.0) + abs(zdum.imag() / 2.0);
     //     ..
     //     .. Executable Statements ..
     //

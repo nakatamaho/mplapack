@@ -251,7 +251,7 @@ statement_10:
                 //
                 CRscal(n - m, one / bii, &x[((m + 1) - 1) + (i - 1) * ldx], 1);
                 if (kbt > 0) {
-                    Cgerc(n - m, kbt, -cone, &x[((m + 1) - 1) + (i - 1) * ldx], 1, bb[((kb1 - kbt) - 1) + (i - 1) * ldbb], 1, &x[((m + 1) - 1) + ((i - kbt) - 1) * ldx], ldx);
+                    Cgerc(n - m, kbt, -cone, &x[((m + 1) - 1) + (i - 1) * ldx], 1, &bb[((kb1 - kbt) - 1) + (i - 1) * ldbb], 1, &x[((m + 1) - 1) + ((i - kbt) - 1) * ldx], ldx);
                 }
             }
             //
@@ -274,7 +274,7 @@ statement_10:
                     //
                     //                 generate rotation to annihilate a(i,i-k+ka+1)
                     //
-                    Clartg(ab[((k + 1) - 1) + ((i - k + ka) - 1) * ldab], ra1, &rwork[(i - k + ka - m) - 1], &work[(i - k + ka - m) - 1], ra);
+                    Clartg(ab[((k + 1) - 1) + ((i - k + ka) - 1) * ldab], ra1, rwork[(i - k + ka - m) - 1], work[(i - k + ka - m) - 1], ra);
                     //
                     //                 create nonzero element a(i-k,i-k+ka+1) outside the
                     //                 band and store it in WORK(i-k)
@@ -339,7 +339,7 @@ statement_10:
                 //              post-multiply X by product of rotations in 1st set
                 //
                 for (j = j2; j <= j1; j = j + ka1) {
-                    Crot(n - m, &x[((m + 1) - 1) + (j - 1) * ldx], 1, &x[((m + 1) - 1) + ((j + 1) - 1) * ldx], 1, &rwork[(j - m) - 1], conj(work[(j - m) - 1]));
+                    Crot(n - m, &x[((m + 1) - 1) + (j - 1) * ldx], 1, &x[((m + 1) - 1) + ((j + 1) - 1) * ldx], 1, rwork[(j - m) - 1], conj(work[(j - m) - 1]));
                 }
             }
         }
@@ -429,7 +429,7 @@ statement_10:
                 //              post-multiply X by product of rotations in 2nd set
                 //
                 for (j = j2; j <= j1; j = j + ka1) {
-                    Crot(n - m, &x[((m + 1) - 1) + (j - 1) * ldx], 1, &x[((m + 1) - 1) + ((j + 1) - 1) * ldx], 1, &rwork[j - 1], conj(work[j - 1]));
+                    Crot(n - m, &x[((m + 1) - 1) + (j - 1) * ldx], 1, &x[((m + 1) - 1) + ((j + 1) - 1) * ldx], 1, rwork[j - 1], conj(work[j - 1]));
                 }
             }
         }
@@ -490,7 +490,7 @@ statement_10:
                 //
                 CRscal(n - m, one / bii, &x[((m + 1) - 1) + (i - 1) * ldx], 1);
                 if (kbt > 0) {
-                    Cgeru(n - m, kbt, -cone, &x[((m + 1) - 1) + (i - 1) * ldx], 1, bb[((kbt + 1) - 1) + ((i - kbt) - 1) * ldbb], ldbb - 1, &x[((m + 1) - 1) + ((i - kbt) - 1) * ldx], ldx);
+                    Cgeru(n - m, kbt, -cone, &x[((m + 1) - 1) + (i - 1) * ldx], 1, &bb[((kbt + 1) - 1) + ((i - kbt) - 1) * ldbb], ldbb - 1, &x[((m + 1) - 1) + ((i - kbt) - 1) * ldx], ldx);
                 }
             }
             //
@@ -513,7 +513,7 @@ statement_10:
                     //
                     //                 generate rotation to annihilate a(i-k+ka+1,i)
                     //
-                    Clartg(ab[((ka1 - k) - 1) + (i - 1) * ldab], ra1, &rwork[(i - k + ka - m) - 1], &work[(i - k + ka - m) - 1], ra);
+                    Clartg(ab[((ka1 - k) - 1) + (i - 1) * ldab], ra1, rwork[(i - k + ka - m) - 1], work[(i - k + ka - m) - 1], ra);
                     //
                     //                 create nonzero element a(i-k+ka+1,i-k) outside the
                     //                 band and store it in WORK(i-k)
@@ -578,7 +578,7 @@ statement_10:
                 //              post-multiply X by product of rotations in 1st set
                 //
                 for (j = j2; j <= j1; j = j + ka1) {
-                    Crot(n - m, &x[((m + 1) - 1) + (j - 1) * ldx], 1, &x[((m + 1) - 1) + ((j + 1) - 1) * ldx], 1, &rwork[(j - m) - 1], &work[(j - m) - 1]);
+                    Crot(n - m, &x[((m + 1) - 1) + (j - 1) * ldx], 1, &x[((m + 1) - 1) + ((j + 1) - 1) * ldx], 1, rwork[(j - m) - 1], work[(j - m) - 1]);
                 }
             }
         }
@@ -668,7 +668,7 @@ statement_10:
                 //              post-multiply X by product of rotations in 2nd set
                 //
                 for (j = j2; j <= j1; j = j + ka1) {
-                    Crot(n - m, &x[((m + 1) - 1) + (j - 1) * ldx], 1, &x[((m + 1) - 1) + ((j + 1) - 1) * ldx], 1, &rwork[j - 1], &work[j - 1]);
+                    Crot(n - m, &x[((m + 1) - 1) + (j - 1) * ldx], 1, &x[((m + 1) - 1) + ((j + 1) - 1) * ldx], 1, rwork[j - 1], work[j - 1]);
                 }
             }
         }
@@ -782,7 +782,7 @@ statement_490:
                 //
                 CRscal(nx, one / bii, &x[(i - 1) * ldx], 1);
                 if (kbt > 0) {
-                    Cgeru(nx, kbt, -cone, &x[(i - 1) * ldx], 1, bb[(kb - 1) + ((i + 1) - 1) * ldbb], ldbb - 1, &x[((i + 1) - 1) * ldx], ldx);
+                    Cgeru(nx, kbt, -cone, &x[(i - 1) * ldx], 1, &bb[(kb - 1) + ((i + 1) - 1) * ldbb], ldbb - 1, &x[((i + 1) - 1) * ldx], ldx);
                 }
             }
             //
@@ -804,7 +804,7 @@ statement_490:
                     //
                     //                 generate rotation to annihilate a(i+k-ka-1,i)
                     //
-                    Clartg(ab[((k + 1) - 1) + (i - 1) * ldab], ra1, &rwork[(i + k - ka) - 1], &work[(i + k - ka) - 1], ra);
+                    Clartg(ab[((k + 1) - 1) + (i - 1) * ldab], ra1, rwork[(i + k - ka) - 1], work[(i + k - ka) - 1], ra);
                     //
                     //                 create nonzero element a(i+k-ka-1,i+k) outside the
                     //                 band and store it in WORK(m-kb+i+k)
@@ -870,7 +870,7 @@ statement_490:
                 //              post-multiply X by product of rotations in 1st set
                 //
                 for (j = j1; j <= j2; j = j + ka1) {
-                    Crot(nx, &x[(j - 1) * ldx], 1, &x[((j - 1) - 1) * ldx], 1, &rwork[j - 1], &work[j - 1]);
+                    Crot(nx, &x[(j - 1) * ldx], 1, &x[((j - 1) - 1) * ldx], 1, rwork[j - 1], work[j - 1]);
                 }
             }
         }
@@ -962,7 +962,7 @@ statement_490:
                 //              post-multiply X by product of rotations in 2nd set
                 //
                 for (j = j1; j <= j2; j = j + ka1) {
-                    Crot(nx, &x[(j - 1) * ldx], 1, &x[((j - 1) - 1) * ldx], 1, &rwork[(m - kb + j) - 1], &work[(m - kb + j) - 1]);
+                    Crot(nx, &x[(j - 1) * ldx], 1, &x[((j - 1) - 1) * ldx], 1, rwork[(m - kb + j) - 1], work[(m - kb + j) - 1]);
                 }
             }
         }
@@ -1024,7 +1024,7 @@ statement_490:
                 //
                 CRscal(nx, one / bii, &x[(i - 1) * ldx], 1);
                 if (kbt > 0) {
-                    Cgerc(nx, kbt, -cone, &x[(i - 1) * ldx], 1, bb[(2 - 1) + (i - 1) * ldbb], 1, &x[((i + 1) - 1) * ldx], ldx);
+                    Cgerc(nx, kbt, -cone, &x[(i - 1) * ldx], 1, &bb[(2 - 1) + (i - 1) * ldbb], 1, &x[((i + 1) - 1) * ldx], ldx);
                 }
             }
             //
@@ -1046,7 +1046,7 @@ statement_490:
                     //
                     //                 generate rotation to annihilate a(i,i+k-ka-1)
                     //
-                    Clartg(ab[((ka1 - k) - 1) + ((i + k - ka) - 1) * ldab], ra1, &rwork[(i + k - ka) - 1], &work[(i + k - ka) - 1], ra);
+                    Clartg(ab[((ka1 - k) - 1) + ((i + k - ka) - 1) * ldab], ra1, rwork[(i + k - ka) - 1], work[(i + k - ka) - 1], ra);
                     //
                     //                 create nonzero element a(i+k,i+k-ka-1) outside the
                     //                 band and store it in WORK(m-kb+i+k)
@@ -1112,7 +1112,7 @@ statement_490:
                 //              post-multiply X by product of rotations in 1st set
                 //
                 for (j = j1; j <= j2; j = j + ka1) {
-                    Crot(nx, &x[(j - 1) * ldx], 1, &x[((j - 1) - 1) * ldx], 1, &rwork[j - 1], conj(work[j - 1]));
+                    Crot(nx, &x[(j - 1) * ldx], 1, &x[((j - 1) - 1) * ldx], 1, rwork[j - 1], conj(work[j - 1]));
                 }
             }
         }
@@ -1204,7 +1204,7 @@ statement_490:
                 //              post-multiply X by product of rotations in 2nd set
                 //
                 for (j = j1; j <= j2; j = j + ka1) {
-                    Crot(nx, &x[(j - 1) * ldx], 1, &x[((j - 1) - 1) * ldx], 1, &rwork[(m - kb + j) - 1], conj(work[(m - kb + j) - 1]));
+                    Crot(nx, &x[(j - 1) * ldx], 1, &x[((j - 1) - 1) * ldx], 1, rwork[(m - kb + j) - 1], conj(work[(m - kb + j) - 1]));
                 }
             }
         }

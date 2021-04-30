@@ -218,7 +218,7 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 //
                 for (i = ihi; i >= j + 2; i = i - 1) {
                     temp = a[((i - 1) - 1) + (j - 1) * lda];
-                    Clartg(temp, &a[(i - 1) + (j - 1) * lda], c, s, &a[((i - 1) - 1) + (j - 1) * lda]);
+                    Clartg(temp, a[(i - 1) + (j - 1) * lda], c, s, a[((i - 1) - 1) + (j - 1) * lda]);
                     a[(i - 1) + (j - 1) * lda] = COMPLEX(c);
                     b[(i - 1) + (j - 1) * ldb] = s;
                 }
@@ -287,7 +287,7 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     //
                     if (jj < ihi) {
                         temp = b[((jj + 1) - 1) + ((jj + 1) - 1) * ldb];
-                        Clartg(temp, &b[((jj + 1) - 1) + (jj - 1) * ldb], c, s, &b[((jj + 1) - 1) + ((jj + 1) - 1) * ldb]);
+                        Clartg(temp, b[((jj + 1) - 1) + (jj - 1) * ldb], c, s, b[((jj + 1) - 1) + ((jj + 1) - 1) * ldb]);
                         b[((jj + 1) - 1) + (jj - 1) * ldb] = czero;
                         Crot(jj - top, &b[((top + 1) - 1) + ((jj + 1) - 1) * ldb], 1, &b[((top + 1) - 1) + (jj - 1) * ldb], 1, c, s);
                         a[((jj + 1) - 1) + (j - 1) * lda] = COMPLEX(c);
@@ -612,19 +612,19 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
     //     Use unblocked code to reduce the rest of the matrix
     //     Avoid re-initialization of modified Q and Z.
     //
-    char compq2 = compq;
-    char compz2 = compz;
+    char compq2 = *compq;
+    char compz2 = *compz;
     if (jcol != ilo) {
         if (wantq) {
-            compq2 = "V";
+            compq2 = 'V';
         }
         if (wantz) {
-            compz2 = "V";
+            compz2 = 'V';
         }
     }
     //
     if (jcol < ihi) {
-        Cgghrd(compq2, compz2, n, jcol, ihi, a, lda, b, ldb, q, ldq, z, ldz, ierr);
+        Cgghrd(&compq2, &compz2, n, jcol, ihi, a, lda, b, ldb, q, ldq, z, ldz, ierr);
     }
     work[1 - 1] = COMPLEX(lwkopt);
     //

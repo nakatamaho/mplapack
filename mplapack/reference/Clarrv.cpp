@@ -385,7 +385,7 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                     offset = indexw[wbegin - 1] - 1;
                     //                 perform limited bisection (if necessary) to get approximate
                     //                 eigenvalues to the precision needed.
-                    Rlarrb(in, &d[ibegin - 1], &work[(indlld + ibegin - 1) - 1], p, q, rtol1, rtol2, offset, &work[wbegin - 1], wgap[wbegin - 1], werr[wbegin - 1], &work[indwrk - 1], &iwork[iindwk - 1], pivmin, spdiam, in, iinfo);
+                    Rlarrb(in, &d[ibegin - 1], &work[(indlld + ibegin - 1) - 1], p, q, rtol1, rtol2, offset, &work[wbegin - 1], &wgap[wbegin - 1], &werr[wbegin - 1], &work[indwrk - 1], &iwork[iindwk - 1], pivmin, spdiam, in, iinfo);
                     if (iinfo != 0) {
                         info = -1;
                         return;
@@ -398,10 +398,10 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                     //                 However, we only allow the gaps to become greater since
                     //                 this is what should happen when we decrease WERR
                     if (oldfst > 1) {
-                        wgap[(wbegin + oldfst - 2) - 1] = max(wgap[(wbegin + oldfst - 2) - 1], &w[(wbegin + oldfst - 1) - 1] - werr[(wbegin + oldfst - 1) - 1] - w[(wbegin + oldfst - 2) - 1] - werr[(wbegin + oldfst - 2) - 1]);
+                        wgap[(wbegin + oldfst - 2) - 1] = max(wgap[(wbegin + oldfst - 2) - 1], w[(wbegin + oldfst - 1) - 1] - werr[(wbegin + oldfst - 1) - 1] - w[(wbegin + oldfst - 2) - 1] - werr[(wbegin + oldfst - 2) - 1]);
                     }
                     if (wbegin + oldlst - 1 < wend) {
-                        wgap[(wbegin + oldlst - 1) - 1] = max(wgap[(wbegin + oldlst - 1) - 1], &w[(wbegin + oldlst) - 1] - werr[(wbegin + oldlst) - 1] - w[(wbegin + oldlst - 1) - 1] - werr[(wbegin + oldlst - 1) - 1]);
+                        wgap[(wbegin + oldlst - 1) - 1] = max(wgap[(wbegin + oldlst - 1) - 1], w[(wbegin + oldlst) - 1] - werr[(wbegin + oldlst) - 1] - w[(wbegin + oldlst - 1) - 1] - werr[(wbegin + oldlst - 1) - 1]);
                     }
                     //                 Each time the eigenvalues in WORK get refined, we store
                     //                 the newly found approximation with all shifts applied in W
@@ -463,7 +463,7 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                         //                    in W might be of the same order so that gaps are not
                         //                    exhibited correctly for very close eigenvalues.
                         if (newfst == 1) {
-                            lgap = max(zero, &w[wbegin - 1] - werr[wbegin - 1] - vl);
+                            lgap = max(zero, w[wbegin - 1] - werr[wbegin - 1] - vl);
                         } else {
                             lgap = wgap[(wbegin + newfst - 2) - 1];
                         }
@@ -481,7 +481,7 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                                 p = indexw[(wbegin - 1 + newlst) - 1];
                             }
                             offset = indexw[wbegin - 1] - 1;
-                            Rlarrb(in, &d[ibegin - 1], &work[(indlld + ibegin - 1) - 1], p, p, rqtol, rqtol, offset, &work[wbegin - 1], wgap[wbegin - 1], werr[wbegin - 1], &work[indwrk - 1], &iwork[iindwk - 1], pivmin, spdiam, in, iinfo);
+                            Rlarrb(in, &d[ibegin - 1], &work[(indlld + ibegin - 1) - 1], p, p, rqtol, rqtol, offset, &work[wbegin - 1], &wgap[wbegin - 1], &werr[wbegin - 1], &work[indwrk - 1], &iwork[iindwk - 1], pivmin, spdiam, in, iinfo);
                         }
                         //
                         if ((wbegin + newlst - 1 < dol) || (wbegin + newfst - 1 > dou)) {
@@ -500,7 +500,7 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                         //                    Note that the new RRR is stored in Z
                         //
                         //                    Rlarrf needs LWORK = 2*N
-                        Rlarrf(in, &d[ibegin - 1], l[ibegin - 1], &work[(indld + ibegin - 1) - 1], newfst, newlst, &work[wbegin - 1], wgap[wbegin - 1], werr[wbegin - 1], spdiam, lgap, rgap, pivmin, tau, &work[indin1 - 1], &work[indin2 - 1], &work[indwrk - 1], iinfo);
+                        Rlarrf(in, &d[ibegin - 1], &l[ibegin - 1], &work[(indld + ibegin - 1) - 1], newfst, newlst, &work[wbegin - 1], &wgap[wbegin - 1], &werr[wbegin - 1], spdiam, lgap, rgap, pivmin, tau, &work[indin1 - 1], &work[indin2 - 1], &work[indwrk - 1], iinfo);
                         //                    In the complex case, Rlarrf cannot write
                         //                    the new RRR directly into Z and needs an intermediate
                         //                    workspace
@@ -545,7 +545,7 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                         //
                         iter = 0;
                         //
-                        tol = four * log(in.real()) * eps;
+                        tol = four * log(castREAL(in)) * eps;
                         //
                         k = newfst;
                         windex = wbegin + k - 1;
@@ -626,7 +626,7 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                             usedbs = true;
                             itmp1 = iwork[(iindr + windex) - 1];
                             offset = indexw[wbegin - 1] - 1;
-                            Rlarrb(in, &d[ibegin - 1], &work[(indlld + ibegin - 1) - 1], indeig, indeig, zero, two * eps, offset, &work[wbegin - 1], wgap[wbegin - 1], werr[wbegin - 1], &work[indwrk - 1], &iwork[iindwk - 1], pivmin, spdiam, itmp1, iinfo);
+                            Rlarrb(in, &d[ibegin - 1], &work[(indlld + ibegin - 1) - 1], indeig, indeig, zero, two * eps, offset, &work[wbegin - 1], &wgap[wbegin - 1], &werr[wbegin - 1], &work[indwrk - 1], &iwork[iindwk - 1], pivmin, spdiam, itmp1, iinfo);
                             if (iinfo != 0) {
                                 info = -3;
                                 return;
@@ -637,7 +637,7 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                             iwork[(iindr + windex) - 1] = 0;
                         }
                         //                    Given LAMBDA, compute the eigenvector.
-                        Clar1v(in, 1, in, lambda, &d[ibegin - 1], l[ibegin - 1], &work[(indld + ibegin - 1) - 1], &work[(indlld + ibegin - 1) - 1], pivmin, gaptol, &z[(ibegin - 1) + (windex - 1) * ldz], !usedbs, negcnt, ztz, mingma, &iwork[(iindr + windex) - 1], isuppz[(2 * windex - 1) - 1], nrminv, resid, rqcorr, &work[indwrk - 1]);
+                        Clar1v(in, 1, in, lambda, &d[ibegin - 1], &l[ibegin - 1], &work[(indld + ibegin - 1) - 1], &work[(indlld + ibegin - 1) - 1], pivmin, gaptol, &z[(ibegin - 1) + (windex - 1) * ldz], !usedbs, negcnt, ztz, mingma, iwork[(iindr + windex) - 1], &isuppz[(2 * windex - 1) - 1], nrminv, resid, rqcorr, &work[indwrk - 1]);
                         if (iter == 0) {
                             bstres = resid;
                             bstw = lambda;
@@ -722,7 +722,7 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                             }
                             if (stp2ii) {
                                 //                          improve error angle by second step
-                                Clar1v(in, 1, in, lambda, &d[ibegin - 1], l[ibegin - 1], &work[(indld + ibegin - 1) - 1], &work[(indlld + ibegin - 1) - 1], pivmin, gaptol, &z[(ibegin - 1) + (windex - 1) * ldz], !usedbs, negcnt, ztz, mingma, &iwork[(iindr + windex) - 1], isuppz[(2 * windex - 1) - 1], nrminv, resid, rqcorr, &work[indwrk - 1]);
+                                Clar1v(in, 1, in, lambda, &d[ibegin - 1], &l[ibegin - 1], &work[(indld + ibegin - 1) - 1], &work[(indlld + ibegin - 1) - 1], pivmin, gaptol, &z[(ibegin - 1) + (windex - 1) * ldz], !usedbs, negcnt, ztz, mingma, iwork[(iindr + windex) - 1], &isuppz[(2 * windex - 1) - 1], nrminv, resid, rqcorr, &work[indwrk - 1]);
                             }
                             work[windex - 1] = lambda;
                         }
@@ -758,10 +758,10 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                         //                    to WERR being too crude.)
                         if (!eskip) {
                             if (k > 1) {
-                                wgap[windmn - 1] = max(wgap[windmn - 1], &w[windex - 1] - werr[windex - 1] - w[windmn - 1] - werr[windmn - 1]);
+                                wgap[windmn - 1] = max(wgap[windmn - 1], w[windex - 1] - werr[windex - 1] - w[windmn - 1] - werr[windmn - 1]);
                             }
                             if (windex < wend) {
-                                wgap[windex - 1] = max(savgap, &w[windpl - 1] - werr[windpl - 1] - w[windex - 1] - werr[windex - 1]);
+                                wgap[windex - 1] = max(savgap, w[windpl - 1] - werr[windpl - 1] - w[windex - 1] - werr[windex - 1]);
                             }
                         }
                         idone++;

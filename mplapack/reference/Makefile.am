@@ -1063,12 +1063,12 @@ Cgsvj1.cpp \
 Rorcsd2by1.cpp \
 Cuncsd2by1.cpp \
 Chetrf_aa_2stage.cpp \
-Csytrf_aa_2stage.cpp
-
-MPLAPACK_SOURCES_NOTYET= \
+Csytrf_aa_2stage.cpp \
 Rlarrd.cpp \
 Rgesvdx.cpp \
-Chgeqz.cpp \
+Chgeqz.cpp
+
+MPLAPACK_SOURCES_NOTYET= \
 Rlarre.cpp \
 Cgghd3.cpp \
 Clatbs.cpp \

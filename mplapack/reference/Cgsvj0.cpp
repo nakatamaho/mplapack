@@ -222,7 +222,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                     //
                     //     .. de Rijk's pivoting
                     //
-                    q = iRamax(n - p + 1, sva[p - 1], 1) + p - 1;
+                    q = iRamax(n - p + 1, &sva[p - 1], 1) + p - 1;
                     if (p != q) {
                         Cswap(m, &a[(p - 1) * lda], 1, &a[(q - 1) * lda], 1);
                         if (rsvec) {
@@ -659,7 +659,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
             swband = i;
         }
         //
-        if ((i > swband + 1) && (mxaapq < sqrt(n.real()) * tol) && (n.real() * mxaapq * mxsinj < tol)) {
+        if ((i > swband + 1) && (mxaapq < sqrt(castREAL(n) * tol)) && (castREAL(n) * mxaapq * mxsinj < tol)) {
             goto statement_1994;
         }
         //
@@ -684,7 +684,7 @@ statement_1995:
     //
     //     Sort the vector SVA() of column norms.
     for (p = 1; p <= n - 1; p = p + 1) {
-        q = iRamax(n - p + 1, sva[p - 1], 1) + p - 1;
+        q = iRamax(n - p + 1, &sva[p - 1], 1) + p - 1;
         if (p != q) {
             temp1 = sva[p - 1];
             sva[p - 1] = sva[q - 1];

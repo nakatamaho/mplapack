@@ -311,14 +311,14 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
         if (((irange == allrng) && (!forceb)) || usedqd) {
             //           Case of DQDS
             //           Find approximations to the extremal eigenvalues of the block
-            Rlarrk(in, 1, gl, gu, &d[ibegin - 1], e2[ibegin - 1], pivmin, rtl, tmp, tmp1, iinfo);
+            Rlarrk(in, 1, gl, gu, &d[ibegin - 1], &e2[ibegin - 1], pivmin, rtl, tmp, tmp1, iinfo);
             if (iinfo != 0) {
                 info = -1;
                 return;
             }
             isleft = max(gl, tmp - tmp1 - hndrd * eps * abs(tmp - tmp1));
             //
-            Rlarrk(in, in, gl, gu, &d[ibegin - 1], e2[ibegin - 1], pivmin, rtl, tmp, tmp1, iinfo);
+            Rlarrk(in, in, gl, gu, &d[ibegin - 1], &e2[ibegin - 1], pivmin, rtl, tmp, tmp1, iinfo);
             if (iinfo != 0) {
                 info = -1;
                 return;
@@ -329,8 +329,8 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
         } else {
             //           Case of bisection
             //           Find approximations to the wanted extremal eigenvalues
-            isleft = max(gl, &w[wbegin - 1] - werr[wbegin - 1] - hndrd * eps * abs(w[wbegin - 1] - werr[wbegin - 1]));
-            isrght = min(gu, &w[wend - 1] + werr[wend - 1] + hndrd * eps * abs(w[wend - 1] + werr[wend - 1]));
+            isleft = max(gl, w[wbegin - 1] - werr[wbegin - 1] - hndrd * eps * abs(w[wbegin - 1] - werr[wbegin - 1]));
+            isrght = min(gu, w[wend - 1] + werr[wend - 1] + hndrd * eps * abs(w[wend - 1] + werr[wend - 1]));
         }
         //
         //        Decide whether the base representation for the current block
@@ -416,7 +416,7 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
         } else {
             if (mb > 1) {
                 clwdth = w[wend - 1] + werr[wend - 1] - w[wbegin - 1] - werr[wbegin - 1];
-                avgap = abs(clwdth / (wend - wbegin).real());
+                avgap = abs(clwdth / castREAL(wend - wbegin));
                 if (sgndef == one) {
                     tau = half * max(wgap[wbegin - 1], avgap);
                     tau = max(tau, werr[wbegin - 1]);
@@ -537,7 +537,7 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
                 work[i - 1] = d[i - 1] * pow2(e[i - 1]);
             }
             //           use bisection to find EV from INDL to INDU
-            Rlarrb(in, &d[ibegin - 1], &work[ibegin - 1], indl, indu, rtol1, rtol2, indl - 1, &w[wbegin - 1], wgap[wbegin - 1], werr[wbegin - 1], &work[(2 * n + 1) - 1], iwork, pivmin, spdiam, in, iinfo);
+            Rlarrb(in, &d[ibegin - 1], &work[ibegin - 1], indl, indu, rtol1, rtol2, indl - 1, &w[wbegin - 1], &wgap[wbegin - 1], &werr[wbegin - 1], &work[(2 * n + 1) - 1], iwork, pivmin, spdiam, in, iinfo);
             if (iinfo != 0) {
                 info = -4;
                 return;
@@ -562,7 +562,7 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
             //           This is an ESTIMATED error, the worst case bound is 4*N*EPS
             //           which is usually too large and requires unnecessary work to be
             //           done by bisection when computing the eigenvectors
-            rtol = log(in.real()) * four * eps;
+            rtol = log(castREAL(in)) * four * eps;
             j = ibegin;
             for (i = 1; i <= in - 1; i = i + 1) {
                 work[(2 * i - 1) - 1] = abs(d[j - 1]);
