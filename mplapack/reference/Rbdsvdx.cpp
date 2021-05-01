@@ -401,7 +401,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
                         //                    Exit with the error code from Rstevx.
                         return;
                     }
-                    emin = abs(Mmaxval(s, isbeg, isbeg + nsl - 1));
+                    emin = abs(Mmaxval(s, isbeg, isbeg + nsl - 1, 1));
                     //
                     if (nsl > 0 && wantz) {
                         //
@@ -420,12 +420,14 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
                             //                       eigenvectors corresponding to the two smallest
                             //                       eigenvalues.
                             //
-                          z(irowz, irowz + ntgk - 1, icolz + nsl - 2 += zirowz, irowz + ntgk - 1, icolz + nsl - 1;
-                            zirowz, irowz + ntgk - 1, icolz + nsl - 1 = zero;
-                          //                       IF( IUTGK*2.GT.NTGK ) THEN
-                          //                          Eigenvalue equal to zero or very small.
-                          //                          NSL = NSL - 1
-                          //                       END IF
+                            for (int l = irowz; l <= irowz + ntgk - 1; l++)
+                                z[(l - 1) + ((icolz + nsl - 2) - 1) * ldz] = z[(l - 1) + ((icolz + nsl - 2) - 1) * ldz] + z[(l - 1) + ((icolz + nsl - 1) - 1) * ldz];
+                            for (int l = irowz; l <= irowz + ntgk - 1; l++)
+                                z[(l - 1) + ((icolz + nsl - 1) - 1) * ldz] = 0.0;
+                            //                       IF( IUTGK*2.GT.NTGK ) THEN
+                            //                          Eigenvalue equal to zero or very small.
+                            //                          NSL = NSL - 1
+                            //                       END IF
                         }
                         //
                         for (i = 0; i <= min(nsl - 1, nru - 1); i = i + 1) {
@@ -468,8 +470,11 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
                             //                       active submatrix is reached).
                             //
                             split = true;
-                            zirowz, irowz + ntgk - 1, n + 1 = zirowz, irowz + ntgk - 1, ns + nsl;
-                            zirowz, irowz + ntgk - 1, ns + nsl = zero;
+
+                            for (int l = irowz; l <= irowz + ntgk - 1; l++)
+                                z[l + ((n + 1) - 1) * ldz] = z[l + ((ns + nsl) - 1) * ldz];
+                            for (int l = irowz; l <= irowz + ntgk - 1; l++)
+                                z[l + ((ns + nsl) - 1) * ldz] = 0.0;
                         }
                         //** WANTZ **!
                     }
@@ -497,7 +502,8 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
                     //** NTGK.GT.0 **!
                 }
                 if (irowz < n * 2 && wantz) {
-                    z1, irowz - 1, icolz = zero;
+                    for (int l = 1; l <= irowz - 1; l++)
+                        z[(l - 1) + (icolz - 1) * ldz] = zero;
                 }
                 //** IDPTR loop **!
             }
@@ -506,8 +512,10 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
                 //              Bring back eigenvector corresponding
                 //              to eigenvalue equal to zero.
                 //
-                zidbeg, idend - ntgk + 1, isbeg - 1 += zidbeg, idend - ntgk + 1, n + 1;
-                zidbeg, idend - ntgk + 1, n + 1 = 0;
+                for (int l = idbeg; l <= idend - ntgk + 1; l++)
+                    z[(l - 1) + (isbeg - 1) * ldz] = z[(l - 1) + (isbeg - 1) * ldz] + z[(l - 1) + ((n + 1) - 1) * ldz];
+                for (int l = idbeg; l <= idend - ntgk + 1; l++)
+                    z[(l - 1) + ((n + 1) - 1) * ldz] = 0.0;
             }
             irowv = irowv - 1;
             irowu++;
@@ -546,9 +554,12 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
     if (indsv) {
         k = iu - il + 1;
         if (k < ns) {
-            s[((k + 1) - 1) + (ns - 1) * lds] = zero;
+            for (int l = k + 1; l <= ns; l++)
+                s[l - 1] = zero;
             if (wantz) {
-                z(1, n * 2, k + 1, ns) = zero;
+                for (int l = 1; l <= n * 2; l++)
+                    for (int m = k + 1; m <= ns; m++)
+                        z[(l - 1) + (m - 1) * ldz] = zero;
             }
             ns = k;
         }

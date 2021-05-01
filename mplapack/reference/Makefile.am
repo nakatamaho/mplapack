@@ -523,11 +523,13 @@ Cupgtr.cpp \
 Cupmtr.cpp \
 Mlsamen.cpp \
 Mmaxloc.cpp \
+Mmaxval.cpp \
 Mutils.cpp \
 RCsum1.cpp \
 Rbbcsd.cpp \
 Rbdsdc.cpp \
 Rbdsqr.cpp \
+Rbdsvdx.cpp \
 Rcombssq.cpp \
 Rdisna.cpp \
 Rgbbrd.cpp \
@@ -997,6 +999,3 @@ iMlazlc.cpp \
 iMlazlr.cpp \
 iMparmq.cpp \
 iMparam2stage.cpp
-
-#Rbdsvdx.cpp
-

@@ -74,7 +74,7 @@ mpreal Clansy(const char *norm, const char *uplo, mplapackint const n, mpcomplex
 mpreal Clantb(const char *norm, const char *uplo, const char *diag, mplapackint const n, mplapackint const k, mpcomplex *ab, mplapackint const ldab, mpreal *work);
 mpreal Clantp(const char *norm, const char *uplo, const char *diag, mplapackint const n, mpcomplex *ap, mpreal *work);
 mpreal Clantr(const char *norm, const char *uplo, const char *diag, mplapackint const m, mplapackint const n, mpcomplex *a, mplapackint const lda, mpreal *work);
-mpreal Mmaxval(mpreal *dx, mplapackint const start, mplapackint const end);
+mpreal Mmaxval(mpreal *dx, mplapackint const start, mplapackint const end, mplapackint incx);
 mpreal RCsum1(mplapackint const n, mpcomplex *cx, mplapackint const incx);
 mpreal Rla_gbrcond(const char *trans, mplapackint const n, mplapackint const kl, mplapackint const ku, mpreal *ab, mplapackint const ldab, mpreal *afb, mplapackint const ldafb, mplapackint *ipiv, mplapackint const cmode, mpreal *c, mplapackint &info, mpreal *work, mplapackint *iwork);
 mpreal Rla_gbrpvgrw(mplapackint const n, mplapackint const kl, mplapackint const ku, mplapackint const ncols, mpreal *ab, mplapackint const ldab, mpreal *afb, mplapackint const ldafb);

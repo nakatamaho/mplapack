@@ -70,7 +70,7 @@ qd_real Clansy(const char *norm, const char *uplo, mplapackint const n, qd_compl
 qd_real Clantb(const char *norm, const char *uplo, const char *diag, mplapackint const n, mplapackint const k, qd_complex *ab, mplapackint const ldab, qd_real *work);
 qd_real Clantp(const char *norm, const char *uplo, const char *diag, mplapackint const n, qd_complex *ap, qd_real *work);
 qd_real Clantr(const char *norm, const char *uplo, const char *diag, mplapackint const m, mplapackint const n, qd_complex *a, mplapackint const lda, qd_real *work);
-qd_real Mmaxval(qd_real *dx, mplapackint const start, mplapackint const end);
+qd_real Mmaxval(qd_real *dx, mplapackint const start, mplapackint const end, mplapackint incx);
 qd_real RCsum1(mplapackint const n, qd_complex *cx, mplapackint const incx);
 qd_real Rla_gbrcond(const char *trans, mplapackint const n, mplapackint const kl, mplapackint const ku, qd_real *ab, mplapackint const ldab, qd_real *afb, mplapackint const ldafb, mplapackint *ipiv, mplapackint const cmode, qd_real *c, mplapackint &info, qd_real *work, mplapackint *iwork);
 qd_real Rla_gbrpvgrw(mplapackint const n, mplapackint const kl, mplapackint const ku, mplapackint const ncols, qd_real *ab, mplapackint const ldab, qd_real *afb, mplapackint const ldafb);

@@ -54,7 +54,7 @@ mpf_class Clansy(const char *norm, const char *uplo, mplapackint const n, mpc_cl
 mpf_class Clantb(const char *norm, const char *uplo, const char *diag, mplapackint const n, mplapackint const k, mpc_class *ab, mplapackint const ldab, mpf_class *work);
 mpf_class Clantp(const char *norm, const char *uplo, const char *diag, mplapackint const n, mpc_class *ap, mpf_class *work);
 mpf_class Clantr(const char *norm, const char *uplo, const char *diag, mplapackint const m, mplapackint const n, mpc_class *a, mplapackint const lda, mpf_class *work);
-mpf_class Mmaxval(mpf_class *dx, mplapackint const start, mplapackint const end);
+mpf_class Mmaxval(mpf_class *dx, mplapackint const start, mplapackint const end, mplapackint incx);
 mpf_class RCsum1(mplapackint const n, mpc_class *cx, mplapackint const incx);
 mpf_class Rla_gbrcond(const char *trans, mplapackint const n, mplapackint const kl, mplapackint const ku, mpf_class *ab, mplapackint const ldab, mpf_class *afb, mplapackint const ldafb, mplapackint *ipiv, mplapackint const cmode, mpf_class *c, mplapackint &info, mpf_class *work, mplapackint *iwork);
 mpf_class Rla_gbrpvgrw(mplapackint const n, mplapackint const kl, mplapackint const ku, mplapackint const ncols, mpf_class *ab, mplapackint const ldab, mpf_class *afb, mplapackint const ldafb);

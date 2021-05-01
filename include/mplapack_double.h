@@ -51,7 +51,7 @@ double Clansy(const char *norm, const char *uplo, mplapackint const n, std::comp
 double Clantb(const char *norm, const char *uplo, const char *diag, mplapackint const n, mplapackint const k, std::complex<double> *ab, mplapackint const ldab, double *work);
 double Clantp(const char *norm, const char *uplo, const char *diag, mplapackint const n, std::complex<double> *ap, double *work);
 double Clantr(const char *norm, const char *uplo, const char *diag, mplapackint const m, mplapackint const n, std::complex<double> *a, mplapackint const lda, double *work);
-double Mmaxval(double *dx, mplapackint const start, mplapackint const end);
+double Mmaxval(double *dx, mplapackint const start, mplapackint const end, mplapackint incx);
 double RCsum1(mplapackint const n, std::complex<double> *cx, mplapackint const incx);
 double Rla_gbrcond(const char *trans, mplapackint const n, mplapackint const kl, mplapackint const ku, double *ab, mplapackint const ldab, double *afb, mplapackint const ldafb, mplapackint *ipiv, mplapackint const cmode, double *c, mplapackint &info, double *work, mplapackint *iwork);
 double Rla_gbrpvgrw(mplapackint const n, mplapackint const kl, mplapackint const ku, mplapackint const ncols, double *ab, mplapackint const ldab, double *afb, mplapackint const ldafb);

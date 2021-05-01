@@ -52,7 +52,7 @@ _Float128 Clansy(const char *norm, const char *uplo, mplapackint const n, std::c
 _Float128 Clantb(const char *norm, const char *uplo, const char *diag, mplapackint const n, mplapackint const k, std::complex<_Float128> *ab, mplapackint const ldab, _Float128 *work);
 _Float128 Clantp(const char *norm, const char *uplo, const char *diag, mplapackint const n, std::complex<_Float128> *ap, _Float128 *work);
 _Float128 Clantr(const char *norm, const char *uplo, const char *diag, mplapackint const m, mplapackint const n, std::complex<_Float128> *a, mplapackint const lda, _Float128 *work);
-_Float128 Mmaxval(_Float128 *dx, mplapackint const start, mplapackint const end);
+_Float128 Mmaxval(_Float128 *dx, mplapackint const start, mplapackint const end, mplapackint incx);
 _Float128 RCsum1(mplapackint const n, std::complex<_Float128> *cx, mplapackint const incx);
 _Float128 Rla_gbrcond(const char *trans, mplapackint const n, mplapackint const kl, mplapackint const ku, _Float128 *ab, mplapackint const ldab, _Float128 *afb, mplapackint const ldafb, mplapackint *ipiv, mplapackint const cmode, _Float128 *c, mplapackint &info, _Float128 *work, mplapackint *iwork);
 _Float128 Rla_gbrpvgrw(mplapackint const n, mplapackint const kl, mplapackint const ku, mplapackint const ncols, _Float128 *ab, mplapackint const ldab, _Float128 *afb, mplapackint const ldafb);

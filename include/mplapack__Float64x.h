@@ -48,7 +48,7 @@ _Float64x Clansy(const char *norm, const char *uplo, mplapackint const n, std::c
 _Float64x Clantb(const char *norm, const char *uplo, const char *diag, mplapackint const n, mplapackint const k, std::complex<_Float64x> *ab, mplapackint const ldab, _Float64x *work);
 _Float64x Clantp(const char *norm, const char *uplo, const char *diag, mplapackint const n, std::complex<_Float64x> *ap, _Float64x *work);
 _Float64x Clantr(const char *norm, const char *uplo, const char *diag, mplapackint const m, mplapackint const n, std::complex<_Float64x> *a, mplapackint const lda, _Float64x *work);
-_Float64x Mmaxval(_Float64x *dx, mplapackint const start, mplapackint const end);
+_Float64x Mmaxval(_Float64x *dx, mplapackint const start, mplapackint const end, mplapackint incx);
 _Float64x RCsum1(mplapackint const n, std::complex<_Float64x> *cx, mplapackint const incx);
 _Float64x Rla_gbrcond(const char *trans, mplapackint const n, mplapackint const kl, mplapackint const ku, _Float64x *ab, mplapackint const ldab, _Float64x *afb, mplapackint const ldafb, mplapackint *ipiv, mplapackint const cmode, _Float64x *c, mplapackint &info, _Float64x *work, mplapackint *iwork);
 _Float64x Rla_gbrpvgrw(mplapackint const n, mplapackint const kl, mplapackint const ku, mplapackint const ncols, _Float64x *ab, mplapackint const ldab, _Float64x *afb, mplapackint const ldafb);

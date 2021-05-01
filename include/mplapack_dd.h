@@ -54,7 +54,7 @@ dd_real Clansy(const char *norm, const char *uplo, mplapackint const n, dd_compl
 dd_real Clantb(const char *norm, const char *uplo, const char *diag, mplapackint const n, mplapackint const k, dd_complex *ab, mplapackint const ldab, dd_real *work);
 dd_real Clantp(const char *norm, const char *uplo, const char *diag, mplapackint const n, dd_complex *ap, dd_real *work);
 dd_real Clantr(const char *norm, const char *uplo, const char *diag, mplapackint const m, mplapackint const n, dd_complex *a, mplapackint const lda, dd_real *work);
-dd_real Mmaxval(dd_real *dx, mplapackint const start, mplapackint const end);
+dd_real Mmaxval(dd_real *dx, mplapackint const start, mplapackint const end, mplapackint incx);
 dd_real RCsum1(mplapackint const n, dd_complex *cx, mplapackint const incx);
 dd_real Rla_gbrcond(const char *trans, mplapackint const n, mplapackint const kl, mplapackint const ku, dd_real *ab, mplapackint const ldab, dd_real *afb, mplapackint const ldafb, mplapackint *ipiv, mplapackint const cmode, dd_real *c, mplapackint &info, dd_real *work, mplapackint *iwork);
 dd_real Rla_gbrpvgrw(mplapackint const n, mplapackint const kl, mplapackint const ku, mplapackint const ncols, dd_real *ab, mplapackint const ldab, dd_real *afb, mplapackint const ldafb);

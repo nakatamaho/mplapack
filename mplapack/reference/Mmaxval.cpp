@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -28,7 +28,7 @@
 
 #include <mplapack.h>
 
-INTEGER Mmaxloc(REAL *dx, INTEGER const start, INTEGER const end, INTEGER const incx) {
+REAL Mmaxval(REAL *dx, INTEGER const start, INTEGER const end, INTEGER incx) {
     INTEGER return_value = 0;
     return_value = 0;
     if (incx <= 0) {
@@ -62,5 +62,5 @@ INTEGER Mmaxloc(REAL *dx, INTEGER const start, INTEGER const end, INTEGER const 
             ix += incx;
         }
     }
-    return return_value;
+    return dmax;
 }
