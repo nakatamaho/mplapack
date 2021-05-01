@@ -2,7 +2,24 @@ dnl
 dnl Configure for MPLAPACK
 dnl
 
-AC_INIT(mplapack, 1.0.0)
+m4_define([MPLAPACK_VER_MAJOR], [1])
+m4_define([MPLAPACK_VER_MINOR], [0])
+m4_define([MPLAPACK_VER_PATCH], [0])
+m4_define([MPLAPACK_VERSION], [MPLAPACK_VER_MAJOR.MPLAPACK_VER_MINOR.MPLAPACK_VER_PATCH])
+m4_define([LAPACK_VER_MAJOR], [3])
+m4_define([LAPACK_VER_MINOR], [9])
+m4_define([LAPACK_VER_PATCH], [1])
+
+AC_INIT(mplapack, [MPLAPACK_VERSION])
+
+sed -e "s/%%mplapack_ver_major%%/MPLAPACK_VER_MAJOR/g" \
+    -e "s/%%mplapack_ver_minor%%/MPLAPACK_VER_MINOR/g" \
+    -e "s/%%mplapack_ver_patch%%/MPLAPACK_VER_PATCH/g" \
+    -e "s/%%lapack_ver_major%%/LAPACK_VER_MAJOR/g" \
+    -e "s/%%lapack_ver_minor%%/LAPACK_VER_MINOR/g" \
+    -e "s/%%lapack_ver_patch%%/LAPACK_VER_PATCH/g" \
+     mplapack/reference/iMlaver.cpp.in > mplapack/reference/iMlaver.cpp
+
 AC_SUBST([PACKAGE_DESCRIPTION], "A multiple precision version of BLAS and LAPACK")
 AC_CONFIG_HEADER(include/config.h) 
 
@@ -12,6 +29,7 @@ AC_CONFIG_FILES([packaging/PKGBUILD packaging/mplapack.spec])
 AC_CANONICAL_TARGET
 
 AC_PROG_CC
+AC_PROG_CXX
 IS_INTELCC=0
 AC_COMPILE_IFELSE([
     AC_LANG_SOURCE([[
@@ -25,22 +43,6 @@ AC_COMPILE_IFELSE([
    ]]) 
 ], [is_intelcc=1])
 AM_CONDITIONAL(IS_INTELCC, test x$is_intelcc = x1)
-
-AC_PROG_CXX
-AC_LANG([C++])
-IS_INTELCXX=0
-AC_COMPILE_IFELSE([
-    AC_LANG_SOURCE([[
-    #if !defined __INTEL_COMPILER
-    #error
-    #endif
-    #include <stdio.h>
-    int main() {
-        return 0;    
-    }
-   ]]) 
-], [is_intelcxx=1])
-AM_CONDITIONAL(IS_INTELCXX, test x$is_intelcxx = x1)
 
 AC_PROG_LIBTOOL
 AM_INIT_AUTOMAKE([subdir-objects])
@@ -791,9 +793,9 @@ if test x"$enable_optimization" = x"yes"; then
            FCFLAGS="$FCFLAGS -march=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
        ;;
     esac
-    if test x$__ICC = x"icc"; then
-        CFLAGS="$CFLAGS -xHost -O3"
+    if test x"is_intelcc" = x"1"; then
         CXXFLAGS="$CXXFLAGS -xHost -O3"
+        CFLAGS="$CFLAGS -xHost -O3"
         FCFLAGS="$FCFLAGS -xHost -O3"
     fi
     AC_SUBST(CFLAGS)
