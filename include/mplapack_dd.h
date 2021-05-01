@@ -957,5 +957,5 @@ void Rtrtrs(const char *uplo, const char *trans, const char *diag, mplapackint c
 void Rtrttf(const char *transr, const char *uplo, mplapackint const n, dd_real *a, mplapackint const lda, dd_real *arf, mplapackint &info);
 void Rtrttp(const char *uplo, mplapackint const n, dd_real *a, mplapackint const lda, dd_real *ap, mplapackint &info);
 void Rtzrzf(mplapackint const m, mplapackint const n, dd_real *a, mplapackint const lda, dd_real *tau, dd_real *work, mplapackint const lwork, mplapackint &info);
-void iMlaver_dd(int &vers_major, int &vers_minor, int &vers_patch);
+void iMlaver_dd(int &mplapack_ver_major, int &mplapack_ver_minor, int &mplapack_ver_patch, int &lapack_ver_major, int &lapack_minor_major, int &lapack_ver_patch);
 #endif

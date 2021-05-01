@@ -955,5 +955,5 @@ void Rtrtrs(const char *uplo, const char *trans, const char *diag, mplapackint c
 void Rtrttf(const char *transr, const char *uplo, mplapackint const n, _Float64x *a, mplapackint const lda, _Float64x *arf, mplapackint &info);
 void Rtrttp(const char *uplo, mplapackint const n, _Float64x *a, mplapackint const lda, _Float64x *ap, mplapackint &info);
 void Rtzrzf(mplapackint const m, mplapackint const n, _Float64x *a, mplapackint const lda, _Float64x *tau, _Float64x *work, mplapackint const lwork, mplapackint &info);
-void iMlaver__Float64x(int &vers_major, int &vers_minor, int &vers_patch);
+void iMlaver__Float64x(int &mplapack_ver_major, int &mplapack_ver_minor, int &mplapack_ver_patch, int &lapack_ver_major, int &lapack_minor_major, int &lapack_ver_patch);
 #endif
