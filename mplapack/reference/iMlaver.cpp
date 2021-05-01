@@ -29,8 +29,11 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void iMlaver(int &vers_major, int &vers_minor, int &vers_patch) {
-    vers_major = 1;
-    vers_minor = 0;
-    vers_patch = 0;
+void iMlaver(int &mplapack_ver_major, int &mplapack_ver_minor, int &mplapack_ver_patch, int &lapack_ver_major, int &lapack_minor_major, int &lapack_ver_patch) {
+    mplapack_ver_major = 1;
+    mplapack_ver_minor = 0;
+    mplapack_ver_patch = 0;
+    lapack_ver_major = 3;
+    lapack_ver_minor = 9;
+    lapack_ver_patch = 1;
 }
