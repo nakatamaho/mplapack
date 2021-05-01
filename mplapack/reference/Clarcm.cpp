@@ -84,7 +84,7 @@ void Clarcm(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, COMPLE
     Rgemm("N", "N", m, n, m, one, a, lda, rwork, m, zero, &rwork[l - 1], m);
     for (j = 1; j <= n; j = j + 1) {
         for (i = 1; i <= m; i = i + 1) {
-            c[(i - 1) + (j - 1) * ldc] = COMPLEX(c[(i - 1) + (j - 1) * ldc].real(), &rwork[(l + (j - 1) * m + i - 1) - 1]);
+            c[(i - 1) + (j - 1) * ldc] = COMPLEX(c[(i - 1) + (j - 1) * ldc].real(), rwork[(l + (j - 1) * m + i - 1) - 1]);
         }
     }
     //

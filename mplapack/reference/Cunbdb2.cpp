@@ -112,7 +112,7 @@ void Cunbdb2(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
             CRrot(q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, &x21[((i - 1) - 1) + (i - 1) * ldx21], ldx21, c, s);
         }
         Clacgv(q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11);
-        Clarfgp(q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, tauq1[i - 1]);
+        Clarfgp(q - i + 1, x11[(i - 1) + (i - 1) * ldx11], &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, tauq1[i - 1]);
         c = x11[(i - 1) + (i - 1) * ldx11].real();
         x11[(i - 1) + (i - 1) * ldx11] = one;
         Clarf("R", p - i, q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, tauq1[i - 1], &x11[((i + 1) - 1) + (i - 1) * ldx11], ldx11, &work[ilarf - 1]);
@@ -123,10 +123,10 @@ void Cunbdb2(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         //
         Cunbdb5(p - i, m - p - i + 1, q - i, &x11[((i + 1) - 1) + (i - 1) * ldx11], 1, &x21[(i - 1) + (i - 1) * ldx21], 1, &x11[((i + 1) - 1) + ((i + 1) - 1) * ldx11], ldx11, &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, &work[iorbdb5 - 1], lorbdb5, childinfo);
         Cscal(p - i, negone, &x11[((i + 1) - 1) + (i - 1) * ldx11], 1);
-        Clarfgp(m - p - i + 1, &x21[(i - 1) + (i - 1) * ldx21], &x21[((i + 1) - 1) + (i - 1) * ldx21], 1, taup2[i - 1]);
+        Clarfgp(m - p - i + 1, x21[(i - 1) + (i - 1) * ldx21], &x21[((i + 1) - 1) + (i - 1) * ldx21], 1, taup2[i - 1]);
         if (i < p) {
-            Clarfgp(p - i, &x11[((i + 1) - 1) + (i - 1) * ldx11], &x11[((i + 2) - 1) + (i - 1) * ldx11], 1, taup1[i - 1]);
-            phi[i - 1] = atan2(x11[((i + 1) - 1) + (i - 1) * ldx11].real(), &x21[(i - 1) + (i - 1) * ldx21].real());
+            Clarfgp(p - i, x11[((i + 1) - 1) + (i - 1) * ldx11], &x11[((i + 2) - 1) + (i - 1) * ldx11], 1, taup1[i - 1]);
+            phi[i - 1] = atan2(x11[((i + 1) - 1) + (i - 1) * ldx11].real(), x21[(i - 1) + (i - 1) * ldx21].real());
             c = cos(phi[i - 1]);
             s = sin(phi[i - 1]);
             x11[((i + 1) - 1) + (i - 1) * ldx11] = one;
@@ -140,7 +140,7 @@ void Cunbdb2(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
     //     Reduce the bottom-right portion of X21 to the identity matrix
     //
     for (i = p + 1; i <= q; i = i + 1) {
-        Clarfgp(m - p - i + 1, &x21[(i - 1) + (i - 1) * ldx21], &x21[((i + 1) - 1) + (i - 1) * ldx21], 1, taup2[i - 1]);
+        Clarfgp(m - p - i + 1, x21[(i - 1) + (i - 1) * ldx21], &x21[((i + 1) - 1) + (i - 1) * ldx21], 1, taup2[i - 1]);
         x21[(i - 1) + (i - 1) * ldx21] = one;
         Clarf("L", m - p - i + 1, q - i, &x21[(i - 1) + (i - 1) * ldx21], 1, conj(taup2[i - 1]), &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, &work[ilarf - 1]);
     }

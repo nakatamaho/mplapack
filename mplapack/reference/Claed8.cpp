@@ -51,6 +51,8 @@ void Claed8(INTEGER &k, INTEGER const n, INTEGER const qsiz, COMPLEX *q, INTEGER
     REAL c = 0.0;
     REAL tau = 0.0;
     INTEGER jp = 0;
+    INTEGER ldgivnum = 2;
+    INTEGER ldgivcol = 2;
     //
     //  -- LAPACK computational routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -157,9 +159,9 @@ void Claed8(INTEGER &k, INTEGER const n, INTEGER const qsiz, COMPLEX *q, INTEGER
         k = 0;
         for (j = 1; j <= n; j = j + 1) {
             perm[j - 1] = indxq[indx[j - 1] - 1];
-            Ccopy(qsiz, &q[(perm[j - 1] - 1) * ldq], 1, q2[(j - 1) * ldq2], 1);
+            Ccopy(qsiz, &q[(perm[j - 1] - 1) * ldq], 1, &q2[(j - 1) * ldq2], 1);
         }
-        Clacpy("A", qsiz, n, q2[(1 - 1)], ldq2, &q[(1 - 1)], ldq);
+        Clacpy("A", qsiz, n, &q2[(1 - 1)], ldq2, &q[(1 - 1)], ldq);
         return;
     }
     //
@@ -274,15 +276,15 @@ statement_100:
         jp = indxp[j - 1];
         dlamda[j - 1] = d[jp - 1];
         perm[j - 1] = indxq[indx[jp - 1] - 1];
-        Ccopy(qsiz, &q[(perm[j - 1] - 1) * ldq], 1, q2[(j - 1) * ldq2], 1);
+        Ccopy(qsiz, &q[(perm[j - 1] - 1) * ldq], 1, &q2[(j - 1) * ldq2], 1);
     }
     //
     //     The deflated eigenvalues and their corresponding vectors go back
     //     into the last N - K slots of D and Q respectively.
     //
     if (k < n) {
-        Rcopy(n - k, dlamda[(k + 1) - 1], 1, &d[(k + 1) - 1], 1);
-        Clacpy("A", qsiz, n - k, q2[((k + 1) - 1) * ldq2], ldq2, &q[((k + 1) - 1) * ldq], ldq);
+        Rcopy(n - k, &dlamda[(k + 1) - 1], 1, &d[(k + 1) - 1], 1);
+        Clacpy("A", qsiz, n - k, &q2[((k + 1) - 1) * ldq2], ldq2, &q[((k + 1) - 1) * ldq], ldq);
     }
     //
     //     End of Claed8

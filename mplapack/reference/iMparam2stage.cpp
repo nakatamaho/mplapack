@@ -71,7 +71,7 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
     bool rprec = false;
     bool cprec = false;
 
-    name_len = min((int)strlen(name), subnamlen);
+    name_len = min((int)strlen(name), strlen(subnam));
     strncpy(subnam, name, name_len);
     for (int i = 0; i < strlen(subnam); i++) {
         subnam[i] = toupper(subnam[i]);
@@ -93,8 +93,8 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
         algo[2] = subnam[9];
         algo[3] = subnam[10];
         algo[4] = subnam[11];
-        rprec = prec == "R";
-        cprec = prec == "C";
+        rprec = prec == 'R';
+        cprec = prec == 'C';
         //
         //        Invalid value for PRECISION
         //
@@ -160,7 +160,7 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
         //
         //     Will add the VECT OPTION HERE next release
         vect = opts[(1 - 1)];
-        if (vect == "N") {
+        if (vect == 'N') {
             lhous = max((INTEGER)1, 4 * ni);
         } else {
             //           This is not correct, it need to call the ALGO and the stage2
@@ -189,27 +189,27 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
         //                    + (KD+1)*N
         lwork = -1;
         subnam[(1 - 1)] = prec;
-        subnam[(2 - 1)] = "G";
-        subnam[(3 - 1)] = "E";
-        subnam[(4 - 1)] = "Q";
-        subnam[(5 - 1)] = "R";
-        subnam[(6 - 1)] = "F";
+        subnam[(2 - 1)] = 'G';
+        subnam[(3 - 1)] = 'E';
+        subnam[(4 - 1)] = 'Q';
+        subnam[(5 - 1)] = 'R';
+        subnam[(6 - 1)] = 'F';
 
         qroptnb = iMlaenv(1, subnam, " ", ni, nbi, -1, -1);
-        subnam[(2 - 1)] = "G";
-        subnam[(3 - 1)] = "E";
-        subnam[(4 - 1)] = "L";
-        subnam[(5 - 1)] = "Q";
-        subnam[(6 - 1)] = "F";
+        subnam[(2 - 1)] = 'G';
+        subnam[(3 - 1)] = 'E';
+        subnam[(4 - 1)] = 'L';
+        subnam[(5 - 1)] = 'Q';
+        subnam[(6 - 1)] = 'F';
         lqoptnb = iMlaenv(1, subnam, " ", nbi, ni, -1, -1);
         //        Could be QR or LQ for TRD and the max for BRD
         factoptnb = max(qroptnb, lqoptnb);
         if (strncmp(algo, "TRD", 3)) {
             if (strncmp(stag, "2STAG", 4)) {
                 lwork = ni * nbi + ni * max(nbi + 1, factoptnb) + max((INTEGER)2 * nbi * nbi, nbi * nthreads) + (nbi + 1) * ni;
-          } else if ((strncmp(stag, "HE2HB",4) || (strncmp(stag, "SY2SB",4)) {
+            } else if ((strncmp(stag, "HE2HB", 4)) || (strncmp(stag, "SY2SB", 4))) {
                 lwork = ni * nbi + ni * max(nbi, factoptnb) + 2 * nbi * nbi;
-	      } else if ((strncmp(stag, "HB2ST",4) || (strncmp(stag,"SB2ST",4)) {
+            } else if ((strncmp(stag, "HB2ST", 4)) || (strncmp(stag, "SB2ST", 4))) {
                 lwork = (2 * nbi + 1) * ni + nbi * nthreads;
             }
         } else if (strncmp(algo, "BRD", 3)) {

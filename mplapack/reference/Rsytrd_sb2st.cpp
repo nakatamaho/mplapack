@@ -204,7 +204,7 @@ void Rsytrd_sb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
     INTEGER shift = 3;
     INTEGER nbtiles = ceil(double(n) / double(kd));
     INTEGER stepercol = ceil(double(shift) / double(grsiz));
-    INTEGER thgrnb = ceil(double(n - 1) /double(thgrsiz));
+    INTEGER thgrnb = ceil(double(n - 1) / double(thgrsiz));
     //
     Rlacpy("A", kd + 1, n, ab, ldab, &work[apos - 1], lda);
     const REAL zero = 0.0;
@@ -263,7 +263,7 @@ void Rsytrd_sb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
                         //
                         //                         Call the kernel
                         //
-                        Rsb2st_kernels(uplo, wantq, ttype, stind, edind, sweepid, n, kd, ib, &work[inda - 1], lda, hous[indv - 1], hous[indtau - 1], ldv, &work[(indw + tid * kd) - 1]);
+                        Rsb2st_kernels(uplo, wantq, ttype, stind, edind, sweepid, n, kd, ib, &work[inda - 1], lda, &hous[indv - 1], &hous[indtau - 1], ldv, &work[(indw + tid * kd) - 1]);
                         if (blklastind >= (n - 1)) {
                             stt++;
                             break;

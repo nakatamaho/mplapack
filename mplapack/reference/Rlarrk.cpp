@@ -83,7 +83,7 @@ void Rlarrk(INTEGER const n, INTEGER const iw, REAL const gl, REAL const gu, REA
     rtoli = reltol;
     atoli = fudge * two * pivmin;
     //
-    itmax = int((log(tnorm + pivmin) - log(pivmin)) / log(two)) + 2;
+    itmax = castREAL((log(tnorm + pivmin) - log(pivmin)) / log(two)) + 2;
     //
     info = -1;
     //

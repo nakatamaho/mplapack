@@ -112,7 +112,7 @@ void Cunbdb3(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         }
         //
         Clacgv(q - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21);
-        Clarfgp(q - i + 1, &x21[(i - 1) + (i - 1) * ldx21], &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, tauq1[i - 1]);
+        Clarfgp(q - i + 1, x21[(i - 1) + (i - 1) * ldx21], &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, tauq1[i - 1]);
         s = x21[(i - 1) + (i - 1) * ldx21].real();
         x21[(i - 1) + (i - 1) * ldx21] = one;
         Clarf("R", p - i + 1, q - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21, tauq1[i - 1], &x11[(i - 1) + (i - 1) * ldx11], ldx11, &work[ilarf - 1]);
@@ -122,10 +122,10 @@ void Cunbdb3(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         theta[i - 1] = atan2(s, c);
         //
         Cunbdb5(p - i + 1, m - p - i, q - i, &x11[(i - 1) + (i - 1) * ldx11], 1, &x21[((i + 1) - 1) + (i - 1) * ldx21], 1, &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, &x21[((i + 1) - 1) + ((i + 1) - 1) * ldx21], ldx21, &work[iorbdb5 - 1], lorbdb5, childinfo);
-        Clarfgp(p - i + 1, &x11[(i - 1) + (i - 1) * ldx11], &x11[((i + 1) - 1) + (i - 1) * ldx11], 1, taup1[i - 1]);
+        Clarfgp(p - i + 1, x11[(i - 1) + (i - 1) * ldx11], &x11[((i + 1) - 1) + (i - 1) * ldx11], 1, taup1[i - 1]);
         if (i < m - p) {
-            Clarfgp(m - p - i, &x21[((i + 1) - 1) + (i - 1) * ldx21], &x21[((i + 2) - 1) + (i - 1) * ldx21], 1, taup2[i - 1]);
-            phi[i - 1] = atan2(x21[((i + 1) - 1) + (i - 1) * ldx21].real(), &x11[(i - 1) + (i - 1) * ldx11].real());
+            Clarfgp(m - p - i, x21[((i + 1) - 1) + (i - 1) * ldx21], &x21[((i + 2) - 1) + (i - 1) * ldx21], 1, taup2[i - 1]);
+            phi[i - 1] = atan2(x21[((i + 1) - 1) + (i - 1) * ldx21].real(), x11[(i - 1) + (i - 1) * ldx11].real());
             c = cos(phi[i - 1]);
             s = sin(phi[i - 1]);
             x21[((i + 1) - 1) + (i - 1) * ldx21] = one;
@@ -139,7 +139,7 @@ void Cunbdb3(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
     //     Reduce the bottom-right portion of X11 to the identity matrix
     //
     for (i = m - p + 1; i <= q; i = i + 1) {
-        Clarfgp(p - i + 1, &x11[(i - 1) + (i - 1) * ldx11], &x11[((i + 1) - 1) + (i - 1) * ldx11], 1, taup1[i - 1]);
+        Clarfgp(p - i + 1, x11[(i - 1) + (i - 1) * ldx11], &x11[((i + 1) - 1) + (i - 1) * ldx11], 1, taup1[i - 1]);
         x11[(i - 1) + (i - 1) * ldx11] = one;
         Clarf("L", p - i + 1, q - i, &x11[(i - 1) + (i - 1) * ldx11], 1, conj(taup1[i - 1]), &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, &work[ilarf - 1]);
     }

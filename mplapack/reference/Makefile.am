@@ -252,26 +252,6 @@ Chptri.cpp \
 Chptrs.cpp \
 Chsein.cpp \
 Chseqr.cpp \
-Cla_gbamv.cpp \
-Cla_gbrcond_c.cpp \
-Cla_gbrcond_x.cpp \
-Cla_gbrpvgrw.cpp \
-Cla_geamv.cpp \
-Cla_gercond_c.cpp \
-Cla_gercond_x.cpp \
-Cla_gerpvgrw.cpp \
-Cla_heamv.cpp \
-Cla_hercond_c.cpp \
-Cla_hercond_x.cpp \
-Cla_herpvgrw.cpp \
-Cla_porcond_c.cpp \
-Cla_porcond_x.cpp \
-Cla_porpvgrw.cpp \
-Cla_syamv.cpp \
-Cla_syrcond_c.cpp \
-Cla_syrcond_x.cpp \
-Cla_syrpvgrw.cpp \
-Cla_wwaddw.cpp \
 Clabrd.cpp \
 Clacgv.cpp \
 Clacn2.cpp \
@@ -548,7 +528,6 @@ RCsum1.cpp \
 Rbbcsd.cpp \
 Rbdsdc.cpp \
 Rbdsqr.cpp \
-Rbdsvdx.cpp \
 Rcombssq.cpp \
 Rdisna.cpp \
 Rgbbrd.cpp \
@@ -646,18 +625,6 @@ Rhgeqz.cpp \
 Rhsein.cpp \
 Rhseqr.cpp \
 Risnan.cpp \
-Rla_gbamv.cpp \
-Rla_gbrcond.cpp \
-Rla_gbrpvgrw.cpp \
-Rla_geamv.cpp \
-Rla_gercond.cpp \
-Rla_gerpvgrw.cpp \
-Rla_porcond.cpp \
-Rla_porpvgrw.cpp \
-Rla_syamv.cpp \
-Rla_syrcond.cpp \
-Rla_syrpvgrw.cpp \
-Rla_wwaddw.cpp \
 Rlabad.cpp \
 Rlabrd.cpp \
 Rlacn2.cpp \
@@ -1030,3 +997,6 @@ iMlazlc.cpp \
 iMlazlr.cpp \
 iMparmq.cpp \
 iMparam2stage.cpp
+
+#Rbdsvdx.cpp
+

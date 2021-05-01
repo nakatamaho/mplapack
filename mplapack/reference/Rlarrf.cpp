@@ -106,7 +106,7 @@ void Rlarrf(INTEGER const n, REAL *d, REAL *l, REAL *ld, INTEGER const clstrt, I
         return;
     }
     //
-    fact = (pow(2, ktrymax)).real();
+    fact = castREAL(pow(2, ktrymax));
     eps = Rlamch("Precision");
     shift = 0;
     forcer = false;
@@ -128,11 +128,11 @@ void Rlarrf(INTEGER const n, REAL *d, REAL *l, REAL *ld, INTEGER const clstrt, I
     //
     //     Compute the average gap length of the cluster
     clwdth = abs(w[clend - 1] - w[clstrt - 1]) + werr[clend - 1] + werr[clstrt - 1];
-    avgap = clwdth / (clend - clstrt).real();
+    avgap = clwdth / castREAL(clend - clstrt);
     mingap = min(clgapl, clgapr);
     //     Initial values for shifts to both ends of cluster
-    lsigma = min(w[clstrt - 1], &w[clend - 1]) - werr[clstrt - 1];
-    rsigma = max(w[clstrt - 1], &w[clend - 1]) + werr[clend - 1];
+    lsigma = min(w[clstrt - 1], w[clend - 1]) - werr[clstrt - 1];
+    rsigma = max(w[clstrt - 1], w[clend - 1]) + werr[clend - 1];
     //
     //     Use a small fudge to make sure that we really shift to the outside
     lsigma = lsigma - abs(lsigma) * four * eps;
@@ -149,8 +149,8 @@ void Rlarrf(INTEGER const n, REAL *d, REAL *l, REAL *ld, INTEGER const clstrt, I
     //
     s = Rlamch("S");
     smlgrowth = one / s;
-    fail = (n - 1).real() * mingap / (spdiam * eps);
-    fail2 = (n - 1).real() * mingap / (spdiam * sqrt(eps));
+    fail = castREAL(n - 1) * mingap / (spdiam * eps);
+    fail2 = castREAL(n - 1) * mingap / (spdiam * sqrt(eps));
     bestshift = lsigma;
     //
     //     while (KTRY <= KTRYMAX)
@@ -256,7 +256,7 @@ statement_5:
     //     we may still accept the representation, if it passes a
     //     refined test for RRR. This test supposes that no NaN occurred.
     //     Moreover, we use the refined RRR test only for isolated clusters.
-    if ((clwdth < mingap / 128.real()) && (min(max1, max2) < fail2) && (!sawnan1) && (!sawnan2)) {
+    if ((clwdth < mingap / 128.0) && (min(max1, max2) < fail2) && (!sawnan1) && (!sawnan2)) {
         dorrr1 = true;
     } else {
         dorrr1 = false;

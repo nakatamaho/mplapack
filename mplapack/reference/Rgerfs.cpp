@@ -112,9 +112,9 @@ void Rgerfs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *a, INT
     }
     //
     if (notran) {
-        transt = "T";
+        transt = 'T';
     } else {
-        transt = "N";
+        transt = 'N';
     }
     //
     //     NZ = maximum number of nonzero elements in each row of A, plus 1
@@ -237,7 +237,7 @@ void Rgerfs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *a, INT
                 //
                 //              Multiply by diag(W)*inv(op(A)**T).
                 //
-                Rgetrs(transt, n, 1, af, ldaf, ipiv, &work[(n + 1) - 1], n, info);
+                Rgetrs(&transt, n, 1, af, ldaf, ipiv, &work[(n + 1) - 1], n, info);
                 for (i = 1; i <= n; i = i + 1) {
                     work[(n + i) - 1] = work[i - 1] * work[(n + i) - 1];
                 }

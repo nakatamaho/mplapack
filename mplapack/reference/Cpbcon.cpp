@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
+
 void Cpbcon(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, REAL const anorm, REAL &rcond, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool upper = false;
@@ -70,7 +72,6 @@ void Cpbcon(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1(zdum) = abs(zdum.real()) + abs(zdum.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -109,7 +110,7 @@ void Cpbcon(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
     //     Estimate the 1-norm of the inverse.
     //
     kase = 0;
-    normin = "N";
+    normin = 'N';
 statement_10:
     Clacn2(n, &work[(n + 1) - 1], work, ainvnm, kase, isave);
     if (kase != 0) {
@@ -117,22 +118,22 @@ statement_10:
             //
             //           Multiply by inv(U**H).
             //
-            Clatbs("Upper", "Conjugate transpose", "Non-unit", normin, n, kd, ab, ldab, work, scalel, rwork, info);
-            normin = "Y";
+            Clatbs("Upper", "Conjugate transpose", "Non-unit", &normin, n, kd, ab, ldab, work, scalel, rwork, info);
+            normin = 'Y';
             //
             //           Multiply by inv(U).
             //
-            Clatbs("Upper", "No transpose", "Non-unit", normin, n, kd, ab, ldab, work, scaleu, rwork, info);
+            Clatbs("Upper", "No transpose", "Non-unit", &normin, n, kd, ab, ldab, work, scaleu, rwork, info);
         } else {
             //
             //           Multiply by inv(L).
             //
-            Clatbs("Lower", "No transpose", "Non-unit", normin, n, kd, ab, ldab, work, scalel, rwork, info);
-            normin = "Y";
+            Clatbs("Lower", "No transpose", "Non-unit", &normin, n, kd, ab, ldab, work, scalel, rwork, info);
+            normin = 'Y';
             //
             //           Multiply by inv(L**H).
             //
-            Clatbs("Lower", "Conjugate transpose", "Non-unit", normin, n, kd, ab, ldab, work, scaleu, rwork, info);
+            Clatbs("Lower", "Conjugate transpose", "Non-unit", &normin, n, kd, ab, ldab, work, scaleu, rwork, info);
         }
         //
         //        Multiply by 1/SCALE if doing so will not cause overflow.

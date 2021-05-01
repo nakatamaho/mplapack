@@ -101,11 +101,11 @@ void Rlaed9(INTEGER const k, INTEGER const kstart, INTEGER const kstop, INTEGER 
     //     this code.
     //
     for (i = 1; i <= n; i = i + 1) {
-        dlamda[i - 1] = dlamc3[(dlamda[i - 1] - 1) + (dlamda[i - 1] - 1) * lddlamc3] - dlamda[i - 1];
+        dlamda[i - 1] = Rlamc3(dlamda[i - 1], (dlamda[i - 1] - 1)) - dlamda[i - 1];
     }
     //
     for (j = kstart; j <= kstop; j = j + 1) {
-        Rlaed4(k, j, dlamda, w, &q[(j - 1) * ldq], rho, &d[j - 1], info);
+        Rlaed4(k, j, dlamda, w, &q[(j - 1) * ldq], rho, d[j - 1], info);
         //
         //        If the zero finder fails, the computation is terminated.
         //

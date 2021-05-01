@@ -83,10 +83,10 @@ statement_10:
         //
         //        Determine ith pivot column and swap if necessary
         //
-        pvt = (k - 1) + iRamax(n - k + 1, vn1[k - 1], 1);
+        pvt = (k - 1) + iRamax(n - k + 1, &vn1[k - 1], 1);
         if (pvt != k) {
             Cswap(m, &a[(pvt - 1) * lda], 1, &a[(k - 1) * lda], 1);
-            Cswap(k - 1, f[(pvt - 1)], ldf, f[(k - 1)], ldf);
+            Cswap(k - 1, &f[(pvt - 1)], ldf, &f[(k - 1)], ldf);
             itemp = jpvt[pvt - 1];
             jpvt[pvt - 1] = jpvt[k - 1];
             jpvt[k - 1] = itemp;
@@ -101,7 +101,7 @@ statement_10:
             for (j = 1; j <= k - 1; j = j + 1) {
                 f[(k - 1) + (j - 1) * ldf] = conj(f[(k - 1) + (j - 1) * ldf]);
             }
-            Cgemv("No transpose", m - rk + 1, k - 1, -cone, &a[(rk - 1)], lda, f[(k - 1)], ldf, cone, &a[(rk - 1) + (k - 1) * lda], 1);
+            Cgemv("No transpose", m - rk + 1, k - 1, -cone, &a[(rk - 1)], lda, &f[(k - 1)], ldf, cone, &a[(rk - 1) + (k - 1) * lda], 1);
             for (j = 1; j <= k - 1; j = j + 1) {
                 f[(k - 1) + (j - 1) * ldf] = conj(f[(k - 1) + (j - 1) * ldf]);
             }
@@ -110,9 +110,9 @@ statement_10:
         //        Generate elementary reflector H(k).
         //
         if (rk < m) {
-            Clarfg(m - rk + 1, &a[(rk - 1) + (k - 1) * lda], &a[((rk + 1) - 1) + (k - 1) * lda], 1, &tau[k - 1]);
+            Clarfg(m - rk + 1, a[(rk - 1) + (k - 1) * lda], &a[((rk + 1) - 1) + (k - 1) * lda], 1, tau[k - 1]);
         } else {
-            Clarfg(1, &a[(rk - 1) + (k - 1) * lda], &a[(rk - 1) + (k - 1) * lda], 1, &tau[k - 1]);
+            Clarfg(1, a[(rk - 1) + (k - 1) * lda], &a[(rk - 1) + (k - 1) * lda], 1, tau[k - 1]);
         }
         //
         akk = a[(rk - 1) + (k - 1) * lda];
@@ -123,7 +123,7 @@ statement_10:
         //        Compute  F(K+1:N,K) := tau(K)*A(RK:M,K+1:N)**H*A(RK:M,K).
         //
         if (k < n) {
-            Cgemv("Conjugate transpose", m - rk + 1, n - k, &tau[k - 1], &a[(rk - 1) + ((k + 1) - 1) * lda], lda, &a[(rk - 1) + (k - 1) * lda], 1, czero, f[((k + 1) - 1) + (k - 1) * ldf], 1);
+            Cgemv("Conjugate transpose", m - rk + 1, n - k, tau[k - 1], &a[(rk - 1) + ((k + 1) - 1) * lda], lda, &a[(rk - 1) + (k - 1) * lda], 1, czero, &f[((k + 1) - 1) + (k - 1) * ldf], 1);
         }
         //
         //        Padding F(1:K,K) with zeros.
@@ -137,16 +137,16 @@ statement_10:
         //                    *A(RK:M,K).
         //
         if (k > 1) {
-            Cgemv("Conjugate transpose", m - rk + 1, k - 1, -tau[k - 1], &a[(rk - 1)], lda, &a[(rk - 1) + (k - 1) * lda], 1, czero, auxv[1 - 1], 1);
+            Cgemv("Conjugate transpose", m - rk + 1, k - 1, -tau[k - 1], &a[(rk - 1)], lda, &a[(rk - 1) + (k - 1) * lda], 1, czero, &auxv[1 - 1], 1);
             //
-            Cgemv("No transpose", n, k - 1, cone, f[(1 - 1)], ldf, auxv[1 - 1], 1, cone, f[(k - 1) * ldf], 1);
+            Cgemv("No transpose", n, k - 1, cone, &f[(1 - 1)], ldf, &auxv[1 - 1], 1, cone, &f[(k - 1) * ldf], 1);
         }
         //
         //        Update the current row of A:
         //        A(RK,K+1:N) := A(RK,K+1:N) - A(RK,1:K)*F(K+1:N,1:K)**H.
         //
         if (k < n) {
-            Cgemm("No transpose", "Conjugate transpose", 1, n - k, k, -cone, &a[(rk - 1)], lda, f[((k + 1) - 1)], ldf, cone, &a[(rk - 1) + ((k + 1) - 1) * lda], lda);
+            Cgemm("No transpose", "Conjugate transpose", 1, n - k, k, -cone, &a[(rk - 1)], lda, &f[((k + 1) - 1)], ldf, cone, &a[(rk - 1) + ((k + 1) - 1) * lda], lda);
         }
         //
         //        Update partial column norms.
@@ -162,7 +162,7 @@ statement_10:
                     temp = max(zero, (one + temp) * (one - temp));
                     temp2 = temp * pow2((vn1[j - 1] / vn2[j - 1]));
                     if (temp2 <= tol3z) {
-                        vn2[j - 1] = lsticc.real();
+                        vn2[j - 1] = castREAL(lsticc);
                         lsticc = j;
                     } else {
                         vn1[j - 1] = vn1[j - 1] * sqrt(temp);
@@ -185,7 +185,7 @@ statement_10:
     //                         A(OFFSET+KB+1:M,1:KB)*F(KB+1:N,1:KB)**H.
     //
     if (kb < min(n, m - offset)) {
-        Cgemm("No transpose", "Conjugate transpose", m - rk, n - kb, kb, -cone, &a[((rk + 1) - 1)], lda, f[((kb + 1) - 1)], ldf, cone, &a[((rk + 1) - 1) + ((kb + 1) - 1) * lda], lda);
+        Cgemm("No transpose", "Conjugate transpose", m - rk, n - kb, kb, -cone, &a[((rk + 1) - 1)], lda, &f[((kb + 1) - 1)], ldf, cone, &a[((rk + 1) - 1) + ((kb + 1) - 1) * lda], lda);
     }
 //
 //     Recomputation of difficult columns.

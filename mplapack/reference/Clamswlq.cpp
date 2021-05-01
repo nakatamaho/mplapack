@@ -145,7 +145,7 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         ctr = 1;
         Cgemlqt("L", "N", nb, n, k, mb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
         //
-        for (i = nb + 1; i >= ii - nb + k; i = i(nb - k)) {
+        for (i = nb + 1; i <= ii - nb + k; i = i + (nb - k)) {
             //
             //         Multiply Q to the current block of C (I:I+NB,1:N)
             //
@@ -196,7 +196,7 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         Cgemlqt("R", "C", m, nb, k, mb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
         ctr = 1;
         //
-        for (i = nb + 1; i >= ii - nb + k; i = i(nb - k)) {
+        for (i = nb + 1; i <= ii - nb + k; i = i + (nb - k)) {
             //
             //         Multiply Q to the current block of C (1:M,I:I+MB)
             //

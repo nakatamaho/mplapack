@@ -61,6 +61,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
     bool indsv = Mlsame(range, "I");
     bool wantz = Mlsame(jobz, "V");
     bool lower = Mlsame(uplo, "L");
+    INTEGER ldwork = 14;
     //
     info = 0;
     const REAL zero = 0.0;
@@ -117,7 +118,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
             }
         }
         if (wantz) {
-            z[(1 - 1)] = sign(one, &d[1 - 1]);
+            z[(1 - 1)] = sign(one, d[1 - 1]);
             z[(2 - 1)] = one;
         }
         return;
@@ -126,7 +127,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
     REAL abstol = 2 * Rlamch("Safe Minimum");
     REAL ulp = Rlamch("Precision");
     REAL eps = Rlamch("Epsilon");
-    REAL sqrt2 = sqrt(2.0);
+    REAL sqrt2 = sqrt(castREAL(2));
     REAL ortol = sqrt(ulp);
     //
     //     Criterion for splitting is taken from Rbdsqr when singular
@@ -160,7 +161,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
             }
         }
     }
-    smin = smin / sqrt(n.real());
+    smin = smin / sqrt(castREAL(n));
     REAL thresh = tol * smin;
     //
     //     Check for zeros in D and E (splits), i.e. submatrices.
@@ -202,7 +203,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
         //        leading comments) with RNGVX = 'I'. IL and IU are set
         //        of the active submatrix.
         //
-        rngvx = "I";
+        rngvx = 'I';
         if (wantz) {
             Rlaset("F", n * 2, n + 1, zero, zero, z, ldz);
         }
@@ -212,7 +213,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
         //        at -s (see leading comments) and we swap VL and VU
         //        (as VUTGK and VLTGK), changing their signs.
         //
-        rngvx = "V";
+        rngvx = 'V';
         vltgk = -vu;
         vutgk = -vl;
         work[(idtgk - 1) + ((idtgk + 2 * n - 1) - 1) * ldwork] = zero;
@@ -237,7 +238,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
         //
         iltgk = il;
         iutgk = iu;
-        rngvx = "V";
+        rngvx = 'V';
         work[(idtgk - 1) + ((idtgk + 2 * n - 1) - 1) * ldwork] = zero;
         Rcopy(n, d, 1, &work[ietgk - 1], 2);
         Rcopy(n - 1, e, 1, &work[(ietgk + 1) - 1], 2);
@@ -283,7 +284,8 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
     //
     //     Form the tridiagonal TGK matrix.
     //
-    s[(n - 1) * lds] = zero;
+    for (int i = 1; i <= n; i++)
+        s[i - 1] = zero;
     work[(ietgk + 2 * n - 1) - 1] = zero;
     work[(idtgk - 1) + ((idtgk + 2 * n - 1) - 1) * ldwork] = zero;
     Rcopy(n, d, 1, &work[ietgk - 1], 2);
@@ -394,12 +396,12 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
                     //                 WORK( ITEMP: ): 2*5*NTGK
                     //                 IWORK( 1: ): 2*6*NTGK
                     //
-                    Rstevx(jobz, rngvx, ntgk, &work[(idtgk + isplt - 1) - 1], &work[(ietgk + isplt - 1) - 1], vltgk, vutgk, iltgk, iutgk, abstol, nsl, s[isbeg - 1], &z[(irowz - 1) + (icolz - 1) * ldz], ldz, &work[itemp - 1], &iwork[iiwork - 1], &iwork[iifail - 1], info);
+                    Rstevx(jobz, &rngvx, ntgk, &work[(idtgk + isplt - 1) - 1], &work[(ietgk + isplt - 1) - 1], vltgk, vutgk, iltgk, iutgk, abstol, nsl, &s[isbeg - 1], &z[(irowz - 1) + (icolz - 1) * ldz], ldz, &work[itemp - 1], &iwork[iiwork - 1], &iwork[iifail - 1], info);
                     if (info != 0) {
                         //                    Exit with the error code from Rstevx.
                         return;
                     }
-                    emin = abs(maxval[(s[(isbeg - 1) + ((isbeg + nsl - 1) - 1) * lds]) - 1]);
+                    emin = abs(Mmaxval(s, isbeg, isbeg + nsl - 1));
                     //
                     if (nsl > 0 && wantz) {
                         //
@@ -418,12 +420,12 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
                             //                       eigenvectors corresponding to the two smallest
                             //                       eigenvalues.
                             //
-                            zirowz, irowz + ntgk - 1, icolz + nsl - 2 += zirowz, irowz + ntgk - 1, icolz + nsl - 1;
+                          z(irowz, irowz + ntgk - 1, icolz + nsl - 2 += zirowz, irowz + ntgk - 1, icolz + nsl - 1;
                             zirowz, irowz + ntgk - 1, icolz + nsl - 1 = zero;
-                            //                       IF( IUTGK*2.GT.NTGK ) THEN
-                            //                          Eigenvalue equal to zero or very small.
-                            //                          NSL = NSL - 1
-                            //                       END IF
+                          //                       IF( IUTGK*2.GT.NTGK ) THEN
+                          //                          Eigenvalue equal to zero or very small.
+                          //                          NSL = NSL - 1
+                          //                       END IF
                         }
                         //
                         for (i = 0; i <= min(nsl - 1, nru - 1); i = i + 1) {

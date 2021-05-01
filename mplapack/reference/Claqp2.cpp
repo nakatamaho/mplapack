@@ -76,7 +76,7 @@ void Claqp2(INTEGER const m, INTEGER const n, INTEGER const offset, COMPLEX *a, 
         //
         //        Determine ith pivot column and swap if necessary.
         //
-        pvt = (i - 1) + iRamax(n - i + 1, vn1[i - 1], 1);
+        pvt = (i - 1) + iRamax(n - i + 1, &vn1[i - 1], 1);
         //
         if (pvt != i) {
             Cswap(m, &a[(pvt - 1) * lda], 1, &a[(i - 1) * lda], 1);
@@ -90,9 +90,9 @@ void Claqp2(INTEGER const m, INTEGER const n, INTEGER const offset, COMPLEX *a, 
         //        Generate elementary reflector H(i).
         //
         if (offpi < m) {
-            Clarfg(m - offpi + 1, &a[(offpi - 1) + (i - 1) * lda], &a[((offpi + 1) - 1) + (i - 1) * lda], 1, &tau[i - 1]);
+            Clarfg(m - offpi + 1, a[(offpi - 1) + (i - 1) * lda], &a[((offpi + 1) - 1) + (i - 1) * lda], 1, tau[i - 1]);
         } else {
-            Clarfg(1, &a[(m - 1) + (i - 1) * lda], &a[(m - 1) + (i - 1) * lda], 1, &tau[i - 1]);
+            Clarfg(1, a[(m - 1) + (i - 1) * lda], &a[(m - 1) + (i - 1) * lda], 1, tau[i - 1]);
         }
         //
         if (i < n) {
