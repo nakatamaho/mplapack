@@ -766,7 +766,7 @@ def convert_data_type(conv_info, fdecl, crhs):
       csize = "1"
     else:
       csize = convert_tokens(conv_info=conv_info, tokens=size_tokens)
-    ctype = "fem::str<%s>" % csize
+    ctype = "char [%s]" % csize
     if (crhs is None):
       crhs = "fem::char0"
   else:
@@ -881,6 +881,8 @@ def convert_data_type_and_dims(conv_info, fdecl, crhs, force_arr=False):
   dt = fdecl.dim_tokens
   cdims = None
   cfill0 = "fem::fill0"
+  _ctype = ""
+  _t = ""
   if (dt is not None):
     atype = None
     if (    not force_arr
@@ -895,8 +897,12 @@ def convert_data_type_and_dims(conv_info, fdecl, crhs, force_arr=False):
           if (dimensions_are_simple(dim_tokens=dt)):
             cdims = Auto
             t = convert_tokens(conv_info=conv_info, tokens=dt, commas=True)
+            __t =t.replace(",", "*");
           else:
             t = ", ".join(["%d" % v for v in vals])
+            __t = "* ".join(["%d" % v for v in vals])
+          _t = "%s" % __t
+          _ctype = "%s" % ctype
           t = "%s, %s" % (t, ctype)
           if (t.endswith(">")): templs = " "
           else:                 templs = ""
@@ -914,7 +920,7 @@ def convert_data_type_and_dims(conv_info, fdecl, crhs, force_arr=False):
     ctype = atype
     if (cdims is None):
       cdims = convert_dims(conv_info=conv_info, dim_tokens=dt)
-  return ctype, cdims, crhs, cfill0
+  return ctype, cdims, crhs, cfill0, _ctype, _t
 
 def ad_hoc_change_arr_to_arr_ref(ctype, cconst=""):
   return ctype.replace("arr<", "arr_%sref<" % cconst, 1)
@@ -927,7 +933,7 @@ def zero_shortcut_if_possible(ctype):
   return "fem::%s0" % ctype
 
 def convert_declaration(rapp, conv_info, fdecl, crhs, const):
-  ctype, cdims, crhs, cfill0 = convert_data_type_and_dims(
+  ctype, cdims, crhs, cfill0, _ctype, _t  = convert_data_type_and_dims(
     conv_info=conv_info, fdecl=fdecl, crhs=crhs)
   vname = conv_info.vmapped(fdecl=fdecl)
   if (cdims is None):
@@ -938,7 +944,7 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
     rapp("%s%s %s = %s;" % (const_qualifier(), ctype, vname, crhs))
     return False
   if (cdims is Auto):
-    rapp("%s %s(%s);" % (ctype, vname, cfill0))
+    rapp("%s %s [%s];" % (_ctype, vname, _t ))
   else:
     rapp("%s %s(%s, %s);" % (ctype, vname, cdims, cfill0))
   return True

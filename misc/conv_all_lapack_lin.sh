@@ -77,6 +77,7 @@ sed -i -e 's/, x21\[/, \&x21\[/g' ${newfilename}.cpp
 sed -i -e 's/, x22\[/, \&x22\[/g' ${newfilename}.cpp
 sed -i -e 's/ == "1"/Mlsame( , "1")/g' ${newfilename}.cpp
 sed -i -e 's/ == "0"/Mlsame( , "0")/g' ${newfilename}.cpp
+
 fi
 rm -f ${oldfilename}.cpp
 done
