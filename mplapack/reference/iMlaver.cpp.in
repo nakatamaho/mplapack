@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void iMlaver(int &mplapack_ver_major, int &mplapack_ver_minor, int &mplapack_ver_patch, int &lapack_ver_major, int &lapack_ver_minor, int &lapack_ver_patch) {
+void iMlaver(INTEGER &mplapack_ver_major, INTEGER &mplapack_ver_minor, INTEGER &mplapack_ver_patch, INTEGER &lapack_ver_major, INTEGER &lapack_ver_minor, INTEGER &lapack_ver_patch) {
     mplapack_ver_major = %%mplapack_ver_major%%;
     mplapack_ver_minor = %%mplapack_ver_minor%%;
     mplapack_ver_patch = %%mplapack_ver_patch%%;
