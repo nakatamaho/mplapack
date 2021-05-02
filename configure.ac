@@ -6,11 +6,16 @@ m4_define([MPLAPACK_VER_MAJOR], [1])
 m4_define([MPLAPACK_VER_MINOR], [0])
 m4_define([MPLAPACK_VER_PATCH], [0])
 m4_define([MPLAPACK_VERSION], [MPLAPACK_VER_MAJOR.MPLAPACK_VER_MINOR.MPLAPACK_VER_PATCH])
-m4_define([LAPACK_VER_MAJOR], [3])
-m4_define([LAPACK_VER_MINOR], [9])
-m4_define([LAPACK_VER_PATCH], [1])
-
 AC_INIT(mplapack, [MPLAPACK_VERSION])
+
+AC_SUBST([PACKAGE_DESCRIPTION], "A multiple precision version of BLAS and LAPACK")
+AC_CONFIG_HEADER(include/config.h) 
+
+LAPACK_VER_MAJOR="3"
+LAPACK_VER_MINOR="9"
+LAPACK_VER_PATCH="1"
+LAPACK_VERSION=${LAPACK_VER_MAJOR}.${LAPACK_VER_MINOR}.${LAPACK_VER_PATCH}
+AC_SUBST(LAPACK_VERSION)
 
 sed -e "s/%%mplapack_ver_major%%/MPLAPACK_VER_MAJOR/g" \
     -e "s/%%mplapack_ver_minor%%/MPLAPACK_VER_MINOR/g" \
@@ -19,9 +24,6 @@ sed -e "s/%%mplapack_ver_major%%/MPLAPACK_VER_MAJOR/g" \
     -e "s/%%lapack_ver_minor%%/LAPACK_VER_MINOR/g" \
     -e "s/%%lapack_ver_patch%%/LAPACK_VER_PATCH/g" \
      mplapack/reference/iMlaver.cpp.in > mplapack/reference/iMlaver.cpp
-
-AC_SUBST([PACKAGE_DESCRIPTION], "A multiple precision version of BLAS and LAPACK")
-AC_CONFIG_HEADER(include/config.h) 
 
 AC_CONFIG_FILES([ Makefile mplapack.pc ])
 AC_CONFIG_FILES([packaging/PKGBUILD packaging/mplapack.spec])
