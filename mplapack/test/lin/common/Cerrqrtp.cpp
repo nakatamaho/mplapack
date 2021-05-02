@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrqrtp(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,7 @@ void Cerrqrtp(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
+    char &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -77,10 +80,10 @@ void Cerrqrtp(const char *path, INTEGER const nunit) {
     INTEGER j = 0;
     const INTEGER nmax = 2;
     INTEGER i = 0;
-    COMPLEX a[nmax * nmax];
-    COMPLEX c[nmax * nmax];
-    COMPLEX t[nmax * nmax];
-    COMPLEX w[nmax];
+    arr_2d<nmax, nmax, COMPLEX> a;
+    arr_2d<nmax, nmax, COMPLEX> c;
+    arr_2d<nmax, nmax, COMPLEX> t;
+    arr_1d<nmax, COMPLEX> w;
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = 1.0 / COMPLEX((i + j).real(), 0.0);
@@ -97,7 +100,7 @@ void Cerrqrtp(const char *path, INTEGER const nunit) {
     //
     srnamt = "Ctpqrt";
     infot = 1;
-    COMPLEX b[nmax * nmax];
+    arr_2d<nmax, nmax, COMPLEX> b;
     INTEGER info = 0;
     Ctpqrt(-1, 1, 0, 1, a, 1, b, 1, t, 1, w, info);
     chkxer("Ctpqrt", infot, nout, lerr, ok);

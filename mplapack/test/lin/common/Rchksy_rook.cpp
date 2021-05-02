@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,16 +27,19 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const  /* nmax */, REAL *a, REAL *afac, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Rchksy_rook);
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
+    char &srnamt = cmn.srnamt;
     //
     if (is_called_first_time) {
         {
@@ -52,31 +55,31 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
     const REAL sevten = 17.0e+0;
     const REAL eight = 8.0e+0;
     REAL alpha = 0.0;
-    char[3] path;
-    char[3] matpath;
+    char path[3];
+    char matpath[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    INTEGER iseed[4];
+    arr_1d<4, int> iseed;
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char[1] xtype;
+    char xtype[1];
     const INTEGER ntypes = 10;
     INTEGER nimat = 0;
     INTEGER izero = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char[1] uplo;
-    char[1] type;
+    char uplo[1];
+    char type[1];
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
+    char dist[1];
     INTEGER info = 0;
     INTEGER ioff = 0;
     const REAL zero = 0.0;
@@ -89,13 +92,13 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
     INTEGER k = 0;
     bool trfcon = false;
     const INTEGER ntests = 7;
-    REAL result[ntests];
+    arr_1d<ntests, REAL> result;
     INTEGER nt = 0;
     REAL rcondc = 0.0;
     REAL dtemp = 0.0;
     REAL identifier_const = 0.0;
-    REAL block[2 * 2];
-    REAL ddummy[1];
+    arr_2d<2, 2, REAL> block;
+    arr_1d<1, REAL> ddummy;
     REAL sing_max = 0.0;
     REAL sing_min = 0.0;
     INTEGER irhs = 0;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 REAL Rqrt11(INTEGER const m, INTEGER const k, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork) {
     REAL return_value = 0.0;
@@ -94,7 +97,7 @@ REAL Rqrt11(INTEGER const m, INTEGER const k, REAL *a, INTEGER const lda, REAL *
         work[((j - 1) * m + j) - 1] = work[((j - 1) * m + j) - 1] - one;
     }
     //
-    REAL rdummy[1];
+    arr_1d<1, REAL> rdummy;
     return_value = Rlange("One-norm", m, m, work, m, rdummy) / (m.real() * Rlamch("Epsilon"));
     //
     return return_value;

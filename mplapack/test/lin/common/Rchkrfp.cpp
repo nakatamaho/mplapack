@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void program_Rchkrfp(INTEGER argc, char const *argv[]) {
     common cmn(argc, argv);
@@ -95,7 +98,7 @@ void program_Rchkrfp(INTEGER argc, char const *argv[]) {
         nn = 0;
         fatal = true;
     }
-    INTEGER nval[maxin];
+    arr_1d<maxin, int> nval;
     INTEGER i = 0;
     {
         read_loop rloop(cmn, nin, star);
@@ -136,7 +139,7 @@ void program_Rchkrfp(INTEGER argc, char const *argv[]) {
         nns = 0;
         fatal = true;
     }
-    INTEGER nsval[maxin];
+    arr_1d<maxin, int> nsval;
     {
         read_loop rloop(cmn, nin, star);
         for (i = 1; i <= nns; i = i + 1) {
@@ -177,7 +180,7 @@ void program_Rchkrfp(INTEGER argc, char const *argv[]) {
         nnt = 0;
         fatal = true;
     }
-    INTEGER ntval[ntypes];
+    arr_1d<ntypes, int> ntval;
     {
         read_loop rloop(cmn, nin, star);
         for (i = 1; i <= nnt; i = i + 1) {
@@ -240,11 +243,11 @@ void program_Rchkrfp(INTEGER argc, char const *argv[]) {
     //     Test the routines: Rpftrf, Rpftri, Rpftrs (as in Rdrvpo).
     //     This also tests the routines: Rtfsm, Rtftri, Rtfttr, Rtrttf.
     //
-    REAL d_work_dlatms[3 * nmax];
-    REAL d_work_Rpot01[nmax];
-    REAL d_work_Rlansy[nmax];
-    REAL d_work_Rpot02[nmax];
-    REAL d_work_Rpot03[nmax];
+    arr_1d<3 * nmax, REAL> d_work_dlatms;
+    arr_1d<nmax, REAL> d_work_Rpot01;
+    arr_1d<nmax, REAL> d_work_Rlansy;
+    arr_1d<nmax, REAL> d_work_Rpot02;
+    arr_1d<nmax, REAL> d_work_Rpot03;
     Rdrvrfp(nout, nn, nval, nns, nsval, nnt, ntval, thresh, worka, workasav, workafac, workainv, workb, workbsav, workxact, workx, workarf, workarfinv, d_work_dlatms, d_work_Rpot01, d_temp_Rpot02, d_temp_Rpot03, d_work_Rlansy, d_work_Rpot02, d_work_Rpot03);
     //
     //     Test the routine: Rlansf

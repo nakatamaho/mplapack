@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 REAL Rqrt12(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *s, REAL *work, INTEGER const lwork) {
     REAL return_value = 0.0;
@@ -100,7 +103,7 @@ REAL Rqrt12(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     //
     //     Scale work if max entry outside range [SMLNUM,BIGNUM]
     //
-    REAL dummy[1];
+    arr_1d<1, REAL> dummy;
     REAL anrm = Rlange("M", m, n, work, m, dummy);
     INTEGER iscl = 0;
     INTEGER info = 0;

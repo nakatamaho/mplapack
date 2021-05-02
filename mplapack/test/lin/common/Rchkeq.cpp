@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rchkeq(REAL const thresh, INTEGER const nout) {
     common_write write(cmn);
@@ -59,22 +62,22 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
     //     ..
     //     .. Executable Statements ..
     //
-    char[3] path = "Double precision";
+    char path[3] = "Double precision";
     path[(2 - 1) + (3 - 1) * ldpath] = "EQ";
     //
     REAL eps = Rlamch("P");
     INTEGER i = 0;
     const REAL zero = 0.0;
-    REAL reslts[5];
+    arr_1d<5, REAL> reslts;
     for (i = 1; i <= 5; i = i + 1) {
         reslts[i - 1] = zero;
     }
     const INTEGER nsz = 5;
     const INTEGER npow = 2 * nsz + 1;
     const REAL ten = 1.0e1;
-    REAL pow[npow];
+    arr_1d<npow, REAL> pow;
     const REAL one = 1.0;
-    REAL rpow[npow];
+    arr_1d<npow, REAL> rpow;
     for (i = 1; i <= npow; i = i + 1) {
         pow[i - 1] = pow(ten, [(i - 1) - 1]);
         rpow[i - 1] = one / pow[i - 1];
@@ -85,9 +88,9 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
     INTEGER n = 0;
     INTEGER m = 0;
     INTEGER j = 0;
-    REAL a[nsz * nsz];
-    REAL r[nsz];
-    REAL c[nsz];
+    arr_2d<nsz, nsz, REAL> a;
+    arr_1d<nsz, REAL> r;
+    arr_1d<nsz, REAL> c;
     REAL rcond = 0.0;
     REAL ccond = 0.0;
     REAL norm = 0.0;
@@ -153,7 +156,7 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
     INTEGER kl = 0;
     INTEGER ku = 0;
     const INTEGER nszb = 3 * nsz - 2;
-    REAL ab[nszb * nsz];
+    arr_2d<nszb, nsz, REAL> ab;
     REAL rcmin = 0.0;
     REAL rcmax = 0.0;
     REAL ratio = 0.0;
@@ -271,7 +274,7 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
     //     Test Rppequ
     //
     const INTEGER nszp = (nsz * (nsz + 1)) / 2;
-    REAL ap[nszp];
+    arr_1d<nszp, REAL> ap;
     for (n = 0; n <= nsz; n = n + 1) {
         //
         //        Upper triangular packed storage

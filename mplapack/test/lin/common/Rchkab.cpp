@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,18 +27,21 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void program_Rchkab(INTEGER argc, char const *argv[]) {
     common cmn(argc, argv);
     FEM_CMN_SVE(program_Rchkab);
     common_read read(cmn);
     common_write write(cmn);
-    char[10] &intstr = sve.intstr;
+    char &intstr = sve.intstr;
     if (is_called_first_time) {
         intstr = "0123456789";
     }
@@ -53,30 +56,30 @@ void program_Rchkab(INTEGER argc, char const *argv[]) {
     const INTEGER nout = 6;
     INTEGER nm = 0;
     const INTEGER maxin = 12;
-    INTEGER mval[maxin];
+    arr_1d<maxin, int> mval;
     INTEGER i = 0;
     INTEGER nns = 0;
-    INTEGER nsval[maxin];
+    arr_1d<maxin, int> nsval;
     const INTEGER maxrhs = 16;
     REAL thresh = 0.0;
     bool tstdrv = false;
     bool tsterr = false;
     float seps = float0;
     REAL eps = 0.0;
-    char[72] aline;
-    char[3] path;
+    char aline[72];
+    char path[3];
     const INTEGER matmax = 30;
     INTEGER nmats = 0;
-    char[1] c1;
+    char c1[1];
     INTEGER k = 0;
     INTEGER ic = 0;
-    char[2] c2;
+    char c2[2];
     INTEGER nrhs = 0;
     INTEGER ntypes = 0;
-    bool dotype[matmax];
+    arr_1d<matmax, bool> dotype;
     const INTEGER ldamax = nmax;
-    REAL rwork[nmax];
-    INTEGER iwork[nmax];
+    arr_1d<nmax, REAL> rwork;
+    arr_1d<nmax, int> iwork;
     REAL s2 = 0.0;
     static const char *format_9989 = "(/,1x,a6,' driver routines were not tested')";
     static const char *format_9991 = "(' Relative machine ',a,' is taken to be',d16.6)";

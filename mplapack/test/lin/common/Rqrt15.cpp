@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *s, INTEGER &rank, REAL &norma, REAL &normb, INTEGER *iseed, REAL *work, INTEGER const lwork) {
     INTEGER mn = 0;
@@ -45,7 +48,7 @@ void Rqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER c
     const REAL svmin = 0.1e0;
     const REAL two = 2.0;
     INTEGER info = 0;
-    REAL dummy[1];
+    arr_1d<1, REAL> dummy;
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

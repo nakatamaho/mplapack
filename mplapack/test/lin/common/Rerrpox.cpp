@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rerrpo(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
+    char &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -73,22 +76,22 @@ void Rerrpo(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     //
     //     Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 4;
     INTEGER i = 0;
-    REAL a[nmax * nmax];
-    REAL af[nmax * nmax];
-    REAL b[nmax];
-    REAL r1[nmax];
-    REAL r2[nmax];
-    REAL w[3 * nmax];
-    REAL x[nmax];
-    REAL s[nmax];
-    INTEGER iw[nmax];
+    arr_2d<nmax, nmax, REAL> a;
+    arr_2d<nmax, nmax, REAL> af;
+    arr_1d<nmax, REAL> b;
+    arr_1d<nmax, REAL> r1;
+    arr_1d<nmax, REAL> r2;
+    arr_1d<3 * nmax, REAL> w;
+    arr_1d<nmax, REAL> x;
+    arr_1d<nmax, REAL> s;
+    arr_1d<nmax, int> iw;
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
@@ -107,12 +110,12 @@ void Rerrpo(const char *path, INTEGER const nunit) {
     INTEGER info = 0;
     INTEGER n_err_bnds = 0;
     INTEGER nparams = 0;
-    char[1] eq;
+    char eq[1];
     REAL rcond = 0.0;
     REAL berr = 0.0;
-    REAL err_bnds_n[nmax * 3];
-    REAL err_bnds_c[nmax * 3];
-    REAL params[1];
+    arr_2d<nmax, 3, REAL> err_bnds_n;
+    arr_2d<nmax, 3, REAL> err_bnds_c;
+    arr_1d<1, REAL> params;
     REAL anrm = 0.0;
     if (Mlsamen(2, c2, "PO")) {
         //

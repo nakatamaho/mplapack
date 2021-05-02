@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,16 +27,19 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rqrt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c, REAL *cc, REAL *q, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     FEM_CMN_SVE(Rqrt03);
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
+    char &srnamt = cmn.srnamt;
     //
     // SAVE
     //
@@ -91,14 +94,14 @@ void Rqrt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
     Rorgqr(m, m, k, q, lda, tau, work, lwork, info);
     //
     INTEGER iside = 0;
-    char[1] side;
+    char side[1];
     INTEGER mc = 0;
     INTEGER nc = 0;
     INTEGER j = 0;
     REAL cnorm = 0.0;
     const REAL one = 1.0;
     INTEGER itrans = 0;
-    char[1] trans;
+    char trans[1];
     REAL resid = 0.0;
     for (iside = 1; iside <= 2; iside = iside + 1) {
         if (iside == 1) {

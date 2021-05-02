@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,16 +27,19 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, INTEGER *nsval, REAL const thresh, INTEGER const  /* nmax */, REAL *a, REAL *afac, REAL *b, REAL *x, REAL *work, REAL *rwork, arr_cref<float> swork, INTEGER const nout) {
     FEM_CMN_SVE(Rdrvac);
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
+    char &srnamt = cmn.srnamt;
     //
     if (is_called_first_time) {
         {
@@ -49,12 +52,12 @@ void Rdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
         }
     }
     INTEGER kase = 0;
-    char[3] path;
+    char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    INTEGER iseed[4];
+    arr_1d<4, int> iseed;
     INTEGER im = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
@@ -63,24 +66,24 @@ void Rdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char[1] uplo;
-    char[1] type;
+    char uplo[1];
+    char type[1];
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
+    char dist[1];
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
     const REAL zero = 0.0;
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
-    char[1] xtype;
+    char xtype[1];
     INTEGER iter = 0;
     const INTEGER ntests = 1;
-    REAL result[ntests];
+    arr_1d<ntests, REAL> result;
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

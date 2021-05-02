@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,17 +27,20 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, COMPLEX *c1, COMPLEX *c2, INTEGER const ldc, COMPLEX *crf, COMPLEX *a, INTEGER const lda, REAL *d_work_Clange) {
     FEM_CMN_SVE(Cdrvrf4);
     common_write write(cmn);
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
+    char &srnamt = cmn.srnamt;
     //
     // SAVE
     //
@@ -97,7 +100,7 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     INTEGER nfail = 0;
     INTEGER info = 0;
     INTEGER i = 0;
-    INTEGER iseed[4];
+    arr_1d<4, int> iseed;
     for (i = 1; i <= 4; i = i + 1) {
         iseed[i - 1] = iseedy[i - 1];
     }
@@ -108,11 +111,11 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     INTEGER iik = 0;
     INTEGER k = 0;
     INTEGER iform = 0;
-    char[1] cform;
+    char cform[1];
     INTEGER iuplo = 0;
-    char[1] uplo;
+    char uplo[1];
     INTEGER itrans = 0;
-    char[1] trans;
+    char trans[1];
     INTEGER ialpha = 0;
     const REAL zero = 0.0;
     REAL alpha = 0.0;
@@ -122,7 +125,7 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     REAL norma = 0.0;
     REAL normc = 0.0;
     const INTEGER ntests = 1;
-    REAL result[ntests];
+    arr_1d<ntests, REAL> result;
     for (iin = 1; iin <= nn; iin = iin + 1) {
         //
         n = nval[iin - 1];

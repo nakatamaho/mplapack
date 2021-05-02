@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, INTEGER *iseed, INTEGER &info) {
     //
@@ -61,8 +64,8 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
     //     Test the input parameters.
     //
     info = 0;
-    char[1] c1 = path[(1 - 1)];
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c1[1] = path[(1 - 1)];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     bool tran = Mlsame(trans, "T") || Mlsame(trans, "C");
     bool notran = !tran;
     bool gen = Mlsame(path[(2 - 1) + (2 - 1) * ldpath], "G");
@@ -123,7 +126,7 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
     //
     const REAL one = 1.0;
     const REAL zero = 0.0;
-    char[1] diag;
+    char diag[1];
     if (Mlsamen(2, c2, "GE") || Mlsamen(2, c2, "QR") || Mlsamen(2, c2, "LQ") || Mlsamen(2, c2, "QL") || Mlsamen(2, c2, "RQ")) {
         //
         //        General matrix

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rerrgt(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,7 @@ void Rerrgt(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
+    char &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -71,34 +74,34 @@ void Rerrgt(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     const INTEGER nmax = 2;
-    REAL d[nmax];
+    arr_1d<nmax, REAL> d;
     d[1 - 1] = 1.0;
     d[2 - 1] = 2.0;
-    REAL df[nmax];
+    arr_1d<nmax, REAL> df;
     df[1 - 1] = 1.0;
     df[2 - 1] = 2.0;
-    REAL e[nmax];
+    arr_1d<nmax, REAL> e;
     e[1 - 1] = 3.e0;
     e[2 - 1] = 4.e0;
-    REAL ef[nmax];
+    arr_1d<nmax, REAL> ef;
     ef[1 - 1] = 3.e0;
     ef[2 - 1] = 4.e0;
     REAL anorm = 1.0;
     ok = true;
     //
-    REAL c[nmax];
-    REAL f[nmax];
-    INTEGER ip[nmax];
+    arr_1d<nmax, REAL> c;
+    arr_1d<nmax, REAL> f;
+    arr_1d<nmax, int> ip;
     INTEGER info = 0;
-    REAL x[nmax];
-    REAL cf[nmax];
-    REAL b[nmax];
-    REAL r1[nmax];
-    REAL r2[nmax];
-    REAL w[nmax];
-    INTEGER iw[nmax];
+    arr_1d<nmax, REAL> x;
+    arr_1d<nmax, REAL> cf;
+    arr_1d<nmax, REAL> b;
+    arr_1d<nmax, REAL> r1;
+    arr_1d<nmax, REAL> r2;
+    arr_1d<nmax, REAL> w;
+    arr_1d<nmax, int> iw;
     REAL rcond = 0.0;
     if (Mlsamen(2, c2, "GT")) {
         //

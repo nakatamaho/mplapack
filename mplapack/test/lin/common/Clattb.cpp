@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag, INTEGER *iseed, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, COMPLEX *b, COMPLEX *work, REAL *rwork, INTEGER &info) {
     //
@@ -58,7 +61,7 @@ void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //     ..
     //     .. Executable Statements ..
     //
-    char[3] path = "Zomplex precision";
+    char path[3] = "Zomplex precision";
     path[(2 - 1) + (3 - 1) * ldpath] = "TB";
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
@@ -82,15 +85,15 @@ void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //     Call Clatb4 to set parameters for CLATMS.
     //
     bool upper = Mlsame(uplo, "U");
-    char[1] type;
+    char type[1];
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
+    char dist[1];
     INTEGER ioff = 0;
-    char[1] packit;
+    char packit[1];
     if (upper) {
         Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
         ku = kd;

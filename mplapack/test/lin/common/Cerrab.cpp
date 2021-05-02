@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrab(INTEGER const nunit) {
     common_write write(cmn);
@@ -77,16 +80,16 @@ void Cerrab(INTEGER const nunit) {
     INTEGER j = 0;
     const INTEGER nmax = 4;
     INTEGER i = 0;
-    COMPLEX a[nmax * nmax];
-    COMPLEX af[nmax * nmax];
-    COMPLEX b[nmax];
-    COMPLEX r1[nmax];
-    COMPLEX r2[nmax];
-    COMPLEX w[2 * nmax];
-    COMPLEX x[nmax];
-    COMPLEX c[nmax];
-    COMPLEX r[nmax];
-    INTEGER ip[nmax];
+    arr_2d<nmax, nmax, COMPLEX> a;
+    arr_2d<nmax, nmax, COMPLEX> af;
+    arr_1d<nmax, COMPLEX> b;
+    arr_1d<nmax, COMPLEX> r1;
+    arr_1d<nmax, COMPLEX> r2;
+    arr_1d<2 * nmax, COMPLEX> w;
+    arr_1d<nmax, COMPLEX> x;
+    arr_1d<nmax, COMPLEX> c;
+    arr_1d<nmax, COMPLEX> r;
+    arr_1d<nmax, int> ip;
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
@@ -105,9 +108,9 @@ void Cerrab(INTEGER const nunit) {
     //
     cmn.srnamt = "Ccgesv";
     infot = 1;
-    COMPLEX work[1];
-    std::complex<float> swork[1];
-    REAL rwork[1];
+    arr_1d<1, COMPLEX> work;
+    arr_1d<1, std::complex<float>> swork;
+    arr_1d<1, REAL> rwork;
     INTEGER iter = 0;
     INTEGER info = 0;
     Ccgesv(-1, 0, a, 1, ip, b, 1, x, 1, work, swork, rwork, iter, info);

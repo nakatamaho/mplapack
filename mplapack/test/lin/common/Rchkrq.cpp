@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,27 +27,30 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rchkrq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *af, REAL *aq, REAL *ar, REAL *ac, REAL *b, REAL *x, REAL *xact, REAL *tau, REAL *work, REAL *rwork, INTEGER * /* iwork */, INTEGER const nout) {
     FEM_CMN_SVE(Rchkrq);
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
+    char &srnamt = cmn.srnamt;
     //
     if (is_called_first_time) {
         static const INTEGER values[] = {1988, 1989, 1990, 1991};
         data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
     }
-    char[3] path;
+    char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    INTEGER iseed[4];
+    arr_1d<4, int> iseed;
     INTEGER lda = 0;
     INTEGER lwork = 0;
     INTEGER im = 0;
@@ -57,15 +60,15 @@ void Rchkrq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER minmn = 0;
     INTEGER imat = 0;
     const INTEGER ntypes = 8;
-    char[1] type;
+    char type[1];
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
+    char dist[1];
     INTEGER info = 0;
-    INTEGER kval[4];
+    arr_1d<4, int> kval;
     INTEGER nk = 0;
     INTEGER ik = 0;
     INTEGER k = 0;
@@ -74,7 +77,7 @@ void Rchkrq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER nx = 0;
     const INTEGER ntests = 7;
     const REAL zero = 0.0;
-    REAL result[ntests];
+    arr_1d<ntests, REAL> result;
     INTEGER nt = 0;
     //
     //  -- LAPACK test routine --

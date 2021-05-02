@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,17 +27,20 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, REAL *a, INTEGER const lda, REAL *arf, REAL *b1, REAL *b2, REAL *d_work_Rlange, REAL *d_work_Rgeqrf, REAL *tau) {
     FEM_CMN_SVE(Rdrvrf3);
     common_write write(cmn);
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
+    char &srnamt = cmn.srnamt;
     //
     // SAVE
     //
@@ -105,7 +108,7 @@ void Rdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     INTEGER nfail = 0;
     INTEGER info = 0;
     INTEGER i = 0;
-    INTEGER iseed[4];
+    arr_1d<4, int> iseed;
     for (i = 1; i <= 4; i = i + 1) {
         iseed[i - 1] = iseedy[i - 1];
     }
@@ -116,15 +119,15 @@ void Rdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     INTEGER iin = 0;
     INTEGER n = 0;
     INTEGER iform = 0;
-    char[1] cform;
+    char cform[1];
     INTEGER iuplo = 0;
-    char[1] uplo;
+    char uplo[1];
     INTEGER iside = 0;
-    char[1] side;
+    char side[1];
     INTEGER itrans = 0;
-    char[1] trans;
+    char trans[1];
     INTEGER idiag = 0;
-    char[1] diag;
+    char diag[1];
     INTEGER ialpha = 0;
     const REAL zero = (0.0, 0.0);
     REAL alpha = 0.0;
@@ -132,7 +135,7 @@ void Rdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     INTEGER na = 0;
     INTEGER j = 0;
     const INTEGER ntests = 1;
-    REAL result[ntests];
+    arr_1d<ntests, REAL> result;
     for (iim = 1; iim <= nn; iim = iim + 1) {
         //
         m = nval[iim - 1];

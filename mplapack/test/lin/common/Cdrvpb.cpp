@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,16 +27,19 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const  /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *asav, COMPLEX *b, COMPLEX *bsav, COMPLEX *x, COMPLEX *xact, REAL *s, COMPLEX *work, REAL *rwork, INTEGER const nout) {
     FEM_CMN_SVE(Cdrvpb);
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
+    char &srnamt = cmn.srnamt;
     //
     if (is_called_first_time) {
         {
@@ -52,20 +55,20 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             data_of_type_str(FEM_VALUES_AND_SIZE), equeds;
         }
     }
-    char[3] path;
+    char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    INTEGER iseed[4];
+    arr_1d<4, int> iseed;
     const INTEGER nbw = 4;
-    INTEGER kdval[nbw];
+    arr_1d<nbw, int> kdval;
     INTEGER nb = 0;
     INTEGER nbmin = 0;
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char[1] xtype;
+    char xtype[1];
     INTEGER nkd = 0;
     const INTEGER ntypes = 8;
     INTEGER nimat = 0;
@@ -74,17 +77,17 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER ldab = 0;
     INTEGER iuplo = 0;
     INTEGER koff = 0;
-    char[1] uplo;
-    char[1] packit;
+    char uplo[1];
+    char packit[1];
     INTEGER imat = 0;
     bool zerot = false;
-    char[1] type;
+    char type[1];
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
+    char dist[1];
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER iw = 0;
@@ -93,10 +96,10 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER i2 = 0;
     const REAL zero = 0.0;
     INTEGER iequed = 0;
-    char[1] equed;
+    char equed[1];
     INTEGER nfact = 0;
     INTEGER ifact = 0;
-    char[1] fact;
+    char fact[1];
     bool prefac = false;
     bool nofact = false;
     bool equil = false;
@@ -107,7 +110,7 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     const REAL one = 1.0;
     REAL ainvnm = 0.0;
     const INTEGER ntests = 6;
-    REAL result[ntests];
+    arr_1d<ntests, REAL> result;
     INTEGER nt = 0;
     INTEGER k = 0;
     REAL rcond = 0.0;

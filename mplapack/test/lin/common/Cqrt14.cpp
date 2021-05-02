@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 REAL Cqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *work, INTEGER const lwork) {
     REAL return_value = 0.0;
@@ -91,7 +94,7 @@ REAL Cqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
     //     Copy and scale A
     //
     Clacpy("All", m, n, a, lda, work, ldwork);
-    REAL rwork[1];
+    arr_1d<1, REAL> rwork;
     REAL anrm = Clange("M", m, n, work, ldwork, rwork);
     const REAL one = 1.0;
     INTEGER info = 0;

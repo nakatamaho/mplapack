@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,16 +27,19 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, COMPLEX *a, COMPLEX *af, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Cchkgt);
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
+    char &srnamt = cmn.srnamt;
     //
     if (is_called_first_time) {
         {
@@ -48,12 +51,12 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             data_of_type_str(FEM_VALUES_AND_SIZE), transs;
         }
     }
-    char[3] path;
+    char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    INTEGER iseed[4];
+    arr_1d<4, int> iseed;
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER m = 0;
@@ -61,26 +64,26 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     const INTEGER ntypes = 12;
     INTEGER nimat = 0;
     INTEGER imat = 0;
-    char[1] type;
+    char type[1];
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cond = 0.0;
-    char[1] dist;
+    char dist[1];
     bool zerot = false;
     INTEGER koff = 0;
     INTEGER info = 0;
     INTEGER izero = 0;
     const REAL one = 1.0;
-    COMPLEX z[3];
+    arr_1d<3, COMPLEX> z;
     const REAL zero = 0.0;
     bool trfcon = false;
     const INTEGER ntests = 7;
-    REAL result[ntests];
+    arr_1d<ntests, REAL> result;
     INTEGER itran = 0;
-    char[1] trans;
-    char[1] norm;
+    char trans[1];
+    char norm[1];
     REAL ainvnm = 0.0;
     INTEGER j = 0;
     REAL rcondc = 0.0;

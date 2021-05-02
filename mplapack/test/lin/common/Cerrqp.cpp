@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrqp(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -70,10 +73,10 @@ void Cerrqp(const char *path, INTEGER const nunit) {
     //     .. Executable Statements ..
     //
     nout = nunit;
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     const INTEGER nmax = 3;
     INTEGER lw = nmax + 1;
-    COMPLEX a[nmax * nmax];
+    arr_2d<nmax, nmax, COMPLEX> a;
     a[(1 - 1)] = COMPLEX(1.0, -1.0);
     a[(2 - 1) * lda] = COMPLEX(2.0e+0, -2.0e+0);
     a[(2 - 1) + (2 - 1) * lda] = COMPLEX(3.0e+0, -3.0e+0);
@@ -83,10 +86,10 @@ void Cerrqp(const char *path, INTEGER const nunit) {
     //
     //     Test error exits for QR factorization with pivoting
     //
-    INTEGER ip[nmax];
-    COMPLEX tau[nmax];
-    COMPLEX w[2 * nmax + 3 * nmax];
-    REAL rw[2 * nmax];
+    arr_1d<nmax, int> ip;
+    arr_1d<nmax, COMPLEX> tau;
+    arr_1d<2 * nmax + 3 * nmax, COMPLEX> w;
+    arr_1d<2 * nmax, REAL> rw;
     INTEGER info = 0;
     if (Mlsamen(2, c2, "QP")) {
         //

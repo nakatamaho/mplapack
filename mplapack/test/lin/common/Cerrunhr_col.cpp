@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrunhr_col(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -75,9 +78,9 @@ void Cerrunhr_col(const char *path, INTEGER const nunit) {
     INTEGER j = 0;
     const INTEGER nmax = 2;
     INTEGER i = 0;
-    COMPLEX a[nmax * nmax];
-    COMPLEX t[nmax * nmax];
-    COMPLEX d[nmax];
+    arr_2d<nmax, nmax, COMPLEX> a;
+    arr_2d<nmax, nmax, COMPLEX> t;
+    arr_1d<nmax, COMPLEX> d;
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = COMPLEX(1.e+0 / (i + j).real());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,16 +27,19 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, COMPLEX *a, REAL *d, COMPLEX *e, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
     FEM_CMN_SVE(Cchkpt);
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
+    char &srnamt = cmn.srnamt;
     //
     if (is_called_first_time) {
         {
@@ -48,43 +51,43 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
         }
     }
-    char[3] path;
+    char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    INTEGER iseed[4];
+    arr_1d<4, int> iseed;
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
     const INTEGER ntypes = 12;
     INTEGER nimat = 0;
     INTEGER imat = 0;
-    char[1] type;
+    char type[1];
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cond = 0.0;
-    char[1] dist;
+    char dist[1];
     bool zerot = false;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ia = 0;
     INTEGER ix = 0;
     REAL dmax = 0.0;
-    COMPLEX z[3];
+    arr_1d<3, COMPLEX> z;
     const REAL zero = 0.0;
     REAL rcondc = 0.0;
     const INTEGER ntests = 7;
-    REAL result[ntests];
+    arr_1d<ntests, REAL> result;
     REAL ainvnm = 0.0;
     INTEGER j = 0;
     const REAL one = 1.0;
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     INTEGER iuplo = 0;
-    char[1] uplo;
+    char uplo[1];
     INTEGER k = 0;
     REAL rcond = 0.0;
     static const char *format_9999 = "(' N =',i5,', type ',i2,', test ',i2,', ratio = ',g12.5)";

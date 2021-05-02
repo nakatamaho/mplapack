@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,18 +27,21 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void program_Rchkaa(INTEGER argc, char const *argv[]) {
     common cmn(argc, argv);
     FEM_CMN_SVE(program_Rchkaa);
     common_read read(cmn);
     common_write write(cmn);
-    char[10] &intstr = sve.intstr;
+    char &intstr = sve.intstr;
     REAL &threq = sve.threq;
     if (is_called_first_time) {
         threq = 2.0;
@@ -55,43 +58,43 @@ void program_Rchkaa(INTEGER argc, char const *argv[]) {
     const INTEGER nout = 6;
     INTEGER nm = 0;
     const INTEGER maxin = 12;
-    INTEGER mval[maxin];
+    arr_1d<maxin, int> mval;
     INTEGER i = 0;
     INTEGER nn = 0;
-    INTEGER nval[maxin];
+    arr_1d<maxin, int> nval;
     INTEGER nns = 0;
-    INTEGER nsval[maxin];
+    arr_1d<maxin, int> nsval;
     const INTEGER maxrhs = 16;
     INTEGER nnb = 0;
-    INTEGER nbval[maxin];
+    arr_1d<maxin, int> nbval;
     INTEGER nnb2 = 0;
     INTEGER nb = 0;
     INTEGER j = 0;
-    INTEGER nbval2[maxin];
-    INTEGER nxval[maxin];
+    arr_1d<maxin, int> nbval2;
+    arr_1d<maxin, int> nxval;
     INTEGER nrank = 0;
-    INTEGER rankval[maxin];
+    arr_1d<maxin, int> rankval;
     REAL thresh = 0.0;
     bool tstchk = false;
     bool tstdrv = false;
     bool tsterr = false;
     REAL eps = 0.0;
-    char[72] aline;
-    char[3] path;
+    char aline[72];
+    char path[3];
     const INTEGER matmax = 30;
     INTEGER nmats = 0;
-    char[1] c1;
+    char c1[1];
     INTEGER k = 0;
     INTEGER ic = 0;
-    char[2] c2;
+    char c2[2];
     INTEGER nrhs = 0;
     INTEGER ntypes = 0;
-    bool dotype[matmax];
+    arr_1d<matmax, bool> dotype;
     const INTEGER kdmax = nmax + (nmax + 1) / 4;
     INTEGER la = 0;
     INTEGER lafac = 0;
-    INTEGER piv[nmax];
-    REAL e[nmax];
+    arr_1d<nmax, int> piv;
+    arr_1d<nmax, REAL> e;
     REAL s2 = 0.0;
     static const char *format_9988 = "(/,1x,a3,' driver routines were not tested')";
     static const char *format_9989 = "(/,1x,a3,' routines were not tested')";

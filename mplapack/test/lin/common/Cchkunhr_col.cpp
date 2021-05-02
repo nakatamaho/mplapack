@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cchkunhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nout) {
     common_write write(cmn);
@@ -65,7 +68,7 @@ void Cchkunhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
     //
     //     Initialize constants
     //
-    char[1] path = "Z";
+    char path[1] = "Z";
     path[(2 - 1) + (3 - 1) * ldpath] = "HH";
     INTEGER nrun = 0;
     INTEGER nfail = 0;
@@ -91,7 +94,7 @@ void Cchkunhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
     INTEGER inb2 = 0;
     INTEGER nb2 = 0;
     const INTEGER ntests = 6;
-    REAL result[ntests];
+    arr_1d<ntests, REAL> result;
     INTEGER t = 0;
     for (i = 1; i <= nm; i = i + 1) {
         m = mval[i - 1];

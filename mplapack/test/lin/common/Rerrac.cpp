@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rerrac(INTEGER const nunit) {
     common_write write(cmn);
@@ -75,15 +78,15 @@ void Rerrac(INTEGER const nunit) {
     INTEGER j = 0;
     const INTEGER nmax = 4;
     INTEGER i = 0;
-    REAL a[nmax * nmax];
-    REAL af[nmax * nmax];
-    REAL b[nmax];
-    REAL r1[nmax];
-    REAL r2[nmax];
-    REAL w[2 * nmax];
-    REAL x[nmax];
-    REAL c[nmax];
-    REAL r[nmax];
+    arr_2d<nmax, nmax, REAL> a;
+    arr_2d<nmax, nmax, REAL> af;
+    arr_1d<nmax, REAL> b;
+    arr_1d<nmax, REAL> r1;
+    arr_1d<nmax, REAL> r2;
+    arr_1d<2 * nmax, REAL> w;
+    arr_1d<nmax, REAL> x;
+    arr_1d<nmax, REAL> c;
+    arr_1d<nmax, REAL> r;
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
@@ -101,8 +104,8 @@ void Rerrac(INTEGER const nunit) {
     //
     cmn.srnamt = "Rsposv";
     infot = 1;
-    REAL work[nmax * nmax];
-    float swork[nmax * nmax];
+    arr_1d<nmax * nmax, REAL> work;
+    arr_1d<nmax * nmax, float> swork;
     INTEGER iter = 0;
     INTEGER info = 0;
     Rsposv("/", 0, 0, a, 1, b, 1, x, 1, work, swork, iter, info);
