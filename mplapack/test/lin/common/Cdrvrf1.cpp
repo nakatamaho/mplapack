@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,19 +27,16 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
-
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-
-#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack.h>
 
 void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, COMPLEX *a, INTEGER const lda, COMPLEX *arf, REAL *work) {
     FEM_CMN_SVE(Cdrvrf1);
     common_write write(cmn);
-    char &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     if (is_called_first_time) {
         {
@@ -64,7 +61,7 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     INTEGER nerrs = 0;
     INTEGER info = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed;
+    INTEGER iseed[4];
     REAL eps = 0.0;
     REAL small = 0.0;
     const REAL one = 1.0;
@@ -74,15 +71,15 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     INTEGER iit = 0;
     INTEGER j = 0;
     INTEGER iuplo = 0;
-    char uplo[1];
+    char[1] uplo;
     INTEGER iform = 0;
-    char cform[1];
+    char[1] cform;
     INTEGER inorm = 0;
-    char norm[1];
+    char[1] norm;
     REAL normarf = 0.0;
     REAL norma = 0.0;
     const INTEGER ntests = 1;
-    arr_1d<ntests, REAL> result;
+    REAL result[ntests];
     static const char *format_9999 = "(1x,' *** Error(s) or Failure(s) while testing Clanhf         ***')";
     //
     //  -- LAPACK test routine --

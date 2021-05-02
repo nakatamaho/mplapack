@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,19 +27,16 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
-
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-
-#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack.h>
 
 void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, REAL *a, INTEGER const la, REAL *afac, INTEGER const lafac, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Rchkgb);
     common_write write(cmn);
-    char &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     const INTEGER ntran = 3;
     if (is_called_first_time) {
@@ -52,20 +49,20 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
             data_of_type_str(FEM_VALUES_AND_SIZE), transs;
         }
     }
-    char path[3];
+    char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed;
+    INTEGER iseed[4];
     const INTEGER nbw = 4;
-    arr_1d<nbw, int> klval;
-    arr_1d<nbw, int> kuval;
+    INTEGER klval[nbw];
+    INTEGER kuval[nbw];
     INTEGER im = 0;
     INTEGER m = 0;
     INTEGER in = 0;
     INTEGER n = 0;
-    char xtype[1];
+    char[1] xtype;
     INTEGER nkl = 0;
     INTEGER nku = 0;
     const INTEGER ntypes = 8;
@@ -78,11 +75,11 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER ldafac = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char type[1];
+    char[1] type;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist[1];
+    char[1] dist;
     INTEGER koff = 0;
     const REAL zero = 0.0;
     INTEGER info = 0;
@@ -95,7 +92,7 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER nb = 0;
     bool trfcon = false;
     const INTEGER ntests = 7;
-    arr_1d<ntests, REAL> result;
+    REAL result[ntests];
     REAL anormo = 0.0;
     REAL anormi = 0.0;
     INTEGER ldb = 0;
@@ -106,9 +103,9 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     INTEGER itran = 0;
-    char trans[1];
+    char[1] trans;
     REAL rcondc = 0.0;
-    char norm[1];
+    char[1] norm;
     INTEGER k = 0;
     REAL rcond = 0.0;
     //

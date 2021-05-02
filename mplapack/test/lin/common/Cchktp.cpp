@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,19 +27,16 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
-
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-
-#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack.h>
 
 void Cchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const  /* nmax */, COMPLEX *ap, COMPLEX *ainvp, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
     FEM_CMN_SVE(Cchktp);
     common_write write(cmn);
-    char &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     const INTEGER ntran = 3;
     if (is_called_first_time) {
@@ -56,22 +53,22 @@ void Cchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             data_of_type_str(FEM_VALUES_AND_SIZE), transs;
         }
     }
-    char path[3];
+    char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed;
+    INTEGER iseed[4];
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
     INTEGER lap = 0;
-    char xtype[1];
+    char[1] xtype;
     INTEGER imat = 0;
     const INTEGER ntype1 = 10;
     INTEGER iuplo = 0;
-    char uplo[1];
-    char diag[1];
+    char[1] uplo;
+    char[1] diag;
     INTEGER info = 0;
     INTEGER idiag = 0;
     REAL anorm = 0.0;
@@ -81,12 +78,12 @@ void Cchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     REAL rcondi = 0.0;
     REAL rcondo = 0.0;
     const INTEGER ntests = 9;
-    arr_1d<ntests, REAL> result;
+    REAL result[ntests];
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     INTEGER itran = 0;
-    char trans[1];
-    char norm[1];
+    char[1] trans;
+    char[1] norm;
     REAL rcondc = 0.0;
     INTEGER k = 0;
     REAL rcond = 0.0;

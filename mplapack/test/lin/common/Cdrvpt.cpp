@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,60 +27,57 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
-
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-
-#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack.h>
 
 void Cdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, COMPLEX *a, REAL *d, COMPLEX *e, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
     FEM_CMN_SVE(Cdrvpt);
     common_write write(cmn);
-    char &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     if (is_called_first_time) {
         static const INTEGER values[] = {0, 0, 0, 1};
         data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
     }
-    char path[3];
+    char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed;
+    INTEGER iseed[4];
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
     const INTEGER ntypes = 12;
     INTEGER nimat = 0;
     INTEGER imat = 0;
-    char type[1];
+    char[1] type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cond = 0.0;
-    char dist[1];
+    char[1] dist;
     bool zerot = false;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ia = 0;
     INTEGER ix = 0;
     REAL dmax = 0.0;
-    arr_1d<3, REAL> z;
+    REAL z[3];
     const REAL zero = 0.0;
     INTEGER j = 0;
     const REAL one = 1.0;
     INTEGER ifact = 0;
-    char fact[1];
+    char[1] fact;
     REAL rcondc = 0.0;
     REAL ainvnm = 0.0;
     INTEGER nt = 0;
     const INTEGER ntests = 6;
-    arr_1d<ntests, REAL> result;
+    REAL result[ntests];
     INTEGER k = 0;
     REAL rcond = 0.0;
     INTEGER k1 = 0;

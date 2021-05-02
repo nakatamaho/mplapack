@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,14 +27,11 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
-
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-
-#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack.h>
 
 void Cerrql(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -44,7 +41,7 @@ void Cerrql(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -80,11 +77,11 @@ void Cerrql(const char *path, INTEGER const nunit) {
     INTEGER j = 0;
     const INTEGER nmax = 2;
     INTEGER i = 0;
-    arr_2d<nmax, nmax, COMPLEX> a;
-    arr_2d<nmax, nmax, COMPLEX> af;
-    arr_1d<nmax, COMPLEX> b;
-    arr_1d<nmax, COMPLEX> w;
-    arr_1d<nmax, COMPLEX> x;
+    COMPLEX a[nmax * nmax];
+    COMPLEX af[nmax * nmax];
+    COMPLEX b[nmax];
+    COMPLEX w[nmax];
+    COMPLEX x[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = COMPLEX(1.0 / (i + j).real(), -1.0 / (i + j).real());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,19 +27,16 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
-
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-
-#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack.h>
 
 void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, COMPLEX *a, INTEGER const la, COMPLEX *afb, INTEGER const lafb, COMPLEX *asav, COMPLEX *b, COMPLEX *bsav, COMPLEX *x, COMPLEX *xact, REAL *s, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Cdrvgb);
     common_write write(cmn);
-    char &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     const INTEGER ntran = 3;
     if (is_called_first_time) {
@@ -60,18 +57,18 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             data_of_type_str(FEM_VALUES_AND_SIZE), equeds;
         }
     }
-    char path[3];
+    char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed;
+    INTEGER iseed[4];
     INTEGER nb = 0;
     INTEGER nbmin = 0;
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER ldb = 0;
-    char xtype[1];
+    char[1] xtype;
     INTEGER nkl = 0;
     INTEGER nku = 0;
     const INTEGER ntypes = 8;
@@ -84,11 +81,11 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER ldafb = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char type[1];
+    char[1] type;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist[1];
+    char[1] dist;
     const REAL one = 1.0;
     REAL rcondc = 0.0;
     INTEGER info = 0;
@@ -99,10 +96,10 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     const REAL zero = 0.0;
     INTEGER j = 0;
     INTEGER iequed = 0;
-    char equed[1];
+    char[1] equed;
     INTEGER nfact = 0;
     INTEGER ifact = 0;
-    char fact[1];
+    char[1] fact;
     bool prefac = false;
     bool nofact = false;
     bool equil = false;
@@ -117,14 +114,14 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL anormi = 0.0;
     REAL ainvnm = 0.0;
     INTEGER itran = 0;
-    char trans[1];
+    char[1] trans;
     const INTEGER ntests = 7;
-    arr_1d<ntests, REAL> result;
+    REAL result[ntests];
     INTEGER nt = 0;
     INTEGER k = 0;
     REAL rcond = 0.0;
     REAL anrmpv = 0.0;
-    arr_1d<1, REAL> rdum;
+    REAL rdum[1];
     REAL rpvgrw = 0.0;
     INTEGER k1 = 0;
     bool trfcon = false;

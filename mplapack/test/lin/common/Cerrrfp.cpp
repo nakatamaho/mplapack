@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,14 +27,11 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
-
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-
-#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack.h>
 
 void Cerrrfp(INTEGER const nunit) {
     common_write write(cmn);
@@ -44,7 +41,7 @@ void Cerrrfp(INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -73,9 +70,9 @@ void Cerrrfp(INTEGER const nunit) {
     //
     nout = nunit;
     ok = true;
-    arr_2d<1, 1, COMPLEX> a;
+    COMPLEX a[1 * 1];
     a[(1 - 1)] = COMPLEX(1.0, 1.0);
-    arr_2d<1, 1, COMPLEX> b;
+    COMPLEX b[1 * 1];
     b[(1 - 1)] = COMPLEX(1.0, 1.0);
     REAL alpha = 1.0;
     COMPLEX calpha = COMPLEX(1.0, 1.0);

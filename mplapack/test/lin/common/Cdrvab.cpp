@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,31 +27,28 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
-
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-
-#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack.h>
 
 void Cdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, INTEGER *nsval, REAL const thresh, INTEGER const  /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *b, COMPLEX *x, COMPLEX *work, REAL *rwork, arr_cref<std::complex<float>> swork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Cdrvab);
     common_write write(cmn);
-    char &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     if (is_called_first_time) {
         static const INTEGER values[] = {2006, 2007, 2008, 2009};
         data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
     }
     INTEGER kase = 0;
-    char path[3];
+    char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed;
+    INTEGER iseed[4];
     INTEGER im = 0;
     INTEGER m = 0;
     INTEGER lda = 0;
@@ -60,24 +57,24 @@ void Cdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char type[1];
+    char[1] type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist[1];
+    char[1] dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
     const REAL zero = 0.0;
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
-    char xtype[1];
-    char trans[1];
+    char[1] xtype;
+    char[1] trans;
     INTEGER iter = 0;
     const INTEGER ntests = 1;
-    arr_1d<ntests, REAL> result;
+    REAL result[ntests];
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,14 +27,11 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
-
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-
-#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack.h>
 
 void Rebchvxx(REAL const thresh, const char *path) {
     common_write write(cmn);
@@ -54,10 +51,10 @@ void Rebchvxx(REAL const thresh, const char *path) {
     //
     //  Create the loop to test out the Hilbert matrices
     //
-    char fact[1] = "E";
-    char uplo[1] = "U";
-    char trans[1] = "N";
-    char equed[1] = "N";
+    char[1] fact = "E";
+    char[1] uplo = "U";
+    char[1] trans = 'N';
+    char[1] equed = "N";
     REAL eps = Rlamch("Epsilon");
     INTEGER nfail = 0;
     INTEGER n_aux_tests = 0;
@@ -65,7 +62,7 @@ void Rebchvxx(REAL const thresh, const char *path) {
     INTEGER lda = nmax;
     INTEGER ldab = (nmax - 1) + (nmax - 1) + 1;
     INTEGER ldafb = 2 * (nmax - 1) + (nmax - 1) + 1;
-    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
+    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
     //
     //     Main loop to test the different Hilbert Matrices.
     //
@@ -73,42 +70,42 @@ void Rebchvxx(REAL const thresh, const char *path) {
     //
     INTEGER n = 0;
     const INTEGER nparams = 2;
-    arr_1d<nparams, REAL> params;
+    REAL params[nparams];
     INTEGER kl = 0;
     INTEGER ku = 0;
     INTEGER nrhs = 0;
     REAL m = 0.0;
-    arr_2d<nmax, nmax, REAL> a;
-    arr_2d<nmax, nmax, REAL> invhilb;
-    arr_2d<nmax, nmax, REAL> b;
-    arr_1d<nmax * 3 * 5, REAL> work;
+    REAL a[nmax * nmax];
+    REAL invhilb[nmax * nmax];
+    REAL b[nmax * nmax];
+    REAL work[nmax * 3 * 5];
     INTEGER info = 0;
-    arr_2d<nmax, nmax, REAL> acopy;
+    REAL acopy[nmax * nmax];
     INTEGER j = 0;
     INTEGER i = 0;
-    arr_2d<(nmax - 1) + (nmax - 1) + 1, nmax, REAL> ab;
-    arr_2d<(nmax - 1) + (nmax - 1) + 1, nmax, REAL> abcopy;
-    arr_2d<nmax, nmax, REAL> af;
-    arr_1d<nmax, int> ipiv;
-    arr_1d<nmax, REAL> s;
-    arr_2d<nmax, nmax, REAL> x;
+    REAL ab[(nmax - 1) + (nmax - 1) + 1 * nmax];
+    REAL abcopy[(nmax - 1) + (nmax - 1) + 1 * nmax];
+    REAL af[nmax * nmax];
+    INTEGER ipiv[nmax];
+    REAL s[nmax];
+    REAL x[nmax * nmax];
     REAL orcond = 0.0;
     REAL rpvgrw = 0.0;
-    arr_1d<nmax, REAL> berr;
+    REAL berr[nmax];
     const INTEGER nerrbnd = 3;
-    arr_1d<nmax * 3, REAL> errbnd_n;
-    arr_1d<nmax * 3, REAL> errbnd_c;
-    arr_1d<3 * nmax, int> iwork;
+    REAL errbnd_n[nmax * 3];
+    REAL errbnd_c[nmax * 3];
+    INTEGER iwork[3 * nmax];
     nmax), fill0);
-    arr_1d<nmax, REAL> r;
-    arr_1d<nmax, REAL> c;
+    REAL r[nmax];
+    REAL c[nmax];
     REAL rcond = 0.0;
-    arr_2d<nmax, nmax, REAL> diff;
+    REAL diff[nmax * nmax];
     REAL rnorm = 0.0;
     REAL rinorm = 0.0;
     REAL sumr = 0.0;
     REAL sumri = 0.0;
-    arr_1d<nmax, REAL> rinv;
+    REAL rinv[nmax];
     REAL ncond = 0.0;
     REAL condthresh = 0.0;
     REAL errthresh = 0.0;
@@ -124,10 +121,10 @@ void Rebchvxx(REAL const thresh, const char *path) {
     const INTEGER cond_i = 3;
     REAL nwise_rcond = 0.0;
     REAL cwise_rcond = 0.0;
-    char nguar[1];
+    char[1] nguar;
     const INTEGER ntests = 6;
-    arr_1d<ntests, REAL> tstrat;
-    char cguar[1];
+    REAL tstrat[ntests];
+    char[1] cguar;
     for (n = 1; n <= nmax; n = n + 1) {
         params[1 - 1] = -1;
         params[2 - 1] = -1;

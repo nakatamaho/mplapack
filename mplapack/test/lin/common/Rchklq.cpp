@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,30 +27,27 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
-
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-
-#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack.h>
 
 void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *af, REAL *aq, REAL *al, REAL *ac, REAL *b, REAL *x, REAL *xact, REAL *tau, REAL *work, REAL *rwork, INTEGER const nout) {
     FEM_CMN_SVE(Rchklq);
     common_write write(cmn);
-    char &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     if (is_called_first_time) {
         static const INTEGER values[] = {1988, 1989, 1990, 1991};
         data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
     }
-    char path[3];
+    char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed;
+    INTEGER iseed[4];
     INTEGER lda = 0;
     INTEGER lwork = 0;
     INTEGER im = 0;
@@ -60,15 +57,15 @@ void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER minmn = 0;
     INTEGER imat = 0;
     const INTEGER ntypes = 8;
-    char type[1];
+    char[1] type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist[1];
+    char[1] dist;
     INTEGER info = 0;
-    arr_1d<4, int> kval;
+    INTEGER kval[4];
     INTEGER nk = 0;
     INTEGER ik = 0;
     INTEGER k = 0;
@@ -77,7 +74,7 @@ void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER nx = 0;
     const INTEGER ntests = 7;
     const REAL zero = 0.0;
-    arr_1d<ntests, REAL> result;
+    REAL result[ntests];
     INTEGER nt = 0;
     //
     //  -- LAPACK test routine --

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,13 +27,16 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-#include <mplapack_lin.h>
-#include <mplapack.h>
 
-void Cpot02(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
+#include <mplapack_matgen.h>
+#include <mplapack_lin.h>
+
+void chkxer(const char *srnamt, INTEGER const &infot, INTEGER const &nout, bool &lerr, bool &ok) {
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -41,63 +44,22 @@ void Cpot02(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
     //
     //     .. Scalar Arguments ..
     //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
     //     .. Intrinsic Functions ..
     //     ..
     //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0 or NRHS = 0.
-    //
-    const REAL zero = 0.0;
-    if (n <= 0 || nrhs <= 0) {
-        resid = zero;
-        return;
+    common cmn;
+    common_write write(cmn);
+    char srnmat_trimmed[1024];
+    memset(srnmat_trimmed, '\0', sizeof(srnmat_trimmed));
+    strncpy(srnmat_trimmed, srnamt, 6);
+    if (!lerr) {
+        write(nout, "(' *** Illegal value of parameter number ',i2,' not detected by ',a6,"
+                    "' ***')"),
+            infot, srnmat_trimmed;
+        ok = false;
     }
+    lerr = false;
     //
-    //     Exit with RESID = 1/EPS if ANORM = 0.
-    //
-    REAL eps = Rlamch("Epsilon");
-    REAL anorm = Clanhe("1", uplo, n, a, lda, rwork);
-    const REAL one = 1.0;
-    if (anorm <= zero) {
-        resid = one / eps;
-        return;
-    }
-    //
-    //     Compute  B - A*X
-    //
-    const COMPLEX cone = COMPLEX(1.0, 0.0);
-    Chemm("Left", uplo, n, nrhs, -cone, a, lda, x, ldx, cone, b, ldb);
-    //
-    //     Compute the maximum over the number of right hand sides of
-    //        norm( B - A*X ) / ( norm(A) * norm(X) * EPS ) .
-    //
-    resid = zero;
-    INTEGER j = 0;
-    REAL bnorm = 0.0;
-    REAL xnorm = 0.0;
-    for (j = 1; j <= nrhs; j = j + 1) {
-        bnorm = RCasum(n, &b[(j - 1) * ldb], 1);
-        xnorm = RCasum(n, &x[(j - 1) * ldx], 1);
-        if (xnorm <= zero) {
-            resid = one / eps;
-        } else {
-            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
-        }
-    }
-    //
-    //     End of Cpot02
+    //     End of CHKXER.
     //
 }

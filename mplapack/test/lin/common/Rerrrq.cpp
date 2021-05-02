@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,14 +27,11 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
-
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-
-#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack.h>
 
 void Rerrrq(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -44,7 +41,7 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -80,11 +77,11 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     INTEGER j = 0;
     const INTEGER nmax = 2;
     INTEGER i = 0;
-    arr_2d<nmax, nmax, REAL> a;
-    arr_2d<nmax, nmax, REAL> af;
-    arr_1d<nmax, REAL> b;
-    arr_1d<nmax, REAL> w;
-    arr_1d<nmax, REAL> x;
+    REAL a[nmax * nmax];
+    REAL af[nmax * nmax];
+    REAL b[nmax];
+    REAL w[nmax];
+    REAL x[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();

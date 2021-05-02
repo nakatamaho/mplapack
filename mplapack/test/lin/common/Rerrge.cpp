@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,24 +27,13 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
-
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-
-#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack.h>
 
 void Rerrge(const char *path, INTEGER const nunit) {
-    common_write write(cmn);
-    // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    // COMMON srnamc
-    char &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -74,29 +63,32 @@ void Rerrge(const char *path, INTEGER const nunit) {
     //     ..
     //     .. Executable Statements ..
     //
-    nout = nunit;
-    write(nout, star);
-    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
+    INTEGER nout = nunit;
+    char c2[2];
+    c2[0] = path[1];
+    c2[1] = path[2];
     //
     //     Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 4;
     INTEGER i = 0;
-    arr_2d<nmax, nmax, REAL> a;
-    arr_2d<nmax, nmax, REAL> af;
-    arr_1d<nmax, REAL> b;
-    arr_1d<nmax, REAL> r1;
-    arr_1d<nmax, REAL> r2;
+    REAL a[nmax * nmax];
+    REAL af[nmax * nmax];
+    INTEGER lda = nmax;
+    INTEGER ldaf = nmax;
+    REAL b[nmax];
+    REAL r1[nmax];
+    REAL r2[nmax];
     const INTEGER lw = 3 * nmax;
-    arr_1d<lw, REAL> w;
-    arr_1d<nmax, REAL> x;
-    arr_1d<nmax, int> ip;
-    arr_1d<nmax, int> iw;
+    REAL w[lw];
+    REAL x[nmax];
+    INTEGER ip[nmax];
+    INTEGER iw[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
-            af[(i - 1) + (j - 1) * ldaf] = 1.0 / (i + j).real();
+            a[(i - 1) + (j - 1) * lda] = 1.0 / castREAL(i + j);
+            af[(i - 1) + (j - 1) * ldaf] = 1.0 / castREAL(i + j);
         }
         b[j - 1] = 0.0;
         r1[j - 1] = 0.0;
@@ -106,9 +98,11 @@ void Rerrge(const char *path, INTEGER const nunit) {
         ip[j - 1] = j;
         iw[j - 1] = j;
     }
-    ok = true;
+    bool ok = true;
+    bool lerr;
     //
     INTEGER info = 0;
+    INTEGER infot = 0;
     REAL anrm = 0.0;
     REAL rcond = 0.0;
     REAL ccond = 0.0;
@@ -119,7 +113,6 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgetrf
         //
-        srnamt = "Rgetrf";
         infot = 1;
         Rgetrf(-1, 0, a, 1, ip, info);
         chkxer("Rgetrf", infot, nout, lerr, ok);
@@ -132,7 +125,6 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgetf2
         //
-        srnamt = "Rgetf2";
         infot = 1;
         Rgetf2(-1, 0, a, 1, ip, info);
         chkxer("Rgetf2", infot, nout, lerr, ok);
@@ -145,7 +137,6 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgetri
         //
-        srnamt = "Rgetri";
         infot = 1;
         Rgetri(-1, a, 1, ip, w, lw, info);
         chkxer("Rgetri", infot, nout, lerr, ok);
@@ -155,7 +146,6 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgetrs
         //
-        srnamt = "Rgetrs";
         infot = 1;
         Rgetrs("/", 0, 0, a, 1, ip, b, 1, info);
         chkxer("Rgetrs", infot, nout, lerr, ok);
@@ -174,7 +164,6 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        RgerFS
         //
-        srnamt = "RgerFS";
         infot = 1;
         Rgerfs("/", 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
         chkxer("RgerFS", infot, nout, lerr, ok);
@@ -199,7 +188,6 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgecon
         //
-        srnamt = "Rgecon";
         infot = 1;
         Rgecon("/", 0, a, 1, anrm, rcond, w, iw, info);
         chkxer("Rgecon", infot, nout, lerr, ok);
@@ -212,7 +200,6 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgeequ
         //
-        srnamt = "Rgeequ";
         infot = 1;
         Rgeequ(-1, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
         chkxer("Rgeequ", infot, nout, lerr, ok);
@@ -230,7 +217,6 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgbtrf
         //
-        srnamt = "Rgbtrf";
         infot = 1;
         Rgbtrf(-1, 0, 0, 0, a, 1, ip, info);
         chkxer("Rgbtrf", infot, nout, lerr, ok);
@@ -249,7 +235,6 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgbtf2
         //
-        srnamt = "Rgbtf2";
         infot = 1;
         Rgbtf2(-1, 0, 0, 0, a, 1, ip, info);
         chkxer("Rgbtf2", infot, nout, lerr, ok);
@@ -268,7 +253,6 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgbtrs
         //
-        srnamt = "Rgbtrs";
         infot = 1;
         Rgbtrs("/", 0, 0, 0, 1, a, 1, ip, b, 1, info);
         chkxer("Rgbtrs", infot, nout, lerr, ok);
@@ -293,7 +277,6 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgbrfs
         //
-        srnamt = "Rgbrfs";
         infot = 1;
         Rgbrfs("/", 0, 0, 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
         chkxer("Rgbrfs", infot, nout, lerr, ok);
@@ -324,7 +307,6 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgbcon
         //
-        srnamt = "Rgbcon";
         infot = 1;
         Rgbcon("/", 0, 0, 0, a, 1, ip, anrm, rcond, w, iw, info);
         chkxer("Rgbcon", infot, nout, lerr, ok);
@@ -343,7 +325,6 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgbequ
         //
-        srnamt = "Rgbequ";
         infot = 1;
         Rgbequ(-1, 0, 0, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
         chkxer("Rgbequ", infot, nout, lerr, ok);

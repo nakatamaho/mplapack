@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,14 +27,11 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
-
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-
-#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack.h>
 
 void Cerrvx(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -44,7 +41,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -76,24 +73,24 @@ void Cerrvx(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
+    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
     //
     //     Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 4;
     INTEGER i = 0;
-    arr_2d<nmax, nmax, COMPLEX> a;
-    arr_2d<nmax, nmax, COMPLEX> af;
-    arr_1d<nmax, COMPLEX> b;
-    arr_1d<nmax, COMPLEX> e;
-    arr_1d<nmax, REAL> r1;
-    arr_1d<nmax, REAL> r2;
-    arr_1d<2 * nmax, COMPLEX> w;
-    arr_1d<nmax, COMPLEX> x;
-    arr_1d<nmax, REAL> c;
-    arr_1d<nmax, REAL> r;
-    arr_1d<nmax, int> ip;
+    COMPLEX a[nmax * nmax];
+    COMPLEX af[nmax * nmax];
+    COMPLEX b[nmax];
+    COMPLEX e[nmax];
+    REAL r1[nmax];
+    REAL r2[nmax];
+    COMPLEX w[2 * nmax];
+    COMPLEX x[nmax];
+    REAL c[nmax];
+    REAL r[nmax];
+    INTEGER ip[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = COMPLEX(1.0 / (i + j).real(), -1.0 / (i + j).real());
@@ -109,13 +106,13 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         r[j - 1] = 0.0;
         ip[j - 1] = j;
     }
-    char eq[1] = " ";
+    char[1] eq = " ";
     ok = true;
     //
     INTEGER info = 0;
     REAL rcond = 0.0;
-    arr_1d<nmax, REAL> rw;
-    arr_1d<nmax, REAL> rf;
+    REAL rw[nmax];
+    REAL rf[nmax];
     if (Mlsamen(2, c2, "GE")) {
         //
         //        Cgesv

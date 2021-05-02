@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,14 +27,11 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
-
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-
-#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack.h>
 
 void program_Cchkrfp(INTEGER argc, char const *argv[]) {
     common cmn(argc, argv);
@@ -97,7 +94,7 @@ void program_Cchkrfp(INTEGER argc, char const *argv[]) {
         nn = 0;
         fatal = true;
     }
-    arr_1d<maxin, int> nval;
+    INTEGER nval[maxin];
     INTEGER i = 0;
     {
         read_loop rloop(cmn, nin, star);
@@ -138,7 +135,7 @@ void program_Cchkrfp(INTEGER argc, char const *argv[]) {
         nns = 0;
         fatal = true;
     }
-    arr_1d<maxin, int> nsval;
+    INTEGER nsval[maxin];
     {
         read_loop rloop(cmn, nin, star);
         for (i = 1; i <= nns; i = i + 1) {
@@ -179,7 +176,7 @@ void program_Cchkrfp(INTEGER argc, char const *argv[]) {
         nnt = 0;
         fatal = true;
     }
-    arr_1d<ntypes, int> ntval;
+    INTEGER ntval[ntypes];
     {
         read_loop rloop(cmn, nin, star);
         for (i = 1; i <= nnt; i = i + 1) {
@@ -244,13 +241,13 @@ void program_Cchkrfp(INTEGER argc, char const *argv[]) {
     //
     fill0);
     fill0);
-    arr_1d<3 * nmax, COMPLEX> z_work_zlatms;
+    COMPLEX z_work_zlatms[3 * nmax];
     fill0);
-    arr_1d<nmax, REAL> d_work_zlatms;
-    arr_1d<nmax, REAL> d_work_Clanhe;
-    arr_1d<nmax, REAL> d_work_Cpot01;
-    arr_1d<nmax, REAL> d_work_Cpot02;
-    arr_1d<nmax, REAL> d_work_Cpot03;
+    REAL d_work_zlatms[nmax];
+    REAL d_work_Clanhe[nmax];
+    REAL d_work_Cpot01[nmax];
+    REAL d_work_Cpot02[nmax];
+    REAL d_work_Cpot03[nmax];
     Cdrvrfp(nout, nn, nval, nns, nsval, nnt, ntval, thresh, worka, workasav, workafac, workainv, workb, workbsav, workxact, workx, workarf, workarfinv, z_work_zlatms, z_work_Cpot02, z_work_Cpot03, d_work_zlatms, d_work_Clanhe, d_work_Cpot01, d_work_Cpot02, d_work_Cpot03);
     //
     //    Test the routine: Clanhf

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,14 +27,11 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
-
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-
-#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack.h>
 
 void Cerrtz(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -73,21 +70,21 @@ void Cerrtz(const char *path, INTEGER const nunit) {
     //     .. Executable Statements ..
     //
     nout = nunit;
-    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
+    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
     const INTEGER nmax = 2;
-    arr_2d<nmax, nmax, COMPLEX> a;
+    COMPLEX a[nmax * nmax];
     a[(1 - 1)] = COMPLEX(1.e+0, -1.e+0);
     a[(2 - 1) * lda] = COMPLEX(2.e+0, -2.e+0);
     a[(2 - 1) + (2 - 1) * lda] = COMPLEX(3.e+0, -3.e+0);
     a[(2 - 1)] = COMPLEX(4.e+0, -4.e+0);
-    arr_1d<nmax, COMPLEX> w;
+    COMPLEX w[nmax];
     w[1 - 1] = COMPLEX(0.e+0, 0.e+0);
     w[2 - 1] = COMPLEX(0.e+0, 0.e+0);
     ok = true;
     //
     //     Test error exits for the trapezoidal routines.
     write(nout, star);
-    arr_1d<nmax, COMPLEX> tau;
+    COMPLEX tau[nmax];
     INTEGER info = 0;
     if (Mlsamen(2, c2, "TZ")) {
         //
