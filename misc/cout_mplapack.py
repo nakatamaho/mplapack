@@ -949,7 +949,10 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
       rapp("%s%s %s[%s] = %s;" % (const_qualifier(), ctype, vname, _csize, crhs))
     return False
   if (cdims is Auto):
-    rapp("%s %s [%s];" % (_ctype, vname, _csize ))
+    if _csize == "" or _csize =="dummy":
+      rapp("%s %s;" % (ctype, vname))
+    else:
+      rapp("%s %s [%s];" % (ctype, vname, _csize ))
   else:
     rapp("%s %s(%s, %s);" % (ctype, vname, cdims, cfill0))
   return True
