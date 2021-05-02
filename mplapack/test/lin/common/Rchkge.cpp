@@ -41,8 +41,8 @@ using fem::common;
 void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *afac, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    // seeds are ignored
-    static const char *values[] = {"N", "T", "C"};
+    const INTEGER ntran = 3;
+    char transs[ntran] = {'N', 'T', 'C'};
     char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
@@ -92,9 +92,6 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     char norm;
     REAL rcond = 0.0;
     REAL dummy = 0.0;
-    char nopacking[] = "No packing";
-    INTEGER ntran = 3;
-    char transs[ntran] = {'N', 'T', 'C'};
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -129,15 +126,12 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Initialize constants and the random number seed.
     //
-    path[0] = 'R'; // Real
+    path[0] = 'R';
     path[1] = 'G';
     path[2] = 'E';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
-    for (i = 1; i <= 4; i = i + 1) {
-        iseed[i - 1] = 0; // seed is dummy in MPLAPACK
-    }
     //
     //     Test the error exits
     //
@@ -166,14 +160,14 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 //              Do the tests only if DOTYPE( IMAT ) is true.
                 //
                 if (!dotype[imat - 1]) {
-                    continue;
+                    goto statement_100;
                 }
                 //
                 //              Skip types 5, 6, or 7 if the matrix size is too small.
                 //
                 zerot = imat >= 5 && imat <= 7;
                 if (zerot && n < imat - 4) {
-                    continue;
+                    goto statement_100;
                 }
                 //
                 //              Set up parameters with Rlatb4 and generate a test matrix
@@ -181,9 +175,9 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 //
                 Rlatb4(path, imat, m, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                 //
-                Rlatms(m, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, nopacking, a, lda, work, info);
+                Rlatms(m, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
                 //
-                //              Check error code from Rlatms.
+                //              Check error code from DLATMS.
                 //
                 if (info != 0) {
                     Alaerh(path, "Rlatms", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
@@ -227,11 +221,11 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //                 Compute the LU factorization of the matrix.
                     //
                     Rlacpy("Full", m, n, a, lda, afac, lda);
+                    printf("Rgetrf m:%ld n:%ld lda:%ld info: %ld infoe: %ld \n", m, n, lda, info, izero);
                     Rgetrf(m, n, afac, lda, iwork, info);
                     //
                     //                 Check error code from Rgetrf.
                     //
-                    printf("Rgetrf m:%ld n:%ld lda:%ld info: %ld infoe: %ld \n", m, n, lda, info, izero);
                     if (info != izero) {
                         Alaerh(path, "Rgetrf", info, izero, " ", m, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
@@ -297,8 +291,10 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 Alahd(nout, path);
                             }
                             write(nout, "(' M = ',i5,', N =',i5,', NB =',i4,', type ',i2,', test(',i2,"
-                                        "') =',g12.5) XXXcast2doubleXXX"),
+                                        "') =',g12.5)"),
                                 m, n, nb, imat, k, cast2double(result[k - 1]);
+                            printnum(result[k - 1]);
+                            printf("\n");
                             nfail++;
                         }
                     }
@@ -374,8 +370,10 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         Alahd(nout, path);
                                     }
                                     write(nout, "(' TRANS=''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                                "', test(',i2,') =',g12.5) xxx cast2double xxx"),
+                                                "', test(',i2,') =',g12.5)"),
                                         trans, n, nrhs, imat, k, cast2double(result[k - 1]);
+                                    printnum(result[k - 1]);
+                                    printf("\n");
                                     nfail++;
                                 }
                             }
@@ -405,9 +403,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Alaerh(path, "Rgecon", info, 0, &norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
-                        //                       This line is needed on a Sun SPARCstation.
                         //
-                        dummy = rcond;
                         //
                         result[8 - 1] = Rget06(rcond, rcondc);
                         //
@@ -419,8 +415,10 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 Alahd(nout, path);
                             }
                             write(nout, "(' NORM =''',a1,''', N =',i5,',',10x,' type ',i2,', test(',"
-                                        "i2,') =',g12.5) xxx cast2double xxx"),
+                                        "i2,') =',g12.5)"),
                                 norm, n, imat, 8, cast2double(result[8 - 1]);
+                            printnum(result[8 - 1]);
+                            printf("\n");
                             nfail++;
                         }
                         nrun++;
