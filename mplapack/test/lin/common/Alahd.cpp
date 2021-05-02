@@ -208,7 +208,7 @@ void Alahd(INTEGER const iounit, const char *path) {
         if (sord) {
             strncpy(sym, "Symmetric", strlen(sym));
         } else {
-            strncpy(sym, "Hermitian", strlen(sym));             
+            strncpy(sym, "Hermitian", strlen(sym));
         }
         if (Mlsame(c3, "O")) {
             write(iounit, "(/,1x,a3,':  ',a9,' positive definite matrices')"), path, sym;
@@ -239,11 +239,11 @@ void Alahd(INTEGER const iounit, const char *path) {
         //        PS: Positive semi-definite full
         //
         if (sord) {
-            strncpy(sym, "Symmetric", strlen(sym));             
+            strncpy(sym, "Symmetric", strlen(sym));
         } else {
-            strncpy(sym, "Hermitian", strlen(sym));                         
+            strncpy(sym, "Hermitian", strlen(sym));
         }
-        strncpy(eigcnm, "1D12", strlen(eigcnm));                         
+        strncpy(eigcnm, "1D12", strlen(eigcnm));
         write(iounit, format_9995), path, sym;
         write(iounit, "(' Matrix types:')");
         write(iounit, "(4x,'1. Diagonal',/,4x,'2. Random, CNDNUM = 2',14x,/,3x,"
@@ -503,12 +503,12 @@ void Alahd(INTEGER const iounit, const char *path) {
         //
         if (Mlsame(c3, "R")) {
             write(iounit, "(/,1x,a3,':  Triangular matrices')"), path;
-	    std::string _str;
+            std::string _str;
             _str = path[0] + "LATRS";
             strncpy(subnam, _str.c_str(), strlen(subnam));
         } else {
             write(iounit, "(/,1x,a3,':  Triangular packed matrices')"), path;
-	    std::string _str;
+            std::string _str;
             _str = path[0] + "LATRS";
             strncpy(subnam, _str.c_str(), strlen(subnam));
         }
@@ -519,8 +519,8 @@ void Alahd(INTEGER const iounit, const char *path) {
                       "'9. Unit, CNDNUM = sqrt(0.1/EPS)',/,4x,'5. Scaled near underflow',10x,"
                       "'10. Unit, CNDNUM = 0.1/EPS')"),
             path;
-	memset(subnam_trimmed, '\0', sizeof(subnam_trimmed));
-	strncpy(subnam_trimmed, subnam, strlen(subnam));
+        memset(subnam_trimmed, '\0', sizeof(subnam_trimmed));
+        strncpy(subnam_trimmed, subnam, strlen(subnam));
         write(iounit, "(' Special types for testing ',a,':',/,3x,"
                       "'11. Matrix elements are O(1), large right hand side',/,3x,"
                       "'12. First diagonal causes overflow,',' offdiagonal column norms < 1',"
@@ -531,7 +531,7 @@ void Alahd(INTEGER const iounit, const char *path) {
                       "'16. One zero diagonal element',/,3x,"
                       "'17. Large offdiagonals cause overflow when adding a column',/,3x,"
                       "'18. Unit triangular with large right hand side')"),
-	  subnam_trimmed;
+            subnam_trimmed;
 
         write(iounit, "(' Test ratios:')");
         write(iounit, format_9961), 1;
@@ -541,8 +541,8 @@ void Alahd(INTEGER const iounit, const char *path) {
         write(iounit, format_9957), 5;
         write(iounit, format_9956), 6;
         write(iounit, format_9955), 7;
-	memset(subnam_trimmed, '\0', sizeof(subnam_trimmed));
-	strncpy(subnam_trimmed, subnam, strlen(subnam));
+        memset(subnam_trimmed, '\0', sizeof(subnam_trimmed));
+        strncpy(subnam_trimmed, subnam, strlen(subnam));
         write(iounit, format_9951), subnam_trimmed, 8;
         write(iounit, "(' Messages:')");
         //
@@ -551,9 +551,9 @@ void Alahd(INTEGER const iounit, const char *path) {
         //        TB: Triangular band
         //
         write(iounit, "(/,1x,a3,':  Triangular band matrices')"), path;
-	    std::string _str;
-            _str = path[0] + "LATBS";
-            strncpy(subnam, _str.c_str(), strlen(subnam));
+        std::string _str;
+        _str = path[0] + "LATBS";
+        strncpy(subnam, _str.c_str(), strlen(subnam));
         write(iounit, "(' Matrix types for ',a3,' routines:',/,4x,'1. Random, CNDNUM = 2',14x,"
                       "'6. Identity',/,4x,'2. Random, CNDNUM = sqrt(0.1/EPS)  ',"
                       "'7. Unit triangular, CNDNUM = 2',/,4x,'3. Random, CNDNUM = 0.1/EPS',8x,"
@@ -561,8 +561,8 @@ void Alahd(INTEGER const iounit, const char *path) {
                       "'9. Unit, CNDNUM = 0.1/EPS',/,4x,'5. Scaled near overflow')"),
             path;
 
-	memset(subnam_trimmed, '\0', sizeof(subnam_trimmed));
-	strncpy(subnam_trimmed, subnam, strlen(subnam));
+        memset(subnam_trimmed, '\0', sizeof(subnam_trimmed));
+        strncpy(subnam_trimmed, subnam, strlen(subnam));
         write(iounit, "(' Special types for testing ',a,':',/,3x,"
                       "'10. Matrix elements are O(1), large right hand side',/,3x,"
                       "'11. First diagonal causes overflow,',' offdiagonal column norms < 1',"
@@ -573,7 +573,7 @@ void Alahd(INTEGER const iounit, const char *path) {
                       "'15. One zero diagonal element',/,3x,"
                       "'16. Large offdiagonals cause overflow when adding a column',/,3x,"
                       "'17. Unit triangular with large right hand side')"),
-	  subnam_trimmed;
+            subnam_trimmed;
         write(iounit, "(' Test ratios:')");
         write(iounit, format_9960), 1;
         write(iounit, format_9959), 2;

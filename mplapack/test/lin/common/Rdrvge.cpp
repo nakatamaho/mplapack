@@ -34,29 +34,14 @@ using fem::common;
 #include <mplapack.h>
 
 void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *afac, REAL *asav, REAL *b, REAL *bsav, REAL *x, REAL *xact, REAL *s, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
-    FEM_CMN_SVE(Rdrvge);
+    common cmn;
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
     //
     const INTEGER ntran = 3;
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"N", "T", "C"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), transs;
-        }
-        {
-            static const char *values[] = {"F", "N", "E"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), facts;
-        }
-        {
-            static const char *values[] = {"N", "R", "C", "B"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), equeds;
-        }
-    }
+    static const INTEGER values[] = {1988, 1989, 1990, 1991};
+    static const char *values[] = {"N", "T", "C"};
+    static const char *values[] = {"F", "N", "E"};
+    static const char *values[] = {"N", "R", "C", "B"};
     char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;

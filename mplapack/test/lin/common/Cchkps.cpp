@@ -33,7 +33,7 @@ using fem::common;
 #include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nrank, INTEGER *rankval, REAL const thresh, bool const tsterr, INTEGER const  /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *perm, INTEGER *piv, COMPLEX *work, REAL *rwork, INTEGER const nout) {
+void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nrank, INTEGER *rankval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *perm, INTEGER *piv, COMPLEX *work, REAL *rwork, INTEGER const nout) {
     FEM_CMN_SVE(Cchkps);
     common_write write(cmn);
     char[32] &srnamt = cmn.srnamt;

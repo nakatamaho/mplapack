@@ -170,9 +170,9 @@ void Aladhd(INTEGER const iounit, const char *path) {
         //        PP: Positive definite packed
         //
         if (sord) {
-	  strncpy(sym, "Symmetric", strlen(sym));
+            strncpy(sym, "Symmetric", strlen(sym));
         } else {
-	  strncpy(sym, "Hermitian", strlen(sym));             
+            strncpy(sym, "Hermitian", strlen(sym));
         }
         if (Mlsame(c3, "O")) {
             write(iounit, "(/,1x,a3,' drivers:  ',a9,' positive definite matrices')"), path, sym;

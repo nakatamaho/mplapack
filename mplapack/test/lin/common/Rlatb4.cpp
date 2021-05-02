@@ -73,7 +73,7 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
     //
     char c2[2];
     c2[0] = path[1];
-    c2[1] = path[2];    
+    c2[1] = path[2];
     //
     //     Set some parameters we don't plan to change.
     //

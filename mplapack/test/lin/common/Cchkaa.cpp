@@ -405,7 +405,7 @@ statement_80:
     //
     try {
         read(nin, "(a72)"), aline;
-    } catch (read_end const ) {
+    } catch (read_end const) {
         goto statement_140;
     }
     path = aline[(3 - 1) * ldaline];

@@ -96,7 +96,7 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
         if (nmats > 0) {
             try {
                 read(nin, "(a80)"), line;
-            } catch (read_end const ) {
+            } catch (read_end const) {
                 goto statement_90;
             }
             lenp = len[line - 1];
@@ -177,4 +177,3 @@ statement_90:
     //     End of Alareq
     //
 }
-

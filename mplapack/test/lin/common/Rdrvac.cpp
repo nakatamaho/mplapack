@@ -33,7 +33,7 @@ using fem::common;
 #include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Rdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, INTEGER *nsval, REAL const thresh, INTEGER const  /* nmax */, REAL *a, REAL *afac, REAL *b, REAL *x, REAL *work, REAL *rwork, arr_cref<float> swork, INTEGER const nout) {
+void Rdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, INTEGER *nsval, REAL const thresh, INTEGER const /* nmax */, REAL *a, REAL *afac, REAL *b, REAL *x, REAL *work, REAL *rwork, arr_cref<float> swork, INTEGER const nout) {
     FEM_CMN_SVE(Rdrvac);
     common_write write(cmn);
     char[32] &srnamt = cmn.srnamt;

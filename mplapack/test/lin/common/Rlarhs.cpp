@@ -61,11 +61,11 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
     //     Test the input parameters.
     //
     info = 0;
-    char c1 [1];
+    char c1[1];
     c1[0] = path[(1 - 1)];
-    char c2 [2];
+    char c2[2];
     c2[0] = path[1];
-    c2[1] = path[2];    
+    c2[1] = path[2];
     bool tran = Mlsame(trans, "T") || Mlsame(trans, "C");
     bool notran = !tran;
     bool gen = Mlsame(&path[1], "G");

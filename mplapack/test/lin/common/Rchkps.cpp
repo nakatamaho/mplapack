@@ -33,7 +33,7 @@ using fem::common;
 #include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nrank, INTEGER *rankval, REAL const thresh, bool const tsterr, INTEGER const  /* nmax */, REAL *a, REAL *afac, REAL *perm, INTEGER *piv, REAL *work, REAL *rwork, INTEGER const nout) {
+void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nrank, INTEGER *rankval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, REAL *a, REAL *afac, REAL *perm, INTEGER *piv, REAL *work, REAL *rwork, INTEGER const nout) {
     FEM_CMN_SVE(Rchkps);
     common_write write(cmn);
     char[32] &srnamt = cmn.srnamt;

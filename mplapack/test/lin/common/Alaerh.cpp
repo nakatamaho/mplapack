@@ -118,7 +118,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
     c5[1] = subnam[2];
     c5[2] = subnam[3];
     c5[3] = subnam[4];
-    c5[4] = subnam[5];            
+    c5[4] = subnam[5];
     char subnam_trimmed[1024];
     memset(subnam_trimmed, '\0', sizeof(subnam_trimmed));
     strncpy(subnam_trimmed, subnam, strlen(subnam));
