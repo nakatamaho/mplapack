@@ -93,8 +93,8 @@ void Aladhd(INTEGER const iounit, const char *path) {
     c3[0] = path[2];
     p2[0] = path[1];
     p2[1] = path[2];
-    bool sord = Mlsame(c1, "R")
-    bool corz = Mlsame(c1, "C")
+    bool sord = Mlsame(c1, "R");
+    bool corz = Mlsame(c1, "C");
     if (!(sord || corz)) {
         return;
     }

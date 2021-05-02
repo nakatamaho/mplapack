@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,28 +27,27 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const ntypes, INTEGER const nin, INTEGER const nout) {
-    FEM_CMN_SVE(Alareq);
+    common cmn;
     common_read read(cmn);
     common_write write(cmn);
-    char[10] &intstr = sve.intstr;
-    if (is_called_first_time) {
-        intstr = "0123456789";
-    }
     INTEGER i = 0;
     bool firstt = false;
-    char[80] line;
+    char line[80];
     INTEGER lenp = 0;
     INTEGER j = 0;
     INTEGER nreq[100];
     INTEGER i1 = 0;
-    char[1] c1;
+    char c1;
     INTEGER k = 0;
     INTEGER ic = 0;
     INTEGER nt = 0;
@@ -84,6 +83,9 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
             dotype[i - 1] = true;
         }
     } else {
+        printf("Not yet supported \n");
+        exit(-1);
+#ifdef NOTYET
         for (i = 1; i <= ntypes; i = i + 1) {
             dotype[i - 1] = false;
         }
@@ -161,6 +163,7 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
             }
         }
     statement_80:;
+#endif
     }
     return;
 //
@@ -170,8 +173,8 @@ statement_90:
                 "' right number of types for each path',/)"),
         path;
     write(nout, star);
-    FEM_STOP(0);
     //
     //     End of Alareq
     //
 }
+
