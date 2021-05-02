@@ -29,6 +29,13 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+
+#include <mplapack_matgen.h>
+#include <mplapack_lin.h>
+
 void chkxer(const char *srnamt, INTEGER const &infot, INTEGER const &nout, bool &lerr, bool &ok) {
     //
     //  -- LAPACK test routine --
@@ -40,13 +47,15 @@ void chkxer(const char *srnamt, INTEGER const &infot, INTEGER const &nout, bool 
     //     .. Intrinsic Functions ..
     //     ..
     //     .. Executable Statements ..
+    common cmn;
+    common_write write(cmn);
     char srnmat_trimmed[1024];
     memset(srnmat_trimmed, '\0', sizeof(srnmat_trimmed));
     strncpy(srnmat_trimmed, srnamt, 6);
     if (!lerr) {
         write(nout, "(' *** Illegal value of parameter number ',i2,' not detected by ',a6,"
                     "' ***')"),
-            infot, srnamt_trimmed;
+            infot, srnmat_trimmed;
         ok = false;
     }
     lerr = false;
