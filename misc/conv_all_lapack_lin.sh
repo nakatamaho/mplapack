@@ -82,13 +82,16 @@ sed -i -e 's/ == "0"/Mlsame( , "0")/g' ${newfilename}.cpp
 fi
 
 cat << EOF > insert_lin.txt
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 EOF
 
-sed -i "/#include <mplapack.h>/e cat insert_lin.txt" ${newfilename}.cpp  #GNU sed only
+sed -i "/#include <mplapack.h>/r insert_lin.txt" ${newfilename}.cpp  #GNU sed only
 rm -f ${oldfilename}.cpp
 done
 rm insert_lin.txt
