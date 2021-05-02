@@ -785,14 +785,14 @@ AM_CONDITIONAL(DO_LAPACKBENCH, test x$DO_LAPACKBENCH = xyes)
 if test x"$enable_optimization" = x"yes"; then
     case $target in
        powerpc*-*-*)
-           CFLAGS="$CFLAGS -O2 -mcpu=native -fomit-frame-pointer -finline-functions -funroll-all-loops"
-           CXXFLAGS="$CXXFLAGS -mcpu=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
-           FCFLAGS="$FCFLAGS -mcpu=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
+           CFLAGS="$CFLAGS -mcpu=native -O2 -finline-functions -funroll-all-loops"
+           CXXFLAGS="$CXXFLAGS -mcpu=native -O2 -finline-functions -funroll-all-loops"
+           FCFLAGS="$FCFLAGS -mcpu=native -O2 -finline-functions -funroll-all-loops"
        ;;
        * ) 
-           CFLAGS="$CFLAGS -O2 -march=native -fomit-frame-pointer -finline-functions -funroll-all-loops"
-           CXXFLAGS="$CXXFLAGS -march=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
-           FCFLAGS="$FCFLAGS -march=native -O2 -fomit-frame-pointer -finline-functions -funroll-all-loops"
+           CFLAGS="$CFLAGS -march=native -O2 -finline-functions -funroll-all-loops"
+           CXXFLAGS="$CXXFLAGS -march=native -O2 -finline-functions -funroll-all-loops"
+           FCFLAGS="$FCFLAGS -march=native -O2 -finline-functions -funroll-all-loops"
        ;;
     esac
     if test x"is_intelcc" = x"1"; then
