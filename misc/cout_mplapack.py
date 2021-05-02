@@ -750,6 +750,7 @@ def convert_to_int_literal(tokens):
   return int(strip_leading_zeros(string=tokens[0].value))
 
 def convert_data_type(conv_info, fdecl, crhs):
+  _csize="dummy"
   if (fdecl.data_type is None):
     assert conv_info.fproc is not None
     fdecl.data_type = conv_info.fproc.implicit.get(fdecl.id_tok.value[0])
@@ -766,7 +767,8 @@ def convert_data_type(conv_info, fdecl, crhs):
       csize = "1"
     else:
       csize = convert_tokens(conv_info=conv_info, tokens=size_tokens)
-    ctype = "char [%s]" % csize
+    ctype = "char"
+    _csize = csize
     if (crhs is None):
       crhs = "fem::char0"
   else:
@@ -825,7 +827,7 @@ def convert_data_type(conv_info, fdecl, crhs):
     else:
       raise RuntimeError(
         "Not implemented: data_type_code = %s" % data_type_code)
-  return ctype, crhs
+  return ctype, crhs, _csize
 
 def convert_dims(conv_info, dim_tokens):
   need_origin = False
@@ -877,12 +879,12 @@ def convert_dims_to_static_size(conv_info, dim_tokens):
   return " * ".join([parenthesize_if_necessary(expr=expr) for expr in terms])
 
 def convert_data_type_and_dims(conv_info, fdecl, crhs, force_arr=False):
-  ctype, crhs = convert_data_type(conv_info=conv_info, fdecl=fdecl, crhs=crhs)
+  ctype, crhs, _csize = convert_data_type(conv_info=conv_info, fdecl=fdecl, crhs=crhs)
+  if _csize == "":
+    _csize ="dummy"
   dt = fdecl.dim_tokens
   cdims = None
   cfill0 = "fem::fill0"
-  _ctype = ""
-  _t = ""
   if (dt is not None):
     atype = None
     if (    not force_arr
@@ -920,7 +922,7 @@ def convert_data_type_and_dims(conv_info, fdecl, crhs, force_arr=False):
     ctype = atype
     if (cdims is None):
       cdims = convert_dims(conv_info=conv_info, dim_tokens=dt)
-  return ctype, cdims, crhs, cfill0, _ctype, _t
+  return ctype, cdims, crhs, cfill0, _csize
 
 def ad_hoc_change_arr_to_arr_ref(ctype, cconst=""):
   return ctype.replace("arr<", "arr_%sref<" % cconst, 1)
@@ -933,7 +935,7 @@ def zero_shortcut_if_possible(ctype):
   return "fem::%s0" % ctype
 
 def convert_declaration(rapp, conv_info, fdecl, crhs, const):
-  ctype, cdims, crhs, cfill0, _ctype, _t  = convert_data_type_and_dims(
+  ctype, cdims, crhs, cfill0, _csize  = convert_data_type_and_dims(
     conv_info=conv_info, fdecl=fdecl, crhs=crhs)
   vname = conv_info.vmapped(fdecl=fdecl)
   if (cdims is None):
@@ -941,10 +943,13 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
     def const_qualifier():
       if (const): return "const "
       return ""
-    rapp("%s%s %s = %s;" % (const_qualifier(), ctype, vname, crhs))
+    if _csize == "" or _csize == "dummy":
+      rapp("%s%s %s = %s;" % (const_qualifier(), ctype, vname, crhs))
+    else:
+      rapp("%s%s %s[%s] = %s;" % (const_qualifier(), ctype, vname, _csize, crhs))
     return False
   if (cdims is Auto):
-    rapp("%s %s [%s];" % (_ctype, vname, _t ))
+    rapp("%s %s [%s];" % (_ctype, vname, _csize ))
   else:
     rapp("%s %s(%s, %s);" % (ctype, vname, cdims, cfill0))
   return True
