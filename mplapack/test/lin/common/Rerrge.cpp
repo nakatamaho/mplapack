@@ -63,7 +63,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
     //     ..
     //     .. Executable Statements ..
     //
-    nout = nunit;
+    INTEGER nout = nunit;
     char c2[2];
     c2[0] = path[1];
     c2[1] = path[2];
@@ -102,6 +102,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
     bool lerr;
     //
     INTEGER info = 0;
+    INTEGER infot = 0;
     REAL anrm = 0.0;
     REAL rcond = 0.0;
     REAL ccond = 0.0;

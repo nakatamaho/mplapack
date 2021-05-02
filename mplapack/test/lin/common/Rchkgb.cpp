@@ -27,12 +27,16 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Rchkgb(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, REAL *a, INTEGER const la, REAL *afac, INTEGER const lafac, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, REAL *a, INTEGER const la, REAL *afac, INTEGER const lafac, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Rchkgb);
     common_write write(cmn);
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     const INTEGER ntran = 3;
     if (is_called_first_time) {
@@ -45,20 +49,20 @@ void Rchkgb(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
             data_of_type_str(FEM_VALUES_AND_SIZE), transs;
         }
     }
-    str<3> path = char0;
+    char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed(fill0);
+    INTEGER iseed[4];
     const INTEGER nbw = 4;
-    arr_1d<nbw, int> klval(fill0);
-    arr_1d<nbw, int> kuval(fill0);
+    INTEGER klval[nbw];
+    INTEGER kuval[nbw];
     INTEGER im = 0;
     INTEGER m = 0;
     INTEGER in = 0;
     INTEGER n = 0;
-    char xtype = char0;
+    char[1] xtype;
     INTEGER nkl = 0;
     INTEGER nku = 0;
     const INTEGER ntypes = 8;
@@ -71,11 +75,11 @@ void Rchkgb(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
     INTEGER ldafac = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char type = char0;
+    char[1] type;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist = char0;
+    char[1] dist;
     INTEGER koff = 0;
     const REAL zero = 0.0;
     INTEGER info = 0;
@@ -88,7 +92,7 @@ void Rchkgb(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
     INTEGER nb = 0;
     bool trfcon = false;
     const INTEGER ntests = 7;
-    arr_1d<ntests, REAL> result(fill0);
+    REAL result[ntests];
     REAL anormo = 0.0;
     REAL anormi = 0.0;
     INTEGER ldb = 0;
@@ -99,9 +103,9 @@ void Rchkgb(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     INTEGER itran = 0;
-    char trans = char0;
+    char[1] trans;
     REAL rcondc = 0.0;
-    char norm = char0;
+    char[1] norm;
     INTEGER k = 0;
     REAL rcond = 0.0;
     //
@@ -339,7 +343,7 @@ void Rchkgb(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
                             //                       Compute the LU factorization of the band matrix.
                             //
                             if (m > 0 && n > 0) {
-                                Rlacpy("Full", kl + ku + 1, n, a, lda, &afac[(kl + 1) - 1], ldafac);
+                                Rlacpy("Full", kl + ku + 1, n, a, lda, afac[(kl + 1) - 1], ldafac);
                             }
                             srnamt = "Rgbtrf";
                             Rgbtrf(m, n, kl, ku, afac, ldafac, iwork, info);
@@ -435,7 +439,7 @@ void Rchkgb(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
                                         norm = "O";
                                     } else {
                                         rcondc = rcondi;
-                                        norm = "I";
+                                        norm = 'I';
                                     }
                                     //
                                     //+    TEST 2:
@@ -506,7 +510,7 @@ void Rchkgb(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
                                 } else {
                                     anorm = anormi;
                                     rcondc = rcondi;
-                                    norm = "I";
+                                    norm = 'I';
                                 }
                                 srnamt = "Rgbcon";
                                 Rgbcon(norm, n, kl, ku, afac, ldafac, iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);

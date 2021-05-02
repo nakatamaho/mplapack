@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void Rqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL &norma, INTEGER *iseed) {
@@ -72,7 +76,7 @@ void Rqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, REAL *a, INTE
     //
     //     scaled versions
     //
-    arr_1d<1, REAL> dummy(fill0);
+    REAL dummy[1];
     REAL smlnum = 0.0;
     const REAL one = 1.0;
     REAL bignum = 0.0;

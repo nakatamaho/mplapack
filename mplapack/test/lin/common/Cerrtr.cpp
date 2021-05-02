@@ -27,9 +27,13 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Cerrtr(common &cmn, const char *path, INTEGER const nunit) {
+void Cerrtr(const char *path, INTEGER const nunit) {
     common_write write(cmn);
     // COMMON infoc
     INTEGER &infot = cmn.infot;
@@ -37,7 +41,7 @@ void Cerrtr(common &cmn, const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -67,9 +71,9 @@ void Cerrtr(common &cmn, const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    str<2> c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
     const INTEGER nmax = 2;
-    arr_2d<nmax, nmax, COMPLEX> a(fill0);
+    COMPLEX a[nmax * nmax];
     a[(1 - 1)] = 1.0;
     a[(2 - 1) * lda] = 2.0;
     a[(2 - 1) + (2 - 1) * lda] = 3.e0;
@@ -79,12 +83,12 @@ void Cerrtr(common &cmn, const char *path, INTEGER const nunit) {
     //     Test error exits for the general triangular routines.
     //
     INTEGER info = 0;
-    arr_1d<nmax, COMPLEX> x(fill0);
-    arr_1d<nmax, COMPLEX> b(fill0);
-    arr_1d<nmax, REAL> r1(fill0);
-    arr_1d<nmax, REAL> r2(fill0);
-    arr_1d<nmax, COMPLEX> w(fill0);
-    arr_1d<nmax, REAL> rw(fill0);
+    COMPLEX x[nmax];
+    COMPLEX b[nmax];
+    REAL r1[nmax];
+    REAL r2[nmax];
+    COMPLEX w[nmax];
+    REAL rw[nmax];
     REAL rcond = 0.0;
     REAL scale = 0.0;
     if (Mlsamen(2, c2, "TR")) {

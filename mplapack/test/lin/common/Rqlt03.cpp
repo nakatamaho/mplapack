@@ -27,12 +27,16 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Rqlt03(common &cmn, INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c, REAL *cc, REAL *q, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
+void Rqlt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c, REAL *cc, REAL *q, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     FEM_CMN_SVE(Rqlt03);
     // COMMON srnamc
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     // SAVE
     //
@@ -104,14 +108,14 @@ void Rqlt03(common &cmn, INTEGER const m, INTEGER const n, INTEGER const k, REAL
     Rorgql(m, m, k, q, lda, &tau[(minmn - k + 1) - 1], work, lwork, info);
     //
     INTEGER iside = 0;
-    char side = char0;
+    char[1] side;
     INTEGER mc = 0;
     INTEGER nc = 0;
     INTEGER j = 0;
     REAL cnorm = 0.0;
     const REAL one = 1.0;
     INTEGER itrans = 0;
-    char trans = char0;
+    char[1] trans;
     REAL resid = 0.0;
     for (iside = 1; iside <= 2; iside = iside + 1) {
         if (iside == 1) {
@@ -136,9 +140,9 @@ void Rqlt03(common &cmn, INTEGER const m, INTEGER const n, INTEGER const k, REAL
         //
         for (itrans = 1; itrans <= 2; itrans = itrans + 1) {
             if (itrans == 1) {
-                trans = "N";
+                trans = 'N';
             } else {
-                trans = "T";
+                trans = 'T';
             }
             //
             //           Copy C

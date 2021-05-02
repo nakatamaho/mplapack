@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void program_Rchkrfp(INTEGER argc, char const *argv[]) {
@@ -91,7 +95,7 @@ void program_Rchkrfp(INTEGER argc, char const *argv[]) {
         nn = 0;
         fatal = true;
     }
-    arr_1d<maxin, int> nval(fill0);
+    INTEGER nval[maxin];
     INTEGER i = 0;
     {
         read_loop rloop(cmn, nin, star);
@@ -132,7 +136,7 @@ void program_Rchkrfp(INTEGER argc, char const *argv[]) {
         nns = 0;
         fatal = true;
     }
-    arr_1d<maxin, int> nsval(fill0);
+    INTEGER nsval[maxin];
     {
         read_loop rloop(cmn, nin, star);
         for (i = 1; i <= nns; i = i + 1) {
@@ -173,7 +177,7 @@ void program_Rchkrfp(INTEGER argc, char const *argv[]) {
         nnt = 0;
         fatal = true;
     }
-    arr_1d<ntypes, int> ntval(fill0);
+    INTEGER ntval[ntypes];
     {
         read_loop rloop(cmn, nin, star);
         for (i = 1; i <= nnt; i = i + 1) {
@@ -236,11 +240,11 @@ void program_Rchkrfp(INTEGER argc, char const *argv[]) {
     //     Test the routines: Rpftrf, Rpftri, Rpftrs (as in Rdrvpo).
     //     This also tests the routines: Rtfsm, Rtftri, Rtfttr, Rtrttf.
     //
-    arr_1d<3 * nmax, REAL> d_work_dlatms(fill0);
-    arr_1d<nmax, REAL> d_work_Rpot01(fill0);
-    arr_1d<nmax, REAL> d_work_Rlansy(fill0);
-    arr_1d<nmax, REAL> d_work_Rpot02(fill0);
-    arr_1d<nmax, REAL> d_work_Rpot03(fill0);
+    REAL d_work_dlatms[3 * nmax];
+    REAL d_work_Rpot01[nmax];
+    REAL d_work_Rlansy[nmax];
+    REAL d_work_Rpot02[nmax];
+    REAL d_work_Rpot03[nmax];
     Rdrvrfp(nout, nn, nval, nns, nsval, nnt, ntval, thresh, worka, workasav, workafac, workainv, workb, workbsav, workxact, workx, workarf, workarfinv, d_work_dlatms, d_work_Rpot01, d_temp_Rpot02, d_temp_Rpot03, d_work_Rlansy, d_work_Rpot02, d_work_Rpot03);
     //
     //     Test the routine: Rlansf

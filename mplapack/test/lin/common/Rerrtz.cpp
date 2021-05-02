@@ -27,9 +27,13 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Rerrtz(common &cmn, const char *path, INTEGER const nunit) {
+void Rerrtz(const char *path, INTEGER const nunit) {
     common_write write(cmn);
     // COMMON infoc
     INTEGER &infot = cmn.infot;
@@ -65,19 +69,19 @@ void Rerrtz(common &cmn, const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    str<2> c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
     const INTEGER nmax = 2;
-    arr_2d<nmax, nmax, REAL> a(fill0);
+    REAL a[nmax * nmax];
     a[(1 - 1)] = 1.e+0;
     a[(2 - 1) * lda] = 2.e+0;
     a[(2 - 1) + (2 - 1) * lda] = 3.e+0;
     a[(2 - 1)] = 4.e+0;
-    arr_1d<nmax, REAL> w(fill0);
+    REAL w[nmax];
     w[1 - 1] = 0.0;
     w[2 - 1] = 0.0;
     ok = true;
     //
-    arr_1d<nmax, REAL> tau(fill0);
+    REAL tau[nmax];
     INTEGER info = 0;
     if (Mlsamen(2, c2, "TZ")) {
         //

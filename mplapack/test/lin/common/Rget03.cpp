@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void Rget03(INTEGER const n, REAL *a, INTEGER const lda, REAL *ainv, INTEGER const ldainv, REAL *work, INTEGER const ldwork, REAL *rwork, REAL &rcond, REAL &resid) {
@@ -88,7 +92,7 @@ void Rget03(INTEGER const n, REAL *a, INTEGER const lda, REAL *ainv, INTEGER con
     //
     resid = Rlange("1", n, n, work, ldwork, rwork);
     //
-    resid = ((resid * rcond) / eps) / castREAL(n);
+    resid = ((resid * rcond) / eps) / n.real();
     //
     //     End of Rget03
     //

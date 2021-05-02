@@ -27,12 +27,16 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Cqrt03(common &cmn, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMPLEX *c, COMPLEX *cc, COMPLEX *q, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
+void Cqrt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMPLEX *c, COMPLEX *cc, COMPLEX *q, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     FEM_CMN_SVE(Cqrt03);
     // COMMON srnamc
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     // SAVE
     //
@@ -87,7 +91,7 @@ void Cqrt03(common &cmn, INTEGER const m, INTEGER const n, INTEGER const k, COMP
     Cungqr(m, m, k, q, lda, tau, work, lwork, info);
     //
     INTEGER iside = 0;
-    char side = char0;
+    char[1] side;
     INTEGER mc = 0;
     INTEGER nc = 0;
     INTEGER j = 0;
@@ -95,7 +99,7 @@ void Cqrt03(common &cmn, INTEGER const m, INTEGER const n, INTEGER const k, COMP
     const REAL zero = 0.0;
     const REAL one = 1.0;
     INTEGER itrans = 0;
-    char trans = char0;
+    char[1] trans;
     REAL resid = 0.0;
     for (iside = 1; iside <= 2; iside = iside + 1) {
         if (iside == 1) {
@@ -120,9 +124,9 @@ void Cqrt03(common &cmn, INTEGER const m, INTEGER const n, INTEGER const k, COMP
         //
         for (itrans = 1; itrans <= 2; itrans = itrans + 1) {
             if (itrans == 1) {
-                trans = "N";
+                trans = 'N';
             } else {
-                trans = "C";
+                trans = 'C';
             }
             //
             //           Copy C

@@ -27,9 +27,13 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Cerrqp(common &cmn, const char *path, INTEGER const nunit) {
+void Cerrqp(const char *path, INTEGER const nunit) {
     common_write write(cmn);
     // COMMON infoc
     INTEGER &infot = cmn.infot;
@@ -66,10 +70,10 @@ void Cerrqp(common &cmn, const char *path, INTEGER const nunit) {
     //     .. Executable Statements ..
     //
     nout = nunit;
-    str<2> c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
     const INTEGER nmax = 3;
     INTEGER lw = nmax + 1;
-    arr_2d<nmax, nmax, COMPLEX> a(fill0);
+    COMPLEX a[nmax * nmax];
     a[(1 - 1)] = COMPLEX(1.0, -1.0);
     a[(2 - 1) * lda] = COMPLEX(2.0e+0, -2.0e+0);
     a[(2 - 1) + (2 - 1) * lda] = COMPLEX(3.0e+0, -3.0e+0);
@@ -79,10 +83,10 @@ void Cerrqp(common &cmn, const char *path, INTEGER const nunit) {
     //
     //     Test error exits for QR factorization with pivoting
     //
-    arr_1d<nmax, int> ip(fill0);
-    arr_1d<nmax, COMPLEX> tau(fill0);
-    arr_1d<2 * nmax + 3 * nmax, COMPLEX> w(fill0);
-    arr_1d<2 * nmax, REAL> rw(fill0);
+    INTEGER ip[nmax];
+    COMPLEX tau[nmax];
+    COMPLEX w[2 * nmax + 3 * nmax];
+    REAL rw[2 * nmax];
     INTEGER info = 0;
     if (Mlsamen(2, c2, "QP")) {
         //

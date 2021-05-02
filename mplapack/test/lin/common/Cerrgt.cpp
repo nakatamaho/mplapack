@@ -27,9 +27,13 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Cerrgt(common &cmn, const char *path, INTEGER const nunit) {
+void Cerrgt(const char *path, INTEGER const nunit) {
     common_write write(cmn);
     // COMMON infoc
     INTEGER &infot = cmn.infot;
@@ -37,7 +41,7 @@ void Cerrgt(common &cmn, const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -67,13 +71,13 @@ void Cerrgt(common &cmn, const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    str<2> c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
     INTEGER i = 0;
     const INTEGER nmax = 2;
-    arr_1d<nmax, REAL> d(fill0);
-    arr_1d<nmax, COMPLEX> e(fill0);
-    arr_1d<nmax, COMPLEX> dl(fill0);
-    arr_1d<nmax, COMPLEX> du(fill0);
+    REAL d[nmax];
+    COMPLEX e[nmax];
+    COMPLEX dl[nmax];
+    COMPLEX du[nmax];
     for (i = 1; i <= nmax; i = i + 1) {
         d[i - 1] = 1.0;
         e[i - 1] = 2.0;
@@ -83,20 +87,20 @@ void Cerrgt(common &cmn, const char *path, INTEGER const nunit) {
     REAL anorm = 1.0;
     ok = true;
     //
-    arr_1d<nmax, COMPLEX> du2(fill0);
-    arr_1d<nmax, int> ip(fill0);
+    COMPLEX du2[nmax];
+    INTEGER ip[nmax];
     INTEGER info = 0;
-    arr_1d<nmax, COMPLEX> x(fill0);
-    arr_1d<nmax, COMPLEX> dlf(fill0);
-    arr_1d<nmax, COMPLEX> ef(fill0);
-    arr_1d<nmax, COMPLEX> duf(fill0);
-    arr_1d<nmax, COMPLEX> b(fill0);
-    arr_1d<nmax, REAL> r1(fill0);
-    arr_1d<nmax, REAL> r2(fill0);
-    arr_1d<nmax, COMPLEX> w(fill0);
-    arr_1d<nmax, REAL> rw(fill0);
+    COMPLEX x[nmax];
+    COMPLEX dlf[nmax];
+    COMPLEX ef[nmax];
+    COMPLEX duf[nmax];
+    COMPLEX b[nmax];
+    REAL r1[nmax];
+    REAL r2[nmax];
+    COMPLEX w[nmax];
+    REAL rw[nmax];
     REAL rcond = 0.0;
-    arr_1d<nmax, REAL> df(fill0);
+    REAL df[nmax];
     if (Mlsamen(2, c2, "GT")) {
         //
         //        Test error exits for the general tridiagonal routines.

@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 REAL Cqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *work, INTEGER const lwork) {
@@ -87,7 +91,7 @@ REAL Cqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
     //     Copy and scale A
     //
     Clacpy("All", m, n, a, lda, work, ldwork);
-    arr_1d<1, REAL> rwork(fill0);
+    REAL rwork[1];
     REAL anrm = Clange("M", m, n, work, ldwork, rwork);
     const REAL one = 1.0;
     INTEGER info = 0;
@@ -157,7 +161,7 @@ REAL Cqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         //
     }
     //
-    return_value = err / ((max(m, n, nrhs)).real() * Rlamch("Epsilon"));
+    return_value = err / ((max({m, n, nrhs})).real() * Rlamch("Epsilon"));
     //
     return return_value;
     //

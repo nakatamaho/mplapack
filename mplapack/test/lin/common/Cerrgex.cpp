@@ -27,9 +27,13 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Cerrge(common &cmn, const char *path, INTEGER const nunit) {
+void Cerrge(const char *path, INTEGER const nunit) {
     common_write write(cmn);
     // COMMON infoc
     INTEGER &infot = cmn.infot;
@@ -37,7 +41,7 @@ void Cerrge(common &cmn, const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -69,23 +73,23 @@ void Cerrge(common &cmn, const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    str<2> c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
     //
     //     Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 4;
     INTEGER i = 0;
-    arr_2d<nmax, nmax, COMPLEX> a(fill0);
-    arr_2d<nmax, nmax, COMPLEX> af(fill0);
-    arr_1d<nmax, COMPLEX> b(fill0);
-    arr_1d<nmax, REAL> r1(fill0);
-    arr_1d<nmax, REAL> r2(fill0);
-    arr_1d<2 * nmax, COMPLEX> w(fill0);
-    arr_1d<nmax, COMPLEX> x(fill0);
-    arr_1d<nmax, REAL> cs(fill0);
-    arr_1d<nmax, REAL> rs(fill0);
-    arr_1d<nmax, int> ip(fill0);
+    COMPLEX a[nmax * nmax];
+    COMPLEX af[nmax * nmax];
+    COMPLEX b[nmax];
+    REAL r1[nmax];
+    REAL r2[nmax];
+    COMPLEX w[2 * nmax];
+    COMPLEX x[nmax];
+    REAL cs[nmax];
+    REAL rs[nmax];
+    INTEGER ip[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = COMPLEX(1.0 / (i + j).real(), -1.0 / (i + j).real());
@@ -106,14 +110,14 @@ void Cerrge(common &cmn, const char *path, INTEGER const nunit) {
     //     of a general matrix.
     //
     INTEGER info = 0;
-    arr_1d<nmax, REAL> r(fill0);
+    REAL r[nmax];
     INTEGER n_err_bnds = 0;
     INTEGER nparams = 0;
-    char eq = char0;
+    char[1] eq;
     REAL rcond = 0.0;
     REAL berr = 0.0;
-    arr_2d<nmax, 3, COMPLEX> err_bnds_n(fill0);
-    arr_2d<nmax, 3, COMPLEX> err_bnds_c(fill0);
+    COMPLEX err_bnds_n[nmax * 3];
+    COMPLEX err_bnds_c[nmax * 3];
     COMPLEX params = 0.0;
     REAL anrm = 0.0;
     REAL ccond = 0.0;

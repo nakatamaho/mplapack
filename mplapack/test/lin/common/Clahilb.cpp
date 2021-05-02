@@ -27,9 +27,13 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Clahilb(common &cmn, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL *work, INTEGER &info, const char *path) {
+void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL *work, INTEGER &info, const char *path) {
     FEM_CMN_SVE(Clahilb);
     // SAVE
     //
@@ -62,7 +66,7 @@ void Clahilb(common &cmn, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEG
     //     .. External Functions
     //     ..
     //     .. Executable Statements ..
-    str<2> c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
     //
     //     Test the input arguments
     //

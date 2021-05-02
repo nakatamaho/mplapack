@@ -27,21 +27,25 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Cchkq3(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, REAL const thresh, COMPLEX *a, COMPLEX *copya, REAL *s, COMPLEX *tau, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, REAL const thresh, COMPLEX *a, COMPLEX *copya, REAL *s, COMPLEX *tau, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Cchkq3);
     common_write write(cmn);
     if (is_called_first_time) {
         static const INTEGER values[] = {1988, 1989, 1990, 1991};
         data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
     }
-    str<3> path = char0;
+    char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed(fill0);
+    INTEGER iseed[4];
     REAL eps = 0.0;
     INTEGER im = 0;
     INTEGER m = 0;
@@ -65,7 +69,7 @@ void Cchkq3(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
     INTEGER nx = 0;
     INTEGER lw = 0;
     const INTEGER ntests = 3;
-    arr_1d<ntests, REAL> result(fill0);
+    REAL result[ntests];
     INTEGER k = 0;
     //
     //  -- LAPACK test routine --
@@ -125,7 +129,7 @@ void Cchkq3(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
             //
             n = nval[in - 1];
             mnmin = min(m, n);
-            lwork = max((INTEGER)1, m * max(m, n) + 4 * mnmin + max(m, n));
+            lwork = max({(INTEGER)1, m * max(m, n) + 4 * mnmin + max(m, n)});
             //
             for (imode = 1; imode <= ntypes; imode = imode + 1) {
                 if (!dotype[imode - 1]) {

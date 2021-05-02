@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag, INTEGER *iseed, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, REAL *work, INTEGER &info) {
@@ -54,7 +58,7 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //     ..
     //     .. Executable Statements ..
     //
-    str<3> path = "Double precision";
+    char[3] path = "Double precision";
     path[(2 - 1) + (3 - 1) * ldpath] = "TR";
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
@@ -78,13 +82,13 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //     Call Rlatb4 to set parameters for SLATMS.
     //
     bool upper = Mlsame(uplo, "U");
-    char type = char0;
+    char[1] type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist = char0;
+    char[1] dist;
     if (upper) {
         Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
     } else {

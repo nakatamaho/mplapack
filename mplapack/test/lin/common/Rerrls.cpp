@@ -27,9 +27,13 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Rerrls(common &cmn, const char *path, INTEGER const nunit) {
+void Rerrls(const char *path, INTEGER const nunit) {
     common_write write(cmn);
     // COMMON infoc
     INTEGER &infot = cmn.infot;
@@ -37,7 +41,7 @@ void Rerrls(common &cmn, const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -67,22 +71,22 @@ void Rerrls(common &cmn, const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    str<2> c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
     const INTEGER nmax = 2;
-    arr_2d<nmax, nmax, REAL> a(fill0);
+    REAL a[nmax * nmax];
     a[(1 - 1)] = 1.0;
     a[(2 - 1) * lda] = 2.0e+0;
     a[(2 - 1) + (2 - 1) * lda] = 3.0e+0;
     a[(2 - 1)] = 4.0e+0;
     ok = true;
     //
-    arr_2d<nmax, nmax, REAL> b(fill0);
-    arr_1d<nmax, REAL> w(fill0);
+    REAL b[nmax * nmax];
+    REAL w[nmax];
     INTEGER info = 0;
-    arr_1d<nmax, REAL> s(fill0);
+    REAL s[nmax];
     REAL rcond = 0.0;
     INTEGER irnk = 0;
-    arr_1d<nmax, int> ip(fill0);
+    INTEGER ip[nmax];
     if (Mlsamen(2, c2, "LS")) {
         //
         //        Test error exits for the least squares driver routines.

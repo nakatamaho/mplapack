@@ -27,13 +27,17 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Rdrvrf4(common &cmn, INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, REAL *c1, REAL *c2, INTEGER const ldc, REAL *crf, REAL *a, INTEGER const lda, REAL *d_work_Rlange) {
+void Rdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, REAL *c1, REAL *c2, INTEGER const ldc, REAL *crf, REAL *a, INTEGER const lda, REAL *d_work_Rlange) {
     FEM_CMN_SVE(Rdrvrf4);
     common_write write(cmn);
     // COMMON srnamc
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     // SAVE
     //
@@ -93,7 +97,7 @@ void Rdrvrf4(common &cmn, INTEGER const nout, INTEGER const nn, INTEGER *nval, R
     INTEGER nfail = 0;
     INTEGER info = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed(fill0);
+    INTEGER iseed[4];
     for (i = 1; i <= 4; i = i + 1) {
         iseed[i - 1] = iseedy[i - 1];
     }
@@ -104,11 +108,11 @@ void Rdrvrf4(common &cmn, INTEGER const nout, INTEGER const nn, INTEGER *nval, R
     INTEGER iik = 0;
     INTEGER k = 0;
     INTEGER iform = 0;
-    char cform = char0;
+    char[1] cform;
     INTEGER iuplo = 0;
-    char uplo = char0;
+    char[1] uplo;
     INTEGER itrans = 0;
-    char trans = char0;
+    char[1] trans;
     INTEGER ialpha = 0;
     const REAL zero = 0.0;
     REAL alpha = 0.0;
@@ -118,7 +122,7 @@ void Rdrvrf4(common &cmn, INTEGER const nout, INTEGER const nn, INTEGER *nval, R
     REAL norma = 0.0;
     REAL normc = 0.0;
     const INTEGER ntests = 1;
-    arr_1d<ntests, REAL> result(fill0);
+    REAL result[ntests];
     for (iin = 1; iin <= nn; iin = iin + 1) {
         //
         n = nval[iin - 1];

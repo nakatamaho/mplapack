@@ -27,12 +27,16 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Rdrvgb(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, REAL *a, INTEGER const la, REAL *afb, INTEGER const lafb, REAL *asav, REAL *b, REAL *bsav, REAL *x, REAL *xact, REAL *s, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, REAL *a, INTEGER const la, REAL *afb, INTEGER const lafb, REAL *asav, REAL *b, REAL *bsav, REAL *x, REAL *xact, REAL *s, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Rdrvgb);
     common_write write(cmn);
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     const INTEGER ntran = 3;
     if (is_called_first_time) {
@@ -53,18 +57,18 @@ void Rdrvgb(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
             data_of_type_str(FEM_VALUES_AND_SIZE), equeds;
         }
     }
-    str<3> path = char0;
+    char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed(fill0);
+    INTEGER iseed[4];
     INTEGER nb = 0;
     INTEGER nbmin = 0;
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER ldb = 0;
-    char xtype = char0;
+    char[1] xtype;
     INTEGER nkl = 0;
     INTEGER nku = 0;
     const INTEGER ntypes = 8;
@@ -77,11 +81,11 @@ void Rdrvgb(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
     INTEGER ldafb = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char type = char0;
+    char[1] type;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist = char0;
+    char[1] dist;
     const REAL one = 1.0;
     REAL rcondc = 0.0;
     INTEGER info = 0;
@@ -92,10 +96,10 @@ void Rdrvgb(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
     const REAL zero = 0.0;
     INTEGER j = 0;
     INTEGER iequed = 0;
-    char equed = char0;
+    char[1] equed;
     INTEGER nfact = 0;
     INTEGER ifact = 0;
-    char fact = char0;
+    char[1] fact;
     bool prefac = false;
     bool nofact = false;
     bool equil = false;
@@ -110,9 +114,9 @@ void Rdrvgb(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
     REAL anormi = 0.0;
     REAL ainvnm = 0.0;
     INTEGER itran = 0;
-    char trans = char0;
+    char[1] trans;
     const INTEGER ntests = 7;
-    arr_1d<ntests, REAL> result(fill0);
+    REAL result[ntests];
     INTEGER nt = 0;
     INTEGER k = 0;
     REAL rcond = 0.0;
@@ -191,7 +195,7 @@ void Rdrvgb(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
         //
         //        Set limits on the number of loop iterations.
         //
-        nkl = max((INTEGER)1, min(n, 4));
+        nkl = max({(INTEGER)1, min(n, 4)});
         if (n == 0) {
             nkl = 1;
         }

@@ -27,9 +27,13 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Rchkorhr_col(common &cmn, REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nout) {
+void Rchkorhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nout) {
     common_write write(cmn);
     //
     //  -- LAPACK test routine --
@@ -61,7 +65,7 @@ void Rchkorhr_col(common &cmn, REAL const thresh, bool const tsterr, INTEGER con
     //
     //     Initialize constants
     //
-    char path = "D";
+    char[1] path = "D";
     path[(2 - 1) + (3 - 1) * ldpath] = "HH";
     INTEGER nrun = 0;
     INTEGER nfail = 0;
@@ -87,7 +91,7 @@ void Rchkorhr_col(common &cmn, REAL const thresh, bool const tsterr, INTEGER con
     INTEGER inb2 = 0;
     INTEGER nb2 = 0;
     const INTEGER ntests = 6;
-    arr_1d<ntests, REAL> result(fill0);
+    REAL result[ntests];
     INTEGER t = 0;
     for (i = 1; i <= nm; i = i + 1) {
         m = mval[i - 1];

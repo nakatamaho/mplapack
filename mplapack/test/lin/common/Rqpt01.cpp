@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 REAL Rqpt01(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af, INTEGER const lda, REAL *tau, INTEGER *jpvt, REAL *work, INTEGER const lwork) {
@@ -73,7 +77,7 @@ REAL Rqpt01(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
         return return_value;
     }
     //
-    arr_1d<1, REAL> rwork(fill0);
+    REAL rwork[1];
     REAL norma = Rlange("One-norm", m, n, a, lda, rwork);
     //
     INTEGER j = 0;

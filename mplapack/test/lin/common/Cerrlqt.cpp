@@ -27,9 +27,13 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Cerrlqt(common &cmn, const char *path, INTEGER const nunit) {
+void Cerrlqt(const char *path, INTEGER const nunit) {
     common_write write(cmn);
     // COMMON infoc
     INTEGER &infot = cmn.infot;
@@ -37,7 +41,7 @@ void Cerrlqt(common &cmn, const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -73,10 +77,10 @@ void Cerrlqt(common &cmn, const char *path, INTEGER const nunit) {
     INTEGER j = 0;
     const INTEGER nmax = 2;
     INTEGER i = 0;
-    arr_2d<nmax, nmax, COMPLEX> a(fill0);
-    arr_2d<nmax, nmax, COMPLEX> c(fill0);
-    arr_2d<nmax, nmax, COMPLEX> t(fill0);
-    arr_1d<nmax, COMPLEX> w(fill0);
+    COMPLEX a[nmax * nmax];
+    COMPLEX c[nmax * nmax];
+    COMPLEX t[nmax * nmax];
+    COMPLEX w[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = 1.0 / COMPLEX((i + j).real(), 0.0);

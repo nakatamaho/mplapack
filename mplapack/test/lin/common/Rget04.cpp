@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void Rget04(INTEGER const n, INTEGER const nrhs, REAL *x, INTEGER const ldx, REAL *xact, INTEGER const ldxact, REAL const rcond, REAL &resid) {
@@ -79,7 +83,7 @@ void Rget04(INTEGER const n, INTEGER const nrhs, REAL *x, INTEGER const ldx, REA
     REAL diffnm = 0.0;
     INTEGER i = 0;
     for (j = 1; j <= nrhs; j = j + 1) {
-        ix = iRamax(n, &xact[(j - 1) * ldxact], 1);
+        ix = iRamax(n, xact[(j - 1) * ldxact], 1);
         xnorm = abs(xact[(ix - 1) + (j - 1) * ldxact]);
         diffnm = zero;
         for (i = 1; i <= n; i = i + 1) {

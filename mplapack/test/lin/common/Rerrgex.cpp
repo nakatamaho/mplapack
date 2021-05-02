@@ -27,9 +27,13 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Rerrge(common &cmn, const char *path, INTEGER const nunit) {
+void Rerrge(const char *path, INTEGER const nunit) {
     common_write write(cmn);
     // COMMON infoc
     INTEGER &infot = cmn.infot;
@@ -37,7 +41,7 @@ void Rerrge(common &cmn, const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -69,25 +73,25 @@ void Rerrge(common &cmn, const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    str<2> c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
     //
     //     Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 4;
     INTEGER i = 0;
-    arr_2d<nmax, nmax, REAL> a(fill0);
-    arr_2d<nmax, nmax, REAL> af(fill0);
-    arr_1d<nmax, REAL> b(fill0);
-    arr_1d<nmax, REAL> r1(fill0);
-    arr_1d<nmax, REAL> r2(fill0);
+    REAL a[nmax * nmax];
+    REAL af[nmax * nmax];
+    REAL b[nmax];
+    REAL r1[nmax];
+    REAL r2[nmax];
     const INTEGER lw = 3 * nmax;
-    arr_1d<lw, REAL> w(fill0);
-    arr_1d<nmax, REAL> x(fill0);
-    arr_1d<nmax, REAL> c(fill0);
-    arr_1d<nmax, REAL> r(fill0);
-    arr_1d<nmax, int> ip(fill0);
-    arr_1d<nmax, int> iw(fill0);
+    REAL w[lw];
+    REAL x[nmax];
+    REAL c[nmax];
+    REAL r[nmax];
+    INTEGER ip[nmax];
+    INTEGER iw[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
@@ -108,12 +112,12 @@ void Rerrge(common &cmn, const char *path, INTEGER const nunit) {
     INTEGER info = 0;
     INTEGER n_err_bnds = 0;
     INTEGER nparams = 0;
-    char eq = char0;
+    char[1] eq;
     REAL rcond = 0.0;
     REAL berr = 0.0;
-    arr_2d<nmax, 3, REAL> err_bnds_n(fill0);
-    arr_2d<nmax, 3, REAL> err_bnds_c(fill0);
-    arr_1d<1, REAL> params(fill0);
+    REAL err_bnds_n[nmax * 3];
+    REAL err_bnds_c[nmax * 3];
+    REAL params[1];
     REAL anrm = 0.0;
     REAL ccond = 0.0;
     if (Mlsamen(2, c2, "GE")) {

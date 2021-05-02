@@ -27,12 +27,16 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Cdrvpp(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *asav, COMPLEX *b, COMPLEX *bsav, COMPLEX *x, COMPLEX *xact, REAL *s, COMPLEX *work, REAL *rwork, INTEGER const nout) {
+void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const  /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *asav, COMPLEX *b, COMPLEX *bsav, COMPLEX *x, COMPLEX *xact, REAL *s, COMPLEX *work, REAL *rwork, INTEGER const nout) {
     FEM_CMN_SVE(Cdrvpp);
     common_write write(cmn);
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     if (is_called_first_time) {
         {
@@ -56,31 +60,31 @@ void Cdrvpp(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
             data_of_type_str(FEM_VALUES_AND_SIZE), equeds;
         }
     }
-    str<3> path = char0;
+    char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed(fill0);
+    INTEGER iseed[4];
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
     INTEGER npp = 0;
-    char xtype = char0;
+    char[1] xtype;
     const INTEGER ntypes = 9;
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo = char0;
-    char packit = char0;
-    char type = char0;
+    char[1] uplo;
+    char[1] packit;
+    char[1] type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist = char0;
+    char[1] dist;
     const REAL one = 1.0;
     REAL rcondc = 0.0;
     INTEGER info = 0;
@@ -88,10 +92,10 @@ void Cdrvpp(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
     INTEGER ioff = 0;
     const REAL zero = 0.0;
     INTEGER iequed = 0;
-    char equed = char0;
+    char[1] equed;
     INTEGER nfact = 0;
     INTEGER ifact = 0;
-    char fact = char0;
+    char[1] fact;
     bool prefac = false;
     bool nofact = false;
     bool equil = false;
@@ -100,7 +104,7 @@ void Cdrvpp(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
     REAL roldc = 0.0;
     REAL ainvnm = 0.0;
     const INTEGER ntests = 6;
-    arr_1d<ntests, REAL> result(fill0);
+    REAL result[ntests];
     INTEGER nt = 0;
     INTEGER k = 0;
     REAL rcond = 0.0;

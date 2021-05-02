@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void Cget01(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, INTEGER *ipiv, REAL *rwork, REAL &resid) {
@@ -76,24 +80,24 @@ void Cget01(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     for (k = n; k >= 1; k = k - 1) {
         if (k > m) {
-            Ctrmv("Lower", "No transpose", "Unit", m, afac, ldafac, &afac[(k - 1) * ldafac], 1);
+            Ctrmv("Lower", "No transpose", "Unit", m, afac, ldafac, afac[(k - 1) * ldafac], 1);
         } else {
             //
             //           Compute elements (K+1:M,K)
             //
             t = afac[(k - 1) + (k - 1) * ldafac];
             if (k + 1 <= m) {
-                Cscal(m - k, t, &afac[((k + 1) - 1) + (k - 1) * ldafac], 1);
-                Cgemv("No transpose", m - k, k - 1, cone, &afac[((k + 1) - 1)], ldafac, &afac[(k - 1) * ldafac], 1, cone, &afac[((k + 1) - 1) + (k - 1) * ldafac], 1);
+                Cscal(m - k, t, afac[((k + 1) - 1) + (k - 1) * ldafac], 1);
+                Cgemv("No transpose", m - k, k - 1, cone, afac[((k + 1) - 1)], ldafac, afac[(k - 1) * ldafac], 1, cone, afac[((k + 1) - 1) + (k - 1) * ldafac], 1);
             }
             //
             //           Compute the (K,K) element
             //
-            afac[(k - 1) + (k - 1) * ldafac] = t + Cdotu(k - 1, &afac[(k - 1)], ldafac, &afac[(k - 1) * ldafac], 1);
+            afac[(k - 1) + (k - 1) * ldafac] = t + Cdotu(k - 1, afac[(k - 1)], ldafac, afac[(k - 1) * ldafac], 1);
             //
             //           Compute elements (1:K-1,K)
             //
-            Ctrmv("Lower", "No transpose", "Unit", k - 1, afac, ldafac, &afac[(k - 1) * ldafac], 1);
+            Ctrmv("Lower", "No transpose", "Unit", k - 1, afac, ldafac, afac[(k - 1) * ldafac], 1);
         }
     }
     Claswp(n, afac, ldafac, 1, min(m, n), ipiv, -1);

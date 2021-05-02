@@ -27,13 +27,17 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Rdrvrf2(common &cmn, INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEGER const lda, REAL *arf, REAL *ap, REAL *asav) {
+void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEGER const lda, REAL *arf, REAL *ap, REAL *asav) {
     FEM_CMN_SVE(Rdrvrf2);
     common_write write(cmn);
     // COMMON srnamc
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     // SAVE
     //
@@ -85,7 +89,7 @@ void Rdrvrf2(common &cmn, INTEGER const nout, INTEGER const nn, INTEGER *nval, R
     INTEGER nerrs = 0;
     INTEGER info = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed(fill0);
+    INTEGER iseed[4];
     for (i = 1; i <= 4; i = i + 1) {
         iseed[i - 1] = iseedy[i - 1];
     }
@@ -93,10 +97,10 @@ void Rdrvrf2(common &cmn, INTEGER const nout, INTEGER const nn, INTEGER *nval, R
     INTEGER iin = 0;
     INTEGER n = 0;
     INTEGER iuplo = 0;
-    char uplo = char0;
+    char[1] uplo;
     bool lower = false;
     INTEGER iform = 0;
-    char cform = char0;
+    char[1] cform;
     INTEGER j = 0;
     bool ok1 = false;
     bool ok2 = false;

@@ -27,9 +27,13 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Clatb5(common &cmn, const char *path, INTEGER const imat, INTEGER const n, char *type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, char *dist) {
+void Clatb5(const char *path, INTEGER const imat, INTEGER const n, char *type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, char *dist) {
     FEM_CMN_SVE(Clatb5);
     // SAVE
     REAL &badc1 = sve.badc1;
@@ -89,7 +93,7 @@ void Clatb5(common &cmn, const char *path, INTEGER const imat, INTEGER const n, 
         large = one / small;
     }
     //
-    str<2> c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
     //
     //     Set some parameters
     //

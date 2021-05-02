@@ -27,25 +27,28 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
-
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+#include <mplapack_lin.h>
+#include <mplapack.h>
 
 void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const ntypes, INTEGER const nin, INTEGER const nout) {
-    common cmn;
+    FEM_CMN_SVE(Alareq);
     common_read read(cmn);
     common_write write(cmn);
-
+    char[10] &intstr = sve.intstr;
+    if (is_called_first_time) {
+        intstr = "0123456789";
+    }
     INTEGER i = 0;
     bool firstt = false;
-    char line[80];
+    char[80] line;
     INTEGER lenp = 0;
     INTEGER j = 0;
     INTEGER nreq[100];
     INTEGER i1 = 0;
-    char c1;
+    char[1] c1;
     INTEGER k = 0;
     INTEGER ic = 0;
     INTEGER nt = 0;
@@ -81,9 +84,6 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
             dotype[i - 1] = true;
         }
     } else {
-        printf("not yet : Rlareq.cpp\n");
-        exit(1);
-#ifdef NOTYET
         for (i = 1; i <= ntypes; i = i + 1) {
             dotype[i - 1] = false;
         }
@@ -94,7 +94,7 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
         if (nmats > 0) {
             try {
                 read(nin, "(a80)"), line;
-            } catch (read_end const) {
+            } catch (read_end const ) {
                 goto statement_90;
             }
             lenp = len[line - 1];
@@ -151,7 +151,6 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
                     firstt = false;
                     write(nout, "(' *** Warning:  duplicate request of matrix type ',i2,' for ',"
                                 "a3)"),
-
                         nt, path;
                 }
                 dotype[nt - 1] = true;
@@ -162,7 +161,6 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
             }
         }
     statement_80:;
-#endif
     }
     return;
 //
@@ -172,6 +170,7 @@ statement_90:
                 "' right number of types for each path',/)"),
         path;
     write(nout, star);
+    FEM_STOP(0);
     //
     //     End of Alareq
     //

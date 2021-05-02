@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -44,7 +44,9 @@ void chkxer(const char *srnamt, INTEGER const &infot, INTEGER const &nout, bool 
     memset(srnmat_trimmed, '\0', sizeof(srnmat_trimmed));
     strncpy(srnmat_trimmed, srnamt, 6);
     if (!lerr) {
-        printf(" *** Illegal value of parameter number %2ld not detected by %s ***\n", infot, srnamt);
+        write(nout, "(' *** Illegal value of parameter number ',i2,' not detected by ',a6,"
+                    "' ***')"),
+            infot, srnamt_trimmed;
         ok = false;
     }
     lerr = false;

@@ -27,9 +27,13 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Cchkqrt(common &cmn, REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nout) {
+void Cchkqrt(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nout) {
     common_write write(cmn);
     //
     //  -- LAPACK test routine --
@@ -59,7 +63,7 @@ void Cchkqrt(common &cmn, REAL const thresh, bool const tsterr, INTEGER const nm
     //
     //     Initialize constants
     //
-    str<3> path = "Z";
+    char[3] path = "Z";
     path[(2 - 1) + (3 - 1) * ldpath] = "QT";
     INTEGER nrun = 0;
     INTEGER nfail = 0;
@@ -82,7 +86,7 @@ void Cchkqrt(common &cmn, REAL const thresh, bool const tsterr, INTEGER const nm
     INTEGER k = 0;
     INTEGER nb = 0;
     const INTEGER ntests = 6;
-    arr_1d<ntests, REAL> result(fill0);
+    REAL result[ntests];
     INTEGER t = 0;
     for (i = 1; i <= nm; i = i + 1) {
         m = mval[i - 1];

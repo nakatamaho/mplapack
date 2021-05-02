@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void Rgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL *a, INTEGER const lda, REAL *afac, INTEGER const ldafac, INTEGER *ipiv, REAL *work, REAL &resid) {
@@ -74,7 +78,7 @@ void Rgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         i1 = max(kd + 1 - j, 1);
         i2 = min(kd + m - j, kl + kd);
         if (i2 >= i1) {
-            anorm = max(anorm, Rasum(i2 - i1 + 1, &a[(i1 - 1) + (j - 1) * lda], 1));
+            anorm = max({anorm, Rasum(i2 - i1 + 1, &a[(i1 - 1) + (j - 1) * lda], 1)});
         }
     }
     //
@@ -99,7 +103,7 @@ void Rgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         jl = min(kl, m - j);
         lenj = min(m, j) - j + ju + 1;
         if (lenj > 0) {
-            Rcopy(lenj, &afac[((kd - ju) - 1) + (j - 1) * ldafac], 1, work, 1);
+            Rcopy(lenj, afac[((kd - ju) - 1) + (j - 1) * ldafac], 1, work, 1);
             for (i = lenj + 1; i <= ju + jl + 1; i = i + 1) {
                 work[i - 1] = zero;
             }
@@ -112,7 +116,7 @@ void Rgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 if (il > 0) {
                     iw = i - j + ju + 1;
                     t = work[iw - 1];
-                    Raxpy(il, t, &afac[((kd + 1) - 1) + (i - 1) * ldafac], 1, &work[(iw + 1) - 1], 1);
+                    Raxpy(il, t, afac[((kd + 1) - 1) + (i - 1) * ldafac], 1, &work[(iw + 1) - 1], 1);
                     ip = ipiv[i - 1];
                     if (i != ip) {
                         ip = ip - j + ju + 1;
@@ -131,7 +135,7 @@ void Rgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
             //
             //           Compute the 1-norm of the column.
             //
-            resid = max(resid, Rasum(ju + jl + 1, work, 1));
+            resid = max({resid, Rasum(ju + jl + 1, work, 1)});
         }
     }
     //

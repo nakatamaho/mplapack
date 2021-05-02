@@ -27,12 +27,16 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Rchkgt(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, REAL *a, REAL *af, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, REAL *a, REAL *af, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Rchkgt);
     common_write write(cmn);
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     if (is_called_first_time) {
         {
@@ -44,12 +48,12 @@ void Rchkgt(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
             data_of_type_str(FEM_VALUES_AND_SIZE), transs;
         }
     }
-    str<3> path = char0;
+    char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed(fill0);
+    INTEGER iseed[4];
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER m = 0;
@@ -57,26 +61,26 @@ void Rchkgt(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
     const INTEGER ntypes = 12;
     INTEGER nimat = 0;
     INTEGER imat = 0;
-    char type = char0;
+    char[1] type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cond = 0.0;
-    char dist = char0;
+    char[1] dist;
     bool zerot = false;
     INTEGER koff = 0;
     INTEGER info = 0;
     INTEGER izero = 0;
     const REAL one = 1.0;
-    arr_1d<3, REAL> z(fill0);
+    REAL z[3];
     const REAL zero = 0.0;
     bool trfcon = false;
     const INTEGER ntests = 7;
-    arr_1d<ntests, REAL> result(fill0);
+    REAL result[ntests];
     INTEGER itran = 0;
-    char trans = char0;
-    char norm = char0;
+    char[1] trans;
+    char[1] norm;
     REAL ainvnm = 0.0;
     INTEGER j = 0;
     REAL rcondc = 0.0;
@@ -164,7 +168,7 @@ void Rchkgt(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
                 //
                 //              Types 1-6:  generate matrices of known condition number.
                 //
-                koff = max((INTEGER)2 - ku, 3 - max((INTEGER)1, n));
+                koff = max({(INTEGER)2 - ku, 3 - max((INTEGER)1, n)});
                 srnamt = "DLATMS";
                 dlatms(n, n, dist, iseed, type, rwork, mode, cond, anorm, kl, ku, "Z", af[koff - 1], 3, work, info);
                 //
@@ -277,7 +281,7 @@ void Rchkgt(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
                 if (itran == 1) {
                     norm = "O";
                 } else {
-                    norm = "I";
+                    norm = 'I';
                 }
                 anorm = Rlangt(norm, n, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1]);
                 //
@@ -294,7 +298,7 @@ void Rchkgt(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
                         }
                         x[i - 1] = one;
                         Rgttrs(trans, n, 1, af, af[(m + 1) - 1], af[(n + m + 1) - 1], af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
-                        ainvnm = max(ainvnm, Rasum(n, x, 1));
+                        ainvnm = max({ainvnm, Rasum(n, x, 1)});
                     }
                     //
                     //                 Compute RCONDC = 1 / (norm(A) * norm(inv(A))

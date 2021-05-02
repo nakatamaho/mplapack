@@ -27,47 +27,51 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Rchkpt(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, REAL *a, REAL *d, REAL *e, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER const nout) {
+void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, REAL *a, REAL *d, REAL *e, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER const nout) {
     FEM_CMN_SVE(Rchkpt);
     common_write write(cmn);
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     if (is_called_first_time) {
         static const INTEGER values[] = {0, 0, 0, 1};
         data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
     }
-    str<3> path = char0;
+    char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed(fill0);
+    INTEGER iseed[4];
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
     const INTEGER ntypes = 12;
     INTEGER nimat = 0;
     INTEGER imat = 0;
-    char type = char0;
+    char[1] type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cond = 0.0;
-    char dist = char0;
+    char[1] dist;
     bool zerot = false;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ia = 0;
     INTEGER ix = 0;
     REAL dmax = 0.0;
-    arr_1d<3, REAL> z(fill0);
+    REAL z[3];
     const REAL zero = 0.0;
     REAL rcondc = 0.0;
     const INTEGER ntests = 7;
-    arr_1d<ntests, REAL> result(fill0);
+    REAL result[ntests];
     REAL ainvnm = 0.0;
     INTEGER j = 0;
     const REAL one = 1.0;
@@ -311,7 +315,7 @@ void Rchkpt(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
                 }
                 x[i - 1] = one;
                 Rpttrs(n, 1, &d[(n + 1) - 1], &e[(n + 1) - 1], x, lda, info);
-                ainvnm = max(ainvnm, Rasum(n, x, 1));
+                ainvnm = max({ainvnm, Rasum(n, x, 1)});
             }
             rcondc = one / max(one, anorm * ainvnm);
             //

@@ -27,9 +27,13 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Cchkeq(common &cmn, REAL const thresh, INTEGER const nout) {
+void Cchkeq(REAL const thresh, INTEGER const nout) {
     common_write write(cmn);
     //
     //  -- LAPACK test routine --
@@ -55,22 +59,22 @@ void Cchkeq(common &cmn, REAL const thresh, INTEGER const nout) {
     //     ..
     //     .. Executable Statements ..
     //
-    str<3> path = "Zomplex precision";
+    char[3] path = "Zomplex precision";
     path[(2 - 1) + (3 - 1) * ldpath] = "EQ";
     //
     REAL eps = Rlamch("P");
     INTEGER i = 0;
     const REAL zero = 0.0;
-    arr_1d<5, REAL> reslts(fill0);
+    REAL reslts[5];
     for (i = 1; i <= 5; i = i + 1) {
         reslts[i - 1] = zero;
     }
     const INTEGER nsz = 5;
     const INTEGER npow = 2 * nsz + 1;
     const REAL ten = 1.0e1;
-    arr_1d<npow, REAL> pow(fill0);
+    REAL pow[npow];
     const REAL one = 1.0;
-    arr_1d<npow, REAL> rpow(fill0);
+    REAL rpow[npow];
     for (i = 1; i <= npow; i = i + 1) {
         pow[i - 1] = pow(ten, [(i - 1) - 1]);
         rpow[i - 1] = one / pow[i - 1];
@@ -81,10 +85,10 @@ void Cchkeq(common &cmn, REAL const thresh, INTEGER const nout) {
     INTEGER n = 0;
     INTEGER m = 0;
     INTEGER j = 0;
-    arr_2d<nsz, nsz, COMPLEX> a(fill0);
+    COMPLEX a[nsz * nsz];
     const COMPLEX czero = COMPLEX(0.0, 0.0);
-    arr_1d<nsz, REAL> r(fill0);
-    arr_1d<nsz, REAL> c(fill0);
+    REAL r[nsz];
+    REAL c[nsz];
     REAL rcond = 0.0;
     REAL ccond = 0.0;
     REAL norm = 0.0;
@@ -151,7 +155,7 @@ void Cchkeq(common &cmn, REAL const thresh, INTEGER const nout) {
     INTEGER kl = 0;
     INTEGER ku = 0;
     const INTEGER nszb = 3 * nsz - 2;
-    arr_2d<nszb, nsz, COMPLEX> ab(fill0);
+    COMPLEX ab[nszb * nsz];
     REAL rcmin = 0.0;
     REAL rcmax = 0.0;
     REAL ratio = 0.0;
@@ -269,7 +273,7 @@ void Cchkeq(common &cmn, REAL const thresh, INTEGER const nout) {
     //     Test Cppequ
     //
     const INTEGER nszp = (nsz * (nsz + 1)) / 2;
-    arr_1d<nszp, COMPLEX> ap(fill0);
+    COMPLEX ap[nszp];
     for (n = 0; n <= nsz; n = n + 1) {
         //
         //        Upper triangular packed storage

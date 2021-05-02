@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void Rptt01(INTEGER const n, REAL *d, REAL *e, REAL *df, REAL *ef, REAL *work, REAL &resid) {

@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, INTEGER *iseed, INTEGER &info) {
@@ -57,19 +61,16 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
     //     Test the input parameters.
     //
     info = 0;
-    char c1[1];
-    c1[0] = path[0];
-    char c2[2];
-    c2[0] = path[1];
-    c2[1] = path[2];    
+    char[1] c1 = path[(1 - 1)];
+    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
     bool tran = Mlsame(trans, "T") || Mlsame(trans, "C");
     bool notran = !tran;
-    bool gen = Mlsame(&path[(2 - 1)], "G");
-    bool qrs = Mlsame(&path[(2 - 1)], "Q") || Mlsame(&path[(3 - 1)], "Q");
-    bool sym = Mlsame(&path[(2 - 1)], "P") || Mlsame(&path[(2 - 1)], "S");
-    bool tri = Mlsame(&path[(2 - 1)], "T");
-    bool band = Mlsame(&path[(3 - 1)], "B");
-    if (!Mlsame(c1, "Real")) {
+    bool gen = Mlsame(path[(2 - 1) + (2 - 1) * ldpath], "G");
+    bool qrs = Mlsame(path[(2 - 1) + (2 - 1) * ldpath], "Q") || Mlsame(path[(3 - 1) + (3 - 1) * ldpath], "Q");
+    bool sym = Mlsame(path[(2 - 1) + (2 - 1) * ldpath], "P") || Mlsame(path[(2 - 1) + (2 - 1) * ldpath], "S");
+    bool tri = Mlsame(path[(2 - 1) + (2 - 1) * ldpath], "T");
+    bool band = Mlsame(path[(3 - 1) + (3 - 1) * ldpath], "B");
+    if (!Mlsame(c1, "Double precision")) {
         info = -1;
     } else if (!(Mlsame(xtype, "N") || Mlsame(xtype, "C"))) {
         info = -2;
@@ -122,7 +123,7 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
     //
     const REAL one = 1.0;
     const REAL zero = 0.0;
-    char diag;
+    char[1] diag;
     if (Mlsamen(2, c2, "GE") || Mlsamen(2, c2, "QR") || Mlsamen(2, c2, "LQ") || Mlsamen(2, c2, "QL") || Mlsamen(2, c2, "RQ")) {
         //
         //        General matrix
@@ -167,11 +168,11 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
         //
         Rlacpy("Full", n, nrhs, x, ldx, b, ldb);
         if (ku == 2) {
-            diag = 'U';
+            diag = "U";
         } else {
-            diag = 'N';
+            diag = "N";
         }
-        Rtrmm("Left", uplo, trans, &diag, n, nrhs, one, a, lda, b, ldb);
+        Rtrmm("Left", uplo, trans, diag, n, nrhs, one, a, lda, b, ldb);
         //
     } else if (Mlsamen(2, c2, "TP")) {
         //
@@ -179,12 +180,12 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
         //
         Rlacpy("Full", n, nrhs, x, ldx, b, ldb);
         if (ku == 2) {
-            diag = 'U';
+            diag = "U";
         } else {
-            diag = 'N';
+            diag = "N";
         }
         for (j = 1; j <= nrhs; j = j + 1) {
-            Rtpmv(uplo, trans, &diag, n, a, &b[(j - 1) * ldb], 1);
+            Rtpmv(uplo, trans, diag, n, a, &b[(j - 1) * ldb], 1);
         }
         //
     } else if (Mlsamen(2, c2, "TB")) {
@@ -193,12 +194,12 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
         //
         Rlacpy("Full", n, nrhs, x, ldx, b, ldb);
         if (ku == 2) {
-            diag = 'U';
+            diag = "U";
         } else {
-            diag = 'N';
+            diag = "N";
         }
         for (j = 1; j <= nrhs; j = j + 1) {
-            Rtbmv(uplo, trans, &diag, n, kl, a, lda, &b[(j - 1) * ldb], 1);
+            Rtbmv(uplo, trans, diag, n, kl, a, lda, &b[(j - 1) * ldb], 1);
         }
         //
     } else {

@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 REAL Cqrt12(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *s, COMPLEX *work, INTEGER const lwork, REAL *rwork) {
@@ -96,7 +100,7 @@ REAL Cqrt12(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     //
     //     Scale work if max entry outside range [SMLNUM,BIGNUM]
     //
-    arr_1d<1, REAL> dummy(fill0);
+    REAL dummy[1];
     REAL anrm = Clange("M", m, n, work, m, dummy);
     INTEGER iscl = 0;
     INTEGER info = 0;

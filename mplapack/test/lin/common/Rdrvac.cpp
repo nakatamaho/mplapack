@@ -27,12 +27,16 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Rdrvac(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, INTEGER *nsval, REAL const thresh, INTEGER const /* nmax */, REAL *a, REAL *afac, REAL *b, REAL *x, REAL *work, REAL *rwork, arr_cref<float> swork, INTEGER const nout) {
+void Rdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, INTEGER *nsval, REAL const thresh, INTEGER const  /* nmax */, REAL *a, REAL *afac, REAL *b, REAL *x, REAL *work, REAL *rwork, arr_cref<float> swork, INTEGER const nout) {
     FEM_CMN_SVE(Rdrvac);
     common_write write(cmn);
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     if (is_called_first_time) {
         {
@@ -45,12 +49,12 @@ void Rdrvac(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
         }
     }
     INTEGER kase = 0;
-    str<3> path = char0;
+    char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed(fill0);
+    INTEGER iseed[4];
     INTEGER im = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
@@ -59,24 +63,24 @@ void Rdrvac(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo = char0;
-    char type = char0;
+    char[1] uplo;
+    char[1] type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist = char0;
+    char[1] dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
     const REAL zero = 0.0;
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
-    char xtype = char0;
+    char[1] xtype;
     INTEGER iter = 0;
     const INTEGER ntests = 1;
-    arr_1d<ntests, REAL> result(fill0);
+    REAL result[ntests];
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

@@ -27,12 +27,16 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Rchksy_rk(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, REAL *a, REAL *afac, REAL *e, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+void Rchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const  /* nmax */, REAL *a, REAL *afac, REAL *e, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Rchksy_rk);
     common_write write(cmn);
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     if (is_called_first_time) {
         {
@@ -48,31 +52,31 @@ void Rchksy_rk(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEG
     const REAL sevten = 17.0e+0;
     const REAL eight = 8.0e+0;
     REAL alpha = 0.0;
-    str<3> path = char0;
-    str<3> matpath = char0;
+    char[3] path;
+    char[3] matpath;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed(fill0);
+    INTEGER iseed[4];
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype = char0;
+    char[1] xtype;
     const INTEGER ntypes = 10;
     INTEGER nimat = 0;
     INTEGER izero = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo = char0;
-    char type = char0;
+    char[1] uplo;
+    char[1] type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist = char0;
+    char[1] dist;
     INTEGER info = 0;
     INTEGER ioff = 0;
     const REAL zero = 0.0;
@@ -85,13 +89,13 @@ void Rchksy_rk(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEG
     INTEGER k = 0;
     bool trfcon = false;
     const INTEGER ntests = 7;
-    arr_1d<ntests, REAL> result(fill0);
+    REAL result[ntests];
     INTEGER nt = 0;
     REAL rcondc = 0.0;
     REAL dtemp = 0.0;
     REAL identifier_const = 0.0;
-    arr_2d<2, 2, REAL> block(fill0);
-    arr_1d<1, REAL> ddummy(fill0);
+    REAL block[2 * 2];
+    REAL ddummy[1];
     REAL sing_max = 0.0;
     REAL sing_min = 0.0;
     INTEGER irhs = 0;
@@ -160,7 +164,7 @@ void Rchksy_rk(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEG
     cmn.infot = 0;
     //
     //     Set the minimum block size for which the block routine should
-    //     be used, which will be later returned by ILAENV
+    //     be used, which will be later returned by iMlaenv
     //
     xlaenv(2, 2);
     //
@@ -297,7 +301,7 @@ void Rchksy_rk(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEG
                 for (inb = 1; inb <= nnb; inb = inb + 1) {
                     //
                     //                 Set the optimal blocksize, which will be later
-                    //                 returned by ILAENV.
+                    //                 returned by iMlaenv.
                     //
                     nb = nbval[inb - 1];
                     xlaenv(1, nb);
@@ -421,13 +425,13 @@ void Rchksy_rk(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEG
                             //                       Get max absolute value from elements
                             //                       in column k in in U
                             //
-                            dtemp = Rlange("M", k - 1, 1, &afac[((k - 1) * lda + 1) - 1], lda, rwork);
+                            dtemp = Rlange("M", k - 1, 1, afac[((k - 1) * lda + 1) - 1], lda, rwork);
                         } else {
                             //
                             //                       Get max absolute value from elements
                             //                       in columns k and k-1 in U
                             //
-                            dtemp = Rlange("M", k - 2, 2, &afac[((k - 2) * lda + 1) - 1], lda, rwork);
+                            dtemp = Rlange("M", k - 2, 2, afac[((k - 2) * lda + 1) - 1], lda, rwork);
                             k = k - 1;
                             //
                         }
@@ -459,13 +463,13 @@ void Rchksy_rk(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEG
                             //                       Get max absolute value from elements
                             //                       in column k in in L
                             //
-                            dtemp = Rlange("M", n - k, 1, &afac[((k - 1) * lda + k + 1) - 1], lda, rwork);
+                            dtemp = Rlange("M", n - k, 1, afac[((k - 1) * lda + k + 1) - 1], lda, rwork);
                         } else {
                             //
                             //                       Get max absolute value from elements
                             //                       in columns k and k+1 in L
                             //
-                            dtemp = Rlange("M", n - k - 1, 2, &afac[((k - 1) * lda + k + 2) - 1], lda, rwork);
+                            dtemp = Rlange("M", n - k - 1, 2, afac[((k - 1) * lda + k + 2) - 1], lda, rwork);
                             k++;
                             //
                         }

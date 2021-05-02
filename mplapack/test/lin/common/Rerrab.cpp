@@ -27,9 +27,13 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Rerrab(common &cmn, INTEGER const nunit) {
+void Rerrab(INTEGER const nunit) {
     common_write write(cmn);
     // COMMON infoc
     INTEGER &infot = cmn.infot;
@@ -71,16 +75,16 @@ void Rerrab(common &cmn, INTEGER const nunit) {
     INTEGER j = 0;
     const INTEGER nmax = 4;
     INTEGER i = 0;
-    arr_2d<nmax, nmax, REAL> a(fill0);
-    arr_2d<nmax, nmax, REAL> af(fill0);
-    arr_1d<nmax, REAL> b(fill0);
-    arr_1d<nmax, REAL> r1(fill0);
-    arr_1d<nmax, REAL> r2(fill0);
-    arr_1d<2 * nmax, REAL> w(fill0);
-    arr_1d<nmax, REAL> x(fill0);
-    arr_1d<nmax, REAL> c(fill0);
-    arr_1d<nmax, REAL> r(fill0);
-    arr_1d<nmax, int> ip(fill0);
+    REAL a[nmax * nmax];
+    REAL af[nmax * nmax];
+    REAL b[nmax];
+    REAL r1[nmax];
+    REAL r2[nmax];
+    REAL w[2 * nmax];
+    REAL x[nmax];
+    REAL c[nmax];
+    REAL r[nmax];
+    INTEGER ip[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
@@ -99,8 +103,8 @@ void Rerrab(common &cmn, INTEGER const nunit) {
     //
     cmn.srnamt = "Rsgesv";
     infot = 1;
-    arr_1d<1, REAL> work(fill0);
-    arr_1d<1, float> swork(fill0);
+    REAL work[1];
+    float swork[1];
     INTEGER iter = 0;
     INTEGER info = 0;
     Rsgesv(-1, 0, a, 1, ip, b, 1, x, 1, work, swork, iter, info);

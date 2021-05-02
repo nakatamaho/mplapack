@@ -27,12 +27,16 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Cchktp(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *ap, COMPLEX *ainvp, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
+void Cchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const  /* nmax */, COMPLEX *ap, COMPLEX *ainvp, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
     FEM_CMN_SVE(Cchktp);
     common_write write(cmn);
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     const INTEGER ntran = 3;
     if (is_called_first_time) {
@@ -49,22 +53,22 @@ void Cchktp(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
             data_of_type_str(FEM_VALUES_AND_SIZE), transs;
         }
     }
-    str<3> path = char0;
+    char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed(fill0);
+    INTEGER iseed[4];
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
     INTEGER lap = 0;
-    char xtype = char0;
+    char[1] xtype;
     INTEGER imat = 0;
     const INTEGER ntype1 = 10;
     INTEGER iuplo = 0;
-    char uplo = char0;
-    char diag = char0;
+    char[1] uplo;
+    char[1] diag;
     INTEGER info = 0;
     INTEGER idiag = 0;
     REAL anorm = 0.0;
@@ -74,12 +78,12 @@ void Cchktp(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
     REAL rcondi = 0.0;
     REAL rcondo = 0.0;
     const INTEGER ntests = 9;
-    arr_1d<ntests, REAL> result(fill0);
+    REAL result[ntests];
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     INTEGER itran = 0;
-    char trans = char0;
-    char norm = char0;
+    char[1] trans;
+    char[1] norm;
     REAL rcondc = 0.0;
     INTEGER k = 0;
     REAL rcond = 0.0;
@@ -229,7 +233,7 @@ void Cchktp(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
                             norm = "O";
                             rcondc = rcondo;
                         } else {
-                            norm = "I";
+                            norm = 'I';
                             rcondc = rcondi;
                         }
                         //
@@ -299,7 +303,7 @@ void Cchktp(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
                         norm = "O";
                         rcondc = rcondo;
                     } else {
-                        norm = "I";
+                        norm = 'I';
                         rcondc = rcondi;
                     }
                     srnamt = "Ctpcon";

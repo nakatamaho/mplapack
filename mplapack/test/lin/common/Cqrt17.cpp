@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 REAL Cqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, COMPLEX *c, COMPLEX *work, INTEGER const lwork) {
@@ -82,7 +86,7 @@ REAL Cqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER co
         return return_value;
     }
     //
-    arr_1d<1, REAL> rwork(fill0);
+    REAL rwork[1];
     REAL norma = Clange("One-norm", m, n, a, lda, rwork);
     REAL smlnum = Rlamch("Safe minimum") / Rlamch("Precision");
     const REAL one = 1.0;
@@ -127,7 +131,7 @@ REAL Cqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER co
         }
     }
     //
-    return_value = err / (Rlamch("Epsilon") * (max(m, n, nrhs)).real());
+    return_value = err / (Rlamch("Epsilon") * (max({m, n, nrhs})).real());
     return return_value;
     //
     //     End of Cqrt17

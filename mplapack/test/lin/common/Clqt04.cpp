@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 ********************************************************************************Sorry : fable internal error : at / home / docker / mplapack / external / lapack / work / internal / lapack - 3.9.1 / TESTING / LIN / Clqt04.f(132) : | CALL Clarnv(2, ISEED, M, A(1, J)) | ********************************************************************************

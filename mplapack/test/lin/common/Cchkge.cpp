@@ -27,12 +27,16 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Cchkge(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const nmax, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const nmax, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Cchkge);
     common_write write(cmn);
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     const INTEGER ntran = 3;
     if (is_called_first_time) {
@@ -45,29 +49,29 @@ void Cchkge(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
             data_of_type_str(FEM_VALUES_AND_SIZE), transs;
         }
     }
-    str<3> path = char0;
+    char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed(fill0);
+    INTEGER iseed[4];
     INTEGER im = 0;
     INTEGER m = 0;
     INTEGER lda = 0;
     INTEGER in = 0;
     INTEGER n = 0;
-    char xtype = char0;
+    char[1] xtype;
     const INTEGER ntypes = 11;
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char type = char0;
+    char[1] type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist = char0;
+    char[1] dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
@@ -76,7 +80,7 @@ void Cchkge(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
     INTEGER nb = 0;
     bool trfcon = false;
     const INTEGER ntests = 8;
-    arr_1d<ntests, REAL> result(fill0);
+    REAL result[ntests];
     INTEGER nt = 0;
     INTEGER nrhs = 0;
     INTEGER lwork = 0;
@@ -89,9 +93,9 @@ void Cchkge(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
     INTEGER k = 0;
     INTEGER irhs = 0;
     INTEGER itran = 0;
-    char trans = char0;
+    char[1] trans;
     REAL rcondc = 0.0;
-    char norm = char0;
+    char[1] norm;
     REAL rcond = 0.0;
     REAL dummy = 0.0;
     //
@@ -402,7 +406,7 @@ void Cchkge(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
                         } else {
                             anorm = anormi;
                             rcondc = rcondi;
-                            norm = "I";
+                            norm = 'I';
                         }
                         srnamt = "Cgecon";
                         Cgecon(norm, n, afac, lda, anorm, rcond, work, rwork, info);

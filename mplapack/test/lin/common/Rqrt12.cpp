@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 REAL Rqrt12(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *s, REAL *work, INTEGER const lwork) {
@@ -62,7 +66,7 @@ REAL Rqrt12(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     //
     //     Test that enough workspace is supplied
     //
-    if (lwork < max(m * n + 4 * min(m, n) + max(m, n), m * n + 2 * min(m, n) + 4 * n)) {
+    if (lwork < max({m * n + 4 * min(m, n) + max(m, n), m * n + 2 * min(m, n) + 4 * n})) {
         Mxerbla("Rqrt12", 7);
         return return_value;
     }
@@ -96,7 +100,7 @@ REAL Rqrt12(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     //
     //     Scale work if max entry outside range [SMLNUM,BIGNUM]
     //
-    arr_1d<1, REAL> dummy(fill0);
+    REAL dummy[1];
     REAL anrm = Rlange("M", m, n, work, m, dummy);
     INTEGER iscl = 0;
     INTEGER info = 0;

@@ -27,24 +27,28 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Cdrvab(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, INTEGER *nsval, REAL const thresh, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *b, COMPLEX *x, COMPLEX *work, REAL *rwork, arr_cref<std::complex<float>> swork, INTEGER *iwork, INTEGER const nout) {
+void Cdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, INTEGER *nsval, REAL const thresh, INTEGER const  /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *b, COMPLEX *x, COMPLEX *work, REAL *rwork, arr_cref<std::complex<float>> swork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Cdrvab);
     common_write write(cmn);
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     if (is_called_first_time) {
         static const INTEGER values[] = {2006, 2007, 2008, 2009};
         data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
     }
     INTEGER kase = 0;
-    str<3> path = char0;
+    char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed(fill0);
+    INTEGER iseed[4];
     INTEGER im = 0;
     INTEGER m = 0;
     INTEGER lda = 0;
@@ -53,24 +57,24 @@ void Cdrvab(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char type = char0;
+    char[1] type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist = char0;
+    char[1] dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
     const REAL zero = 0.0;
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
-    char xtype = char0;
-    char trans = char0;
+    char[1] xtype;
+    char[1] trans;
     INTEGER iter = 0;
     const INTEGER ntests = 1;
-    arr_1d<ntests, REAL> result(fill0);
+    REAL result[ntests];
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -185,7 +189,7 @@ void Cdrvab(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
             for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                 nrhs = nsval[irhs - 1];
                 xtype = "N";
-                trans = "N";
+                trans = 'N';
                 //
                 srnamt = "Clarhs";
                 Clarhs(path, xtype, " ", trans, n, n, kl, ku, nrhs, a, lda, x, lda, b, lda, iseed, info);

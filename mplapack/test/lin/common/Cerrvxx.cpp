@@ -27,9 +27,13 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Cerrvx(common &cmn, const char *path, INTEGER const nunit) {
+void Cerrvx(const char *path, INTEGER const nunit) {
     common_write write(cmn);
     // COMMON infoc
     INTEGER &infot = cmn.infot;
@@ -37,7 +41,7 @@ void Cerrvx(common &cmn, const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -69,24 +73,24 @@ void Cerrvx(common &cmn, const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    str<2> c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
     //
     //     Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 4;
     INTEGER i = 0;
-    arr_2d<nmax, nmax, COMPLEX> a(fill0);
-    arr_2d<nmax, nmax, COMPLEX> af(fill0);
-    arr_1d<nmax, COMPLEX> b(fill0);
-    arr_1d<nmax, COMPLEX> e(fill0);
-    arr_1d<nmax, REAL> r1(fill0);
-    arr_1d<nmax, REAL> r2(fill0);
-    arr_1d<2 * nmax, COMPLEX> w(fill0);
-    arr_1d<nmax, COMPLEX> x(fill0);
-    arr_1d<nmax, REAL> c(fill0);
-    arr_1d<nmax, REAL> r(fill0);
-    arr_1d<nmax, int> ip(fill0);
+    COMPLEX a[nmax * nmax];
+    COMPLEX af[nmax * nmax];
+    COMPLEX b[nmax];
+    COMPLEX e[nmax];
+    REAL r1[nmax];
+    REAL r2[nmax];
+    COMPLEX w[2 * nmax];
+    COMPLEX x[nmax];
+    REAL c[nmax];
+    REAL r[nmax];
+    INTEGER ip[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = COMPLEX(1.0 / (i + j).real(), -1.0 / (i + j).real());
@@ -102,20 +106,20 @@ void Cerrvx(common &cmn, const char *path, INTEGER const nunit) {
         r[j - 1] = 0.0;
         ip[j - 1] = j;
     }
-    char eq = " ";
+    char[1] eq = " ";
     ok = true;
     //
     INTEGER info = 0;
     REAL rcond = 0.0;
-    arr_1d<nmax, REAL> rw(fill0);
+    REAL rw[nmax];
     INTEGER n_err_bnds = 0;
     INTEGER nparams = 0;
     REAL rpvgrw = 0.0;
     REAL berr = 0.0;
-    arr_2d<nmax, 3, REAL> err_bnds_n(fill0);
-    arr_2d<nmax, 3, REAL> err_bnds_c(fill0);
-    arr_1d<1, REAL> params(fill0);
-    arr_1d<nmax, REAL> rf(fill0);
+    REAL err_bnds_n[nmax * 3];
+    REAL err_bnds_c[nmax * 3];
+    REAL params[1];
+    REAL rf[nmax];
     const float one = 1.0;
     if (Mlsamen(2, c2, "GE")) {
         //

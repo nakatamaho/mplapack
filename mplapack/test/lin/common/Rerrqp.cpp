@@ -27,9 +27,13 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Rerrqp(common &cmn, const char *path, INTEGER const nunit) {
+void Rerrqp(const char *path, INTEGER const nunit) {
     common_write write(cmn);
     // COMMON infoc
     INTEGER &infot = cmn.infot;
@@ -65,19 +69,19 @@ void Rerrqp(common &cmn, const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    str<2> c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
     const INTEGER nmax = 3;
     INTEGER lw = 3 * nmax + 1;
-    arr_2d<nmax, nmax, REAL> a(fill0);
+    REAL a[nmax * nmax];
     a[(1 - 1)] = 1.0;
     a[(2 - 1) * lda] = 2.0e+0;
     a[(2 - 1) + (2 - 1) * lda] = 3.0e+0;
     a[(2 - 1)] = 4.0e+0;
     ok = true;
     //
-    arr_1d<nmax, int> ip(fill0);
-    arr_1d<nmax, REAL> tau(fill0);
-    arr_1d<3 * nmax + 1, REAL> w(fill0);
+    INTEGER ip[nmax];
+    REAL tau[nmax];
+    REAL w[3 * nmax + 1];
     INTEGER info = 0;
     if (Mlsamen(2, c2, "QP")) {
         //

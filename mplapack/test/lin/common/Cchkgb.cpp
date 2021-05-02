@@ -27,9 +27,17 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, COMPLEX *a, INTEGER const la, COMPLEX *afac, INTEGER const lafac, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+    FEM_CMN_SVE(Cchkgb);
+    common_write write(cmn);
+    char[32] &srnamt = cmn.srnamt;
+    //
     const INTEGER ntran = 3;
     if (is_called_first_time) {
         {
@@ -41,20 +49,20 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
             data_of_type_str(FEM_VALUES_AND_SIZE), transs;
         }
     }
-    str<3> path = char0;
+    char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed(fill0);
+    INTEGER iseed[4];
     const INTEGER nbw = 4;
-    arr_1d<nbw, int> klval(fill0);
-    arr_1d<nbw, int> kuval(fill0);
+    INTEGER klval[nbw];
+    INTEGER kuval[nbw];
     INTEGER im = 0;
     INTEGER m = 0;
     INTEGER in = 0;
     INTEGER n = 0;
-    char xtype = char0;
+    char[1] xtype;
     INTEGER nkl = 0;
     INTEGER nku = 0;
     const INTEGER ntypes = 8;
@@ -67,11 +75,11 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER ldafac = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char type = char0;
+    char[1] type;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist = char0;
+    char[1] dist;
     INTEGER koff = 0;
     const REAL zero = 0.0;
     INTEGER info = 0;
@@ -84,7 +92,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER nb = 0;
     bool trfcon = false;
     const INTEGER ntests = 7;
-    arr_1d<ntests, REAL> result(fill0);
+    REAL result[ntests];
     REAL anormo = 0.0;
     REAL anormi = 0.0;
     INTEGER ldb = 0;
@@ -95,9 +103,9 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     INTEGER itran = 0;
-    char trans = char0;
+    char[1] trans;
     REAL rcondc = 0.0;
-    char norm = char0;
+    char[1] norm;
     INTEGER k = 0;
     REAL rcond = 0.0;
     //
@@ -334,7 +342,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //                       Compute the LU factorization of the band matrix.
                             //
                             if (m > 0 && n > 0) {
-                                Clacpy("Full", kl + ku + 1, n, a, lda, &afac[(kl + 1) - 1], ldafac);
+                                Clacpy("Full", kl + ku + 1, n, a, lda, afac[(kl + 1) - 1], ldafac);
                             }
                             srnamt = "Cgbtrf";
                             Cgbtrf(m, n, kl, ku, afac, ldafac, iwork, info);
@@ -430,7 +438,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         norm = "O";
                                     } else {
                                         rcondc = rcondi;
-                                        norm = "I";
+                                        norm = 'I';
                                     }
                                     //
                                     //+    TEST 2:
@@ -505,7 +513,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 } else {
                                     anorm = anormi;
                                     rcondc = rcondi;
-                                    norm = "I";
+                                    norm = 'I';
                                 }
                                 srnamt = "Cgbcon";
                                 Cgbcon(norm, n, kl, ku, afac, ldafac, iwork, anorm, rcond, work, rwork, info);

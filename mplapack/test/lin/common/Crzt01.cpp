@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 REAL Crzt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork) {
@@ -71,7 +75,7 @@ REAL Crzt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, INTEGER c
         return return_value;
     }
     //
-    arr_1d<1, REAL> rwork(fill0);
+    REAL rwork[1];
     REAL norma = Clange("One-norm", m, n, a, lda, rwork);
     //
     //     Copy upper triangle R

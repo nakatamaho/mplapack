@@ -27,21 +27,25 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Rchktz(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, REAL const thresh, bool const tsterr, REAL *a, REAL *copya, REAL *s, REAL *tau, REAL *work, INTEGER const nout) {
+void Rchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, REAL const thresh, bool const tsterr, REAL *a, REAL *copya, REAL *s, REAL *tau, REAL *work, INTEGER const nout) {
     FEM_CMN_SVE(Rchktz);
     common_write write(cmn);
     if (is_called_first_time) {
         static const INTEGER values[] = {1988, 1989, 1990, 1991};
         data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
     }
-    str<3> path = char0;
+    char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed(fill0);
+    INTEGER iseed[4];
     REAL eps = 0.0;
     INTEGER im = 0;
     INTEGER m = 0;
@@ -57,7 +61,7 @@ void Rchktz(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
     const REAL one = 1.0;
     INTEGER info = 0;
     const INTEGER ntests = 3;
-    arr_1d<ntests, REAL> result(fill0);
+    REAL result[ntests];
     INTEGER k = 0;
     //
     //  -- LAPACK test routine --
@@ -123,7 +127,7 @@ void Rchktz(common &cmn, bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER 
             //
             n = nval[in - 1];
             mnmin = min(m, n);
-            lwork = max((INTEGER)1, n * n + 4 * m + n, m * n + 2 * mnmin + 4 * n);
+            lwork = max({(INTEGER)1, n * n + 4 * m + n, m * n + 2 * mnmin + 4 * n});
             //
             if (m <= n) {
                 for (imode = 1; imode <= ntypes; imode = imode + 1) {

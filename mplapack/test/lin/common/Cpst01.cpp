@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void Cpst01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, COMPLEX *perm, INTEGER const ldperm, INTEGER *piv, REAL *rwork, REAL &resid, INTEGER const rank) {
@@ -104,12 +108,12 @@ void Cpst01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
             //
             //           Compute the (K,K) element of the result.
             //
-            tr = Cdotc(k, &afac[(k - 1) * ldafac], 1, &afac[(k - 1) * ldafac], 1);
+            tr = Cdotc(k, afac[(k - 1) * ldafac], 1, afac[(k - 1) * ldafac], 1);
             afac[(k - 1) + (k - 1) * ldafac] = tr;
             //
             //           Compute the rest of column K.
             //
-            Ctrmv("Upper", "Conjugate", "Non-unit", k - 1, afac, ldafac, &afac[(k - 1) * ldafac], 1);
+            Ctrmv("Upper", "Conjugate", "Non-unit", k - 1, afac, ldafac, afac[(k - 1) * ldafac], 1);
             //
         }
         //
@@ -130,13 +134,13 @@ void Cpst01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
             //           columns K+1 through N.
             //
             if (k + 1 <= n) {
-                Cher("Lower", n - k, one, &afac[((k + 1) - 1) + (k - 1) * ldafac], 1, &afac[((k + 1) - 1) + ((k + 1) - 1) * ldafac], ldafac);
+                Cher("Lower", n - k, one, afac[((k + 1) - 1) + (k - 1) * ldafac], 1, afac[((k + 1) - 1) + ((k + 1) - 1) * ldafac], ldafac);
             }
             //
             //           Scale column K by the diagonal element.
             //
             tc = afac[(k - 1) + (k - 1) * ldafac];
-            Cscal(n - k + 1, tc, &afac[(k - 1) + (k - 1) * ldafac], 1);
+            Cscal(n - k + 1, tc, afac[(k - 1) + (k - 1) * ldafac], 1);
         }
         //
     }

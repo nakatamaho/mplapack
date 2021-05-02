@@ -27,29 +27,33 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Cchkpb(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
+void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const  /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
     FEM_CMN_SVE(Cchkpb);
     common_write write(cmn);
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     if (is_called_first_time) {
         static const INTEGER values[] = {1988, 1989, 1990, 1991};
         data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
     }
-    str<3> path = char0;
+    char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed(fill0);
+    INTEGER iseed[4];
     const INTEGER nbw = 4;
-    arr_1d<nbw, int> kdval(fill0);
+    INTEGER kdval[nbw];
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype = char0;
+    char[1] xtype;
     INTEGER nkd = 0;
     const INTEGER ntypes = 8;
     INTEGER nimat = 0;
@@ -58,17 +62,17 @@ void Cchkpb(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
     INTEGER ldab = 0;
     INTEGER iuplo = 0;
     INTEGER koff = 0;
-    char uplo = char0;
-    char packit = char0;
+    char[1] uplo;
+    char[1] packit;
     INTEGER imat = 0;
     bool zerot = false;
-    char type = char0;
+    char[1] type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist = char0;
+    char[1] dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER iw = 0;
@@ -79,7 +83,7 @@ void Cchkpb(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
     INTEGER inb = 0;
     INTEGER nb = 0;
     const INTEGER ntests = 7;
-    arr_1d<ntests, REAL> result(fill0);
+    REAL result[ntests];
     const REAL one = 1.0;
     REAL ainvnm = 0.0;
     REAL rcondc = 0.0;
@@ -147,7 +151,7 @@ void Cchkpb(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
         //
         //        Set limits on the number of loop iterations.
         //
-        nkd = max((INTEGER)1, min(n, 4));
+        nkd = max({(INTEGER)1, min(n, 4)});
         nimat = ntypes;
         if (n == 0) {
             nimat = 1;

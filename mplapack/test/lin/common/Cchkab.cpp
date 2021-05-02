@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void program_Cchkab(INTEGER argc, char const *argv[]) {
@@ -34,7 +38,7 @@ void program_Cchkab(INTEGER argc, char const *argv[]) {
     FEM_CMN_SVE(program_Cchkab);
     common_read read(cmn);
     common_write write(cmn);
-    str<10> &intstr = sve.intstr;
+    char[10] &intstr = sve.intstr;
     if (is_called_first_time) {
         intstr = "0123456789";
     }
@@ -49,31 +53,31 @@ void program_Cchkab(INTEGER argc, char const *argv[]) {
     const INTEGER nout = 6;
     INTEGER nm = 0;
     const INTEGER maxin = 12;
-    arr_1d<maxin, int> mval(fill0);
+    INTEGER mval[maxin];
     INTEGER i = 0;
     INTEGER nns = 0;
-    arr_1d<maxin, int> nsval(fill0);
+    INTEGER nsval[maxin];
     const INTEGER maxrhs = 16;
     REAL thresh = 0.0;
     bool tstdrv = false;
     bool tsterr = false;
     float seps = float0;
     REAL eps = 0.0;
-    str<72> aline = char0;
-    str<3> path = char0;
+    char[72] aline;
+    char[3] path;
     const INTEGER matmax = 30;
     INTEGER nmats = 0;
-    char c1 = char0;
+    char[1] c1;
     INTEGER k = 0;
     INTEGER ic = 0;
-    str<2> c2 = char0;
+    char[2] c2;
     INTEGER nrhs = 0;
     INTEGER ntypes = 0;
-    arr_1d<matmax, bool> dotype(fill0);
+    bool dotype[matmax];
     const INTEGER ldamax = nmax;
-    arr_1d<nmax, REAL> rwork(fill0);
+    REAL rwork[nmax];
     fill0);
-    arr_1d<nmax, int> iwork(fill0);
+    INTEGER iwork[nmax];
     REAL s2 = 0.0;
     static const char *format_9989 = "(/,1x,a6,' driver routines were not tested')";
     static const char *format_9990 = "(/,1x,a6,' routines were not tested')";
@@ -240,7 +244,7 @@ statement_80:
     //
     try {
         read(nin, "(a72)"), aline;
-    } catch (read_end const) {
+    } catch (read_end const ) {
         goto statement_140;
     }
     path = aline[(3 - 1) * ldaline];

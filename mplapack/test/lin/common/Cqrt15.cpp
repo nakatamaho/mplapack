@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void Cqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *s, INTEGER &rank, REAL &norma, REAL &normb, INTEGER *iseed, COMPLEX *work, INTEGER const lwork) {
@@ -43,7 +47,7 @@ void Cqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER c
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const REAL two = 2.0e+0;
     INTEGER info = 0;
-    arr_1d<1, REAL> dummy(fill0);
+    REAL dummy[1];
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -71,7 +75,7 @@ void Cqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER c
     //     .. Executable Statements ..
     //
     mn = min(m, n);
-    if (lwork < max(m + mn, mn * nrhs, 2 * n + m)) {
+    if (lwork < max({m + mn, mn * nrhs, 2 * n + m})) {
         Mxerbla("Cqrt15", 16);
         return;
     }

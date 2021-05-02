@@ -27,20 +27,13 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
-
-#include <mpblas.h>
-#include <mplapack.h>
-#include <string>
-
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-
 #include <mplapack_lin.h>
+#include <mplapack.h>
 
 void Alaesm(const char *path, bool const ok, INTEGER const nout) {
-    common cmn;
     common_write write(cmn);
     //
     //  -- LAPACK test routine --

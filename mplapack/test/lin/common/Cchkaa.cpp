@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void program_Cchkaa(INTEGER argc, char const *argv[]) {
@@ -34,7 +38,7 @@ void program_Cchkaa(INTEGER argc, char const *argv[]) {
     FEM_CMN_SVE(program_Cchkaa);
     common_read read(cmn);
     common_write write(cmn);
-    str<10> &intstr = sve.intstr;
+    char[10] &intstr = sve.intstr;
     REAL &threq = sve.threq;
     if (is_called_first_time) {
         threq = 2.0;
@@ -51,44 +55,44 @@ void program_Cchkaa(INTEGER argc, char const *argv[]) {
     const INTEGER nout = 6;
     INTEGER nm = 0;
     const INTEGER maxin = 12;
-    arr_1d<maxin, int> mval(fill0);
+    INTEGER mval[maxin];
     INTEGER i = 0;
     INTEGER nn = 0;
-    arr_1d<maxin, int> nval(fill0);
+    INTEGER nval[maxin];
     INTEGER nns = 0;
-    arr_1d<maxin, int> nsval(fill0);
+    INTEGER nsval[maxin];
     const INTEGER maxrhs = 16;
     INTEGER nnb = 0;
-    arr_1d<maxin, int> nbval(fill0);
+    INTEGER nbval[maxin];
     INTEGER nnb2 = 0;
     INTEGER nb = 0;
     INTEGER j = 0;
-    arr_1d<maxin, int> nbval2(fill0);
-    arr_1d<maxin, int> nxval(fill0);
+    INTEGER nbval2[maxin];
+    INTEGER nxval[maxin];
     INTEGER nrank = 0;
-    arr_1d<maxin, int> rankval(fill0);
+    INTEGER rankval[maxin];
     REAL thresh = 0.0;
     bool tstchk = false;
     bool tstdrv = false;
     bool tsterr = false;
     REAL eps = 0.0;
     INTEGER nrhs = 0;
-    str<72> aline = char0;
-    str<3> path = char0;
+    char[72] aline;
+    char[3] path;
     const INTEGER matmax = 30;
     INTEGER nmats = 0;
-    char c1 = char0;
+    char[1] c1;
     INTEGER k = 0;
     INTEGER ic = 0;
-    str<2> c2 = char0;
+    char[2] c2;
     INTEGER ntypes = 0;
-    arr_1d<matmax, bool> dotype(fill0);
+    bool dotype[matmax];
     const INTEGER kdmax = nmax + (nmax + 1) / 4;
     fill0);
     INTEGER la = 0;
     INTEGER lafac = 0;
-    arr_1d<nmax, int> piv(fill0);
-    arr_1d<nmax, COMPLEX> e(fill0);
+    INTEGER piv[nmax];
+    COMPLEX e[nmax];
     REAL s2 = 0.0;
     static const char *format_9988 = "(/,1x,a3,' driver routines were not tested')";
     static const char *format_9989 = "(/,1x,a3,' routines were not tested')";
@@ -401,7 +405,7 @@ statement_80:
     //
     try {
         read(nin, "(a72)"), aline;
-    } catch (read_end const) {
+    } catch (read_end const ) {
         goto statement_140;
     }
     path = aline[(3 - 1) * ldaline];

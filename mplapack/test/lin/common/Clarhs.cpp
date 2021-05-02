@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void Clarhs(const char *path, const char *xtype, const char *uplo, const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, INTEGER *iseed, INTEGER &info) {
@@ -57,8 +61,8 @@ void Clarhs(const char *path, const char *xtype, const char *uplo, const char *t
     //     Test the input parameters.
     //
     info = 0;
-    char c1 = path[(1 - 1)];
-    str<2> c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char[1] c1 = path[(1 - 1)];
+    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
     bool tran = Mlsame(trans, "T") || Mlsame(trans, "C");
     bool notran = !tran;
     bool gen = Mlsame(path[(2 - 1) + (2 - 1) * ldpath], "G");
@@ -119,7 +123,7 @@ void Clarhs(const char *path, const char *xtype, const char *uplo, const char *t
     //
     const COMPLEX one = COMPLEX(1.0, 0.0);
     const COMPLEX zero = COMPLEX(0.0, 0.0);
-    char diag = char0;
+    char[1] diag;
     if (Mlsamen(2, c2, "GE") || Mlsamen(2, c2, "QR") || Mlsamen(2, c2, "LQ") || Mlsamen(2, c2, "QL") || Mlsamen(2, c2, "RQ")) {
         //
         //        General matrix

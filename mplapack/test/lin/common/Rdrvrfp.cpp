@@ -27,12 +27,16 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Rdrvrfp(common &cmn, INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, INTEGER const nnt, INTEGER *ntval, REAL const thresh, REAL *a, REAL *asav, REAL *afac, REAL *ainv, REAL *b, REAL *bsav, REAL *xact, REAL *x, REAL *arf, REAL *arfinv, REAL *d_work_dlatms, REAL *d_work_Rpot01, REAL *d_temp_Rpot02, REAL *d_temp_Rpot03, REAL *d_work_Rlansy, REAL *d_work_Rpot02, REAL *d_work_Rpot03) {
+void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, INTEGER const nnt, INTEGER *ntval, REAL const thresh, REAL *a, REAL *asav, REAL *afac, REAL *ainv, REAL *b, REAL *bsav, REAL *xact, REAL *x, REAL *arf, REAL *arfinv, REAL *d_work_dlatms, REAL *d_work_Rpot01, REAL *d_temp_Rpot02, REAL *d_temp_Rpot03, REAL *d_work_Rlansy, REAL *d_work_Rpot02, REAL *d_work_Rpot03) {
     FEM_CMN_SVE(Rdrvrfp);
     common_write write(cmn);
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     if (is_called_first_time) {
         {
@@ -52,7 +56,7 @@ void Rdrvrfp(common &cmn, INTEGER const nout, INTEGER const nn, INTEGER *nval, I
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed(fill0);
+    INTEGER iseed[4];
     INTEGER iin = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
@@ -62,16 +66,16 @@ void Rdrvrfp(common &cmn, INTEGER const nout, INTEGER const nn, INTEGER *nval, I
     INTEGER iit = 0;
     INTEGER imat = 0;
     INTEGER iuplo = 0;
-    char uplo = char0;
+    char[1] uplo;
     INTEGER iform = 0;
-    char cform = char0;
-    char ctype = char0;
+    char[1] cform;
+    char[1] ctype;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist = char0;
+    char[1] dist;
     INTEGER info = 0;
     bool zerot = false;
     INTEGER izero = 0;
@@ -81,7 +85,7 @@ void Rdrvrfp(common &cmn, INTEGER const nout, INTEGER const nn, INTEGER *nval, I
     REAL ainvnm = 0.0;
     const REAL one = 1.0;
     const INTEGER ntests = 4;
-    arr_1d<ntests, REAL> result(fill0);
+    REAL result[ntests];
     INTEGER nt = 0;
     INTEGER k = 0;
     //

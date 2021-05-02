@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void Rget01(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *afac, INTEGER const ldafac, INTEGER *ipiv, REAL *rwork, REAL &resid) {
@@ -76,24 +80,24 @@ void Rget01(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     const REAL one = 1.0;
     for (k = n; k >= 1; k = k - 1) {
         if (k > m) {
-            Rtrmv("Lower", "No transpose", "Unit", m, afac, ldafac, &afac[(k - 1) * ldafac], 1);
+            Rtrmv("Lower", "No transpose", "Unit", m, afac, ldafac, afac[(k - 1) * ldafac], 1);
         } else {
             //
             //           Compute elements (K+1:M,K)
             //
             t = afac[(k - 1) + (k - 1) * ldafac];
             if (k + 1 <= m) {
-                Rscal(m - k, t, &afac[((k + 1) - 1) + (k - 1) * ldafac], 1);
-                Rgemv("No transpose", m - k, k - 1, one, &afac[((k + 1) - 1)], ldafac, &afac[(k - 1) * ldafac], 1, one, &afac[((k + 1) - 1) + (k - 1) * ldafac], 1);
+                Rscal(m - k, t, afac[((k + 1) - 1) + (k - 1) * ldafac], 1);
+                Rgemv("No transpose", m - k, k - 1, one, afac[((k + 1) - 1)], ldafac, afac[(k - 1) * ldafac], 1, one, afac[((k + 1) - 1) + (k - 1) * ldafac], 1);
             }
             //
             //           Compute the (K,K) element
             //
-            afac[(k - 1) + (k - 1) * ldafac] = t + Rdot(k - 1, &afac[(k - 1)], ldafac, &afac[(k - 1) * ldafac], 1);
+            afac[(k - 1) + (k - 1) * ldafac] = t + Rdot(k - 1, afac[(k - 1)], ldafac, afac[(k - 1) * ldafac], 1);
             //
             //           Compute elements (1:K-1,K)
             //
-            Rtrmv("Lower", "No transpose", "Unit", k - 1, afac, ldafac, &afac[(k - 1) * ldafac], 1);
+            Rtrmv("Lower", "No transpose", "Unit", k - 1, afac, ldafac, afac[(k - 1) * ldafac], 1);
         }
     }
     Rlaswp(n, afac, ldafac, 1, min(m, n), ipiv, -1);
@@ -117,7 +121,7 @@ void Rget01(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
             resid = one / eps;
         }
     } else {
-        resid = ((resid / castREAL(n)) / anorm) / eps;
+        resid = ((resid / n.real()) / anorm) / eps;
     }
     //
     //     End of Rget01

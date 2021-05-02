@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void Cpbt01(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, REAL *rwork, REAL &resid) {
@@ -105,13 +109,13 @@ void Cpbt01(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *a, INT
             //
             //           Compute the (K,K) element of the result.
             //
-            akk = Cdotc(klen + 1, &afac[(kc - 1) + (k - 1) * ldafac], 1, &afac[(kc - 1) + (k - 1) * ldafac], 1);
+            akk = Cdotc(klen + 1, afac[(kc - 1) + (k - 1) * ldafac], 1, afac[(kc - 1) + (k - 1) * ldafac], 1);
             afac[((kd + 1) - 1) + (k - 1) * ldafac] = akk;
             //
             //           Compute the rest of column K.
             //
             if (klen > 0) {
-                Ctrmv("Upper", "Conjugate", "Non-unit", klen, &afac[((kd + 1) - 1) + ((k - klen) - 1) * ldafac], ldafac - 1, &afac[(kc - 1) + (k - 1) * ldafac], 1);
+                Ctrmv("Upper", "Conjugate", "Non-unit", klen, afac[((kd + 1) - 1) + ((k - klen) - 1) * ldafac], ldafac - 1, afac[(kc - 1) + (k - 1) * ldafac], 1);
             }
             //
         }
@@ -126,13 +130,13 @@ void Cpbt01(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *a, INT
             //           columns K+1 through N.
             //
             if (klen > 0) {
-                Cher("Lower", klen, one, &afac[(2 - 1) + (k - 1) * ldafac], 1, &afac[((k + 1) - 1) * ldafac], ldafac - 1);
+                Cher("Lower", klen, one, afac[(2 - 1) + (k - 1) * ldafac], 1, afac[((k + 1) - 1) * ldafac], ldafac - 1);
             }
             //
             //           Scale column K by the diagonal element.
             //
             akk = afac[(k - 1) * ldafac];
-            CRscal(klen + 1, akk, &afac[(k - 1) * ldafac], 1);
+            CRscal(klen + 1, akk, afac[(k - 1) * ldafac], 1);
             //
         }
     }

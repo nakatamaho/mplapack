@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void Rgbt02(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL &resid) {
@@ -73,7 +77,7 @@ void Rgbt02(const char *trans, INTEGER const m, INTEGER const n, INTEGER const k
     for (j = 1; j <= n; j = j + 1) {
         i1 = max(kd + 1 - j, 1);
         i2 = min(kd + m - j, kl + kd);
-        anorm = max(anorm, Rasum(i2 - i1 + 1, &a[(i1 - 1) + (j - 1) * lda], 1));
+        anorm = max({anorm, Rasum(i2 - i1 + 1, &a[(i1 - 1) + (j - 1) * lda], 1)});
     }
     const REAL one = 1.0;
     if (anorm <= zero) {

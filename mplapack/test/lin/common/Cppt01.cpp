@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void Cppt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *rwork, REAL &resid) {
@@ -106,13 +110,13 @@ void Cppt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *
             //
             //           Compute the (K,K) element of the result.
             //
-            tr = Cdotc(k, &afac[kc - 1], 1, &afac[kc - 1], 1);
+            tr = Cdotc(k, afac[kc - 1], 1, afac[kc - 1], 1);
             afac[(kc + k - 1) - 1] = tr;
             //
             //           Compute the rest of column K.
             //
             if (k > 1) {
-                Ctpmv("Upper", "Conjugate", "Non-unit", k - 1, afac, &afac[kc - 1], 1);
+                Ctpmv("Upper", "Conjugate", "Non-unit", k - 1, afac, afac[kc - 1], 1);
                 kc = kc - (k - 1);
             }
         }
@@ -138,13 +142,13 @@ void Cppt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *
             //           columns K+1 through N.
             //
             if (k < n) {
-                Chpr("Lower", n - k, one, &afac[(kc + 1) - 1], 1, &afac[(kc + n - k + 1) - 1]);
+                Chpr("Lower", n - k, one, afac[(kc + 1) - 1], 1, afac[(kc + n - k + 1) - 1]);
             }
             //
             //           Scale column K by the diagonal element.
             //
             tc = afac[kc - 1];
-            Cscal(n - k + 1, tc, &afac[kc - 1], 1);
+            Cscal(n - k + 1, tc, afac[kc - 1], 1);
             //
             kc = kc - (n - k + 2);
         }

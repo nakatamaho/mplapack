@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void Cqrt16(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
@@ -98,7 +102,7 @@ void Cqrt16(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         } else if (anorm <= zero || xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, ((bnorm / anorm) / xnorm) / (max(m, n) * eps));
+            resid = max({resid, ((bnorm / anorm) / xnorm) / (max(m, n) * eps)});
         }
     }
     //

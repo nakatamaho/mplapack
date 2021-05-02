@@ -27,9 +27,13 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Alasvm(common &cmn, const char *type, INTEGER const nout, INTEGER const nfail, INTEGER const nrun, INTEGER const nerrs) {
+void Alasvm(const char *type, INTEGER const nout, INTEGER const nfail, INTEGER const nrun, INTEGER const nerrs) {
     common_write write(cmn);
     //
     //  -- LAPACK test routine --

@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void Rsyt01_aa(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *afac, INTEGER const ldafac, INTEGER *ipiv, REAL *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
@@ -70,31 +74,31 @@ void Rsyt01_aa(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, RE
     //     Initialize C to the tridiagonal matrix T.
     //
     Rlaset("Full", n, n, zero, zero, c, ldc);
-    Rlacpy("F", 1, n, &afac[(1 - 1)], ldafac + 1, &c[(1 - 1)], ldc + 1);
+    Rlacpy("F", 1, n, afac[(1 - 1)], ldafac + 1, &c[(1 - 1)], ldc + 1);
     const REAL one = 1.0;
     if (n > 1) {
         if (Mlsame(uplo, "U")) {
-            Rlacpy("F", 1, n - 1, &afac[(2 - 1) * ldafac], ldafac + 1, &c[(2 - 1) * ldc], ldc + 1);
-            Rlacpy("F", 1, n - 1, &afac[(2 - 1) * ldafac], ldafac + 1, &c[(2 - 1)], ldc + 1);
+            Rlacpy("F", 1, n - 1, afac[(2 - 1) * ldafac], ldafac + 1, &c[(2 - 1) * ldc], ldc + 1);
+            Rlacpy("F", 1, n - 1, afac[(2 - 1) * ldafac], ldafac + 1, &c[(2 - 1)], ldc + 1);
         } else {
-            Rlacpy("F", 1, n - 1, &afac[(2 - 1)], ldafac + 1, &c[(2 - 1) * ldc], ldc + 1);
-            Rlacpy("F", 1, n - 1, &afac[(2 - 1)], ldafac + 1, &c[(2 - 1)], ldc + 1);
+            Rlacpy("F", 1, n - 1, afac[(2 - 1)], ldafac + 1, &c[(2 - 1) * ldc], ldc + 1);
+            Rlacpy("F", 1, n - 1, afac[(2 - 1)], ldafac + 1, &c[(2 - 1)], ldc + 1);
         }
         //
         //        Call Rtrmm to form the product U' * D (or L * D ).
         //
         if (Mlsame(uplo, "U")) {
-            Rtrmm("Left", uplo, "Transpose", "Unit", n - 1, n, one, &afac[(2 - 1) * ldafac], ldafac, &c[(2 - 1)], ldc);
+            Rtrmm("Left", uplo, "Transpose", "Unit", n - 1, n, one, afac[(2 - 1) * ldafac], ldafac, &c[(2 - 1)], ldc);
         } else {
-            Rtrmm("Left", uplo, "No transpose", "Unit", n - 1, n, one, &afac[(2 - 1)], ldafac, &c[(2 - 1)], ldc);
+            Rtrmm("Left", uplo, "No transpose", "Unit", n - 1, n, one, afac[(2 - 1)], ldafac, &c[(2 - 1)], ldc);
         }
         //
         //        Call Rtrmm again to multiply by U (or L ).
         //
         if (Mlsame(uplo, "U")) {
-            Rtrmm("Right", uplo, "No transpose", "Unit", n, n - 1, one, &afac[(2 - 1) * ldafac], ldafac, &c[(2 - 1) * ldc], ldc);
+            Rtrmm("Right", uplo, "No transpose", "Unit", n, n - 1, one, afac[(2 - 1) * ldafac], ldafac, &c[(2 - 1) * ldc], ldc);
         } else {
-            Rtrmm("Right", uplo, "Transpose", "Unit", n, n - 1, one, &afac[(2 - 1)], ldafac, &c[(2 - 1) * ldc], ldc);
+            Rtrmm("Right", uplo, "Transpose", "Unit", n, n - 1, one, afac[(2 - 1)], ldafac, &c[(2 - 1) * ldc], ldc);
         }
     }
     //

@@ -27,12 +27,16 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
-void Cchkpt(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, COMPLEX *a, REAL *d, COMPLEX *e, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
+void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, COMPLEX *a, REAL *d, COMPLEX *e, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
     FEM_CMN_SVE(Cchkpt);
     common_write write(cmn);
-    str<32> &srnamt = cmn.srnamt;
+    char[32] &srnamt = cmn.srnamt;
     //
     if (is_called_first_time) {
         {
@@ -44,43 +48,43 @@ void Cchkpt(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
             data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
         }
     }
-    str<3> path = char0;
+    char[3] path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed(fill0);
+    INTEGER iseed[4];
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
     const INTEGER ntypes = 12;
     INTEGER nimat = 0;
     INTEGER imat = 0;
-    char type = char0;
+    char[1] type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cond = 0.0;
-    char dist = char0;
+    char[1] dist;
     bool zerot = false;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ia = 0;
     INTEGER ix = 0;
     REAL dmax = 0.0;
-    arr_1d<3, COMPLEX> z(fill0);
+    COMPLEX z[3];
     const REAL zero = 0.0;
     REAL rcondc = 0.0;
     const INTEGER ntests = 7;
-    arr_1d<ntests, REAL> result(fill0);
+    REAL result[ntests];
     REAL ainvnm = 0.0;
     INTEGER j = 0;
     const REAL one = 1.0;
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     INTEGER iuplo = 0;
-    char uplo = char0;
+    char[1] uplo;
     INTEGER k = 0;
     REAL rcond = 0.0;
     static const char *format_9999 = "(' N =',i5,', type ',i2,', test ',i2,', ratio = ',g12.5)";
@@ -319,7 +323,7 @@ void Cchkpt(common &cmn, bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER 
                 }
                 x[i - 1] = one;
                 Cpttrs("Lower", n, 1, &d[(n + 1) - 1], &e[(n + 1) - 1], x, lda, info);
-                ainvnm = max(ainvnm, RCasum(n, x, 1));
+                ainvnm = max({ainvnm, RCasum(n, x, 1)});
             }
             rcondc = one / max(one, anorm * ainvnm);
             //

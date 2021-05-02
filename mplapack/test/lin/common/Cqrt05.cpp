@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 ********************************************************************************Sorry : fable internal error : at / home / docker / mplapack / external / lapack / work / internal / lapack - 3.9.1 / TESTING / LIN / Cqrt05.f(140) : | CALL Claset('Full', M2, N, CZERO, CZERO, A, M2) | ********************************************************************************

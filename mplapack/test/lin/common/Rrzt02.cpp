@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 REAL Rrzt02(INTEGER const m, INTEGER const n, REAL *af, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork) {
@@ -92,7 +96,7 @@ REAL Rrzt02(INTEGER const m, INTEGER const n, REAL *af, INTEGER const lda, REAL 
         work[((i - 1) * n + i) - 1] = work[((i - 1) * n + i) - 1] - one;
     }
     //
-    arr_1d<1, REAL> rwork(fill0);
+    REAL rwork[1];
     return_value = Rlange("One-norm", n, n, work, n, rwork) / (Rlamch("Epsilon") * (max(m, n)).real());
     return return_value;
     //

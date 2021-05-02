@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void Cgtt01(INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *dlf, COMPLEX *df, COMPLEX *duf, COMPLEX *du2, INTEGER *ipiv, COMPLEX *work, INTEGER const ldwork, REAL *rwork, REAL &resid) {

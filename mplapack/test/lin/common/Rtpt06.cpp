@@ -27,6 +27,10 @@
  */
 
 #include <mpblas.h>
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
 #include <mplapack.h>
 
 void Rtpt06(REAL const rcond, REAL const rcondc, const char *uplo, const char *diag, INTEGER const n, REAL *ap, REAL *work, REAL &rat) {
@@ -96,7 +100,7 @@ void Rtpt06(REAL const rcond, REAL const rcondc, const char *uplo, const char *d
         Rlabad(smlnum, bignum);
         anorm = Rlantp("M", uplo, diag, n, ap, work);
         //
-        rat = rmax * (min(bignum / max(one, anorm), one / eps));
+        rat = rmax * (min({bignum / max(one, anorm), one / eps}));
     }
     //
     //     End of Rtpt06
