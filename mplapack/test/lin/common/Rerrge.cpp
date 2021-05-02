@@ -27,14 +27,11 @@
  */
 
 #include <mpblas.h>
-#include <mplapack.h>
-
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-
-#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack.h>
 
 void Rerrge(const char *path, INTEGER const nunit) {
     //
@@ -66,7 +63,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
     //     ..
     //     .. Executable Statements ..
     //
-    INTEGER nout = nunit;
+    nout = nunit;
     char c2[2];
     c2[0] = path[1];
     c2[1] = path[2];
@@ -105,7 +102,6 @@ void Rerrge(const char *path, INTEGER const nunit) {
     bool lerr;
     //
     INTEGER info = 0;
-    INTEGER infot = 0;
     REAL anrm = 0.0;
     REAL rcond = 0.0;
     REAL ccond = 0.0;
@@ -165,29 +161,29 @@ void Rerrge(const char *path, INTEGER const nunit) {
         Rgetrs("N", 2, 1, a, 2, ip, b, 1, info);
         chkxer("Rgetrs", infot, nout, lerr, ok);
         //
-        //        Rgerfs
+        //        RgerFS
         //
         infot = 1;
         Rgerfs("/", 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rgerfs", infot, nout, lerr, ok);
+        chkxer("RgerFS", infot, nout, lerr, ok);
         infot = 2;
         Rgerfs("N", -1, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rgerfs", infot, nout, lerr, ok);
+        chkxer("RgerFS", infot, nout, lerr, ok);
         infot = 3;
         Rgerfs("N", 0, -1, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rgerfs", infot, nout, lerr, ok);
+        chkxer("RgerFS", infot, nout, lerr, ok);
         infot = 5;
         Rgerfs("N", 2, 1, a, 1, af, 2, ip, b, 2, x, 2, r1, r2, w, iw, info);
-        chkxer("Rgerfs", infot, nout, lerr, ok);
+        chkxer("RgerFS", infot, nout, lerr, ok);
         infot = 7;
         Rgerfs("N", 2, 1, a, 2, af, 1, ip, b, 2, x, 2, r1, r2, w, iw, info);
-        chkxer("Rgerfs", infot, nout, lerr, ok);
+        chkxer("RgerFS", infot, nout, lerr, ok);
         infot = 10;
         Rgerfs("N", 2, 1, a, 2, af, 2, ip, b, 1, x, 2, r1, r2, w, iw, info);
-        chkxer("Rgerfs", infot, nout, lerr, ok);
+        chkxer("RgerFS", infot, nout, lerr, ok);
         infot = 12;
         Rgerfs("N", 2, 1, a, 2, af, 2, ip, b, 2, x, 1, r1, r2, w, iw, info);
-        chkxer("Rgerfs", infot, nout, lerr, ok);
+        chkxer("RgerFS", infot, nout, lerr, ok);
         //
         //        Rgecon
         //
