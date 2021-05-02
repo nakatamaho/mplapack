@@ -36,6 +36,7 @@ newfilename=`basename $_file | sed -e 's/^dzsum1/RCsum1/g' -e 's/^zdscal/CRscal/
 if [ ! -e $newfilename ]; then
 cat ${oldfilename}.cpp | bash BLAS_LIST | bash LAPACK_LIN_LIST | bash LAPACK_LIST | sed 's/dlamch/Rlamch/g' > ${newfilename}.cpp_
 mv ${newfilename}.cpp_  ${newfilename}.cpp
+sed -i -e 's/common &cmn, //g' ${newfilename}.cpp
 sed -i -e 's/vect = "N";/vect = \'\'N\'';/g' ${newfilename}.cpp
 sed -i -e 's/vect = "U";/vect = \'\'U\'';/g' ${newfilename}.cpp
 sed -i -e 's/trans = "N";/trans = \'\'N\'';/g' ${newfilename}.cpp
@@ -79,5 +80,15 @@ sed -i -e 's/ == "1"/Mlsame( , "1")/g' ${newfilename}.cpp
 sed -i -e 's/ == "0"/Mlsame( , "0")/g' ${newfilename}.cpp
 
 fi
+
+cat << EOF > insert_lin.txt
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+#include <mplapack_lin.h>
+EOF
+
+sed -i "/#include <mplapack.h>/e cat insert_lin.txt" ${newfilename}.cpp  #GNU sed only
 rm -f ${oldfilename}.cpp
 done
+rm insert_lin.txt
