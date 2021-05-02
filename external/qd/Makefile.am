@@ -1,8 +1,8 @@
 QDVERSION=2.3.22
 MAKEFLAGS =
 
-CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/QD/ --host=$(host) --enable-shared $(QDLIB_FLAGS)
-CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) --enable-shared $(QDLIB_FLAGS)
+CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/QD/ --host=$(host) --enable-fortran=no --enable-shared $(QDLIB_FLAGS)
+CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) --enable-fortran=no --enable-shared $(QDLIB_FLAGS)
 
 EXTRACT_STAMP=.qd_extract_done
 PATCH_STAMP=.qd_patch_done

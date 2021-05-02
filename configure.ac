@@ -488,8 +488,8 @@ fi
 if test x$enable_mpfr = x"yes" -o x$enable_test = x"yes"; then
     if test x$with_system_mpfr != x"no"; then
         HAVE_MPFR=""
-        save_CFLAGS=$CFLAGS
-        CFLAGS="$CFLAGS -I$MPFR_INCLUDEDIR -I$GMP_INCLUDEDIR"
+        save_CXXFLAGS=$CXXFLAGS
+        CXXFLAGS="$CXXFLAGS -I$MPFR_INCLUDEDIR -I$GMP_INCLUDEDIR"
         AC_CHECK_HEADER(mpfr.h, HAVE_MPFR_HEADER=yes)
         if test x$HAVE_MPFR_HEADER = xyes; then
             save_LDFLAGS="$LDFLAGS"
@@ -503,7 +503,7 @@ if test x$enable_mpfr = x"yes" -o x$enable_test = x"yes"; then
             AC_MSG_RESULT([MPFR found: using MPFR comes with the system])
             SYSTEM_MPFR=yes
         fi
-        CFLAGS=$save_CFLAGS
+        CXXFLAGS=$save_CXXFLAGS
     else
         AC_MSG_RESULT([Using MPFR comes with MPLAPACK])
         MPFR_INCLUDEDIR=$highest_abs_top_srcdir/external/i/MPFR/include/
@@ -535,8 +535,8 @@ fi
 if test x$enable_mpfr = x"yes" -o x$enable_test = x"yes"; then
     if test x$with_system_mpc != x"no"; then
         HAVE_MPC=""
-        save_CFLAGS=$CFLAGS
-        CFLAGS="$CFLAGS -I$MPC_INCLUDEDIR -I$MPFR_INCLUDEDIR -I$GMP_INCLUDEDIR"
+        save_CXXFLAGS=$CXXFLAGS
+        CXXFLAGS="$CXXFLAGS -I$MPC_INCLUDEDIR -I$MPFR_INCLUDEDIR -I$GMP_INCLUDEDIR"
         AC_CHECK_HEADER(mpc.h, HAVE_MPC_HEADER=yes)
         if test x$HAVE_MPC_HEADER = xyes; then
             save_LDFLAGS="$LDFLAGS"
@@ -550,7 +550,7 @@ if test x$enable_mpfr = x"yes" -o x$enable_test = x"yes"; then
             AC_MSG_RESULT([MPC library found: using MPC library comes with the system])
             SYSTEM_MPC=yes
         fi
-        CFLAGS=$save_CFLAGS
+        CXXFLAGS=$save_CXXFLAGS
     else
 	AC_MSG_RESULT([Using MPC library comes with MPLAPACK])
         MPC_INCLUDEDIR=$highest_abs_top_srcdir/external/i/MPC/include/
