@@ -35,5 +35,5 @@ void iMlaver(int &mplapack_ver_major, int &mplapack_ver_minor, int &mplapack_ver
     mplapack_ver_patch = %%mplapack_ver_patch%%;
     lapack_ver_major = %%lapack_ver_major%%;
     lapack_ver_minor = %%lapack_ver_minor%%;
-    lapack_ver_patch = %%lapack_ver_mpatch%%;
+    lapack_ver_patch = %%lapack_ver_patch%%;
 }

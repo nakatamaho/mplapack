@@ -20,9 +20,9 @@ AC_SUBST(LAPACK_VERSION)
 sed -e "s/%%mplapack_ver_major%%/MPLAPACK_VER_MAJOR/g" \
     -e "s/%%mplapack_ver_minor%%/MPLAPACK_VER_MINOR/g" \
     -e "s/%%mplapack_ver_patch%%/MPLAPACK_VER_PATCH/g" \
-    -e "s/%%lapack_ver_major%%/LAPACK_VER_MAJOR/g" \
-    -e "s/%%lapack_ver_minor%%/LAPACK_VER_MINOR/g" \
-    -e "s/%%lapack_ver_patch%%/LAPACK_VER_PATCH/g" \
+    -e "s/%%lapack_ver_major%%/$LAPACK_VER_MAJOR/g" \
+    -e "s/%%lapack_ver_minor%%/$LAPACK_VER_MINOR/g" \
+    -e "s/%%lapack_ver_patch%%/$LAPACK_VER_PATCH/g" \
      mplapack/reference/iMlaver.cpp.in > mplapack/reference/iMlaver.cpp
 
 AC_CONFIG_FILES([ Makefile mplapack.pc ])
