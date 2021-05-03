@@ -17,9 +17,9 @@ original license by LAPACK).
 * MPFR + MPC https://www.mpfr.org/ and http://www.multiprecision.org/mpc/  (arbitrary precision with IEEE like rounding mode)
 * GMP https://gmplib.org/ (arbitrary precision)
 * double (binary64)
-* DD, QD (https://www.davidhbailey.com/dhbsoftware/) (DD=approx. binary64, QD=binary128)
+* DD, QD (https://www.davidhbailey.com/dhbsoftware/) (DD=approx. binary128, QD=approx. binary256)
 * _Float128 (binary128; via glibc or libquadmath; automatically detected)
-* _Float64x (extended precision of double; Intel CPU only)
+* _Float64x (extended precision of double; binary80 Intel CPU only)
 
 We use MPFR + MPC as the primary arithmetic class.
 
