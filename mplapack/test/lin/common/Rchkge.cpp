@@ -172,7 +172,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 }
                 //
                 //              Set up parameters with Rlatb4 and generate a test matrix
-                //              with DLATMS.
+                //              with Rlatms.
                 //
                 Rlatb4(path, imat, m, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                 //
@@ -222,7 +222,6 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //                 Compute the LU factorization of the matrix.
                     //
                     Rlacpy("Full", m, n, a, lda, afac, lda);
-                    printf("Rgetrf m:%ld n:%ld lda:%ld info: %ld infoe: %ld \n", m, n, lda, info, izero);
                     Rgetrf(m, n, afac, lda, iwork, info);
                     //
                     //                 Check error code from Rgetrf.
