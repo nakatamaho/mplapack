@@ -20,8 +20,7 @@ LIN_SOURCES = \
 ../common/Rget06.cpp \
 ../common/Rget07.cpp \
 ../common/Rlatb4.cpp \
-../common/Rlarhs.cpp \
-../common/mplapack.test.cpp
+../common/Rlarhs.cpp
 
 libdepends = -L. -llin_mpfr -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr 
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lm
@@ -33,6 +32,6 @@ mplapack_mpfr_lintestdir = $(prefix)/share/mplapack/test/mplapack/lin/mpfr
 mplapack_mpfr_lintest_PROGRAMS = \
 xlintstR_mpfr
 
-xlintstR_mpfr_SOURCES  = ../common/Rchkaa.cpp ../common/mplapack.test.cpp
+xlintstR_mpfr_SOURCES  = ../common/Rchkaa.cpp $(top_builddir)/mpblas/test/common/mplapack.test.cpp
 xlintstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs)
 xlintstR_mpfr_CXXFLAGS = $(cxxflags)

@@ -44,6 +44,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     const INTEGER ntran = 3;
     char transs[ntran] = {'N', 'T', 'C'};
     char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -290,11 +291,10 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
+                            sprintnum_short(buf, result[k - 1]);
                             write(nout, "(' M = ',i5,', N =',i5,', NB =',i4,', type ',i2,', test(',i2,"
-                                        "') =',g12.5)"),
-                                m, n, nb, imat, k, cast2double(result[k - 1]);
-                            printnum(result[k - 1]);
-                            printf("\n");
+                                        "') =',a)"),
+                                m, n, nb, imat, k, buf;
                             nfail++;
                         }
                     }
@@ -352,7 +352,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //
                             Rgerfs(&trans, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                             //
-                            //                       Check error code from RgerFS.
+                            //                       Check error code from Rgerfs.
                             //
                             if (info != 0) {
                                 Alaerh(path, "Rgerfs", info, 0, &trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
@@ -369,11 +369,10 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     if (nfail == 0 && nerrs == 0) {
                                         Alahd(nout, path);
                                     }
+                                    sprintnum_short(buf, result[k - 1]);
                                     write(nout, "(' TRANS=''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                                "', test(',i2,') =',g12.5)"),
-                                        trans, n, nrhs, imat, k, cast2double(result[k - 1]);
-                                    printnum(result[k - 1]);
-                                    printf("\n");
+                                                "', test(',i2,') =',a)"),
+                                        &trans, n, nrhs, imat, k, buf;
                                     nfail++;
                                 }
                             }
@@ -410,15 +409,14 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         //                    Print information about the tests that did not pass
                         //                    the threshold.
                         //
+                        sprintnum_short(buf, result[8 - 1]);
                         if (result[8 - 1] >= thresh) {
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
                             write(nout, "(' NORM =''',a1,''', N =',i5,',',10x,' type ',i2,', test(',"
-                                        "i2,') =',g12.5)"),
-                                norm, n, imat, 8, cast2double(result[8 - 1]);
-                            printnum(result[8 - 1]);
-                            printf("\n");
+                                        "i2,') =',a)"),
+                                &norm, n, imat, 8, buf;
                             nfail++;
                         }
                         nrun++;
