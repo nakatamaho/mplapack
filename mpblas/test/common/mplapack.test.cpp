@@ -82,6 +82,12 @@ void sprintnum(char *buf, mpreal rtmp)
     return;
 }
 
+void sprintnum_short(char *buf, mpreal rtmp)
+{
+    mpfr_snprintf(buf, BUFLEN, MPFR_SHORT_FORMAT, mpfr_ptr(rtmp));
+    return;
+}
+
 void sprintnum(char *buf, mpcomplex ctmp)
 {
     mpreal cre, cim;

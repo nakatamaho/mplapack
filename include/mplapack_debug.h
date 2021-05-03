@@ -136,6 +136,7 @@ using namespace mpfr;
 //#define MPFR_P_FORMAT "%+36.32Re"
 #define GMP_P_FORMAT "%+68.64Fe"
 #define MPFR_P_FORMAT "%+68.64Re"
+#define MPFR_SHORT_FORMAT "%+16.7Re"
 // double
 //#define GMP_P_FORMAT  "%+21.16Fe"
 //#define MPFR_P_FORMAT "%+21.16Re"
@@ -193,6 +194,7 @@ void printnum(complex<double> ctmp);
 void printnum(long double rtmp);
 void printnum(complex<long double> ctmp);
 void sprintnum(char *buf, mpreal rtmp);
+void sprintnum_short(char *buf, mpreal rtmp);
 void sprintnum(char *buf, mpcomplex rtmp);
 void sprintnum(char *buf, double rtmp);
 void sprintnum(char *buf, long double rtmp);
