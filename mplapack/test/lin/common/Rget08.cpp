@@ -98,8 +98,10 @@ void Rget08(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
     REAL bnorm = 0.0;
     REAL xnorm = 0.0;
     for (j = 1; j <= nrhs; j = j + 1) {
-        bnorm = abs(b(iRamax(n1, &b[(j - 1) * ldb], 1), j));
-        xnorm = abs(x(iRamax(n2, &x[(j - 1) * ldx], 1), j));
+        INTEGER bb = iRamax(n1, &b[(j - 1) * ldb], 1);
+        INTEGER xx = iRamax(n2, &x[(j - 1) * ldx], 1);
+        bnorm = abs(b[(bb - 1) + (j - 1) * ldx]);
+        xnorm = abs(x[(xx - 1) + (j - 1) * ldx]);
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
@@ -107,6 +109,6 @@ void Rget08(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         }
     }
     //
-    //     End of Rget02
+    //     End of Rget08
     //
 }

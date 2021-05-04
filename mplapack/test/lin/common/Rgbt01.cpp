@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL *a, INTEGER const lda, REAL *afac, INTEGER const ldafac, INTEGER *ipiv, REAL *work, REAL &resid) {
     //
@@ -116,7 +119,7 @@ void Rgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 if (il > 0) {
                     iw = i - j + ju + 1;
                     t = work[iw - 1];
-                    Raxpy(il, t, afac[((kd + 1) - 1) + (i - 1) * ldafac], 1, &work[(iw + 1) - 1], 1);
+                    Raxpy(il, t, &afac[((kd + 1) - 1) + (i - 1) * ldafac], 1, &work[(iw + 1) - 1], 1);
                     ip = ipiv[i - 1];
                     if (i != ip) {
                         ip = ip - j + ju + 1;
@@ -146,7 +149,7 @@ void Rgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
             resid = one / eps;
         }
     } else {
-        resid = ((resid / n.real()) / anorm) / eps;
+        resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
     //     End of Rgbt01

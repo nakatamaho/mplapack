@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -35,14 +35,15 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+
 #include <mplapack_debug.h>
 
 void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *afac, REAL *asav, REAL *b, REAL *bsav, REAL *x, REAL *xact, REAL *s, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+    //
     common cmn;
     common_write write(cmn);
-    //
     const INTEGER ntran = 3;
-    char transs[] = {'N', 'T', 'C'};
+    char transs[ntran] = {'N', 'T', 'C'};
     char facts[] = {'F', 'N', 'E'};
     char equeds[] = {'N', 'R', 'C', 'B'};
     char path[3];
@@ -188,17 +189,17 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             }
             //
             //           Set up parameters with Rlatb4 and generate a test matrix
-            //           with DLATMS.
+            //           with Rlatms.
             //
             Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
             rcondc = one / cndnum;
             //
             Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
             //
-            //           Check error code from DLATMS.
+            //           Check error code from Rlatms.
             //
             if (info != 0) {
-                Alaerh(path, "DLATMS", info, 0, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                Alaerh(path, "Rlatms", info, 0, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 goto statement_80;
             }
             //
@@ -278,7 +279,7 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 //
                                 //                          Equilibrate the matrix.
                                 //
-                                Rlaqge(n, n, afac, lda, s, s[(n + 1) - 1], rowcnd, colcnd, amax, equed);
+                                Rlaqge(n, n, afac, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, &equed);
                             }
                         }
                         //
@@ -341,8 +342,8 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         //                    Form an exact solution and set the right hand side.
                         //
-                        Rlarhs(path, xtype, "Full", &trans, n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                        xtype = "C";
+                        Rlarhs(path, &xtype, "Full", &trans, n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        xtype = 'C';
                         Rlacpy("Full", n, nrhs, b, lda, bsav, lda);
                         //
                         if (nofact && itran == 1) {
@@ -389,7 +390,8 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     if (nfail == 0 && nerrs == 0) {
                                         Aladhd(nout, path);
                                     }
-                                    write(nout, "(1x,a,', N =',i5,', type ',i2,', test(',i2,') =',g12.5)"), "Rgesv ", n, imat, k, result(k);
+                                    sprintnum_short(buf, result[k - 1]);
+                                    write(nout, "(1x,a,', N =',i5,', type ',i2,', test(',i2,') =',a)"), "Rgesv ", n, imat, k, buf;
                                     nfail++;
                                 }
                             }
@@ -407,18 +409,22 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       Equilibrate the matrix if FACT = 'F' and
                             //                       EQUED = 'R', 'C', or 'B'.
                             //
-                            Rlaqge(n, n, a, lda, s, s[(n + 1) - 1], rowcnd, colcnd, amax, equed);
+                            Rlaqge(n, n, a, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, &equed);
                         }
                         //
                         //                    Solve the system and compute the condition number
                         //                    and error bounds using Rgesvx.
                         //
-                        Rgesvx(fact, trans, n, nrhs, a, lda, afac, lda, iwork, equed, s, s[(n + 1) - 1], b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
+                        Rgesvx(&fact, &trans, n, nrhs, a, lda, afac, lda, iwork, &equed, s, &s[(n + 1) - 1], b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                         //
                         //                    Check the error code from Rgesvx.
                         //
                         if (info != izero) {
-                            Alaerh(path, "Rgesvx", info, izero, fact + trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            char fact_trans[3];
+                            fact_trans[0] = fact;
+                            fact_trans[1] = trans;
+                            fact_trans[2] = '\0';
+                            Alaerh(path, "Rgesvx", info, izero, fact_trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         //                    Compare WORK(1) from Rgesvx with the computed
@@ -458,11 +464,11 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       Compute residual of the computed solution.
                             //
                             Rlacpy("Full", n, nrhs, bsav, lda, work, lda);
-                            Rget02(trans, n, n, nrhs, asav, lda, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
+                            Rget02(&trans, n, n, nrhs, asav, lda, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
                             //
                             //                       Check solution from generated exact solution.
                             //
-                            if (nofact || (prefac && Mlsame(equed, "N"))) {
+                            if (nofact || (prefac && Mlsame(&equed, "N"))) {
                                 Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                             } else {
                                 if (itran == 1) {
@@ -476,7 +482,7 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       Check the error bounds from iterative
                             //                       refinement.
                             //
-                            Rget07(trans, n, nrhs, asav, lda, b, lda, x, lda, xact, lda, rwork, true, &rwork[(nrhs + 1) - 1], result[4 - 1]);
+                            Rget07(&trans, n, nrhs, asav, lda, b, lda, x, lda, xact, lda, rwork, true, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                         } else {
                             trfcon = true;
                         }
@@ -496,9 +502,11 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                         Aladhd(nout, path);
                                     }
                                     if (prefac) {
-                                        write(nout, format_9997), "Rgesvx", fact, trans, n, equed, imat, k, result(k);
+                                        sprintnum_short(buf, result[k - 1]);
+                                        write(nout, format_9997), "Rgesvx", fact, trans, n, equed, imat, k, buf;
                                     } else {
-                                        write(nout, format_9998), "Rgesvx", fact, trans, n, imat, k, result(k);
+                                        sprintnum_short(buf, result[k - 1]);
+                                        write(nout, format_9998), "Rgesvx", fact, trans, n, imat, k, buf;
                                     }
                                     nfail++;
                                 }
@@ -510,9 +518,11 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     Aladhd(nout, path);
                                 }
                                 if (prefac) {
-                                    write(nout, format_9997), "Rgesvx", fact, trans, n, equed, imat, 1, result(1);
+                                    sprintnum_short(buf, result[1 - 1]);
+                                    write(nout, format_9997), "Rgesvx", fact, trans, n, equed, imat, 1, buf;
                                 } else {
-                                    write(nout, format_9998), "Rgesvx", fact, trans, n, imat, 1, result(1);
+                                    sprintnum_short(buf, result[1 - 1]);
+                                    write(nout, format_9998), "Rgesvx", fact, trans, n, imat, 1, buf;
                                 }
                                 nfail++;
                                 nrun++;
@@ -522,9 +532,11 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     Aladhd(nout, path);
                                 }
                                 if (prefac) {
-                                    write(nout, format_9997), "Rgesvx", fact, trans, n, equed, imat, 6, result(6);
+                                    sprintnum_short(buf, result[6 - 1]);
+                                    write(nout, format_9997), "Rgesvx", fact, trans, n, equed, imat, 6, buf;
                                 } else {
-                                    write(nout, format_9998), "Rgesvx", fact, trans, n, imat, 6, result(6);
+                                    sprintnum_short(buf, result[6 - 1]);
+                                    write(nout, format_9998), "Rgesvx", fact, trans, n, imat, 6, buf;
                                 }
                                 nfail++;
                                 nrun++;
@@ -534,9 +546,11 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     Aladhd(nout, path);
                                 }
                                 if (prefac) {
-                                    write(nout, format_9997), "Rgesvx", fact, trans, n, equed, imat, 7, result(7);
+                                    sprintnum_short(buf, result[7 - 1]);
+                                    write(nout, format_9997), "Rgesvx", fact, trans, n, equed, imat, 7, buf;
                                 } else {
-                                    write(nout, format_9998), "Rgesvx", fact, trans, n, imat, 7, result(7);
+                                    sprintnum_short(buf, result[7 - 1]);
+                                    write(nout, format_9998), "Rgesvx", fact, trans, n, imat, 7, buf;
                                 }
                                 nfail++;
                                 nrun++;
