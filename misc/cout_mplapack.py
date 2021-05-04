@@ -850,7 +850,7 @@ def convert_dims(conv_info, dim_tokens):
   if (need_origin):
     result = ".".join(dims)
   else:
-    result = "[" + ", ".join(dims) + "]"
+    result = "[" + " * ".join(dims) + "]"
   return result
 
 def parenthesize_if_necessary(expr):
@@ -901,12 +901,13 @@ def convert_data_type_and_dims(conv_info, fdecl, crhs, force_arr=False):
             cdims = Auto
             t = convert_tokens(conv_info=conv_info, tokens=dt, commas=True)
             __t =t.replace(",", "*");
+            _csize = __t
           else:
             t = ", ".join(["%d" % v for v in vals])
             __t = "* ".join(["%d" % v for v in vals])
           _t = "%s" % __t
           _ctype = "%s" % ctype
-          _csize = __t
+          _csize = t.replace(",", "*");
           t = "%s, %s" % (t, ctype)
           if (t.endswith(">")): templs = " "
           else:                 templs = ""
