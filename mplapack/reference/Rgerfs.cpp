@@ -265,6 +265,6 @@ void Rgerfs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *a, INT
         //
     }
     //
-    //     End of RgerFS
+    //     End of Rgerfs
     //
 }
