@@ -178,7 +178,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 //
                 Rlatms(m, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
                 //
-                //              Check error code from DLATMS.
+                //              Check error code from Rlatms.
                 //
                 if (info != 0) {
                     Alaerh(path, "Rlatms", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
