@@ -22,7 +22,7 @@ if [ x$LINE != x"" ]; then
 fi
 sed -i -e 's/side + trans/side_trans/g' ${output}_
 cat ${output}_ | sed -e '/#include <fem.hpp> \/\/ Fortran EMulation library of fable module/,/\/\/  =====================================================================/d' > ${output}
-cat ${output} | sed -e 's/lsame/Mlsame/g' -e 's/xerbla/Mxerbla/g' -e 's/ilaenv/iMlaenv/g' > ${output}_
+cat ${output} | sed -e 's/lsame/Mlsame/g' -e 's/xerbla/Mxerbla/g' -e 's/ilaenv/iMlaenv/g' | grep -v '(\[star\])' >  ${output}_
 cat /home/docker/mplapack/misc/header_lapack ${output}_ | sed '/namespace placeholder_please_replace/d' > ${output}
 clang-format -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" ${output} > ${output}_
 mv ${output}_ ${output}

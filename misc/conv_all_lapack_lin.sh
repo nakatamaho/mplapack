@@ -26,6 +26,7 @@ fi
 
 cp ~/mplapack/misc/BLAS_LIST .
 cp ~/mplapack/misc/LAPACK_LIST .
+cp ~/mplapack/misc/LAPACK_MATGEN_LIST .
 
 for _file in $FILES_SUBSET ; do
 perl -i.bk -pe 's/[^[:ascii:]]//g;' $_file
@@ -34,7 +35,7 @@ oldfilename=`basename $_file | sed -e 's/\.f$//'`
 newfilename=`basename $_file | sed -e 's/^dzsum1/RCsum1/g' -e 's/^zdscal/CRscal/g' -e 's/^zdrot/CRrot/g' -e 's/^dcabs/RCabs/g' -e 's/^dzasum/RCasum/g' -e 's/^dznrm2/RCnrm2/g' | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^a/A/g' -e 's/^iz/iC/' -e 's/^ila/iMla/' -e 's/^ip/iMp/' -e 's/\.f$//'`
 
 if [ ! -e $newfilename ]; then
-cat ${oldfilename}.cpp | bash BLAS_LIST | bash LAPACK_LIN_LIST | bash LAPACK_LIST | sed 's/dlamch/Rlamch/g' > ${newfilename}.cpp_
+cat ${oldfilename}.cpp | bash BLAS_LIST | bash LAPACK_LIN_LIST | bash LAPACK_MATGEN_LIST | bash LAPACK_LIST | sed 's/dlamch/Rlamch/g' > ${newfilename}.cpp_
 mv ${newfilename}.cpp_  ${newfilename}.cpp
 sed -i -e 's/common &cmn, //g' ${newfilename}.cpp
 sed -i -e 's/vect = "N";/vect = \'\'N\'';/g' ${newfilename}.cpp
