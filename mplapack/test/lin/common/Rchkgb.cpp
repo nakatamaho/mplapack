@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -41,7 +41,7 @@ using fem::common;
 void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, REAL *a, INTEGER const la, REAL *afac, INTEGER const lafac, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-
+    //
     const INTEGER ntran = 3;
     char transs[ntran] = {'N', 'T', 'C'};
     char path[3];
@@ -138,9 +138,9 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Initialize constants and the random number seed.
     //
-    path[0] = 'R';
+    path[0] = 'D';
     path[1] = 'G';
-    path[2] = 'B';
+    path[1] = 'B';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -357,10 +357,10 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
-                            sprintnum_short(buf, result[0]);
-			    write(nout, "(' M =',i5,', N =',i5,', KL=',i5,', KU=',i5,', NB =',i4,"
+                                sprintnum_short(buf, result[1 - 1]);
+                                write(nout, "(' M =',i5,', N =',i5,', KL=',i5,', KU=',i5,', NB =',i4,"
                                             "', type ',i1,', test(',i1,')=',a)"),
-			      m, n, kl, ku, nb, imat, 1, buf;
+                                    m, n, kl, ku, nb, imat, 1, buf;
                                 nfail++;
                             }
                             nrun++;
@@ -474,10 +474,10 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                             if (nfail == 0 && nerrs == 0) {
                                                 Alahd(nout, path);
                                             }
-                                    sprintnum_short(buf, result[k - 1]);
-				    write(nout, "(' TRANS=''',a1,''', N=',i5,', KL=',i5,', KU=',i5,"
+                                            sprintnum_short(buf, result[k - 1]);
+                                            write(nout, "(' TRANS=''',a1,''', N=',i5,', KL=',i5,', KU=',i5,"
                                                         "', NRHS=',i3,', type ',i1,', test(',i1,')=',a)"),
-				      trans, n, kl, ku, nrhs, imat, k, buf;
+                                                trans, n, kl, ku, nrhs, imat, k, buf;
                                             nfail++;
                                         }
                                     }
@@ -516,10 +516,10 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     if (nfail == 0 && nerrs == 0) {
                                         Alahd(nout, path);
                                     }
-                        sprintnum_short(buf, result[7 - 1]);
-			write(nout, "(' NORM =''',a1,''', N=',i5,', KL=',i5,', KU=',i5,',',"
+                                    sprintnum_short(buf, result[7 - 1]);
+                                    write(nout, "(' NORM =''',a1,''', N=',i5,', KL=',i5,', KU=',i5,',',"
                                                 "10x,' type ',i1,', test(',i1,')=',a)"),
-			  norm, n, kl, ku, imat, 7, buf;
+                                        norm, n, kl, ku, imat, 7, buf;
                                     nfail++;
                                 }
                                 nrun++;
