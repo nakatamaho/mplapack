@@ -6,6 +6,8 @@ liblin_mpfr_la_SOURCES = $(LIN_SOURCES)
 LIN_SOURCES = \
 ../common/Rerrge.cpp \
 ../common/Rchkge.cpp \
+../common/Rdrvge.cpp \
+../common/Rchkgb.cpp \
 ../common/chkxer.cpp \
 ../common/Alasum.cpp \
 ../common/Alareq.cpp \
@@ -20,7 +22,10 @@ LIN_SOURCES = \
 ../common/Rget06.cpp \
 ../common/Rget07.cpp \
 ../common/Rlatb4.cpp \
-../common/Rlarhs.cpp
+../common/Rlarhs.cpp \
+../common/Rgbt01.cpp \
+../common/Rgbt02.cpp \
+../common/Rgbt05.cpp
 
 libdepends = -L. -llin_mpfr -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr 
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lm

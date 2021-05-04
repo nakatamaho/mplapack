@@ -239,9 +239,9 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 //
                 for (ifact = 1; ifact <= nfact; ifact = ifact + 1) {
                     fact = facts[ifact - 1];
-                    prefac = Mlsame(fact, "F");
-                    nofact = Mlsame(fact, "N");
-                    equil = Mlsame(fact, "E");
+                    prefac = Mlsame(&fact, "F");
+                    nofact = Mlsame(&fact, "N");
+                    equil = Mlsame(&fact, "E");
                     //
                     if (zerot) {
                         if (prefac) {
@@ -265,13 +265,13 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //
                             Rgeequ(n, n, afac, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, info);
                             if (info == 0 && n > 0) {
-                                if (Mlsame(equed, "R")) {
+                                if (Mlsame(&equed, "R")) {
                                     rowcnd = zero;
                                     colcnd = one;
-                                } else if (Mlsame(equed, "C")) {
+                                } else if (Mlsame(&equed, "C")) {
                                     rowcnd = one;
                                     colcnd = zero;
-                                } else if (Mlsame(equed, "B")) {
+                                } else if (Mlsame(&equed, "B")) {
                                     rowcnd = zero;
                                     colcnd = zero;
                                 }
@@ -341,7 +341,7 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         //                    Form an exact solution and set the right hand side.
                         //
-                        Rlarhs(path, xtype, "Full", trans, n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        Rlarhs(path, xtype, "Full", &trans, n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         xtype = "C";
                         Rlacpy("Full", n, nrhs, b, lda, bsav, lda);
                         //
