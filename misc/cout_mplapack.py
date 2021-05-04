@@ -850,7 +850,7 @@ def convert_dims(conv_info, dim_tokens):
   if (need_origin):
     result = ".".join(dims)
   else:
-    result = "dimension(" + ", ".join(dims) + ")"
+    result = "[" + ", ".join(dims) + "]"
   return result
 
 def parenthesize_if_necessary(expr):
@@ -882,6 +882,7 @@ def convert_data_type_and_dims(conv_info, fdecl, crhs, force_arr=False):
   ctype, crhs, _csize = convert_data_type(conv_info=conv_info, fdecl=fdecl, crhs=crhs)
   if _csize == "":
     _csize ="dummy"
+  _ctype =""
   dt = fdecl.dim_tokens
   cdims = None
   cfill0 = "fem::fill0"
@@ -905,6 +906,7 @@ def convert_data_type_and_dims(conv_info, fdecl, crhs, force_arr=False):
             __t = "* ".join(["%d" % v for v in vals])
           _t = "%s" % __t
           _ctype = "%s" % ctype
+          _csize = __t
           t = "%s, %s" % (t, ctype)
           if (t.endswith(">")): templs = " "
           else:                 templs = ""
@@ -919,10 +921,11 @@ def convert_data_type_and_dims(conv_info, fdecl, crhs, force_arr=False):
       if (t.endswith(">")): templs = " "
       else:                 templs = ""
       atype = "arr<%s%s>" % (t, templs)
+      _ctype = ctype
     ctype = atype
     if (cdims is None):
       cdims = convert_dims(conv_info=conv_info, dim_tokens=dt)
-  return ctype, cdims, crhs, cfill0, _csize
+  return ctype, cdims, crhs, cfill0, _csize, _ctype
 
 def ad_hoc_change_arr_to_arr_ref(ctype, cconst=""):
   return ctype.replace("arr<", "arr_%sref<" % cconst, 1)
@@ -935,7 +938,7 @@ def zero_shortcut_if_possible(ctype):
   return "fem::%s0" % ctype
 
 def convert_declaration(rapp, conv_info, fdecl, crhs, const):
-  ctype, cdims, crhs, cfill0, _csize  = convert_data_type_and_dims(
+  ctype, cdims, crhs, cfill0, _csize, _ctype  = convert_data_type_and_dims(
     conv_info=conv_info, fdecl=fdecl, crhs=crhs)
   vname = conv_info.vmapped(fdecl=fdecl)
   if (cdims is None):
@@ -949,12 +952,15 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
       rapp("%s%s %s[%s] = %s;" % (const_qualifier(), ctype, vname, _csize, crhs))
     return False
   if (cdims is Auto):
-    if _csize == "" or _csize =="dummy":
+    if _ctype == "":
       rapp("%s %s;" % (ctype, vname))
     else:
-      rapp("%s %s [%s];" % (ctype, vname, _csize ))
+      rapp("%s %s [%s];" % (_ctype, vname, _csize ))
   else:
-    rapp("%s %s(%s, %s);" % (ctype, vname, cdims, cfill0))
+    if _ctype == "":
+      rapp("%s %s %s;" % (ctype, vname, cdims))
+    else:
+      rapp("%s %s %s;" % (_ctype, vname, cdims))
   return True
 
 class scope(object):
