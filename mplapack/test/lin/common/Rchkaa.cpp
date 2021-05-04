@@ -489,16 +489,13 @@ void Rchkaa(void) {
                 write(nout, format_9989), path;
             }
             //
-#ifdef NOTYET
             if (tstdrv) {
                 Rdrvge(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], s, work, rwork, iwork, nout);
             } else {
                 write(nout, format_9988), path;
             }
-#endif
             //
         }
-#ifdef NOTYET
         else if (Mlsamen(2, c2, "GB")) {
             //
             //        GB:  general banded matrices
@@ -513,6 +510,8 @@ void Rchkaa(void) {
             } else {
                 write(nout, format_9989), path;
             }
+	}
+#ifdef NOTYET
             //
             if (tstdrv) {
                 Rdrvgb(dotype, nn, nval, nrhs, thresh, tsterr, &a[(1 - 1)], la, &a[(3 - 1) * ldaorg], lafac, &a[(6 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], s, work, rwork, iwork, nout);

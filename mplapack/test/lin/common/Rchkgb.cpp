@@ -27,29 +27,25 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
+
+#include <mplapack_debug.h>
 
 void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, REAL *a, INTEGER const la, REAL *afac, INTEGER const lafac, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
-    FEM_CMN_SVE(Rchkgb);
+    common cmn;
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
-    //
+
     const INTEGER ntran = 3;
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"N", "T", "C"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), transs;
-        }
-    }
-    char[3] path;
+    char transs[ntran] = {'N', 'T', 'C'};
+    char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -62,7 +58,7 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER m = 0;
     INTEGER in = 0;
     INTEGER n = 0;
-    char[1] xtype;
+    char xtype;
     INTEGER nkl = 0;
     INTEGER nku = 0;
     const INTEGER ntypes = 8;
@@ -75,11 +71,11 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER ldafac = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char[1] type;
+    char type;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
+    char dist;
     INTEGER koff = 0;
     const REAL zero = 0.0;
     INTEGER info = 0;
@@ -103,9 +99,9 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     INTEGER itran = 0;
-    char[1] trans;
+    char trans;
     REAL rcondc = 0.0;
-    char[1] norm;
+    char norm;
     INTEGER k = 0;
     REAL rcond = 0.0;
     //
@@ -142,22 +138,18 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Initialize constants and the random number seed.
     //
-    path[(1 - 1)] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "GB";
+    path[0] = 'R';
+    path[1] = 'G';
+    path[2] = 'B';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
-    for (i = 1; i <= 4; i = i + 1) {
-        iseed[i - 1] = iseedy[i - 1];
-    }
     //
     //     Test the error exits
     //
     if (tsterr) {
         Rerrge(path, nout);
     }
-    cmn.infot = 0;
-    xlaenv(2, 2);
     //
     //     Initialize the first value for the lower and upper bandwidths.
     //
@@ -182,7 +174,7 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         //
         for (in = 1; in <= nn; in = in + 1) {
             n = nval[in - 1];
-            xtype = "N";
+            xtype = 'N';
             //
             //           Set values to use for the upper bandwidth.
             //
@@ -268,21 +260,20 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         if (!zerot || !dotype[1 - 1]) {
                             //
                             //                       Set up parameters with Rlatb4 and generate a
-                            //                       test matrix with DLATMS.
+                            //                       test matrix with Rlatms.
                             //
-                            Rlatb4(path, imat, m, n, type, kl, ku, anorm, mode, cndnum, dist);
+                            Rlatb4(path, imat, m, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                             //
                             koff = max((INTEGER)1, ku + 2 - n);
                             for (i = 1; i <= koff - 1; i = i + 1) {
                                 a[i - 1] = zero;
                             }
-                            srnamt = "DLATMS";
-                            dlatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "Z", &a[koff - 1], lda, work, info);
+                            Rlatms(m, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "Z", &a[koff - 1], lda, work, info);
                             //
-                            //                       Check the error code from DLATMS.
+                            //                       Check the error code from Rlatms.
                             //
                             if (info != 0) {
-                                Alaerh(path, "DLATMS", info, 0, " ", m, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Rlatms", info, 0, " ", m, n, kl, ku, -1, imat, nfail, nerrs, nout);
                                 goto statement_120;
                             }
                         } else if (izero > 0) {
@@ -338,14 +329,12 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         //
                         for (inb = 1; inb <= nnb; inb = inb + 1) {
                             nb = nbval[inb - 1];
-                            xlaenv(1, nb);
                             //
                             //                       Compute the LU factorization of the band matrix.
                             //
                             if (m > 0 && n > 0) {
-                                Rlacpy("Full", kl + ku + 1, n, a, lda, afac[(kl + 1) - 1], ldafac);
+                                Rlacpy("Full", kl + ku + 1, n, a, lda, &afac[(kl + 1) - 1], ldafac);
                             }
-                            srnamt = "Rgbtrf";
                             Rgbtrf(m, n, kl, ku, afac, ldafac, iwork, info);
                             //
                             //                       Check error code from Rgbtrf.
@@ -368,9 +357,10 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
-                                write(nout, "(' M =',i5,', N =',i5,', KL=',i5,', KU=',i5,', NB =',i4,"
-                                            "', type ',i1,', test(',i1,')=',g12.5)"),
-                                    m, n, kl, ku, nb, imat, 1, result(1);
+                            sprintnum_short(buf, result[0]);
+			    write(nout, "(' M =',i5,', N =',i5,', KL=',i5,', KU=',i5,', NB =',i4,"
+                                            "', type ',i1,', test(',i1,')=',a)"),
+			      m, n, kl, ku, nb, imat, 1, buf;
                                 nfail++;
                             }
                             nrun++;
@@ -392,7 +382,6 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 //
                                 ldb = max((INTEGER)1, n);
                                 Rlaset("Full", n, n, zero, one, work, ldb);
-                                srnamt = "Rgbtrs";
                                 Rgbtrs("No transpose", n, kl, ku, n, afac, ldafac, iwork, work, ldb, info);
                                 //
                                 //                          Compute the 1-norm condition number of A.
@@ -430,13 +419,13 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //
                             for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                                 nrhs = nsval[irhs - 1];
-                                xtype = "N";
+                                xtype = 'N';
                                 //
                                 for (itran = 1; itran <= ntran; itran = itran + 1) {
                                     trans = transs[itran - 1];
                                     if (itran == 1) {
                                         rcondc = rcondo;
-                                        norm = "O";
+                                        norm = 'O';
                                     } else {
                                         rcondc = rcondi;
                                         norm = 'I';
@@ -445,22 +434,20 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     //+    TEST 2:
                                     //                             Solve and compute residual for A * X = B.
                                     //
-                                    srnamt = "Rlarhs";
-                                    Rlarhs(path, xtype, " ", trans, n, n, kl, ku, nrhs, a, lda, xact, ldb, b, ldb, iseed, info);
-                                    xtype = "C";
+                                    Rlarhs(path, &xtype, " ", &trans, n, n, kl, ku, nrhs, a, lda, xact, ldb, b, ldb, iseed, info);
+                                    xtype = 'C';
                                     Rlacpy("Full", n, nrhs, b, ldb, x, ldb);
                                     //
-                                    srnamt = "Rgbtrs";
-                                    Rgbtrs(trans, n, kl, ku, nrhs, afac, ldafac, iwork, x, ldb, info);
+                                    Rgbtrs(&trans, n, kl, ku, nrhs, afac, ldafac, iwork, x, ldb, info);
                                     //
                                     //                             Check error code from Rgbtrs.
                                     //
                                     if (info != 0) {
-                                        Alaerh(path, "Rgbtrs", info, 0, trans, n, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                                        Alaerh(path, "Rgbtrs", info, 0, &trans, n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                                     }
                                     //
                                     Rlacpy("Full", n, nrhs, b, ldb, work, ldb);
-                                    Rgbt02(trans, m, n, kl, ku, nrhs, a, lda, x, ldb, work, ldb, result[2 - 1]);
+                                    Rgbt02(&trans, m, n, kl, ku, nrhs, a, lda, x, ldb, work, ldb, result[2 - 1]);
                                     //
                                     //+    TEST 3:
                                     //                             Check solution from generated exact
@@ -472,25 +459,25 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     //                             Use iterative refinement to improve the
                                     //                             solution.
                                     //
-                                    srnamt = "Rgbrfs";
-                                    Rgbrfs(trans, n, kl, ku, nrhs, a, lda, afac, ldafac, iwork, b, ldb, x, ldb, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
+                                    Rgbrfs(&trans, n, kl, ku, nrhs, a, lda, afac, ldafac, iwork, b, ldb, x, ldb, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                                     //
                                     //                             Check error code from Rgbrfs.
                                     //
                                     if (info != 0) {
-                                        Alaerh(path, "Rgbrfs", info, 0, trans, n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
+                                        Alaerh(path, "Rgbrfs", info, 0, &trans, n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
                                     }
                                     //
                                     Rget04(n, nrhs, x, ldb, xact, ldb, rcondc, result[4 - 1]);
-                                    Rgbt05(trans, n, kl, ku, nrhs, a, lda, b, ldb, x, ldb, xact, ldb, rwork, &rwork[(nrhs + 1) - 1], result[5 - 1]);
+                                    Rgbt05(&trans, n, kl, ku, nrhs, a, lda, b, ldb, x, ldb, xact, ldb, rwork, &rwork[(nrhs + 1) - 1], &result[5 - 1]);
                                     for (k = 2; k <= 6; k = k + 1) {
                                         if (result[k - 1] >= thresh) {
                                             if (nfail == 0 && nerrs == 0) {
                                                 Alahd(nout, path);
                                             }
-                                            write(nout, "(' TRANS=''',a1,''', N=',i5,', KL=',i5,', KU=',i5,"
-                                                        "', NRHS=',i3,', type ',i1,', test(',i1,')=',g12.5)"),
-                                                trans, n, kl, ku, nrhs, imat, k, result(k);
+                                    sprintnum_short(buf, result[k - 1]);
+				    write(nout, "(' TRANS=''',a1,''', N=',i5,', KL=',i5,', KU=',i5,"
+                                                        "', NRHS=',i3,', type ',i1,', test(',i1,')=',a)"),
+				      trans, n, kl, ku, nrhs, imat, k, buf;
                                             nfail++;
                                         }
                                     }
@@ -506,22 +493,21 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 if (itran == 1) {
                                     anorm = anormo;
                                     rcondc = rcondo;
-                                    norm = "O";
+                                    norm = 'O';
                                 } else {
                                     anorm = anormi;
                                     rcondc = rcondi;
                                     norm = 'I';
                                 }
-                                srnamt = "Rgbcon";
-                                Rgbcon(norm, n, kl, ku, afac, ldafac, iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);
+                                Rgbcon(&norm, n, kl, ku, afac, ldafac, iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);
                                 //
                                 //                             Check error code from Rgbcon.
                                 //
                                 if (info != 0) {
-                                    Alaerh(path, "Rgbcon", info, 0, norm, n, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                                    Alaerh(path, "Rgbcon", info, 0, &norm, n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                                 }
                                 //
-                                result[7 - 1] = Rget06[(rcond - 1) + (rcondc - 1) * ldRget06];
+                                result[7 - 1] = Rget06(rcond, rcondc);
                                 //
                                 //                          Print information about the tests that did
                                 //                          not pass the threshold.
@@ -530,9 +516,10 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     if (nfail == 0 && nerrs == 0) {
                                         Alahd(nout, path);
                                     }
-                                    write(nout, "(' NORM =''',a1,''', N=',i5,', KL=',i5,', KU=',i5,',',"
-                                                "10x,' type ',i1,', test(',i1,')=',g12.5)"),
-                                        norm, n, kl, ku, imat, 7, result(7);
+                        sprintnum_short(buf, result[7 - 1]);
+			write(nout, "(' NORM =''',a1,''', N=',i5,', KL=',i5,', KU=',i5,',',"
+                                                "10x,' type ',i1,', test(',i1,')=',a)"),
+			  norm, n, kl, ku, imat, 7, buf;
                                     nfail++;
                                 }
                                 nrun++;

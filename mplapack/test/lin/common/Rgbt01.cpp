@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -103,7 +103,7 @@ void Rgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         jl = min(kl, m - j);
         lenj = min(m, j) - j + ju + 1;
         if (lenj > 0) {
-            Rcopy(lenj, afac[((kd - ju) - 1) + (j - 1) * ldafac], 1, work, 1);
+            Rcopy(lenj, &afac[((kd - ju) - 1) + (j - 1) * ldafac], 1, work, 1);
             for (i = lenj + 1; i <= ju + jl + 1; i = i + 1) {
                 work[i - 1] = zero;
             }

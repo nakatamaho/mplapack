@@ -27,22 +27,26 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
+#include <mplapack_debug.h>
 
 void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *afac, REAL *asav, REAL *b, REAL *bsav, REAL *x, REAL *xact, REAL *s, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
     //
     const INTEGER ntran = 3;
-    static const INTEGER values[] = {1988, 1989, 1990, 1991};
-    static const char *values[] = {"N", "T", "C"};
-    static const char *values[] = {"F", "N", "E"};
-    static const char *values[] = {"N", "R", "C", "B"};
-    char[3] path;
+    char transs[] = {'N', 'T', 'C'};
+    char facts[] = {'F', 'N', 'E'};
+    char equeds[] = {'N', 'R', 'C', 'B'};
+    char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -53,18 +57,18 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char[1] xtype;
+    char xtype;
     const INTEGER ntypes = 11;
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char[1] type;
+    char type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
+    char dist;
     const REAL one = 1.0;
     REAL rcondc = 0.0;
     INTEGER info = 0;
@@ -72,10 +76,10 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER ioff = 0;
     const REAL zero = 0.0;
     INTEGER iequed = 0;
-    char[1] equed;
+    char equed;
     INTEGER nfact = 0;
     INTEGER ifact = 0;
-    char[1] fact;
+    char fact;
     bool prefac = false;
     bool nofact = false;
     bool equil = false;
@@ -91,7 +95,7 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER lwork = 0;
     REAL ainvnm = 0.0;
     INTEGER itran = 0;
-    char[1] trans;
+    char trans;
     const INTEGER ntests = 7;
     REAL result[ntests];
     INTEGER nt = 0;
@@ -102,9 +106,9 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     bool trfcon = false;
     REAL roldc = 0.0;
     static const char *format_9997 = "(1x,a,', FACT=''',a1,''', TRANS=''',a1,''', N=',i5,', EQUED=''',a1,"
-                                     "''', type ',i2,', test(',i1,')=',g12.5)";
+                                     "''', type ',i2,', test(',i1,')=',a)";
     static const char *format_9998 = "(1x,a,', FACT=''',a1,''', TRANS=''',a1,''', N=',i5,', type ',i2,"
-                                     "', test(',i1,')=',g12.5)";
+                                     "', test(',i1,')=',a)";
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -139,35 +143,30 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     //
     //     Initialize constants and the random number seed.
     //
-    path[(1 - 1)] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "GE";
+    path[0] = 'R';
+    path[1] = 'G';
+    path[2] = 'E';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
-    for (i = 1; i <= 4; i = i + 1) {
-        iseed[i - 1] = iseedy[i - 1];
-    }
     //
     //     Test the error exits
     //
     if (tsterr) {
         Rerrvx(path, nout);
     }
-    cmn.infot = 0;
     //
     //     Set the block size and minimum block size for testing.
     //
     nb = 1;
     nbmin = 2;
-    xlaenv(1, nb);
-    xlaenv(2, nbmin);
     //
     //     Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, 1);
-        xtype = "N";
+        xtype = 'N';
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -191,11 +190,10 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             //           Set up parameters with Rlatb4 and generate a test matrix
             //           with DLATMS.
             //
-            Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
+            Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
             rcondc = one / cndnum;
             //
-            srnamt = "DLATMS";
-            dlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
+            Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
             //
             //           Check error code from DLATMS.
             //
@@ -265,7 +263,7 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       Compute row and column scale factors to
                             //                       equilibrate the matrix A.
                             //
-                            Rgeequ(n, n, afac, lda, s, s[(n + 1) - 1], rowcnd, colcnd, amax, info);
+                            Rgeequ(n, n, afac, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, info);
                             if (info == 0 && n > 0) {
                                 if (Mlsame(equed, "R")) {
                                     rowcnd = zero;
@@ -299,14 +297,12 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         //                    Factor the matrix A.
                         //
-                        srnamt = "Rgetrf";
                         Rgetrf(n, n, afac, lda, iwork, info);
                         //
                         //                    Form the inverse of A.
                         //
                         Rlacpy("Full", n, n, afac, lda, a, lda);
                         lwork = nmax * max(3, nrhs);
-                        srnamt = "Rgetri";
                         Rgetri(n, a, lda, iwork, work, lwork, info);
                         //
                         //                    Compute the 1-norm condition number of A.
@@ -345,7 +341,6 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         //                    Form an exact solution and set the right hand side.
                         //
-                        srnamt = "Rlarhs";
                         Rlarhs(path, xtype, "Full", trans, n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         xtype = "C";
                         Rlacpy("Full", n, nrhs, b, lda, bsav, lda);
@@ -360,7 +355,6 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             Rlacpy("Full", n, n, a, lda, afac, lda);
                             Rlacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            srnamt = "Rgesv ";
                             Rgesv(n, nrhs, afac, lda, iwork, x, lda, info);
                             //
                             //                       Check error code from Rgesv .
@@ -419,7 +413,6 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //                    Solve the system and compute the condition number
                         //                    and error bounds using Rgesvx.
                         //
-                        srnamt = "Rgesvx";
                         Rgesvx(fact, trans, n, nrhs, a, lda, afac, lda, iwork, equed, s, s[(n + 1) - 1], b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                         //
                         //                    Check the error code from Rgesvx.
@@ -491,7 +484,7 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //                    Compare RCOND from Rgesvx with the computed value
                         //                    in RCONDC.
                         //
-                        result[6 - 1] = Rget06[(rcond - 1) + (rcondc - 1) * ldRget06];
+                        result[6 - 1] = Rget06(rcond, rcondc);
                         //
                         //                    Print information about the tests that did not pass
                         //                    the threshold.
