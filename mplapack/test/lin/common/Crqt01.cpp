@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,15 +27,22 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Crqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *q, COMPLEX *r, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
+    a([lda * star]);
+    af([lda * star]);
+    q([lda * star]);
+    r([lda * star]);
+    work([lwork]);
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -74,7 +81,6 @@ void Crqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     //
     //     Factorize the matrix A in the array AF.
     //
-    srnamt = "Cgerqf";
     INTEGER info = 0;
     Cgerqf(m, n, af, lda, tau, work, lwork, info);
     //
@@ -97,7 +103,6 @@ void Crqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     //
     //     Generate the n-by-n matrix Q
     //
-    srnamt = "Cungrq";
     Cungrq(n, n, minmn, q, lda, tau, work, lwork, info);
     //
     //     Copy R

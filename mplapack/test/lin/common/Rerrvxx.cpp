@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rerrvx(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -73,7 +75,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     //
     //     Set the variables to innocuous values.
     //
@@ -106,7 +108,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         r[j - 1] = 0.e+0;
         ip[j - 1] = j;
     }
-    char[1] eq = " ";
+    char eq;
     ok = true;
     //
     INTEGER info = 0;
@@ -124,7 +126,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rgesv
         //
-        srnamt = "Rgesv ";
         infot = 1;
         Rgesv(-1, 0, a, 1, ip, b, 1, info);
         chkxer("Rgesv ", infot, nout, lerr, ok);
@@ -140,7 +141,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rgesvx
         //
-        srnamt = "Rgesvx";
         infot = 1;
         Rgesvx("/", "N", 0, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rgesvx", infot, nout, lerr, ok);
@@ -182,7 +182,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         n_err_bnds = 3;
         nparams = 1;
-        srnamt = "Rgesvxx";
         infot = 1;
         Rgesvxx("/", "N", 0, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, rpvgrw, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, iw, info);
         chkxer("Rgesvxx", infot, nout, lerr, ok);
@@ -224,7 +223,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rgbsv
         //
-        srnamt = "Rgbsv ";
         infot = 1;
         Rgbsv(-1, 0, 0, 0, a, 1, ip, b, 1, info);
         chkxer("Rgbsv ", infot, nout, lerr, ok);
@@ -246,7 +244,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rgbsvx
         //
-        srnamt = "Rgbsvx";
         infot = 1;
         Rgbsvx("/", "N", 0, 0, 0, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rgbsvx", infot, nout, lerr, ok);
@@ -294,7 +291,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         n_err_bnds = 3;
         nparams = 1;
-        srnamt = "Rgbsvxx";
         infot = 1;
         Rgbsvxx("/", "N", 0, 0, 0, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, rpvgrw, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, iw, info);
         chkxer("Rgbsvxx", infot, nout, lerr, ok);
@@ -342,7 +338,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rgtsv
         //
-        srnamt = "Rgtsv ";
         infot = 1;
         Rgtsv(-1, 0, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], b, 1, info);
         chkxer("Rgtsv ", infot, nout, lerr, ok);
@@ -355,7 +350,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rgtsvx
         //
-        srnamt = "Rgtsvx";
         infot = 1;
         Rgtsvx("/", "N", 0, 0, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], af[(1 - 1)], af[(2 - 1) * ldaf], af[(3 - 1) * ldaf], af[(4 - 1) * ldaf], ip, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rgtsvx", infot, nout, lerr, ok);
@@ -379,7 +373,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rposv
         //
-        srnamt = "Rposv ";
         infot = 1;
         Rposv("/", 0, 0, a, 1, b, 1, info);
         chkxer("Rposv ", infot, nout, lerr, ok);
@@ -398,7 +391,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rposvx
         //
-        srnamt = "Rposvx";
         infot = 1;
         Rposvx("/", "U", 0, 0, a, 1, af, 1, eq, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rposvx", infot, nout, lerr, ok);
@@ -436,7 +428,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         n_err_bnds = 3;
         nparams = 1;
-        srnamt = "Rposvxx";
         infot = 1;
         Rposvxx("/", "U", 0, 0, a, 1, af, 1, eq, c, b, 1, x, 1, rcond, rpvgrw, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, iw, info);
         chkxer("Rposvxx", infot, nout, lerr, ok);
@@ -474,7 +465,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rppsv
         //
-        srnamt = "Rppsv ";
         infot = 1;
         Rppsv("/", 0, 0, a, b, 1, info);
         chkxer("Rppsv ", infot, nout, lerr, ok);
@@ -490,7 +480,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rppsvx
         //
-        srnamt = "Rppsvx";
         infot = 1;
         Rppsvx("/", "U", 0, 0, a, af, eq, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rppsvx", infot, nout, lerr, ok);
@@ -522,7 +511,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rpbsv
         //
-        srnamt = "Rpbsv ";
         infot = 1;
         Rpbsv("/", 0, 0, 0, a, 1, b, 1, info);
         chkxer("Rpbsv ", infot, nout, lerr, ok);
@@ -544,7 +532,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rpbsvx
         //
-        srnamt = "Rpbsvx";
         infot = 1;
         Rpbsvx("/", "U", 0, 0, 0, a, 1, af, 1, eq, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rpbsvx", infot, nout, lerr, ok);
@@ -585,7 +572,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rptsv
         //
-        srnamt = "Rptsv ";
         infot = 1;
         Rptsv(-1, 0, &a[(1 - 1)], &a[(2 - 1) * lda], b, 1, info);
         chkxer("Rptsv ", infot, nout, lerr, ok);
@@ -598,7 +584,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rptsvx
         //
-        srnamt = "Rptsvx";
         infot = 1;
         Rptsvx("/", 0, 0, &a[(1 - 1)], &a[(2 - 1) * lda], af[(1 - 1)], af[(2 - 1) * ldaf], b, 1, x, 1, rcond, r1, r2, w, info);
         chkxer("Rptsvx", infot, nout, lerr, ok);
@@ -619,7 +604,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rsysv
         //
-        srnamt = "Rsysv ";
         infot = 1;
         Rsysv("/", 0, 0, a, 1, ip, b, 1, w, 1, info);
         chkxer("Rsysv ", infot, nout, lerr, ok);
@@ -644,7 +628,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rsysvx
         //
-        srnamt = "Rsysvx";
         infot = 1;
         Rsysvx("/", "U", 0, 0, a, 1, af, 1, ip, b, 1, x, 1, rcond, r1, r2, w, 1, iw, info);
         chkxer("Rsysvx", infot, nout, lerr, ok);
@@ -677,7 +660,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         n_err_bnds = 3;
         nparams = 1;
-        srnamt = "Rsysvxx";
         infot = 1;
         eq = "N";
         Rsysvxx("/", "U", 0, 0, a, 1, af, 1, ip, eq, r, b, 1, x, 1, rcond, rpvgrw, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, iw, info);
@@ -723,7 +705,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rsysv_rook
         //
-        srnamt = "Rsysv_rook";
         infot = 1;
         Rsysv_rook("/", 0, 0, a, 1, ip, b, 1, w, 1, info);
         chkxer("Rsysv_rook", infot, nout, lerr, ok);
@@ -758,7 +739,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //        L (or U) is stored in A, diagonal of D is stored on the
         //        diagonal of A, subdiagonal of D is stored in a separate array E.
         //
-        srnamt = "Rsysv_rk";
         infot = 1;
         Rsysv_rk("/", 0, 0, a, 1, e, ip, b, 1, w, 1, info);
         chkxer("Rsysv_rk", infot, nout, lerr, ok);
@@ -785,7 +765,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rspsv
         //
-        srnamt = "Rspsv ";
         infot = 1;
         Rspsv("/", 0, 0, a, ip, b, 1, info);
         chkxer("Rspsv ", infot, nout, lerr, ok);
@@ -801,7 +780,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rspsvx
         //
-        srnamt = "Rspsvx";
         infot = 1;
         Rspsvx("/", "U", 0, 0, a, af, ip, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rspsvx", infot, nout, lerr, ok);

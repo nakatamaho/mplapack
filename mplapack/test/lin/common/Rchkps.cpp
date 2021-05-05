@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,17 +27,21 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-#include <mplapack_lin.h>
-#include <mplapack.h>
 
-void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nrank, INTEGER *rankval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, REAL *a, REAL *afac, REAL *perm, INTEGER *piv, REAL *work, REAL *rwork, INTEGER const nout) {
+#include <mplapack_matgen.h>
+#include <mplapack_lin.h>
+
+void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nrank, INTEGER *rankval, REAL const thresh, bool const tsterr, INTEGER const  /* nmax */, REAL *a, REAL *afac, REAL *perm, INTEGER *piv, REAL *work, REAL *rwork, INTEGER const nout) {
     FEM_CMN_SVE(Rchkps);
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
     //
+    INTEGER *iseedy(sve.iseedy, [4]);
+    str_arr_ref<1> uplos(sve.uplos, [2]);
     if (is_called_first_time) {
         {
             static const INTEGER values[] = {1988, 1989, 1990, 1991};
@@ -48,7 +52,7 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
             data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
         }
     }
-    char[3] path;
+    char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -64,14 +68,14 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER irank = 0;
     INTEGER rank = 0;
     INTEGER iuplo = 0;
-    char[1] uplo;
-    char[1] type;
+    char uplo;
+    char type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
+    char dist;
     INTEGER info = 0;
     INTEGER inb = 0;
     INTEGER nb = 0;
@@ -167,17 +171,16 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     uplo = uplos[iuplo - 1];
                     //
                     //              Set up parameters with Rlatb5 and generate a test matrix
-                    //              with DLATMT.
+                    //              with Rlatmt.
                     //
                     Rlatb5(path, imat, n, type, kl, ku, anorm, mode, cndnum, dist);
                     //
-                    srnamt = "DLATMT";
-                    dlatmt(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, rank, kl, ku, uplo, a, lda, work, info);
+                    Rlatmt(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, rank, kl, ku, uplo, a, lda, work, info);
                     //
-                    //              Check error code from DLATMT.
+                    //              Check error code from Rlatmt.
                     //
                     if (info != 0) {
-                        Alaerh(path, "DLATMT", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rlatmt", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         goto statement_120;
                     }
                     //
@@ -191,7 +194,6 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                 of the matrix.
                         //
                         Rlacpy(uplo, n, n, a, lda, afac, lda);
-                        srnamt = "Rpstrf";
                         //
                         //                 Use default tolerance
                         //

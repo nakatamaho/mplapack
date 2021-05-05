@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrhe(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -73,7 +75,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     //
     //     Set the variables to innocuous values.
     //
@@ -116,7 +118,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chetrf
         //
-        srnamt = "Chetrf";
         infot = 1;
         Chetrf("/", 0, a, 1, ip, w, 1, info);
         chkxer("Chetrf", infot, nout, lerr, ok);
@@ -135,7 +136,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chetf2
         //
-        srnamt = "Chetf2";
         infot = 1;
         Chetf2("/", 0, a, 1, ip, info);
         chkxer("Chetf2", infot, nout, lerr, ok);
@@ -148,7 +148,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chetri
         //
-        srnamt = "Chetri";
         infot = 1;
         Chetri("/", 0, a, 1, ip, w, info);
         chkxer("Chetri", infot, nout, lerr, ok);
@@ -161,7 +160,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chetri2
         //
-        srnamt = "Chetri2";
         infot = 1;
         Chetri2("/", 0, a, 1, ip, w, 1, info);
         chkxer("Chetri2", infot, nout, lerr, ok);
@@ -174,7 +172,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chetri2x
         //
-        srnamt = "Chetri2x";
         infot = 1;
         Chetri2x("/", 0, a, 1, ip, w, 1, info);
         chkxer("Chetri2x", infot, nout, lerr, ok);
@@ -187,7 +184,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chetrs
         //
-        srnamt = "Chetrs";
         infot = 1;
         Chetrs("/", 0, 0, a, 1, ip, b, 1, info);
         chkxer("Chetrs", infot, nout, lerr, ok);
@@ -206,7 +202,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        CherFS
         //
-        srnamt = "CherFS";
         infot = 1;
         Cherfs("/", 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, r, info);
         chkxer("CherFS", infot, nout, lerr, ok);
@@ -231,7 +226,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Checon
         //
-        srnamt = "Checon";
         infot = 1;
         Checon("/", 0, a, 1, ip, anrm, rcond, w, info);
         chkxer("Checon", infot, nout, lerr, ok);
@@ -253,7 +247,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chetrf_rook
         //
-        srnamt = "Chetrf_rook";
         infot = 1;
         Chetrf_rook("/", 0, a, 1, ip, w, 1, info);
         chkxer("Chetrf_rook", infot, nout, lerr, ok);
@@ -272,7 +265,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chetf2_rook
         //
-        srnamt = "Chetf2_rook";
         infot = 1;
         Chetf2_rook("/", 0, a, 1, ip, info);
         chkxer("Chetf2_rook", infot, nout, lerr, ok);
@@ -285,7 +277,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chetri_rook
         //
-        srnamt = "Chetri_rook";
         infot = 1;
         Chetri_rook("/", 0, a, 1, ip, w, info);
         chkxer("Chetri_rook", infot, nout, lerr, ok);
@@ -298,7 +289,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chetrs_rook
         //
-        srnamt = "Chetrs_rook";
         infot = 1;
         Chetrs_rook("/", 0, 0, a, 1, ip, b, 1, info);
         chkxer("Chetrs_rook", infot, nout, lerr, ok);
@@ -317,7 +307,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Checon_rook
         //
-        srnamt = "Checon_rook";
         infot = 1;
         Checon_rook("/", 0, a, 1, ip, anrm, rcond, w, info);
         chkxer("Checon_rook", infot, nout, lerr, ok);
@@ -343,7 +332,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chetrf_rk
         //
-        srnamt = "Chetrf_rk";
         infot = 1;
         Chetrf_rk("/", 0, a, 1, e, ip, w, 1, info);
         chkxer("Chetrf_rk", infot, nout, lerr, ok);
@@ -362,7 +350,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chetf2_rk
         //
-        srnamt = "Chetf2_rk";
         infot = 1;
         Chetf2_rk("/", 0, a, 1, e, ip, info);
         chkxer("Chetf2_rk", infot, nout, lerr, ok);
@@ -375,7 +362,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chetri_3
         //
-        srnamt = "Chetri_3";
         infot = 1;
         Chetri_3("/", 0, a, 1, e, ip, w, 1, info);
         chkxer("Chetri_3", infot, nout, lerr, ok);
@@ -394,7 +380,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chetri_3x
         //
-        srnamt = "Chetri_3x";
         infot = 1;
         Chetri_3x("/", 0, a, 1, e, ip, w, 1, info);
         chkxer("Chetri_3x", infot, nout, lerr, ok);
@@ -407,7 +392,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chetrs_3
         //
-        srnamt = "Chetrs_3";
         infot = 1;
         Chetrs_3("/", 0, 0, a, 1, e, ip, b, 1, info);
         chkxer("Chetrs_3", infot, nout, lerr, ok);
@@ -426,7 +410,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Checon_3
         //
-        srnamt = "Checon_3";
         infot = 1;
         Checon_3("/", 0, a, 1, e, ip, anrm, rcond, w, info);
         chkxer("Checon_3", infot, nout, lerr, ok);
@@ -447,7 +430,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chetrf_aa
         //
-        srnamt = "Chetrf_aa";
         infot = 1;
         Chetrf_aa("/", 0, a, 1, ip, w, 1, info);
         chkxer("Chetrf_aa", infot, nout, lerr, ok);
@@ -466,7 +448,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chetrs_aa
         //
-        srnamt = "Chetrs_aa";
         infot = 1;
         Chetrs_aa("/", 0, 0, a, 1, ip, b, 1, w, 1, info);
         chkxer("Chetrs_aa", infot, nout, lerr, ok);
@@ -496,7 +477,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chetrf_aa_2stage
         //
-        srnamt = "Chetrf_aa_2stage";
         infot = 1;
         Chetrf_aa_2stage("/", 0, a, 1, a, 1, ip, ip, w, 1, info);
         chkxer("Chetrf_aa_2stage", infot, nout, lerr, ok);
@@ -515,7 +495,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chetrs_aa_2stage
         //
-        srnamt = "Chetrs_aa_2stage";
         infot = 1;
         Chetrs_aa_2stage("/", 0, 0, a, 1, a, 1, ip, ip, b, 1, info);
         chkxer("Chetrs_aa_2stage", infot, nout, lerr, ok);
@@ -543,7 +522,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chptrf
         //
-        srnamt = "Chptrf";
         infot = 1;
         Chptrf("/", 0, a, ip, info);
         chkxer("Chptrf", infot, nout, lerr, ok);
@@ -553,7 +531,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chptri
         //
-        srnamt = "Chptri";
         infot = 1;
         Chptri("/", 0, a, ip, w, info);
         chkxer("Chptri", infot, nout, lerr, ok);
@@ -563,7 +540,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chptrs
         //
-        srnamt = "Chptrs";
         infot = 1;
         Chptrs("/", 0, 0, a, ip, b, 1, info);
         chkxer("Chptrs", infot, nout, lerr, ok);
@@ -579,7 +555,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        ChprFS
         //
-        srnamt = "ChprFS";
         infot = 1;
         Chprfs("/", 0, 0, a, af, ip, b, 1, x, 1, r1, r2, w, r, info);
         chkxer("ChprFS", infot, nout, lerr, ok);
@@ -598,7 +573,6 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
         //        Chpcon
         //
-        srnamt = "Chpcon";
         infot = 1;
         Chpcon("/", 0, a, ip, anrm, rcond, w, info);
         chkxer("Chpcon", infot, nout, lerr, ok);

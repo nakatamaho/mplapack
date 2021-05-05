@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rerrtr(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Rerrtr(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -71,7 +73,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     const INTEGER nmax = 2;
     REAL a[nmax * nmax];
     a[(1 - 1)] = 1.0;
@@ -95,7 +97,6 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //
         //        Rtrtri
         //
-        srnamt = "Rtrtri";
         infot = 1;
         Rtrtri("/", "N", 0, a, 1, info);
         chkxer("Rtrtri", infot, nout, lerr, ok);
@@ -111,7 +112,6 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //
         //        Rtrti2
         //
-        srnamt = "Rtrti2";
         infot = 1;
         Rtrti2("/", "N", 0, a, 1, info);
         chkxer("Rtrti2", infot, nout, lerr, ok);
@@ -127,7 +127,6 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //
         //        Rtrtrs
         //
-        srnamt = "Rtrtrs";
         infot = 1;
         Rtrtrs("/", "N", "N", 0, 0, a, 1, x, 1, info);
         chkxer("Rtrtrs", infot, nout, lerr, ok);
@@ -152,7 +151,6 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //
         //        Rtrrfs
         //
-        srnamt = "Rtrrfs";
         infot = 1;
         Rtrrfs("/", "N", "N", 0, 0, a, 1, b, 1, x, 1, r1, r2, w, iw, info);
         chkxer("Rtrrfs", infot, nout, lerr, ok);
@@ -180,7 +178,6 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //
         //        Rtrcon
         //
-        srnamt = "Rtrcon";
         infot = 1;
         Rtrcon("/", "U", "N", 0, a, 1, rcond, w, iw, info);
         chkxer("Rtrcon", infot, nout, lerr, ok);
@@ -199,7 +196,6 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //
         //        Rlatrs
         //
-        srnamt = "Rlatrs";
         infot = 1;
         Rlatrs("/", "N", "N", "N", 0, a, 1, x, scale, w, info);
         chkxer("Rlatrs", infot, nout, lerr, ok);
@@ -225,7 +221,6 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //
         //        Rtptri
         //
-        srnamt = "Rtptri";
         infot = 1;
         Rtptri("/", "N", 0, a, info);
         chkxer("Rtptri", infot, nout, lerr, ok);
@@ -238,7 +233,6 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //
         //        Rtptrs
         //
-        srnamt = "Rtptrs";
         infot = 1;
         Rtptrs("/", "N", "N", 0, 0, a, x, 1, info);
         chkxer("Rtptrs", infot, nout, lerr, ok);
@@ -260,7 +254,6 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //
         //        Rtprfs
         //
-        srnamt = "Rtprfs";
         infot = 1;
         Rtprfs("/", "N", "N", 0, 0, a, b, 1, x, 1, r1, r2, w, iw, info);
         chkxer("Rtprfs", infot, nout, lerr, ok);
@@ -285,7 +278,6 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //
         //        Rtpcon
         //
-        srnamt = "Rtpcon";
         infot = 1;
         Rtpcon("/", "U", "N", 0, a, rcond, w, iw, info);
         chkxer("Rtpcon", infot, nout, lerr, ok);
@@ -301,7 +293,6 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //
         //        Rlatps
         //
-        srnamt = "Rlatps";
         infot = 1;
         Rlatps("/", "N", "N", "N", 0, a, x, scale, w, info);
         chkxer("Rlatps", infot, nout, lerr, ok);
@@ -324,7 +315,6 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //
         //        Rtbtrs
         //
-        srnamt = "Rtbtrs";
         infot = 1;
         Rtbtrs("/", "N", "N", 0, 0, 0, a, 1, x, 1, info);
         chkxer("Rtbtrs", infot, nout, lerr, ok);
@@ -352,7 +342,6 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //
         //        Rtbrfs
         //
-        srnamt = "Rtbrfs";
         infot = 1;
         Rtbrfs("/", "N", "N", 0, 0, 0, a, 1, b, 1, x, 1, r1, r2, w, iw, info);
         chkxer("Rtbrfs", infot, nout, lerr, ok);
@@ -383,7 +372,6 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //
         //        Rtbcon
         //
-        srnamt = "Rtbcon";
         infot = 1;
         Rtbcon("/", "U", "N", 0, 0, a, 1, rcond, w, iw, info);
         chkxer("Rtbcon", infot, nout, lerr, ok);
@@ -405,7 +393,6 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //
         //        Rlatbs
         //
-        srnamt = "Rlatbs";
         infot = 1;
         Rlatbs("/", "N", "N", "N", 0, 0, a, 1, x, scale, w, info);
         chkxer("Rlatbs", infot, nout, lerr, ok);

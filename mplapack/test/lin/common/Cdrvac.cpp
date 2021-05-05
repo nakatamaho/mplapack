@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,17 +27,21 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-#include <mplapack_lin.h>
-#include <mplapack.h>
 
-void Cdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, INTEGER *nsval, REAL const thresh, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *b, COMPLEX *x, COMPLEX *work, REAL *rwork, arr_cref<std::complex<float>> swork, INTEGER const nout) {
+#include <mplapack_matgen.h>
+#include <mplapack_lin.h>
+
+void Cdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, INTEGER *nsval, REAL const thresh, INTEGER const  /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *b, COMPLEX *x, COMPLEX *work, REAL *rwork, arr_cref<std::complex<float>> swork, INTEGER const nout) {
     FEM_CMN_SVE(Cdrvac);
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
     //
+    INTEGER *iseedy(sve.iseedy, [4]);
+    str_arr_ref<1> uplos(sve.uplos, [2]);
     if (is_called_first_time) {
         {
             static const INTEGER values[] = {1988, 1989, 1990, 1991};
@@ -49,7 +53,7 @@ void Cdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
         }
     }
     INTEGER kase = 0;
-    char[3] path;
+    char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -63,21 +67,21 @@ void Cdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char[1] uplo;
-    char[1] type;
+    char uplo;
+    char type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
+    char dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
     const REAL zero = 0.0;
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
-    char[1] xtype;
+    char xtype;
     INTEGER iter = 0;
     const INTEGER ntests = 1;
     REAL result[ntests];
@@ -158,17 +162,16 @@ void Cdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                 uplo = uplos[iuplo - 1];
                 //
                 //              Set up parameters with Clatb4 and generate a test matrix
-                //              with ZLATMS.
+                //              with Clatms.
                 //
                 Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                srnamt = "ZLATMS";
-                zlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
+                Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
-                //              Check error code from ZLATMS.
+                //              Check error code from Clatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "ZLATMS", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_100;
                 }
                 //
@@ -221,13 +224,11 @@ void Cdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                     //
                     //                 Form an exact solution and set the right hand side.
                     //
-                    srnamt = "Clarhs";
                     Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, x, lda, b, lda, iseed, info);
                     //
                     //                 Compute the L*L' or U'*U factorization of the
                     //                 matrix and solve the system.
                     //
-                    srnamt = "Ccposv ";
                     kase++;
                     //
                     Clacpy("All", n, n, a, lda, afac, lda);

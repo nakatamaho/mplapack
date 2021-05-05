@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,13 +27,20 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *s, INTEGER &rank, REAL &norma, REAL &normb, INTEGER *iseed, REAL *work, INTEGER const lwork) {
+    a([lda * star]);
+    b([ldb * star]);
+    iseed([4]);
+    work([lwork]);
     INTEGER mn = 0;
     REAL smlnum = 0.0;
     const REAL one = 1.0;
@@ -104,7 +111,7 @@ void Rqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER c
         s[1 - 1] = one;
         for (j = 2; j <= rank; j = j + 1) {
         statement_20:
-            temp = dlarnd(1, iseed);
+            temp = Rlarnd(1, iseed);
             if (temp > svmin) {
                 s[j - 1] = abs(temp);
             } else {
@@ -137,7 +144,7 @@ void Rqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER c
         if (rank < n) {
             Rlaset("Full", m, n - rank, zero, zero, &a[((rank + 1) - 1) * lda], lda);
         }
-        dlaror("Right", "No initialization", m, n, a, lda, iseed, work, info);
+        Rlaror("Right", "No initialization", m, n, a, lda, iseed, work, info);
         //
     } else {
         //

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrtsqr(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Cerrtsqr(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -95,7 +97,6 @@ void Cerrtsqr(const char *path, INTEGER const nunit) {
     //
     //     Cgeqr
     //
-    srnamt = "Cgeqr";
     infot = 1;
     COMPLEX tau[nmax];
     INTEGER info = 0;
@@ -118,7 +119,6 @@ void Cerrtsqr(const char *path, INTEGER const nunit) {
     //
     tau[1 - 1] = 1;
     tau[2 - 1] = 1;
-    srnamt = "Cgemqr";
     INTEGER nb = 1;
     infot = 1;
     Cgemqr("/", "N", 0, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
@@ -156,7 +156,6 @@ void Cerrtsqr(const char *path, INTEGER const nunit) {
     //
     //     Cgelq
     //
-    srnamt = "Cgelq";
     infot = 1;
     Cgelq(-1, 0, a, 1, tau, 1, w, 1, info);
     chkxer("Cgelq", infot, nout, lerr, ok);
@@ -177,7 +176,6 @@ void Cerrtsqr(const char *path, INTEGER const nunit) {
     //
     tau[1 - 1] = 1;
     tau[2 - 1] = 1;
-    srnamt = "Cgemlq";
     nb = 1;
     infot = 1;
     Cgemlq("/", "N", 0, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);

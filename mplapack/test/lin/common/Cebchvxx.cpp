@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cebchvxx(REAL const thresh, const char *path) {
     common_write write(cmn);
@@ -57,10 +60,10 @@ void Cebchvxx(REAL const thresh, const char *path) {
     //
     //  Create the loop to test out the Hilbert matrices
     //
-    char[1] fact = "E";
-    char[1] uplo = "U";
-    char[1] trans = 'N';
-    char[1] equed = "N";
+    char fact;
+    char uplo;
+    char trans;
+    char equed;
     REAL eps = Rlamch("Epsilon");
     INTEGER nfail = 0;
     INTEGER n_aux_tests = 0;
@@ -68,7 +71,7 @@ void Cebchvxx(REAL const thresh, const char *path) {
     INTEGER lda = nmax;
     INTEGER ldab = (nmax - 1) + (nmax - 1) + 1;
     INTEGER ldafb = 2 * (nmax - 1) + (nmax - 1) + 1;
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     //
     //     Main loop to test the different Hilbert Matrices.
     //
@@ -102,7 +105,7 @@ void Cebchvxx(REAL const thresh, const char *path) {
     REAL errbnd_n[nmax * 3];
     REAL errbnd_c[nmax * 3];
     REAL rwork[3 * nmax];
-    nmax), fill0);
+    COMPLEX afb[2 * (nmax - 1) + (nmax - 1) + 1 * nmax];
     REAL r[nmax];
     REAL c[nmax];
     REAL rcond = 0.0;
@@ -127,10 +130,10 @@ void Cebchvxx(REAL const thresh, const char *path) {
     const INTEGER cond_i = 3;
     REAL nwise_rcond = 0.0;
     REAL cwise_rcond = 0.0;
-    char[1] nguar;
+    char nguar;
     const INTEGER ntests = 6;
     REAL tstrat[ntests];
-    char[1] cguar;
+    char cguar;
     for (n = 1; n <= nmax; n = n + 1) {
         params[1 - 1] = -1;
         params[2 - 1] = -1;

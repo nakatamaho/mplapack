@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rerrrfp(INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Rerrrfp(INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -75,7 +77,6 @@ void Rerrrfp(INTEGER const nunit) {
     REAL alpha = 1.0;
     REAL beta = 1.0;
     //
-    srnamt = "Rpftrf";
     infot = 1;
     INTEGER info = 0;
     Rpftrf("/", "U", 0, a, info);
@@ -87,7 +88,6 @@ void Rerrrfp(INTEGER const nunit) {
     Rpftrf("N", "U", -1, a, info);
     chkxer("Rpftrf", infot, nout, lerr, ok);
     //
-    srnamt = "Rpftrs";
     infot = 1;
     Rpftrs("/", "U", 0, 0, a, b, 1, info);
     chkxer("Rpftrs", infot, nout, lerr, ok);
@@ -104,7 +104,6 @@ void Rerrrfp(INTEGER const nunit) {
     Rpftrs("N", "U", 0, 0, a, b, 0, info);
     chkxer("Rpftrs", infot, nout, lerr, ok);
     //
-    srnamt = "Rpftri";
     infot = 1;
     Rpftri("/", "U", 0, a, info);
     chkxer("Rpftri", infot, nout, lerr, ok);
@@ -115,7 +114,6 @@ void Rerrrfp(INTEGER const nunit) {
     Rpftri("N", "U", -1, a, info);
     chkxer("Rpftri", infot, nout, lerr, ok);
     //
-    srnamt = "Rtfsm ";
     infot = 1;
     Rtfsm("/", "L", "U", "T", "U", 0, 0, alpha, a, b, 1);
     chkxer("Rtfsm ", infot, nout, lerr, ok);
@@ -141,7 +139,6 @@ void Rerrrfp(INTEGER const nunit) {
     Rtfsm("N", "L", "U", "T", "U", 0, 0, alpha, a, b, 0);
     chkxer("Rtfsm ", infot, nout, lerr, ok);
     //
-    srnamt = "Rtftri";
     infot = 1;
     Rtftri("/", "L", "N", 0, a, info);
     chkxer("Rtftri", infot, nout, lerr, ok);
@@ -155,7 +152,6 @@ void Rerrrfp(INTEGER const nunit) {
     Rtftri("N", "L", "N", -1, a, info);
     chkxer("Rtftri", infot, nout, lerr, ok);
     //
-    srnamt = "Rtfttr";
     infot = 1;
     Rtfttr("/", "U", 0, a, b, 1, info);
     chkxer("Rtfttr", infot, nout, lerr, ok);
@@ -169,7 +165,6 @@ void Rerrrfp(INTEGER const nunit) {
     Rtfttr("N", "U", 0, a, b, 0, info);
     chkxer("Rtfttr", infot, nout, lerr, ok);
     //
-    srnamt = "Rtrttf";
     infot = 1;
     Rtrttf("/", "U", 0, a, 1, b, info);
     chkxer("Rtrttf", infot, nout, lerr, ok);
@@ -183,7 +178,6 @@ void Rerrrfp(INTEGER const nunit) {
     Rtrttf("N", "U", 0, a, 0, b, info);
     chkxer("Rtrttf", infot, nout, lerr, ok);
     //
-    srnamt = "Rtfttp";
     infot = 1;
     Rtfttp("/", "U", 0, a, b, info);
     chkxer("Rtfttp", infot, nout, lerr, ok);
@@ -194,7 +188,6 @@ void Rerrrfp(INTEGER const nunit) {
     Rtfttp("N", "U", -1, a, b, info);
     chkxer("Rtfttp", infot, nout, lerr, ok);
     //
-    srnamt = "Rtpttf";
     infot = 1;
     Rtpttf("/", "U", 0, a, b, info);
     chkxer("Rtpttf", infot, nout, lerr, ok);
@@ -205,7 +198,6 @@ void Rerrrfp(INTEGER const nunit) {
     Rtpttf("N", "U", -1, a, b, info);
     chkxer("Rtpttf", infot, nout, lerr, ok);
     //
-    srnamt = "Rtrttp";
     infot = 1;
     Rtrttp("/", 0, a, 1, b, info);
     chkxer("Rtrttp", infot, nout, lerr, ok);
@@ -216,7 +208,6 @@ void Rerrrfp(INTEGER const nunit) {
     Rtrttp("U", 0, a, 0, b, info);
     chkxer("Rtrttp", infot, nout, lerr, ok);
     //
-    srnamt = "Rtpttr";
     infot = 1;
     Rtpttr("/", 0, a, b, 1, info);
     chkxer("Rtpttr", infot, nout, lerr, ok);
@@ -227,7 +218,6 @@ void Rerrrfp(INTEGER const nunit) {
     Rtpttr("U", 0, a, b, 0, info);
     chkxer("Rtpttr", infot, nout, lerr, ok);
     //
-    srnamt = "Rsfrk ";
     infot = 1;
     Rsfrk("/", "U", "N", 0, 0, alpha, a, 1, beta, b);
     chkxer("Rsfrk ", infot, nout, lerr, ok);

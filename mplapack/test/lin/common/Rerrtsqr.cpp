@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rerrtsqr(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Rerrtsqr(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -95,7 +97,6 @@ void Rerrtsqr(const char *path, INTEGER const nunit) {
     //
     //     Rgeqr
     //
-    srnamt = "Rgeqr";
     infot = 1;
     REAL tau[nmax * 2];
     INTEGER info = 0;
@@ -120,7 +121,6 @@ void Rerrtsqr(const char *path, INTEGER const nunit) {
     tau[2 - 1] = 1;
     tau[3 - 1] = 1;
     tau[4 - 1] = 1;
-    srnamt = "Rgemqr";
     INTEGER nb = 1;
     infot = 1;
     Rgemqr("/", "N", 0, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
@@ -158,7 +158,6 @@ void Rerrtsqr(const char *path, INTEGER const nunit) {
     //
     //     Rgelq
     //
-    srnamt = "Rgelq";
     infot = 1;
     Rgelq(-1, 0, a, 1, tau, 1, w, 1, info);
     chkxer("Rgelq", infot, nout, lerr, ok);
@@ -179,7 +178,6 @@ void Rerrtsqr(const char *path, INTEGER const nunit) {
     //
     tau[1 - 1] = 1;
     tau[2 - 1] = 1;
-    srnamt = "Rgemlq";
     nb = 1;
     infot = 1;
     Rgemlq("/", "N", 0, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);

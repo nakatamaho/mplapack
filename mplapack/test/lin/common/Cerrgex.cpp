@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrge(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Cerrge(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -73,7 +75,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     //
     //     Set the variables to innocuous values.
     //
@@ -113,7 +115,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
     REAL r[nmax];
     INTEGER n_err_bnds = 0;
     INTEGER nparams = 0;
-    char[1] eq;
+    char eq;
     REAL rcond = 0.0;
     REAL berr = 0.0;
     COMPLEX err_bnds_n[nmax * 3];
@@ -125,7 +127,6 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgetrf
         //
-        srnamt = "Cgetrf";
         infot = 1;
         Cgetrf(-1, 0, a, 1, ip, info);
         chkxer("Cgetrf", infot, nout, lerr, ok);
@@ -138,7 +139,6 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgetf2
         //
-        srnamt = "Cgetf2";
         infot = 1;
         Cgetf2(-1, 0, a, 1, ip, info);
         chkxer("Cgetf2", infot, nout, lerr, ok);
@@ -151,7 +151,6 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgetri
         //
-        srnamt = "Cgetri";
         infot = 1;
         Cgetri(-1, a, 1, ip, w, 1, info);
         chkxer("Cgetri", infot, nout, lerr, ok);
@@ -164,7 +163,6 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgetrs
         //
-        srnamt = "Cgetrs";
         infot = 1;
         Cgetrs("/", 0, 0, a, 1, ip, b, 1, info);
         chkxer("Cgetrs", infot, nout, lerr, ok);
@@ -183,7 +181,6 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgerfs
         //
-        srnamt = "Cgerfs";
         infot = 1;
         Cgerfs("/", 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, r, info);
         chkxer("Cgerfs", infot, nout, lerr, ok);
@@ -210,7 +207,6 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         n_err_bnds = 3;
         nparams = 0;
-        srnamt = "Cgerfsx";
         infot = 1;
         Cgerfsx("/", eq, 0, 0, a, 1, af, 1, ip, rs, cs, b, 1, x, 1, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
         chkxer("Cgerfsx", infot, nout, lerr, ok);
@@ -241,7 +237,6 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgecon
         //
-        srnamt = "Cgecon";
         infot = 1;
         Cgecon("/", 0, a, 1, anrm, rcond, w, r, info);
         chkxer("Cgecon", infot, nout, lerr, ok);
@@ -254,7 +249,6 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgeequ
         //
-        srnamt = "Cgeequ";
         infot = 1;
         Cgeequ(-1, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
         chkxer("Cgeequ", infot, nout, lerr, ok);
@@ -267,7 +261,6 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgeequb
         //
-        srnamt = "Cgeequb";
         infot = 1;
         Cgeequb(-1, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
         chkxer("Cgeequb", infot, nout, lerr, ok);
@@ -285,7 +278,6 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgbtrf
         //
-        srnamt = "Cgbtrf";
         infot = 1;
         Cgbtrf(-1, 0, 0, 0, a, 1, ip, info);
         chkxer("Cgbtrf", infot, nout, lerr, ok);
@@ -304,7 +296,6 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgbtf2
         //
-        srnamt = "Cgbtf2";
         infot = 1;
         Cgbtf2(-1, 0, 0, 0, a, 1, ip, info);
         chkxer("Cgbtf2", infot, nout, lerr, ok);
@@ -323,7 +314,6 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgbtrs
         //
-        srnamt = "Cgbtrs";
         infot = 1;
         Cgbtrs("/", 0, 0, 0, 1, a, 1, ip, b, 1, info);
         chkxer("Cgbtrs", infot, nout, lerr, ok);
@@ -348,7 +338,6 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgbrfs
         //
-        srnamt = "Cgbrfs";
         infot = 1;
         Cgbrfs("/", 0, 0, 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, r, info);
         chkxer("Cgbrfs", infot, nout, lerr, ok);
@@ -381,7 +370,6 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         n_err_bnds = 3;
         nparams = 0;
-        srnamt = "Cgbrfsx";
         infot = 1;
         Cgbrfsx("/", eq, 0, 0, 0, 0, a, 1, af, 1, ip, rs, cs, b, 1, x, 1, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
         chkxer("Cgbrfsx", infot, nout, lerr, ok);
@@ -420,7 +408,6 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgbcon
         //
-        srnamt = "Cgbcon";
         infot = 1;
         Cgbcon("/", 0, 0, 0, a, 1, ip, anrm, rcond, w, r, info);
         chkxer("Cgbcon", infot, nout, lerr, ok);
@@ -439,7 +426,6 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgbequ
         //
-        srnamt = "Cgbequ";
         infot = 1;
         Cgbequ(-1, 0, 0, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
         chkxer("Cgbequ", infot, nout, lerr, ok);
@@ -458,7 +444,6 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgbequb
         //
-        srnamt = "Cgbequb";
         infot = 1;
         Cgbequb(-1, 0, 0, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
         chkxer("Cgbequb", infot, nout, lerr, ok);

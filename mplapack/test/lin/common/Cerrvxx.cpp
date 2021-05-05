@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrvx(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -73,7 +75,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     //
     //     Set the variables to innocuous values.
     //
@@ -106,7 +108,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         r[j - 1] = 0.0;
         ip[j - 1] = j;
     }
-    char[1] eq = " ";
+    char eq;
     ok = true;
     //
     INTEGER info = 0;
@@ -125,7 +127,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Cgesv
         //
-        srnamt = "Cgesv ";
         infot = 1;
         Cgesv(-1, 0, a, 1, ip, b, 1, info);
         chkxer("Cgesv ", infot, nout, lerr, ok);
@@ -141,7 +142,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Cgesvx
         //
-        srnamt = "Cgesvx";
         infot = 1;
         Cgesvx("/", "N", 0, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cgesvx", infot, nout, lerr, ok);
@@ -183,7 +183,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         n_err_bnds = 3;
         nparams = 1;
-        srnamt = "Cgesvxx";
         infot = 1;
         Cgesvxx("/", "N", 0, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, rpvgrw, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, rw, info);
         chkxer("Cgesvxx", infot, nout, lerr, ok);
@@ -225,7 +224,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Cgbsv
         //
-        srnamt = "Cgbsv ";
         infot = 1;
         Cgbsv(-1, 0, 0, 0, a, 1, ip, b, 1, info);
         chkxer("Cgbsv ", infot, nout, lerr, ok);
@@ -247,7 +245,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Cgbsvx
         //
-        srnamt = "Cgbsvx";
         infot = 1;
         Cgbsvx("/", "N", 0, 0, 0, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cgbsvx", infot, nout, lerr, ok);
@@ -295,7 +292,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         n_err_bnds = 3;
         nparams = 1;
-        srnamt = "Cgbsvxx";
         infot = 1;
         Cgbsvxx("/", "N", 0, 0, 0, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, rpvgrw, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, rw, info);
         chkxer("Cgbsvxx", infot, nout, lerr, ok);
@@ -343,7 +339,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Cgtsv
         //
-        srnamt = "Cgtsv ";
         infot = 1;
         Cgtsv(-1, 0, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], b, 1, info);
         chkxer("Cgtsv ", infot, nout, lerr, ok);
@@ -356,7 +351,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Cgtsvx
         //
-        srnamt = "Cgtsvx";
         infot = 1;
         Cgtsvx("/", "N", 0, 0, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], af[(1 - 1)], af[(2 - 1) * ldaf], af[(3 - 1) * ldaf], af[(4 - 1) * ldaf], ip, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cgtsvx", infot, nout, lerr, ok);
@@ -380,7 +374,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Chesv_rook
         //
-        srnamt = "Chesv_rook";
         infot = 1;
         Chesv_rook("/", 0, 0, a, 1, ip, b, 1, w, 1, info);
         chkxer("Chesv_rook", infot, nout, lerr, ok);
@@ -398,7 +391,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Cposv
         //
-        srnamt = "Cposv ";
         infot = 1;
         Cposv("/", 0, 0, a, 1, b, 1, info);
         chkxer("Cposv ", infot, nout, lerr, ok);
@@ -417,7 +409,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Cposvx
         //
-        srnamt = "Cposvx";
         infot = 1;
         Cposvx("/", "U", 0, 0, a, 1, af, 1, eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cposvx", infot, nout, lerr, ok);
@@ -455,7 +446,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         n_err_bnds = 3;
         nparams = 1;
-        srnamt = "Cposvxx";
         infot = 1;
         Cposvxx("/", "U", 0, 0, a, 1, af, 1, eq, c, b, 1, x, 1, rcond, rpvgrw, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, rw, info);
         chkxer("Cposvxx", infot, nout, lerr, ok);
@@ -493,7 +483,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Cppsv
         //
-        srnamt = "Cppsv ";
         infot = 1;
         Cppsv("/", 0, 0, a, b, 1, info);
         chkxer("Cppsv ", infot, nout, lerr, ok);
@@ -509,7 +498,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Cppsvx
         //
-        srnamt = "Cppsvx";
         infot = 1;
         Cppsvx("/", "U", 0, 0, a, af, eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cppsvx", infot, nout, lerr, ok);
@@ -541,7 +529,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Cpbsv
         //
-        srnamt = "Cpbsv ";
         infot = 1;
         Cpbsv("/", 0, 0, 0, a, 1, b, 1, info);
         chkxer("Cpbsv ", infot, nout, lerr, ok);
@@ -563,7 +550,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Cpbsvx
         //
-        srnamt = "Cpbsvx";
         infot = 1;
         Cpbsvx("/", "U", 0, 0, 0, a, 1, af, 1, eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cpbsvx", infot, nout, lerr, ok);
@@ -604,7 +590,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Cptsv
         //
-        srnamt = "Cptsv ";
         infot = 1;
         Cptsv(-1, 0, r, &a[(1 - 1)], b, 1, info);
         chkxer("Cptsv ", infot, nout, lerr, ok);
@@ -617,7 +602,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Cptsvx
         //
-        srnamt = "Cptsvx";
         infot = 1;
         Cptsvx("/", 0, 0, r, &a[(1 - 1)], rf, af[(1 - 1)], b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cptsvx", infot, nout, lerr, ok);
@@ -638,7 +622,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Chesv
         //
-        srnamt = "Chesv ";
         infot = 1;
         Chesv("/", 0, 0, a, 1, ip, b, 1, w, 1, info);
         chkxer("Chesv ", infot, nout, lerr, ok);
@@ -663,7 +646,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Chesvx
         //
-        srnamt = "Chesvx";
         infot = 1;
         Chesvx("/", "U", 0, 0, a, 1, af, 1, ip, b, 1, x, 1, rcond, r1, r2, w, 1, rw, info);
         chkxer("Chesvx", infot, nout, lerr, ok);
@@ -696,7 +678,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         n_err_bnds = 3;
         nparams = 1;
-        srnamt = "Chesvxx";
         infot = 1;
         Chesvxx("/", "U", 0, 0, a, 1, af, 1, ip, eq, c, b, 1, x, 1, rcond, rpvgrw, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, rw, info);
         chkxer("Chesvxx", infot, nout, lerr, ok);
@@ -734,7 +715,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Chesv_rook
         //
-        srnamt = "Chesv_rook";
         infot = 1;
         Chesv_rook("/", 0, 0, a, 1, ip, b, 1, w, 1, info);
         chkxer("Chesv_rook", infot, nout, lerr, ok);
@@ -766,7 +746,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //        L (or U) is stored in A, diagonal of D is stored on the
         //        diagonal of A, subdiagonal of D is stored in a separate array E.
         //
-        srnamt = "Chesv_rk";
         infot = 1;
         Chesv_rk("/", 0, 0, a, 1, e, ip, b, 1, w, 1, info);
         chkxer("Chesv_rk", infot, nout, lerr, ok);
@@ -793,7 +772,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Chpsv
         //
-        srnamt = "Chpsv ";
         infot = 1;
         Chpsv("/", 0, 0, a, ip, b, 1, info);
         chkxer("Chpsv ", infot, nout, lerr, ok);
@@ -809,7 +787,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Chpsvx
         //
-        srnamt = "Chpsvx";
         infot = 1;
         Chpsvx("/", "U", 0, 0, a, af, ip, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Chpsvx", infot, nout, lerr, ok);
@@ -833,7 +810,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Csysv
         //
-        srnamt = "Csysv ";
         infot = 1;
         Csysv("/", 0, 0, a, 1, ip, b, 1, w, 1, info);
         chkxer("Csysv ", infot, nout, lerr, ok);
@@ -855,7 +831,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Csysvx
         //
-        srnamt = "Csysvx";
         infot = 1;
         Csysvx("/", "U", 0, 0, a, 1, af, 1, ip, b, 1, x, 1, rcond, r1, r2, w, 1, rw, info);
         chkxer("Csysvx", infot, nout, lerr, ok);
@@ -888,7 +863,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         n_err_bnds = 3;
         nparams = 1;
-        srnamt = "Csysvxx";
         infot = 1;
         eq = "N";
         Csysvxx("/", "U", 0, 0, a, 1, af, 1, ip, eq, r, b, 1, x, 1, rcond, rpvgrw, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, rw, info);
@@ -934,7 +908,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Csysv_rook
         //
-        srnamt = "Csysv_rook";
         infot = 1;
         Csysv_rook("/", 0, 0, a, 1, ip, b, 1, w, 1, info);
         chkxer("Csysv_rook", infot, nout, lerr, ok);
@@ -965,7 +938,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //        L (or U) is stored in A, diagonal of D is stored on the
         //        diagonal of A, subdiagonal of D is stored in a separate array E.
         //
-        srnamt = "Csysv_rk";
         infot = 1;
         Csysv_rk("/", 0, 0, a, 1, e, ip, b, 1, w, 1, info);
         chkxer("Csysv_rk", infot, nout, lerr, ok);
@@ -992,7 +964,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Cspsv
         //
-        srnamt = "Cspsv ";
         infot = 1;
         Cspsv("/", 0, 0, a, ip, b, 1, info);
         chkxer("Cspsv ", infot, nout, lerr, ok);
@@ -1008,7 +979,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         //        Cspsvx
         //
-        srnamt = "Cspsvx";
         infot = 1;
         Cspsvx("/", "U", 0, 0, a, af, ip, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cspsvx", infot, nout, lerr, ok);

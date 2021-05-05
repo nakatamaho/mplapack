@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void program_Cchkrfp(INTEGER argc, char const *argv[]) {
     common cmn(argc, argv);
@@ -239,16 +242,25 @@ void program_Cchkrfp(INTEGER argc, char const *argv[]) {
     //    Test the routines: Cpftrf, Cpftri, Cpftrs (as in Cdrvpo).
     //    This also tests the routines: Ctfsm, Ctftri, Ctfttr, Ctrttf.
     //
-    fill0);
-    fill0);
-    COMPLEX z_work_zlatms[3 * nmax];
-    fill0);
-    REAL d_work_zlatms[nmax];
+    COMPLEX worka[nmax * nmax];
+    COMPLEX workasav[nmax * nmax];
+    COMPLEX workafac[nmax * nmax];
+    COMPLEX workainv[nmax * nmax];
+    COMPLEX workb[nmax * maxrhs];
+    COMPLEX workbsav[nmax * maxrhs];
+    COMPLEX workxact[nmax * maxrhs];
+    COMPLEX workx[nmax * maxrhs];
+    COMPLEX workarf[(nmax * (nmax + 1)) / 2];
+    COMPLEX workarfinv[(nmax * (nmax + 1)) / 2];
+    COMPLEX z_work_Clatms[3 * nmax];
+    COMPLEX z_work_Cpot02[nmax * maxrhs];
+    COMPLEX z_work_Cpot03[nmax * nmax];
+    REAL d_work_Clatms[nmax];
     REAL d_work_Clanhe[nmax];
     REAL d_work_Cpot01[nmax];
     REAL d_work_Cpot02[nmax];
     REAL d_work_Cpot03[nmax];
-    Cdrvrfp(nout, nn, nval, nns, nsval, nnt, ntval, thresh, worka, workasav, workafac, workainv, workb, workbsav, workxact, workx, workarf, workarfinv, z_work_zlatms, z_work_Cpot02, z_work_Cpot03, d_work_zlatms, d_work_Clanhe, d_work_Cpot01, d_work_Cpot02, d_work_Cpot03);
+    Cdrvrfp(nout, nn, nval, nns, nsval, nnt, ntval, thresh, worka, workasav, workafac, workainv, workb, workbsav, workxact, workx, workarf, workarfinv, z_work_Clatms, z_work_Cpot02, z_work_Cpot03, d_work_Clatms, d_work_Clanhe, d_work_Cpot01, d_work_Cpot02, d_work_Cpot03);
     //
     //    Test the routine: Clanhf
     //
@@ -257,7 +269,7 @@ void program_Cchkrfp(INTEGER argc, char const *argv[]) {
     //    Test the conversion routines:
     //       zhfttp, ztpthf, Ctfttr, Ctrttf, Ctrttp and Ctpttr.
     //
-    fill0);
+    COMPLEX workap[(nmax * (nmax + 1)) / 2];
     Cdrvrf2(nout, nn, nval, worka, nmax, workarf, workap, workasav);
     //
     //    Test the routine: Ctfsm

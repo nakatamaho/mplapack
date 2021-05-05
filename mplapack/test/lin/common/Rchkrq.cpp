@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,22 +27,25 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rchkrq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *af, REAL *aq, REAL *ar, REAL *ac, REAL *b, REAL *x, REAL *xact, REAL *tau, REAL *work, REAL *rwork, INTEGER * /* iwork */, INTEGER const nout) {
     FEM_CMN_SVE(Rchkrq);
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
     //
+    INTEGER *iseedy(sve.iseedy, [4]);
     if (is_called_first_time) {
         static const INTEGER values[] = {1988, 1989, 1990, 1991};
         data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
     }
-    char[3] path;
+    char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -57,13 +60,13 @@ void Rchkrq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER minmn = 0;
     INTEGER imat = 0;
     const INTEGER ntypes = 8;
-    char[1] type;
+    char type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
+    char dist;
     INTEGER info = 0;
     INTEGER kval[4];
     INTEGER nk = 0;
@@ -147,17 +150,16 @@ void Rchkrq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 }
                 //
                 //              Set up parameters with Rlatb4 and generate a test matrix
-                //              with DLATMS.
+                //              with Rlatms.
                 //
                 Rlatb4(path, imat, m, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                srnamt = "DLATMS";
-                dlatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
+                Rlatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
                 //
-                //              Check error code from DLATMS.
+                //              Check error code from Rlatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "DLATMS", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rlatms", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_50;
                 }
                 //
@@ -225,11 +227,9 @@ void Rchkrq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 //                          Generate a solution and set the right
                                 //                          hand side.
                                 //
-                                srnamt = "Rlarhs";
                                 Rlarhs(path, "New", "Full", "No transpose", m, n, 0, 0, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                                 //
                                 Rlacpy("Full", m, nrhs, b, lda, &x[(n - m + 1) - 1], lda);
-                                srnamt = "RgerQS";
                                 Rgerqs(m, n, nrhs, af, lda, tau, x, lda, work, lwork, info);
                                 //
                                 //                          Check error code from RgerQS.

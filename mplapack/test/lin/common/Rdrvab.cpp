@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,23 +27,26 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-#include <mplapack_lin.h>
-#include <mplapack.h>
 
-void Rdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, INTEGER *nsval, REAL const thresh, INTEGER const /* nmax */, REAL *a, REAL *afac, REAL *b, REAL *x, REAL *work, REAL *rwork, arr_cref<float> swork, INTEGER *iwork, INTEGER const nout) {
+#include <mplapack_matgen.h>
+#include <mplapack_lin.h>
+
+void Rdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, INTEGER *nsval, REAL const thresh, INTEGER const  /* nmax */, REAL *a, REAL *afac, REAL *b, REAL *x, REAL *work, REAL *rwork, arr_cref<float> swork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Rdrvab);
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
     //
+    INTEGER *iseedy(sve.iseedy, [4]);
     if (is_called_first_time) {
         static const INTEGER values[] = {2006, 2007, 2008, 2009};
         data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
     }
     INTEGER kase = 0;
-    char[3] path;
+    char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -57,21 +60,21 @@ void Rdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char[1] type;
+    char type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
+    char dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
     const REAL zero = 0.0;
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
-    char[1] xtype;
-    char[1] trans;
+    char xtype;
+    char trans;
     INTEGER iter = 0;
     const INTEGER ntests = 1;
     REAL result[ntests];
@@ -149,17 +152,16 @@ void Rdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
             }
             //
             //           Set up parameters with Rlatb4 and generate a test matrix
-            //           with DLATMS.
+            //           with Rlatms.
             //
             Rlatb4(path, imat, m, n, type, kl, ku, anorm, mode, cndnum, dist);
             //
-            srnamt = "DLATMS";
-            dlatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
+            Rlatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
             //
-            //           Check error code from DLATMS.
+            //           Check error code from Rlatms.
             //
             if (info != 0) {
-                Alaerh(path, "DLATMS", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                Alaerh(path, "Rlatms", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 goto statement_100;
             }
             //
@@ -191,10 +193,8 @@ void Rdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                 xtype = "N";
                 trans = 'N';
                 //
-                srnamt = "Rlarhs";
                 Rlarhs(path, xtype, " ", trans, n, n, kl, ku, nrhs, a, lda, x, lda, b, lda, iseed, info);
                 //
-                srnamt = "Rsgesv";
                 //
                 kase++;
                 //

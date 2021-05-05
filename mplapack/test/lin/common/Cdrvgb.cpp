@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,18 +27,24 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, COMPLEX *a, INTEGER const la, COMPLEX *afb, INTEGER const lafb, COMPLEX *asav, COMPLEX *b, COMPLEX *bsav, COMPLEX *x, COMPLEX *xact, REAL *s, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Cdrvgb);
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
     //
+    str_arr_ref<1> equeds(sve.equeds, [4]);
+    str_arr_ref<1> facts(sve.facts, [3]);
+    INTEGER *iseedy(sve.iseedy, [4]);
     const INTEGER ntran = 3;
+    str_arr_ref<1> transs(sve.transs, [ntran]);
     if (is_called_first_time) {
         {
             static const INTEGER values[] = {1988, 1989, 1990, 1991};
@@ -57,7 +63,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             data_of_type_str(FEM_VALUES_AND_SIZE), equeds;
         }
     }
-    char[3] path;
+    char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -68,7 +74,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER ldb = 0;
-    char[1] xtype;
+    char xtype;
     INTEGER nkl = 0;
     INTEGER nku = 0;
     const INTEGER ntypes = 8;
@@ -81,11 +87,11 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER ldafb = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char[1] type;
+    char type;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
+    char dist;
     const REAL one = 1.0;
     REAL rcondc = 0.0;
     INTEGER info = 0;
@@ -96,10 +102,10 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     const REAL zero = 0.0;
     INTEGER j = 0;
     INTEGER iequed = 0;
-    char[1] equed;
+    char equed;
     INTEGER nfact = 0;
     INTEGER ifact = 0;
-    char[1] fact;
+    char fact;
     bool prefac = false;
     bool nofact = false;
     bool equil = false;
@@ -114,7 +120,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL anormi = 0.0;
     REAL ainvnm = 0.0;
     INTEGER itran = 0;
-    char[1] trans;
+    char trans;
     const INTEGER ntests = 7;
     REAL result[ntests];
     INTEGER nt = 0;
@@ -276,18 +282,17 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     }
                     //
                     //                 Set up parameters with Clatb4 and generate a
-                    //                 test matrix with ZLATMS.
+                    //                 test matrix with Clatms.
                     //
                     Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                     rcondc = one / cndnum;
                     //
-                    srnamt = "ZLATMS";
-                    zlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "Z", a, lda, work, info);
+                    Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "Z", a, lda, work, info);
                     //
-                    //                 Check the error code from ZLATMS.
+                    //                 Check the error code from Clatms.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZLATMS", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Clatms", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                         goto statement_120;
                     }
                     //
@@ -397,7 +402,6 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 //                          Form the inverse of A.
                                 //
                                 Claset("Full", n, n, COMPLEX(zero), COMPLEX(one), work, ldb);
-                                srnamt = "Cgbtrs";
                                 Cgbtrs("No transpose", n, kl, ku, n, afb, ldafb, iwork, work, ldb, info);
                                 //
                                 //                          Compute the 1-norm condition number of A.
@@ -438,7 +442,6 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 //                          Form an exact solution and set the right hand
                                 //                          side.
                                 //
-                                srnamt = "Clarhs";
                                 Clarhs(path, xtype, "Full", trans, n, n, kl, ku, nrhs, a, lda, xact, ldb, b, ldb, iseed, info);
                                 xtype = "C";
                                 Clacpy("Full", n, nrhs, b, ldb, bsav, ldb);
@@ -453,7 +456,6 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     Clacpy("Full", kl + ku + 1, n, a, lda, afb[(kl + 1) - 1], ldafb);
                                     Clacpy("Full", n, nrhs, b, ldb, x, ldb);
                                     //
-                                    srnamt = "Cgbsv ";
                                     Cgbsv(n, kl, ku, nrhs, afb, ldafb, iwork, x, ldb, info);
                                     //
                                     //                             Check error code from Cgbsv .
@@ -516,7 +518,6 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 //                          Solve the system and compute the condition
                                 //                          number and error bounds using Cgbsvx.
                                 //
-                                srnamt = "Cgbsvx";
                                 Cgbsvx(fact, trans, n, kl, ku, nrhs, a, lda, afb, ldafb, iwork, equed, s, s[(ldb + 1) - 1], b, ldb, x, ldb, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                                 //
                                 //                          Check the error code from Cgbsvx.

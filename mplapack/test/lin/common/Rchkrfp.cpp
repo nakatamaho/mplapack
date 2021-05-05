@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void program_Rchkrfp(INTEGER argc, char const *argv[]) {
     common cmn(argc, argv);
@@ -240,12 +243,24 @@ void program_Rchkrfp(INTEGER argc, char const *argv[]) {
     //     Test the routines: Rpftrf, Rpftri, Rpftrs (as in Rdrvpo).
     //     This also tests the routines: Rtfsm, Rtftri, Rtfttr, Rtrttf.
     //
-    REAL d_work_dlatms[3 * nmax];
+    REAL worka[nmax * nmax];
+    REAL workasav[nmax * nmax];
+    REAL workafac[nmax * nmax];
+    REAL workainv[nmax * nmax];
+    REAL workb[nmax * maxrhs];
+    REAL workbsav[nmax * maxrhs];
+    REAL workxact[nmax * maxrhs];
+    REAL workx[nmax * maxrhs];
+    REAL workarf[(nmax * (nmax + 1)) / 2];
+    REAL workarfinv[(nmax * (nmax + 1)) / 2];
+    REAL d_work_Rlatms[3 * nmax];
     REAL d_work_Rpot01[nmax];
+    REAL d_temp_Rpot02[nmax * maxrhs];
+    REAL d_temp_Rpot03[nmax * nmax];
     REAL d_work_Rlansy[nmax];
     REAL d_work_Rpot02[nmax];
     REAL d_work_Rpot03[nmax];
-    Rdrvrfp(nout, nn, nval, nns, nsval, nnt, ntval, thresh, worka, workasav, workafac, workainv, workb, workbsav, workxact, workx, workarf, workarfinv, d_work_dlatms, d_work_Rpot01, d_temp_Rpot02, d_temp_Rpot03, d_work_Rlansy, d_work_Rpot02, d_work_Rpot03);
+    Rdrvrfp(nout, nn, nval, nns, nsval, nnt, ntval, thresh, worka, workasav, workafac, workainv, workb, workbsav, workxact, workx, workarf, workarfinv, d_work_Rlatms, d_work_Rpot01, d_temp_Rpot02, d_temp_Rpot03, d_work_Rlansy, d_work_Rpot02, d_work_Rpot03);
     //
     //     Test the routine: Rlansf
     //
@@ -254,6 +269,7 @@ void program_Rchkrfp(INTEGER argc, char const *argv[]) {
     //     Test the conversion routines:
     //       Rtfttp, Rtpttf, Rtfttr, Rtrttf, Rtrttp and Rtpttr.
     //
+    REAL workap[(nmax * (nmax + 1)) / 2];
     Rdrvrf2(nout, nn, nval, worka, nmax, workarf, workap, workasav);
     //
     //     Test the routine: Rtfsm

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,18 +27,23 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-#include <mplapack_lin.h>
-#include <mplapack.h>
 
-void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, REAL *a, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+#include <mplapack_matgen.h>
+#include <mplapack_lin.h>
+
+void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const  /* nmax */, REAL *a, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Rchktr);
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
     //
+    INTEGER *iseedy(sve.iseedy, [4]);
     const INTEGER ntran = 3;
+    str_arr_ref<1> transs(sve.transs, [ntran]);
+    str_arr_ref<1> uplos(sve.uplos, [2]);
     if (is_called_first_time) {
         {
             static const INTEGER values[] = {1988, 1989, 1990, 1991};
@@ -53,7 +58,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
             data_of_type_str(FEM_VALUES_AND_SIZE), transs;
         }
     }
-    char[3] path;
+    char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -62,12 +67,12 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char[1] xtype;
+    char xtype;
     INTEGER imat = 0;
     const INTEGER ntype1 = 10;
     INTEGER iuplo = 0;
-    char[1] uplo;
-    char[1] diag;
+    char uplo;
+    char diag;
     INTEGER info = 0;
     INTEGER idiag = 0;
     INTEGER inb = 0;
@@ -83,8 +88,8 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     INTEGER itran = 0;
-    char[1] trans;
-    char[1] norm;
+    char trans;
+    char norm;
     REAL rcondc = 0.0;
     REAL dummy = 0.0;
     INTEGER k = 0;
@@ -168,7 +173,6 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //
                 //              Call Rlattr to generate a triangular test matrix.
                 //
-                srnamt = "Rlattr";
                 Rlattr(imat, uplo, "No transpose", diag, iseed, n, a, lda, x, work, info);
                 //
                 //              Set IDIAG = 1 for non-unit matrices, 2 for unit.
@@ -190,7 +194,6 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //                 Form the inverse of A.
                     //
                     Rlacpy(uplo, n, n, a, lda, ainv, lda);
-                    srnamt = "Rtrtri";
                     Rtrtri(uplo, diag, n, ainv, lda, info);
                     //
                     //                 Check error code from Rtrtri.
@@ -254,12 +257,10 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             //+    TEST 2
                             //                       Solve and compute residual for op(A)*x = b.
                             //
-                            srnamt = "Rlarhs";
                             Rlarhs(path, xtype, uplo, trans, n, n, 0, idiag, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                             xtype = "C";
                             Rlacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            srnamt = "Rtrtrs";
                             Rtrtrs(uplo, trans, diag, n, nrhs, a, lda, x, lda, info);
                             //
                             //                       Check error code from Rtrtrs.
@@ -285,7 +286,6 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             //                       Use iterative refinement to improve the solution
                             //                       and compute error bounds.
                             //
-                            srnamt = "Rtrrfs";
                             Rtrrfs(uplo, trans, diag, n, nrhs, a, lda, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
                             //
                             //                       Check error code from Rtrrfs.
@@ -327,7 +327,6 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             norm = 'I';
                             rcondc = rcondi;
                         }
-                        srnamt = "Rtrcon";
                         Rtrcon(norm, uplo, diag, n, a, lda, rcond, work, iwork, info);
                         //
                         //                       Check error code from Rtrcon.
@@ -380,13 +379,11 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     //                 Call Rlattr to generate a triangular test matrix.
                     //
-                    srnamt = "Rlattr";
                     Rlattr(imat, uplo, trans, diag, iseed, n, a, lda, x, work, info);
                     //
                     //+    TEST 8
                     //                 Solve the system op(A)*x = b.
                     //
-                    srnamt = "Rlatrs";
                     Rcopy(n, x, 1, b, 1);
                     Rlatrs(uplo, trans, diag, "N", n, a, lda, b, scale, rwork, info);
                     //

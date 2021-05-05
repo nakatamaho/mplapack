@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrtr(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Cerrtr(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -71,7 +73,7 @@ void Cerrtr(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     const INTEGER nmax = 2;
     COMPLEX a[nmax * nmax];
     a[(1 - 1)] = 1.0;
@@ -95,7 +97,6 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         //
         //        Ctrtri
         //
-        srnamt = "Ctrtri";
         infot = 1;
         Ctrtri("/", "N", 0, a, 1, info);
         chkxer("Ctrtri", infot, nout, lerr, ok);
@@ -111,7 +112,6 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         //
         //        Ctrti2
         //
-        srnamt = "Ctrti2";
         infot = 1;
         Ctrti2("/", "N", 0, a, 1, info);
         chkxer("Ctrti2", infot, nout, lerr, ok);
@@ -127,7 +127,6 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         //
         //        Ctrtrs
         //
-        srnamt = "Ctrtrs";
         infot = 1;
         Ctrtrs("/", "N", "N", 0, 0, a, 1, x, 1, info);
         chkxer("Ctrtrs", infot, nout, lerr, ok);
@@ -147,7 +146,6 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         //
         //        Ctrrfs
         //
-        srnamt = "Ctrrfs";
         infot = 1;
         Ctrrfs("/", "N", "N", 0, 0, a, 1, b, 1, x, 1, r1, r2, w, rw, info);
         chkxer("Ctrrfs", infot, nout, lerr, ok);
@@ -175,7 +173,6 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         //
         //        Ctrcon
         //
-        srnamt = "Ctrcon";
         infot = 1;
         Ctrcon("/", "U", "N", 0, a, 1, rcond, w, rw, info);
         chkxer("Ctrcon", infot, nout, lerr, ok);
@@ -194,7 +191,6 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         //
         //        Clatrs
         //
-        srnamt = "Clatrs";
         infot = 1;
         Clatrs("/", "N", "N", "N", 0, a, 1, x, scale, rw, info);
         chkxer("Clatrs", infot, nout, lerr, ok);
@@ -220,7 +216,6 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         //
         //        Ctptri
         //
-        srnamt = "Ctptri";
         infot = 1;
         Ctptri("/", "N", 0, a, info);
         chkxer("Ctptri", infot, nout, lerr, ok);
@@ -233,7 +228,6 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         //
         //        Ctptrs
         //
-        srnamt = "Ctptrs";
         infot = 1;
         Ctptrs("/", "N", "N", 0, 0, a, x, 1, info);
         chkxer("Ctptrs", infot, nout, lerr, ok);
@@ -255,7 +249,6 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         //
         //        Ctprfs
         //
-        srnamt = "Ctprfs";
         infot = 1;
         Ctprfs("/", "N", "N", 0, 0, a, b, 1, x, 1, r1, r2, w, rw, info);
         chkxer("Ctprfs", infot, nout, lerr, ok);
@@ -280,7 +273,6 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         //
         //        Ctpcon
         //
-        srnamt = "Ctpcon";
         infot = 1;
         Ctpcon("/", "U", "N", 0, a, rcond, w, rw, info);
         chkxer("Ctpcon", infot, nout, lerr, ok);
@@ -296,7 +288,6 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         //
         //        Clatps
         //
-        srnamt = "Clatps";
         infot = 1;
         Clatps("/", "N", "N", "N", 0, a, x, scale, rw, info);
         chkxer("Clatps", infot, nout, lerr, ok);
@@ -319,7 +310,6 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         //
         //        Ctbtrs
         //
-        srnamt = "Ctbtrs";
         infot = 1;
         Ctbtrs("/", "N", "N", 0, 0, 0, a, 1, x, 1, info);
         chkxer("Ctbtrs", infot, nout, lerr, ok);
@@ -347,7 +337,6 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         //
         //        Ctbrfs
         //
-        srnamt = "Ctbrfs";
         infot = 1;
         Ctbrfs("/", "N", "N", 0, 0, 0, a, 1, b, 1, x, 1, r1, r2, w, rw, info);
         chkxer("Ctbrfs", infot, nout, lerr, ok);
@@ -378,7 +367,6 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         //
         //        Ctbcon
         //
-        srnamt = "Ctbcon";
         infot = 1;
         Ctbcon("/", "U", "N", 0, 0, a, 1, rcond, w, rw, info);
         chkxer("Ctbcon", infot, nout, lerr, ok);
@@ -400,7 +388,6 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         //
         //        Clatbs
         //
-        srnamt = "Clatbs";
         infot = 1;
         Clatbs("/", "N", "N", "N", 0, 0, a, 1, x, scale, rw, info);
         chkxer("Clatbs", infot, nout, lerr, ok);

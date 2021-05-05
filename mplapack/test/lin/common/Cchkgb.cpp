@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,18 +27,22 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, COMPLEX *a, INTEGER const la, COMPLEX *afac, INTEGER const lafac, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Cchkgb);
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
     //
+    INTEGER *iseedy(sve.iseedy, [4]);
     const INTEGER ntran = 3;
+    str_arr_ref<1> transs(sve.transs, [ntran]);
     if (is_called_first_time) {
         {
             static const INTEGER values[] = {1988, 1989, 1990, 1991};
@@ -49,7 +53,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
             data_of_type_str(FEM_VALUES_AND_SIZE), transs;
         }
     }
-    char[3] path;
+    char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -62,7 +66,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER m = 0;
     INTEGER in = 0;
     INTEGER n = 0;
-    char[1] xtype;
+    char xtype;
     INTEGER nkl = 0;
     INTEGER nku = 0;
     const INTEGER ntypes = 8;
@@ -75,11 +79,11 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER ldafac = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char[1] type;
+    char type;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
+    char dist;
     INTEGER koff = 0;
     const REAL zero = 0.0;
     INTEGER info = 0;
@@ -103,9 +107,9 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     INTEGER itran = 0;
-    char[1] trans;
+    char trans;
     REAL rcondc = 0.0;
-    char[1] norm;
+    char norm;
     INTEGER k = 0;
     REAL rcond = 0.0;
     //
@@ -267,7 +271,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         if (!zerot || !dotype[1 - 1]) {
                             //
                             //                       Set up parameters with Clatb4 and generate a
-                            //                       test matrix with ZLATMS.
+                            //                       test matrix with Clatms.
                             //
                             Clatb4(path, imat, m, n, type, kl, ku, anorm, mode, cndnum, dist);
                             //
@@ -275,13 +279,12 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             for (i = 1; i <= koff - 1; i = i + 1) {
                                 a[i - 1] = zero;
                             }
-                            srnamt = "ZLATMS";
-                            zlatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "Z", &a[koff - 1], lda, work, info);
+                            Clatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "Z", &a[koff - 1], lda, work, info);
                             //
-                            //                       Check the error code from ZLATMS.
+                            //                       Check the error code from Clatms.
                             //
                             if (info != 0) {
-                                Alaerh(path, "ZLATMS", info, 0, " ", m, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Clatms", info, 0, " ", m, n, kl, ku, -1, imat, nfail, nerrs, nout);
                                 goto statement_120;
                             }
                         } else if (izero > 0) {
@@ -344,7 +347,6 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (m > 0 && n > 0) {
                                 Clacpy("Full", kl + ku + 1, n, a, lda, afac[(kl + 1) - 1], ldafac);
                             }
-                            srnamt = "Cgbtrf";
                             Cgbtrf(m, n, kl, ku, afac, ldafac, iwork, info);
                             //
                             //                       Check error code from Cgbtrf.
@@ -391,7 +393,6 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 //
                                 ldb = max((INTEGER)1, n);
                                 Claset("Full", n, n, COMPLEX(zero), COMPLEX(one), work, ldb);
-                                srnamt = "Cgbtrs";
                                 Cgbtrs("No transpose", n, kl, ku, n, afac, ldafac, iwork, work, ldb, info);
                                 //
                                 //                          Compute the 1-norm condition number of A.
@@ -444,12 +445,10 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     //+    TEST 2:
                                     //                             Solve and compute residual for A * X = B.
                                     //
-                                    srnamt = "Clarhs";
                                     Clarhs(path, xtype, " ", trans, n, n, kl, ku, nrhs, a, lda, xact, ldb, b, ldb, iseed, info);
                                     xtype = "C";
                                     Clacpy("Full", n, nrhs, b, ldb, x, ldb);
                                     //
-                                    srnamt = "Cgbtrs";
                                     Cgbtrs(trans, n, kl, ku, nrhs, afac, ldafac, iwork, x, ldb, info);
                                     //
                                     //                             Check error code from Cgbtrs.
@@ -471,7 +470,6 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     //                             Use iterative refinement to improve the
                                     //                             solution.
                                     //
-                                    srnamt = "Cgbrfs";
                                     Cgbrfs(trans, n, kl, ku, nrhs, a, lda, afac, ldafac, iwork, b, ldb, x, ldb, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                                     //
                                     //                             Check error code from Cgbrfs.
@@ -515,7 +513,6 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     rcondc = rcondi;
                                     norm = 'I';
                                 }
-                                srnamt = "Cgbcon";
                                 Cgbcon(norm, n, kl, ku, afac, ldafac, iwork, anorm, rcond, work, rwork, info);
                                 //
                                 //                             Check error code from Cgbcon.

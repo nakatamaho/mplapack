@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rerrsy(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -73,7 +75,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     //
     //     Set the variables to innocuous values.
     //
@@ -113,7 +115,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
     INTEGER info = 0;
     INTEGER n_err_bnds = 0;
     INTEGER nparams = 0;
-    char[1] eq;
+    char eq;
     REAL berr = 0.0;
     REAL err_bnds_n[nmax * 3];
     REAL err_bnds_c[nmax * 3];
@@ -126,7 +128,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytrf
         //
-        srnamt = "Rsytrf";
         infot = 1;
         Rsytrf("/", 0, a, 1, ip, w, 1, info);
         chkxer("Rsytrf", infot, nout, lerr, ok);
@@ -145,7 +146,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytf2
         //
-        srnamt = "Rsytf2";
         infot = 1;
         Rsytf2("/", 0, a, 1, ip, info);
         chkxer("Rsytf2", infot, nout, lerr, ok);
@@ -158,7 +158,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytri
         //
-        srnamt = "Rsytri";
         infot = 1;
         Rsytri("/", 0, a, 1, ip, w, info);
         chkxer("Rsytri", infot, nout, lerr, ok);
@@ -171,7 +170,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytri2
         //
-        srnamt = "Rsytri2";
         infot = 1;
         Rsytri2("/", 0, a, 1, ip, w, iw, info);
         chkxer("Rsytri2", infot, nout, lerr, ok);
@@ -184,7 +182,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytri2x
         //
-        srnamt = "Rsytri2x";
         infot = 1;
         Rsytri2x("/", 0, a, 1, ip, w, 1, info);
         chkxer("Rsytri2x", infot, nout, lerr, ok);
@@ -197,7 +194,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytrs
         //
-        srnamt = "Rsytrs";
         infot = 1;
         Rsytrs("/", 0, 0, a, 1, ip, b, 1, info);
         chkxer("Rsytrs", infot, nout, lerr, ok);
@@ -216,7 +212,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        RsyrFS
         //
-        srnamt = "RsyrFS";
         infot = 1;
         Rsyrfs("/", 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
         chkxer("RsyrFS", infot, nout, lerr, ok);
@@ -243,7 +238,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         n_err_bnds = 3;
         nparams = 0;
-        srnamt = "RsyrFSX";
         infot = 1;
         Rsyrfsx("/", eq, 0, 0, a, 1, af, 1, ip, s, b, 1, x, 1, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, iw, info);
         chkxer("RsyrFSX", infot, nout, lerr, ok);
@@ -272,7 +266,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsycon
         //
-        srnamt = "Rsycon";
         infot = 1;
         Rsycon("/", 0, a, 1, ip, anrm, rcond, w, iw, info);
         chkxer("Rsycon", infot, nout, lerr, ok);
@@ -294,7 +287,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytrf_rook
         //
-        srnamt = "Rsytrf_rook";
         infot = 1;
         Rsytrf_rook("/", 0, a, 1, ip, w, 1, info);
         chkxer("Rsytrf_rook", infot, nout, lerr, ok);
@@ -313,7 +305,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytf2_rook
         //
-        srnamt = "Rsytf2_rook";
         infot = 1;
         Rsytf2_rook("/", 0, a, 1, ip, info);
         chkxer("Rsytf2_rook", infot, nout, lerr, ok);
@@ -326,7 +317,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytri_rook
         //
-        srnamt = "Rsytri_rook";
         infot = 1;
         Rsytri_rook("/", 0, a, 1, ip, w, info);
         chkxer("Rsytri_rook", infot, nout, lerr, ok);
@@ -339,7 +329,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytrs_rook
         //
-        srnamt = "Rsytrs_rook";
         infot = 1;
         Rsytrs_rook("/", 0, 0, a, 1, ip, b, 1, info);
         chkxer("Rsytrs_rook", infot, nout, lerr, ok);
@@ -358,7 +347,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsycon_rook
         //
-        srnamt = "Rsycon_rook";
         infot = 1;
         Rsycon_rook("/", 0, a, 1, ip, anrm, rcond, w, iw, info);
         chkxer("Rsycon_rook", infot, nout, lerr, ok);
@@ -384,7 +372,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytrf_rk
         //
-        srnamt = "Rsytrf_rk";
         infot = 1;
         Rsytrf_rk("/", 0, a, 1, e, ip, w, 1, info);
         chkxer("Rsytrf_rk", infot, nout, lerr, ok);
@@ -403,7 +390,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytf2_rk
         //
-        srnamt = "Rsytf2_rk";
         infot = 1;
         Rsytf2_rk("/", 0, a, 1, e, ip, info);
         chkxer("Rsytf2_rk", infot, nout, lerr, ok);
@@ -416,7 +402,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytri_3
         //
-        srnamt = "Rsytri_3";
         infot = 1;
         Rsytri_3("/", 0, a, 1, e, ip, w, 1, info);
         chkxer("Rsytri_3", infot, nout, lerr, ok);
@@ -435,7 +420,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytri_3x
         //
-        srnamt = "Rsytri_3x";
         infot = 1;
         Rsytri_3x("/", 0, a, 1, e, ip, w, 1, info);
         chkxer("Rsytri_3x", infot, nout, lerr, ok);
@@ -448,7 +432,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytrs_3
         //
-        srnamt = "Rsytrs_3";
         infot = 1;
         Rsytrs_3("/", 0, 0, a, 1, e, ip, b, 1, info);
         chkxer("Rsytrs_3", infot, nout, lerr, ok);
@@ -467,7 +450,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsycon_3
         //
-        srnamt = "Rsycon_3";
         infot = 1;
         Rsycon_3("/", 0, a, 1, e, ip, anrm, rcond, w, iw, info);
         chkxer("Rsycon_3", infot, nout, lerr, ok);
@@ -489,7 +471,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsptrf
         //
-        srnamt = "Rsptrf";
         infot = 1;
         Rsptrf("/", 0, a, ip, info);
         chkxer("Rsptrf", infot, nout, lerr, ok);
@@ -499,7 +480,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsptri
         //
-        srnamt = "Rsptri";
         infot = 1;
         Rsptri("/", 0, a, ip, w, info);
         chkxer("Rsptri", infot, nout, lerr, ok);
@@ -509,7 +489,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsptrs
         //
-        srnamt = "Rsptrs";
         infot = 1;
         Rsptrs("/", 0, 0, a, ip, b, 1, info);
         chkxer("Rsptrs", infot, nout, lerr, ok);
@@ -525,7 +504,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        RsprFS
         //
-        srnamt = "RsprFS";
         infot = 1;
         Rsprfs("/", 0, 0, a, af, ip, b, 1, x, 1, r1, r2, w, iw, info);
         chkxer("RsprFS", infot, nout, lerr, ok);
@@ -544,7 +522,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rspcon
         //
-        srnamt = "Rspcon";
         infot = 1;
         Rspcon("/", 0, a, ip, anrm, rcond, w, iw, info);
         chkxer("Rspcon", infot, nout, lerr, ok);

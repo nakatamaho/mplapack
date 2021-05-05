@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrql(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Cerrql(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -97,7 +99,6 @@ void Cerrql(const char *path, INTEGER const nunit) {
     //
     //     Cgeqlf
     //
-    srnamt = "Cgeqlf";
     infot = 1;
     INTEGER info = 0;
     Cgeqlf(-1, 0, a, 1, b, w, 1, info);
@@ -114,7 +115,6 @@ void Cerrql(const char *path, INTEGER const nunit) {
     //
     //     Cgeql2
     //
-    srnamt = "Cgeql2";
     infot = 1;
     Cgeql2(-1, 0, a, 1, b, w, info);
     chkxer("Cgeql2", infot, nout, lerr, ok);
@@ -127,7 +127,6 @@ void Cerrql(const char *path, INTEGER const nunit) {
     //
     //     Cgeqls
     //
-    srnamt = "Cgeqls";
     infot = 1;
     Cgeqls(-1, 0, 0, a, 1, x, b, 1, w, 1, info);
     chkxer("Cgeqls", infot, nout, lerr, ok);
@@ -152,7 +151,6 @@ void Cerrql(const char *path, INTEGER const nunit) {
     //
     //     Cungql
     //
-    srnamt = "Cungql";
     infot = 1;
     Cungql(-1, 0, 0, a, 1, x, w, 1, info);
     chkxer("Cungql", infot, nout, lerr, ok);
@@ -177,7 +175,6 @@ void Cerrql(const char *path, INTEGER const nunit) {
     //
     //     Cung2l
     //
-    srnamt = "Cung2l";
     infot = 1;
     Cung2l(-1, 0, 0, a, 1, x, w, info);
     chkxer("Cung2l", infot, nout, lerr, ok);
@@ -199,7 +196,6 @@ void Cerrql(const char *path, INTEGER const nunit) {
     //
     //     Cunmql
     //
-    srnamt = "Cunmql";
     infot = 1;
     Cunmql("/", "N", 0, 0, 0, a, 1, x, af, 1, w, 1, info);
     chkxer("Cunmql", infot, nout, lerr, ok);
@@ -239,7 +235,6 @@ void Cerrql(const char *path, INTEGER const nunit) {
     //
     //     Cunm2l
     //
-    srnamt = "Cunm2l";
     infot = 1;
     Cunm2l("/", "N", 0, 0, 0, a, 1, x, af, 1, w, info);
     chkxer("Cunm2l", infot, nout, lerr, ok);

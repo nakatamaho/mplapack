@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,15 +27,22 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rqrt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *r, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
+    a([lda * star]);
+    af([lda * star]);
+    q([lda * star]);
+    r([lda * star]);
+    work([lwork]);
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -74,7 +81,6 @@ void Rqrt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //
     //     Factorize the matrix A in the array AF.
     //
-    srnamt = "Rgeqrf";
     INTEGER info = 0;
     Rgeqrf(m, n, af, lda, tau, work, lwork, info);
     //
@@ -86,7 +92,6 @@ void Rqrt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //
     //     Generate the m-by-m matrix Q
     //
-    srnamt = "Rorgqr";
     Rorgqr(m, m, minmn, q, lda, tau, work, lwork, info);
     //
     //     Copy R

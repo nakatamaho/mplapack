@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrgt(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Cerrgt(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -71,7 +73,7 @@ void Cerrgt(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     INTEGER i = 0;
     const INTEGER nmax = 2;
     REAL d[nmax];
@@ -107,14 +109,12 @@ void Cerrgt(const char *path, INTEGER const nunit) {
         //
         //        Cgttrf
         //
-        srnamt = "Cgttrf";
         infot = 1;
         Cgttrf(-1, dl, e, du, du2, ip, info);
         chkxer("Cgttrf", infot, nout, lerr, ok);
         //
         //        Cgttrs
         //
-        srnamt = "Cgttrs";
         infot = 1;
         Cgttrs("/", 0, 0, dl, e, du, du2, ip, x, 1, info);
         chkxer("Cgttrs", infot, nout, lerr, ok);
@@ -130,7 +130,6 @@ void Cerrgt(const char *path, INTEGER const nunit) {
         //
         //        Cgtrfs
         //
-        srnamt = "Cgtrfs";
         infot = 1;
         Cgtrfs("/", 0, 0, dl, e, du, dlf, ef, duf, du2, ip, b, 1, x, 1, r1, r2, w, rw, info);
         chkxer("Cgtrfs", infot, nout, lerr, ok);
@@ -149,7 +148,6 @@ void Cerrgt(const char *path, INTEGER const nunit) {
         //
         //        Cgtcon
         //
-        srnamt = "Cgtcon";
         infot = 1;
         Cgtcon("/", 0, dl, e, du, du2, ip, anorm, rcond, w, info);
         chkxer("Cgtcon", infot, nout, lerr, ok);
@@ -167,14 +165,12 @@ void Cerrgt(const char *path, INTEGER const nunit) {
         //
         //        Cpttrf
         //
-        srnamt = "Cpttrf";
         infot = 1;
         Cpttrf(-1, d, e, info);
         chkxer("Cpttrf", infot, nout, lerr, ok);
         //
         //        Cpttrs
         //
-        srnamt = "Cpttrs";
         infot = 1;
         Cpttrs("/", 1, 0, d, e, x, 1, info);
         chkxer("Cpttrs", infot, nout, lerr, ok);
@@ -190,7 +186,6 @@ void Cerrgt(const char *path, INTEGER const nunit) {
         //
         //        Cptrfs
         //
-        srnamt = "Cptrfs";
         infot = 1;
         Cptrfs("/", 1, 0, d, e, df, ef, b, 1, x, 1, r1, r2, w, rw, info);
         chkxer("Cptrfs", infot, nout, lerr, ok);
@@ -209,7 +204,6 @@ void Cerrgt(const char *path, INTEGER const nunit) {
         //
         //        Cptcon
         //
-        srnamt = "Cptcon";
         infot = 1;
         Cptcon(-1, d, e, anorm, rcond, rw, info);
         chkxer("Cptcon", infot, nout, lerr, ok);

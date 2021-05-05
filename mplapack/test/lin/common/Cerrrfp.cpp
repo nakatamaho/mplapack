@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrrfp(INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Cerrrfp(INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -78,7 +80,6 @@ void Cerrrfp(INTEGER const nunit) {
     COMPLEX calpha = COMPLEX(1.0, 1.0);
     REAL beta = 1.0;
     //
-    srnamt = "Cpftrf";
     infot = 1;
     INTEGER info = 0;
     Cpftrf("/", "U", 0, a, info);
@@ -90,7 +91,6 @@ void Cerrrfp(INTEGER const nunit) {
     Cpftrf("N", "U", -1, a, info);
     chkxer("Cpftrf", infot, nout, lerr, ok);
     //
-    srnamt = "Cpftrs";
     infot = 1;
     Cpftrs("/", "U", 0, 0, a, b, 1, info);
     chkxer("Cpftrs", infot, nout, lerr, ok);
@@ -107,7 +107,6 @@ void Cerrrfp(INTEGER const nunit) {
     Cpftrs("N", "U", 0, 0, a, b, 0, info);
     chkxer("Cpftrs", infot, nout, lerr, ok);
     //
-    srnamt = "Cpftri";
     infot = 1;
     Cpftri("/", "U", 0, a, info);
     chkxer("Cpftri", infot, nout, lerr, ok);
@@ -118,7 +117,6 @@ void Cerrrfp(INTEGER const nunit) {
     Cpftri("N", "U", -1, a, info);
     chkxer("Cpftri", infot, nout, lerr, ok);
     //
-    srnamt = "Ctfsm ";
     infot = 1;
     Ctfsm("/", "L", "U", "C", "U", 0, 0, calpha, a, b, 1);
     chkxer("Ctfsm ", infot, nout, lerr, ok);
@@ -144,7 +142,6 @@ void Cerrrfp(INTEGER const nunit) {
     Ctfsm("N", "L", "U", "C", "U", 0, 0, calpha, a, b, 0);
     chkxer("Ctfsm ", infot, nout, lerr, ok);
     //
-    srnamt = "Ctftri";
     infot = 1;
     Ctftri("/", "L", "N", 0, a, info);
     chkxer("Ctftri", infot, nout, lerr, ok);
@@ -158,7 +155,6 @@ void Cerrrfp(INTEGER const nunit) {
     Ctftri("N", "L", "N", -1, a, info);
     chkxer("Ctftri", infot, nout, lerr, ok);
     //
-    srnamt = "Ctfttr";
     infot = 1;
     Ctfttr("/", "U", 0, a, b, 1, info);
     chkxer("Ctfttr", infot, nout, lerr, ok);
@@ -172,7 +168,6 @@ void Cerrrfp(INTEGER const nunit) {
     Ctfttr("N", "U", 0, a, b, 0, info);
     chkxer("Ctfttr", infot, nout, lerr, ok);
     //
-    srnamt = "Ctrttf";
     infot = 1;
     Ctrttf("/", "U", 0, a, 1, b, info);
     chkxer("Ctrttf", infot, nout, lerr, ok);
@@ -186,7 +181,6 @@ void Cerrrfp(INTEGER const nunit) {
     Ctrttf("N", "U", 0, a, 0, b, info);
     chkxer("Ctrttf", infot, nout, lerr, ok);
     //
-    srnamt = "Ctfttp";
     infot = 1;
     Ctfttp("/", "U", 0, a, b, info);
     chkxer("Ctfttp", infot, nout, lerr, ok);
@@ -197,7 +191,6 @@ void Cerrrfp(INTEGER const nunit) {
     Ctfttp("N", "U", -1, a, b, info);
     chkxer("Ctfttp", infot, nout, lerr, ok);
     //
-    srnamt = "Ctpttf";
     infot = 1;
     Ctpttf("/", "U", 0, a, b, info);
     chkxer("Ctpttf", infot, nout, lerr, ok);
@@ -208,7 +201,6 @@ void Cerrrfp(INTEGER const nunit) {
     Ctpttf("N", "U", -1, a, b, info);
     chkxer("Ctpttf", infot, nout, lerr, ok);
     //
-    srnamt = "Ctrttp";
     infot = 1;
     Ctrttp("/", 0, a, 1, b, info);
     chkxer("Ctrttp", infot, nout, lerr, ok);
@@ -219,7 +211,6 @@ void Cerrrfp(INTEGER const nunit) {
     Ctrttp("U", 0, a, 0, b, info);
     chkxer("Ctrttp", infot, nout, lerr, ok);
     //
-    srnamt = "Ctpttr";
     infot = 1;
     Ctpttr("/", 0, a, b, 1, info);
     chkxer("Ctpttr", infot, nout, lerr, ok);
@@ -230,7 +221,6 @@ void Cerrrfp(INTEGER const nunit) {
     Ctpttr("U", 0, a, b, 0, info);
     chkxer("Ctpttr", infot, nout, lerr, ok);
     //
-    srnamt = "Chfrk ";
     infot = 1;
     Chfrk("/", "U", "N", 0, 0, alpha, a, 1, beta, b);
     chkxer("Chfrk ", infot, nout, lerr, ok);

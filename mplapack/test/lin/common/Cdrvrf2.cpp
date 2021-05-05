@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,19 +27,27 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, INTEGER const lda, COMPLEX *arf, COMPLEX *ap, COMPLEX *asav) {
     FEM_CMN_SVE(Cdrvrf2);
+    nval([nn]);
+    a([lda * star]);
+    asav([lda * star]);
     common_write write(cmn);
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     // SAVE
+    str_arr_ref<1> forms(sve.forms, [2]);
+    INTEGER *iseedy(sve.iseedy, [4]);
+    str_arr_ref<1> uplos(sve.uplos, [2]);
     //
     if (is_called_first_time) {
         {
@@ -97,10 +105,10 @@ void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, IN
     INTEGER iin = 0;
     INTEGER n = 0;
     INTEGER iuplo = 0;
-    char[1] uplo;
+    char uplo;
     bool lower = false;
     INTEGER iform = 0;
-    char[1] cform;
+    char cform;
     INTEGER j = 0;
     bool ok1 = false;
     bool ok2 = false;
@@ -128,17 +136,14 @@ void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, IN
                 //
                 for (j = 1; j <= n; j = j + 1) {
                     for (i = 1; i <= n; i = i + 1) {
-                        a[(i - 1) + (j - 1) * lda] = zlarnd(4, iseed);
+                        a[(i - 1) + (j - 1) * lda] = Clarnd(4, iseed);
                     }
                 }
                 //
-                srnamt = "Ctrttf";
                 Ctrttf(cform, uplo, n, a, lda, arf, info);
                 //
-                srnamt = "Ctfttp";
                 Ctfttp(cform, uplo, n, arf, ap, info);
                 //
-                srnamt = "Ctpttr";
                 Ctpttr(uplo, n, ap, asav, lda, info);
                 //
                 ok1 = true;
@@ -162,13 +167,10 @@ void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, IN
                 //
                 nrun++;
                 //
-                srnamt = "Ctrttp";
                 Ctrttp(uplo, n, a, lda, ap, info);
                 //
-                srnamt = "Ctpttf";
                 Ctpttf(cform, uplo, n, ap, arf, info);
                 //
-                srnamt = "Ctfttr";
                 Ctfttr(cform, uplo, n, arf, asav, lda, info);
                 //
                 ok2 = true;

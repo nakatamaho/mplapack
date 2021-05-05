@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrunhr_col(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -91,7 +94,6 @@ void Cerrunhr_col(const char *path, INTEGER const nunit) {
     //
     //     Cunhr_col
     //
-    cmn.srnamt = "Cunhr_col";
     //
     infot = 1;
     INTEGER info = 0;

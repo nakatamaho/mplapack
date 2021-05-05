@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrab(INTEGER const nunit) {
     common_write write(cmn);
@@ -103,7 +106,6 @@ void Cerrab(INTEGER const nunit) {
     }
     ok = true;
     //
-    cmn.srnamt = "Ccgesv";
     infot = 1;
     COMPLEX work[1];
     std::complex<float> swork[1];

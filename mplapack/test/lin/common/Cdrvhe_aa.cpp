@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,18 +27,23 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-#include <mplapack_lin.h>
-#include <mplapack.h>
 
-void Cdrvhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+#include <mplapack_matgen.h>
+#include <mplapack_lin.h>
+
+void Cdrvhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const  /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Cdrvhe_aa);
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
     //
     const INTEGER nfact = 2;
+    str_arr_ref<1> facts(sve.facts, [nfact]);
+    INTEGER *iseedy(sve.iseedy, [4]);
+    str_arr_ref<1> uplos(sve.uplos, [2]);
     if (is_called_first_time) {
         {
             static const INTEGER values[] = {1988, 1989, 1990, 1991};
@@ -53,8 +58,8 @@ void Cdrvhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
             data_of_type_str(FEM_VALUES_AND_SIZE), facts;
         }
     }
-    char[3] path;
-    char[3] matpath;
+    char path[3];
+    char matpath[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -66,20 +71,20 @@ void Cdrvhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
     INTEGER n = 0;
     INTEGER lwork = 0;
     INTEGER lda = 0;
-    char[1] xtype;
+    char xtype;
     const INTEGER ntypes = 10;
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char[1] uplo;
-    char[1] type;
+    char uplo;
+    char type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
+    char dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
@@ -88,7 +93,7 @@ void Cdrvhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
     INTEGER i2 = 0;
     INTEGER i1 = 0;
     INTEGER ifact = 0;
-    char[1] fact;
+    char fact;
     INTEGER k = 0;
     const INTEGER ntests = 3;
     REAL result[ntests];
@@ -194,17 +199,16 @@ void Cdrvhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                 //              Begin generate the test matrix A.
                 //
                 //              Set up parameters with Clatb4 and generate a test matrix
-                //              with ZLATMS.
+                //              with Clatms.
                 //
                 Clatb4(matpath, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                srnamt = "ZLATMS";
-                zlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
+                Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
-                //              Check error code from ZLATMS.
+                //              Check error code from Clatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "ZLATMS", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_160;
                 }
                 //
@@ -288,7 +292,6 @@ void Cdrvhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                     //
                     //                 Form an exact solution and set the right hand side.
                     //
-                    srnamt = "Clarhs";
                     Clarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                     xtype = "C";
                     //
@@ -300,7 +303,6 @@ void Cdrvhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                         //
                         //                    Factor the matrix and solve the system using Chesv.
                         //
-                        srnamt = "Chesv_aa ";
                         Chesv_aa(uplo, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
                         //
                         //                    Adjust the expected value of INFO to account for

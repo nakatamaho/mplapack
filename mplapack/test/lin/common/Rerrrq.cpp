@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rerrrq(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -97,7 +99,6 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     //
     //     RgerQF
     //
-    srnamt = "RgerQF";
     infot = 1;
     INTEGER info = 0;
     Rgerqf(-1, 0, a, 1, b, w, 1, info);
@@ -114,7 +115,6 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     //
     //     RgerQ2
     //
-    srnamt = "RgerQ2";
     infot = 1;
     Rgerq2(-1, 0, a, 1, b, w, info);
     chkxer("RgerQ2", infot, nout, lerr, ok);
@@ -127,7 +127,6 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     //
     //     RgerQS
     //
-    srnamt = "RgerQS";
     infot = 1;
     Rgerqs(-1, 0, 0, a, 1, x, b, 1, w, 1, info);
     chkxer("RgerQS", infot, nout, lerr, ok);
@@ -152,7 +151,6 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     //
     //     Rorgrq
     //
-    srnamt = "Rorgrq";
     infot = 1;
     Rorgrq(-1, 0, 0, a, 1, x, w, 1, info);
     chkxer("Rorgrq", infot, nout, lerr, ok);
@@ -177,7 +175,6 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     //
     //     Rorgr2
     //
-    srnamt = "Rorgr2";
     infot = 1;
     Rorgr2(-1, 0, 0, a, 1, x, w, info);
     chkxer("Rorgr2", infot, nout, lerr, ok);
@@ -199,7 +196,6 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     //
     //     Rormrq
     //
-    srnamt = "Rormrq";
     infot = 1;
     Rormrq("/", "N", 0, 0, 0, a, 1, x, af, 1, w, 1, info);
     chkxer("Rormrq", infot, nout, lerr, ok);
@@ -239,7 +235,6 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     //
     //     Rormr2
     //
-    srnamt = "Rormr2";
     infot = 1;
     Rormr2("/", "N", 0, 0, 0, a, 1, x, af, 1, w, info);
     chkxer("Rormr2", infot, nout, lerr, ok);

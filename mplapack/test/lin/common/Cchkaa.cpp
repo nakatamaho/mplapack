@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,18 +27,21 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void program_Cchkaa(INTEGER argc, char const *argv[]) {
     common cmn(argc, argv);
     FEM_CMN_SVE(program_Cchkaa);
     common_read read(cmn);
     common_write write(cmn);
-    char[10] &intstr = sve.intstr;
+    char &intstr = sve.intstr;
     REAL &threq = sve.threq;
     if (is_called_first_time) {
         threq = 2.0;
@@ -77,18 +80,23 @@ void program_Cchkaa(INTEGER argc, char const *argv[]) {
     bool tsterr = false;
     REAL eps = 0.0;
     INTEGER nrhs = 0;
-    char[72] aline;
-    char[3] path;
+    char aline[72];
+    char path[3];
     const INTEGER matmax = 30;
     INTEGER nmats = 0;
-    char[1] c1;
+    char c1;
     INTEGER k = 0;
     INTEGER ic = 0;
-    char[2] c2;
+    char c2[2];
     INTEGER ntypes = 0;
     bool dotype[matmax];
     const INTEGER kdmax = nmax + (nmax + 1) / 4;
-    fill0);
+    COMPLEX a[(kdmax + 1) * nmax * 7];
+    COMPLEX b[nmax * maxrhs * 4];
+    COMPLEX work[nmax * nmax + maxrhs + 10];
+    REAL rwork[150 * nmax + 2 * maxrhs];
+    INTEGER iwork[25 * nmax];
+    REAL s[2 * nmax];
     INTEGER la = 0;
     INTEGER lafac = 0;
     INTEGER piv[nmax];
@@ -405,7 +413,7 @@ statement_80:
     //
     try {
         read(nin, "(a72)"), aline;
-    } catch (read_end const) {
+    } catch (read_end const ) {
         goto statement_140;
     }
     path = aline[(3 - 1) * ldaline];

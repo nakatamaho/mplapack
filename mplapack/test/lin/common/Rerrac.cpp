@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rerrac(INTEGER const nunit) {
     common_write write(cmn);
@@ -99,7 +102,6 @@ void Rerrac(INTEGER const nunit) {
     }
     ok = true;
     //
-    cmn.srnamt = "Rsposv";
     infot = 1;
     REAL work[nmax * nmax];
     float swork[nmax * nmax];

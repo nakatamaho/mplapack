@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,18 +27,22 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *afac, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Rdrvsp);
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
     //
     const INTEGER nfact = 2;
+    str_arr_ref<1> facts(sve.facts, [nfact]);
+    INTEGER *iseedy(sve.iseedy, [4]);
     if (is_called_first_time) {
         {
             static const INTEGER values[] = {1988, 1989, 1990, 1991};
@@ -49,7 +53,7 @@ void Rdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             data_of_type_str(FEM_VALUES_AND_SIZE), facts;
         }
     }
-    char[3] path;
+    char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -60,21 +64,21 @@ void Rdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER n = 0;
     INTEGER lda = 0;
     INTEGER npp = 0;
-    char[1] xtype;
+    char xtype;
     const INTEGER ntypes = 10;
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char[1] uplo;
-    char[1] packit;
-    char[1] type;
+    char uplo;
+    char packit;
+    char type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
+    char dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
@@ -83,7 +87,7 @@ void Rdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER i2 = 0;
     INTEGER i1 = 0;
     INTEGER ifact = 0;
-    char[1] fact;
+    char fact;
     REAL rcondc = 0.0;
     REAL ainvnm = 0.0;
     const REAL one = 1.0;
@@ -183,17 +187,16 @@ void Rdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 }
                 //
                 //              Set up parameters with Rlatb4 and generate a test matrix
-                //              with DLATMS.
+                //              with Rlatms.
                 //
                 Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                srnamt = "DLATMS";
-                dlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, packit, a, lda, work, info);
+                Rlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, packit, a, lda, work, info);
                 //
-                //              Check error code from DLATMS.
+                //              Check error code from Rlatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "DLATMS", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rlatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_160;
                 }
                 //
@@ -307,7 +310,6 @@ void Rdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     //                 Form an exact solution and set the right hand side.
                     //
-                    srnamt = "Rlarhs";
                     Rlarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                     xtype = "C";
                     //
@@ -319,7 +321,6 @@ void Rdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         //                    Factor the matrix and solve the system using Rspsv.
                         //
-                        srnamt = "Rspsv ";
                         Rspsv(uplo, n, nrhs, afac, iwork, x, lda, info);
                         //
                         //                    Adjust the expected value of INFO to account for
@@ -391,7 +392,6 @@ void Rdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //                 Solve the system and compute the condition number and
                     //                 error bounds using Rspsvx.
                     //
-                    srnamt = "Rspsvx";
                     Rspsvx(fact, uplo, n, nrhs, a, afac, iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                     //
                     //                 Adjust the expected value of INFO to account for

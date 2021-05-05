@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrsy(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -73,7 +75,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     //
     //     Set the variables to innocuous values.
     //
@@ -111,7 +113,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
     REAL r[nmax];
     INTEGER n_err_bnds = 0;
     INTEGER nparams = 0;
-    char[1] eq;
+    char eq;
     REAL rcond = 0.0;
     REAL berr = 0.0;
     REAL err_bnds_n[nmax * 3];
@@ -125,7 +127,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csytrf
         //
-        srnamt = "Csytrf";
         infot = 1;
         Csytrf("/", 0, a, 1, ip, w, 1, info);
         chkxer("Csytrf", infot, nout, lerr, ok);
@@ -144,7 +145,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csytf2
         //
-        srnamt = "Csytf2";
         infot = 1;
         Csytf2("/", 0, a, 1, ip, info);
         chkxer("Csytf2", infot, nout, lerr, ok);
@@ -157,7 +157,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csytri
         //
-        srnamt = "Csytri";
         infot = 1;
         Csytri("/", 0, a, 1, ip, w, info);
         chkxer("Csytri", infot, nout, lerr, ok);
@@ -170,7 +169,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csytri2
         //
-        srnamt = "Csytri2";
         infot = 1;
         Csytri2("/", 0, a, 1, ip, w, 1, info);
         chkxer("Csytri2", infot, nout, lerr, ok);
@@ -183,7 +181,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csytri2x
         //
-        srnamt = "Csytri2x";
         infot = 1;
         Csytri2x("/", 0, a, 1, ip, w, 1, info);
         chkxer("Csytri2x", infot, nout, lerr, ok);
@@ -196,7 +193,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csytrs
         //
-        srnamt = "Csytrs";
         infot = 1;
         Csytrs("/", 0, 0, a, 1, ip, b, 1, info);
         chkxer("Csytrs", infot, nout, lerr, ok);
@@ -215,7 +211,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csyrfs
         //
-        srnamt = "Csyrfs";
         infot = 1;
         Csyrfs("/", 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, r, info);
         chkxer("Csyrfs", infot, nout, lerr, ok);
@@ -242,7 +237,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         n_err_bnds = 3;
         nparams = 0;
-        srnamt = "Csyrfsx";
         infot = 1;
         Csyrfsx("/", eq, 0, 0, a, 1, af, 1, ip, s, b, 1, x, 1, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
         chkxer("Csyrfsx", infot, nout, lerr, ok);
@@ -271,7 +265,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csycon
         //
-        srnamt = "Csycon";
         infot = 1;
         Csycon("/", 0, a, 1, ip, anrm, rcond, w, info);
         chkxer("Csycon", infot, nout, lerr, ok);
@@ -293,7 +286,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csytrf_rook
         //
-        srnamt = "Csytrf_rook";
         infot = 1;
         Csytrf_rook("/", 0, a, 1, ip, w, 1, info);
         chkxer("Csytrf_rook", infot, nout, lerr, ok);
@@ -312,7 +304,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csytf2_rook
         //
-        srnamt = "Csytf2_rook";
         infot = 1;
         Csytf2_rook("/", 0, a, 1, ip, info);
         chkxer("Csytf2_rook", infot, nout, lerr, ok);
@@ -325,7 +316,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csytri_rook
         //
-        srnamt = "Csytri_rook";
         infot = 1;
         Csytri_rook("/", 0, a, 1, ip, w, info);
         chkxer("Csytri_rook", infot, nout, lerr, ok);
@@ -338,7 +328,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csytrs_rook
         //
-        srnamt = "Csytrs_rook";
         infot = 1;
         Csytrs_rook("/", 0, 0, a, 1, ip, b, 1, info);
         chkxer("Csytrs_rook", infot, nout, lerr, ok);
@@ -357,7 +346,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csycon_rook
         //
-        srnamt = "Csycon_rook";
         infot = 1;
         Csycon_rook("/", 0, a, 1, ip, anrm, rcond, w, info);
         chkxer("Csycon_rook", infot, nout, lerr, ok);
@@ -383,7 +371,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csytrf_rk
         //
-        srnamt = "Csytrf_rk";
         infot = 1;
         Csytrf_rk("/", 0, a, 1, e, ip, w, 1, info);
         chkxer("Csytrf_rk", infot, nout, lerr, ok);
@@ -402,7 +389,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csytf2_rk
         //
-        srnamt = "Csytf2_rk";
         infot = 1;
         Csytf2_rk("/", 0, a, 1, e, ip, info);
         chkxer("Csytf2_rk", infot, nout, lerr, ok);
@@ -415,7 +401,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csytri_3
         //
-        srnamt = "Csytri_3";
         infot = 1;
         Csytri_3("/", 0, a, 1, e, ip, w, 1, info);
         chkxer("Csytri_3", infot, nout, lerr, ok);
@@ -434,7 +419,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csytri_3x
         //
-        srnamt = "Csytri_3x";
         infot = 1;
         Csytri_3x("/", 0, a, 1, e, ip, w, 1, info);
         chkxer("Csytri_3x", infot, nout, lerr, ok);
@@ -447,7 +431,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csytrs_3
         //
-        srnamt = "Csytrs_3";
         infot = 1;
         Csytrs_3("/", 0, 0, a, 1, e, ip, b, 1, info);
         chkxer("Csytrs_3", infot, nout, lerr, ok);
@@ -466,7 +449,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csycon_3
         //
-        srnamt = "Csycon_3";
         infot = 1;
         Csycon_3("/", 0, a, 1, e, ip, anrm, rcond, w, info);
         chkxer("Csycon_3", infot, nout, lerr, ok);
@@ -488,7 +470,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csptrf
         //
-        srnamt = "Csptrf";
         infot = 1;
         Csptrf("/", 0, a, ip, info);
         chkxer("Csptrf", infot, nout, lerr, ok);
@@ -498,7 +479,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csptri
         //
-        srnamt = "Csptri";
         infot = 1;
         Csptri("/", 0, a, ip, w, info);
         chkxer("Csptri", infot, nout, lerr, ok);
@@ -508,7 +488,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csptrs
         //
-        srnamt = "Csptrs";
         infot = 1;
         Csptrs("/", 0, 0, a, ip, b, 1, info);
         chkxer("Csptrs", infot, nout, lerr, ok);
@@ -524,7 +503,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Csprfs
         //
-        srnamt = "Csprfs";
         infot = 1;
         Csprfs("/", 0, 0, a, af, ip, b, 1, x, 1, r1, r2, w, r, info);
         chkxer("Csprfs", infot, nout, lerr, ok);
@@ -543,7 +521,6 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
         //        Cspcon
         //
-        srnamt = "Cspcon";
         infot = 1;
         Cspcon("/", 0, a, ip, anrm, rcond, w, info);
         chkxer("Cspcon", infot, nout, lerr, ok);

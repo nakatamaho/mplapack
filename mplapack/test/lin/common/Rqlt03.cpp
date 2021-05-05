@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,18 +27,26 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rqlt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c, REAL *cc, REAL *q, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     FEM_CMN_SVE(Rqlt03);
+    af([lda * star]);
+    c([lda * star]);
+    cc([lda * star]);
+    q([lda * star]);
+    work([lwork]);
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     // SAVE
+    INTEGER *iseed(sve.iseed, [4]);
     //
     if (is_called_first_time) {
         static const INTEGER values[] = {1988, 1989, 1990, 1991};
@@ -103,19 +111,18 @@ void Rqlt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
     //
     //     Generate the m-by-m matrix Q
     //
-    srnamt = "Rorgql";
     INTEGER info = 0;
     Rorgql(m, m, k, q, lda, &tau[(minmn - k + 1) - 1], work, lwork, info);
     //
     INTEGER iside = 0;
-    char[1] side;
+    char side;
     INTEGER mc = 0;
     INTEGER nc = 0;
     INTEGER j = 0;
     REAL cnorm = 0.0;
     const REAL one = 1.0;
     INTEGER itrans = 0;
-    char[1] trans;
+    char trans;
     REAL resid = 0.0;
     for (iside = 1; iside <= 2; iside = iside + 1) {
         if (iside == 1) {
@@ -151,7 +158,6 @@ void Rqlt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
             //
             //           Apply Q or Q' to C
             //
-            srnamt = "Rormql";
             if (k > 0) {
                 Rormql(side, trans, mc, nc, k, af[((n - k + 1) - 1) * ldaf], lda, &tau[(minmn - k + 1) - 1], cc, lda, work, lwork, info);
             }

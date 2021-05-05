@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Clatsp(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER *iseed) {
     //
@@ -84,21 +87,21 @@ void Clatsp(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER *iseed) {
         //
         jj = n * (n + 1) / 2;
         for (j = n; j >= n5; j = j - 5) {
-            a = alpha3 * zlarnd(5, iseed);
-            b = zlarnd(5, iseed) / alpha;
+            a = alpha3 * Clarnd(5, iseed);
+            b = Clarnd(5, iseed) / alpha;
             c = a - 2.0 * b * eye;
             r = c / beta;
             x[jj - 1] = a;
             x[(jj - 2) - 1] = b;
             jj = jj - j;
-            x[jj - 1] = zlarnd(2, iseed);
+            x[jj - 1] = Clarnd(2, iseed);
             x[(jj - 1) - 1] = r;
             jj = jj - (j - 1);
             x[jj - 1] = c;
             jj = jj - (j - 2);
-            x[jj - 1] = zlarnd(2, iseed);
+            x[jj - 1] = Clarnd(2, iseed);
             jj = jj - (j - 3);
-            x[jj - 1] = zlarnd(2, iseed);
+            x[jj - 1] = Clarnd(2, iseed);
             if (abs(x[(jj + (j - 3)) - 1]) > abs(x[jj - 1])) {
                 x[(jj + (j - 4)) - 1] = 2.0 * x[(jj + (j - 3)) - 1];
             } else {
@@ -111,14 +114,14 @@ void Clatsp(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER *iseed) {
         //
         j = n5 - 1;
         if (j > 2) {
-            a = alpha3 * zlarnd(5, iseed);
-            b = zlarnd(5, iseed) / alpha;
+            a = alpha3 * Clarnd(5, iseed);
+            b = Clarnd(5, iseed) / alpha;
             c = a - 2.0 * b * eye;
             r = c / beta;
             x[jj - 1] = a;
             x[(jj - 2) - 1] = b;
             jj = jj - j;
-            x[jj - 1] = zlarnd(2, iseed);
+            x[jj - 1] = Clarnd(2, iseed);
             x[(jj - 1) - 1] = r;
             jj = jj - (j - 1);
             x[jj - 1] = c;
@@ -126,8 +129,8 @@ void Clatsp(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER *iseed) {
             j = j - 3;
         }
         if (j > 1) {
-            x[jj - 1] = zlarnd(2, iseed);
-            x[(jj - j) - 1] = zlarnd(2, iseed);
+            x[jj - 1] = Clarnd(2, iseed);
+            x[(jj - j) - 1] = Clarnd(2, iseed);
             if (abs(x[jj - 1]) > abs(x[(jj - j) - 1])) {
                 x[(jj - 1) - 1] = 2.0 * x[jj - 1];
             } else {
@@ -136,7 +139,7 @@ void Clatsp(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER *iseed) {
             jj = jj - j - (j - 1);
             j = j - 2;
         } else if (j == 1) {
-            x[jj - 1] = zlarnd(2, iseed);
+            x[jj - 1] = Clarnd(2, iseed);
             j = j - 1;
         }
         //
@@ -148,21 +151,21 @@ void Clatsp(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER *iseed) {
         //
         jj = 1;
         for (j = 1; j <= n5; j = j + 5) {
-            a = alpha3 * zlarnd(5, iseed);
-            b = zlarnd(5, iseed) / alpha;
+            a = alpha3 * Clarnd(5, iseed);
+            b = Clarnd(5, iseed) / alpha;
             c = a - 2.0 * b * eye;
             r = c / beta;
             x[jj - 1] = a;
             x[(jj + 2) - 1] = b;
             jj += (n - j + 1);
-            x[jj - 1] = zlarnd(2, iseed);
+            x[jj - 1] = Clarnd(2, iseed);
             x[(jj + 1) - 1] = r;
             jj += (n - j);
             x[jj - 1] = c;
             jj += (n - j - 1);
-            x[jj - 1] = zlarnd(2, iseed);
+            x[jj - 1] = Clarnd(2, iseed);
             jj += (n - j - 2);
-            x[jj - 1] = zlarnd(2, iseed);
+            x[jj - 1] = Clarnd(2, iseed);
             if (abs(x[(jj - (n - j - 2)) - 1]) > abs(x[jj - 1])) {
                 x[(jj - (n - j - 2) + 1) - 1] = 2.0 * x[(jj - (n - j - 2)) - 1];
             } else {
@@ -175,14 +178,14 @@ void Clatsp(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER *iseed) {
         //
         j = n5 + 1;
         if (j < n - 1) {
-            a = alpha3 * zlarnd(5, iseed);
-            b = zlarnd(5, iseed) / alpha;
+            a = alpha3 * Clarnd(5, iseed);
+            b = Clarnd(5, iseed) / alpha;
             c = a - 2.0 * b * eye;
             r = c / beta;
             x[jj - 1] = a;
             x[(jj + 2) - 1] = b;
             jj += (n - j + 1);
-            x[jj - 1] = zlarnd(2, iseed);
+            x[jj - 1] = Clarnd(2, iseed);
             x[(jj + 1) - 1] = r;
             jj += (n - j);
             x[jj - 1] = c;
@@ -190,8 +193,8 @@ void Clatsp(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER *iseed) {
             j += 3;
         }
         if (j < n) {
-            x[jj - 1] = zlarnd(2, iseed);
-            x[(jj + (n - j + 1)) - 1] = zlarnd(2, iseed);
+            x[jj - 1] = Clarnd(2, iseed);
+            x[(jj + (n - j + 1)) - 1] = Clarnd(2, iseed);
             if (abs(x[jj - 1]) > abs(x[(jj + (n - j + 1)) - 1])) {
                 x[(jj + 1) - 1] = 2.0 * x[jj - 1];
             } else {
@@ -200,7 +203,7 @@ void Clatsp(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER *iseed) {
             jj += (n - j + 1) + (n - j);
             j += 2;
         } else if (j == n) {
-            x[jj - 1] = zlarnd(2, iseed);
+            x[jj - 1] = Clarnd(2, iseed);
             jj += (n - j + 1);
             j++;
         }

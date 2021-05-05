@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rerrqrtp(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Rerrqrtp(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -95,7 +97,6 @@ void Rerrqrtp(const char *path, INTEGER const nunit) {
     //
     //     Rtpqrt
     //
-    srnamt = "Rtpqrt";
     infot = 1;
     REAL b[nmax * nmax];
     INTEGER info = 0;
@@ -128,7 +129,6 @@ void Rerrqrtp(const char *path, INTEGER const nunit) {
     //
     //     Rtpqrt2
     //
-    srnamt = "Rtpqrt2";
     infot = 1;
     Rtpqrt2(-1, 0, 0, a, 1, b, 1, t, 1, info);
     chkxer("Rtpqrt2", infot, nout, lerr, ok);
@@ -150,7 +150,6 @@ void Rerrqrtp(const char *path, INTEGER const nunit) {
     //
     //     Rtpmqrt
     //
-    srnamt = "Rtpmqrt";
     infot = 1;
     Rtpmqrt("/", "N", 0, 0, 0, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
     chkxer("Rtpmqrt", infot, nout, lerr, ok);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,17 +27,25 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-#include <mplapack_lin.h>
-#include <mplapack.h>
 
-void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, INTEGER const nnt, INTEGER *ntval, REAL const thresh, COMPLEX *a, COMPLEX *asav, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *bsav, COMPLEX *xact, COMPLEX *x, COMPLEX *arf, COMPLEX *arfinv, COMPLEX *z_work_zlatms, COMPLEX *z_work_Cpot02, COMPLEX *z_work_Cpot03, REAL *d_work_zlatms, REAL *d_work_Clanhe, REAL *d_work_Cpot01, REAL *d_work_Cpot02, REAL *d_work_Cpot03) {
+#include <mplapack_matgen.h>
+#include <mplapack_lin.h>
+
+void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, INTEGER const nnt, INTEGER *ntval, REAL const thresh, COMPLEX *a, COMPLEX *asav, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *bsav, COMPLEX *xact, COMPLEX *x, COMPLEX *arf, COMPLEX *arfinv, COMPLEX *z_work_Clatms, COMPLEX *z_work_Cpot02, COMPLEX *z_work_Cpot03, REAL *d_work_Clatms, REAL *d_work_Clanhe, REAL *d_work_Cpot01, REAL *d_work_Cpot02, REAL *d_work_Cpot03) {
     FEM_CMN_SVE(Cdrvrfp);
+    nval([nn]);
+    nsval([nns]);
+    ntval([nnt]);
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
     //
+    str_arr_ref<1> forms(sve.forms, [2]);
+    INTEGER *iseedy(sve.iseedy, [4]);
+    str_arr_ref<1> uplos(sve.uplos, [2]);
     if (is_called_first_time) {
         {
             static const INTEGER values[] = {1988, 1989, 1990, 1991};
@@ -66,16 +74,16 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
     INTEGER iit = 0;
     INTEGER imat = 0;
     INTEGER iuplo = 0;
-    char[1] uplo;
+    char uplo;
     INTEGER iform = 0;
-    char[1] cform;
-    char[1] ctype;
+    char cform;
+    char ctype;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
+    char dist;
     INTEGER info = 0;
     bool zerot = false;
     INTEGER izero = 0;
@@ -167,17 +175,16 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         cform = forms[iform - 1];
                         //
                         //                    Set up parameters with Clatb4 and generate a test
-                        //                    matrix with ZLATMS.
+                        //                    matrix with Clatms.
                         //
                         Clatb4("ZPO", imat, n, n, ctype, kl, ku, anorm, mode, cndnum, dist);
                         //
-                        srnamt = "ZLATMS";
-                        zlatms(n, n, dist, iseed, ctype, d_work_zlatms, mode, cndnum, anorm, kl, ku, uplo, a, lda, z_work_zlatms, info);
+                        Clatms(n, n, dist, iseed, ctype, d_work_Clatms, mode, cndnum, anorm, kl, ku, uplo, a, lda, z_work_Clatms, info);
                         //
-                        //                    Check error code from ZLATMS.
+                        //                    Check error code from Clatms.
                         //
                         if (info != 0) {
-                            Alaerh("ZPF", "ZLATMS", info, 0, uplo, n, n, -1, -1, -1, iit, nfail, nerrs, nout);
+                            Alaerh("ZPF", "Clatms", info, 0, uplo, n, n, -1, -1, -1, iit, nfail, nerrs, nout);
                             goto statement_100;
                         }
                         //
@@ -263,7 +270,6 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         //
                         //                    Form an exact solution and set the right hand side.
                         //
-                        srnamt = "Clarhs";
                         Clarhs("ZPO", "N", uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, bsav, lda);
                         //
@@ -273,9 +279,7 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         Clacpy(uplo, n, n, a, lda, afac, lda);
                         Clacpy("Full", n, nrhs, b, ldb, x, ldb);
                         //
-                        srnamt = "Ctrttf";
                         Ctrttf(cform, uplo, n, afac, lda, arf, info);
-                        srnamt = "Cpftrf";
                         Cpftrf(cform, uplo, n, arf, info);
                         //
                         //                    Check error code from Cpftrf.
@@ -296,10 +300,8 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             goto statement_100;
                         }
                         //
-                        srnamt = "Cpftrs";
                         Cpftrs(cform, uplo, n, nrhs, arf, x, ldb, info);
                         //
-                        srnamt = "Ctfttr";
                         Ctfttr(cform, uplo, n, arf, afac, lda, info);
                         //
                         //                    Reconstruct matrix from factors and compute
@@ -317,10 +319,8 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             Clacpy("A", n, (n + 1) / 2, arf, n, arfinv, n);
                         }
                         //
-                        srnamt = "Cpftri";
                         Cpftri(cform, uplo, n, arfinv, info);
                         //
-                        srnamt = "Ctfttr";
                         Ctfttr(cform, uplo, n, arfinv, ainv, lda, info);
                         //
                         //                    Check error code from Cpftri.

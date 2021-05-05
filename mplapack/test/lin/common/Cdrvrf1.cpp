@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,17 +27,25 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, COMPLEX *a, INTEGER const lda, COMPLEX *arf, REAL *work) {
     FEM_CMN_SVE(Cdrvrf1);
+    nval([nn]);
+    a([lda * star]);
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
     //
+    str_arr_ref<1> forms(sve.forms, [2]);
+    INTEGER *iseedy(sve.iseedy, [4]);
+    str_arr_ref<1> norms(sve.norms, [4]);
+    str_arr_ref<1> uplos(sve.uplos, [2]);
     if (is_called_first_time) {
         {
             static const INTEGER values[] = {1988, 1989, 1990, 1991};
@@ -71,11 +79,11 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     INTEGER iit = 0;
     INTEGER j = 0;
     INTEGER iuplo = 0;
-    char[1] uplo;
+    char uplo;
     INTEGER iform = 0;
-    char[1] cform;
+    char cform;
     INTEGER inorm = 0;
-    char[1] norm;
+    char norm;
     REAL normarf = 0.0;
     REAL norma = 0.0;
     const INTEGER ntests = 1;
@@ -143,7 +151,7 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
             //
             for (j = 1; j <= n; j = j + 1) {
                 for (i = 1; i <= n; i = i + 1) {
-                    a[(i - 1) + (j - 1) * lda] = zlarnd(4, iseed);
+                    a[(i - 1) + (j - 1) * lda] = Clarnd(4, iseed);
                 }
             }
             //
@@ -175,7 +183,6 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                     //
                     cform = forms[iform - 1];
                     //
-                    srnamt = "Ctrttf";
                     Ctrttf(cform, uplo, n, a, lda, arf, info);
                     //
                     //                 Check error code from Ctrttf

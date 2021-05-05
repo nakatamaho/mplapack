@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrrq(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Cerrrq(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -97,7 +99,6 @@ void Cerrrq(const char *path, INTEGER const nunit) {
     //
     //     Cgerqf
     //
-    srnamt = "Cgerqf";
     infot = 1;
     INTEGER info = 0;
     Cgerqf(-1, 0, a, 1, b, w, 1, info);
@@ -114,7 +115,6 @@ void Cerrrq(const char *path, INTEGER const nunit) {
     //
     //     Cgerq2
     //
-    srnamt = "Cgerq2";
     infot = 1;
     Cgerq2(-1, 0, a, 1, b, w, info);
     chkxer("Cgerq2", infot, nout, lerr, ok);
@@ -127,7 +127,6 @@ void Cerrrq(const char *path, INTEGER const nunit) {
     //
     //     Cgerqs
     //
-    srnamt = "Cgerqs";
     infot = 1;
     Cgerqs(-1, 0, 0, a, 1, x, b, 1, w, 1, info);
     chkxer("Cgerqs", infot, nout, lerr, ok);
@@ -152,7 +151,6 @@ void Cerrrq(const char *path, INTEGER const nunit) {
     //
     //     Cungrq
     //
-    srnamt = "Cungrq";
     infot = 1;
     Cungrq(-1, 0, 0, a, 1, x, w, 1, info);
     chkxer("Cungrq", infot, nout, lerr, ok);
@@ -177,7 +175,6 @@ void Cerrrq(const char *path, INTEGER const nunit) {
     //
     //     Cungr2
     //
-    srnamt = "Cungr2";
     infot = 1;
     Cungr2(-1, 0, 0, a, 1, x, w, info);
     chkxer("Cungr2", infot, nout, lerr, ok);
@@ -199,7 +196,6 @@ void Cerrrq(const char *path, INTEGER const nunit) {
     //
     //     Cunmrq
     //
-    srnamt = "Cunmrq";
     infot = 1;
     Cunmrq("/", "N", 0, 0, 0, a, 1, x, af, 1, w, 1, info);
     chkxer("Cunmrq", infot, nout, lerr, ok);
@@ -239,7 +235,6 @@ void Cerrrq(const char *path, INTEGER const nunit) {
     //
     //     Cunmr2
     //
-    srnamt = "Cunmr2";
     infot = 1;
     Cunmr2("/", "N", 0, 0, 0, a, 1, x, af, 1, w, info);
     chkxer("Cunmr2", infot, nout, lerr, ok);

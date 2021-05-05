@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,17 +27,21 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, REAL *a, REAL *af, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Rchkgt);
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
     //
+    INTEGER *iseedy(sve.iseedy, [4]);
+    str_arr_ref<1> transs(sve.transs, [3]);
     if (is_called_first_time) {
         {
             static const INTEGER values[] = {0, 0, 0, 1};
@@ -48,7 +52,7 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             data_of_type_str(FEM_VALUES_AND_SIZE), transs;
         }
     }
-    char[3] path;
+    char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -61,13 +65,13 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     const INTEGER ntypes = 12;
     INTEGER nimat = 0;
     INTEGER imat = 0;
-    char[1] type;
+    char type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cond = 0.0;
-    char[1] dist;
+    char dist;
     bool zerot = false;
     INTEGER koff = 0;
     INTEGER info = 0;
@@ -79,8 +83,8 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     const INTEGER ntests = 7;
     REAL result[ntests];
     INTEGER itran = 0;
-    char[1] trans;
-    char[1] norm;
+    char trans;
+    char norm;
     REAL ainvnm = 0.0;
     INTEGER j = 0;
     REAL rcondc = 0.0;
@@ -169,13 +173,12 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //              Types 1-6:  generate matrices of known condition number.
                 //
                 koff = max({(INTEGER)2 - ku, 3 - max((INTEGER)1, n)});
-                srnamt = "DLATMS";
-                dlatms(n, n, dist, iseed, type, rwork, mode, cond, anorm, kl, ku, "Z", af[koff - 1], 3, work, info);
+                Rlatms(n, n, dist, iseed, type, rwork, mode, cond, anorm, kl, ku, "Z", af[koff - 1], 3, work, info);
                 //
-                //              Check the error code from DLATMS.
+                //              Check the error code from Rlatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "DLATMS", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rlatms", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                     goto statement_100;
                 }
                 izero = 0;
@@ -253,7 +256,6 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //              norm(L*U - A) / (n * norm(A) * EPS )
             //
             Rcopy(n + 2 * m, a, 1, af, 1);
-            srnamt = "Rgttrf";
             Rgttrf(n, af, af[(m + 1) - 1], af[(n + m + 1) - 1], af[(n + 2 * m + 1) - 1], iwork, info);
             //
             //           Check error code from Rgttrf.
@@ -321,7 +323,6 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //              Estimate the reciprocal of the condition number of the
                 //              matrix.
                 //
-                srnamt = "Rgtcon";
                 Rgtcon(norm, n, af, af[(m + 1) - 1], af[(n + m + 1) - 1], af[(n + 2 * m + 1) - 1], iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);
                 //
                 //              Check error code from Rgtcon.
@@ -379,7 +380,6 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //                 Solve op(A) * X = B and compute the residual.
                     //
                     Rlacpy("Full", n, nrhs, b, lda, x, lda);
-                    srnamt = "Rgttrs";
                     Rgttrs(trans, n, nrhs, af, af[(m + 1) - 1], af[(n + m + 1) - 1], af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
                     //
                     //                 Check error code from Rgttrs.
@@ -399,7 +399,6 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //+    TESTS 4, 5, and 6
                     //                 Use iterative refinement to improve the solution.
                     //
-                    srnamt = "Rgtrfs";
                     Rgtrfs(trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, af[(m + 1) - 1], af[(n + m + 1) - 1], af[(n + 2 * m + 1) - 1], iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                     //
                     //                 Check error code from Rgtrfs.

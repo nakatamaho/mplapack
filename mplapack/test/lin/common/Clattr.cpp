@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,13 +27,18 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag, INTEGER *iseed, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *work, REAL *rwork, INTEGER &info) {
+    iseed([4]);
+    a([lda * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -58,7 +63,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //     ..
     //     .. Executable Statements ..
     //
-    char[3] path = "Zomplex precision";
+    char path[3] = "Zomplex precision";
     path[(2 - 1) + (3 - 1) * ldpath] = "TR";
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
@@ -82,13 +87,13 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //     Call Clatb4 to set parameters for CLATMS.
     //
     bool upper = Mlsame(uplo, "U");
-    char[1] type;
+    char type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
+    char dist;
     if (upper) {
         Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
     } else {
@@ -121,7 +126,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL texp = 0.0;
     REAL tleft = 0.0;
     if (imat <= 6) {
-        zlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
+        Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
         //
         //     IMAT > 6:  Unit triangular matrix
         //     The diagonal is deliberately set to something other than 1.
@@ -226,9 +231,9 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
         //        where c = w / sqrt(w**2+4) and s = 2 / sqrt(w**2+4).
         //
-        star1 = 0.25e0 * zlarnd(5, iseed);
+        star1 = 0.25e0 * Clarnd(5, iseed);
         sfac = 0.5e0;
-        plus1 = sfac * zlarnd(5, iseed);
+        plus1 = sfac * Clarnd(5, iseed);
         for (j = 1; j <= n; j = j + 2) {
             plus2 = star1 / plus1;
             work[j - 1] = plus1;
@@ -237,11 +242,11 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 work[(j + 1) - 1] = plus2;
                 work[(n + j + 1) - 1] = zero;
                 plus1 = star1 / plus2;
-                rexp = dlarnd(2, iseed);
+                rexp = Rlarnd(2, iseed);
                 if (rexp < zero) {
-                    star1 = -pow(sfac, [(one - rexp) - 1]) * zlarnd(5, iseed);
+                    star1 = -pow(sfac, [(one - rexp) - 1]) * Clarnd(5, iseed);
                 } else {
-                    star1 = pow(sfac, [(one + rexp) - 1]) * zlarnd(5, iseed);
+                    star1 = pow(sfac, [(one + rexp) - 1]) * Clarnd(5, iseed);
                 }
             }
         }
@@ -342,14 +347,14 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
                 Clarnv(4, iseed, j - 1, &a[(j - 1) * lda]);
-                a[(j - 1) + (j - 1) * lda] = zlarnd(5, iseed) * two;
+                a[(j - 1) + (j - 1) * lda] = Clarnd(5, iseed) * two;
             }
         } else {
             for (j = 1; j <= n; j = j + 1) {
                 if (j < n) {
                     Clarnv(4, iseed, n - j, &a[((j + 1) - 1) + (j - 1) * lda]);
                 }
-                a[(j - 1) + (j - 1) * lda] = zlarnd(5, iseed) * two;
+                a[(j - 1) + (j - 1) * lda] = Clarnd(5, iseed) * two;
             }
         }
         //
@@ -373,7 +378,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             for (j = 1; j <= n; j = j + 1) {
                 Clarnv(4, iseed, j - 1, &a[(j - 1) * lda]);
                 CRscal(j - 1, tscal, &a[(j - 1) * lda], 1);
-                a[(j - 1) + (j - 1) * lda] = zlarnd(5, iseed);
+                a[(j - 1) + (j - 1) * lda] = Clarnd(5, iseed);
             }
             a[(n - 1) + (n - 1) * lda] = smlnum * a[(n - 1) + (n - 1) * lda];
         } else {
@@ -382,7 +387,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                     Clarnv(4, iseed, n - j, &a[((j + 1) - 1) + (j - 1) * lda]);
                     CRscal(n - j, tscal, &a[((j + 1) - 1) + (j - 1) * lda], 1);
                 }
-                a[(j - 1) + (j - 1) * lda] = zlarnd(5, iseed);
+                a[(j - 1) + (j - 1) * lda] = Clarnd(5, iseed);
             }
             a[(1 - 1)] = smlnum * a[(1 - 1)];
         }
@@ -397,7 +402,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
                 Clarnv(4, iseed, j - 1, &a[(j - 1) * lda]);
-                a[(j - 1) + (j - 1) * lda] = zlarnd(5, iseed);
+                a[(j - 1) + (j - 1) * lda] = Clarnd(5, iseed);
             }
             a[(n - 1) + (n - 1) * lda] = smlnum * a[(n - 1) + (n - 1) * lda];
         } else {
@@ -405,7 +410,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 if (j < n) {
                     Clarnv(4, iseed, n - j, &a[((j + 1) - 1) + (j - 1) * lda]);
                 }
-                a[(j - 1) + (j - 1) * lda] = zlarnd(5, iseed);
+                a[(j - 1) + (j - 1) * lda] = Clarnd(5, iseed);
             }
             a[(1 - 1)] = smlnum * a[(1 - 1)];
         }
@@ -423,9 +428,9 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                     a[(i - 1) + (j - 1) * lda] = zero;
                 }
                 if (jcount <= 2) {
-                    a[(j - 1) + (j - 1) * lda] = smlnum * zlarnd(5, iseed);
+                    a[(j - 1) + (j - 1) * lda] = smlnum * Clarnd(5, iseed);
                 } else {
-                    a[(j - 1) + (j - 1) * lda] = zlarnd(5, iseed);
+                    a[(j - 1) + (j - 1) * lda] = Clarnd(5, iseed);
                 }
                 jcount++;
                 if (jcount > 4) {
@@ -439,9 +444,9 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                     a[(i - 1) + (j - 1) * lda] = zero;
                 }
                 if (jcount <= 2) {
-                    a[(j - 1) + (j - 1) * lda] = smlnum * zlarnd(5, iseed);
+                    a[(j - 1) + (j - 1) * lda] = smlnum * Clarnd(5, iseed);
                 } else {
-                    a[(j - 1) + (j - 1) * lda] = zlarnd(5, iseed);
+                    a[(j - 1) + (j - 1) * lda] = Clarnd(5, iseed);
                 }
                 jcount++;
                 if (jcount > 4) {
@@ -456,13 +461,13 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             b[1 - 1] = zero;
             for (i = n; i >= 2; i = i - 2) {
                 b[i - 1] = zero;
-                b[(i - 1) - 1] = smlnum * zlarnd(5, iseed);
+                b[(i - 1) - 1] = smlnum * Clarnd(5, iseed);
             }
         } else {
             b[n - 1] = zero;
             for (i = 1; i <= n - 1; i = i + 2) {
                 b[i - 1] = zero;
-                b[(i + 1) - 1] = smlnum * zlarnd(5, iseed);
+                b[(i + 1) - 1] = smlnum * Clarnd(5, iseed);
             }
         }
         //
@@ -483,7 +488,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 if (j > 1) {
                     a[((j - 1) - 1) + (j - 1) * lda] = COMPLEX(-one, -one);
                 }
-                a[(j - 1) + (j - 1) * lda] = tscal * zlarnd(5, iseed);
+                a[(j - 1) + (j - 1) * lda] = tscal * Clarnd(5, iseed);
             }
             b[n - 1] = COMPLEX(one, one);
         } else {
@@ -494,7 +499,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 if (j < n) {
                     a[((j + 1) - 1) + (j - 1) * lda] = COMPLEX(-one, -one);
                 }
-                a[(j - 1) + (j - 1) * lda] = tscal * zlarnd(5, iseed);
+                a[(j - 1) + (j - 1) * lda] = tscal * Clarnd(5, iseed);
             }
             b[1 - 1] = COMPLEX(one, one);
         }
@@ -508,7 +513,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             for (j = 1; j <= n; j = j + 1) {
                 Clarnv(4, iseed, j - 1, &a[(j - 1) * lda]);
                 if (j != iy) {
-                    a[(j - 1) + (j - 1) * lda] = zlarnd(5, iseed) * two;
+                    a[(j - 1) + (j - 1) * lda] = Clarnd(5, iseed) * two;
                 } else {
                     a[(j - 1) + (j - 1) * lda] = zero;
                 }
@@ -519,7 +524,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                     Clarnv(4, iseed, n - j, &a[((j + 1) - 1) + (j - 1) * lda]);
                 }
                 if (j != iy) {
-                    a[(j - 1) + (j - 1) * lda] = zlarnd(5, iseed) * two;
+                    a[(j - 1) + (j - 1) * lda] = Clarnd(5, iseed) * two;
                 } else {
                     a[(j - 1) + (j - 1) * lda] = zero;
                 }

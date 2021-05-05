@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rerrls(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Rerrls(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -71,7 +73,7 @@ void Rerrls(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     const INTEGER nmax = 2;
     REAL a[nmax * nmax];
     a[(1 - 1)] = 1.0;
@@ -93,7 +95,6 @@ void Rerrls(const char *path, INTEGER const nunit) {
         //
         //        Rgels
         //
-        srnamt = "Rgels ";
         infot = 1;
         Rgels("/", 0, 0, 0, a, 1, b, 1, w, 1, info);
         chkxer("Rgels ", infot, nout, lerr, ok);
@@ -118,7 +119,6 @@ void Rerrls(const char *path, INTEGER const nunit) {
         //
         //        Rgelss
         //
-        srnamt = "Rgelss";
         infot = 1;
         Rgelss(-1, 0, 0, a, 1, b, 1, s, rcond, irnk, w, 1, info);
         chkxer("Rgelss", infot, nout, lerr, ok);
@@ -137,7 +137,6 @@ void Rerrls(const char *path, INTEGER const nunit) {
         //
         //        Rgelsy
         //
-        srnamt = "Rgelsy";
         infot = 1;
         Rgelsy(-1, 0, 0, a, 1, b, 1, ip, rcond, irnk, w, 10, info);
         chkxer("Rgelsy", infot, nout, lerr, ok);
@@ -159,7 +158,6 @@ void Rerrls(const char *path, INTEGER const nunit) {
         //
         //        Rgelsd
         //
-        srnamt = "Rgelsd";
         infot = 1;
         Rgelsd(-1, 0, 0, a, 1, b, 1, s, rcond, irnk, w, 10, ip, info);
         chkxer("Rgelsd", infot, nout, lerr, ok);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrqp(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -70,7 +73,7 @@ void Cerrqp(const char *path, INTEGER const nunit) {
     //     .. Executable Statements ..
     //
     nout = nunit;
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     const INTEGER nmax = 3;
     INTEGER lw = nmax + 1;
     COMPLEX a[nmax * nmax];
@@ -92,7 +95,6 @@ void Cerrqp(const char *path, INTEGER const nunit) {
         //
         //        Cgeqp3
         //
-        cmn.srnamt = "Cgeqp3";
         infot = 1;
         Cgeqp3(-1, 0, a, 1, ip, tau, w, lw, rw, info);
         chkxer("Cgeqp3", infot, nout, lerr, ok);

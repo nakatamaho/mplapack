@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,15 +27,26 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL *work, INTEGER &info, const char *path) {
     FEM_CMN_SVE(Clahilb);
+    a([lda * n]);
+    x([ldx * nrhs]);
+    b([ldb * nrhs]);
+    work([n]);
     // SAVE
+    COMPLEX *d1(sve.d1, [8]);
+    COMPLEX *d2(sve.d2, [8]);
+    COMPLEX *invd1(sve.invd1, [8]);
+    COMPLEX *invd2(sve.invd2, [8]);
     //
     if (is_called_first_time) {
         data((values, cmplx(-1, 0), cmplx(0, 1), cmplx(-1, -1), cmplx(0, -1), cmplx(1, 0), cmplx(-1, 1), cmplx(1, 1), cmplx(1, -1))), d1;
@@ -66,7 +77,7 @@ void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda,
     //     .. External Functions
     //     ..
     //     .. Executable Statements ..
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     //
     //     Test the input arguments
     //

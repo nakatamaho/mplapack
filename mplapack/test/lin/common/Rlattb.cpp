@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,13 +27,18 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag, INTEGER *iseed, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *b, REAL *work, INTEGER &info) {
+    iseed([4]);
+    ab([ldab * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -58,7 +63,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //     ..
     //     .. Executable Statements ..
     //
-    char[3] path = "Double precision";
+    char path[3] = "Double precision";
     path[(2 - 1) + (3 - 1) * ldpath] = "TB";
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
@@ -82,15 +87,15 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //     Call Rlatb4 to set parameters for SLATMS.
     //
     bool upper = Mlsame(uplo, "U");
-    char[1] type;
+    char type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
+    char dist;
     INTEGER ioff = 0;
-    char[1] packit;
+    char packit;
     if (upper) {
         Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
         ku = kd;
@@ -126,7 +131,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL texp = 0.0;
     REAL tleft = 0.0;
     if (imat <= 5) {
-        dlatms(n, n, dist, iseed, type, b, mode, cndnum, anorm, kl, ku, packit, &ab[(ioff - 1)], ldab, work, info);
+        Rlatms(n, n, dist, iseed, type, b, mode, cndnum, anorm, kl, ku, packit, &ab[(ioff - 1)], ldab, work, info);
         //
         //     IMAT > 5:  Unit triangular matrix
         //     The diagonal is deliberately set to something other than 1.
@@ -181,14 +186,14 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
         if (kd == 1) {
             if (upper) {
-                ab[(2 - 1) * ldab] = sign(tnorm, dlarnd(2, iseed));
+                ab[(2 - 1) * ldab] = sign(tnorm, Rlarnd(2, iseed));
                 lenj = (n - 3) / 2;
                 Rlarnv(2, iseed, lenj, work);
                 for (j = 1; j <= lenj; j = j + 1) {
                     ab[((2 * (j + 1)) - 1) * ldab] = tnorm * work[j - 1];
                 }
             } else {
-                ab[(2 - 1)] = sign(tnorm, dlarnd(2, iseed));
+                ab[(2 - 1)] = sign(tnorm, Rlarnd(2, iseed));
                 lenj = (n - 3) / 2;
                 Rlarnv(2, iseed, lenj, work);
                 for (j = 1; j <= lenj; j = j + 1) {
@@ -213,9 +218,9 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             //
             //        The two offdiagonals of T are stored in WORK.
             //
-            star1 = sign(tnorm, dlarnd(2, iseed));
+            star1 = sign(tnorm, Rlarnd(2, iseed));
             sfac = sqrt(tnorm);
-            plus1 = sign(sfac, dlarnd(2, iseed));
+            plus1 = sign(sfac, Rlarnd(2, iseed));
             for (j = 1; j <= n; j = j + 2) {
                 plus2 = star1 / plus1;
                 work[j - 1] = plus1;
@@ -228,7 +233,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                     //                 Generate a new *-value with norm between sqrt(TNORM)
                     //                 and TNORM.
                     //
-                    rexp = dlarnd(2, iseed);
+                    rexp = Rlarnd(2, iseed);
                     if (rexp < zero) {
                         star1 = -pow(sfac, [(one - rexp) - 1]);
                     } else {

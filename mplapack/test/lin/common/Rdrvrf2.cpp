@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,19 +27,27 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEGER const lda, REAL *arf, REAL *ap, REAL *asav) {
     FEM_CMN_SVE(Rdrvrf2);
+    nval([nn]);
+    a([lda * star]);
+    asav([lda * star]);
     common_write write(cmn);
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     // SAVE
+    str_arr_ref<1> forms(sve.forms, [2]);
+    INTEGER *iseedy(sve.iseedy, [4]);
+    str_arr_ref<1> uplos(sve.uplos, [2]);
     //
     if (is_called_first_time) {
         {
@@ -97,10 +105,10 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
     INTEGER iin = 0;
     INTEGER n = 0;
     INTEGER iuplo = 0;
-    char[1] uplo;
+    char uplo;
     bool lower = false;
     INTEGER iform = 0;
-    char[1] cform;
+    char cform;
     INTEGER j = 0;
     bool ok1 = false;
     bool ok2 = false;
@@ -128,17 +136,14 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
                 //
                 for (j = 1; j <= n; j = j + 1) {
                     for (i = 1; i <= n; i = i + 1) {
-                        a[(i - 1) + (j - 1) * lda] = dlarnd(2, iseed);
+                        a[(i - 1) + (j - 1) * lda] = Rlarnd(2, iseed);
                     }
                 }
                 //
-                srnamt = "Rtrttf";
                 Rtrttf(cform, uplo, n, a, lda, arf, info);
                 //
-                srnamt = "Rtfttp";
                 Rtfttp(cform, uplo, n, arf, ap, info);
                 //
-                srnamt = "Rtpttr";
                 Rtpttr(uplo, n, ap, asav, lda, info);
                 //
                 ok1 = true;
@@ -162,13 +167,10 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
                 //
                 nrun++;
                 //
-                srnamt = "Rtrttp";
                 Rtrttp(uplo, n, a, lda, ap, info);
                 //
-                srnamt = "Rtpttf";
                 Rtpttf(cform, uplo, n, ap, arf, info);
                 //
-                srnamt = "Rtfttr";
                 Rtfttr(cform, uplo, n, arf, asav, lda, info);
                 //
                 ok2 = true;

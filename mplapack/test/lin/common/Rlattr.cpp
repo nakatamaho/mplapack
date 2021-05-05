@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,13 +27,18 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag, INTEGER *iseed, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, REAL *work, INTEGER &info) {
+    iseed([4]);
+    a([lda * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -58,7 +63,7 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //     ..
     //     .. Executable Statements ..
     //
-    char[3] path = "Double precision";
+    char path[3] = "Double precision";
     path[(2 - 1) + (3 - 1) * ldpath] = "TR";
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
@@ -82,13 +87,13 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //     Call Rlatb4 to set parameters for SLATMS.
     //
     bool upper = Mlsame(uplo, "U");
-    char[1] type;
+    char type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
+    char dist;
     if (upper) {
         Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
     } else {
@@ -121,7 +126,7 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL texp = 0.0;
     REAL tleft = 0.0;
     if (imat <= 6) {
-        dlatms(n, n, dist, iseed, type, b, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
+        Rlatms(n, n, dist, iseed, type, b, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
         //
         //     IMAT > 6:  Unit triangular matrix
         //     The diagonal is deliberately set to something other than 1.
@@ -237,7 +242,7 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 work[(j + 1) - 1] = plus2;
                 work[(n + j + 1) - 1] = zero;
                 plus1 = star1 / plus2;
-                rexp = dlarnd(2, iseed);
+                rexp = Rlarnd(2, iseed);
                 star1 = star1 * (pow(sfac, rexp));
                 if (rexp < zero) {
                     star1 = -pow(sfac, [(one - rexp) - 1]);

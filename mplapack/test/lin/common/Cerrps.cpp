@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrps(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Cerrps(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -97,7 +99,6 @@ void Cerrps(const char *path, INTEGER const nunit) {
     //
     //        Cpstrf
     //
-    srnamt = "Cpstrf";
     infot = 1;
     INTEGER rank = 0;
     INTEGER info = 0;
@@ -112,7 +113,6 @@ void Cerrps(const char *path, INTEGER const nunit) {
     //
     //        Cpstf2
     //
-    srnamt = "Cpstf2";
     infot = 1;
     Cpstf2("/", 0, a, 1, piv, rank, -1.0, rwork, info);
     chkxer("Cpstf2", infot, nout, lerr, ok);

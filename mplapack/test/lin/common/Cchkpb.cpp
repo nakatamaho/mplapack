@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,22 +27,25 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-#include <mplapack_lin.h>
-#include <mplapack.h>
 
-void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
+#include <mplapack_matgen.h>
+#include <mplapack_lin.h>
+
+void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const  /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
     FEM_CMN_SVE(Cchkpb);
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
     //
+    INTEGER *iseedy(sve.iseedy, [4]);
     if (is_called_first_time) {
         static const INTEGER values[] = {1988, 1989, 1990, 1991};
         data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
     }
-    char[3] path;
+    char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -53,7 +56,7 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char[1] xtype;
+    char xtype;
     INTEGER nkd = 0;
     const INTEGER ntypes = 8;
     INTEGER nimat = 0;
@@ -62,17 +65,17 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER ldab = 0;
     INTEGER iuplo = 0;
     INTEGER koff = 0;
-    char[1] uplo;
-    char[1] packit;
+    char uplo;
+    char packit;
     INTEGER imat = 0;
     bool zerot = false;
-    char[1] type;
+    char type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
+    char dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER iw = 0;
@@ -201,17 +204,16 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     if (!zerot || !dotype[1 - 1]) {
                         //
                         //                    Set up parameters with Clatb4 and generate a test
-                        //                    matrix with ZLATMS.
+                        //                    matrix with Clatms.
                         //
                         Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                         //
-                        srnamt = "ZLATMS";
-                        zlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kd, kd, packit, &a[koff - 1], ldab, work, info);
+                        Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kd, kd, packit, &a[koff - 1], ldab, work, info);
                         //
-                        //                    Check error code from ZLATMS.
+                        //                    Check error code from Clatms.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZLATMS", info, 0, uplo, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Clatms", info, 0, uplo, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
                             goto statement_60;
                         }
                     } else if (izero > 0) {
@@ -289,7 +291,6 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                    matrix.
                         //
                         Clacpy("Full", kd + 1, n, a, ldab, afac, ldab);
-                        srnamt = "Cpbtrf";
                         Cpbtrf(uplo, n, kd, afac, ldab, info);
                         //
                         //                    Check error code from Cpbtrf.
@@ -335,7 +336,6 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                    of RCONDC = 1/(norm(A) * norm(inv(A))).
                         //
                         Claset("Full", n, n, COMPLEX(zero), COMPLEX(one), ainv, lda);
-                        srnamt = "Cpbtrs";
                         Cpbtrs(uplo, n, kd, n, afac, ldab, ainv, lda, info);
                         //
                         //                    Compute RCONDC = 1/(norm(A) * norm(inv(A))).
@@ -354,11 +354,9 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             //+    TEST 2
                             //                    Solve and compute residual for A * X = B.
                             //
-                            srnamt = "Clarhs";
                             Clarhs(path, xtype, uplo, " ", n, n, kd, kd, nrhs, a, ldab, xact, lda, b, lda, iseed, info);
                             Clacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            srnamt = "Cpbtrs";
                             Cpbtrs(uplo, n, kd, nrhs, afac, ldab, x, lda, info);
                             //
                             //                    Check error code from Cpbtrs.
@@ -378,7 +376,6 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             //+    TESTS 4, 5, and 6
                             //                    Use iterative refinement to improve the solution.
                             //
-                            srnamt = "Cpbrfs";
                             Cpbrfs(uplo, n, kd, nrhs, a, ldab, afac, ldab, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                             //
                             //                    Check error code from Cpbrfs.
@@ -410,7 +407,6 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //+    TEST 7
                         //                    Get an estimate of RCOND = 1/CNDNUM.
                         //
-                        srnamt = "Cpbcon";
                         Cpbcon(uplo, n, kd, afac, ldab, anorm, rcond, work, rwork, info);
                         //
                         //                    Check error code from Cpbcon.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,20 +27,24 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, REAL const thresh, bool const tsterr, COMPLEX *a, COMPLEX *copya, REAL *s, COMPLEX *tau, COMPLEX *work, REAL *rwork, INTEGER const nout) {
     FEM_CMN_SVE(Cchktz);
     common_write write(cmn);
+    INTEGER *iseedy(sve.iseedy, [4]);
     if (is_called_first_time) {
         static const INTEGER values[] = {1988, 1989, 1990, 1991};
         data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
     }
-    char[3] path;
+    char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -153,7 +157,7 @@ void Cchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             s[i - 1] = zero;
                         }
                     } else {
-                        zlatms(m, n, "Uniform", iseed, "Nonsymmetric", s, imode, one / eps, one, m, n, "No packing", a, lda, work, info);
+                        Clatms(m, n, "Uniform", iseed, "Nonsymmetric", s, imode, one / eps, one, m, n, "No packing", a, lda, work, info);
                         Cgeqr2(m, n, a, lda, work, &work[(mnmin + 1) - 1], info);
                         Claset("Lower", m - 1, n, COMPLEX(zero), COMPLEX(zero), &a[2 - 1], lda);
                         Rlaord("Decreasing", mnmin, s, 1);
@@ -166,7 +170,6 @@ void Cchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //                 Call Ctzrzf to reduce the upper trapezoidal matrix to
                     //                 upper triangular form.
                     //
-                    cmn.srnamt = "Ctzrzf";
                     Ctzrzf(m, n, a, lda, tau, work, lwork, info);
                     //
                     //                 Compute norm(svd(a) - svd(r))

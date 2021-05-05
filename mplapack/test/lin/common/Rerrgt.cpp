@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rerrgt(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Rerrgt(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -71,7 +73,7 @@ void Rerrgt(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     const INTEGER nmax = 2;
     REAL d[nmax];
     d[1 - 1] = 1.0;
@@ -106,14 +108,12 @@ void Rerrgt(const char *path, INTEGER const nunit) {
         //
         //        Rgttrf
         //
-        srnamt = "Rgttrf";
         infot = 1;
         Rgttrf(-1, c, d, e, f, ip, info);
         chkxer("Rgttrf", infot, nout, lerr, ok);
         //
         //        Rgttrs
         //
-        srnamt = "Rgttrs";
         infot = 1;
         Rgttrs("/", 0, 0, c, d, e, f, ip, x, 1, info);
         chkxer("Rgttrs", infot, nout, lerr, ok);
@@ -129,7 +129,6 @@ void Rerrgt(const char *path, INTEGER const nunit) {
         //
         //        Rgtrfs
         //
-        srnamt = "Rgtrfs";
         infot = 1;
         Rgtrfs("/", 0, 0, c, d, e, cf, df, ef, f, ip, b, 1, x, 1, r1, r2, w, iw, info);
         chkxer("Rgtrfs", infot, nout, lerr, ok);
@@ -148,7 +147,6 @@ void Rerrgt(const char *path, INTEGER const nunit) {
         //
         //        Rgtcon
         //
-        srnamt = "Rgtcon";
         infot = 1;
         Rgtcon("/", 0, c, d, e, f, ip, anorm, rcond, w, iw, info);
         chkxer("Rgtcon", infot, nout, lerr, ok);
@@ -166,14 +164,12 @@ void Rerrgt(const char *path, INTEGER const nunit) {
         //
         //        Rpttrf
         //
-        srnamt = "Rpttrf";
         infot = 1;
         Rpttrf(-1, d, e, info);
         chkxer("Rpttrf", infot, nout, lerr, ok);
         //
         //        Rpttrs
         //
-        srnamt = "Rpttrs";
         infot = 1;
         Rpttrs(-1, 0, d, e, x, 1, info);
         chkxer("Rpttrs", infot, nout, lerr, ok);
@@ -186,7 +182,6 @@ void Rerrgt(const char *path, INTEGER const nunit) {
         //
         //        Rptrfs
         //
-        srnamt = "Rptrfs";
         infot = 1;
         Rptrfs(-1, 0, d, e, df, ef, b, 1, x, 1, r1, r2, w, info);
         chkxer("Rptrfs", infot, nout, lerr, ok);
@@ -202,7 +197,6 @@ void Rerrgt(const char *path, INTEGER const nunit) {
         //
         //        Rptcon
         //
-        srnamt = "Rptcon";
         infot = 1;
         Rptcon(-1, d, e, anorm, rcond, w, info);
         chkxer("Rptcon", infot, nout, lerr, ok);

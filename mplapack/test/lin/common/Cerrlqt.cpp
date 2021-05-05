@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrlqt(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Cerrlqt(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -95,7 +97,6 @@ void Cerrlqt(const char *path, INTEGER const nunit) {
     //
     //     Cgelqt
     //
-    srnamt = "Cgelqt";
     infot = 1;
     INTEGER info = 0;
     Cgelqt(-1, 0, 1, a, 1, t, 1, w, info);
@@ -115,7 +116,6 @@ void Cerrlqt(const char *path, INTEGER const nunit) {
     //
     //     Cgelqt3
     //
-    srnamt = "Cgelqt3";
     infot = 1;
     Cgelqt3(-1, 0, a, 1, t, 1, info);
     chkxer("Cgelqt3", infot, nout, lerr, ok);
@@ -131,7 +131,6 @@ void Cerrlqt(const char *path, INTEGER const nunit) {
     //
     //     Cgemlqt
     //
-    srnamt = "Cgemlqt";
     infot = 1;
     Cgemlqt("/", "N", 0, 0, 0, 1, a, 1, t, 1, c, 1, w, info);
     chkxer("Cgemlqt", infot, nout, lerr, ok);

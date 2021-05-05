@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,18 +27,23 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-#include <mplapack_lin.h>
-#include <mplapack.h>
 
-void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *ab, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
+#include <mplapack_matgen.h>
+#include <mplapack_lin.h>
+
+void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const  /* nmax */, COMPLEX *ab, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
     FEM_CMN_SVE(Cchktb);
     common_write write(cmn);
-    char[32] &srnamt = cmn.srnamt;
     //
+    INTEGER *iseedy(sve.iseedy, [4]);
     const INTEGER ntran = 3;
+    str_arr_ref<1> transs(sve.transs, [ntran]);
+    str_arr_ref<1> uplos(sve.uplos, [2]);
     if (is_called_first_time) {
         {
             static const INTEGER values[] = {1988, 1989, 1990, 1991};
@@ -53,7 +58,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             data_of_type_str(FEM_VALUES_AND_SIZE), transs;
         }
     }
-    char[3] path;
+    char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -62,7 +67,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char[1] xtype;
+    char xtype;
     const INTEGER ntype1 = 9;
     INTEGER nimat = 0;
     const INTEGER ntypes = 17;
@@ -73,8 +78,8 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     INTEGER ldab = 0;
     INTEGER imat = 0;
     INTEGER iuplo = 0;
-    char[1] uplo;
-    char[1] diag;
+    char uplo;
+    char diag;
     INTEGER info = 0;
     INTEGER idiag = 0;
     const REAL zero = 0.0;
@@ -87,8 +92,8 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     INTEGER itran = 0;
-    char[1] trans;
-    char[1] norm;
+    char trans;
+    char norm;
     REAL rcondc = 0.0;
     const INTEGER ntests = 8;
     REAL result[ntests];
@@ -194,7 +199,6 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //
                     //                 Call Clattb to generate a triangular test matrix.
                     //
-                    srnamt = "Clattb";
                     Clattb(imat, uplo, "No transpose", diag, iseed, n, kd, ab, ldab, x, work, rwork, info);
                     //
                     //                 Set IDIAG = 1 for non-unit matrices, 2 for unit.
@@ -259,12 +263,10 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             //+    TEST 1
                             //                    Solve and compute residual for op(A)*x = b.
                             //
-                            srnamt = "Clarhs";
                             Clarhs(path, xtype, uplo, trans, n, n, kd, idiag, nrhs, ab, ldab, xact, lda, b, lda, iseed, info);
                             xtype = "C";
                             Clacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            srnamt = "Ctbtrs";
                             Ctbtrs(uplo, trans, diag, n, kd, nrhs, ab, ldab, x, lda, info);
                             //
                             //                    Check error code from Ctbtrs.
@@ -284,7 +286,6 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             //                    Use iterative refinement to improve the solution
                             //                    and compute error bounds.
                             //
-                            srnamt = "Ctbrfs";
                             Ctbrfs(uplo, trans, diag, n, kd, nrhs, ab, ldab, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                             //
                             //                    Check error code from Ctbrfs.
@@ -326,7 +327,6 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             norm = 'I';
                             rcondc = rcondi;
                         }
-                        srnamt = "Ctbcon";
                         Ctbcon(norm, uplo, diag, n, kd, ab, ldab, rcond, work, rwork, info);
                         //
                         //                    Check error code from Ctbcon.
@@ -377,13 +377,11 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         //
                         //                    Call Clattb to generate a triangular test matrix.
                         //
-                        srnamt = "Clattb";
                         Clattb(imat, uplo, trans, diag, iseed, n, kd, ab, ldab, x, work, rwork, info);
                         //
                         //+    TEST 7
                         //                    Solve the system op(A)*x = b
                         //
-                        srnamt = "Clatbs";
                         Ccopy(n, x, 1, b, 1);
                         Clatbs(uplo, trans, diag, "N", n, kd, ab, ldab, b, scale, rwork, info);
                         //

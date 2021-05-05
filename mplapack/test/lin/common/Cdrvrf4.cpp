@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,19 +27,29 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, COMPLEX *c1, COMPLEX *c2, INTEGER const ldc, COMPLEX *crf, COMPLEX *a, INTEGER const lda, REAL *d_work_Clange) {
     FEM_CMN_SVE(Cdrvrf4);
+    nval([nn]);
+    c1([ldc * star]);
+    c2([ldc * star]);
+    a([lda * star]);
     common_write write(cmn);
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     // SAVE
+    str_arr_ref<1> forms(sve.forms, [2]);
+    INTEGER *iseedy(sve.iseedy, [4]);
+    str_arr_ref<1> transs(sve.transs, [2]);
+    str_arr_ref<1> uplos(sve.uplos, [2]);
     //
     if (is_called_first_time) {
         {
@@ -108,11 +118,11 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     INTEGER iik = 0;
     INTEGER k = 0;
     INTEGER iform = 0;
-    char[1] cform;
+    char cform;
     INTEGER iuplo = 0;
-    char[1] uplo;
+    char uplo;
     INTEGER itrans = 0;
-    char[1] trans;
+    char trans;
     INTEGER ialpha = 0;
     const REAL zero = 0.0;
     REAL alpha = 0.0;
@@ -155,8 +165,8 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                 alpha = zero;
                                 beta = one;
                             } else {
-                                alpha = dlarnd(2, iseed);
-                                beta = dlarnd(2, iseed);
+                                alpha = Rlarnd(2, iseed);
+                                beta = Rlarnd(2, iseed);
                             }
                             //
                             //                       All the parameters are set:
@@ -172,7 +182,7 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                 //
                                 for (j = 1; j <= k; j = j + 1) {
                                     for (i = 1; i <= n; i = i + 1) {
-                                        a[(i - 1) + (j - 1) * lda] = zlarnd(4, iseed);
+                                        a[(i - 1) + (j - 1) * lda] = Clarnd(4, iseed);
                                     }
                                 }
                                 //
@@ -184,7 +194,7 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                 //
                                 for (j = 1; j <= n; j = j + 1) {
                                     for (i = 1; i <= k; i = i + 1) {
-                                        a[(i - 1) + (j - 1) * lda] = zlarnd(4, iseed);
+                                        a[(i - 1) + (j - 1) * lda] = Clarnd(4, iseed);
                                     }
                                 }
                                 //
@@ -199,7 +209,7 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                             //
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = 1; i <= n; i = i + 1) {
-                                    c1[(i - 1) + (j - 1) * ldc1] = zlarnd(4, iseed);
+                                    c1[(i - 1) + (j - 1) * ldc1] = Clarnd(4, iseed);
                                     c2[(i - 1) + (j - 1) * ldc2] = c1[(i - 1) + (j - 1) * ldc1];
                                 }
                             }
@@ -209,22 +219,18 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                             //
                             normc = Clange("I", n, n, c1, ldc, d_work_Clange);
                             //
-                            srnamt = "Ctrttf";
                             Ctrttf(cform, uplo, n, c1, ldc, crf, info);
                             //
                             //                       call Cherk the BLAS routine -> gives C1
                             //
-                            srnamt = "Cherk ";
                             Cherk(uplo, trans, n, k, alpha, a, lda, beta, c1, ldc);
                             //
                             //                       call Chfrk the RFP routine -> gives CRF
                             //
-                            srnamt = "Chfrk ";
                             Chfrk(cform, uplo, trans, n, k, alpha, a, lda, beta, crf);
                             //
                             //                       convert CRF in full format -> gives C2
                             //
-                            srnamt = "Ctfttr";
                             Ctfttr(cform, uplo, n, crf, c2, ldc, info);
                             //
                             //                       compare C1 and C2

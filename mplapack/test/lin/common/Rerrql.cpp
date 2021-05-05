@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rerrql(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Rerrql(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -97,7 +99,6 @@ void Rerrql(const char *path, INTEGER const nunit) {
     //
     //     Rgeqlf
     //
-    srnamt = "Rgeqlf";
     infot = 1;
     INTEGER info = 0;
     Rgeqlf(-1, 0, a, 1, b, w, 1, info);
@@ -114,7 +115,6 @@ void Rerrql(const char *path, INTEGER const nunit) {
     //
     //     Rgeql2
     //
-    srnamt = "Rgeql2";
     infot = 1;
     Rgeql2(-1, 0, a, 1, b, w, info);
     chkxer("Rgeql2", infot, nout, lerr, ok);
@@ -127,7 +127,6 @@ void Rerrql(const char *path, INTEGER const nunit) {
     //
     //     Rgeqls
     //
-    srnamt = "Rgeqls";
     infot = 1;
     Rgeqls(-1, 0, 0, a, 1, x, b, 1, w, 1, info);
     chkxer("Rgeqls", infot, nout, lerr, ok);
@@ -152,7 +151,6 @@ void Rerrql(const char *path, INTEGER const nunit) {
     //
     //     Rorgql
     //
-    srnamt = "Rorgql";
     infot = 1;
     Rorgql(-1, 0, 0, a, 1, x, w, 1, info);
     chkxer("Rorgql", infot, nout, lerr, ok);
@@ -177,7 +175,6 @@ void Rerrql(const char *path, INTEGER const nunit) {
     //
     //     Rorg2l
     //
-    srnamt = "Rorg2l";
     infot = 1;
     Rorg2l(-1, 0, 0, a, 1, x, w, info);
     chkxer("Rorg2l", infot, nout, lerr, ok);
@@ -199,7 +196,6 @@ void Rerrql(const char *path, INTEGER const nunit) {
     //
     //     Rormql
     //
-    srnamt = "Rormql";
     infot = 1;
     Rormql("/", "N", 0, 0, 0, a, 1, x, af, 1, w, 1, info);
     chkxer("Rormql", infot, nout, lerr, ok);
@@ -239,7 +235,6 @@ void Rerrql(const char *path, INTEGER const nunit) {
     //
     //     Rorm2l
     //
-    srnamt = "Rorm2l";
     infot = 1;
     Rorm2l("/", "N", 0, 0, 0, a, 1, x, af, 1, w, info);
     chkxer("Rorm2l", infot, nout, lerr, ok);

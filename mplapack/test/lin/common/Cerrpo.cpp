@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrpo(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Cerrpo(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -73,7 +75,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     //
     //     Set the variables to innocuous values.
     //
@@ -111,7 +113,6 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpotrf
         //
-        srnamt = "Cpotrf";
         infot = 1;
         Cpotrf("/", 0, a, 1, info);
         chkxer("Cpotrf", infot, nout, lerr, ok);
@@ -124,7 +125,6 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpotf2
         //
-        srnamt = "Cpotf2";
         infot = 1;
         Cpotf2("/", 0, a, 1, info);
         chkxer("Cpotf2", infot, nout, lerr, ok);
@@ -137,7 +137,6 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpotri
         //
-        srnamt = "Cpotri";
         infot = 1;
         Cpotri("/", 0, a, 1, info);
         chkxer("Cpotri", infot, nout, lerr, ok);
@@ -150,7 +149,6 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpotrs
         //
-        srnamt = "Cpotrs";
         infot = 1;
         Cpotrs("/", 0, 0, a, 1, b, 1, info);
         chkxer("Cpotrs", infot, nout, lerr, ok);
@@ -169,7 +167,6 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cporfs
         //
-        srnamt = "Cporfs";
         infot = 1;
         Cporfs("/", 0, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, r, info);
         chkxer("Cporfs", infot, nout, lerr, ok);
@@ -194,7 +191,6 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpocon
         //
-        srnamt = "Cpocon";
         infot = 1;
         Cpocon("/", 0, a, 1, anrm, rcond, w, r, info);
         chkxer("Cpocon", infot, nout, lerr, ok);
@@ -210,7 +206,6 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpoequ
         //
-        srnamt = "Cpoequ";
         infot = 1;
         Cpoequ(-1, a, 1, r1, rcond, anrm, info);
         chkxer("Cpoequ", infot, nout, lerr, ok);
@@ -225,7 +220,6 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpptrf
         //
-        srnamt = "Cpptrf";
         infot = 1;
         Cpptrf("/", 0, a, info);
         chkxer("Cpptrf", infot, nout, lerr, ok);
@@ -235,7 +229,6 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpptri
         //
-        srnamt = "Cpptri";
         infot = 1;
         Cpptri("/", 0, a, info);
         chkxer("Cpptri", infot, nout, lerr, ok);
@@ -245,7 +238,6 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpptrs
         //
-        srnamt = "Cpptrs";
         infot = 1;
         Cpptrs("/", 0, 0, a, b, 1, info);
         chkxer("Cpptrs", infot, nout, lerr, ok);
@@ -261,7 +253,6 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpprfs
         //
-        srnamt = "Cpprfs";
         infot = 1;
         Cpprfs("/", 0, 0, a, af, b, 1, x, 1, r1, r2, w, r, info);
         chkxer("Cpprfs", infot, nout, lerr, ok);
@@ -280,7 +271,6 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cppcon
         //
-        srnamt = "Cppcon";
         infot = 1;
         Cppcon("/", 0, a, anrm, rcond, w, r, info);
         chkxer("Cppcon", infot, nout, lerr, ok);
@@ -293,7 +283,6 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cppequ
         //
-        srnamt = "Cppequ";
         infot = 1;
         Cppequ("/", 0, a, r1, rcond, anrm, info);
         chkxer("Cppequ", infot, nout, lerr, ok);
@@ -308,7 +297,6 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpbtrf
         //
-        srnamt = "Cpbtrf";
         infot = 1;
         Cpbtrf("/", 0, 0, a, 1, info);
         chkxer("Cpbtrf", infot, nout, lerr, ok);
@@ -324,7 +312,6 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpbtf2
         //
-        srnamt = "Cpbtf2";
         infot = 1;
         Cpbtf2("/", 0, 0, a, 1, info);
         chkxer("Cpbtf2", infot, nout, lerr, ok);
@@ -340,7 +327,6 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpbtrs
         //
-        srnamt = "Cpbtrs";
         infot = 1;
         Cpbtrs("/", 0, 0, 0, a, 1, b, 1, info);
         chkxer("Cpbtrs", infot, nout, lerr, ok);
@@ -362,7 +348,6 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpbrfs
         //
-        srnamt = "Cpbrfs";
         infot = 1;
         Cpbrfs("/", 0, 0, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, r, info);
         chkxer("Cpbrfs", infot, nout, lerr, ok);
@@ -390,7 +375,6 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpbcon
         //
-        srnamt = "Cpbcon";
         infot = 1;
         Cpbcon("/", 0, 0, a, 1, anrm, rcond, w, r, info);
         chkxer("Cpbcon", infot, nout, lerr, ok);
@@ -409,7 +393,6 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpbequ
         //
-        srnamt = "Cpbequ";
         infot = 1;
         Cpbequ("/", 0, 0, a, 1, r1, rcond, anrm, info);
         chkxer("Cpbequ", infot, nout, lerr, ok);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,13 +27,17 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag, INTEGER *iseed, INTEGER const n, REAL *a, REAL *b, REAL *work, INTEGER &info) {
+    iseed([4]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -58,7 +62,7 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //     ..
     //     .. Executable Statements ..
     //
-    char[3] path = "Double precision";
+    char path[3] = "Double precision";
     path[(2 - 1) + (3 - 1) * ldpath] = "TP";
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
@@ -82,14 +86,14 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //     Call Rlatb4 to set parameters for SLATMS.
     //
     bool upper = Mlsame(uplo, "U");
-    char[1] type;
+    char type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char[1] dist;
-    char[1] packit;
+    char dist;
+    char packit;
     if (upper) {
         Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
         packit = "C";
@@ -128,7 +132,7 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL texp = 0.0;
     REAL tleft = 0.0;
     if (imat <= 6) {
-        dlatms(n, n, dist, iseed, type, b, mode, cndnum, anorm, kl, ku, packit, a, n, work, info);
+        Rlatms(n, n, dist, iseed, type, b, mode, cndnum, anorm, kl, ku, packit, a, n, work, info);
         //
         //     IMAT > 6:  Unit triangular matrix
         //     The diagonal is deliberately set to something other than 1.
@@ -252,7 +256,7 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 work[(j + 1) - 1] = plus2;
                 work[(n + j + 1) - 1] = zero;
                 plus1 = star1 / plus2;
-                rexp = dlarnd(2, iseed);
+                rexp = Rlarnd(2, iseed);
                 star1 = star1 * (pow(sfac, rexp));
                 if (rexp < zero) {
                     star1 = -pow(sfac, [(one - rexp) - 1]);
@@ -424,7 +428,7 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             for (j = 1; j <= n; j = j + 1) {
                 Rlarnv(2, iseed, j - 1, &a[jc - 1]);
                 Rscal(j - 1, tscal, &a[jc - 1], 1);
-                a[(jc + j - 1) - 1] = sign(one, dlarnd(2, iseed));
+                a[(jc + j - 1) - 1] = sign(one, Rlarnd(2, iseed));
                 jc += j;
             }
             a[(n * (n + 1) / 2) - 1] = smlnum;
@@ -433,7 +437,7 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             for (j = 1; j <= n; j = j + 1) {
                 Rlarnv(2, iseed, n - j, &a[(jc + 1) - 1]);
                 Rscal(n - j, tscal, &a[(jc + 1) - 1], 1);
-                a[jc - 1] = sign(one, dlarnd(2, iseed));
+                a[jc - 1] = sign(one, Rlarnd(2, iseed));
                 jc += n - j + 1;
             }
             a[1 - 1] = smlnum;
@@ -450,7 +454,7 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             jc = 1;
             for (j = 1; j <= n; j = j + 1) {
                 Rlarnv(2, iseed, j - 1, &a[jc - 1]);
-                a[(jc + j - 1) - 1] = sign(one, dlarnd(2, iseed));
+                a[(jc + j - 1) - 1] = sign(one, Rlarnd(2, iseed));
                 jc += j;
             }
             a[(n * (n + 1) / 2) - 1] = smlnum;
@@ -458,7 +462,7 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             jc = 1;
             for (j = 1; j <= n; j = j + 1) {
                 Rlarnv(2, iseed, n - j, &a[(jc + 1) - 1]);
-                a[jc - 1] = sign(one, dlarnd(2, iseed));
+                a[jc - 1] = sign(one, Rlarnd(2, iseed));
                 jc += n - j + 1;
             }
             a[1 - 1] = smlnum;

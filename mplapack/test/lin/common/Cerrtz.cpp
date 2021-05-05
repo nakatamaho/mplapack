@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrtz(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -70,7 +73,7 @@ void Cerrtz(const char *path, INTEGER const nunit) {
     //     .. Executable Statements ..
     //
     nout = nunit;
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     const INTEGER nmax = 2;
     COMPLEX a[nmax * nmax];
     a[(1 - 1)] = COMPLEX(1.e+0, -1.e+0);
@@ -90,7 +93,6 @@ void Cerrtz(const char *path, INTEGER const nunit) {
         //
         //        Ctzrzf
         //
-        cmn.srnamt = "Ctzrzf";
         infot = 1;
         Ctzrzf(-1, 0, a, 1, tau, w, 1, info);
         chkxer("Ctzrzf", infot, nout, lerr, ok);

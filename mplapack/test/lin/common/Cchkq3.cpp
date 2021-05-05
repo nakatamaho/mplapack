@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,20 +27,24 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, REAL const thresh, COMPLEX *a, COMPLEX *copya, REAL *s, COMPLEX *tau, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Cchkq3);
     common_write write(cmn);
+    INTEGER *iseedy(sve.iseedy, [4]);
     if (is_called_first_time) {
         static const INTEGER values[] = {1988, 1989, 1990, 1991};
         data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
     }
-    char[3] path;
+    char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -161,7 +165,7 @@ void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         s[i - 1] = zero;
                     }
                 } else {
-                    zlatms(m, n, "Uniform", iseed, "Nonsymm", s, mode, one / eps, one, m, n, "No packing", copya, lda, work, info);
+                    Clatms(m, n, "Uniform", iseed, "Nonsymm", s, mode, one / eps, one, m, n, "No packing", copya, lda, work, info);
                     if (imode >= 4) {
                         if (imode == 4) {
                             ilow = 1;
@@ -202,7 +206,6 @@ void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //
                     lw = nb * (n + 1);
                     //
-                    cmn.srnamt = "Cgeqp3";
                     Cgeqp3(m, n, a, lda, &iwork[(n + 1) - 1], tau, work, lw, rwork, info);
                     //
                     //                 Compute norm(svd(a) - svd(r))

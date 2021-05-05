@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,18 +27,21 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void program_Cchkab(INTEGER argc, char const *argv[]) {
     common cmn(argc, argv);
     FEM_CMN_SVE(program_Cchkab);
     common_read read(cmn);
     common_write write(cmn);
-    char[10] &intstr = sve.intstr;
+    char &intstr = sve.intstr;
     if (is_called_first_time) {
         intstr = "0123456789";
     }
@@ -63,20 +66,23 @@ void program_Cchkab(INTEGER argc, char const *argv[]) {
     bool tsterr = false;
     float seps = float0;
     REAL eps = 0.0;
-    char[72] aline;
-    char[3] path;
+    char aline[72];
+    char path[3];
     const INTEGER matmax = 30;
     INTEGER nmats = 0;
-    char[1] c1;
+    char c1;
     INTEGER k = 0;
     INTEGER ic = 0;
-    char[2] c2;
+    char c2[2];
     INTEGER nrhs = 0;
     INTEGER ntypes = 0;
     bool dotype[matmax];
     const INTEGER ldamax = nmax;
+    COMPLEX a[ldamax * nmax * 2];
+    COMPLEX b[nmax * maxrhs * 2];
+    COMPLEX work[nmax * maxrhs * 2];
     REAL rwork[nmax];
-    fill0);
+    std::complex<float> swork[nmax * (nmax + maxrhs)];
     INTEGER iwork[nmax];
     REAL s2 = 0.0;
     static const char *format_9989 = "(/,1x,a6,' driver routines were not tested')";
@@ -244,7 +250,7 @@ statement_80:
     //
     try {
         read(nin, "(a72)"), aline;
-    } catch (read_end const) {
+    } catch (read_end const ) {
         goto statement_140;
     }
     path = aline[(3 - 1) * ldaline];

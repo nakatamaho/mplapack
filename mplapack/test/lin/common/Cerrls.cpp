@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,11 +27,14 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cerrls(const char *path, INTEGER const nunit) {
     common_write write(cmn);
@@ -41,7 +44,6 @@ void Cerrls(const char *path, INTEGER const nunit) {
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -70,7 +72,7 @@ void Cerrls(const char *path, INTEGER const nunit) {
     //     .. Executable Statements ..
     //
     nout = nunit;
-    char[2] c2 = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     const INTEGER nmax = 2;
     COMPLEX a[nmax * nmax];
     a[(1 - 1)] = (1.0, 0.0);
@@ -94,7 +96,6 @@ void Cerrls(const char *path, INTEGER const nunit) {
         //
         //        Cgels
         //
-        srnamt = "Cgels ";
         infot = 1;
         Cgels("/", 0, 0, 0, a, 1, b, 1, w, 1, info);
         chkxer("Cgels ", infot, nout, lerr, ok);
@@ -119,7 +120,6 @@ void Cerrls(const char *path, INTEGER const nunit) {
         //
         //        Cgelss
         //
-        srnamt = "Cgelss";
         infot = 1;
         Cgelss(-1, 0, 0, a, 1, b, 1, s, rcond, irnk, w, 1, rw, info);
         chkxer("Cgelss", infot, nout, lerr, ok);
@@ -138,7 +138,6 @@ void Cerrls(const char *path, INTEGER const nunit) {
         //
         //        Cgelsy
         //
-        srnamt = "Cgelsy";
         infot = 1;
         Cgelsy(-1, 0, 0, a, 1, b, 1, ip, rcond, irnk, w, 10, rw, info);
         chkxer("Cgelsy", infot, nout, lerr, ok);
@@ -160,7 +159,6 @@ void Cerrls(const char *path, INTEGER const nunit) {
         //
         //        Cgelsd
         //
-        srnamt = "Cgelsd";
         infot = 1;
         Cgelsd(-1, 0, 0, a, 1, b, 1, s, rcond, irnk, w, 10, rw, ip, info);
         chkxer("Cgelsd", infot, nout, lerr, ok);

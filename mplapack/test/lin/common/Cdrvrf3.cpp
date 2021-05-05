@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,19 +27,31 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, COMPLEX *a, INTEGER const lda, COMPLEX *arf, COMPLEX *b1, COMPLEX *b2, REAL *d_work_Clange, COMPLEX *z_work_Cgeqrf, COMPLEX *tau) {
     FEM_CMN_SVE(Cdrvrf3);
+    nval([nn]);
+    a([lda * star]);
+    b1([lda * star]);
+    b2([lda * star]);
     common_write write(cmn);
     // COMMON srnamc
-    char[32] &srnamt = cmn.srnamt;
     //
     // SAVE
+    str_arr_ref<1> diags(sve.diags, [2]);
+    str_arr_ref<1> forms(sve.forms, [2]);
+    INTEGER *iseedy(sve.iseedy, [4]);
+    str_arr_ref<1> sides(sve.sides, [2]);
+    str_arr_ref<1> transs(sve.transs, [2]);
+    str_arr_ref<1> uplos(sve.uplos, [2]);
     //
     if (is_called_first_time) {
         {
@@ -116,15 +128,15 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     INTEGER iin = 0;
     INTEGER n = 0;
     INTEGER iform = 0;
-    char[1] cform;
+    char cform;
     INTEGER iuplo = 0;
-    char[1] uplo;
+    char uplo;
     INTEGER iside = 0;
-    char[1] side;
+    char side;
     INTEGER itrans = 0;
-    char[1] trans;
+    char trans;
     INTEGER idiag = 0;
-    char[1] diag;
+    char diag;
     INTEGER ialpha = 0;
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     COMPLEX alpha = 0.0;
@@ -168,7 +180,7 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     } else if (ialpha == 2) {
                                         alpha = one;
                                     } else {
-                                        alpha = zlarnd(4, iseed);
+                                        alpha = Clarnd(4, iseed);
                                     }
                                     //
                                     //                             All the parameters are set:
@@ -204,7 +216,7 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     //
                                     for (j = 1; j <= na; j = j + 1) {
                                         for (i = 1; i <= na; i = i + 1) {
-                                            a[(i - 1) + (j - 1) * lda] = zlarnd(4, iseed);
+                                            a[(i - 1) + (j - 1) * lda] = Clarnd(4, iseed);
                                         }
                                     }
                                     //
@@ -213,14 +225,12 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                         //                                The case IUPLO.EQ.1 is when SIDE.EQ.'U'
                                         //                                -> QR factorization.
                                         //
-                                        srnamt = "Cgeqrf";
                                         Cgeqrf(na, na, a, lda, tau, z_work_Cgeqrf, lda, info);
                                     } else {
                                         //
                                         //                                The case IUPLO.EQ.2 is when SIDE.EQ.'L'
                                         //                                -> QL factorization.
                                         //
-                                        srnamt = "Cgelqf";
                                         Cgelqf(na, na, a, lda, tau, z_work_Cgeqrf, lda, info);
                                     }
                                     //
@@ -230,12 +240,11 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     //                             value 1.0E+00.
                                     //
                                     for (j = 1; j <= na; j = j + 1) {
-                                        a[(j - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda] * zlarnd(5, iseed);
+                                        a[(j - 1) + (j - 1) * lda] = a[(j - 1) + (j - 1) * lda] * Clarnd(5, iseed);
                                     }
                                     //
                                     //                             Store a copy of A in RFP format (in ARF).
                                     //
-                                    srnamt = "Ctrttf";
                                     Ctrttf(cform, uplo, na, a, lda, arf, info);
                                     //
                                     //                             Generate B1 our M--by--N right-hand side
@@ -243,7 +252,7 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     //
                                     for (j = 1; j <= n; j = j + 1) {
                                         for (i = 1; i <= m; i = i + 1) {
-                                            b1[(i - 1) + (j - 1) * ldb1] = zlarnd(4, iseed);
+                                            b1[(i - 1) + (j - 1) * ldb1] = Clarnd(4, iseed);
                                             b2[(i - 1) + (j - 1) * ldb2] = b1[(i - 1) + (j - 1) * ldb1];
                                         }
                                     }
@@ -251,13 +260,11 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     //                             Solve op( A ) X = B or X op( A ) = B
                                     //                             with Ctrsm
                                     //
-                                    srnamt = "Ctrsm";
                                     Ctrsm(side, uplo, trans, diag, m, n, alpha, a, lda, b1, lda);
                                     //
                                     //                             Solve op( A ) X = B or X op( A ) = B
                                     //                             with Ctfsm
                                     //
-                                    srnamt = "Ctfsm";
                                     Ctfsm(cform, side, uplo, trans, diag, m, n, alpha, arf, b2, lda);
                                     //
                                     //                             Check that the result agrees.
