@@ -11,7 +11,6 @@ LIN_SOURCES = \
 ../common/Alareq.cpp \
 ../common/Alasum.cpp \
 ../common/Alasvm.cpp \
-../common/Cchkaa.cpp \
 ../common/Cchkeq.cpp \
 ../common/Cchkgb.cpp \
 ../common/Cchkge.cpp \
@@ -35,7 +34,6 @@ LIN_SOURCES = \
 ../common/Cchkqr.cpp \
 ../common/Cchkqrt.cpp \
 ../common/Cchkqrtp.cpp \
-../common/Cchkrfp.cpp \
 ../common/Cchkrq.cpp \
 ../common/Cchksp.cpp \
 ../common/Cchksy.cpp \
@@ -203,7 +201,6 @@ LIN_SOURCES = \
 ../common/Ctsqr01.cpp \
 ../common/Cunhr_col01.cpp \
 ../common/Cunhr_col02.cpp \
-../common/Rchkaa.cpp \
 ../common/Rchkeq.cpp \
 ../common/Rchkgb.cpp \
 ../common/Rchkge.cpp \
