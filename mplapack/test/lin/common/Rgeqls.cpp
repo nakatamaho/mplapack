@@ -37,9 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rgeqls(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *tau, REAL *b, INTEGER const ldb, REAL *work, INTEGER const lwork, INTEGER &info) {
-    a([lda * star]);
-    b([ldb * star]);
-    work([lwork]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

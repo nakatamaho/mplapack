@@ -116,6 +116,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     INTEGER i = 0;
     const REAL zero = 0.0;
     REAL tnorm = 0.0;
+    float a &b[(1 - 1) + (2 - 1) * ldb] = float0;
     INTEGER lenj = 0;
     REAL star1 = 0.0;
     REAL sfac = 0.0;
@@ -127,6 +128,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL bnorm = 0.0;
     REAL bscal = 0.0;
     REAL tscal = 0.0;
+    float a &b[(1 - 1) + (1 - 1) * ldb] = float0;
     INTEGER jcount = 0;
     REAL texp = 0.0;
     REAL tleft = 0.0;
@@ -186,7 +188,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
         if (kd == 1) {
             if (upper) {
-                ab[(2 - 1) * ldab] = sign(tnorm, Rlarnd(2, iseed));
+                a &b[(1 - 1) + (2 - 1) * ldb] = sign(tnorm, Rlarnd(2, iseed));
                 lenj = (n - 3) / 2;
                 Rlarnv(2, iseed, lenj, work);
                 for (j = 1; j <= lenj; j = j + 1) {
@@ -312,7 +314,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 }
                 ab[(j - 1) * ldab] = sign(one, &ab[(j - 1) * ldab]);
             }
-            ab[(1 - 1)] = smlnum * ab[(1 - 1)];
+            a &b[(1 - 1) + (1 - 1) * ldb] = smlnum * a & b[(1 - 1) + (1 - 1) * ldb];
         }
         //
     } else if (imat == 12) {
@@ -335,7 +337,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 Rlarnv(2, iseed, lenj, &ab[(j - 1) * ldab]);
                 ab[(j - 1) * ldab] = sign(one, &ab[(j - 1) * ldab]);
             }
-            ab[(1 - 1)] = smlnum * ab[(1 - 1)];
+            a &b[(1 - 1) + (1 - 1) * ldb] = smlnum * a & b[(1 - 1) + (1 - 1) * ldb];
         }
         //
     } else if (imat == 13) {

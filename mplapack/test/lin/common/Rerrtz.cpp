@@ -73,10 +73,10 @@ void Rerrtz(const char *path, INTEGER const nunit) {
     nout = nunit;
     write(nout, star);
     char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
+    INTEGER &a[(1 - 1) + (1 - 1) * lda] = 1.e+0;
+    INTEGER &a[(1 - 1) + (2 - 1) * lda] = 2.e+0;
     const INTEGER nmax = 2;
     REAL a[nmax * nmax];
-    a[(1 - 1)] = 1.e+0;
-    a[(2 - 1) * lda] = 2.e+0;
     a[(2 - 1) + (2 - 1) * lda] = 3.e+0;
     a[(2 - 1)] = 4.e+0;
     REAL w[nmax];

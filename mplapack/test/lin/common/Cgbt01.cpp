@@ -108,7 +108,7 @@ void Cgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         jl = min(kl, m - j);
         lenj = min(m, j) - j + ju + 1;
         if (lenj > 0) {
-            Ccopy(lenj, afac[((kd - ju) - 1) + (j - 1) * ldafac], 1, work, 1);
+            Ccopy(lenj, &afac[((kd - ju) - 1) + (j - 1) * ldafac], 1, work, 1);
             for (i = lenj + 1; i <= ju + jl + 1; i = i + 1) {
                 work[i - 1] = zero;
             }
@@ -121,7 +121,7 @@ void Cgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 if (il > 0) {
                     iw = i - j + ju + 1;
                     t = work[iw - 1];
-                    Caxpy(il, t, afac[((kd + 1) - 1) + (i - 1) * ldafac], 1, &work[(iw + 1) - 1], 1);
+                    Caxpy(il, t, &afac[((kd + 1) - 1) + (i - 1) * ldafac], 1, &work[(iw + 1) - 1], 1);
                     ip = ipiv[i - 1];
                     if (i != ip) {
                         ip = ip - j + ju + 1;

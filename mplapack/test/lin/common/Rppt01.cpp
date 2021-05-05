@@ -90,13 +90,13 @@ void Rppt01(const char *uplo, INTEGER const n, REAL *a, REAL *afac, REAL *rwork,
             //
             //           Compute the (K,K) element of the result.
             //
-            t = Rdot(k, afac[kc - 1], 1, afac[kc - 1], 1);
+            t = Rdot(k, &afac[kc - 1], 1, &afac[kc - 1], 1);
             afac[(kc + k - 1) - 1] = t;
             //
             //           Compute the rest of column K.
             //
             if (k > 1) {
-                Rtpmv("Upper", "Transpose", "Non-unit", k - 1, afac, afac[kc - 1], 1);
+                Rtpmv("Upper", "Transpose", "Non-unit", k - 1, afac, &afac[kc - 1], 1);
                 kc = kc - (k - 1);
             }
         }
@@ -111,13 +111,13 @@ void Rppt01(const char *uplo, INTEGER const n, REAL *a, REAL *afac, REAL *rwork,
             //           columns K+1 through N.
             //
             if (k < n) {
-                Rspr("Lower", n - k, one, afac[(kc + 1) - 1], 1, afac[(kc + n - k + 1) - 1]);
+                Rspr("Lower", n - k, one, &afac[(kc + 1) - 1], 1, &afac[(kc + n - k + 1) - 1]);
             }
             //
             //           Scale column K by the diagonal element.
             //
             t = afac[kc - 1];
-            Rscal(n - k + 1, t, afac[kc - 1], 1);
+            Rscal(n - k + 1, t, &afac[kc - 1], 1);
             //
             kc = kc - (n - k + 2);
         }

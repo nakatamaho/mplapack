@@ -77,9 +77,10 @@ void program_Rchkab(INTEGER argc, char const *argv[]) {
     INTEGER nrhs = 0;
     INTEGER ntypes = 0;
     bool dotype[matmax];
-    const INTEGER ldamax = nmax;
-    REAL a[ldamax * nmax * 2];
-    REAL b[nmax * maxrhs * 2];
+    INTEGER &a[(1 - 1) + (1 - 1) * lda] = 0;
+    INTEGER &a[(1 - 1) + (2 - 1) * lda] = 0;
+    INTEGER &b[(1 - 1) + (1 - 1) * ldb] = 0;
+    INTEGER &b[(1 - 1) + (2 - 1) * ldb] = 0;
     REAL work[nmax * maxrhs * 2];
     REAL rwork[nmax];
     float swork[nmax * (nmax + maxrhs)];
@@ -249,7 +250,7 @@ statement_80:
     //
     try {
         read(nin, "(a72)"), aline;
-    } catch (read_end const ) {
+    } catch (read_end const) {
         goto statement_140;
     }
     path = aline[(3 - 1) * ldaline];
@@ -312,7 +313,7 @@ statement_130:
         }
         //
         if (tstdrv) {
-            Rdrvab(dotype, nm, mval, nns, nsval, thresh, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], work, rwork, swork, iwork, nout);
+            Rdrvab(dotype, nm, mval, nns, nsval, thresh, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], work, rwork, swork, iwork, nout);
         } else {
             write(nout, format_9989), "Rsgesv";
         }
@@ -329,7 +330,7 @@ statement_130:
         }
         //
         if (tstdrv) {
-            Rdrvac(dotype, nm, mval, nns, nsval, thresh, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], work, rwork, swork, nout);
+            Rdrvac(dotype, nm, mval, nns, nsval, thresh, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], work, rwork, swork, nout);
         } else {
             write(nout, format_9989), path;
         }

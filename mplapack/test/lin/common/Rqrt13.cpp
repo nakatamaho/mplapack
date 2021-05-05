@@ -37,8 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL &norma, INTEGER *iseed) {
-    a([lda * star]);
-    iseed([4]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -75,7 +73,7 @@ void Rqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, REAL *a, INTE
     for (j = 1; j <= n; j = j + 1) {
         Rlarnv(2, iseed, m, &a[(j - 1) * lda]);
         if (j <= m) {
-            a[(j - 1) + (j - 1) * lda] += sign(Rasum(m, &a[(j - 1) * lda], 1), &a[(j - 1) + (j - 1) * lda]);
+            a[(j - 1) + (j - 1) * lda] += sign(Rasum(m, &a[(j - 1) * lda], 1), a[(j - 1) + (j - 1) * lda]);
         }
     }
     //

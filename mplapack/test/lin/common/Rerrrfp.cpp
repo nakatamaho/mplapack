@@ -70,14 +70,13 @@ void Rerrrfp(INTEGER const nunit) {
     //
     nout = nunit;
     ok = true;
-    REAL a[1 * 1];
-    a[(1 - 1)] = 1.0;
-    REAL b[1 * 1];
-    b[(1 - 1)] = 1.0;
+    INTEGER &a[(1 - 1) + (1 - 1) * lda] = 1.0;
+    INTEGER &b[(1 - 1) + (1 - 1) * ldb] = 1.0;
     REAL alpha = 1.0;
     REAL beta = 1.0;
     //
     infot = 1;
+    REAL a[1 * 1];
     INTEGER info = 0;
     Rpftrf("/", "U", 0, a, info);
     chkxer("Rpftrf", infot, nout, lerr, ok);
@@ -89,6 +88,7 @@ void Rerrrfp(INTEGER const nunit) {
     chkxer("Rpftrf", infot, nout, lerr, ok);
     //
     infot = 1;
+    REAL b[1 * 1];
     Rpftrs("/", "U", 0, 0, a, b, 1, info);
     chkxer("Rpftrs", infot, nout, lerr, ok);
     infot = 2;

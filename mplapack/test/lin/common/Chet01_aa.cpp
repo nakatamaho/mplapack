@@ -81,35 +81,39 @@ void Chet01_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     Claset("Full", n, n, czero, czero, c, ldc);
-    Clacpy("F", 1, n, afac[(1 - 1)], ldafac + 1, &c[(1 - 1)], ldc + 1);
+    float afa &c[(1 - 1) + (1 - 1) * ldc] = float0;
+    INTEGER &c[(1 - 1) + (1 - 1) * ldc] = 0;
+    Clacpy("F", 1, n, afa & c[(1 - 1) + (1 - 1) * ldc], ldafac + 1, &c[(1 - 1) + (1 - 1) * ldc], ldc + 1);
+    float afa &c[(1 - 1) + (2 - 1) * ldc] = float0;
+    INTEGER &c[(1 - 1) + (2 - 1) * ldc] = 0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     INTEGER j = 0;
     INTEGER i = 0;
     if (n > 1) {
         if (Mlsame(uplo, "U")) {
-            Clacpy("F", 1, n - 1, afac[(2 - 1) * ldafac], ldafac + 1, &c[(2 - 1) * ldc], ldc + 1);
-            Clacpy("F", 1, n - 1, afac[(2 - 1) * ldafac], ldafac + 1, &c[(2 - 1)], ldc + 1);
+            Clacpy("F", 1, n - 1, afa & c[(1 - 1) + (2 - 1) * ldc], ldafac + 1, &c[(1 - 1) + (2 - 1) * ldc], ldc + 1);
+            Clacpy("F", 1, n - 1, afa & c[(1 - 1) + (2 - 1) * ldc], ldafac + 1, &c[(2 - 1)], ldc + 1);
             Clacgv(n - 1, &c[(2 - 1)], ldc + 1);
         } else {
-            Clacpy("F", 1, n - 1, afac[(2 - 1)], ldafac + 1, &c[(2 - 1) * ldc], ldc + 1);
-            Clacpy("F", 1, n - 1, afac[(2 - 1)], ldafac + 1, &c[(2 - 1)], ldc + 1);
-            Clacgv(n - 1, &c[(2 - 1) * ldc], ldc + 1);
+            Clacpy("F", 1, n - 1, &afac[(2 - 1)], ldafac + 1, &c[(1 - 1) + (2 - 1) * ldc], ldc + 1);
+            Clacpy("F", 1, n - 1, &afac[(2 - 1)], ldafac + 1, &c[(2 - 1)], ldc + 1);
+            Clacgv(n - 1, &c[(1 - 1) + (2 - 1) * ldc], ldc + 1);
         }
         //
         //        Call Ctrmm to form the product U' * D (or L * D ).
         //
         if (Mlsame(uplo, "U")) {
-            Ctrmm("Left", uplo, "Conjugate transpose", "Unit", n - 1, n, cone, afac[(2 - 1) * ldafac], ldafac, &c[(2 - 1)], ldc);
+            Ctrmm("Left", uplo, "Conjugate transpose", "Unit", n - 1, n, cone, afa & c[(1 - 1) + (2 - 1) * ldc], ldafac, &c[(2 - 1)], ldc);
         } else {
-            Ctrmm("Left", uplo, "No transpose", "Unit", n - 1, n, cone, afac[(2 - 1)], ldafac, &c[(2 - 1)], ldc);
+            Ctrmm("Left", uplo, "No transpose", "Unit", n - 1, n, cone, &afac[(2 - 1)], ldafac, &c[(2 - 1)], ldc);
         }
         //
         //        Call Ctrmm again to multiply by U (or L ).
         //
         if (Mlsame(uplo, "U")) {
-            Ctrmm("Right", uplo, "No transpose", "Unit", n, n - 1, cone, afac[(2 - 1) * ldafac], ldafac, &c[(2 - 1) * ldc], ldc);
+            Ctrmm("Right", uplo, "No transpose", "Unit", n, n - 1, cone, afa & c[(1 - 1) + (2 - 1) * ldc], ldafac, &c[(1 - 1) + (2 - 1) * ldc], ldc);
         } else {
-            Ctrmm("Right", uplo, "Conjugate transpose", "Unit", n, n - 1, cone, afac[(2 - 1)], ldafac, &c[(2 - 1) * ldc], ldc);
+            Ctrmm("Right", uplo, "Conjugate transpose", "Unit", n, n - 1, cone, &afac[(2 - 1)], ldafac, &c[(1 - 1) + (2 - 1) * ldc], ldc);
         }
         //
         //        Apply hermitian pivots

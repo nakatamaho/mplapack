@@ -42,6 +42,7 @@ void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
     bool nounit = false;
     INTEGER k = 0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
+    INTEGER &b[(1 - 1) + (1 - 1) * ldb] = 0;
     INTEGER kp = 0;
     COMPLEX d11 = 0.0;
     COMPLEX d22 = 0.0;
@@ -137,7 +138,7 @@ void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
                     //
                     //                 Apply the transformation.
                     //
-                    Cgeru(k - 1, nrhs, cone, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[(1 - 1)], ldb);
+                    Cgeru(k - 1, nrhs, cone, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
                     //
                     //                 Interchange if P(K) != I.
                     //
@@ -172,8 +173,8 @@ void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
                     //
                     //                 Apply the transformations.
                     //
-                    Cgeru(k - 1, nrhs, cone, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[(1 - 1)], ldb);
-                    Cgeru(k - 1, nrhs, cone, &a[((k + 1) - 1) * lda], 1, &b[((k + 1) - 1)], ldb, &b[(1 - 1)], ldb);
+                    Cgeru(k - 1, nrhs, cone, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
+                    Cgeru(k - 1, nrhs, cone, &a[((k + 1) - 1) * lda], 1, &b[((k + 1) - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
                     //
                     //                 Interchange if a permutation was applied at the
                     //                 K-th step of the factorization.

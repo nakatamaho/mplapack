@@ -42,6 +42,7 @@ void Rlavsy(const char *uplo, const char *trans, const char *diag, INTEGER const
     bool nounit = false;
     INTEGER k = 0;
     const REAL one = 1.0;
+    INTEGER &b[(1 - 1) + (1 - 1) * ldb] = 0;
     INTEGER kp = 0;
     REAL d11 = 0.0;
     REAL d22 = 0.0;
@@ -137,7 +138,7 @@ void Rlavsy(const char *uplo, const char *trans, const char *diag, INTEGER const
                     //
                     //                 Apply the transformation.
                     //
-                    Rger(k - 1, nrhs, one, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[(1 - 1)], ldb);
+                    Rger(k - 1, nrhs, one, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
                     //
                     //                 Interchange if P(K) .ne. I.
                     //
@@ -172,8 +173,8 @@ void Rlavsy(const char *uplo, const char *trans, const char *diag, INTEGER const
                     //
                     //                 Apply the transformations.
                     //
-                    Rger(k - 1, nrhs, one, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[(1 - 1)], ldb);
-                    Rger(k - 1, nrhs, one, &a[((k + 1) - 1) * lda], 1, &b[((k + 1) - 1)], ldb, &b[(1 - 1)], ldb);
+                    Rger(k - 1, nrhs, one, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
+                    Rger(k - 1, nrhs, one, &a[((k + 1) - 1) * lda], 1, &b[((k + 1) - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
                     //
                     //                 Interchange if P(K) .ne. I.
                     //

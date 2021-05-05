@@ -77,9 +77,10 @@ void program_Cchkab(INTEGER argc, char const *argv[]) {
     INTEGER nrhs = 0;
     INTEGER ntypes = 0;
     bool dotype[matmax];
-    const INTEGER ldamax = nmax;
-    COMPLEX a[ldamax * nmax * 2];
-    COMPLEX b[nmax * maxrhs * 2];
+    INTEGER &a[(1 - 1) + (1 - 1) * lda] = 0;
+    INTEGER &a[(1 - 1) + (2 - 1) * lda] = 0;
+    INTEGER &b[(1 - 1) + (1 - 1) * ldb] = 0;
+    INTEGER &b[(1 - 1) + (2 - 1) * ldb] = 0;
     COMPLEX work[nmax * maxrhs * 2];
     REAL rwork[nmax];
     std::complex<float> swork[nmax * (nmax + maxrhs)];
@@ -250,7 +251,7 @@ statement_80:
     //
     try {
         read(nin, "(a72)"), aline;
-    } catch (read_end const ) {
+    } catch (read_end const) {
         goto statement_140;
     }
     path = aline[(3 - 1) * ldaline];
@@ -314,7 +315,7 @@ statement_130:
         }
         //
         if (tstdrv) {
-            Cdrvab(dotype, nm, mval, nns, nsval, thresh, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], work, rwork, swork, iwork, nout);
+            Cdrvab(dotype, nm, mval, nns, nsval, thresh, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], work, rwork, swork, iwork, nout);
         } else {
             write(nout, format_9989), "Ccgesv";
         }
@@ -331,7 +332,7 @@ statement_130:
         }
         //
         if (tstdrv) {
-            Cdrvac(dotype, nm, mval, nns, nsval, thresh, lda, &a[(1 - 1)], &a[(2 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], work, rwork, swork, nout);
+            Cdrvac(dotype, nm, mval, nns, nsval, thresh, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], work, rwork, swork, nout);
         } else {
             write(nout, format_9989), "Ccposv";
         }

@@ -72,15 +72,14 @@ void Cerrrfp(INTEGER const nunit) {
     //
     nout = nunit;
     ok = true;
-    COMPLEX a[1 * 1];
-    a[(1 - 1)] = COMPLEX(1.0, 1.0);
-    COMPLEX b[1 * 1];
-    b[(1 - 1)] = COMPLEX(1.0, 1.0);
+    INTEGER &a[(1 - 1) + (1 - 1) * lda] = COMPLEX(1.0, 1.0);
+    INTEGER &b[(1 - 1) + (1 - 1) * ldb] = COMPLEX(1.0, 1.0);
     REAL alpha = 1.0;
     COMPLEX calpha = COMPLEX(1.0, 1.0);
     REAL beta = 1.0;
     //
     infot = 1;
+    COMPLEX a[1 * 1];
     INTEGER info = 0;
     Cpftrf("/", "U", 0, a, info);
     chkxer("Cpftrf", infot, nout, lerr, ok);
@@ -92,6 +91,7 @@ void Cerrrfp(INTEGER const nunit) {
     chkxer("Cpftrf", infot, nout, lerr, ok);
     //
     infot = 1;
+    COMPLEX b[1 * 1];
     Cpftrs("/", "U", 0, 0, a, b, 1, info);
     chkxer("Cpftrs", infot, nout, lerr, ok);
     infot = 2;

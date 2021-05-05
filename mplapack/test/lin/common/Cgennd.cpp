@@ -38,7 +38,6 @@ using fem::common;
 
 bool Cgennd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda) {
     bool return_value = false;
-    a([lda * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -61,7 +60,7 @@ bool Cgennd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda) {
     INTEGER k = min(m, n);
     INTEGER i = 0;
     COMPLEX aii = 0.0;
-    const float zero = 0.0f;
+    const REAL zero = 0.0;
     for (i = 1; i <= k; i = i + 1) {
         aii = a[(i - 1) + (i - 1) * lda];
         if (aii.real() < zero || aii.imag() != zero) {

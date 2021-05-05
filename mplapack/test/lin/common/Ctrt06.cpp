@@ -37,7 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Ctrt06(REAL const rcond, REAL const rcondc, const char *uplo, const char *diag, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *rwork, REAL &rat) {
-    a([lda * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

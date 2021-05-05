@@ -116,6 +116,7 @@ void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     INTEGER i = 0;
     const REAL zero = 0.0;
     REAL tnorm = 0.0;
+    float a &b[(1 - 1) + (2 - 1) * ldb] = float0;
     INTEGER lenj = 0;
     COMPLEX star1 = 0.0;
     REAL sfac = 0.0;
@@ -127,6 +128,7 @@ void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL bnorm = 0.0;
     REAL bscal = 0.0;
     REAL tscal = 0.0;
+    float a &b[(1 - 1) + (1 - 1) * ldb] = float0;
     INTEGER jcount = 0;
     REAL texp = 0.0;
     REAL tleft = 0.0;
@@ -186,7 +188,7 @@ void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
         if (kd == 1) {
             if (upper) {
-                ab[(2 - 1) * ldab] = tnorm * Clarnd(5, iseed);
+                a &b[(1 - 1) + (2 - 1) * ldb] = tnorm * Clarnd(5, iseed);
                 lenj = (n - 3) / 2;
                 Clarnv(2, iseed, lenj, work);
                 for (j = 1; j <= lenj; j = j + 1) {
@@ -314,7 +316,7 @@ void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 }
                 ab[(j - 1) * ldab] = Clarnd(5, iseed);
             }
-            ab[(1 - 1)] = smlnum * ab[(1 - 1)];
+            a &b[(1 - 1) + (1 - 1) * ldb] = smlnum * a & b[(1 - 1) + (1 - 1) * ldb];
         }
         //
     } else if (imat == 12) {
@@ -341,7 +343,7 @@ void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 }
                 ab[(j - 1) * ldab] = Clarnd(5, iseed);
             }
-            ab[(1 - 1)] = smlnum * ab[(1 - 1)];
+            a &b[(1 - 1) + (1 - 1) * ldb] = smlnum * a & b[(1 - 1) + (1 - 1) * ldb];
         }
         //
     } else if (imat == 13) {

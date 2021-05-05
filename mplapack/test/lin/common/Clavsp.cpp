@@ -42,6 +42,7 @@ void Clavsp(const char *uplo, const char *trans, const char *diag, INTEGER const
     INTEGER k = 0;
     INTEGER kc = 0;
     const COMPLEX one = COMPLEX(1.0, 0.0);
+    INTEGER &b[(1 - 1) + (1 - 1) * ldb] = 0;
     INTEGER kp = 0;
     INTEGER kcnext = 0;
     COMPLEX d11 = 0.0;
@@ -138,7 +139,7 @@ void Clavsp(const char *uplo, const char *trans, const char *diag, INTEGER const
                     //
                     //                 Apply the transformation.
                     //
-                    Cgeru(k - 1, nrhs, one, &a[kc - 1], 1, &b[(k - 1)], ldb, &b[(1 - 1)], ldb);
+                    Cgeru(k - 1, nrhs, one, &a[kc - 1], 1, &b[(k - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
                     //
                     //                 Interchange if P(K) != I.
                     //
@@ -176,8 +177,8 @@ void Clavsp(const char *uplo, const char *trans, const char *diag, INTEGER const
                     //
                     //                 Apply the transformations.
                     //
-                    Cgeru(k - 1, nrhs, one, &a[kc - 1], 1, &b[(k - 1)], ldb, &b[(1 - 1)], ldb);
-                    Cgeru(k - 1, nrhs, one, &a[kcnext - 1], 1, &b[((k + 1) - 1)], ldb, &b[(1 - 1)], ldb);
+                    Cgeru(k - 1, nrhs, one, &a[kc - 1], 1, &b[(k - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
+                    Cgeru(k - 1, nrhs, one, &a[kcnext - 1], 1, &b[((k + 1) - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
                     //
                     //                 Interchange if P(K) != I.
                     //

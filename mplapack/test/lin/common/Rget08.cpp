@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -27,13 +27,19 @@
  */
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rget08(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
+    a([lda * star]);
+    x([ldx * star]);
+    b([ldb * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -98,10 +104,8 @@ void Rget08(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
     REAL bnorm = 0.0;
     REAL xnorm = 0.0;
     for (j = 1; j <= nrhs; j = j + 1) {
-        INTEGER bb = iRamax(n1, &b[(j - 1) * ldb], 1);
-        INTEGER xx = iRamax(n2, &x[(j - 1) * ldx], 1);
-        bnorm = abs(b[(bb - 1) + (j - 1) * ldx]);
-        xnorm = abs(x[(xx - 1) + (j - 1) * ldx]);
+        bnorm = abs(b(iRamax(n1, &b[(j - 1) * ldb], 1), j));
+        xnorm = abs(x(iRamax(n2, &x[(j - 1) * ldx], 1), j));
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
@@ -109,6 +113,6 @@ void Rget08(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         }
     }
     //
-    //     End of Rget08
+    //     End of Rget02
     //
 }

@@ -94,13 +94,13 @@ void Rpbt01(const char *uplo, INTEGER const n, INTEGER const kd, REAL *a, INTEGE
             //
             //           Compute the (K,K) element of the result.
             //
-            t = Rdot(klen + 1, afac[(kc - 1) + (k - 1) * ldafac], 1, afac[(kc - 1) + (k - 1) * ldafac], 1);
+            t = Rdot(klen + 1, &afac[(kc - 1) + (k - 1) * ldafac], 1, &afac[(kc - 1) + (k - 1) * ldafac], 1);
             afac[((kd + 1) - 1) + (k - 1) * ldafac] = t;
             //
             //           Compute the rest of column K.
             //
             if (klen > 0) {
-                Rtrmv("Upper", "Transpose", "Non-unit", klen, afac[((kd + 1) - 1) + ((k - klen) - 1) * ldafac], ldafac - 1, afac[(kc - 1) + (k - 1) * ldafac], 1);
+                Rtrmv("Upper", "Transpose", "Non-unit", klen, &afac[((kd + 1) - 1) + ((k - klen) - 1) * ldafac], ldafac - 1, &afac[(kc - 1) + (k - 1) * ldafac], 1);
             }
             //
         }
@@ -115,13 +115,13 @@ void Rpbt01(const char *uplo, INTEGER const n, INTEGER const kd, REAL *a, INTEGE
             //           columns K+1 through N.
             //
             if (klen > 0) {
-                Rsyr("Lower", klen, one, afac[(2 - 1) + (k - 1) * ldafac], 1, afac[((k + 1) - 1) * ldafac], ldafac - 1);
+                Rsyr("Lower", klen, one, &afac[(2 - 1) + (k - 1) * ldafac], 1, &afac[((k + 1) - 1) * ldafac], ldafac - 1);
             }
             //
             //           Scale column K by the diagonal element.
             //
             t = afac[(k - 1) * ldafac];
-            Rscal(klen + 1, t, afac[(k - 1) * ldafac], 1);
+            Rscal(klen + 1, t, &afac[(k - 1) * ldafac], 1);
             //
         }
     }

@@ -38,8 +38,6 @@ using fem::common;
 
 REAL Cqrt11(INTEGER const m, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork) {
     REAL return_value = 0.0;
-    a([lda * star]);
-    work([lwork]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -100,7 +98,7 @@ REAL Cqrt11(INTEGER const m, INTEGER const k, COMPLEX *a, INTEGER const lda, COM
     }
     //
     REAL rdummy[1];
-    return_value = Clange("One-norm", m, m, work, m, rdummy) / (m.real() * Rlamch("Epsilon"));
+    return_value = Clange("One-norm", m, m, work, m, rdummy) / (castREAL(m) * Rlamch("Epsilon"));
     //
     return return_value;
     //

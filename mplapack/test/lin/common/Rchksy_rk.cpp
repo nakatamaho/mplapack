@@ -36,7 +36,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const  /* nmax */, REAL *a, REAL *afac, REAL *e, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+void Rchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, REAL *a, REAL *afac, REAL *e, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Rchksy_rk);
     common_write write(cmn);
     //
@@ -426,13 +426,13 @@ void Rchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                             //                       Get max absolute value from elements
                             //                       in column k in in U
                             //
-                            dtemp = Rlange("M", k - 1, 1, afac[((k - 1) * lda + 1) - 1], lda, rwork);
+                            dtemp = Rlange("M", k - 1, 1, &afac[((k - 1) * lda + 1) - 1], lda, rwork);
                         } else {
                             //
                             //                       Get max absolute value from elements
                             //                       in columns k and k-1 in U
                             //
-                            dtemp = Rlange("M", k - 2, 2, afac[((k - 2) * lda + 1) - 1], lda, rwork);
+                            dtemp = Rlange("M", k - 2, 2, &afac[((k - 2) * lda + 1) - 1], lda, rwork);
                             k = k - 1;
                             //
                         }
@@ -464,13 +464,13 @@ void Rchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                             //                       Get max absolute value from elements
                             //                       in column k in in L
                             //
-                            dtemp = Rlange("M", n - k, 1, afac[((k - 1) * lda + k + 1) - 1], lda, rwork);
+                            dtemp = Rlange("M", n - k, 1, &afac[((k - 1) * lda + k + 1) - 1], lda, rwork);
                         } else {
                             //
                             //                       Get max absolute value from elements
                             //                       in columns k and k+1 in L
                             //
-                            dtemp = Rlange("M", n - k - 1, 2, afac[((k - 1) * lda + k + 2) - 1], lda, rwork);
+                            dtemp = Rlange("M", n - k - 1, 2, &afac[((k - 1) * lda + k + 2) - 1], lda, rwork);
                             k++;
                             //
                         }

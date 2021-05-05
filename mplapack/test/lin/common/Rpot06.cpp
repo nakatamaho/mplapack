@@ -37,9 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rpot06(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
-    a([lda * star]);
-    x([ldx * star]);
-    b([ldb * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -96,8 +93,10 @@ void Rpot06(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
     REAL bnorm = 0.0;
     REAL xnorm = 0.0;
     for (j = 1; j <= nrhs; j = j + 1) {
-        bnorm = abs(b(iRamax(n, &b[(j - 1) * ldb], 1), j));
-        xnorm = abs(x(iRamax(n, &x[(j - 1) * ldx], 1), j));
+        INTEGER bb = iRamax(n, &b[(j - 1) * ldb], 1);
+        INTEGER xx = iRamax(n, &x[(j - 1) * ldx], 1);
+        bnorm = abs(b[(bb-1) + (j-1)* lda] );
+        xnorm = abs(x[(xx-1) + (j-1)* lda] );
         if (xnorm <= zero) {
             resid = one / eps;
         } else {

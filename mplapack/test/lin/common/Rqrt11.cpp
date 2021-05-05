@@ -38,8 +38,6 @@ using fem::common;
 
 REAL Rqrt11(INTEGER const m, INTEGER const k, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork) {
     REAL return_value = 0.0;
-    a([lda * star]);
-    work([lwork]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -100,7 +98,7 @@ REAL Rqrt11(INTEGER const m, INTEGER const k, REAL *a, INTEGER const lda, REAL *
     }
     //
     REAL rdummy[1];
-    return_value = Rlange("One-norm", m, m, work, m, rdummy) / (m.real() * Rlamch("Epsilon"));
+    return_value = Rlange("One-norm", m, m, work, m, rdummy) / (castREAL(m) * Rlamch("Epsilon"));
     //
     return return_value;
     //

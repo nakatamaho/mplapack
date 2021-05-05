@@ -37,9 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cget03(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *ainv, INTEGER const ldainv, COMPLEX *work, INTEGER const ldwork, REAL *rwork, REAL &rcond, REAL &resid) {
-    a([lda * star]);
-    ainv([ldainv * star]);
-    work([ldwork * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -100,7 +97,7 @@ void Cget03(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *ainv, INTEG
     //
     resid = Clange("1", n, n, work, ldwork, rwork);
     //
-    resid = ((resid * rcond) / eps) / n.real();
+    resid = ((resid * rcond) / eps) / castREAL(n);
     //
     //     End of Cget03
     //

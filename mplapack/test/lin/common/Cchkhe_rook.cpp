@@ -36,7 +36,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cchkhe_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const  /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+void Cchkhe_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     FEM_CMN_SVE(Cchkhe_rook);
     common_write write(cmn);
     //
@@ -422,13 +422,13 @@ void Cchkhe_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                             //                       Get max absolute value from elements
                             //                       in column k in U
                             //
-                            dtemp = Clange("M", k - 1, 1, afac[((k - 1) * lda + 1) - 1], lda, rwork);
+                            dtemp = Clange("M", k - 1, 1, &afac[((k - 1) * lda + 1) - 1], lda, rwork);
                         } else {
                             //
                             //                       Get max absolute value from elements
                             //                       in columns k and k-1 in U
                             //
-                            dtemp = Clange("M", k - 2, 2, afac[((k - 2) * lda + 1) - 1], lda, rwork);
+                            dtemp = Clange("M", k - 2, 2, &afac[((k - 2) * lda + 1) - 1], lda, rwork);
                             k = k - 1;
                             //
                         }
@@ -460,13 +460,13 @@ void Cchkhe_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                             //                       Get max absolute value from elements
                             //                       in column k in L
                             //
-                            dtemp = Clange("M", n - k, 1, afac[((k - 1) * lda + k + 1) - 1], lda, rwork);
+                            dtemp = Clange("M", n - k, 1, &afac[((k - 1) * lda + k + 1) - 1], lda, rwork);
                         } else {
                             //
                             //                       Get max absolute value from elements
                             //                       in columns k and k+1 in L
                             //
-                            dtemp = Clange("M", n - k - 1, 2, afac[((k - 1) * lda + k + 2) - 1], lda, rwork);
+                            dtemp = Clange("M", n - k - 1, 2, &afac[((k - 1) * lda + k + 2) - 1], lda, rwork);
                             k++;
                             //
                         }

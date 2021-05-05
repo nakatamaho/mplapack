@@ -122,6 +122,7 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL bnorm = 0.0;
     REAL bscal = 0.0;
     REAL tscal = 0.0;
+    INTEGER &a[(1 - 1) + (1 - 1) * lda] = 0;
     INTEGER jcount = 0;
     REAL texp = 0.0;
     REAL tleft = 0.0;
@@ -387,7 +388,7 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 }
                 a[(j - 1) + (j - 1) * lda] = sign(one, &a[(j - 1) + (j - 1) * lda]);
             }
-            a[(1 - 1)] = smlnum * a[(1 - 1)];
+            &a[(1 - 1) + (1 - 1) * lda] = smlnum * &a[(1 - 1) + (1 - 1) * lda];
         }
         //
     } else if (imat == 13) {
@@ -408,7 +409,7 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 Rlarnv(2, iseed, n - j + 1, &a[(j - 1) + (j - 1) * lda]);
                 a[(j - 1) + (j - 1) * lda] = sign(one, &a[(j - 1) + (j - 1) * lda]);
             }
-            a[(1 - 1)] = smlnum * a[(1 - 1)];
+            &a[(1 - 1) + (1 - 1) * lda] = smlnum * &a[(1 - 1) + (1 - 1) * lda];
         }
         //
     } else if (imat == 14) {

@@ -74,10 +74,10 @@ void Cerrtz(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
+    INTEGER &a[(1 - 1) + (1 - 1) * lda] = COMPLEX(1.e+0, -1.e+0);
+    INTEGER &a[(1 - 1) + (2 - 1) * lda] = COMPLEX(2.e+0, -2.e+0);
     const INTEGER nmax = 2;
     COMPLEX a[nmax * nmax];
-    a[(1 - 1)] = COMPLEX(1.e+0, -1.e+0);
-    a[(2 - 1) * lda] = COMPLEX(2.e+0, -2.e+0);
     a[(2 - 1) + (2 - 1) * lda] = COMPLEX(3.e+0, -3.e+0);
     a[(2 - 1)] = COMPLEX(4.e+0, -4.e+0);
     COMPLEX w[nmax];

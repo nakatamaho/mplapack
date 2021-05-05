@@ -38,8 +38,6 @@ using fem::common;
 
 REAL Crzt02(INTEGER const m, INTEGER const n, COMPLEX *af, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork) {
     REAL return_value = 0.0;
-    af([lda * star]);
-    work([lwork]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -102,7 +100,7 @@ REAL Crzt02(INTEGER const m, INTEGER const n, COMPLEX *af, INTEGER const lda, CO
     }
     //
     REAL rwork[1];
-    return_value = Clange("One-norm", n, n, work, n, rwork) / (Rlamch("Epsilon") * (max(m, n)).real());
+    return_value = Clange("One-norm", n, n, work, n, rwork) / (Rlamch("Epsilon") * castREAL(max(m, n)));
     return return_value;
     //
     //     End of Crzt02

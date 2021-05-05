@@ -38,7 +38,6 @@ using fem::common;
 
 bool Rgennd(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda) {
     bool return_value = false;
-    a([lda * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

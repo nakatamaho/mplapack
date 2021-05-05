@@ -73,10 +73,10 @@ void Cerrls(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
+    INTEGER &a[(1 - 1) + (1 - 1) * lda] = (1.0, 0.0);
+    INTEGER &a[(1 - 1) + (2 - 1) * lda] = (2.0e+0, 0.0);
     const INTEGER nmax = 2;
     COMPLEX a[nmax * nmax];
-    a[(1 - 1)] = (1.0, 0.0);
-    a[(2 - 1) * lda] = (2.0e+0, 0.0);
     a[(2 - 1) + (2 - 1) * lda] = (3.0e+0, 0.0);
     a[(2 - 1)] = (4.0e+0, 0.0);
     ok = true;
