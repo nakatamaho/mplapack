@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012
+ * Copyright (c) 2008-2021
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef _MPLAPACK_LIN__FLOAT64X_H_
-#define _MPLAPACK_LIN__FLOAT64X_H_
+#ifndef _MPLAPACK_LIN_DOUBLE_H_
+#define _MPLAPACK_LIN_DOUBLE_H_
 
 #include "mplapack_config.h"
 

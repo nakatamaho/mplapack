@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2012
+ * Copyright (c) 2008-2021
  *	Nakata, Maho
  * 	All rights reserved.
  *
- * $Id: mplapack_double.h,v 1.4 2010/08/07 03:15:46 nakatamaho Exp $
+ * $Id: mplapack_mpfr.h,v 1.5 2010/08/07 03:15:46 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,8 +28,14 @@
  *
  */
 
-#ifndef _MPLAPACK_LIN__FLOAT64X_H_
-#define _MPLAPACK_LIN__FLOAT64X_H_
+#ifndef _MPLAPACK_LIN_MPFR_H_
+#define _MPLAPACK_LIN_MPFR_H_
 
 #include "mplapack_config.h"
+#include "mpc_class.h"
+#include "gmpxx.h"
+#include "mpreal.h"
+#include "mpcomplex.h"
+
+using namespace mpfr;
 
