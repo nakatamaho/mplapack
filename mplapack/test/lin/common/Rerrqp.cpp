@@ -69,10 +69,13 @@ void Rerrqp(const char *path, INTEGER const nunit) {
     //     .. Executable Statements ..
     //
     INTEGER nout = nunit;
-    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2];
+    c2[0] = path[1];
+    c2[1] = path[2];
     const INTEGER nmax = 3;
     INTEGER lw = 3 * nmax + 1;
     REAL a[nmax * nmax];
+    INTEGER lda = nmax;
     a[(1 - 1) + (1 - 1) * lda] = 1.0;
     a[(1 - 1) + (2 - 1) * lda] = 2.0e+0;
     a[(2 - 1) + (2 - 1) * lda] = 3.0e+0;
@@ -83,6 +86,7 @@ void Rerrqp(const char *path, INTEGER const nunit) {
     REAL tau[nmax];
     REAL w[3 * nmax + 1];
     INTEGER info = 0;
+    bool infot = 0;
     if (Mlsamen(2, c2, "QP")) {
         //
         //        Test error exits for QR factorization with pivoting

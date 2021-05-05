@@ -36,9 +36,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
+
 void Cget04(INTEGER const n, INTEGER const nrhs, COMPLEX *x, INTEGER const ldx, COMPLEX *xact, INTEGER const ldxact, REAL const rcond, REAL &resid) {
-    x([ldx * star]);
-    xact([ldxact * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -63,7 +63,6 @@ void Cget04(INTEGER const n, INTEGER const nrhs, COMPLEX *x, INTEGER const ldx, 
     //     ..
     //     .. Statement Function definitions ..
     COMPLEX zdum = 0.0;
-    abs1(zdum) = abs(zdum.real()) + abs(zdum.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -94,7 +93,7 @@ void Cget04(INTEGER const n, INTEGER const nrhs, COMPLEX *x, INTEGER const ldx, 
     REAL diffnm = 0.0;
     INTEGER i = 0;
     for (j = 1; j <= nrhs; j = j + 1) {
-        ix = iCamax(n, xact[(j - 1) * ldxact], 1);
+        ix = iCamax(n, &xact[(j - 1) * ldxact], 1);
         xnorm = abs1(xact[(ix - 1) + (j - 1) * ldxact]);
         diffnm = zero;
         for (i = 1; i <= n; i = i + 1) {

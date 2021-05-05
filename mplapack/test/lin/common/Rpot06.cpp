@@ -95,8 +95,8 @@ void Rpot06(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
     for (j = 1; j <= nrhs; j = j + 1) {
         INTEGER bb = iRamax(n, &b[(j - 1) * ldb], 1);
         INTEGER xx = iRamax(n, &x[(j - 1) * ldx], 1);
-        bnorm = abs(b[(bb-1) + (j-1)* lda] );
-        xnorm = abs(x[(xx-1) + (j-1)* lda] );
+        bnorm = abs(b[(bb - 1) + (j - 1) * lda]);
+        xnorm = abs(x[(xx - 1) + (j - 1) * lda]);
         if (xnorm <= zero) {
             resid = one / eps;
         } else {

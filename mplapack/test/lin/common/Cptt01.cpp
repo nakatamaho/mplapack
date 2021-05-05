@@ -87,10 +87,10 @@ void Cptt01(INTEGER const n, REAL *d, COMPLEX *e, REAL *df, COMPLEX *ef, COMPLEX
         anorm = d[1 - 1];
         resid = abs(work[1 - 1]);
     } else {
-        anorm = max(d[1 - 1] + abs(e[1 - 1]), &d[n - 1] + abs(e[(n - 1) - 1]));
+        anorm = max(d[1 - 1] + abs(e[1 - 1]), d[n - 1] + abs(e[(n - 1) - 1]));
         resid = max(abs(work[1 - 1]) + abs(work[(n + 1) - 1]), abs(work[n - 1]) + abs(work[(2 * n - 1) - 1]));
         for (i = 2; i <= n - 1; i = i + 1) {
-            anorm = max(anorm, &d[i - 1] + abs(e[i - 1]) + abs(e[(i - 1) - 1]));
+            anorm = max(anorm, d[i - 1] + abs(e[i - 1]) + abs(e[(i - 1) - 1]));
             resid = max(resid, abs(work[i - 1]) + abs(work[(n + i - 1) - 1]) + abs(work[(n + i) - 1]));
         }
     }
@@ -103,7 +103,7 @@ void Cptt01(INTEGER const n, REAL *d, COMPLEX *e, REAL *df, COMPLEX *ef, COMPLEX
             resid = one / eps;
         }
     } else {
-        resid = ((resid / n.real()) / anorm) / eps;
+        resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
     //     End of Cptt01
