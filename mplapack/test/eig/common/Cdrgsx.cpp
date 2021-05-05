@@ -39,6 +39,13 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER const nin, INTEGER const nout, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *ai, COMPLEX *bi, COMPLEX *z, COMPLEX *q, COMPLEX *alpha, COMPLEX *beta, COMPLEX *c, INTEGER const ldc, REAL *s, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER const liwork, bool *bwork, INTEGER &info) {
+    a([lda * star]);
+    b([lda * star]);
+    ai([lda * star]);
+    bi([lda * star]);
+    z([lda * star]);
+    q([lda * star]);
+    c([ldc * star]);
     common_read read(cmn);
     common_write write(cmn);
     INTEGER &m = cmn.m;
@@ -67,12 +74,12 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
     INTEGER qbb = 0;
     REAL weight = 0.0;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
-    char sense[1];
+    char sense;
     INTEGER mm = 0;
-    arr_1d<2, REAL> pl;
-    arr_1d<2, REAL> difest;
+    REAL pl[2];
+    REAL difest[2];
     INTEGER linfo = 0;
-    arr_1d<10, REAL> result;
+    REAL result[10];
     REAL abnrm = 0.0;
     INTEGER ntest = 0;
     REAL temp1 = 0.0;

@@ -39,6 +39,10 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rsyt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER const kband, REAL *a, INTEGER const lda, REAL *d, REAL *e, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *tau, REAL *work, REAL *result) {
+    a([lda * star]);
+    u([ldu * star]);
+    v([ldv * star]);
+    result([2]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -73,7 +77,7 @@ void Rsyt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     }
     //
     bool lower = false;
-    char cuplo[1];
+    char cuplo;
     if (Mlsame(uplo, "U")) {
         lower = false;
         cuplo = "U";

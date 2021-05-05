@@ -40,8 +40,18 @@ using fem::common;
 
 void Rchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nwdths, INTEGER *kk, INTEGER const ntypes, bool *dotype, INTEGER const nrhs, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *ab, INTEGER const ldab, REAL *bd, REAL *be, REAL *q, INTEGER const ldq, REAL *p, INTEGER const ldp, REAL *c, INTEGER const ldc, REAL *cc, REAL *work, INTEGER const lwork, REAL *result, INTEGER &info) {
     FEM_CMN_SVE(Rchkbb);
+    iseed([4]);
+    a([lda * star]);
+    ab([ldab * star]);
+    q([ldq * star]);
+    p([ldp * star]);
+    c([ldc * star]);
+    cc([ldc * star]);
     common_write write(cmn);
     const INTEGER maxtyp = 15;
+    INTEGER *kmagn(sve.kmagn, [maxtyp]);
+    INTEGER *kmode(sve.kmode, [maxtyp]);
+    INTEGER *ktype(sve.ktype, [maxtyp]);
     if (is_called_first_time) {
         data((values, 1, 2, 5 * datum(4), 5 * datum(6), 3 * datum(9))), ktype;
         {
@@ -87,7 +97,7 @@ void Rchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
-    arr_1d<4, int> ioldsd;
+    INTEGER ioldsd[4];
     INTEGER itype = 0;
     INTEGER imode = 0;
     REAL anorm = 0.0;
@@ -95,7 +105,7 @@ void Rchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
     INTEGER iinfo = 0;
     REAL cond = 0.0;
     INTEGER jcol = 0;
-    arr_1d<1, int> idumma;
+    INTEGER idumma[1];
     INTEGER i = 0;
     INTEGER jr = 0;
     static const char *format_9999 = "(' Rchkbb: ',a,' returned INFO=',i5,'.',/,9x,'M=',i5,' N=',i5,' K=',i5,"

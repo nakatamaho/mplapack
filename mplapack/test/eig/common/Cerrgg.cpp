@@ -82,11 +82,11 @@ void Cerrgg(const char *path, INTEGER const nunit) {
     //
     INTEGER j = 0;
     const INTEGER nmax = 3;
-    arr_1d<nmax, bool> sel;
+    bool sel[nmax];
     INTEGER i = 0;
     const REAL zero = 0.0;
-    arr_2d<nmax, nmax, COMPLEX> a;
-    arr_2d<nmax, nmax, COMPLEX> b;
+    COMPLEX a[nmax * nmax];
+    COMPLEX b[nmax * nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         sel[j - 1] = true;
         for (i = 1; i <= nmax; i = i + 1) {
@@ -109,33 +109,33 @@ void Cerrgg(const char *path, INTEGER const nunit) {
     //
     //     Test error exits for the GG path.
     //
-    arr_2d<nmax, nmax, COMPLEX> q;
-    arr_2d<nmax, nmax, COMPLEX> z;
+    COMPLEX q[nmax * nmax];
+    COMPLEX z[nmax * nmax];
     INTEGER info = 0;
     const INTEGER lw = 6 * nmax;
-    arr_1d<lw, COMPLEX> w;
-    arr_1d<nmax, COMPLEX> alpha;
-    arr_1d<nmax, COMPLEX> beta;
-    arr_1d<lw, REAL> rw;
+    COMPLEX w[lw];
+    COMPLEX alpha[nmax];
+    COMPLEX beta[nmax];
+    REAL rw[lw];
     INTEGER m = 0;
     INTEGER dummyk = 0;
     INTEGER dummyl = 0;
-    arr_1d<nmax, REAL> r1;
-    arr_1d<nmax, REAL> r2;
-    arr_2d<nmax, nmax, COMPLEX> u;
-    arr_2d<nmax, nmax, COMPLEX> v;
-    arr_1d<nmax, int> idum;
-    arr_1d<lw, int> iw;
-    arr_1d<nmax, COMPLEX> tau;
+    REAL r1[nmax];
+    REAL r2[nmax];
+    COMPLEX u[nmax * nmax];
+    COMPLEX v[nmax * nmax];
+    INTEGER idum[nmax];
+    INTEGER iw[lw];
+    COMPLEX tau[nmax];
     INTEGER ncycle = 0;
-    arr_1d<nmax, REAL> rs;
+    REAL rs[nmax];
     INTEGER sdim = 0;
-    arr_1d<nmax, bool> bw;
-    arr_1d<nmax, REAL> rce;
-    arr_1d<nmax, REAL> rcv;
+    bool bw[nmax];
+    REAL rce[nmax];
+    REAL rcv[nmax];
     INTEGER ilo = 0;
     INTEGER ihi = 0;
-    arr_1d<nmax, REAL> ls;
+    REAL ls[nmax];
     REAL anrm = 0.0;
     REAL bnrm = 0.0;
     REAL scale = 0.0;

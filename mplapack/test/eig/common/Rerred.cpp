@@ -90,7 +90,7 @@ void Rerred(const char *path, INTEGER const nunit) {
     const INTEGER nmax = 4;
     INTEGER i = 0;
     const REAL zero = 0.0;
-    arr_2d<nmax, nmax, REAL> a;
+    REAL a[nmax * nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = zero;
@@ -103,23 +103,23 @@ void Rerred(const char *path, INTEGER const nunit) {
     ok = true;
     INTEGER nt = 0;
     //
-    arr_1d<nmax, REAL> wr;
-    arr_1d<nmax, REAL> wi;
-    arr_2d<nmax, nmax, REAL> vl;
-    arr_2d<nmax, nmax, REAL> vr;
-    arr_1d<10 * nmax, REAL> w;
+    REAL wr[nmax];
+    REAL wi[nmax];
+    REAL vl[nmax * nmax];
+    REAL vr[nmax * nmax];
+    REAL w[10 * nmax];
     INTEGER info = 0;
     INTEGER sdim = 0;
-    arr_1d<nmax, bool> b;
+    bool b[nmax];
     INTEGER ilo = 0;
     INTEGER ihi = 0;
-    arr_1d<nmax, REAL> s;
+    REAL s[nmax];
     REAL abnrm = 0.0;
-    arr_1d<nmax, REAL> r1;
-    arr_1d<nmax, REAL> r2;
-    arr_1d<2 * nmax, int> iw;
-    arr_2d<nmax, nmax, REAL> u;
-    arr_2d<nmax, nmax, REAL> vt;
+    REAL r1[nmax];
+    REAL r2[nmax];
+    INTEGER iw[2 * nmax];
+    REAL u[nmax * nmax];
+    REAL vt[nmax * nmax];
     INTEGER ns = 0;
     if (Mlsamen(2, c2, "EV")) {
         //

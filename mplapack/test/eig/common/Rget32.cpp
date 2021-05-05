@@ -41,6 +41,7 @@ using fem::common;
 void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     FEM_CMN_SVE(Rget32);
     // SAVE
+    arr_ref<int, 3> itval(sve.itval, [2 * 2 * 8]);
     //
     if (is_called_first_time) {
         static const INTEGER values[] = {8, 4, 2, 1, 4, 8, 1, 2, 2, 1, 8, 4, 1, 2, 4, 8, 9, 4, 2, 1, 4, 9, 1, 2, 2, 1, 9, 4, 1, 2, 4, 9};
@@ -82,7 +83,7 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     //
     //     Set up test case parameters
     //
-    arr_1d<3, REAL> val;
+    REAL val[3];
     val[1 - 1] = sqrt(smlnum);
     val[2 - 1] = one;
     val[3 - 1] = sqrt(bignum);
@@ -106,11 +107,12 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     INTEGER itl = 0;
     INTEGER itr = 0;
     INTEGER ib = 0;
-    arr_2d<2, 2, REAL> tl;
-    arr_2d<2, 2, REAL> tr;
-    arr_2d<2, 2, REAL> b;
+    REAL tl[2 * 2];
+    REAL tr[2 * 2];
+    INTEGER &b[(1 - 1) + (1 - 1) * ldb] = 0;
+    REAL b[2 * 2];
     REAL scale = 0.0;
-    arr_2d<2, 2, REAL> x;
+    REAL x[2 * 2];
     REAL xnorm = 0.0;
     INTEGER info = 0;
     REAL res = 0.0;
@@ -124,6 +126,7 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     REAL xnrm = 0.0;
     INTEGER itrscl = 0;
     const REAL two = 2.0;
+    INTEGER &b[(1 - 1) + (2 - 1) * ldb] = 0;
     INTEGER ib3 = 0;
     const REAL eight = 8.0;
     for (itranl = 0; itranl <= 1; itranl = itranl + 1) {
@@ -140,13 +143,13 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                         for (ib = 1; ib <= 3; ib = ib + 1) {
                             tl[(1 - 1)] = val[itl - 1];
                             tr[(1 - 1)] = val[itr - 1];
-                            b[(1 - 1)] = val[ib - 1];
+                            &b[(1 - 1) + (1 - 1) * ldb] = val[ib - 1];
                             knt++;
                             Rlasy2(ltranl, ltranr, isgn, n1, n2, tl, 2, tr, 2, b, 2, scale, x, 2, xnorm, info);
                             if (info != 0) {
                                 ninfo++;
                             }
-                            res = abs((tl[(1 - 1)] + sgn * tr[(1 - 1)]) * x[(1 - 1)] - scale * b[(1 - 1)]);
+                            res = abs((tl[(1 - 1)] + sgn * tr[(1 - 1)]) * x[(1 - 1)] - scale * &b[(1 - 1) + (1 - 1) * ldb]);
                             if (info == 0) {
                                 den = max(eps * ((abs(tr[(1 - 1)]) + abs(tl[(1 - 1)])) * abs(x[(1 - 1)])), smlnum);
                             } else {
@@ -175,7 +178,7 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                         for (itr = 1; itr <= 3; itr = itr + 1) {
                             for (ib1 = 1; ib1 <= 3; ib1 = ib1 + 1) {
                                 for (ib2 = 1; ib2 <= 3; ib2 = ib2 + 1) {
-                                    b[(1 - 1)] = val[ib1 - 1];
+                                    &b[(1 - 1) + (1 - 1) * ldb] = val[ib1 - 1];
                                     b[(2 - 1)] = -four * val[ib2 - 1];
                                     tl[(1 - 1)] = itval1, 1, itl * val[itlscl - 1];
                                     tl[(2 - 1)] = itval2, 1, itl * val[itlscl - 1];
@@ -192,7 +195,7 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                         tl[(2 - 1) * ldtl] = tl[(2 - 1)];
                                         tl[(2 - 1)] = tmp;
                                     }
-                                    res = abs((tl[(1 - 1)] + sgn * tr[(1 - 1)]) * x[(1 - 1)] + tl[(2 - 1) * ldtl] * x[(2 - 1)] - scale * b[(1 - 1)]);
+                                    res = abs((tl[(1 - 1)] + sgn * tr[(1 - 1)]) * x[(1 - 1)] + tl[(2 - 1) * ldtl] * x[(2 - 1)] - scale * &b[(1 - 1) + (1 - 1) * ldb]);
                                     res += abs((tl[(2 - 1) + (2 - 1) * ldtl] + sgn * tr[(1 - 1)]) * x[(2 - 1)] + tl[(2 - 1)] * x[(1 - 1)] - scale * b[(2 - 1)]);
                                     tnrm = abs(tr[(1 - 1)]) + abs(tl[(1 - 1)]) + abs(tl[(2 - 1) * ldtl]) + abs(tl[(2 - 1)]) + abs(tl[(2 - 1) + (2 - 1) * ldtl]);
                                     xnrm = max(abs(x[(1 - 1)]), abs(x[(2 - 1)]));
@@ -219,8 +222,8 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                         for (itl = 1; itl <= 3; itl = itl + 1) {
                             for (ib1 = 1; ib1 <= 3; ib1 = ib1 + 1) {
                                 for (ib2 = 1; ib2 <= 3; ib2 = ib2 + 1) {
-                                    b[(1 - 1)] = val[ib1 - 1];
-                                    b[(2 - 1) * ldb] = -two * val[ib2 - 1];
+                                    &b[(1 - 1) + (1 - 1) * ldb] = val[ib1 - 1];
+                                    &b[(1 - 1) + (2 - 1) * ldb] = -two * val[ib2 - 1];
                                     tr[(1 - 1)] = itval1, 1, itr * val[itrscl - 1];
                                     tr[(2 - 1)] = itval2, 1, itr * val[itrscl - 1];
                                     tr[(2 - 1) * ldtr] = itval1, 2, itr * val[itrscl - 1];
@@ -238,8 +241,8 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                     }
                                     tnrm = abs(tl[(1 - 1)]) + abs(tr[(1 - 1)]) + abs(tr[(2 - 1) * ldtr]) + abs(tr[(2 - 1) + (2 - 1) * ldtr]) + abs(tr[(2 - 1)]);
                                     xnrm = abs(x[(1 - 1)]) + abs(x[(2 - 1) * ldx]);
-                                    res = abs(((tl[(1 - 1)] + sgn * tr[(1 - 1)])) * (x[(1 - 1)]) + (sgn * tr[(2 - 1)]) * (x[(2 - 1) * ldx]) - (scale * b[(1 - 1)]));
-                                    res += abs(((tl[(1 - 1)] + sgn * tr[(2 - 1) + (2 - 1) * ldtr])) * (x[(2 - 1) * ldx]) + (sgn * tr[(2 - 1) * ldtr]) * (x[(1 - 1)]) - (scale * b[(2 - 1) * ldb]));
+                                    res = abs(((tl[(1 - 1)] + sgn * tr[(1 - 1)])) * (x[(1 - 1)]) + (sgn * tr[(2 - 1)]) * (x[(2 - 1) * ldx]) - (scale * &b[(1 - 1) + (1 - 1) * ldb]));
+                                    res += abs(((tl[(1 - 1)] + sgn * tr[(2 - 1) + (2 - 1) * ldtr])) * (x[(2 - 1) * ldx]) + (sgn * tr[(2 - 1) * ldtr]) * (x[(1 - 1)]) - (scale * &b[(1 - 1) + (2 - 1) * ldb]));
                                     den = max({smlnum, smlnum * xnrm, (tnrm * eps) * xnrm});
                                     res = res / den;
                                     if (scale > one) {
@@ -265,9 +268,9 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                 for (ib1 = 1; ib1 <= 3; ib1 = ib1 + 1) {
                                     for (ib2 = 1; ib2 <= 3; ib2 = ib2 + 1) {
                                         for (ib3 = 1; ib3 <= 3; ib3 = ib3 + 1) {
-                                            b[(1 - 1)] = val[ib1 - 1];
+                                            &b[(1 - 1) + (1 - 1) * ldb] = val[ib1 - 1];
                                             b[(2 - 1)] = -four * val[ib2 - 1];
-                                            b[(2 - 1) * ldb] = -two * val[ib3 - 1];
+                                            &b[(1 - 1) + (2 - 1) * ldb] = -two * val[ib3 - 1];
                                             b[(2 - 1) + (2 - 1) * ldb] = eight * min({val[ib1 - 1], val[ib2 - 1], val[ib3 - 1]});
                                             tr[(1 - 1)] = itval1, 1, itr * val[itrscl - 1];
                                             tr[(2 - 1)] = itval2, 1, itr * val[itrscl - 1];
@@ -294,8 +297,8 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                             }
                                             tnrm = abs(tr[(1 - 1)]) + abs(tr[(2 - 1)]) + abs(tr[(2 - 1) * ldtr]) + abs(tr[(2 - 1) + (2 - 1) * ldtr]) + abs(tl[(1 - 1)]) + abs(tl[(2 - 1)]) + abs(tl[(2 - 1) * ldtl]) + abs(tl[(2 - 1) + (2 - 1) * ldtl]);
                                             xnrm = max(abs(x[(1 - 1)]) + abs(x[(2 - 1) * ldx]), abs(x[(2 - 1)]) + abs(x[(2 - 1) + (2 - 1) * ldx]));
-                                            res = abs(((tl[(1 - 1)] + sgn * tr[(1 - 1)])) * (x[(1 - 1)]) + (sgn * tr[(2 - 1)]) * (x[(2 - 1) * ldx]) + (tl[(2 - 1) * ldtl]) * (x[(2 - 1)]) - (scale * b[(1 - 1)]));
-                                            res += abs((tl[(1 - 1)]) * (x[(2 - 1) * ldx]) + (sgn * tr[(2 - 1) * ldtr]) * (x[(1 - 1)]) + (sgn * tr[(2 - 1) + (2 - 1) * ldtr]) * (x[(2 - 1) * ldx]) + (tl[(2 - 1) * ldtl]) * (x[(2 - 1) + (2 - 1) * ldx]) - (scale * b[(2 - 1) * ldb]));
+                                            res = abs(((tl[(1 - 1)] + sgn * tr[(1 - 1)])) * (x[(1 - 1)]) + (sgn * tr[(2 - 1)]) * (x[(2 - 1) * ldx]) + (tl[(2 - 1) * ldtl]) * (x[(2 - 1)]) - (scale * &b[(1 - 1) + (1 - 1) * ldb]));
+                                            res += abs((tl[(1 - 1)]) * (x[(2 - 1) * ldx]) + (sgn * tr[(2 - 1) * ldtr]) * (x[(1 - 1)]) + (sgn * tr[(2 - 1) + (2 - 1) * ldtr]) * (x[(2 - 1) * ldx]) + (tl[(2 - 1) * ldtl]) * (x[(2 - 1) + (2 - 1) * ldx]) - (scale * &b[(1 - 1) + (2 - 1) * ldb]));
                                             res += abs((tl[(2 - 1)]) * (x[(1 - 1)]) + (sgn * tr[(1 - 1)]) * (x[(2 - 1)]) + (sgn * tr[(2 - 1)]) * (x[(2 - 1) + (2 - 1) * ldx]) + (tl[(2 - 1) + (2 - 1) * ldtl]) * (x[(2 - 1)]) - (scale * b[(2 - 1)]));
                                             res += abs(((tl[(2 - 1) + (2 - 1) * ldtl] + sgn * tr[(2 - 1) + (2 - 1) * ldtr])) * (x[(2 - 1) + (2 - 1) * ldx]) + (sgn * tr[(2 - 1) * ldtr]) * (x[(2 - 1)]) + (tl[(2 - 1)]) * (x[(2 - 1) * ldx]) - (scale * b[(2 - 1) + (2 - 1) * ldb]));
                                             den = max({smlnum, smlnum * xnrm, (tnrm * eps) * xnrm});

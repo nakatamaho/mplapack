@@ -85,9 +85,9 @@ void Rerrhs(const char *path, INTEGER const nunit) {
     INTEGER j = 0;
     const INTEGER nmax = 3;
     INTEGER i = 0;
-    arr_2d<nmax, nmax, REAL> a;
-    arr_1d<nmax, REAL> wi;
-    arr_1d<nmax, bool> sel;
+    REAL a[nmax * nmax];
+    REAL wi[nmax];
+    bool sel[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
@@ -102,18 +102,18 @@ void Rerrhs(const char *path, INTEGER const nunit) {
     //
     INTEGER ilo = 0;
     INTEGER ihi = 0;
-    arr_1d<nmax, REAL> s;
+    REAL s[nmax];
     INTEGER info = 0;
-    arr_1d<nmax, REAL> tau;
+    REAL tau[nmax];
     const INTEGER lw = (nmax + 2) * (nmax + 2) + nmax;
-    arr_1d<lw, REAL> w;
-    arr_2d<nmax, nmax, REAL> c;
-    arr_1d<nmax, REAL> wr;
-    arr_2d<nmax, nmax, REAL> vl;
-    arr_2d<nmax, nmax, REAL> vr;
+    REAL w[lw];
+    REAL c[nmax * nmax];
+    REAL wr[nmax];
+    REAL vl[nmax * nmax];
+    REAL vr[nmax * nmax];
     INTEGER m = 0;
-    arr_1d<nmax, int> ifaill;
-    arr_1d<nmax, int> ifailr;
+    INTEGER ifaill[nmax];
+    INTEGER ifailr[nmax];
     if (Mlsamen(2, c2, "HS")) {
         //
         //        Rgebal

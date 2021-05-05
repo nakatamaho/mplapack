@@ -40,8 +40,20 @@ using fem::common;
 
 void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const ntypes, bool *dotype, INTEGER const nrhs, INTEGER *iseed, REAL const thresh, COMPLEX *a, INTEGER const lda, REAL *bd, REAL *be, REAL *s1, REAL *s2, COMPLEX *x, INTEGER const ldx, COMPLEX *y, COMPLEX *z, COMPLEX *q, INTEGER const ldq, COMPLEX *pt, INTEGER const ldpt, COMPLEX *u, COMPLEX *vt, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const nout, INTEGER &info) {
     FEM_CMN_SVE(Cchkbd);
+    iseed([4]);
+    a([lda * star]);
+    x([ldx * star]);
+    y([ldx * star]);
+    z([ldx * star]);
+    q([ldq * star]);
+    pt([ldpt * star]);
+    u([ldpt * star]);
+    vt([ldpt * star]);
     common_write write(cmn);
     const INTEGER maxtyp = 16;
+    INTEGER *kmagn(sve.kmagn, [maxtyp]);
+    INTEGER *kmode(sve.kmode, [maxtyp]);
+    INTEGER *ktype(sve.ktype, [maxtyp]);
     if (is_called_first_time) {
         data((values, 1, 2, 5 * datum(4), 5 * datum(6), 3 * datum(9), 10)), ktype;
         {
@@ -83,9 +95,9 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     REAL amninv = 0.0;
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
-    arr_1d<4, int> ioldsd;
-    arr_1d<14, REAL> result;
-    char uplo[1];
+    INTEGER ioldsd[4];
+    REAL result[14];
+    char uplo;
     INTEGER itype = 0;
     INTEGER imode = 0;
     REAL anorm = 0.0;
@@ -95,14 +107,14 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     bool bidiag = false;
     INTEGER jcol = 0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
-    arr_1d<1, int> iwork;
+    INTEGER iwork[1];
     const REAL zero = 0.0;
     REAL temp1 = 0.0;
     INTEGER mq = 0;
     INTEGER i = 0;
     REAL temp2 = 0.0;
     const REAL half = 0.5e0;
-    arr_1d<1, REAL> dumma;
+    REAL dumma[1];
     static const char *format_9998 = "(' Cchkbd: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
                                      "', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')";
     //

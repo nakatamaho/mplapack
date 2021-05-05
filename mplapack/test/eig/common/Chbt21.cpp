@@ -39,6 +39,9 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Chbt21(const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const ks, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *u, INTEGER const ldu, COMPLEX *work, REAL *rwork, REAL *result) {
+    a([lda * star]);
+    u([ldu * star]);
+    result([2]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -75,7 +78,7 @@ void Chbt21(const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const k
     INTEGER ika = max({(INTEGER)0, min(n - 1, ka)});
     //
     bool lower = false;
-    char cuplo[1];
+    char cuplo;
     if (Mlsame(uplo, "U")) {
         lower = false;
         cuplo = "U";

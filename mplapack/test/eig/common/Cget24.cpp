@@ -39,8 +39,18 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *iseed, INTEGER const nounit, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *ht, COMPLEX *w, COMPLEX *wt, COMPLEX *wtmp, COMPLEX *vs, INTEGER const ldvs, COMPLEX *vs1, REAL const rcdein, REAL const rcdvin, INTEGER const nslct, INTEGER *islct, INTEGER const isrt, REAL *result, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
+    iseed([4]);
+    a([lda * star]);
+    h([lda * star]);
+    ht([lda * star]);
+    vs([ldvs * star]);
+    vs1([ldvs * star]);
+    result([17]);
     common_write write(cmn);
     INTEGER &selopt = cmn.selopt;
+    bool *selval(cmn.selval, [20]);
+    REAL *selwr(cmn.selwr, [20]);
+    REAL *selwi(cmn.selwi, [20]);
     //
     const REAL zero = 0.0;
     INTEGER i = 0;
@@ -49,7 +59,7 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
     REAL ulp = 0.0;
     REAL ulpinv = 0.0;
     INTEGER isort = 0;
-    char sort[1];
+    char sort;
     INTEGER rsub = 0;
     INTEGER sdim = 0;
     REAL rconde = 0.0;
@@ -66,7 +76,7 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
     REAL rcndv1 = 0.0;
     const REAL epsin = 5.9605e-8;
     REAL eps = 0.0;
-    arr_1d<20, int> ipnt;
+    INTEGER ipnt[20];
     INTEGER kmin = 0;
     REAL vrimin = 0.0;
     REAL vricmp = 0.0;

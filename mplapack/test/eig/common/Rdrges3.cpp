@@ -40,8 +40,29 @@ using fem::common;
 
 void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *b, REAL *s, REAL *t, REAL *q, INTEGER const ldq, REAL *z, REAL *alphar, REAL *alphai, REAL *beta, REAL *work, INTEGER const lwork, REAL *result, bool *bwork, INTEGER &info) {
     FEM_CMN_SVE(Rdrges3);
+    iseed([4]);
+    a([lda * star]);
+    b([lda * star]);
+    s([lda * star]);
+    t([lda * star]);
+    q([ldq * star]);
+    z([ldq * star]);
+    result([13]);
     common_write write(cmn);
     const INTEGER maxtyp = 26;
+    INTEGER *iasign(sve.iasign, [maxtyp]);
+    INTEGER *ibsign(sve.ibsign, [maxtyp]);
+    INTEGER *kadd(sve.kadd, [6]);
+    INTEGER *kamagn(sve.kamagn, [maxtyp]);
+    INTEGER *katype(sve.katype, [maxtyp]);
+    INTEGER *kazero(sve.kazero, [maxtyp]);
+    INTEGER *kbmagn(sve.kbmagn, [maxtyp]);
+    INTEGER *kbtype(sve.kbtype, [maxtyp]);
+    INTEGER *kbzero(sve.kbzero, [maxtyp]);
+    INTEGER *kclass(sve.kclass, [maxtyp]);
+    INTEGER *ktrian(sve.ktrian, [maxtyp]);
+    INTEGER *kz1(sve.kz1, [6]);
+    INTEGER *kz2(sve.kz2, [6]);
     if (is_called_first_time) {
         data((values, 15 * datum(1), 10 * datum(2), 1 * datum(3))), kclass;
         {
@@ -120,7 +141,7 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     const REAL one = 1.0;
     REAL safmax = 0.0;
     REAL ulpinv = 0.0;
-    arr_1d<4, REAL> rmagn(dim1(0, 3), fill0);
+    REAL rmagn dim1(0, 3);
     INTEGER ntestt = 0;
     INTEGER nerrs = 0;
     INTEGER nmats = 0;
@@ -130,7 +151,7 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
-    arr_1d<4, int> ioldsd;
+    INTEGER ioldsd[4];
     INTEGER iinfo = 0;
     INTEGER in = 0;
     INTEGER iadd = 0;
@@ -138,7 +159,7 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     INTEGER jr = 0;
     INTEGER i = 0;
     INTEGER isort = 0;
-    char sort[1];
+    char sort;
     INTEGER rsub = 0;
     INTEGER sdim = 0;
     REAL temp1 = 0.0;

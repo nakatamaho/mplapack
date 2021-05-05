@@ -39,6 +39,10 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, INTEGER *iseed, INTEGER &info) {
+    a([lda * star]);
+    x([ldx * star]);
+    b([ldb * star]);
+    iseed([4]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -66,7 +70,7 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
     //     Test the input parameters.
     //
     info = 0;
-    char c1[1] = path[(1 - 1)];
+    char c1;
     char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
     bool tran = Mlsame(trans, "T") || Mlsame(trans, "C");
     bool notran = !tran;
@@ -128,7 +132,7 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
     //
     const REAL one = 1.0;
     const REAL zero = 0.0;
-    char diag[1];
+    char diag;
     if (Mlsamen(2, c2, "GE") || Mlsamen(2, c2, "QR") || Mlsamen(2, c2, "LQ") || Mlsamen(2, c2, "QL") || Mlsamen(2, c2, "RQ")) {
         //
         //        General matrix

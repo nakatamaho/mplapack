@@ -82,8 +82,8 @@ void Cerrec(const char *path, INTEGER const nunit) {
     const INTEGER nmax = 4;
     INTEGER i = 0;
     const REAL zero = 0.0;
-    arr_2d<nmax, nmax, COMPLEX> a;
-    arr_2d<nmax, nmax, COMPLEX> b;
+    COMPLEX a[nmax * nmax];
+    COMPLEX b[nmax * nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = zero;
@@ -91,7 +91,7 @@ void Cerrec(const char *path, INTEGER const nunit) {
         }
     }
     const REAL one = 1.0;
-    arr_1d<nmax, bool> sel;
+    bool sel[nmax];
     for (i = 1; i <= nmax; i = i + 1) {
         a[(i - 1) + (i - 1) * lda] = one;
         sel[i - 1] = true;
@@ -101,7 +101,7 @@ void Cerrec(const char *path, INTEGER const nunit) {
     //
     srnamt = "Ctrsyl";
     infot = 1;
-    arr_2d<nmax, nmax, COMPLEX> c;
+    COMPLEX c[nmax * nmax];
     REAL scale = 0.0;
     INTEGER info = 0;
     Ctrsyl("X", "N", 1, 0, 0, a, 1, b, 1, c, 1, scale, info);
@@ -171,12 +171,12 @@ void Cerrec(const char *path, INTEGER const nunit) {
     //
     srnamt = "Ctrsna";
     infot = 1;
-    arr_1d<nmax, REAL> s;
-    arr_1d<nmax, REAL> sep;
+    REAL s[nmax];
+    REAL sep[nmax];
     INTEGER m = 0;
     const INTEGER lw = nmax * (nmax + 2);
-    arr_1d<lw, COMPLEX> work;
-    arr_1d<lw, REAL> rw;
+    COMPLEX work[lw];
+    REAL rw[lw];
     Ctrsna("X", "A", sel, 0, a, 1, b, 1, c, 1, s, sep, 1, m, work, 1, rw, info);
     chkxer("Ctrsna", infot, nout, lerr, ok);
     infot = 2;
@@ -210,7 +210,7 @@ void Cerrec(const char *path, INTEGER const nunit) {
     sel[1 - 1] = false;
     srnamt = "Ctrsen";
     infot = 1;
-    arr_1d<nmax, COMPLEX> x;
+    COMPLEX x[nmax];
     Ctrsen("X", "N", sel, 0, a, 1, b, 1, x, m, s[1 - 1], sep[1 - 1], work, 1, info);
     chkxer("Ctrsen", infot, nout, lerr, ok);
     infot = 2;

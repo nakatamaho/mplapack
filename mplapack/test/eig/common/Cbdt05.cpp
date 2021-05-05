@@ -39,6 +39,8 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cbdt05(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *s, INTEGER const ns, COMPLEX *u, INTEGER const ldu, COMPLEX *vt, INTEGER const ldvt, COMPLEX *work, REAL &resid) {
+    a([lda * star]);
+    vt([ldvt * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -74,7 +76,7 @@ void Cbdt05(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     }
     //
     REAL eps = Rlamch("Precision");
-    arr_1d<1, REAL> dum;
+    REAL dum[1];
     REAL anorm = Clange("M", m, n, a, lda, dum);
     //
     //     Compute U' * A * V.

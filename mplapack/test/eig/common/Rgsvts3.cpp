@@ -39,6 +39,16 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *af, INTEGER const lda, REAL *b, REAL *bf, INTEGER const ldb, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *q, INTEGER const ldq, REAL *alpha, REAL *beta, REAL *r, INTEGER const ldr, INTEGER *iwork, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
+    a([lda * star]);
+    af([lda * star]);
+    b([ldb * star]);
+    bf([ldb * star]);
+    u([ldu * star]);
+    v([ldv * star]);
+    q([ldq * star]);
+    r([ldr * star]);
+    work([lwork]);
+    result([6]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

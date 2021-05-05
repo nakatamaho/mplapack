@@ -40,8 +40,16 @@ using fem::common;
 
 void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, REAL *d1, REAL *d2, REAL *d3, REAL *wa1, REAL *wa2, REAL *wa3, COMPLEX *u, INTEGER const ldu, COMPLEX *v, COMPLEX *tau, COMPLEX *z, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
     FEM_CMN_SVE(Cdrvst2stg);
+    iseed([4]);
+    a([lda * star]);
+    u([ldu * star]);
+    v([ldu * star]);
+    z([ldu * star]);
     common_write write(cmn);
     const INTEGER maxtyp = 18;
+    INTEGER *kmagn(sve.kmagn, [maxtyp]);
+    INTEGER *kmode(sve.kmode, [maxtyp]);
+    INTEGER *ktype(sve.ktype, [maxtyp]);
     if (is_called_first_time) {
         data((values, 1, 2, 5 * datum(4), 5 * datum(5), 3 * datum(8), 3 * datum(9))), ktype;
         {
@@ -71,8 +79,8 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     REAL rtunfl = 0.0;
     REAL rtovfl = 0.0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed2;
-    arr_1d<4, int> iseed3;
+    INTEGER iseed2[4];
+    INTEGER iseed3[4];
     INTEGER nerrs = 0;
     INTEGER nmats = 0;
     INTEGER jsize = 0;
@@ -86,7 +94,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
-    arr_1d<4, int> ioldsd;
+    INTEGER ioldsd[4];
     INTEGER itype = 0;
     INTEGER imode = 0;
     REAL anorm = 0.0;
@@ -95,7 +103,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     REAL cond = 0.0;
     INTEGER jcol = 0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
-    arr_1d<1, int> idumma;
+    INTEGER idumma[1];
     const REAL zero = 0.0;
     INTEGER ihbw = 0;
     INTEGER idiag = 0;
@@ -107,7 +115,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     INTEGER iu = 0;
     INTEGER itemp = 0;
     INTEGER iuplo = 0;
-    char uplo[1];
+    char uplo;
     REAL temp1 = 0.0;
     REAL temp2 = 0.0;
     REAL temp3 = 0.0;

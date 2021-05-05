@@ -73,14 +73,14 @@ void Rget33(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     //
     //     Set up test case parameters
     //
-    arr_1d<4, REAL> val;
+    REAL val[4];
     val[1 - 1] = one;
     const REAL two = 2.0;
     val[2 - 1] = one + two * eps;
     val[3 - 1] = two;
     const REAL four = 4.0;
     val[4 - 1] = two - four * eps;
-    arr_1d<3, REAL> vm;
+    REAL vm[3];
     vm[1 - 1] = smlnum;
     vm[2 - 1] = one;
     vm[3 - 1] = bignum;
@@ -101,10 +101,10 @@ void Rget33(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     INTEGER im2 = 0;
     INTEGER im3 = 0;
     INTEGER im4 = 0;
-    arr_2d<2, 2, REAL> t;
+    REAL t[2 * 2];
     REAL tnrm = 0.0;
-    arr_2d<2, 2, REAL> t1;
-    arr_2d<2, 2, REAL> q;
+    REAL t1[2 * 2];
+    REAL q[2 * 2];
     REAL wr1 = 0.0;
     REAL wi1 = 0.0;
     REAL wr2 = 0.0;
@@ -114,7 +114,7 @@ void Rget33(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     INTEGER j1 = 0;
     REAL res = 0.0;
     INTEGER j2 = 0;
-    arr_2d<2, 2, REAL> t2;
+    REAL t2[2 * 2];
     INTEGER j3 = 0;
     REAL sum = 0.0;
     for (i1 = 1; i1 <= 4; i1 = i1 + 1) {

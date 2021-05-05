@@ -39,6 +39,7 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget40(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
+    ninfo([3]);
     common_read read(cmn);
     REAL eps = 0.0;
     const REAL zero = 0.0;
@@ -47,14 +48,14 @@ void Rget40(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     INTEGER ilst = 0;
     INTEGER i = 0;
     const INTEGER ldt = 10;
-    arr_2d<ldt, ldt, REAL> tmp;
+    REAL tmp[ldt * ldt];
     INTEGER j = 0;
-    arr_2d<ldt, ldt, REAL> t;
-    arr_2d<ldt, ldt, REAL> t1;
-    arr_2d<ldt, ldt, REAL> t2;
-    arr_2d<ldt, ldt, REAL> s;
-    arr_2d<ldt, ldt, REAL> s1;
-    arr_2d<ldt, ldt, REAL> s2;
+    REAL t[ldt * ldt];
+    REAL t1[ldt * ldt];
+    REAL t2[ldt * ldt];
+    REAL s[ldt * ldt];
+    REAL s1[ldt * ldt];
+    REAL s2[ldt * ldt];
     INTEGER ifstsv = 0;
     INTEGER ilstsv = 0;
     INTEGER ifst1 = 0;
@@ -63,13 +64,13 @@ void Rget40(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     INTEGER ilst2 = 0;
     REAL res = 0.0;
     const REAL one = 1.0;
-    arr_2d<ldt, ldt, REAL> q;
-    arr_2d<ldt, ldt, REAL> z;
+    REAL q[ldt * ldt];
+    REAL z[ldt * ldt];
     const INTEGER lwork = 100 + 4 * ldt + 16;
-    arr_1d<lwork, REAL> work;
+    REAL work[lwork];
     INTEGER info1 = 0;
     INTEGER info2 = 0;
-    arr_1d<4, REAL> result;
+    REAL result[4];
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

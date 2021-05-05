@@ -40,8 +40,18 @@ using fem::common;
 
 void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nwdths, INTEGER *kk, INTEGER const ntypes, bool *dotype, INTEGER const nrhs, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *ab, INTEGER const ldab, REAL *bd, REAL *be, COMPLEX *q, INTEGER const ldq, COMPLEX *p, INTEGER const ldp, COMPLEX *c, INTEGER const ldc, COMPLEX *cc, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result, INTEGER &info) {
     FEM_CMN_SVE(Cchkbb);
+    iseed([4]);
+    a([lda * star]);
+    ab([ldab * star]);
+    q([ldq * star]);
+    p([ldp * star]);
+    c([ldc * star]);
+    cc([ldc * star]);
     common_write write(cmn);
     const INTEGER maxtyp = 15;
+    INTEGER *kmagn(sve.kmagn, [maxtyp]);
+    INTEGER *kmode(sve.kmode, [maxtyp]);
+    INTEGER *ktype(sve.ktype, [maxtyp]);
     if (is_called_first_time) {
         data((values, 1, 2, 5 * datum(4), 5 * datum(6), 3 * datum(9))), ktype;
         {
@@ -87,7 +97,7 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
-    arr_1d<4, int> ioldsd;
+    INTEGER ioldsd[4];
     INTEGER itype = 0;
     INTEGER imode = 0;
     REAL anorm = 0.0;
@@ -96,7 +106,7 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
     REAL cond = 0.0;
     INTEGER jcol = 0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
-    arr_1d<1, int> idumma;
+    INTEGER idumma[1];
     const REAL zero = 0.0;
     INTEGER i = 0;
     INTEGER jr = 0;

@@ -39,6 +39,11 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rglmts(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, REAL *af, INTEGER const lda, REAL *b, REAL *bf, INTEGER const ldb, REAL *d, REAL *df, REAL *x, REAL *u, REAL *work, INTEGER const lwork, REAL *rwork, REAL &result) {
+    a([lda * star]);
+    af([lda * star]);
+    b([ldb * star]);
+    bf([ldb * star]);
+    work([lwork]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

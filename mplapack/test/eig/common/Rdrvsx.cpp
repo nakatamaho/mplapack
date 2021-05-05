@@ -40,9 +40,20 @@ using fem::common;
 
 void Rdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const niunit, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *h, REAL *ht, REAL *wr, REAL *wi, REAL *wrt, REAL *wit, REAL *wrtmp, REAL *witmp, REAL *vs, INTEGER const ldvs, REAL *vs1, REAL *result, REAL *work, INTEGER const lwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
     FEM_CMN_SVE(Rdrvsx);
+    iseed([4]);
+    a([lda * star]);
+    h([lda * star]);
+    ht([lda * star]);
+    vs([ldvs * star]);
+    vs1([ldvs * star]);
+    result([17]);
     common_read read(cmn);
     common_write write(cmn);
     const INTEGER maxtyp = 21;
+    INTEGER *kconds(sve.kconds, [maxtyp]);
+    INTEGER *kmagn(sve.kmagn, [maxtyp]);
+    INTEGER *kmode(sve.kmode, [maxtyp]);
+    INTEGER *ktype(sve.ktype, [maxtyp]);
     if (is_called_first_time) {
         data((values, 1, 2, 3, 5 * datum(4), 4 * datum(6), 6 * datum(6), 3 * datum(9))), ktype;
         {
@@ -79,7 +90,7 @@ void Rdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER n = 0;
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
-    arr_1d<4, int> ioldsd;
+    INTEGER ioldsd[4];
     INTEGER itype = 0;
     INTEGER imode = 0;
     REAL anorm = 0.0;
@@ -87,14 +98,14 @@ void Rdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     REAL cond = 0.0;
     INTEGER jcol = 0;
     REAL conds = 0.0;
-    arr_1d<1, char> adumma[1];
-    arr_1d<1, int> idumma;
+    char adumma;
+    INTEGER idumma[1];
     INTEGER iwk = 0;
     INTEGER nnwork = 0;
     REAL rcdein = 0.0;
     REAL rcdvin = 0.0;
     INTEGER nslct = 0;
-    arr_1d<20, int> islct;
+    INTEGER islct[20];
     INTEGER ntest = 0;
     INTEGER nfail = 0;
     INTEGER i = 0;

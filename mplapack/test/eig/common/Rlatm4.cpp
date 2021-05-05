@@ -39,6 +39,8 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER const nz2, INTEGER const isign, REAL const amagn, REAL const rcond, REAL const triang, INTEGER const idist, INTEGER *iseed, REAL *a, INTEGER const lda) {
+    iseed([4]);
+    a([lda * star]);
     const REAL zero = 0.0;
     INTEGER kbeg = 0;
     INTEGER kend = 0;

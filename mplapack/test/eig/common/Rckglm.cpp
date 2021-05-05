@@ -39,13 +39,14 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rckglm(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const nmax, REAL *a, REAL *af, REAL *b, REAL *bf, REAL *x, REAL *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
+    iseed([4]);
     common_write write(cmn);
     char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     bool firstt = false;
     const INTEGER ntypes = 8;
-    arr_1d<ntypes, bool> dotype;
+    bool dotype[ntypes];
     INTEGER lda = 0;
     INTEGER ldb = 0;
     INTEGER lwork = 0;
@@ -54,7 +55,7 @@ void Rckglm(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     INTEGER p = 0;
     INTEGER n = 0;
     INTEGER imat = 0;
-    char type[1];
+    char type;
     INTEGER kla = 0;
     INTEGER kua = 0;
     INTEGER klb = 0;
@@ -65,8 +66,8 @@ void Rckglm(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     INTEGER modeb = 0;
     REAL cndnma = 0.0;
     REAL cndnmb = 0.0;
-    char dista[1];
-    char distb[1];
+    char dista;
+    char distb;
     INTEGER iinfo = 0;
     INTEGER i = 0;
     REAL resid = 0.0;

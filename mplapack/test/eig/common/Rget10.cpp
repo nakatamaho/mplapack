@@ -39,6 +39,8 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget10(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *work, REAL &result) {
+    a([lda * star]);
+    b([ldb * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

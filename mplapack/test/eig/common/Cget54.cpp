@@ -39,6 +39,12 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cget54(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *s, INTEGER const lds, COMPLEX *t, INTEGER const ldt, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *work, REAL &result) {
+    a([lda * star]);
+    b([ldb * star]);
+    s([lds * star]);
+    t([ldt * star]);
+    u([ldu * star]);
+    v([ldv * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -80,7 +86,7 @@ void Cget54(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER 
     //
     Clacpy("Full", n, n, a, lda, work, n);
     Clacpy("Full", n, n, b, ldb, &work[(n * n + 1) - 1], n);
-    arr_1d<1, REAL> dum;
+    REAL dum[1];
     REAL abnorm = max({Clange("1", n, 2 * n, work, n, dum), unfl});
     //
     //     Compute W1 = A - U*S*V', and put in the array WORK(1:N*N)

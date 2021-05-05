@@ -39,6 +39,9 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rstt22(INTEGER const n, INTEGER const m, INTEGER const kband, REAL *ad, REAL *ae, REAL *sd, REAL *se, REAL *u, INTEGER const ldu, REAL *work, INTEGER const ldwork, REAL *result) {
+    u([ldu * star]);
+    work([ldwork * star]);
+    result([2]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

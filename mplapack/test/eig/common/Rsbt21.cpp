@@ -39,6 +39,9 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rsbt21(const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const ks, REAL *a, INTEGER const lda, REAL *d, REAL *e, REAL *u, INTEGER const ldu, REAL *work, REAL *result) {
+    a([lda * star]);
+    u([ldu * star]);
+    result([2]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -76,7 +79,7 @@ void Rsbt21(const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const k
     INTEGER lw = (n * (n + 1)) / 2;
     //
     bool lower = false;
-    char cuplo[1];
+    char cuplo;
     if (Mlsame(uplo, "U")) {
         lower = false;
         cuplo = "U";

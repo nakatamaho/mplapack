@@ -40,6 +40,7 @@ using fem::common;
 
 void Rget31(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
     FEM_CMN_SVE(Rget31);
+    ninfo([2]);
     // SAVE
     bool *ltrans(sve.ltrans, dim1(0, 1));
     //
@@ -86,35 +87,35 @@ void Rget31(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
     //
     //     Set up test case parameters
     //
-    arr_1d<4, REAL> vsmin;
+    REAL vsmin[4];
     vsmin[1 - 1] = smlnum;
     vsmin[2 - 1] = eps;
     const REAL ten = 10.0;
     vsmin[3 - 1] = one / (ten * ten);
     vsmin[4 - 1] = one / eps;
-    arr_1d<3, REAL> vab;
+    REAL vab[3];
     vab[1 - 1] = sqrt(smlnum);
     vab[2 - 1] = one;
     vab[3 - 1] = sqrt(bignum);
     const REAL zero = 0.0;
-    arr_1d<4, REAL> vwr;
+    REAL vwr[4];
     vwr[1 - 1] = zero;
     const REAL half = 0.5e0;
     vwr[2 - 1] = half;
     const REAL two = 2.0;
     vwr[3 - 1] = two;
     vwr[4 - 1] = one;
-    arr_1d<4, REAL> vwi;
+    REAL vwi[4];
     vwi[1 - 1] = smlnum;
     vwi[2 - 1] = eps;
     vwi[3 - 1] = one;
     vwi[4 - 1] = two;
-    arr_1d<4, REAL> vdd;
+    REAL vdd[4];
     vdd[1 - 1] = sqrt(smlnum);
     vdd[2 - 1] = one;
     vdd[3 - 1] = two;
     vdd[4 - 1] = sqrt(bignum);
-    arr_1d<5, REAL> vca;
+    REAL vca[5];
     vca[1 - 1] = zero;
     vca[2 - 1] = sqrt(smlnum);
     vca[3 - 1] = eps;
@@ -141,20 +142,24 @@ void Rget31(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
     INTEGER na = 0;
     INTEGER nw = 0;
     INTEGER ia = 0;
-    arr_2d<2, 2, REAL> a;
+    INTEGER &a[(1 - 1) + (1 - 1) * lda] = 0;
     INTEGER ib = 0;
-    arr_2d<2, 2, REAL> b;
+    INTEGER &b[(1 - 1) + (1 - 1) * ldb] = 0;
     INTEGER iwr = 0;
     REAL wr = 0.0;
     REAL wi = 0.0;
-    arr_2d<2, 2, REAL> x;
+    REAL a[2 * 2];
+    REAL b[2 * 2];
+    REAL x[2 * 2];
     REAL scale = 0.0;
     REAL xnorm = 0.0;
     INTEGER info = 0;
     REAL res = 0.0;
     REAL den = 0.0;
+    INTEGER &b[(1 - 1) + (2 - 1) * ldb] = 0;
     INTEGER iwi = 0;
     const REAL three = 3.0;
+    INTEGER &a[(1 - 1) + (2 - 1) * lda] = 0;
     const REAL seven = 7.0;
     const REAL twnone = 21.0;
     REAL tmp = 0.0;
@@ -172,12 +177,12 @@ void Rget31(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                         na = 1;
                         nw = 1;
                         for (ia = 1; ia <= 3; ia = ia + 1) {
-                            a[(1 - 1)] = vab[ia - 1];
+                            &a[(1 - 1) + (1 - 1) * lda] = vab[ia - 1];
                             for (ib = 1; ib <= 3; ib = ib + 1) {
-                                b[(1 - 1)] = vab[ib - 1];
+                                &b[(1 - 1) + (1 - 1) * ldb] = vab[ib - 1];
                                 for (iwr = 1; iwr <= 4; iwr = iwr + 1) {
                                     if (d1 == one && d2 == one && ca == one) {
-                                        wr = vwr[iwr - 1] * a[(1 - 1)];
+                                        wr = vwr[iwr - 1] * &a[(1 - 1) + (1 - 1) * lda];
                                     } else {
                                         wr = vwr[iwr - 1];
                                     }
@@ -189,14 +194,14 @@ void Rget31(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                                     if (info > 0) {
                                         ninfo[2 - 1]++;
                                     }
-                                    res = abs((ca * a[(1 - 1)] - wr * d1) * x[(1 - 1)] - scale * b[(1 - 1)]);
+                                    res = abs((ca * &a[(1 - 1) + (1 - 1) * lda] - wr * d1) * x[(1 - 1)] - scale * &b[(1 - 1) + (1 - 1) * ldb]);
                                     if (info == 0) {
                                         den = max(eps * (abs((ca * a[(1 - 1)] - wr * d1) * x[(1 - 1)])), smlnum);
                                     } else {
                                         den = max(smin * abs(x[(1 - 1)]), smlnum);
                                     }
                                     res = res / den;
-                                    if (abs(x[(1 - 1)]) < unfl && abs(b[(1 - 1)]) <= smlnum * abs(ca * a[(1 - 1)] - wr * d1)) {
+                                    if (abs(x[(1 - 1)]) < unfl && abs(&b[(1 - 1) + (1 - 1) * ldb]) <= smlnum * abs(ca * &a[(1 - 1) + (1 - 1) * lda] - wr * d1)) {
                                         res = zero;
                                     }
                                     if (scale > one) {
@@ -218,19 +223,19 @@ void Rget31(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                         na = 1;
                         nw = 2;
                         for (ia = 1; ia <= 3; ia = ia + 1) {
-                            a[(1 - 1)] = vab[ia - 1];
+                            &a[(1 - 1) + (1 - 1) * lda] = vab[ia - 1];
                             for (ib = 1; ib <= 3; ib = ib + 1) {
-                                b[(1 - 1)] = vab[ib - 1];
-                                b[(2 - 1) * ldb] = -half * vab[ib - 1];
+                                &b[(1 - 1) + (1 - 1) * ldb] = vab[ib - 1];
+                                &b[(1 - 1) + (2 - 1) * ldb] = -half * vab[ib - 1];
                                 for (iwr = 1; iwr <= 4; iwr = iwr + 1) {
                                     if (d1 == one && d2 == one && ca == one) {
-                                        wr = vwr[iwr - 1] * a[(1 - 1)];
+                                        wr = vwr[iwr - 1] * &a[(1 - 1) + (1 - 1) * lda];
                                     } else {
                                         wr = vwr[iwr - 1];
                                     }
                                     for (iwi = 1; iwi <= 4; iwi = iwi + 1) {
                                         if (d1 == one && d2 == one && ca == one) {
-                                            wi = vwi[iwi - 1] * a[(1 - 1)];
+                                            wi = vwi[iwi - 1] * &a[(1 - 1) + (1 - 1) * lda];
                                         } else {
                                             wi = vwi[iwi - 1];
                                         }
@@ -241,15 +246,15 @@ void Rget31(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                                         if (info > 0) {
                                             ninfo[2 - 1]++;
                                         }
-                                        res = abs((ca * a[(1 - 1)] - wr * d1) * x[(1 - 1)] + (wi * d1) * x[(2 - 1) * ldx] - scale * b[(1 - 1)]);
-                                        res += abs((-wi * d1) * x[(1 - 1)] + (ca * a[(1 - 1)] - wr * d1) * x[(2 - 1) * ldx] - scale * b[(2 - 1) * ldb]);
+                                        res = abs((ca * &a[(1 - 1) + (1 - 1) * lda] - wr * d1) * x[(1 - 1)] + (wi * d1) * x[(2 - 1) * ldx] - scale * &b[(1 - 1) + (1 - 1) * ldb]);
+                                        res += abs((-wi * d1) * x[(1 - 1)] + (ca * &a[(1 - 1) + (1 - 1) * lda] - wr * d1) * x[(2 - 1) * ldx] - scale * &b[(1 - 1) + (2 - 1) * ldb]);
                                         if (info == 0) {
                                             den = max({eps * (max(abs(ca * a[(1 - 1)] - wr * d1), abs(d1 * wi)) * (abs(x[(1 - 1)]) + abs(x[(2 - 1) * ldx]))), smlnum});
                                         } else {
                                             den = max(smin * (abs(x[(1 - 1)]) + abs(x[(2 - 1) * ldx])), smlnum);
                                         }
                                         res = res / den;
-                                        if (abs(x[(1 - 1)]) < unfl && abs(x[(2 - 1) * ldx]) < unfl && abs(b[(1 - 1)]) <= smlnum * abs(ca * a[(1 - 1)] - wr * d1)) {
+                                        if (abs(x[(1 - 1)]) < unfl && abs(x[(2 - 1) * ldx]) < unfl && abs(&b[(1 - 1) + (1 - 1) * ldb]) <= smlnum * abs(ca * &a[(1 - 1) + (1 - 1) * lda] - wr * d1)) {
                                             res = zero;
                                         }
                                         if (scale > one) {
@@ -272,16 +277,16 @@ void Rget31(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                         na = 2;
                         nw = 1;
                         for (ia = 1; ia <= 3; ia = ia + 1) {
-                            a[(1 - 1)] = vab[ia - 1];
-                            a[(2 - 1) * lda] = -three * vab[ia - 1];
+                            &a[(1 - 1) + (1 - 1) * lda] = vab[ia - 1];
+                            &a[(1 - 1) + (2 - 1) * lda] = -three * vab[ia - 1];
                             a[(2 - 1)] = -seven * vab[ia - 1];
                             a[(2 - 1) + (2 - 1) * lda] = twnone * vab[ia - 1];
                             for (ib = 1; ib <= 3; ib = ib + 1) {
-                                b[(1 - 1)] = vab[ib - 1];
+                                &b[(1 - 1) + (1 - 1) * ldb] = vab[ib - 1];
                                 b[(2 - 1)] = -two * vab[ib - 1];
                                 for (iwr = 1; iwr <= 4; iwr = iwr + 1) {
                                     if (d1 == one && d2 == one && ca == one) {
-                                        wr = vwr[iwr - 1] * a[(1 - 1)];
+                                        wr = vwr[iwr - 1] * &a[(1 - 1) + (1 - 1) * lda];
                                     } else {
                                         wr = vwr[iwr - 1];
                                     }
@@ -294,19 +299,19 @@ void Rget31(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                                         ninfo[2 - 1]++;
                                     }
                                     if (itrans == 1) {
-                                        tmp = a[(2 - 1) * lda];
-                                        a[(2 - 1) * lda] = a[(2 - 1)];
+                                        tmp = &a[(1 - 1) + (2 - 1) * lda];
+                                        &a[(1 - 1) + (2 - 1) * lda] = a[(2 - 1)];
                                         a[(2 - 1)] = tmp;
                                     }
-                                    res = abs((ca * a[(1 - 1)] - wr * d1) * x[(1 - 1)] + (ca * a[(2 - 1) * lda]) * x[(2 - 1)] - scale * b[(1 - 1)]);
+                                    res = abs((ca * &a[(1 - 1) + (1 - 1) * lda] - wr * d1) * x[(1 - 1)] + (ca * &a[(1 - 1) + (2 - 1) * lda]) * x[(2 - 1)] - scale * &b[(1 - 1) + (1 - 1) * ldb]);
                                     res += abs((ca * a[(2 - 1)]) * x[(1 - 1)] + (ca * a[(2 - 1) + (2 - 1) * lda] - wr * d2) * x[(2 - 1)] - scale * b[(2 - 1)]);
                                     if (info == 0) {
-                                        den = max({eps * (max(abs(ca * a[(1 - 1)] - wr * d1) + abs(ca * a[(2 - 1) * lda]), abs(ca * a[(2 - 1)]) + abs(ca * a[(2 - 1) + (2 - 1) * lda] - wr * d2)) * max(abs(x[(1 - 1)]), abs(x[(2 - 1)]))), smlnum});
+                                        den = max({eps * (max(abs(ca * a[(1 - 1)] - wr * d1) + abs(ca * &a[(1 - 1) + (2 - 1) * lda]), abs(ca * a[(2 - 1)]) + abs(ca * a[(2 - 1) + (2 - 1) * lda] - wr * d2)) * max(abs(x[(1 - 1)]), abs(x[(2 - 1)]))), smlnum});
                                     } else {
-                                        den = max({eps * (max({smin / eps, max(abs(ca * a[(1 - 1)] - wr * d1) + abs(ca * a[(2 - 1) * lda]), abs(ca * a[(2 - 1)]) + abs(ca * a[(2 - 1) + (2 - 1) * lda] - wr * d2))}) * max(abs(x[(1 - 1)]), abs(x[(2 - 1)]))), smlnum});
+                                        den = max({eps * (max({smin / eps, max(abs(ca * a[(1 - 1)] - wr * d1) + abs(ca * &a[(1 - 1) + (2 - 1) * lda]), abs(ca * a[(2 - 1)]) + abs(ca * a[(2 - 1) + (2 - 1) * lda] - wr * d2))}) * max(abs(x[(1 - 1)]), abs(x[(2 - 1)]))), smlnum});
                                     }
                                     res = res / den;
-                                    if (abs(x[(1 - 1)]) < unfl && abs(x[(2 - 1)]) < unfl && abs(b[(1 - 1)]) + abs(b[(2 - 1)]) <= smlnum * (abs(ca * a[(1 - 1)] - wr * d1) + abs(ca * a[(2 - 1) * lda]) + abs(ca * a[(2 - 1)]) + abs(ca * a[(2 - 1) + (2 - 1) * lda] - wr * d2))) {
+                                    if (abs(x[(1 - 1)]) < unfl && abs(x[(2 - 1)]) < unfl && abs(&b[(1 - 1) + (1 - 1) * ldb]) + abs(b[(2 - 1)]) <= smlnum * (abs(ca * a[(1 - 1)] - wr * d1) + abs(ca * a[(2 - 1) * lda]) + abs(ca * a[(2 - 1)]) + abs(ca * a[(2 - 1) + (2 - 1) * lda] - wr * d2))) {
                                         res = zero;
                                     }
                                     if (scale > one) {
@@ -328,24 +333,24 @@ void Rget31(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                         na = 2;
                         nw = 2;
                         for (ia = 1; ia <= 3; ia = ia + 1) {
-                            a[(1 - 1)] = vab[ia - 1] * two;
-                            a[(2 - 1) * lda] = -three * vab[ia - 1];
+                            &a[(1 - 1) + (1 - 1) * lda] = vab[ia - 1] * two;
+                            &a[(1 - 1) + (2 - 1) * lda] = -three * vab[ia - 1];
                             a[(2 - 1)] = -seven * vab[ia - 1];
                             a[(2 - 1) + (2 - 1) * lda] = twnone * vab[ia - 1];
                             for (ib = 1; ib <= 3; ib = ib + 1) {
-                                b[(1 - 1)] = vab[ib - 1];
+                                &b[(1 - 1) + (1 - 1) * ldb] = vab[ib - 1];
                                 b[(2 - 1)] = -two * vab[ib - 1];
-                                b[(2 - 1) * ldb] = four * vab[ib - 1];
+                                &b[(1 - 1) + (2 - 1) * ldb] = four * vab[ib - 1];
                                 b[(2 - 1) + (2 - 1) * ldb] = -seven * vab[ib - 1];
                                 for (iwr = 1; iwr <= 4; iwr = iwr + 1) {
                                     if (d1 == one && d2 == one && ca == one) {
-                                        wr = vwr[iwr - 1] * a[(1 - 1)];
+                                        wr = vwr[iwr - 1] * &a[(1 - 1) + (1 - 1) * lda];
                                     } else {
                                         wr = vwr[iwr - 1];
                                     }
                                     for (iwi = 1; iwi <= 4; iwi = iwi + 1) {
                                         if (d1 == one && d2 == one && ca == one) {
-                                            wi = vwi[iwi - 1] * a[(1 - 1)];
+                                            wi = vwi[iwi - 1] * &a[(1 - 1) + (1 - 1) * lda];
                                         } else {
                                             wi = vwi[iwi - 1];
                                         }
@@ -357,12 +362,12 @@ void Rget31(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                                             ninfo[2 - 1]++;
                                         }
                                         if (itrans == 1) {
-                                            tmp = a[(2 - 1) * lda];
-                                            a[(2 - 1) * lda] = a[(2 - 1)];
+                                            tmp = &a[(1 - 1) + (2 - 1) * lda];
+                                            &a[(1 - 1) + (2 - 1) * lda] = a[(2 - 1)];
                                             a[(2 - 1)] = tmp;
                                         }
-                                        res = abs((ca * a[(1 - 1)] - wr * d1) * x[(1 - 1)] + (ca * a[(2 - 1) * lda]) * x[(2 - 1)] + (wi * d1) * x[(2 - 1) * ldx] - scale * b[(1 - 1)]);
-                                        res += abs((ca * a[(1 - 1)] - wr * d1) * x[(2 - 1) * ldx] + (ca * a[(2 - 1) * lda]) * x[(2 - 1) + (2 - 1) * ldx] - (wi * d1) * x[(1 - 1)] - scale * b[(2 - 1) * ldb]);
+                                        res = abs((ca * &a[(1 - 1) + (1 - 1) * lda] - wr * d1) * x[(1 - 1)] + (ca * &a[(1 - 1) + (2 - 1) * lda]) * x[(2 - 1)] + (wi * d1) * x[(2 - 1) * ldx] - scale * &b[(1 - 1) + (1 - 1) * ldb]);
+                                        res += abs((ca * a[(1 - 1)] - wr * d1) * x[(2 - 1) * ldx] + (ca * &a[(1 - 1) + (2 - 1) * lda]) * x[(2 - 1) + (2 - 1) * ldx] - (wi * d1) * x[(1 - 1)] - scale * &b[(1 - 1) + (2 - 1) * ldb]);
                                         res += abs((ca * a[(2 - 1)]) * x[(1 - 1)] + (ca * a[(2 - 1) + (2 - 1) * lda] - wr * d2) * x[(2 - 1)] + (wi * d2) * x[(2 - 1) + (2 - 1) * ldx] - scale * b[(2 - 1)]);
                                         res += abs((ca * a[(2 - 1)]) * x[(2 - 1) * ldx] + (ca * a[(2 - 1) + (2 - 1) * lda] - wr * d2) * x[(2 - 1) + (2 - 1) * ldx] - (wi * d2) * x[(2 - 1)] - scale * b[(2 - 1) + (2 - 1) * ldb]);
                                         if (info == 0) {
@@ -371,7 +376,7 @@ void Rget31(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                                             den = max({eps * (max({smin / eps, max(abs(ca * a[(1 - 1)] - wr * d1) + abs(ca * a[(2 - 1) * lda]) + abs(wi * d1), abs(ca * a[(2 - 1)]) + abs(ca * a[(2 - 1) + (2 - 1) * lda] - wr * d2) + abs(wi * d2))}) * max(abs(x[(1 - 1)]) + abs(x[(2 - 1)]), abs(x[(2 - 1) * ldx]) + abs(x[(2 - 1) + (2 - 1) * ldx]))), smlnum});
                                         }
                                         res = res / den;
-                                        if (abs(x[(1 - 1)]) < unfl && abs(x[(2 - 1)]) < unfl && abs(x[(2 - 1) * ldx]) < unfl && abs(x[(2 - 1) + (2 - 1) * ldx]) < unfl && abs(b[(1 - 1)]) + abs(b[(2 - 1)]) <= smlnum * (abs(ca * a[(1 - 1)] - wr * d1) + abs(ca * a[(2 - 1) * lda]) + abs(ca * a[(2 - 1)]) + abs(ca * a[(2 - 1) + (2 - 1) * lda] - wr * d2) + abs(wi * d2) + abs(wi * d1))) {
+                                        if (abs(x[(1 - 1)]) < unfl && abs(x[(2 - 1)]) < unfl && abs(x[(2 - 1) * ldx]) < unfl && abs(x[(2 - 1) + (2 - 1) * ldx]) < unfl && abs(&b[(1 - 1) + (1 - 1) * ldb]) + abs(b[(2 - 1)]) <= smlnum * (abs(ca * &a[(1 - 1) + (1 - 1) * lda] - wr * d1) + abs(ca * &a[(1 - 1) + (2 - 1) * lda]) + abs(ca * a[(2 - 1)]) + abs(ca * a[(2 - 1) + (2 - 1) * lda] - wr * d2) + abs(wi * d2) + abs(wi * d1))) {
                                             res = zero;
                                         }
                                         if (scale > one) {

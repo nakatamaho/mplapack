@@ -39,6 +39,8 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rort03(const char *rc, INTEGER const mu, INTEGER const mv, INTEGER const n, INTEGER const k, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *work, INTEGER const lwork, REAL &result, INTEGER &info) {
+    u([ldu * star]);
+    v([ldv * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

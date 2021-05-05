@@ -40,10 +40,18 @@ using fem::common;
 
 void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *d1, REAL *d2, REAL *d3, REAL *d4, REAL *eveigs, REAL *wa1, REAL *wa2, REAL *wa3, REAL *u, INTEGER const ldu, REAL *v, REAL *tau, REAL *z, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
     FEM_CMN_SVE(Rdrvst2stg);
+    iseed([4]);
+    a([lda * star]);
+    u([ldu * star]);
+    v([ldu * star]);
+    z([ldu * star]);
     common_write write(cmn);
     char &srnamt = cmn.srnamt;
     //
     const INTEGER maxtyp = 18;
+    INTEGER *kmagn(sve.kmagn, [maxtyp]);
+    INTEGER *kmode(sve.kmode, [maxtyp]);
+    INTEGER *ktype(sve.ktype, [maxtyp]);
     if (is_called_first_time) {
         data((values, 1, 2, 5 * datum(4), 5 * datum(5), 3 * datum(8), 3 * datum(9))), ktype;
         {
@@ -76,8 +84,8 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     REAL rtunfl = 0.0;
     REAL rtovfl = 0.0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed2;
-    arr_1d<4, int> iseed3;
+    INTEGER iseed2[4];
+    INTEGER iseed3[4];
     INTEGER nerrs = 0;
     INTEGER nmats = 0;
     INTEGER jsize = 0;
@@ -90,14 +98,14 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
-    arr_1d<4, int> ioldsd;
+    INTEGER ioldsd[4];
     INTEGER itype = 0;
     INTEGER imode = 0;
     REAL anorm = 0.0;
     INTEGER iinfo = 0;
     REAL cond = 0.0;
     INTEGER jcol = 0;
-    arr_1d<1, int> idumma;
+    INTEGER idumma[1];
     INTEGER ihbw = 0;
     INTEGER idiag = 0;
     INTEGER irow = 0;
@@ -116,7 +124,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     const REAL half = 0.5e0;
     const REAL ten = 10.0;
     INTEGER iuplo = 0;
-    char uplo[1];
+    char uplo;
     INTEGER indx = 0;
     INTEGER kd = 0;
     static const char *format_9999 = "(' Rdrvst2stg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"

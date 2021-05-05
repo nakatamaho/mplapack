@@ -40,8 +40,37 @@ using fem::common;
 
 void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, bool const tstdif, REAL const thrshn, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *h, COMPLEX *t, COMPLEX *s1, COMPLEX *s2, COMPLEX *p1, COMPLEX *p2, COMPLEX *u, INTEGER const ldu, COMPLEX *v, COMPLEX *q, COMPLEX *z, COMPLEX *alpha1, COMPLEX *beta1, COMPLEX *alpha3, COMPLEX *beta3, COMPLEX *evectl, COMPLEX *evectr, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *llwork, REAL *result, INTEGER &info) {
     FEM_CMN_SVE(Cchkgg);
+    iseed([4]);
+    a([lda * star]);
+    b([lda * star]);
+    h([lda * star]);
+    t([lda * star]);
+    s1([lda * star]);
+    s2([lda * star]);
+    p1([lda * star]);
+    p2([lda * star]);
+    u([ldu * star]);
+    v([ldu * star]);
+    q([ldu * star]);
+    z([ldu * star]);
+    evectl([ldu * star]);
+    evectr([ldu * star]);
+    result([15]);
     common_write write(cmn);
+    INTEGER *kadd(sve.kadd, [6]);
     const INTEGER maxtyp = 26;
+    INTEGER *kamagn(sve.kamagn, [maxtyp]);
+    INTEGER *katype(sve.katype, [maxtyp]);
+    INTEGER *kazero(sve.kazero, [maxtyp]);
+    INTEGER *kbmagn(sve.kbmagn, [maxtyp]);
+    INTEGER *kbtype(sve.kbtype, [maxtyp]);
+    INTEGER *kbzero(sve.kbzero, [maxtyp]);
+    INTEGER *kclass(sve.kclass, [maxtyp]);
+    INTEGER *ktrian(sve.ktrian, [maxtyp]);
+    INTEGER *kz1(sve.kz1, [6]);
+    INTEGER *kz2(sve.kz2, [6]);
+    bool *lasign(sve.lasign, [maxtyp]);
+    bool *lbsign(sve.lbsign, [maxtyp]);
     if (is_called_first_time) {
         data((values, 15 * datum(1), 10 * datum(2), 1 * datum(3))), kclass;
         {
@@ -118,7 +147,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     const REAL one = 1.0;
     REAL safmax = 0.0;
     REAL ulpinv = 0.0;
-    arr_1d<4, REAL> rmagn(dim1(0, 3), fill0);
+    REAL rmagn dim1(0, 3);
     INTEGER ntestt = 0;
     INTEGER nerrs = 0;
     INTEGER nmats = 0;
@@ -128,7 +157,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
-    arr_1d<4, int> ioldsd;
+    INTEGER ioldsd[4];
     INTEGER iinfo = 0;
     INTEGER in = 0;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
@@ -140,8 +169,8 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     REAL anorm = 0.0;
     REAL bnorm = 0.0;
     INTEGER i1 = 0;
-    arr_1d<4, COMPLEX> cdumma;
-    arr_1d<4, REAL> dumma;
+    COMPLEX cdumma[4];
+    REAL dumma[4];
     REAL temp1 = 0.0;
     REAL temp2 = 0.0;
     static const char *format_9998 = "(' Cchkgg: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"

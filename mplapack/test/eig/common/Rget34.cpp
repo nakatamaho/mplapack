@@ -39,6 +39,7 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
+    ninfo([2]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -76,7 +77,7 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
     //     Set up test case parameters
     //
     const REAL zero = 0.0;
-    arr_1d<9, REAL> val;
+    REAL val[9];
     val[1 - 1] = zero;
     val[2 - 1] = sqrt(smlnum);
     val[3 - 1] = one;
@@ -87,10 +88,10 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
     val[7 - 1] = -one;
     val[8 - 1] = -two;
     val[9 - 1] = -sqrt(bignum);
-    arr_1d<2, REAL> vm;
+    REAL vm[2];
     vm[1 - 1] = one;
     vm[2 - 1] = one + two * eps;
-    arr_2d<4, 4, REAL> t;
+    REAL t[4 * 4];
     Rcopy(16, val[4 - 1], 0, &t[(1 - 1)], 1);
     //
     ninfo[1 - 1] = 0;
@@ -106,12 +107,12 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
     INTEGER ib = 0;
     INTEGER ic = 0;
     REAL tnrm = 0.0;
-    arr_2d<4, 4, REAL> t1;
-    arr_2d<4, 4, REAL> q;
+    REAL t1[4 * 4];
+    REAL q[4 * 4];
     const INTEGER lwork = 32;
-    arr_1d<lwork, REAL> work;
+    REAL work[lwork];
     INTEGER info = 0;
-    arr_1d<2, REAL> result;
+    REAL result[2];
     REAL res = 0.0;
     for (ia = 1; ia <= 9; ia = ia + 1) {
         for (iam = 1; iam <= 2; iam = iam + 1) {

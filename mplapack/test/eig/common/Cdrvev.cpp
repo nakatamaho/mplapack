@@ -40,8 +40,19 @@ using fem::common;
 
 void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *w, COMPLEX *w1, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, COMPLEX *lre, INTEGER const ldlre, REAL *result, COMPLEX *work, INTEGER const nwork, REAL *rwork, INTEGER *iwork, INTEGER &info) {
     FEM_CMN_SVE(Cdrvev);
+    iseed([4]);
+    a([lda * star]);
+    h([lda * star]);
+    vl([ldvl * star]);
+    vr([ldvr * star]);
+    lre([ldlre * star]);
+    result([7]);
     common_write write(cmn);
     const INTEGER maxtyp = 21;
+    INTEGER *kconds(sve.kconds, [maxtyp]);
+    INTEGER *kmagn(sve.kmagn, [maxtyp]);
+    INTEGER *kmode(sve.kmode, [maxtyp]);
+    INTEGER *ktype(sve.ktype, [maxtyp]);
     if (is_called_first_time) {
         data((values, 1, 2, 3, 5 * datum(4), 4 * datum(6), 6 * datum(6), 3 * datum(9))), ktype;
         {
@@ -78,7 +89,7 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER n = 0;
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
-    arr_1d<4, int> ioldsd;
+    INTEGER ioldsd[4];
     INTEGER itype = 0;
     INTEGER imode = 0;
     REAL anorm = 0.0;
@@ -88,17 +99,17 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER jcol = 0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     REAL conds = 0.0;
-    arr_1d<1, int> idumma;
+    INTEGER idumma[1];
     INTEGER iwk = 0;
     INTEGER nnwork = 0;
-    arr_1d<2, REAL> res;
+    REAL res[2];
     REAL tnrm = 0.0;
     REAL vmx = 0.0;
     REAL vrmx = 0.0;
     INTEGER jj = 0;
     REAL vtst = 0.0;
     const REAL two = 2.0e+0;
-    arr_1d<1, COMPLEX> dum;
+    COMPLEX dum[1];
     INTEGER ntest = 0;
     INTEGER nfail = 0;
     static const char *format_9993 = "(' Cdrvev: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"

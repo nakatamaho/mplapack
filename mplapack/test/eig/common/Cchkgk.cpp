@@ -42,7 +42,7 @@ void Cchkgk(INTEGER const nin, INTEGER const nout) {
     common_read read(cmn);
     common_write write(cmn);
     COMPLEX cdum = 0.0;
-    arr_1d<4, int> lmax;
+    INTEGER lmax[4];
     INTEGER ninfo = 0;
     INTEGER knt = 0;
     const REAL zero = 0.0;
@@ -52,23 +52,35 @@ void Cchkgk(INTEGER const nin, INTEGER const nout) {
     INTEGER m = 0;
     INTEGER i = 0;
     const INTEGER lda = 50;
+    COMPLEX a[lda * lda];
     INTEGER j = 0;
     const INTEGER ldb = 50;
+    COMPLEX b[ldb * ldb];
     const INTEGER ldvl = 50;
+    COMPLEX vl[ldvl * ldvl];
     const INTEGER ldvr = 50;
+    COMPLEX vr[ldvr * ldvr];
     const INTEGER lrwork = 6 * 50;
+    REAL rwork[lrwork];
     REAL anorm = 0.0;
     REAL bnorm = 0.0;
+    COMPLEX af[lda * lda];
+    COMPLEX bf[ldb * ldb];
     INTEGER ilo = 0;
     INTEGER ihi = 0;
-    arr_1d<lda, REAL> lscale;
-    arr_1d<lda, REAL> rscale;
+    REAL lscale[lda];
+    REAL rscale[lda];
     INTEGER info = 0;
+    COMPLEX vlf[ldvl * ldvl];
+    COMPLEX vrf[ldvr * ldvr];
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const INTEGER ldwork = 50;
+    COMPLEX work[ldwork * ldwork];
     const INTEGER lde = 50;
+    COMPLEX e[lde * lde];
     const INTEGER ldf = 50;
+    COMPLEX f[ldf * ldf];
     REAL vmax = 0.0;
     //
     //  -- LAPACK test routine --

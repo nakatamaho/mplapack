@@ -39,6 +39,9 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cget22(const char *transa, const char *transe, const char *transw, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *e, INTEGER const lde, COMPLEX *w, COMPLEX *work, REAL *rwork, REAL *result) {
+    a([lda * star]);
+    e([lde * star]);
+    result([2]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -77,8 +80,8 @@ void Cget22(const char *transa, const char *transe, const char *transw, INTEGER 
     //
     INTEGER itrnse = 0;
     INTEGER itrnsw = 0;
-    char norma[1] = "O";
-    char norme[1] = "O";
+    char norma;
+    char norme;
     //
     if (Mlsame(transa, "T") || Mlsame(transa, "C")) {
         norma = "I";

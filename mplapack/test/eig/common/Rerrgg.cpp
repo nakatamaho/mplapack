@@ -82,11 +82,11 @@ void Rerrgg(const char *path, INTEGER const nunit) {
     //
     INTEGER j = 0;
     const INTEGER nmax = 3;
-    arr_1d<nmax, bool> sel;
+    bool sel[nmax];
     INTEGER i = 0;
     const REAL zero = 0.0;
-    arr_2d<nmax, nmax, REAL> a;
-    arr_2d<nmax, nmax, REAL> b;
+    REAL a[nmax * nmax];
+    REAL b[nmax * nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         sel[j - 1] = true;
         for (i = 1; i <= nmax; i = i + 1) {
@@ -109,31 +109,31 @@ void Rerrgg(const char *path, INTEGER const nunit) {
     //
     //     Test error exits for the GG path.
     //
-    arr_2d<nmax, nmax, REAL> q;
-    arr_2d<nmax, nmax, REAL> z;
+    REAL q[nmax * nmax];
+    REAL z[nmax * nmax];
     INTEGER info = 0;
     const INTEGER lw = 6 * nmax;
-    arr_1d<lw, REAL> w;
-    arr_1d<nmax, REAL> r1;
-    arr_1d<nmax, REAL> r2;
-    arr_1d<nmax, REAL> r3;
+    REAL w[lw];
+    REAL r1[nmax];
+    REAL r2[nmax];
+    REAL r3[nmax];
     INTEGER m = 0;
     INTEGER dummyk = 0;
     INTEGER dummyl = 0;
-    arr_2d<nmax, nmax, REAL> u;
-    arr_2d<nmax, nmax, REAL> v;
-    arr_1d<nmax, int> idum;
-    arr_1d<nmax, int> iw;
-    arr_1d<nmax, REAL> tau;
+    REAL u[nmax * nmax];
+    REAL v[nmax * nmax];
+    INTEGER idum[nmax];
+    INTEGER iw[nmax];
+    REAL tau[nmax];
     INTEGER ncycle = 0;
     INTEGER sdim = 0;
-    arr_1d<nmax, bool> bw;
-    arr_1d<2, REAL> rce;
-    arr_1d<2, REAL> rcv;
+    bool bw[nmax];
+    REAL rce[2];
+    REAL rcv[2];
     INTEGER ilo = 0;
     INTEGER ihi = 0;
-    arr_1d<nmax, REAL> ls;
-    arr_1d<nmax, REAL> rs;
+    REAL ls[nmax];
+    REAL rs[nmax];
     REAL anrm = 0.0;
     REAL bnrm = 0.0;
     REAL scale = 0.0;

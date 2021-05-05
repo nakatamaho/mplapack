@@ -39,6 +39,12 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget54(INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *s, INTEGER const lds, REAL *t, INTEGER const ldt, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *work, REAL &result) {
+    a([lda * star]);
+    b([ldb * star]);
+    s([lds * star]);
+    t([ldt * star]);
+    u([ldu * star]);
+    v([ldv * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -80,7 +86,7 @@ void Rget54(INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const 
     //
     Rlacpy("Full", n, n, a, lda, work, n);
     Rlacpy("Full", n, n, b, ldb, &work[(n * n + 1) - 1], n);
-    arr_1d<1, REAL> dum;
+    REAL dum[1];
     REAL abnorm = max({Rlange("1", n, 2 * n, work, n, dum), unfl});
     //
     //     Compute W1 = A - U*S*V', and put in the array WORK(1:N*N)

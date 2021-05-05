@@ -39,6 +39,10 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *e, INTEGER const lde, REAL *alphar, REAL *alphai, REAL *beta, REAL *work, REAL *result) {
+    a([lda * star]);
+    b([ldb * star]);
+    e([lde * star]);
+    result([2]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -75,8 +79,8 @@ void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     REAL safmax = one / safmin;
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     //
-    char trans[1];
-    char normab[1];
+    char trans;
+    char normab;
     if (left) {
         trans = 'T';
         normab = "I";

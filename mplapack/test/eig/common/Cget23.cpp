@@ -40,7 +40,15 @@ using fem::common;
 
 void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER const jtype, REAL const thresh, INTEGER *iseed, INTEGER const nounit, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *w, COMPLEX *w1, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, COMPLEX *lre, INTEGER const ldlre, REAL *rcondv, REAL *rcndv1, REAL *rcdvin, REAL *rconde, REAL *rcnde1, REAL *rcdein, REAL *scale, REAL *scale1, REAL *result, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     FEM_CMN_SVE(Cget23);
+    iseed([4]);
+    a([lda * star]);
+    h([lda * star]);
+    vl([ldvl * star]);
+    vr([ldvr * star]);
+    lre([ldlre * star]);
+    result([11]);
     common_write write(cmn);
+    str_arr_ref<1> sens(sve.sens, [2]);
     if (is_called_first_time) {
         static const char *values[] = {"N", "V"};
         data_of_type_str(FEM_VALUES_AND_SIZE), sens;
@@ -53,13 +61,13 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
     REAL ulp = 0.0;
     REAL smlnum = 0.0;
     REAL ulpinv = 0.0;
-    char sense[1];
+    char sense;
     INTEGER isensm = 0;
     INTEGER ilo = 0;
     INTEGER ihi = 0;
     REAL abnrm = 0.0;
     INTEGER iinfo = 0;
-    arr_1d<2, REAL> res;
+    REAL res[2];
     INTEGER j = 0;
     REAL tnrm = 0.0;
     REAL vmx = 0.0;
@@ -68,7 +76,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
     REAL vtst = 0.0;
     const REAL two = 2.0;
     INTEGER isens = 0;
-    arr_1d<1, COMPLEX> cdum;
+    COMPLEX cdum[1];
     INTEGER ilo1 = 0;
     INTEGER ihi1 = 0;
     REAL abnrm1 = 0.0;

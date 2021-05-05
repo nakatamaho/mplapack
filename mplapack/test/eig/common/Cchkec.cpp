@@ -104,9 +104,9 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
             rtrexc, ltrexc, ntrexc, ktrexc;
     }
     //
-    arr_1d<3, REAL> rtrsna;
-    arr_1d<3, int> ltrsna;
-    arr_1d<3, int> ntrsna;
+    REAL rtrsna[3];
+    INTEGER ltrsna[3];
+    INTEGER ntrsna[3];
     INTEGER ktrsna = 0;
     Cget37(rtrsna, ltrsna, ntrsna, ktrsna, nin);
     if (rtrsna[1 - 1] > thresh || rtrsna[2 - 1] > thresh || ntrsna[1 - 1] != 0 || ntrsna[2 - 1] != 0 || ntrsna[3 - 1] != 0) {
@@ -116,9 +116,9 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
             rtrsna, ltrsna, ntrsna, ktrsna;
     }
     //
-    arr_1d<3, REAL> rtrsen;
-    arr_1d<3, int> ltrsen;
-    arr_1d<3, int> ntrsen;
+    REAL rtrsen[3];
+    INTEGER ltrsen[3];
+    INTEGER ntrsen[3];
     INTEGER ktrsen = 0;
     Cget38(rtrsen, ltrsen, ntrsen, ktrsen, nin);
     if (rtrsen[1 - 1] > thresh || rtrsen[2 - 1] > thresh || ntrsen[1 - 1] != 0 || ntrsen[2 - 1] != 0 || ntrsen[3 - 1] != 0) {

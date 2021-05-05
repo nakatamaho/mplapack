@@ -82,8 +82,8 @@ void Rerrec(const char *path, INTEGER const nunit) {
     const INTEGER nmax = 4;
     INTEGER i = 0;
     const REAL zero = 0.0;
-    arr_2d<nmax, nmax, REAL> a;
-    arr_2d<nmax, nmax, REAL> b;
+    REAL a[nmax * nmax];
+    REAL b[nmax * nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = zero;
@@ -91,7 +91,7 @@ void Rerrec(const char *path, INTEGER const nunit) {
         }
     }
     const REAL one = 1.0;
-    arr_1d<nmax, bool> sel;
+    bool sel[nmax];
     for (i = 1; i <= nmax; i = i + 1) {
         a[(i - 1) + (i - 1) * lda] = one;
         sel[i - 1] = true;
@@ -101,7 +101,7 @@ void Rerrec(const char *path, INTEGER const nunit) {
     //
     srnamt = "Rtrsyl";
     infot = 1;
-    arr_2d<nmax, nmax, REAL> c;
+    REAL c[nmax * nmax];
     REAL scale = 0.0;
     INTEGER info = 0;
     Rtrsyl("X", "N", 1, 0, 0, a, 1, b, 1, c, 1, scale, info);
@@ -135,7 +135,7 @@ void Rerrec(const char *path, INTEGER const nunit) {
     INTEGER ifst = 1;
     INTEGER ilst = 1;
     infot = 1;
-    arr_1d<nmax, REAL> work;
+    REAL work[nmax];
     Rtrexc("X", 1, a, 1, b, 1, ifst, ilst, work, info);
     chkxer("Rtrexc", infot, nout, lerr, ok);
     infot = 2;
@@ -172,10 +172,10 @@ void Rerrec(const char *path, INTEGER const nunit) {
     //
     srnamt = "Rtrsna";
     infot = 1;
-    arr_1d<nmax, REAL> s;
-    arr_1d<nmax, REAL> sep;
+    REAL s[nmax];
+    REAL sep[nmax];
     INTEGER m = 0;
-    arr_1d<nmax, int> iwork;
+    INTEGER iwork[nmax];
     Rtrsna("X", "A", sel, 0, a, 1, b, 1, c, 1, s, sep, 1, m, work, 1, iwork, info);
     chkxer("Rtrsna", infot, nout, lerr, ok);
     infot = 2;
@@ -209,8 +209,8 @@ void Rerrec(const char *path, INTEGER const nunit) {
     sel[1 - 1] = false;
     srnamt = "Rtrsen";
     infot = 1;
-    arr_1d<nmax, REAL> wr;
-    arr_1d<nmax, REAL> wi;
+    REAL wr[nmax];
+    REAL wi[nmax];
     Rtrsen("X", "N", sel, 0, a, 1, b, 1, wr, wi, m, s[1 - 1], sep[1 - 1], work, 1, iwork, 1, info);
     chkxer("Rtrsen", infot, nout, lerr, ok);
     infot = 2;

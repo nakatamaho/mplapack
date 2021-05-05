@@ -39,6 +39,9 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
+    rmax([3]);
+    lmax([3]);
+    ninfo([3]);
     common_read read(cmn);
     REAL eps = 0.0;
     REAL smlnum = 0.0;
@@ -46,42 +49,51 @@ void Cget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     REAL bignum = 0.0;
     const REAL epsin = 5.9605e-8;
     const REAL zero = 0.0;
-    arr_1d<3, REAL> val;
+    REAL val[3];
     INTEGER n = 0;
     INTEGER ndim = 0;
     INTEGER isrt = 0;
     const INTEGER ldt = 20;
-    arr_1d<ldt, int> iselec;
+    INTEGER iselec[ldt];
     INTEGER i = 0;
+    COMPLEX tmp[ldt * ldt];
     INTEGER j = 0;
     REAL sin = 0.0;
     REAL sepin = 0.0;
-    arr_1d<ldt, REAL> rwork;
+    REAL rwork[ldt];
     REAL tnrm = 0.0;
     INTEGER iscl = 0;
+    COMPLEX t[ldt * ldt];
     REAL vmul = 0.0;
+    COMPLEX tsav[ldt * ldt];
     const INTEGER lwork = 2 * ldt * (10 + ldt);
+    COMPLEX work[lwork];
     INTEGER info = 0;
+    COMPLEX q[ldt * ldt];
     const COMPLEX czero = COMPLEX(0.0, 0.0);
-    arr_1d<ldt, COMPLEX> w;
-    arr_1d<ldt, int> ipnt;
-    arr_1d<ldt, bool> select;
-    arr_1d<ldt, REAL> wsrt;
+    COMPLEX w[ldt];
+    INTEGER ipnt[ldt];
+    bool select[ldt];
+    REAL wsrt[ldt];
     INTEGER kmin = 0;
     REAL vmin = 0.0;
     INTEGER itmp = 0;
-    arr_1d<ldt, COMPLEX> wtmp;
+    COMPLEX qsav[ldt * ldt];
+    COMPLEX tsav1[ldt * ldt];
+    COMPLEX wtmp[ldt];
     INTEGER m = 0;
     REAL s = 0.0;
     REAL sep = 0.0;
     REAL septmp = 0.0;
     REAL stmp = 0.0;
-    arr_1d<2, REAL> result;
+    REAL result[2];
     REAL vmax = 0.0;
     const REAL two = 2.0e+0;
     REAL v = 0.0;
     REAL tol = 0.0;
     REAL tolin = 0.0;
+    COMPLEX ttmp[ldt * ldt];
+    COMPLEX qtmp[ldt * ldt];
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

@@ -41,6 +41,9 @@ using fem::common;
 bool Cslect(COMPLEX const z) {
     bool return_value = false;
     // COMMON sslct
+    bool *selval(cmn.selval, [20]);
+    REAL *selwr(cmn.selwr, [20]);
+    REAL *selwi(cmn.selwi, [20]);
     //
     //
     //  -- LAPACK test routine --

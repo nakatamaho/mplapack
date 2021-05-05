@@ -85,17 +85,17 @@ void Cerrst(const char *path, INTEGER const nunit) {
     INTEGER j = 0;
     const INTEGER nmax = 3;
     INTEGER i = 0;
-    arr_2d<nmax, nmax, COMPLEX> a;
+    COMPLEX a[nmax * nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
         }
     }
-    arr_1d<nmax, REAL> d;
-    arr_1d<nmax, REAL> e;
-    arr_1d<nmax, int> i1;
-    arr_1d<nmax, int> i2;
-    arr_1d<nmax, COMPLEX> tau;
+    REAL d[nmax];
+    REAL e[nmax];
+    INTEGER i1[nmax];
+    INTEGER i2[nmax];
+    COMPLEX tau[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         d[j - 1] = j.real();
         e[j - 1] = 0.0;
@@ -109,19 +109,19 @@ void Cerrst(const char *path, INTEGER const nunit) {
     //     Test error exits for the ST path.
     //
     const INTEGER lw = 20 * nmax;
-    arr_1d<lw, COMPLEX> w;
+    COMPLEX w[lw];
     INTEGER info = 0;
-    arr_2d<nmax, nmax, COMPLEX> c;
-    arr_2d<nmax, nmax, COMPLEX> z;
-    arr_1d<lw, REAL> rw;
-    arr_1d<nmax, REAL> x;
+    COMPLEX c[nmax * nmax];
+    COMPLEX z[nmax * nmax];
+    REAL rw[lw];
+    REAL x[nmax];
     const INTEGER liw = 12 * nmax;
-    arr_1d<liw, int> iw;
-    arr_1d<nmax, int> i3;
+    INTEGER iw[liw];
+    INTEGER i3[nmax];
     INTEGER m = 0;
     INTEGER n = 0;
-    arr_1d<lw, REAL> r;
-    arr_2d<nmax, nmax, COMPLEX> q;
+    REAL r[lw];
+    COMPLEX q[nmax * nmax];
     if (Mlsamen(2, c2, "ST")) {
         //
         //        Chetrd

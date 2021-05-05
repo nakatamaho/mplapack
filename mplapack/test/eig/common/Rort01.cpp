@@ -39,6 +39,7 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rort01(const char *rowcol, INTEGER const m, INTEGER const n, REAL *u, INTEGER const ldu, REAL *work, INTEGER const lwork, REAL &resid) {
+    u([ldu * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -73,7 +74,7 @@ void Rort01(const char *rowcol, INTEGER const m, INTEGER const n, REAL *u, INTEG
     }
     //
     REAL eps = Rlamch("Precision");
-    char transu[1];
+    char transu;
     INTEGER k = 0;
     if (m < n || (m == n && Mlsame(rowcol, "R"))) {
         transu = "N";

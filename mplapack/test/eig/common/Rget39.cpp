@@ -41,6 +41,8 @@ using fem::common;
 void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     FEM_CMN_SVE(Rget39);
     // SAVE
+    INTEGER *idim(sve.idim, [6]);
+    arr_ref<int, 3> ival(sve.ival, [5 * 5 * 6]);
     //
     if (is_called_first_time) {
         data((values, 4, 5 * datum(5))), idim;
@@ -99,35 +101,35 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     //
     //     Set up test case parameters
     //
-    arr_1d<5, REAL> vm1;
+    REAL vm1[5];
     vm1[1 - 1] = one;
     vm1[2 - 1] = sqrt(smlnum);
     vm1[3 - 1] = sqrt(vm1[2 - 1]);
     vm1[4 - 1] = sqrt(bignum);
     vm1[5 - 1] = sqrt(vm1[4 - 1]);
     //
-    arr_1d<5, REAL> vm2;
+    REAL vm2[5];
     vm2[1 - 1] = one;
     vm2[2 - 1] = sqrt(smlnum);
     vm2[3 - 1] = sqrt(vm2[2 - 1]);
     vm2[4 - 1] = sqrt(bignum);
     vm2[5 - 1] = sqrt(vm2[4 - 1]);
     //
-    arr_1d<5, REAL> vm3;
+    REAL vm3[5];
     vm3[1 - 1] = one;
     vm3[2 - 1] = sqrt(smlnum);
     vm3[3 - 1] = sqrt(vm3[2 - 1]);
     vm3[4 - 1] = sqrt(bignum);
     vm3[5 - 1] = sqrt(vm3[4 - 1]);
     //
-    arr_1d<5, REAL> vm4;
+    REAL vm4[5];
     vm4[1 - 1] = one;
     vm4[2 - 1] = sqrt(smlnum);
     vm4[3 - 1] = sqrt(vm4[2 - 1]);
     vm4[4 - 1] = sqrt(bignum);
     vm4[5 - 1] = sqrt(vm4[4 - 1]);
     //
-    arr_1d<3, REAL> vm5;
+    REAL vm5[3];
     vm5[1 - 1] = one;
     vm5[2 - 1] = eps;
     vm5[3 - 1] = sqrt(smlnum);
@@ -152,21 +154,21 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     INTEGER i = 0;
     INTEGER j = 0;
     const INTEGER ldt = 10;
-    arr_2d<ldt, ldt, REAL> t;
+    REAL t[ldt * ldt];
     REAL w = 0.0;
-    arr_1d<ldt, REAL> b;
+    REAL b[ldt];
     const INTEGER ldt2 = 2 * ldt;
-    arr_1d<ldt2, REAL> d;
-    arr_1d<ldt, REAL> work;
+    REAL d[ldt2];
+    REAL work[ldt];
     REAL norm = 0.0;
     INTEGER k = 0;
     REAL normtb = 0.0;
-    arr_1d<ldt2, REAL> x;
-    arr_1d<1, REAL> dum;
+    REAL x[ldt2];
+    REAL dum[1];
     REAL dumm = 0.0;
     REAL scale = 0.0;
     INTEGER info = 0;
-    arr_1d<ldt2, REAL> y;
+    REAL y[ldt2];
     REAL xnorm = 0.0;
     REAL resid = 0.0;
     REAL domin = 0.0;

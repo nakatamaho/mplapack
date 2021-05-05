@@ -86,7 +86,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     bool ok = true;
     REAL rlaln2 = 0.0;
     INTEGER llaln2 = 0;
-    arr_1d<2, int> nlaln2;
+    INTEGER nlaln2[2];
     INTEGER klaln2 = 0;
     Rget31(rlaln2, llaln2, nlaln2, klaln2);
     if (rlaln2 > thresh || nlaln2[1 - 1] != 0) {
@@ -122,7 +122,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     //
     REAL rlaexc = 0.0;
     INTEGER llaexc = 0;
-    arr_1d<2, int> nlaexc;
+    INTEGER nlaexc[2];
     INTEGER klaexc = 0;
     Rget34(rlaexc, llaexc, nlaexc, klaexc);
     if (rlaexc > thresh || nlaexc[2 - 1] != 0) {
@@ -146,7 +146,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     //
     REAL rtrexc = 0.0;
     INTEGER ltrexc = 0;
-    arr_1d<3, int> ntrexc;
+    INTEGER ntrexc[3];
     INTEGER ktrexc = 0;
     Rget36(rtrexc, ltrexc, ntrexc, ktrexc, nin);
     if (rtrexc > thresh || ntrexc[3 - 1] > 0) {
@@ -156,9 +156,9 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
             rtrexc, ltrexc, ntrexc, ktrexc;
     }
     //
-    arr_1d<3, REAL> rtrsna;
-    arr_1d<3, int> ltrsna;
-    arr_1d<3, int> ntrsna;
+    REAL rtrsna[3];
+    INTEGER ltrsna[3];
+    INTEGER ntrsna[3];
     INTEGER ktrsna = 0;
     Rget37(rtrsna, ltrsna, ntrsna, ktrsna, nin);
     if (rtrsna[1 - 1] > thresh || rtrsna[2 - 1] > thresh || ntrsna[1 - 1] != 0 || ntrsna[2 - 1] != 0 || ntrsna[3 - 1] != 0) {
@@ -168,9 +168,9 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
             rtrsna, ltrsna, ntrsna, ktrsna;
     }
     //
-    arr_1d<3, REAL> rtrsen;
-    arr_1d<3, int> ltrsen;
-    arr_1d<3, int> ntrsen;
+    REAL rtrsen[3];
+    INTEGER ltrsen[3];
+    INTEGER ntrsen[3];
     INTEGER ktrsen = 0;
     Rget38(rtrsen, ltrsen, ntrsen, ktrsen, nin);
     if (rtrsen[1 - 1] > thresh || rtrsen[2 - 1] > thresh || ntrsen[1 - 1] != 0 || ntrsen[2 - 1] != 0 || ntrsen[3 - 1] != 0) {

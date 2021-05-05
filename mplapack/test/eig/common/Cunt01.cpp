@@ -39,6 +39,7 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cunt01(const char *rowcol, INTEGER const m, INTEGER const n, COMPLEX *u, INTEGER const ldu, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL &resid) {
+    u([ldu * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -79,7 +80,7 @@ void Cunt01(const char *rowcol, INTEGER const m, INTEGER const n, COMPLEX *u, IN
     }
     //
     REAL eps = Rlamch("Precision");
-    char transu[1];
+    char transu;
     INTEGER k = 0;
     if (m < n || (m == n && Mlsame(rowcol, "R"))) {
         transu = "N";

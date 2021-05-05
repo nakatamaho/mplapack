@@ -40,9 +40,19 @@ using fem::common;
 
 void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, COMPLEX *a, INTEGER const lda, COMPLEX *u, INTEGER const ldu, COMPLEX *vt, INTEGER const ldvt, COMPLEX *asav, COMPLEX *usav, COMPLEX *vtsav, REAL *s, REAL *ssav, REAL *e, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER const nounit, INTEGER &info) {
     FEM_CMN_SVE(Cdrvbd);
+    iseed([4]);
+    a([lda * star]);
+    u([ldu * star]);
+    vt([ldvt * star]);
+    asav([lda * star]);
+    usav([ldu * star]);
+    vtsav([ldvt * star]);
     common_write write(cmn);
     char &srnamt = cmn.srnamt;
     //
+    str_arr_ref<1> cjob(sve.cjob, [4]);
+    str_arr_ref<1> cjobr(sve.cjobr, [3]);
+    str_arr_ref<1> cjobv(sve.cjobv, [2]);
     if (is_called_first_time) {
         {
             static const char *values[] = {"N", "O", "S", "A"};
@@ -81,7 +91,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
-    arr_1d<4, int> ioldsd;
+    INTEGER ioldsd[4];
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     INTEGER i = 0;
     const REAL zero = 0.0;
@@ -91,15 +101,15 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     INTEGER iwspc = 0;
     INTEGER iwtmp = 0;
     INTEGER lswork = 0;
-    arr_1d<39, REAL> result;
+    REAL result[39];
     INTEGER iju = 0;
     INTEGER ijvt = 0;
-    char jobu[1];
-    char jobvt[1];
+    char jobu;
+    char jobvt;
     REAL dif = 0.0;
     REAL div = 0.0;
     INTEGER ijq = 0;
-    char jobq[1];
+    char jobq;
     INTEGER lrwork = 0;
     INTEGER liwork = 0;
     INTEGER numrank = 0;
@@ -108,8 +118,8 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     INTEGER il = 0;
     INTEGER iu = 0;
     INTEGER ns = 0;
-    char range[1];
-    arr_1d<4, int> iseed2;
+    char range;
+    INTEGER iseed2[4];
     INTEGER itemp = 0;
     INTEGER nsi = 0;
     const REAL half = 0.5e0;

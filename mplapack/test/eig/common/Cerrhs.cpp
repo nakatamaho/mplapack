@@ -85,8 +85,8 @@ void Cerrhs(const char *path, INTEGER const nunit) {
     INTEGER j = 0;
     const INTEGER nmax = 3;
     INTEGER i = 0;
-    arr_2d<nmax, nmax, COMPLEX> a;
-    arr_1d<nmax, bool> sel;
+    COMPLEX a[nmax * nmax];
+    bool sel[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
@@ -100,19 +100,19 @@ void Cerrhs(const char *path, INTEGER const nunit) {
     //
     INTEGER ilo = 0;
     INTEGER ihi = 0;
-    arr_1d<nmax, REAL> s;
+    REAL s[nmax];
     INTEGER info = 0;
-    arr_1d<nmax, COMPLEX> tau;
+    COMPLEX tau[nmax];
     const INTEGER lw = nmax * nmax;
-    arr_1d<lw, COMPLEX> w;
-    arr_2d<nmax, nmax, COMPLEX> c;
-    arr_1d<nmax, COMPLEX> x;
-    arr_2d<nmax, nmax, COMPLEX> vl;
-    arr_2d<nmax, nmax, COMPLEX> vr;
+    COMPLEX w[lw];
+    COMPLEX c[nmax * nmax];
+    COMPLEX x[nmax];
+    COMPLEX vl[nmax * nmax];
+    COMPLEX vr[nmax * nmax];
     INTEGER m = 0;
-    arr_1d<nmax, REAL> rw;
-    arr_1d<nmax, int> ifaill;
-    arr_1d<nmax, int> ifailr;
+    REAL rw[nmax];
+    INTEGER ifaill[nmax];
+    INTEGER ifailr[nmax];
     if (Mlsamen(2, c2, "HS")) {
         //
         //        Cgebal

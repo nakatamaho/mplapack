@@ -40,8 +40,26 @@ using fem::common;
 
 void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *t1, COMPLEX *t2, COMPLEX *u, INTEGER const ldu, COMPLEX *z, COMPLEX *uz, COMPLEX *w1, COMPLEX *w3, COMPLEX *evectl, COMPLEX *evectr, COMPLEX *evecty, COMPLEX *evectx, COMPLEX *uu, COMPLEX *tau, COMPLEX *work, INTEGER const nwork, REAL *rwork, INTEGER *iwork, bool *select, REAL *result, INTEGER &info) {
     FEM_CMN_SVE(Cchkhs);
+    iseed([4]);
+    a([lda * star]);
+    h([lda * star]);
+    t1([lda * star]);
+    t2([lda * star]);
+    u([ldu * star]);
+    z([ldu * star]);
+    uz([ldu * star]);
+    evectl([ldu * star]);
+    evectr([ldu * star]);
+    evecty([ldu * star]);
+    evectx([ldu * star]);
+    uu([ldu * star]);
+    result([14]);
     common_write write(cmn);
     const INTEGER maxtyp = 21;
+    INTEGER *kconds(sve.kconds, [maxtyp]);
+    INTEGER *kmagn(sve.kmagn, [maxtyp]);
+    INTEGER *kmode(sve.kmode, [maxtyp]);
+    INTEGER *ktype(sve.ktype, [maxtyp]);
     if (is_called_first_time) {
         data((values, 1, 2, 3, 5 * datum(4), 4 * datum(6), 6 * datum(6), 3 * datum(9))), ktype;
         {
@@ -82,7 +100,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
-    arr_1d<4, int> ioldsd;
+    INTEGER ioldsd[4];
     INTEGER itype = 0;
     INTEGER imode = 0;
     REAL anorm = 0.0;
@@ -91,16 +109,16 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     REAL cond = 0.0;
     INTEGER jcol = 0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
-    arr_1d<1, int> idumma;
+    INTEGER idumma[1];
     REAL conds = 0.0;
     INTEGER ilo = 0;
     INTEGER ihi = 0;
     INTEGER i = 0;
     REAL temp1 = 0.0;
     REAL temp2 = 0.0;
-    arr_1d<4, COMPLEX> cdumma;
+    COMPLEX cdumma[4];
     INTEGER in = 0;
-    arr_1d<4, REAL> dumma;
+    REAL dumma[4];
     INTEGER k = 0;
     bool match = false;
     INTEGER jj = 0;

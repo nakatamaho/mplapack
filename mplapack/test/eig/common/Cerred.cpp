@@ -90,7 +90,7 @@ void Cerred(const char *path, INTEGER const nunit) {
     const INTEGER nmax = 4;
     INTEGER i = 0;
     const REAL zero = 0.0;
-    arr_2d<nmax, nmax, COMPLEX> a;
+    COMPLEX a[nmax * nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = zero;
@@ -103,24 +103,24 @@ void Cerred(const char *path, INTEGER const nunit) {
     ok = true;
     INTEGER nt = 0;
     //
-    arr_1d<nmax, COMPLEX> x;
-    arr_2d<nmax, nmax, COMPLEX> vl;
-    arr_2d<nmax, nmax, COMPLEX> vr;
-    arr_1d<10 * nmax, COMPLEX> w;
+    COMPLEX x[nmax];
+    COMPLEX vl[nmax * nmax];
+    COMPLEX vr[nmax * nmax];
+    COMPLEX w[10 * nmax];
     const INTEGER lw = 5 * nmax;
-    arr_1d<lw, REAL> rw;
+    REAL rw[lw];
     INTEGER info = 0;
     INTEGER sdim = 0;
-    arr_1d<nmax, bool> b;
+    bool b[nmax];
     INTEGER ilo = 0;
     INTEGER ihi = 0;
-    arr_1d<nmax, REAL> s;
+    REAL s[nmax];
     REAL abnrm = 0.0;
-    arr_1d<nmax, REAL> r1;
-    arr_1d<nmax, REAL> r2;
-    arr_2d<nmax, nmax, COMPLEX> u;
-    arr_2d<nmax, nmax, COMPLEX> vt;
-    arr_1d<4 * nmax, int> iw;
+    REAL r1[nmax];
+    REAL r2[nmax];
+    COMPLEX u[nmax * nmax];
+    COMPLEX vt[nmax * nmax];
+    INTEGER iw[4 * nmax];
     INTEGER ns = 0;
     if (Mlsamen(2, c2, "EV")) {
         //

@@ -42,7 +42,7 @@ void Cchkbk(INTEGER const nin, INTEGER const nout) {
     common_read read(cmn);
     common_write write(cmn);
     COMPLEX cdum = 0.0;
-    arr_1d<2, int> lmax;
+    INTEGER lmax[2];
     INTEGER ninfo = 0;
     INTEGER knt = 0;
     const REAL zero = 0.0;
@@ -53,9 +53,11 @@ void Cchkbk(INTEGER const nin, INTEGER const nout) {
     INTEGER ilo = 0;
     INTEGER ihi = 0;
     const INTEGER lde = 20;
-    arr_1d<lde, REAL> scale;
+    REAL scale[lde];
     INTEGER i = 0;
+    COMPLEX e[lde * lde];
     INTEGER j = 0;
+    COMPLEX ein[lde * lde];
     INTEGER info = 0;
     REAL vmax = 0.0;
     REAL x = 0.0;

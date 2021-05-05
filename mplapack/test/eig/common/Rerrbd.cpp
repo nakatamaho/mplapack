@@ -85,7 +85,7 @@ void Rerrbd(const char *path, INTEGER const nunit) {
     INTEGER j = 0;
     const INTEGER nmax = 4;
     INTEGER i = 0;
-    arr_2d<nmax, nmax, REAL> a;
+    REAL a[nmax * nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
@@ -96,22 +96,22 @@ void Rerrbd(const char *path, INTEGER const nunit) {
     //
     //     Test error exits of the SVD routines.
     //
-    arr_1d<nmax, REAL> d;
-    arr_1d<nmax, REAL> e;
-    arr_1d<nmax, REAL> tq;
-    arr_1d<nmax, REAL> tp;
+    REAL d[nmax];
+    REAL e[nmax];
+    REAL tq[nmax];
+    REAL tp[nmax];
     const INTEGER lw = nmax;
-    arr_1d<lw, REAL> w;
+    REAL w[lw];
     INTEGER info = 0;
-    arr_2d<nmax, nmax, REAL> u;
-    arr_2d<nmax, nmax, REAL> v;
-    arr_2d<nmax, nmax, REAL> q;
-    arr_2d<nmax, nmax, int> iq;
-    arr_1d<nmax, int> iw;
+    REAL u[nmax * nmax];
+    REAL v[nmax * nmax];
+    REAL q[nmax * nmax];
+    INTEGER iq[nmax * nmax];
+    INTEGER iw[nmax];
     const REAL zero = 0.0;
     const REAL one = 1.0;
     INTEGER ns = 0;
-    arr_1d<nmax, REAL> s;
+    REAL s[nmax];
     if (Mlsamen(2, c2, "BD")) {
         //
         //        Rgebrd

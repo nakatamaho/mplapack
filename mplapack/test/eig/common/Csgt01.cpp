@@ -39,6 +39,9 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Csgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER const m, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *z, INTEGER const ldz, REAL *d, COMPLEX *work, REAL *rwork, REAL *result) {
+    a([lda * star]);
+    b([ldb * star]);
+    z([ldz * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

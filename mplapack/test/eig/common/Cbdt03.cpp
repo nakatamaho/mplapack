@@ -39,6 +39,8 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cbdt03(const char *uplo, INTEGER const n, INTEGER const kd, REAL *d, REAL *e, COMPLEX *u, INTEGER const ldu, REAL *s, COMPLEX *vt, INTEGER const ldvt, COMPLEX *work, REAL &resid) {
+    u([ldu * star]);
+    vt([ldvt * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

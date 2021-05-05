@@ -39,13 +39,14 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const mmax, REAL *x, REAL *xf, REAL *u1, REAL *u2, REAL *v1t, REAL *v2t, REAL *theta, INTEGER *iwork, REAL *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
+    iseed([4]);
     common_write write(cmn);
     char path[3];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     bool firstt = false;
     const INTEGER ntypes = 4;
-    arr_1d<ntypes, bool> dotype;
+    bool dotype[ntypes];
     INTEGER ldx = 0;
     INTEGER ldu1 = 0;
     INTEGER ldu2 = 0;
@@ -69,7 +70,7 @@ void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
     const REAL one = 1.0;
     INTEGER nt = 0;
     const INTEGER ntests = 15;
-    arr_1d<ntests, REAL> result;
+    REAL result[ntests];
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

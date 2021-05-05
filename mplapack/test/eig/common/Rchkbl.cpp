@@ -41,7 +41,7 @@ using fem::common;
 void Rchkbl(INTEGER const nin, INTEGER const nout) {
     common_read read(cmn);
     common_write write(cmn);
-    arr_1d<3, int> lmax;
+    INTEGER lmax[3];
     INTEGER ninfo = 0;
     INTEGER knt = 0;
     const REAL zero = 0.0;
@@ -52,15 +52,17 @@ void Rchkbl(INTEGER const nin, INTEGER const nout) {
     INTEGER n = 0;
     INTEGER i = 0;
     const INTEGER lda = 20;
+    REAL a[lda * lda];
     INTEGER j = 0;
     INTEGER iloin = 0;
     INTEGER ihiin = 0;
-    arr_1d<lda, REAL> scalin;
-    arr_1d<1, REAL> dummy;
+    REAL ain[lda * lda];
+    REAL scalin[lda];
+    REAL dummy[1];
     REAL anorm = 0.0;
     INTEGER ilo = 0;
     INTEGER ihi = 0;
-    arr_1d<lda, REAL> scale;
+    REAL scale[lda];
     INTEGER info = 0;
     REAL temp = 0.0;
     //

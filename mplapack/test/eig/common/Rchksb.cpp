@@ -40,8 +40,14 @@ using fem::common;
 
 void Rchksb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *sd, REAL *se, REAL *u, INTEGER const ldu, REAL *work, INTEGER const lwork, REAL *result, INTEGER &info) {
     FEM_CMN_SVE(Rchksb);
+    iseed([4]);
+    a([lda * star]);
+    u([ldu * star]);
     common_write write(cmn);
     const INTEGER maxtyp = 15;
+    INTEGER *kmagn(sve.kmagn, [maxtyp]);
+    INTEGER *kmode(sve.kmode, [maxtyp]);
+    INTEGER *ktype(sve.ktype, [maxtyp]);
     if (is_called_first_time) {
         data((values, 1, 2, 5 * datum(4), 5 * datum(5), 3 * datum(8))), ktype;
         {
@@ -80,7 +86,7 @@ void Rchksb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
-    arr_1d<4, int> ioldsd;
+    INTEGER ioldsd[4];
     INTEGER itype = 0;
     INTEGER imode = 0;
     REAL anorm = 0.0;
@@ -89,7 +95,7 @@ void Rchksb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
     REAL cond = 0.0;
     const REAL ten = 10.0;
     INTEGER jcol = 0;
-    arr_1d<1, int> idumma;
+    INTEGER idumma[1];
     INTEGER i = 0;
     REAL temp1 = 0.0;
     const REAL two = 2.0;

@@ -86,17 +86,17 @@ void Rerrst(const char *path, INTEGER const nunit) {
     INTEGER j = 0;
     const INTEGER nmax = 3;
     INTEGER i = 0;
-    arr_2d<nmax, nmax, REAL> a;
+    REAL a[nmax * nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
         }
     }
-    arr_1d<nmax, REAL> d;
-    arr_1d<nmax, REAL> e;
-    arr_1d<nmax, int> i1;
-    arr_1d<nmax, int> i2;
-    arr_1d<nmax, REAL> tau;
+    REAL d[nmax];
+    REAL e[nmax];
+    INTEGER i1[nmax];
+    INTEGER i2[nmax];
+    REAL tau[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         d[j - 1] = j.real();
         e[j - 1] = 0.0;
@@ -110,19 +110,19 @@ void Rerrst(const char *path, INTEGER const nunit) {
     //     Test error exits for the ST path.
     //
     const INTEGER lw = 20 * nmax;
-    arr_1d<lw, REAL> w;
+    REAL w[lw];
     INTEGER info = 0;
-    arr_2d<nmax, nmax, REAL> c;
-    arr_2d<nmax, nmax, REAL> z;
+    REAL c[nmax * nmax];
+    REAL z[nmax * nmax];
     INTEGER m = 0;
     INTEGER nsplit = 0;
-    arr_1d<nmax, REAL> x;
+    REAL x[nmax];
     const INTEGER liw = 12 * nmax;
-    arr_1d<liw, int> iw;
-    arr_1d<nmax, int> i3;
+    INTEGER iw[liw];
+    INTEGER i3[nmax];
     INTEGER n = 0;
-    arr_1d<nmax, REAL> r;
-    arr_2d<nmax, nmax, REAL> q;
+    REAL r[nmax];
+    REAL q[nmax * nmax];
     if (Mlsamen(2, c2, "ST")) {
         //
         //        Rsytrd

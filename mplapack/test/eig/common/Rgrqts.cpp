@@ -39,6 +39,17 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rgrqts(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *r, INTEGER const lda, REAL *taua, REAL *b, REAL *bf, REAL *z, REAL *t, REAL *bwk, INTEGER const ldb, REAL *taub, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
+    a([lda * star]);
+    af([lda * star]);
+    q([lda * star]);
+    r([lda * star]);
+    b([ldb * star]);
+    bf([ldb * star]);
+    z([ldb * star]);
+    t([ldb * star]);
+    bwk([ldb * star]);
+    work([lwork]);
+    result([4]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

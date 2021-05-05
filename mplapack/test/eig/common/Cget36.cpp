@@ -47,23 +47,23 @@ void Cget36(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER con
     INTEGER ilst = 0;
     INTEGER i = 0;
     const INTEGER ldt = 10;
-    arr_2d<ldt, ldt, COMPLEX> tmp;
+    COMPLEX tmp[ldt * ldt];
     INTEGER j = 0;
-    arr_2d<ldt, ldt, COMPLEX> t1;
-    arr_2d<ldt, ldt, COMPLEX> t2;
+    COMPLEX t1[ldt * ldt];
+    COMPLEX t2[ldt * ldt];
     REAL res = 0.0;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX cone = COMPLEX(1.0, 0.0);
-    arr_2d<ldt, ldt, COMPLEX> q;
+    COMPLEX q[ldt * ldt];
     INTEGER info1 = 0;
     const REAL one = 1.0;
     INTEGER info2 = 0;
-    arr_1d<ldt, COMPLEX> diag;
+    COMPLEX diag[ldt];
     COMPLEX ctemp = 0.0;
     const INTEGER lwork = 2 * ldt * ldt;
-    arr_1d<lwork, COMPLEX> work;
-    arr_1d<ldt, REAL> rwork;
-    arr_1d<2, REAL> result;
+    COMPLEX work[lwork];
+    REAL rwork[ldt];
+    REAL result[2];
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

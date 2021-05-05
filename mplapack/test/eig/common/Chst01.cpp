@@ -39,6 +39,11 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Chst01(INTEGER const n, INTEGER const  /* ilo */, INTEGER const  /* ihi */, COMPLEX *a, INTEGER const lda, COMPLEX *h, INTEGER const ldh, COMPLEX *q, INTEGER const ldq, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
+    a([lda * star]);
+    h([ldh * star]);
+    q([ldq * star]);
+    work([lwork]);
+    result([2]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

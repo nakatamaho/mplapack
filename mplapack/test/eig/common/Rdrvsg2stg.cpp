@@ -40,8 +40,17 @@ using fem::common;
 
 void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *d, REAL *d2, REAL *z, INTEGER const ldz, REAL *ab, REAL *bb, REAL *ap, REAL *bp, REAL *work, INTEGER const nwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
     FEM_CMN_SVE(Rdrvsg2stg);
+    iseed([4]);
+    a([lda * star]);
+    b([ldb * star]);
+    z([ldz * star]);
+    ab([lda * star]);
+    bb([ldb * star]);
     common_write write(cmn);
     const INTEGER maxtyp = 21;
+    INTEGER *kmagn(sve.kmagn, [maxtyp]);
+    INTEGER *kmode(sve.kmode, [maxtyp]);
+    INTEGER *ktype(sve.ktype, [maxtyp]);
     if (is_called_first_time) {
         data((values, 1, 2, 5 * datum(4), 5 * datum(5), 3 * datum(8), 6 * datum(9))), ktype;
         {
@@ -69,7 +78,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     REAL rtunfl = 0.0;
     REAL rtovfl = 0.0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed2;
+    INTEGER iseed2[4];
     INTEGER nerrs = 0;
     INTEGER nmats = 0;
     INTEGER jsize = 0;
@@ -80,7 +89,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     INTEGER kb9 = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
-    arr_1d<4, int> ioldsd;
+    INTEGER ioldsd[4];
     INTEGER itype = 0;
     INTEGER imode = 0;
     REAL anorm = 0.0;
@@ -90,14 +99,14 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     INTEGER kb = 0;
     const REAL zero = 0.0;
     INTEGER jcol = 0;
-    arr_1d<1, int> idumma;
+    INTEGER idumma[1];
     REAL abstol = 0.0;
     INTEGER il = 0;
     INTEGER iu = 0;
     INTEGER itemp = 0;
     INTEGER ibtype = 0;
     INTEGER ibuplo = 0;
-    char uplo[1];
+    char uplo;
     const REAL ten = 10.0;
     REAL temp1 = 0.0;
     REAL temp2 = 0.0;

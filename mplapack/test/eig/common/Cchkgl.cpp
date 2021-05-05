@@ -41,7 +41,7 @@ using fem::common;
 void Cchkgl(INTEGER const nin, INTEGER const nout) {
     common_read read(cmn);
     common_write write(cmn);
-    arr_1d<3, int> lmax;
+    INTEGER lmax[3];
     INTEGER ninfo = 0;
     INTEGER knt = 0;
     const REAL zero = 0.0;
@@ -50,20 +50,24 @@ void Cchkgl(INTEGER const nin, INTEGER const nout) {
     INTEGER n = 0;
     INTEGER i = 0;
     const INTEGER lda = 20;
+    COMPLEX a[lda * lda];
     INTEGER j = 0;
     const INTEGER ldb = 20;
+    COMPLEX b[ldb * ldb];
     INTEGER iloin = 0;
     INTEGER ihiin = 0;
-    arr_1d<lda, REAL> lsclin;
-    arr_1d<lda, REAL> rsclin;
+    COMPLEX ain[lda * lda];
+    COMPLEX bin[ldb * ldb];
+    REAL lsclin[lda];
+    REAL rsclin[lda];
     const INTEGER lwork = 6 * lda;
-    arr_1d<lwork, REAL> work;
+    REAL work[lwork];
     REAL anorm = 0.0;
     REAL bnorm = 0.0;
     INTEGER ilo = 0;
     INTEGER ihi = 0;
-    arr_1d<lda, REAL> lscale;
-    arr_1d<lda, REAL> rscale;
+    REAL lscale[lda];
+    REAL rscale[lda];
     INTEGER info = 0;
     REAL vmax = 0.0;
     //

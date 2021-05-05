@@ -51,9 +51,9 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
     char line[80];
     INTEGER lenp = 0;
     INTEGER j = 0;
-    arr_1d<100, int> nreq;
+    INTEGER nreq[100];
     INTEGER i1 = 0;
-    char c1[1];
+    char c1;
     INTEGER k = 0;
     INTEGER ic = 0;
     INTEGER nt = 0;

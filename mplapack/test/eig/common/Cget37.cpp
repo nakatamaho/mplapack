@@ -39,6 +39,9 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
+    rmax([3]);
+    lmax([3]);
+    ninfo([3]);
     common_read read(cmn);
     REAL eps = 0.0;
     REAL smlnum = 0.0;
@@ -46,32 +49,37 @@ void Cget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     REAL bignum = 0.0;
     const REAL epsin = 5.9605e-8;
     const REAL zero = 0.0;
-    arr_1d<3, REAL> val;
+    REAL val[3];
     INTEGER n = 0;
     INTEGER isrt = 0;
     INTEGER i = 0;
     const INTEGER ldt = 20;
+    COMPLEX tmp[ldt * ldt];
     INTEGER j = 0;
-    arr_1d<ldt, REAL> wrin;
-    arr_1d<ldt, REAL> wiin;
-    arr_1d<ldt, REAL> sin;
-    arr_1d<ldt, REAL> sepin;
-    arr_1d<2 * ldt, REAL> rwork;
+    REAL wrin[ldt];
+    REAL wiin[ldt];
+    REAL sin[ldt];
+    REAL sepin[ldt];
+    REAL rwork[2 * ldt];
     REAL tnrm = 0.0;
     INTEGER iscl = 0;
+    COMPLEX t[ldt * ldt];
     REAL vmul = 0.0;
     const INTEGER lwork = 2 * ldt * (10 + ldt);
+    COMPLEX work[lwork];
     INTEGER info = 0;
-    arr_1d<ldt, COMPLEX> w;
-    arr_1d<1, COMPLEX> cdum;
-    arr_1d<ldt, bool> select;
+    COMPLEX w[ldt];
+    COMPLEX cdum[1];
+    bool select[ldt];
+    COMPLEX le[ldt * ldt];
+    COMPLEX re[ldt * ldt];
     INTEGER m = 0;
-    arr_1d<ldt, REAL> s;
-    arr_1d<ldt, REAL> sep;
-    arr_1d<ldt, COMPLEX> wtmp;
-    arr_1d<ldt, REAL> wsrt;
-    arr_1d<ldt, REAL> stmp;
-    arr_1d<ldt, REAL> septmp;
+    REAL s[ldt];
+    REAL sep[ldt];
+    COMPLEX wtmp[ldt];
+    REAL wsrt[ldt];
+    REAL stmp[ldt];
+    REAL septmp[ldt];
     INTEGER kmin = 0;
     REAL vmin = 0.0;
     REAL vcmin = 0.0;
@@ -80,9 +88,9 @@ void Cget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     REAL tol = 0.0;
     REAL tolin = 0.0;
     REAL vmax = 0.0;
-    arr_1d<1, REAL> dum;
+    REAL dum[1];
     INTEGER icmp = 0;
-    arr_1d<3, int> lcmp;
+    INTEGER lcmp[3];
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

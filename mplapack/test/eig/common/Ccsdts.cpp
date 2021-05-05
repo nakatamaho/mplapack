@@ -39,6 +39,14 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Ccsdts(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x, COMPLEX *xf, INTEGER const ldx, COMPLEX *u1, INTEGER const ldu1, COMPLEX *u2, INTEGER const ldu2, COMPLEX *v1t, INTEGER const ldv1t, COMPLEX *v2t, INTEGER const ldv2t, REAL *theta, INTEGER *iwork, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
+    x([ldx * star]);
+    xf([ldx * star]);
+    u1([ldu1 * star]);
+    u2([ldu2 * star]);
+    v1t([ldv1t * star]);
+    v2t([ldv2t * star]);
+    work([lwork]);
+    result([15]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

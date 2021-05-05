@@ -39,6 +39,9 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
+    rmax([3]);
+    lmax([3]);
+    ninfo([3]);
     common_read read(cmn);
     REAL eps = 0.0;
     REAL smlnum = 0.0;
@@ -46,42 +49,52 @@ void Rget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     REAL bignum = 0.0;
     const REAL epsin = 5.9605e-8;
     const REAL zero = 0.0;
-    arr_1d<3, REAL> val;
+    REAL val[3];
     INTEGER n = 0;
     INTEGER ndim = 0;
     const INTEGER ldt = 20;
-    arr_1d<ldt, int> iselec;
+    INTEGER iselec[ldt];
     INTEGER i = 0;
+    REAL tmp[ldt * ldt];
     INTEGER j = 0;
     REAL sin = 0.0;
     REAL sepin = 0.0;
     const INTEGER lwork = 2 * ldt * (10 + ldt);
+    REAL work[lwork];
     REAL tnrm = 0.0;
     INTEGER iscl = 0;
+    REAL t[ldt * ldt];
     REAL vmul = 0.0;
+    REAL tsav[ldt * ldt];
     INTEGER info = 0;
-    arr_1d<ldt, REAL> wr;
-    arr_1d<ldt, REAL> wi;
-    arr_1d<ldt, int> ipnt;
-    arr_1d<ldt, bool> select;
-    arr_1d<ldt, REAL> wrtmp;
-    arr_1d<ldt, REAL> witmp;
+    REAL q[ldt * ldt];
+    REAL wr[ldt];
+    REAL wi[ldt];
+    INTEGER ipnt[ldt];
+    bool select[ldt];
+    REAL wrtmp[ldt];
+    REAL witmp[ldt];
     INTEGER kmin = 0;
     REAL vrmin = 0.0;
     REAL vimin = 0.0;
     INTEGER itmp = 0;
+    REAL qsav[ldt * ldt];
+    REAL tsav1[ldt * ldt];
     INTEGER m = 0;
     REAL s = 0.0;
     REAL sep = 0.0;
     const INTEGER liwork = ldt * ldt;
+    INTEGER iwork[liwork];
     REAL septmp = 0.0;
     REAL stmp = 0.0;
-    arr_1d<2, REAL> result;
+    REAL result[2];
     REAL vmax = 0.0;
     const REAL two = 2.0;
     REAL v = 0.0;
     REAL tol = 0.0;
     REAL tolin = 0.0;
+    REAL ttmp[ldt * ldt];
+    REAL qtmp[ldt * ldt];
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

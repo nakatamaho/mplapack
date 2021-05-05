@@ -39,6 +39,7 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rlafts(const char *type, INTEGER const m, INTEGER const n, INTEGER const imat, INTEGER const ntests, REAL *result, INTEGER *iseed, REAL const thresh, INTEGER const iounit, INTEGER &ie) {
+    iseed([4]);
     common_write write(cmn);
     //
     //  -- LAPACK test routine --

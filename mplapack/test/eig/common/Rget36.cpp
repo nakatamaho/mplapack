@@ -39,6 +39,7 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget36(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
+    ninfo([3]);
     common_read read(cmn);
     REAL eps = 0.0;
     const REAL zero = 0.0;
@@ -47,10 +48,10 @@ void Rget36(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     INTEGER ilst = 0;
     INTEGER i = 0;
     const INTEGER ldt = 10;
-    arr_2d<ldt, ldt, REAL> tmp;
+    REAL tmp[ldt * ldt];
     INTEGER j = 0;
-    arr_2d<ldt, ldt, REAL> t1;
-    arr_2d<ldt, ldt, REAL> t2;
+    REAL t1[ldt * ldt];
+    REAL t2[ldt * ldt];
     INTEGER ifstsv = 0;
     INTEGER ilstsv = 0;
     INTEGER ifst1 = 0;
@@ -59,12 +60,12 @@ void Rget36(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     INTEGER ilst2 = 0;
     REAL res = 0.0;
     const REAL one = 1.0;
-    arr_2d<ldt, ldt, REAL> q;
+    REAL q[ldt * ldt];
     const INTEGER lwork = 2 * ldt * ldt;
-    arr_1d<lwork, REAL> work;
+    REAL work[lwork];
     INTEGER info1 = 0;
     INTEGER info2 = 0;
-    arr_1d<2, REAL> result;
+    REAL result[2];
     INTEGER loc = 0;
     //
     //  -- LAPACK test routine --

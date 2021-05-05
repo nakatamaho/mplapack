@@ -41,6 +41,8 @@ using fem::common;
 void Rget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     FEM_CMN_SVE(Rget35);
     // SAVE
+    INTEGER *idim(sve.idim, [8]);
+    arr_ref<int, 3> ival(sve.ival, [6 * 6 * 8]);
     //
     if (is_called_first_time) {
         {
@@ -101,11 +103,11 @@ void Rget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     //
     //     Set up test case parameters
     //
-    arr_1d<3, REAL> vm1;
+    REAL vm1[3];
     vm1[1 - 1] = sqrt(smlnum);
     vm1[2 - 1] = one;
     vm1[3 - 1] = sqrt(bignum);
-    arr_1d<3, REAL> vm2;
+    REAL vm2[3];
     vm2[1 - 1] = one;
     const REAL two = 2.0;
     vm2[2 - 1] = one + two * eps;
@@ -128,21 +130,21 @@ void Rget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     INTEGER imloff = 0;
     INTEGER imb = 0;
     INTEGER imldb1 = 0;
-    char trana[1];
-    char tranb[1];
+    char trana;
+    char tranb;
     INTEGER m = 0;
     INTEGER n = 0;
     REAL tnrm = 0.0;
     INTEGER i = 0;
     INTEGER j = 0;
-    arr_2d<6, 6, REAL> a;
-    arr_2d<6, 6, REAL> b;
+    REAL a[6 * 6];
+    REAL b[6 * 6];
     REAL cnrm = 0.0;
-    arr_2d<6, 6, REAL> c;
-    arr_2d<6, 6, REAL> cc;
+    REAL c[6 * 6];
+    REAL cc[6 * 6];
     REAL scale = 0.0;
     INTEGER info = 0;
-    arr_1d<1, REAL> dum;
+    REAL dum[1];
     REAL xnrm = 0.0;
     REAL rmul = 0.0;
     REAL res1 = 0.0;

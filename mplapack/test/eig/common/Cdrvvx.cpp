@@ -40,9 +40,21 @@ using fem::common;
 
 void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const niunit, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *w, COMPLEX *w1, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, COMPLEX *lre, INTEGER const ldlre, REAL *rcondv, REAL *rcndv1, REAL *rcdvin, REAL *rconde, REAL *rcnde1, REAL *rcdein, REAL *scale, REAL *scale1, REAL *result, COMPLEX *work, INTEGER const nwork, REAL *rwork, INTEGER &info) {
     FEM_CMN_SVE(Cdrvvx);
+    iseed([4]);
+    a([lda * star]);
+    h([lda * star]);
+    vl([ldvl * star]);
+    vr([ldvr * star]);
+    lre([ldlre * star]);
+    result([11]);
     common_read read(cmn);
     common_write write(cmn);
+    str_arr_ref<1> bal(sve.bal, [4]);
     const INTEGER maxtyp = 21;
+    INTEGER *kconds(sve.kconds, [maxtyp]);
+    INTEGER *kmagn(sve.kmagn, [maxtyp]);
+    INTEGER *kmode(sve.kmode, [maxtyp]);
+    INTEGER *ktype(sve.ktype, [maxtyp]);
     if (is_called_first_time) {
         data((values, 1, 2, 3, 5 * datum(4), 4 * datum(6), 6 * datum(6), 3 * datum(9))), ktype;
         {
@@ -83,7 +95,7 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER n = 0;
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
-    arr_1d<4, int> ioldsd;
+    INTEGER ioldsd[4];
     INTEGER itype = 0;
     INTEGER imode = 0;
     REAL anorm = 0.0;
@@ -93,11 +105,11 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER jcol = 0;
     REAL conds = 0.0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
-    arr_1d<1, int> idumma;
+    INTEGER idumma[1];
     INTEGER iwk = 0;
     INTEGER nnwork = 0;
     INTEGER ibal = 0;
-    char balanc[1];
+    char balanc;
     INTEGER ntest = 0;
     INTEGER nfail = 0;
     INTEGER isrt = 0;

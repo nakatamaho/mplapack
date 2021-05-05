@@ -39,6 +39,13 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER const nout, REAL *a, INTEGER const lda, REAL *b, REAL *ai, REAL *bi, REAL *alphar, REAL *alphai, REAL *beta, REAL *vl, REAL *vr, INTEGER const ilo, INTEGER const ihi, REAL *lscale, REAL *rscale, REAL *s, REAL *dtru, REAL *dif, REAL *diftru, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, REAL *result, bool *bwork, INTEGER &info) {
+    a([lda * star]);
+    b([lda * star]);
+    ai([lda * star]);
+    bi([lda * star]);
+    vl([lda * star]);
+    vr([lda * star]);
+    result([4]);
     common_read read(cmn);
     common_write write(cmn);
     INTEGER nmax = 0;
@@ -55,7 +62,7 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
     INTEGER nptknt = 0;
     INTEGER ntestt = 0;
     const REAL tnth = 1.0e-1;
-    arr_1d<5, REAL> weight;
+    REAL weight[5];
     const REAL half = 0.5e+0;
     INTEGER iptype = 0;
     INTEGER iwa = 0;

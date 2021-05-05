@@ -40,9 +40,19 @@ using fem::common;
 
 void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, REAL *a, INTEGER const lda, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *asav, REAL *usav, REAL *vtsav, REAL *s, REAL *ssav, REAL *e, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const nout, INTEGER &info) {
     FEM_CMN_SVE(Rdrvbd);
+    iseed([4]);
+    a([lda * star]);
+    u([ldu * star]);
+    vt([ldvt * star]);
+    asav([lda * star]);
+    usav([ldu * star]);
+    vtsav([ldvt * star]);
     common_write write(cmn);
     char &srnamt = cmn.srnamt;
     //
+    str_arr_ref<1> cjob(sve.cjob, [4]);
+    str_arr_ref<1> cjobr(sve.cjobr, [3]);
+    str_arr_ref<1> cjobv(sve.cjobv, [2]);
     if (is_called_first_time) {
         {
             static const char *values[] = {"N", "O", "S", "A"};
@@ -80,34 +90,34 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     const INTEGER maxtyp = 5;
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
-    arr_1d<4, int> ioldsd;
+    INTEGER ioldsd[4];
     const REAL zero = 0.0;
     REAL anorm = 0.0;
     INTEGER iinfo = 0;
     INTEGER iws = 0;
-    arr_1d<39, REAL> result;
+    REAL result[39];
     INTEGER iwtmp = 0;
     INTEGER lswork = 0;
     INTEGER i = 0;
     INTEGER iju = 0;
     INTEGER ijvt = 0;
-    char jobu[1];
-    char jobvt[1];
+    char jobu;
+    char jobvt;
     REAL dif = 0.0;
     REAL div = 0.0;
     INTEGER ijq = 0;
-    char jobq[1];
+    char jobq;
     INTEGER lrwork = 0;
     INTEGER liwork = 0;
     INTEGER numrank = 0;
-    arr_1d<2, REAL> rwork;
+    REAL rwork[2];
     REAL vl = 0.0;
     REAL vu = 0.0;
     INTEGER il = 0;
     INTEGER iu = 0;
     INTEGER ns = 0;
-    char range[1];
-    arr_1d<4, int> iseed2;
+    char range;
+    INTEGER iseed2[4];
     INTEGER itemp = 0;
     INTEGER nsi = 0;
     const REAL half = 0.5e0;

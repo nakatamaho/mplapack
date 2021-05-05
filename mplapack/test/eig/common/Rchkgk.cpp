@@ -41,7 +41,7 @@ using fem::common;
 void Rchkgk(INTEGER const nin, INTEGER const nout) {
     common_read read(cmn);
     common_write write(cmn);
-    arr_1d<4, int> lmax;
+    INTEGER lmax[4];
     INTEGER ninfo = 0;
     INTEGER knt = 0;
     const REAL zero = 0.0;
@@ -51,21 +51,32 @@ void Rchkgk(INTEGER const nin, INTEGER const nout) {
     INTEGER m = 0;
     INTEGER i = 0;
     const INTEGER lda = 50;
+    REAL a[lda * lda];
     INTEGER j = 0;
     const INTEGER ldb = 50;
+    REAL b[ldb * ldb];
     const INTEGER ldvl = 50;
+    REAL vl[ldvl * ldvl];
     const INTEGER ldvr = 50;
+    REAL vr[ldvr * ldvr];
     const INTEGER ldwork = 50;
+    REAL work[ldwork * ldwork];
     REAL anorm = 0.0;
     REAL bnorm = 0.0;
+    REAL af[lda * lda];
+    REAL bf[ldb * ldb];
     INTEGER ilo = 0;
     INTEGER ihi = 0;
-    arr_1d<lda, REAL> lscale;
-    arr_1d<lda, REAL> rscale;
+    REAL lscale[lda];
+    REAL rscale[lda];
     INTEGER info = 0;
+    REAL vlf[ldvl * ldvl];
+    REAL vrf[ldvr * ldvr];
     const REAL one = 1.0;
     const INTEGER lde = 50;
+    REAL e[lde * lde];
     const INTEGER ldf = 50;
+    REAL f[ldf * ldf];
     REAL vmax = 0.0;
     //
     //  -- LAPACK test routine --

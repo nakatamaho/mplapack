@@ -40,8 +40,17 @@ using fem::common;
 
 void Cdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *d, COMPLEX *z, INTEGER const ldz, COMPLEX *ab, COMPLEX *bb, COMPLEX *ap, COMPLEX *bp, COMPLEX *work, INTEGER const nwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
     FEM_CMN_SVE(Cdrvsg);
+    iseed([4]);
+    a([lda * star]);
+    b([ldb * star]);
+    z([ldz * star]);
+    ab([lda * star]);
+    bb([ldb * star]);
     common_write write(cmn);
     const INTEGER maxtyp = 21;
+    INTEGER *kmagn(sve.kmagn, [maxtyp]);
+    INTEGER *kmode(sve.kmode, [maxtyp]);
+    INTEGER *ktype(sve.ktype, [maxtyp]);
     if (is_called_first_time) {
         data((values, 1, 2, 5 * datum(4), 5 * datum(5), 3 * datum(8), 6 * datum(9))), ktype;
         {
@@ -69,7 +78,7 @@ void Cdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     REAL rtunfl = 0.0;
     REAL rtovfl = 0.0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed2;
+    INTEGER iseed2[4];
     INTEGER nerrs = 0;
     INTEGER nmats = 0;
     INTEGER jsize = 0;
@@ -80,7 +89,7 @@ void Cdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER kb9 = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
-    arr_1d<4, int> ioldsd;
+    INTEGER ioldsd[4];
     INTEGER itype = 0;
     INTEGER imode = 0;
     REAL anorm = 0.0;
@@ -91,7 +100,7 @@ void Cdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     INTEGER jcol = 0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
-    arr_1d<1, int> idumma;
+    INTEGER idumma[1];
     const REAL zero = 0.0;
     REAL abstol = 0.0;
     INTEGER il = 0;
@@ -99,7 +108,7 @@ void Cdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER itemp = 0;
     INTEGER ibtype = 0;
     INTEGER ibuplo = 0;
-    char uplo[1];
+    char uplo;
     const REAL ten = 10.0;
     REAL vl = 0.0;
     REAL vu = 0.0;

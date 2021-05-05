@@ -40,8 +40,16 @@ using fem::common;
 
 void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *ap, REAL *sd, REAL *se, REAL *d1, REAL *d2, REAL *d3, REAL *d4, REAL *d5, REAL *wa1, REAL *wa2, REAL *wa3, REAL *wr, REAL *u, INTEGER const ldu, REAL *v, REAL *vp, REAL *tau, REAL *z, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
     FEM_CMN_SVE(Rchkst);
+    iseed([4]);
+    a([lda * star]);
+    u([ldu * star]);
+    v([ldu * star]);
+    z([ldu * star]);
     common_write write(cmn);
     const INTEGER maxtyp = 21;
+    INTEGER *kmagn(sve.kmagn, [maxtyp]);
+    INTEGER *kmode(sve.kmode, [maxtyp]);
+    INTEGER *ktype(sve.ktype, [maxtyp]);
     if (is_called_first_time) {
         {
             static const INTEGER values[] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9, 9, 9, 10};
@@ -56,7 +64,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             data_of_type<int>(FEM_VALUES_AND_SIZE), kmode;
         }
     }
-    arr_1d<1, int> idumma;
+    INTEGER idumma[1];
     INTEGER ntestt = 0;
     bool badnn = false;
     bool tryrac = false;
@@ -73,7 +81,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     REAL rtunfl = 0.0;
     REAL rtovfl = 0.0;
     INTEGER i = 0;
-    arr_1d<4, int> iseed2;
+    INTEGER iseed2[4];
     INTEGER nerrs = 0;
     INTEGER nmats = 0;
     INTEGER jsize = 0;
@@ -86,7 +94,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
-    arr_1d<4, int> ioldsd;
+    INTEGER ioldsd[4];
     INTEGER itype = 0;
     INTEGER imode = 0;
     REAL anorm = 0.0;
@@ -98,7 +106,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     REAL temp1 = 0.0;
     const REAL half = one / two;
     INTEGER jr = 0;
-    arr_1d<1, REAL> dumma;
+    REAL dumma[1];
     REAL temp2 = 0.0;
     REAL temp3 = 0.0;
     REAL temp4 = 0.0;

@@ -85,7 +85,7 @@ void Cerrbd(const char *path, INTEGER const nunit) {
     INTEGER j = 0;
     const INTEGER nmax = 4;
     INTEGER i = 0;
-    arr_2d<nmax, nmax, COMPLEX> a;
+    COMPLEX a[nmax * nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
@@ -96,16 +96,16 @@ void Cerrbd(const char *path, INTEGER const nunit) {
     //
     //     Test error exits of the SVD routines.
     //
-    arr_1d<nmax, REAL> d;
-    arr_1d<nmax, REAL> e;
-    arr_1d<nmax, COMPLEX> tq;
-    arr_1d<nmax, COMPLEX> tp;
+    REAL d[nmax];
+    REAL e[nmax];
+    COMPLEX tq[nmax];
+    COMPLEX tp[nmax];
     const INTEGER lw = nmax;
-    arr_1d<lw, COMPLEX> w;
+    COMPLEX w[lw];
     INTEGER info = 0;
-    arr_2d<nmax, nmax, COMPLEX> u;
-    arr_2d<nmax, nmax, COMPLEX> v;
-    arr_1d<4 * nmax, REAL> rw;
+    COMPLEX u[nmax * nmax];
+    COMPLEX v[nmax * nmax];
+    REAL rw[4 * nmax];
     if (Mlsamen(2, c2, "BD")) {
         //
         //        Cgebrd

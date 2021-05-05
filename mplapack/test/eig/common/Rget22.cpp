@@ -39,6 +39,9 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget22(const char *transa, const char *transe, const char *transw, INTEGER const n, REAL *a, INTEGER const lda, REAL *e, INTEGER const lde, REAL *wr, REAL *wi, REAL *work, REAL *result) {
+    a([lda * star]);
+    e([lde * star]);
+    result([2]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -79,8 +82,8 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
     //
     INTEGER itrnse = 0;
     INTEGER ince = 1;
-    char norma[1] = "O";
-    char norme[1] = "O";
+    char norma;
+    char norme;
     //
     if (Mlsame(transa, "T") || Mlsame(transa, "C")) {
         norma = "I";
@@ -186,7 +189,7 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
     INTEGER iecol = 1;
     //
     INTEGER jcol = 0;
-    arr_2d<2, 2, REAL> wmat;
+    REAL wmat[2 * 2];
     for (jcol = 1; jcol <= n; jcol = jcol + 1) {
         if (itrnse == 1) {
             ierow = jcol;
