@@ -36,6 +36,7 @@
 #include "qd_complex.h"
 
 mplapackint iMlaenv_qd(mplapackint ispec, const char *name, const char *opts, mplapackint n1, mplapackint n2, mplapackint n3, mplapackint n4);
+mplapackint iMlaenv_qd2stage(mplapackint ispec, const char *name, const char *opts, mplapackint n1, mplapackint n2, mplapackint n3, mplapackint n4);
 qd_complex Clarnd(mplapackint const idist, mplapackint *iseed);
 qd_complex Clatm2(mplapackint const m, mplapackint const n, mplapackint const i, mplapackint const j, mplapackint const kl, mplapackint const ku, mplapackint const idist, mplapackint *iseed, qd_complex *d, mplapackint const igrade, qd_complex *dl, qd_complex *dr, mplapackint const ipvtng, mplapackint *iwork, qd_real const sparse);
 qd_complex Clatm3(mplapackint const m, mplapackint const n, mplapackint const i, mplapackint const j, mplapackint &isub, mplapackint &jsub, mplapackint const kl, mplapackint const ku, mplapackint const idist, mplapackint *iseed, qd_complex *d, mplapackint const igrade, qd_complex *dl, qd_complex *dr, mplapackint const ipvtng, mplapackint *iwork, qd_real const sparse);
@@ -47,6 +48,7 @@ qd_real Rlatm3(mplapackint const m, mplapackint const n, mplapackint const i, mp
 void Clagge(mplapackint const m, mplapackint const n, mplapackint const kl, mplapackint const ku, qd_real *d, qd_complex *a, mplapackint const lda, mplapackint *iseed, qd_complex *work, mplapackint &info);
 void Claghe(mplapackint const n, mplapackint const k, qd_real *d, qd_complex *a, mplapackint const lda, mplapackint *iseed, qd_complex *work, mplapackint &info);
 void Clagsy(mplapackint const n, mplapackint const k, qd_real *d, qd_complex *a, mplapackint const lda, mplapackint *iseed, qd_complex *work, mplapackint &info);
+void Clahilb(mplapackint const n, mplapackint const nrhs, qd_complex *a, mplapackint const lda, qd_complex *x, mplapackint const ldx, qd_complex *b, mplapackint const ldb, qd_real *work, mplapackint &info, const char *path);
 void Clakf2(mplapackint const m, mplapackint const n, qd_complex *a, mplapackint const lda, qd_complex *b, qd_complex *d, qd_complex *e, qd_complex *z, mplapackint const ldz);
 void Clarge(mplapackint const n, qd_complex *a, mplapackint const lda, mplapackint *iseed, qd_complex *work, mplapackint &info);
 void Claror(const char *side, const char *init, mplapackint const m, mplapackint const n, qd_complex *a, mplapackint const lda, mplapackint *iseed, qd_complex *x, mplapackint &info);

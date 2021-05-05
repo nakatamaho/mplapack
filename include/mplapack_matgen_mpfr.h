@@ -43,6 +43,7 @@ mpcomplex Clarnd(mplapackint const idist, mplapackint *iseed);
 mpcomplex Clatm2(mplapackint const m, mplapackint const n, mplapackint const i, mplapackint const j, mplapackint const kl, mplapackint const ku, mplapackint const idist, mplapackint *iseed, mpcomplex *d, mplapackint const igrade, mpcomplex *dl, mpcomplex *dr, mplapackint const ipvtng, mplapackint *iwork, mpreal const sparse);
 mpcomplex Clatm3(mplapackint const m, mplapackint const n, mplapackint const i, mplapackint const j, mplapackint &isub, mplapackint &jsub, mplapackint const kl, mplapackint const ku, mplapackint const idist, mplapackint *iseed, mpcomplex *d, mplapackint const igrade, mpcomplex *dl, mpcomplex *dr, mplapackint const ipvtng, mplapackint *iwork, mpreal const sparse);
 mplapackint iMlaenv_mpfr(mplapackint ispec, const char *name, const char *opts, mplapackint n1, mplapackint n2, mplapackint n3, mplapackint n4);
+mplapackint iMlaenv_mpfr2stage(mplapackint ispec, const char *name, const char *opts, mplapackint n1, mplapackint n2, mplapackint n3, mplapackint n4);
 mpreal Rlamch_mpfr(const char *cmach);
 mpreal Rlaran(mplapackint *iseed);
 mpreal Rlarnd(mplapackint const idist, mplapackint *iseed);
@@ -51,6 +52,7 @@ mpreal Rlatm3(mplapackint const m, mplapackint const n, mplapackint const i, mpl
 void Clagge(mplapackint const m, mplapackint const n, mplapackint const kl, mplapackint const ku, mpreal *d, mpcomplex *a, mplapackint const lda, mplapackint *iseed, mpcomplex *work, mplapackint &info);
 void Claghe(mplapackint const n, mplapackint const k, mpreal *d, mpcomplex *a, mplapackint const lda, mplapackint *iseed, mpcomplex *work, mplapackint &info);
 void Clagsy(mplapackint const n, mplapackint const k, mpreal *d, mpcomplex *a, mplapackint const lda, mplapackint *iseed, mpcomplex *work, mplapackint &info);
+void Clahilb(mplapackint const n, mplapackint const nrhs, mpcomplex *a, mplapackint const lda, mpcomplex *x, mplapackint const ldx, mpcomplex *b, mplapackint const ldb, mpreal *work, mplapackint &info, const char *path);
 void Clakf2(mplapackint const m, mplapackint const n, mpcomplex *a, mplapackint const lda, mpcomplex *b, mpcomplex *d, mpcomplex *e, mpcomplex *z, mplapackint const ldz);
 void Clarge(mplapackint const n, mpcomplex *a, mplapackint const lda, mplapackint *iseed, mpcomplex *work, mplapackint &info);
 void Claror(const char *side, const char *init, mplapackint const m, mplapackint const n, mpcomplex *a, mplapackint const lda, mplapackint *iseed, mpcomplex *x, mplapackint &info);
