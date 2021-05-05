@@ -37,6 +37,7 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Alasvm(const char *type, INTEGER const nout, INTEGER const nfail, INTEGER const nrun, INTEGER const nerrs) {
+    common cmn;
     common_write write(cmn);
     //
     //  -- LAPACK test routine --
