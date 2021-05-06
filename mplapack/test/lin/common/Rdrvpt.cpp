@@ -37,7 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, REAL *a, REAL *d, REAL *e, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER const nout) {
-    FEM_CMN_SVE(Rdrvpt);
     common_write write(cmn);
     //
     INTEGER *iseedy(sve.iseedy, [4]);

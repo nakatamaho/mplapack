@@ -37,7 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cqrt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMPLEX *c, COMPLEX *cc, COMPLEX *q, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    FEM_CMN_SVE(Cqrt03);
     af([lda * star]);
     c([lda * star]);
     cc([lda * star]);

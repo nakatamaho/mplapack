@@ -37,7 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, REAL *a, INTEGER const la, REAL *afb, INTEGER const lafb, REAL *asav, REAL *b, REAL *bsav, REAL *x, REAL *xact, REAL *s, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
-    FEM_CMN_SVE(Rdrvgb);
     common_write write(cmn);
     //
     str_arr_ref<1> equeds(sve.equeds, [4]);

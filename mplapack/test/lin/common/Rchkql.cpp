@@ -37,7 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rchkql(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *af, REAL *aq, REAL *al, REAL *ac, REAL *b, REAL *x, REAL *xact, REAL *tau, REAL *work, REAL *rwork, INTEGER const nout) {
-    FEM_CMN_SVE(Rchkql);
     common_write write(cmn);
     //
     INTEGER *iseedy(sve.iseedy, [4]);

@@ -37,7 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, COMPLEX *a, INTEGER const lda, COMPLEX *arf, COMPLEX *b1, COMPLEX *b2, REAL *d_work_Clange, COMPLEX *z_work_Cgeqrf, COMPLEX *tau) {
-    FEM_CMN_SVE(Cdrvrf3);
     nval([nn]);
     a([lda * star]);
     b1([lda * star]);

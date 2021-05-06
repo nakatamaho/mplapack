@@ -37,7 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, REAL const thresh, REAL *a, REAL *copya, REAL *s, REAL *tau, REAL *work, INTEGER *iwork, INTEGER const nout) {
-    FEM_CMN_SVE(Rchkq3);
     common_write write(cmn);
     INTEGER *iseedy(sve.iseedy, [4]);
     if (is_called_first_time) {

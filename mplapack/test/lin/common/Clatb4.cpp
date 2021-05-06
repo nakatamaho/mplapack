@@ -37,7 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Clatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const n, char *type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, char *dist) {
-    FEM_CMN_SVE(Clatb4);
     // SAVE
     REAL &badc1 = sve.badc1;
     REAL &badc2 = sve.badc2;

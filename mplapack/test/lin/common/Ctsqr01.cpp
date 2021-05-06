@@ -37,7 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER const nb, REAL *result) {
-    FEM_CMN_SVE(Ctsqr01);
     result([6]);
     // COMMON srnamc
     //

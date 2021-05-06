@@ -38,7 +38,6 @@ using fem::common;
 
 void program_Cchkab(INTEGER argc, char const *argv[]) {
     common cmn(argc, argv);
-    FEM_CMN_SVE(program_Cchkab);
     common_read read(cmn);
     common_write write(cmn);
     char &intstr = sve.intstr;

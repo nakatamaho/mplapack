@@ -37,7 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, REAL *c1, REAL *c2, INTEGER const ldc, REAL *crf, REAL *a, INTEGER const lda, REAL *d_work_Rlange) {
-    FEM_CMN_SVE(Rdrvrf4);
     nval([nn]);
     c1([ldc * star]);
     c2([ldc * star]);

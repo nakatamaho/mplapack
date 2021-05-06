@@ -37,7 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, INTEGER *nsval, REAL const thresh, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *b, COMPLEX *x, COMPLEX *work, REAL *rwork, arr_cref<std::complex<float>> swork, INTEGER const nout) {
-    FEM_CMN_SVE(Cdrvac);
     common_write write(cmn);
     //
     INTEGER *iseedy(sve.iseedy, [4]);

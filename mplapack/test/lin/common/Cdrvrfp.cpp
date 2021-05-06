@@ -37,7 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, INTEGER const nnt, INTEGER *ntval, REAL const thresh, COMPLEX *a, COMPLEX *asav, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *bsav, COMPLEX *xact, COMPLEX *x, COMPLEX *arf, COMPLEX *arfinv, COMPLEX *z_work_Clatms, COMPLEX *z_work_Cpot02, COMPLEX *z_work_Cpot03, REAL *d_work_Clatms, REAL *d_work_Clanhe, REAL *d_work_Cpot01, REAL *d_work_Cpot02, REAL *d_work_Cpot03) {
-    FEM_CMN_SVE(Cdrvrfp);
     nval([nn]);
     nsval([nns]);
     ntval([nnt]);

@@ -37,7 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, COMPLEX *a, COMPLEX *af, COMPLEX *aq, COMPLEX *ar, COMPLEX *ac, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *tau, COMPLEX *work, REAL *rwork, INTEGER * /* iwork */, INTEGER const nout) {
-    FEM_CMN_SVE(Cchkqr);
     common_write write(cmn);
     //
     INTEGER *iseedy(sve.iseedy, [4]);
