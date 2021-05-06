@@ -37,17 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER const nb1, INTEGER const nb2, REAL *result) {
-    FEM_CMN_SVE(Rorhr_col02);
-    result([6]);
-    // COMMON srmnamc
-    //
-    // SAVE
-    INTEGER *iseed(sve.iseed, [4]);
-    //
-    if (is_called_first_time) {
-        static const INTEGER values[] = {1988, 1989, 1990, 1991};
-        data_of_type<int>(FEM_VALUES_AND_SIZE), iseed;
-    }
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -81,18 +70,20 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     //     TEST MATRICES WITH HALF OF MATRIX BEING ZEROS
     //
+    INTEGER iseed[4] = {1988, 1989, 1990, 1991};
     bool testzeros = false;
     //
     REAL eps = Rlamch("Epsilon");
     INTEGER k = min(m, n);
-    INTEGER l = max({m, n, 1});
+    INTEGER l = max({m, n, (INTEGER)1});
     //
     //     Dynamically allocate local arrays
     //
     //     Put random numbers into A and copy to AF
     //
     INTEGER j = 0;
-    REAL a[m * n];
+    REAL *a = new REAL[m * n];
+    INTEGER lda = m;
     for (j = 1; j <= n; j = j + 1) {
         Rlarnv(2, iseed, m, &a[(j - 1) * lda]);
     }
@@ -103,12 +94,13 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
             }
         }
     }
-    REAL af[m * n];
+    REAL *af = new REAL[m * n];
+    INTEGER ldaf = m;
     Rlacpy("Full", m, n, a, m, af, m);
     //
     //     Number of row blocks in Rlatsqr
     //
-    INTEGER nrb = max((INTEGER)1, ceiling(castREAL(m - n) / castREAL(mb1 - n)));
+    INTEGER nrb = max((INTEGER)1, ceil(castREAL(m - n) / castREAL(mb1 - n)));
     //
     //     Begin determine LWORK for the array WORK and allocate memory.
     //
@@ -116,12 +108,12 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     INTEGER nb2_ub = min(nb2, n);
     //
-    REAL t2[nb2 * n];
+    REAL *t2 = new REAL[nb2 * n];
     REAL workquery[1];
     INTEGER info = 0;
     Rgetsqrhrt(m, n, mb1, nb1, nb2, af, m, t2, nb2, workquery, -1, info);
     //
-    INTEGER lwork = int(workquery[1 - 1]);
+    INTEGER lwork = castINTEGER(workquery[1 - 1]);
     //
     //     In Rgemqrt, WORK is N*NB2_UB if SIDE = 'L',
     //                or  M*NB2_UB if SIDE = 'R'.
@@ -134,7 +126,7 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     //     Factor the matrix A in the array AF.
     //
-    REAL work[lwork];
+    REAL *work = new REAL[lwork];
     Rgetsqrhrt(m, n, mb1, nb1, nb2, af, m, t2, nb2, work, lwork, info);
     //
     //     End Householder reconstruction routines.
@@ -143,14 +135,15 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
-    REAL q[l * l];
-    Rlaset("Full", m, m, zero, one, q, m);
+    REAL *q = new REAL[l * l];
+    INTEGER ldq = l;
     //
     Rgemqrt("L", "N", m, m, k, nb2_ub, af, m, t2, nb2, q, m, work, info);
     //
     //     Copy R
     //
-    REAL r[m * l];
+    REAL *r = new REAL[m * l];
+    INTEGER ldr = m;
     Rlaset("Full", m, n, zero, zero, r, m);
     //
     Rlacpy("Upper", m, n, af, m, r, m);
@@ -160,7 +153,7 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     Rgemm("T", "N", m, n, m, -one, q, m, a, m, one, r, m);
     //
-    REAL rwork[l];
+    REAL *rwork = new REAL[l];
     REAL anorm = Rlange("1", m, n, a, m, rwork);
     REAL resid = Rlange("1", m, n, r, m, rwork);
     if (anorm > zero) {
@@ -179,12 +172,14 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     //     Generate random m-by-n matrix C
     //
-    REAL c[m * n];
+    REAL *c = new REAL[m * n];
+    INTEGER ldc = m;
     for (j = 1; j <= n; j = j + 1) {
         Rlarnv(2, iseed, m, &c[(j - 1) * ldc]);
     }
     REAL cnorm = Rlange("1", m, n, c, m, rwork);
-    REAL cf[m * n];
+    REAL *cf = new REAL[m * n];
+    INTEGER ldcf = m;
     Rlacpy("Full", m, n, c, m, cf, m);
     //
     //     Apply Q to C as Q*C = CF
@@ -223,12 +218,13 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     //     Generate random n-by-m matrix D and a copy DF
     //
-    REAL d[n * m];
+    REAL *d = new REAL[n * m];
+    INTEGER ldd = n;
     for (j = 1; j <= m; j = j + 1) {
         Rlarnv(2, iseed, n, &d[(j - 1) * ldd]);
     }
     REAL dnorm = Rlange("1", n, m, d, n, rwork);
-    REAL df[n * m];
+    REAL *df = new REAL[n * m];
     Rlacpy("Full", n, m, d, n, df, n);
     //
     //     Apply Q to D as D*Q = DF
@@ -267,8 +263,16 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     //     Deallocate all arrays
     //
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(a,af,q,r,rwork,work,t1,t2,diag,c,d,cf,d"
-                        "f)");
+    delete[] a;
+    delete[] af;
+    delete[] q;
+    delete[] r;
+    delete[] rwork;
+    delete[] t2;
+    delete[] c;
+    delete[] d;
+    delete[] cf;
+    delete[] df;
     //
     //     End of Rorhr_col02
     //
