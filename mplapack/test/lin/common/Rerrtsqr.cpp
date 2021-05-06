@@ -37,14 +37,12 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rerrtsqr(const char *path, INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    // COMMON srnamc
-    //
+    INTEGER infot;
+    INTEGER nout;
+    bool ok;
+    bool lerr;
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -82,6 +80,9 @@ void Rerrtsqr(const char *path, INTEGER const nunit) {
     REAL a[nmax * nmax];
     REAL c[nmax * nmax];
     REAL t[nmax * nmax];
+    INTEGER lda = nmax;
+    INTEGER ldc = nmax;
+    INTEGER ldt = nmax;
     REAL w[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {

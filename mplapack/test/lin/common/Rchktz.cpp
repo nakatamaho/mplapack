@@ -36,15 +36,14 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, REAL const thresh, bool const tsterr, REAL *a, REAL *copya, REAL *s, REAL *tau, REAL *work, INTEGER const nout) {
-    FEM_CMN_SVE(Rchktz);
+    common cmn;
     common_write write(cmn);
-    INTEGER *iseedy(sve.iseedy, [4]);
-    if (is_called_first_time) {
-        static const INTEGER values[] = {1988, 1989, 1990, 1991};
-        data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-    }
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -101,8 +100,9 @@ void Rchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Initialize constants and the random number seed.
     //
-    path[(1 - 1)] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "TZ";
+    path[0] = 'D';
+    path[1] = 'T';
+    path[2] = 'Z';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -116,7 +116,6 @@ void Rchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     if (tsterr) {
         Rerrtz(path, nout);
     }
-    cmn.infot = 0;
     //
     for (im = 1; im <= nm; im = im + 1) {
         //
@@ -192,9 +191,10 @@ void Rchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
+                            sprintnum_short(buf, result[k - 1]);
                             write(nout, "(' M =',i5,', N =',i5,', type ',i2,', test ',i2,', ratio =',"
-                                        "g12.5)"),
-                                m, n, imode, k, result(k);
+                                        "a)"),
+                                m, n, imode, k, buf;
                             nfail++;
                         }
                     }

@@ -37,7 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Clatsy(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, INTEGER *iseed) {
-    x([ldx * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -62,7 +61,11 @@ void Clatsy(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, IN
     //
     //     Initialize constants
     //
-    REAL alpha = (1.0 + sqrt(17.e0)) / 8.e0;
+
+    REAL seventeen = 8.0;
+    REAL eight = 8.0;
+    REAL two = 2.0;
+    REAL alpha = (1.0 + sqrt(seventeen)) / eight;
     REAL beta = alpha - 1.0 / 1000.0;
     REAL alpha3 = alpha * alpha * alpha;
     //
@@ -91,7 +94,7 @@ void Clatsy(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, IN
         for (i = n; i >= n5; i = i - 5) {
             a = alpha3 * Clarnd(5, iseed);
             b = Clarnd(5, iseed) / alpha;
-            c = a - 2.0 * b * eye;
+            c = a - two * b * eye;
             r = c / beta;
             x[(i - 1) + (i - 1) * ldx] = a;
             x[((i - 2) - 1) + (i - 1) * ldx] = b;
@@ -101,9 +104,9 @@ void Clatsy(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, IN
             x[((i - 3) - 1) + ((i - 3) - 1) * ldx] = Clarnd(2, iseed);
             x[((i - 4) - 1) + ((i - 4) - 1) * ldx] = Clarnd(2, iseed);
             if (abs(x[((i - 3) - 1) + ((i - 3) - 1) * ldx]) > abs(x[((i - 4) - 1) + ((i - 4) - 1) * ldx])) {
-                x[((i - 4) - 1) + ((i - 3) - 1) * ldx] = 2.0 * x[((i - 3) - 1) + ((i - 3) - 1) * ldx];
+                x[((i - 4) - 1) + ((i - 3) - 1) * ldx] = two * x[((i - 3) - 1) + ((i - 3) - 1) * ldx];
             } else {
-                x[((i - 4) - 1) + ((i - 3) - 1) * ldx] = 2.0 * x[((i - 4) - 1) + ((i - 4) - 1) * ldx];
+                x[((i - 4) - 1) + ((i - 3) - 1) * ldx] = two * x[((i - 4) - 1) + ((i - 4) - 1) * ldx];
             }
         }
         //
@@ -113,7 +116,7 @@ void Clatsy(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, IN
         if (i > 2) {
             a = alpha3 * Clarnd(5, iseed);
             b = Clarnd(5, iseed) / alpha;
-            c = a - 2.0 * b * eye;
+            c = a - two * b * eye;
             r = c / beta;
             x[(i - 1) + (i - 1) * ldx] = a;
             x[((i - 2) - 1) + (i - 1) * ldx] = b;
@@ -126,9 +129,9 @@ void Clatsy(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, IN
             x[(i - 1) + (i - 1) * ldx] = Clarnd(2, iseed);
             x[((i - 1) - 1) + ((i - 1) - 1) * ldx] = Clarnd(2, iseed);
             if (abs(x[(i - 1) + (i - 1) * ldx]) > abs(x[((i - 1) - 1) + ((i - 1) - 1) * ldx])) {
-                x[((i - 1) - 1) + (i - 1) * ldx] = 2.0 * x[(i - 1) + (i - 1) * ldx];
+                x[((i - 1) - 1) + (i - 1) * ldx] = two * x[(i - 1) + (i - 1) * ldx];
             } else {
-                x[((i - 1) - 1) + (i - 1) * ldx] = 2.0 * x[((i - 1) - 1) + ((i - 1) - 1) * ldx];
+                x[((i - 1) - 1) + (i - 1) * ldx] = two * x[((i - 1) - 1) + ((i - 1) - 1) * ldx];
             }
             i = i - 2;
         } else if (i == 1) {
@@ -153,7 +156,7 @@ void Clatsy(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, IN
         for (i = 1; i <= n5; i = i + 5) {
             a = alpha3 * Clarnd(5, iseed);
             b = Clarnd(5, iseed) / alpha;
-            c = a - 2.0 * b * eye;
+            c = a - two * b * eye;
             r = c / beta;
             x[(i - 1) + (i - 1) * ldx] = a;
             x[((i + 2) - 1) + (i - 1) * ldx] = b;
@@ -163,9 +166,9 @@ void Clatsy(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, IN
             x[((i + 3) - 1) + ((i + 3) - 1) * ldx] = Clarnd(2, iseed);
             x[((i + 4) - 1) + ((i + 4) - 1) * ldx] = Clarnd(2, iseed);
             if (abs(x[((i + 3) - 1) + ((i + 3) - 1) * ldx]) > abs(x[((i + 4) - 1) + ((i + 4) - 1) * ldx])) {
-                x[((i + 4) - 1) + ((i + 3) - 1) * ldx] = 2.0 * x[((i + 3) - 1) + ((i + 3) - 1) * ldx];
+                x[((i + 4) - 1) + ((i + 3) - 1) * ldx] = two * x[((i + 3) - 1) + ((i + 3) - 1) * ldx];
             } else {
-                x[((i + 4) - 1) + ((i + 3) - 1) * ldx] = 2.0 * x[((i + 4) - 1) + ((i + 4) - 1) * ldx];
+                x[((i + 4) - 1) + ((i + 3) - 1) * ldx] = two * x[((i + 4) - 1) + ((i + 4) - 1) * ldx];
             }
         }
         //
@@ -175,7 +178,7 @@ void Clatsy(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, IN
         if (i < n - 1) {
             a = alpha3 * Clarnd(5, iseed);
             b = Clarnd(5, iseed) / alpha;
-            c = a - 2.0 * b * eye;
+            c = a - two * b * eye;
             r = c / beta;
             x[(i - 1) + (i - 1) * ldx] = a;
             x[((i + 2) - 1) + (i - 1) * ldx] = b;
@@ -188,9 +191,9 @@ void Clatsy(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, IN
             x[(i - 1) + (i - 1) * ldx] = Clarnd(2, iseed);
             x[((i + 1) - 1) + ((i + 1) - 1) * ldx] = Clarnd(2, iseed);
             if (abs(x[(i - 1) + (i - 1) * ldx]) > abs(x[((i + 1) - 1) + ((i + 1) - 1) * ldx])) {
-                x[((i + 1) - 1) + (i - 1) * ldx] = 2.0 * x[(i - 1) + (i - 1) * ldx];
+                x[((i + 1) - 1) + (i - 1) * ldx] = two * x[(i - 1) + (i - 1) * ldx];
             } else {
-                x[((i + 1) - 1) + (i - 1) * ldx] = 2.0 * x[((i + 1) - 1) + ((i + 1) - 1) * ldx];
+                x[((i + 1) - 1) + (i - 1) * ldx] = two * x[((i + 1) - 1) + ((i + 1) - 1) * ldx];
             }
             i += 2;
         } else if (i == n) {

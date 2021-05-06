@@ -37,15 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb, REAL *result) {
-    FEM_CMN_SVE(Rqrt05);
-    result([6]);
-    // SAVE
-    INTEGER *iseed(sve.iseed, [4]);
-    //
-    if (is_called_first_time) {
-        static const INTEGER values[] = {1988, 1989, 1990, 1991};
-        data_of_type<int>(FEM_VALUES_AND_SIZE), iseed;
-    }
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -72,6 +63,7 @@ void Rqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //     ..
     //     .. Data statements ..
     //
+    INTEGER iseed[4] = {1988, 1989, 1990, 1991};
     REAL eps = Rlamch("Epsilon");
     INTEGER k = n;
     INTEGER m2 = m + n;
@@ -85,11 +77,12 @@ void Rqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     //     Put random stuff into A
     //
-    INTEGER ldt = nb;
     const REAL zero = 0.0f;
-    REAL a[m2 * n];
+    REAL *a = new REAL[m2 * n];
+    INTEGER lda = m2;
     Rlaset("Full", m2, n, zero, zero, a, m2);
-    REAL t[nb * n];
+    REAL *t = new REAL[nb * n];
+    INTEGER ldt = nb;
     Rlaset("Full", nb, n, zero, zero, t, nb);
     INTEGER j = 0;
     for (j = 1; j <= n; j = j + 1) {
@@ -108,32 +101,35 @@ void Rqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     //     Copy the matrix A to the array AF.
     //
-    REAL af[m2 * n];
+    REAL *af = new REAL[m2 * n];
+    INTEGER ldaf = m2;
     Rlacpy("Full", m2, n, a, m2, af, m2);
     //
     //     Factor the matrix A in the array AF.
     //
-    REAL work[lwork];
+    REAL *work = new REAL[lwork];
     INTEGER info = 0;
-    Rtpqrt(m, n, l, nb, af, m2, af[(np1 - 1)], m2, t, ldt, work, info);
+    Rtpqrt(m, n, l, nb, af, m2, &af[(np1 - 1)], m2, t, ldt, work, info);
     //
     //     Generate the (M+N)-by-(M+N) matrix Q by applying H to I
     //
     const REAL one = 1.0f;
-    REAL q[m2 * m2];
+    REAL *q = new REAL[m2 * m2];
+    INTEGER ldq = m2;
     Rlaset("Full", m2, m2, zero, one, q, m2);
     Rgemqrt("R", "N", m2, m2, k, nb, af, m2, t, ldt, q, m2, work, info);
     //
     //     Copy R
     //
-    REAL r[m2 * m2];
+    REAL *r = new REAL[m2 * m2];
+    INTEGER ldr = m2;
     Rlaset("Full", m2, n, zero, zero, r, m2);
     Rlacpy("Upper", m2, n, af, m2, r, m2);
     //
     //     Compute |R - Q'*A| / |A| and store in RESULT(1)
     //
     Rgemm("T", "N", m2, n, m2, -one, q, m2, a, m2, one, r, m2);
-    REAL rwork[m2];
+    REAL *rwork = new REAL[m2];
     REAL anorm = Rlange("1", m2, n, a, m2, rwork);
     REAL resid = Rlange("1", m2, n, r, m2, rwork);
     if (anorm > zero) {
@@ -151,17 +147,18 @@ void Rqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     //     Generate random m-by-n matrix C and a copy CF
     //
-    REAL c[m2 * n];
+    REAL *c = new REAL[m2 * n];
+    INTEGER ldc = m2;
     for (j = 1; j <= n; j = j + 1) {
         Rlarnv(2, iseed, m2, &c[(j - 1) * ldc]);
     }
     REAL cnorm = Rlange("1", m2, n, c, m2, rwork);
-    REAL cf[m2 * n];
+    REAL *cf = new REAL[m2 * n];
     Rlacpy("Full", m2, n, c, m2, cf, m2);
     //
     //     Apply Q to C as Q*C
     //
-    Rtpmqrt("L", "N", m, n, k, l, nb, af[(np1 - 1)], m2, t, ldt, cf, m2, cf[(np1 - 1)], m2, work, info);
+    Rtpmqrt("L", "N", m, n, k, l, nb, &af[(np1 - 1)], m2, t, ldt, cf, m2, &cf[(np1 - 1)], m2, work, info);
     //
     //     Compute |Q*C - Q*C| / |C|
     //
@@ -179,7 +176,7 @@ void Rqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     //     Apply Q to C as QT*C
     //
-    Rtpmqrt("L", "T", m, n, k, l, nb, af[(np1 - 1)], m2, t, ldt, cf, m2, cf[(np1 - 1)], m2, work, info);
+    Rtpmqrt("L", "T", m, n, k, l, nb, &af[(np1 - 1)], m2, t, ldt, cf, m2, &cf[(np1 - 1)], m2, work, info);
     //
     //     Compute |QT*C - QT*C| / |C|
     //
@@ -193,17 +190,19 @@ void Rqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     //     Generate random n-by-m matrix D and a copy DF
     //
-    REAL d[n * m2];
+    REAL *d = new REAL[n * m2];
+    INTEGER ldd = n;
     for (j = 1; j <= m2; j = j + 1) {
         Rlarnv(2, iseed, n, &d[(j - 1) * ldd]);
     }
     REAL dnorm = Rlange("1", n, m2, d, n, rwork);
-    REAL df[n * m2];
+    REAL *df = new REAL[n * m2];
+    INTEGER lddf = n;
     Rlacpy("Full", n, m2, d, n, df, n);
     //
     //     Apply Q to D as D*Q
     //
-    Rtpmqrt("R", "N", n, m, n, l, nb, af[(np1 - 1)], m2, t, ldt, df, n, df[(np1 - 1) * lddf], n, work, info);
+    Rtpmqrt("R", "N", n, m, n, l, nb, &af[(np1 - 1)], m2, t, ldt, df, n, &df[(np1 - 1) * lddf], n, work, info);
     //
     //     Compute |D*Q - D*Q| / |D|
     //
@@ -221,7 +220,7 @@ void Rqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     //     Apply Q to D as D*QT
     //
-    Rtpmqrt("R", "T", n, m, n, l, nb, af[(np1 - 1)], m2, t, ldt, df, n, df[(np1 - 1) * lddf], n, work, info);
+    Rtpmqrt("R", "T", n, m, n, l, nb, &af[(np1 - 1)], m2, t, ldt, df, n, &df[(np1 - 1) * lddf], n, work, info);
     //
     //     Compute |D*QT - D*QT| / |D|
     //
@@ -235,5 +234,15 @@ void Rqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     //     Deallocate all arrays
     //
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(a,af,q,r,rwork,work,t,c,d,cf,df)");
+    delete[] a;
+    delete[] af;
+    delete[] q;
+    delete[] r;
+    delete[] rwork;
+    delete[] work;
+    delete[] t;
+    delete[] c;
+    delete[] d;
+    delete[] cf;
+    delete[] df;
 }

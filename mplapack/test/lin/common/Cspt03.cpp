@@ -37,7 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cspt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLEX *work, INTEGER const ldw, REAL *rwork, REAL &rcond, REAL &resid) {
-    work([ldw * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -102,7 +101,7 @@ void Cspt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLE
             //
             for (j = 1; j <= i; j = j + 1) {
                 jcol = ((j - 1) * j) / 2 + 1;
-                t = Cdotu(j, &a[icol - 1], 1, ainv[jcol - 1], 1);
+                t = Cdotu(j, &a[icol - 1], 1, &ainv[jcol - 1], 1);
                 jcol += 2 * j - 1;
                 kcol = icol - 1;
                 for (k = j + 1; k <= i; k = k + 1) {
@@ -115,14 +114,14 @@ void Cspt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLE
                     kcol += k;
                     jcol += k;
                 }
-                work[(i - 1) + (j - 1) * ldwork] = -t;
+                work[(i - 1) + (j - 1) * ldw] = -t;
             }
             //
             //           Code when J > I
             //
             for (j = i + 1; j <= n; j = j + 1) {
                 jcol = ((j - 1) * j) / 2 + 1;
-                t = Cdotu(i, &a[icol - 1], 1, ainv[jcol - 1], 1);
+                t = Cdotu(i, &a[icol - 1], 1, &ainv[jcol - 1], 1);
                 jcol = jcol - 1;
                 kcol = icol + 2 * i - 1;
                 for (k = i + 1; k <= j; k = k + 1) {
@@ -135,7 +134,7 @@ void Cspt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLE
                     kcol += k;
                     jcol += k;
                 }
-                work[(i - 1) + (j - 1) * ldwork] = -t;
+                work[(i - 1) + (j - 1) * ldw] = -t;
             }
         }
     } else {
@@ -150,7 +149,7 @@ void Cspt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLE
             icol = nall - ((n - i + 1) * (n - i + 2)) / 2 + 1;
             for (j = 1; j <= i; j = j + 1) {
                 jcol = nall - ((n - j) * (n - j + 1)) / 2 - (n - i);
-                t = Cdotu(n - i + 1, &a[icol - 1], 1, ainv[jcol - 1], 1);
+                t = Cdotu(n - i + 1, &a[icol - 1], 1, &ainv[jcol - 1], 1);
                 kcol = i;
                 jcol = j;
                 for (k = 1; k <= j - 1; k = k + 1) {
@@ -163,7 +162,7 @@ void Cspt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLE
                     t += a[kcol - 1] * ainv[(jcol + k) - 1];
                     kcol += n - k;
                 }
-                work[(i - 1) + (j - 1) * ldwork] = -t;
+                work[(i - 1) + (j - 1) * ldw] = -t;
             }
             //
             //           Code when J > I
@@ -171,7 +170,7 @@ void Cspt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLE
             icol = nall - ((n - i) * (n - i + 1)) / 2;
             for (j = i + 1; j <= n; j = j + 1) {
                 jcol = nall - ((n - j + 1) * (n - j + 2)) / 2 + 1;
-                t = Cdotu(n - j + 1, &a[(icol - n + j) - 1], 1, ainv[jcol - 1], 1);
+                t = Cdotu(n - j + 1, &a[(icol - n + j) - 1], 1, &ainv[jcol - 1], 1);
                 kcol = i;
                 jcol = j;
                 for (k = 1; k <= i - 1; k = k + 1) {
@@ -184,7 +183,7 @@ void Cspt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLE
                     t += a[(kcol + k) - 1] * ainv[jcol - 1];
                     jcol += n - k;
                 }
-                work[(i - 1) + (j - 1) * ldwork] = -t;
+                work[(i - 1) + (j - 1) * ldw] = -t;
             }
         }
     }
@@ -192,7 +191,7 @@ void Cspt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLE
     //     Add the identity matrix to WORK .
     //
     for (i = 1; i <= n; i = i + 1) {
-        work[(i - 1) + (i - 1) * ldwork] += one;
+        work[(i - 1) + (i - 1) * ldw] += one;
     }
     //
     //     Compute norm(I - A*AINV) / (N * norm(A) * norm(AINV) * EPS)

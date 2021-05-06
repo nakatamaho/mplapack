@@ -36,34 +36,17 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, COMPLEX *a, INTEGER const lda, COMPLEX *arf, REAL *work) {
-    FEM_CMN_SVE(Cdrvrf1);
-    nval([nn]);
-    a([lda * star]);
+    common cmn;
     common_write write(cmn);
     //
-    str_arr_ref<1> forms(sve.forms, [2]);
-    INTEGER *iseedy(sve.iseedy, [4]);
-    str_arr_ref<1> norms(sve.norms, [4]);
-    str_arr_ref<1> uplos(sve.uplos, [2]);
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"U", "L"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
-        }
-        {
-            static const char *values[] = {"N", "C"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), forms;
-        }
-        {
-            static const char *values[] = {"M", "1", "I", "F"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), norms;
-        }
-    }
+    char forms[] = {'N', 'C'};
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
+    char norms[] = {'M', '1', 'I', 'F'};
+    char uplos[] = {'U', 'L'};
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -183,7 +166,7 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                     //
                     cform = forms[iform - 1];
                     //
-                    Ctrttf(cform, uplo, n, a, lda, arf, info);
+                    Ctrttf(&cform, &uplo, n, a, lda, arf, info);
                     //
                     //                 Check error code from Ctrttf
                     //
@@ -194,7 +177,7 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                         }
                         write(nout, "(1x,'     Error in ',a6,' with UPLO=''',a1,''', FORM=''',a1,"
                                     "''', N=',i5)"),
-                            srnamt, uplo, cform, n;
+                            "Ctrttf", uplo, cform, n;
                         nerrs++;
                         goto statement_100;
                     }
@@ -204,8 +187,8 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                         //                    Check all four norms: 'M', '1', 'I', 'F'
                         //
                         norm = norms[inorm - 1];
-                        normarf = Clanhf(norm, cform, uplo, n, arf, work);
-                        norma = Clanhe(norm, uplo, n, a, lda, work);
+                        normarf = Clanhf(&norm, &cform, &uplo, n, arf, work);
+                        norma = Clanhe(&norm, &uplo, n, a, lda, work);
                         //
                         result[1 - 1] = (norma - normarf) / norma / eps;
                         nrun++;
@@ -215,9 +198,10 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                 write(nout, star);
                                 write(nout, format_9999);
                             }
+                            sprintnum_short(buf, result[0]);
                             write(nout, "(1x,'     Failure in ',a6,' N=',i5,' TYPE=',i5,' UPLO=''',a1,"
-                                        "''', FORM =''',a1,''', NORM=''',a1,''', test=',g12.5)"),
-                                "Clanhf", n, iit, uplo, cform, norm, result(1);
+                                        "''', FORM =''',a1,''', NORM=''',a1,''', test=',a)"),
+                                "Clanhf", n, iit, uplo, cform, norm, buf;
                             nfail++;
                         }
                     }

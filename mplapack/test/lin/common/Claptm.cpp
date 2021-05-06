@@ -37,8 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Claptm(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL const alpha, REAL *d, COMPLEX *e, COMPLEX *x, INTEGER const ldx, REAL const beta, COMPLEX *b, INTEGER const ldb) {
-    x([ldx * star]);
-    b([ldb * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

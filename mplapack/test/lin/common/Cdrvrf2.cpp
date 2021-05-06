@@ -37,32 +37,11 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, INTEGER const lda, COMPLEX *arf, COMPLEX *ap, COMPLEX *asav) {
-    FEM_CMN_SVE(Cdrvrf2);
-    nval([nn]);
-    a([lda * star]);
-    asav([lda * star]);
+    common cmn;
     common_write write(cmn);
-    // COMMON srnamc
-    //
-    // SAVE
-    str_arr_ref<1> forms(sve.forms, [2]);
-    INTEGER *iseedy(sve.iseedy, [4]);
-    str_arr_ref<1> uplos(sve.uplos, [2]);
-    //
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"U", "L"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
-        }
-        {
-            static const char *values[] = {"N", "C"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), forms;
-        }
-    }
+    char uplos[2] = {'U', 'L'};
+    char forms[2] = {'N', 'C'};
+    INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -97,6 +76,7 @@ void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, IN
     INTEGER nerrs = 0;
     INTEGER info = 0;
     INTEGER i = 0;
+    INTEGER ldasav = lda;
     INTEGER iseed[4];
     for (i = 1; i <= 4; i = i + 1) {
         iseed[i - 1] = iseedy[i - 1];
@@ -140,11 +120,11 @@ void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, IN
                     }
                 }
                 //
-                Ctrttf(cform, uplo, n, a, lda, arf, info);
+                Ctrttf(&cform, &uplo, n, a, lda, arf, info);
                 //
-                Ctfttp(cform, uplo, n, arf, ap, info);
+                Ctfttp(&cform, &uplo, n, arf, ap, info);
                 //
-                Ctpttr(uplo, n, ap, asav, lda, info);
+                Ctpttr(&uplo, n, ap, asav, lda, info);
                 //
                 ok1 = true;
                 if (lower) {
@@ -167,11 +147,11 @@ void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, IN
                 //
                 nrun++;
                 //
-                Ctrttp(uplo, n, a, lda, ap, info);
+                Ctrttp(&uplo, n, a, lda, ap, info);
                 //
-                Ctpttf(cform, uplo, n, ap, arf, info);
+                Ctpttf(&cform, &uplo, n, ap, arf, info);
                 //
-                Ctfttr(cform, uplo, n, arf, asav, lda, info);
+                Ctfttr(&cform, &uplo, n, arf, asav, lda, info);
                 //
                 ok2 = true;
                 if (lower) {

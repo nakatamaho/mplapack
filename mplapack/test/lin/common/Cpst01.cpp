@@ -37,9 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cpst01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, COMPLEX *perm, INTEGER const ldperm, INTEGER *piv, REAL *rwork, REAL &resid, INTEGER const rank) {
-    a([lda * star]);
-    afac([ldafac * star]);
-    perm([ldperm * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -114,7 +111,7 @@ void Cpst01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
             //
             //           Compute the (K,K) element of the result.
             //
-            tr = Cdotc(k, &afac[(k - 1) * ldafac], 1, &afac[(k - 1) * ldafac], 1);
+            tr = Cdotc(k, &afac[(k - 1) * ldafac], 1, &afac[(k - 1) * ldafac], 1).real();
             afac[(k - 1) + (k - 1) * ldafac] = tr;
             //
             //           Compute the rest of column K.
@@ -190,11 +187,11 @@ void Cpst01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
             for (i = 1; i <= j - 1; i = i + 1) {
                 perm[(i - 1) + (j - 1) * ldperm] = perm[(i - 1) + (j - 1) * ldperm] - a[(i - 1) + (j - 1) * lda];
             }
-            perm[(j - 1) + (j - 1) * ldperm] = perm[(j - 1) + (j - 1) * ldperm] - castREAL(a[(j - 1) + (j - 1) * lda]);
+            perm[(j - 1) + (j - 1) * ldperm] = perm[(j - 1) + (j - 1) * ldperm] - (a[(j - 1) + (j - 1) * lda]).real();
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            perm[(j - 1) + (j - 1) * ldperm] = perm[(j - 1) + (j - 1) * ldperm] - castREAL(a[(j - 1) + (j - 1) * lda]);
+            perm[(j - 1) + (j - 1) * ldperm] = perm[(j - 1) + (j - 1) * ldperm] - (a[(j - 1) + (j - 1) * lda]).real();
             for (i = j + 1; i <= n; i = i + 1) {
                 perm[(i - 1) + (j - 1) * ldperm] = perm[(i - 1) + (j - 1) * ldperm] - a[(i - 1) + (j - 1) * lda];
             }

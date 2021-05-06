@@ -36,7 +36,10 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Cchkunhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nout) {
+    common cmn;
     common_write write(cmn);
     //
     //  -- LAPACK test routine --
@@ -68,8 +71,11 @@ void Cchkunhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
     //
     //     Initialize constants
     //
-    char path;
-    path[(2 - 1) + (3 - 1) * ldpath] = "HH";
+    char path[3];
+    path[0] = 'Z';
+    path[1] = 'H';
+    path[2] = 'H';
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -79,7 +85,6 @@ void Cchkunhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
     if (tsterr) {
         Cerrunhr_col(path, nout);
     }
-    cmn.infot = 0;
     //
     //     Do for each value of M in MVAL.
     //
@@ -141,9 +146,10 @@ void Cchkunhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
                                             if (nfail == 0 && nerrs == 0) {
                                                 Alahd(nout, path);
                                             }
+                                            sprintnum_short(buf, result[t - 1]);
                                             write(nout, "('Cungtsqr and Cunhr_col: M=',i5,', N=',i5,', MB1=',"
-                                                        "i5,', NB1=',i5,', NB2=',i5,' test(',i2,')=',g12.5)"),
-                                                m, n, mb1, nb1, nb2, t, result(t);
+                                                        "i5,', NB1=',i5,', NB2=',i5,' test(',i2,')=',a)"),
+                                                m, n, mb1, nb1, nb2, t, buf;
                                             nfail++;
                                         }
                                     }
@@ -204,10 +210,11 @@ void Cchkunhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
                                             if (nfail == 0 && nerrs == 0) {
                                                 Alahd(nout, path);
                                             }
+                                            sprintnum_short(buf, result[t - 1]);
                                             write(nout, "('Cungtsqr_row and Cunhr_col: M=',i5,', N=',i5,"
                                                         "', MB1=',i5,', NB1=',i5,', NB2=',i5,' test(',i2,')=',"
-                                                        "g12.5)"),
-                                                m, n, mb1, nb1, nb2, t, result(t);
+                                                        "a)"),
+                                                m, n, mb1, nb1, nb2, t, buf;
                                             nfail++;
                                         }
                                     }

@@ -37,23 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL *work, INTEGER &info, const char *path) {
-    FEM_CMN_SVE(Clahilb);
-    a([lda * n]);
-    x([ldx * nrhs]);
-    b([ldb * nrhs]);
-    work([n]);
-    // SAVE
-    COMPLEX *d1(sve.d1, [8]);
-    COMPLEX *d2(sve.d2, [8]);
-    COMPLEX *invd1(sve.invd1, [8]);
-    COMPLEX *invd2(sve.invd2, [8]);
-    //
-    if (is_called_first_time) {
-        data((values, cmplx(-1, 0), cmplx(0, 1), cmplx(-1, -1), cmplx(0, -1), cmplx(1, 0), cmplx(-1, 1), cmplx(1, 1), cmplx(1, -1))), d1;
-        data((values, cmplx(-1, 0), cmplx(0, -1), cmplx(-1, 1), cmplx(0, 1), cmplx(1, 0), cmplx(-1, -1), cmplx(1, -1), cmplx(1, 1))), d2;
-        data((values, cmplx(-1, 0), cmplx(0, -1), cmplx(-.5f, .5f), cmplx(0, 1), cmplx(1, 0), cmplx(-.5f, -.5f), cmplx(.5f, -.5f), cmplx(.5f, .5f))), invd1;
-        data((values, cmplx(-1, 0), cmplx(0, 1), cmplx(-.5f, -.5f), cmplx(0, -1), cmplx(1, 0), cmplx(-.5f, .5f), cmplx(.5f, .5f), cmplx(.5f, -.5f))), invd2;
-    }
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -77,7 +60,13 @@ void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda,
     //     .. External Functions
     //     ..
     //     .. Executable Statements ..
-    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
+    COMPLEX d1[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, 1.0), COMPLEX(-1.0, -1.0), COMPLEX(0.0, -1.0), COMPLEX(1.0, 0.0), COMPLEX(-1.0, 1.0), COMPLEX(1.0, 1.0), COMPLEX(1.0, -1.0)};
+    COMPLEX d2[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, -1.0), COMPLEX(-1.0, 1.0), COMPLEX(0.0, 1.0), COMPLEX(1, 0.0), COMPLEX(-1.0, -1.0), COMPLEX(1, -1.0), COMPLEX(1, 1.0)};
+    COMPLEX invd1[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, -1.0), COMPLEX(-0.5, 0.5), COMPLEX(0.0, 1.0), COMPLEX(1, 0.0), COMPLEX(-0.5, -0.5), COMPLEX(0.5, -0.5), COMPLEX(0.5, 0.5)};
+    COMPLEX invd2[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, 1.0), COMPLEX(-0.5, -0.5), COMPLEX(0.0, -1.0), COMPLEX(1, 0.0), COMPLEX(-0.5, 0.5), COMPLEX(0.5, 0.5), COMPLEX(0.5, -0.5)};
+    char c2[2];
+    c2[0] = path[1];
+    c2[1] = path[2];
     //
     //     Test the input arguments
     //
@@ -130,13 +119,13 @@ void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda,
     if (Mlsamen(2, c2, "SY")) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= n; i = i + 1) {
-                a[(i - 1) + (j - 1) * lda] = d1[(mod(j - 1) + ((size_d) + 1) - 1) * ldd1] * (castREAL(m) / (i + j - 1)) * d1[(mod(i - 1) + ((size_d) + 1) - 1) * ldd1];
+                a[(i - 1) + (j - 1) * lda] = d1[(mod(j, size_d) + 1) - 1] * (castREAL(m) / (i + j - 1)) * d1[(mod(i, size_d) + 1) - 1];
             }
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= n; i = i + 1) {
-                a[(i - 1) + (j - 1) * lda] = d1[(mod(j - 1) + ((size_d) + 1) - 1) * ldd1] * (castREAL(m) / (i + j - 1)) * d2[(mod(i - 1) + ((size_d) + 1) - 1) * ldd2];
+                a[(i - 1) + (j - 1) * lda] = d1[(mod(j, size_d) + 1) - 1] * (castREAL(m) / (i + j - 1)) * d2[(mod(i, size_d) + 1) - 1];
             }
         }
     }
@@ -159,13 +148,13 @@ void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda,
     if (Mlsamen(2, c2, "SY")) {
         for (j = 1; j <= nrhs; j = j + 1) {
             for (i = 1; i <= n; i = i + 1) {
-                x[(i - 1) + (j - 1) * ldx] = invd1[(mod(j - 1) + ((size_d) + 1) - 1) * ldinvd1] * ((work[i - 1] * work[j - 1]) / (i + j - 1)) * invd1[(mod(i - 1) + ((size_d) + 1) - 1) * ldinvd1];
+                x[(i - 1) + (j - 1) * ldx] = invd1[(mod(j, size_d) + 1) - 1] * ((work[i - 1] * work[j - 1]) / (i + j - 1)) * invd1[(mod(i, size_d) + 1) - 1];
             }
         }
     } else {
         for (j = 1; j <= nrhs; j = j + 1) {
             for (i = 1; i <= n; i = i + 1) {
-                x[(i - 1) + (j - 1) * ldx] = invd2[(mod(j - 1) + ((size_d) + 1) - 1) * ldinvd2] * ((work[i - 1] * work[j - 1]) / (i + j - 1)) * invd1[(mod(i - 1) + ((size_d) + 1) - 1) * ldinvd1];
+                x[(i - 1) + (j - 1) * ldx] = invd2[(mod(j, size_d) + 1) - 1] * ((work[i - 1] * work[j - 1]) / (i + j - 1)) * invd1[(mod(i, size_d) + 1) - 1];
             }
         }
     }

@@ -37,9 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rpst01(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *afac, INTEGER const ldafac, REAL *perm, INTEGER const ldperm, INTEGER *piv, REAL *rwork, REAL &resid, INTEGER const rank) {
-    a([lda * star]);
-    afac([ldafac * star]);
-    perm([ldperm * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

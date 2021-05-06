@@ -37,14 +37,12 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cerrrfp(INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    // COMMON srnamc
-    //
+    INTEGER infot;
+    INTEGER nout;
+    bool ok;
+    bool lerr;
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -72,14 +70,15 @@ void Cerrrfp(INTEGER const nunit) {
     //
     nout = nunit;
     ok = true;
-    INTEGER &a[(1 - 1) + (1 - 1) * lda] = COMPLEX(1.0, 1.0);
-    INTEGER &b[(1 - 1) + (1 - 1) * ldb] = COMPLEX(1.0, 1.0);
+    COMPLEX a[1 * 1];
+    COMPLEX b[1 * 1];
+    a[0] = COMPLEX(1.0, 1.0);
+    b[0] = COMPLEX(1.0, 1.0);
     REAL alpha = 1.0;
     COMPLEX calpha = COMPLEX(1.0, 1.0);
     REAL beta = 1.0;
     //
     infot = 1;
-    COMPLEX a[1 * 1];
     INTEGER info = 0;
     Cpftrf("/", "U", 0, a, info);
     chkxer("Cpftrf", infot, nout, lerr, ok);
@@ -91,7 +90,6 @@ void Cerrrfp(INTEGER const nunit) {
     chkxer("Cpftrf", infot, nout, lerr, ok);
     //
     infot = 1;
-    COMPLEX b[1 * 1];
     Cpftrs("/", "U", 0, 0, a, b, 1, info);
     chkxer("Cpftrs", infot, nout, lerr, ok);
     infot = 2;

@@ -37,13 +37,12 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rerrrq(const char *path, INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    // COMMON srnamc
+    INTEGER infot;
+    INTEGER nout;
+    bool ok;
+    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -81,6 +80,8 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     INTEGER i = 0;
     REAL a[nmax * nmax];
     REAL af[nmax * nmax];
+    INTEGER lda = nmax;
+    INTEGER ldaf = nmax;
     REAL b[nmax];
     REAL w[nmax];
     REAL x[nmax];

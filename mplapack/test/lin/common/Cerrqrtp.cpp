@@ -37,13 +37,12 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cerrqrtp(const char *path, INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    // COMMON srnamc
+    INTEGER infot;
+    INTEGER nout;
+    bool ok;
+    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -72,7 +71,6 @@ void Cerrqrtp(const char *path, INTEGER const nunit) {
     //     .. Executable Statements ..
     //
     nout = nunit;
-    write(nout, star);
     //
     //     Set the variables to innocuous values.
     //
@@ -82,12 +80,15 @@ void Cerrqrtp(const char *path, INTEGER const nunit) {
     COMPLEX a[nmax * nmax];
     COMPLEX c[nmax * nmax];
     COMPLEX t[nmax * nmax];
+    INTEGER lda = nmax;
+    INTEGER ldc = nmax;
+    INTEGER ldt = nmax;
     COMPLEX w[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / COMPLEX(castREAL(i + j), 0.0);
-            c[(i - 1) + (j - 1) * ldc] = 1.0 / COMPLEX(castREAL(i + j), 0.0);
-            t[(i - 1) + (j - 1) * ldt] = 1.0 / COMPLEX(castREAL(i + j), 0.0);
+            a[(i - 1) + (j - 1) * lda] = COMPLEX(1.0 / castREAL(i + j), 0.0);
+            c[(i - 1) + (j - 1) * ldc] = COMPLEX(1.0 / castREAL(i + j), 0.0);
+            t[(i - 1) + (j - 1) * ldt] = COMPLEX(1.0 / castREAL(i + j), 0.0);
         }
         w[j - 1] = COMPLEX(0.0, 0.0);
     }

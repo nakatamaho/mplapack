@@ -208,4 +208,13 @@ void Clqt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //     Deallocate all arrays
     //
     //
+    delete[] a;
+    delete[] af;
+    delete[] t;
+    delete[] work;
+    delete[] q;
+    delete[] l;
+    delete[] rwork;
+    delete[] d;
+    delete[] df;
 }

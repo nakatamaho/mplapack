@@ -37,13 +37,12 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rerrls(const char *path, INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    // COMMON srnamc
+    INTEGER infot;
+    INTEGER nout;
+    bool ok;
+    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -72,12 +71,14 @@ void Rerrls(const char *path, INTEGER const nunit) {
     //     .. Executable Statements ..
     //
     nout = nunit;
-    write(nout, star);
-    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
-    INTEGER &a[(1 - 1) + (1 - 1) * lda] = 1.0;
-    INTEGER &a[(1 - 1) + (2 - 1) * lda] = 2.0e+0;
+    char c2[2];
+    c2[0] = path[1];
+    c2[1] = path[2];
     const INTEGER nmax = 2;
     REAL a[nmax * nmax];
+    INTEGER lda = nmax;
+    a[(1 - 1) + (1 - 1) * lda] = 1.0;
+    a[(1 - 1) + (2 - 1) * lda] = 2.0e+0;
     a[(2 - 1) + (2 - 1) * lda] = 3.0e+0;
     a[(2 - 1)] = 4.0e+0;
     ok = true;

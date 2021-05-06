@@ -37,32 +37,11 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEGER const lda, REAL *arf, REAL *ap, REAL *asav) {
-    FEM_CMN_SVE(Rdrvrf2);
-    nval([nn]);
-    a([lda * star]);
-    asav([lda * star]);
+    common cmn;
     common_write write(cmn);
-    // COMMON srnamc
-    //
-    // SAVE
-    str_arr_ref<1> forms(sve.forms, [2]);
-    INTEGER *iseedy(sve.iseedy, [4]);
-    str_arr_ref<1> uplos(sve.uplos, [2]);
-    //
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"U", "L"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
-        }
-        {
-            static const char *values[] = {"N", "T"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), forms;
-        }
-    }
+    char uplos[2] = {'U', 'L'};
+    char forms[2] = {'N', 'T'};
+    INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -93,6 +72,7 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
     //
     //     Initialize constants and the random number seed.
     //
+    INTEGER ldasav = lda;
     INTEGER nrun = 0;
     INTEGER nerrs = 0;
     INTEGER info = 0;
@@ -140,11 +120,11 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
                     }
                 }
                 //
-                Rtrttf(cform, uplo, n, a, lda, arf, info);
+                Rtrttf(&cform, &uplo, n, a, lda, arf, info);
                 //
-                Rtfttp(cform, uplo, n, arf, ap, info);
+                Rtfttp(&cform, &uplo, n, arf, ap, info);
                 //
-                Rtpttr(uplo, n, ap, asav, lda, info);
+                Rtpttr(&uplo, n, ap, asav, lda, info);
                 //
                 ok1 = true;
                 if (lower) {
@@ -167,11 +147,11 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
                 //
                 nrun++;
                 //
-                Rtrttp(uplo, n, a, lda, ap, info);
+                Rtrttp(&uplo, n, a, lda, ap, info);
                 //
-                Rtpttf(cform, uplo, n, ap, arf, info);
+                Rtpttf(&cform, &uplo, n, ap, arf, info);
                 //
-                Rtfttr(cform, uplo, n, arf, asav, lda, info);
+                Rtfttr(&cform, &uplo, n, arf, asav, lda, info);
                 //
                 ok2 = true;
                 if (lower) {
