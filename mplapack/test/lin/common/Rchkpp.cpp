@@ -142,7 +142,6 @@ void Rchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     if (tsterr) {
         Rerrpo(path, nout);
     }
-    cmn.infot = 0;
     //
     //     Do for each value of N in NVAL
     //

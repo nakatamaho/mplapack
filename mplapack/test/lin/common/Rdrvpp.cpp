@@ -163,7 +163,6 @@ void Rdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     if (tsterr) {
         Rerrvx(path, nout);
     }
-    cmn.infot = 0;
     //
     //     Do for each value of N in NVAL
     //

@@ -124,7 +124,6 @@ void Cchkql(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     if (tsterr) {
         Cerrql(path, nout);
     }
-    cmn.infot = 0;
     //
     lda = nmax;
     lwork = nmax * max(nmax, nrhs);

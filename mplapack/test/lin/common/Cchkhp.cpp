@@ -142,7 +142,6 @@ void Cchkhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     if (tsterr) {
         Cerrsy(path, nout);
     }
-    cmn.infot = 0;
     //
     //     Do for each value of N in NVAL
     //

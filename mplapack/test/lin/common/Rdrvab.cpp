@@ -121,7 +121,6 @@ void Rdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    cmn.infot = 0;
     //
     //     Do for each value of M in MVAL
     //

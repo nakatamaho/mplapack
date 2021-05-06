@@ -183,7 +183,6 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     if (tsterr) {
         Cerrvx(path, nout);
     }
-    cmn.infot = 0;
     //
     //     Set the block size and minimum block size for testing.
     //

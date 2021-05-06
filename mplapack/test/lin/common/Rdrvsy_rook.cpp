@@ -157,7 +157,6 @@ void Rdrvsy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nr
     if (tsterr) {
         Rerrvx(path, nout);
     }
-    cmn.infot = 0;
     //
     //     Set the block size and minimum block size for which the block
     //     routine should be used, which will be later returned by iMlaenv.

@@ -135,7 +135,6 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     if (tsterr) {
         Rerrpo(path, nout);
     }
-    cmn.infot = 0;
     //
     //     Do for each value of N in NVAL
     //

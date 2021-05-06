@@ -116,7 +116,6 @@ void Rchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         iseed[i - 1] = iseedy[i - 1];
     }
     eps = Rlamch("Epsilon");
-    cmn.infot = 0;
     //
     for (im = 1; im <= nm; im = im + 1) {
         //

@@ -143,7 +143,6 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     if (tsterr) {
         Rerrtr(path, nout);
     }
-    cmn.infot = 0;
     //
     for (in = 1; in <= nn; in = in + 1) {
         //

@@ -137,7 +137,6 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     if (tsterr) {
         Cerrgt(path, nout);
     }
-    cmn.infot = 0;
     //
     for (in = 1; in <= nn; in = in + 1) {
         //

@@ -153,7 +153,6 @@ void Rdrvsy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
     if (tsterr) {
         Rerrvx(path, nout);
     }
-    cmn.infot = 0;
     //
     //     Set the block size and minimum block size for testing.
     //
