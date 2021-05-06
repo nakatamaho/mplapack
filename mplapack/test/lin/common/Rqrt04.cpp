@@ -37,15 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
-    FEM_CMN_SVE(Rqrt04);
-    result([6]);
-    // SAVE
-    INTEGER *iseed(sve.iseed, [4]);
-    //
-    if (is_called_first_time) {
-        static const INTEGER values[] = {1988, 1989, 1990, 1991};
-        data_of_type<int>(FEM_VALUES_AND_SIZE), iseed;
-    }
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -71,6 +62,7 @@ void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //     ..
     //     .. Data statements ..
     //
+    INTEGER iseed[] = {1988, 1989, 1990, 1991};
     REAL eps = Rlamch("Epsilon");
     INTEGER k = min(m, n);
     INTEGER l = max(m, n);
@@ -80,19 +72,21 @@ void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     //     Put random numbers into A and copy to AF
     //
-    INTEGER ldt = nb;
     INTEGER j = 0;
-    REAL a[m * n];
+    REAL *a = new REAL[m * n];
+    INTEGER lda = m;
     for (j = 1; j <= n; j = j + 1) {
         Rlarnv(2, iseed, m, &a[(j - 1) * lda]);
     }
-    REAL af[m * n];
+    REAL *af = new REAL[m * n];
+    INTEGER ldaf = m;
     Rlacpy("Full", m, n, a, m, af, m);
     //
     //     Factor the matrix A in the array AF.
     //
-    REAL t[nb * n];
-    REAL work[lwork];
+    REAL *t = new REAL[nb * n];
+    INTEGER ldt = nb;
+    REAL *work = new REAL[lwork];
     INTEGER info = 0;
     Rgeqrt(m, n, nb, af, m, t, ldt, work, info);
     //
@@ -100,20 +94,22 @@ void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     const REAL zero = 0.0f;
     const REAL one = 1.0f;
-    REAL q[m * m];
+    REAL *q = new REAL[m * m];
+    INTEGER ldq = m;
     Rlaset("Full", m, m, zero, one, q, m);
     Rgemqrt("R", "N", m, m, k, nb, af, m, t, ldt, q, m, work, info);
     //
     //     Copy R
     //
-    REAL r[m * l];
+    REAL *r = new REAL[m * l];
+    INTEGER ldr = m;
     Rlaset("Full", m, n, zero, zero, r, m);
     Rlacpy("Upper", m, n, af, m, r, m);
     //
     //     Compute |R - Q'*A| / |A| and store in RESULT(1)
     //
     Rgemm("T", "N", m, n, m, -one, q, m, a, m, one, r, m);
-    REAL rwork[l];
+    REAL *rwork = new REAL[l];
     REAL anorm = Rlange("1", m, n, a, m, rwork);
     REAL resid = Rlange("1", m, n, r, m, rwork);
     if (anorm > zero) {
@@ -131,12 +127,13 @@ void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     //     Generate random m-by-n matrix C and a copy CF
     //
-    REAL c[m * n];
+    REAL *c = new REAL[m * n];
+    INTEGER ldc = m;
     for (j = 1; j <= n; j = j + 1) {
         Rlarnv(2, iseed, m, &c[(j - 1) * ldc]);
     }
     REAL cnorm = Rlange("1", m, n, c, m, rwork);
-    REAL cf[m * n];
+    REAL *cf = new REAL[m * n];
     Rlacpy("Full", m, n, c, m, cf, m);
     //
     //     Apply Q to C as Q*C
@@ -173,12 +170,14 @@ void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     //     Generate random n-by-m matrix D and a copy DF
     //
-    REAL d[n * m];
+    REAL *d = new REAL[n * m];
+    INTEGER ldd = n;
     for (j = 1; j <= m; j = j + 1) {
         Rlarnv(2, iseed, n, &d[(j - 1) * ldd]);
     }
     REAL dnorm = Rlange("1", n, m, d, n, rwork);
-    REAL df[n * m];
+    REAL *df = new REAL[n * m];
+    INTEGER lddf = n;
     Rlacpy("Full", n, m, d, n, df, n);
     //
     //     Apply Q to D as D*Q
@@ -215,6 +214,16 @@ void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     //     Deallocate all arrays
     //
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(a,af,q,r,rwork,work,t,c,d,cf,df)");
+    delete[] a;
+    delete[] af;
+    delete[] q;
+    delete[] r;
+    delete[] rwork;
+    delete[] work;
+    delete[] t;
+    delete[] c;
+    delete[] d;
+    delete[] cf;
+    delete[] df;
     //
 }
