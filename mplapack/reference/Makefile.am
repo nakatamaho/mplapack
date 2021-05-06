@@ -86,6 +86,8 @@ endif
 
 
 MPLAPACK_SOURCES = \
+Cgtcon.cpp \
+Cgttrf.cpp \
 Cbbcsd.cpp \
 Cbdsqr.cpp \
 Cdrscl.cpp \
