@@ -47,6 +47,7 @@ sed -i -e 's/norm = "1";/norm = \'\'1\'';/g' ${newfilename}.cpp
 sed -i -e 's/norm = "I";/norm = \'\'I\'';/g' ${newfilename}.cpp
 sed -i -e 's/const &/const /g' ${newfilename}.cpp
 sed -i -e 's/, a\[/, \&a\[/g' ${newfilename}.cpp
+sed -i -e 's/, afac\[/, \&afac\[/g' ${newfilename}.cpp
 sed -i -e 's/, b\[/, \&b\[/g' ${newfilename}.cpp
 sed -i -e 's/, c\[/, \&c\[/g' ${newfilename}.cpp
 sed -i -e 's/, d\[/, \&d\[/g' ${newfilename}.cpp
@@ -95,4 +96,5 @@ EOF
 sed -i "/#include <mplapack.h>/r insert_lin.txt" ${newfilename}.cpp  #GNU sed only
 rm -f ${oldfilename}.cpp
 done
+sed -i '/srnamt = /d' *cpp
 rm insert_lin.txt
