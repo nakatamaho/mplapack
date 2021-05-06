@@ -36,15 +36,14 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, REAL const thresh, COMPLEX *a, COMPLEX *copya, REAL *s, COMPLEX *tau, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
-    FEM_CMN_SVE(Cchkq3);
+    common cmn;
     common_write write(cmn);
-    INTEGER *iseedy(sve.iseedy, [4]);
-    if (is_called_first_time) {
-        static const INTEGER values[] = {1988, 1989, 1990, 1991};
-        data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-    }
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -109,8 +108,9 @@ void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Initialize constants and the random number seed.
     //
-    path[(1 - 1)] = "Zomplex precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "Q3";
+    path[0] = 'Z';
+    path[1] = 'Q';
+    path[2] = '3';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -118,7 +118,6 @@ void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         iseed[i - 1] = iseedy[i - 1];
     }
     eps = Rlamch("Epsilon");
-    cmn.infot = 0;
     //
     for (im = 1; im <= nm; im = im + 1) {
         //
@@ -192,9 +191,7 @@ void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //                 Do for each pair of values (NB,NX) in NBVAL and NXVAL.
                     //
                     nb = nbval[inb - 1];
-                    xlaenv(1, nb);
                     nx = nxval[inb - 1];
-                    xlaenv(3, nx);
                     //
                     //                 Save A and its singular values and a copy of
                     //                 vector IWORK.
@@ -228,9 +225,10 @@ void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
+                            sprintnum_short(buf, result[k - 1]);
                             write(nout, "(1x,a,' M =',i5,', N =',i5,', NB =',i4,', type ',i2,"
-                                        "', test ',i2,', ratio =',g12.5)"),
-                                "Cgeqp3", m, n, nb, imode, k, result(k);
+                                        "', test ',i2,', ratio =',a"),
+                                "Cgeqp3", m, n, nb, imode, k, buf;
                             nfail++;
                         }
                     }
