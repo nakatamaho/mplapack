@@ -36,15 +36,15 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Cchkql(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, COMPLEX *a, COMPLEX *af, COMPLEX *aq, COMPLEX *al, COMPLEX *ac, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *tau, COMPLEX *work, REAL *rwork, INTEGER const nout) {
+    common cmn;
     common_write write(cmn);
     //
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    if (is_called_first_time) {
-        static const INTEGER values[] = {1988, 1989, 1990, 1991};
-        data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-    }
     char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -110,8 +110,9 @@ void Cchkql(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Initialize constants and the random number seed.
     //
-    path[(1 - 1)] = "Zomplex precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "QL";
+    path[0] = 'C';
+    path[1] = 'Q';
+    path[2] = 'L';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -149,9 +150,9 @@ void Cchkql(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 //              Set up parameters with Clatb4 and generate a test matrix
                 //              with Clatms.
                 //
-                Clatb4(path, imat, m, n, type, kl, ku, anorm, mode, cndnum, dist);
+                Clatb4(path, imat, m, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                 //
-                Clatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
+                Clatms(m, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
                 //
                 //              Check error code from Clatms.
                 //
@@ -196,20 +197,20 @@ void Cchkql(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //
                             //                       Test Cgeqlf
                             //
-                            Cqlt01(m, n, a, af, aq, al, lda, tau, work, lwork, rwork, result[1 - 1]);
+                            Cqlt01(m, n, a, af, aq, al, lda, tau, work, lwork, rwork, &result[1 - 1]);
                         } else if (m >= n) {
                             //
                             //                       Test Cungql, using factorization
                             //                       returned by Cqlt01
                             //
-                            Cqlt02(m, n, k, a, af, aq, al, lda, tau, work, lwork, rwork, result[1 - 1]);
+                            Cqlt02(m, n, k, a, af, aq, al, lda, tau, work, lwork, rwork, &result[1 - 1]);
                         }
                         if (m >= k) {
                             //
                             //                       Test Cunmql, using factorization returned
                             //                       by Cqlt01
                             //
-                            Cqlt03(m, n, k, af, ac, al, aq, lda, tau, work, lwork, rwork, result[3 - 1]);
+                            Cqlt03(m, n, k, af, ac, al, aq, lda, tau, work, lwork, rwork, &result[3 - 1]);
                             nt += 4;
                             //
                             //                       If M>=N and K=N, call Cgeqls to solve a system
@@ -245,9 +246,10 @@ void Cchkql(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
+                                sprintnum_short(buf, result[i - 1]);
                                 write(nout, "(' M=',i5,', N=',i5,', K=',i5,', NB=',i4,', NX=',i5,"
-                                            "', type ',i2,', test(',i2,')=',g12.5)"),
-                                    m, n, k, nb, nx, imat, i, result(i);
+                                            "', type ',i2,', test(',i2,')=',a)"),
+                                    m, n, k, nb, nx, imat, i, buf;
                                 nfail++;
                             }
                         }
