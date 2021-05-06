@@ -37,21 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rqlt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c, REAL *cc, REAL *q, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    FEM_CMN_SVE(Rqlt03);
-    af([lda * star]);
-    c([lda * star]);
-    cc([lda * star]);
-    q([lda * star]);
-    work([lwork]);
-    // COMMON srnamc
-    //
-    // SAVE
-    INTEGER *iseed(sve.iseed, [4]);
-    //
-    if (is_called_first_time) {
-        static const INTEGER values[] = {1988, 1989, 1990, 1991};
-        data_of_type<int>(FEM_VALUES_AND_SIZE), iseed;
-    }
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -84,6 +69,11 @@ void Rqlt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
     //     ..
     //     .. Executable Statements ..
     //
+    INTEGER ldaf = lda;
+    INTEGER ldc = lda;
+    INTEGER ldcc = lda;
+    INTEGER ldq = lda;
+    INTEGER iseed[] = {1988, 1989, 1990, 1991};
     REAL eps = Rlamch("Epsilon");
     INTEGER minmn = min(m, n);
     //
@@ -103,10 +93,10 @@ void Rqlt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
     const REAL rogue = -1.0e+10;
     Rlaset("Full", m, m, rogue, rogue, q, lda);
     if (k > 0 && m > k) {
-        Rlacpy("Full", m - k, k, af[((n - k + 1) - 1) * ldaf], lda, &q[((m - k + 1) - 1) * ldq], lda);
+        Rlacpy("Full", m - k, k, &af[((n - k + 1) - 1) * ldaf], lda, &q[((m - k + 1) - 1) * ldq], lda);
     }
     if (k > 1) {
-        Rlacpy("Upper", k - 1, k - 1, af[((m - k + 1) - 1) + ((n - k + 2) - 1) * ldaf], lda, &q[((m - k + 1) - 1) + ((m - k + 2) - 1) * ldq], lda);
+        Rlacpy("Upper", k - 1, k - 1, &af[((m - k + 1) - 1) + ((n - k + 2) - 1) * ldaf], lda, &q[((m - k + 1) - 1) + ((m - k + 2) - 1) * ldq], lda);
     }
     //
     //     Generate the m-by-m matrix Q
@@ -126,11 +116,11 @@ void Rqlt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
     REAL resid = 0.0;
     for (iside = 1; iside <= 2; iside = iside + 1) {
         if (iside == 1) {
-            side = "L";
+            side = 'L';
             mc = m;
             nc = n;
         } else {
-            side = "R";
+            side = 'R';
             mc = n;
             nc = m;
         }
@@ -159,15 +149,15 @@ void Rqlt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
             //           Apply Q or Q' to C
             //
             if (k > 0) {
-                Rormql(side, trans, mc, nc, k, af[((n - k + 1) - 1) * ldaf], lda, &tau[(minmn - k + 1) - 1], cc, lda, work, lwork, info);
+                Rormql(&side, &trans, mc, nc, k, &af[((n - k + 1) - 1) * ldaf], lda, &tau[(minmn - k + 1) - 1], cc, lda, work, lwork, info);
             }
             //
             //           Form explicit product and subtract
             //
-            if (Mlsame(side, "L")) {
-                Rgemm(trans, "No transpose", mc, nc, mc, -one, q, lda, c, lda, one, cc, lda);
+            if (Mlsame(&side, "L")) {
+                Rgemm(&trans, "No transpose", mc, nc, mc, -one, q, lda, c, lda, one, cc, lda);
             } else {
-                Rgemm("No transpose", trans, mc, nc, nc, -one, c, lda, q, lda, one, cc, lda);
+                Rgemm("No transpose", &trans, mc, nc, nc, -one, c, lda, q, lda, one, cc, lda);
             }
             //
             //           Compute error in the difference

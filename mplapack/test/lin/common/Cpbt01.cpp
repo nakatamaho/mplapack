@@ -36,9 +36,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
+
 void Cpbt01(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, REAL *rwork, REAL &resid) {
-    a([lda * star]);
-    afac([ldafac * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -114,7 +114,7 @@ void Cpbt01(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *a, INT
             //
             //           Compute the (K,K) element of the result.
             //
-            akk = Cdotc(klen + 1, &afac[(kc - 1) + (k - 1) * ldafac], 1, &afac[(kc - 1) + (k - 1) * ldafac], 1);
+            akk = Cdotc(klen + 1, &afac[(kc - 1) + (k - 1) * ldafac], 1, &afac[(kc - 1) + (k - 1) * ldafac], 1).real();
             afac[((kd + 1) - 1) + (k - 1) * ldafac] = akk;
             //
             //           Compute the rest of column K.
@@ -140,7 +140,7 @@ void Cpbt01(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *a, INT
             //
             //           Scale column K by the diagonal element.
             //
-            akk = afac[(k - 1) * ldafac];
+            akk = afac[(k - 1) * ldafac].real();
             CRscal(klen + 1, akk, &afac[(k - 1) * ldafac], 1);
             //
         }

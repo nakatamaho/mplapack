@@ -37,10 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *s, INTEGER &rank, REAL &norma, REAL &normb, INTEGER *iseed, COMPLEX *work, INTEGER const lwork) {
-    a([lda * star]);
-    b([ldb * star]);
-    iseed([4]);
-    work([lwork]);
     INTEGER mn = 0;
     REAL smlnum = 0.0;
     const REAL one = 1.0;

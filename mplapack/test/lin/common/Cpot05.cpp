@@ -36,11 +36,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
+
 void Cpot05(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, COMPLEX *xact, INTEGER const ldxact, REAL *ferr, REAL *berr, REAL *reslts) {
-    a([lda * star]);
-    b([ldb * star]);
-    x([ldx * star]);
-    xact([ldxact * star]);
     COMPLEX zdum = 0.0;
     const REAL zero = 0.0;
     REAL eps = 0.0;
@@ -80,7 +78,6 @@ void Cpot05(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1(zdum) = abs(zdu castREAL(m)) + abs(zdum.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -139,7 +136,7 @@ void Cpot05(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
                 for (j = 1; j <= i - 1; j = j + 1) {
                     tmp += abs1(a[(j - 1) + (i - 1) * lda]) * abs1(x[(j - 1) + (k - 1) * ldx]);
                 }
-                tmp += abs(castREAL(a[(i - 1) + (i - 1) * lda])) * abs1(x[(i - 1) + (k - 1) * ldx]);
+                tmp += abs((a[(i - 1) + (i - 1) * lda]).real()) * abs1(x[(i - 1) + (k - 1) * ldx]);
                 for (j = i + 1; j <= n; j = j + 1) {
                     tmp += abs1(a[(i - 1) + (j - 1) * lda]) * abs1(x[(j - 1) + (k - 1) * ldx]);
                 }
@@ -147,7 +144,7 @@ void Cpot05(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
                 for (j = 1; j <= i - 1; j = j + 1) {
                     tmp += abs1(a[(i - 1) + (j - 1) * lda]) * abs1(x[(j - 1) + (k - 1) * ldx]);
                 }
-                tmp += abs(castREAL(a[(i - 1) + (i - 1) * lda])) * abs1(x[(i - 1) + (k - 1) * ldx]);
+                tmp += abs((a[(i - 1) + (i - 1) * lda]).real()) * abs1(x[(i - 1) + (k - 1) * ldx]);
                 for (j = i + 1; j <= n; j = j + 1) {
                     tmp += abs1(a[(j - 1) + (i - 1) * lda]) * abs1(x[(j - 1) + (k - 1) * ldx]);
                 }

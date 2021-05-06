@@ -38,9 +38,6 @@ using fem::common;
 
 REAL Cqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *work, INTEGER const lwork) {
     REAL return_value = 0.0;
-    a([lda * star]);
-    x([ldx * star]);
-    work([lwork]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -124,7 +121,7 @@ REAL Cqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         //
         //        Compute QR factorization of X
         //
-        Cgeqr2(m, n + nrhs, work, ldwork, &work[(ldwork * (n + nrhs) + 1) - 1], &work[((ldwork * (n + nrhs) + min(m) - 1) + ((n + nrhs) + 1) - 1) * ldwork], info);
+        Cgeqr2(m, n + nrhs, work, ldwork, &work[(ldwork * (n + nrhs) + 1) - 1], &work[(ldwork * (n + nrhs) + min(m, n + nrhs) + 1) - 1], info);
         //
         //        Compute largest entry in upper triangle of
         //        work(n+1:m,n+1:n+nrhs)

@@ -36,7 +36,10 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nout) {
+    common cmn;
     common_write write(cmn);
     //
     //  -- LAPACK test routine --
@@ -68,8 +71,11 @@ void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
     //
     //     Initialize constants
     //
-    char path[3] = "Z";
-    path[(2 - 1) + (3 - 1) * ldpath] = "TS";
+    char path[3];
+    path[0] = 'Z';
+    path[1] = 'T';
+    path[2] = 'S';
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -79,7 +85,6 @@ void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
     if (tsterr) {
         Cerrtsqr(path, nout);
     }
-    cmn.infot = 0;
     //
     //     Do for each value of M in MVAL.
     //
@@ -104,10 +109,8 @@ void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
             if (min(m, n) != 0) {
                 for (inb = 1; inb <= nnb; inb = inb + 1) {
                     mb = nbval[inb - 1];
-                    xlaenv(1, mb);
                     for (imb = 1; imb <= nnb; imb = imb + 1) {
                         nb = nbval[imb - 1];
-                        xlaenv(2, nb);
                         //
                         //                 Test Cgeqr and Cgemqr
                         //
@@ -121,9 +124,10 @@ void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
+                                sprintnum_short(buf, result[t - 1]);
                                 write(nout, "('TS: M=',i5,', N=',i5,', MB=',i5,', NB=',i5,' test(',i2,"
-                                            "')=',g12.5)"),
-                                    m, n, mb, nb, t, result(t);
+                                            "')=',a)"),
+                                    m, n, mb, nb, t, buf;
                                 nfail++;
                             }
                         }
@@ -146,10 +150,8 @@ void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
             if (min(m, n) != 0) {
                 for (inb = 1; inb <= nnb; inb = inb + 1) {
                     mb = nbval[inb - 1];
-                    xlaenv(1, mb);
                     for (imb = 1; imb <= nnb; imb = imb + 1) {
                         nb = nbval[imb - 1];
-                        xlaenv(2, nb);
                         //
                         //                 Test Cgelq and Cgemlq
                         //
@@ -163,9 +165,10 @@ void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
+                                sprintnum_short(buf, result[t - 1]);
                                 write(nout, "('SW: M=',i5,', N=',i5,', MB=',i5,', NB=',i5,' test(',i2,"
-                                            "')=',g12.5)"),
-                                    m, n, mb, nb, t, result(t);
+                                            "')=',a)"),
+                                    m, n, mb, nb, t, buf;
                                 nfail++;
                             }
                         }

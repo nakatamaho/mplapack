@@ -37,9 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rgtt05(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, REAL *d, REAL *du, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL *xact, INTEGER const ldxact, REAL *ferr, REAL *berr, REAL *reslts) {
-    b([ldb * star]);
-    x([ldx * star]);
-    xact([ldxact * star]);
     const REAL zero = 0.0;
     REAL eps = 0.0;
     REAL unfl = 0.0;

@@ -36,10 +36,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
+
 void Cgtt05(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, COMPLEX *xact, INTEGER const ldxact, REAL *ferr, REAL *berr, REAL *reslts) {
-    b([ldb * star]);
-    x([ldx * star]);
-    xact([ldxact * star]);
     COMPLEX zdum = 0.0;
     const REAL zero = 0.0;
     REAL eps = 0.0;
@@ -80,7 +79,6 @@ void Cgtt05(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1(zdum) = abs(zdu castREAL(m)) + abs(zdum.imag());
     //     ..
     //     .. Executable Statements ..
     //
