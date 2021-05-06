@@ -37,17 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const nb, REAL *result) {
-    FEM_CMN_SVE(Rtsqr01);
-    result([6]);
-    // COMMON srnamc
-    //
-    // SAVE
-    INTEGER *iseed(sve.iseed, [4]);
-    //
-    if (is_called_first_time) {
-        static const INTEGER values[] = {1988, 1989, 1990, 1991};
-        data_of_type<int>(FEM_VALUES_AND_SIZE), iseed;
-    }
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -78,6 +67,7 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
     //
     //     TEST TALL SKINNY OR SHORT WIDE
     //
+    INTEGER iseed[] = {1988, 1989, 1990, 1991};
     bool ts = Mlsame(tssw, "TS");
     //
     //     TEST MATRICES WITH HALF OF MATRIX BEING ZEROS
@@ -86,7 +76,7 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
     //
     REAL eps = Rlamch("Epsilon");
     INTEGER k = min(m, n);
-    INTEGER l = max({m, n, 1});
+    INTEGER l = max({m, n, (INTEGER)1});
     INTEGER mnb = max(mb, nb);
     INTEGER lwork = max(3, l) * mnb;
     //
@@ -95,7 +85,8 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
     //     Put random numbers into A and copy to AF
     //
     INTEGER j = 0;
-    REAL a[m * n];
+    REAL *a = new REAL[m * n];
+    INTEGER lda = m;
     for (j = 1; j <= n; j = j + 1) {
         Rlarnv(2, iseed, m, &a[(j - 1) * lda]);
     }
@@ -106,27 +97,34 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
             }
         }
     }
-    REAL af[m * n];
+    REAL *af = new REAL[m * n];
+    INTEGER ldaf = m;
     Rlacpy("Full", m, n, a, m, af, m);
     //
     REAL tquery[5];
     REAL workquery[1];
     INTEGER info = 0;
     INTEGER tsize = 0;
-    REAL cf[m * n];
-    REAL df[n * m];
-    REAL t[tsize];
-    REAL work[lwork];
+    REAL *cf = new REAL[m * n];
+    INTEGER ldcf = m;
+    REAL *df = new REAL[n * m];
+    INTEGER lddf = n;
+    REAL *t = new REAL[tsize];
+    REAL *work = new REAL[lwork];
     const REAL zero = 0.0f;
     const REAL one = 1.0f;
-    REAL q[l * l];
-    REAL r[m * l];
-    REAL rwork[l];
+    REAL *q = new REAL[l * l];
+    INTEGER ldq = l;
+    REAL *r = new REAL[m * l];
+    INTEGER ldr = m;
+    REAL *rwork = new REAL[l];
     REAL anorm = 0.0;
     REAL resid = 0.0;
-    REAL c[m * n];
+    REAL *c = new REAL[m * n];
+    INTEGER ldc = m;
     REAL cnorm = 0.0;
-    REAL d[n * m];
+    REAL *d = new REAL[n * m];
+    INTEGER ldd = n;
     REAL dnorm = 0.0;
     REAL lq[l * n];
     if (ts) {
@@ -134,18 +132,18 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
         //     Factor the matrix A in the array AF.
         //
         Rgeqr(m, n, af, m, tquery, -1, workquery, -1, info);
-        tsize = int(tquery[1 - 1]);
-        lwork = int(workquery[1 - 1]);
+        tsize = castINTEGER(tquery[1 - 1]);
+        lwork = castINTEGER(workquery[1 - 1]);
         Rgemqr("L", "N", m, m, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
-        lwork = max(lwork, int(workquery[1 - 1]));
+        lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemqr("L", "N", m, n, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
-        lwork = max(lwork, int(workquery[1 - 1]));
+        lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemqr("L", "T", m, n, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
-        lwork = max(lwork, int(workquery[1 - 1]));
+        lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemqr("R", "N", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);
-        lwork = max(lwork, int(workquery[1 - 1]));
+        lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemqr("R", "T", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);
-        lwork = max(lwork, int(workquery[1 - 1]));
+        lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgeqr(m, n, af, m, t, tsize, work, lwork, info);
         //
         //     Generate the m-by-m matrix Q
@@ -260,20 +258,18 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
         //
     } else {
         Rgelq(m, n, af, m, tquery, -1, workquery, -1, info);
-        tsize = int(tquery[1 - 1]);
-        lwork = int(workquery[1 - 1]);
+        tsize = castINTEGER(tquery[1 - 1]);
+        lwork = castINTEGER(workquery[1 - 1]);
         Rgemlq("R", "N", n, n, k, af, m, tquery, tsize, q, n, workquery, -1, info);
-        lwork = max(lwork, int(workquery[1 - 1]));
+        lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemlq("L", "N", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);
-        lwork = max(lwork, int(workquery[1 - 1]));
+        lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemlq("L", "T", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);
-        lwork = max(lwork, int(workquery[1 - 1]));
+        lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemlq("R", "N", m, n, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
-        lwork = max(lwork, int(workquery[1 - 1]));
+        lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemlq("R", "T", m, n, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
-        lwork = max(lwork, int(workquery[1 - 1]));
-        FEM_THROW_UNHANDLED("executable allocate: allocate(t(tsize))");
-        FEM_THROW_UNHANDLED("executable allocate: allocate(work(lwork))");
+        lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgelq(m, n, af, m, t, tsize, work, lwork, info);
         //
         //     Generate the n-by-n matrix Q
@@ -388,6 +384,16 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
     //
     //     Deallocate all arrays
     //
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(a,af,q,r,rwork,work,t,c,d,cf,df)");
+    delete[] a;
+    delete[] af;
+    delete[] q;
+    delete[] r;
+    delete[] rwork;
+    delete[] work;
+    delete[] t;
+    delete[] c;
+    delete[] d;
+    delete[] cf;
+    delete[] df;
     //
 }
