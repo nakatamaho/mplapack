@@ -36,23 +36,16 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nrank, INTEGER *rankval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, REAL *a, REAL *afac, REAL *perm, INTEGER *piv, REAL *work, REAL *rwork, INTEGER const nout) {
-    FEM_CMN_SVE(Rchkps);
+    common cmn;
     common_write write(cmn);
     //
-    INTEGER *iseedy(sve.iseedy, [4]);
-    str_arr_ref<1> uplos(sve.uplos, [2]);
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"U", "L"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
-        }
-    }
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
+    const char uplos[] = {'U', 'L'};
     char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -116,8 +109,9 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     //
     //     Initialize constants and the random number seed.
     //
-    path[(1 - 1)] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "PS";
+    path[0] = 'D';
+    path[1] = 'P';
+    path[2] = 'S';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -130,8 +124,6 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     if (tsterr) {
         Rerrps(path, nout);
     }
-    cmn.infot = 0;
-    xlaenv(2, 2);
     //
     //     Do for each value of N in NVAL
     //
@@ -163,7 +155,7 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     goto statement_130;
                 }
                 //
-                rank = ceiling((n * castREAL(rankval[irank - 1])) / 100.e+0);
+                rank = ceil((n * castREAL(rankval[irank - 1])) / 100.0);
                 //
                 //           Do first for UPLO = 'U', then for UPLO = 'L'
                 //
@@ -173,14 +165,14 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //              Set up parameters with Rlatb5 and generate a test matrix
                     //              with Rlatmt.
                     //
-                    Rlatb5(path, imat, n, type, kl, ku, anorm, mode, cndnum, dist);
+                    Rlatb5(path, imat, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                     //
-                    Rlatmt(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, rank, kl, ku, uplo, a, lda, work, info);
+                    Rlatmt(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, rank, kl, ku, &uplo, a, lda, work, info);
                     //
                     //              Check error code from Rlatmt.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Rlatmt", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rlatmt", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         goto statement_120;
                     }
                     //
@@ -188,22 +180,21 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     for (inb = 1; inb <= nnb; inb = inb + 1) {
                         nb = nbval[inb - 1];
-                        xlaenv(1, nb);
                         //
                         //                 Compute the pivoted L*L' or U'*U factorization
                         //                 of the matrix.
                         //
-                        Rlacpy(uplo, n, n, a, lda, afac, lda);
+                        Rlacpy(&uplo, n, n, a, lda, afac, lda);
                         //
                         //                 Use default tolerance
                         //
                         tol = -one;
-                        Rpstrf(uplo, n, afac, lda, piv, comprank, tol, work, info);
+                        Rpstrf(&uplo, n, afac, lda, piv, comprank, tol, work, info);
                         //
                         //                 Check error code from Rpstrf.
                         //
                         if ((info < izero) || (info != izero && rank == n) || (info <= izero && rank < n)) {
-                            Alaerh(path, "Rpstrf", info, izero, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rpstrf", info, izero, &uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                             goto statement_110;
                         }
                         //
@@ -217,7 +208,7 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //
                         //                 PERM holds permuted L*L^T or U^T*U
                         //
-                        Rpst01(uplo, n, a, lda, afac, lda, perm, lda, piv, rwork, result, comprank);
+                        Rpst01(&uplo, n, a, lda, afac, lda, perm, lda, piv, rwork, result, comprank);
                         //
                         //                 Print information about the tests that did not pass
                         //                 the threshold or where computed rank was not RANK.
@@ -230,9 +221,10 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
+                            sprintnum_short(buf, result);
                             write(nout, "(' UPLO = ''',a1,''', N =',i5,', RANK =',i3,', Diff =',i5,"
-                                        "', NB =',i4,', type ',i2,', Ratio =',g12.5)"),
-                                uplo, n, rank, rankdiff, nb, imat, result;
+                                        "', NB =',i4,', type ',i2,', Ratio =',a)"),
+                                uplo, n, rank, rankdiff, nb, imat, buf;
                             nfail++;
                         }
                         nrun++;
