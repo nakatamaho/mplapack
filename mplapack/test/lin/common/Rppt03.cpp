@@ -147,7 +147,7 @@ void Rppt03(const char *uplo, INTEGER const n, REAL *a, REAL *ainv, REAL *work, 
     //
     resid = Rlange("1", n, n, work, ldwork, rwork);
     //
-    resid = ((resid * rcond) / eps) / n.real();
+    resid = ((resid * rcond) / eps) / castREAL(n);
     //
     //     End of Rppt03
     //

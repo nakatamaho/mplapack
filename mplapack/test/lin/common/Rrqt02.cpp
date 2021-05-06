@@ -112,7 +112,7 @@ void Rrqt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     REAL anorm = Rlange("1", k, n, &a[((m - k + 1) - 1)], lda, rwork);
     REAL resid = Rlange("1", k, m, r[((m - k + 1) - 1) + ((n - m + 1) - 1) * ldr], lda, rwork);
     if (anorm > zero) {
-        result[1 - 1] = ((resid / (max((INTEGER)1, n)).real()) / anorm) / eps;
+        result[1 - 1] = ((resid / castREAL(max((INTEGER)1, n))) / anorm) / eps;
     } else {
         result[1 - 1] = zero;
     }
@@ -126,7 +126,7 @@ void Rrqt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     //
     resid = Rlansy("1", "Upper", m, r, lda, rwork);
     //
-    result[2 - 1] = (resid / (max((INTEGER)1, n)).real()) / eps;
+    result[2 - 1] = (resid / castREAL(max((INTEGER)1, n))) / eps;
     //
     //     End of Rrqt02
     //

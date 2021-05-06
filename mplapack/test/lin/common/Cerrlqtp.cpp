@@ -85,9 +85,9 @@ void Cerrlqtp(const char *path, INTEGER const nunit) {
     COMPLEX w[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / COMPLEX((i + j).real(), 0.0);
-            c[(i - 1) + (j - 1) * ldc] = 1.0 / COMPLEX((i + j).real(), 0.0);
-            t[(i - 1) + (j - 1) * ldt] = 1.0 / COMPLEX((i + j).real(), 0.0);
+            a[(i - 1) + (j - 1) * lda] = 1.0 / COMPLEX(castREAL(i + j), 0.0);
+            c[(i - 1) + (j - 1) * ldc] = 1.0 / COMPLEX(castREAL(i + j), 0.0);
+            t[(i - 1) + (j - 1) * ldt] = 1.0 / COMPLEX(castREAL(i + j), 0.0);
         }
         w[j - 1] = 0.0f;
     }

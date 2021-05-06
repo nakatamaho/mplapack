@@ -37,18 +37,12 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rlatb5(const char *path, INTEGER const imat, INTEGER const n, char *type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, char *dist) {
-    FEM_CMN_SVE(Rlatb5);
-    // SAVE
-    REAL &badc1 = sve.badc1;
-    REAL &badc2 = sve.badc2;
-    REAL &eps = sve.eps;
-    bool &first = sve.first;
-    REAL &large = sve.large;
-    REAL &small = sve.small;
-    //
-    if (is_called_first_time) {
-        first = true;
-    }
+    REAL badc1 = badc1;
+    REAL badc2 = badc2;
+    REAL eps = eps;
+    bool first = first;
+    REAL large = large;
+    REAL small = small;
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -80,32 +74,31 @@ void Rlatb5(const char *path, INTEGER const imat, INTEGER const n, char *type, I
     const REAL tenth = 0.1e+0;
     const REAL one = 1.0;
     const REAL shrink = 0.25e0;
-    if (first) {
-        first = false;
-        eps = Rlamch("Precision");
-        badc2 = tenth / eps;
-        badc1 = sqrt(badc2);
-        small = Rlamch("Safe minimum");
-        large = one / small;
-        //
-        //        If it looks like we're on a Cray, take the square root of
-        //        SMALL and LARGE to avoid overflow and underflow problems.
-        //
-        Rlabad(small, large);
-        small = shrink * (small / eps);
-        large = one / small;
-    }
+    eps = Rlamch("Precision");
+    badc2 = tenth / eps;
+    badc1 = sqrt(badc2);
+    small = Rlamch("Safe minimum");
+    large = one / small;
     //
-    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
+    //        If it looks like we're on a Cray, take the square root of
+    //        SMALL and LARGE to avoid overflow and underflow problems.
+    //
+    Rlabad(small, large);
+    small = shrink * (small / eps);
+    large = one / small;
+    //
+    char c2[2];
+    c2[0] = path[1];
+    c2[1] = path[2];
     //
     //     Set some parameters
     //
-    dist = "S";
+    *dist = 'S';
     mode = 3;
     //
     //     Set TYPE, the type of matrix to be generated.
     //
-    type = c2[(1 - 1)];
+    *type = c2[0];
     //
     //     Set the lower and upper bandwidths.
     //

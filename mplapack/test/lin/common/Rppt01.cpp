@@ -135,7 +135,7 @@ void Rppt01(const char *uplo, INTEGER const n, REAL *a, REAL *afac, REAL *rwork,
     //
     resid = Rlansp("1", uplo, n, afac, rwork);
     //
-    resid = ((resid / n.real()) / anorm) / eps;
+    resid = ((resid / castREAL(n)) / anorm) / eps;
     //
     //     End of Rppt01
     //

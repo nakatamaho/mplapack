@@ -112,7 +112,7 @@ void Cqlt02(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
     REAL anorm = Clange("1", m, k, &a[((n - k + 1) - 1) * lda], lda, rwork);
     REAL resid = Clange("1", n, k, l[((m - n + 1) - 1) + ((n - k + 1) - 1) * ldl], lda, rwork);
     if (anorm > zero) {
-        result[1 - 1] = ((resid / (max((INTEGER)1, m)).real()) / anorm) / eps;
+        result[1 - 1] = ((resid / castREAL(max((INTEGER)1, m))) / anorm) / eps;
     } else {
         result[1 - 1] = zero;
     }
@@ -126,7 +126,7 @@ void Cqlt02(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
     //
     resid = Clansy("1", "Upper", n, l, lda, rwork);
     //
-    result[2 - 1] = (resid / (max((INTEGER)1, m)).real()) / eps;
+    result[2 - 1] = (resid / castREAL(max((INTEGER)1, m))) / eps;
     //
     //     End of Cqlt02
     //

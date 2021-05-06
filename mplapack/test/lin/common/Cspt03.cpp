@@ -199,7 +199,7 @@ void Cspt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLE
     //
     resid = Clange("1", n, n, work, ldw, rwork);
     //
-    resid = ((resid * rcond) / eps) / n.real();
+    resid = ((resid * rcond) / eps) / castREAL(n);
     //
     //     End of Cspt03
     //

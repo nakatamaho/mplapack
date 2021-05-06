@@ -81,7 +81,7 @@ void Cpbt05(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1(zdum) = abs(zdum.real()) + abs(zdum.imag());
+    abs1(zdum) = abs(zdu castREAL(m)) + abs(zdum.imag());
     //     ..
     //     .. Executable Statements ..
     //

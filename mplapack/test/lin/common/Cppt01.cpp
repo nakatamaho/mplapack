@@ -160,7 +160,7 @@ void Cppt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *
         //
         kc = 1;
         for (k = 1; k <= n; k = k + 1) {
-            afac[kc - 1] = afac[kc - 1] - a[kc - 1].real();
+            afac[kc - 1] = afac[kc - 1] - castREAL(a[kc - 1]);
             for (i = k + 1; i <= n; i = i + 1) {
                 afac[(kc + i - k) - 1] = afac[(kc + i - k) - 1] - a[(kc + i - k) - 1];
             }
@@ -172,7 +172,7 @@ void Cppt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *
     //
     resid = Clanhp("1", uplo, n, afac, rwork);
     //
-    resid = ((resid / n.real()) / anorm) / eps;
+    resid = ((resid / castREAL(n)) / anorm) / eps;
     //
     //     End of Cppt01
     //

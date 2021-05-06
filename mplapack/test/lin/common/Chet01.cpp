@@ -112,11 +112,11 @@ void Chet01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
             for (i = 1; i <= j - 1; i = i + 1) {
                 c[(i - 1) + (j - 1) * ldc] = c[(i - 1) + (j - 1) * ldc] - a[(i - 1) + (j - 1) * lda];
             }
-            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - a[(j - 1) + (j - 1) * lda].real();
+            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - castREAL(a[(j - 1) + (j - 1) * lda]);
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - a[(j - 1) + (j - 1) * lda].real();
+            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - castREAL(a[(j - 1) + (j - 1) * lda]);
             for (i = j + 1; i <= n; i = i + 1) {
                 c[(i - 1) + (j - 1) * ldc] = c[(i - 1) + (j - 1) * ldc] - a[(i - 1) + (j - 1) * lda];
             }
@@ -132,7 +132,7 @@ void Chet01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
             resid = one / eps;
         }
     } else {
-        resid = ((resid / n.real()) / anorm) / eps;
+        resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
     //     End of Chet01

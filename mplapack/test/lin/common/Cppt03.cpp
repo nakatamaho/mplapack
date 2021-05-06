@@ -157,7 +157,7 @@ void Cppt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLE
     //
     resid = Clange("1", n, n, work, ldwork, rwork);
     //
-    resid = ((resid * rcond) / eps) / n.real();
+    resid = ((resid * rcond) / eps) / castREAL(n);
     //
     //     End of Cppt03
     //

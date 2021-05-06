@@ -183,12 +183,12 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 ia = 1;
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d[i - 1] = a[ia - 1].real();
+                    d[i - 1] = castREAL(a[ia - 1]);
                     e[i - 1] = a[(ia + 1) - 1];
                     ia += 2;
                 }
                 if (n > 0) {
-                    d[n - 1] = a[ia - 1].real();
+                    d[n - 1] = castREAL(a[ia - 1]);
                 }
             } else {
                 //

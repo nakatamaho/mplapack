@@ -110,7 +110,7 @@ void Rtbt03(const char *uplo, const char *trans, const char *diag, INTEGER const
         Rcopy(n, &x[(j - 1) * ldx], 1, work, 1);
         ix = iRamax(n, work, 1);
         xnorm = max(one, abs(x[(ix - 1) + (j - 1) * ldx]));
-        xscal = (one / xnorm) / (kd + 1).real();
+        xscal = (one / xnorm) / castREAL(kd + 1);
         Rscal(n, xscal, work, 1);
         Rtbmv(uplo, trans, diag, n, kd, ab, ldab, work, 1);
         Raxpy(n, -scale * xscal, &b[(j - 1) * ldb], 1, work, 1);

@@ -80,7 +80,7 @@ void Cget07(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1(zdum) = abs(zdum.real()) + abs(zdum.imag());
+    abs1(zdum) = abs(zdu castREAL(m)) + abs(zdum.imag());
     //     ..
     //     .. Executable Statements ..
     //

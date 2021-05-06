@@ -127,7 +127,7 @@ void Cget01(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
             resid = one / eps;
         }
     } else {
-        resid = ((resid / n.real()) / anorm) / eps;
+        resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
     //     End of Cget01

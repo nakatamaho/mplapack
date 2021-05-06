@@ -283,7 +283,7 @@ void Cdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                     //                 NORM1(B - A*X)/(NORM1(A)*NORM1(X)*EPS) < THRES
                     //                 (Cf. the linear solver testing routines)
                     //
-                    if ((thresh <= 0.00f) || ((iter >= 0) && (n > 0) && (result[1 - 1] >= sqrt(n.real()))) || ((iter < 0) && (result[1 - 1] >= thresh))) {
+                    if ((thresh <= 0.00f) || ((iter >= 0) && (n > 0) && (result[1 - 1] >= sqrt(castREAL(n)))) || ((iter < 0) && (result[1 - 1] >= thresh))) {
                         //
                         if (nfail == 0 && nerrs == 0) {
                             write(nout, "(/,1x,a3,':  positive definite dense matrices')"), "ZPO";

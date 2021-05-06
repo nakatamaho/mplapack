@@ -108,7 +108,7 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     //     Number of row blocks in Clatsqr
     //
-    INTEGER nrb = max((INTEGER)1, ceiling((m - n).real() / (mb1 - n).real()));
+    INTEGER nrb = max((INTEGER)1, ceiling(castREAL(m - n) / castREAL(mb1 - n)));
     //
     //     Begin determine LWORK for the array WORK and allocate memory.
     //

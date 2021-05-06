@@ -73,7 +73,7 @@ void Cqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, COMPLEX *a, I
     for (j = 1; j <= n; j = j + 1) {
         Clarnv(2, iseed, m, &a[(j - 1) * lda]);
         if (j <= m) {
-            a[(j - 1) + (j - 1) * lda] += COMPLEX(sign(RCasum(m, &a[(j - 1) * lda], 1), a[(j - 1) + (j - 1) * lda].real()));
+            a[(j - 1) + (j - 1) * lda] += COMPLEX(sign(RCasum(m, &a[(j - 1) * lda], 1), castREAL(a[(j - 1) + (j - 1) * lda])));
         }
     }
     //

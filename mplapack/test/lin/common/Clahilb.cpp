@@ -130,20 +130,20 @@ void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda,
     if (Mlsamen(2, c2, "SY")) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= n; i = i + 1) {
-                a[(i - 1) + (j - 1) * lda] = d1[(mod(j - 1) + ((size_d) + 1) - 1) * ldd1] * (m.real() / (i + j - 1)) * d1[(mod(i - 1) + ((size_d) + 1) - 1) * ldd1];
+                a[(i - 1) + (j - 1) * lda] = d1[(mod(j - 1) + ((size_d) + 1) - 1) * ldd1] * (castREAL(m) / (i + j - 1)) * d1[(mod(i - 1) + ((size_d) + 1) - 1) * ldd1];
             }
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= n; i = i + 1) {
-                a[(i - 1) + (j - 1) * lda] = d1[(mod(j - 1) + ((size_d) + 1) - 1) * ldd1] * (m.real() / (i + j - 1)) * d2[(mod(i - 1) + ((size_d) + 1) - 1) * ldd2];
+                a[(i - 1) + (j - 1) * lda] = d1[(mod(j - 1) + ((size_d) + 1) - 1) * ldd1] * (castREAL(m) / (i + j - 1)) * d2[(mod(i - 1) + ((size_d) + 1) - 1) * ldd2];
             }
         }
     }
     //
     //     Generate matrix B as simply the first NRHS columns of M * the
     //     identity.
-    COMPLEX tmp = m.real();
+    COMPLEX tmp = castREAL(m);
     Claset("Full", n, nrhs, (0.0, 0.0), tmp, b, ldb);
     //
     //     Generate the true solutions in X.  Because B = the first NRHS

@@ -249,7 +249,7 @@ void Rdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                 //                NORMI(B - A*X)/(NORMI(A)*NORMI(X)*EPS) < THRES
                 //              (Cf. the linear solver testing routines)
                 //
-                if ((thresh <= 0.00f) || ((iter >= 0) && (n > 0) && (result[1 - 1] >= sqrt(n.real()))) || ((iter < 0) && (result[1 - 1] >= thresh))) {
+                if ((thresh <= 0.00f) || ((iter >= 0) && (n > 0) && (result[1 - 1] >= sqrt(castREAL(n)))) || ((iter < 0) && (result[1 - 1] >= thresh))) {
                     //
                     if (nfail == 0 && nerrs == 0) {
                         write(nout, "(/,1x,a3,':  General dense matrices')"), "DGE";

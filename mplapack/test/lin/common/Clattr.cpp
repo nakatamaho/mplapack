@@ -374,7 +374,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //        In type 12, the offdiagonal elements are small (CNORM(j) < 1).
         //
         Clarnv(2, iseed, n, b);
-        tscal = one / max(one, (n - 1).real());
+        tscal = one / max(one, castREAL(n - 1));
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
                 Clarnv(4, iseed, j - 1, &a[(j - 1) * lda]);
@@ -478,7 +478,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //        overflow when dividing by T(j,j).  To control the amount of
         //        scaling needed, the matrix is bidiagonal.
         //
-        texp = one / max(one, (n - 1).real());
+        texp = one / max(one, castREAL(n - 1));
         tscal = pow(smlnum, texp);
         Clarnv(4, iseed, n, b);
         if (upper) {
@@ -551,26 +551,26 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         texp = one;
         if (upper) {
             for (j = n; j >= 2; j = j - 2) {
-                a[(j - 1) * lda] = -tscal / (n + 1).real();
+                a[(j - 1) * lda] = -tscal / castREAL(n + 1);
                 a[(j - 1) + (j - 1) * lda] = one;
                 b[j - 1] = texp * (one - ulp);
-                a[((j - 1) - 1) * lda] = -(tscal / (n + 1).real()) / (n + 2).real();
+                a[((j - 1) - 1) * lda] = -(tscal / castREAL(n + 1)) / castREAL(n + 2);
                 a[((j - 1) - 1) + ((j - 1) - 1) * lda] = one;
-                b[(j - 1) - 1] = texp * (n * n + n - 1).real();
+                b[(j - 1) - 1] = texp * castREAL(n * n + n - 1);
                 texp = texp * 2.0;
             }
-            b[1 - 1] = ((n + 1).real() / (n + 2).real()) * tscal;
+            b[1 - 1] = (castREAL(n + 1) / castREAL(n + 2)) * tscal;
         } else {
             for (j = 1; j <= n - 1; j = j + 2) {
-                a[(n - 1) + (j - 1) * lda] = -tscal / (n + 1).real();
+                a[(n - 1) + (j - 1) * lda] = -tscal / castREAL(n + 1);
                 a[(j - 1) + (j - 1) * lda] = one;
                 b[j - 1] = texp * (one - ulp);
-                a[(n - 1) + ((j + 1) - 1) * lda] = -(tscal / (n + 1).real()) / (n + 2).real();
+                a[(n - 1) + ((j + 1) - 1) * lda] = -(tscal / castREAL(n + 1)) / castREAL(n + 2);
                 a[((j + 1) - 1) + ((j + 1) - 1) * lda] = one;
-                b[(j + 1) - 1] = texp * (n * n + n - 1).real();
+                b[(j + 1) - 1] = texp * castREAL(n * n + n - 1);
                 texp = texp * 2.0;
             }
-            b[n - 1] = ((n + 1).real() / (n + 2).real()) * tscal;
+            b[n - 1] = (castREAL(n + 1) / castREAL(n + 2)) * tscal;
         }
         //
     } else if (imat == 18) {
@@ -608,8 +608,8 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //        norms will exceed BIGNUM.
         //        1/3/91:  Clatrs no longer can handle this case
         //
-        tleft = bignum / max(one, (n - 1).real());
-        tscal = bignum * ((n - 1).real() / max(one, n.real()));
+        tleft = bignum / max(one, castREAL(n - 1));
+        tscal = bignum * (castREAL(n - 1) / max(one, castREAL(n)));
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
                 Clarnv(5, iseed, j, &a[(j - 1) * lda]);

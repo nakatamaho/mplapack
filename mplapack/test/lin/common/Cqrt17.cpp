@@ -139,7 +139,7 @@ REAL Cqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER co
         }
     }
     //
-    return_value = err / (Rlamch("Epsilon") * (max({m, n, nrhs})).real());
+    return_value = err / (Rlamch("Epsilon") * castREAL(max({m, n, nrhs})));
     return return_value;
     //
     //     End of Cqrt17

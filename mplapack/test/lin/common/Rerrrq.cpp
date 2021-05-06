@@ -86,8 +86,8 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     REAL x[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
-            af[(i - 1) + (j - 1) * ldaf] = 1.0 / (i + j).real();
+            a[(i - 1) + (j - 1) * lda] = 1.0 / castREAL(i + j);
+            af[(i - 1) + (j - 1) * ldaf] = 1.0 / castREAL(i + j);
         }
         b[j - 1] = 0.0;
         w[j - 1] = 0.0;

@@ -173,7 +173,7 @@ void Rqlt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
             //           Compute error in the difference
             //
             resid = Rlange("1", mc, nc, cc, lda, rwork);
-            result[((iside - 1) * 2 + itrans) - 1] = resid / ((max((INTEGER)1, m)).real() * cnorm * eps);
+            result[((iside - 1) * 2 + itrans) - 1] = resid / castREAL((max((INTEGER)1, m)) * cnorm * eps);
             //
         }
     }

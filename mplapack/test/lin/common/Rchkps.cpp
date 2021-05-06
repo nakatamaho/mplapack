@@ -163,7 +163,7 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     goto statement_130;
                 }
                 //
-                rank = ceiling((n * rankval[irank - 1].real()) / 100.e+0);
+                rank = ceiling((n * castREAL(rankval[irank - 1])) / 100.e+0);
                 //
                 //           Do first for UPLO = 'U', then for UPLO = 'L'
                 //

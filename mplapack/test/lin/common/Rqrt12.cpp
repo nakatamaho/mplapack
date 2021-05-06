@@ -149,7 +149,7 @@ REAL Rqrt12(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     //     Compare s and singular values of work
     //
     Raxpy(mn, -one, s, 1, &work[(m * n + 1) - 1], 1);
-    return_value = Rasum(mn, &work[(m * n + 1) - 1], 1) / (Rlamch("Epsilon") * (max(m, n)).real());
+    return_value = Rasum(mn, &work[(m * n + 1) - 1], 1) / (Rlamch("Epsilon") * castREAL(max(m, n)));
     if (nrmsvl != zero) {
         return_value = return_value / nrmsvl;
     }

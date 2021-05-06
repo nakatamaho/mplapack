@@ -267,7 +267,7 @@ void Clattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
         x = sqrt(cndnum) - one / sqrt(cndnum);
         if (n > 2) {
-            y = sqrt(two / (n - 2).real()) * x;
+            y = sqrt(two / castREAL(n - 2)) * x;
         } else {
             y = zero;
         }
@@ -424,7 +424,7 @@ void Clattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //        In type 12, the offdiagonal elements are small (CNORM(j) < 1).
         //
         Clarnv(2, iseed, n, b);
-        tscal = one / max(one, (n - 1).real());
+        tscal = one / max(one, castREAL(n - 1));
         if (upper) {
             jc = 1;
             for (j = 1; j <= n; j = j + 1) {
@@ -536,7 +536,7 @@ void Clattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //        overflow when dividing by T(j,j).  To control the amount of
         //        scaling needed, the matrix is bidiagonal.
         //
-        texp = one / max(one, (n - 1).real());
+        texp = one / max(one, castREAL(n - 1));
         tscal = pow(smlnum, texp);
         Clarnv(4, iseed, n, b);
         if (upper) {
@@ -614,31 +614,31 @@ void Clattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         if (upper) {
             jc = (n - 1) * n / 2 + 1;
             for (j = n; j >= 2; j = j - 2) {
-                ap[jc - 1] = -tscal / (n + 1).real();
+                ap[jc - 1] = -tscal / castREAL(n + 1);
                 ap[(jc + j - 1) - 1] = one;
                 b[j - 1] = texp * (one - ulp);
                 jc = jc - j + 1;
-                ap[jc - 1] = -(tscal / (n + 1).real()) / (n + 2).real();
+                ap[jc - 1] = -(tscal / castREAL(n + 1)) / castREAL(n + 2);
                 ap[(jc + j - 2) - 1] = one;
-                b[(j - 1) - 1] = texp * (n * n + n - 1).real();
+                b[(j - 1) - 1] = texp * castREAL(n * n + n - 1);
                 texp = texp * two;
                 jc = jc - j + 2;
             }
-            b[1 - 1] = ((n + 1).real() / (n + 2).real()) * tscal;
+            b[1 - 1] = (castREAL(n + 1) / castREAL(n + 2)) * tscal;
         } else {
             jc = 1;
             for (j = 1; j <= n - 1; j = j + 2) {
-                ap[(jc + n - j) - 1] = -tscal / (n + 1).real();
+                ap[(jc + n - j) - 1] = -tscal / castREAL(n + 1);
                 ap[jc - 1] = one;
                 b[j - 1] = texp * (one - ulp);
                 jc += n - j + 1;
-                ap[(jc + n - j - 1) - 1] = -(tscal / (n + 1).real()) / (n + 2).real();
+                ap[(jc + n - j - 1) - 1] = -(tscal / castREAL(n + 1)) / castREAL(n + 2);
                 ap[jc - 1] = one;
-                b[(j + 1) - 1] = texp * (n * n + n - 1).real();
+                b[(j + 1) - 1] = texp * castREAL(n * n + n - 1);
                 texp = texp * two;
                 jc += n - j;
             }
-            b[n - 1] = ((n + 1).real() / (n + 2).real()) * tscal;
+            b[n - 1] = (castREAL(n + 1) / castREAL(n + 2)) * tscal;
         }
         //
     } else if (imat == 18) {
@@ -680,8 +680,8 @@ void Clattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //        norms will exceed BIGNUM.
         //        1/3/91:  Clatps no longer can handle this case
         //
-        tleft = bignum / max(one, (n - 1).real());
-        tscal = bignum * ((n - 1).real() / max(one, n.real()));
+        tleft = bignum / max(one, castREAL(n - 1));
+        tscal = bignum * (castREAL(n - 1) / max(one, castREAL(n)));
         if (upper) {
             jc = 1;
             for (j = 1; j <= n; j = j + 1) {

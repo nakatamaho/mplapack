@@ -137,11 +137,11 @@ void Cpot01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
             for (i = 1; i <= j - 1; i = i + 1) {
                 afac[(i - 1) + (j - 1) * ldafac] = afac[(i - 1) + (j - 1) * ldafac] - a[(i - 1) + (j - 1) * lda];
             }
-            afac[(j - 1) + (j - 1) * ldafac] = afac[(j - 1) + (j - 1) * ldafac] - a[(j - 1) + (j - 1) * lda].real();
+            afac[(j - 1) + (j - 1) * ldafac] = afac[(j - 1) + (j - 1) * ldafac] - castREAL(a[(j - 1) + (j - 1) * lda]);
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            afac[(j - 1) + (j - 1) * ldafac] = afac[(j - 1) + (j - 1) * ldafac] - a[(j - 1) + (j - 1) * lda].real();
+            afac[(j - 1) + (j - 1) * ldafac] = afac[(j - 1) + (j - 1) * ldafac] - castREAL(a[(j - 1) + (j - 1) * lda]);
             for (i = j + 1; i <= n; i = i + 1) {
                 afac[(i - 1) + (j - 1) * ldafac] = afac[(i - 1) + (j - 1) * ldafac] - a[(i - 1) + (j - 1) * lda];
             }
@@ -152,7 +152,7 @@ void Cpot01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     //
     resid = Clanhe("1", uplo, n, afac, ldafac, rwork);
     //
-    resid = ((resid / n.real()) / anorm) / eps;
+    resid = ((resid / castREAL(n)) / anorm) / eps;
     //
     //     End of Cpot01
     //

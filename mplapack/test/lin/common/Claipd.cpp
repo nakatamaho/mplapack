@@ -62,7 +62,7 @@ void Claipd(INTEGER const n, COMPLEX *a, INTEGER const inda, INTEGER const vinda
     INTEGER ixa = inda;
     INTEGER i = 0;
     for (i = 1; i <= n; i = i + 1) {
-        a[ia - 1] = COMPLEX(a[ia - 1].real(), bignum);
+        a[ia - 1] = COMPLEX(castREAL(a[ia - 1]), bignum);
         ia += ixa;
         ixa += vinda;
     }

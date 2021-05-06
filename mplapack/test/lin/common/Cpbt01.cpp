@@ -171,7 +171,7 @@ void Cpbt01(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *a, INT
     //
     resid = Clanhb("1", uplo, n, kd, afac, ldafac, rwork);
     //
-    resid = ((resid / n.real()) / anorm) / eps;
+    resid = ((resid / castREAL(n)) / anorm) / eps;
     //
     //     End of Cpbt01
     //

@@ -152,7 +152,7 @@ void Rpbt01(const char *uplo, INTEGER const n, INTEGER const kd, REAL *a, INTEGE
     //
     resid = Rlansb("I", uplo, n, kd, afac, ldafac, rwork);
     //
-    resid = ((resid / n.real()) / anorm) / eps;
+    resid = ((resid / castREAL(n)) / anorm) / eps;
     //
     //     End of Rpbt01
     //

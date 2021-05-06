@@ -123,13 +123,13 @@ void Chpt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, INTEGE
             for (i = 1; i <= j - 1; i = i + 1) {
                 c[(i - 1) + (j - 1) * ldc] = c[(i - 1) + (j - 1) * ldc] - a[(jc + i) - 1];
             }
-            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - a[(jc + j) - 1].real();
+            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - castREAL(a[(jc + j) - 1]);
             jc += j;
         }
     } else {
         jc = 1;
         for (j = 1; j <= n; j = j + 1) {
-            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - a[jc - 1].real();
+            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - castREAL(a[jc - 1]);
             for (i = j + 1; i <= n; i = i + 1) {
                 c[(i - 1) + (j - 1) * ldc] = c[(i - 1) + (j - 1) * ldc] - a[(jc + i - j) - 1];
             }
@@ -146,7 +146,7 @@ void Chpt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, INTEGE
             resid = one / eps;
         }
     } else {
-        resid = ((resid / n.real()) / anorm) / eps;
+        resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
     //     End of Chpt01

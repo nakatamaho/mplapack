@@ -37,9 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Csyt01_3(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, COMPLEX *e, INTEGER *ipiv, COMPLEX *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
-    a([lda * star]);
-    afac([ldafac * star]);
-    c([ldc * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -124,7 +121,7 @@ void Csyt01_3(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
             resid = one / eps;
         }
     } else {
-        resid = ((resid / n.real()) / anorm) / eps;
+        resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
     //     b) Convert to factor of L (or U)

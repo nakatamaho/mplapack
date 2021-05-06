@@ -162,7 +162,7 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     goto statement_130;
                 }
                 //
-                rank = ceiling((n * rankval[irank - 1].real()) / 100.e+0f);
+                rank = ceiling((n * castREAL(rankval[irank - 1])) / 100.e+0f);
                 //
                 //           Do first for UPLO = 'U', then for UPLO = 'L'
                 //

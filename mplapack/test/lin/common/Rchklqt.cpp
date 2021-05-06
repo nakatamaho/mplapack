@@ -36,7 +36,10 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rchklqt(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nout) {
+    common cmn;
     common_write write(cmn);
     //
     //  -- LAPACK test routine --
@@ -66,8 +69,11 @@ void Rchklqt(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mv
     //
     //     Initialize constants
     //
-    char path[3] = "D";
-    path[(2 - 1) + (3 - 1) * ldpath] = "TQ";
+    char path[3];
+    path[0]= 'D';
+    path[1]= 'T';
+    path[2]= 'Q';        
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -77,7 +83,6 @@ void Rchklqt(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mv
     if (tsterr) {
         Rerrlqt(path, nout);
     }
-    cmn.infot = 0;
     //
     //     Do for each value of M in MVAL.
     //
@@ -118,7 +123,8 @@ void Rchklqt(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mv
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            write(nout, "(' M=',i5,', N=',i5,', NB=',i4,' test(',i2,')=',g12.5)"), m, n, nb, t, result(t);
+                            sprintnum_short(buf, result[t - 1]);
+                            write(nout, "(' M=',i5,', N=',i5,', NB=',i4,' test(',i2,')=',a)"), m, n, nb, t, buf;
                             nfail++;
                         }
                     }

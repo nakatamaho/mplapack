@@ -37,12 +37,12 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rerrorhr_col(const char *path, INTEGER const nunit) {
+  common cmn;
     common_write write(cmn);
-    // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
+    INTEGER infot;
+    INTEGER nout;
+    bool ok;
+    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -81,10 +81,12 @@ void Rerrorhr_col(const char *path, INTEGER const nunit) {
     REAL a[nmax * nmax];
     REAL t[nmax * nmax];
     REAL d[nmax];
+    INTEGER lda = nmax;
+    INTEGER ldt = nmax;    
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.e+0 / (i + j).real();
-            t[(i - 1) + (j - 1) * ldt] = 1.e+0 / (i + j).real();
+            a[(i - 1) + (j - 1) * lda] = 1.e+0 / castREAL(i + j);
+            t[(i - 1) + (j - 1) * ldt] = 1.e+0 / castREAL(i + j);
         }
         d[j - 1] = 0.e+0;
     }

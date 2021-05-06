@@ -85,9 +85,9 @@ void Cerrtsqr(const char *path, INTEGER const nunit) {
     COMPLEX w[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
-            c[(i - 1) + (j - 1) * ldc] = 1.0 / (i + j).real();
-            t[(i - 1) + (j - 1) * ldt] = 1.0 / (i + j).real();
+            a[(i - 1) + (j - 1) * lda] = 1.0 / castREAL(i + j);
+            c[(i - 1) + (j - 1) * ldc] = 1.0 / castREAL(i + j);
+            t[(i - 1) + (j - 1) * ldt] = 1.0 / castREAL(i + j);
         }
         w[j - 1] = 0.0;
     }

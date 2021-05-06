@@ -167,7 +167,7 @@ REAL Rqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         //
     }
     //
-    return_value = err / ((max({m, n, nrhs})).real() * Rlamch("Epsilon"));
+    return_value = err / (castREAL(max({m, n, nrhs})) * Rlamch("Epsilon"));
     //
     return return_value;
     //

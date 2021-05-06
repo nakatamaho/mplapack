@@ -114,7 +114,7 @@ void Rtpt03(const char *uplo, const char *trans, const char *diag, INTEGER const
         Rcopy(n, &x[(j - 1) * ldx], 1, work, 1);
         ix = iRamax(n, work, 1);
         xnorm = max(one, abs(x[(ix - 1) + (j - 1) * ldx]));
-        xscal = (one / xnorm) / n.real();
+        xscal = (one / xnorm) / castREAL(n);
         Rscal(n, xscal, work, 1);
         Rtpmv(uplo, trans, diag, n, ap, work, 1);
         Raxpy(n, -scale * xscal, &b[(j - 1) * ldb], 1, work, 1);

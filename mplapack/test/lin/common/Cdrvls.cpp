@@ -313,7 +313,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     //
                                     if (ncols > 0) {
                                         Clarnv(2, iseed, ncols * nrhs, work);
-                                        CRscal(ncols * nrhs, one / ncols.real(), work, 1);
+                                        CRscal(ncols * nrhs, one / castREAL(ncols), work, 1);
                                     }
                                     Cgemm(trans, "No transpose", nrows, nrhs, ncols, cone, copya, lda, work, ldwork, czero, b, ldb);
                                     Clacpy("Full", nrows, nrhs, b, ldb, copyb, ldb);
@@ -396,7 +396,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         //
                                         if (ncols > 0) {
                                             Clarnv(2, iseed, ncols * nrhs, work);
-                                            Cscal(ncols * nrhs, cone / ncols.real(), work, 1);
+                                            Cscal(ncols * nrhs, cone / castREAL(ncols), work, 1);
                                         }
                                         Cgemm(trans, "No transpose", nrows, nrhs, ncols, cone, copya, lda, work, ldwork, czero, b, ldb);
                                         Clacpy("Full", nrows, nrhs, b, ldb, copyb, ldb);
@@ -541,7 +541,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //
                             if (rank > 0) {
                                 Raxpy(mnmin, -one, copys, 1, s, 1);
-                                result[7 - 1] = Rasum(mnmin, s, 1) / Rasum(mnmin, copys, 1) / (eps * mnmin.real());
+                                result[7 - 1] = Rasum(mnmin, s, 1) / Rasum(mnmin, copys, 1) / (eps * castREAL(mnmin));
                             } else {
                                 result[7 - 1] = zero;
                             }
@@ -585,7 +585,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //
                             if (rank > 0) {
                                 Raxpy(mnmin, -one, copys, 1, s, 1);
-                                result[11 - 1] = Rasum(mnmin, s, 1) / Rasum(mnmin, copys, 1) / (eps * mnmin.real());
+                                result[11 - 1] = Rasum(mnmin, s, 1) / Rasum(mnmin, copys, 1) / (eps * castREAL(mnmin));
                             } else {
                                 result[11 - 1] = zero;
                             }

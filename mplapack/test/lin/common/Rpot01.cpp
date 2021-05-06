@@ -141,7 +141,7 @@ void Rpot01(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     //
     resid = Rlansy("1", uplo, n, afac, ldafac, rwork);
     //
-    resid = ((resid / n.real()) / anorm) / eps;
+    resid = ((resid / castREAL(n)) / anorm) / eps;
     //
     //     End of Rpot01
     //

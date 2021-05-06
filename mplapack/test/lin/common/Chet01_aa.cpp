@@ -158,7 +158,7 @@ void Chet01_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
             resid = one / eps;
         }
     } else {
-        resid = ((resid / n.real()) / anorm) / eps;
+        resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
     //     End of Chet01_aa

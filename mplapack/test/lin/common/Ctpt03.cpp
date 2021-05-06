@@ -112,7 +112,7 @@ void Ctpt03(const char *uplo, const char *trans, const char *diag, INTEGER const
         Ccopy(n, &x[(j - 1) * ldx], 1, work, 1);
         ix = iCamax(n, work, 1);
         xnorm = max(one, abs(x[(ix - 1) + (j - 1) * ldx]));
-        xscal = (one / xnorm) / n.real();
+        xscal = (one / xnorm) / castREAL(n);
         CRscal(n, xscal, work, 1);
         Ctpmv(uplo, trans, diag, n, ap, work, 1);
         Caxpy(n, COMPLEX(-scale * xscal), &b[(j - 1) * ldb], 1, work, 1);

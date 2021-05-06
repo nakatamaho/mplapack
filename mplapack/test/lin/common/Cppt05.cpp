@@ -80,7 +80,7 @@ void Cppt05(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1(zdum) = abs(zdum.real()) + abs(zdum.imag());
+    abs1(zdum) = abs(zdu castREAL(m)) + abs(zdum.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -140,7 +140,7 @@ void Cppt05(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
                 for (j = 1; j <= i - 1; j = j + 1) {
                     tmp += abs1(ap[(jc + j) - 1]) * abs1(x[(j - 1) + (k - 1) * ldx]);
                 }
-                tmp += abs(ap[(jc + i) - 1].real()) * abs1(x[(i - 1) + (k - 1) * ldx]);
+                tmp += abs(castREAL(ap[(jc + i) - 1])) * abs1(x[(i - 1) + (k - 1) * ldx]);
                 jc += i + i;
                 for (j = i + 1; j <= n; j = j + 1) {
                     tmp += abs1(ap[jc - 1]) * abs1(x[(j - 1) + (k - 1) * ldx]);
@@ -152,7 +152,7 @@ void Cppt05(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
                     tmp += abs1(ap[jc - 1]) * abs1(x[(j - 1) + (k - 1) * ldx]);
                     jc += n - j;
                 }
-                tmp += abs(ap[jc - 1].real()) * abs1(x[(i - 1) + (k - 1) * ldx]);
+                tmp += abs(castREAL(ap[jc - 1])) * abs1(x[(i - 1) + (k - 1) * ldx]);
                 for (j = i + 1; j <= n; j = j + 1) {
                     tmp += abs1(ap[(jc + j - i) - 1]) * abs1(x[(j - 1) + (k - 1) * ldx]);
                 }

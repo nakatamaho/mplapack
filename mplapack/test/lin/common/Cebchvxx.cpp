@@ -54,7 +54,7 @@ void Cebchvxx(REAL const thresh, const char *path) {
     //
     //     .. Statement Function Definitions ..
     COMPLEX zdum = 0.0;
-    abs1(zdum) = abs(zdum.real()) + abs(zdum.imag());
+    abs1(zdum) = abs(zdu castREAL(m)) + abs(zdum.imag());
     //
     //     .. Parameters ..
     //
@@ -141,7 +141,7 @@ void Cebchvxx(REAL const thresh, const char *path) {
         kl = n - 1;
         ku = n - 1;
         nrhs = n;
-        m = max(sqrt(n.real()), 10.0);
+        m = max(sqrt(castREAL(n)), 10.0);
         //
         //        Generate the Hilbert matrix, its inverse, and the
         //        right hand side, all scaled by the LCM(1,..,2N-1).
