@@ -284,7 +284,6 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     for (inb = 1; inb <= nnb; inb = inb + 1) {
                         nb = nbval[inb - 1];
-                        xlaenv(1, nb);
                         //
                         //                    Compute the L*L' or U'*U factorization of the band
                         //                    matrix.

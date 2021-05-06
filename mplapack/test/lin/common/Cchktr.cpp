@@ -186,7 +186,6 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //                 Do for each blocksize in NBVAL
                     //
                     nb = nbval[inb - 1];
-                    xlaenv(1, nb);
                     //
                     //+    TEST 1
                     //                 Form the inverse of A.

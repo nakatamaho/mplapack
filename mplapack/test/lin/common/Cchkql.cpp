@@ -125,7 +125,6 @@ void Cchkql(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         Cerrql(path, nout);
     }
     cmn.infot = 0;
-    xlaenv(2, 2);
     //
     lda = nmax;
     lwork = nmax * max(nmax, nrhs);
@@ -189,9 +188,7 @@ void Cchkql(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //
                     for (inb = 1; inb <= nnb; inb = inb + 1) {
                         nb = nbval[inb - 1];
-                        xlaenv(1, nb);
                         nx = nxval[inb - 1];
-                        xlaenv(3, nx);
                         for (i = 1; i <= ntests; i = i + 1) {
                             result[i - 1] = zero;
                         }
