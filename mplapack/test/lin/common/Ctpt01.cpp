@@ -97,7 +97,7 @@ void Ctpt01(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, CO
             //
             //           Form the j-th column of A*AINV.
             //
-            Ctpmv("Upper", "No transpose", diag, j, ap, ainvp[jc - 1], 1);
+            Ctpmv("Upper", "No transpose", diag, j, ap, &ainvp[jc - 1], 1);
             //
             //           Subtract 1 from the diagonal to form A*AINV - I.
             //
@@ -113,7 +113,7 @@ void Ctpt01(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, CO
             //
             //           Form the j-th column of A*AINV.
             //
-            Ctpmv("Lower", "No transpose", diag, n - j + 1, &ap[jc - 1], ainvp[jc - 1], 1);
+            Ctpmv("Lower", "No transpose", diag, n - j + 1, &ap[jc - 1], &ainvp[jc - 1], 1);
             //
             //           Subtract 1 from the diagonal to form A*AINV - I.
             //
@@ -126,7 +126,7 @@ void Ctpt01(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, CO
     //
     resid = Clantp("1", uplo, "Non-unit", n, ainvp, rwork);
     //
-    resid = ((resid * rcond) / n.real()) / eps;
+    resid = ((resid * rcond) / castREAL(n)) / eps;
     //
     //     End of Ctpt01
     //

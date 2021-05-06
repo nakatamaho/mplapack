@@ -37,12 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Clqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *q, COMPLEX *l, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    a([lda * star]);
-    af([lda * star]);
-    q([lda * star]);
-    l([lda * star]);
-    work([lwork]);
-    // COMMON srnamc
     //
     //
     //  -- LAPACK test routine --
@@ -72,6 +66,9 @@ void Clqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     //     ..
     //     .. Executable Statements ..
     //
+    INTEGER ldaf = lda;
+    INTEGER ldq = lda;
+    INTEGER ldl = lda;
     INTEGER minmn = min(m, n);
     REAL eps = Rlamch("Epsilon");
     //
@@ -89,7 +86,7 @@ void Clqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     const COMPLEX rogue = COMPLEX(-1.0e+10, -1.0e+10);
     Claset("Full", n, n, rogue, rogue, q, lda);
     if (n > 1) {
-        Clacpy("Upper", m, n - 1, af[(2 - 1) * ldaf], lda, &q[(2 - 1) * ldq], lda);
+        Clacpy("Upper", m, n - 1, &af[(2 - 1) * ldaf], lda, &q[(2 - 1) * ldq], lda);
     }
     //
     //     Generate the n-by-n matrix Q
@@ -112,7 +109,7 @@ void Clqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     REAL anorm = Clange("1", m, n, a, lda, rwork);
     REAL resid = Clange("1", m, n, l, lda, rwork);
     if (anorm > zero) {
-        result[1 - 1] = ((resid / (max((INTEGER)1, n)).real()) / anorm) / eps;
+        result[1 - 1] = ((resid / castREAL(max((INTEGER)1, n))) / anorm) / eps;
     } else {
         result[1 - 1] = zero;
     }
@@ -126,7 +123,7 @@ void Clqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     //
     resid = Clansy("1", "Upper", n, l, lda, rwork);
     //
-    result[2 - 1] = (resid / (max((INTEGER)1, n)).real()) / eps;
+    result[2 - 1] = (resid / castREAL(max((INTEGER)1, n))) / eps;
     //
     //     End of Clqt01
     //

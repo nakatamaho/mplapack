@@ -37,10 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rlahilb(INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *work, INTEGER &info) {
-    a([lda * n]);
-    x([ldx * nrhs]);
-    b([ldb * nrhs]);
-    work([n]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -109,25 +105,25 @@ void Rlahilb(INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, RE
     INTEGER j = 0;
     for (j = 1; j <= n; j = j + 1) {
         for (i = 1; i <= n; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = m.real() / (i + j - 1);
+            a[(i - 1) + (j - 1) * lda] = castREAL(m) / castREAL(i + j - 1);
         }
     }
     //
     //     Generate matrix B as simply the first NRHS columns of M * the
     //     identity.
-    Rlaset("Full", n, nrhs, 0.0, m.real(), b, ldb);
+    Rlaset("Full", n, nrhs, 0.0, castREAL(m), b, ldb);
     //
     //     Generate the true solutions in X.  Because B = the first NRHS
     //     columns of M*I, the true solutions are just the first NRHS columns
     //     of the inverse Hilbert matrix.
     work[1 - 1] = n;
     for (j = 2; j <= n; j = j + 1) {
-        work[j - 1] = (((work[(j - 1) - 1] / (j - 1)) * (j - 1 - n)) / (j - 1)) * (n + j - 1);
+        work[j - 1] = (((work[(j - 1) - 1] / castREAL(j - 1)) * castREAL(j - 1 - n)) / castREAL(j - 1)) * castREAL(n + j - 1);
     }
     //
     for (j = 1; j <= nrhs; j = j + 1) {
         for (i = 1; i <= n; i = i + 1) {
-            x[(i - 1) + (j - 1) * ldx] = (work[i - 1] * work[j - 1]) / (i + j - 1);
+            x[(i - 1) + (j - 1) * ldx] = (work[i - 1] * work[j - 1]) / castREAL(i + j - 1);
         }
     }
     //

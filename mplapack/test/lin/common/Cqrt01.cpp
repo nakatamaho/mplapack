@@ -37,14 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cqrt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *q, COMPLEX *r, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    a([lda * star]);
-    af([lda * star]);
-    q([lda * star]);
-    r([lda * star]);
-    work([lwork]);
-    // COMMON srnamc
-    //
-    //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
     //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -72,6 +64,9 @@ void Cqrt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     //     ..
     //     .. Executable Statements ..
     //
+    INTEGER ldaf = lda;
+    INTEGER ldq = lda;
+    INTEGER ldr = lda;
     INTEGER minmn = min(m, n);
     REAL eps = Rlamch("Epsilon");
     //
@@ -88,7 +83,7 @@ void Cqrt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     //
     const COMPLEX rogue = COMPLEX(-1.0e+10, -1.0e+10);
     Claset("Full", m, m, rogue, rogue, q, lda);
-    Clacpy("Lower", m - 1, n, af[(2 - 1)], lda, &q[(2 - 1)], lda);
+    Clacpy("Lower", m - 1, n, &af[(2 - 1)], lda, &q[(2 - 1)], lda);
     //
     //     Generate the m-by-m matrix Q
     //
@@ -110,7 +105,7 @@ void Cqrt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     REAL anorm = Clange("1", m, n, a, lda, rwork);
     REAL resid = Clange("1", m, n, r, lda, rwork);
     if (anorm > zero) {
-        result[1 - 1] = ((resid / (max((INTEGER)1, m)).real()) / anorm) / eps;
+        result[1 - 1] = ((resid / castREAL(max((INTEGER)1, m))) / anorm) / eps;
     } else {
         result[1 - 1] = zero;
     }
@@ -124,7 +119,7 @@ void Cqrt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     //
     resid = Clansy("1", "Upper", m, r, lda, rwork);
     //
-    result[2 - 1] = (resid / (max((INTEGER)1, m)).real()) / eps;
+    result[2 - 1] = (resid / castREAL(max((INTEGER)1, m))) / eps;
     //
     //     End of Cqrt01
     //
