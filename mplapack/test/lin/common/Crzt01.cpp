@@ -38,9 +38,6 @@ using fem::common;
 
 REAL Crzt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork) {
     REAL return_value = 0.0;
-    a([lda * star]);
-    af([lda * star]);
-    work([lwork]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -89,6 +86,7 @@ REAL Crzt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, INTEGER c
     Claset("Full", m, n, COMPLEX(zero), COMPLEX(zero), work, m);
     INTEGER j = 0;
     INTEGER i = 0;
+    INTEGER ldaf = lda;
     for (j = 1; j <= m; j = j + 1) {
         for (i = 1; i <= j; i = i + 1) {
             work[((j - 1) * m + i) - 1] = af[(i - 1) + (j - 1) * ldaf];
@@ -109,7 +107,7 @@ REAL Crzt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, INTEGER c
     //
     return_value = Clange("One-norm", m, n, work, m, rwork);
     //
-    return_value = return_value / (Rlamch("Epsilon") * (max(m, n)).real());
+    return_value = return_value / (Rlamch("Epsilon") * castREAL(max(m, n)));
     if (norma != zero) {
         return_value = return_value / norma;
     }

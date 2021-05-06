@@ -37,11 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rqrt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af, REAL *q, REAL *r, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    a([lda * star]);
-    af([lda * star]);
-    q([lda * star]);
-    r([lda * star]);
-    work([lwork]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -76,7 +71,7 @@ void Rqrt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     //
     const REAL rogue = -1.0e+10;
     Rlaset("Full", m, n, rogue, rogue, q, lda);
-    Rlacpy("Lower", m - 1, k, af[(2 - 1)], lda, &q[(2 - 1)], lda);
+    Rlacpy("Lower", m - 1, k, &af[(2 - 1)], lda, &q[(2 - 1)], lda);
     //
     //     Generate the first n columns of the matrix Q
     //
@@ -99,7 +94,7 @@ void Rqrt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     REAL anorm = Rlange("1", m, k, a, lda, rwork);
     REAL resid = Rlange("1", n, k, r, lda, rwork);
     if (anorm > zero) {
-        result[1 - 1] = ((resid / (max((INTEGER)1, m)).real()) / anorm) / eps;
+        result[1 - 1] = ((resid / castREAL(max((INTEGER)1, m))) / anorm) / eps;
     } else {
         result[1 - 1] = zero;
     }
@@ -113,7 +108,7 @@ void Rqrt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     //
     resid = Rlansy("1", "Upper", n, r, lda, rwork);
     //
-    result[2 - 1] = (resid / (max((INTEGER)1, m)).real()) / eps;
+    result[2 - 1] = (resid / castREAL(max((INTEGER)1, m))) / eps;
     //
     //     End of Rqrt02
     //

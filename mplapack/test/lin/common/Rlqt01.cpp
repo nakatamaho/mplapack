@@ -37,11 +37,9 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *l, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    a([lda * star]);
-    af([lda * star]);
-    q([lda * star]);
-    l([lda * star]);
-    work([lwork]);
+    INTEGER ldaf = lda;
+    INTEGER ldq = lda;
+    INTEGER ldl = lda;
     // COMMON srnamc
     //
     //
@@ -89,7 +87,7 @@ void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     const REAL rogue = -1.0e+10;
     Rlaset("Full", n, n, rogue, rogue, q, lda);
     if (n > 1) {
-        Rlacpy("Upper", m, n - 1, af[(2 - 1) * ldaf], lda, &q[(2 - 1) * ldq], lda);
+        Rlacpy("Upper", m, n - 1, &af[(2 - 1) * ldaf], lda, &q[(2 - 1) * ldq], lda);
     }
     //
     //     Generate the n-by-n matrix Q
@@ -112,7 +110,7 @@ void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     REAL anorm = Rlange("1", m, n, a, lda, rwork);
     REAL resid = Rlange("1", m, n, l, lda, rwork);
     if (anorm > zero) {
-        result[1 - 1] = ((resid / (max((INTEGER)1, n)).real()) / anorm) / eps;
+        result[1 - 1] = ((resid / castREAL(max((INTEGER)1, n))) / anorm) / eps;
     } else {
         result[1 - 1] = zero;
     }
@@ -126,7 +124,7 @@ void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //
     resid = Rlansy("1", "Upper", n, l, lda, rwork);
     //
-    result[2 - 1] = (resid / (max((INTEGER)1, n)).real()) / eps;
+    result[2 - 1] = (resid / castREAL(max((INTEGER)1, n))) / eps;
     //
     //     End of Rlqt01
     //

@@ -37,11 +37,9 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rqrt01p(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *r, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    a([lda * star]);
-    af([lda * star]);
-    q([lda * star]);
-    r([lda * star]);
-    work([lwork]);
+    INTEGER ldaf = lda;
+    INTEGER ldq = lda;
+    INTEGER ldr = lda;
     // COMMON srnamc
     //
     //
@@ -88,7 +86,7 @@ void Rqrt01p(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL 
     //
     const REAL rogue = -1.0e+10;
     Rlaset("Full", m, m, rogue, rogue, q, lda);
-    Rlacpy("Lower", m - 1, n, af[(2 - 1)], lda, &q[(2 - 1)], lda);
+    Rlacpy("Lower", m - 1, n, &af[(2 - 1)], lda, &q[(2 - 1)], lda);
     //
     //     Generate the m-by-m matrix Q
     //
@@ -110,7 +108,7 @@ void Rqrt01p(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL 
     REAL anorm = Rlange("1", m, n, a, lda, rwork);
     REAL resid = Rlange("1", m, n, r, lda, rwork);
     if (anorm > zero) {
-        result[1 - 1] = ((resid / (max((INTEGER)1, m)).real()) / anorm) / eps;
+        result[1 - 1] = ((resid / castREAL(max((INTEGER)1, m))) / anorm) / eps;
     } else {
         result[1 - 1] = zero;
     }
@@ -124,7 +122,7 @@ void Rqrt01p(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL 
     //
     resid = Rlansy("1", "Upper", m, r, lda, rwork);
     //
-    result[2 - 1] = (resid / (max((INTEGER)1, m)).real()) / eps;
+    result[2 - 1] = (resid / castREAL(max((INTEGER)1, m))) / eps;
     //
     //     End of Rqrt01p
     //

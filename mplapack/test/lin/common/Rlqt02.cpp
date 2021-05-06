@@ -37,11 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rlqt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af, REAL *q, REAL *l, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    a([lda * star]);
-    af([lda * star]);
-    q([lda * star]);
-    l([lda * star]);
-    work([lwork]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -75,8 +70,10 @@ void Rlqt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     //     Copy the first k rows of the factorization to the array Q
     //
     const REAL rogue = -1.0e+10;
+    INTEGER ldaf = lda;
+    INTEGER ldq = lda;
     Rlaset("Full", m, n, rogue, rogue, q, lda);
-    Rlacpy("Upper", k, n - 1, af[(2 - 1) * ldaf], lda, &q[(2 - 1) * ldq], lda);
+    Rlacpy("Upper", k, n - 1, &af[(2 - 1) * ldaf], lda, &q[(2 - 1) * ldq], lda);
     //
     //     Generate the first n columns of the matrix Q
     //
@@ -99,7 +96,7 @@ void Rlqt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     REAL anorm = Rlange("1", k, n, a, lda, rwork);
     REAL resid = Rlange("1", k, m, l, lda, rwork);
     if (anorm > zero) {
-        result[1 - 1] = ((resid / (max((INTEGER)1, n)).real()) / anorm) / eps;
+        result[1 - 1] = ((resid / castREAL(max((INTEGER)1, n))) / anorm) / eps;
     } else {
         result[1 - 1] = zero;
     }
@@ -113,7 +110,7 @@ void Rlqt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     //
     resid = Rlansy("1", "Upper", m, l, lda, rwork);
     //
-    result[2 - 1] = (resid / (max((INTEGER)1, n)).real()) / eps;
+    result[2 - 1] = (resid / castREAL(max((INTEGER)1, n))) / eps;
     //
     //     End of Rlqt02
     //

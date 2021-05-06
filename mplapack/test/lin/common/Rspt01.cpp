@@ -37,7 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rspt01(const char *uplo, INTEGER const n, REAL *a, REAL *afac, INTEGER *ipiv, REAL *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
-    c([ldc * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -121,7 +120,7 @@ void Rspt01(const char *uplo, INTEGER const n, REAL *a, REAL *afac, INTEGER *ipi
             resid = one / eps;
         }
     } else {
-        resid = ((resid / n.real()) / anorm) / eps;
+        resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
     //     End of Rspt01

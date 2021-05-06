@@ -38,9 +38,6 @@ using fem::common;
 
 REAL Cqpt01(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPLEX *af, INTEGER const lda, COMPLEX *tau, INTEGER *jpvt, COMPLEX *work, INTEGER const lwork) {
     REAL return_value = 0.0;
-    a([lda * star]);
-    af([lda * star]);
-    work([lwork]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -88,6 +85,7 @@ REAL Cqpt01(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
     //
     INTEGER j = 0;
     INTEGER i = 0;
+    INTEGER ldaf = lda;
     for (j = 1; j <= k; j = j + 1) {
         for (i = 1; i <= min(j, m); i = i + 1) {
             work[((j - 1) * m + i) - 1] = af[(i - 1) + (j - 1) * ldaf];
@@ -97,7 +95,7 @@ REAL Cqpt01(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
         }
     }
     for (j = k + 1; j <= n; j = j + 1) {
-        Ccopy(m, af[(j - 1) * ldaf], 1, &work[((j - 1) * m + 1) - 1], 1);
+        Ccopy(m, &af[(j - 1) * ldaf], 1, &work[((j - 1) * m + 1) - 1], 1);
     }
     //
     INTEGER info = 0;
@@ -111,7 +109,7 @@ REAL Cqpt01(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
         Caxpy(m, COMPLEX(-one), &a[(jpvt[j - 1] - 1) * lda], 1, &work[((j - 1) * m + 1) - 1], 1);
     }
     //
-    return_value = Clange("One-norm", m, n, work, m, rwork) / ((max(m, n)).real() * Rlamch("Epsilon"));
+    return_value = Clange("One-norm", m, n, work, m, rwork) / castREAL((max(m, n)) * Rlamch("Epsilon"));
     if (norma != zero) {
         return_value = return_value / norma;
     }

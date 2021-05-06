@@ -38,9 +38,6 @@ using fem::common;
 
 REAL Rrzt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork) {
     REAL return_value = 0.0;
-    a([lda * star]);
-    af([lda * star]);
-    work([lwork]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -68,6 +65,7 @@ REAL Rrzt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, INTEGER const l
     //     .. Executable Statements ..
     //
     const REAL zero = 0.0;
+    INTEGER ldaf = lda;
     return_value = zero;
     //
     if (lwork < m * n + m) {
@@ -109,7 +107,7 @@ REAL Rrzt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, INTEGER const l
     //
     return_value = Rlange("One-norm", m, n, work, m, rwork);
     //
-    return_value = return_value / (Rlamch("Epsilon") * (max(m, n)).real());
+    return_value = return_value / (Rlamch("Epsilon") * castREAL(max(m, n)));
     if (norma != zero) {
         return_value = return_value / norma;
     }

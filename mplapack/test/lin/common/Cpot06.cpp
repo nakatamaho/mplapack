@@ -36,10 +36,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
+
 void Cpot06(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
-    a([lda * star]);
-    x([ldx * star]);
-    b([ldb * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -66,7 +65,6 @@ void Cpot06(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
     //     ..
     //     .. Statement Function definitions ..
     COMPLEX zdum = 0.0;
-    abs1(zdum) = abs(zdum.real()) + abs(zdum.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -103,8 +101,10 @@ void Cpot06(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
     REAL bnorm = 0.0;
     REAL xnorm = 0.0;
     for (j = 1; j <= nrhs; j = j + 1) {
-        bnorm = abs1(b(iCamax(n, &b[(j - 1) * ldb], 1), j));
-        xnorm = abs1(x(iCamax(n, &x[(j - 1) * ldx], 1), j));
+        INTEGER bb = iCamax(n, &b[(j - 1) * ldb], 1);
+        INTEGER xx = iCamax(n, &x[(j - 1) * ldx], 1);
+        bnorm = abs1(b[(bb - 1) + (j - 1) * lda]);
+        xnorm = abs1(x[(xx - 1) + (j - 1) * lda]);
         if (xnorm <= zero) {
             resid = one / eps;
         } else {

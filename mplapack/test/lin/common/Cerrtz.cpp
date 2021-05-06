@@ -37,12 +37,13 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cerrtz(const char *path, INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
     // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
+    INTEGER infot;
+    INTEGER nout;
+    bool ok;
+    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -73,11 +74,15 @@ void Cerrtz(const char *path, INTEGER const nunit) {
     //     .. Executable Statements ..
     //
     nout = nunit;
-    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
-    INTEGER &a[(1 - 1) + (1 - 1) * lda] = COMPLEX(1.e+0, -1.e+0);
-    INTEGER &a[(1 - 1) + (2 - 1) * lda] = COMPLEX(2.e+0, -2.e+0);
+    char c2[2];
+    c2[0] = path[1];
+    c2[1] = path[2];
+
     const INTEGER nmax = 2;
     COMPLEX a[nmax * nmax];
+    INTEGER lda = nmax;
+    a[(1 - 1) + (1 - 1) * lda] = COMPLEX(1.e+0, -1.e+0);
+    a[(1 - 1) + (2 - 1) * lda] = COMPLEX(2.e+0, -2.e+0);
     a[(2 - 1) + (2 - 1) * lda] = COMPLEX(3.e+0, -3.e+0);
     a[(2 - 1)] = COMPLEX(4.e+0, -4.e+0);
     COMPLEX w[nmax];
@@ -86,7 +91,6 @@ void Cerrtz(const char *path, INTEGER const nunit) {
     ok = true;
     //
     //     Test error exits for the trapezoidal routines.
-    write(nout, star);
     COMPLEX tau[nmax];
     INTEGER info = 0;
     if (Mlsamen(2, c2, "TZ")) {

@@ -38,9 +38,6 @@ using fem::common;
 
 REAL Rqpt01(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af, INTEGER const lda, REAL *tau, INTEGER *jpvt, REAL *work, INTEGER const lwork) {
     REAL return_value = 0.0;
-    a([lda * star]);
-    af([lda * star]);
-    work([lwork]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -69,6 +66,7 @@ REAL Rqpt01(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     //
     const REAL zero = 0.0;
     return_value = zero;
+    INTEGER ldaf = lda;
     //
     //     Test if there is enough workspace
     //
@@ -97,7 +95,7 @@ REAL Rqpt01(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
         }
     }
     for (j = k + 1; j <= n; j = j + 1) {
-        Rcopy(m, af[(j - 1) * ldaf], 1, &work[((j - 1) * m + 1) - 1], 1);
+        Rcopy(m, &af[(j - 1) * ldaf], 1, &work[((j - 1) * m + 1) - 1], 1);
     }
     //
     INTEGER info = 0;
@@ -111,7 +109,7 @@ REAL Rqpt01(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
         Raxpy(m, -one, &a[(jpvt[j - 1] - 1) * lda], 1, &work[((j - 1) * m + 1) - 1], 1);
     }
     //
-    return_value = Rlange("One-norm", m, n, work, m, rwork) / ((max(m, n)).real() * Rlamch("Epsilon"));
+    return_value = Rlange("One-norm", m, n, work, m, rwork) / castREAL((max(m, n)) * Rlamch("Epsilon"));
     if (norma != zero) {
         return_value = return_value / norma;
     }

@@ -37,12 +37,13 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cerrqp(const char *path, INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
+
+    INTEGER infot;
+    INTEGER nout;
+    bool ok;
+    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -73,16 +74,18 @@ void Cerrqp(const char *path, INTEGER const nunit) {
     //     .. Executable Statements ..
     //
     nout = nunit;
-    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2];
+    c2[0] = path[1];
+    c2[1] = path[2];
     const INTEGER nmax = 3;
     INTEGER lw = nmax + 1;
-    INTEGER &a[(1 - 1) + (1 - 1) * lda] = COMPLEX(1.0, -1.0);
-    INTEGER &a[(1 - 1) + (2 - 1) * lda] = COMPLEX(2.0e+0, -2.0e+0);
     COMPLEX a[nmax * nmax];
+    INTEGER lda = nmax;
+    a[(1 - 1) + (1 - 1) * lda] = COMPLEX(1.0, -1.0);
+    a[(1 - 1) + (2 - 1) * lda] = COMPLEX(2.0e+0, -2.0e+0);
     a[(2 - 1) + (2 - 1) * lda] = COMPLEX(3.0e+0, -3.0e+0);
     a[(2 - 1)] = COMPLEX(4.0e+0, -4.0e+0);
     ok = true;
-    write(nout, star);
     //
     //     Test error exits for QR factorization with pivoting
     //

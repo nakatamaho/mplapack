@@ -37,13 +37,10 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cerrps(const char *path, INTEGER const nunit) {
-    common_write write(cmn);
-    // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    // COMMON srnamc
+    INTEGER infot;
+    INTEGER nout;
+    bool ok;
+    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -72,7 +69,6 @@ void Cerrps(const char *path, INTEGER const nunit) {
     //     .. Executable Statements ..
     //
     nout = nunit;
-    write(nout, star);
     //
     //     Set the variables to innocuous values.
     //
@@ -80,11 +76,12 @@ void Cerrps(const char *path, INTEGER const nunit) {
     const INTEGER nmax = 4;
     INTEGER i = 0;
     COMPLEX a[nmax * nmax];
+    INTEGER lda = nmax;
     INTEGER piv[nmax];
     REAL rwork[2 * nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
+            a[(i - 1) + (j - 1) * lda] = 1.0 / castREAL(i + j);
             //
         }
         piv[j - 1] = j;

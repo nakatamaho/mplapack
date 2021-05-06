@@ -37,9 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rpot03(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *ainv, INTEGER const ldainv, REAL *work, INTEGER const ldwork, REAL *rwork, REAL &rcond, REAL &resid) {
-    a([lda * star]);
-    ainv([ldainv * star]);
-    work([ldwork * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -116,7 +113,7 @@ void Rpot03(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     //
     resid = Rlange("1", n, n, work, ldwork, rwork);
     //
-    resid = ((resid * rcond) / eps) / n.real();
+    resid = ((resid * rcond) / eps) / castREAL(n);
     //
     //     End of Rpot03
     //

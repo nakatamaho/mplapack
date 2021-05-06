@@ -37,8 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rtrt01(const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGER const lda, REAL *ainv, INTEGER const ldainv, REAL &rcond, REAL *work, REAL &resid) {
-    a([lda * star]);
-    ainv([ldainv * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -98,11 +96,11 @@ void Rtrt01(const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGE
     //
     if (Mlsame(uplo, "U")) {
         for (j = 1; j <= n; j = j + 1) {
-            Rtrmv("Upper", "No transpose", diag, j, a, lda, ainv[(j - 1) * ldainv], 1);
+            Rtrmv("Upper", "No transpose", diag, j, a, lda, &ainv[(j - 1) * ldainv], 1);
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            Rtrmv("Lower", "No transpose", diag, n - j + 1, &a[(j - 1) + (j - 1) * lda], lda, ainv[(j - 1) + (j - 1) * ldainv], 1);
+            Rtrmv("Lower", "No transpose", diag, n - j + 1, &a[(j - 1) + (j - 1) * lda], lda, &ainv[(j - 1) + (j - 1) * ldainv], 1);
         }
     }
     //
@@ -116,7 +114,7 @@ void Rtrt01(const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGE
     //
     resid = Rlantr("1", uplo, "Non-unit", n, n, ainv, ldainv, work);
     //
-    resid = ((resid * rcond) / n.real()) / eps;
+    resid = ((resid * rcond) / castREAL(n)) / eps;
     //
     //     End of Rtrt01
     //

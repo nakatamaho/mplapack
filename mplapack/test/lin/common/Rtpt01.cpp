@@ -97,7 +97,7 @@ void Rtpt01(const char *uplo, const char *diag, INTEGER const n, REAL *ap, REAL 
             //
             //           Form the j-th column of A*AINV
             //
-            Rtpmv("Upper", "No transpose", diag, j, ap, ainvp[jc - 1], 1);
+            Rtpmv("Upper", "No transpose", diag, j, ap, &ainvp[jc - 1], 1);
             //
             //           Subtract 1 from the diagonal
             //
@@ -113,7 +113,7 @@ void Rtpt01(const char *uplo, const char *diag, INTEGER const n, REAL *ap, REAL 
             //
             //           Form the j-th column of A*AINV
             //
-            Rtpmv("Lower", "No transpose", diag, n - j + 1, &ap[jc - 1], ainvp[jc - 1], 1);
+            Rtpmv("Lower", "No transpose", diag, n - j + 1, &ap[jc - 1], &ainvp[jc - 1], 1);
             //
             //           Subtract 1 from the diagonal
             //
@@ -126,7 +126,7 @@ void Rtpt01(const char *uplo, const char *diag, INTEGER const n, REAL *ap, REAL 
     //
     resid = Rlantp("1", uplo, "Non-unit", n, ainvp, work);
     //
-    resid = ((resid * rcond) / n.real()) / eps;
+    resid = ((resid * rcond) / castREAL(n)) / eps;
     //
     //     End of Rtpt01
     //
