@@ -37,26 +37,12 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER const nb, REAL *result) {
-    result([6]);
-    // COMMON srnamc
-    //
-    // SAVE
-    INTEGER *iseed(sve.iseed, [4]);
-    //
-    if (is_called_first_time) {
-        static const INTEGER values[] = {1988, 1989, 1990, 1991};
-        data_of_type<int>(FEM_VALUES_AND_SIZE), iseed;
-    }
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
     //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
     //     .. Scalar Arguments ..
-    m = 10;
-    n = 10;
-    INTEGER l = 10;
-    INTEGER lwork = 10;
     //
     //     .. Return values ..
     //
@@ -82,6 +68,11 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
     //
     //     TEST TALL SKINNY OR SHORT WIDE
     //
+    INTEGER iseed[] = {1988, 1989, 1990, 1991};
+    m = 10;
+    n = 10;
+    INTEGER l = 10;
+    INTEGER lwork = 10;
     bool ts = Mlsame(tssw, "TS");
     //
     //     TEST MATRICES WITH HALF OF MATRIX BEING ZEROS
@@ -90,7 +81,7 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
     //
     REAL eps = Rlamch("Epsilon");
     INTEGER k = min(m, n);
-    l = max({m, n, 1});
+    l = max({m, n, (INTEGER)1});
     INTEGER mnb = max(mb, nb);
     lwork = max(3, l) * mnb;
     //
@@ -99,7 +90,8 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
     //     Put random numbers into A and copy to AF
     //
     INTEGER j = 0;
-    COMPLEX a[m * n];
+    COMPLEX *a = new COMPLEX[m * n];
+    INTEGER lda = m;
     for (j = 1; j <= n; j = j + 1) {
         Clarnv(2, iseed, m, &a[(j - 1) * lda]);
     }
@@ -110,28 +102,35 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
             }
         }
     }
-    COMPLEX af[m * n];
+    COMPLEX *af= new COMPLEX[m * n];
     Clacpy("Full", m, n, a, m, af, m);
     //
     COMPLEX tquery[5];
     COMPLEX workquery[1];
     INTEGER info = 0;
     INTEGER tsize = 0;
-    COMPLEX cf[m * n];
-    COMPLEX df[n * m];
-    COMPLEX t[m * n];
-    COMPLEX work[lwork];
+    COMPLEX *cf = new COMPLEX[m * n];
+    INTEGER ldcf = m;
+    COMPLEX *df = new COMPLEX[n * m];
+    INTEGER lddf = n;
+    COMPLEX *t = new COMPLEX[m * n];
+    INTEGER ldm = m;
+    COMPLEX *work = new COMPLEX[lwork];    
     const COMPLEX czero = COMPLEX(0.0f, 0.0f);
     const COMPLEX one = COMPLEX(1.0f, 0.0f);
-    COMPLEX q[l * l];
-    COMPLEX r[m * l];
-    COMPLEX rwork[l];
+    COMPLEX *q = new COMPLEX[l * l];
+    INTEGER ldq = l;
+    COMPLEX *r = new COMPLEX[m * l];
+    INTEGER ldr = m;
+    REAL *rwork = new REAL [l];
     REAL anorm = 0.0;
     REAL resid = 0.0;
     const REAL zero = 0.0f;
-    COMPLEX c[m * n];
+    COMPLEX *c = new COMPLEX[m * n];
+    INTEGER ldc = m;
     REAL cnorm = 0.0;
-    COMPLEX d[n * m];
+    COMPLEX *d = new COMPLEX[n * m];
+    INTEGER ldd = n;
     REAL dnorm = 0.0;
     COMPLEX lq[l * n];
     if (ts) {
@@ -139,18 +138,18 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
         //     Factor the matrix A in the array AF.
         //
         Cgeqr(m, n, af, m, tquery, -1, workquery, -1, info);
-        tsize = int(tquery[1 - 1]);
-        lwork = int(workquery[1 - 1]);
+        tsize = castINTEGER(tquery[1 - 1].real());
+        lwork = castINTEGER(workquery[1 - 1].real());
         Cgemqr("L", "N", m, m, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
-        lwork = max(lwork, int(workquery[1 - 1]));
+        lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
         Cgemqr("L", "N", m, n, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
-        lwork = max(lwork, int(workquery[1 - 1]));
+        lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
         Cgemqr("L", "C", m, n, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
-        lwork = max(lwork, int(workquery[1 - 1]));
+        lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
         Cgemqr("R", "N", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);
-        lwork = max(lwork, int(workquery[1 - 1]));
+        lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
         Cgemqr("R", "C", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);
-        lwork = max(lwork, int(workquery[1 - 1]));
+        lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
         Cgeqr(m, n, af, m, t, tsize, work, lwork, info);
         //
         //     Generate the m-by-m matrix Q
@@ -177,7 +176,7 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
         //     Compute |I - Q'*Q| and store in RESULT(2)
         //
         Claset("Full", m, m, czero, one, r, m);
-        Cherk("U", "C", m, m, dreal[-one - 1], q, m, dreal[one - 1], r, m);
+        Cherk("U", "C", m, m, -one.real(), q, m, one.real(), r, m);
         resid = Clansy("1", "Upper", m, r, m, rwork);
         result[2 - 1] = resid / (eps * max((INTEGER)1, m));
         //
@@ -265,18 +264,18 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
         //
     } else {
         Cgelq(m, n, af, m, tquery, -1, workquery, -1, info);
-        tsize = int(tquery[1 - 1]);
-        lwork = int(workquery[1 - 1]);
+        tsize = castINTEGER(tquery[1 - 1].real());
+        lwork = castINTEGER(workquery[1 - 1].real());
         Cgemlq("R", "N", n, n, k, af, m, tquery, tsize, q, n, workquery, -1, info);
-        lwork = max(lwork, int(workquery[1 - 1]));
+        lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
         Cgemlq("L", "N", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);
-        lwork = max(lwork, int(workquery[1 - 1]));
+        lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
         Cgemlq("L", "C", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);
-        lwork = max(lwork, int(workquery[1 - 1]));
+        lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
         Cgemlq("R", "N", m, n, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
-        lwork = max(lwork, int(workquery[1 - 1]));
+        lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
         Cgemlq("R", "C", m, n, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
-        lwork = max(lwork, int(workquery[1 - 1]));
+        lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
         Cgelq(m, n, af, m, t, tsize, work, lwork, info);
         //
         //     Generate the n-by-n matrix Q
@@ -303,7 +302,7 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
         //     Compute |I - Q'*Q| and store in RESULT(2)
         //
         Claset("Full", n, n, czero, one, lq, l);
-        Cherk("U", "C", n, n, dreal[-one - 1], q, n, dreal[one - 1], lq, l);
+        Cherk("U", "C", n, n, -one.real(), q, n, one.real(), lq, l);
         resid = Clansy("1", "Upper", n, lq, l, rwork);
         result[2 - 1] = resid / (eps * max((INTEGER)1, n));
         //
@@ -391,6 +390,16 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
     //
     //     Deallocate all arrays
     //
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(a,af,q,r,rwork,work,t,c,d,cf,df)");
+    delete[] a;
+    delete[] af;
+    delete[] q;
+    delete[] r;
+    delete[] rwork;
+    delete[] work;
+    delete[] t;
+    delete[] c;
+    delete[] d;
+    delete[] cf;
+    delete[] df;
     //
 }
