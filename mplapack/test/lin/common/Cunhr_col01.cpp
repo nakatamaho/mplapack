@@ -37,17 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER const nb1, INTEGER const nb2, REAL *result) {
-    FEM_CMN_SVE(Cunhr_col01);
-    result([6]);
-    // COMMON srmnamc
-    //
-    // SAVE
-    INTEGER *iseed(sve.iseed, [4]);
-    //
-    if (is_called_first_time) {
-        static const INTEGER values[] = {1988, 1989, 1990, 1991};
-        data_of_type<int>(FEM_VALUES_AND_SIZE), iseed;
-    }
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -81,18 +70,20 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     //     TEST MATRICES WITH HALF OF MATRIX BEING ZEROS
     //
+    INTEGER iseed[4] = {1988, 1989, 1990, 1991};
     bool testzeros = false;
     //
     REAL eps = Rlamch("Epsilon");
     INTEGER k = min(m, n);
-    INTEGER l = max({m, n, 1});
+    INTEGER l = max({m, n, (INTEGER)1});
     //
     //     Dynamically allocate local arrays
     //
     //     Put random numbers into A and copy to AF
     //
     INTEGER j = 0;
-    COMPLEX a[m * n];
+    COMPLEX *a = new COMPLEX[m * n];
+    INTEGER lda = m;
     for (j = 1; j <= n; j = j + 1) {
         Clarnv(2, iseed, m, &a[(j - 1) * lda]);
     }
@@ -103,12 +94,13 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
             }
         }
     }
-    COMPLEX af[m * n];
+    COMPLEX *af = new COMPLEX[m * n];
+    INTEGER ldaf = m;
     Clacpy("Full", m, n, a, m, af, m);
     //
     //     Number of row blocks in Clatsqr
     //
-    INTEGER nrb = max((INTEGER)1, ceiling(castREAL(m - n) / castREAL(mb1 - n)));
+    INTEGER nrb = max((INTEGER)1, ceil(castREAL(m - n) / castREAL(mb1 - n)));
     //
     //     Begin determine LWORK for the array WORK and allocate memory.
     //
@@ -120,14 +112,14 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     INTEGER nb2_ub = min(nb2, n);
     //
-    COMPLEX t1[nb1 * n * nrb];
+    COMPLEX *t1 = new COMPLEX[nb1 * n * nrb];
     COMPLEX workquery[1];
     INTEGER info = 0;
     Clatsqr(m, n, mb1, nb1_ub, af, m, t1, nb1, workquery, -1, info);
-    INTEGER lwork = int(workquery[1 - 1]);
+    INTEGER lwork = castINTEGER(workquery[1 - 1].real());
     Cungtsqr(m, n, mb1, nb1, af, m, t1, nb1, workquery, -1, info);
     //
-    lwork = max(lwork, int(workquery[1 - 1]));
+    lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
     //
     //     In Cgemqrt, WORK is N*NB2_UB if SIDE = 'L',
     //                or  M*NB2_UB if SIDE = 'R'.
@@ -142,12 +134,13 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     //     Factor the matrix A in the array AF.
     //
-    COMPLEX work[lwork];
+    COMPLEX *work = new COMPLEX[lwork];
     Clatsqr(m, n, mb1, nb1_ub, af, m, t1, nb1, work, lwork, info);
     //
     //     Copy the factor R into the array R.
     //
-    COMPLEX r[m * l];
+    COMPLEX *r = new COMPLEX[m * l];
+    INTEGER ldr = m;
     Clacpy("U", n, n, af, m, r, m);
     //
     //     Reconstruct the orthogonal matrix Q.
@@ -157,8 +150,8 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //     Perform the Householder reconstruction, the result is stored
     //     the arrays AF and T2.
     //
-    COMPLEX t2[nb2 * n];
-    COMPLEX diag[n];
+    COMPLEX *t2 = new COMPLEX[nb2 * n];
+    COMPLEX *diag = new COMPLEX[n];
     Cunhr_col(m, n, nb2, af, m, t2, nb2, diag, info);
     //
     //     Compute the factor R_hr corresponding to the Householder
@@ -174,7 +167,7 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     for (i = 1; i <= n; i = i + 1) {
         if (diag[i - 1] == -cone) {
-            Cscal(n + 1 - i, -cone, af[(i - 1) + (i - 1) * ldaf], m);
+            Cscal(n + 1 - i, -cone, &af[(i - 1) + (i - 1) * ldaf], m);
         }
     }
     //
@@ -183,7 +176,8 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //     Generate the m-by-m matrix Q
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
-    COMPLEX q[l * l];
+    COMPLEX *q = new COMPLEX[l * l];
+    INTEGER ldq = l;
     Claset("Full", m, m, czero, cone, q, m);
     //
     Cgemqrt("L", "N", m, m, k, nb2_ub, af, m, t2, nb2, q, m, work, info);
@@ -199,7 +193,7 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     Cgemm("C", "N", m, n, m, -cone, q, m, a, m, cone, r, m);
     //
-    REAL rwork[l];
+    REAL *rwork = new REAL[l];
     REAL anorm = Clange("1", m, n, a, m, rwork);
     REAL resid = Clange("1", m, n, r, m, rwork);
     const REAL zero = 0.0;
@@ -213,18 +207,20 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //     Compute |I - (Q**H)*Q| / ( eps * m ) and store in RESULT(2)
     //
     Claset("Full", m, m, czero, cone, r, m);
-    Cherk("U", "C", m, m, -cone, q, m, cone, r, m);
+    Cherk("U", "C", m, m, -cone.real(), q, m, cone.real(), r, m);
     resid = Clansy("1", "Upper", m, r, m, rwork);
     result[2 - 1] = resid / (eps * max((INTEGER)1, m));
     //
     //     Generate random m-by-n matrix C
     //
-    COMPLEX c[m * n];
+    COMPLEX *c = new COMPLEX[m * n];
+    INTEGER ldc = m;
     for (j = 1; j <= n; j = j + 1) {
         Clarnv(2, iseed, m, &c[(j - 1) * ldc]);
     }
     REAL cnorm = Clange("1", m, n, c, m, rwork);
-    COMPLEX cf[m * n];
+    COMPLEX *cf = new COMPLEX[m * n];
+    INTEGER ldcf = m;
     Clacpy("Full", m, n, c, m, cf, m);
     //
     //     Apply Q to C as Q*C = CF
@@ -263,7 +259,8 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     //     Generate random n-by-m matrix D and a copy DF
     //
-    COMPLEX d[n * m];
+    COMPLEX *d = new COMPLEX[n * m];
+    INTEGER ldd = n;
     for (j = 1; j <= m; j = j + 1) {
         Clarnv(2, iseed, n, &d[(j - 1) * ldd]);
     }
@@ -306,7 +303,17 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     }
     //
     //     Deallocate all arrays
-    //
-    //     End of Cunhr_col01
+    delete[] a;
+    delete[] af;
+    delete[] t1;
+    delete[] work;
+    delete[] rwork;
+    delete[] r;
+    delete[] t2;
+    delete[] diag;
+    delete[] q;
+    delete[] c;
+    delete[] cf;
+    delete[] d;
     //
 }
