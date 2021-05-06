@@ -36,4 +36,204 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-********************************************************************************Sorry : fable internal error : at Rqrt05.cpp(137) : | CALL Rlaset('Full', M2, N, ZERO, ZERO, A, M2) | ********************************************************************************
+void Rqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb, REAL *result) {
+    FEM_CMN_SVE(Rqrt05);
+    result([6]);
+    // SAVE
+    INTEGER *iseed(sve.iseed, [4]);
+    //
+    if (is_called_first_time) {
+        static const INTEGER values[] = {1988, 1989, 1990, 1991};
+        data_of_type<int>(FEM_VALUES_AND_SIZE), iseed;
+    }
+    //
+    //  -- LAPACK test routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     .. Return values ..
+    //
+    //  =====================================================================
+    //
+    //     ..
+    //     .. Local allocatable arrays
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //
+    //     Dynamically allocate all arrays
+    //
+    //     ..
+    //     .. Local Arrays ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. Data statements ..
+    //
+    REAL eps = Rlamch("Epsilon");
+    INTEGER k = n;
+    INTEGER m2 = m + n;
+    INTEGER np1 = 0;
+    if (m > 0) {
+        np1 = n + 1;
+    } else {
+        np1 = 1;
+    }
+    INTEGER lwork = m2 * m2 * nb;
+    //
+    //     Put random stuff into A
+    //
+    INTEGER ldt = nb;
+    const REAL zero = 0.0f;
+    REAL a[m2 * n];
+    Rlaset("Full", m2, n, zero, zero, a, m2);
+    REAL t[nb * n];
+    Rlaset("Full", nb, n, zero, zero, t, nb);
+    INTEGER j = 0;
+    for (j = 1; j <= n; j = j + 1) {
+        Rlarnv(2, iseed, j, &a[(j - 1) * lda]);
+    }
+    if (m > 0) {
+        for (j = 1; j <= n; j = j + 1) {
+            Rlarnv(2, iseed, m - l, &a[(min(n + m, n + 1) - 1) + (j - 1) * lda]);
+        }
+    }
+    if (l > 0) {
+        for (j = 1; j <= n; j = j + 1) {
+            Rlarnv(2, iseed, min(j, l), &a[(min(n + m, n + m - l + 1) - 1) + (j - 1) * lda]);
+        }
+    }
+    //
+    //     Copy the matrix A to the array AF.
+    //
+    REAL af[m2 * n];
+    Rlacpy("Full", m2, n, a, m2, af, m2);
+    //
+    //     Factor the matrix A in the array AF.
+    //
+    REAL work[lwork];
+    INTEGER info = 0;
+    Rtpqrt(m, n, l, nb, af, m2, af[(np1 - 1)], m2, t, ldt, work, info);
+    //
+    //     Generate the (M+N)-by-(M+N) matrix Q by applying H to I
+    //
+    const REAL one = 1.0f;
+    REAL q[m2 * m2];
+    Rlaset("Full", m2, m2, zero, one, q, m2);
+    Rgemqrt("R", "N", m2, m2, k, nb, af, m2, t, ldt, q, m2, work, info);
+    //
+    //     Copy R
+    //
+    REAL r[m2 * m2];
+    Rlaset("Full", m2, n, zero, zero, r, m2);
+    Rlacpy("Upper", m2, n, af, m2, r, m2);
+    //
+    //     Compute |R - Q'*A| / |A| and store in RESULT(1)
+    //
+    Rgemm("T", "N", m2, n, m2, -one, q, m2, a, m2, one, r, m2);
+    REAL rwork[m2];
+    REAL anorm = Rlange("1", m2, n, a, m2, rwork);
+    REAL resid = Rlange("1", m2, n, r, m2, rwork);
+    if (anorm > zero) {
+        result[1 - 1] = resid / (eps * anorm * max((INTEGER)1, m2));
+    } else {
+        result[1 - 1] = zero;
+    }
+    //
+    //     Compute |I - Q'*Q| and store in RESULT(2)
+    //
+    Rlaset("Full", m2, m2, zero, one, r, m2);
+    Rsyrk("U", "C", m2, m2, -one, q, m2, one, r, m2);
+    resid = Rlansy("1", "Upper", m2, r, m2, rwork);
+    result[2 - 1] = resid / (eps * max((INTEGER)1, m2));
+    //
+    //     Generate random m-by-n matrix C and a copy CF
+    //
+    REAL c[m2 * n];
+    for (j = 1; j <= n; j = j + 1) {
+        Rlarnv(2, iseed, m2, &c[(j - 1) * ldc]);
+    }
+    REAL cnorm = Rlange("1", m2, n, c, m2, rwork);
+    REAL cf[m2 * n];
+    Rlacpy("Full", m2, n, c, m2, cf, m2);
+    //
+    //     Apply Q to C as Q*C
+    //
+    Rtpmqrt("L", "N", m, n, k, l, nb, af[(np1 - 1)], m2, t, ldt, cf, m2, cf[(np1 - 1)], m2, work, info);
+    //
+    //     Compute |Q*C - Q*C| / |C|
+    //
+    Rgemm("N", "N", m2, n, m2, -one, q, m2, c, m2, one, cf, m2);
+    resid = Rlange("1", m2, n, cf, m2, rwork);
+    if (cnorm > zero) {
+        result[3 - 1] = resid / (eps * max((INTEGER)1, m2) * cnorm);
+    } else {
+        result[3 - 1] = zero;
+    }
+    //
+    //     Copy C into CF again
+    //
+    Rlacpy("Full", m2, n, c, m2, cf, m2);
+    //
+    //     Apply Q to C as QT*C
+    //
+    Rtpmqrt("L", "T", m, n, k, l, nb, af[(np1 - 1)], m2, t, ldt, cf, m2, cf[(np1 - 1)], m2, work, info);
+    //
+    //     Compute |QT*C - QT*C| / |C|
+    //
+    Rgemm("T", "N", m2, n, m2, -one, q, m2, c, m2, one, cf, m2);
+    resid = Rlange("1", m2, n, cf, m2, rwork);
+    if (cnorm > zero) {
+        result[4 - 1] = resid / (eps * max((INTEGER)1, m2) * cnorm);
+    } else {
+        result[4 - 1] = zero;
+    }
+    //
+    //     Generate random n-by-m matrix D and a copy DF
+    //
+    REAL d[n * m2];
+    for (j = 1; j <= m2; j = j + 1) {
+        Rlarnv(2, iseed, n, &d[(j - 1) * ldd]);
+    }
+    REAL dnorm = Rlange("1", n, m2, d, n, rwork);
+    REAL df[n * m2];
+    Rlacpy("Full", n, m2, d, n, df, n);
+    //
+    //     Apply Q to D as D*Q
+    //
+    Rtpmqrt("R", "N", n, m, n, l, nb, af[(np1 - 1)], m2, t, ldt, df, n, df[(np1 - 1) * lddf], n, work, info);
+    //
+    //     Compute |D*Q - D*Q| / |D|
+    //
+    Rgemm("N", "N", n, m2, m2, -one, d, n, q, m2, one, df, n);
+    resid = Rlange("1", n, m2, df, n, rwork);
+    if (cnorm > zero) {
+        result[5 - 1] = resid / (eps * max((INTEGER)1, m2) * dnorm);
+    } else {
+        result[5 - 1] = zero;
+    }
+    //
+    //     Copy D into DF again
+    //
+    Rlacpy("Full", n, m2, d, n, df, n);
+    //
+    //     Apply Q to D as D*QT
+    //
+    Rtpmqrt("R", "T", n, m, n, l, nb, af[(np1 - 1)], m2, t, ldt, df, n, df[(np1 - 1) * lddf], n, work, info);
+    //
+    //     Compute |D*QT - D*QT| / |D|
+    //
+    Rgemm("N", "T", n, m2, m2, -one, d, n, q, m2, one, df, n);
+    resid = Rlange("1", n, m2, df, n, rwork);
+    if (cnorm > zero) {
+        result[6 - 1] = resid / (eps * max((INTEGER)1, m2) * dnorm);
+    } else {
+        result[6 - 1] = zero;
+    }
+    //
+    //     Deallocate all arrays
+    //
+    FEM_THROW_UNHANDLED("executable deallocate: deallocate(a,af,q,r,rwork,work,t,c,d,cf,df)");
+}
