@@ -62,6 +62,7 @@ void Clqt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //     ..
     //     .. Data statements ..
     //
+    INTEGER iseed[] = {1988, 1989, 1990, 1991};
     REAL eps = Rlamch("Epsilon");
     INTEGER k = min(m, n);
     INTEGER ll = max(m, n);
@@ -71,18 +72,20 @@ void Clqt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     //     Put random numbers into A and copy to AF
     //
-    INTEGER ldt = nb;
     INTEGER j = 0;
     COMPLEX *a = new COMPLEX[m * n];
+    INTEGER lda = m;
     for (j = 1; j <= n; j = j + 1) {
         Clarnv(2, iseed, m, &a[(j - 1) * lda]);
     }
     COMPLEX *af = new COMPLEX[m * n];
+    INTEGER ldaf = m;
     Clacpy("Full", m, n, a, m, af, m);
     //
     //     Factor the matrix A in the array AF.
     //
     COMPLEX *t = new COMPLEX[nb * n];
+    INTEGER ldt = nb;
     COMPLEX *work = new COMPLEX[lwork];
     INTEGER info = 0;
     Cgelqt(m, n, nb, af, m, t, ldt, work, info);
@@ -92,19 +95,21 @@ void Clqt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     const COMPLEX czero = COMPLEX(0.0f, 0.0f);
     const COMPLEX one = COMPLEX(1.0f, 0.0f);
     COMPLEX *q = new COMPLEX[n * n];
+    INTEGER ldq = n;
     Claset("Full", n, n, czero, one, q, n);
     Cgemlqt("R", "N", n, n, k, nb, af, m, t, ldt, q, n, work, info);
     //
     //     Copy L
     //
     COMPLEX *l = new COMPLEX[ll * n];
+    INTEGER ldl = ll;
     Claset("Full", ll, n, czero, czero, l, ll);
     Clacpy("Lower", m, n, af, m, l, ll);
     //
     //     Compute |L - A*Q'| / |A| and store in RESULT(1)
     //
     Cgemm("N", "C", m, n, n, -one, a, m, q, n, one, l, ll);
-    COMPLEX *rwork = new COMPLEX[ll];
+    REAL *rwork = new REAL[ll];
     REAL anorm = Clange("1", m, n, a, m, rwork);
     REAL resid = Clange("1", m, n, l, ll, rwork);
     const REAL zero = 0.0f;
@@ -117,18 +122,20 @@ void Clqt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //     Compute |I - Q'*Q| and store in RESULT(2)
     //
     Claset("Full", n, n, czero, one, l, ll);
-    Cherk("U", "C", n, n, dreal[-one - 1], q, n, dreal[one - 1], l, ll);
+    Cherk("U", "C", n, n, -one.real(), q, n, one.real(), l, ll);
     resid = Clansy("1", "Upper", n, l, ll, rwork);
     result[2 - 1] = resid / (eps * max((INTEGER)1, n));
     //
     //     Generate random m-by-n matrix C and a copy CF
     //
     COMPLEX *d = new COMPLEX[n * m];
+    INTEGER ldd = n;
     for (j = 1; j <= m; j = j + 1) {
         Clarnv(2, iseed, n, &d[(j - 1) * ldd]);
     }
     REAL dnorm = Clange("1", n, m, d, n, rwork);
     COMPLEX *df = new COMPLEX[n * m];
+    INTEGER lddf = n;
     Clacpy("Full", n, m, d, n, df, n);
     //
     //     Apply Q to C as Q*C
@@ -165,12 +172,14 @@ void Clqt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     //     Generate random n-by-m matrix D and a copy DF
     //
-    COMPLEX c[m * n];
+    COMPLEX *c = new COMPLEX[m * n];
+    INTEGER ldc = m;
     for (j = 1; j <= n; j = j + 1) {
         Clarnv(2, iseed, m, &c[(j - 1) * ldc]);
     }
     REAL cnorm = Clange("1", m, n, c, m, rwork);
-    COMPLEX cf[m * n];
+    COMPLEX *cf = new COMPLEX[m * n];
+    INTEGER ldcf = m;
     Clacpy("Full", m, n, c, m, cf, m);
     //
     //     Apply Q to C as C*Q
