@@ -37,15 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
-    FEM_CMN_SVE(Cqrt04);
-    result([6]);
-    // SAVE
-    INTEGER *iseed(sve.iseed, [4]);
-    //
-    if (is_called_first_time) {
-        static const INTEGER values[] = {1988, 1989, 1990, 1991};
-        data_of_type<int>(FEM_VALUES_AND_SIZE), iseed;
-    }
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -71,6 +62,7 @@ void Cqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //     ..
     //     .. Data statements ..
     //
+    INTEGER iseed[] = {1988, 1989, 1990, 1991};
     REAL eps = Rlamch("Epsilon");
     INTEGER k = min(m, n);
     INTEGER l = max(m, n);
@@ -80,19 +72,21 @@ void Cqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     //     Put random numbers into A and copy to AF
     //
-    INTEGER ldt = nb;
     INTEGER j = 0;
-    COMPLEX a[m * n];
+    COMPLEX *a = new COMPLEX[m * n];
+    INTEGER lda = m;
     for (j = 1; j <= n; j = j + 1) {
         Clarnv(2, iseed, m, &a[(j - 1) * lda]);
     }
-    COMPLEX af[m * n];
+    COMPLEX *af = new COMPLEX[m * n];
+    INTEGER ldaf = m;
     Clacpy("Full", m, n, a, m, af, m);
     //
     //     Factor the matrix A in the array AF.
     //
-    COMPLEX t[nb * n];
-    COMPLEX work[lwork];
+    COMPLEX *t = new COMPLEX[nb * n];
+    INTEGER ldt = nb;
+    COMPLEX *work = new COMPLEX[lwork];
     INTEGER info = 0;
     Cgeqrt(m, n, nb, af, m, t, ldt, work, info);
     //
@@ -100,20 +94,22 @@ void Cqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     const COMPLEX czero = COMPLEX(0.0f, 0.0f);
     const COMPLEX one = COMPLEX(1.0f, 0.0f);
-    COMPLEX q[m * m];
+    COMPLEX *q = new COMPLEX[m * m];
+    INTEGER ldq = m;
     Claset("Full", m, m, czero, one, q, m);
     Cgemqrt("R", "N", m, m, k, nb, af, m, t, ldt, q, m, work, info);
     //
     //     Copy R
     //
-    COMPLEX r[m * l];
+    COMPLEX *r = new COMPLEX[m * l];
+    INTEGER ldr = m;
     Claset("Full", m, n, czero, czero, r, m);
     Clacpy("Upper", m, n, af, m, r, m);
     //
     //     Compute |R - Q'*A| / |A| and store in RESULT(1)
     //
     Cgemm("C", "N", m, n, m, -one, q, m, a, m, one, r, m);
-    REAL rwork[l];
+    REAL *rwork = new REAL[l];
     REAL anorm = Clange("1", m, n, a, m, rwork);
     REAL resid = Clange("1", m, n, r, m, rwork);
     const REAL zero = 0.0f;
@@ -126,18 +122,20 @@ void Cqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //     Compute |I - Q'*Q| and store in RESULT(2)
     //
     Claset("Full", m, m, czero, one, r, m);
-    Cherk("U", "C", m, m, dreal[-one - 1], q, m, dreal[one - 1], r, m);
+    Cherk("U", "C", m, m, -one.real(), q, m, one.real(), r, m);
     resid = Clansy("1", "Upper", m, r, m, rwork);
     result[2 - 1] = resid / (eps * max((INTEGER)1, m));
     //
     //     Generate random m-by-n matrix C and a copy CF
     //
-    COMPLEX c[m * n];
+    COMPLEX *c = new COMPLEX[m * n];
+    INTEGER ldc = m;
     for (j = 1; j <= n; j = j + 1) {
         Clarnv(2, iseed, m, &c[(j - 1) * ldc]);
     }
     REAL cnorm = Clange("1", m, n, c, m, rwork);
-    COMPLEX cf[m * n];
+    COMPLEX *cf = new COMPLEX[m * n];
+    INTEGER ldcf = m;
     Clacpy("Full", m, n, c, m, cf, m);
     //
     //     Apply Q to C as Q*C
@@ -174,12 +172,14 @@ void Cqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     //     Generate random n-by-m matrix D and a copy DF
     //
-    COMPLEX d[n * m];
+    COMPLEX *d = new COMPLEX[n * m];
+    INTEGER ldd = n;
     for (j = 1; j <= m; j = j + 1) {
         Clarnv(2, iseed, n, &d[(j - 1) * ldd]);
     }
     REAL dnorm = Clange("1", n, m, d, n, rwork);
-    COMPLEX df[n * m];
+    COMPLEX *df = new COMPLEX[n * m];
+    INTEGER lddf = n;
     Clacpy("Full", n, m, d, n, df, n);
     //
     //     Apply Q to D as D*Q
@@ -216,6 +216,15 @@ void Cqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     //     Deallocate all arrays
     //
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(a,af,q,r,rwork,work,t,c,d,cf,df)");
-    //
+    delete[] a;
+    delete[] af;
+    delete[] q;
+    delete[] r;
+    delete[] rwork;
+    delete[] work;
+    delete[] t;
+    delete[] c;
+    delete[] d;
+    delete[] cf;
+    delete[] df;
 }
