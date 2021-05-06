@@ -38,11 +38,7 @@ using fem::common;
 
 REAL Rqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *c, REAL *work, INTEGER const lwork) {
     REAL return_value = 0.0;
-    a([lda * star]);
-    x([ldx * star]);
-    b([ldb * star]);
-    c([ldb * star]);
-    work([lwork]);
+    INTEGER ldc = ldb;
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

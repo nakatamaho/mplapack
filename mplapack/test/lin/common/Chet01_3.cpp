@@ -37,9 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Chet01_3(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, COMPLEX *e, INTEGER *ipiv, COMPLEX *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
-    a([lda * star]);
-    afac([ldafac * star]);
-    c([ldc * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -116,11 +113,11 @@ void Chet01_3(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
             for (i = 1; i <= j - 1; i = i + 1) {
                 c[(i - 1) + (j - 1) * ldc] = c[(i - 1) + (j - 1) * ldc] - a[(i - 1) + (j - 1) * lda];
             }
-            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - castREAL(a[(j - 1) + (j - 1) * lda]);
+            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - (a[(j - 1) + (j - 1) * lda]).real();
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - castREAL(a[(j - 1) + (j - 1) * lda]);
+            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - (a[(j - 1) + (j - 1) * lda]).real();
             for (i = j + 1; i <= n; i = i + 1) {
                 c[(i - 1) + (j - 1) * ldc] = c[(i - 1) + (j - 1) * ldc] - a[(i - 1) + (j - 1) * lda];
             }

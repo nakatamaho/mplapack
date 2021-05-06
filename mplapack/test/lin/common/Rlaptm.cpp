@@ -37,8 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rlaptm(INTEGER const n, INTEGER const nrhs, REAL const alpha, REAL *d, REAL *e, REAL *x, INTEGER const ldx, REAL const beta, REAL *b, INTEGER const ldb) {
-    x([ldx * star]);
-    b([ldb * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

@@ -37,12 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Crqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *q, COMPLEX *r, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    a([lda * star]);
-    af([lda * star]);
-    q([lda * star]);
-    r([lda * star]);
-    work([lwork]);
-    // COMMON srnamc
     //
     //
     //  -- LAPACK test routine --
@@ -73,6 +67,9 @@ void Crqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     //     .. Executable Statements ..
     //
     INTEGER minmn = min(m, n);
+    INTEGER ldaf = lda;
+    INTEGER ldq = lda;
+    INTEGER ldr = lda;
     REAL eps = Rlamch("Epsilon");
     //
     //     Copy the matrix A to the array AF.
@@ -93,11 +90,11 @@ void Crqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
             Clacpy("Full", m, n - m, af, lda, &q[((n - m + 1) - 1)], lda);
         }
         if (m > 1) {
-            Clacpy("Lower", m - 1, m - 1, af[(2 - 1) + ((n - m + 1) - 1) * ldaf], lda, &q[((n - m + 2) - 1) + ((n - m + 1) - 1) * ldq], lda);
+            Clacpy("Lower", m - 1, m - 1, &af[(2 - 1) + ((n - m + 1) - 1) * ldaf], lda, &q[((n - m + 2) - 1) + ((n - m + 1) - 1) * ldq], lda);
         }
     } else {
         if (n > 1) {
-            Clacpy("Lower", n - 1, n - 1, af[((m - n + 2) - 1)], lda, &q[(2 - 1)], lda);
+            Clacpy("Lower", n - 1, n - 1, &af[((m - n + 2) - 1)], lda, &q[(2 - 1)], lda);
         }
     }
     //
@@ -111,14 +108,14 @@ void Crqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     Claset("Full", m, n, COMPLEX(zero), COMPLEX(zero), r, lda);
     if (m <= n) {
         if (m > 0) {
-            Clacpy("Upper", m, m, af[((n - m + 1) - 1) * ldaf], lda, r[((n - m + 1) - 1) * ldr], lda);
+            Clacpy("Upper", m, m, &af[((n - m + 1) - 1) * ldaf], lda, &r[((n - m + 1) - 1) * ldr], lda);
         }
     } else {
         if (m > n && n > 0) {
             Clacpy("Full", m - n, n, af, lda, r, lda);
         }
         if (n > 0) {
-            Clacpy("Upper", n, n, af[((m - n + 1) - 1)], lda, r[((m - n + 1) - 1)], lda);
+            Clacpy("Upper", n, n, &af[((m - n + 1) - 1)], lda, &r[((m - n + 1) - 1)], lda);
         }
     }
     //

@@ -37,7 +37,7 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cerrunhr_col(const char *path, INTEGER const nunit) {
-  common cmn;
+    common cmn;
     common_write write(cmn);
     // COMMON infoc
     INTEGER infot;
@@ -82,7 +82,7 @@ void Cerrunhr_col(const char *path, INTEGER const nunit) {
     COMPLEX t[nmax * nmax];
     COMPLEX d[nmax];
     INTEGER lda = nmax;
-    INTEGER ldt = nmax;    
+    INTEGER ldt = nmax;
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = COMPLEX(1.e+0 / castREAL(i + j));

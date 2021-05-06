@@ -37,7 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Chpt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, INTEGER *ipiv, COMPLEX *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
-    c([ldc * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -123,13 +122,13 @@ void Chpt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, INTEGE
             for (i = 1; i <= j - 1; i = i + 1) {
                 c[(i - 1) + (j - 1) * ldc] = c[(i - 1) + (j - 1) * ldc] - a[(jc + i) - 1];
             }
-            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - castREAL(a[(jc + j) - 1]);
+            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - (a[(jc + j) - 1]).real();
             jc += j;
         }
     } else {
         jc = 1;
         for (j = 1; j <= n; j = j + 1) {
-            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - castREAL(a[jc - 1]);
+            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - (a[jc - 1]).real();
             for (i = j + 1; i <= n; i = i + 1) {
                 c[(i - 1) + (j - 1) * ldc] = c[(i - 1) + (j - 1) * ldc] - a[(jc + i - j) - 1];
             }

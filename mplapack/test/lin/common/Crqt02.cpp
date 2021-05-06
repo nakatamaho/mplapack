@@ -37,11 +37,7 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Crqt02(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPLEX *af, COMPLEX *q, COMPLEX *r, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    a([lda * star]);
-    af([lda * star]);
-    q([lda * star]);
-    r([lda * star]);
-    work([lwork]);
+
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -72,6 +68,9 @@ void Crqt02(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
     //
     //     Quick return if possible
     //
+    INTEGER ldaf = lda;
+    INTEGER ldq = lda;
+    INTEGER ldr = lda;
     const REAL zero = 0.0;
     if (m == 0 || n == 0 || k == 0) {
         result[1 - 1] = zero;
@@ -86,10 +85,10 @@ void Crqt02(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
     const COMPLEX rogue = COMPLEX(-1.0e+10, -1.0e+10);
     Claset("Full", m, n, rogue, rogue, q, lda);
     if (k < n) {
-        Clacpy("Full", k, n - k, af[((m - k + 1) - 1)], lda, &q[((m - k + 1) - 1)], lda);
+        Clacpy("Full", k, n - k, &af[((m - k + 1) - 1)], lda, &q[((m - k + 1) - 1)], lda);
     }
     if (k > 1) {
-        Clacpy("Lower", k - 1, k - 1, af[((m - k + 2) - 1) + ((n - k + 1) - 1) * ldaf], lda, &q[((m - k + 2) - 1) + ((n - k + 1) - 1) * ldq], lda);
+        Clacpy("Lower", k - 1, k - 1, &af[((m - k + 2) - 1) + ((n - k + 1) - 1) * ldaf], lda, &q[((m - k + 2) - 1) + ((n - k + 1) - 1) * ldq], lda);
     }
     //
     //     Generate the last n rows of the matrix Q
@@ -99,18 +98,18 @@ void Crqt02(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
     //
     //     Copy R(m-k+1:m,n-m+1:n)
     //
-    Claset("Full", k, m, COMPLEX(zero), COMPLEX(zero), r[((m - k + 1) - 1) + ((n - m + 1) - 1) * ldr], lda);
-    Clacpy("Upper", k, k, af[((m - k + 1) - 1) + ((n - k + 1) - 1) * ldaf], lda, r[((m - k + 1) - 1) + ((n - k + 1) - 1) * ldr], lda);
+    Claset("Full", k, m, COMPLEX(zero), COMPLEX(zero), &r[((m - k + 1) - 1) + ((n - m + 1) - 1) * ldr], lda);
+    Clacpy("Upper", k, k, &af[((m - k + 1) - 1) + ((n - k + 1) - 1) * ldaf], lda, &r[((m - k + 1) - 1) + ((n - k + 1) - 1) * ldr], lda);
     //
     //     Compute R(m-k+1:m,n-m+1:n) - A(m-k+1:m,1:n) * Q(n-m+1:n,1:n)'
     //
     const REAL one = 1.0;
-    Cgemm("No transpose", "Conjugate transpose", k, m, n, COMPLEX(-one), &a[((m - k + 1) - 1)], lda, q, lda, COMPLEX(one), r[((m - k + 1) - 1) + ((n - m + 1) - 1) * ldr], lda);
+    Cgemm("No transpose", "Conjugate transpose", k, m, n, COMPLEX(-one), &a[((m - k + 1) - 1)], lda, q, lda, COMPLEX(one), &r[((m - k + 1) - 1) + ((n - m + 1) - 1) * ldr], lda);
     //
     //     Compute norm( R - A*Q' ) / ( N * norm(A) * EPS ) .
     //
     REAL anorm = Clange("1", k, n, &a[((m - k + 1) - 1)], lda, rwork);
-    REAL resid = Clange("1", k, m, r[((m - k + 1) - 1) + ((n - m + 1) - 1) * ldr], lda, rwork);
+    REAL resid = Clange("1", k, m, &r[((m - k + 1) - 1) + ((n - m + 1) - 1) * ldr], lda, rwork);
     if (anorm > zero) {
         result[1 - 1] = ((resid / castREAL(max((INTEGER)1, n))) / anorm) / eps;
     } else {

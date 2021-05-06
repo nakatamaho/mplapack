@@ -73,7 +73,7 @@ void Clqt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     INTEGER ldt = nb;
     INTEGER j = 0;
-    COMPLEX *a = new COMPLEX [m * n];
+    COMPLEX *a = new COMPLEX[m * n];
     for (j = 1; j <= n; j = j + 1) {
         Clarnv(2, iseed, m, &a[(j - 1) * lda]);
     }
@@ -82,8 +82,8 @@ void Clqt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     //     Factor the matrix A in the array AF.
     //
-    COMPLEX *t = new COMPLEX [nb * n];
-    COMPLEX *work= new COMPLEX [lwork];
+    COMPLEX *t = new COMPLEX[nb * n];
+    COMPLEX *work = new COMPLEX[lwork];
     INTEGER info = 0;
     Cgelqt(m, n, nb, af, m, t, ldt, work, info);
     //
@@ -91,20 +91,20 @@ void Clqt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     const COMPLEX czero = COMPLEX(0.0f, 0.0f);
     const COMPLEX one = COMPLEX(1.0f, 0.0f);
-    COMPLEX * q = new COMPLEX [n * n];
+    COMPLEX *q = new COMPLEX[n * n];
     Claset("Full", n, n, czero, one, q, n);
     Cgemlqt("R", "N", n, n, k, nb, af, m, t, ldt, q, n, work, info);
     //
     //     Copy L
     //
-    COMPLEX * l= new COMPLEX [ll * n];
+    COMPLEX *l = new COMPLEX[ll * n];
     Claset("Full", ll, n, czero, czero, l, ll);
     Clacpy("Lower", m, n, af, m, l, ll);
     //
     //     Compute |L - A*Q'| / |A| and store in RESULT(1)
     //
     Cgemm("N", "C", m, n, n, -one, a, m, q, n, one, l, ll);
-    COMPLEX *rwork = new COMPLEX [ll];
+    COMPLEX *rwork = new COMPLEX[ll];
     REAL anorm = Clange("1", m, n, a, m, rwork);
     REAL resid = Clange("1", m, n, l, ll, rwork);
     const REAL zero = 0.0f;
@@ -123,12 +123,12 @@ void Clqt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     //     Generate random m-by-n matrix C and a copy CF
     //
-    COMPLEX *d = new COMPLEX [n * m];
+    COMPLEX *d = new COMPLEX[n * m];
     for (j = 1; j <= m; j = j + 1) {
         Clarnv(2, iseed, n, &d[(j - 1) * ldd]);
     }
     REAL dnorm = Clange("1", n, m, d, n, rwork);
-    COMPLEX *df = new COMPLEX [n * m];
+    COMPLEX *df = new COMPLEX[n * m];
     Clacpy("Full", n, m, d, n, df, n);
     //
     //     Apply Q to C as Q*C

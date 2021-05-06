@@ -38,8 +38,6 @@ using fem::common;
 
 REAL Rqrt12(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *s, REAL *work, INTEGER const lwork) {
     REAL return_value = 0.0;
-    a([lda * star]);
-    work([lwork]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

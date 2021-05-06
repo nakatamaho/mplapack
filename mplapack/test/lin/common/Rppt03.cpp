@@ -37,7 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rppt03(const char *uplo, INTEGER const n, REAL *a, REAL *ainv, REAL *work, INTEGER const ldwork, REAL *rwork, REAL &rcond, REAL &resid) {
-    work([ldwork * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -97,19 +96,19 @@ void Rppt03(const char *uplo, INTEGER const n, REAL *a, REAL *ainv, REAL *work, 
         //
         jj = 1;
         for (j = 1; j <= n - 1; j = j + 1) {
-            Rcopy(j, ainv[jj - 1], 1, &work[((j + 1) - 1) * ldwork], 1);
-            Rcopy(j - 1, ainv[jj - 1], 1, &work[(j - 1) + (2 - 1) * ldwork], ldwork);
+            Rcopy(j, &ainv[jj - 1], 1, &work[((j + 1) - 1) * ldwork], 1);
+            Rcopy(j - 1, &ainv[jj - 1], 1, &work[(j - 1) + (2 - 1) * ldwork], ldwork);
             jj += j;
         }
         jj = ((n - 1) * n) / 2 + 1;
-        Rcopy(n - 1, ainv[jj - 1], 1, &work[(n - 1) + (2 - 1) * ldwork], ldwork);
+        Rcopy(n - 1, &ainv[jj - 1], 1, &work[(n - 1) + (2 - 1) * ldwork], ldwork);
         //
         //        Multiply by A
         //
         for (j = 1; j <= n - 1; j = j + 1) {
             Rspmv("Upper", n, -one, a, &work[((j + 1) - 1) * ldwork], 1, zero, &work[(j - 1) * ldwork], 1);
         }
-        Rspmv("Upper", n, -one, a, ainv[jj - 1], 1, zero, &work[(n - 1) * ldwork], 1);
+        Rspmv("Upper", n, -one, a, &ainv[jj - 1], 1, zero, &work[(n - 1) * ldwork], 1);
         //
         //     UPLO = 'L':
         //     Copy the trailing N-1 x N-1 submatrix of AINV to WORK(1:N,1:N-1)
@@ -119,11 +118,11 @@ void Rppt03(const char *uplo, INTEGER const n, REAL *a, REAL *ainv, REAL *work, 
         //
         //        Copy AINV
         //
-        Rcopy(n - 1, ainv[2 - 1], 1, &work[(1 - 1)], ldwork);
+        Rcopy(n - 1, &ainv[2 - 1], 1, &work[(1 - 1)], ldwork);
         jj = n + 1;
         for (j = 2; j <= n; j = j + 1) {
-            Rcopy(n - j + 1, ainv[jj - 1], 1, &work[(j - 1) + ((j - 1) - 1) * ldwork], 1);
-            Rcopy(n - j, ainv[(jj + 1) - 1], 1, &work[(j - 1) + (j - 1) * ldwork], ldwork);
+            Rcopy(n - j + 1, &ainv[jj - 1], 1, &work[(j - 1) + ((j - 1) - 1) * ldwork], 1);
+            Rcopy(n - j, &ainv[(jj + 1) - 1], 1, &work[(j - 1) + (j - 1) * ldwork], ldwork);
             jj += n - j + 1;
         }
         //
@@ -132,7 +131,7 @@ void Rppt03(const char *uplo, INTEGER const n, REAL *a, REAL *ainv, REAL *work, 
         for (j = n; j >= 2; j = j - 1) {
             Rspmv("Lower", n, -one, a, &work[((j - 1) - 1) * ldwork], 1, zero, &work[(j - 1) * ldwork], 1);
         }
-        Rspmv("Lower", n, -one, a, ainv[1 - 1], 1, zero, &work[(1 - 1)], 1);
+        Rspmv("Lower", n, -one, a, &ainv[1 - 1], 1, zero, &work[(1 - 1)], 1);
         //
     }
     //

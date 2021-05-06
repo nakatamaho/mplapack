@@ -37,8 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rpot01(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *afac, INTEGER const ldafac, REAL *rwork, REAL &resid) {
-    a([lda * star]);
-    afac([ldafac * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

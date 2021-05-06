@@ -37,12 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rrqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *r, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    a([lda * star]);
-    af([lda * star]);
-    q([lda * star]);
-    r([lda * star]);
-    work([lwork]);
-    // COMMON srnamc
     //
     //
     //  -- LAPACK test routine --
@@ -72,6 +66,9 @@ void Rrqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //     ..
     //     .. Executable Statements ..
     //
+    INTEGER ldaf = lda;
+    INTEGER ldq = lda;
+    INTEGER ldr = lda;
     INTEGER minmn = min(m, n);
     REAL eps = Rlamch("Epsilon");
     //
@@ -93,11 +90,11 @@ void Rrqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
             Rlacpy("Full", m, n - m, af, lda, &q[((n - m + 1) - 1)], lda);
         }
         if (m > 1) {
-            Rlacpy("Lower", m - 1, m - 1, af[(2 - 1) + ((n - m + 1) - 1) * ldaf], lda, &q[((n - m + 2) - 1) + ((n - m + 1) - 1) * ldq], lda);
+            Rlacpy("Lower", m - 1, m - 1, &af[(2 - 1) + ((n - m + 1) - 1) * ldaf], lda, &q[((n - m + 2) - 1) + ((n - m + 1) - 1) * ldq], lda);
         }
     } else {
         if (n > 1) {
-            Rlacpy("Lower", n - 1, n - 1, af[((m - n + 2) - 1)], lda, &q[(2 - 1)], lda);
+            Rlacpy("Lower", n - 1, n - 1, &af[((m - n + 2) - 1)], lda, &q[(2 - 1)], lda);
         }
     }
     //
@@ -111,14 +108,14 @@ void Rrqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     Rlaset("Full", m, n, zero, zero, r, lda);
     if (m <= n) {
         if (m > 0) {
-            Rlacpy("Upper", m, m, af[((n - m + 1) - 1) * ldaf], lda, r[((n - m + 1) - 1) * ldr], lda);
+            Rlacpy("Upper", m, m, &af[((n - m + 1) - 1) * ldaf], lda, &r[((n - m + 1) - 1) * ldr], lda);
         }
     } else {
         if (m > n && n > 0) {
             Rlacpy("Full", m - n, n, af, lda, r, lda);
         }
         if (n > 0) {
-            Rlacpy("Upper", n, n, af[((m - n + 1) - 1)], lda, r[((m - n + 1) - 1)], lda);
+            Rlacpy("Upper", n, n, &af[((m - n + 1) - 1)], lda, &r[((m - n + 1) - 1)], lda);
         }
     }
     //

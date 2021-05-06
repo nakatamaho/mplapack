@@ -37,11 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rqlt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af, REAL *q, REAL *l, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    a([lda * star]);
-    af([lda * star]);
-    q([lda * star]);
-    l([lda * star]);
-    work([lwork]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -72,6 +67,9 @@ void Rqlt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     //
     //     Quick return if possible
     //
+    INTEGER ldaf = lda;
+    INTEGER ldq = lda;
+    INTEGER ldl = lda;
     const REAL zero = 0.0;
     if (m == 0 || n == 0 || k == 0) {
         result[1 - 1] = zero;
@@ -86,10 +84,10 @@ void Rqlt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     const REAL rogue = -1.0e+10;
     Rlaset("Full", m, n, rogue, rogue, q, lda);
     if (k < m) {
-        Rlacpy("Full", m - k, k, af[((n - k + 1) - 1) * ldaf], lda, &q[((n - k + 1) - 1) * ldq], lda);
+        Rlacpy("Full", m - k, k, &af[((n - k + 1) - 1) * ldaf], lda, &q[((n - k + 1) - 1) * ldq], lda);
     }
     if (k > 1) {
-        Rlacpy("Upper", k - 1, k - 1, af[((m - k + 1) - 1) + ((n - k + 2) - 1) * ldaf], lda, &q[((m - k + 1) - 1) + ((n - k + 2) - 1) * ldq], lda);
+        Rlacpy("Upper", k - 1, k - 1, &af[((m - k + 1) - 1) + ((n - k + 2) - 1) * ldaf], lda, &q[((m - k + 1) - 1) + ((n - k + 2) - 1) * ldq], lda);
     }
     //
     //     Generate the last n columns of the matrix Q
@@ -99,18 +97,18 @@ void Rqlt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     //
     //     Copy L(m-n+1:m,n-k+1:n)
     //
-    Rlaset("Full", n, k, zero, zero, l[((m - n + 1) - 1) + ((n - k + 1) - 1) * ldl], lda);
-    Rlacpy("Lower", k, k, af[((m - k + 1) - 1) + ((n - k + 1) - 1) * ldaf], lda, l[((m - k + 1) - 1) + ((n - k + 1) - 1) * ldl], lda);
+    Rlaset("Full", n, k, zero, zero, &l[((m - n + 1) - 1) + ((n - k + 1) - 1) * ldl], lda);
+    Rlacpy("Lower", k, k, &af[((m - k + 1) - 1) + ((n - k + 1) - 1) * ldaf], lda, &l[((m - k + 1) - 1) + ((n - k + 1) - 1) * ldl], lda);
     //
     //     Compute L(m-n+1:m,n-k+1:n) - Q(1:m,m-n+1:m)' * A(1:m,n-k+1:n)
     //
     const REAL one = 1.0;
-    Rgemm("Transpose", "No transpose", n, k, m, -one, q, lda, &a[((n - k + 1) - 1) * lda], lda, one, l[((m - n + 1) - 1) + ((n - k + 1) - 1) * ldl], lda);
+    Rgemm("Transpose", "No transpose", n, k, m, -one, q, lda, &a[((n - k + 1) - 1) * lda], lda, one, &l[((m - n + 1) - 1) + ((n - k + 1) - 1) * ldl], lda);
     //
     //     Compute norm( L - Q'*A ) / ( M * norm(A) * EPS ) .
     //
     REAL anorm = Rlange("1", m, k, &a[((n - k + 1) - 1) * lda], lda, rwork);
-    REAL resid = Rlange("1", n, k, l[((m - n + 1) - 1) + ((n - k + 1) - 1) * ldl], lda, rwork);
+    REAL resid = Rlange("1", n, k, &l[((m - n + 1) - 1) + ((n - k + 1) - 1) * ldl], lda, rwork);
     if (anorm > zero) {
         result[1 - 1] = ((resid / castREAL(max((INTEGER)1, m))) / anorm) / eps;
     } else {

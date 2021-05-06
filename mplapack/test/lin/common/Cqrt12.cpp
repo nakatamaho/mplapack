@@ -38,8 +38,6 @@ using fem::common;
 
 REAL Cqrt12(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *s, COMPLEX *work, INTEGER const lwork, REAL *rwork) {
     REAL return_value = 0.0;
-    a([lda * star]);
-    work([lwork]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
