@@ -37,10 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rpbt05(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const nrhs, REAL *ab, INTEGER const ldab, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL *xact, INTEGER const ldxact, REAL *ferr, REAL *berr, REAL *reslts) {
-    ab([ldab * star]);
-    b([ldb * star]);
-    x([ldx * star]);
-    xact([ldxact * star]);
     const REAL zero = 0.0;
     REAL eps = 0.0;
     REAL unfl = 0.0;

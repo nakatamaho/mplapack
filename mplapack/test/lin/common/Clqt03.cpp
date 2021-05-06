@@ -37,21 +37,7 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Clqt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMPLEX *c, COMPLEX *cc, COMPLEX *q, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    FEM_CMN_SVE(Clqt03);
-    af([lda * star]);
-    c([lda * star]);
-    cc([lda * star]);
-    q([lda * star]);
-    work([lwork]);
-    // COMMON srnamc
-    //
-    // SAVE
-    INTEGER *iseed(sve.iseed, [4]);
-    //
-    if (is_called_first_time) {
-        static const INTEGER values[] = {1988, 1989, 1990, 1991};
-        data_of_type<int>(FEM_VALUES_AND_SIZE), iseed;
-    }
+
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -84,13 +70,18 @@ void Clqt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
     //     ..
     //     .. Executable Statements ..
     //
+    INTEGER ldaf = lda;
+    INTEGER ldc = lda;
+    INTEGER ldcc = lda;
+    INTEGER ldq = lda;
+    const INTEGER iseed[] = {1988, 1989, 1990, 1991};
     REAL eps = Rlamch("Epsilon");
     //
     //     Copy the first k rows of the factorization to the array Q
     //
     const COMPLEX rogue = COMPLEX(-1.0e+10, -1.0e+10);
     Claset("Full", n, n, rogue, rogue, q, lda);
-    Clacpy("Upper", k, n - 1, af[(2 - 1) * ldaf], lda, &q[(2 - 1) * ldq], lda);
+    Clacpy("Upper", k, n - 1, &af[(2 - 1) * ldaf], lda, &q[(2 - 1) * ldq], lda);
     //
     //     Generate the n-by-n matrix Q
     //
@@ -110,11 +101,11 @@ void Clqt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
     REAL resid = 0.0;
     for (iside = 1; iside <= 2; iside = iside + 1) {
         if (iside == 1) {
-            side = "L";
+            side = 'L';
             mc = n;
             nc = m;
         } else {
-            side = "R";
+            side = 'R';
             mc = m;
             nc = n;
         }
@@ -122,7 +113,7 @@ void Clqt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
         //        Generate MC by NC matrix C
         //
         for (j = 1; j <= nc; j = j + 1) {
-            Clarnv(2, iseed, mc, &c[(j - 1) * ldc]);
+            Clarnv(2, &iseed, mc, c[(j - 1) * ldc]);
         }
         cnorm = Clange("1", mc, nc, c, lda, rwork);
         if (cnorm == zero) {
@@ -142,14 +133,14 @@ void Clqt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
             //
             //           Apply Q or Q' to C
             //
-            Cunmlq(side, trans, mc, nc, k, af, lda, tau, cc, lda, work, lwork, info);
+            Cunmlq(&side, &trans, mc, nc, k, af, lda, tau, cc, lda, work, lwork, info);
             //
             //           Form explicit product and subtract
             //
-            if (Mlsame(side, "L")) {
-                Cgemm(trans, "No transpose", mc, nc, mc, COMPLEX(-one), q, lda, c, lda, COMPLEX(one), cc, lda);
+            if (Mlsame(&side, "L")) {
+                Cgemm(&trans, "No transpose", mc, nc, mc, COMPLEX(-one), q, lda, c, lda, COMPLEX(one), cc, lda);
             } else {
-                Cgemm("No transpose", trans, mc, nc, nc, COMPLEX(-one), c, lda, q, lda, COMPLEX(one), cc, lda);
+                Cgemm("No transpose", &trans, mc, nc, nc, COMPLEX(-one), c, lda, q, lda, COMPLEX(one), cc, lda);
             }
             //
             //           Compute error in the difference

@@ -37,7 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cppt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLEX *work, INTEGER const ldwork, REAL *rwork, REAL &rcond, REAL &resid) {
-    work([ldwork * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -100,7 +99,7 @@ void Cppt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLE
         //
         jj = 1;
         for (j = 1; j <= n - 1; j = j + 1) {
-            Ccopy(j, ainv[jj - 1], 1, &work[((j + 1) - 1) * ldwork], 1);
+            Ccopy(j, &ainv[jj - 1], 1, &work[((j + 1) - 1) * ldwork], 1);
             for (i = 1; i <= j - 1; i = i + 1) {
                 work[(j - 1) + ((i + 1) - 1) * ldwork] = conj(ainv[(jj + i - 1) - 1]);
             }
@@ -116,7 +115,7 @@ void Cppt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLE
         for (j = 1; j <= n - 1; j = j + 1) {
             Chpmv("Upper", n, -cone, a, &work[((j + 1) - 1) * ldwork], 1, czero, &work[(j - 1) * ldwork], 1);
         }
-        Chpmv("Upper", n, -cone, a, ainv[jj - 1], 1, czero, &work[(n - 1) * ldwork], 1);
+        Chpmv("Upper", n, -cone, a, &ainv[jj - 1], 1, czero, &work[(n - 1) * ldwork], 1);
         //
         //     UPLO = 'L':
         //     Copy the trailing N-1 x N-1 submatrix of AINV to WORK(1:N,1:N-1)
@@ -131,7 +130,7 @@ void Cppt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLE
         }
         jj = n + 1;
         for (j = 2; j <= n; j = j + 1) {
-            Ccopy(n - j + 1, ainv[jj - 1], 1, &work[(j - 1) + ((j - 1) - 1) * ldwork], 1);
+            Ccopy(n - j + 1, &ainv[jj - 1], 1, &work[(j - 1) + ((j - 1) - 1) * ldwork], 1);
             for (i = 1; i <= n - j; i = i + 1) {
                 work[(j - 1) + ((j + i - 1) - 1) * ldwork] = conj(ainv[(jj + i) - 1]);
             }
@@ -143,7 +142,7 @@ void Cppt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLE
         for (j = n; j >= 2; j = j - 1) {
             Chpmv("Lower", n, -cone, a, &work[((j - 1) - 1) * ldwork], 1, czero, &work[(j - 1) * ldwork], 1);
         }
-        Chpmv("Lower", n, -cone, a, ainv[1 - 1], 1, czero, &work[(1 - 1)], 1);
+        Chpmv("Lower", n, -cone, a, &ainv[1 - 1], 1, czero, &work[(1 - 1)], 1);
         //
     }
     //

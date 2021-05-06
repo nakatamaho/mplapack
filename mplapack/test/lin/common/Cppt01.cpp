@@ -113,7 +113,7 @@ void Cppt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *
             //
             //           Compute the (K,K) element of the result.
             //
-            tr = Cdotc(k, &afac[kc - 1], 1, &afac[kc - 1], 1);
+            tr = Cdotc(k, &afac[kc - 1], 1, &afac[kc - 1], 1).real();
             afac[(kc + k - 1) - 1] = tr;
             //
             //           Compute the rest of column K.
@@ -160,7 +160,7 @@ void Cppt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *
         //
         kc = 1;
         for (k = 1; k <= n; k = k + 1) {
-            afac[kc - 1] = afac[kc - 1] - castREAL(a[kc - 1]);
+            afac[kc - 1] = afac[kc - 1] - (a[kc - 1]).real();
             for (i = k + 1; i <= n; i = i + 1) {
                 afac[(kc + i - k) - 1] = afac[(kc + i - k) - 1] - a[(kc + i - k) - 1];
             }

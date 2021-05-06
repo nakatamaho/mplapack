@@ -37,7 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cgtt01(INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *dlf, COMPLEX *df, COMPLEX *duf, COMPLEX *du2, INTEGER *ipiv, COMPLEX *work, INTEGER const ldwork, REAL *rwork, REAL &resid) {
-    work([ldwork * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

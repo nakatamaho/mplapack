@@ -5,19 +5,6 @@ liblin_mpfr_la_SOURCES = $(LIN_SOURCES)
 
 LIN_SOURCES = \
 ../common/Clqt03.cpp \
-../common/Rpbt01.cpp \
-../common/Rgtt01.cpp \
-../common/Cgtt01.cpp \
-../common/Cptt05.cpp \
-../common/Cpot01.cpp \
-../common/Rpot05.cpp \
-../common/Cget07.cpp \
-../common/Cgbt05.cpp \
-../common/Rppt05.cpp \
-../common/Cppt03.cpp \
-../common/Rerrlqt.cpp \
-../common/Rpbt05.cpp \
-../common/Cppt01.cpp \
 ../common/Cerrlqt.cpp \
 ../common/Rsyt01_aa.cpp \
 ../common/Csyt01_aa.cpp \
@@ -398,10 +385,22 @@ LIN_SOURCES = \
 ../common/Rlqt03.cpp \
 ../common/Rppt03.cpp \
 ../common/Cgbt01.cpp \
-../common/Cqrt03.cpp
+../common/Cqrt03.cpp \
+../common/Rpbt01.cpp \
+../common/Rgtt01.cpp \
+../common/Cgtt01.cpp \
+../common/Cptt05.cpp \
+../common/Cpot01.cpp \
+../common/Rpot05.cpp \
+../common/Cget07.cpp \
+../common/Cgbt05.cpp \
+../common/Rppt05.cpp \
+../common/Cppt03.cpp \
+../common/Rerrlqt.cpp \
+../common/Rpbt05.cpp \
+../common/Cppt01.cpp
 
 #../common/iMlaenv.cpp
-
 
 libdepends = -L. -llin_mpfr -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr 
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lm

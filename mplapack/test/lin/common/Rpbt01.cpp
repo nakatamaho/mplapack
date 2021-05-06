@@ -37,8 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rpbt01(const char *uplo, INTEGER const n, INTEGER const kd, REAL *a, INTEGER const lda, REAL *afac, INTEGER const ldafac, REAL *rwork, REAL &resid) {
-    a([lda * star]);
-    afac([ldafac * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

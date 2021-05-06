@@ -37,10 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rpot05(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL *xact, INTEGER const ldxact, REAL *ferr, REAL *berr, REAL *reslts) {
-    a([lda * star]);
-    b([ldb * star]);
-    x([ldx * star]);
-    xact([ldxact * star]);
     const REAL zero = 0.0;
     REAL eps = 0.0;
     REAL unfl = 0.0;
