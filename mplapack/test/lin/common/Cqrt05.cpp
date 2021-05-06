@@ -37,15 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb, REAL *result) {
-    FEM_CMN_SVE(Cqrt05);
-    result([6]);
-    // SAVE
-    INTEGER *iseed(sve.iseed, [4]);
-    //
-    if (is_called_first_time) {
-        static const INTEGER values[] = {1988, 1989, 1990, 1991};
-        data_of_type<int>(FEM_VALUES_AND_SIZE), iseed;
-    }
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -69,6 +60,7 @@ void Cqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //     ..
     //     .. Data statements ..
     //
+    INTEGER iseed[] = {1988, 1989, 1990, 1991};
     REAL eps = Rlamch("Epsilon");
     INTEGER k = n;
     INTEGER m2 = m + n;
@@ -84,11 +76,12 @@ void Cqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     //     Put random stuff into A
     //
-    INTEGER ldt = nb;
     const COMPLEX czero = COMPLEX(0.0f, 0.0f);
-    COMPLEX a[m2 * n];
+    COMPLEX *a = new COMPLEX[m2 * n];
+    INTEGER lda = m2;
     Claset("Full", m2, n, czero, czero, a, m2);
-    COMPLEX t[nb * n];
+    COMPLEX *t = new COMPLEX[nb * n];
+    INTEGER ldt = nb;
     Claset("Full", nb, n, czero, czero, t, nb);
     INTEGER j = 0;
     for (j = 1; j <= n; j = j + 1) {
@@ -107,32 +100,35 @@ void Cqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     //     Copy the matrix A to the array AF.
     //
-    COMPLEX af[m2 * n];
+    COMPLEX *af = new COMPLEX[m2 * n];
+    INTEGER ldaf = m2;
     Clacpy("Full", m2, n, a, m2, af, m2);
     //
     //     Factor the matrix A in the array AF.
     //
-    COMPLEX work[lwork];
+    COMPLEX *work = new COMPLEX[lwork];
     INTEGER info = 0;
-    Ctpqrt(m, n, l, nb, af, m2, af[(np1 - 1)], m2, t, ldt, work, info);
+    Ctpqrt(m, n, l, nb, af, m2, &af[(np1 - 1)], m2, t, ldt, work, info);
     //
     //     Generate the (M+N)-by-(M+N) matrix Q by applying H to I
     //
     const COMPLEX one = COMPLEX(1.0f, 0.0f);
-    COMPLEX q[m2 * m2];
+    COMPLEX *q = new COMPLEX[m2 * m2];
+    INTEGER ldq = m2;
     Claset("Full", m2, m2, czero, one, q, m2);
     Cgemqrt("R", "N", m2, m2, k, nb, af, m2, t, ldt, q, m2, work, info);
     //
     //     Copy R
     //
-    COMPLEX r[m2 * m2];
+    COMPLEX *r = new COMPLEX[m2 * m2];
+    INTEGER ldr = m2;
     Claset("Full", m2, n, czero, czero, r, m2);
     Clacpy("Upper", m2, n, af, m2, r, m2);
     //
     //     Compute |R - Q'*A| / |A| and store in RESULT(1)
     //
     Cgemm("C", "N", m2, n, m2, -one, q, m2, a, m2, one, r, m2);
-    REAL rwork[m2];
+    REAL *rwork = new REAL[m2];
     REAL anorm = Clange("1", m2, n, a, m2, rwork);
     REAL resid = Clange("1", m2, n, r, m2, rwork);
     const REAL zero = 0.0f;
@@ -145,23 +141,25 @@ void Cqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //     Compute |I - Q'*Q| and store in RESULT(2)
     //
     Claset("Full", m2, m2, czero, one, r, m2);
-    Cherk("U", "C", m2, m2, dreal[-one - 1], q, m2, dreal[one - 1], r, m2);
+    Cherk("U", "C", m2, m2, -one.real(), q, m2, one.real(), r, m2);
     resid = Clansy("1", "Upper", m2, r, m2, rwork);
     result[2 - 1] = resid / (eps * max((INTEGER)1, m2));
     //
     //     Generate random m-by-n matrix C and a copy CF
     //
-    COMPLEX c[m2 * n];
+    COMPLEX *c = new COMPLEX[m2 * n];
+    INTEGER ldc = m2;
     for (j = 1; j <= n; j = j + 1) {
         Clarnv(2, iseed, m2, &c[(j - 1) * ldc]);
     }
     REAL cnorm = Clange("1", m2, n, c, m2, rwork);
-    COMPLEX cf[m2 * n];
+    COMPLEX *cf = new COMPLEX[m2 * n];
+    INTEGER ldcf = m2;
     Clacpy("Full", m2, n, c, m2, cf, m2);
     //
     //     Apply Q to C as Q*C
     //
-    Ctpmqrt("L", "N", m, n, k, l, nb, af[(np1 - 1)], m2, t, ldt, cf, m2, cf[(np1 - 1)], m2, work, info);
+    Ctpmqrt("L", "N", m, n, k, l, nb, &af[(np1 - 1)], m2, t, ldt, cf, m2, &cf[(np1 - 1)], m2, work, info);
     //
     //     Compute |Q*C - Q*C| / |C|
     //
@@ -179,7 +177,7 @@ void Cqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     //     Apply Q to C as QT*C
     //
-    Ctpmqrt("L", "C", m, n, k, l, nb, af[(np1 - 1)], m2, t, ldt, cf, m2, cf[(np1 - 1)], m2, work, info);
+    Ctpmqrt("L", "C", m, n, k, l, nb, &af[(np1 - 1)], m2, t, ldt, cf, m2, &cf[(np1 - 1)], m2, work, info);
     //
     //     Compute |QT*C - QT*C| / |C|
     //
@@ -193,17 +191,20 @@ void Cqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     //     Generate random n-by-m matrix D and a copy DF
     //
-    COMPLEX d[n * m2];
+    COMPLEX *d = new COMPLEX[n * m2];
+    INTEGER ldd = n;
+
     for (j = 1; j <= m2; j = j + 1) {
         Clarnv(2, iseed, n, &d[(j - 1) * ldd]);
     }
     REAL dnorm = Clange("1", n, m2, d, n, rwork);
-    COMPLEX df[n * m2];
+    COMPLEX *df = new COMPLEX[n * m2];
+    INTEGER lddf = n;
     Clacpy("Full", n, m2, d, n, df, n);
     //
     //     Apply Q to D as D*Q
     //
-    Ctpmqrt("R", "N", n, m, n, l, nb, af[(np1 - 1)], m2, t, ldt, df, n, df[(np1 - 1) * lddf], n, work, info);
+    Ctpmqrt("R", "N", n, m, n, l, nb, &af[(np1 - 1)], m2, t, ldt, df, n, &df[(np1 - 1) * lddf], n, work, info);
     //
     //     Compute |D*Q - D*Q| / |D|
     //
@@ -221,7 +222,7 @@ void Cqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     //     Apply Q to D as D*QT
     //
-    Ctpmqrt("R", "C", n, m, n, l, nb, af[(np1 - 1)], m2, t, ldt, df, n, df[(np1 - 1) * lddf], n, work, info);
+    Ctpmqrt("R", "C", n, m, n, l, nb, &af[(np1 - 1)], m2, t, ldt, df, n, &df[(np1 - 1) * lddf], n, work, info);
     //
     //     Compute |D*QT - D*QT| / |D|
     //
@@ -235,5 +236,15 @@ void Cqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     //     Deallocate all arrays
     //
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(a,af,q,r,rwork,work,t,c,d,cf,df)");
+    delete[] a;
+    delete[] af;
+    delete[] q;
+    delete[] r;
+    delete[] rwork;
+    delete[] work;
+    delete[] t;
+    delete[] c;
+    delete[] d;
+    delete[] cf;
+    delete[] df;
 }
