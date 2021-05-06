@@ -46,7 +46,7 @@ void Rdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     //
     // SAVE
     str_arr_ref<1> forms(sve.forms, [2]);
-    INTEGER *iseedy(sve.iseedy, [4]);
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     str_arr_ref<1> transs(sve.transs, [2]);
     str_arr_ref<1> uplos(sve.uplos, [2]);
     //

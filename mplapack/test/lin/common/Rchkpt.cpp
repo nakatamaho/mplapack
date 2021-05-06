@@ -39,7 +39,7 @@ using fem::common;
 void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, REAL *a, REAL *d, REAL *e, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER const nout) {
     common_write write(cmn);
     //
-    INTEGER *iseedy(sve.iseedy, [4]);
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     if (is_called_first_time) {
         static const INTEGER values[] = {0, 0, 0, 1};
         data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;

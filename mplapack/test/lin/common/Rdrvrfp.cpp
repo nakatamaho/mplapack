@@ -43,7 +43,7 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
     common_write write(cmn);
     //
     str_arr_ref<1> forms(sve.forms, [2]);
-    INTEGER *iseedy(sve.iseedy, [4]);
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     str_arr_ref<1> uplos(sve.uplos, [2]);
     if (is_called_first_time) {
         {

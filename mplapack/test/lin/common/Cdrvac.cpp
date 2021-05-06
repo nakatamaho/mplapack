@@ -39,7 +39,7 @@ using fem::common;
 void Cdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, INTEGER *nsval, REAL const thresh, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *b, COMPLEX *x, COMPLEX *work, REAL *rwork, arr_cref<std::complex<float>> swork, INTEGER const nout) {
     common_write write(cmn);
     //
-    INTEGER *iseedy(sve.iseedy, [4]);
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     str_arr_ref<1> uplos(sve.uplos, [2]);
     if (is_called_first_time) {
         {

@@ -39,7 +39,7 @@ using fem::common;
 void Cchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *ap, COMPLEX *ainvp, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
     common_write write(cmn);
     //
-    INTEGER *iseedy(sve.iseedy, [4]);
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     const INTEGER ntran = 3;
     str_arr_ref<1> transs(sve.transs, [ntran]);
     str_arr_ref<1> uplos(sve.uplos, [2]);

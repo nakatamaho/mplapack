@@ -41,7 +41,7 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     //
     str_arr_ref<1> equeds(sve.equeds, [4]);
     str_arr_ref<1> facts(sve.facts, [3]);
-    INTEGER *iseedy(sve.iseedy, [4]);
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     const INTEGER ntran = 3;
     str_arr_ref<1> transs(sve.transs, [ntran]);
     if (is_called_first_time) {

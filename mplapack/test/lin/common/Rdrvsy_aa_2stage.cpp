@@ -41,7 +41,7 @@ void Rdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
     //
     const INTEGER nfact = 2;
     str_arr_ref<1> facts(sve.facts, [nfact]);
-    INTEGER *iseedy(sve.iseedy, [4]);
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     str_arr_ref<1> uplos(sve.uplos, [2]);
     if (is_called_first_time) {
         {

@@ -39,7 +39,7 @@ using fem::common;
 void Cdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, INTEGER *nsval, REAL const thresh, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *b, COMPLEX *x, COMPLEX *work, REAL *rwork, arr_cref<std::complex<float>> swork, INTEGER *iwork, INTEGER const nout) {
     common_write write(cmn);
     //
-    INTEGER *iseedy(sve.iseedy, [4]);
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     if (is_called_first_time) {
         static const INTEGER values[] = {2006, 2007, 2008, 2009};
         data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
