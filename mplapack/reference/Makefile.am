@@ -86,6 +86,16 @@ endif
 
 
 MPLAPACK_SOURCES = \
+Cgtsvx.cpp \
+Chesv_aa.cpp \
+Chesv_aa_2stage.cpp \
+Chesv_rk.cpp \
+Cpptri.cpp \
+Csysv.cpp \
+Csysv_aa_2stage.cpp \
+Csysv_rk.cpp \
+Csysv_rook.cpp \
+Rgtsvx.cpp \
 Cgtcon.cpp \
 Cgttrf.cpp \
 Cbbcsd.cpp \
