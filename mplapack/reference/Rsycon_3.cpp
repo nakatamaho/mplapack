@@ -30,7 +30,6 @@
 #include <mplapack.h>
 
 void Rsycon_3(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *e, INTEGER *ipiv, REAL const anorm, REAL &rcond, REAL *work, INTEGER *iwork, INTEGER &info) {
-    a([lda * star]);
     bool upper = false;
     const REAL zero = 0.0;
     const REAL one = 1.0;
