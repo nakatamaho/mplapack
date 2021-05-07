@@ -359,7 +359,7 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         Alaerh(path, "Cpocon", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
-                    result[8 - 1] = Rget06[(rcond - 1) + (rcondc - 1) * ldRget06];
+                    result[8 - 1] = Rget06(rcond, rcondc);
                     //
                     //                 Print the test ratio if it is .GE. THRESH.
                     //

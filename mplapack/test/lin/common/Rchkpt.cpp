@@ -398,7 +398,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 Alaerh(path, "Rptcon", info, 0, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
             }
             //
-            result[7 - 1] = Rget06[(rcond - 1) + (rcondc - 1) * ldRget06];
+            result[7 - 1] = Rget06(rcond, rcondc);
             //
             //           Print the test ratio if greater than or equal to THRESH.
             //

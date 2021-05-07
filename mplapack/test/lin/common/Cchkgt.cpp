@@ -329,7 +329,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     Alaerh(path, "Cgtcon", info, 0, norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 //
-                result[7 - 1] = Rget06[(rcond - 1) + (rcondc - 1) * ldRget06];
+                result[7 - 1] = Rget06(rcond, rcondc);
                 //
                 //              Print the test ratio if it is .GE. THRESH.
                 //

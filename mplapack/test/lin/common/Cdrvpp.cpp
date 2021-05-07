@@ -464,7 +464,7 @@ void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //                    Compare RCOND from Cppsvx with the computed value
                         //                    in RCONDC.
                         //
-                        result[6 - 1] = Rget06[(rcond - 1) + (rcondc - 1) * ldRget06];
+                        result[6 - 1] = Rget06(rcond, rcondc);
                         //
                         //                    Print information about the tests that did not pass
                         //                    the threshold.

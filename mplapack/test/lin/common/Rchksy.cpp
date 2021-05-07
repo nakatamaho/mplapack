@@ -493,7 +493,7 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     //                 Compute the test ratio to compare values of RCOND
                     //
-                    result[9 - 1] = Rget06[(rcond - 1) + (rcondc - 1) * ldRget06];
+                    result[9 - 1] = Rget06(rcond, rcondc);
                     //
                     //                 Print information about the tests that did not pass
                     //                 the threshold.
