@@ -201,6 +201,7 @@ void Chbgvx(const char *jobz, const char *range, const char *uplo, mplapackint c
 void Chbtrd(const char *vect, const char *uplo, mplapackint const n, mplapackint const kd, std::complex<double> *ab, mplapackint const ldab, double *d, double *e, std::complex<double> *q, mplapackint const ldq, std::complex<double> *work, mplapackint &info);
 void Checon(const char *uplo, mplapackint const n, std::complex<double> *a, mplapackint const lda, mplapackint *ipiv, double const anorm, double &rcond, std::complex<double> *work, mplapackint &info);
 void Checon_3(const char *uplo, mplapackint const n, std::complex<double> *a, mplapackint const lda, std::complex<double> *e, mplapackint *ipiv, double const anorm, double &rcond, std::complex<double> *work, mplapackint &info);
+void Checon_rook(const char *uplo, mplapackint const n, std::complex<double> *a, mplapackint const lda, mplapackint *ipiv, double const anorm, double &rcond, std::complex<double> *work, mplapackint &info);
 void Cheequb(const char *uplo, mplapackint const n, std::complex<double> *a, mplapackint const lda, double *s, double &scond, double &amax, std::complex<double> *work, mplapackint &info);
 void Cheev(const char *jobz, const char *uplo, mplapackint const n, std::complex<double> *a, mplapackint const lda, double *w, std::complex<double> *work, mplapackint const lwork, double *rwork, mplapackint &info);
 void Cheev_2stage(const char *jobz, const char *uplo, mplapackint const n, std::complex<double> *a, mplapackint const lda, double *w, std::complex<double> *work, mplapackint const lwork, double *rwork, mplapackint &info);
@@ -407,6 +408,7 @@ void Cstemr(const char *jobz, const char *range, mplapackint const n, double *d,
 void Csteqr(const char *compz, mplapackint const n, double *d, double *e, std::complex<double> *z, mplapackint const ldz, double *work, mplapackint &info);
 void Csycon(const char *uplo, mplapackint const n, std::complex<double> *a, mplapackint const lda, mplapackint *ipiv, double const anorm, double &rcond, std::complex<double> *work, mplapackint &info);
 void Csycon_3(const char *uplo, mplapackint const n, std::complex<double> *a, mplapackint const lda, std::complex<double> *e, mplapackint *ipiv, double const anorm, double &rcond, std::complex<double> *work, mplapackint &info);
+void Csycon_rook(const char *uplo, mplapackint const n, std::complex<double> *a, mplapackint const lda, mplapackint *ipiv, double const anorm, double &rcond, std::complex<double> *work, mplapackint &info);
 void Csyconv(const char *uplo, const char *way, mplapackint const n, std::complex<double> *a, mplapackint const lda, mplapackint *ipiv, std::complex<double> *e, mplapackint &info);
 void Csyconvf(const char *uplo, const char *way, mplapackint const n, std::complex<double> *a, mplapackint const lda, std::complex<double> *e, mplapackint *ipiv, mplapackint &info);
 void Csyconvf_rook(const char *uplo, const char *way, mplapackint const n, std::complex<double> *a, mplapackint const lda, std::complex<double> *e, mplapackint *ipiv, mplapackint &info);

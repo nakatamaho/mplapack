@@ -203,6 +203,7 @@ void Chbgvx(const char *jobz, const char *range, const char *uplo, mplapackint c
 void Chbtrd(const char *vect, const char *uplo, mplapackint const n, mplapackint const kd, dd_complex *ab, mplapackint const ldab, dd_real *d, dd_real *e, dd_complex *q, mplapackint const ldq, dd_complex *work, mplapackint &info);
 void Checon(const char *uplo, mplapackint const n, dd_complex *a, mplapackint const lda, mplapackint *ipiv, dd_real const anorm, dd_real &rcond, dd_complex *work, mplapackint &info);
 void Checon_3(const char *uplo, mplapackint const n, dd_complex *a, mplapackint const lda, dd_complex *e, mplapackint *ipiv, dd_real const anorm, dd_real &rcond, dd_complex *work, mplapackint &info);
+void Checon_rook(const char *uplo, mplapackint const n, dd_complex *a, mplapackint const lda, mplapackint *ipiv, dd_real const anorm, dd_real &rcond, dd_complex *work, mplapackint &info);
 void Cheequb(const char *uplo, mplapackint const n, dd_complex *a, mplapackint const lda, dd_real *s, dd_real &scond, dd_real &amax, dd_complex *work, mplapackint &info);
 void Cheev(const char *jobz, const char *uplo, mplapackint const n, dd_complex *a, mplapackint const lda, dd_real *w, dd_complex *work, mplapackint const lwork, dd_real *rwork, mplapackint &info);
 void Cheev_2stage(const char *jobz, const char *uplo, mplapackint const n, dd_complex *a, mplapackint const lda, dd_real *w, dd_complex *work, mplapackint const lwork, dd_real *rwork, mplapackint &info);
@@ -409,6 +410,7 @@ void Cstemr(const char *jobz, const char *range, mplapackint const n, dd_real *d
 void Csteqr(const char *compz, mplapackint const n, dd_real *d, dd_real *e, dd_complex *z, mplapackint const ldz, dd_real *work, mplapackint &info);
 void Csycon(const char *uplo, mplapackint const n, dd_complex *a, mplapackint const lda, mplapackint *ipiv, dd_real const anorm, dd_real &rcond, dd_complex *work, mplapackint &info);
 void Csycon_3(const char *uplo, mplapackint const n, dd_complex *a, mplapackint const lda, dd_complex *e, mplapackint *ipiv, dd_real const anorm, dd_real &rcond, dd_complex *work, mplapackint &info);
+void Csycon_rook(const char *uplo, mplapackint const n, dd_complex *a, mplapackint const lda, mplapackint *ipiv, dd_real const anorm, dd_real &rcond, dd_complex *work, mplapackint &info);
 void Csyconv(const char *uplo, const char *way, mplapackint const n, dd_complex *a, mplapackint const lda, mplapackint *ipiv, dd_complex *e, mplapackint &info);
 void Csyconvf(const char *uplo, const char *way, mplapackint const n, dd_complex *a, mplapackint const lda, dd_complex *e, mplapackint *ipiv, mplapackint &info);
 void Csyconvf_rook(const char *uplo, const char *way, mplapackint const n, dd_complex *a, mplapackint const lda, dd_complex *e, mplapackint *ipiv, mplapackint &info);
