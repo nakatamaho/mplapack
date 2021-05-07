@@ -424,6 +424,7 @@ Csyequb.cpp \
 Csymv.cpp \
 Csyr.cpp \
 Csyrfs.cpp \
+Csysv_aa.cpp \
 Csysvx.cpp \
 Csyswapr.cpp \
 Csytf2.cpp \
