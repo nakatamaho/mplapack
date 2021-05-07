@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012
+ * Copyright (c) 2021
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef _MPLAPACK_LIN__FLOAT64X_H_
-#define _MPLAPACK_LIN__FLOAT64X_H_
+#ifndef _MPLAPACK_LIN__FLOAT128_H_
+#define _MPLAPACK_LIN__FLOAT128_H_
 
 #include "mplapack_config.h"
 
@@ -162,7 +162,6 @@ void Cgtt02(const char *trans, mplapackint const n, mplapackint const nrhs, std:
 void Cgtt05(const char *trans, mplapackint const n, mplapackint const nrhs, std::complex<_Float128> *dl, std::complex<_Float128> *d, std::complex<_Float128> *du, std::complex<_Float128> *b, mplapackint const ldb, std::complex<_Float128> *x, mplapackint const ldx, std::complex<_Float128> *xact, mplapackint const ldxact, _Float128 *ferr, _Float128 *berr, _Float128 *reslts);
 void Chet01(const char *uplo, mplapackint const n, std::complex<_Float128> *a, mplapackint const lda, std::complex<_Float128> *afac, mplapackint const ldafac, mplapackint *ipiv, std::complex<_Float128> *c, mplapackint const ldc, _Float128 *rwork, _Float128 &resid);
 void Chet01_3(const char *uplo, mplapackint const n, std::complex<_Float128> *a, mplapackint const lda, std::complex<_Float128> *afac, mplapackint const ldafac, std::complex<_Float128> *e, mplapackint *ipiv, std::complex<_Float128> *c, mplapackint const ldc, _Float128 *rwork, _Float128 &resid);
-void Chet01_aa(const char *uplo, mplapackint const n, std::complex<_Float128> *a, mplapackint const lda, std::complex<_Float128> *afac, mplapackint const ldafac, mplapackint *ipiv, std::complex<_Float128> *c, mplapackint const ldc, _Float128 *rwork, _Float128 &resid);
 void Chet01_rook(const char *uplo, mplapackint const n, std::complex<_Float128> *a, mplapackint const lda, std::complex<_Float128> *afac, mplapackint const ldafac, mplapackint *ipiv, std::complex<_Float128> *c, mplapackint const ldc, _Float128 *rwork, _Float128 &resid);
 void Chpt01(const char *uplo, mplapackint const n, std::complex<_Float128> *a, std::complex<_Float128> *afac, mplapackint *ipiv, std::complex<_Float128> *c, mplapackint const ldc, _Float128 *rwork, _Float128 &resid);
 void Clahilb(mplapackint const n, mplapackint const nrhs, std::complex<_Float128> *a, mplapackint const lda, std::complex<_Float128> *x, mplapackint const ldx, std::complex<_Float128> *b, mplapackint const ldb, _Float128 *work, mplapackint &info, const char *path);
@@ -224,7 +223,6 @@ void Cspt02(const char *uplo, mplapackint const n, mplapackint const nrhs, std::
 void Cspt03(const char *uplo, mplapackint const n, std::complex<_Float128> *a, std::complex<_Float128> *ainv, std::complex<_Float128> *work, mplapackint const ldw, _Float128 *rwork, _Float128 &rcond, _Float128 &resid);
 void Csyt01(const char *uplo, mplapackint const n, std::complex<_Float128> *a, mplapackint const lda, std::complex<_Float128> *afac, mplapackint const ldafac, mplapackint *ipiv, std::complex<_Float128> *c, mplapackint const ldc, _Float128 *rwork, _Float128 &resid);
 void Csyt01_3(const char *uplo, mplapackint const n, std::complex<_Float128> *a, mplapackint const lda, std::complex<_Float128> *afac, mplapackint const ldafac, std::complex<_Float128> *e, mplapackint *ipiv, std::complex<_Float128> *c, mplapackint const ldc, _Float128 *rwork, _Float128 &resid);
-void Csyt01_aa(const char *uplo, mplapackint const n, std::complex<_Float128> *a, mplapackint const lda, std::complex<_Float128> *afac, mplapackint const ldafac, mplapackint *ipiv, std::complex<_Float128> *c, mplapackint const ldc, _Float128 *rwork, _Float128 &resid);
 void Csyt01_rook(const char *uplo, mplapackint const n, std::complex<_Float128> *a, mplapackint const lda, std::complex<_Float128> *afac, mplapackint const ldafac, mplapackint *ipiv, std::complex<_Float128> *c, mplapackint const ldc, _Float128 *rwork, _Float128 &resid);
 void Csyt02(const char *uplo, mplapackint const n, mplapackint const nrhs, std::complex<_Float128> *a, mplapackint const lda, std::complex<_Float128> *x, mplapackint const ldx, std::complex<_Float128> *b, mplapackint const ldb, _Float128 *rwork, _Float128 &resid);
 void Csyt03(const char *uplo, mplapackint const n, std::complex<_Float128> *a, mplapackint const lda, std::complex<_Float128> *ainv, mplapackint const ldainv, std::complex<_Float128> *work, mplapackint const ldwork, _Float128 *rwork, _Float128 &rcond, _Float128 &resid);
@@ -385,7 +383,6 @@ void Rrqt03(mplapackint const m, mplapackint const n, mplapackint const k, _Floa
 void Rspt01(const char *uplo, mplapackint const n, _Float128 *a, _Float128 *afac, mplapackint *ipiv, _Float128 *c, mplapackint const ldc, _Float128 *rwork, _Float128 &resid);
 void Rsyt01(const char *uplo, mplapackint const n, _Float128 *a, mplapackint const lda, _Float128 *afac, mplapackint const ldafac, mplapackint *ipiv, _Float128 *c, mplapackint const ldc, _Float128 *rwork, _Float128 &resid);
 void Rsyt01_3(const char *uplo, mplapackint const n, _Float128 *a, mplapackint const lda, _Float128 *afac, mplapackint const ldafac, _Float128 *e, mplapackint *ipiv, _Float128 *c, mplapackint const ldc, _Float128 *rwork, _Float128 &resid);
-void Rsyt01_aa(const char *uplo, mplapackint const n, _Float128 *a, mplapackint const lda, _Float128 *afac, mplapackint const ldafac, mplapackint *ipiv, _Float128 *c, mplapackint const ldc, _Float128 *rwork, _Float128 &resid);
 void Rsyt01_rook(const char *uplo, mplapackint const n, _Float128 *a, mplapackint const lda, _Float128 *afac, mplapackint const ldafac, mplapackint *ipiv, _Float128 *c, mplapackint const ldc, _Float128 *rwork, _Float128 &resid);
 void Rtbt02(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const kd, mplapackint const nrhs, _Float128 *ab, mplapackint const ldab, _Float128 *x, mplapackint const ldx, _Float128 *b, mplapackint const ldb, _Float128 *work, _Float128 &resid);
 void Rtbt03(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const kd, mplapackint const nrhs, _Float128 *ab, mplapackint const ldab, _Float128 const scale, _Float128 *cnorm, _Float128 const tscal, _Float128 *x, mplapackint const ldx, _Float128 *b, mplapackint const ldb, _Float128 *work, _Float128 &resid);
@@ -404,6 +401,7 @@ void Rtrt05(const char *uplo, const char *trans, const char *diag, mplapackint c
 void Rtrt06(_Float128 const rcond, _Float128 const rcondc, const char *uplo, const char *diag, mplapackint const n, _Float128 *a, mplapackint const lda, _Float128 *work, _Float128 &rat);
 void Rtsqr01(const char *tssw, mplapackint const m, mplapackint const n, mplapackint const mb, mplapackint const nb, _Float128 *result);
 void chkxer(const char *srnamt, mplapackint const &infot, mplapackint const &nout, bool &lerr, bool &ok);
+void icopy(mplapackint const &n, mplapackint *sx, mplapackint const &incx, mplapackint *sy, mplapackint const &incy);
 void program_Cchkaa(mplapackint argc, char const *argv[]);
 void program_Cchkab(mplapackint argc, char const *argv[]);
 void program_Cchkrfp(mplapackint argc, char const *argv[]);

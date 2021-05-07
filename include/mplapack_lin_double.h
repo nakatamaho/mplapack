@@ -162,7 +162,6 @@ void Cgtt02(const char *trans, mplapackint const n, mplapackint const nrhs, std:
 void Cgtt05(const char *trans, mplapackint const n, mplapackint const nrhs, std::complex<double> *dl, std::complex<double> *d, std::complex<double> *du, std::complex<double> *b, mplapackint const ldb, std::complex<double> *x, mplapackint const ldx, std::complex<double> *xact, mplapackint const ldxact, double *ferr, double *berr, double *reslts);
 void Chet01(const char *uplo, mplapackint const n, std::complex<double> *a, mplapackint const lda, std::complex<double> *afac, mplapackint const ldafac, mplapackint *ipiv, std::complex<double> *c, mplapackint const ldc, double *rwork, double &resid);
 void Chet01_3(const char *uplo, mplapackint const n, std::complex<double> *a, mplapackint const lda, std::complex<double> *afac, mplapackint const ldafac, std::complex<double> *e, mplapackint *ipiv, std::complex<double> *c, mplapackint const ldc, double *rwork, double &resid);
-void Chet01_aa(const char *uplo, mplapackint const n, std::complex<double> *a, mplapackint const lda, std::complex<double> *afac, mplapackint const ldafac, mplapackint *ipiv, std::complex<double> *c, mplapackint const ldc, double *rwork, double &resid);
 void Chet01_rook(const char *uplo, mplapackint const n, std::complex<double> *a, mplapackint const lda, std::complex<double> *afac, mplapackint const ldafac, mplapackint *ipiv, std::complex<double> *c, mplapackint const ldc, double *rwork, double &resid);
 void Chpt01(const char *uplo, mplapackint const n, std::complex<double> *a, std::complex<double> *afac, mplapackint *ipiv, std::complex<double> *c, mplapackint const ldc, double *rwork, double &resid);
 void Clahilb(mplapackint const n, mplapackint const nrhs, std::complex<double> *a, mplapackint const lda, std::complex<double> *x, mplapackint const ldx, std::complex<double> *b, mplapackint const ldb, double *work, mplapackint &info, const char *path);
@@ -224,7 +223,6 @@ void Cspt02(const char *uplo, mplapackint const n, mplapackint const nrhs, std::
 void Cspt03(const char *uplo, mplapackint const n, std::complex<double> *a, std::complex<double> *ainv, std::complex<double> *work, mplapackint const ldw, double *rwork, double &rcond, double &resid);
 void Csyt01(const char *uplo, mplapackint const n, std::complex<double> *a, mplapackint const lda, std::complex<double> *afac, mplapackint const ldafac, mplapackint *ipiv, std::complex<double> *c, mplapackint const ldc, double *rwork, double &resid);
 void Csyt01_3(const char *uplo, mplapackint const n, std::complex<double> *a, mplapackint const lda, std::complex<double> *afac, mplapackint const ldafac, std::complex<double> *e, mplapackint *ipiv, std::complex<double> *c, mplapackint const ldc, double *rwork, double &resid);
-void Csyt01_aa(const char *uplo, mplapackint const n, std::complex<double> *a, mplapackint const lda, std::complex<double> *afac, mplapackint const ldafac, mplapackint *ipiv, std::complex<double> *c, mplapackint const ldc, double *rwork, double &resid);
 void Csyt01_rook(const char *uplo, mplapackint const n, std::complex<double> *a, mplapackint const lda, std::complex<double> *afac, mplapackint const ldafac, mplapackint *ipiv, std::complex<double> *c, mplapackint const ldc, double *rwork, double &resid);
 void Csyt02(const char *uplo, mplapackint const n, mplapackint const nrhs, std::complex<double> *a, mplapackint const lda, std::complex<double> *x, mplapackint const ldx, std::complex<double> *b, mplapackint const ldb, double *rwork, double &resid);
 void Csyt03(const char *uplo, mplapackint const n, std::complex<double> *a, mplapackint const lda, std::complex<double> *ainv, mplapackint const ldainv, std::complex<double> *work, mplapackint const ldwork, double *rwork, double &rcond, double &resid);
@@ -385,7 +383,6 @@ void Rrqt03(mplapackint const m, mplapackint const n, mplapackint const k, doubl
 void Rspt01(const char *uplo, mplapackint const n, double *a, double *afac, mplapackint *ipiv, double *c, mplapackint const ldc, double *rwork, double &resid);
 void Rsyt01(const char *uplo, mplapackint const n, double *a, mplapackint const lda, double *afac, mplapackint const ldafac, mplapackint *ipiv, double *c, mplapackint const ldc, double *rwork, double &resid);
 void Rsyt01_3(const char *uplo, mplapackint const n, double *a, mplapackint const lda, double *afac, mplapackint const ldafac, double *e, mplapackint *ipiv, double *c, mplapackint const ldc, double *rwork, double &resid);
-void Rsyt01_aa(const char *uplo, mplapackint const n, double *a, mplapackint const lda, double *afac, mplapackint const ldafac, mplapackint *ipiv, double *c, mplapackint const ldc, double *rwork, double &resid);
 void Rsyt01_rook(const char *uplo, mplapackint const n, double *a, mplapackint const lda, double *afac, mplapackint const ldafac, mplapackint *ipiv, double *c, mplapackint const ldc, double *rwork, double &resid);
 void Rtbt02(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const kd, mplapackint const nrhs, double *ab, mplapackint const ldab, double *x, mplapackint const ldx, double *b, mplapackint const ldb, double *work, double &resid);
 void Rtbt03(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const kd, mplapackint const nrhs, double *ab, mplapackint const ldab, double const scale, double *cnorm, double const tscal, double *x, mplapackint const ldx, double *b, mplapackint const ldb, double *work, double &resid);
@@ -404,6 +401,7 @@ void Rtrt05(const char *uplo, const char *trans, const char *diag, mplapackint c
 void Rtrt06(double const rcond, double const rcondc, const char *uplo, const char *diag, mplapackint const n, double *a, mplapackint const lda, double *work, double &rat);
 void Rtsqr01(const char *tssw, mplapackint const m, mplapackint const n, mplapackint const mb, mplapackint const nb, double *result);
 void chkxer(const char *srnamt, mplapackint const &infot, mplapackint const &nout, bool &lerr, bool &ok);
+void icopy(mplapackint const &n, mplapackint *sx, mplapackint const &incx, mplapackint *sy, mplapackint const &incy);
 void program_Cchkaa(mplapackint argc, char const *argv[]);
 void program_Cchkab(mplapackint argc, char const *argv[]);
 void program_Cchkrfp(mplapackint argc, char const *argv[]);

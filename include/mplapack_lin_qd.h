@@ -164,7 +164,6 @@ void Cgtt02(const char *trans, mplapackint const n, mplapackint const nrhs, qd_c
 void Cgtt05(const char *trans, mplapackint const n, mplapackint const nrhs, qd_complex *dl, qd_complex *d, qd_complex *du, qd_complex *b, mplapackint const ldb, qd_complex *x, mplapackint const ldx, qd_complex *xact, mplapackint const ldxact, qd_real *ferr, qd_real *berr, qd_real *reslts);
 void Chet01(const char *uplo, mplapackint const n, qd_complex *a, mplapackint const lda, qd_complex *afac, mplapackint const ldafac, mplapackint *ipiv, qd_complex *c, mplapackint const ldc, qd_real *rwork, qd_real &resid);
 void Chet01_3(const char *uplo, mplapackint const n, qd_complex *a, mplapackint const lda, qd_complex *afac, mplapackint const ldafac, qd_complex *e, mplapackint *ipiv, qd_complex *c, mplapackint const ldc, qd_real *rwork, qd_real &resid);
-void Chet01_aa(const char *uplo, mplapackint const n, qd_complex *a, mplapackint const lda, qd_complex *afac, mplapackint const ldafac, mplapackint *ipiv, qd_complex *c, mplapackint const ldc, qd_real *rwork, qd_real &resid);
 void Chet01_rook(const char *uplo, mplapackint const n, qd_complex *a, mplapackint const lda, qd_complex *afac, mplapackint const ldafac, mplapackint *ipiv, qd_complex *c, mplapackint const ldc, qd_real *rwork, qd_real &resid);
 void Chpt01(const char *uplo, mplapackint const n, qd_complex *a, qd_complex *afac, mplapackint *ipiv, qd_complex *c, mplapackint const ldc, qd_real *rwork, qd_real &resid);
 void Clahilb(mplapackint const n, mplapackint const nrhs, qd_complex *a, mplapackint const lda, qd_complex *x, mplapackint const ldx, qd_complex *b, mplapackint const ldb, qd_real *work, mplapackint &info, const char *path);
@@ -226,7 +225,6 @@ void Cspt02(const char *uplo, mplapackint const n, mplapackint const nrhs, qd_co
 void Cspt03(const char *uplo, mplapackint const n, qd_complex *a, qd_complex *ainv, qd_complex *work, mplapackint const ldw, qd_real *rwork, qd_real &rcond, qd_real &resid);
 void Csyt01(const char *uplo, mplapackint const n, qd_complex *a, mplapackint const lda, qd_complex *afac, mplapackint const ldafac, mplapackint *ipiv, qd_complex *c, mplapackint const ldc, qd_real *rwork, qd_real &resid);
 void Csyt01_3(const char *uplo, mplapackint const n, qd_complex *a, mplapackint const lda, qd_complex *afac, mplapackint const ldafac, qd_complex *e, mplapackint *ipiv, qd_complex *c, mplapackint const ldc, qd_real *rwork, qd_real &resid);
-void Csyt01_aa(const char *uplo, mplapackint const n, qd_complex *a, mplapackint const lda, qd_complex *afac, mplapackint const ldafac, mplapackint *ipiv, qd_complex *c, mplapackint const ldc, qd_real *rwork, qd_real &resid);
 void Csyt01_rook(const char *uplo, mplapackint const n, qd_complex *a, mplapackint const lda, qd_complex *afac, mplapackint const ldafac, mplapackint *ipiv, qd_complex *c, mplapackint const ldc, qd_real *rwork, qd_real &resid);
 void Csyt02(const char *uplo, mplapackint const n, mplapackint const nrhs, qd_complex *a, mplapackint const lda, qd_complex *x, mplapackint const ldx, qd_complex *b, mplapackint const ldb, qd_real *rwork, qd_real &resid);
 void Csyt03(const char *uplo, mplapackint const n, qd_complex *a, mplapackint const lda, qd_complex *ainv, mplapackint const ldainv, qd_complex *work, mplapackint const ldwork, qd_real *rwork, qd_real &rcond, qd_real &resid);
@@ -387,7 +385,6 @@ void Rrqt03(mplapackint const m, mplapackint const n, mplapackint const k, qd_re
 void Rspt01(const char *uplo, mplapackint const n, qd_real *a, qd_real *afac, mplapackint *ipiv, qd_real *c, mplapackint const ldc, qd_real *rwork, qd_real &resid);
 void Rsyt01(const char *uplo, mplapackint const n, qd_real *a, mplapackint const lda, qd_real *afac, mplapackint const ldafac, mplapackint *ipiv, qd_real *c, mplapackint const ldc, qd_real *rwork, qd_real &resid);
 void Rsyt01_3(const char *uplo, mplapackint const n, qd_real *a, mplapackint const lda, qd_real *afac, mplapackint const ldafac, qd_real *e, mplapackint *ipiv, qd_real *c, mplapackint const ldc, qd_real *rwork, qd_real &resid);
-void Rsyt01_aa(const char *uplo, mplapackint const n, qd_real *a, mplapackint const lda, qd_real *afac, mplapackint const ldafac, mplapackint *ipiv, qd_real *c, mplapackint const ldc, qd_real *rwork, qd_real &resid);
 void Rsyt01_rook(const char *uplo, mplapackint const n, qd_real *a, mplapackint const lda, qd_real *afac, mplapackint const ldafac, mplapackint *ipiv, qd_real *c, mplapackint const ldc, qd_real *rwork, qd_real &resid);
 void Rtbt02(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const kd, mplapackint const nrhs, qd_real *ab, mplapackint const ldab, qd_real *x, mplapackint const ldx, qd_real *b, mplapackint const ldb, qd_real *work, qd_real &resid);
 void Rtbt03(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const kd, mplapackint const nrhs, qd_real *ab, mplapackint const ldab, qd_real const scale, qd_real *cnorm, qd_real const tscal, qd_real *x, mplapackint const ldx, qd_real *b, mplapackint const ldb, qd_real *work, qd_real &resid);
@@ -406,6 +403,7 @@ void Rtrt05(const char *uplo, const char *trans, const char *diag, mplapackint c
 void Rtrt06(qd_real const rcond, qd_real const rcondc, const char *uplo, const char *diag, mplapackint const n, qd_real *a, mplapackint const lda, qd_real *work, qd_real &rat);
 void Rtsqr01(const char *tssw, mplapackint const m, mplapackint const n, mplapackint const mb, mplapackint const nb, qd_real *result);
 void chkxer(const char *srnamt, mplapackint const &infot, mplapackint const &nout, bool &lerr, bool &ok);
+void icopy(mplapackint const &n, mplapackint *sx, mplapackint const &incx, mplapackint *sy, mplapackint const &incy);
 void program_Cchkaa(mplapackint argc, char const *argv[]);
 void program_Cchkab(mplapackint argc, char const *argv[]);
 void program_Cchkrfp(mplapackint argc, char const *argv[]);

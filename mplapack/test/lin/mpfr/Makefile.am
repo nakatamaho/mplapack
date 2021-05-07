@@ -4,29 +4,14 @@ liblin_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INC
 liblin_mpfr_la_SOURCES = $(LIN_SOURCES)
 
 LIN_SOURCES = \
-../common/Rtsqr01.cpp \
-../common/Cqrt05.cpp \
-../common/Clqt04.cpp \
-../common/Cqrt04.cpp \
-../common/Rlqt04.cpp \
-../common/Rqrt04.cpp \
-../common/Cunhr_col01.cpp \
-../common/Cunhr_col02.cpp \
-../common/Rorhr_col01.cpp \
-../common/Rorhr_col02.cpp \
-../common/Cchkps.cpp \
-../common/Cchkq3.cpp \
-../common/Rchkps.cpp \
+../common/Rchksy_rook.cpp \
+../common/Rchksy_rk.cpp \
+../common/Cchkhe_rook.cpp \
+../common/Cchkhe_rk.cpp \
+../common/Cchksy_rook.cpp \
 ../common/Rchkq3.cpp \
 ../common/Rerrqr.cpp \
 ../common/Cerrqr.cpp \
-../common/Rchkql.cpp \
-../common/Cchklq.cpp \
-../common/Cchkql.cpp \
-../common/Cchkrq.cpp \
-../common/Rchkrq.cpp \
-../common/Rchkab.cpp \
-../common/Cchkab.cpp \
 ../common/Rchklq.cpp \
 ../common/Rchkqr.cpp \
 ../common/Cchkqr.cpp \
@@ -40,7 +25,6 @@ LIN_SOURCES = \
 ../common/Cerrge.cpp \
 ../common/Rdrvac.cpp \
 ../common/Cdrvac.cpp \
-../common/Ctsqr01.cpp \
 ../common/Rdrvsy_aa.cpp \
 ../common/Rerrpo.cpp \
 ../common/Cdrvsy_aa.cpp \
@@ -148,11 +132,6 @@ LIN_SOURCES = \
 ../common/Rdrvpox.cpp \
 ../common/Cdrvpox.cpp \
 ../common/Rerrvx.cpp \
-../common/Rchksy_rook.cpp \
-../common/Rchksy_rk.cpp \
-../common/Cchkhe_rook.cpp \
-../common/Cchkhe_rk.cpp \
-../common/Cchksy_rook.cpp \
 ../common/Cchksy_rk.cpp \
 ../common/Rdrvgb.cpp \
 ../common/Cdrvgb.cpp \
@@ -165,6 +144,7 @@ LIN_SOURCES = \
 ../common/Alahd.cpp \
 ../common/Rdrvgbx.cpp \
 ../common/Cdrvgbx.cpp \
+\
 ../common/Alaesm.cpp \
 ../common/chkxer.cpp \
 ../common/Claipd.cpp \
@@ -392,7 +372,27 @@ LIN_SOURCES = \
 ../common/Rqrt05.cpp \
 ../common/Clqt05.cpp \
 ../common/Cdrvls.cpp \
-../common/Rdrvls.cpp
+../common/Rdrvls.cpp \
+../common/icopy.cpp \
+../common/Rtsqr01.cpp \
+../common/Cqrt05.cpp \
+../common/Clqt04.cpp \
+../common/Cqrt04.cpp \
+../common/Rlqt04.cpp \
+../common/Rqrt04.cpp \
+../common/Cunhr_col01.cpp \
+../common/Cunhr_col02.cpp \
+../common/Rorhr_col01.cpp \
+../common/Rorhr_col02.cpp \
+../common/Cchkps.cpp \
+../common/Cchkq3.cpp \
+../common/Rchkps.cpp \
+../common/Rchkql.cpp \
+../common/Cchklq.cpp \
+../common/Cchkql.cpp \
+../common/Cchkrq.cpp \
+../common/Rchkrq.cpp \
+../common/Ctsqr01.cpp
 
 #../common/iMlaenv.cpp
 
