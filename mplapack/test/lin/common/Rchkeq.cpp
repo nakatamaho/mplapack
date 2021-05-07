@@ -37,6 +37,7 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rchkeq(REAL const thresh, INTEGER const nout) {
+    common cmn;
     common_write write(cmn);
     //
     //  -- LAPACK test routine --
@@ -62,8 +63,10 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
     //     ..
     //     .. Executable Statements ..
     //
-    char path[3] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "EQ";
+    char path[3];
+    path[0] = 'D';
+    path[1] = 'E';
+    path[2] = 'Q';
     //
     REAL eps = Rlamch("P");
     INTEGER i = 0;

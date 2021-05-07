@@ -36,48 +36,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, REAL *a, INTEGER const lda, REAL *arf, REAL *b1, REAL *b2, REAL *d_work_Rlange, REAL *d_work_Rgeqrf, REAL *tau) {
-    nval([nn]);
-    a([lda * star]);
-    b1([lda * star]);
-    b2([lda * star]);
-    common_write write(cmn);
-    // COMMON srnamc
-    //
-    // SAVE
-    str_arr_ref<1> diags(sve.diags, [2]);
-    str_arr_ref<1> forms(sve.forms, [2]);
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    str_arr_ref<1> sides(sve.sides, [2]);
-    str_arr_ref<1> transs(sve.transs, [2]);
-    str_arr_ref<1> uplos(sve.uplos, [2]);
-    //
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"U", "L"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
-        }
-        {
-            static const char *values[] = {"N", "T"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), forms;
-        }
-        {
-            static const char *values[] = {"L", "R"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), sides;
-        }
-        {
-            static const char *values[] = {"N", "T"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), transs;
-        }
-        {
-            static const char *values[] = {"N", "U"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), diags;
-        }
-    }
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -112,6 +73,17 @@ void Rdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     //
     //     Initialize constants and the random number seed.
     //
+    common cmn;
+    common_write write(cmn);
+    char transs[] = {'N', 'T'};
+    char diags[] = {'N', 'T'};
+    char forms[] = {'N', 'T'};
+    char sides[] = {'L', 'R'};
+    char uplos[] = {'U', 'L'};
+    char buf[1024];
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
+    INTEGER ldb1 = lda;
+    INTEGER ldb2 = lda;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER info = 0;
@@ -235,7 +207,7 @@ void Rdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     //
                                     //                             Store a copy of A in RFP format (in ARF).
                                     //
-                                    Rtrttf(cform, uplo, na, a, lda, arf, info);
+                                    Rtrttf(&cform, &uplo, na, a, lda, arf, info);
                                     //
                                     //                             Generate B1 our M--by--N right-hand side
                                     //                             and store a copy in B2.
@@ -250,12 +222,12 @@ void Rdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     //                             Solve op( A ) X = B or X op( A ) = B
                                     //                             with Rtrsm
                                     //
-                                    Rtrsm(side, uplo, trans, diag, m, n, alpha, a, lda, b1, lda);
+                                    Rtrsm(&side, &uplo, &trans, &diag, m, n, alpha, a, lda, b1, lda);
                                     //
                                     //                             Solve op( A ) X = B or X op( A ) = B
                                     //                             with Rtfsm
                                     //
-                                    Rtfsm(cform, side, uplo, trans, diag, m, n, alpha, arf, b2, lda);
+                                    Rtfsm(&cform, &side, &uplo, &trans, &diag, m, n, alpha, arf, b2, lda);
                                     //
                                     //                             Check that the result agrees.
                                     //
@@ -267,7 +239,7 @@ void Rdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     //
                                     result[1 - 1] = Rlange("I", m, n, b1, lda, d_work_Rlange);
                                     //
-                                    result[1 - 1] = result[1 - 1] / sqrt(eps) / max({max(m, n), 1});
+                                    result[1 - 1] = result[1 - 1] / sqrt(eps) / castREAL(max({max(m, n), (INTEGER)1}));
                                     //
                                     if (result[1 - 1] >= thresh) {
                                         if (nfail == 0) {
@@ -275,11 +247,12 @@ void Rdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                             write(nout, "(1x,' *** Error(s) or Failure(s) while testing Rtfsm "
                                                         "        ***')");
                                         }
+                                        sprintnum_short(buf, result[1 - 1]);
                                         write(nout, "(1x,'     Failure in ',a5,', CFORM=''',a1,''',',"
                                                     "' SIDE=''',a1,''',',' UPLO=''',a1,''',',' TRANS=''',a1,"
                                                     "''',',' DIAG=''',a1,''',',' M=',i3,', N =',i3,"
-                                                    "', test=',g12.5)"),
-                                            "Rtfsm", cform, side, uplo, trans, diag, m, n, result(1);
+                                                    "', test=',a)"),
+                                            "Rtfsm", cform, side, uplo, trans, diag, m, n, buf;
                                         nfail++;
                                     }
                                     //
