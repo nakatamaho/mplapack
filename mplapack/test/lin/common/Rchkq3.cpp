@@ -36,14 +36,14 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, REAL const thresh, REAL *a, REAL *copya, REAL *s, REAL *tau, REAL *work, INTEGER *iwork, INTEGER const nout) {
+    common cmn;
     common_write write(cmn);
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    if (is_called_first_time) {
-        static const INTEGER values[] = {1988, 1989, 1990, 1991};
-        data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-    }
     char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -107,8 +107,9 @@ void Rchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Initialize constants and the random number seed.
     //
-    path[(1 - 1)] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "Q3";
+    path[0] = 'D';
+    path[1] = 'Q';
+    path[2] = '3';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -225,9 +226,10 @@ void Rchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
+                            sprintnum_short(buf, result[k - 1]);
                             write(nout, "(1x,a,' M =',i5,', N =',i5,', NB =',i4,', type ',i2,"
-                                        "', test ',i2,', ratio =',g12.5)"),
-                                "Rgeqp3", m, n, nb, imode, k, result(k);
+                                        "', test ',i2,', ratio =',a)"),
+                                "Rgeqp3", m, n, nb, imode, k, buf;
                             nfail++;
                         }
                     }

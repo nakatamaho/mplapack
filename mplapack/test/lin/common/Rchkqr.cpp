@@ -36,15 +36,16 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *af, REAL *aq, REAL *ar, REAL *ac, REAL *b, REAL *x, REAL *xact, REAL *tau, REAL *work, REAL *rwork, INTEGER * /* iwork */, INTEGER const nout) {
+    common cmn;
     common_write write(cmn);
     //
+    //
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    if (is_called_first_time) {
-        static const INTEGER values[] = {1988, 1989, 1990, 1991};
-        data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-    }
     char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -112,8 +113,9 @@ void Rchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Initialize constants and the random number seed.
     //
-    path[(1 - 1)] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "QR";
+    path[0] = 'D';
+    path[1] = 'Q';
+    path[2] = 'R';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -151,9 +153,9 @@ void Rchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 //              Set up parameters with Rlatb4 and generate a test matrix
                 //              with Rlatms.
                 //
-                Rlatb4(path, imat, m, n, type, kl, ku, anorm, mode, cndnum, dist);
+                Rlatb4(path, imat, m, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                 //
-                Rlatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
+                Rlatms(m, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
                 //
                 //              Check error code from Rlatms.
                 //
@@ -198,11 +200,11 @@ void Rchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //
                             //                       Test Rgeqrf
                             //
-                            Rqrt01(m, n, a, af, aq, ar, lda, tau, work, lwork, rwork, result[1 - 1]);
+                            Rqrt01(m, n, a, af, aq, ar, lda, tau, work, lwork, rwork, &result[1 - 1]);
                             //
                             //                       Test Rgeqrfp
                             //
-                            Rqrt01p(m, n, a, af, aq, ar, lda, tau, work, lwork, rwork, result[8 - 1]);
+                            Rqrt01p(m, n, a, af, aq, ar, lda, tau, work, lwork, rwork, &result[8 - 1]);
                             //
                             if (!Rgennd(m, n, af, lda)) {
                                 result[9 - 1] = 2 * thresh;
@@ -213,14 +215,14 @@ void Rchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //                       Test Rorgqr, using factorization
                             //                       returned by Rqrt01
                             //
-                            Rqrt02(m, n, k, a, af, aq, ar, lda, tau, work, lwork, rwork, result[1 - 1]);
+                            Rqrt02(m, n, k, a, af, aq, ar, lda, tau, work, lwork, rwork, &result[1 - 1]);
                         }
                         if (m >= k) {
                             //
                             //                       Test Rormqr, using factorization returned
                             //                       by Rqrt01
                             //
-                            Rqrt03(m, n, k, af, ac, ar, aq, lda, tau, work, lwork, rwork, result[3 - 1]);
+                            Rqrt03(m, n, k, af, ac, ar, aq, lda, tau, work, lwork, rwork, &result[3 - 1]);
                             nt += 4;
                             //
                             //                       If M>=N and K=N, call Rgeqrs to solve a system
@@ -256,9 +258,10 @@ void Rchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
+                                sprintnum_short(buf, result[i - 1]);
                                 write(nout, "(' M=',i5,', N=',i5,', K=',i5,', NB=',i4,', NX=',i5,"
-                                            "', type ',i2,', test(',i2,')=',g12.5)"),
-                                    m, n, k, nb, nx, imat, i, result(i);
+                                            "', type ',i2,', test(',i2,')=',a)"),
+                                    m, n, k, nb, nx, imat, i, buf;
                                 nfail++;
                             }
                         }

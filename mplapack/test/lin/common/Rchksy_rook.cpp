@@ -43,14 +43,14 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
     common_write write(cmn);
     //
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    const char uplos[] ={'U', 'L'};
+    const char uplos[] = {'U', 'L'};
     const REAL one = 1.0;
     const REAL sevten = 17.0e+0;
     const REAL eight = 8.0e+0;
     REAL alpha = 0.0;
     char path[3];
     char matpath[3];
-    char buf[1024];    
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -141,13 +141,13 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
     //
     path[0] = 'D';
     path[1] = 'S';
-    path[2] = 'R';        
+    path[2] = 'R';
     //
     //     Path to generate matrices
     //
     matpath[0] = 'D';
-    matpath[1] = 'S' ;
-    matpath[2] = 'Y' ;
+    matpath[1] = 'S';
+    matpath[2] = 'Y';
     //
     nrun = 0;
     nfail = 0;
@@ -384,7 +384,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-			    sprintnum_short(buf, result[k - 1]);
+                            sprintnum_short(buf, result[k - 1]);
                             write(nout, format_9999), uplo, n, nb, imat, k, buf;
                             nfail++;
                         }
@@ -581,7 +581,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-			    sprintnum_short(buf, result[k - 1]);
+                            sprintnum_short(buf, result[k - 1]);
                             write(nout, format_9999), uplo, n, nb, imat, k, buf;
                             nfail++;
                         }
@@ -643,10 +643,10 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
-			    sprintnum_short(buf, result[k - 1]);
-			    write(nout, "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
+                                sprintnum_short(buf, result[k - 1]);
+                                write(nout, "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
                                             "', test(',i2,') =',a)"),
-			      uplo, n, nrhs, imat, k, buf;
+                                    uplo, n, nrhs, imat, k, buf;
                                 nfail++;
                             }
                         }
@@ -680,10 +680,10 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-			    sprintnum_short(buf, result[7 - 1]);
-			    write(nout, "(' UPLO = ''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,"
+                        sprintnum_short(buf, result[7 - 1]);
+                        write(nout, "(' UPLO = ''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,"
                                     "') =',a)"),
-			      uplo, n, imat, 7, buf;
+                            uplo, n, imat, 7, buf;
                         nfail++;
                     }
                     nrun++;

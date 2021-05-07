@@ -102,7 +102,7 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
             }
         }
     }
-    COMPLEX *af= new COMPLEX[m * n];
+    COMPLEX *af = new COMPLEX[m * n];
     Clacpy("Full", m, n, a, m, af, m);
     //
     COMPLEX tquery[5];
@@ -115,14 +115,14 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
     INTEGER lddf = n;
     COMPLEX *t = new COMPLEX[m * n];
     INTEGER ldm = m;
-    COMPLEX *work = new COMPLEX[lwork];    
+    COMPLEX *work = new COMPLEX[lwork];
     const COMPLEX czero = COMPLEX(0.0f, 0.0f);
     const COMPLEX one = COMPLEX(1.0f, 0.0f);
     COMPLEX *q = new COMPLEX[l * l];
     INTEGER ldq = l;
     COMPLEX *r = new COMPLEX[m * l];
     INTEGER ldr = m;
-    REAL *rwork = new REAL [l];
+    REAL *rwork = new REAL[l];
     REAL anorm = 0.0;
     REAL resid = 0.0;
     const REAL zero = 0.0f;

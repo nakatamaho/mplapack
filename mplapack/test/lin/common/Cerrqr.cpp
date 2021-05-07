@@ -37,13 +37,13 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cerrqr(const char *path, INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    // COMMON srnamc
+
+    INTEGER infot;
+    INTEGER nout;
+    bool ok;
+    bool lerr;
     //
     //
     //  -- LAPACK test routine (--
@@ -72,7 +72,6 @@ void Cerrqr(const char *path, INTEGER const nunit) {
     //     .. Executable Statements ..
     //
     nout = nunit;
-    write(nout, star);
     //
     //     Set the variables to innocuous values.
     //
@@ -84,6 +83,8 @@ void Cerrqr(const char *path, INTEGER const nunit) {
     COMPLEX b[nmax];
     COMPLEX w[nmax];
     COMPLEX x[nmax];
+    INTEGER lda = nmax;
+    INTEGER ldaf = nmax;
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = COMPLEX(1.0 / castREAL(i + j), -1.0 / castREAL(i + j));
