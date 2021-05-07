@@ -121,7 +121,6 @@ void Cdrvsy_aa(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackin
 void Cdrvsy_aa_2stage(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, _Float64x const thresh, bool const tsterr, mplapackint const nmax, std::complex<_Float64x> *a, std::complex<_Float64x> *afac, std::complex<_Float64x> *ainv, std::complex<_Float64x> *b, std::complex<_Float64x> *x, std::complex<_Float64x> *xact, std::complex<_Float64x> *work, _Float64x *rwork, mplapackint *iwork, mplapackint const nout);
 void Cdrvsy_rk(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, _Float64x const thresh, bool const tsterr, mplapackint const nmax, std::complex<_Float64x> *a, std::complex<_Float64x> *afac, std::complex<_Float64x> *e, std::complex<_Float64x> *ainv, std::complex<_Float64x> *b, std::complex<_Float64x> *x, std::complex<_Float64x> *xact, std::complex<_Float64x> *work, _Float64x *rwork, mplapackint *iwork, mplapackint const nout);
 void Cdrvsy_rook(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, _Float64x const thresh, bool const tsterr, mplapackint const nmax, std::complex<_Float64x> *a, std::complex<_Float64x> *afac, std::complex<_Float64x> *ainv, std::complex<_Float64x> *b, std::complex<_Float64x> *x, std::complex<_Float64x> *xact, std::complex<_Float64x> *work, _Float64x *rwork, mplapackint *iwork, mplapackint const nout);
-void Cebchvxx(_Float64x const thresh, const char *path);
 void Cerrge(const char *path, mplapackint const nunit);
 void Cerrgt(const char *path, mplapackint const nunit);
 void Cerrhe(const char *path, mplapackint const nunit);
@@ -293,7 +292,6 @@ void Rdrvsy_aa(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackin
 void Rdrvsy_aa_2stage(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, _Float64x const thresh, bool const tsterr, mplapackint const nmax, _Float64x *a, _Float64x *afac, _Float64x *ainv, _Float64x *b, _Float64x *x, _Float64x *xact, _Float64x *work, _Float64x *rwork, mplapackint *iwork, mplapackint const nout);
 void Rdrvsy_rk(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, _Float64x const thresh, bool const tsterr, mplapackint const nmax, _Float64x *a, _Float64x *afac, _Float64x *e, _Float64x *ainv, _Float64x *b, _Float64x *x, _Float64x *xact, _Float64x *work, _Float64x *rwork, mplapackint *iwork, mplapackint const nout);
 void Rdrvsy_rook(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, _Float64x const thresh, bool const tsterr, mplapackint const nmax, _Float64x *a, _Float64x *afac, _Float64x *ainv, _Float64x *b, _Float64x *x, _Float64x *xact, _Float64x *work, _Float64x *rwork, mplapackint *iwork, mplapackint const nout);
-void Rebchvxx(_Float64x const thresh, const char *path);
 void Rerrge(const char *path, mplapackint const nunit);
 void Rerrgt(const char *path, mplapackint const nunit);
 void Rerrlq(const char *path, mplapackint const nunit);

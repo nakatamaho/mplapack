@@ -123,7 +123,6 @@ void Cdrvsy_aa(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackin
 void Cdrvsy_aa_2stage(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, mpf_class const thresh, bool const tsterr, mplapackint const nmax, mpc_class *a, mpc_class *afac, mpc_class *ainv, mpc_class *b, mpc_class *x, mpc_class *xact, mpc_class *work, mpf_class *rwork, mplapackint *iwork, mplapackint const nout);
 void Cdrvsy_rk(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, mpf_class const thresh, bool const tsterr, mplapackint const nmax, mpc_class *a, mpc_class *afac, mpc_class *e, mpc_class *ainv, mpc_class *b, mpc_class *x, mpc_class *xact, mpc_class *work, mpf_class *rwork, mplapackint *iwork, mplapackint const nout);
 void Cdrvsy_rook(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, mpf_class const thresh, bool const tsterr, mplapackint const nmax, mpc_class *a, mpc_class *afac, mpc_class *ainv, mpc_class *b, mpc_class *x, mpc_class *xact, mpc_class *work, mpf_class *rwork, mplapackint *iwork, mplapackint const nout);
-void Cebchvxx(mpf_class const thresh, const char *path);
 void Cerrge(const char *path, mplapackint const nunit);
 void Cerrgt(const char *path, mplapackint const nunit);
 void Cerrhe(const char *path, mplapackint const nunit);
@@ -295,7 +294,6 @@ void Rdrvsy_aa(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackin
 void Rdrvsy_aa_2stage(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, mpf_class const thresh, bool const tsterr, mplapackint const nmax, mpf_class *a, mpf_class *afac, mpf_class *ainv, mpf_class *b, mpf_class *x, mpf_class *xact, mpf_class *work, mpf_class *rwork, mplapackint *iwork, mplapackint const nout);
 void Rdrvsy_rk(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, mpf_class const thresh, bool const tsterr, mplapackint const nmax, mpf_class *a, mpf_class *afac, mpf_class *e, mpf_class *ainv, mpf_class *b, mpf_class *x, mpf_class *xact, mpf_class *work, mpf_class *rwork, mplapackint *iwork, mplapackint const nout);
 void Rdrvsy_rook(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, mpf_class const thresh, bool const tsterr, mplapackint const nmax, mpf_class *a, mpf_class *afac, mpf_class *ainv, mpf_class *b, mpf_class *x, mpf_class *xact, mpf_class *work, mpf_class *rwork, mplapackint *iwork, mplapackint const nout);
-void Rebchvxx(mpf_class const thresh, const char *path);
 void Rerrge(const char *path, mplapackint const nunit);
 void Rerrgt(const char *path, mplapackint const nunit);
 void Rerrlq(const char *path, mplapackint const nunit);
