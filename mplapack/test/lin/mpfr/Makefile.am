@@ -3,18 +3,14 @@ lib_LTLIBRARIES = liblin_mpfr.la
 liblin_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mplapack/test/fable
 liblin_mpfr_la_SOURCES = $(LIN_SOURCES)
 
+LIN_REQ_REF=\
+../common/Cchkhe_rook.cpp\
+../common/Cchksy_rook.cpp
+
+#Checon_rook
+#Csycon_rook
+
 LIN_SOURCES = \
-../common/Rchksy_rook.cpp \
-../common/Rchksy_rk.cpp \
-../common/Cchkhe_rook.cpp \
-../common/Cchkhe_rk.cpp \
-../common/Cchksy_rook.cpp \
-../common/Rchkq3.cpp \
-../common/Rerrqr.cpp \
-../common/Cerrqr.cpp \
-../common/Rchklq.cpp \
-../common/Rchkqr.cpp \
-../common/Cchkqr.cpp \
 ../common/Rdrvab.cpp \
 ../common/Cdrvab.cpp \
 ../common/Rdrvrf4.cpp \
@@ -392,7 +388,16 @@ LIN_SOURCES = \
 ../common/Cchkql.cpp \
 ../common/Cchkrq.cpp \
 ../common/Rchkrq.cpp \
-../common/Ctsqr01.cpp
+../common/Ctsqr01.cpp \
+../common/Rchksy_rook.cpp \
+../common/Rchksy_rk.cpp \
+../common/Cchkhe_rk.cpp \
+../common/Rchkq3.cpp \
+../common/Rerrqr.cpp \
+../common/Cerrqr.cpp \
+../common/Rchklq.cpp \
+../common/Rchkqr.cpp \
+../common/Cchkqr.cpp
 
 #../common/iMlaenv.cpp
 
