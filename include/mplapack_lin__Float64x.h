@@ -223,6 +223,7 @@ void Cspt02(const char *uplo, mplapackint const n, mplapackint const nrhs, std::
 void Cspt03(const char *uplo, mplapackint const n, std::complex<_Float64x> *a, std::complex<_Float64x> *ainv, std::complex<_Float64x> *work, mplapackint const ldw, _Float64x *rwork, _Float64x &rcond, _Float64x &resid);
 void Csyt01(const char *uplo, mplapackint const n, std::complex<_Float64x> *a, mplapackint const lda, std::complex<_Float64x> *afac, mplapackint const ldafac, mplapackint *ipiv, std::complex<_Float64x> *c, mplapackint const ldc, _Float64x *rwork, _Float64x &resid);
 void Csyt01_3(const char *uplo, mplapackint const n, std::complex<_Float64x> *a, mplapackint const lda, std::complex<_Float64x> *afac, mplapackint const ldafac, std::complex<_Float64x> *e, mplapackint *ipiv, std::complex<_Float64x> *c, mplapackint const ldc, _Float64x *rwork, _Float64x &resid);
+void Csyt01_aa(const char *uplo, mplapackint const n, std::complex<_Float64x> *a, mplapackint const lda, std::complex<_Float64x> *afac, mplapackint const ldafac, mplapackint *ipiv, std::complex<_Float64x> *c, mplapackint const ldc, _Float64x *rwork, _Float64x &resid);
 void Csyt01_rook(const char *uplo, mplapackint const n, std::complex<_Float64x> *a, mplapackint const lda, std::complex<_Float64x> *afac, mplapackint const ldafac, mplapackint *ipiv, std::complex<_Float64x> *c, mplapackint const ldc, _Float64x *rwork, _Float64x &resid);
 void Csyt02(const char *uplo, mplapackint const n, mplapackint const nrhs, std::complex<_Float64x> *a, mplapackint const lda, std::complex<_Float64x> *x, mplapackint const ldx, std::complex<_Float64x> *b, mplapackint const ldb, _Float64x *rwork, _Float64x &resid);
 void Csyt03(const char *uplo, mplapackint const n, std::complex<_Float64x> *a, mplapackint const lda, std::complex<_Float64x> *ainv, mplapackint const ldainv, std::complex<_Float64x> *work, mplapackint const ldwork, _Float64x *rwork, _Float64x &rcond, _Float64x &resid);
@@ -383,6 +384,7 @@ void Rrqt03(mplapackint const m, mplapackint const n, mplapackint const k, _Floa
 void Rspt01(const char *uplo, mplapackint const n, _Float64x *a, _Float64x *afac, mplapackint *ipiv, _Float64x *c, mplapackint const ldc, _Float64x *rwork, _Float64x &resid);
 void Rsyt01(const char *uplo, mplapackint const n, _Float64x *a, mplapackint const lda, _Float64x *afac, mplapackint const ldafac, mplapackint *ipiv, _Float64x *c, mplapackint const ldc, _Float64x *rwork, _Float64x &resid);
 void Rsyt01_3(const char *uplo, mplapackint const n, _Float64x *a, mplapackint const lda, _Float64x *afac, mplapackint const ldafac, _Float64x *e, mplapackint *ipiv, _Float64x *c, mplapackint const ldc, _Float64x *rwork, _Float64x &resid);
+void Rsyt01_aa(const char *uplo, mplapackint const n, _Float64x *a, mplapackint const lda, _Float64x *afac, mplapackint const ldafac, mplapackint *ipiv, _Float64x *c, mplapackint const ldc, _Float64x *rwork, _Float64x &resid);
 void Rsyt01_rook(const char *uplo, mplapackint const n, _Float64x *a, mplapackint const lda, _Float64x *afac, mplapackint const ldafac, mplapackint *ipiv, _Float64x *c, mplapackint const ldc, _Float64x *rwork, _Float64x &resid);
 void Rtbt02(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const kd, mplapackint const nrhs, _Float64x *ab, mplapackint const ldab, _Float64x *x, mplapackint const ldx, _Float64x *b, mplapackint const ldb, _Float64x *work, _Float64x &resid);
 void Rtbt03(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const kd, mplapackint const nrhs, _Float64x *ab, mplapackint const ldab, _Float64x const scale, _Float64x *cnorm, _Float64x const tscal, _Float64x *x, mplapackint const ldx, _Float64x *b, mplapackint const ldb, _Float64x *work, _Float64x &resid);
@@ -403,8 +405,6 @@ void Rtsqr01(const char *tssw, mplapackint const m, mplapackint const n, mplapac
 void chkxer(const char *srnamt, mplapackint const &infot, mplapackint const &nout, bool &lerr, bool &ok);
 void icopy(mplapackint const &n, mplapackint *sx, mplapackint const &incx, mplapackint *sy, mplapackint const &incy);
 void program_Cchkaa(mplapackint argc, char const *argv[]);
-void program_Cchkab(mplapackint argc, char const *argv[]);
 void program_Cchkrfp(mplapackint argc, char const *argv[]);
-void program_Rchkab(mplapackint argc, char const *argv[]);
 void program_Rchkrfp(mplapackint argc, char const *argv[]);
 #endif
