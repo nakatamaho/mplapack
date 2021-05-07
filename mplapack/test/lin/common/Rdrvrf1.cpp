@@ -43,7 +43,6 @@ void Rdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     common_write write(cmn);
     //
     char forms[] = {'N', 'T'};
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     char norms[] = {'M', '1', 'I', 'F'};
     char uplos[] = {'U', 'L'};
     char buf[1024];

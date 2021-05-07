@@ -36,22 +36,16 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
+    common cmn;
     common_write write(cmn);
     //
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    str_arr_ref<1> uplos(sve.uplos, [2]);
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"U", "L"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
-        }
-    }
+    char uplos[] = {'U', 'L'};
     char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -121,8 +115,9 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     //
     //     Initialize constants and the random number seed.
     //
-    path[(1 - 1)] = "Zomplex precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "PO";
+    path[0] = 'C';
+    path[1] = 'P';
+    path[2] = 'O';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -141,7 +136,7 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, 1);
-        xtype = "N";
+        xtype = 'N';
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -171,14 +166,14 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //              Set up parameters with Clatb4 and generate a test matrix
                 //              with Clatms.
                 //
-                Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
+                Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                 //
-                Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
+                Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
                 //
                 //              Check error code from Clatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Clatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_100;
                 }
                 //
@@ -232,13 +227,13 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     //                 Compute the L*L' or U'*U factorization of the matrix.
                     //
-                    Clacpy(uplo, n, n, a, lda, afac, lda);
-                    Cpotrf(uplo, n, afac, lda, info);
+                    Clacpy(&uplo, n, n, a, lda, afac, lda);
+                    Cpotrf(&uplo, n, afac, lda, info);
                     //
                     //                 Check error code from Cpotrf.
                     //
                     if (info != izero) {
-                        Alaerh(path, "Cpotrf", info, izero, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Cpotrf", info, izero, &uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                         goto statement_90;
                     }
                     //
@@ -251,22 +246,22 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //+    TEST 1
                     //                 Reconstruct matrix from factors and compute residual.
                     //
-                    Clacpy(uplo, n, n, afac, lda, ainv, lda);
-                    Cpot01(uplo, n, a, lda, ainv, lda, rwork, result[1 - 1]);
+                    Clacpy(&uplo, n, n, afac, lda, ainv, lda);
+                    Cpot01(&uplo, n, a, lda, ainv, lda, rwork, result[1 - 1]);
                     //
                     //+    TEST 2
                     //                 Form the inverse and compute the residual.
                     //
-                    Clacpy(uplo, n, n, afac, lda, ainv, lda);
-                    Cpotri(uplo, n, ainv, lda, info);
+                    Clacpy(&uplo, n, n, afac, lda, ainv, lda);
+                    Cpotri(&uplo, n, ainv, lda, info);
                     //
                     //                 Check error code from Cpotri.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Cpotri", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Cpotri", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
-                    Cpot03(uplo, n, a, lda, ainv, lda, work, lda, rwork, rcondc, result[2 - 1]);
+                    Cpot03(&uplo, n, a, lda, ainv, lda, work, lda, rwork, rcondc, result[2 - 1]);
                     //
                     //                 Print information about the tests that did not pass
                     //                 the threshold.
@@ -276,9 +271,10 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
+                            sprintnum_short(buf, result[k - 1]);
                             write(nout, "(' UPLO = ''',a1,''', N =',i5,', NB =',i4,', type ',i2,"
-                                        "', test ',i2,', ratio =',g12.5)"),
-                                uplo, n, nb, imat, k, result(k);
+                                        "', test ',i2,', ratio =',a)"),
+                                uplo, n, nb, imat, k, buf;
                             nfail++;
                         }
                     }
@@ -297,19 +293,19 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //+    TEST 3
                         //                 Solve and compute residual for A * X = B .
                         //
-                        Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        Clarhs(path, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        Cpotrs(uplo, n, nrhs, afac, lda, x, lda, info);
+                        Cpotrs(&uplo, n, nrhs, afac, lda, x, lda, info);
                         //
                         //                 Check error code from Cpotrs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Cpotrs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cpotrs", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
-                        Cpot02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[3 - 1]);
+                        Cpot02(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[3 - 1]);
                         //
                         //+    TEST 4
                         //                 Check solution from generated exact solution.
@@ -319,16 +315,16 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //+    TESTS 5, 6, and 7
                         //                 Use iterative refinement to improve the solution.
                         //
-                        Cporfs(uplo, n, nrhs, a, lda, afac, lda, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                        Cporfs(&uplo, n, nrhs, a, lda, afac, lda, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                         //
                         //                 Check error code from Cporfs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Cporfs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cporfs", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
-                        Cpot05(uplo, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], result[6 - 1]);
+                        Cpot05(&uplo, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[6 - 1]);
                         //
                         //                    Print information about the tests that did not pass
                         //                    the threshold.
@@ -338,9 +334,10 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
+                                sprintnum_short(buf, result[k - 1]);
                                 write(nout, "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                            "', test(',i2,') =',g12.5)"),
-                                    uplo, n, nrhs, imat, k, result(k);
+                                            "', test(',i2,') =',a)"),
+                                    uplo, n, nrhs, imat, k, buf;
                                 nfail++;
                             }
                         }
@@ -350,13 +347,13 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //+    TEST 8
                     //                 Get an estimate of RCOND = 1/CNDNUM.
                     //
-                    anorm = Clanhe("1", uplo, n, a, lda, rwork);
-                    Cpocon(uplo, n, afac, lda, anorm, rcond, work, rwork, info);
+                    anorm = Clanhe("1", &uplo, n, a, lda, rwork);
+                    Cpocon(&uplo, n, afac, lda, anorm, rcond, work, rwork, info);
                     //
                     //                 Check error code from Cpocon.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Cpocon", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Cpocon", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     result[8 - 1] = Rget06(rcond, rcondc);
@@ -367,9 +364,10 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
+                        sprintnum_short(buf, result[8 - 1]);
                         write(nout, "(' UPLO = ''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,"
-                                    "') =',g12.5)"),
-                            uplo, n, imat, 8, result(8);
+                                    "') =',a)"),
+                            uplo, n, imat, 8, buf;
                         nfail++;
                     }
                     nrun++;

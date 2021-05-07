@@ -36,15 +36,15 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, REAL *a, REAL *d, REAL *e, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER const nout) {
+    common cmn;
     common_write write(cmn);
     //
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    if (is_called_first_time) {
-        static const INTEGER values[] = {0, 0, 0, 1};
-        data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-    }
     char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -81,7 +81,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     INTEGER nrhs = 0;
     INTEGER k = 0;
     REAL rcond = 0.0;
-    static const char *format_9999 = "(' N =',i5,', type ',i2,', test ',i2,', ratio = ',g12.5)";
+    static const char *format_9999 = "(' N =',i5,', type ',i2,', test ',i2,', ratio = ',a)";
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -114,8 +114,9 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     //     ..
     //     .. Executable Statements ..
     //
-    path[(1 - 1)] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "PT";
+    path[0] = 'R';
+    path[1] = 'P';
+    path[2] = 'T';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -150,7 +151,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //
             //           Set up parameters with Rlatb4.
             //
-            Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cond, dist);
+            Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cond, &dist);
             //
             zerot = imat >= 8 && imat <= 10;
             if (imat <= 6) {
@@ -158,7 +159,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //              Type 1-6:  generate a symmetric tridiagonal matrix of
                 //              known condition number in lower triangular band storage.
                 //
-                Rlatms(n, n, dist, iseed, type, rwork, mode, cond, anorm, kl, ku, "B", a, 2, work, info);
+                Rlatms(n, n, &dist, iseed, &type, rwork, mode, cond, anorm, kl, ku, "B", a, 2, work, info);
                 //
                 //              Check the error code from Rlatms.
                 //
@@ -294,7 +295,8 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 if (nfail == 0 && nerrs == 0) {
                     Alahd(nout, path);
                 }
-                write(nout, format_9999), n, imat, 1, result(1);
+                sprintnum_short(buf, result[1 - 1]);
+                write(nout, format_9999), n, imat, 1, buf;
                 nfail++;
             }
             nrun++;
@@ -326,7 +328,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 ix = 1;
                 for (j = 1; j <= nrhs; j = j + 1) {
-                    Rlarnv(2, iseed, n, xact[ix - 1]);
+                    Rlarnv(2, iseed, n, &xact[ix - 1]);
                     ix += lda;
                 }
                 //
@@ -366,7 +368,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 }
                 //
                 Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
-                Rptt05(n, nrhs, d, e, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], result[5 - 1]);
+                Rptt05(n, nrhs, d, e, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[5 - 1]);
                 //
                 //           Print information about the tests that did not pass the
                 //           threshold.
@@ -376,9 +378,10 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
+                        sprintnum_short(buf, result[k - 1]);
                         write(nout, "(' N =',i5,', NRHS=',i3,', type ',i2,', test(',i2,') = ',"
-                                    "g12.5)"),
-                            n, nrhs, imat, k, result(k);
+                                    "a)"),
+                            n, nrhs, imat, k, buf;
                         nfail++;
                     }
                 }
@@ -406,7 +409,8 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 if (nfail == 0 && nerrs == 0) {
                     Alahd(nout, path);
                 }
-                write(nout, format_9999), n, imat, 7, result(7);
+                sprintnum_short(buf, result[7 - 1]);
+                write(nout, format_9999), n, imat, 7, buf;
                 nfail++;
             }
             nrun++;

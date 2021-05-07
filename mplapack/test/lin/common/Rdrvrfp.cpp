@@ -36,29 +36,16 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, INTEGER const nnt, INTEGER *ntval, REAL const thresh, REAL *a, REAL *asav, REAL *afac, REAL *ainv, REAL *b, REAL *bsav, REAL *xact, REAL *x, REAL *arf, REAL *arfinv, REAL *d_work_Rlatms, REAL *d_work_Rpot01, REAL *d_temp_Rpot02, REAL *d_temp_Rpot03, REAL *d_work_Rlansy, REAL *d_work_Rpot02, REAL *d_work_Rpot03) {
-    nval([nn]);
-    nsval([nns]);
-    ntval([nnt]);
+    common cmn;
     common_write write(cmn);
     //
-    str_arr_ref<1> forms(sve.forms, [2]);
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    str_arr_ref<1> uplos(sve.uplos, [2]);
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"U", "L"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
-        }
-        {
-            static const char *values[] = {"N", "T"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), forms;
-        }
-    }
+    char uplos[] = {'U', 'L'};
+    char forms[] = {'N', 'T'};
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -176,14 +163,14 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         //                    Set up parameters with Rlatb4 and generate a test
                         //                    matrix with Rlatms.
                         //
-                        Rlatb4("DPO", imat, n, n, ctype, kl, ku, anorm, mode, cndnum, dist);
+                        Rlatb4("DPO", imat, n, n, &ctype, kl, ku, anorm, mode, cndnum, &dist);
                         //
-                        Rlatms(n, n, dist, iseed, ctype, d_work_Rlatms, mode, cndnum, anorm, kl, ku, uplo, a, lda, d_work_Rlatms, info);
+                        Rlatms(n, n, &dist, iseed, &ctype, d_work_Rlatms, mode, cndnum, anorm, kl, ku, &uplo, a, lda, d_work_Rlatms, info);
                         //
                         //                    Check error code from Rlatms.
                         //
                         if (info != 0) {
-                            Alaerh("DPF", "Rlatms", info, 0, uplo, n, n, -1, -1, -1, iit, nfail, nerrs, nout);
+                            Alaerh("DPF", "Rlatms", info, 0, &uplo, n, n, -1, -1, -1, iit, nfail, nerrs, nout);
                             goto statement_100;
                         }
                         //
@@ -229,7 +216,7 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         //
                         //                    Save a copy of the matrix A in ASAV.
                         //
-                        Rlacpy(uplo, n, n, a, lda, asav, lda);
+                        Rlacpy(&uplo, n, n, a, lda, asav, lda);
                         //
                         //                    Compute the condition number of A (RCONDC).
                         //
@@ -239,43 +226,43 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             //
                             //                       Compute the 1-norm of A.
                             //
-                            anorm = Rlansy("1", uplo, n, a, lda, d_work_Rlansy);
+                            anorm = Rlansy("1", &uplo, n, a, lda, d_work_Rlansy);
                             //
                             //                       Factor the matrix A.
                             //
-                            Rpotrf(uplo, n, a, lda, info);
+                            Rpotrf(&uplo, n, a, lda, info);
                             //
                             //                       Form the inverse of A.
                             //
-                            Rpotri(uplo, n, a, lda, info);
+                            Rpotri(&uplo, n, a, lda, info);
                             //
                             if (n != 0) {
                                 //
                                 //                          Compute the 1-norm condition number of A.
                                 //
-                                ainvnm = Rlansy("1", uplo, n, a, lda, d_work_Rlansy);
+                                ainvnm = Rlansy("1", &uplo, n, a, lda, d_work_Rlansy);
                                 rcondc = (one / anorm) / ainvnm;
                                 //
                                 //                          Restore the matrix A.
                                 //
-                                Rlacpy(uplo, n, n, asav, lda, a, lda);
+                                Rlacpy(&uplo, n, n, asav, lda, a, lda);
                             }
                             //
                         }
                         //
                         //                    Form an exact solution and set the right hand side.
                         //
-                        Rlarhs("DPO", "N", uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        Rlarhs("DPO", "N", &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Rlacpy("Full", n, nrhs, b, lda, bsav, lda);
                         //
                         //                    Compute the L*L' or U'*U factorization of the
                         //                    matrix and solve the system.
                         //
-                        Rlacpy(uplo, n, n, a, lda, afac, lda);
+                        Rlacpy(&uplo, n, n, a, lda, afac, lda);
                         Rlacpy("Full", n, nrhs, b, ldb, x, ldb);
                         //
-                        Rtrttf(cform, uplo, n, afac, lda, arf, info);
-                        Rpftrf(cform, uplo, n, arf, info);
+                        Rtrttf(&cform, &uplo, n, afac, lda, arf, info);
+                        Rpftrf(&cform, &uplo, n, arf, info);
                         //
                         //                    Check error code from Rpftrf.
                         //
@@ -285,7 +272,7 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             //                       always be INFO however if INFO is ZERO, Alaerh does not
                             //                       complain.
                             //
-                            Alaerh("DPF", "DPFSV ", info, izero, uplo, n, n, -1, -1, nrhs, iit, nfail, nerrs, nout);
+                            Alaerh("DPF", "DPFSV ", info, izero, &uplo, n, n, -1, -1, nrhs, iit, nfail, nerrs, nout);
                             goto statement_100;
                         }
                         //
@@ -295,16 +282,16 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             goto statement_100;
                         }
                         //
-                        Rpftrs(cform, uplo, n, nrhs, arf, x, ldb, info);
+                        Rpftrs(&cform, &uplo, n, nrhs, arf, x, ldb, info);
                         //
-                        Rtfttr(cform, uplo, n, arf, afac, lda, info);
+                        Rtfttr(&cform, &uplo, n, arf, afac, lda, info);
                         //
                         //                    Reconstruct matrix from factors and compute
                         //                    residual.
                         //
-                        Rlacpy(uplo, n, n, afac, lda, asav, lda);
-                        Rpot01(uplo, n, a, lda, afac, lda, d_work_Rpot01, result[1 - 1]);
-                        Rlacpy(uplo, n, n, asav, lda, afac, lda);
+                        Rlacpy(&uplo, n, n, afac, lda, asav, lda);
+                        Rpot01(&uplo, n, a, lda, afac, lda, d_work_Rpot01, result[1 - 1]);
+                        Rlacpy(&uplo, n, n, asav, lda, afac, lda);
                         //
                         //                    Form the inverse and compute the residual.
                         //
@@ -314,22 +301,22 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             Rlacpy("A", n, (n + 1) / 2, arf, n, arfinv, n);
                         }
                         //
-                        Rpftri(cform, uplo, n, arfinv, info);
+                        Rpftri(&cform, &uplo, n, arfinv, info);
                         //
-                        Rtfttr(cform, uplo, n, arfinv, ainv, lda, info);
+                        Rtfttr(&cform, &uplo, n, arfinv, ainv, lda, info);
                         //
                         //                    Check error code from Rpftri.
                         //
                         if (info != 0) {
-                            Alaerh("DPO", "Rpftri", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh("DPO", "Rpftri", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
-                        Rpot03(uplo, n, a, lda, ainv, lda, d_temp_Rpot03, lda, d_work_Rpot03, rcondc, result[2 - 1]);
+                        Rpot03(&uplo, n, a, lda, ainv, lda, d_temp_Rpot03, lda, d_work_Rpot03, rcondc, result[2 - 1]);
                         //
                         //                    Compute residual of the computed solution.
                         //
                         Rlacpy("Full", n, nrhs, b, lda, d_temp_Rpot02, lda);
-                        Rpot02(uplo, n, nrhs, a, lda, x, lda, d_temp_Rpot02, lda, d_work_Rpot02, result[3 - 1]);
+                        Rpot02(&uplo, n, nrhs, a, lda, x, lda, d_temp_Rpot02, lda, d_work_Rpot02, result[3 - 1]);
                         //
                         //                    Check solution from generated exact solution.
                         //
@@ -344,9 +331,10 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, "DPF");
                                 }
+                                sprintnum_short(buf, result[k - 1]);
                                 write(nout, "(1x,a6,', UPLO=''',a1,''', N =',i5,', type ',i1,', test(',"
-                                            "i1,')=',g12.5)"),
-                                    "DPFSV ", uplo, n, iit, k, result(k);
+                                            "i1,')=',a)"),
+                                    "DPFSV ", uplo, n, iit, k, buf;
                                 nfail++;
                             }
                         }

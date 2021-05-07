@@ -37,12 +37,9 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Clavsy(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
-    a([lda * star]);
-    b([ldb * star]);
     bool nounit = false;
     INTEGER k = 0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
-    INTEGER &b[(1 - 1) + (1 - 1) * ldb] = 0;
     INTEGER kp = 0;
     COMPLEX d11 = 0.0;
     COMPLEX d22 = 0.0;
@@ -129,7 +126,7 @@ void Clavsy(const char *uplo, const char *trans, const char *diag, INTEGER const
                 //              Multiply by the diagonal element if forming U * D.
                 //
                 if (nounit) {
-                    Cscal(nrhs, &a[(k - 1) + (k - 1) * lda], &b[(k - 1)], ldb);
+                    Cscal(nrhs, a[(k - 1) + (k - 1) * lda], &b[(k - 1)], ldb);
                 }
                 //
                 //              Multiply by  P(K) * inv(U(K))  if K > 1.
@@ -211,7 +208,7 @@ void Clavsy(const char *uplo, const char *trans, const char *diag, INTEGER const
                 //              Multiply by the diagonal element if forming L * D.
                 //
                 if (nounit) {
-                    Cscal(nrhs, &a[(k - 1) + (k - 1) * lda], &b[(k - 1)], ldb);
+                    Cscal(nrhs, a[(k - 1) + (k - 1) * lda], &b[(k - 1)], ldb);
                 }
                 //
                 //              Multiply by  P(K) * inv(L(K))  if K < N.
@@ -311,7 +308,7 @@ void Clavsy(const char *uplo, const char *trans, const char *diag, INTEGER const
                     Cgemv("Transpose", k - 1, nrhs, cone, b, ldb, &a[(k - 1) * lda], 1, cone, &b[(k - 1)], ldb);
                 }
                 if (nounit) {
-                    Cscal(nrhs, &a[(k - 1) + (k - 1) * lda], &b[(k - 1)], ldb);
+                    Cscal(nrhs, a[(k - 1) + (k - 1) * lda], &b[(k - 1)], ldb);
                 }
                 k = k - 1;
                 //
@@ -383,7 +380,7 @@ void Clavsy(const char *uplo, const char *trans, const char *diag, INTEGER const
                     Cgemv("Transpose", n - k, nrhs, cone, &b[((k + 1) - 1)], ldb, &a[((k + 1) - 1) + (k - 1) * lda], 1, cone, &b[(k - 1)], ldb);
                 }
                 if (nounit) {
-                    Cscal(nrhs, &a[(k - 1) + (k - 1) * lda], &b[(k - 1)], ldb);
+                    Cscal(nrhs, a[(k - 1) + (k - 1) * lda], &b[(k - 1)], ldb);
                 }
                 k++;
                 //

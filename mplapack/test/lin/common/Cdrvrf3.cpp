@@ -36,48 +36,18 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, COMPLEX *a, INTEGER const lda, COMPLEX *arf, COMPLEX *b1, COMPLEX *b2, REAL *d_work_Clange, COMPLEX *z_work_Cgeqrf, COMPLEX *tau) {
-    nval([nn]);
-    a([lda * star]);
-    b1([lda * star]);
-    b2([lda * star]);
+    common cmn;
     common_write write(cmn);
-    // COMMON srnamc
-    //
-    // SAVE
-    str_arr_ref<1> diags(sve.diags, [2]);
-    str_arr_ref<1> forms(sve.forms, [2]);
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    str_arr_ref<1> sides(sve.sides, [2]);
-    str_arr_ref<1> transs(sve.transs, [2]);
-    str_arr_ref<1> uplos(sve.uplos, [2]);
-    //
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"U", "L"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
-        }
-        {
-            static const char *values[] = {"N", "C"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), forms;
-        }
-        {
-            static const char *values[] = {"L", "R"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), sides;
-        }
-        {
-            static const char *values[] = {"N", "C"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), transs;
-        }
-        {
-            static const char *values[] = {"N", "U"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), diags;
-        }
-    }
+    char uplos[] = {'U', 'L'};
+    char transs[] = {'N', 'C'};
+    char diags[] = {'N', 'U'};
+    char forms[] = {'N', 'C'};
+    char sides[] = {'L', 'R'};
+    char buf[1024];
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -144,6 +114,9 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     INTEGER j = 0;
     const INTEGER ntests = 1;
     REAL result[ntests];
+    INTEGER ldb1 = lda;
+    INTEGER ldb2 = lda;
+
     for (iim = 1; iim <= nn; iim = iim + 1) {
         //
         m = nval[iim - 1];
@@ -244,7 +217,7 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     //
                                     //                             Store a copy of A in RFP format (in ARF).
                                     //
-                                    Ctrttf(cform, uplo, na, a, lda, arf, info);
+                                    Ctrttf(&cform, &uplo, na, a, lda, arf, info);
                                     //
                                     //                             Generate B1 our M--by--N right-hand side
                                     //                             and store a copy in B2.
@@ -259,12 +232,12 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     //                             Solve op( A ) X = B or X op( A ) = B
                                     //                             with Ctrsm
                                     //
-                                    Ctrsm(side, uplo, trans, diag, m, n, alpha, a, lda, b1, lda);
+                                    Ctrsm(&side, &uplo, &trans, &diag, m, n, alpha, a, lda, b1, lda);
                                     //
                                     //                             Solve op( A ) X = B or X op( A ) = B
                                     //                             with Ctfsm
                                     //
-                                    Ctfsm(cform, side, uplo, trans, diag, m, n, alpha, arf, b2, lda);
+                                    Ctfsm(&cform, &side, &uplo, &trans, &diag, m, n, alpha, arf, b2, lda);
                                     //
                                     //                             Check that the result agrees.
                                     //
@@ -276,7 +249,7 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     //
                                     result[1 - 1] = Clange("I", m, n, b1, lda, d_work_Clange);
                                     //
-                                    result[1 - 1] = result[1 - 1] / sqrt(eps) / max({max(m, n), 1});
+                                    result[1 - 1] = result[1 - 1] / sqrt(eps) / max(max(m, n), 1);
                                     //
                                     if (result[1 - 1] >= thresh) {
                                         if (nfail == 0) {
@@ -284,11 +257,12 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                             write(nout, "(1x,' *** Error(s) or Failure(s) while testing Ctfsm "
                                                         "        ***')");
                                         }
+                                        sprintnum_short(buf, result[1 - 1]);
                                         write(nout, "(1x,'     Failure in ',a5,', CFORM=''',a1,''',',"
                                                     "' SIDE=''',a1,''',',' UPLO=''',a1,''',',' TRANS=''',a1,"
                                                     "''',',' DIAG=''',a1,''',',' M=',i3,', N =',i3,"
-                                                    "', test=',g12.5)"),
-                                            "Ctfsm", cform, side, uplo, trans, diag, m, n, result(1);
+                                                    "', test=',a)"),
+                                            "Ctfsm", cform, side, uplo, trans, diag, m, n, buf;
                                         nfail++;
                                     }
                                     //

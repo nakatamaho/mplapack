@@ -329,7 +329,8 @@ void Cchkhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        write(nout, format_9999), uplo, n, imat, k, result(k);
+                        sprintnum_short(buf, result[k - 1]);
+                        write(nout, format_9999), uplo, n, imat, k, buf;
                         nfail++;
                     }
                 }
@@ -390,9 +391,10 @@ void Cchkhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
+                            sprintnum_short(buf, result[k - 1]);
                             write(nout, "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                        "', test(',i2,') =',g12.5)"),
-                                uplo, n, nrhs, imat, k, result(k);
+                                        "', test(',i2,') =',a)"),
+                                uplo, n, nrhs, imat, k, buf;
                             nfail++;
                         }
                     }

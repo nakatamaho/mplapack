@@ -37,12 +37,10 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rlavsp(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER *ipiv, REAL *b, INTEGER const ldb, INTEGER &info) {
-    b([ldb * star]);
     bool nounit = false;
     INTEGER k = 0;
     INTEGER kc = 0;
     const REAL one = 1.0;
-    INTEGER &b[(1 - 1) + (1 - 1) * ldb] = 0;
     INTEGER kp = 0;
     INTEGER kcnext = 0;
     REAL d11 = 0.0;
@@ -130,7 +128,7 @@ void Rlavsp(const char *uplo, const char *trans, const char *diag, INTEGER const
                 //              Multiply by the diagonal element if forming U * D.
                 //
                 if (nounit) {
-                    Rscal(nrhs, &a[(kc + k - 1) - 1], &b[(k - 1)], ldb);
+                    Rscal(nrhs, a[(kc + k - 1) - 1], &b[(k - 1)], ldb);
                 }
                 //
                 //              Multiply by P(K) * inv(U(K))  if K > 1.
@@ -218,7 +216,7 @@ void Rlavsp(const char *uplo, const char *trans, const char *diag, INTEGER const
                 //              Multiply by the diagonal element if forming L * D.
                 //
                 if (nounit) {
-                    Rscal(nrhs, &a[kc - 1], &b[(k - 1)], ldb);
+                    Rscal(nrhs, a[kc - 1], &b[(k - 1)], ldb);
                 }
                 //
                 //              Multiply by  P(K) * inv(L(K))  if K < N.
@@ -323,7 +321,7 @@ void Rlavsp(const char *uplo, const char *trans, const char *diag, INTEGER const
                     Rgemv("Transpose", k - 1, nrhs, one, b, ldb, &a[kc - 1], 1, one, &b[(k - 1)], ldb);
                 }
                 if (nounit) {
-                    Rscal(nrhs, &a[(kc + k - 1) - 1], &b[(k - 1)], ldb);
+                    Rscal(nrhs, a[(kc + k - 1) - 1], &b[(k - 1)], ldb);
                 }
                 k = k - 1;
                 //
@@ -398,7 +396,7 @@ void Rlavsp(const char *uplo, const char *trans, const char *diag, INTEGER const
                     Rgemv("Transpose", n - k, nrhs, one, &b[((k + 1) - 1)], ldb, &a[(kc + 1) - 1], 1, one, &b[(k - 1)], ldb);
                 }
                 if (nounit) {
-                    Rscal(nrhs, &a[kc - 1], &b[(k - 1)], ldb);
+                    Rscal(nrhs, a[kc - 1], &b[(k - 1)], ldb);
                 }
                 kc += n - k + 1;
                 k++;

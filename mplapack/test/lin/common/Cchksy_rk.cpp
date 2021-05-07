@@ -36,27 +36,21 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *e, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+    common cmn;
     common_write write(cmn);
     //
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    str_arr_ref<1> uplos(sve.uplos, [2]);
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"U", "L"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
-        }
-    }
+    char uplos[] = {'U', 'L'};
     const REAL one = 1.0;
     const REAL sevten = 17.0e+0;
     const REAL eight = 8.0e+0;
     REAL alpha = 0.0;
     char path[3];
     char matpath[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -100,6 +94,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     const REAL onehalf = 0.5e+0;
     REAL identifier_const = 0.0;
     COMPLEX block[2 * 2];
+    INTEGER ldblock = 2;
     COMPLEX zdummy[1];
     REAL sing_max = 0.0;
     REAL sing_min = 0.0;
@@ -107,7 +102,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     INTEGER nrhs = 0;
     REAL rcond = 0.0;
     static const char *format_9999 = "(' UPLO = ''',a1,''', N =',i5,', NB =',i4,', type ',i2,', test ',i2,"
-                                     "', ratio =',g12.5)";
+                                     "', ratio =',a)";
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -146,13 +141,15 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     //
     //     Test path
     //
-    path[(1 - 1)] = "Zomplex precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "SK";
+    path[0] = 'Z';
+    path[1] = 'S';
+    path[2] = 'K';
     //
     //     Path to generate matrices
     //
-    matpath[(1 - 1)] = "Zomplex precision";
-    matpath[(2 - 1) + (3 - 1) * ldmatpath] = "SY";
+    matpath[0] = 'Z';
+    matpath[1] = 'S';
+    matpath[2] = 'Y';
     //
     nrun = 0;
     nfail = 0;
@@ -176,7 +173,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, 1);
-        xtype = "N";
+        xtype = 'N';
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -407,7 +404,8 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            write(nout, format_9999), uplo, n, nb, imat, k, result(k);
+                            sprintnum_short(buf, result[k - 1]);
+                            write(nout, format_9999), uplo, n, nb, imat, k, buf;
                             nfail++;
                         }
                     }
@@ -602,7 +600,8 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            write(nout, format_9999), uplo, n, nb, imat, k, result(k);
+                            sprintnum_short(buf, result[k - 1]);
+                            write(nout, format_9999), uplo, n, nb, imat, k, buf;
                             nfail++;
                         }
                     }
@@ -663,9 +662,10 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
+                                sprintnum_short(buf, result[k - 1]);
                                 write(nout, "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                            "', test(',i2,') =',g12.5)"),
-                                    uplo, n, nrhs, imat, k, result(k);
+                                            "', test(',i2,') =',a)"),
+                                    uplo, n, nrhs, imat, k, buf;
                                 nfail++;
                             }
                         }
@@ -699,9 +699,10 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
+                        sprintnum_short(buf, result[7 - 1]);
                         write(nout, "(' UPLO = ''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,"
-                                    "') =',g12.5)"),
-                            uplo, n, imat, 7, result(7);
+                                    "') =',a)"),
+                            uplo, n, imat, 7, buf;
                         nfail++;
                     }
                     nrun++;
