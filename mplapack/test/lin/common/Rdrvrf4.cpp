@@ -36,38 +36,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, REAL *c1, REAL *c2, INTEGER const ldc, REAL *crf, REAL *a, INTEGER const lda, REAL *d_work_Rlange) {
-    nval([nn]);
-    c1([ldc * star]);
-    c2([ldc * star]);
-    a([lda * star]);
+    common cmn;
     common_write write(cmn);
-    // COMMON srnamc
-    //
-    // SAVE
-    str_arr_ref<1> forms(sve.forms, [2]);
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    str_arr_ref<1> transs(sve.transs, [2]);
-    str_arr_ref<1> uplos(sve.uplos, [2]);
-    //
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"U", "L"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
-        }
-        {
-            static const char *values[] = {"N", "T"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), forms;
-        }
-        {
-            static const char *values[] = {"N", "T"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), transs;
-        }
-    }
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -102,6 +75,13 @@ void Rdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     //
     //     Initialize constants and the random number seed.
     //
+    INTEGER ldc1 = ldc;
+    INTEGER ldc2 = ldc;
+    char transs[] = {'N', 'T'};
+    char uplos[] = {'U', 'L'};
+    char forms[] = {'N', 'T'};
+    char buf[1024];
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER info = 0;
@@ -218,19 +198,19 @@ void Rdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                             //
                             normc = Rlange("I", n, n, c1, ldc, d_work_Rlange);
                             //
-                            Rtrttf(cform, uplo, n, c1, ldc, crf, info);
+                            Rtrttf(&cform, &uplo, n, c1, ldc, crf, info);
                             //
                             //                       call Rsyrk the BLAS routine -> gives C1
                             //
-                            Rsyrk(uplo, trans, n, k, alpha, a, lda, beta, c1, ldc);
+                            Rsyrk(&uplo, &trans, n, k, alpha, a, lda, beta, c1, ldc);
                             //
                             //                       call Rsfrk the RFP routine -> gives CRF
                             //
-                            Rsfrk(cform, uplo, trans, n, k, alpha, a, lda, beta, crf);
+                            Rsfrk(&cform, &uplo, &trans, n, k, alpha, a, lda, beta, crf);
                             //
                             //                       convert CRF in full format -> gives C2
                             //
-                            Rtfttr(cform, uplo, n, crf, c2, ldc, info);
+                            Rtfttr(&cform, &uplo, n, crf, c2, ldc, info);
                             //
                             //                       compare C1 and C2
                             //
@@ -254,10 +234,11 @@ void Rdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     write(nout, "(1x,' *** Error(s) or Failure(s) while testing Rsfrk     "
                                                 "    ***')");
                                 }
+                                sprintnum_short(buf, result[0]);
                                 write(nout, "(1x,'     Failure in ',a5,', CFORM=''',a1,''',',' UPLO=''',"
                                             "a1,''',',' TRANS=''',a1,''',',' N=',i3,', K =',i3,"
-                                            "', test=',g12.5)"),
-                                    "Rsfrk", cform, uplo, trans, n, k, result(1);
+                                            "', test=',a)"),
+                                    "Rsfrk", cform, uplo, trans, n, k, buf;
                                 nfail++;
                             }
                             //

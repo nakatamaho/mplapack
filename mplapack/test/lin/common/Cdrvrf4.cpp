@@ -36,38 +36,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, COMPLEX *c1, COMPLEX *c2, INTEGER const ldc, COMPLEX *crf, COMPLEX *a, INTEGER const lda, REAL *d_work_Clange) {
-    nval([nn]);
-    c1([ldc * star]);
-    c2([ldc * star]);
-    a([lda * star]);
+    common cmn;
     common_write write(cmn);
-    // COMMON srnamc
-    //
-    // SAVE
-    str_arr_ref<1> forms(sve.forms, [2]);
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    str_arr_ref<1> transs(sve.transs, [2]);
-    str_arr_ref<1> uplos(sve.uplos, [2]);
-    //
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"U", "L"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
-        }
-        {
-            static const char *values[] = {"N", "C"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), forms;
-        }
-        {
-            static const char *values[] = {"N", "C"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), transs;
-        }
-    }
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -102,6 +75,13 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     //
     //     Initialize constants and the random number seed.
     //
+    INTEGER ldc1 = ldc;
+    INTEGER ldc2 = ldc;
+    char transs[] = {'N', 'C'};
+    char uplos[] = {'U', 'L'};
+    char forms[] = {'N', 'C'};
+    char buf[1024];
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER info = 0;
@@ -218,19 +198,19 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                             //
                             normc = Clange("I", n, n, c1, ldc, d_work_Clange);
                             //
-                            Ctrttf(cform, uplo, n, c1, ldc, crf, info);
+                            Ctrttf(&cform, &uplo, n, c1, ldc, crf, info);
                             //
                             //                       call Cherk the BLAS routine -> gives C1
                             //
-                            Cherk(uplo, trans, n, k, alpha, a, lda, beta, c1, ldc);
+                            Cherk(&uplo, &trans, n, k, alpha, a, lda, beta, c1, ldc);
                             //
                             //                       call Chfrk the RFP routine -> gives CRF
                             //
-                            Chfrk(cform, uplo, trans, n, k, alpha, a, lda, beta, crf);
+                            Chfrk(&cform, &uplo, &trans, n, k, alpha, a, lda, beta, crf);
                             //
                             //                       convert CRF in full format -> gives C2
                             //
-                            Ctfttr(cform, uplo, n, crf, c2, ldc, info);
+                            Ctfttr(&cform, &uplo, n, crf, c2, ldc, info);
                             //
                             //                       compare C1 and C2
                             //
@@ -254,10 +234,11 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     write(nout, "(1x,' *** Error(s) or Failure(s) while testing Chfrk     "
                                                 "    ***')");
                                 }
+                                sprintnum_short(buf, result[0]);
                                 write(nout, "(1x,'     Failure in ',a5,', CFORM=''',a1,''',',' UPLO=''',"
                                             "a1,''',',' TRANS=''',a1,''',',' N=',i3,', K =',i3,"
-                                            "', test=',g12.5)"),
-                                    "Chfrk", cform, uplo, trans, n, k, result(1);
+                                            "', test=',a)"),
+                                    "Chfrk", cform, uplo, trans, n, k, buf;
                                 nfail++;
                             }
                             //

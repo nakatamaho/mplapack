@@ -78,6 +78,7 @@ void Rchkaa(void) {
     INTEGER nrank = 0;
     INTEGER rankval[maxin];
     REAL thresh = 0.0;
+    REAL threq = 2.0;
     bool tstchk = false;
     bool tstdrv = false;
     bool tsterr = false;
@@ -509,494 +510,459 @@ void Rchkaa(void) {
             } else {
                 write(nout, format_9989), path;
             }
-        }
-#ifdef NOTYET
-        //
-        if (tstdrv) {
-            Rdrvgb(dotype, nn, nval, nrhs, thresh, tsterr, &a[(1 - 1)], la, &a[(3 - 1) * ldaorg], lafac, &a[(6 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], s, work, rwork, iwork, nout);
+            if (tstdrv) {
+                Rdrvgb(dotype, nn, nval, nrhs, thresh, tsterr, &a[(1 - 1)], la, &a[(3 - 1) * ldaorg], lafac, &a[(6 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], s, work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9988), path;
+            }
+        } else if (Mlsamen(2, c2, "GT")) {
+            //
+            //        GT:  general tridiagonal matrices
+            //
+            ntypes = 12;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchkgt(dotype, nn, nval, nns, nsval, thresh, tsterr, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+            if (tstdrv) {
+                Rdrvgt(dotype, nn, nval, nrhs, thresh, tsterr, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9988), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "PO")) {
+            //
+            //        PO:  positive definite matrices
+            //
+            ntypes = 9;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchkpo(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+            if (tstdrv) {
+                Rdrvpo(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], s, work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9988), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "PS")) {
+            //
+            //        PS:  positive semi-definite matrices
+            //
+            ntypes = 9;
+            //
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchkps(dotype, nn, nval, nnb2, nbval2, nrank, rankval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], piv, work, rwork, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "PP")) {
+            //
+            //        PP:  positive definite packed matrices
+            //
+            ntypes = 9;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchkpp(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+            if (tstdrv) {
+                Rdrvpp(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], s, work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9988), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "PB")) {
+            //
+            //        PB:  positive definite banded matrices
+            //
+            ntypes = 8;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchkpb(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+            if (tstdrv) {
+                Rdrvpb(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], s, work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9988), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "PT")) {
+            //
+            //        PT:  positive definite tridiagonal matrices
+            //
+            ntypes = 12;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchkpt(dotype, nn, nval, nns, nsval, thresh, tsterr, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+            if (tstdrv) {
+                Rdrvpt(dotype, nn, nval, nrhs, thresh, tsterr, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, nout);
+            } else {
+                write(nout, format_9988), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "SY")) {
+            //
+            //        SY:  symmetric indefinite matrices,
+            //             with partial (Bunch-Kaufman) pivoting algorithm
+            //
+            ntypes = 10;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchksy(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+            if (tstdrv) {
+                Rdrvsy(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9988), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "SR")) {
+            //
+            //        SR:  symmetric indefinite matrices,
+            //             with bounded Bunch-Kaufman (rook) pivoting algorithm
+            //
+            ntypes = 10;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchksy_rook(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+            if (tstdrv) {
+                Rdrvsy_rook(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9988), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "SK")) {
+            //
+            //        SK:  symmetric indefinite matrices,
+            //             with bounded Bunch-Kaufman (rook) pivoting algorithm,
+            //             different matrix storage format than SR path version.
+            //
+            ntypes = 10;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchksy_rk(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], e, &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+            if (tstdrv) {
+                Rdrvsy_rk(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], e, &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9988), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "SA")) {
+            //
+            //        SA:  symmetric indefinite matrices,
+            //             with partial (Aasen's) pivoting algorithm
+            //
+            ntypes = 10;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchksy_aa(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+            if (tstdrv) {
+                Rdrvsy_aa(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9988), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "S2")) {
+            //
+            //        SA:  symmetric indefinite matrices,
+            //             with partial (Aasen's) pivoting algorithm
+            //
+            ntypes = 10;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchksy_aa_2stage(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+            if (tstdrv) {
+                Rdrvsy_aa_2stage(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9988), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "SP")) {
+            //
+            //        SP:  symmetric indefinite packed matrices,
+            //             with partial (Bunch-Kaufman) pivoting algorithm
+            //
+            ntypes = 10;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchksp(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+            if (tstdrv) {
+                Rdrvsp(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9988), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "TR")) {
+            //
+            //        TR:  triangular matrices
+            //
+            ntypes = 18;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchktr(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "TP")) {
+            //
+            //        TP:  triangular packed matrices
+            //
+            ntypes = 18;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchktp(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "TB")) {
+            //
+            //        TB:  triangular banded matrices
+            //
+            ntypes = 17;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchktb(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "QR")) {
+            //
+            //        QR:  QR factorization
+            //
+            ntypes = 8;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchkqr(dotype, nm, mval, nn, nval, nnb, nbval, nxval, nrhs, thresh, tsterr, nmax, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &a[(4 - 1) * ldaorg], &a[(5 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "LQ")) {
+            //
+            //        LQ:  LQ factorization
+            //
+            ntypes = 8;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchklq(dotype, nm, mval, nn, nval, nnb, nbval, nxval, nrhs, thresh, tsterr, nmax, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &a[(4 - 1) * ldaorg], &a[(5 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], work, rwork, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "QL")) {
+            //
+            //        QL:  QL factorization
+            //
+            ntypes = 8;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchkql(dotype, nm, mval, nn, nval, nnb, nbval, nxval, nrhs, thresh, tsterr, nmax, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &a[(4 - 1) * ldaorg], &a[(5 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], work, rwork, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "RQ")) {
+            //
+            //        RQ:  RQ factorization
+            //
+            ntypes = 8;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchkrq(dotype, nm, mval, nn, nval, nnb, nbval, nxval, nrhs, thresh, tsterr, nmax, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &a[(4 - 1) * ldaorg], &a[(5 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], work, rwork, iwork, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "QP")) {
+            //
+            //        QP:  QR factorization with pivoting
+            //
+            ntypes = 6;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchkq3(dotype, nm, mval, nn, nval, nnb, nbval, nxval, thresh, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &b[(1 - 1)], &b[(3 - 1) * ldb], work, iwork, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "TZ")) {
+            //
+            //        TZ:  Trapezoidal matrix
+            //
+            ntypes = 3;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstchk) {
+                Rchktz(dotype, nm, mval, nn, nval, thresh, tsterr, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &b[(1 - 1)], &b[(3 - 1) * ldb], work, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "LS")) {
+            //
+            //        LS:  Least squares drivers
+            //
+            ntypes = 6;
+            Alareq(path, nmats, dotype, ntypes, nin, nout);
+            //
+            if (tstdrv) {
+                Rdrvls(dotype, nm, mval, nn, nval, nns, nsval, nnb, nbval, nxval, thresh, tsterr, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], rwork, &rwork[(nmax + 1) - 1], nout);
+            } else {
+                write(nout, format_9988), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "EQ")) {
+            //
+            //        EQ:  Equilibration routines for general and positive definite
+            //             matrices (THREQ should be between 2 and 10)
+            //
+            if (tstchk) {
+                Rchkeq(threq, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "QT")) {
+            //
+            //        QT:  QRT routines for general matrices
+            //
+            if (tstchk) {
+                Rchkqrt(thresh, tsterr, nm, mval, nn, nval, nnb, nbval, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "QX")) {
+            //
+            //        QX:  QRT routines for triangular-pentagonal matrices
+            //
+            if (tstchk) {
+                Rchkqrtp(thresh, tsterr, nm, mval, nn, nval, nnb, nbval, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "TQ")) {
+            //
+            //        TQ:  LQT routines for general matrices
+            //
+            if (tstchk) {
+                Rchklqt(thresh, tsterr, nm, mval, nn, nval, nnb, nbval, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "XQ")) {
+            //
+            //        XQ:  LQT routines for triangular-pentagonal matrices
+            //
+            if (tstchk) {
+                Rchklqtp(thresh, tsterr, nm, mval, nn, nval, nnb, nbval, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "TS")) {
+            //
+            //        TS:  QR routines for tall-skinny matrices
+            //
+            if (tstchk) {
+                Rchktsqr(thresh, tsterr, nm, mval, nn, nval, nnb, nbval, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
+        } else if (Mlsamen(2, c2, "HH")) {
+            //
+            //        HH:  Householder reconstruction for tall-skinny matrices
+            //
+            if (tstchk) {
+                Rchkorhr_col(thresh, tsterr, nm, mval, nn, nval, nnb, nbval, nout);
+            } else {
+                write(nout, format_9989), path;
+            }
+            //
         } else {
-            write(nout, format_9988), path;
+            //
+            write(nout, format_9990), path;
         }
+        //
+        //     Go back to get another input line.
         //
     }
-    else if (Mlsamen(2, c2, "GT")) {
-        //
-        //        GT:  general tridiagonal matrices
-        //
-        ntypes = 12;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchkgt(dotype, nn, nval, nns, nsval, thresh, tsterr, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-        if (tstdrv) {
-            Rdrvgt(dotype, nn, nval, nrhs, thresh, tsterr, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9988), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "PO")) {
-        //
-        //        PO:  positive definite matrices
-        //
-        ntypes = 9;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchkpo(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-        if (tstdrv) {
-            Rdrvpo(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], s, work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9988), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "PS")) {
-        //
-        //        PS:  positive semi-definite matrices
-        //
-        ntypes = 9;
-        //
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchkps(dotype, nn, nval, nnb2, nbval2, nrank, rankval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], piv, work, rwork, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "PP")) {
-        //
-        //        PP:  positive definite packed matrices
-        //
-        ntypes = 9;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchkpp(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-        if (tstdrv) {
-            Rdrvpp(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], s, work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9988), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "PB")) {
-        //
-        //        PB:  positive definite banded matrices
-        //
-        ntypes = 8;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchkpb(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-        if (tstdrv) {
-            Rdrvpb(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], s, work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9988), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "PT")) {
-        //
-        //        PT:  positive definite tridiagonal matrices
-        //
-        ntypes = 12;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchkpt(dotype, nn, nval, nns, nsval, thresh, tsterr, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-        if (tstdrv) {
-            Rdrvpt(dotype, nn, nval, nrhs, thresh, tsterr, &a[(1 - 1)], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, nout);
-        } else {
-            write(nout, format_9988), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "SY")) {
-        //
-        //        SY:  symmetric indefinite matrices,
-        //             with partial (Bunch-Kaufman) pivoting algorithm
-        //
-        ntypes = 10;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchksy(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-        if (tstdrv) {
-            Rdrvsy(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9988), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "SR")) {
-        //
-        //        SR:  symmetric indefinite matrices,
-        //             with bounded Bunch-Kaufman (rook) pivoting algorithm
-        //
-        ntypes = 10;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchksy_rook(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-        if (tstdrv) {
-            Rdrvsy_rook(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9988), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "SK")) {
-        //
-        //        SK:  symmetric indefinite matrices,
-        //             with bounded Bunch-Kaufman (rook) pivoting algorithm,
-        //             different matrix storage format than SR path version.
-        //
-        ntypes = 10;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchksy_rk(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], e, &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-        if (tstdrv) {
-            Rdrvsy_rk(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], e, &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9988), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "SA")) {
-        //
-        //        SA:  symmetric indefinite matrices,
-        //             with partial (Aasen's) pivoting algorithm
-        //
-        ntypes = 10;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchksy_aa(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-        if (tstdrv) {
-            Rdrvsy_aa(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9988), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "S2")) {
-        //
-        //        SA:  symmetric indefinite matrices,
-        //             with partial (Aasen's) pivoting algorithm
-        //
-        ntypes = 10;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchksy_aa_2stage(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-        if (tstdrv) {
-            Rdrvsy_aa_2stage(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9988), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "SP")) {
-        //
-        //        SP:  symmetric indefinite packed matrices,
-        //             with partial (Bunch-Kaufman) pivoting algorithm
-        //
-        ntypes = 10;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchksp(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-        if (tstdrv) {
-            Rdrvsp(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9988), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "TR")) {
-        //
-        //        TR:  triangular matrices
-        //
-        ntypes = 18;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchktr(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "TP")) {
-        //
-        //        TP:  triangular packed matrices
-        //
-        ntypes = 18;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchktp(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "TB")) {
-        //
-        //        TB:  triangular banded matrices
-        //
-        ntypes = 17;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchktb(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "QR")) {
-        //
-        //        QR:  QR factorization
-        //
-        ntypes = 8;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchkqr(dotype, nm, mval, nn, nval, nnb, nbval, nxval, nrhs, thresh, tsterr, nmax, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &a[(4 - 1) * ldaorg], &a[(5 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "LQ")) {
-        //
-        //        LQ:  LQ factorization
-        //
-        ntypes = 8;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchklq(dotype, nm, mval, nn, nval, nnb, nbval, nxval, nrhs, thresh, tsterr, nmax, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &a[(4 - 1) * ldaorg], &a[(5 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], work, rwork, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "QL")) {
-        //
-        //        QL:  QL factorization
-        //
-        ntypes = 8;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchkql(dotype, nm, mval, nn, nval, nnb, nbval, nxval, nrhs, thresh, tsterr, nmax, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &a[(4 - 1) * ldaorg], &a[(5 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], work, rwork, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "RQ")) {
-        //
-        //        RQ:  RQ factorization
-        //
-        ntypes = 8;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchkrq(dotype, nm, mval, nn, nval, nnb, nbval, nxval, nrhs, thresh, tsterr, nmax, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &a[(4 - 1) * ldaorg], &a[(5 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], work, rwork, iwork, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "QP")) {
-        //
-        //        QP:  QR factorization with pivoting
-        //
-        ntypes = 6;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchkq3(dotype, nm, mval, nn, nval, nnb, nbval, nxval, thresh, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &b[(1 - 1)], &b[(3 - 1) * ldb], work, iwork, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "TZ")) {
-        //
-        //        TZ:  Trapezoidal matrix
-        //
-        ntypes = 3;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstchk) {
-            Rchktz(dotype, nm, mval, nn, nval, thresh, tsterr, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &b[(1 - 1)], &b[(3 - 1) * ldb], work, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "LS")) {
-        //
-        //        LS:  Least squares drivers
-        //
-        ntypes = 6;
-        Alareq(path, nmats, dotype, ntypes, nin, nout);
-        //
-        if (tstdrv) {
-            Rdrvls(dotype, nm, mval, nn, nval, nns, nsval, nnb, nbval, nxval, thresh, tsterr, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], rwork, &rwork[(nmax + 1) - 1], nout);
-        } else {
-            write(nout, format_9988), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "EQ")) {
-        //
-        //        EQ:  Equilibration routines for general and positive definite
-        //             matrices (THREQ should be between 2 and 10)
-        //
-        if (tstchk) {
-            Rchkeq(threq, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "QT")) {
-        //
-        //        QT:  QRT routines for general matrices
-        //
-        if (tstchk) {
-            Rchkqrt(thresh, tsterr, nm, mval, nn, nval, nnb, nbval, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "QX")) {
-        //
-        //        QX:  QRT routines for triangular-pentagonal matrices
-        //
-        if (tstchk) {
-            Rchkqrtp(thresh, tsterr, nm, mval, nn, nval, nnb, nbval, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "TQ")) {
-        //
-        //        TQ:  LQT routines for general matrices
-        //
-        if (tstchk) {
-            Rchklqt(thresh, tsterr, nm, mval, nn, nval, nnb, nbval, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "XQ")) {
-        //
-        //        XQ:  LQT routines for triangular-pentagonal matrices
-        //
-        if (tstchk) {
-            Rchklqtp(thresh, tsterr, nm, mval, nn, nval, nnb, nbval, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "TS")) {
-        //
-        //        TS:  QR routines for tall-skinny matrices
-        //
-        if (tstchk) {
-            Rchktsqr(thresh, tsterr, nm, mval, nn, nval, nnb, nbval, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-    }
-    else if (Mlsamen(2, c2, "HH")) {
-        //
-        //        HH:  Householder reconstruction for tall-skinny matrices
-        //
-        if (tstchk) {
-            Rchkorhr_col(thresh, tsterr, nm, mval, nn, nval, nnb, nbval, nout);
-        } else {
-            write(nout, format_9989), path;
-        }
-        //
-    }
-    else {
-        //
-        write(nout, format_9990), path;
-    }
-#endif
     //
-    //     Go back to get another input line.
+    //     Branch to this line when the last record is read.
     //
-}
-//
-//     Branch to this line when the last record is read.
-//
-s2 = time(NULL);
-write(nout, "(/,' End of tests')");
-write(nout, "(' Total time used = ',f12.2,' seconds',/)"), int(s2 - s1);
-//
-//     End of Rchkaa
-//
+    s2 = time(NULL);
+    write(nout, "(/,' End of tests')");
+    write(nout, "(' Total time used = ',f12.2,' seconds',/)"), int(s2 - s1);
+    //
+    //     End of Rchkaa
+    //
 }
 
 int main(int argc, char *argv[]) { Rchkaa(); }
