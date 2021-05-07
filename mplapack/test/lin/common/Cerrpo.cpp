@@ -37,14 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cerrpo(const char *path, INTEGER const nunit) {
-    common_write write(cmn);
-    // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    // COMMON srnamc
-    //
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -73,9 +65,15 @@ void Cerrpo(const char *path, INTEGER const nunit) {
     //     ..
     //     .. Executable Statements ..
     //
+    INTEGER infot;
+    INTEGER nout;
+    bool ok;
+    bool lerr;
+    //
     nout = nunit;
-    write(nout, star);
-    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2];
+    c2[0] = path[1];
+    c2[1] = path[2];
     //
     //     Set the variables to innocuous values.
     //
@@ -84,6 +82,8 @@ void Cerrpo(const char *path, INTEGER const nunit) {
     INTEGER i = 0;
     COMPLEX a[nmax * nmax];
     COMPLEX af[nmax * nmax];
+    INTEGER lda = nmax;
+    INTEGER ldaf = nmax;
     COMPLEX b[nmax];
     REAL r1[nmax];
     REAL r2[nmax];

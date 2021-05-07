@@ -44,8 +44,6 @@ void Cdrvsy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
     //
     const INTEGER nfact = 2;
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char facts[] = {'F', 'N'};
-    char uplos[] = {'U', 'L'};
     char path[3];
     char matpath[3];
     char buf[1024];
