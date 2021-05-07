@@ -193,6 +193,7 @@ Chbgvx.cpp \
 Chbtrd.cpp \
 Checon.cpp \
 Checon_3.cpp \
+Checon_rook.cpp \
 Cheequb.cpp \
 Cheev.cpp \
 Cheev_2stage.cpp \
@@ -415,6 +416,7 @@ Cstemr.cpp \
 Csteqr.cpp \
 Csycon.cpp \
 Csycon_3.cpp \
+Csycon_rook.cpp \
 Csyconv.cpp \
 Csyconvf.cpp \
 Csyconvf_rook.cpp \
