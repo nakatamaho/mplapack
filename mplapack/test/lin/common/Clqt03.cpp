@@ -74,7 +74,7 @@ void Clqt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
     INTEGER ldc = lda;
     INTEGER ldcc = lda;
     INTEGER ldq = lda;
-    const INTEGER iseed[] = {1988, 1989, 1990, 1991};
+    INTEGER iseed[] = {1988, 1989, 1990, 1991};
     REAL eps = Rlamch("Epsilon");
     //
     //     Copy the first k rows of the factorization to the array Q
@@ -113,7 +113,7 @@ void Clqt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
         //        Generate MC by NC matrix C
         //
         for (j = 1; j <= nc; j = j + 1) {
-            Clarnv(2, &iseed, mc, c[(j - 1) * ldc]);
+            Clarnv(2, iseed, mc, &c[(j - 1) * ldc]);
         }
         cnorm = Clange("1", mc, nc, c, lda, rwork);
         if (cnorm == zero) {

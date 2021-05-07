@@ -37,8 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag, INTEGER *iseed, INTEGER const n, REAL *a, REAL *b, REAL *work, INTEGER &info) {
-    iseed([4]);
-    //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
     //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -62,8 +60,10 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //     ..
     //     .. Executable Statements ..
     //
-    char path[3] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "TP";
+    char path[3];
+    path[0] = 'R';
+    path[1] = 'T';
+    path[2] = 'P';
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     REAL smlnum = unfl;
@@ -71,9 +71,9 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL bignum = (one - ulp) / smlnum;
     Rlabad(smlnum, bignum);
     if ((imat >= 7 && imat <= 10) || imat == 18) {
-        diag = "U";
+        *diag = 'U';
     } else {
-        diag = "N";
+        *diag = 'N';
     }
     info = 0;
     //
@@ -95,11 +95,11 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     char dist;
     char packit;
     if (upper) {
-        Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
-        packit = "C";
+        Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+        packit = 'C';
     } else {
-        Rlatb4(path, -imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
-        packit = "R";
+        Rlatb4(path, -imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+        packit = 'R';
     }
     //
     //     IMAT <= 6:  Non-unit triangular matrix
@@ -132,7 +132,7 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL texp = 0.0;
     REAL tleft = 0.0;
     if (imat <= 6) {
-        Rlatms(n, n, dist, iseed, type, b, mode, cndnum, anorm, kl, ku, packit, a, n, work, info);
+        Rlatms(n, n, &dist, iseed, &type, b, mode, cndnum, anorm, kl, ku, &packit, a, n, work, info);
         //
         //     IMAT > 6:  Unit triangular matrix
         //     The diagonal is deliberately set to something other than 1.
@@ -259,9 +259,9 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 rexp = Rlarnd(2, iseed);
                 star1 = star1 * (pow(sfac, rexp));
                 if (rexp < zero) {
-                    star1 = -pow(sfac, [(one - rexp) - 1]);
+                    star1 = -pow(sfac, (one - rexp));
                 } else {
-                    star1 = pow(sfac, [(one + rexp) - 1]);
+                    star1 = pow(sfac, (one + rexp));
                 }
             }
         }
@@ -395,14 +395,14 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             jc = 1;
             for (j = 1; j <= n; j = j + 1) {
                 Rlarnv(2, iseed, j, &a[jc - 1]);
-                a[(jc + j - 1) - 1] = sign(two, &a[(jc + j - 1) - 1]);
+                a[(jc + j - 1) - 1] = sign(two, a[(jc + j - 1) - 1]);
                 jc += j;
             }
         } else {
             jc = 1;
             for (j = 1; j <= n; j = j + 1) {
                 Rlarnv(2, iseed, n - j + 1, &a[jc - 1]);
-                a[jc - 1] = sign(two, &a[jc - 1]);
+                a[jc - 1] = sign(two, a[jc - 1]);
                 jc += n - j + 1;
             }
         }
@@ -575,7 +575,7 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             for (j = 1; j <= n; j = j + 1) {
                 Rlarnv(2, iseed, j, &a[jc - 1]);
                 if (j != iy) {
-                    a[(jc + j - 1) - 1] = sign(two, &a[(jc + j - 1) - 1]);
+                    a[(jc + j - 1) - 1] = sign(two, a[(jc + j - 1) - 1]);
                 } else {
                     a[(jc + j - 1) - 1] = zero;
                 }
@@ -586,7 +586,7 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             for (j = 1; j <= n; j = j + 1) {
                 Rlarnv(2, iseed, n - j + 1, &a[jc - 1]);
                 if (j != iy) {
-                    a[jc - 1] = sign(two, &a[jc - 1]);
+                    a[jc - 1] = sign(two, a[jc - 1]);
                 } else {
                     a[jc - 1] = zero;
                 }
@@ -684,7 +684,7 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             for (j = 1; j <= n; j = j + 1) {
                 Rlarnv(2, iseed, j, &a[jc - 1]);
                 for (i = 1; i <= j; i = i + 1) {
-                    a[(jc + i - 1) - 1] = sign(tleft, &a[(jc + i - 1) - 1]) + tscal * a[(jc + i - 1) - 1];
+                    a[(jc + i - 1) - 1] = sign(tleft, a[(jc + i - 1) - 1]) + tscal * a[(jc + i - 1) - 1];
                 }
                 jc += j;
             }
@@ -693,7 +693,7 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             for (j = 1; j <= n; j = j + 1) {
                 Rlarnv(2, iseed, n - j + 1, &a[jc - 1]);
                 for (i = j; i <= n; i = i + 1) {
-                    a[(jc + i - j) - 1] = sign(tleft, &a[(jc + i - j) - 1]) + tscal * a[(jc + i - j) - 1];
+                    a[(jc + i - j) - 1] = sign(tleft, a[(jc + i - j) - 1]) + tscal * a[(jc + i - j) - 1];
                 }
                 jc += n - j + 1;
             }

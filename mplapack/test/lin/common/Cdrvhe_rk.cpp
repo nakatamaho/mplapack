@@ -36,29 +36,19 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Cdrvhe_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, COMPLEX *a, COMPLEX *afac, COMPLEX *e, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+    common cmn;
     common_write write(cmn);
     //
     const INTEGER nfact = 2;
-    str_arr_ref<1> facts(sve.facts, [nfact]);
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    str_arr_ref<1> uplos(sve.uplos, [2]);
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"U", "L"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
-        }
-        {
-            static const char *values[] = {"F", "N"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), facts;
-        }
-    }
+    char uplos[] = {'U', 'L'};
+    char facts[] = {'F', 'N'};
     char path[3];
     char matpath[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -137,13 +127,15 @@ void Cdrvhe_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
     //
     //     Test path
     //
-    path[(1 - 1)] = "Zomplex precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "HK";
+    path[0] = 'C';
+    path[1] = 'H';
+    path[2] = 'K';
     //
     //     Path to generate matrices
     //
-    matpath[(1 - 1)] = "Zomplex precision";
-    matpath[(2 - 1) + (3 - 1) * ldmatpath] = "HE";
+    matpath[0] = 'C';
+    matpath[1] = 'H';
+    matpath[2] = 'E';
     //
     nrun = 0;
     nfail = 0;
@@ -170,7 +162,7 @@ void Cdrvhe_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, 1);
-        xtype = "N";
+        xtype = 'N';
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -201,16 +193,16 @@ void Cdrvhe_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                 //                 Set up parameters with Clatb4 for the matrix generator
                 //                 based on the type of matrix to be generated.
                 //
-                Clatb4(matpath, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
+                Clatb4(matpath, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                 //
                 //                 Generate a matrix with Clatms.
                 //
-                Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
+                Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
                 //
                 //                 Check error code from Clatms and handle error.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Clatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_160;
                 }
                 //
@@ -302,23 +294,23 @@ void Cdrvhe_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                         //
                         //                    Compute the 1-norm of A.
                         //
-                        anorm = Clanhe("1", uplo, n, a, lda, rwork);
+                        anorm = Clanhe("1", &uplo, n, a, lda, rwork);
                         //
                         //                    Factor the matrix A.
                         //
-                        Clacpy(uplo, n, n, a, lda, afac, lda);
-                        Chetrf_rk(uplo, n, afac, lda, e, iwork, work, lwork, info);
+                        Clacpy(&uplo, n, n, a, lda, afac, lda);
+                        Chetrf_rk(&uplo, n, afac, lda, e, iwork, work, lwork, info);
                         //
                         //                    Compute inv(A) and take its norm.
                         //
-                        Clacpy(uplo, n, n, afac, lda, ainv, lda);
+                        Clacpy(&uplo, n, n, afac, lda, ainv, lda);
                         lwork = (n + nb + 1) * (nb + 3);
                         //
                         //                    We need to compute the inverse to compute
                         //                    RCONDC that is used later in TEST3.
                         //
-                        Chetri_3(uplo, n, ainv, lda, e, iwork, work, lwork, info);
-                        ainvnm = Clanhe("1", uplo, n, ainv, lda, rwork);
+                        Chetri_3(&uplo, n, ainv, lda, e, iwork, work, lwork, info);
+                        ainvnm = Clanhe("1", &uplo, n, ainv, lda, rwork);
                         //
                         //                    Compute the 1-norm condition number of A.
                         //
@@ -331,19 +323,19 @@ void Cdrvhe_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                     //
                     //                 Form an exact solution and set the right hand side.
                     //
-                    Clarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                    xtype = "C";
+                    Clarhs(matpath, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                    xtype = 'C';
                     //
                     //                 --- Test Chesv_rk  ---
                     //
                     if (ifact == 2) {
-                        Clacpy(uplo, n, n, a, lda, afac, lda);
+                        Clacpy(&uplo, n, n, a, lda, afac, lda);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
                         //                    Factor the matrix and solve the system using
                         //                    Chesv_rk.
                         //
-                        Chesv_rk(uplo, n, nrhs, afac, lda, e, iwork, x, lda, work, lwork, info);
+                        Chesv_rk(&uplo, n, nrhs, afac, lda, e, iwork, x, lda, work, lwork, info);
                         //
                         //                    Adjust the expected value of INFO to account for
                         //                    pivoting.
@@ -365,7 +357,7 @@ void Cdrvhe_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                         //                    Check error code from Chesv_rk and handle error.
                         //
                         if (info != k) {
-                            Alaerh(path, "Chesv_rk", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Chesv_rk", info, k, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_120;
                         } else if (info != 0) {
                             goto statement_120;
@@ -374,12 +366,12 @@ void Cdrvhe_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                         //+    TEST 1      Reconstruct matrix from factors and compute
                         //                 residual.
                         //
-                        Chet01_3(uplo, n, a, lda, afac, lda, e, iwork, ainv, lda, rwork, result[1 - 1]);
+                        Chet01_3(&uplo, n, a, lda, afac, lda, e, iwork, ainv, lda, rwork, result[1 - 1]);
                         //
                         //+    TEST 2      Compute residual of the computed solution.
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
-                        Cpot02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
+                        Cpot02(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
                         //
                         //+    TEST 3
                         //                 Check solution from generated exact solution.
@@ -395,9 +387,10 @@ void Cdrvhe_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, path);
                                 }
+                                sprintnum_short(buf, result[k - 1]);
                                 write(nout, "(1x,a,', UPLO=''',a1,''', N =',i5,', type ',i2,', test ',"
-                                            "i2,', ratio =',g12.5)"),
-                                    "Chesv_rk", uplo, n, imat, k, result(k);
+                                            "i2,', ratio =',a)"),
+                                    "Chesv_rk", uplo, n, imat, k, buf;
                                 nfail++;
                             }
                         }
