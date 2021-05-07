@@ -36,29 +36,19 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rdrvsy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, REAL *a, REAL *afac, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+    common cmn;
     common_write write(cmn);
     //
     const INTEGER nfact = 2;
-    str_arr_ref<1> facts(sve.facts, [nfact]);
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    str_arr_ref<1> uplos(sve.uplos, [2]);
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"U", "L"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
-        }
-        {
-            static const char *values[] = {"F", "N"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), facts;
-        }
-    }
+    char uplos[] = {'U', 'L'};
+    char facts[] = {'F', 'N'};
     char path[3];
     char matpath[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -133,13 +123,15 @@ void Rdrvsy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
     //
     //     Test path
     //
-    path[(1 - 1)] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "SA";
+    path[0] = 'D';
+    path[1] = 'S';
+    path[2] = 'A';
     //
     //     Path to generate matrices
     //
-    matpath[(1 - 1)] = "Double precision";
-    matpath[(2 - 1) + (3 - 1) * ldmatpath] = "SY";
+    matpath[0] = 'D';
+    matpath[1] = 'S';
+    matpath[2] = 'Y';
     //
     nrun = 0;
     nfail = 0;
@@ -166,7 +158,7 @@ void Rdrvsy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
         lwork = max(3 * n - 2, n * (1 + nb));
         lwork = max(lwork, 1);
         lda = max(n, 1);
-        xtype = "N";
+        xtype = 'N';
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -195,14 +187,14 @@ void Rdrvsy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                 //              Set up parameters with Rlatb4 and generate a test matrix
                 //              with Rlatms.
                 //
-                Rlatb4(matpath, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
+                Rlatb4(matpath, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                 //
-                Rlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
+                Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
                 //
                 //              Check error code from Rlatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Rlatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rlatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_160;
                 }
                 //
@@ -282,18 +274,18 @@ void Rdrvsy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                     //
                     //                 Form an exact solution and set the right hand side.
                     //
-                    Rlarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                    xtype = "C";
+                    Rlarhs(matpath, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                    xtype = 'C';
                     //
                     //                 --- Test Rsysv_aa  ---
                     //
                     if (ifact == 2) {
-                        Rlacpy(uplo, n, n, a, lda, afac, lda);
+                        Rlacpy(&uplo, n, n, a, lda, afac, lda);
                         Rlacpy("Full", n, nrhs, b, lda, x, lda);
                         //
                         //                    Factor the matrix and solve the system using Rsysv_aa.
                         //
-                        Rsysv_aa(uplo, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
+                        Rsysv_aa(&uplo, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
                         //
                         //                    Adjust the expected value of INFO to account for
                         //                    pivoting.
@@ -318,7 +310,7 @@ void Rdrvsy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                         //                    Check error code from Rsysv_aa .
                         //
                         if (info != k) {
-                            Alaerh(path, "Rsysv_aa ", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rsysv_aa ", info, k, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_120;
                         } else if (info != 0) {
                             goto statement_120;
@@ -327,12 +319,12 @@ void Rdrvsy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                         //                    Reconstruct matrix from factors and compute
                         //                    residual.
                         //
-                        Rsyt01_aa(uplo, n, a, lda, afac, lda, iwork, ainv, lda, rwork, result[1 - 1]);
+                        Rsyt01_aa(&uplo, n, a, lda, afac, lda, iwork, ainv, lda, rwork, result[1 - 1]);
                         //
                         //                    Compute residual of the computed solution.
                         //
                         Rlacpy("Full", n, nrhs, b, lda, work, lda);
-                        Rpot02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
+                        Rpot02(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
                         nt = 2;
                         //
                         //                    Print information about the tests that did not pass
@@ -343,9 +335,10 @@ void Rdrvsy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, path);
                                 }
+                                sprintnum_short(buf, result[k - 1]);
                                 write(nout, "(1x,a,', UPLO=''',a1,''', N =',i5,', type ',i2,', test ',"
-                                            "i2,', ratio =',g12.5)"),
-                                    "Rsysv_aa ", uplo, n, imat, k, result(k);
+                                            "i2,', ratio =',a)"),
+                                    "Rsysv_aa ", uplo, n, imat, k, buf;
                                 nfail++;
                             }
                         }
