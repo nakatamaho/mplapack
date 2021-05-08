@@ -36,16 +36,15 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, REAL *a, REAL *d, REAL *e, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER const nout) {
-    FEM_CMN_SVE(Rdrvpt);
+    common cmn;
     common_write write(cmn);
     //
-    INTEGER *iseedy(sve.iseedy, [4]);
-    if (is_called_first_time) {
-        static const INTEGER values[] = {0, 0, 0, 1};
-        data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-    }
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -116,8 +115,9 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     //     ..
     //     .. Executable Statements ..
     //
-    path[(1 - 1)] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "PT";
+    path[0] = 'R';
+    path[1] = 'P';
+    path[2] = 'T';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -152,7 +152,7 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             //
             //           Set up parameters with Rlatb4.
             //
-            Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cond, dist);
+            Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cond, &dist);
             //
             zerot = imat >= 8 && imat <= 10;
             if (imat <= 6) {
@@ -160,7 +160,7 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 //              Type 1-6:  generate a symmetric tridiagonal matrix of
                 //              known condition number in lower triangular band storage.
                 //
-                Rlatms(n, n, dist, iseed, type, rwork, mode, cond, anorm, kl, ku, "B", a, 2, work, info);
+                Rlatms(n, n, &dist, iseed, &type, rwork, mode, cond, anorm, kl, ku, "B", a, 2, work, info);
                 //
                 //              Check the error code from Rlatms.
                 //
@@ -271,7 +271,7 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             //
             ix = 1;
             for (j = 1; j <= nrhs; j = j + 1) {
-                Rlarnv(2, iseed, n, xact[ix - 1]);
+                Rlarnv(2, iseed, n, &xact[ix - 1]);
                 ix += lda;
             }
             //
@@ -378,9 +378,10 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             if (nfail == 0 && nerrs == 0) {
                                 Aladhd(nout, path);
                             }
+                            sprintnum_short(buf, result[k - 1]);
                             write(nout, "(1x,a,', N =',i5,', type ',i2,', test ',i2,', ratio = ',"
-                                        "g12.5)"),
-                                "Rptsv ", n, imat, k, result(k);
+                                        "a)"),
+                                "Rptsv ", n, imat, k, buf;
                             nfail++;
                         }
                     }
@@ -407,12 +408,12 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 //              Solve the system and compute the condition number and
                 //              error bounds using Rptsvx.
                 //
-                Rptsvx(fact, n, nrhs, d, e, &d[(n + 1) - 1], &e[(n + 1) - 1], b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, info);
+                Rptsvx(&fact, n, nrhs, d, e, &d[(n + 1) - 1], &e[(n + 1) - 1], b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, info);
                 //
                 //              Check the error code from Rptsvx.
                 //
                 if (info != izero) {
-                    Alaerh(path, "Rptsvx", info, izero, fact, n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rptsvx", info, izero, &fact, n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
                 }
                 if (izero == 0) {
                     if (ifact == 2) {
@@ -437,7 +438,7 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     //                 Check error bounds from iterative refinement.
                     //
-                    Rptt05(n, nrhs, d, e, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], result[4 - 1]);
+                    Rptt05(n, nrhs, d, e, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                 } else {
                     k1 = 6;
                 }
@@ -454,9 +455,10 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         if (nfail == 0 && nerrs == 0) {
                             Aladhd(nout, path);
                         }
+                        sprintnum_short(buf, result[k - 1]);
                         write(nout, "(1x,a,', FACT=''',a1,''', N =',i5,', type ',i2,', test ',i2,"
-                                    "', ratio = ',g12.5)"),
-                            "Rptsvx", fact, n, imat, k, result(k);
+                                    "', ratio = ',a)"),
+                            "Rptsvx", fact, n, imat, k, buf;
                         nfail++;
                     }
                 }

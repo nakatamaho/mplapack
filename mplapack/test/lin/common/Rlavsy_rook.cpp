@@ -37,12 +37,9 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rlavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *b, INTEGER const ldb, INTEGER &info) {
-    a([lda * star]);
-    b([ldb * star]);
     bool nounit = false;
     INTEGER k = 0;
     const REAL one = 1.0;
-    INTEGER &b[(1 - 1) + (1 - 1) * ldb] = 0;
     INTEGER kp = 0;
     REAL d11 = 0.0;
     REAL d22 = 0.0;
@@ -129,7 +126,7 @@ void Rlavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
                 //              Multiply by the diagonal element if forming U * D.
                 //
                 if (nounit) {
-                    Rscal(nrhs, &a[(k - 1) + (k - 1) * lda], &b[(k - 1)], ldb);
+                    Rscal(nrhs, a[(k - 1) + (k - 1) * lda], &b[(k - 1)], ldb);
                 }
                 //
                 //              Multiply by  P(K) * inv(U(K))  if K > 1.
@@ -221,7 +218,7 @@ void Rlavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
                 //              Multiply by the diagonal element if forming L * D.
                 //
                 if (nounit) {
-                    Rscal(nrhs, &a[(k - 1) + (k - 1) * lda], &b[(k - 1)], ldb);
+                    Rscal(nrhs, a[(k - 1) + (k - 1) * lda], &b[(k - 1)], ldb);
                 }
                 //
                 //              Multiply by  P(K) * inv(L(K))  if K < N.
@@ -330,7 +327,7 @@ void Rlavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
                     Rgemv("Transpose", k - 1, nrhs, one, b, ldb, &a[(k - 1) * lda], 1, one, &b[(k - 1)], ldb);
                 }
                 if (nounit) {
-                    Rscal(nrhs, &a[(k - 1) + (k - 1) * lda], &b[(k - 1)], ldb);
+                    Rscal(nrhs, a[(k - 1) + (k - 1) * lda], &b[(k - 1)], ldb);
                 }
                 k = k - 1;
                 //
@@ -409,7 +406,7 @@ void Rlavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
                     Rgemv("Transpose", n - k, nrhs, one, &b[((k + 1) - 1)], ldb, &a[((k + 1) - 1) + (k - 1) * lda], 1, one, &b[(k - 1)], ldb);
                 }
                 if (nounit) {
-                    Rscal(nrhs, &a[(k - 1) + (k - 1) * lda], &b[(k - 1)], ldb);
+                    Rscal(nrhs, a[(k - 1) + (k - 1) * lda], &b[(k - 1)], ldb);
                 }
                 k++;
                 //
