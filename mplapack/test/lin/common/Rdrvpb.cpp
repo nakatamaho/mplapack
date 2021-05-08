@@ -37,11 +37,12 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, REAL *a, REAL *afac, REAL *asav, REAL *b, REAL *bsav, REAL *x, REAL *xact, REAL *s, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+    FEM_CMN_SVE(Rdrvpb);
     common_write write(cmn);
     //
     str_arr_ref<1> equeds(sve.equeds, [2]);
     str_arr_ref<1> facts(sve.facts, [3]);
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
+    INTEGER *iseedy(sve.iseedy, [4]);
     if (is_called_first_time) {
         {
             static const INTEGER values[] = {1988, 1989, 1990, 1991};
@@ -176,7 +177,7 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, 1);
-        xtype = "N";
+        xtype = 'N';
         //
         //        Set limits on the number of loop iterations.
         //
@@ -204,12 +205,12 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 koff = 1;
                 if (iuplo == 1) {
-                    uplo = "U";
-                    packit = "Q";
+                    uplo = 'U';
+                    packit = 'Q';
                     koff = max((INTEGER)1, kd + 2 - n);
                 } else {
-                    uplo = "L";
-                    packit = "B";
+                    uplo = 'L';
+                    packit = 'B';
                 }
                 //
                 for (imat = 1; imat <= nimat; imat = imat + 1) {
@@ -386,7 +387,7 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       side.
                             //
                             Rlarhs(path, xtype, uplo, " ", n, n, kd, kd, nrhs, a, ldab, xact, lda, b, lda, iseed, info);
-                            xtype = "C";
+                            xtype = 'C';
                             Rlacpy("Full", n, nrhs, b, lda, bsav, lda);
                             //
                             if (nofact) {

@@ -37,11 +37,12 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, COMPLEX *a, COMPLEX *afac, COMPLEX *asav, COMPLEX *b, COMPLEX *bsav, COMPLEX *x, COMPLEX *xact, REAL *s, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+    FEM_CMN_SVE(Cdrvge);
     common_write write(cmn);
     //
     str_arr_ref<1> equeds(sve.equeds, [4]);
     str_arr_ref<1> facts(sve.facts, [3]);
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
+    INTEGER *iseedy(sve.iseedy, [4]);
     const INTEGER ntran = 3;
     str_arr_ref<1> transs(sve.transs, [ntran]);
     if (is_called_first_time) {
@@ -185,7 +186,7 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, 1);
-        xtype = "N";
+        xtype = 'N';
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -361,7 +362,7 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //                    Form an exact solution and set the right hand side.
                         //
                         Clarhs(path, xtype, "Full", trans, n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                        xtype = "C";
+                        xtype = 'C';
                         Clacpy("Full", n, nrhs, b, lda, bsav, lda);
                         //
                         if (nofact && itran == 1) {

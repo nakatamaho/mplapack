@@ -37,9 +37,10 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, REAL *a, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+    FEM_CMN_SVE(Rchktr);
     common_write write(cmn);
     //
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
+    INTEGER *iseedy(sve.iseedy, [4]);
     const INTEGER ntran = 3;
     str_arr_ref<1> transs(sve.transs, [ntran]);
     str_arr_ref<1> uplos(sve.uplos, [2]);
@@ -152,7 +153,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         //
         n = nval[in - 1];
         lda = max((INTEGER)1, n);
-        xtype = "N";
+        xtype = 'N';
         //
         for (imat = 1; imat <= ntype1; imat = imat + 1) {
             //
@@ -235,7 +236,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                         nrhs = nsval[irhs - 1];
-                        xtype = "N";
+                        xtype = 'N';
                         //
                         for (itran = 1; itran <= ntran; itran = itran + 1) {
                             //
@@ -243,7 +244,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             //
                             trans = transs[itran - 1];
                             if (itran == 1) {
-                                norm = "O";
+                                norm = 'O';
                                 rcondc = rcondo;
                             } else {
                                 norm = 'I';
@@ -254,7 +255,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             //                       Solve and compute residual for op(A)*x = b.
                             //
                             Rlarhs(path, xtype, uplo, trans, n, n, 0, idiag, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                            xtype = "C";
+                            xtype = 'C';
                             Rlacpy("Full", n, nrhs, b, lda, x, lda);
                             //
                             Rtrtrs(uplo, trans, diag, n, nrhs, a, lda, x, lda, info);
@@ -317,7 +318,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     for (itran = 1; itran <= 2; itran = itran + 1) {
                         if (itran == 1) {
-                            norm = "O";
+                            norm = 'O';
                             rcondc = rcondo;
                         } else {
                             norm = 'I';

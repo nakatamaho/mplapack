@@ -37,9 +37,10 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+    FEM_CMN_SVE(Cchksy);
     common_write write(cmn);
     //
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
+    INTEGER *iseedy(sve.iseedy, [4]);
     str_arr_ref<1> uplos(sve.uplos, [2]);
     if (is_called_first_time) {
         {
@@ -152,7 +153,7 @@ void Cchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, 1);
-        xtype = "N";
+        xtype = 'N';
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;

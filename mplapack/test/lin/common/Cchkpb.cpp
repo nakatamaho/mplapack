@@ -37,9 +37,10 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
+    FEM_CMN_SVE(Cchkpb);
     common_write write(cmn);
     //
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
+    INTEGER *iseedy(sve.iseedy, [4]);
     if (is_called_first_time) {
         static const INTEGER values[] = {1988, 1989, 1990, 1991};
         data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
@@ -148,7 +149,7 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, 1);
-        xtype = "N";
+        xtype = 'N';
         //
         //        Set limits on the number of loop iterations.
         //
@@ -176,12 +177,12 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 koff = 1;
                 if (iuplo == 1) {
-                    uplo = "U";
+                    uplo = 'U';
                     koff = max((INTEGER)1, kd + 2 - n);
-                    packit = "Q";
+                    packit = 'Q';
                 } else {
-                    uplo = "L";
-                    packit = "B";
+                    uplo = 'L';
+                    packit = 'B';
                 }
                 //
                 for (imat = 1; imat <= nimat; imat = imat + 1) {

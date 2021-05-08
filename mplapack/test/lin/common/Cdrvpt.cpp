@@ -37,9 +37,10 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, COMPLEX *a, REAL *d, COMPLEX *e, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
+    FEM_CMN_SVE(Cdrvpt);
     common_write write(cmn);
     //
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
+    INTEGER *iseedy(sve.iseedy, [4]);
     if (is_called_first_time) {
         static const INTEGER values[] = {0, 0, 0, 1};
         data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
@@ -280,9 +281,9 @@ void Cdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             //
             for (ifact = 1; ifact <= 2; ifact = ifact + 1) {
                 if (ifact == 1) {
-                    fact = "F";
+                    fact = 'F';
                 } else {
-                    fact = "N";
+                    fact = 'N';
                 }
                 //
                 //              Compute the condition number for comparison with

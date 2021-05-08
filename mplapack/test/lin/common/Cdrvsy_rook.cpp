@@ -37,11 +37,12 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cdrvsy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+    FEM_CMN_SVE(Cdrvsy_rook);
     common_write write(cmn);
     //
     const INTEGER nfact = 2;
     str_arr_ref<1> facts(sve.facts, [nfact]);
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
+    INTEGER *iseedy(sve.iseedy, [4]);
     str_arr_ref<1> uplos(sve.uplos, [2]);
     if (is_called_first_time) {
         {
@@ -170,7 +171,7 @@ void Cdrvsy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nr
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, 1);
-        xtype = "N";
+        xtype = 'N';
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -336,7 +337,7 @@ void Cdrvsy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nr
                     //                 Form an exact solution and set the right hand side.
                     //
                     Clarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                    xtype = "C";
+                    xtype = 'C';
                     //
                     //                 --- Test Csysv_rook  ---
                     //

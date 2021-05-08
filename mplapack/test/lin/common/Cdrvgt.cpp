@@ -37,9 +37,10 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, COMPLEX *a, COMPLEX *af, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+    FEM_CMN_SVE(Cdrvgt);
     common_write write(cmn);
     //
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
+    INTEGER *iseedy(sve.iseedy, [4]);
     str_arr_ref<1> transs(sve.transs, [3]);
     if (is_called_first_time) {
         {
@@ -176,7 +177,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 //              Types 1-6:  generate matrices of known condition number.
                 //
                 koff = max({(INTEGER)2 - ku, 3 - max((INTEGER)1, n)});
-                Clatms(n, n, dist, iseed, type, rwork, mode, cond, anorm, kl, ku, "Z", af[koff - 1], 3, work, info);
+                Clatms(n, n, dist, iseed, type, rwork, mode, cond, anorm, kl, ku, "Z", &af[koff - 1], 3, work, info);
                 //
                 //              Check the error code from Clatms.
                 //
@@ -187,10 +188,10 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 izero = 0;
                 //
                 if (n > 1) {
-                    Ccopy(n - 1, af[4 - 1], 3, a, 1);
-                    Ccopy(n - 1, af[3 - 1], 3, &a[(n + m + 1) - 1], 1);
+                    Ccopy(n - 1, &af[4 - 1], 3, a, 1);
+                    Ccopy(n - 1, &af[3 - 1], 3, &a[(n + m + 1) - 1], 1);
                 }
-                Ccopy(n, af[2 - 1], 3, &a[(m + 1) - 1], 1);
+                Ccopy(n, &af[2 - 1], 3, &a[(m + 1) - 1], 1);
             } else {
                 //
                 //              Types 7-12:  generate tridiagonal matrices with
@@ -256,9 +257,9 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             //
             for (ifact = 1; ifact <= 2; ifact = ifact + 1) {
                 if (ifact == 1) {
-                    fact = "F";
+                    fact = 'F';
                 } else {
-                    fact = "N";
+                    fact = 'N';
                 }
                 //
                 //              Compute the condition number for comparison with
@@ -281,7 +282,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     //                 Factor the matrix A.
                     //
-                    Cgttrf(n, af, af[(m + 1) - 1], af[(n + m + 1) - 1], af[(n + 2 * m + 1) - 1], iwork, info);
+                    Cgttrf(n, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, info);
                     //
                     //                 Use Cgttrs to solve for one column at a time of
                     //                 inv(A), computing the maximum column sum as we go.
@@ -292,7 +293,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             x[j - 1] = zero;
                         }
                         x[i - 1] = one;
-                        Cgttrs("No transpose", n, 1, af, af[(m + 1) - 1], af[(n + m + 1) - 1], af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
+                        Cgttrs("No transpose", n, 1, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
                         ainvnm = max({ainvnm, RCasum(n, x, 1)});
                     }
                     //
@@ -313,7 +314,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             x[j - 1] = zero;
                         }
                         x[i - 1] = one;
-                        Cgttrs("Conjugate transpose", n, 1, af, af[(m + 1) - 1], af[(n + m + 1) - 1], af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
+                        Cgttrs("Conjugate transpose", n, 1, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
                         ainvnm = max({ainvnm, RCasum(n, x, 1)});
                     }
                     //
@@ -356,7 +357,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         Ccopy(n + 2 * m, a, 1, af, 1);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        Cgtsv(n, nrhs, af, af[(m + 1) - 1], af[(n + m + 1) - 1], x, lda, info);
+                        Cgtsv(n, nrhs, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], x, lda, info);
                         //
                         //                    Check error code from Cgtsv .
                         //
@@ -409,7 +410,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //                 Solve the system and compute the condition number and
                     //                 error bounds using Cgtsvx.
                     //
-                    Cgtsvx(fact, trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, af[(m + 1) - 1], af[(n + m + 1) - 1], af[(n + 2 * m + 1) - 1], iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                    Cgtsvx(fact, trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                     //
                     //                 Check the error code from Cgtsvx.
                     //
@@ -422,7 +423,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //                    Reconstruct matrix from factors and compute
                         //                    residual.
                         //
-                        Cgtt01(n, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, af[(m + 1) - 1], af[(n + m + 1) - 1], af[(n + 2 * m + 1) - 1], iwork, work, lda, rwork, result[1 - 1]);
+                        Cgtt01(n, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, work, lda, rwork, result[1 - 1]);
                         k1 = 1;
                     } else {
                         k1 = 2;

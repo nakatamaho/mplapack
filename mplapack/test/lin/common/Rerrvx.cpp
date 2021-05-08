@@ -39,7 +39,6 @@ using fem::common;
 void Rerrvx(const char *path, INTEGER const nunit) {
     common_write write(cmn);
     // COMMON infoc
-    INTEGER &infot = cmn.infot;
     INTEGER &nout = cmn.nout;
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
@@ -95,8 +94,8 @@ void Rerrvx(const char *path, INTEGER const nunit) {
     INTEGER ip[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / castREAL(i + j);
-            af[(i - 1) + (j - 1) * ldaf] = 1.0 / castREAL(i + j);
+            a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
+            af[(i - 1) + (j - 1) * ldaf] = 1.0 / (i + j).real();
         }
         b[j - 1] = 0.e+0;
         e[j - 1] = 0.e+0;
@@ -155,15 +154,14 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         Rgesvx("N", "N", 2, 1, a, 2, af, 1, ip, eq, r, c, b, 2, x, 2, rcond, r1, r2, w, iw, info);
         chkxer("Rgesvx", infot, nout, lerr, ok);
         infot = 10;
-        eq = "/";
-        Rgesvx("F", "N", 0, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
+        eq = '/' Rgesvx("F", "N", 0, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rgesvx", infot, nout, lerr, ok);
         infot = 11;
-        eq = "R";
+        eq = 'R';
         Rgesvx("F", "N", 1, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rgesvx", infot, nout, lerr, ok);
         infot = 12;
-        eq = "C";
+        eq = 'C';
         Rgesvx("F", "N", 1, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rgesvx", infot, nout, lerr, ok);
         infot = 14;
@@ -223,15 +221,14 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         Rgbsvx("N", "N", 1, 1, 1, 0, a, 3, af, 3, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rgbsvx", infot, nout, lerr, ok);
         infot = 12;
-        eq = "/";
-        Rgbsvx("F", "N", 0, 0, 0, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
+        eq = '/' Rgbsvx("F", "N", 0, 0, 0, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rgbsvx", infot, nout, lerr, ok);
         infot = 13;
-        eq = "R";
+        eq = 'R';
         Rgbsvx("F", "N", 1, 0, 0, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rgbsvx", infot, nout, lerr, ok);
         infot = 14;
-        eq = "C";
+        eq = 'C';
         Rgbsvx("F", "N", 1, 0, 0, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rgbsvx", infot, nout, lerr, ok);
         infot = 16;
@@ -258,22 +255,22 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //        Rgtsvx
         //
         infot = 1;
-        Rgtsvx("/", "N", 0, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], af[(1 - 1)], af[(2 - 1) * ldaf], af[(3 - 1) * ldaf], af[(4 - 1) * ldaf], ip, b, 1, x, 1, rcond, r1, r2, w, iw, info);
+        Rgtsvx("/", "N", 0, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &af[(1 - 1)], &af[(2 - 1) * ldaf], &af[(3 - 1) * ldaf], &af[(4 - 1) * ldaf], ip, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rgtsvx", infot, nout, lerr, ok);
         infot = 2;
-        Rgtsvx("N", "/", 0, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], af[(1 - 1)], af[(2 - 1) * ldaf], af[(3 - 1) * ldaf], af[(4 - 1) * ldaf], ip, b, 1, x, 1, rcond, r1, r2, w, iw, info);
+        Rgtsvx("N", "/", 0, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &af[(1 - 1)], &af[(2 - 1) * ldaf], &af[(3 - 1) * ldaf], &af[(4 - 1) * ldaf], ip, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rgtsvx", infot, nout, lerr, ok);
         infot = 3;
-        Rgtsvx("N", "N", -1, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], af[(1 - 1)], af[(2 - 1) * ldaf], af[(3 - 1) * ldaf], af[(4 - 1) * ldaf], ip, b, 1, x, 1, rcond, r1, r2, w, iw, info);
+        Rgtsvx("N", "N", -1, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &af[(1 - 1)], &af[(2 - 1) * ldaf], &af[(3 - 1) * ldaf], &af[(4 - 1) * ldaf], ip, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rgtsvx", infot, nout, lerr, ok);
         infot = 4;
-        Rgtsvx("N", "N", 0, -1, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], af[(1 - 1)], af[(2 - 1) * ldaf], af[(3 - 1) * ldaf], af[(4 - 1) * ldaf], ip, b, 1, x, 1, rcond, r1, r2, w, iw, info);
+        Rgtsvx("N", "N", 0, -1, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &af[(1 - 1)], &af[(2 - 1) * ldaf], &af[(3 - 1) * ldaf], &af[(4 - 1) * ldaf], ip, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rgtsvx", infot, nout, lerr, ok);
         infot = 14;
-        Rgtsvx("N", "N", 2, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], af[(1 - 1)], af[(2 - 1) * ldaf], af[(3 - 1) * ldaf], af[(4 - 1) * ldaf], ip, b, 1, x, 2, rcond, r1, r2, w, iw, info);
+        Rgtsvx("N", "N", 2, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &af[(1 - 1)], &af[(2 - 1) * ldaf], &af[(3 - 1) * ldaf], &af[(4 - 1) * ldaf], ip, b, 1, x, 2, rcond, r1, r2, w, iw, info);
         chkxer("Rgtsvx", infot, nout, lerr, ok);
         infot = 16;
-        Rgtsvx("N", "N", 2, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], af[(1 - 1)], af[(2 - 1) * ldaf], af[(3 - 1) * ldaf], af[(4 - 1) * ldaf], ip, b, 2, x, 1, rcond, r1, r2, w, iw, info);
+        Rgtsvx("N", "N", 2, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &af[(1 - 1)], &af[(2 - 1) * ldaf], &af[(3 - 1) * ldaf], &af[(4 - 1) * ldaf], ip, b, 2, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rgtsvx", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2, "PO")) {
@@ -317,11 +314,10 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         Rposvx("N", "U", 2, 0, a, 2, af, 1, eq, c, b, 2, x, 2, rcond, r1, r2, w, iw, info);
         chkxer("Rposvx", infot, nout, lerr, ok);
         infot = 9;
-        eq = "/";
-        Rposvx("F", "U", 0, 0, a, 1, af, 1, eq, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
+        eq = '/' Rposvx("F", "U", 0, 0, a, 1, af, 1, eq, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rposvx", infot, nout, lerr, ok);
         infot = 10;
-        eq = "Y";
+        eq = 'Y';
         Rposvx("F", "U", 1, 0, a, 1, af, 1, eq, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rposvx", infot, nout, lerr, ok);
         infot = 12;
@@ -363,11 +359,10 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         Rppsvx("N", "U", 0, -1, a, af, eq, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rppsvx", infot, nout, lerr, ok);
         infot = 7;
-        eq = "/";
-        Rppsvx("F", "U", 0, 0, a, af, eq, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
+        eq = '/' Rppsvx("F", "U", 0, 0, a, af, eq, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rppsvx", infot, nout, lerr, ok);
         infot = 8;
-        eq = "Y";
+        eq = 'Y';
         Rppsvx("F", "U", 1, 0, a, af, eq, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rppsvx", infot, nout, lerr, ok);
         infot = 10;
@@ -424,11 +419,10 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         Rpbsvx("N", "U", 1, 1, 0, a, 2, af, 1, eq, c, b, 2, x, 2, rcond, r1, r2, w, iw, info);
         chkxer("Rpbsvx", infot, nout, lerr, ok);
         infot = 10;
-        eq = "/";
-        Rpbsvx("F", "U", 0, 0, 0, a, 1, af, 1, eq, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
+        eq = '/' Rpbsvx("F", "U", 0, 0, 0, a, 1, af, 1, eq, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rpbsvx", infot, nout, lerr, ok);
         infot = 11;
-        eq = "Y";
+        eq = 'Y';
         Rpbsvx("F", "U", 1, 0, 0, a, 1, af, 1, eq, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rpbsvx", infot, nout, lerr, ok);
         infot = 13;
@@ -455,19 +449,19 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //        Rptsvx
         //
         infot = 1;
-        Rptsvx("/", 0, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], af[(1 - 1)], af[(2 - 1) * ldaf], b, 1, x, 1, rcond, r1, r2, w, info);
+        Rptsvx("/", 0, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &af[(1 - 1)], &af[(2 - 1) * ldaf], b, 1, x, 1, rcond, r1, r2, w, info);
         chkxer("Rptsvx", infot, nout, lerr, ok);
         infot = 2;
-        Rptsvx("N", -1, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], af[(1 - 1)], af[(2 - 1) * ldaf], b, 1, x, 1, rcond, r1, r2, w, info);
+        Rptsvx("N", -1, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &af[(1 - 1)], &af[(2 - 1) * ldaf], b, 1, x, 1, rcond, r1, r2, w, info);
         chkxer("Rptsvx", infot, nout, lerr, ok);
         infot = 3;
-        Rptsvx("N", 0, -1, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], af[(1 - 1)], af[(2 - 1) * ldaf], b, 1, x, 1, rcond, r1, r2, w, info);
+        Rptsvx("N", 0, -1, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &af[(1 - 1)], &af[(2 - 1) * ldaf], b, 1, x, 1, rcond, r1, r2, w, info);
         chkxer("Rptsvx", infot, nout, lerr, ok);
         infot = 9;
-        Rptsvx("N", 2, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], af[(1 - 1)], af[(2 - 1) * ldaf], b, 1, x, 2, rcond, r1, r2, w, info);
+        Rptsvx("N", 2, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &af[(1 - 1)], &af[(2 - 1) * ldaf], b, 1, x, 2, rcond, r1, r2, w, info);
         chkxer("Rptsvx", infot, nout, lerr, ok);
         infot = 11;
-        Rptsvx("N", 2, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], af[(1 - 1)], af[(2 - 1) * ldaf], b, 2, x, 1, rcond, r1, r2, w, info);
+        Rptsvx("N", 2, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &af[(1 - 1)], &af[(2 - 1) * ldaf], b, 2, x, 1, rcond, r1, r2, w, info);
         chkxer("Rptsvx", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2, "SY")) {

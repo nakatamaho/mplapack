@@ -37,11 +37,12 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+    FEM_CMN_SVE(Cdrvsp);
     common_write write(cmn);
     //
     const INTEGER nfact = 2;
     str_arr_ref<1> facts(sve.facts, [nfact]);
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
+    INTEGER *iseedy(sve.iseedy, [4]);
     if (is_called_first_time) {
         {
             static const INTEGER values[] = {1988, 1989, 1990, 1991};
@@ -157,7 +158,7 @@ void Cdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         n = nval[in - 1];
         lda = max(n, 1);
         npp = n * (n + 1) / 2;
-        xtype = "N";
+        xtype = 'N';
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -182,11 +183,11 @@ void Cdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 if (iuplo == 1) {
-                    uplo = "U";
-                    packit = "C";
+                    uplo = 'U';
+                    packit = 'C';
                 } else {
-                    uplo = "L";
-                    packit = "R";
+                    uplo = 'L';
+                    packit = 'R';
                 }
                 //
                 if (imat != ntypes) {
@@ -324,7 +325,7 @@ void Cdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //                 Form an exact solution and set the right hand side.
                     //
                     Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                    xtype = "C";
+                    xtype = 'C';
                     //
                     //                 --- Test Cspsv  ---
                     //

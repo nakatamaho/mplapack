@@ -39,7 +39,6 @@ using fem::common;
 void Cerrvx(const char *path, INTEGER const nunit) {
     common_write write(cmn);
     // COMMON infoc
-    INTEGER &infot = cmn.infot;
     INTEGER &nout = cmn.nout;
     bool &ok = cmn.ok;
     bool &lerr = cmn.lerr;
@@ -95,8 +94,8 @@ void Cerrvx(const char *path, INTEGER const nunit) {
     INTEGER ip[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = COMPLEX(1.0 / castREAL(i + j), -1.0 / castREAL(i + j));
-            af[(i - 1) + (j - 1) * ldaf] = COMPLEX(1.0 / castREAL(i + j), -1.0 / castREAL(i + j));
+            a[(i - 1) + (j - 1) * lda] = COMPLEX(1.0 / (i + j).real(), -1.0 / (i + j).real());
+            af[(i - 1) + (j - 1) * ldaf] = COMPLEX(1.0 / (i + j).real(), -1.0 / (i + j).real());
         }
         b[j - 1] = 0.0;
         e[j - 1] = 0.0;
@@ -156,15 +155,14 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Cgesvx("N", "N", 2, 1, a, 2, af, 1, ip, eq, r, c, b, 2, x, 2, rcond, r1, r2, w, rw, info);
         chkxer("Cgesvx", infot, nout, lerr, ok);
         infot = 10;
-        eq = "/";
-        Cgesvx("F", "N", 0, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        eq = '/' Cgesvx("F", "N", 0, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cgesvx", infot, nout, lerr, ok);
         infot = 11;
-        eq = "R";
+        eq = 'R';
         Cgesvx("F", "N", 1, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cgesvx", infot, nout, lerr, ok);
         infot = 12;
-        eq = "C";
+        eq = 'C';
         Cgesvx("F", "N", 1, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cgesvx", infot, nout, lerr, ok);
         infot = 14;
@@ -224,15 +222,14 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Cgbsvx("N", "N", 1, 1, 1, 0, a, 3, af, 3, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cgbsvx", infot, nout, lerr, ok);
         infot = 12;
-        eq = "/";
-        Cgbsvx("F", "N", 0, 0, 0, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        eq = '/' Cgbsvx("F", "N", 0, 0, 0, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cgbsvx", infot, nout, lerr, ok);
         infot = 13;
-        eq = "R";
+        eq = 'R';
         Cgbsvx("F", "N", 1, 0, 0, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cgbsvx", infot, nout, lerr, ok);
         infot = 14;
-        eq = "C";
+        eq = 'C';
         Cgbsvx("F", "N", 1, 0, 0, 0, a, 1, af, 1, ip, eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cgbsvx", infot, nout, lerr, ok);
         infot = 16;
@@ -259,22 +256,22 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //        Cgtsvx
         //
         infot = 1;
-        Cgtsvx("/", "N", 0, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], af[(1 - 1)], af[(2 - 1) * ldaf], af[(3 - 1) * ldaf], af[(4 - 1) * ldaf], ip, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgtsvx("/", "N", 0, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &af[(1 - 1)], &af[(2 - 1) * ldaf], &af[(3 - 1) * ldaf], &af[(4 - 1) * ldaf], ip, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cgtsvx", infot, nout, lerr, ok);
         infot = 2;
-        Cgtsvx("N", "/", 0, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], af[(1 - 1)], af[(2 - 1) * ldaf], af[(3 - 1) * ldaf], af[(4 - 1) * ldaf], ip, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgtsvx("N", "/", 0, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &af[(1 - 1)], &af[(2 - 1) * ldaf], &af[(3 - 1) * ldaf], &af[(4 - 1) * ldaf], ip, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cgtsvx", infot, nout, lerr, ok);
         infot = 3;
-        Cgtsvx("N", "N", -1, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], af[(1 - 1)], af[(2 - 1) * ldaf], af[(3 - 1) * ldaf], af[(4 - 1) * ldaf], ip, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgtsvx("N", "N", -1, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &af[(1 - 1)], &af[(2 - 1) * ldaf], &af[(3 - 1) * ldaf], &af[(4 - 1) * ldaf], ip, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cgtsvx", infot, nout, lerr, ok);
         infot = 4;
-        Cgtsvx("N", "N", 0, -1, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], af[(1 - 1)], af[(2 - 1) * ldaf], af[(3 - 1) * ldaf], af[(4 - 1) * ldaf], ip, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgtsvx("N", "N", 0, -1, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &af[(1 - 1)], &af[(2 - 1) * ldaf], &af[(3 - 1) * ldaf], &af[(4 - 1) * ldaf], ip, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cgtsvx", infot, nout, lerr, ok);
         infot = 14;
-        Cgtsvx("N", "N", 2, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], af[(1 - 1)], af[(2 - 1) * ldaf], af[(3 - 1) * ldaf], af[(4 - 1) * ldaf], ip, b, 1, x, 2, rcond, r1, r2, w, rw, info);
+        Cgtsvx("N", "N", 2, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &af[(1 - 1)], &af[(2 - 1) * ldaf], &af[(3 - 1) * ldaf], &af[(4 - 1) * ldaf], ip, b, 1, x, 2, rcond, r1, r2, w, rw, info);
         chkxer("Cgtsvx", infot, nout, lerr, ok);
         infot = 16;
-        Cgtsvx("N", "N", 2, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], af[(1 - 1)], af[(2 - 1) * ldaf], af[(3 - 1) * ldaf], af[(4 - 1) * ldaf], ip, b, 2, x, 1, rcond, r1, r2, w, rw, info);
+        Cgtsvx("N", "N", 2, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &af[(1 - 1)], &af[(2 - 1) * ldaf], &af[(3 - 1) * ldaf], &af[(4 - 1) * ldaf], ip, b, 2, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cgtsvx", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2, "PO")) {
@@ -318,11 +315,10 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Cposvx("N", "U", 2, 0, a, 2, af, 1, eq, c, b, 2, x, 2, rcond, r1, r2, w, rw, info);
         chkxer("Cposvx", infot, nout, lerr, ok);
         infot = 9;
-        eq = "/";
-        Cposvx("F", "U", 0, 0, a, 1, af, 1, eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        eq = '/' Cposvx("F", "U", 0, 0, a, 1, af, 1, eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cposvx", infot, nout, lerr, ok);
         infot = 10;
-        eq = "Y";
+        eq = 'Y';
         Cposvx("F", "U", 1, 0, a, 1, af, 1, eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cposvx", infot, nout, lerr, ok);
         infot = 12;
@@ -364,11 +360,10 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Cppsvx("N", "U", 0, -1, a, af, eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cppsvx", infot, nout, lerr, ok);
         infot = 7;
-        eq = "/";
-        Cppsvx("F", "U", 0, 0, a, af, eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        eq = '/' Cppsvx("F", "U", 0, 0, a, af, eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cppsvx", infot, nout, lerr, ok);
         infot = 8;
-        eq = "Y";
+        eq = 'Y';
         Cppsvx("F", "U", 1, 0, a, af, eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cppsvx", infot, nout, lerr, ok);
         infot = 10;
@@ -425,11 +420,10 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Cpbsvx("N", "U", 1, 1, 0, a, 2, af, 1, eq, c, b, 2, x, 2, rcond, r1, r2, w, rw, info);
         chkxer("Cpbsvx", infot, nout, lerr, ok);
         infot = 10;
-        eq = "/";
-        Cpbsvx("F", "U", 0, 0, 0, a, 1, af, 1, eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        eq = '/' Cpbsvx("F", "U", 0, 0, 0, a, 1, af, 1, eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cpbsvx", infot, nout, lerr, ok);
         infot = 11;
-        eq = "Y";
+        eq = 'Y';
         Cpbsvx("F", "U", 1, 0, 0, a, 1, af, 1, eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cpbsvx", infot, nout, lerr, ok);
         infot = 13;
@@ -456,19 +450,19 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //        Cptsvx
         //
         infot = 1;
-        Cptsvx("/", 0, 0, r, &a[(1 - 1) + (1 - 1) * lda], rf, af[(1 - 1)], b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cptsvx("/", 0, 0, r, &a[(1 - 1) + (1 - 1) * lda], rf, &af[(1 - 1)], b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cptsvx", infot, nout, lerr, ok);
         infot = 2;
-        Cptsvx("N", -1, 0, r, &a[(1 - 1) + (1 - 1) * lda], rf, af[(1 - 1)], b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cptsvx("N", -1, 0, r, &a[(1 - 1) + (1 - 1) * lda], rf, &af[(1 - 1)], b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cptsvx", infot, nout, lerr, ok);
         infot = 3;
-        Cptsvx("N", 0, -1, r, &a[(1 - 1) + (1 - 1) * lda], rf, af[(1 - 1)], b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cptsvx("N", 0, -1, r, &a[(1 - 1) + (1 - 1) * lda], rf, &af[(1 - 1)], b, 1, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cptsvx", infot, nout, lerr, ok);
         infot = 9;
-        Cptsvx("N", 2, 0, r, &a[(1 - 1) + (1 - 1) * lda], rf, af[(1 - 1)], b, 1, x, 2, rcond, r1, r2, w, rw, info);
+        Cptsvx("N", 2, 0, r, &a[(1 - 1) + (1 - 1) * lda], rf, &af[(1 - 1)], b, 1, x, 2, rcond, r1, r2, w, rw, info);
         chkxer("Cptsvx", infot, nout, lerr, ok);
         infot = 11;
-        Cptsvx("N", 2, 0, r, &a[(1 - 1) + (1 - 1) * lda], rf, af[(1 - 1)], b, 2, x, 1, rcond, r1, r2, w, rw, info);
+        Cptsvx("N", 2, 0, r, &a[(1 - 1) + (1 - 1) * lda], rf, &af[(1 - 1)], b, 2, x, 1, rcond, r1, r2, w, rw, info);
         chkxer("Cptsvx", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2, "HE")) {
