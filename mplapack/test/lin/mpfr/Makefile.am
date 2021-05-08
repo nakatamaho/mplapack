@@ -4,28 +4,6 @@ liblin_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INC
 liblin_mpfr_la_SOURCES = $(LIN_SOURCES)
 
 LIN_SOURCES = \
-../common/Cchkhp.cpp \
-../common/Rchkgt.cpp \
-../common/Cchkgt.cpp \
-../common/Rdrvgb.cpp \
-../common/Cdrvgb.cpp \
-../common/Cdrvsy_rook.cpp \
-../common/Cdrvsy_rk.cpp \
-../common/Rchksy_aa_2stage.cpp \
-../common/Rchksy_aa.cpp \
-../common/Cchksy_aa_2stage.cpp \
-../common/Cchksy_aa.cpp \
-../common/Cchksp.cpp \
-../common/Clavhp.cpp \
-../common/Cchkhe_aa.cpp \
-../common/Clavhe.cpp \
-../common/Cchkeq.cpp \
-../common/Cchkhe_aa_2stage.cpp \
-../common/Rlavsy_rook.cpp \
-../common/Clavsy_rook.cpp \
-../common/Rchkge.cpp \
-../common/Rdrvpt.cpp \
-../common/Cchkge.cpp \
 ../common/Cdrvpt.cpp \
 ../common/Rchktr.cpp \
 ../common/Cchktr.cpp \
@@ -369,8 +347,29 @@ LIN_SOURCES = \
 ../common/Rlattp.cpp \
 ../common/Clattp.cpp \
 ../common/Aladhd.cpp \
-../common/Rchkaa.cpp \
-../common/Clqt03.cpp
+../common/Clqt03.cpp \
+../common/Rchkgt.cpp \
+../common/Cchkgt.cpp \
+../common/Rdrvgb.cpp \
+../common/Cdrvgb.cpp \
+../common/Cchkhp.cpp \
+../common/Cdrvsy_rook.cpp \
+../common/Cdrvsy_rk.cpp \
+../common/Rchksy_aa_2stage.cpp \
+../common/Rchksy_aa.cpp \
+../common/Cchksy_aa_2stage.cpp \
+../common/Cchksy_aa.cpp \
+../common/Cchksp.cpp \
+../common/Clavhp.cpp \
+../common/Cchkhe_aa.cpp \
+../common/Clavhe.cpp \
+../common/Cchkeq.cpp \
+../common/Cchkhe_aa_2stage.cpp \
+../common/Rlavsy_rook.cpp \
+../common/Clavsy_rook.cpp \
+../common/Rchkge.cpp \
+../common/Rdrvpt.cpp \
+../common/Cchkge.cpp
 
 #../common/iMlaenv.cpp
 
