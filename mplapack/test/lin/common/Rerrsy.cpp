@@ -37,13 +37,9 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rerrsy(const char *path, INTEGER const nunit) {
-    common_write write(cmn);
-    // COMMON infoc
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    // COMMON srnamc
-    //
+    INTEGER nout;
+    bool ok;
+    bool lerr;
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -73,8 +69,9 @@ void Rerrsy(const char *path, INTEGER const nunit) {
     //     .. Executable Statements ..
     //
     nout = nunit;
-    write(nout, star);
-    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2];
+    c2[0] = path[1];
+    c2[1] = path[2];
     //
     //     Set the variables to innocuous values.
     //
@@ -83,6 +80,8 @@ void Rerrsy(const char *path, INTEGER const nunit) {
     INTEGER i = 0;
     REAL a[nmax * nmax];
     REAL af[nmax * nmax];
+    INTEGER lda = nmax;
+    INTEGER ldaf = nmax;
     REAL b[nmax];
     REAL e[nmax];
     REAL r1[nmax];
@@ -93,8 +92,8 @@ void Rerrsy(const char *path, INTEGER const nunit) {
     INTEGER iw[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
-            af[(i - 1) + (j - 1) * ldaf] = 1.0 / (i + j).real();
+            a[(i - 1) + (j - 1) * lda] = 1.0 / castREAL(i + j);
+            af[(i - 1) + (j - 1) * ldaf] = 1.0 / castREAL(i + j);
         }
         b[j - 1] = 0.0;
         e[j - 1] = 0.0;
@@ -110,6 +109,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
     ok = true;
     //
     INTEGER info = 0;
+    bool infot = 0;
     if (Mlsamen(2, c2, "SY")) {
         //
         //        Test error exits of the routines that use factorization

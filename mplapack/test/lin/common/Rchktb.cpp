@@ -35,30 +35,21 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Rchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, REAL *ab, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
-    FEM_CMN_SVE(Rchktb);
+    common cmn;
     common_write write(cmn);
     //
-    INTEGER *iseedy(sve.iseedy, [4]);
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     const INTEGER ntran = 3;
-    str_arr_ref<1> transs(sve.transs, [ntran]);
-    str_arr_ref<1> uplos(sve.uplos, [2]);
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"U", "L"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
-        }
-        {
-            static const char *values[] = {"N", "T", "C"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), transs;
-        }
-    }
+    char uplos[] = {'U', 'L'};
+    char transs[] = {'N', 'T', 'C'};
     char path[3];
+    char buf[1024];
+    char norm_trans_diag[4];
+    char norm_uplo_diag[4];
+    char uplo_trans_diag[4];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -101,7 +92,7 @@ void Rchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     REAL rcond = 0.0;
     REAL scale = 0.0;
     static const char *format_9997 = "(1x,a,'( ''',a1,''', ''',a1,''', ''',a1,''', ''',a1,''',',i5,',',i5,"
-                                     "', ...  ),  type ',i2,', test(',i1,')=',g12.5)";
+                                     "', ...  ),  type ',i2,', test(',i1,')=',a)";
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -136,8 +127,9 @@ void Rchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     //
     //     Initialize constants and the random number seed.
     //
-    path[(1 - 1)] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "TB";
+    path[0] = 'R';
+    path[1] = 'T';
+    path[2] = 'B';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -198,11 +190,11 @@ void Rchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //
                     //                 Call Rlattb to generate a triangular test matrix.
                     //
-                    Rlattb(imat, uplo, "No transpose", diag, iseed, n, kd, ab, ldab, x, work, info);
+                    Rlattb(imat, &uplo, "No transpose", &diag, iseed, n, kd, ab, ldab, x, work, info);
                     //
                     //                 Set IDIAG = 1 for non-unit matrices, 2 for unit.
                     //
-                    if (Mlsame(diag, "N")) {
+                    if (Mlsame(&diag, "N")) {
                         idiag = 1;
                     } else {
                         idiag = 2;
@@ -212,20 +204,20 @@ void Rchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //                 of RCONDC = 1/(norm(A) * norm(inv(A))).
                     //
                     Rlaset("Full", n, n, zero, one, ainv, lda);
-                    if (Mlsame(uplo, "U")) {
+                    if (Mlsame(&uplo, "U")) {
                         for (j = 1; j <= n; j = j + 1) {
-                            Rtbsv(uplo, "No transpose", diag, j, kd, ab, ldab, ainv[((j - 1) * lda + 1) - 1], 1);
+                            Rtbsv(&uplo, "No transpose", &diag, j, kd, ab, ldab, &ainv[((j - 1) * lda + 1) - 1], 1);
                         }
                     } else {
                         for (j = 1; j <= n; j = j + 1) {
-                            Rtbsv(uplo, "No transpose", diag, n - j + 1, kd, &ab[((j - 1) * ldab + 1) - 1], ldab, ainv[((j - 1) * lda + j) - 1], 1);
+                            Rtbsv(&uplo, "No transpose", &diag, n - j + 1, kd, &ab[((j - 1) * ldab + 1) - 1], ldab, &ainv[((j - 1) * lda + j) - 1], 1);
                         }
                     }
                     //
                     //                 Compute the 1-norm condition number of A.
                     //
-                    anorm = Rlantb("1", uplo, diag, n, kd, ab, ldab, rwork);
-                    ainvnm = Rlantr("1", uplo, diag, n, n, ainv, lda, rwork);
+                    anorm = Rlantb("1", &uplo, &diag, n, kd, ab, ldab, rwork);
+                    ainvnm = Rlantr("1", &uplo, &diag, n, n, ainv, lda, rwork);
                     if (anorm <= zero || ainvnm <= zero) {
                         rcondo = one;
                     } else {
@@ -234,8 +226,8 @@ void Rchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //
                     //                 Compute the infinity-norm condition number of A.
                     //
-                    anorm = Rlantb("I", uplo, diag, n, kd, ab, ldab, rwork);
-                    ainvnm = Rlantr("I", uplo, diag, n, n, ainv, lda, rwork);
+                    anorm = Rlantb("I", &uplo, &diag, n, kd, ab, ldab, rwork);
+                    ainvnm = Rlantr("I", &uplo, &diag, n, n, ainv, lda, rwork);
                     if (anorm <= zero || ainvnm <= zero) {
                         rcondi = one;
                     } else {
@@ -262,19 +254,23 @@ void Rchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             //+    TEST 1
                             //                    Solve and compute residual for op(A)*x = b.
                             //
-                            Rlarhs(path, xtype, uplo, trans, n, n, kd, idiag, nrhs, ab, ldab, xact, lda, b, lda, iseed, info);
+                            Rlarhs(path, &xtype, &uplo, &trans, n, n, kd, idiag, nrhs, ab, ldab, xact, lda, b, lda, iseed, info);
                             xtype = 'C';
                             Rlacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            Rtbtrs(uplo, trans, diag, n, kd, nrhs, ab, ldab, x, lda, info);
+                            Rtbtrs(&uplo, &trans, &diag, n, kd, nrhs, ab, ldab, x, lda, info);
                             //
                             //                    Check error code from Rtbtrs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "Rtbtrs", info, 0, uplo + trans + diag, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                uplo_trans_diag[0] = uplo;
+                                uplo_trans_diag[1] = trans;
+                                uplo_trans_diag[2] = diag;
+                                uplo_trans_diag[3] = '\0';
+                                Alaerh(path, "Rtbtrs", info, 0, uplo_trans_diag, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
-                            Rtbt02(uplo, trans, diag, n, kd, nrhs, ab, ldab, x, lda, b, lda, work, result[1 - 1]);
+                            Rtbt02(&uplo, &trans, &diag, n, kd, nrhs, ab, ldab, x, lda, b, lda, work, result[1 - 1]);
                             //
                             //+    TEST 2
                             //                    Check solution from generated exact solution.
@@ -285,16 +281,20 @@ void Rchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             //                    Use iterative refinement to improve the solution
                             //                    and compute error bounds.
                             //
-                            Rtbrfs(uplo, trans, diag, n, kd, nrhs, ab, ldab, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
+                            Rtbrfs(&uplo, &trans, &diag, n, kd, nrhs, ab, ldab, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
                             //
                             //                    Check error code from Rtbrfs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "Rtbrfs", info, 0, uplo + trans + diag, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                uplo_trans_diag[0] = uplo;
+                                uplo_trans_diag[1] = trans;
+                                uplo_trans_diag[2] = diag;
+                                uplo_trans_diag[3] = '\0';
+                                Alaerh(path, "Rtbrfs", info, 0, uplo_trans_diag, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
-                            Rtbt05(uplo, trans, diag, n, kd, nrhs, ab, ldab, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], result[4 - 1]);
+                            Rtbt05(&uplo, &trans, &diag, n, kd, nrhs, ab, ldab, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                             //
                             //                       Print information about the tests that did not
                             //                       pass the threshold.
@@ -304,10 +304,11 @@ void Rchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                                     if (nfail == 0 && nerrs == 0) {
                                         Alahd(nout, path);
                                     }
+                                    sprintnum_short(buf, result[k - 1]);
                                     write(nout, "(' UPLO=''',a1,''', TRANS=''',a1,''',      DIAG=''',a1,"
                                                 "''', N=',i5,', KD=',i5,', NRHS=',i5,', type ',i2,"
-                                                "', test(',i2,')=',g12.5)"),
-                                        uplo, trans, diag, n, kd, nrhs, imat, k, result(k);
+                                                "', test(',i2,')=',a)"),
+                                        uplo, trans, diag, n, kd, nrhs, imat, k, buf;
                                     nfail++;
                                 }
                             }
@@ -326,15 +327,19 @@ void Rchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             norm = 'I';
                             rcondc = rcondi;
                         }
-                        Rtbcon(norm, uplo, diag, n, kd, ab, ldab, rcond, work, iwork, info);
+                        Rtbcon(&norm, &uplo, &diag, n, kd, ab, ldab, rcond, work, iwork, info);
                         //
                         //                    Check error code from Rtbcon.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Rtbcon", info, 0, norm + uplo + diag, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
+                            norm_uplo_diag[0] = norm;
+                            norm_uplo_diag[1] = trans;
+                            norm_uplo_diag[2] = diag;
+                            norm_uplo_diag[3] = '\0';
+                            Alaerh(path, "Rtbcon", info, 0, norm_uplo_diag, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
                         }
                         //
-                        Rtbt06(rcond, rcondc, uplo, diag, n, kd, ab, ldab, rwork, result[6 - 1]);
+                        Rtbt06(rcond, rcondc, &uplo, &diag, n, kd, ab, ldab, rwork, result[6 - 1]);
                         //
                         //                    Print information about the tests that did not pass
                         //                    the threshold.
@@ -343,9 +348,10 @@ void Rchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
+                            sprintnum_short(buf, result[6 - 1]);
                             write(nout, "(1x,a,'( ''',a1,''', ''',a1,''', ''',a1,''',',i5,',',i5,"
-                                        "',  ... ), type ',i2,', test(',i2,')=',g12.5)"),
-                                "Rtbcon", norm, uplo, diag, n, kd, imat, 6, result(6);
+                                        "',  ... ), type ',i2,', test(',i2,')=',a)"),
+                                "Rtbcon", norm, uplo, diag, n, kd, imat, 6, buf;
                             nfail++;
                         }
                         nrun++;
@@ -377,35 +383,43 @@ void Rchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         //
                         //                    Call Rlattb to generate a triangular test matrix.
                         //
-                        Rlattb(imat, uplo, trans, diag, iseed, n, kd, ab, ldab, x, work, info);
+                        Rlattb(imat, &uplo, &trans, &diag, iseed, n, kd, ab, ldab, x, work, info);
                         //
                         //+    TEST 7
                         //                    Solve the system op(A)*x = b
                         //
                         Rcopy(n, x, 1, b, 1);
-                        Rlatbs(uplo, trans, diag, "N", n, kd, ab, ldab, b, scale, rwork, info);
+                        Rlatbs(&uplo, &trans, &diag, "N", n, kd, ab, ldab, b, scale, rwork, info);
                         //
                         //                    Check error code from Rlatbs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Rlatbs", info, 0, uplo + trans + diag + const char *("N"), n, n, kd, kd, -1, imat, nfail, nerrs, nout);
+                            uplo_trans_diag[0] = uplo;
+                            uplo_trans_diag[1] = trans;
+                            uplo_trans_diag[2] = diag;
+                            uplo_trans_diag[3] = 'N';
+                            Alaerh(path, "Rlatbs", info, 0, uplo_trans_diag, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
                         }
                         //
-                        Rtbt03(uplo, trans, diag, n, kd, 1, ab, ldab, scale, rwork, one, b, lda, x, lda, work, result[7 - 1]);
+                        Rtbt03(&uplo, &trans, &diag, n, kd, 1, ab, ldab, scale, rwork, one, b, lda, x, lda, work, result[7 - 1]);
                         //
                         //+    TEST 8
                         //                    Solve op(A)*x = b again with NORMIN = 'Y'.
                         //
                         Rcopy(n, x, 1, b, 1);
-                        Rlatbs(uplo, trans, diag, "Y", n, kd, ab, ldab, b, scale, rwork, info);
+                        Rlatbs(&uplo, &trans, &diag, "Y", n, kd, ab, ldab, b, scale, rwork, info);
                         //
                         //                    Check error code from Rlatbs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Rlatbs", info, 0, uplo + trans + diag + const char *("Y"), n, n, kd, kd, -1, imat, nfail, nerrs, nout);
+                            uplo_trans_diag[0] = uplo;
+                            uplo_trans_diag[1] = trans;
+                            uplo_trans_diag[2] = diag;
+                            uplo_trans_diag[3] = 'Y';
+                            Alaerh(path, "Rlatbs", info, 0, uplo_trans_diag, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
                         }
                         //
-                        Rtbt03(uplo, trans, diag, n, kd, 1, ab, ldab, scale, rwork, one, b, lda, x, lda, work, result[8 - 1]);
+                        Rtbt03(&uplo, &trans, &diag, n, kd, 1, ab, ldab, scale, rwork, one, b, lda, x, lda, work, result[8 - 1]);
                         //
                         //                    Print information about the tests that did not pass
                         //                    the threshold.
@@ -414,14 +428,16 @@ void Rchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            write(nout, format_9997), "Rlatbs", uplo, trans, diag, "N", n, kd, imat, 7, result(7);
+                            sprintnum_short(buf, result[7 - 1]);
+                            write(nout, format_9997), "Rlatbs", uplo, trans, diag, "N", n, kd, imat, 7, buf;
                             nfail++;
                         }
                         if (result[8 - 1] >= thresh) {
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            write(nout, format_9997), "Rlatbs", uplo, trans, diag, "Y", n, kd, imat, 8, result(8);
+                            sprintnum_short(buf, result[8 - 1]);
+                            write(nout, format_9997), "Rlatbs", uplo, trans, diag, "Y", n, kd, imat, 8, buf;
                             nfail++;
                         }
                         nrun += 2;
