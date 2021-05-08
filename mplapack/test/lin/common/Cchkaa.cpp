@@ -36,16 +36,13 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void program_Cchkaa(INTEGER argc, char const *argv[]) {
-    common cmn(argc, argv);
-    common_read read(cmn);
+void Cchkaa(void) {
+    common cmn;
     common_write write(cmn);
+    time_t s1;
+    time_t s2;
     char &intstr = sve.intstr;
-    REAL &threq = sve.threq;
-    if (is_called_first_time) {
-        threq = 2.0;
-        intstr = "0123456789";
-    }
+    REAL threq = 2.0;
     REAL s1 = 0.0;
     const INTEGER nmax = 132;
     INTEGER lda = 0;
@@ -1106,4 +1103,4 @@ statement_140:
     //
 }
 
-INTEGER main(INTEGER argc, char const *argv[]) { return main_with_catch(argc, argv, placeholder_please_replace::program_Cchkaa); }
+int main(int argc, char const *argv[]) { return Cchkaa(); }

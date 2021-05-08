@@ -79,7 +79,7 @@ void Clatsy(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, IN
     const COMPLEX eye = COMPLEX(0.0, 1.0);
     COMPLEX c = 0.0;
     COMPLEX r = 0.0;
-    if (uplo == "U") {
+    if (Mlsame(uplo, "U")) {
         //
         //        Fill the upper triangle of the matrix with zeros.
         //

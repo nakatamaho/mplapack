@@ -36,22 +36,16 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, REAL *a, REAL *af, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+    common cmn;
     common_write write(cmn);
     //
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    str_arr_ref<1> transs(sve.transs, [3]);
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {0, 0, 0, 1};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"N", "T", "C"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), transs;
-        }
-    }
+    char transs[] = {'N', 'T', 'C'};
     char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -126,8 +120,9 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     //     ..
     //     .. Executable Statements ..
     //
-    path[(1 - 1)] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "GT";
+    path[0] = 'R';
+    path[1] = 'G';
+    path[2] = 'T';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -163,7 +158,7 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //
             //           Set up parameters with Rlatb4.
             //
-            Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cond, dist);
+            Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cond, &dist);
             //
             zerot = imat >= 8 && imat <= 10;
             if (imat <= 6) {
@@ -171,7 +166,7 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //              Types 1-6:  generate matrices of known condition number.
                 //
                 koff = max({(INTEGER)2 - ku, 3 - max((INTEGER)1, n)});
-                Rlatms(n, n, dist, iseed, type, rwork, mode, cond, anorm, kl, ku, "Z", af[koff - 1], 3, work, info);
+                Rlatms(n, n, &dist, iseed, &type, rwork, mode, cond, anorm, kl, ku, "Z", &af[koff - 1], 3, work, info);
                 //
                 //              Check the error code from Rlatms.
                 //
@@ -182,10 +177,10 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 izero = 0;
                 //
                 if (n > 1) {
-                    Rcopy(n - 1, af[4 - 1], 3, a, 1);
-                    Rcopy(n - 1, af[3 - 1], 3, &a[(n + m + 1) - 1], 1);
+                    Rcopy(n - 1, &af[4 - 1], 3, a, 1);
+                    Rcopy(n - 1, &af[3 - 1], 3, &a[(n + m + 1) - 1], 1);
                 }
-                Rcopy(n, af[2 - 1], 3, &a[(m + 1) - 1], 1);
+                Rcopy(n, &af[2 - 1], 3, &a[(m + 1) - 1], 1);
             } else {
                 //
                 //              Types 7-12:  generate tridiagonal matrices with
@@ -254,7 +249,7 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //              norm(L*U - A) / (n * norm(A) * EPS )
             //
             Rcopy(n + 2 * m, a, 1, af, 1);
-            Rgttrf(n, af, af[(m + 1) - 1], af[(n + m + 1) - 1], af[(n + 2 * m + 1) - 1], iwork, info);
+            Rgttrf(n, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, info);
             //
             //           Check error code from Rgttrf.
             //
@@ -263,7 +258,7 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             }
             trfcon = info != 0;
             //
-            Rgtt01(n, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, af[(m + 1) - 1], af[(n + m + 1) - 1], af[(n + 2 * m + 1) - 1], iwork, work, lda, rwork, result[1 - 1]);
+            Rgtt01(n, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, work, lda, rwork, result[1 - 1]);
             //
             //           Print the test ratio if it is .GE. THRESH.
             //
@@ -271,7 +266,8 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 if (nfail == 0 && nerrs == 0) {
                     Alahd(nout, path);
                 }
-                write(nout, "(12x,'N =',i5,',',10x,' type ',i2,', test(',i2,') = ',g12.5)"), n, imat, 1, result(1);
+                sprintnum_short(buf, result[1 - 1]);
+                write(nout, "(12x,'N =',i5,',',10x,' type ',i2,', test(',i2,') = ',a)"), n, imat, 1, buf;
                 nfail++;
             }
             nrun++;
@@ -279,11 +275,11 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             for (itran = 1; itran <= 2; itran = itran + 1) {
                 trans = transs[itran - 1];
                 if (itran == 1) {
-                    norm = "O";
+                    norm = 'O';
                 } else {
                     norm = 'I';
                 }
-                anorm = Rlangt(norm, n, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1]);
+                anorm = Rlangt(&norm, n, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1]);
                 //
                 if (!trfcon) {
                     //
@@ -297,7 +293,7 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             x[j - 1] = zero;
                         }
                         x[i - 1] = one;
-                        Rgttrs(trans, n, 1, af, af[(m + 1) - 1], af[(n + m + 1) - 1], af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
+                        Rgttrs(&trans, n, 1, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
                         ainvnm = max({ainvnm, Rasum(n, x, 1)});
                     }
                     //
@@ -321,12 +317,12 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //              Estimate the reciprocal of the condition number of the
                 //              matrix.
                 //
-                Rgtcon(norm, n, af, af[(m + 1) - 1], af[(n + m + 1) - 1], af[(n + 2 * m + 1) - 1], iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);
+                Rgtcon(&norm, n, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);
                 //
                 //              Check error code from Rgtcon.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Rgtcon", info, 0, norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rgtcon", info, 0, &norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 //
                 result[7 - 1] = Rget06(rcond, rcondc);
@@ -337,9 +333,10 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     if (nfail == 0 && nerrs == 0) {
                         Alahd(nout, path);
                     }
+                    sprintnum_short(buf, result[7 - 1]);
                     write(nout, "(' NORM =''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,"
-                                "') = ',g12.5)"),
-                        norm, n, imat, 7, result(7);
+                                "') = ',a)"),
+                        norm, n, imat, 7, buf;
                     nfail++;
                 }
                 nrun++;
@@ -358,7 +355,7 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 ix = 1;
                 for (j = 1; j <= nrhs; j = j + 1) {
-                    Rlarnv(2, iseed, n, xact[ix - 1]);
+                    Rlarnv(2, iseed, n, &xact[ix - 1]);
                     ix += lda;
                 }
                 //
@@ -372,22 +369,22 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //
                     //                 Set the right hand side.
                     //
-                    Rlagtm(trans, n, nrhs, one, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], xact, lda, zero, b, lda);
+                    Rlagtm(&trans, n, nrhs, one, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], xact, lda, zero, b, lda);
                     //
                     //+    TEST 2
                     //                 Solve op(A) * X = B and compute the residual.
                     //
                     Rlacpy("Full", n, nrhs, b, lda, x, lda);
-                    Rgttrs(trans, n, nrhs, af, af[(m + 1) - 1], af[(n + m + 1) - 1], af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
+                    Rgttrs(&trans, n, nrhs, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
                     //
                     //                 Check error code from Rgttrs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Rgttrs", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rgttrs", info, 0, &trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Rlacpy("Full", n, nrhs, b, lda, work, lda);
-                    Rgtt02(trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], x, lda, work, lda, result[2 - 1]);
+                    Rgtt02(&trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], x, lda, work, lda, result[2 - 1]);
                     //
                     //+    TEST 3
                     //                 Check solution from generated exact solution.
@@ -397,16 +394,16 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //+    TESTS 4, 5, and 6
                     //                 Use iterative refinement to improve the solution.
                     //
-                    Rgtrfs(trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, af[(m + 1) - 1], af[(n + m + 1) - 1], af[(n + 2 * m + 1) - 1], iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
+                    Rgtrfs(&trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                     //
                     //                 Check error code from Rgtrfs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Rgtrfs", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rgtrfs", info, 0, &trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
-                    Rgtt05(trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], result[5 - 1]);
+                    Rgtt05(&trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[5 - 1]);
                     //
                     //                 Print information about the tests that did not pass
                     //                 the threshold.
@@ -416,9 +413,10 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
+                            sprintnum_short(buf, result[k - 1]);
                             write(nout, "(' TRANS=''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                        "', test(',i2,') = ',g12.5)"),
-                                trans, n, nrhs, imat, k, result(k);
+                                        "', test(',i2,') = ',a)"),
+                                trans, n, nrhs, imat, k, buf;
                             nfail++;
                         }
                     }

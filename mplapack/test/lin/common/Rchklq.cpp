@@ -111,7 +111,7 @@ void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Initialize constants and the random number seed.
     //
-    path[0] = 'D';
+    path[0] = 'R';
     path[1] = 'L';
     path[2] = 'Q';
     nrun = 0;
