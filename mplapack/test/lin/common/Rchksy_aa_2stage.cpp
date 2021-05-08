@@ -36,24 +36,17 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rchksy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *afac, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
-    FEM_CMN_SVE(Rchksy_aa_2stage);
+    common cmn;
     common_write write(cmn);
     //
-    INTEGER *iseedy(sve.iseedy, [4]);
-    str_arr_ref<1> uplos(sve.uplos, [2]);
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"U", "L"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
-        }
-    }
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
+    char uplos[] = {'U', 'L'};
     char path[3];
     char matpath[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -126,13 +119,15 @@ void Rchksy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
     //
     //     Test path
     //
-    path[(1 - 1)] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "S2";
+    path[0] = 'R';
+    path[1] = 'S';
+    path[2] = '2';
     //
     //     Path to generate matrices
     //
-    matpath[(1 - 1)] = "Double precision";
-    matpath[(2 - 1) + (3 - 1) * ldmatpath] = "SY";
+    matpath[0] = 'R';
+    matpath[1] = 'S';
+    matpath[2] = 'Y';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -195,16 +190,16 @@ void Rchksy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                 //              Set up parameters with Rlatb4 for the matrix generator
                 //              based on the type of matrix to be generated.
                 //
-                Rlatb4(matpath, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
+                Rlatb4(matpath, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                 //
                 //              Generate a matrix with Rlatms.
                 //
-                Rlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
+                Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
                 //
                 //              Check error code from Rlatms and handle error.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Rlatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rlatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     //
                     //                    Skip all tests for this generated matrix
                     //
@@ -296,7 +291,7 @@ void Rchksy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                     //                 will be factorized in place. This is needed to
                     //                 preserve the test matrix A for subsequent tests.
                     //
-                    Rlacpy(uplo, n, n, a, lda, afac, lda);
+                    Rlacpy(&uplo, n, n, a, lda, afac, lda);
                     //
                     //                 Compute the L*D*L**T or U*D*U**T factorization of the
                     //                 matrix. IWORK stores details of the interchanges and
@@ -304,7 +299,7 @@ void Rchksy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                     //                 block factorization, LWORK is the length of AINV.
                     //
                     lwork = min(n * nb, 3 * nmax * nmax);
-                    Rsytrf_aa_2stage(uplo, n, afac, lda, ainv, (3 * nb + 1) * n, iwork, &iwork[(1 + n) - 1], work, lwork, info);
+                    Rsytrf_aa_2stage(&uplo, n, afac, lda, ainv, (3 * nb + 1) * n, iwork, &iwork[(1 + n) - 1], work, lwork, info);
                     //
                     //                 Adjust the expected value of INFO to account for
                     //                 pivoting.
@@ -329,7 +324,7 @@ void Rchksy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                     //                 Check error code from Rsytrf and handle error.
                     //
                     if (info != k) {
-                        Alaerh(path, "Rsytrf_aa_2stage", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rsytrf_aa_2stage", info, k, &uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
                     //+    TEST 1
@@ -348,9 +343,10 @@ void Rchksy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
+                            sprintnum_short(buf, result[k - 1]);
                             write(nout, "(' UPLO = ''',a1,''', N =',i5,', NB =',i4,', type ',i2,"
-                                        "', test ',i2,', ratio =',g12.5)"),
-                                uplo, n, nb, imat, k, result(k);
+                                        "', test ',i2,', ratio =',a)"),
+                                uplo, n, nb, imat, k, buf;
                             nfail++;
                         }
                     }
@@ -373,24 +369,24 @@ void Rchksy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                         //                    Choose a set of NRHS random solution vectors
                         //                    stored in XACT and set up the right hand side B
                         //
-                        Rlarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        Rlarhs(matpath, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Rlacpy("Full", n, nrhs, b, lda, x, lda);
                         //
                         lwork = max((INTEGER)1, 3 * n - 2);
-                        Rsytrs_aa_2stage(uplo, n, nrhs, afac, lda, ainv, (3 * nb + 1) * n, iwork, &iwork[(1 + n) - 1], x, lda, info);
+                        Rsytrs_aa_2stage(&uplo, n, nrhs, afac, lda, ainv, (3 * nb + 1) * n, iwork, &iwork[(1 + n) - 1], x, lda, info);
                         //
                         //                    Check error code from Rsytrs and handle error.
                         //
                         if (info != 0) {
                             if (izero == 0) {
-                                Alaerh(path, "Rsytrs_aa_2stage", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Rsytrs_aa_2stage", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                         } else {
                             Rlacpy("Full", n, nrhs, b, lda, work, lda);
                             //
                             //                       Compute the residual for the solution
                             //
-                            Rpot02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
+                            Rpot02(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
                             //
                             //                       Print information about the tests that did not pass
                             //                       the threshold.
@@ -400,9 +396,10 @@ void Rchksy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                                     if (nfail == 0 && nerrs == 0) {
                                         Alahd(nout, path);
                                     }
+                                    sprintnum_short(buf, result[k - 1]);
                                     write(nout, "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                                "', test(',i2,') =',g12.5)"),
-                                        uplo, n, nrhs, imat, k, result(k);
+                                                "', test(',i2,') =',g)"),
+                                        uplo, n, nrhs, imat, k, buf;
                                     nfail++;
                                 }
                             }

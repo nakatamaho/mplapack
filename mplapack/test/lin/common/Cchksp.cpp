@@ -36,23 +36,18 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
-    FEM_CMN_SVE(Cchksp);
+    common cmn;
     common_write write(cmn);
     //
-    INTEGER *iseedy(sve.iseedy, [4]);
-    str_arr_ref<1> uplos(sve.uplos, [2]);
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"U", "L"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
-        }
-    }
+    const INTEGER nfact = 2;
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
+    char uplos[] = {'U', 'L'};
     char path[3];
+    char matpath[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -94,7 +89,7 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     INTEGER nrhs = 0;
     REAL rcond = 0.0;
     static const char *format_9999 = "(' UPLO = ''',a1,''', N =',i5,', type ',i2,', test ',i2,', ratio =',"
-                                     "g12.5)";
+                                     "a)";
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -129,8 +124,9 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     //
     //     Initialize constants and the random number seed.
     //
-    path[(1 - 1)] = "Zomplex precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "SP";
+    path[0] = 'C';
+    path[1] = 'Z';
+    path[2] = 'P';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -174,7 +170,7 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 uplo = uplos[iuplo - 1];
-                if (Mlsame(uplo, "U")) {
+                if (Mlsame(&uplo, "U")) {
                     packit = 'C';
                 } else {
                     packit = 'R';
@@ -185,14 +181,14 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //                 Set up parameters with Clatb4 and generate a test
                     //                 matrix with Clatms.
                     //
-                    Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
+                    Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                     //
-                    Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, packit, a, lda, work, info);
+                    Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &packit, a, lda, work, info);
                     //
                     //                 Check error code from Clatms.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Clatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         goto statement_150;
                     }
                     //
@@ -268,14 +264,14 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //                 Use a special block diagonal matrix to test alternate
                     //                 code for the 2 x 2 blocks.
                     //
-                    Clatsp(uplo, n, a, iseed);
+                    Clatsp(&uplo, n, a, iseed);
                 }
                 //
                 //              Compute the L*D*L' or U*D*U' factorization of the matrix.
                 //
                 npp = n * (n + 1) / 2;
                 Ccopy(npp, a, 1, afac, 1);
-                Csptrf(uplo, n, afac, iwork, info);
+                Csptrf(&uplo, n, afac, iwork, info);
                 //
                 //              Adjust the expected value of INFO to account for
                 //              pivoting.
@@ -297,7 +293,7 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //              Check error code from Csptrf.
                 //
                 if (info != k) {
-                    Alaerh(path, "Csptrf", info, k, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Csptrf", info, k, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 if (info != 0) {
                     trfcon = true;
@@ -308,7 +304,7 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //+    TEST 1
                 //              Reconstruct matrix from factors and compute residual.
                 //
-                Cspt01(uplo, n, a, afac, iwork, ainv, lda, rwork, result[1 - 1]);
+                Cspt01(&uplo, n, a, afac, iwork, ainv, lda, rwork, result[1 - 1]);
                 nt = 1;
                 //
                 //+    TEST 2
@@ -316,15 +312,15 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 if (!trfcon) {
                     Ccopy(npp, afac, 1, ainv, 1);
-                    Csptri(uplo, n, ainv, iwork, work, info);
+                    Csptri(&uplo, n, ainv, iwork, work, info);
                     //
                     //              Check error code from Csptri.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Csptri", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Csptri", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
-                    Cspt03(uplo, n, a, ainv, work, lda, rwork, rcondc, result[2 - 1]);
+                    Cspt03(&uplo, n, a, ainv, work, lda, rwork, rcondc, result[2 - 1]);
                     nt = 2;
                 }
                 //
@@ -336,7 +332,8 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        write(nout, format_9999), uplo, n, imat, k, result(k);
+                        sprintnum_short(buf, result[k - 1]);
+                        write(nout, format_9999), uplo, n, imat, k, buf;
                         nfail++;
                     }
                 }
@@ -355,19 +352,19 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //+    TEST 3
                     //              Solve and compute residual for  A * X = B.
                     //
-                    Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                    Clarhs(path, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                     Clacpy("Full", n, nrhs, b, lda, x, lda);
                     //
-                    Csptrs(uplo, n, nrhs, afac, iwork, x, lda, info);
+                    Csptrs(&uplo, n, nrhs, afac, iwork, x, lda, info);
                     //
                     //              Check error code from Csptrs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Csptrs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Csptrs", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Clacpy("Full", n, nrhs, b, lda, work, lda);
-                    Cspt02(uplo, n, nrhs, a, x, lda, work, lda, rwork, result[3 - 1]);
+                    Cspt02(&uplo, n, nrhs, a, x, lda, work, lda, rwork, result[3 - 1]);
                     //
                     //+    TEST 4
                     //              Check solution from generated exact solution.
@@ -377,16 +374,16 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //+    TESTS 5, 6, and 7
                     //              Use iterative refinement to improve the solution.
                     //
-                    Csprfs(uplo, n, nrhs, a, afac, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                    Csprfs(&uplo, n, nrhs, a, afac, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                     //
                     //              Check error code from Csprfs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Csprfs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Csprfs", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
-                    Cppt05(uplo, n, nrhs, a, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], result[6 - 1]);
+                    Cppt05(&uplo, n, nrhs, a, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[6 - 1]);
                     //
                     //                 Print information about the tests that did not pass
                     //                 the threshold.
@@ -396,9 +393,10 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
+                            sprintnum_short(buf, result[k - 1]);
                             write(nout, "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                        "', test(',i2,') =',g12.5)"),
-                                uplo, n, nrhs, imat, k, result(k);
+                                        "', test(',i2,') =',a)"),
+                                uplo, n, nrhs, imat, k, buf;
                             nfail++;
                         }
                     }
@@ -409,13 +407,13 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //              Get an estimate of RCOND = 1/CNDNUM.
             //
             statement_140:
-                anorm = Clansp("1", uplo, n, a, rwork);
-                Cspcon(uplo, n, afac, iwork, anorm, rcond, work, info);
+                anorm = Clansp("1", &uplo, n, a, rwork);
+                Cspcon(&uplo, n, afac, iwork, anorm, rcond, work, info);
                 //
                 //              Check error code from Cspcon.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Cspcon", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Cspcon", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 //
                 result[8 - 1] = Rget06(rcond, rcondc);
@@ -426,7 +424,8 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     if (nfail == 0 && nerrs == 0) {
                         Alahd(nout, path);
                     }
-                    write(nout, format_9999), uplo, n, imat, 8, result(8);
+                    sprintnum_short(buf, result[8 - 1]);
+                    write(nout, format_9999), uplo, n, imat, 8, buf;
                     nfail++;
                 }
                 nrun++;

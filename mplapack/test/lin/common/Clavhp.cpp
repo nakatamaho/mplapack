@@ -37,12 +37,10 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Clavhp(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
-    b([ldb * star]);
     bool nounit = false;
     INTEGER k = 0;
     INTEGER kc = 0;
     const COMPLEX one = COMPLEX(1.0, 0.0);
-    INTEGER &b[(1 - 1) + (1 - 1) * ldb] = 0;
     INTEGER kp = 0;
     INTEGER kcnext = 0;
     COMPLEX d11 = 0.0;
@@ -130,7 +128,7 @@ void Clavhp(const char *uplo, const char *trans, const char *diag, INTEGER const
                 //              Multiply by the diagonal element if forming U * D.
                 //
                 if (nounit) {
-                    Cscal(nrhs, &a[(kc + k - 1) - 1], &b[(k - 1)], ldb);
+                    Cscal(nrhs, a[(kc + k - 1) - 1], &b[(k - 1)], ldb);
                 }
                 //
                 //              Multiply by P(K) * inv(U(K))  if K > 1.
@@ -218,7 +216,7 @@ void Clavhp(const char *uplo, const char *trans, const char *diag, INTEGER const
                 //              Multiply by the diagonal element if forming L * D.
                 //
                 if (nounit) {
-                    Cscal(nrhs, &a[kc - 1], &b[(k - 1)], ldb);
+                    Cscal(nrhs, a[kc - 1], &b[(k - 1)], ldb);
                 }
                 //
                 //              Multiply by  P(K) * inv(L(K))  if K < N.
@@ -327,7 +325,7 @@ void Clavhp(const char *uplo, const char *trans, const char *diag, INTEGER const
                     Clacgv(nrhs, &b[(k - 1)], ldb);
                 }
                 if (nounit) {
-                    Cscal(nrhs, &a[(kc + k - 1) - 1], &b[(k - 1)], ldb);
+                    Cscal(nrhs, a[(kc + k - 1) - 1], &b[(k - 1)], ldb);
                 }
                 k = k - 1;
                 //
@@ -409,7 +407,7 @@ void Clavhp(const char *uplo, const char *trans, const char *diag, INTEGER const
                     Clacgv(nrhs, &b[(k - 1)], ldb);
                 }
                 if (nounit) {
-                    Cscal(nrhs, &a[kc - 1], &b[(k - 1)], ldb);
+                    Cscal(nrhs, a[kc - 1], &b[(k - 1)], ldb);
                 }
                 kc += n - k + 1;
                 k++;
