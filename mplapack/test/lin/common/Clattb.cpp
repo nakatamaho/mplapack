@@ -37,8 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag, INTEGER *iseed, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, COMPLEX *b, COMPLEX *work, REAL *rwork, INTEGER &info) {
-    iseed([4]);
-    ab([ldab * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -63,8 +61,10 @@ void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //     ..
     //     .. Executable Statements ..
     //
-    char path[3] = "Zomplex precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "TB";
+    char path[3];
+    path[0] = 'C';
+    path[1] = 'T';
+    path[2] = 'B';
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     REAL smlnum = unfl;
@@ -72,9 +72,9 @@ void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL bignum = (one - ulp) / smlnum;
     Rlabad(smlnum, bignum);
     if ((imat >= 6 && imat <= 9) || imat == 17) {
-        diag = "U";
+        *diag = 'U';
     } else {
-        diag = "N";
+        *diag = 'N';
     }
     info = 0;
     //
@@ -97,17 +97,17 @@ void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     INTEGER ioff = 0;
     char packit;
     if (upper) {
-        Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
+        Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
         ku = kd;
         ioff = 1 + max((INTEGER)0, kd - n + 1);
         kl = 0;
-        packit = "Q";
+        packit = 'Q';
     } else {
-        Clatb4(path, -imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
+        Clatb4(path, -imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
         kl = kd;
         ioff = 1;
         ku = 0;
-        packit = "B";
+        packit = 'B';
     }
     //
     //     IMAT <= 5:  Non-unit triangular matrix
@@ -116,7 +116,6 @@ void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     INTEGER i = 0;
     const REAL zero = 0.0;
     REAL tnorm = 0.0;
-    float a &b[(1 - 1) + (2 - 1) * ldb] = float0;
     INTEGER lenj = 0;
     COMPLEX star1 = 0.0;
     REAL sfac = 0.0;
@@ -128,12 +127,11 @@ void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL bnorm = 0.0;
     REAL bscal = 0.0;
     REAL tscal = 0.0;
-    float a &b[(1 - 1) + (1 - 1) * ldb] = float0;
     INTEGER jcount = 0;
     REAL texp = 0.0;
     REAL tleft = 0.0;
     if (imat <= 5) {
-        Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, packit, &ab[(ioff - 1)], ldab, work, info);
+        Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &packit, &ab[(ioff - 1)], ldab, work, info);
         //
         //     IMAT > 5:  Unit triangular matrix
         //     The diagonal is deliberately set to something other than 1.
@@ -146,7 +144,7 @@ void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 for (i = max((INTEGER)1, kd + 2 - j); i <= kd; i = i + 1) {
                     ab[(i - 1) + (j - 1) * ldab] = zero;
                 }
-                ab[((kd + 1) - 1) + (j - 1) * ldab] = j;
+                ab[((kd + 1) - 1) + (j - 1) * ldab] = castREAL(j);
             }
         } else {
             for (j = 1; j <= n; j = j + 1) {
@@ -188,7 +186,7 @@ void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
         if (kd == 1) {
             if (upper) {
-                a &b[(1 - 1) + (2 - 1) * ldb] = tnorm * Clarnd(5, iseed);
+                ab[(1 - 1) + (2 - 1) * ldab] = tnorm * Clarnd(5, iseed);
                 lenj = (n - 3) / 2;
                 Clarnv(2, iseed, lenj, work);
                 for (j = 1; j <= lenj; j = j + 1) {
@@ -237,9 +235,9 @@ void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                     //
                     rexp = Rlarnd(2, iseed);
                     if (rexp < zero) {
-                        star1 = -pow(sfac, [(one - rexp) - 1]) * Clarnd(5, iseed);
+                        star1 = -pow(sfac, (one - rexp)) * Clarnd(5, iseed);
                     } else {
-                        star1 = pow(sfac, [(one + rexp) - 1]) * Clarnd(5, iseed);
+                        star1 = pow(sfac, (one + rexp)) * Clarnd(5, iseed);
                     }
                 }
             }
@@ -316,7 +314,7 @@ void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 }
                 ab[(j - 1) * ldab] = Clarnd(5, iseed);
             }
-            a &b[(1 - 1) + (1 - 1) * ldb] = smlnum * a & b[(1 - 1) + (1 - 1) * ldb];
+            ab[(1 - 1) + (1 - 1) * ldab] = smlnum * ab[(1 - 1) + (1 - 1) * ldab];
         }
         //
     } else if (imat == 12) {
@@ -343,7 +341,7 @@ void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 }
                 ab[(j - 1) * ldab] = Clarnd(5, iseed);
             }
-            a &b[(1 - 1) + (1 - 1) * ldb] = smlnum * a & b[(1 - 1) + (1 - 1) * ldb];
+            ab[(1 - 1) + (1 - 1) * ldab] = smlnum * ab[(1 - 1) + (1 - 1) * ldab];
         }
         //
     } else if (imat == 13) {
@@ -493,7 +491,7 @@ void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                         }
                         texp = texp * two;
                     }
-                    b[(max((j - kd + 1)) - 1) * ldb] = (castREAL(kd + 2) / castREAL(kd + 3)) * tscal;
+                    b[max(1, j - kd + 1) - 1] = (castREAL(kd + 2) / castREAL(kd + 3)) * tscal;
                 }
             } else {
                 for (j = 1; j <= n; j = j + kd) {
@@ -510,7 +508,7 @@ void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                         }
                         texp = texp * two;
                     }
-                    b[(min(n - 1) + ((j + kd - 1)) - 1) * ldb] = (castREAL(kd + 2) / castREAL(kd + 3)) * tscal;
+                    b[min(n, j + kd - 1) - 1] = (castREAL(kd + 2) / castREAL(kd + 3)) * tscal;
                 }
             }
         }

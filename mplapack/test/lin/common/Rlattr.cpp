@@ -37,8 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag, INTEGER *iseed, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, REAL *work, INTEGER &info) {
-    iseed([4]);
-    a([lda * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -63,8 +61,10 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //     ..
     //     .. Executable Statements ..
     //
-    char path[3] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "TR";
+    char path[3];
+    path[0] = 'R';
+    path[1] = 'T';
+    path[2] = 'R';
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     REAL smlnum = unfl;
@@ -72,9 +72,9 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL bignum = (one - ulp) / smlnum;
     Rlabad(smlnum, bignum);
     if ((imat >= 7 && imat <= 10) || imat == 18) {
-        diag = "U";
+        *diag = 'U';
     } else {
-        diag = "N";
+        *diag = 'N';
     }
     info = 0;
     //
@@ -95,9 +95,9 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL cndnum = 0.0;
     char dist;
     if (upper) {
-        Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
+        Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
     } else {
-        Rlatb4(path, -imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
+        Rlatb4(path, -imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
     }
     //
     //     IMAT <= 6:  Non-unit triangular matrix
@@ -122,12 +122,11 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL bnorm = 0.0;
     REAL bscal = 0.0;
     REAL tscal = 0.0;
-    INTEGER &a[(1 - 1) + (1 - 1) * lda] = 0;
     INTEGER jcount = 0;
     REAL texp = 0.0;
     REAL tleft = 0.0;
     if (imat <= 6) {
-        Rlatms(n, n, dist, iseed, type, b, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
+        Rlatms(n, n, &dist, iseed, &type, b, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
         //
         //     IMAT > 6:  Unit triangular matrix
         //     The diagonal is deliberately set to something other than 1.
@@ -246,16 +245,17 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 rexp = Rlarnd(2, iseed);
                 star1 = star1 * (pow(sfac, rexp));
                 if (rexp < zero) {
-                    star1 = -pow(sfac, [(one - rexp) - 1]);
+                    star1 = -pow(sfac, (one - rexp));
                 } else {
-                    star1 = pow(sfac, [(one + rexp) - 1]);
+                    star1 = pow(sfac, (one + rexp));
                 }
             }
         }
         //
+        REAL two = 2.0;
         x = sqrt(cndnum) - 1 / sqrt(cndnum);
         if (n > 2) {
-            y = sqrt(2.0 / (n - 2)) * x;
+            y = sqrt(two / (castREAL(n) - two)) * x;
         } else {
             y = zero;
         }
@@ -348,12 +348,12 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
                 Rlarnv(2, iseed, j, &a[(j - 1) * lda]);
-                a[(j - 1) + (j - 1) * lda] = sign(two, &a[(j - 1) + (j - 1) * lda]);
+                a[(j - 1) + (j - 1) * lda] = sign(two, a[(j - 1) + (j - 1) * lda]);
             }
         } else {
             for (j = 1; j <= n; j = j + 1) {
                 Rlarnv(2, iseed, n - j + 1, &a[(j - 1) + (j - 1) * lda]);
-                a[(j - 1) + (j - 1) * lda] = sign(two, &a[(j - 1) + (j - 1) * lda]);
+                a[(j - 1) + (j - 1) * lda] = sign(two, a[(j - 1) + (j - 1) * lda]);
             }
         }
         //
@@ -377,7 +377,7 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             for (j = 1; j <= n; j = j + 1) {
                 Rlarnv(2, iseed, j, &a[(j - 1) * lda]);
                 Rscal(j - 1, tscal, &a[(j - 1) * lda], 1);
-                a[(j - 1) + (j - 1) * lda] = sign(one, &a[(j - 1) + (j - 1) * lda]);
+                a[(j - 1) + (j - 1) * lda] = sign(one, a[(j - 1) + (j - 1) * lda]);
             }
             a[(n - 1) + (n - 1) * lda] = smlnum * a[(n - 1) + (n - 1) * lda];
         } else {
@@ -386,9 +386,9 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 if (n > j) {
                     Rscal(n - j, tscal, &a[((j + 1) - 1) + (j - 1) * lda], 1);
                 }
-                a[(j - 1) + (j - 1) * lda] = sign(one, &a[(j - 1) + (j - 1) * lda]);
+                a[(j - 1) + (j - 1) * lda] = sign(one, a[(j - 1) + (j - 1) * lda]);
             }
-            &a[(1 - 1) + (1 - 1) * lda] = smlnum * &a[(1 - 1) + (1 - 1) * lda];
+            a[(1 - 1) + (1 - 1) * lda] = smlnum * a[(1 - 1) + (1 - 1) * lda];
         }
         //
     } else if (imat == 13) {
@@ -401,15 +401,15 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
                 Rlarnv(2, iseed, j, &a[(j - 1) * lda]);
-                a[(j - 1) + (j - 1) * lda] = sign(one, &a[(j - 1) + (j - 1) * lda]);
+                a[(j - 1) + (j - 1) * lda] = sign(one, a[(j - 1) + (j - 1) * lda]);
             }
             a[(n - 1) + (n - 1) * lda] = smlnum * a[(n - 1) + (n - 1) * lda];
         } else {
             for (j = 1; j <= n; j = j + 1) {
                 Rlarnv(2, iseed, n - j + 1, &a[(j - 1) + (j - 1) * lda]);
-                a[(j - 1) + (j - 1) * lda] = sign(one, &a[(j - 1) + (j - 1) * lda]);
+                a[(j - 1) + (j - 1) * lda] = sign(one, a[(j - 1) + (j - 1) * lda]);
             }
-            &a[(1 - 1) + (1 - 1) * lda] = smlnum * &a[(1 - 1) + (1 - 1) * lda];
+            a[(1 - 1) + (1 - 1) * lda] = smlnum * a[(1 - 1) + (1 - 1) * lda];
         }
         //
     } else if (imat == 14) {
@@ -510,7 +510,7 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             for (j = 1; j <= n; j = j + 1) {
                 Rlarnv(2, iseed, j, &a[(j - 1) * lda]);
                 if (j != iy) {
-                    a[(j - 1) + (j - 1) * lda] = sign(two, &a[(j - 1) + (j - 1) * lda]);
+                    a[(j - 1) + (j - 1) * lda] = sign(two, a[(j - 1) + (j - 1) * lda]);
                 } else {
                     a[(j - 1) + (j - 1) * lda] = zero;
                 }
@@ -519,7 +519,7 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             for (j = 1; j <= n; j = j + 1) {
                 Rlarnv(2, iseed, n - j + 1, &a[(j - 1) + (j - 1) * lda]);
                 if (j != iy) {
-                    a[(j - 1) + (j - 1) * lda] = sign(two, &a[(j - 1) + (j - 1) * lda]);
+                    a[(j - 1) + (j - 1) * lda] = sign(two, a[(j - 1) + (j - 1) * lda]);
                 } else {
                     a[(j - 1) + (j - 1) * lda] = zero;
                 }
@@ -608,14 +608,14 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             for (j = 1; j <= n; j = j + 1) {
                 Rlarnv(2, iseed, j, &a[(j - 1) * lda]);
                 for (i = 1; i <= j; i = i + 1) {
-                    a[(i - 1) + (j - 1) * lda] = sign(tleft, &a[(i - 1) + (j - 1) * lda]) + tscal * a[(i - 1) + (j - 1) * lda];
+                    a[(i - 1) + (j - 1) * lda] = sign(tleft, a[(i - 1) + (j - 1) * lda]) + tscal * a[(i - 1) + (j - 1) * lda];
                 }
             }
         } else {
             for (j = 1; j <= n; j = j + 1) {
                 Rlarnv(2, iseed, n - j + 1, &a[(j - 1) + (j - 1) * lda]);
                 for (i = j; i <= n; i = i + 1) {
-                    a[(i - 1) + (j - 1) * lda] = sign(tleft, &a[(i - 1) + (j - 1) * lda]) + tscal * a[(i - 1) + (j - 1) * lda];
+                    a[(i - 1) + (j - 1) * lda] = sign(tleft, a[(i - 1) + (j - 1) * lda]) + tscal * a[(i - 1) + (j - 1) * lda];
                 }
             }
         }

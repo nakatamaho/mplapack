@@ -36,16 +36,15 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
-    FEM_CMN_SVE(Cchkpb);
+    common cmn;
     common_write write(cmn);
     //
-    INTEGER *iseedy(sve.iseedy, [4]);
-    if (is_called_first_time) {
-        static const INTEGER values[] = {1988, 1989, 1990, 1991};
-        data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-    }
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -128,8 +127,9 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     //
     //     Initialize constants and the random number seed.
     //
-    path[(1 - 1)] = "Zomplex precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "PB";
+    path[0] = 'C';
+    path[1] = 'P';
+    path[2] = 'B';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -153,7 +153,7 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         //
         //        Set limits on the number of loop iterations.
         //
-        nkd = max({(INTEGER)1, min(n, 4)});
+        nkd = max((INTEGER)1, min(n, 4));
         nimat = ntypes;
         if (n == 0) {
             nimat = 1;
@@ -205,14 +205,14 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                    Set up parameters with Clatb4 and generate a test
                         //                    matrix with Clatms.
                         //
-                        Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
+                        Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                         //
-                        Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kd, kd, packit, &a[koff - 1], ldab, work, info);
+                        Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kd, kd, &packit, &a[koff - 1], ldab, work, info);
                         //
                         //                    Check error code from Clatms.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Clatms", info, 0, uplo, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Clatms", info, 0, &uplo, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
                             goto statement_60;
                         }
                     } else if (izero > 0) {
@@ -289,12 +289,12 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                    matrix.
                         //
                         Clacpy("Full", kd + 1, n, a, ldab, afac, ldab);
-                        Cpbtrf(uplo, n, kd, afac, ldab, info);
+                        Cpbtrf(&uplo, n, kd, afac, ldab, info);
                         //
                         //                    Check error code from Cpbtrf.
                         //
                         if (info != izero) {
-                            Alaerh(path, "Cpbtrf", info, izero, uplo, n, n, kd, kd, nb, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cpbtrf", info, izero, &uplo, n, n, kd, kd, nb, imat, nfail, nerrs, nout);
                             goto statement_50;
                         }
                         //
@@ -309,7 +309,7 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                    residual.
                         //
                         Clacpy("Full", kd + 1, n, afac, ldab, ainv, ldab);
-                        Cpbt01(uplo, n, kd, a, ldab, ainv, ldab, rwork, result[1 - 1]);
+                        Cpbt01(&uplo, n, kd, a, ldab, ainv, ldab, rwork, result[1 - 1]);
                         //
                         //                    Print the test ratio if it is .GE. THRESH.
                         //
@@ -317,9 +317,10 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
+                            sprintnum_short(buf, result[1 - 1]);
                             write(nout, "(' UPLO=''',a1,''', N=',i5,', KD=',i5,', NB=',i4,', type ',"
-                                        "i2,', test ',i2,', ratio= ',g12.5)"),
-                                uplo, n, kd, nb, imat, 1, result(1);
+                                        "i2,', test ',i2,', ratio= ',a)"),
+                                uplo, n, kd, nb, imat, 1, buf;
                             nfail++;
                         }
                         nrun++;
@@ -334,11 +335,11 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                    of RCONDC = 1/(norm(A) * norm(inv(A))).
                         //
                         Claset("Full", n, n, COMPLEX(zero), COMPLEX(one), ainv, lda);
-                        Cpbtrs(uplo, n, kd, n, afac, ldab, ainv, lda, info);
+                        Cpbtrs(&uplo, n, kd, n, afac, ldab, ainv, lda, info);
                         //
                         //                    Compute RCONDC = 1/(norm(A) * norm(inv(A))).
                         //
-                        anorm = Clanhb("1", uplo, n, kd, a, ldab, rwork);
+                        anorm = Clanhb("1", &uplo, n, kd, a, ldab, rwork);
                         ainvnm = Clange("1", n, n, ainv, lda, rwork);
                         if (anorm <= zero || ainvnm <= zero) {
                             rcondc = one;
@@ -352,19 +353,19 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             //+    TEST 2
                             //                    Solve and compute residual for A * X = B.
                             //
-                            Clarhs(path, xtype, uplo, " ", n, n, kd, kd, nrhs, a, ldab, xact, lda, b, lda, iseed, info);
+                            Clarhs(path, &xtype, &uplo, " ", n, n, kd, kd, nrhs, a, ldab, xact, lda, b, lda, iseed, info);
                             Clacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            Cpbtrs(uplo, n, kd, nrhs, afac, ldab, x, lda, info);
+                            Cpbtrs(&uplo, n, kd, nrhs, afac, ldab, x, lda, info);
                             //
                             //                    Check error code from Cpbtrs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "Cpbtrs", info, 0, uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Cpbtrs", info, 0, &uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Clacpy("Full", n, nrhs, b, lda, work, lda);
-                            Cpbt02(uplo, n, kd, nrhs, a, ldab, x, lda, work, lda, rwork, result[2 - 1]);
+                            Cpbt02(&uplo, n, kd, nrhs, a, ldab, x, lda, work, lda, rwork, result[2 - 1]);
                             //
                             //+    TEST 3
                             //                    Check solution from generated exact solution.
@@ -374,16 +375,16 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             //+    TESTS 4, 5, and 6
                             //                    Use iterative refinement to improve the solution.
                             //
-                            Cpbrfs(uplo, n, kd, nrhs, a, ldab, afac, ldab, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                            Cpbrfs(&uplo, n, kd, nrhs, a, ldab, afac, ldab, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                             //
                             //                    Check error code from Cpbrfs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "Cpbrfs", info, 0, uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Cpbrfs", info, 0, &uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
-                            Cpbt05(uplo, n, kd, nrhs, a, ldab, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], result[5 - 1]);
+                            Cpbt05(&uplo, n, kd, nrhs, a, ldab, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[5 - 1]);
                             //
                             //                       Print information about the tests that did not
                             //                       pass the threshold.
@@ -393,9 +394,10 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                                     if (nfail == 0 && nerrs == 0) {
                                         Alahd(nout, path);
                                     }
+                                    sprintnum_short(buf, result[k - 1]);
                                     write(nout, "(' UPLO=''',a1,''', N=',i5,', KD=',i5,', NRHS=',i3,"
-                                                "', type ',i2,', test(',i2,') = ',g12.5)"),
-                                        uplo, n, kd, nrhs, imat, k, result(k);
+                                                "', type ',i2,', test(',i2,') = ',a)"),
+                                        uplo, n, kd, nrhs, imat, k, buf;
                                     nfail++;
                                 }
                             }
@@ -405,12 +407,12 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //+    TEST 7
                         //                    Get an estimate of RCOND = 1/CNDNUM.
                         //
-                        Cpbcon(uplo, n, kd, afac, ldab, anorm, rcond, work, rwork, info);
+                        Cpbcon(&uplo, n, kd, afac, ldab, anorm, rcond, work, rwork, info);
                         //
                         //                    Check error code from Cpbcon.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Cpbcon", info, 0, uplo, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cpbcon", info, 0, &uplo, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         result[7 - 1] = Rget06(rcond, rcondc);
@@ -421,9 +423,10 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
+                            sprintnum_short(buf, result[7 - 1]);
                             write(nout, "(' UPLO=''',a1,''', N=',i5,', KD=',i5,',',10x,' type ',i2,"
-                                        "', test(',i2,') = ',g12.5)"),
-                                uplo, n, kd, imat, 7, result(7);
+                                        "', test(',i2,') = ',a)"),
+                                uplo, n, kd, imat, 7, buf;
                             nfail++;
                         }
                         nrun++;

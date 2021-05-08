@@ -37,8 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag, INTEGER *iseed, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *b, REAL *work, INTEGER &info) {
-    iseed([4]);
-    ab([ldab * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -63,8 +61,10 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //     ..
     //     .. Executable Statements ..
     //
-    char path[3] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "TB";
+    char path[3];
+    path[0] = 'R';
+    path[1] = 'T';
+    path[2] = 'B';
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     REAL smlnum = unfl;
@@ -72,9 +72,9 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL bignum = (one - ulp) / smlnum;
     Rlabad(smlnum, bignum);
     if ((imat >= 6 && imat <= 9) || imat == 17) {
-        diag = 'U';
+        *diag = 'U';
     } else {
-        diag = 'N';
+        *diag = 'N';
     }
     info = 0;
     //
@@ -97,13 +97,13 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     INTEGER ioff = 0;
     char packit;
     if (upper) {
-        Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
+        Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
         ku = kd;
         ioff = 1 + max((INTEGER)0, kd - n + 1);
         kl = 0;
         packit = 'Q';
     } else {
-        Rlatb4(path, -imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
+        Rlatb4(path, -imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
         kl = kd;
         ioff = 1;
         ku = 0;
@@ -116,7 +116,6 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     INTEGER i = 0;
     const REAL zero = 0.0;
     REAL tnorm = 0.0;
-    float a &b[(1 - 1) + (2 - 1) * ldb] = float0;
     INTEGER lenj = 0;
     REAL star1 = 0.0;
     REAL sfac = 0.0;
@@ -128,12 +127,11 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL bnorm = 0.0;
     REAL bscal = 0.0;
     REAL tscal = 0.0;
-    float a &b[(1 - 1) + (1 - 1) * ldb] = float0;
     INTEGER jcount = 0;
     REAL texp = 0.0;
     REAL tleft = 0.0;
     if (imat <= 5) {
-        Rlatms(n, n, dist, iseed, type, b, mode, cndnum, anorm, kl, ku, packit, &ab[(ioff - 1)], ldab, work, info);
+        Rlatms(n, n, &dist, iseed, &type, b, mode, cndnum, anorm, kl, ku, &packit, &ab[(ioff - 1)], ldab, work, info);
         //
         //     IMAT > 5:  Unit triangular matrix
         //     The diagonal is deliberately set to something other than 1.
@@ -172,14 +170,14 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 for (i = max((INTEGER)1, kd + 2 - j); i <= kd; i = i + 1) {
                     ab[(i - 1) + (j - 1) * ldab] = zero;
                 }
-                ab[((kd + 1) - 1) + (j - 1) * ldab] = j.real();
+                ab[((kd + 1) - 1) + (j - 1) * ldab] = castREAL(j);
             }
         } else {
             for (j = 1; j <= n; j = j + 1) {
                 for (i = 2; i <= min(kd + 1, n - j + 1); i = i + 1) {
                     ab[(i - 1) + (j - 1) * ldab] = zero;
                 }
-                ab[(j - 1) * ldab] = j.real();
+                ab[(j - 1) * ldab] = castREAL(j);
             }
         }
         //
@@ -188,7 +186,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
         if (kd == 1) {
             if (upper) {
-                a &b[(1 - 1) + (2 - 1) * ldb] = sign(tnorm, Rlarnd(2, iseed));
+                ab[(1 - 1) + (2 - 1) * ldab] = sign(tnorm, Rlarnd(2, iseed));
                 lenj = (n - 3) / 2;
                 Rlarnv(2, iseed, lenj, work);
                 for (j = 1; j <= lenj; j = j + 1) {
@@ -237,9 +235,9 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                     //
                     rexp = Rlarnd(2, iseed);
                     if (rexp < zero) {
-                        star1 = -pow(sfac, [(one - rexp) - 1]);
+                        star1 = -pow(sfac, (one - rexp));
                     } else {
-                        star1 = pow(sfac, [(one + rexp) - 1]);
+                        star1 = pow(sfac, (one + rexp));
                     }
                 }
             }
@@ -269,7 +267,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             for (j = 1; j <= n; j = j + 1) {
                 lenj = min(j, kd + 1);
                 Rlarnv(2, iseed, lenj, &ab[((kd + 2 - lenj) - 1) + (j - 1) * ldab]);
-                ab[((kd + 1) - 1) + (j - 1) * ldab] = sign(two, &ab[((kd + 1) - 1) + (j - 1) * ldab]);
+                ab[((kd + 1) - 1) + (j - 1) * ldab] = sign(two, ab[((kd + 1) - 1) + (j - 1) * ldab]);
             }
         } else {
             for (j = 1; j <= n; j = j + 1) {
@@ -277,7 +275,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 if (lenj > 0) {
                     Rlarnv(2, iseed, lenj, &ab[(j - 1) * ldab]);
                 }
-                ab[(j - 1) * ldab] = sign(two, &ab[(j - 1) * ldab]);
+                ab[(j - 1) * ldab] = sign(two, ab[(j - 1) * ldab]);
             }
         }
         //
@@ -296,13 +294,13 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //        In type 11, the offdiagonal elements are small (CNORM(j) < 1).
         //
         Rlarnv(2, iseed, n, b);
-        tscal = one / (kd + 1).real();
+        tscal = one / castREAL(kd + 1);
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
                 lenj = min(j, kd + 1);
                 Rlarnv(2, iseed, lenj, &ab[((kd + 2 - lenj) - 1) + (j - 1) * ldab]);
                 Rscal(lenj - 1, tscal, &ab[((kd + 2 - lenj) - 1) + (j - 1) * ldab], 1);
-                ab[((kd + 1) - 1) + (j - 1) * ldab] = sign(one, &ab[((kd + 1) - 1) + (j - 1) * ldab]);
+                ab[((kd + 1) - 1) + (j - 1) * ldab] = sign(one, ab[((kd + 1) - 1) + (j - 1) * ldab]);
             }
             ab[((kd + 1) - 1) + (n - 1) * ldab] = smlnum * ab[((kd + 1) - 1) + (n - 1) * ldab];
         } else {
@@ -312,9 +310,9 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 if (lenj > 1) {
                     Rscal(lenj - 1, tscal, &ab[(2 - 1) + (j - 1) * ldab], 1);
                 }
-                ab[(j - 1) * ldab] = sign(one, &ab[(j - 1) * ldab]);
+                ab[(j - 1) * ldab] = sign(one, ab[(j - 1) * ldab]);
             }
-            a &b[(1 - 1) + (1 - 1) * ldb] = smlnum * a & b[(1 - 1) + (1 - 1) * ldb];
+            ab[(1 - 1) + (1 - 1) * ldab] = smlnum * ab[(1 - 1) + (1 - 1) * ldab];
         }
         //
     } else if (imat == 12) {
@@ -328,16 +326,16 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             for (j = 1; j <= n; j = j + 1) {
                 lenj = min(j, kd + 1);
                 Rlarnv(2, iseed, lenj, &ab[((kd + 2 - lenj) - 1) + (j - 1) * ldab]);
-                ab[((kd + 1) - 1) + (j - 1) * ldab] = sign(one, &ab[((kd + 1) - 1) + (j - 1) * ldab]);
+                ab[((kd + 1) - 1) + (j - 1) * ldab] = sign(one, ab[((kd + 1) - 1) + (j - 1) * ldab]);
             }
             ab[((kd + 1) - 1) + (n - 1) * ldab] = smlnum * ab[((kd + 1) - 1) + (n - 1) * ldab];
         } else {
             for (j = 1; j <= n; j = j + 1) {
                 lenj = min(n - j + 1, kd + 1);
                 Rlarnv(2, iseed, lenj, &ab[(j - 1) * ldab]);
-                ab[(j - 1) * ldab] = sign(one, &ab[(j - 1) * ldab]);
+                ab[(j - 1) * ldab] = sign(one, ab[(j - 1) * ldab]);
             }
-            a &b[(1 - 1) + (1 - 1) * ldb] = smlnum * a & b[(1 - 1) + (1 - 1) * ldb];
+            ab[(1 - 1) + (1 - 1) * ldab] = smlnum * ab[(1 - 1) + (1 - 1) * ldab];
         }
         //
     } else if (imat == 13) {
@@ -402,7 +400,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //        overflow when dividing by T(j,j).  To control the amount of
         //        scaling needed, the matrix is bidiagonal.
         //
-        texp = one / (kd + 1).real();
+        texp = one / castREAL(kd + 1);
         tscal = pow(smlnum, texp);
         Rlarnv(2, iseed, n, b);
         if (upper) {
@@ -439,7 +437,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 lenj = min(j, kd + 1);
                 Rlarnv(2, iseed, lenj, &ab[((kd + 2 - lenj) - 1) + (j - 1) * ldab]);
                 if (j != iy) {
-                    ab[((kd + 1) - 1) + (j - 1) * ldab] = sign(two, &ab[((kd + 1) - 1) + (j - 1) * ldab]);
+                    ab[((kd + 1) - 1) + (j - 1) * ldab] = sign(two, ab[((kd + 1) - 1) + (j - 1) * ldab]);
                 } else {
                     ab[((kd + 1) - 1) + (j - 1) * ldab] = zero;
                 }
@@ -449,7 +447,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 lenj = min(n - j + 1, kd + 1);
                 Rlarnv(2, iseed, lenj, &ab[(j - 1) * ldab]);
                 if (j != iy) {
-                    ab[(j - 1) * ldab] = sign(two, &ab[(j - 1) * ldab]);
+                    ab[(j - 1) * ldab] = sign(two, ab[(j - 1) * ldab]);
                 } else {
                     ab[(j - 1) * ldab] = zero;
                 }
@@ -477,40 +475,40 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             if (upper) {
                 for (j = n; j >= 1; j = j - kd) {
                     for (i = j; i >= max((INTEGER)1, j - kd + 1); i = i - 2) {
-                        ab[((1 + (j - i)) - 1) + (i - 1) * ldab] = -tscal / (kd + 2).real();
+                        ab[((1 + (j - i)) - 1) + (i - 1) * ldab] = -tscal / castREAL(kd + 2);
                         ab[((kd + 1) - 1) + (i - 1) * ldab] = one;
                         b[i - 1] = texp * (one - ulp);
                         if (i > max((INTEGER)1, j - kd + 1)) {
-                            ab[((2 + (j - i)) - 1) + ((i - 1) - 1) * ldab] = -(tscal / (kd + 2).real()) / (kd + 3).real();
+                            ab[((2 + (j - i)) - 1) + ((i - 1) - 1) * ldab] = -(tscal / castREAL(kd + 2)) / castREAL(kd + 3);
                             ab[((kd + 1) - 1) + ((i - 1) - 1) * ldab] = one;
-                            b[(i - 1) - 1] = texp * ((kd + 1) * (kd + 1) + kd).real();
+                            b[(i - 1) - 1] = texp * castREAL((kd + 1) * (kd + 1) + kd);
                         }
                         texp = texp * two;
                     }
-                    b[(max((j - kd + 1)) - 1) * ldb] = ((kd + 2).real() / (kd + 3).real()) * tscal;
+                    b[max(n, j - kd + 1) - 1] = (castREAL(kd + 2) / castREAL(kd + 3)) * tscal;
                 }
             } else {
                 for (j = 1; j <= n; j = j + kd) {
                     texp = one;
                     lenj = min(kd + 1, n - j + 1);
                     for (i = j; i <= min(n, j + kd - 1); i = i + 2) {
-                        ab[((lenj - (i - j)) - 1) + (j - 1) * ldab] = -tscal / (kd + 2).real();
+                        ab[((lenj - (i - j)) - 1) + (j - 1) * ldab] = -tscal / castREAL(kd + 2);
                         ab[(j - 1) * ldab] = one;
                         b[j - 1] = texp * (one - ulp);
                         if (i < min(n, j + kd - 1)) {
-                            ab[((lenj - (i - j + 1)) - 1) + ((i + 1) - 1) * ldab] = -(tscal / (kd + 2).real()) / (kd + 3).real();
+                            ab[((lenj - (i - j + 1)) - 1) + ((i + 1) - 1) * ldab] = -(tscal / castREAL(kd + 2)) / castREAL(kd + 3);
                             ab[((i + 1) - 1) * ldab] = one;
-                            b[(i + 1) - 1] = texp * ((kd + 1) * (kd + 1) + kd).real();
+                            b[(i + 1) - 1] = texp * castREAL((kd + 1) * (kd + 1) + kd);
                         }
                         texp = texp * two;
                     }
-                    b[(min(n - 1) + ((j + kd - 1)) - 1) * ldb] = ((kd + 2).real() / (kd + 3).real()) * tscal;
+                    b[min(n, j + kd - 1) - 1] = (castREAL(kd + 2) / castREAL(kd + 3)) * tscal;
                 }
             }
         } else {
             for (j = 1; j <= n; j = j + 1) {
                 ab[(j - 1) * ldab] = one;
-                b[j - 1] = j.real();
+                b[j - 1] = castREAL(j);
             }
         }
         //
@@ -524,7 +522,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             for (j = 1; j <= n; j = j + 1) {
                 lenj = min(j - 1, kd);
                 Rlarnv(2, iseed, lenj, &ab[((kd + 1 - lenj) - 1) + (j - 1) * ldab]);
-                ab[((kd + 1) - 1) + (j - 1) * ldab] = j.real();
+                ab[((kd + 1) - 1) + (j - 1) * ldab] = castREAL(j);
             }
         } else {
             for (j = 1; j <= n; j = j + 1) {
@@ -532,7 +530,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 if (lenj > 0) {
                     Rlarnv(2, iseed, lenj, &ab[(2 - 1) + (j - 1) * ldab]);
                 }
-                ab[(j - 1) * ldab] = j.real();
+                ab[(j - 1) * ldab] = castREAL(j);
             }
         }
         //
@@ -550,14 +548,14 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //        BIGNUM/KD and BIGNUM so that at least one of the column
         //        norms will exceed BIGNUM.
         //
-        tleft = bignum / max(one, kd.real());
-        tscal = bignum * (kd.real() / (kd + 1).real());
+        tleft = bignum / max(one, castREAL(kd));
+        tscal = bignum * (castREAL(kd) / castREAL(kd + 1));
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
                 lenj = min(j, kd + 1);
                 Rlarnv(2, iseed, lenj, &ab[((kd + 2 - lenj) - 1) + (j - 1) * ldab]);
                 for (i = kd + 2 - lenj; i <= kd + 1; i = i + 1) {
-                    ab[(i - 1) + (j - 1) * ldab] = sign(tleft, &ab[(i - 1) + (j - 1) * ldab]) + tscal * ab[(i - 1) + (j - 1) * ldab];
+                    ab[(i - 1) + (j - 1) * ldab] = sign(tleft, ab[(i - 1) + (j - 1) * ldab]) + tscal * ab[(i - 1) + (j - 1) * ldab];
                 }
             }
         } else {
@@ -565,7 +563,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 lenj = min(n - j + 1, kd + 1);
                 Rlarnv(2, iseed, lenj, &ab[(j - 1) * ldab]);
                 for (i = 1; i <= lenj; i = i + 1) {
-                    ab[(i - 1) + (j - 1) * ldab] = sign(tleft, &ab[(i - 1) + (j - 1) * ldab]) + tscal * ab[(i - 1) + (j - 1) * ldab];
+                    ab[(i - 1) + (j - 1) * ldab] = sign(tleft, ab[(i - 1) + (j - 1) * ldab]) + tscal * ab[(i - 1) + (j - 1) * ldab];
                 }
             }
         }

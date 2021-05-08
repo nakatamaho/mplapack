@@ -47,6 +47,7 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     char facts[] = {'F', 'N', 'E'};
     char equeds[] = {'N', 'R', 'C', 'B'};
     char path[3];
+    char fact_trans[3];
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
@@ -420,7 +421,6 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //                    Check the error code from Rgesvx.
                         //
                         if (info != izero) {
-                            char fact_trans[3];
                             fact_trans[0] = fact;
                             fact_trans[1] = trans;
                             fact_trans[2] = '\0';
