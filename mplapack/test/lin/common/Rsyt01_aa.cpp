@@ -81,8 +81,8 @@ void Rsyt01_aa(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, RE
     const REAL one = 1.0;
     if (n > 1) {
         if (Mlsame(uplo, "U")) {
-            Rlacpy("F", 1, n - 1, &afac[(1 - 1) + (2 - 1) * ldafac], ldafac + 1, &c[(1 - 1) + (2 - 1) * ldc], ldc + 1);
-            Rlacpy("F", 1, n - 1, &afac[(1 - 1) + (2 - 1) * ldafac], ldafac + 1, &c[(2 - 1)], ldc + 1);
+            Rlacpy("F", 1, n - 1, &afac[(1 - 1) + (2 - 1) * ldc], ldafac + 1, &c[(1 - 1) + (2 - 1) * ldc], ldc + 1);
+            Rlacpy("F", 1, n - 1, &afac[(1 - 1) + (2 - 1) * ldc], ldafac + 1, &c[(2 - 1)], ldc + 1);
         } else {
             Rlacpy("F", 1, n - 1, &afac[(2 - 1)], ldafac + 1, &c[(1 - 1) + (2 - 1) * ldc], ldc + 1);
             Rlacpy("F", 1, n - 1, &afac[(2 - 1)], ldafac + 1, &c[(2 - 1)], ldc + 1);
@@ -91,7 +91,7 @@ void Rsyt01_aa(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, RE
         //        Call Rtrmm to form the product U' * D (or L * D ).
         //
         if (Mlsame(uplo, "U")) {
-            Rtrmm("Left", uplo, "Transpose", "Unit", n - 1, n, one, &afac[(1 - 1) + (2 - 1) * ldafac], ldafac, &c[(2 - 1)], ldc);
+            Rtrmm("Left", uplo, "Transpose", "Unit", n - 1, n, one, &afac[(1 - 1) + (2 - 1) * ldc], ldafac, &c[(2 - 1)], ldc);
         } else {
             Rtrmm("Left", uplo, "No transpose", "Unit", n - 1, n, one, &afac[(2 - 1)], ldafac, &c[(2 - 1)], ldc);
         }
@@ -99,7 +99,7 @@ void Rsyt01_aa(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, RE
         //        Call Rtrmm again to multiply by U (or L ).
         //
         if (Mlsame(uplo, "U")) {
-            Rtrmm("Right", uplo, "No transpose", "Unit", n, n - 1, one, &afac[(1 - 1) + (2 - 1) * ldafac], ldafac, &c[(1 - 1) + (2 - 1) * ldc], ldc);
+            Rtrmm("Right", uplo, "No transpose", "Unit", n, n - 1, one, &afac[(1 - 1) + (2 - 1) * ldc], ldafac, &c[(1 - 1) + (2 - 1) * ldc], ldc);
         } else {
             Rtrmm("Right", uplo, "Transpose", "Unit", n, n - 1, one, &afac[(2 - 1)], ldafac, &c[(1 - 1) + (2 - 1) * ldc], ldc);
         }
@@ -147,7 +147,7 @@ void Rsyt01_aa(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, RE
             resid = one / eps;
         }
     } else {
-        resid = ((resid / castREAL(n)) / anorm) / eps;
+      resid = ((resid / castREAL(n) ) / anorm) / eps;
     }
     //
     //     End of Rsyt01

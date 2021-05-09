@@ -36,7 +36,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-inline REAL abs1(COMPLEX zdum) { return abs(zdu castREAL(m)) + abs(zdum.imag()); }
+inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
 
 void Cget08(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
     //

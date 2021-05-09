@@ -36,7 +36,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
+inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
 
 void Cpbt05(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const nrhs, COMPLEX *ab, INTEGER const ldab, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, COMPLEX *xact, INTEGER const ldxact, REAL *ferr, REAL *berr, REAL *reslts) {
     COMPLEX zdum = 0.0;
