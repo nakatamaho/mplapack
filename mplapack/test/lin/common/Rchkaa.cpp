@@ -43,7 +43,6 @@ using fem::common;
 #include <vector>
 
 using namespace std;
-
 void Rchkaa(void) {
     common cmn;
     common_write write(cmn);
@@ -147,7 +146,6 @@ void Rchkaa(void) {
     //     .. Executable Statements ..
     //
     std::string str;
-
     s1 = time(NULL);
     lda = nmax;
     fatal = false;

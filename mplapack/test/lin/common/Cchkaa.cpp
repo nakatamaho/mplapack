@@ -36,21 +36,31 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+
+#include <time.h>
+
+#include <iostream>
+#include <sstream>
+#include <vector>
+
+using namespace std;
+void Cchkaa(void);
+  
 void Cchkaa(void) {
     common cmn;
     common_write write(cmn);
     time_t s1;
     time_t s2;
-    char &intstr = sve.intstr;
     REAL threq = 2.0;
-    REAL s1 = 0.0;
     const INTEGER nmax = 132;
-    INTEGER lda = 0;
     bool fatal = false;
     const INTEGER nin = 5;
-    INTEGER vers_major = 0;
-    INTEGER vers_minor = 0;
-    INTEGER vers_patch = 0;
+    INTEGER mplapack_vers_major = 0;
+    INTEGER mplapack_vers_minor = 0;
+    INTEGER mplapack_vers_patch = 0;
+    INTEGER lapack_vers_major = 0;
+    INTEGER lapack_vers_minor = 0;
+    INTEGER lapack_vers_patch = 0;
     const INTEGER nout = 6;
     INTEGER nm = 0;
     const INTEGER maxin = 12;
@@ -74,38 +84,35 @@ void Cchkaa(void) {
     bool tstchk = false;
     bool tstdrv = false;
     bool tsterr = false;
+    char tstchk_str[1];
+    char tstdrv_str[1];
+    char tsterr_str[1];
     REAL eps = 0.0;
     INTEGER nrhs = 0;
     char aline[72];
     char path[3];
     const INTEGER matmax = 30;
     INTEGER nmats = 0;
-    char c1;
+    char c1[1];
     INTEGER k = 0;
     INTEGER ic = 0;
     char c2[2];
     INTEGER ntypes = 0;
     bool dotype[matmax];
-    INTEGER &a[(1 - 1) + (1 - 1) * lda] = 0;
-    INTEGER &a[(1 - 1) + (2 - 1) * lda] = 0;
-    INTEGER &a[(1 - 1) + (3 - 1) * lda] = 0;
-    INTEGER &b[(1 - 1) + (1 - 1) * ldb] = 0;
-    INTEGER &b[(1 - 1) + (2 - 1) * ldb] = 0;
-    INTEGER &b[(1 - 1) + (3 - 1) * ldb] = 0;
     COMPLEX work[nmax * nmax + maxrhs + 10];
     REAL rwork[150 * nmax + 2 * maxrhs];
     INTEGER iwork[25 * nmax];
-    INTEGER &b[(1 - 1) + (4 - 1) * ldb] = 0;
     REAL s[2 * nmax];
     const INTEGER kdmax = nmax + (nmax + 1) / 4;
     INTEGER la = 0;
     INTEGER lafac = 0;
-    INTEGER &a[(1 - 1) + (6 - 1) * lda] = 0;
     INTEGER piv[nmax];
+    COMPLEX a[((kdmax + 1) * nmax) * 7];
+    INTEGER ldaorg = (kdmax + 1) * nmax;
+    INTEGER lda;
+    COMPLEX b[(nmax * maxrhs) * 4];
+    INTEGER ldb = (nmax * maxrhs);
     COMPLEX e[nmax];
-    INTEGER &a[(1 - 1) + (4 - 1) * lda] = 0;
-    INTEGER &a[(1 - 1) + (5 - 1) * lda] = 0;
-    REAL s2 = 0.0;
     static const char *format_9988 = "(/,1x,a3,' driver routines were not tested')";
     static const char *format_9989 = "(/,1x,a3,' routines were not tested')";
     static const char *format_9990 = "(/,1x,a3,':  Unrecognized path name')";
@@ -140,24 +147,27 @@ void Cchkaa(void) {
     //     ..
     //     .. Executable Statements ..
     //
-    s1 = dsecnd[-1];
+    std::string str;
+    s1 = time(NULL);
     lda = nmax;
     fatal = false;
     //
     //     Read a dummy line.
     //
-    read(nin, star);
+    getline(cin, str);
     //
     //     Report values of parameters.
     //
-    ilaver(vers_major, vers_minor, vers_patch);
-    write(nout, "(' Tests of the COMPLEX*16 LAPACK routines ',/,' LAPACK VERSION ',i1,'.',"
-                "i1,'.',i1,/,/,' The following parameter values will be used:')"),
-        vers_major, vers_minor, vers_patch;
+    iMlaver(mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch);
+    write(nout, "(' Tests of the Multiple precision version of LAPACK MPLAPACK VERSION ',i1,'.',i1,'.',i1,/, "
+                "' Based on original LAPACK VERSION ',i1,'.',i1,'.',i1,/,/, 'The following parameter values will be used:')"),
+        mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch;
     //
     //     Read the values of M
     //
-    read(nin, star), nm;
+    getline(cin, str);
+    stringstream ss(str);
+    ss >> nm;
     if (nm < 1) {
         write(nout, format_9996), " NM ", nm, 1;
         nm = 0;
@@ -167,34 +177,35 @@ void Cchkaa(void) {
         nm = 0;
         fatal = true;
     }
-    {
-        read_loop rloop(cmn, nin, star);
-        for (i = 1; i <= nm; i = i + 1) {
-            rloop, mval(i);
-        }
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    for (i = 1; i <= nm; i = i + 1) {
+        ss >> mval[i - 1];
     }
     for (i = 1; i <= nm; i = i + 1) {
         if (mval[i - 1] < 0) {
-            write(nout, format_9996), " M  ", mval(i), 0;
+            write(nout, format_9996), " M  ", mval[i-1], 0;
             fatal = true;
         } else if (mval[i - 1] > nmax) {
-            write(nout, format_9995), " M  ", mval(i), nmax;
+            write(nout, format_9995), " M  ", mval[i-1], nmax;
             fatal = true;
         }
     }
     if (nm > 0) {
-        {
-            write_loop wloop(cmn, nout, format_9993);
-            wloop, "M   ";
-            for (i = 1; i <= nm; i = i + 1) {
-                wloop, mval(i);
-            }
+        printf("     %4s  :", "M");
+        for (i = 1; i <= nm; i = i + 1) {
+            printf("%6ld", mval[i - 1]);
         }
+        printf("\n");
     }
     //
     //     Read the values of N
     //
-    read(nin, star), nn;
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    ss >> nn;
     if (nn < 1) {
         write(nout, format_9996), " NN ", nn, 1;
         nn = 0;
@@ -204,34 +215,35 @@ void Cchkaa(void) {
         nn = 0;
         fatal = true;
     }
-    {
-        read_loop rloop(cmn, nin, star);
-        for (i = 1; i <= nn; i = i + 1) {
-            rloop, nval(i);
-        }
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    for (i = 1; i <= nn; i = i + 1) {
+        ss >> nval[i - 1];
     }
     for (i = 1; i <= nn; i = i + 1) {
         if (nval[i - 1] < 0) {
-            write(nout, format_9996), " N  ", nval(i), 0;
+            write(nout, format_9996), " N  ", nval[i - 1], 0;
             fatal = true;
         } else if (nval[i - 1] > nmax) {
-            write(nout, format_9995), " N  ", nval(i), nmax;
+            write(nout, format_9995), " N  ", nval[i - 1], nmax;
             fatal = true;
         }
     }
     if (nn > 0) {
-        {
-            write_loop wloop(cmn, nout, format_9993);
-            wloop, "N   ";
-            for (i = 1; i <= nn; i = i + 1) {
-                wloop, nval(i);
-            }
+        printf("     %4s  :", "N");
+        for (i = 1; i <= nn; i = i + 1) {
+            printf("%6ld", nval[i - 1]);
         }
+        printf("\n");
     }
     //
     //     Read the values of NRHS
     //
-    read(nin, star), nns;
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    ss >> nns;
     if (nns < 1) {
         write(nout, format_9996), " NNS", nns, 1;
         nns = 0;
@@ -241,34 +253,34 @@ void Cchkaa(void) {
         nns = 0;
         fatal = true;
     }
-    {
-        read_loop rloop(cmn, nin, star);
-        for (i = 1; i <= nns; i = i + 1) {
-            rloop, nsval(i);
-        }
-    }
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    for (i = 1; i <= nns; i = i + 1)
+        ss >> nsval[i - 1];
     for (i = 1; i <= nns; i = i + 1) {
         if (nsval[i - 1] < 0) {
-            write(nout, format_9996), "NRHS", nsval(i), 0;
+            write(nout, format_9996), "NRHS", nsval[i - 1], 0;
             fatal = true;
         } else if (nsval[i - 1] > maxrhs) {
-            write(nout, format_9995), "NRHS", nsval(i), maxrhs;
+            write(nout, format_9995), "NRHS", nsval[i - 1], maxrhs;
             fatal = true;
         }
     }
     if (nns > 0) {
-        {
-            write_loop wloop(cmn, nout, format_9993);
-            wloop, "NRHS";
-            for (i = 1; i <= nns; i = i + 1) {
-                wloop, nsval(i);
-            }
+        printf("     %4s  :", "NRHS");
+        for (i = 1; i <= nns; i = i + 1) {
+            printf("%6ld", nsval[i - 1]);
         }
     }
+    printf("\n");
     //
     //     Read the values of NB
     //
-    read(nin, star), nnb;
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    ss >> nnb;
     if (nnb < 1) {
         write(nout, format_9996), "NNB ", nnb, 1;
         nnb = 0;
@@ -278,27 +290,25 @@ void Cchkaa(void) {
         nnb = 0;
         fatal = true;
     }
-    {
-        read_loop rloop(cmn, nin, star);
-        for (i = 1; i <= nnb; i = i + 1) {
-            rloop, nbval(i);
-        }
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    for (i = 1; i <= nnb; i = i + 1) {
+        ss >> nbval[i - 1];
     }
     for (i = 1; i <= nnb; i = i + 1) {
         if (nbval[i - 1] < 0) {
-            write(nout, format_9996), " NB ", nbval(i), 0;
+            write(nout, format_9996), " NB ", nbval[i - 1], 0;
             fatal = true;
         }
     }
     if (nnb > 0) {
-        {
-            write_loop wloop(cmn, nout, format_9993);
-            wloop, "NB  ";
-            for (i = 1; i <= nnb; i = i + 1) {
-                wloop, nbval(i);
-            }
+        printf("     %4s  :", "NB");
+        for (i = 1; i <= nnb; i = i + 1) {
+            printf("%6ld", nbval[i - 1]);
         }
     }
+    printf("\n");
     //
     //     Set NBVAL2 to be the set of unique values of NB
     //
@@ -317,31 +327,31 @@ void Cchkaa(void) {
     //
     //     Read the values of NX
     //
-    {
-        read_loop rloop(cmn, nin, star);
-        for (i = 1; i <= nnb; i = i + 1) {
-            rloop, nxval(i);
-        }
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    for (i = 1; i <= nnb; i = i + 1) {
+        ss >> nxval[i - 1];
     }
     for (i = 1; i <= nnb; i = i + 1) {
         if (nxval[i - 1] < 0) {
-            write(nout, format_9996), " NX ", nxval(i), 0;
+            write(nout, format_9996), " NX ", nxval[i - 1], 0;
             fatal = true;
         }
     }
     if (nnb > 0) {
-        {
-            write_loop wloop(cmn, nout, format_9993);
-            wloop, "NX  ";
-            for (i = 1; i <= nnb; i = i + 1) {
-                wloop, nxval(i);
-            }
-        }
+        printf("     %4s  :", "NX");
+        for (i = 1; i <= nnb; i = i + 1)
+            printf("%6ld", nxval[i - 1]);
     }
+    printf("\n");
     //
     //     Read the values of RANKVAL
     //
-    read(nin, star), nrank;
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    ss >> nrank;
     if (nn < 1) {
         write(nout, format_9996), " NRANK ", nrank, 1;
         nrank = 0;
@@ -351,119 +361,123 @@ void Cchkaa(void) {
         nrank = 0;
         fatal = true;
     }
-    {
-        read_loop rloop(cmn, nin, star);
-        for (i = 1; i <= nrank; i = i + 1) {
-            rloop, rankval(i);
-        }
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    for (i = 1; i <= nrank; i = i + 1) {
+        ss >> rankval[i - 1];
     }
     for (i = 1; i <= nrank; i = i + 1) {
         if (rankval[i - 1] < 0) {
-            write(nout, format_9996), " RANK  ", rankval(i), 0;
+            write(nout, format_9996), " RANK  ", rankval[i - 1], 0;
             fatal = true;
         } else if (rankval[i - 1] > 100) {
-            write(nout, format_9995), " RANK  ", rankval(i), 100;
+            write(nout, format_9995), " RANK  ", rankval[i - 1], 100;
             fatal = true;
         }
     }
     if (nrank > 0) {
-        {
-            write_loop wloop(cmn, nout, format_9993);
-            wloop, "RANK % OF N";
-            for (i = 1; i <= nrank; i = i + 1) {
-                wloop, rankval(i);
-            }
-        }
+        printf("     %4s  :", "RANK");
+        for (i = 1; i <= nrank; i = i + 1)
+            printf("%6ld", rankval[i - 1]);
     }
+    printf("\n");
     //
     //     Read the threshold value for the test ratios.
     //
-    read(nin, star), thresh;
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    ss >> thresh;
     write(nout, "(/,' Routines pass computational tests if test ratio is ','less than',"
                 "f8.2,/)"),
-        thresh;
+        double(thresh);
     //
     //     Read the flag that indicates whether to test the LAPACK routines.
     //
-    read(nin, star), tstchk;
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    ss >> tstchk_str;
+    if (Mlsame(tstchk_str, "T"))
+        tstchk = true;
+    else
+        tstchk = false;
     //
     //     Read the flag that indicates whether to test the driver routines.
     //
-    read(nin, star), tstdrv;
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    ss >> tstdrv_str;
+    if (Mlsame(tstdrv_str, "T"))
+        tstdrv = true;
+    else
+        tstdrv = false;
     //
     //     Read the flag that indicates whether to test the error exits.
     //
-    read(nin, star), tsterr;
+    ss.str("");
+    getline(cin, str);
+    ss.str(str);
+    ss >> tsterr;
+    if (Mlsame(tsterr_str, "T"))
+        tsterr = true;
+    else
+        tsterr = false;
     //
     if (fatal) {
         write(nout, "(/,' Execution not attempted due to input errors')");
-        FEM_STOP(0);
+        exit(0);
     }
     //
-    //     Calculate and prINTEGER the machine dependent constants.
+    //     Calculate and print the machine dependent constants.
     //
     eps = Rlamch("Underflow threshold");
-    write(nout, format_9991), "underflow", eps;
+    cout << " Relative machine underflow is taken to be : " << eps << endl;
     eps = Rlamch("Overflow threshold");
-    write(nout, format_9991), "overflow ", eps;
+    cout << " Relative machine overflow  is taken to be : " << eps << endl;
     eps = Rlamch("Epsilon");
-    write(nout, format_9991), "precision", eps;
-    write(nout, star);
-    nrhs = nsval[1 - 1];
-//
-statement_80:
+    cout << " Relative machine precision is taken to be : " << eps << endl;
     //
     //     Read a test path and the number of matrix types to use.
     //
-    try {
-        read(nin, "(a72)"), aline;
-    } catch (read_end const) {
-        goto statement_140;
-    }
-    path = aline[(3 - 1) * ldaline];
-    nmats = matmax;
-    i = 3;
-statement_90:
-    i++;
-    if (i > 72) {
-        goto statement_130;
-    }
-    if (aline[(i - 1) + (i - 1) * ldaline] == " ") {
-        goto statement_90;
-    }
-    nmats = 0;
-statement_100:
-    c1 = aline[(i - 1) + (i - 1) * ldaline];
-    for (k = 1; k <= 10; k = k + 1) {
-        if (c1 == intstr[(k - 1) + (k - 1) * ldintstr]) {
-            ic = k - 1;
-            goto statement_120;
+    while (getline(cin, str)) {
+        istringstream iss(str);
+        vector<string> result;
+        for (string s; iss >> s;)
+            result.push_back(s);
+        INTEGER n = result.size();
+        if (n >= 1) {
+            if (result[0].length() == 3) {
+                path[0] = result[0][0];
+                path[1] = result[0][1];
+                path[2] = result[0][2];
+                c1[0] = result[0][0];
+                c2[0] = result[0][1];
+                c2[1] = result[0][2];
+            } else {
+                printf("wrong three letters\n");
+                exit(0);
+            }
+            if (n >= 2) {
+                nmats = stoi(result[1]);
+            }
         }
-    }
-    goto statement_130;
-statement_120:
-    nmats = nmats * 10 + ic;
-    i++;
-    if (i > 72) {
-        goto statement_130;
-    }
-    goto statement_100;
-statement_130:
-    c1 = path[(1 - 1)];
-    c2 = path[(2 - 1) + (3 - 1) * ldpath];
-    //
-    //     Check first character for correct precision.
-    //
-    if (!Mlsame(c1, "Zomplex precision")) {
-        write(nout, format_9990), path;
+        nrhs = nsval[1 - 1];
         //
-    } else if (nmats <= 0) {
+        //     Check first character for correct precision.
         //
-        //        Check for a positive number of tests requested.
-        //
-        write(nout, format_9989), path;
-        //
-    } else if (Mlsamen(2, c2, "GE")) {
+        if (!Mlsame(c1, "Double precision")) {
+            write(nout, format_9990), path;
+            //
+        } else if (nmats <= 0) {
+            //
+            //        Check for a positive number of tests requested.
+            //
+            write(nout, format_9989), path;
+            //
+        } else if (Mlsamen(2, c2, "GE")) {
         //
         //        GE:  general matrices
         //
@@ -961,7 +975,7 @@ statement_130:
         Alareq(path, nmats, dotype, ntypes, nin, nout);
         //
         if (tstchk) {
-            Cchktz(dotype, nm, mval, nn, nval, thresh, tsterr, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], s[1 - 1], &b[(1 - 1) + (1 - 1) * ldb], work, rwork, nout);
+            Cchktz(dotype, nm, mval, nn, nval, thresh, tsterr, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &s[1 - 1], &b[(1 - 1) + (1 - 1) * ldb], work, rwork, nout);
         } else {
             write(nout, format_9989), path;
         }
@@ -974,7 +988,7 @@ statement_130:
         Alareq(path, nmats, dotype, ntypes, nin, nout);
         //
         if (tstchk) {
-            Cchkq3(dotype, nm, mval, nn, nval, nnb, nbval, nxval, thresh, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], s[1 - 1], &b[(1 - 1) + (1 - 1) * ldb], work, rwork, iwork, nout);
+            Cchkq3(dotype, nm, mval, nn, nval, nnb, nbval, nxval, thresh, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &s[1 - 1], &b[(1 - 1) + (1 - 1) * ldb], work, rwork, iwork, nout);
         } else {
             write(nout, format_9989), path;
         }
@@ -987,7 +1001,7 @@ statement_130:
         Alareq(path, nmats, dotype, ntypes, nin, nout);
         //
         if (tstdrv) {
-            Cdrvls(dotype, nm, mval, nn, nval, nns, nsval, nnb, nbval, nxval, thresh, tsterr, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (5 - 1) * lda], s[1 - 1], s[(nmax + 1) - 1], nout);
+            Cdrvls(dotype, nm, mval, nn, nval, nns, nsval, nnb, nbval, nxval, thresh, tsterr, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (5 - 1) * lda], &s[1 - 1], &s[(nmax + 1) - 1], nout);
         } else {
             write(nout, format_9989), path;
         }
@@ -1089,18 +1103,16 @@ statement_130:
     //
     //     Go back to get another input line.
     //
-    goto statement_80;
 //
 //     Branch to this line when the last record is read.
 //
 statement_140:
-    cmn.io.close(nin);
-    s2 = dsecnd[-1];
+    s2 = time(NULL);
     write(nout, "(/,' End of tests')");
-    write(nout, "(' Total time used = ',f12.2,' seconds',/)"), s2 - s1;
+    write(nout, "(' Total time used = ',f12.2,' seconds',/)"), int(s2 - s1);
     //
     //     End of Cchkaa
     //
+    }
 }
-
-int main(int argc, char const *argv[]) { return Cchkaa(); }
+int main(int argc, char const *argv[]) { Cchkaa(); }
