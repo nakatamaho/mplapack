@@ -910,6 +910,7 @@ Rstevr.cpp \
 Rstevx.cpp \
 Rsycon.cpp \
 Rsycon_3.cpp \
+Rsycon_rook.cpp \
 Rsyconv.cpp \
 Rsyconvf.cpp \
 Rsyconvf_rook.cpp \
