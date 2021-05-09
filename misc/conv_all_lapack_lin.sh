@@ -40,14 +40,42 @@ mv ${newfilename}.cpp_  ${newfilename}.cpp
 sed -i -e 's/common &cmn, //g' ${newfilename}.cpp
 sed -i -e 's/vect = "N";/vect = \'\'N\'';/g' ${newfilename}.cpp
 sed -i -e 's/vect = "U";/vect = \'\'U\'';/g' ${newfilename}.cpp
+sed -i -e 's/uplo = "U";/uplo = \'\'U\'';/g' ${newfilename}.cpp
+sed -i -e 's/uplo = "L";/uplo = \'\'L\'';/g' ${newfilename}.cpp
 sed -i -e 's/trans = "N";/trans = \'\'N\'';/g' ${newfilename}.cpp
 sed -i -e 's/trans = "C";/trans = \'\'C\'';/g' ${newfilename}.cpp
 sed -i -e 's/trans = "T";/trans = \'\'T\'';/g' ${newfilename}.cpp
 sed -i -e 's/norm = "1";/norm = \'\'1\'';/g' ${newfilename}.cpp
 sed -i -e 's/norm = "I";/norm = \'\'I\'';/g' ${newfilename}.cpp
+sed -i -e 's/norm = "O";/norm = \'\'O\'';/g' ${newfilename}.cpp
+sed -i -e 's/packit = "C";/packit = \'\'C\'';/g' ${newfilename}.cpp
+sed -i -e 's/packit = "R";/packit = \'\'R\'';/g' ${newfilename}.cpp
+sed -i -e 's/packit = "Q";/packit = \'\'Q\'';/g' ${newfilename}.cpp
+sed -i -e 's/packit = "B";/packit = \'\'B\'';/g' ${newfilename}.cpp
+sed -i -e 's/diag = "U";/diag = \'\'U\'';/g' ${newfilename}.cpp
+sed -i -e 's/diag = "N";/diag = \'\'N\'';/g' ${newfilename}.cpp
+sed -i -e 's/side = "L";/side = \'\'L\'';/g' ${newfilename}.cpp
+sed -i -e 's/side = "R";/side = \'\'R\'';/g' ${newfilename}.cpp
+sed -i -e 's/type = "P";/type = \'\'P\'';/g' ${newfilename}.cpp
+sed -i -e 's/type = "N";/type = \'\'N\'';/g' ${newfilename}.cpp
+sed -i -e 's/dist = "S";/dist = \'\'S\'';/g' ${newfilename}.cpp
+sed -i -e 's/equed = "N";/equed = \'\'N\'';/g' ${newfilename}.cpp
+sed -i -e 's/eq = "N";/eq = \'\'N\'';/g' ${newfilename}.cpp
+sed -i -e 's/eq = "Y";/eq = \'\'Y\'';/g' ${newfilename}.cpp
+sed -i -e 's/eq = "R";/eq = \'\'R\'';/g' ${newfilename}.cpp
+sed -i -e 's/eq = "C";/eq = \'\'C\'';/g' ${newfilename}.cpp
+sed -i -e 's/eq = "\/";/eq = '\''\/\'\'\\' /g' ${newfilename}.cpp
+sed -i -e 's/fact = "N";/fact = \'\'N\'';/g' ${newfilename}.cpp
+sed -i -e 's/fact = "F";/fact = \'\'F\'';/g' ${newfilename}.cpp
+sed -i -e 's/xtype = "C";/xtype = \'\'C\'';/g' ${newfilename}.cpp
+sed -i -e 's/nguar = "YES";/nugar = \'\'YES\'';/g' ${newfilename}.cpp
+sed -i -e 's/nguar = "NO";/nugar = \'\'NO\'';/g' ${newfilename}.cpp
+sed -i -e 's/cguar = "YES";/cugar = \'\'YES\'';/g' ${newfilename}.cpp
+sed -i -e 's/cguar = "NO";/cugar = \'\'NO\'';/g' ${newfilename}.cpp
 sed -i -e 's/const &/const /g' ${newfilename}.cpp
-sed -i -e 's/, a\[/, \&a\[/g' ${newfilename}.cpp
+sed -i -e 's/, af\[/, \&af\[/g' ${newfilename}.cpp
 sed -i -e 's/, afac\[/, \&afac\[/g' ${newfilename}.cpp
+sed -i -e 's/, a\[/, \&a\[/g' ${newfilename}.cpp
 sed -i -e 's/, b\[/, \&b\[/g' ${newfilename}.cpp
 sed -i -e 's/, c\[/, \&c\[/g' ${newfilename}.cpp
 sed -i -e 's/, d\[/, \&d\[/g' ${newfilename}.cpp
@@ -80,7 +108,7 @@ sed -i -e 's/, x21\[/, \&x21\[/g' ${newfilename}.cpp
 sed -i -e 's/, x22\[/, \&x22\[/g' ${newfilename}.cpp
 sed -i -e 's/ == "1"/Mlsame( , "1")/g' ${newfilename}.cpp
 sed -i -e 's/ == "0"/Mlsame( , "0")/g' ${newfilename}.cpp
-
+sed -i -e 's/Rget06\[(rcond - 1) + (rcondc - 1) \* ldRget06\]/Rget06(rcond, rcondc)/g' ${newfilename}.cpp
 fi
 
 cat << EOF > insert_lin.txt
