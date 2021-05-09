@@ -4,46 +4,8 @@ liblin_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INC
 liblin_mpfr_la_SOURCES = $(LIN_SOURCES)
 
 LIN_SOURCES = \
-../common/Cdrvpt.cpp \
-../common/Rchktr.cpp \
-../common/Cchktr.cpp \
-../common/Rchkpb.cpp \
-../common/Cchktb.cpp \
-../common/Rchktb.cpp \
-../common/Clavhe_rook.cpp \
-../common/Cchkpb.cpp \
-../common/Rdrvsp.cpp \
-../common/Rdrvgt.cpp \
-../common/Rdrvsy.cpp \
-../common/Cdrvgt.cpp \
-../common/Cdrvhp.cpp \
-../common/Cdrvhe.cpp \
-../common/Cdrvsp.cpp \
-../common/Cdrvsy.cpp \
-../common/Cerrsy.cpp \
-../common/Rdrvpo.cpp \
 ../common/Rdrvpp.cpp \
-../common/Rerrsy.cpp \
-../common/Cerrhe.cpp \
-../common/Cdrvpo.cpp \
 ../common/Cdrvpp.cpp \
-../common/Cchkhe.cpp \
-../common/Rchksy.cpp \
-../common/Rlattb.cpp \
-../common/Cchksy.cpp \
-../common/Clattb.cpp \
-../common/Rlattr.cpp \
-../common/Clattr.cpp \
-../common/Rchkgb.cpp \
-../common/Rdrvpb.cpp \
-../common/Rdrvge.cpp \
-../common/Cdrvge.cpp \
-../common/Cchkgb.cpp \
-../common/Cdrvpb.cpp \
-../common/Rerrvx.cpp \
-../common/Cchksy_rk.cpp \
-../common/Cerrvx.cpp \
-\
 ../common/Alaesm.cpp \
 ../common/chkxer.cpp \
 ../common/Claipd.cpp \
@@ -130,7 +92,7 @@ LIN_SOURCES = \
 ../common/Cqrt02.cpp \
 ../common/Clqt02.cpp \
 ../common/Cpot03.cpp \
-../common/Csyt01.cpp \
+../common/Csyt01_aa.cpp \
 ../common/Csyt03.cpp \
 ../common/Csyt01_rook.cpp \
 ../common/Rqrt01.cpp \
@@ -369,7 +331,44 @@ LIN_SOURCES = \
 ../common/Clavsy_rook.cpp \
 ../common/Rchkge.cpp \
 ../common/Rdrvpt.cpp \
-../common/Cchkge.cpp
+../common/Cchkge.cpp \
+../common/Cdrvpt.cpp \
+../common/Rchktr.cpp \
+../common/Cchktr.cpp \
+../common/Rchkgb.cpp \
+../common/Rlattr.cpp \
+../common/Clattr.cpp \
+../common/Rdrvpb.cpp \
+../common/Cdrvpb.cpp \
+../common/Rdrvge.cpp \
+../common/Cdrvge.cpp \
+../common/Cchkgb.cpp \
+../common/Rerrvx.cpp \
+../common/Cerrvx.cpp \
+../common/Cchksy_rk.cpp \
+../common/Clavhe_rook.cpp \
+../common/Rlattb.cpp \
+../common/Clattb.cpp \
+../common/Rchkpb.cpp \
+../common/Cchkpb.cpp \
+../common/Rerrsy.cpp \
+../common/Cerrhe.cpp \
+../common/Cchktb.cpp \
+../common/Rchktb.cpp \
+../common/Cchkhe.cpp \
+../common/Rchksy.cpp \
+../common/Cchksy.cpp \
+../common/Cerrsy.cpp \
+../common/Rdrvsp.cpp \
+../common/Cdrvsp.cpp \
+../common/Rdrvgt.cpp \
+../common/Cdrvgt.cpp \
+../common/Rdrvsy.cpp \
+../common/Cdrvhp.cpp \
+../common/Cdrvhe.cpp \
+../common/Cdrvsy.cpp \
+../common/Rdrvpo.cpp \
+../common/Cdrvpo.cpp
 
 #../common/iMlaenv.cpp
 
