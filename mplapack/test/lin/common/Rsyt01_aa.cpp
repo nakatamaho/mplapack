@@ -147,7 +147,7 @@ void Rsyt01_aa(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, RE
             resid = one / eps;
         }
     } else {
-      resid = ((resid / castREAL(n) ) / anorm) / eps;
+        resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
     //     End of Rsyt01
