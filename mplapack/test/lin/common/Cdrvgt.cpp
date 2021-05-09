@@ -36,23 +36,17 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, COMPLEX *a, COMPLEX *af, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
-    FEM_CMN_SVE(Cdrvgt);
+    common cmn;
     common_write write(cmn);
     //
-    INTEGER *iseedy(sve.iseedy, [4]);
-    str_arr_ref<1> transs(sve.transs, [3]);
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {0, 0, 0, 1};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"N", "T", "C"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), transs;
-        }
-    }
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
+    char fact_trans[3];
+    char transs[] = {'N', 'T', 'C'};
     char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -99,7 +93,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER k1 = 0;
     bool trfcon = false;
     static const char *format_9998 = "(1x,a,', FACT=''',a1,''', TRANS=''',a1,''', N =',i5,', type ',i2,"
-                                     "', test ',i2,', ratio = ',g12.5)";
+                                     "', test ',i2,', ratio = ',a)";
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -132,8 +126,9 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     //     ..
     //     .. Executable Statements ..
     //
-    path[(1 - 1)] = "Zomplex precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "GT";
+    path[0] = 'C';
+    path[1] = 'G';
+    path[2] = 'T';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -169,7 +164,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             //
             //           Set up parameters with Clatb4.
             //
-            Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cond, dist);
+            Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cond, &dist);
             //
             zerot = imat >= 8 && imat <= 10;
             if (imat <= 6) {
@@ -177,7 +172,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 //              Types 1-6:  generate matrices of known condition number.
                 //
                 koff = max({(INTEGER)2 - ku, 3 - max((INTEGER)1, n)});
-                Clatms(n, n, dist, iseed, type, rwork, mode, cond, anorm, kl, ku, "Z", &af[koff - 1], 3, work, info);
+                Clatms(n, n, &dist, iseed, &type, rwork, mode, cond, anorm, kl, ku, "Z", &af[koff - 1], 3, work, info);
                 //
                 //              Check the error code from Clatms.
                 //
@@ -231,16 +226,16 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     izero = 0;
                 } else if (imat == 8) {
                     izero = 1;
-                    z[2 - 1] = a[n - 1];
+                    z[2 - 1] = a[n - 1].real();
                     a[n - 1] = zero;
                     if (n > 1) {
-                        z[3 - 1] = a[1 - 1];
+                        z[3 - 1] = a[1 - 1].real();
                         a[1 - 1] = zero;
                     }
                 } else if (imat == 9) {
                     izero = n;
-                    z[1 - 1] = a[(3 * n - 2) - 1];
-                    z[2 - 1] = a[(2 * n - 1) - 1];
+                    z[1 - 1] = a[(3 * n - 2) - 1].real();
+                    z[2 - 1] = a[(2 * n - 1) - 1].real();
                     a[(3 * n - 2) - 1] = zero;
                     a[(2 * n - 1) - 1] = zero;
                 } else {
@@ -339,13 +334,13 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     ix = 1;
                     for (j = 1; j <= nrhs; j = j + 1) {
-                        Clarnv(2, iseed, n, xact[ix - 1]);
+                        Clarnv(2, iseed, n, &xact[ix - 1]);
                         ix += lda;
                     }
                     //
                     //                 Set the right hand side.
                     //
-                    Clagtm(trans, n, nrhs, one, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], xact, lda, zero, b, lda);
+                    Clagtm(&trans, n, nrhs, one, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], xact, lda, zero, b, lda);
                     //
                     if (ifact == 2 && itran == 1) {
                         //
@@ -370,7 +365,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       Check residual of computed solution.
                             //
                             Clacpy("Full", n, nrhs, b, lda, work, lda);
-                            Cgtt02(trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], x, lda, work, lda, result[2 - 1]);
+                            Cgtt02(&trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], x, lda, work, lda, result[2 - 1]);
                             //
                             //                       Check solution from generated exact solution.
                             //
@@ -386,9 +381,10 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, path);
                                 }
+                                sprintnum_short(buf, result[k - 1]);
                                 write(nout, "(1x,a,', N =',i5,', type ',i2,', test ',i2,', ratio = ',"
-                                            "g12.5)"),
-                                    "Cgtsv ", n, imat, k, result(k);
+                                            "a)"),
+                                    "Cgtsv ", n, imat, k, buf;
                                 nfail++;
                             }
                         }
@@ -410,12 +406,15 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //                 Solve the system and compute the condition number and
                     //                 error bounds using Cgtsvx.
                     //
-                    Cgtsvx(fact, trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                    Cgtsvx(&fact, &trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                     //
                     //                 Check the error code from Cgtsvx.
                     //
                     if (info != izero) {
-                        Alaerh(path, "Cgtsvx", info, izero, fact + trans, n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
+                        fact_trans[0] = fact;
+                        fact_trans[1] = trans;
+                        fact_trans[2] = '\0';
+                        Alaerh(path, "Cgtsvx", info, izero, fact_trans, n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     if (ifact >= 2) {
@@ -435,7 +434,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //                    Check residual of computed solution.
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
-                        Cgtt02(trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], x, lda, work, lda, result[2 - 1]);
+                        Cgtt02(&trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], x, lda, work, lda, result[2 - 1]);
                         //
                         //                    Check solution from generated exact solution.
                         //
@@ -443,7 +442,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         //                    Check the error bounds from iterative refinement.
                         //
-                        Cgtt05(trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], result[4 - 1]);
+                        Cgtt05(&trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                         nt = 5;
                     }
                     //
@@ -455,7 +454,8 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             if (nfail == 0 && nerrs == 0) {
                                 Aladhd(nout, path);
                             }
-                            write(nout, format_9998), "Cgtsvx", fact, trans, n, imat, k, result(k);
+                            sprintnum_short(buf, result[k - 1]);
+                            write(nout, format_9998), "Cgtsvx", fact, trans, n, imat, k, buf;
                             nfail++;
                         }
                     }
@@ -467,7 +467,8 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         if (nfail == 0 && nerrs == 0) {
                             Aladhd(nout, path);
                         }
-                        write(nout, format_9998), "Cgtsvx", fact, trans, n, imat, k, result(k);
+                        sprintnum_short(buf, result[k - 1]);
+                        write(nout, format_9998), "Cgtsvx", fact, trans, n, imat, k, buf;
                         nfail++;
                     }
                     nrun += nt - k1 + 2;

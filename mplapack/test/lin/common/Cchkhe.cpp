@@ -36,22 +36,16 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+    common cmn;
     common_write write(cmn);
     //
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    str_arr_ref<1> uplos(sve.uplos, [2]);
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"U", "L"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
-        }
-    }
+    char uplos[] = {'U', 'L'};
     char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -128,8 +122,9 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     //
     //     Initialize constants and the random number seed.
     //
-    path[(1 - 1)] = "Zomplex precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "HE";
+    path[0] = 'C';
+    path[1] = 'H';
+    path[2] = 'E';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -152,7 +147,7 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, 1);
-        xtype = "N";
+        xtype = 'N';
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -182,16 +177,16 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //              Set up parameters with Clatb4 for the matrix generator
                 //              based on the type of matrix to be generated.
                 //
-                Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
+                Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                 //
                 //              Generate a matrix with Clatms.
                 //
-                Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
+                Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
                 //
                 //              Check error code from Clatms and handle error.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Clatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     //
                     //                 Skip all tests for this generated matrix
                     //
@@ -285,7 +280,7 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //                 will be factorized in place. This is needed to
                     //                 preserve the test matrix A for subsequent tests.
                     //
-                    Clacpy(uplo, n, n, a, lda, afac, lda);
+                    Clacpy(&uplo, n, n, a, lda, afac, lda);
                     //
                     //                 Compute the L*D*L**T or U*D*U**T factorization of the
                     //                 matrix. IWORK stores details of the interchanges and
@@ -293,7 +288,7 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //                 block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)2, nb) * lda;
-                    Chetrf(uplo, n, afac, lda, iwork, ainv, lwork, info);
+                    Chetrf(&uplo, n, afac, lda, iwork, ainv, lwork, info);
                     //
                     //                 Adjust the expected value of INFO to account for
                     //                 pivoting.
@@ -315,7 +310,7 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //                 Check error code from Chetrf and handle error.
                     //
                     if (info != k) {
-                        Alaerh(path, "Chetrf", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Chetrf", info, k, &uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
                     //                 Set the condition estimate flag if the INFO is not 0.
@@ -329,27 +324,27 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //+    TEST 1
                     //                 Reconstruct matrix from factors and compute residual.
                     //
-                    Chet01(uplo, n, a, lda, afac, lda, iwork, ainv, lda, rwork, result[1 - 1]);
+                    Chet01(&uplo, n, a, lda, afac, lda, iwork, ainv, lda, rwork, result[1 - 1]);
                     nt = 1;
                     //
                     //+    TEST 2
                     //                 Form the inverse and compute the residual.
                     //
                     if (inb == 1 && !trfcon) {
-                        Clacpy(uplo, n, n, afac, lda, ainv, lda);
+                        Clacpy(&uplo, n, n, afac, lda, ainv, lda);
                         lwork = (n + nb + 1) * (nb + 3);
-                        Chetri2(uplo, n, ainv, lda, iwork, work, lwork, info);
+                        Chetri2(&uplo, n, ainv, lda, iwork, work, lwork, info);
                         //
                         //                    Check error code from Chetri and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Chetri", info, -1, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Chetri", info, -1, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         //                    Compute the residual for a symmetric matrix times
                         //                    its inverse.
                         //
-                        Cpot03(uplo, n, a, lda, ainv, lda, work, lda, rwork, rcondc, result[2 - 1]);
+                        Cpot03(&uplo, n, a, lda, ainv, lda, work, lda, rwork, rcondc, result[2 - 1]);
                         nt = 2;
                     }
                     //
@@ -361,9 +356,10 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
+                            sprintnum_short(buf, result[k - 1]);
                             write(nout, "(' UPLO = ''',a1,''', N =',i5,', NB =',i4,', type ',i2,"
-                                        "', test ',i2,', ratio =',g12.5)"),
-                                uplo, n, nb, imat, k, result(k);
+                                        "', test ',i2,', ratio =',a)"),
+                                uplo, n, nb, imat, k, buf;
                             nfail++;
                         }
                     }
@@ -394,22 +390,22 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                    Choose a set of NRHS random solution vectors
                         //                    stored in XACT and set up the right hand side B
                         //
-                        Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        Clarhs(path, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        Chetrs(uplo, n, nrhs, afac, lda, iwork, x, lda, info);
+                        Chetrs(&uplo, n, nrhs, afac, lda, iwork, x, lda, info);
                         //
                         //                    Check error code from Chetrs and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Chetrs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Chetrs", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
                         //
                         //                    Compute the residual for the solution
                         //
-                        Cpot02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[3 - 1]);
+                        Cpot02(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[3 - 1]);
                         //
                         //+    TEST 4 (Using TRS2)
                         //                 Solve and compute residual for  A * X = B.
@@ -417,22 +413,22 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                    Choose a set of NRHS random solution vectors
                         //                    stored in XACT and set up the right hand side B
                         //
-                        Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        Clarhs(path, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        Chetrs2(uplo, n, nrhs, afac, lda, iwork, x, lda, work, info);
+                        Chetrs2(&uplo, n, nrhs, afac, lda, iwork, x, lda, work, info);
                         //
                         //                    Check error code from Chetrs2 and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Chetrs2", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Chetrs2", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
                         //
                         //                    Compute the residual for the solution
                         //
-                        Cpot02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[4 - 1]);
+                        Cpot02(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[4 - 1]);
                         //
                         //+    TEST 5
                         //                 Check solution from generated exact solution.
@@ -442,16 +438,16 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //+    TESTS 6, 7, and 8
                         //                 Use iterative refinement to improve the solution.
                         //
-                        Cherfs(uplo, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                        Cherfs(&uplo, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                         //
-                        //                    Check error code from CherFS.
+                        //                    Check error code from Cherfs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "CherFS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cherfs", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[6 - 1]);
-                        Cpot05(uplo, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], result[7 - 1]);
+                        Cpot05(&uplo, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[7 - 1]);
                         //
                         //                    Print information about the tests that did not pass
                         //                    the threshold.
@@ -461,9 +457,10 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
-                                write(nout, "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                            "', test(',i2,') =',g12.5)"),
-                                    uplo, n, nrhs, imat, k, result(k);
+                                sprintnum_short(buf, result[k - 1]);
+                                write(nout, "(' &UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
+                                            "', test(',i2,') =',a)"),
+                                    uplo, n, nrhs, imat, k, buf;
                                 nfail++;
                             }
                         }
@@ -477,13 +474,13 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //                 Get an estimate of RCOND = 1/CNDNUM.
                 //
                 statement_140:
-                    anorm = Clanhe("1", uplo, n, a, lda, rwork);
-                    Checon(uplo, n, afac, lda, iwork, anorm, rcond, work, info);
+                    anorm = Clanhe("1", &uplo, n, a, lda, rwork);
+                    Checon(&uplo, n, afac, lda, iwork, anorm, rcond, work, info);
                     //
                     //                 Check error code from Checon and handle error.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Checon", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Checon", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     result[9 - 1] = Rget06(rcond, rcondc);
@@ -495,9 +492,10 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
+                        sprintnum_short(buf, result[9 - 1]);
                         write(nout, "(' UPLO = ''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,"
-                                    "') =',g12.5)"),
-                            uplo, n, imat, 9, result(9);
+                                    "') =',a)"),
+                            uplo, n, imat, 9, buf;
                         nfail++;
                     }
                     nrun++;

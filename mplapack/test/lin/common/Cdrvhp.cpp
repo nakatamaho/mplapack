@@ -35,25 +35,18 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
-    FEM_CMN_SVE(Cdrvhp);
+    common cmn;
     common_write write(cmn);
     //
     const INTEGER nfact = 2;
-    str_arr_ref<1> facts(sve.facts, [nfact]);
-    INTEGER *iseedy(sve.iseedy, [4]);
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"F", "N"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), facts;
-        }
-    }
+    char uplos[] = {'U', 'L'};
+    char facts[] = {'F', 'N'};
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -132,8 +125,9 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     //
     //     Initialize constants and the random number seed.
     //
-    path[(1 - 1)] = "Z";
-    path[(2 - 1) + (3 - 1) * ldpath] = "HP";
+    path[0] = 'Z';
+    path[1] = 'H';
+    path[2] = 'P';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -193,14 +187,14 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 //              Set up parameters with Clatb4 and generate a test matrix
                 //              with Clatms.
                 //
-                Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
+                Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                 //
-                Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, packit, a, lda, work, info);
+                Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &packit, a, lda, work, info);
                 //
                 //              Check error code from Clatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Clatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_160;
                 }
                 //
@@ -298,18 +292,18 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         //                    Compute the 1-norm of A.
                         //
-                        anorm = Clanhp("1", uplo, n, a, rwork);
+                        anorm = Clanhp("1", &uplo, n, a, rwork);
                         //
                         //                    Factor the matrix A.
                         //
                         Ccopy(npp, a, 1, afac, 1);
-                        Chptrf(uplo, n, afac, iwork, info);
+                        Chptrf(&uplo, n, afac, iwork, info);
                         //
                         //                    Compute inv(A) and take its norm.
                         //
                         Ccopy(npp, afac, 1, ainv, 1);
-                        Chptri(uplo, n, ainv, iwork, work, info);
-                        ainvnm = Clanhp("1", uplo, n, ainv, rwork);
+                        Chptri(&uplo, n, ainv, iwork, work, info);
+                        ainvnm = Clanhp("1", &uplo, n, ainv, rwork);
                         //
                         //                    Compute the 1-norm condition number of A.
                         //
@@ -322,7 +316,7 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     //                 Form an exact solution and set the right hand side.
                     //
-                    Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                    Clarhs(path, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                     xtype = 'C';
                     //
                     //                 --- Test Chpsv  ---
@@ -333,7 +327,7 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         //                    Factor the matrix and solve the system using Chpsv.
                         //
-                        Chpsv(uplo, n, nrhs, afac, iwork, x, lda, info);
+                        Chpsv(&uplo, n, nrhs, afac, iwork, x, lda, info);
                         //
                         //                    Adjust the expected value of INFO to account for
                         //                    pivoting.
@@ -355,7 +349,7 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //                    Check error code from Chpsv .
                         //
                         if (info != k) {
-                            Alaerh(path, "Chpsv ", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Chpsv ", info, k, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_120;
                         } else if (info != 0) {
                             goto statement_120;
@@ -364,12 +358,12 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //                    Reconstruct matrix from factors and compute
                         //                    residual.
                         //
-                        Chpt01(uplo, n, a, afac, iwork, ainv, lda, rwork, result[1 - 1]);
+                        Chpt01(&uplo, n, a, afac, iwork, ainv, lda, rwork, result[1 - 1]);
                         //
                         //                    Compute residual of the computed solution.
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
-                        Cppt02(uplo, n, nrhs, a, x, lda, work, lda, rwork, result[2 - 1]);
+                        Cppt02(&uplo, n, nrhs, a, x, lda, work, lda, rwork, result[2 - 1]);
                         //
                         //                    Check solution from generated exact solution.
                         //
@@ -384,9 +378,10 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, path);
                                 }
+                                sprintnum_short(buf, result[k - 1]);
                                 write(nout, "(1x,a,', UPLO=''',a1,''', N =',i5,', type ',i2,', test ',"
-                                            "i2,', ratio =',g12.5)"),
-                                    "Chpsv ", uplo, n, imat, k, result(k);
+                                            "i2,', ratio =',a)"),
+                                    "Chpsv ", uplo, n, imat, k, buf;
                                 nfail++;
                             }
                         }
@@ -404,7 +399,7 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //                 Solve the system and compute the condition number and
                     //                 error bounds using Chpsvx.
                     //
-                    Chpsvx(fact, uplo, n, nrhs, a, afac, iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                    Chpsvx(&fact, &uplo, n, nrhs, a, afac, iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                     //
                     //                 Adjust the expected value of INFO to account for
                     //                 pivoting.
@@ -426,7 +421,7 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //                 Check the error code from Chpsvx.
                     //
                     if (info != k) {
-                        Alaerh(path, "Chpsvx", info, k, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Chpsvx", info, k, fact + &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         goto statement_150;
                     }
                     //
@@ -436,7 +431,7 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       Reconstruct matrix from factors and compute
                             //                       residual.
                             //
-                            Chpt01(uplo, n, a, afac, iwork, ainv, lda, &rwork[(2 * nrhs + 1) - 1], result[1 - 1]);
+                            Chpt01(&uplo, n, a, afac, iwork, ainv, lda, &rwork[(2 * nrhs + 1) - 1], result[1 - 1]);
                             k1 = 1;
                         } else {
                             k1 = 2;
@@ -445,7 +440,7 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //                    Compute residual of the computed solution.
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
-                        Cppt02(uplo, n, nrhs, a, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
+                        Cppt02(&uplo, n, nrhs, a, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
                         //
                         //                    Check solution from generated exact solution.
                         //
@@ -453,7 +448,7 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         //                    Check the error bounds from iterative refinement.
                         //
-                        Cppt05(uplo, n, nrhs, a, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], result[4 - 1]);
+                        Cppt05(&uplo, n, nrhs, a, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                     } else {
                         k1 = 6;
                     }
@@ -471,9 +466,10 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             if (nfail == 0 && nerrs == 0) {
                                 Aladhd(nout, path);
                             }
+                            sprintnum_short(buf, result[k - 1]);
                             write(nout, "(1x,a,', FACT=''',a1,''', UPLO=''',a1,''', N =',i5,', type ',"
                                         "i2,', test ',i2,', ratio =',g12.5)"),
-                                "Chpsvx", fact, uplo, n, imat, k, result(k);
+                                "Chpsvx", fact, uplo, n, imat, k, buf;
                             nfail++;
                         }
                     }

@@ -35,39 +35,20 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *asav, COMPLEX *b, COMPLEX *bsav, COMPLEX *x, COMPLEX *xact, REAL *s, COMPLEX *work, REAL *rwork, INTEGER const nout) {
-    FEM_CMN_SVE(Cdrvpp);
+    common cmn;
     common_write write(cmn);
-    //
-    str_arr_ref<1> equeds(sve.equeds, [2]);
-    str_arr_ref<1> facts(sve.facts, [3]);
-    INTEGER *iseedy(sve.iseedy, [4]);
-    str_arr_ref<1> packs(sve.packs, [2]);
-    str_arr_ref<1> uplos(sve.uplos, [2]);
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1988, 1989, 1990, 1991};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"U", "L"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
-        }
-        {
-            static const char *values[] = {"F", "N", "E"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), facts;
-        }
-        {
-            static const char *values[] = {"C", "R"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), packs;
-        }
-        {
-            static const char *values[] = {"N", "Y"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), equeds;
-        }
-    }
+
+    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
+    char equeds[] = {'N', 'Y'};
+    char uplos[] = {'U', 'L'};
+    char packs[] = {'C', 'R'};
+    char facts[] = {'F', 'N', 'E'};
     char path[3];
+    char fact_uplo[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -150,8 +131,9 @@ void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     //
     //     Initialize constants and the random number seed.
     //
-    path[(1 - 1)] = "Zomplex precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "PP";
+    path[0] = 'C';
+    path[1] = 'P';
+    path[2] = 'P';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -201,15 +183,15 @@ void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 //              Set up parameters with Clatb4 and generate a test matrix
                 //              with Clatms.
                 //
-                Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
+                Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                 rcondc = one / cndnum;
                 //
-                Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, packit, a, lda, work, info);
+                Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &packit, a, lda, work, info);
                 //
                 //              Check error code from Clatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Clatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_120;
                 }
                 //
@@ -274,9 +256,9 @@ void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     for (ifact = 1; ifact <= nfact; ifact = ifact + 1) {
                         fact = facts[ifact - 1];
-                        prefac = Mlsame(fact, "F");
-                        nofact = Mlsame(fact, "N");
-                        equil = Mlsame(fact, "E");
+                        prefac = Mlsame(&fact, "F");
+                        nofact = Mlsame(&fact, "N");
+                        equil = Mlsame(&fact, "E");
                         //
                         if (zerot) {
                             if (prefac) {
@@ -284,7 +266,7 @@ void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             }
                             rcondc = zero;
                             //
-                        } else if (!Mlsame(fact, "N")) {
+                        } else if (!Mlsame(&fact, "N")) {
                             //
                             //                       Compute the condition number for comparison with
                             //                       the value returned by Cppsvx (FACT = 'N' reuses
@@ -297,7 +279,7 @@ void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 //                          Compute row and column scale factors to
                                 //                          equilibrate the matrix A.
                                 //
-                                Cppequ(uplo, n, afac, s, scond, amax, info);
+                                Cppequ(&uplo, n, afac, s, scond, amax, info);
                                 if (info == 0 && n > 0) {
                                     if (iequed > 1) {
                                         scond = zero;
@@ -305,7 +287,7 @@ void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     //
                                     //                             Equilibrate the matrix.
                                     //
-                                    Claqhp(uplo, n, afac, s, scond, amax, equed);
+                                    Claqhp(&uplo, n, afac, s, scond, amax, &equed);
                                 }
                             }
                             //
@@ -318,20 +300,20 @@ void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //
                             //                       Compute the 1-norm of A.
                             //
-                            anorm = Clanhp("1", uplo, n, afac, rwork);
+                            anorm = Clanhp("1", &uplo, n, afac, rwork);
                             //
                             //                       Factor the matrix A.
                             //
-                            Cpptrf(uplo, n, afac, info);
+                            Cpptrf(&uplo, n, afac, info);
                             //
                             //                       Form the inverse of A.
                             //
                             Ccopy(npp, afac, 1, a, 1);
-                            Cpptri(uplo, n, a, info);
+                            Cpptri(&uplo, n, a, info);
                             //
                             //                       Compute the 1-norm condition number of A.
                             //
-                            ainvnm = Clanhp("1", uplo, n, a, rwork);
+                            ainvnm = Clanhp("1", &uplo, n, a, rwork);
                             if (anorm <= zero || ainvnm <= zero) {
                                 rcondc = one;
                             } else {
@@ -345,7 +327,7 @@ void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         //                    Form an exact solution and set the right hand side.
                         //
-                        Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        Clarhs(path, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         xtype = 'C';
                         Clacpy("Full", n, nrhs, b, lda, bsav, lda);
                         //
@@ -359,12 +341,12 @@ void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             Ccopy(npp, a, 1, afac, 1);
                             Clacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            Cppsv(uplo, n, nrhs, afac, x, lda, info);
+                            Cppsv(&uplo, n, nrhs, afac, x, lda, info);
                             //
                             //                       Check error code from Cppsv .
                             //
                             if (info != izero) {
-                                Alaerh(path, "Cppsv ", info, izero, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Cppsv ", info, izero, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                                 goto statement_70;
                             } else if (info != 0) {
                                 goto statement_70;
@@ -373,12 +355,12 @@ void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       Reconstruct matrix from factors and compute
                             //                       residual.
                             //
-                            Cppt01(uplo, n, a, afac, rwork, result[1 - 1]);
+                            Cppt01(&uplo, n, a, afac, rwork, result[1 - 1]);
                             //
                             //                       Compute residual of the computed solution.
                             //
                             Clacpy("Full", n, nrhs, b, lda, work, lda);
-                            Cppt02(uplo, n, nrhs, a, x, lda, work, lda, rwork, result[2 - 1]);
+                            Cppt02(&uplo, n, nrhs, a, x, lda, work, lda, rwork, result[2 - 1]);
                             //
                             //                       Check solution from generated exact solution.
                             //
@@ -393,9 +375,10 @@ void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     if (nfail == 0 && nerrs == 0) {
                                         Aladhd(nout, path);
                                     }
+                                    sprintnum_short(buf, result[k - 1]);
                                     write(nout, "(1x,a,', UPLO=''',a1,''', N =',i5,', type ',i1,', test(',"
-                                                "i1,')=',g12.5)"),
-                                        "Cppsv ", uplo, n, imat, k, result(k);
+                                                "i1,')=',a)"),
+                                        "Cppsv ", uplo, n, imat, k, buf;
                                     nfail++;
                                 }
                             }
@@ -414,18 +397,21 @@ void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       Equilibrate the matrix if FACT='F' and
                             //                       EQUED='Y'.
                             //
-                            Claqhp(uplo, n, a, s, scond, amax, equed);
+                            Claqhp(&uplo, n, a, s, scond, amax, &equed);
                         }
                         //
                         //                    Solve the system and compute the condition number
                         //                    and error bounds using Cppsvx.
                         //
-                        Cppsvx(fact, uplo, n, nrhs, a, afac, equed, s, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                        Cppsvx(&fact, &uplo, n, nrhs, a, afac, &equed, s, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                         //
                         //                    Check the error code from Cppsvx.
                         //
                         if (info != izero) {
-                            Alaerh(path, "Cppsvx", info, izero, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            fact_uplo[0] = fact;
+                            fact_uplo[1] = uplo;
+                            fact_uplo[2] = '\0';
+                            Alaerh(path, "Cppsvx", info, izero, fact_uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_90;
                         }
                         //
@@ -435,7 +421,7 @@ void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 //                          Reconstruct matrix from factors and compute
                                 //                          residual.
                                 //
-                                Cppt01(uplo, n, a, afac, &rwork[(2 * nrhs + 1) - 1], result[1 - 1]);
+                                Cppt01(&uplo, n, a, afac, &rwork[(2 * nrhs + 1) - 1], result[1 - 1]);
                                 k1 = 1;
                             } else {
                                 k1 = 2;
@@ -444,11 +430,11 @@ void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       Compute residual of the computed solution.
                             //
                             Clacpy("Full", n, nrhs, bsav, lda, work, lda);
-                            Cppt02(uplo, n, nrhs, asav, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
+                            Cppt02(&uplo, n, nrhs, asav, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
                             //
                             //                       Check solution from generated exact solution.
                             //
-                            if (nofact || (prefac && Mlsame(equed, "N"))) {
+                            if (nofact || (prefac && Mlsame(&equed, "N"))) {
                                 Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                             } else {
                                 Cget04(n, nrhs, x, lda, xact, lda, roldc, result[3 - 1]);
@@ -457,7 +443,7 @@ void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       Check the error bounds from iterative
                             //                       refinement.
                             //
-                            Cppt05(uplo, n, nrhs, asav, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], result[4 - 1]);
+                            Cppt05(&uplo, n, nrhs, asav, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                         } else {
                             k1 = 6;
                         }
@@ -476,13 +462,15 @@ void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     Aladhd(nout, path);
                                 }
                                 if (prefac) {
+                                    sprintnum_short(buf, result[k - 1]);
                                     write(nout, "(1x,a,', FACT=''',a1,''', UPLO=''',a1,''', N=',i5,"
-                                                "', EQUED=''',a1,''', type ',i1,', test(',i1,')=',g12.5)"),
-                                        "Cppsvx", fact, uplo, n, equed, imat, k, result(k);
+                                                "', EQUED=''',a1,''', type ',i1,', test(',i1,')=',a)"),
+                                        "Cppsvx", fact, uplo, n, equed, imat, k, buf;
                                 } else {
+                                    sprintnum_short(buf, result[k - 1]);
                                     write(nout, "(1x,a,', FACT=''',a1,''', UPLO=''',a1,''', N=',i5,"
-                                                "', type ',i1,', test(',i1,')=',g12.5)"),
-                                        "Cppsvx", fact, uplo, n, imat, k, result(k);
+                                                "', type ',i1,', test(',i1,')=',a)"),
+                                        "Cppsvx", fact, uplo, n, imat, k, buf;
                                 }
                                 nfail++;
                             }
