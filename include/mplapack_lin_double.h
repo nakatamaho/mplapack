@@ -60,7 +60,6 @@ void Alahd(mplapackint const iounit, const char *path);
 void Alareq(const char *path, mplapackint const nmats, bool *dotype, mplapackint const ntypes, mplapackint const nin, mplapackint const nout);
 void Alasum(const char *type, mplapackint const nout, mplapackint const nfail, mplapackint const nrun, mplapackint const nerrs);
 void Alasvm(const char *type, mplapackint const nout, mplapackint const nfail, mplapackint const nrun, mplapackint const nerrs);
-void Cchkaa(void);
 void Cchkeq(double const thresh, mplapackint const nout);
 void Cchkgb(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nns, mplapackint *nsval, double const thresh, bool const tsterr, std::complex<double> *a, mplapackint const la, std::complex<double> *afac, mplapackint const lafac, std::complex<double> *b, std::complex<double> *x, std::complex<double> *xact, std::complex<double> *work, double *rwork, mplapackint *iwork, mplapackint const nout);
 void Cchkge(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nns, mplapackint *nsval, double const thresh, bool const tsterr, mplapackint const nmax, std::complex<double> *a, std::complex<double> *afac, std::complex<double> *ainv, std::complex<double> *b, std::complex<double> *x, std::complex<double> *xact, std::complex<double> *work, double *rwork, mplapackint *iwork, mplapackint const nout);
@@ -404,6 +403,4 @@ void Rtrt06(double const rcond, double const rcondc, const char *uplo, const cha
 void Rtsqr01(const char *tssw, mplapackint const m, mplapackint const n, mplapackint const mb, mplapackint const nb, double *result);
 void chkxer(const char *srnamt, mplapackint const &infot, mplapackint const &nout, bool &lerr, bool &ok);
 void icopy(mplapackint const &n, mplapackint *sx, mplapackint const &incx, mplapackint *sy, mplapackint const &incy);
-void program_Cchkrfp(mplapackint argc, char const *argv[]);
-void program_Rchkrfp(mplapackint argc, char const *argv[]);
 #endif

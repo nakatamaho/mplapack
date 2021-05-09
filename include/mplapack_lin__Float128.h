@@ -60,7 +60,6 @@ void Alahd(mplapackint const iounit, const char *path);
 void Alareq(const char *path, mplapackint const nmats, bool *dotype, mplapackint const ntypes, mplapackint const nin, mplapackint const nout);
 void Alasum(const char *type, mplapackint const nout, mplapackint const nfail, mplapackint const nrun, mplapackint const nerrs);
 void Alasvm(const char *type, mplapackint const nout, mplapackint const nfail, mplapackint const nrun, mplapackint const nerrs);
-void Cchkaa(void);
 void Cchkeq(_Float128 const thresh, mplapackint const nout);
 void Cchkgb(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nns, mplapackint *nsval, _Float128 const thresh, bool const tsterr, std::complex<_Float128> *a, mplapackint const la, std::complex<_Float128> *afac, mplapackint const lafac, std::complex<_Float128> *b, std::complex<_Float128> *x, std::complex<_Float128> *xact, std::complex<_Float128> *work, _Float128 *rwork, mplapackint *iwork, mplapackint const nout);
 void Cchkge(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nns, mplapackint *nsval, _Float128 const thresh, bool const tsterr, mplapackint const nmax, std::complex<_Float128> *a, std::complex<_Float128> *afac, std::complex<_Float128> *ainv, std::complex<_Float128> *b, std::complex<_Float128> *x, std::complex<_Float128> *xact, std::complex<_Float128> *work, _Float128 *rwork, mplapackint *iwork, mplapackint const nout);
@@ -404,6 +403,4 @@ void Rtrt06(_Float128 const rcond, _Float128 const rcondc, const char *uplo, con
 void Rtsqr01(const char *tssw, mplapackint const m, mplapackint const n, mplapackint const mb, mplapackint const nb, _Float128 *result);
 void chkxer(const char *srnamt, mplapackint const &infot, mplapackint const &nout, bool &lerr, bool &ok);
 void icopy(mplapackint const &n, mplapackint *sx, mplapackint const &incx, mplapackint *sy, mplapackint const &incy);
-void program_Cchkrfp(mplapackint argc, char const *argv[]);
-void program_Rchkrfp(mplapackint argc, char const *argv[]);
 #endif
