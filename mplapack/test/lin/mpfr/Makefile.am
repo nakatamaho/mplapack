@@ -92,6 +92,8 @@ LIN_SOURCES = \
 ../common/Cqrt02.cpp \
 ../common/Clqt02.cpp \
 ../common/Cpot03.cpp \
+../common/Csyt01.cpp \
+../common/Rsyt01_aa.cpp \
 ../common/Csyt01_aa.cpp \
 ../common/Csyt03.cpp \
 ../common/Csyt01_rook.cpp \
