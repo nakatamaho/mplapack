@@ -39,9 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cbdt02(INTEGER const m, INTEGER const n, COMPLEX *b, INTEGER const ldb, COMPLEX *c, INTEGER const ldc, COMPLEX *u, INTEGER const ldu, COMPLEX *work, REAL *rwork, REAL &resid) {
-    b([ldb * star]);
-    c([ldc * star]);
-    u([ldu * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -73,7 +70,7 @@ void Cbdt02(INTEGER const m, INTEGER const n, COMPLEX *b, INTEGER const ldb, COM
     if (m <= 0 || n <= 0) {
         return;
     }
-    REAL realmn = (max(m, n)).real();
+    REAL realmn = castREAL(max(m, n));
     REAL eps = Rlamch("Precision");
     //
     //     Compute norm( B - U * C )

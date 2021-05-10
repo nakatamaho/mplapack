@@ -39,6 +39,7 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cget36(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER const nin) {
+    common cmn;
     common_read read(cmn);
     REAL eps = 0.0;
     const REAL zero = 0.0;

@@ -39,13 +39,9 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rlsets(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *af, INTEGER const lda, REAL *b, REAL *bf, INTEGER const ldb, REAL *c, REAL *cf, REAL *d, REAL *df, REAL *x, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    a([lda * star]);
-    af([lda * star]);
-    b([ldb * star]);
-    bf([ldb * star]);
-    work([lwork]);
-    result([2]);
-    //
+
+    INTEGER ldaf = lda;
+    INTEGER ldbf = ldb;
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
     //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--

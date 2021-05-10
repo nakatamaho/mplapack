@@ -39,9 +39,10 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, INTEGER const nn, INTEGER *nval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const nmax, REAL *a, REAL *af, REAL *aq, REAL *ar, REAL *taua, REAL *b, REAL *bf, REAL *bz, REAL *bt, REAL *bwk, REAL *taub, REAL *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
-    iseed([4]);
+    common cmn;
     common_write write(cmn);
     char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     bool firstt = false;
@@ -75,7 +76,7 @@ void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
     const INTEGER ntests = 7;
     REAL result[ntests];
     INTEGER i = 0;
-    static const char *format_9999 = "(' DLATMS in Rckgqr:    INFO = ',i5)";
+    static const char *format_9999 = "(' RLATMS in Rckgqr:    INFO = ',i5)";
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -102,7 +103,9 @@ void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
     //
     //     Initialize constants.
     //
-    path[(3 - 1) * ldpath] = "GQR";
+    path[0] = 'G';
+    path[1] = 'Q';
+    path[2] = 'R';
     info = 0;
     nrun = 0;
     nfail = 0;
@@ -140,11 +143,11 @@ void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
                     //                 Set up parameters with Rlatb9 and generate test
                     //                 matrices A and B with DLATMS.
                     //
-                    Rlatb9("GRQ", imat, m, p, n, type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, dista, distb);
+                    Rlatb9("GRQ", imat, m, p, n, &type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, &dista, &distb);
                     //
                     //                 Generate M by N matrix A
                     //
-                    dlatms(m, n, dista, iseed, type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
+                    Rlatms(m, n, &dista, iseed, &type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
                     if (iinfo != 0) {
                         write(nout, format_9999), iinfo;
                         info = abs(iinfo);
@@ -153,7 +156,7 @@ void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
                     //
                     //                 Generate P by N matrix B
                     //
-                    dlatms(p, n, distb, iseed, type, rwork, modeb, cndnmb, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
+                    Rlatms(p, n, &distb, iseed, &type, rwork, modeb, cndnmb, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
                     if (iinfo != 0) {
                         write(nout, format_9999), iinfo;
                         info = abs(iinfo);
@@ -173,9 +176,10 @@ void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
                                 firstt = false;
                                 Alahdg(nout, "GRQ");
                             }
+                            sprintnum_short(buf, result[i - 1]);
                             write(nout, "(' M=',i4,' P=',i4,', N=',i4,', type ',i2,', test ',i2,"
-                                        "', ratio=',g13.6)"),
-                                m, p, n, imat, i, result(i);
+                                        "', ratio=',a)"),
+                                m, p, n, imat, i, buf;
                             nfail++;
                         }
                     }
@@ -184,13 +188,13 @@ void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
                     //                 Test Rggqrf
                     //
                     //                 Set up parameters with Rlatb9 and generate test
-                    //                 matrices A and B with DLATMS.
+                    //                 matrices A and B with RLATMS.
                     //
-                    Rlatb9("GQR", imat, m, p, n, type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, dista, distb);
+                    Rlatb9("GQR", imat, m, p, n, &type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, &dista, &distb);
                     //
                     //                 Generate N-by-M matrix  A
                     //
-                    dlatms(n, m, dista, iseed, type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
+                    Rlatms(n, m, &dista, iseed, &type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
                     if (iinfo != 0) {
                         write(nout, format_9999), iinfo;
                         info = abs(iinfo);
@@ -199,7 +203,7 @@ void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
                     //
                     //                 Generate N-by-P matrix  B
                     //
-                    dlatms(n, p, distb, iseed, type, rwork, modea, cndnma, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
+                    Rlatms(n, p, &distb, iseed, &type, rwork, modea, cndnma, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
                     if (iinfo != 0) {
                         write(nout, format_9999), iinfo;
                         info = abs(iinfo);
@@ -219,9 +223,10 @@ void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
                                 firstt = false;
                                 Alahdg(nout, path);
                             }
+                            sprintnum_short(buf, result[i - 1]);
                             write(nout, "(' N=',i4,' M=',i4,', P=',i4,', type ',i2,', test ',i2,"
-                                        "', ratio=',g13.6)"),
-                                n, m, p, imat, i, result(i);
+                                        "', ratio=',a)"),
+                                n, m, p, imat, i, buf;
                             nfail++;
                         }
                     }

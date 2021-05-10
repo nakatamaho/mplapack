@@ -34,19 +34,18 @@ using namespace fem::major_types;
 using fem::common;
 
 #include <mplapack_matgen.h>
+#include <mplapack_lin.h>
 #include <mplapack_eig.h>
 
 #include <mplapack_debug.h>
 
 void Rerrec(const char *path, INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    // COMMON srnamc
-    char &srnamt = cmn.srnamt;
+    INTEGER infot;
+    INTEGER nout;
+    bool ok;
+    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -84,6 +83,8 @@ void Rerrec(const char *path, INTEGER const nunit) {
     const REAL zero = 0.0;
     REAL a[nmax * nmax];
     REAL b[nmax * nmax];
+    INTEGER lda = nmax;
+    INTEGER ldb = nmax;
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = zero;
@@ -99,7 +100,6 @@ void Rerrec(const char *path, INTEGER const nunit) {
     //
     //     Test Rtrsyl
     //
-    srnamt = "Rtrsyl";
     infot = 1;
     REAL c[nmax * nmax];
     REAL scale = 0.0;
@@ -131,7 +131,6 @@ void Rerrec(const char *path, INTEGER const nunit) {
     //
     //     Test Rtrexc
     //
-    srnamt = "Rtrexc";
     INTEGER ifst = 1;
     INTEGER ilst = 1;
     infot = 1;
@@ -170,7 +169,6 @@ void Rerrec(const char *path, INTEGER const nunit) {
     //
     //     Test Rtrsna
     //
-    srnamt = "Rtrsna";
     infot = 1;
     REAL s[nmax];
     REAL sep[nmax];
@@ -207,7 +205,6 @@ void Rerrec(const char *path, INTEGER const nunit) {
     //     Test Rtrsen
     //
     sel[1 - 1] = false;
-    srnamt = "Rtrsen";
     infot = 1;
     REAL wr[nmax];
     REAL wi[nmax];

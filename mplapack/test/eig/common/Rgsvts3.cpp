@@ -39,16 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *af, INTEGER const lda, REAL *b, REAL *bf, INTEGER const ldb, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *q, INTEGER const ldq, REAL *alpha, REAL *beta, REAL *r, INTEGER const ldr, INTEGER *iwork, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    a([lda * star]);
-    af([lda * star]);
-    b([ldb * star]);
-    bf([ldb * star]);
-    u([ldu * star]);
-    v([ldv * star]);
-    q([ldq * star]);
-    r([ldr * star]);
-    work([lwork]);
-    result([6]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -73,6 +63,8 @@ void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *a
     //     ..
     //     .. Executable Statements ..
     //
+    INTEGER ldaf = lda;
+    INTEGER ldbf = ldb;
     REAL ulp = Rlamch("Precision");
     const REAL one = 1.0;
     REAL ulpinv = one / ulp;
@@ -135,7 +127,7 @@ void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *a
     REAL resid = Rlange("1", m, n, a, lda, rwork);
     //
     if (anorm > zero) {
-        result[1 - 1] = ((resid / (max({(INTEGER)1, m, n})).real()) / anorm) / ulp;
+        result[1 - 1] = ((resid / castREAL(max({(INTEGER)1, m, n}))) / anorm) / ulp;
     } else {
         result[1 - 1] = zero;
     }
@@ -156,7 +148,7 @@ void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *a
     //
     resid = Rlange("1", p, n, b, ldb, rwork);
     if (bnorm > zero) {
-        result[2 - 1] = ((resid / (max({(INTEGER)1, p, n})).real()) / bnorm) / ulp;
+        result[2 - 1] = ((resid / castREAL(max({(INTEGER)1, p, n}))) / bnorm) / ulp;
     } else {
         result[2 - 1] = zero;
     }
@@ -169,7 +161,7 @@ void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *a
     //     Compute norm( I - U'*U ) / ( M * ULP ) .
     //
     resid = Rlansy("1", "Upper", m, work, ldu, rwork);
-    result[3 - 1] = (resid / (max((INTEGER)1, m)).real()) / ulp;
+    result[3 - 1] = (resid / castREAL(max((INTEGER)1, m))) / ulp;
     //
     //     Compute I - V'*V
     //
@@ -179,7 +171,7 @@ void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *a
     //     Compute norm( I - V'*V ) / ( P * ULP ) .
     //
     resid = Rlansy("1", "Upper", p, work, ldv, rwork);
-    result[4 - 1] = (resid / (max((INTEGER)1, p)).real()) / ulp;
+    result[4 - 1] = (resid / castREAL(max((INTEGER)1, p))) / ulp;
     //
     //     Compute I - Q'*Q
     //
@@ -189,7 +181,7 @@ void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *a
     //     Compute norm( I - Q'*Q ) / ( N * ULP ) .
     //
     resid = Rlansy("1", "Upper", n, work, ldq, rwork);
-    result[5 - 1] = (resid / (max((INTEGER)1, n)).real()) / ulp;
+    result[5 - 1] = (resid / castREAL(max((INTEGER)1, n))) / ulp;
     //
     //     Check sorting
     //

@@ -439,7 +439,7 @@ statement_70:
 statement_80:
     try {
         read(nin, star), mplusn;
-    } catch (read_end const ) {
+    } catch (read_end const) {
         goto statement_140;
     }
     if (mplusn == 0) {
@@ -447,7 +447,7 @@ statement_80:
     }
     try {
         read(nin, star), n;
-    } catch (read_end const ) {
+    } catch (read_end const) {
         goto statement_140;
     }
     for (i = 1; i <= mplusn; i = i + 1) {

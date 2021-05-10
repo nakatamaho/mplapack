@@ -39,7 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rort01(const char *rowcol, INTEGER const m, INTEGER const n, REAL *u, INTEGER const ldu, REAL *work, INTEGER const lwork, REAL &resid) {
-    u([ldu * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -77,10 +76,10 @@ void Rort01(const char *rowcol, INTEGER const m, INTEGER const n, REAL *u, INTEG
     char transu;
     INTEGER k = 0;
     if (m < n || (m == n && Mlsame(rowcol, "R"))) {
-        transu = "N";
+        transu = 'N';
         k = n;
     } else {
-        transu = "T";
+        transu = 'T';
         k = m;
     }
     INTEGER mnmin = min(m, n);
@@ -100,13 +99,13 @@ void Rort01(const char *rowcol, INTEGER const m, INTEGER const n, REAL *u, INTEG
         //        Compute I - U*U' or I - U'*U.
         //
         Rlaset("Upper", mnmin, mnmin, zero, one, work, ldwork);
-        Rsyrk("Upper", transu, mnmin, k, -one, u, ldu, one, work, ldwork);
+        Rsyrk("Upper", &transu, mnmin, k, -one, u, ldu, one, work, ldwork);
         //
         //        Compute norm( I - U*U' ) / ( K * EPS ) .
         //
         resid = Rlansy("1", "Upper", mnmin, work, ldwork, &work[(ldwork * mnmin + 1) - 1]);
-        resid = (resid / k.real()) / eps;
-    } else if (transu == "T") {
+        resid = (resid / castREAL(k)) / eps;
+    } else if (transu == 'T') {
         //
         //        Find the maximum element in abs( I - U'*U ) / ( m * EPS )
         //
@@ -121,7 +120,7 @@ void Rort01(const char *rowcol, INTEGER const m, INTEGER const n, REAL *u, INTEG
                 resid = max(resid, abs(tmp));
             }
         }
-        resid = (resid / m.real()) / eps;
+        resid = (resid / castREAL(m)) / eps;
     } else {
         //
         //        Find the maximum element in abs( I - U*U' ) / ( n * EPS )
@@ -137,7 +136,7 @@ void Rort01(const char *rowcol, INTEGER const m, INTEGER const n, REAL *u, INTEG
                 resid = max(resid, abs(tmp));
             }
         }
-        resid = (resid / n.real()) / eps;
+        resid = (resid / castREAL(n)) / eps;
     }
     //
     //     End of Rort01

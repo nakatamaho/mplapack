@@ -39,9 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rsgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER const m, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *z, INTEGER const ldz, REAL *d, REAL *work, REAL *result) {
-    a([lda * star]);
-    b([ldb * star]);
-    z([ldz * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -87,7 +84,7 @@ void Rsgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         //
         Rsymm("Left", uplo, n, m, one, a, lda, z, ldz, zero, work, n);
         for (i = 1; i <= m; i = i + 1) {
-            Rscal(n, &d[i - 1], &z[(i - 1) * ldz], 1);
+            Rscal(n, d[i - 1], &z[(i - 1) * ldz], 1);
         }
         Rsymm("Left", uplo, n, m, one, b, ldb, z, ldz, -one, work, n);
         //
@@ -99,7 +96,7 @@ void Rsgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         //
         Rsymm("Left", uplo, n, m, one, b, ldb, z, ldz, zero, work, n);
         for (i = 1; i <= m; i = i + 1) {
-            Rscal(n, &d[i - 1], &z[(i - 1) * ldz], 1);
+            Rscal(n, d[i - 1], &z[(i - 1) * ldz], 1);
         }
         Rsymm("Left", uplo, n, m, one, a, lda, work, n, -one, z, ldz);
         //
@@ -111,7 +108,7 @@ void Rsgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         //
         Rsymm("Left", uplo, n, m, one, a, lda, z, ldz, zero, work, n);
         for (i = 1; i <= m; i = i + 1) {
-            Rscal(n, &d[i - 1], &z[(i - 1) * ldz], 1);
+            Rscal(n, d[i - 1], &z[(i - 1) * ldz], 1);
         }
         Rsymm("Left", uplo, n, m, one, b, ldb, work, n, -one, z, ldz);
         //

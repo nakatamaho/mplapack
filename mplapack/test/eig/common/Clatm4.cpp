@@ -39,8 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER const nz2, bool const rsign, REAL const amagn, REAL const rcond, REAL const triang, INTEGER const idist, INTEGER *iseed, COMPLEX *a, INTEGER const lda) {
-    iseed([4]);
-    a([lda * star]);
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     INTEGER kbeg = 0;
     INTEGER kend = 0;
@@ -196,9 +194,9 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
     statement_140:
         a[(kbeg - 1) + (kbeg - 1) * lda] = cone;
         if (klen > 1) {
-            alpha = pow(rcond, [(one / (klen - 1).real()) - 1]);
+            alpha = pow(rcond, (one / castREAL(klen - 1)));
             for (i = 2; i <= klen; i = i + 1) {
-                a[((nz1 + i) - 1) + ((nz1 + i) - 1) * lda] = COMPLEX(pow(alpha, (i - 1).real()));
+                a[((nz1 + i) - 1) + ((nz1 + i) - 1) * lda] = COMPLEX(pow(alpha, castREAL(i - 1)));
             }
         }
         goto statement_220;
@@ -208,9 +206,9 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
     statement_160:
         a[(kbeg - 1) + (kbeg - 1) * lda] = cone;
         if (klen > 1) {
-            alpha = (one - rcond) / (klen - 1).real();
+            alpha = (one - rcond) / castREAL(klen - 1);
             for (i = 2; i <= klen; i = i + 1) {
-                a[((nz1 + i) - 1) + ((nz1 + i) - 1) * lda] = COMPLEX((klen - i).real() * alpha + rcond);
+                a[((nz1 + i) - 1) + ((nz1 + i) - 1) * lda] = COMPLEX(castREAL(klen - i) * alpha + rcond);
             }
         }
         goto statement_220;
@@ -220,7 +218,7 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
     statement_180:
         alpha = log(rcond);
         for (jd = kbeg; jd <= kend; jd = jd + 1) {
-            a[(jd - 1) + (jd - 1) * lda] = exp(alpha * dlaran(iseed));
+            a[(jd - 1) + (jd - 1) * lda] = exp(alpha * Rlaran(iseed));
         }
         goto statement_220;
     //
@@ -228,7 +226,7 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
     //
     statement_200:
         for (jd = kbeg; jd <= kend; jd = jd + 1) {
-            a[(jd - 1) + (jd - 1) * lda] = zlarnd(idist, iseed);
+            a[(jd - 1) + (jd - 1) * lda] = Clarnd(idist, iseed);
         }
     //
     statement_220:
@@ -248,14 +246,14 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         if (rsign) {
             for (jd = kbeg; jd <= kend; jd = jd + 1) {
                 if (a[(jd - 1) + (jd - 1) * lda].real() != zero) {
-                    ctemp = zlarnd(3, iseed);
+                    ctemp = Clarnd(3, iseed);
                     ctemp = ctemp / abs(ctemp);
                     a[(jd - 1) + (jd - 1) * lda] = ctemp * a[(jd - 1) + (jd - 1) * lda].real();
                 }
             }
             for (jd = isdb; jd <= isde; jd = jd + 1) {
                 if (a[((jd + 1) - 1) + (jd - 1) * lda].real() != zero) {
-                    ctemp = zlarnd(3, iseed);
+                    ctemp = Clarnd(3, iseed);
                     ctemp = ctemp / abs(ctemp);
                     a[((jd + 1) - 1) + (jd - 1) * lda] = ctemp * a[((jd + 1) - 1) + (jd - 1) * lda].real();
                 }
@@ -284,7 +282,7 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
     if (triang != zero) {
         for (jc = 2; jc <= n; jc = jc + 1) {
             for (jr = 1; jr <= jc - 1; jr = jr + 1) {
-                a[(jr - 1) + (jc - 1) * lda] = triang * zlarnd(idist, iseed);
+                a[(jr - 1) + (jc - 1) * lda] = triang * Clarnd(idist, iseed);
             }
         }
     }

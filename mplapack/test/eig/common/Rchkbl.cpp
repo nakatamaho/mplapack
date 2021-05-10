@@ -39,7 +39,7 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rchkbl(INTEGER const nin, INTEGER const nout) {
-    common_read read(cmn);
+    common cmn;
     common_write write(cmn);
     INTEGER lmax[3];
     INTEGER ninfo = 0;

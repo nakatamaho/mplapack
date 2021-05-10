@@ -39,9 +39,10 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const nmax, REAL *a, REAL *af, REAL *b, REAL *bf, REAL *u, REAL *v, REAL *q, REAL *alpha, REAL *beta, REAL *r, INTEGER *iwork, REAL *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
-    iseed([4]);
+    common cmn;
     common_write write(cmn);
     char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     bool firstt = false;
@@ -104,7 +105,9 @@ void Rckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     //
     //     Initialize constants and the random number seed.
     //
-    path[(3 - 1) * ldpath] = "GSV";
+    path[0] = 'G';
+    path[1] = 'S';
+    path[2] = 'V';
     info = 0;
     nrun = 0;
     nfail = 0;
@@ -136,18 +139,18 @@ void Rckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
             //           Set up parameters with Rlatb9 and generate test
             //           matrices A and B with DLATMS.
             //
-            Rlatb9(path, imat, m, p, n, type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, dista, distb);
+            Rlatb9(path, imat, m, p, n, &type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, &dista, &distb);
             //
             //           Generate M by N matrix A
             //
-            dlatms(m, n, dista, iseed, type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
+            Rlatms(m, n, &dista, iseed, &type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
             if (iinfo != 0) {
                 write(nout, format_9999), iinfo;
                 info = abs(iinfo);
                 goto statement_20;
             }
             //
-            dlatms(p, n, distb, iseed, type, rwork, modeb, cndnmb, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
+            Rlatms(p, n, &distb, iseed, &type, rwork, modeb, cndnmb, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
             if (iinfo != 0) {
                 write(nout, format_9999), iinfo;
                 info = abs(iinfo);
@@ -167,9 +170,10 @@ void Rckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
                         firstt = false;
                         Alahdg(nout, path);
                     }
+                    sprintnum_short(buf, result[i - 1]);
                     write(nout, "(' M=',i4,' P=',i4,', N=',i4,', type ',i2,', test ',i2,"
-                                "', ratio=',g13.6)"),
-                        m, p, n, imat, i, result(i);
+                                "', ratio=',a)"),
+                        m, p, n, imat, i, buf;
                     nfail++;
                 }
             }

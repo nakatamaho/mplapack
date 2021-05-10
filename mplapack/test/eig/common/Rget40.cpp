@@ -39,8 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget40(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
-    ninfo([3]);
-    common_read read(cmn);
     REAL eps = 0.0;
     const REAL zero = 0.0;
     INTEGER n = 0;

@@ -39,12 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget54(INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *s, INTEGER const lds, REAL *t, INTEGER const ldt, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *work, REAL &result) {
-    a([lda * star]);
-    b([ldb * star]);
-    s([lds * star]);
-    t([ldt * star]);
-    u([ldu * star]);
-    v([ldv * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -114,7 +108,7 @@ void Rget54(INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const 
         if (abnorm < one) {
             result = (min(wnorm, 2 * n * abnorm) / abnorm) / (2 * n * ulp);
         } else {
-            result = min(wnorm / abnorm, (2 * n).real()) / (2 * n * ulp);
+            result = min(wnorm / abnorm, castREAL(2 * n)) / (2 * n * ulp);
         }
     }
     //

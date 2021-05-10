@@ -39,12 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cget54(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *s, INTEGER const lds, COMPLEX *t, INTEGER const ldt, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *work, REAL &result) {
-    a([lda * star]);
-    b([ldb * star]);
-    s([lds * star]);
-    t([ldt * star]);
-    u([ldu * star]);
-    v([ldv * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -116,7 +110,7 @@ void Cget54(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER 
         if (abnorm < one) {
             result = (min(wnorm, 2 * n * abnorm) / abnorm) / (2 * n * ulp);
         } else {
-            result = min(wnorm / abnorm, (2 * n).real()) / (2 * n * ulp);
+            result = min(wnorm / abnorm, castREAL(2 * n)) / (2 * n * ulp);
         }
     }
     //

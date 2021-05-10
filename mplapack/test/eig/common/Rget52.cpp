@@ -39,10 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *e, INTEGER const lde, REAL *alphar, REAL *alphai, REAL *beta, REAL *work, REAL *result) {
-    a([lda * star]);
-    b([ldb * star]);
-    e([lde * star]);
-    result([2]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -83,16 +79,16 @@ void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     char normab;
     if (left) {
         trans = 'T';
-        normab = "I";
+        normab = 'I';
     } else {
         trans = 'N';
-        normab = "O";
+        normab = 'O';
     }
     //
     //     Norm of A, B, and E:
     //
-    REAL anorm = max({Rlange(normab, n, n, a, lda, work), safmin});
-    REAL bnorm = max({Rlange(normab, n, n, b, ldb, work), safmin});
+    REAL anorm = max({Rlange(&normab, n, n, a, lda, work), safmin});
+    REAL bnorm = max({Rlange(&normab, n, n, b, ldb, work), safmin});
     REAL enorm = max({Rlange("O", n, n, e, lde, work), ulp});
     REAL alfmax = safmax / max(one, bnorm);
     REAL betmax = safmax / max(one, anorm);
@@ -134,8 +130,8 @@ void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *
                 scale = one / max({abs(salfr) * bnorm, abs(sbeta) * anorm, safmin});
                 acoef = scale * sbeta;
                 bcoefr = scale * salfr;
-                Rgemv(trans, n, n, acoef, a, lda, &e[(jvec - 1) * lde], 1, zero, &work[(n * (jvec - 1) + 1) - 1], 1);
-                Rgemv(trans, n, n, -bcoefr, b, lda, &e[(jvec - 1) * lde], 1, one, &work[(n * (jvec - 1) + 1) - 1], 1);
+                Rgemv(&trans, n, n, acoef, a, lda, &e[(jvec - 1) * lde], 1, zero, &work[(n * (jvec - 1) + 1) - 1], 1);
+                Rgemv(&trans, n, n, -bcoefr, b, lda, &e[(jvec - 1) * lde], 1, one, &work[(n * (jvec - 1) + 1) - 1], 1);
             } else {
                 //
                 //              Complex conjugate pair
@@ -160,13 +156,13 @@ void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *
                     bcoefi = -bcoefi;
                 }
                 //
-                Rgemv(trans, n, n, acoef, a, lda, &e[(jvec - 1) * lde], 1, zero, &work[(n * (jvec - 1) + 1) - 1], 1);
-                Rgemv(trans, n, n, -bcoefr, b, lda, &e[(jvec - 1) * lde], 1, one, &work[(n * (jvec - 1) + 1) - 1], 1);
-                Rgemv(trans, n, n, bcoefi, b, lda, &e[((jvec + 1) - 1) * lde], 1, one, &work[(n * (jvec - 1) + 1) - 1], 1);
+                Rgemv(&trans, n, n, acoef, a, lda, &e[(jvec - 1) * lde], 1, zero, &work[(n * (jvec - 1) + 1) - 1], 1);
+                Rgemv(&trans, n, n, -bcoefr, b, lda, &e[(jvec - 1) * lde], 1, one, &work[(n * (jvec - 1) + 1) - 1], 1);
+                Rgemv(&trans, n, n, bcoefi, b, lda, &e[((jvec + 1) - 1) * lde], 1, one, &work[(n * (jvec - 1) + 1) - 1], 1);
                 //
-                Rgemv(trans, n, n, acoef, a, lda, &e[((jvec + 1) - 1) * lde], 1, zero, &work[(n * jvec + 1) - 1], 1);
-                Rgemv(trans, n, n, -bcoefi, b, lda, &e[(jvec - 1) * lde], 1, one, &work[(n * jvec + 1) - 1], 1);
-                Rgemv(trans, n, n, -bcoefr, b, lda, &e[((jvec + 1) - 1) * lde], 1, one, &work[(n * jvec + 1) - 1], 1);
+                Rgemv(&trans, n, n, acoef, a, lda, &e[((jvec + 1) - 1) * lde], 1, zero, &work[(n * jvec + 1) - 1], 1);
+                Rgemv(&trans, n, n, -bcoefi, b, lda, &e[(jvec - 1) * lde], 1, one, &work[(n * jvec + 1) - 1], 1);
+                Rgemv(&trans, n, n, -bcoefr, b, lda, &e[((jvec + 1) - 1) * lde], 1, one, &work[(n * jvec + 1) - 1], 1);
             }
         }
     }
@@ -205,7 +201,7 @@ void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     //
     //     Compute RESULT(2) : the normalization error in E.
     //
-    result[2 - 1] = enrmer / (n.real() * ulp);
+    result[2 - 1] = enrmer / (castREAL(n) * ulp);
     //
     //     End of Rget52
     //

@@ -39,12 +39,8 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Clsets(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMPLEX *af, INTEGER const lda, COMPLEX *b, COMPLEX *bf, INTEGER const ldb, COMPLEX *c, COMPLEX *cf, COMPLEX *d, COMPLEX *df, COMPLEX *x, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    a([lda * star]);
-    af([lda * star]);
-    b([ldb * star]);
-    bf([ldb * star]);
-    work([lwork]);
-    result([2]);
+    INTEGER ldaf = lda;
+    INTEGER ldbf = ldb;
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

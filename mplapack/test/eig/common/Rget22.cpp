@@ -39,9 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget22(const char *transa, const char *transe, const char *transw, INTEGER const n, REAL *a, INTEGER const lda, REAL *e, INTEGER const lde, REAL *wr, REAL *wi, REAL *work, REAL *result) {
-    a([lda * star]);
-    e([lde * star]);
-    result([2]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -86,10 +83,10 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
     char norme;
     //
     if (Mlsame(transa, "T") || Mlsame(transa, "C")) {
-        norma = "I";
+        norma = 'I';
     }
     if (Mlsame(transe, "T") || Mlsame(transe, "C")) {
-        norme = "I";
+        norme = 'I';
         itrnse = 1;
         ince = lde;
     }
@@ -165,18 +162,18 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
         }
         //
         for (jvec = 1; jvec <= n; jvec = jvec + 1) {
-            enrmin = min(enrmin, &work[jvec - 1]);
-            enrmax = max(enrmax, &work[jvec - 1]);
+            enrmin = min(enrmin, work[jvec - 1]);
+            enrmax = max(enrmax, work[jvec - 1]);
         }
     }
     //
     //     Norm of A:
     //
-    REAL anorm = max({Rlange(norma, n, n, a, lda, work), unfl});
+    REAL anorm = max({Rlange(&norma, n, n, a, lda, work), unfl});
     //
     //     Norm of E:
     //
-    REAL enorm = max({Rlange(norme, n, n, e, lde, work), ulp});
+    REAL enorm = max({Rlange(&norme, n, n, e, lde, work), ulp});
     //
     //     Norm of error:
     //
@@ -190,6 +187,7 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
     //
     INTEGER jcol = 0;
     REAL wmat[2 * 2];
+    INTEGER ldwmat = 2;
     for (jcol = 1; jcol <= n; jcol = jcol + 1) {
         if (itrnse == 1) {
             ierow = jcol;
@@ -237,7 +235,7 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
     //
     //     Compute RESULT(2) : the normalization error in E.
     //
-    result[2 - 1] = max(abs(enrmax - one), abs(enrmin - one)) / (n.real() * ulp);
+    result[2 - 1] = max(abs(enrmax - one), abs(enrmin - one)) / (castREAL(n) * ulp);
     //
     //     End of Rget22
     //

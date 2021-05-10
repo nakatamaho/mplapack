@@ -39,10 +39,7 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const ntypes, INTEGER const nin, INTEGER const nout) {
-    FEM_CMN_SVE(Alareq);
-    common_read read(cmn);
-    common_write write(cmn);
-    char &intstr = sve.intstr;
+
     if (is_called_first_time) {
         intstr = "0123456789";
     }
@@ -99,7 +96,7 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
         if (nmats > 0) {
             try {
                 read(nin, "(a80)"), line;
-            } catch (read_end const ) {
+            } catch (read_end const) {
                 goto statement_90;
             }
             lenp = len[line - 1];
@@ -175,7 +172,6 @@ statement_90:
                 "' right number of types for each path',/)"),
         path;
     write(nout, star);
-    FEM_STOP(0);
     //
     //     End of Alareq
     //

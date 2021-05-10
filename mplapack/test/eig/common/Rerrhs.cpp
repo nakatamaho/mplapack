@@ -34,19 +34,18 @@ using namespace fem::major_types;
 using fem::common;
 
 #include <mplapack_matgen.h>
+#include <mplapack_lin.h>
 #include <mplapack_eig.h>
 
 #include <mplapack_debug.h>
 
 void Rerrhs(const char *path, INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    // COMMON srnamc
-    char &srnamt = cmn.srnamt;
+    INTEGER infot;
+    INTEGER nout;
+    bool ok;
+    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -77,8 +76,9 @@ void Rerrhs(const char *path, INTEGER const nunit) {
     //     .. Executable Statements ..
     //
     nout = nunit;
-    write(nout, star);
-    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2];
+    c2[0] = path[1];
+    c2[1] = path[2];
     //
     //     Set the variables to innocuous values.
     //
@@ -86,13 +86,14 @@ void Rerrhs(const char *path, INTEGER const nunit) {
     const INTEGER nmax = 3;
     INTEGER i = 0;
     REAL a[nmax * nmax];
+    INTEGER lda = nmax;
     REAL wi[nmax];
     bool sel[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
+            a[(i - 1) + (j - 1) * lda] = 1.0 / castREAL(i + j);
         }
-        wi[j - 1] = j.real();
+        wi[j - 1] = castREAL(j);
         sel[j - 1] = true;
     }
     ok = true;
@@ -118,7 +119,6 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         //
         //        Rgebal
         //
-        srnamt = "Rgebal";
         infot = 1;
         Rgebal("/", 0, a, 1, ilo, ihi, s, info);
         chkxer("Rgebal", infot, nout, lerr, ok);
@@ -132,7 +132,6 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         //
         //        Rgebak
         //
-        srnamt = "Rgebak";
         infot = 1;
         Rgebak("/", "R", 0, 1, 0, s, 0, a, 1, info);
         chkxer("Rgebak", infot, nout, lerr, ok);
@@ -164,7 +163,6 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         //
         //        Rgehrd
         //
-        srnamt = "Rgehrd";
         infot = 1;
         Rgehrd(-1, 1, 1, a, 1, tau, w, 1, info);
         chkxer("Rgehrd", infot, nout, lerr, ok);
@@ -190,7 +188,6 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         //
         //        Rorghr
         //
-        srnamt = "Rorghr";
         infot = 1;
         Rorghr(-1, 1, 1, a, 1, tau, w, 1, info);
         chkxer("Rorghr", infot, nout, lerr, ok);
@@ -216,7 +213,6 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         //
         //        Rormhr
         //
-        srnamt = "Rormhr";
         infot = 1;
         Rormhr("/", "N", 0, 0, 1, 0, a, 1, tau, c, 1, w, 1, info);
         chkxer("Rormhr", infot, nout, lerr, ok);
@@ -269,7 +265,6 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         //
         //        Rhseqr
         //
-        srnamt = "Rhseqr";
         infot = 1;
         Rhseqr("/", "N", 0, 1, 0, a, 1, wr, wi, c, 1, w, 1, info);
         chkxer("Rhseqr", infot, nout, lerr, ok);
@@ -301,7 +296,6 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         //
         //        Rhsein
         //
-        srnamt = "Rhsein";
         infot = 1;
         Rhsein("/", "N", "N", sel, 0, a, 1, wr, wi, vl, 1, vr, 1, 0, m, w, ifaill, ifailr, info);
         chkxer("Rhsein", infot, nout, lerr, ok);
@@ -330,7 +324,6 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         //
         //        Rtrevc
         //
-        srnamt = "Rtrevc";
         infot = 1;
         Rtrevc("/", "A", sel, 0, a, 1, vl, 1, vr, 1, 0, m, w, info);
         chkxer("Rtrevc", infot, nout, lerr, ok);

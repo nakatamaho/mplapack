@@ -34,19 +34,18 @@ using namespace fem::major_types;
 using fem::common;
 
 #include <mplapack_matgen.h>
+#include <mplapack_lin.h>
 #include <mplapack_eig.h>
 
 #include <mplapack_debug.h>
 
 void Cerrhs(const char *path, INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    // COMMON srnamc
-    char &srnamt = cmn.srnamt;
+    INTEGER infot;
+    INTEGER nout;
+    bool ok;
+    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -77,8 +76,9 @@ void Cerrhs(const char *path, INTEGER const nunit) {
     //     .. Executable Statements ..
     //
     nout = nunit;
-    write(nout, star);
-    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2];
+    c2[0] = path[1];
+    c2[1] = path[2];
     //
     //     Set the variables to innocuous values.
     //
@@ -86,10 +86,11 @@ void Cerrhs(const char *path, INTEGER const nunit) {
     const INTEGER nmax = 3;
     INTEGER i = 0;
     COMPLEX a[nmax * nmax];
+    INTEGER lda = nmax;
     bool sel[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
+            a[(i - 1) + (j - 1) * lda] = 1.0 / castREAL(i + j);
         }
         sel[j - 1] = true;
     }
@@ -117,7 +118,6 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         //
         //        Cgebal
         //
-        srnamt = "Cgebal";
         infot = 1;
         Cgebal("/", 0, a, 1, ilo, ihi, s, info);
         chkxer("Cgebal", infot, nout, lerr, ok);
@@ -131,7 +131,6 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         //
         //        Cgebak
         //
-        srnamt = "Cgebak";
         infot = 1;
         Cgebak("/", "R", 0, 1, 0, s, 0, a, 1, info);
         chkxer("Cgebak", infot, nout, lerr, ok);
@@ -163,7 +162,6 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         //
         //        Cgehrd
         //
-        srnamt = "Cgehrd";
         infot = 1;
         Cgehrd(-1, 1, 1, a, 1, tau, w, 1, info);
         chkxer("Cgehrd", infot, nout, lerr, ok);
@@ -189,7 +187,6 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         //
         //        Cunghr
         //
-        srnamt = "Cunghr";
         infot = 1;
         Cunghr(-1, 1, 1, a, 1, tau, w, 1, info);
         chkxer("Cunghr", infot, nout, lerr, ok);
@@ -215,7 +212,6 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         //
         //        Cunmhr
         //
-        srnamt = "Cunmhr";
         infot = 1;
         Cunmhr("/", "N", 0, 0, 1, 0, a, 1, tau, c, 1, w, 1, info);
         chkxer("Cunmhr", infot, nout, lerr, ok);
@@ -268,7 +264,6 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         //
         //        Chseqr
         //
-        srnamt = "Chseqr";
         infot = 1;
         Chseqr("/", "N", 0, 1, 0, a, 1, x, c, 1, w, 1, info);
         chkxer("Chseqr", infot, nout, lerr, ok);
@@ -300,7 +295,6 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         //
         //        Chsein
         //
-        srnamt = "Chsein";
         infot = 1;
         Chsein("/", "N", "N", sel, 0, a, 1, x, vl, 1, vr, 1, 0, m, w, rw, ifaill, ifailr, info);
         chkxer("Chsein", infot, nout, lerr, ok);
@@ -329,7 +323,6 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         //
         //        Ctrevc
         //
-        srnamt = "Ctrevc";
         infot = 1;
         Ctrevc("/", "A", sel, 0, a, 1, vl, 1, vr, 1, 0, m, w, rw, info);
         chkxer("Ctrevc", infot, nout, lerr, ok);

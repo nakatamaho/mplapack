@@ -39,9 +39,11 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const mmax, REAL *x, REAL *xf, REAL *u1, REAL *u2, REAL *v1t, REAL *v2t, REAL *theta, INTEGER *iwork, REAL *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
-    iseed([4]);
+
+    common cmn;
     common_write write(cmn);
     char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     bool firstt = false;
@@ -99,7 +101,9 @@ void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
     //
     //     Initialize constants and the random number seed.
     //
-    path[(3 - 1) * ldpath] = "CSD";
+    path[0] = 'C';
+    path[1] = 'S';
+    path[2] = 'D';
     info = 0;
     nrun = 0;
     nfail = 0;
@@ -130,7 +134,7 @@ void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
             //           Generate X
             //
             if (imat == 1) {
-                dlaror("L", "I", m, m, x, ldx, iseed, work, iinfo);
+                Rlaror("L", "I", m, m, x, ldx, iseed, work, iinfo);
                 if (m != 0 && iinfo != 0) {
                     write(nout, "(' DLAROR in Rckcsd: M = ',i5,', INFO = ',i15)"), m, iinfo;
                     info = abs(iinfo);
@@ -139,18 +143,18 @@ void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
             } else if (imat == 2) {
                 r = min({p, m - p, q, m - q});
                 for (i = 1; i <= r; i = i + 1) {
-                    theta[i - 1] = piover2 * dlarnd(1, iseed);
+                    theta[i - 1] = piover2 * Rlarnd(1, iseed);
                 }
-                dlacsg(m, p, q, theta, iseed, x, ldx, work);
+                Rlacsg(m, p, q, theta, iseed, x, ldx, work);
                 for (i = 1; i <= m; i = i + 1) {
                     for (j = 1; j <= m; j = j + 1) {
-                        x[(i + (j - 1) * ldx) - 1] += orth * dlarnd(2, iseed);
+                        x[(i + (j - 1) * ldx) - 1] += orth * Rlarnd(2, iseed);
                     }
                 }
             } else if (imat == 3) {
                 r = min({p, m - p, q, m - q});
                 for (i = 1; i <= r + 1; i = i + 1) {
-                    theta[i - 1] = pow(ten, [(-dlarnd((iseed)*gapdigit) - 1) * ldten]);
+                    theta[i - 1] = pow(ten, -Rlarnd(1, iseed) * gapdigit);
                 }
                 for (i = 2; i <= r + 1; i = i + 1) {
                     theta[i - 1] += theta[(i - 1) - 1];
@@ -158,11 +162,11 @@ void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
                 for (i = 1; i <= r; i = i + 1) {
                     theta[i - 1] = piover2 * theta[i - 1] / theta[(r + 1) - 1];
                 }
-                dlacsg(m, p, q, theta, iseed, x, ldx, work);
+                Rlacsg(m, p, q, theta, iseed, x, ldx, work);
             } else {
                 Rlaset("F", m, m, zero, one, x, ldx);
                 for (i = 1; i <= m; i = i + 1) {
-                    j = int(dlaran(iseed) * m) + 1;
+                    j = castINTEGER(Rlaran(iseed) * m) + 1;
                     if (j != i) {
                         Rrot(m, &x[(1 + (i - 1) * ldx) - 1], 1, &x[(1 + (j - 1) * ldx) - 1], 1, zero, one);
                     }
@@ -182,9 +186,10 @@ void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
                         firstt = false;
                         Alahdg(nout, path);
                     }
+                    sprintnum_short(buf, result[i - 1]);
                     write(nout, "(' M=',i4,' P=',i4,', Q=',i4,', type ',i2,', test ',i2,"
-                                "', ratio=',g13.6)"),
-                        m, p, q, imat, i, result(i);
+                                "', ratio=',a)"),
+                        m, p, q, imat, i, buf;
                     nfail++;
                 }
             }

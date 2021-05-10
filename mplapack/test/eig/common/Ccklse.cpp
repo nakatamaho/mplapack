@@ -39,9 +39,10 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Ccklse(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const nmax, COMPLEX *a, COMPLEX *af, COMPLEX *b, COMPLEX *bf, COMPLEX *x, COMPLEX *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
-    iseed([4]);
+    common cmn;
     common_write write(cmn);
     char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     bool firstt = false;
@@ -100,7 +101,9 @@ void Ccklse(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     //
     //     Initialize constants and the random number seed.
     //
-    path[(3 - 1) * ldpath] = "LSE";
+    path[0] = 'L';
+    path[1] = 'S';
+    path[2] = 'E';
     info = 0;
     nrun = 0;
     nfail = 0;
@@ -150,16 +153,16 @@ void Ccklse(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
             //           Set up parameters with Rlatb9 and generate test
             //           matrices A and B with ZLATMS.
             //
-            Rlatb9(path, imat, m, p, n, type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, dista, distb);
+            Rlatb9(path, imat, m, p, n, &type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, &dista, &distb);
             //
-            zlatms(m, n, dista, iseed, type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
+            Clatms(m, n, &dista, iseed, &type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
             if (iinfo != 0) {
                 write(nout, format_9999), iinfo;
                 info = abs(iinfo);
                 goto statement_30;
             }
             //
-            zlatms(p, n, distb, iseed, type, rwork, modeb, cndnmb, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
+            Clatms(p, n, &distb, iseed, &type, rwork, modeb, cndnmb, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
             if (iinfo != 0) {
                 write(nout, format_9999), iinfo;
                 info = abs(iinfo);
@@ -174,7 +177,7 @@ void Ccklse(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
             //
             nt = 2;
             //
-            Clsets(m, p, n, a, af, lda, b, bf, ldb, x, &x[(nmax + 1) - 1], &x[(2 * nmax + 1) - 1], &x[(3 * nmax + 1) - 1], &x[(4 * nmax + 1) - 1], work, lwork, rwork, result[1 - 1]);
+            Clsets(m, p, n, a, af, lda, b, bf, ldb, x, &x[(nmax + 1) - 1], &x[(2 * nmax + 1) - 1], &x[(3 * nmax + 1) - 1], &x[(4 * nmax + 1) - 1], work, lwork, rwork, &result[1 - 1]);
             //
             //           Print information about the tests that did not
             //           pass the threshold.
@@ -185,9 +188,10 @@ void Ccklse(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
                         firstt = false;
                         Alahdg(nout, path);
                     }
+                    sprintnum_short(buf, result[i - 1]);
                     write(nout, "(' M=',i4,' P=',i4,', N=',i4,', type ',i2,', test ',i2,"
-                                "', ratio=',g13.6)"),
-                        m, p, n, imat, i, result(i);
+                                "', ratio=',a)"),
+                        m, p, n, imat, i, buf;
                     nfail++;
                 }
             }

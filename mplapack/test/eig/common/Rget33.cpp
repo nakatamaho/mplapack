@@ -102,9 +102,12 @@ void Rget33(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     INTEGER im3 = 0;
     INTEGER im4 = 0;
     REAL t[2 * 2];
+    INTEGER ldt = 2;
     REAL tnrm = 0.0;
     REAL t1[2 * 2];
+    INTEGER ldt1 = 2;
     REAL q[2 * 2];
+    INTEGER ldq = 2;
     REAL wr1 = 0.0;
     REAL wi1 = 0.0;
     REAL wr2 = 0.0;
@@ -115,6 +118,7 @@ void Rget33(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     REAL res = 0.0;
     INTEGER j2 = 0;
     REAL t2[2 * 2];
+    INTEGER ldt2 = 2;
     INTEGER j3 = 0;
     REAL sum = 0.0;
     for (i1 = 1; i1 <= 4; i1 = i1 + 1) {
@@ -139,7 +143,7 @@ void Rget33(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                     q[(2 - 1)] = zero;
                                     q[(2 - 1) + (2 - 1) * ldq] = one;
                                     //
-                                    Rlanv2(t[(1 - 1)], &t[(2 - 1) * ldt], &t[(2 - 1)], &t[(2 - 1) + (2 - 1) * ldt], wr1, wi1, wr2, wi2, cs, sn);
+                                    Rlanv2(t[(1 - 1)], t[(2 - 1) * ldt], t[(2 - 1)], t[(2 - 1) + (2 - 1) * ldt], wr1, wi1, wr2, wi2, cs, sn);
                                     for (j1 = 1; j1 <= 2; j1 = j1 + 1) {
                                         res = q[(j1 - 1)] * cs + q[(j1 - 1) + (2 - 1) * ldq] * sn;
                                         q[(j1 - 1) + (2 - 1) * ldq] = -q[(j1 - 1)] * sn + q[(j1 - 1) + (2 - 1) * ldq] * cs;
@@ -167,7 +171,7 @@ void Rget33(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                             res += abs(sum) / eps / tnrm;
                                         }
                                     }
-                                    if (t[(2 - 1)] != zero && (t[(1 - 1)] != t[(2 - 1) + (2 - 1) * ldt] || sign(one, &t[(2 - 1) * ldt]) * sign(one, &t[(2 - 1)]) > zero)) {
+                                    if (t[(2 - 1)] != zero && (t[(1 - 1)] != t[(2 - 1) + (2 - 1) * ldt] || sign(one, t[(2 - 1) * ldt]) * sign(one, t[(2 - 1)]) > zero)) {
                                         res += one / eps;
                                     }
                                     knt++;

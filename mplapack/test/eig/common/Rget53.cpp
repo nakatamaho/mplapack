@@ -39,8 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget53(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const scale, REAL const wr, REAL const wi, REAL &result, INTEGER &info) {
-    a([lda * star]);
-    b([ldb * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -77,12 +75,8 @@ void Rget53(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const s
     REAL safmin = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     REAL absw = abs(wrs) + abs(wis);
-    INTEGER &a[(1 - 1) + (1 - 1) * lda] = 0;
-    INTEGER &a[(1 - 1) + (2 - 1) * lda] = 0;
-    REAL anorm = max({abs(&a[(1 - 1) + (1 - 1) * lda]) + abs(a[(2 - 1)]), abs(&a[(1 - 1) + (2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda]), safmin});
-    INTEGER &b[(1 - 1) + (1 - 1) * ldb] = 0;
-    INTEGER &b[(1 - 1) + (2 - 1) * ldb] = 0;
-    REAL bnorm = max({abs(&b[(1 - 1) + (1 - 1) * ldb]), abs(&b[(1 - 1) + (2 - 1) * ldb]) + abs(b[(2 - 1) + (2 - 1) * ldb]), safmin});
+    REAL anorm = max({abs(a[(1 - 1) + (1 - 1) * lda]) + abs(a[(2 - 1)]), abs(a[(1 - 1) + (2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda]), safmin});
+    REAL bnorm = max({abs(b[(1 - 1) + (1 - 1) * ldb]), abs(b[(1 - 1) + (2 - 1) * ldb]) + abs(b[(2 - 1) + (2 - 1) * ldb]), safmin});
     //
     //     Check for possible overflow.
     //
@@ -128,11 +122,11 @@ void Rget53(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const s
     //
     //     Compute C = s A - w B
     //
-    REAL cr11 = scales * &a[(1 - 1) + (1 - 1) * lda] - wrs * &b[(1 - 1) + (1 - 1) * ldb];
-    REAL ci11 = -wis * &b[(1 - 1) + (1 - 1) * ldb];
+    REAL cr11 = scales * a[(1 - 1) + (1 - 1) * lda] - wrs * b[(1 - 1) + (1 - 1) * ldb];
+    REAL ci11 = -wis * b[(1 - 1) + (1 - 1) * ldb];
     REAL cr21 = scales * a[(2 - 1)];
-    REAL cr12 = scales * &a[(1 - 1) + (2 - 1) * lda] - wrs * &b[(1 - 1) + (2 - 1) * ldb];
-    REAL ci12 = -wis * &b[(1 - 1) + (2 - 1) * ldb];
+    REAL cr12 = scales * a[(1 - 1) + (2 - 1) * lda] - wrs * b[(1 - 1) + (2 - 1) * ldb];
+    REAL ci12 = -wis * b[(1 - 1) + (2 - 1) * ldb];
     REAL cr22 = scales * a[(2 - 1) + (2 - 1) * lda] - wrs * b[(2 - 1) + (2 - 1) * ldb];
     REAL ci22 = -wis * b[(2 - 1) + (2 - 1) * ldb];
     //

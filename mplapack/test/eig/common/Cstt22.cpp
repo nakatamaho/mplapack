@@ -39,9 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cstt22(INTEGER const n, INTEGER const m, INTEGER const kband, REAL *ad, REAL *ae, REAL *sd, REAL *se, COMPLEX *u, INTEGER const ldu, COMPLEX *work, INTEGER const ldwork, REAL *rwork, REAL *result) {
-    u([ldu * star]);
-    work([ldwork * star]);
-    result([2]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -133,7 +130,7 @@ void Cstt22(INTEGER const n, INTEGER const m, INTEGER const kband, REAL *ad, REA
         if (anorm < one) {
             result[1 - 1] = (min(wnorm, m * anorm) / anorm) / (m * ulp);
         } else {
-            result[1 - 1] = min(wnorm / anorm, m.real()) / (m * ulp);
+            result[1 - 1] = min(wnorm / anorm, castREAL(m)) / (m * ulp);
         }
     }
     //
@@ -148,7 +145,7 @@ void Cstt22(INTEGER const n, INTEGER const m, INTEGER const kband, REAL *ad, REA
         work[(j - 1) + (j - 1) * ldwork] = work[(j - 1) + (j - 1) * ldwork] - one;
     }
     //
-    result[2 - 1] = min({m.real(), Clange("1", m, m, work, m, rwork)}) / (m * ulp);
+    result[2 - 1] = min(castREAL(m), Clange("1", m, m, work, m, rwork)) / (m * ulp);
     //
     //     End of Cstt22
     //

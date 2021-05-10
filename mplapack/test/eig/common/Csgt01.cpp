@@ -39,9 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Csgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER const m, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *z, INTEGER const ldz, REAL *d, COMPLEX *work, REAL *rwork, REAL *result) {
-    a([lda * star]);
-    b([ldb * star]);
-    z([ldz * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -89,7 +86,7 @@ void Csgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         //
         Chemm("Left", uplo, n, m, cone, a, lda, z, ldz, czero, work, n);
         for (i = 1; i <= m; i = i + 1) {
-            CRscal(n, &d[i - 1], &z[(i - 1) * ldz], 1);
+            CRscal(n, d[i - 1], &z[(i - 1) * ldz], 1);
         }
         Chemm("Left", uplo, n, m, cone, b, ldb, z, ldz, -cone, work, n);
         //
@@ -101,7 +98,7 @@ void Csgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         //
         Chemm("Left", uplo, n, m, cone, b, ldb, z, ldz, czero, work, n);
         for (i = 1; i <= m; i = i + 1) {
-            CRscal(n, &d[i - 1], &z[(i - 1) * ldz], 1);
+            CRscal(n, d[i - 1], &z[(i - 1) * ldz], 1);
         }
         Chemm("Left", uplo, n, m, cone, a, lda, work, n, -cone, z, ldz);
         //
@@ -113,7 +110,7 @@ void Csgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         //
         Chemm("Left", uplo, n, m, cone, a, lda, z, ldz, czero, work, n);
         for (i = 1; i <= m; i = i + 1) {
-            CRscal(n, &d[i - 1], &z[(i - 1) * ldz], 1);
+            CRscal(n, d[i - 1], &z[(i - 1) * ldz], 1);
         }
         Chemm("Left", uplo, n, m, cone, b, ldb, work, n, -cone, z, ldz);
         //

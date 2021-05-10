@@ -30,20 +30,15 @@
 #include <mplapack.h>
 
 #include <fem.hpp> // Fortran EMulation library of fable module
-using namespace fem::major_types;
-using fem::common;
+#include <mplapack_common.h>
 
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
 #include <mplapack_debug.h>
 
-bool Clctsx(COMPLEX const  /* alpha */, COMPLEX const  /* beta */) {
+bool Clctsx(common &cmn, COMPLEX const /* alpha */, COMPLEX const /* beta */) {
     bool return_value = false;
-    // COMMON mn
-    INTEGER &mplusn = cmn.mplusn;
-    INTEGER &i = cmn.i;
-    bool &fs = cmn.fs;
     //
     //
     //  -- LAPACK test routine --
@@ -69,27 +64,27 @@ bool Clctsx(COMPLEX const  /* alpha */, COMPLEX const  /* beta */) {
     //     ..
     //     .. Executable Statements ..
     //
-    if (fs) {
-        i++;
-        if (i <= cmn.m) {
+    if (cmn.fs) {
+        cmn.i++;
+        if (cmn.i <= cmn.m) {
             return_value = false;
         } else {
             return_value = true;
         }
-        if (i == mplusn) {
-            fs = false;
-            i = 0;
+        if (cmn.i == cmn.mplusn) {
+            cmn.fs = false;
+            cmn.i = 0;
         }
     } else {
-        i++;
-        if (i <= cmn.n) {
+        cmn.i++;
+        if (cmn.i <= cmn.n) {
             return_value = true;
         } else {
             return_value = false;
         }
-        if (i == mplusn) {
-            fs = true;
-            i = 0;
+        if (cmn.i == cmn.mplusn) {
+            cmn.fs = true;
+            cmn.i = 0;
         }
     }
     //

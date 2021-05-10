@@ -34,19 +34,18 @@ using namespace fem::major_types;
 using fem::common;
 
 #include <mplapack_matgen.h>
+#include <mplapack_lin.h>
 #include <mplapack_eig.h>
 
 #include <mplapack_debug.h>
 
 void Cerrec(const char *path, INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    // COMMON srnamc
-    char &srnamt = cmn.srnamt;
+    INTEGER infot;
+    INTEGER nout;
+    bool ok;
+    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -84,6 +83,8 @@ void Cerrec(const char *path, INTEGER const nunit) {
     const REAL zero = 0.0;
     COMPLEX a[nmax * nmax];
     COMPLEX b[nmax * nmax];
+    INTEGER lda = nmax;
+    INTEGER ldb = nmax;
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * lda] = zero;
@@ -99,7 +100,6 @@ void Cerrec(const char *path, INTEGER const nunit) {
     //
     //     Test Ctrsyl
     //
-    srnamt = "Ctrsyl";
     infot = 1;
     COMPLEX c[nmax * nmax];
     REAL scale = 0.0;
@@ -131,7 +131,6 @@ void Cerrec(const char *path, INTEGER const nunit) {
     //
     //     Test Ctrexc
     //
-    srnamt = "Ctrexc";
     INTEGER ifst = 1;
     INTEGER ilst = 1;
     infot = 1;
@@ -169,7 +168,6 @@ void Cerrec(const char *path, INTEGER const nunit) {
     //
     //     Test Ctrsna
     //
-    srnamt = "Ctrsna";
     infot = 1;
     REAL s[nmax];
     REAL sep[nmax];
@@ -208,7 +206,6 @@ void Cerrec(const char *path, INTEGER const nunit) {
     //     Test Ctrsen
     //
     sel[1 - 1] = false;
-    srnamt = "Ctrsen";
     infot = 1;
     COMPLEX x[nmax];
     Ctrsen("X", "N", sel, 0, a, 1, b, 1, x, m, s[1 - 1], sep[1 - 1], work, 1, info);

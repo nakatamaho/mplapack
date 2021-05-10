@@ -39,32 +39,12 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
-    FEM_CMN_SVE(Rget39);
     // SAVE
-    INTEGER *idim(sve.idim, [6]);
-    arr_ref<int, 3> ival(sve.ival, [5 * 5 * 6]);
-    //
-    if (is_called_first_time) {
-        data((values, 4, 5 * datum(5))), idim;
-        {
-            data_values data;
-            data.values, 3, 4 * datum(0), 1, 1, -1, 0, 0, 3;
-            data.values, 2, 1, 0, 0, 4, 3, 2, 2;
-            data.values, 0, 5 * datum(0), 1, 4 * datum(0), 2, 2, 3 * datum(0), 3;
-            data.values, 3, 4, 0, 0, 4, 2, 2, 3;
-            data.values, 0, 4 * datum(1), 5, 1, 4 * datum(0), 2, 4, -2;
-            data.values, 0, 0, 3, 3, 4, 0, 0, 4;
-            data.values, 2, 2, 3, 0, 5 * datum(1), 1, 4 * datum(0), 2;
-            data.values, 1, -1, 0, 0, 9, 8, 1, 0;
-            data.values, 0, 4, 9, 1, 2, -1, 5 * datum(2), 9;
-            data.values, 4 * datum(0), 6, 4, 0, 0, 0, 3, 2;
-            data.values, 1, 1, 0, 5, 1, -1, 1, 0;
-            data.values, 5 * datum(2), 4, 4 * datum(0), 2, 2, 0, 0, 0;
-            data.values, 1, 4, 4, 0, 0, 2, 4, 2;
-            data.values, 2, -1, 5 * datum(2);
-            data, ival;
-        }
-    }
+
+    INTEGER idim[] = {4, 5, 5, 5, 5, 5};
+    INTEGER ival[150] = {3, 0, 0, 0, 0, 1, 1, -1, 0, 0, 3, 2, 1, 0, 0, 4, 3, 2, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 2, 0, 0, 0, 3, 3, 4, 0, 0, 4, 2, 2, 3, 0, 1, 1, 1, 1, 5, 1, 0, 0, 0, 0, 2, 4, -2, 0, 0, 3, 3, 4, 0, 0, 4, 2, 2, 3, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 1, -1, 0, 0, 9, 8, 1, 0, 0, 4, 9, 1, 2, -1, 2, 2, 2, 2, 2, 9, 0, 0, 0, 0, 6, 4, 0, 0, 0, 3, 2, 1, 1, 0, 5, 1, -1, 1, 0, 2, 2, 2, 2, 2, 4, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, 4, 4, 0, 0, 2, 4, 2, 2, -1, 2, 2, 2, 2, 2};
+    INTEGER ldval1 = 5;
+    INTEGER ldval2 = 25;
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -182,7 +162,7 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                             n = idim[ndim - 1];
                             for (i = 1; i <= n; i = i + 1) {
                                 for (j = 1; j <= n; j = j + 1) {
-                                    t[(i - 1) + (j - 1) * ldt] = (ivali, j, ndim).real() * vm1[ivm1 - 1];
+                                    t[(i - 1) + (j - 1) * ldt] = castREAL(ival[(i - 1) + (j - 1) * ldval1 + (ndim - 1) * ldval2]) * vm1[ivm1 - 1];
                                     if (i >= j) {
                                         t[(i - 1) + (j - 1) * ldt] = t[(i - 1) + (j - 1) * ldt] * vm5[ivm5 - 1];
                                     }
@@ -192,11 +172,11 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                             w = one * vm2[ivm2 - 1];
                             //
                             for (i = 1; i <= n; i = i + 1) {
-                                b[i - 1] = cos(i.real()) * vm3[ivm3 - 1];
+                                b[i - 1] = cos(castREAL(i)) * vm3[ivm3 - 1];
                             }
                             //
                             for (i = 1; i <= 2 * n; i = i + 1) {
-                                d[i - 1] = sin(i.real()) * vm4[ivm4 - 1];
+                                d[i - 1] = sin(castREAL(i)) * vm4[ivm4 - 1];
                             }
                             //
                             norm = Rlange("1", n, n, t, ldt, work);
@@ -267,7 +247,7 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                             for (i = 2; i <= n; i = i + 1) {
                                 y[(i + n) - 1] = w * x[i - 1] - scale * y[(i + n) - 1];
                             }
-                            Rgemv("No transpose", n, n, one, t, ldt, &x[(1 + n) - 1], 1, one, y[(1 + n) - 1], 1);
+                            Rgemv("No transpose", n, n, one, t, ldt, &x[(1 + n) - 1], 1, one, &y[(1 + n) - 1], 1);
                             //
                             resid = Rasum(2 * n, y, 1);
                             domin = max({smlnum, (smlnum / eps) * normtb, eps * (normtb * Rasum(2 * n, x, 1))});
@@ -299,7 +279,7 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                             for (i = 2; i <= n; i = i + 1) {
                                 y[(i + n) - 1] = b[i - 1] * x[1 - 1] + w * x[i - 1] + scale * y[(i + n) - 1];
                             }
-                            Rgemv("Transpose", n, n, one, t, ldt, &x[(1 + n) - 1], 1, -one, y[(1 + n) - 1], 1);
+                            Rgemv("Transpose", n, n, one, t, ldt, &x[(1 + n) - 1], 1, -one, &y[(1 + n) - 1], 1);
                             //
                             resid = Rasum(2 * n, y, 1);
                             domin = max({smlnum, (smlnum / eps) * normtb, eps * (normtb * Rasum(2 * n, x, 1))});

@@ -39,14 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf, INTEGER const ldx, REAL *u1, INTEGER const ldu1, REAL *u2, INTEGER const ldu2, REAL *v1t, INTEGER const ldv1t, REAL *v2t, INTEGER const ldv2t, REAL *theta, INTEGER *iwork, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    x([ldx * star]);
-    xf([ldx * star]);
-    u1([ldu1 * star]);
-    u2([ldu2 * star]);
-    v1t([ldv1t * star]);
-    v2t([ldv2t * star]);
-    work([lwork]);
-    result([15]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -71,6 +63,7 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     //     ..
     //     .. Executable Statements ..
     //
+    INTEGER ldxf = ldx;
     REAL ulp = Rlamch("Precision");
     const REAL realone = 1.0;
     REAL ulpinv = realone / ulp;
@@ -83,7 +76,7 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     Rsyrk("Upper", "Conjugate transpose", m, m, -one, x, ldx, one, work, ldx);
     REAL eps2 = 0.0;
     if (m > 0) {
-        eps2 = max({ulp, Rlange("1", m, m, work, ldx, rwork) / m.real()});
+        eps2 = max({ulp, Rlange("1", m, m, work, ldx, rwork) / castREAL(m)});
     } else {
         eps2 = ulp;
     }
@@ -96,7 +89,7 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     //     Compute the CSD
     //
     INTEGER info = 0;
-    Rorcsd("Y", "Y", "Y", "Y", "N", "D", m, p, q, xf[(1 - 1)], ldx, xf[((q + 1) - 1) * ldxf], ldx, xf[((p + 1) - 1)], ldx, xf[((p + 1) - 1) + ((q + 1) - 1) * ldxf], ldx, theta, u1, ldu1, u2, ldu2, v1t, ldv1t, v2t, ldv2t, work, lwork, iwork, info);
+    Rorcsd("Y", "Y", "Y", "Y", "N", "D", m, p, q, &xf[(1 - 1)], ldx, &xf[((q + 1) - 1) * ldxf], ldx, &xf[((p + 1) - 1)], ldx, &xf[((p + 1) - 1) + ((q + 1) - 1) * ldxf], ldx, theta, u1, ldu1, u2, ldu2, v1t, ldv1t, v2t, ldv2t, work, lwork, iwork, info);
     //
     //     Compute XF := diag(U1,U2)'*X*diag(V1,V2) - [D11 D12; D21 D22]
     //
@@ -111,61 +104,61 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
         xf[(i - 1) + (i - 1) * ldxf] = xf[(i - 1) + (i - 1) * ldxf] - one;
     }
     for (i = 1; i <= r; i = i + 1) {
-        xf(min(p, q) - r + i, min(p, q) - r + i) = xf(min(p, q) - r + i, min(p, q) - r + i) - cos(theta[i - 1]);
+        xf[(min(p, q) - r + i - 1) + (min(p, q) - r + i - 1) * ldx] = xf[(min(p, q) - r + i - 1) + (min(p, q) - r + i - 1) * ldx] - cos(theta[i - 1]);
     }
     //
-    Rgemm("No transpose", "Conjugate transpose", p, m - q, m - q, one, xf[((q + 1) - 1) * ldxf], ldx, v2t, ldv2t, zero, work, ldx);
+    Rgemm("No transpose", "Conjugate transpose", p, m - q, m - q, one, &xf[((q + 1) - 1) * ldxf], ldx, v2t, ldv2t, zero, work, ldx);
     //
-    Rgemm("Conjugate transpose", "No transpose", p, m - q, p, one, u1, ldu1, work, ldx, zero, xf[((q + 1) - 1) * ldxf], ldx);
+    Rgemm("Conjugate transpose", "No transpose", p, m - q, p, one, u1, ldu1, work, ldx, zero, &xf[((q + 1) - 1) * ldxf], ldx);
     //
     for (i = 1; i <= min(p, m - q) - r; i = i + 1) {
         xf[((p - i + 1) - 1) + ((m - i + 1) - 1) * ldxf] += one;
     }
     for (i = 1; i <= r; i = i + 1) {
-        xf(p - (min(p, m - q) - r) + 1 - i, m - (min(p, m - q) - r) + 1 - i) += sin(theta[(r - i + 1) - 1]);
+        xf[(p - (min(p, m - q) - r) + 1 - i - 1) + (m - (min(p, m - q) - r) + 1 - i - 1) * ldx] += sin(theta[(r - i + 1) - 1]);
     }
     //
-    Rgemm("No transpose", "Conjugate transpose", m - p, q, q, one, xf[((p + 1) - 1)], ldx, v1t, ldv1t, zero, work, ldx);
+    Rgemm("No transpose", "Conjugate transpose", m - p, q, q, one, &xf[((p + 1) - 1)], ldx, v1t, ldv1t, zero, work, ldx);
     //
-    Rgemm("Conjugate transpose", "No transpose", m - p, q, m - p, one, u2, ldu2, work, ldx, zero, xf[((p + 1) - 1)], ldx);
+    Rgemm("Conjugate transpose", "No transpose", m - p, q, m - p, one, u2, ldu2, work, ldx, zero, &xf[((p + 1) - 1)], ldx);
     //
     for (i = 1; i <= min(m - p, q) - r; i = i + 1) {
         xf[((m - i + 1) - 1) + ((q - i + 1) - 1) * ldxf] = xf[((m - i + 1) - 1) + ((q - i + 1) - 1) * ldxf] - one;
     }
     for (i = 1; i <= r; i = i + 1) {
-        xf(m - (min(m - p, q) - r) + 1 - i, q - (min(m - p, q) - r) + 1 - i) = xf(m - (min(m - p, q) - r) + 1 - i, q - (min(m - p, q) - r) + 1 - i) - sin(theta[(r - i + 1) - 1]);
+        xf[(m - (min(m - p, q) - r) + 1 - i - 1) + (q - (min(m - p, q) - r) + 1 - i - 1) * ldx] = xf[(m - (min(m - p, q) - r) + 1 - i - 1) + (q - (min(m - p, q) - r) + 1 - i - 1) * ldx] - sin(theta[(r - i + 1) - 1]);
     }
     //
-    Rgemm("No transpose", "Conjugate transpose", m - p, m - q, m - q, one, xf[((p + 1) - 1) + ((q + 1) - 1) * ldxf], ldx, v2t, ldv2t, zero, work, ldx);
+    Rgemm("No transpose", "Conjugate transpose", m - p, m - q, m - q, one, &xf[((p + 1) - 1) + ((q + 1) - 1) * ldxf], ldx, v2t, ldv2t, zero, work, ldx);
     //
-    Rgemm("Conjugate transpose", "No transpose", m - p, m - q, m - p, one, u2, ldu2, work, ldx, zero, xf[((p + 1) - 1) + ((q + 1) - 1) * ldxf], ldx);
+    Rgemm("Conjugate transpose", "No transpose", m - p, m - q, m - p, one, u2, ldu2, work, ldx, zero, &xf[((p + 1) - 1) + ((q + 1) - 1) * ldxf], ldx);
     //
     for (i = 1; i <= min(m - p, m - q) - r; i = i + 1) {
         xf[((p + i) - 1) + ((q + i) - 1) * ldxf] = xf[((p + i) - 1) + ((q + i) - 1) * ldxf] - one;
     }
     for (i = 1; i <= r; i = i + 1) {
-        xf(p + (min(m - p, m - q) - r) + i, q + (min(m - p, m - q) - r) + i) = xf(p + (min(m - p, m - q) - r) + i, q + (min(m - p, m - q) - r) + i) - cos(theta[i - 1]);
+        xf[(p + (min(m - p, m - q) - r) + i - 1) + (q + (min(m - p, m - q) - r) + i - 1) * ldx] = xf[(p + (min(m - p, m - q) - r) + i - 1) + (q + (min(m - p, m - q) - r) + i - 1) * ldx] - cos(theta[i - 1]);
     }
     //
     //     Compute norm( U1'*X11*V1 - D11 ) / ( MAX(1,P,Q)*EPS2 ) .
     //
     REAL resid = Rlange("1", p, q, xf, ldx, rwork);
-    result[1 - 1] = (resid / (max({(INTEGER)1, p, q})).real()) / eps2;
+    result[1 - 1] = (resid / castREAL(max({(INTEGER)1, p, q}))) / eps2;
     //
     //     Compute norm( U1'*X12*V2 - D12 ) / ( MAX(1,P,M-Q)*EPS2 ) .
     //
-    resid = Rlange("1", p, m - q, xf[((q + 1) - 1) * ldxf], ldx, rwork);
-    result[2 - 1] = (resid / (max({(INTEGER)1, p, m - q})).real()) / eps2;
+    resid = Rlange("1", p, m - q, &xf[((q + 1) - 1) * ldxf], ldx, rwork);
+    result[2 - 1] = (resid / castREAL(max({(INTEGER)1, p, m - q}))) / eps2;
     //
     //     Compute norm( U2'*X21*V1 - D21 ) / ( MAX(1,M-P,Q)*EPS2 ) .
     //
-    resid = Rlange("1", m - p, q, xf[((p + 1) - 1)], ldx, rwork);
-    result[3 - 1] = (resid / (max({(INTEGER)1, m - p, q})).real()) / eps2;
+    resid = Rlange("1", m - p, q, &xf[((p + 1) - 1)], ldx, rwork);
+    result[3 - 1] = (resid / castREAL(max({(INTEGER)1, m - p, q}))) / eps2;
     //
     //     Compute norm( U2'*X22*V2 - D22 ) / ( MAX(1,M-P,M-Q)*EPS2 ) .
     //
-    resid = Rlange("1", m - p, m - q, xf[((p + 1) - 1) + ((q + 1) - 1) * ldxf], ldx, rwork);
-    result[4 - 1] = (resid / (max({(INTEGER)1, m - p, m - q})).real()) / eps2;
+    resid = Rlange("1", m - p, m - q, &xf[((p + 1) - 1) + ((q + 1) - 1) * ldxf], ldx, rwork);
+    result[4 - 1] = (resid / castREAL(max({(INTEGER)1, m - p, m - q}))) / eps2;
     //
     //     Compute I - U1'*U1
     //
@@ -175,7 +168,7 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     //     Compute norm( I - U'*U ) / ( MAX(1,P) * ULP ) .
     //
     resid = Rlansy("1", "Upper", p, work, ldu1, rwork);
-    result[5 - 1] = (resid / (max((INTEGER)1, p)).real()) / ulp;
+    result[5 - 1] = (resid / castREAL(max((INTEGER)1, p))) / ulp;
     //
     //     Compute I - U2'*U2
     //
@@ -185,7 +178,7 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     //     Compute norm( I - U2'*U2 ) / ( MAX(1,M-P) * ULP ) .
     //
     resid = Rlansy("1", "Upper", m - p, work, ldu2, rwork);
-    result[6 - 1] = (resid / (max((INTEGER)1, m - p)).real()) / ulp;
+    result[6 - 1] = (resid / castREAL(max((INTEGER)1, m - p))) / ulp;
     //
     //     Compute I - V1T*V1T'
     //
@@ -195,7 +188,7 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     //     Compute norm( I - V1T*V1T' ) / ( MAX(1,Q) * ULP ) .
     //
     resid = Rlansy("1", "Upper", q, work, ldv1t, rwork);
-    result[7 - 1] = (resid / (max((INTEGER)1, q)).real()) / ulp;
+    result[7 - 1] = (resid / castREAL(max((INTEGER)1, q))) / ulp;
     //
     //     Compute I - V2T*V2T'
     //
@@ -205,7 +198,7 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     //     Compute norm( I - V2T*V2T' ) / ( MAX(1,M-Q) * ULP ) .
     //
     resid = Rlansy("1", "Upper", m - q, work, ldv2t, rwork);
-    result[8 - 1] = (resid / (max((INTEGER)1, m - q)).real()) / ulp;
+    result[8 - 1] = (resid / castREAL(max((INTEGER)1, m - q))) / ulp;
     //
     //     Check sorting
     //
@@ -228,7 +221,7 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     Rlaset("Full", q, q, zero, one, work, ldx);
     Rsyrk("Upper", "Conjugate transpose", q, m, -one, x, ldx, one, work, ldx);
     if (m > 0) {
-        eps2 = max({ulp, Rlange("1", q, q, work, ldx, rwork) / m.real()});
+        eps2 = max({ulp, Rlange("1", q, q, work, ldx, rwork) / castREAL(m)});
     } else {
         eps2 = ulp;
     }
@@ -240,7 +233,7 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     //
     //     Compute the CSD
     //
-    Rorcsd2by1("Y", "Y", "Y", m, p, q, xf[(1 - 1)], ldx, xf[((p + 1) - 1)], ldx, theta, u1, ldu1, u2, ldu2, v1t, ldv1t, work, lwork, iwork, info);
+    Rorcsd2by1("Y", "Y", "Y", m, p, q, &xf[(1 - 1)], ldx, &xf[((p + 1) - 1)], ldx, theta, u1, ldu1, u2, ldu2, v1t, ldv1t, work, lwork, iwork, info);
     //
     //     Compute [X11;X21] := diag(U1,U2)'*[X11;X21]*V1 - [D11;D21]
     //
@@ -252,7 +245,7 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
         x[(i - 1) + (i - 1) * ldx] = x[(i - 1) + (i - 1) * ldx] - one;
     }
     for (i = 1; i <= r; i = i + 1) {
-        x(min(p, q) - r + i, min(p, q) - r + i) = x(min(p, q) - r + i, min(p, q) - r + i) - cos(theta[i - 1]);
+        x[(min(p, q) - r + i - 1) + (min(p, q) - r + i - 1) * ldx] = x[(min(p, q) - r + i - 1) + (min(p, q) - r + i - 1) * ldx] - cos(theta[i - 1]);
     }
     //
     Rgemm("No transpose", "Conjugate transpose", m - p, q, q, one, &x[((p + 1) - 1)], ldx, v1t, ldv1t, zero, work, ldx);
@@ -263,18 +256,18 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
         x[((m - i + 1) - 1) + ((q - i + 1) - 1) * ldx] = x[((m - i + 1) - 1) + ((q - i + 1) - 1) * ldx] - one;
     }
     for (i = 1; i <= r; i = i + 1) {
-        x(m - (min(m - p, q) - r) + 1 - i, q - (min(m - p, q) - r) + 1 - i) = x(m - (min(m - p, q) - r) + 1 - i, q - (min(m - p, q) - r) + 1 - i) - sin(theta[(r - i + 1) - 1]);
+        x[(m - (min(m - p, q) - r) + 1 - i - 1) + (q - (min(m - p, q) - r) + 1 - i - 1) * ldx] = x[(m - (min(m - p, q) - r) + 1 - i - 1) + (q - (min(m - p, q) - r) + 1 - i - 1) * ldx] - sin(theta[(r - i + 1) - 1]);
     }
     //
     //     Compute norm( U1'*X11*V1 - D11 ) / ( MAX(1,P,Q)*EPS2 ) .
     //
     resid = Rlange("1", p, q, x, ldx, rwork);
-    result[10 - 1] = (resid / (max({(INTEGER)1, p, q})).real()) / eps2;
+    result[10 - 1] = (resid / castREAL(max({(INTEGER)1, p, q}))) / eps2;
     //
     //     Compute norm( U2'*X21*V1 - D21 ) / ( MAX(1,M-P,Q)*EPS2 ) .
     //
     resid = Rlange("1", m - p, q, &x[((p + 1) - 1)], ldx, rwork);
-    result[11 - 1] = (resid / (max({(INTEGER)1, m - p, q})).real()) / eps2;
+    result[11 - 1] = (resid / castREAL(max({(INTEGER)1, m - p, q}))) / eps2;
     //
     //     Compute I - U1'*U1
     //
@@ -284,7 +277,7 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     //     Compute norm( I - U1'*U1 ) / ( MAX(1,P) * ULP ) .
     //
     resid = Rlansy("1", "Upper", p, work, ldu1, rwork);
-    result[12 - 1] = (resid / (max((INTEGER)1, p)).real()) / ulp;
+    result[12 - 1] = (resid / castREAL(max((INTEGER)1, p))) / ulp;
     //
     //     Compute I - U2'*U2
     //
@@ -294,7 +287,7 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     //     Compute norm( I - U2'*U2 ) / ( MAX(1,M-P) * ULP ) .
     //
     resid = Rlansy("1", "Upper", m - p, work, ldu2, rwork);
-    result[13 - 1] = (resid / (max((INTEGER)1, m - p)).real()) / ulp;
+    result[13 - 1] = (resid / castREAL(max((INTEGER)1, m - p))) / ulp;
     //
     //     Compute I - V1T*V1T'
     //
@@ -304,7 +297,7 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     //     Compute norm( I - V1T*V1T' ) / ( MAX(1,Q) * ULP ) .
     //
     resid = Rlansy("1", "Upper", q, work, ldv1t, rwork);
-    result[14 - 1] = (resid / (max((INTEGER)1, q)).real()) / ulp;
+    result[14 - 1] = (resid / castREAL(max((INTEGER)1, q))) / ulp;
     //
     //     Check sorting
     //

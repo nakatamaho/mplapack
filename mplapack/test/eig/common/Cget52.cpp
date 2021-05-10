@@ -38,11 +38,9 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
+
 void Cget52(bool const left, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *e, INTEGER const lde, COMPLEX *alpha, COMPLEX *beta, COMPLEX *work, REAL *rwork, REAL *result) {
-    a([lda * star]);
-    b([ldb * star]);
-    e([lde * star]);
-    result([2]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -69,7 +67,6 @@ void Cget52(bool const left, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     //     ..
     //     .. Statement Function definitions ..
     COMPLEX x = 0.0;
-    abs1(x) = abs(x.real()) + abs(x.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -89,16 +86,16 @@ void Cget52(bool const left, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     char normab;
     if (left) {
         trans = 'C';
-        normab = "I";
+        normab = 'I';
     } else {
         trans = 'N';
-        normab = "O";
+        normab = 'O';
     }
     //
     //     Norm of A, B, and E:
     //
-    REAL anorm = max({Clange(normab, n, n, a, lda, rwork), safmin});
-    REAL bnorm = max({Clange(normab, n, n, b, ldb, rwork), safmin});
+    REAL anorm = max({Clange(&normab, n, n, a, lda, rwork), safmin});
+    REAL bnorm = max({Clange(&normab, n, n, b, ldb, rwork), safmin});
     REAL enorm = max({Clange("O", n, n, e, lde, rwork), ulp});
     REAL alfmax = safmax / max(one, bnorm);
     REAL betmax = safmax / max(one, anorm);
@@ -131,8 +128,8 @@ void Cget52(bool const left, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
             acoeff = conj(acoeff);
             bcoeff = conj(bcoeff);
         }
-        Cgemv(trans, n, n, acoeff, a, lda, &e[(jvec - 1) * lde], 1, czero, &work[(n * (jvec - 1) + 1) - 1], 1);
-        Cgemv(trans, n, n, -bcoeff, b, lda, &e[(jvec - 1) * lde], 1, cone, &work[(n * (jvec - 1) + 1) - 1], 1);
+        Cgemv(&trans, n, n, acoeff, a, lda, &e[(jvec - 1) * lde], 1, czero, &work[(n * (jvec - 1) + 1) - 1], 1);
+        Cgemv(&trans, n, n, -bcoeff, b, lda, &e[(jvec - 1) * lde], 1, cone, &work[(n * (jvec - 1) + 1) - 1], 1);
     }
     //
     REAL errnrm = Clange("One", n, n, work, n, rwork) / enorm;
@@ -156,7 +153,7 @@ void Cget52(bool const left, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     //
     //     Compute RESULT(2) : the normalization error in E.
     //
-    result[2 - 1] = enrmer / (n.real() * ulp);
+    result[2 - 1] = enrmer / (castREAL(n) * ulp);
     //
     //     End of Cget52
     //

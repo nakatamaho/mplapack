@@ -38,21 +38,13 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
-void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER const nin, INTEGER const nout, REAL *a, INTEGER const lda, REAL *b, REAL *ai, REAL *bi, REAL *z, REAL *q, REAL *alphar, REAL *alphai, REAL *beta, REAL *c, INTEGER const ldc, REAL *s, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, bool *bwork, INTEGER &info) {
-    a([lda * star]);
-    b([lda * star]);
-    ai([lda * star]);
-    bi([lda * star]);
-    z([lda * star]);
-    q([lda * star]);
-    c([ldc * star]);
-    common_read read(cmn);
+void Rdrgsx(common &cmn, INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER const nin, INTEGER const nout, REAL *a, INTEGER const lda, REAL *b, REAL *ai, REAL *bi, REAL *z, REAL *q, REAL *alphar, REAL *alphai, REAL *beta, REAL *c, INTEGER const ldc, REAL *s, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, bool *bwork, INTEGER &info) {
     common_write write(cmn);
-    INTEGER &m = cmn.m;
-    INTEGER &n = cmn.n;
-    INTEGER &mplusn = cmn.mplusn;
-    INTEGER &k = cmn.k;
-    bool &fs = cmn.fs;
+    INTEGER m = cmn.m;
+    INTEGER n = cmn.n;
+    INTEGER mplusn = cmn.mplusn;
+    INTEGER k = cmn.k;
+    bool fs = cmn.fs;
     //
     const REAL zero = 0.0;
     INTEGER minwrk = 0;
@@ -464,7 +456,7 @@ statement_70:
 statement_80:
     try {
         read(nin, star), mplusn;
-    } catch (read_end const ) {
+    } catch (read_end const) {
         goto statement_140;
     }
     if (mplusn == 0) {
@@ -472,7 +464,7 @@ statement_80:
     }
     try {
         read(nin, star), n;
-    } catch (read_end const ) {
+    } catch (read_end const) {
         goto statement_140;
     }
     for (i = 1; i <= mplusn; i = i + 1) {

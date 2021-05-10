@@ -34,19 +34,18 @@ using namespace fem::major_types;
 using fem::common;
 
 #include <mplapack_matgen.h>
+#include <mplapack_lin.h>
 #include <mplapack_eig.h>
 
 #include <mplapack_debug.h>
 
 void Cerrbd(const char *path, INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    // COMMON srnamc
-    char &srnamt = cmn.srnamt;
+    INTEGER infot;
+    INTEGER nout;
+    bool ok;
+    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -78,7 +77,9 @@ void Cerrbd(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2];
+    c2[0] = path[1];
+    c2[1] = path[2];
     //
     //     Set the variables to innocuous values.
     //
@@ -86,9 +87,10 @@ void Cerrbd(const char *path, INTEGER const nunit) {
     const INTEGER nmax = 4;
     INTEGER i = 0;
     COMPLEX a[nmax * nmax];
+    INTEGER lda = nmax;
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
+            a[(i - 1) + (j - 1) * lda] = 1.0 / castREAL(i + j);
         }
     }
     ok = true;
@@ -110,7 +112,6 @@ void Cerrbd(const char *path, INTEGER const nunit) {
         //
         //        Cgebrd
         //
-        srnamt = "Cgebrd";
         infot = 1;
         Cgebrd(-1, 0, a, 1, d, e, tq, tp, w, 1, info);
         chkxer("Cgebrd", infot, nout, lerr, ok);
@@ -127,7 +128,6 @@ void Cerrbd(const char *path, INTEGER const nunit) {
         //
         //        Cungbr
         //
-        srnamt = "Cungbr";
         infot = 1;
         Cungbr("/", 0, 0, 0, a, 1, tq, w, 1, info);
         chkxer("Cungbr", infot, nout, lerr, ok);
@@ -162,7 +162,6 @@ void Cerrbd(const char *path, INTEGER const nunit) {
         //
         //        Cunmbr
         //
-        srnamt = "Cunmbr";
         infot = 1;
         Cunmbr("/", "L", "T", 0, 0, 0, a, 1, tq, u, 1, w, 1, info);
         chkxer("Cunmbr", infot, nout, lerr, ok);
@@ -206,7 +205,6 @@ void Cerrbd(const char *path, INTEGER const nunit) {
         //
         //        Cbdsqr
         //
-        srnamt = "Cbdsqr";
         infot = 1;
         Cbdsqr("/", 0, 0, 0, 0, d, e, v, 1, u, 1, a, 1, rw, info);
         chkxer("Cbdsqr", infot, nout, lerr, ok);

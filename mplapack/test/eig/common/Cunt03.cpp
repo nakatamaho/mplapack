@@ -39,8 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cunt03(const char *rc, INTEGER const mu, INTEGER const mv, INTEGER const n, INTEGER const k, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL &result, INTEGER &info) {
-    u([ldu * star]);
-    v([ldv * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -139,7 +137,7 @@ void Cunt03(const char *rc, INTEGER const mu, INTEGER const mv, INTEGER const n,
                 res1 = max(res1, abs(u[(i - 1) + (j - 1) * ldu] - s * v[(i - 1) + (j - 1) * ldv]));
             }
         }
-        res1 = res1 / (n.real() * ulp);
+        res1 = res1 / (castREAL(n) * ulp);
         //
         //        Compute orthogonality of rows of V.
         //
@@ -167,7 +165,7 @@ void Cunt03(const char *rc, INTEGER const mu, INTEGER const mv, INTEGER const n,
                 res1 = max(res1, abs(u[(j - 1) + (i - 1) * ldu] - s * v[(j - 1) + (i - 1) * ldv]));
             }
         }
-        res1 = res1 / (n.real() * ulp);
+        res1 = res1 / (castREAL(n) * ulp);
         //
         //        Compute orthogonality of columns of V.
         //

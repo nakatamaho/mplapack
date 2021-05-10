@@ -39,8 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER const kband, COMPLEX *ap, REAL *d, REAL *e, COMPLEX *u, INTEGER const ldu, COMPLEX *vp, COMPLEX *tau, COMPLEX *work, REAL *rwork, REAL *result) {
-    u([ldu * star]);
-    result([2]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -82,10 +80,10 @@ void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     char cuplo;
     if (Mlsame(uplo, "U")) {
         lower = false;
-        cuplo = "U";
+        cuplo = 'U';
     } else {
         lower = true;
-        cuplo = "L";
+        cuplo = 'L';
     }
     //
     REAL unfl = Rlamch("Safe minimum");
@@ -108,7 +106,7 @@ void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     if (itype == 3) {
         anorm = one;
     } else {
-        anorm = max({Clanhp("1", cuplo, n, ap, rwork), unfl});
+        anorm = max({Clanhp("1", &cuplo, n, ap, rwork), unfl});
     }
     //
     //     Compute error matrix:
@@ -132,15 +130,15 @@ void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         Ccopy(lap, ap, 1, work, 1);
         //
         for (j = 1; j <= n; j = j + 1) {
-            Chpr(cuplo, n, -d[j - 1], &u[(j - 1) * ldu], 1, work);
+            Chpr(&cuplo, n, -d[j - 1], &u[(j - 1) * ldu], 1, work);
         }
         //
         if (n > 1 && kband == 1) {
             for (j = 2; j <= n - 1; j = j + 1) {
-                Chpr2(cuplo, n, -COMPLEX(e[j - 1]), &u[(j - 1) * ldu], 1, &u[((j - 1) - 1) * ldu], 1, work);
+                Chpr2(&cuplo, n, -COMPLEX(e[j - 1]), &u[(j - 1) * ldu], 1, &u[((j - 1) - 1) * ldu], 1, work);
             }
         }
-        wnorm = Clanhp("1", cuplo, n, work, rwork);
+        wnorm = Clanhp("1", &cuplo, n, work, rwork);
         //
     } else if (itype == 2) {
         //
@@ -163,10 +161,10 @@ void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
                 if (tau[j - 1] != czero) {
                     vsave = vp[(jp + j + 1) - 1];
                     vp[(jp + j + 1) - 1] = cone;
-                    Chpmv("L", n - j, cone, &work[(jp1 + j + 1) - 1], vp[(jp + j + 1) - 1], 1, czero, &work[(lap + 1) - 1], 1);
-                    temp = -half * tau[j - 1] * Cdotc(n - j, &work[(lap + 1) - 1], 1, vp[(jp + j + 1) - 1], 1);
-                    Caxpy(n - j, temp, vp[(jp + j + 1) - 1], 1, &work[(lap + 1) - 1], 1);
-                    Chpr2("L", n - j, -tau[j - 1], vp[(jp + j + 1) - 1], 1, &work[(lap + 1) - 1], 1, &work[(jp1 + j + 1) - 1]);
+                    Chpmv("L", n - j, cone, &work[(jp1 + j + 1) - 1], &vp[(jp + j + 1) - 1], 1, czero, &work[(lap + 1) - 1], 1);
+                    temp = -half * tau[j - 1] * Cdotc(n - j, &work[(lap + 1) - 1], 1, &vp[(jp + j + 1) - 1], 1);
+                    Caxpy(n - j, temp, &vp[(jp + j + 1) - 1], 1, &work[(lap + 1) - 1], 1);
+                    Chpr2("L", n - j, -tau[j - 1], &vp[(jp + j + 1) - 1], 1, &work[(lap + 1) - 1], 1, &work[(jp1 + j + 1) - 1]);
                     //
                     vp[(jp + j + 1) - 1] = vsave;
                 }
@@ -187,10 +185,10 @@ void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
                 if (tau[j - 1] != czero) {
                     vsave = vp[(jp1 + j) - 1];
                     vp[(jp1 + j) - 1] = cone;
-                    Chpmv("U", j, cone, work, vp[(jp1 + 1) - 1], 1, czero, &work[(lap + 1) - 1], 1);
-                    temp = -half * tau[j - 1] * Cdotc(j, &work[(lap + 1) - 1], 1, vp[(jp1 + 1) - 1], 1);
-                    Caxpy(j, temp, vp[(jp1 + 1) - 1], 1, &work[(lap + 1) - 1], 1);
-                    Chpr2("U", j, -tau[j - 1], vp[(jp1 + 1) - 1], 1, &work[(lap + 1) - 1], 1, work);
+                    Chpmv("U", j, cone, work, &vp[(jp1 + 1) - 1], 1, czero, &work[(lap + 1) - 1], 1);
+                    temp = -half * tau[j - 1] * Cdotc(j, &work[(lap + 1) - 1], 1, &vp[(jp1 + 1) - 1], 1);
+                    Caxpy(j, temp, &vp[(jp1 + 1) - 1], 1, &work[(lap + 1) - 1], 1);
+                    Chpr2("U", j, -tau[j - 1], &vp[(jp1 + 1) - 1], 1, &work[(lap + 1) - 1], 1, work);
                     vp[(jp1 + j) - 1] = vsave;
                 }
                 work[(jp1 + j + 1) - 1] = d[(j + 1) - 1];
@@ -200,7 +198,7 @@ void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         for (j = 1; j <= lap; j = j + 1) {
             work[j - 1] = work[j - 1] - ap[j - 1];
         }
-        wnorm = Clanhp("1", cuplo, n, work, rwork);
+        wnorm = Clanhp("1", &cuplo, n, work, rwork);
         //
     } else if (itype == 3) {
         //
@@ -210,7 +208,7 @@ void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
             return;
         }
         Clacpy(" ", n, n, u, ldu, work, n);
-        Cupmtr("R", cuplo, "C", n, n, vp, tau, work, n, &work[(pow2(n) + 1) - 1], iinfo);
+        Cupmtr("R", &cuplo, "C", n, n, vp, tau, work, n, &work[(pow2(n) + 1) - 1], iinfo);
         if (iinfo != 0) {
             result[1 - 1] = ten / ulp;
             return;
@@ -229,7 +227,7 @@ void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         if (anorm < one) {
             result[1 - 1] = (min(wnorm, n * anorm) / anorm) / (n * ulp);
         } else {
-            result[1 - 1] = min(wnorm / anorm, n.real()) / (n * ulp);
+            result[1 - 1] = min(wnorm / anorm, castREAL(n)) / (n * ulp);
         }
     }
     //
@@ -244,7 +242,7 @@ void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
             work[((n + 1) * (j - 1) + 1) - 1] = work[((n + 1) * (j - 1) + 1) - 1] - cone;
         }
         //
-        result[2 - 1] = min({Clange("1", n, n, work, n, rwork), n.real()}) / (n * ulp);
+        result[2 - 1] = min({Clange("1", n, n, work, n, rwork), castREAL(n)}) / (n * ulp);
     }
     //
     //     End of Chpt21

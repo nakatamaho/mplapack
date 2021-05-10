@@ -39,34 +39,14 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nwdths, INTEGER *kk, INTEGER const ntypes, bool *dotype, INTEGER const nrhs, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *ab, INTEGER const ldab, REAL *bd, REAL *be, REAL *q, INTEGER const ldq, REAL *p, INTEGER const ldp, REAL *c, INTEGER const ldc, REAL *cc, REAL *work, INTEGER const lwork, REAL *result, INTEGER &info) {
-    FEM_CMN_SVE(Rchkbb);
-    iseed([4]);
-    a([lda * star]);
-    ab([ldab * star]);
-    q([ldq * star]);
-    p([ldp * star]);
-    c([ldc * star]);
-    cc([ldc * star]);
+    INTEGER ldcc = ldc;
+    common cmn;
     common_write write(cmn);
+    char buf[1024];
     const INTEGER maxtyp = 15;
-    INTEGER *kmagn(sve.kmagn, [maxtyp]);
-    INTEGER *kmode(sve.kmode, [maxtyp]);
-    INTEGER *ktype(sve.ktype, [maxtyp]);
-    if (is_called_first_time) {
-        data((values, 1, 2, 5 * datum(4), 5 * datum(6), 3 * datum(9))), ktype;
-        {
-            data_values data;
-            data.values, 2 * datum(1), 3 * datum(1), 2, 3, 3 * datum(1), 2, 3, 1;
-            data.values, 2, 3;
-            data, kmagn;
-        }
-        {
-            data_values data;
-            data.values, 2 * datum(0), 4, 3, 1, 4, 4, 4, 3;
-            data.values, 1, 4, 4, 0, 0, 0;
-            data, kmode;
-        }
-    }
+    INTEGER ktype[15] = {1, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 9, 9, 9};
+    INTEGER kmagn[15] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3};
+    INTEGER kmode[15] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0};
     INTEGER ntestt = 0;
     bool badmm = false;
     bool badnn = false;
@@ -230,7 +210,7 @@ void Rchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
         m = mval[jsize - 1];
         n = nval[jsize - 1];
         mnmin = min(m, n);
-        amninv = one / (max({(INTEGER)1, m, n})).real();
+        amninv = one / castREAL(max({(INTEGER)1, m, n}));
         //
         for (jwidth = 1; jwidth <= nwdths; jwidth = jwidth + 1) {
             k = kk[jwidth - 1];
@@ -330,19 +310,19 @@ void Rchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                     //
                     //                 Diagonal Matrix, singular values specified
                     //
-                    dlatms(m, n, "S", iseed, "N", work, imode, cond, anorm, 0, 0, "N", a, lda, &work[(m + 1) - 1], iinfo);
+                    Rlatms(m, n, "S", iseed, "N", work, imode, cond, anorm, 0, 0, "N", a, lda, &work[(m + 1) - 1], iinfo);
                     //
                 } else if (itype == 6) {
                     //
                     //                 Nonhermitian, singular values specified
                     //
-                    dlatms(m, n, "S", iseed, "N", work, imode, cond, anorm, kl, ku, "N", a, lda, &work[(m + 1) - 1], iinfo);
+                    Rlatms(m, n, "S", iseed, "N", work, imode, cond, anorm, kl, ku, "N", a, lda, &work[(m + 1) - 1], iinfo);
                     //
                 } else if (itype == 9) {
                     //
                     //                 Nonhermitian, random entries
                     //
-                    dlatmr(m, n, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, kl, ku, zero, anorm, "N", a, lda, idumma, iinfo);
+                    Rlatmr(m, n, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, kl, ku, zero, anorm, "N", a, lda, idumma, iinfo);
                     //
                 } else {
                     //
@@ -351,7 +331,7 @@ void Rchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                 //
                 //              Generate Right-Hand Side
                 //
-                dlatmr(m, nrhs, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(m + 1) - 1], 1, one, &work[(2 * m + 1) - 1], 1, one, "N", idumma, m, nrhs, zero, one, "NO", c, ldc, idumma, iinfo);
+                Rlatmr(m, nrhs, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(m + 1) - 1], 1, one, &work[(2 * m + 1) - 1], 1, one, "N", idumma, m, nrhs, zero, one, "NO", c, ldc, idumma, iinfo);
                 //
                 if (iinfo != 0) {
                     write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
@@ -412,9 +392,10 @@ void Rchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                             Rlahd2(nounit, "DBB");
                         }
                         nerrs++;
+                        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' M =',i4,' N=',i4,', K=',i3,', seed=',4(i4,','),' type ',i2,"
-                                      "', test(',i2,')=',g10.3)"),
-                            m, n, k, ioldsd, jtype, jr, result(jr);
+                                      "', test(',i2,')=',a)"),
+                            m, n, k, ioldsd, jtype, jr, buf;
                     }
                 }
             //

@@ -39,9 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, COMPLEX *a, INTEGER const lda, COMPLEX *q, INTEGER const ldq, REAL *d, REAL *e, COMPLEX *pt, INTEGER const ldpt, COMPLEX *work, REAL *rwork, REAL &resid) {
-    a([lda * star]);
-    q([ldq * star]);
-    pt([ldpt * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -160,12 +157,12 @@ void Cbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, COMPLEX *a, INTE
         }
     } else {
         if (anorm >= resid) {
-            resid = (resid / anorm) / (n.real() * eps);
+            resid = (resid / anorm) / (castREAL(n) * eps);
         } else {
             if (anorm < one) {
-                resid = (min(resid, n.real() * anorm) / anorm) / (n.real() * eps);
+                resid = (min(resid, castREAL(n) * anorm) / anorm) / (castREAL(n) * eps);
             } else {
-                resid = min(resid / anorm, n.real()) / (n.real() * eps);
+                resid = min(resid / anorm, castREAL(n)) / (castREAL(n) * eps);
             }
         }
     }

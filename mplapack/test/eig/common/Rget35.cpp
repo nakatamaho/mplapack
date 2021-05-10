@@ -39,8 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
-    FEM_CMN_SVE(Rget35);
-    // SAVE
     INTEGER *idim(sve.idim, [8]);
     arr_ref<int, 3> ival(sve.ival, [6 * 6 * 8]);
     //

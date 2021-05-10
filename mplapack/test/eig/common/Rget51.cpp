@@ -39,10 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget51(INTEGER const itype, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *work, REAL &result) {
-    a([lda * star]);
-    b([ldb * star]);
-    u([ldu * star]);
-    v([ldv * star]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -130,7 +126,7 @@ void Rget51(INTEGER const itype, INTEGER const n, REAL *a, INTEGER const lda, RE
             if (anorm < one) {
                 result = (min(wnorm, n * anorm) / anorm) / (n * ulp);
             } else {
-                result = min(wnorm / anorm, n.real()) / (n * ulp);
+                result = min(wnorm / anorm, castREAL(n)) / (n * ulp);
             }
         }
         //
@@ -146,7 +142,7 @@ void Rget51(INTEGER const itype, INTEGER const n, REAL *a, INTEGER const lda, RE
             work[((n + 1) * (jdiag - 1) + 1) - 1] = work[((n + 1) * (jdiag - 1) + 1) - 1] - one;
         }
         //
-        result = min({Rlange("1", n, n, work, n, &work[(pow2(n) + 1) - 1]), n.real()}) / (n * ulp);
+        result = min({Rlange("1", n, n, work, n, &work[(pow2(n) + 1) - 1]), castREAL(n)}) / (n * ulp);
     }
     //
     //     End of Rget51

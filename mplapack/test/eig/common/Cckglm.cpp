@@ -39,9 +39,10 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cckglm(INTEGER const nn, INTEGER *nval, INTEGER *mval, INTEGER *pval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const nmax, COMPLEX *a, COMPLEX *af, COMPLEX *b, COMPLEX *bf, COMPLEX *x, COMPLEX *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
-    iseed([4]);
+    common cmn;
     common_write write(cmn);
     char path[3];
+    char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     bool firstt = false;
@@ -100,7 +101,9 @@ void Cckglm(INTEGER const nn, INTEGER *nval, INTEGER *mval, INTEGER *pval, INTEG
     //
     //     Initialize constants.
     //
-    path[(3 - 1) * ldpath] = "GLM";
+    path[0] = 'G';
+    path[1] = 'L';
+    path[2] = 'M';
     info = 0;
     nrun = 0;
     nfail = 0;
@@ -148,18 +151,18 @@ void Cckglm(INTEGER const nn, INTEGER *nval, INTEGER *mval, INTEGER *pval, INTEG
             }
             //
             //           Set up parameters with Rlatb9 and generate test
-            //           matrices A and B with ZLATMS.
+            //           matrices A and B with CLATMS.
             //
-            Rlatb9(path, imat, m, p, n, type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, dista, distb);
+            Rlatb9(path, imat, m, p, n, &type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, &dista, &distb);
             //
-            zlatms(n, m, dista, iseed, type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
+            Clatms(n, m, &dista, iseed, &type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
             if (iinfo != 0) {
                 write(nout, format_9999), iinfo;
                 info = abs(iinfo);
                 goto statement_30;
             }
             //
-            zlatms(n, p, distb, iseed, type, rwork, modeb, cndnmb, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
+            Clatms(n, p, &distb, iseed, &type, rwork, modeb, cndnmb, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
             if (iinfo != 0) {
                 write(nout, format_9999), iinfo;
                 info = abs(iinfo);
@@ -169,7 +172,7 @@ void Cckglm(INTEGER const nn, INTEGER *nval, INTEGER *mval, INTEGER *pval, INTEG
             //           Generate random left hand side vector of GLM
             //
             for (i = 1; i <= n; i = i + 1) {
-                x[i - 1] = zlarnd(2, iseed);
+                x[i - 1] = Clarnd(2, iseed);
             }
             //
             Cglmts(n, m, p, a, af, lda, b, bf, ldb, x, &x[(nmax + 1) - 1], &x[(2 * nmax + 1) - 1], &x[(3 * nmax + 1) - 1], work, lwork, rwork, resid);
@@ -182,9 +185,10 @@ void Cckglm(INTEGER const nn, INTEGER *nval, INTEGER *mval, INTEGER *pval, INTEG
                     firstt = false;
                     Alahdg(nout, path);
                 }
+                sprintnum_short(buf, resid);
                 write(nout, "(' N=',i4,' M=',i4,', P=',i4,', type ',i2,', test ',i2,', ratio=',"
-                            "g13.6)"),
-                    n, m, p, imat, 1, resid;
+                            "a)"),
+                    n, m, p, imat, 1, buf;
                 nfail++;
             }
             nrun++;

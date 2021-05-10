@@ -39,17 +39,13 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cgrqts(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *q, COMPLEX *r, INTEGER const lda, COMPLEX *taua, COMPLEX *b, COMPLEX *bf, COMPLEX *z, COMPLEX *t, COMPLEX *bwk, INTEGER const ldb, COMPLEX *taub, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    a([lda * star]);
-    af([lda * star]);
-    q([lda * star]);
-    r([lda * star]);
-    b([ldb * star]);
-    bf([ldb * star]);
-    z([ldb * star]);
-    t([ldb * star]);
-    bwk([ldb * star]);
-    work([lwork]);
-    result([4]);
+    INTEGER ldaf = lda;
+    INTEGER ldq = lda;
+    INTEGER ldr = lda;
+    INTEGER ldbf = ldb;
+    INTEGER ldz = ldb;
+    INTEGER ldt = ldb;
+    INTEGER ldbwk = ldb;
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -99,11 +95,11 @@ void Cgrqts(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMPL
             Clacpy("Full", m, n - m, af, lda, &q[((n - m + 1) - 1)], lda);
         }
         if (m > 1) {
-            Clacpy("Lower", m - 1, m - 1, af[(2 - 1) + ((n - m + 1) - 1) * ldaf], lda, &q[((n - m + 2) - 1) + ((n - m + 1) - 1) * ldq], lda);
+            Clacpy("Lower", m - 1, m - 1, &af[(2 - 1) + ((n - m + 1) - 1) * ldaf], lda, &q[((n - m + 2) - 1) + ((n - m + 1) - 1) * ldq], lda);
         }
     } else {
         if (n > 1) {
-            Clacpy("Lower", n - 1, n - 1, af[((m - n + 2) - 1)], lda, &q[(2 - 1)], lda);
+            Clacpy("Lower", n - 1, n - 1, &af[((m - n + 2) - 1)], lda, &q[(2 - 1)], lda);
         }
     }
     Cungrq(n, n, min(m, n), q, lda, taua, work, lwork, info);
@@ -112,7 +108,7 @@ void Cgrqts(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMPL
     //
     Claset("Full", p, p, crogue, crogue, z, ldb);
     if (p > 1) {
-        Clacpy("Lower", p - 1, n, bf[(2 - 1)], ldb, &z[(2 - 1)], ldb);
+        Clacpy("Lower", p - 1, n, &bf[(2 - 1)], ldb, &z[(2 - 1)], ldb);
     }
     Cungqr(p, p, min(p, n), z, ldb, taub, work, lwork, info);
     //
@@ -121,10 +117,10 @@ void Cgrqts(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMPL
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     Claset("Full", m, n, czero, czero, r, lda);
     if (m <= n) {
-        Clacpy("Upper", m, m, af[((n - m + 1) - 1) * ldaf], lda, r[((n - m + 1) - 1) * ldr], lda);
+        Clacpy("Upper", m, m, &af[((n - m + 1) - 1) * ldaf], lda, &r[((n - m + 1) - 1) * ldr], lda);
     } else {
         Clacpy("Full", m - n, n, af, lda, r, lda);
-        Clacpy("Upper", n, n, af[((m - n + 1) - 1)], lda, r[((m - n + 1) - 1)], lda);
+        Clacpy("Upper", n, n, &af[((m - n + 1) - 1)], lda, &r[((m - n + 1) - 1)], lda);
     }
     //
     //     Copy T
@@ -142,7 +138,7 @@ void Cgrqts(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMPL
     REAL resid = Clange("1", m, n, r, lda, rwork);
     const REAL zero = 0.0;
     if (anorm > zero) {
-        result[1 - 1] = ((resid / (max({(INTEGER)1, m, n})).real()) / anorm) / ulp;
+        result[1 - 1] = ((resid / castREAL(max({(INTEGER)1, m, n}))) / anorm) / ulp;
     } else {
         result[1 - 1] = zero;
     }
@@ -156,7 +152,7 @@ void Cgrqts(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMPL
     //
     resid = Clange("1", p, n, bwk, ldb, rwork);
     if (bnorm > zero) {
-        result[2 - 1] = ((resid / (max({(INTEGER)1, p, m})).real()) / bnorm) / ulp;
+        result[2 - 1] = ((resid / castREAL(max({(INTEGER)1, p, m}))) / bnorm) / ulp;
     } else {
         result[2 - 1] = zero;
     }
@@ -170,7 +166,7 @@ void Cgrqts(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMPL
     //     Compute norm( I - Q'*Q ) / ( N * ULP ) .
     //
     resid = Clanhe("1", "Upper", n, r, lda, rwork);
-    result[3 - 1] = (resid / (max((INTEGER)1, n)).real()) / ulp;
+    result[3 - 1] = (resid / castREAL(max((INTEGER)1, n))) / ulp;
     //
     //     Compute I - Z'*Z
     //
@@ -180,7 +176,7 @@ void Cgrqts(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMPL
     //     Compute norm( I - Z'*Z ) / ( P*ULP ) .
     //
     resid = Clanhe("1", "Upper", p, t, ldb, rwork);
-    result[4 - 1] = (resid / (max((INTEGER)1, p)).real()) / ulp;
+    result[4 - 1] = (resid / castREAL(max((INTEGER)1, p))) / ulp;
     //
     //     End of Cgrqts
     //

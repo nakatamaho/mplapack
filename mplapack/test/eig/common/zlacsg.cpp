@@ -28,37 +28,3 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
-
-#include <fem.hpp> // Fortran EMulation library of fable module
-using namespace fem::major_types;
-using fem::common;
-
-#include <mplapack_matgen.h>
-#include <mplapack_eig.h>
-
-#include <mplapack_debug.h>
-
-void Rlasum(const char *type, INTEGER const iounit, INTEGER const ie, INTEGER const nrun) {
-    common cmn;
-    common_write write(cmn);
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Executable Statements ..
-    //
-    if (ie > 0) {
-        write(iounit, "(1x,a3,a2,i4,a8,i5,a35)"), type, ": ", ie, " out of ", nrun, " tests failed to pass the threshold";
-    } else {
-        write(iounit, "(/,1x,a14,a3,a24,i5,a11)"), "All tests for ", type, " passed the threshold ( ", nrun, " tests run)";
-    }
-    //
-    //     End of Rlasum
-    //
-}

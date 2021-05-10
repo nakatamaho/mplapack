@@ -494,7 +494,7 @@ statement_150:
 statement_160:
     try {
         read(niunit, star), n, nslct;
-    } catch (read_end const ) {
+    } catch (read_end const) {
         goto statement_200;
     }
     if (n == 0) {

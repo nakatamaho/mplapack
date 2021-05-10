@@ -39,8 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER const nz2, INTEGER const isign, REAL const amagn, REAL const rcond, REAL const triang, INTEGER const idist, INTEGER *iseed, REAL *a, INTEGER const lda) {
-    iseed([4]);
-    a([lda * star]);
     const REAL zero = 0.0;
     INTEGER kbeg = 0;
     INTEGER kend = 0;
@@ -177,7 +175,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
     //
     statement_80:
         for (jd = kbeg; jd <= kend; jd = jd + 1) {
-            a[(jd - 1) + (jd - 1) * lda] = (jd - nz1).real();
+            a[(jd - 1) + (jd - 1) * lda] = castREAL(jd - nz1);
         }
         goto statement_220;
     //
@@ -204,9 +202,9 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
     statement_140:
         a[(kbeg - 1) + (kbeg - 1) * lda] = one;
         if (klen > 1) {
-            alpha = pow(rcond, [(one / (klen - 1).real()) - 1]);
+            alpha = pow(rcond, (one / castREAL(klen - 1)));
             for (i = 2; i <= klen; i = i + 1) {
-                a[((nz1 + i) - 1) + ((nz1 + i) - 1) * lda] = pow(alpha, (i - 1).real());
+                a[((nz1 + i) - 1) + ((nz1 + i) - 1) * lda] = pow(alpha, castREAL(i - 1));
             }
         }
         goto statement_220;
@@ -216,9 +214,9 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
     statement_160:
         a[(kbeg - 1) + (kbeg - 1) * lda] = one;
         if (klen > 1) {
-            alpha = (one - rcond) / (klen - 1).real();
+            alpha = (one - rcond) / castREAL(klen - 1);
             for (i = 2; i <= klen; i = i + 1) {
-                a[((nz1 + i) - 1) + ((nz1 + i) - 1) * lda] = (klen - i).real() * alpha + rcond;
+                a[((nz1 + i) - 1) + ((nz1 + i) - 1) * lda] = castREAL(klen - i) * alpha + rcond;
             }
         }
         goto statement_220;
@@ -228,7 +226,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
     statement_180:
         alpha = log(rcond);
         for (jd = kbeg; jd <= kend; jd = jd + 1) {
-            a[(jd - 1) + (jd - 1) * lda] = exp(alpha * dlaran(iseed));
+            a[(jd - 1) + (jd - 1) * lda] = exp(alpha * Rlaran(iseed));
         }
         goto statement_220;
     //
@@ -236,7 +234,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
     //
     statement_200:
         for (jd = kbeg; jd <= kend; jd = jd + 1) {
-            a[(jd - 1) + (jd - 1) * lda] = dlarnd(idist, iseed);
+            a[(jd - 1) + (jd - 1) * lda] = Rlarnd(idist, iseed);
         }
     //
     statement_220:
@@ -244,10 +242,10 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         //        Scale by AMAGN
         //
         for (jd = kbeg; jd <= kend; jd = jd + 1) {
-            a[(jd - 1) + (jd - 1) * lda] = amagn * a[(jd - 1) + (jd - 1) * lda].real();
+            a[(jd - 1) + (jd - 1) * lda] = amagn * a[(jd - 1) + (jd - 1) * lda];
         }
         for (jd = isdb; jd <= isde; jd = jd + 1) {
-            a[((jd + 1) - 1) + (jd - 1) * lda] = amagn * a[((jd + 1) - 1) + (jd - 1) * lda].real();
+            a[((jd + 1) - 1) + (jd - 1) * lda] = amagn * a[((jd + 1) - 1) + (jd - 1) * lda];
         }
         //
         //        If ISIGN = 1 or 2, assign random signs to diagonal and
@@ -255,15 +253,15 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         //
         if (isign > 0) {
             for (jd = kbeg; jd <= kend; jd = jd + 1) {
-                if (a[(jd - 1) + (jd - 1) * lda].real() != zero) {
-                    if (dlaran(iseed) > half) {
+                if (a[(jd - 1) + (jd - 1) * lda] != zero) {
+                    if (Rlaran(iseed) > half) {
                         a[(jd - 1) + (jd - 1) * lda] = -a[(jd - 1) + (jd - 1) * lda];
                     }
                 }
             }
             for (jd = isdb; jd <= isde; jd = jd + 1) {
-                if (a[((jd + 1) - 1) + (jd - 1) * lda].real() != zero) {
-                    if (dlaran(iseed) > half) {
+                if (a[((jd + 1) - 1) + (jd - 1) * lda] != zero) {
+                    if (Rlaran(iseed) > half) {
                         a[((jd + 1) - 1) + (jd - 1) * lda] = -a[((jd + 1) - 1) + (jd - 1) * lda];
                     }
                 }
@@ -291,20 +289,20 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         if (isign == 2 && itype != 2 && itype != 3) {
             safmin = Rlamch("S");
             for (jd = kbeg; jd <= kend - 1; jd = jd + 2) {
-                if (dlaran(iseed) > half) {
+                if (Rlaran(iseed) > half) {
                     //
                     //                 Rotation on left.
                     //
-                    cl = two * dlaran(iseed) - one;
-                    sl = two * dlaran(iseed) - one;
+                    cl = two * Rlaran(iseed) - one;
+                    sl = two * Rlaran(iseed) - one;
                     temp = one / max(safmin, sqrt(pow2(cl) + pow2(sl)));
                     cl = cl * temp;
                     sl = sl * temp;
                     //
                     //                 Rotation on right.
                     //
-                    cr = two * dlaran(iseed) - one;
-                    sr = two * dlaran(iseed) - one;
+                    cr = two * Rlaran(iseed) - one;
+                    sr = two * Rlaran(iseed) - one;
                     temp = one / max(safmin, sqrt(pow2(cr) + pow2(sr)));
                     cr = cr * temp;
                     sr = sr * temp;
@@ -332,14 +330,14 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
             ioff = 2;
             for (jr = 1; jr <= n - 1; jr = jr + 1) {
                 if (a[((jr + 1) - 1) + (jr - 1) * lda] == zero) {
-                    a[(jr - 1) + ((jr + 1) - 1) * lda] = triang * dlarnd(idist, iseed);
+                    a[(jr - 1) + ((jr + 1) - 1) * lda] = triang * Rlarnd(idist, iseed);
                 }
             }
         }
         //
         for (jc = 2; jc <= n; jc = jc + 1) {
             for (jr = 1; jr <= jc - ioff; jr = jr + 1) {
-                a[(jr - 1) + (jc - 1) * lda] = triang * dlarnd(idist, iseed);
+                a[(jr - 1) + (jc - 1) * lda] = triang * Rlarnd(idist, iseed);
             }
         }
     }

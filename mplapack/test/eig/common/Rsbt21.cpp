@@ -39,9 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rsbt21(const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const ks, REAL *a, INTEGER const lda, REAL *d, REAL *e, REAL *u, INTEGER const ldu, REAL *work, REAL *result) {
-    a([lda * star]);
-    u([ldu * star]);
-    result([2]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -82,10 +79,10 @@ void Rsbt21(const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const k
     char cuplo;
     if (Mlsame(uplo, "U")) {
         lower = false;
-        cuplo = "U";
+        cuplo = 'U';
     } else {
         lower = true;
-        cuplo = "L";
+        cuplo = 'L';
     }
     //
     REAL unfl = Rlamch("Safe minimum");
@@ -97,7 +94,7 @@ void Rsbt21(const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const k
     //
     //     Norm of A:
     //
-    REAL anorm = max({Rlansb("1", cuplo, n, ika, a, lda, work), unfl});
+    REAL anorm = max(Rlansb("1", &cuplo, n, ika, a, lda, work), unfl);
     //
     //     Compute error matrix:    Error = A - U S U**T
     //
@@ -129,15 +126,15 @@ void Rsbt21(const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const k
     }
     //
     for (j = 1; j <= n; j = j + 1) {
-        Rspr(cuplo, n, -d[j - 1], &u[(j - 1) * ldu], 1, work);
+        Rspr(&cuplo, n, -d[j - 1], &u[(j - 1) * ldu], 1, work);
     }
     //
     if (n > 1 && ks == 1) {
         for (j = 1; j <= n - 1; j = j + 1) {
-            Rspr2(cuplo, n, -e[j - 1], &u[(j - 1) * ldu], 1, &u[((j + 1) - 1) * ldu], 1, work);
+            Rspr2(&cuplo, n, -e[j - 1], &u[(j - 1) * ldu], 1, &u[((j + 1) - 1) * ldu], 1, work);
         }
     }
-    REAL wnorm = Rlansp("1", cuplo, n, work, &work[(lw + 1) - 1]);
+    REAL wnorm = Rlansp("1", &cuplo, n, work, &work[(lw + 1) - 1]);
     //
     const REAL one = 1.0;
     if (anorm > wnorm) {
@@ -146,7 +143,7 @@ void Rsbt21(const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const k
         if (anorm < one) {
             result[1 - 1] = (min(wnorm, n * anorm) / anorm) / (n * ulp);
         } else {
-            result[1 - 1] = min(wnorm / anorm, n.real()) / (n * ulp);
+            result[1 - 1] = min(wnorm / anorm, castREAL(n)) / (n * ulp);
         }
     }
     //
@@ -160,7 +157,7 @@ void Rsbt21(const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const k
         work[((n + 1) * (j - 1) + 1) - 1] = work[((n + 1) * (j - 1) + 1) - 1] - one;
     }
     //
-    result[2 - 1] = min({Rlange("1", n, n, work, n, &work[(pow2(n) + 1) - 1]), n.real()}) / (n * ulp);
+    result[2 - 1] = min(Rlange("1", n, n, work, n, &work[(pow2(n) + 1) - 1]), castREAL(n)) / (n * ulp);
     //
     //     End of Rsbt21
     //

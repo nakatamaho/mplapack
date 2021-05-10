@@ -39,6 +39,7 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Alahdg(INTEGER const iounit, const char *path) {
+    common cmn;
     common_write write(cmn);
     static const char *format_9932 = "(3x,i2,': norm( I - Q''*Q )   / ( N * EPS )')";
     static const char *format_9933 = "(3x,i2,': norm( I - Z''*Z )   / ( P * EPS )')";
@@ -73,7 +74,10 @@ void Alahdg(INTEGER const iounit, const char *path) {
     if (iounit <= 0) {
         return;
     }
-    char c2[3] = path[(3 - 1) * ldpath];
+    char c2[3];
+    c2[0] = path[0];
+    c2[1] = path[1];
+    c2[2] = path[2];
     //
     //     First line describing matrices in this path
     //

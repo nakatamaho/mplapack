@@ -39,18 +39,13 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rlatb9(const char *path, INTEGER const imat, INTEGER const m, INTEGER const p, INTEGER const n, char *type, INTEGER &kla, INTEGER &kua, INTEGER &klb, INTEGER &kub, REAL &anorm, REAL &bnorm, INTEGER &modea, INTEGER &modeb, REAL &cndnma, REAL &cndnmb, char *dista, char *distb) {
-    FEM_CMN_SVE(Rlatb9);
-    // SAVE
-    REAL &badc1 = sve.badc1;
-    REAL &badc2 = sve.badc2;
-    REAL &eps = sve.eps;
-    bool &first = sve.first;
-    REAL &large = sve.large;
-    REAL &small = sve.small;
-    //
-    if (is_called_first_time) {
-        first = true;
-    }
+
+    REAL badc1;
+    REAL badc2;
+    REAL eps;
+    bool first;
+    REAL large;
+    REAL small;
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -82,27 +77,25 @@ void Rlatb9(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
     const REAL tenth = 0.1e+0;
     const REAL one = 1.0;
     const REAL shrink = 0.25e0;
-    if (first) {
-        first = false;
-        eps = Rlamch("Precision");
-        badc2 = tenth / eps;
-        badc1 = sqrt(badc2);
-        small = Rlamch("Safe minimum");
-        large = one / small;
-        //
-        //        If it looks like we're on a Cray, take the square root of
-        //        SMALL and LARGE to avoid overflow and underflow problems.
-        //
-        Rlabad(small, large);
-        small = shrink * (small / eps);
-        large = one / small;
-    }
+    first = false;
+    eps = Rlamch("Precision");
+    badc2 = tenth / eps;
+    badc1 = sqrt(badc2);
+    small = Rlamch("Safe minimum");
+    large = one / small;
+    //
+    //        If it looks like we're on a Cray, take the square root of
+    //        SMALL and LARGE to avoid overflow and underflow problems.
+    //
+    Rlabad(small, large);
+    small = shrink * (small / eps);
+    large = one / small;
     //
     //     Set some parameters we don't plan to change.
     //
-    type = "N";
-    dista = "S";
-    distb = "S";
+    *type = 'N';
+    *dista = 'S';
+    *distb = 'S';
     modea = 3;
     modeb = 4;
     //

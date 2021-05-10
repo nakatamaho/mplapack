@@ -39,11 +39,8 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cglmts(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, COMPLEX *af, INTEGER const lda, COMPLEX *b, COMPLEX *bf, INTEGER const ldb, COMPLEX *d, COMPLEX *df, COMPLEX *x, COMPLEX *u, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL &result) {
-    a([lda * star]);
-    af([lda * star]);
-    b([ldb * star]);
-    bf([ldb * star]);
-    work([lwork]);
+    INTEGER ldaf = lda;
+    INTEGER ldbf = lda;
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

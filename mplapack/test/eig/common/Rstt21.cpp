@@ -39,8 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rstt21(INTEGER const n, INTEGER const kband, REAL *ad, REAL *ae, REAL *sd, REAL *se, REAL *u, INTEGER const ldu, REAL *work, REAL *result) {
-    u([ldu * star]);
-    result([2]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -120,7 +118,7 @@ void Rstt21(INTEGER const n, INTEGER const kband, REAL *ad, REAL *ae, REAL *sd, 
         if (anorm < one) {
             result[1 - 1] = (min(wnorm, n * anorm) / anorm) / (n * ulp);
         } else {
-            result[1 - 1] = min(wnorm / anorm, n.real()) / (n * ulp);
+            result[1 - 1] = min(wnorm / anorm, castREAL(n)) / (n * ulp);
         }
     }
     //
@@ -134,7 +132,7 @@ void Rstt21(INTEGER const n, INTEGER const kband, REAL *ad, REAL *ae, REAL *sd, 
         work[((n + 1) * (j - 1) + 1) - 1] = work[((n + 1) * (j - 1) + 1) - 1] - one;
     }
     //
-    result[2 - 1] = min({n.real(), Rlange("1", n, n, work, n, &work[(pow2(n) + 1) - 1])}) / (n * ulp);
+    result[2 - 1] = min(castREAL(n), Rlange("1", n, n, work, n, &work[(n * n + 1) - 1])) / (n * ulp);
     //
     //     End of Rstt21
     //

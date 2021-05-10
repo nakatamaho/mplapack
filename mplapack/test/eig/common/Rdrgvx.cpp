@@ -330,7 +330,7 @@ statement_90:
     //
     try {
         read(nin, star), n;
-    } catch (read_end const ) {
+    } catch (read_end const) {
         goto statement_150;
     }
     if (n == 0) {

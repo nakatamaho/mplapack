@@ -39,9 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cget22(const char *transa, const char *transe, const char *transw, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *e, INTEGER const lde, COMPLEX *w, COMPLEX *work, REAL *rwork, REAL *result) {
-    a([lda * star]);
-    e([lde * star]);
-    result([2]);
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -84,15 +81,15 @@ void Cget22(const char *transa, const char *transe, const char *transw, INTEGER 
     char norme;
     //
     if (Mlsame(transa, "T") || Mlsame(transa, "C")) {
-        norma = "I";
+        norma = 'I';
     }
     //
     if (Mlsame(transe, "T")) {
         itrnse = 1;
-        norme = "I";
+        norme = 'I';
     } else if (Mlsame(transe, "C")) {
         itrnse = 2;
-        norme = "I";
+        norme = 'I';
     }
     //
     if (Mlsame(transw, "C")) {
@@ -128,18 +125,18 @@ void Cget22(const char *transa, const char *transe, const char *transw, INTEGER 
         }
         //
         for (jvec = 1; jvec <= n; jvec = jvec + 1) {
-            enrmin = min(enrmin, &rwork[jvec - 1]);
-            enrmax = max(enrmax, &rwork[jvec - 1]);
+            enrmin = min(enrmin, rwork[jvec - 1]);
+            enrmax = max(enrmax, rwork[jvec - 1]);
         }
     }
     //
     //     Norm of A:
     //
-    REAL anorm = max({Clange(norma, n, n, a, lda, rwork), unfl});
+    REAL anorm = max({Clange(&norma, n, n, a, lda, rwork), unfl});
     //
     //     Norm of E:
     //
-    REAL enorm = max({Clange(norme, n, n, e, lde, rwork), ulp});
+    REAL enorm = max({Clange(&norme, n, n, e, lde, rwork), ulp});
     //
     //     Norm of error:
     //
@@ -194,7 +191,7 @@ void Cget22(const char *transa, const char *transe, const char *transw, INTEGER 
     //
     //     Compute RESULT(2) : the normalization error in E.
     //
-    result[2 - 1] = max(abs(enrmax - one), abs(enrmin - one)) / (n.real() * ulp);
+    result[2 - 1] = max(abs(enrmax - one), abs(enrmin - one)) / (castREAL(n) * ulp);
     //
     //     End of Cget22
     //

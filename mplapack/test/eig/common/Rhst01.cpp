@@ -38,12 +38,7 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
-void Rhst01(INTEGER const n, INTEGER const  /* ilo */, INTEGER const  /* ihi */, REAL *a, INTEGER const lda, REAL *h, INTEGER const ldh, REAL *q, INTEGER const ldq, REAL *work, INTEGER const lwork, REAL *result) {
-    a([lda * star]);
-    h([ldh * star]);
-    q([ldq * star]);
-    work([lwork]);
-    result([2]);
+void Rhst01(INTEGER const n, INTEGER const /* ilo */, INTEGER const /* ihi */, REAL *a, INTEGER const lda, REAL *h, INTEGER const ldh, REAL *q, INTEGER const ldq, REAL *work, INTEGER const lwork, REAL *result) {
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

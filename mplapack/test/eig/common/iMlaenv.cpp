@@ -40,9 +40,6 @@ using fem::common;
 
 INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
     INTEGER return_value = 0;
-    // COMMON claenv
-    INTEGER *iparms(cmn.iparms, [100]);
-    //
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -177,7 +174,7 @@ INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, I
     return return_value;
 }
 
-INTEGER iparmq(INTEGER const ispec, const char * /* name */, const char * /* opts */, INTEGER const  /* n */, INTEGER const ilo, INTEGER const ihi, INTEGER const  /* lwork */) {
+INTEGER iparmq(INTEGER const ispec, const char * /* name */, const char * /* opts */, INTEGER const /* n */, INTEGER const ilo, INTEGER const ihi, INTEGER const /* lwork */) {
     INTEGER return_value = 0;
     //
     //     ..
