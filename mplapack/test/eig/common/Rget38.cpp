@@ -39,10 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
-    rmax([3]);
-    lmax([3]);
-    ninfo([3]);
-    common_read read(cmn);
     REAL eps = 0.0;
     REAL smlnum = 0.0;
     const REAL one = 1.0;
@@ -56,6 +52,7 @@ void Rget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     INTEGER iselec[ldt];
     INTEGER i = 0;
     REAL tmp[ldt * ldt];
+    INTEGER ldtmp = ldt;
     INTEGER j = 0;
     REAL sin = 0.0;
     REAL sepin = 0.0;
@@ -95,6 +92,8 @@ void Rget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     REAL tolin = 0.0;
     REAL ttmp[ldt * ldt];
     REAL qtmp[ldt * ldt];
+    INTEGER ldttmp = ldt;
+    INTEGER ldq = ldt;
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -266,7 +265,7 @@ statement_10:
         //        Compare condition number for eigenvalue cluster
         //        taking its condition number into account
         //
-        v = max(two * n.real() * eps * tnrm, smlnum);
+        v = max(two * castREAL(n) * eps * tnrm, smlnum);
         if (tnrm == zero) {
             v = one;
         }
@@ -336,7 +335,7 @@ statement_10:
         //        Compare condition number for eigenvalue cluster
         //        without taking its condition number into account
         //
-        if (sin <= (2 * n).real() * eps && stmp <= (2 * n).real() * eps) {
+        if (sin <= castREAL(2 * n) * eps && stmp <= castREAL(2 * n) * eps) {
             vmax = one;
         } else if (eps * sin > stmp) {
             vmax = one / eps;

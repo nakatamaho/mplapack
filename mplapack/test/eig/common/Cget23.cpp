@@ -39,20 +39,10 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER const jtype, REAL const thresh, INTEGER *iseed, INTEGER const nounit, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *w, COMPLEX *w1, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, COMPLEX *lre, INTEGER const ldlre, REAL *rcondv, REAL *rcndv1, REAL *rcdvin, REAL *rconde, REAL *rcnde1, REAL *rcdein, REAL *scale, REAL *scale1, REAL *result, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
-    FEM_CMN_SVE(Cget23);
-    iseed([4]);
-    a([lda * star]);
-    h([lda * star]);
-    vl([ldvl * star]);
-    vr([ldvr * star]);
-    lre([ldlre * star]);
-    result([11]);
+    INTEGER ldh = lda;
+    common cmn;
     common_write write(cmn);
-    str_arr_ref<1> sens(sve.sens, [2]);
-    if (is_called_first_time) {
-        static const char *values[] = {"N", "V"};
-        data_of_type_str(FEM_VALUES_AND_SIZE), sens;
-    }
+    const char sens[] = {'N', 'V'};
     bool nobal = false;
     bool balok = false;
     const REAL zero = 0.0;
@@ -173,20 +163,20 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
     //     Compute eigenvalues and eigenvectors, and test them
     //
     if (lwork >= 2 * n + n * n) {
-        sense = "B";
+        sense = 'B';
         isensm = 2;
     } else {
-        sense = "E";
+        sense = 'E';
         isensm = 1;
     }
     Clacpy("F", n, n, a, lda, h, lda);
-    Cgeevx(balanc, "V", "V", sense, n, h, lda, w, vl, ldvl, vr, ldvr, ilo, ihi, scale, abnrm, rconde, rcondv, work, lwork, rwork, iinfo);
+    Cgeevx(balanc, "V", "V", &sense, n, h, lda, w, vl, ldvl, vr, ldvr, ilo, ihi, scale, abnrm, rconde, rcondv, work, lwork, rwork, iinfo);
     if (iinfo != 0) {
         result[1 - 1] = ulpinv;
         if (jtype != 22) {
             write(nounit, format_9998), "Cgeevx1", iinfo, n, jtype, balanc, iseed;
         } else {
-            write(nounit, format_9999), "Cgeevx1", iinfo, n, iseed(1);
+            write(nounit, format_9999), "Cgeevx1", iinfo, n, iseed[1 - 1];
         }
         info = abs(iinfo);
         return;
@@ -253,13 +243,13 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
         //        Compute eigenvalues only, and test them
         //
         Clacpy("F", n, n, a, lda, h, lda);
-        Cgeevx(balanc, "N", "N", sense, n, h, lda, w1, cdum, 1, cdum, 1, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, rwork, iinfo);
+        Cgeevx(balanc, "N", "N", &sense, n, h, lda, w1, cdum, 1, cdum, 1, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, rwork, iinfo);
         if (iinfo != 0) {
             result[1 - 1] = ulpinv;
             if (jtype != 22) {
                 write(nounit, format_9998), "Cgeevx2", iinfo, n, jtype, balanc, iseed;
             } else {
-                write(nounit, format_9999), "Cgeevx2", iinfo, n, iseed(1);
+                write(nounit, format_9999), "Cgeevx2", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_190;
@@ -305,13 +295,13 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
         //        Compute eigenvalues and right eigenvectors, and test them
         //
         Clacpy("F", n, n, a, lda, h, lda);
-        Cgeevx(balanc, "N", "V", sense, n, h, lda, w1, cdum, 1, lre, ldlre, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, rwork, iinfo);
+        Cgeevx(balanc, "N", "V", &sense, n, h, lda, w1, cdum, 1, lre, ldlre, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, rwork, iinfo);
         if (iinfo != 0) {
             result[1 - 1] = ulpinv;
             if (jtype != 22) {
                 write(nounit, format_9998), "Cgeevx3", iinfo, n, jtype, balanc, iseed;
             } else {
-                write(nounit, format_9999), "Cgeevx3", iinfo, n, iseed(1);
+                write(nounit, format_9999), "Cgeevx3", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_190;
@@ -367,13 +357,13 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
         //        Compute eigenvalues and left eigenvectors, and test them
         //
         Clacpy("F", n, n, a, lda, h, lda);
-        Cgeevx(balanc, "V", "N", sense, n, h, lda, w1, lre, ldlre, cdum, 1, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, rwork, iinfo);
+        Cgeevx(balanc, "V", "N", &sense, n, h, lda, w1, lre, ldlre, cdum, 1, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, rwork, iinfo);
         if (iinfo != 0) {
             result[1 - 1] = ulpinv;
             if (jtype != 22) {
                 write(nounit, format_9998), "Cgeevx4", iinfo, n, jtype, balanc, iseed;
             } else {
-                write(nounit, format_9999), "Cgeevx4", iinfo, n, iseed(1);
+                write(nounit, format_9999), "Cgeevx4", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_190;
@@ -437,7 +427,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
         Cgeevx("N", "V", "V", "B", n, h, lda, w, vl, ldvl, vr, ldvr, ilo, ihi, scale, abnrm, rconde, rcondv, work, lwork, rwork, iinfo);
         if (iinfo != 0) {
             result[1 - 1] = ulpinv;
-            write(nounit, format_9999), "Cgeevx5", iinfo, n, iseed(1);
+            write(nounit, format_9999), "Cgeevx5", iinfo, n, iseed[1 - 1];
             info = abs(iinfo);
             goto statement_250;
         }
@@ -479,7 +469,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
         //
         result[10 - 1] = zero;
         eps = max(epsin, ulp);
-        v = max(n.real() * eps * abnrm, smlnum);
+        v = max(castREAL(n) * eps * abnrm, smlnum);
         if (abnrm == zero) {
             v = one;
         }

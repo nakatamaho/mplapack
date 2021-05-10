@@ -39,7 +39,7 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nwdths, INTEGER *kk, INTEGER const ntypes, bool *dotype, INTEGER const nrhs, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *ab, INTEGER const ldab, REAL *bd, REAL *be, REAL *q, INTEGER const ldq, REAL *p, INTEGER const ldp, REAL *c, INTEGER const ldc, REAL *cc, REAL *work, INTEGER const lwork, REAL *result, INTEGER &info) {
-    INTEGER ldcc = ldc;
+
     common cmn;
     common_write write(cmn);
     char buf[1024];
