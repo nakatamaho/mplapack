@@ -4,6 +4,8 @@ libeig_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INC
 libeig_mpfr_la_SOURCES = $(EIG_SOURCES)
 
 EIG_SOURCES = \
+../common/Rlacsg.cpp \
+../common/Clacsg.cpp \
 ../common/Rlasum.cpp \
 ../common/Rlctes.cpp \
 ../common/Alasmg.cpp \
@@ -44,10 +46,8 @@ EIG_SOURCES = \
 ../common/Cstt21.cpp \
 ../common/Rort01.cpp \
 ../common/Rsvdch.cpp \
-../common/Rchkbk.cpp \
 ../common/Cunt01.cpp \
 ../common/Rbdt04.cpp \
-../common/Cchkbk.cpp \
 ../common/Cchkec.cpp \
 ../common/Rstech.cpp \
 ../common/Rort03.cpp \
@@ -57,26 +57,17 @@ EIG_SOURCES = \
 ../common/Rsbt21.cpp \
 ../common/Cstt22.cpp \
 ../common/Chbt21.cpp \
-../common/Rchkbl.cpp \
 ../common/Cget52.cpp \
 ../common/Rbdt03.cpp \
-../common/Cchkbl.cpp \
 ../common/Cbdt03.cpp \
 ../common/Rget53.cpp \
-../common/Cget36.cpp \
 ../common/Cunt03.cpp \
-../common/Rchkgl.cpp \
-../common/Cchkgl.cpp \
 ../common/Rckgsv.cpp \
 ../common/Cget22.cpp \
 ../common/Rgqrts.cpp \
 ../common/Rgrqts.cpp \
 ../common/Cckgsv.cpp \
-../common/Rget40.cpp \
-../common/Alareq.cpp \
-../common/Alarqg.cpp \
 ../common/Rbdt01.cpp \
-../common/Rget36.cpp \
 ../common/Cgqrts.cpp \
 ../common/Cgrqts.cpp \
 ../common/Cbdt01.cpp \
@@ -87,7 +78,6 @@ EIG_SOURCES = \
 ../common/Cckcsd.cpp \
 ../common/Rcklse.cpp \
 ../common/Ccklse.cpp \
-../common/Rchkgk.cpp \
 ../common/Rchkec.cpp \
 ../common/Rgsvts3.cpp \
 ../common/Csbmv.cpp \
@@ -95,7 +85,6 @@ EIG_SOURCES = \
 ../common/Cgsvts3.cpp \
 ../common/Rget22.cpp \
 ../common/Rget52.cpp \
-../common/Cchkgk.cpp \
 ../common/Rget33.cpp \
 ../common/Rsyt21.cpp \
 ../common/Chet21.cpp \
@@ -103,14 +92,11 @@ EIG_SOURCES = \
 ../common/Clarhs.cpp \
 ../common/Cerrec.cpp \
 ../common/Chpt21.cpp \
-../common/Cget35.cpp \
 ../common/Cerrbd.cpp \
-../common/iMlaenv.cpp \
 ../common/Rerrec.cpp \
 ../common/Cckgqr.cpp \
 ../common/Rckgqr.cpp \
 ../common/Clatm4.cpp \
-../common/Rget35.cpp \
 ../common/Alahdg.cpp \
 ../common/Rlatm4.cpp \
 ../common/Rerrbd.cpp \
@@ -121,28 +107,19 @@ EIG_SOURCES = \
 ../common/Rerrhs.cpp \
 ../common/Rchkbb.cpp \
 ../common/Cchkbb.cpp \
-../common/Rget38.cpp \
-../common/Cget38.cpp \
 ../common/Rget32.cpp \
 ../common/Rget34.cpp \
 ../common/Cget23.cpp \
 ../common/Cerred.cpp \
 ../common/Rget23.cpp \
 ../common/Rerred.cpp \
-../common/Cget37.cpp \
 ../common/Rchksb.cpp \
-../common/Rget37.cpp \
 ../common/Cchkhb.cpp \
-../common/Cdrgvx.cpp \
-../common/Rdrgvx.cpp \
-../common/Rdrvvx.cpp \
-../common/Cdrvvx.cpp \
-../common/Cdrvsx.cpp \
-../common/Rdrvsx.cpp \
 ../common/Rget31.cpp \
 ../common/Cget24.cpp \
 ../common/Cchkbd.cpp \
 ../common/Cdrves.cpp \
+\
 ../common/Cdrvev.cpp \
 ../common/Rdrvev.cpp \
 ../common/Rchksb2stg.cpp \
@@ -184,7 +161,33 @@ EIG_SOURCES = \
 ../common/Cdrvst.cpp \
 ../common/Cdrvst2stg.cpp \
 ../common/Rdrvst.cpp \
-../common/Rdrvst2stg.cpp
+../common/Rdrvst2stg.cpp \
+../common/Cchkbk.cpp \
+../common/Rchkbk.cpp \
+../common/Rchkbl.cpp \
+../common/Cchkbl.cpp \
+../common/Cget36.cpp \
+../common/Rchkgl.cpp \
+../common/Cchkgl.cpp \
+../common/Rget40.cpp \
+../common/Alareq.cpp \
+../common/Alarqg.cpp \
+../common/Rget36.cpp \
+../common/Rchkgk.cpp \
+../common/Cchkgk.cpp \
+../common/Cget35.cpp \
+../common/iMlaenv.cpp \
+../common/Rget35.cpp \
+../common/Rget38.cpp \
+../common/Cget38.cpp \
+../common/Cget37.cpp \
+../common/Rget37.cpp \
+../common/Cdrgvx.cpp \
+../common/Rdrgvx.cpp \
+../common/Rdrvvx.cpp \
+../common/Cdrvvx.cpp \
+../common/Cdrvsx.cpp \
+../common/Rdrvsx.cpp
 
 libdepends = -L. -leig_mpfr -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr 
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lm

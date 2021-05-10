@@ -39,38 +39,16 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *w, COMPLEX *w1, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, COMPLEX *lre, INTEGER const ldlre, REAL *result, COMPLEX *work, INTEGER const nwork, REAL *rwork, INTEGER *iwork, INTEGER &info) {
-    FEM_CMN_SVE(Cdrvev);
-    iseed([4]);
-    a([lda * star]);
-    h([lda * star]);
-    vl([ldvl * star]);
-    vr([ldvr * star]);
-    lre([ldlre * star]);
-    result([7]);
+    INTEGER ldh = lda;
+    common cmn;
     common_write write(cmn);
     const INTEGER maxtyp = 21;
-    INTEGER *kconds(sve.kconds, [maxtyp]);
-    INTEGER *kmagn(sve.kmagn, [maxtyp]);
-    INTEGER *kmode(sve.kmode, [maxtyp]);
-    INTEGER *ktype(sve.ktype, [maxtyp]);
-    if (is_called_first_time) {
-        data((values, 1, 2, 3, 5 * datum(4), 4 * datum(6), 6 * datum(6), 3 * datum(9))), ktype;
-        {
-            data_values data;
-            data.values, 3 * datum(1), 1, 1, 1, 2, 3, 4 * datum(1), 1;
-            data.values, 1, 1, 1, 2, 3, 1, 2, 3;
-            data, kmagn;
-        }
-        {
-            data_values data;
-            data.values, 3 * datum(0), 4, 3, 1, 4, 4, 4, 3;
-            data.values, 1, 5, 4, 3, 1, 5, 5, 5;
-            data.values, 4, 3, 1;
-            data, kmode;
-        }
-        data((values, 3 * datum(0), 5 * datum(0), 4 * datum(1), 6 * datum(2), 3 * datum(0))), kconds;
-    }
+    INTEGER ktype[21] = {1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9};
+    INTEGER kmagn[21] = {1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 2, 3};
+    INTEGER kmode[21] = {0, 0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1};
+    INTEGER kconds[21] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0};
     char path[3];
+    char buf[1024];
     INTEGER ntestt = 0;
     INTEGER ntestf = 0;
     bool badnn = false;
@@ -142,8 +120,9 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     //     ..
     //     .. Executable Statements ..
     //
-    path[(1 - 1)] = "Zomplex precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "EV";
+    path[0] = 'C';
+    path[1] = 'E';
+    path[2] = 'V';
     //
     //     Check for errors
     //
@@ -314,13 +293,13 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 //              Diagonal Matrix, [Eigen]values Specified
                 //
-                zlatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, 0, 0, "N", a, lda, &work[(n + 1) - 1], iinfo);
+                Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, 0, 0, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 5) {
                 //
                 //              Hermitian, eigenvalues specified
                 //
-                zlatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, n, n, "N", a, lda, &work[(n + 1) - 1], iinfo);
+                Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, n, n, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 6) {
                 //
@@ -334,25 +313,25 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     conds = zero;
                 }
                 //
-                zlatme(n, "D", iseed, work, imode, cond, cone, "T", "T", "T", rwork, 4, conds, n, n, anorm, a, lda, &work[(2 * n + 1) - 1], iinfo);
+                Clatme(n, "D", iseed, work, imode, cond, cone, "T", "T", "T", rwork, 4, conds, n, n, anorm, a, lda, &work[(2 * n + 1) - 1], iinfo);
                 //
             } else if (itype == 7) {
                 //
                 //              Diagonal, random eigenvalues
                 //
-                zlatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
+                Clatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 8) {
                 //
                 //              Symmetric, random eigenvalues
                 //
-                zlatmr(n, n, "D", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
+                Clatmr(n, n, "D", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 9) {
                 //
                 //              General, random eigenvalues
                 //
-                zlatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
+                Clatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 if (n >= 4) {
                     Claset("Full", 2, n, czero, czero, a, lda);
                     Claset("Full", n - 3, 1, czero, czero, &a[(3 - 1)], lda);
@@ -364,7 +343,7 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 //              Triangular, random eigenvalues
                 //
-                zlatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
+                Clatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else {
                 //
@@ -577,7 +556,8 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     write(nounit, "(' 19=Matrix with random O(1) entries.    ',' 21=Matrix ',"
                                   "'with small random entries.',/,' 20=Matrix with large ran',"
                                   "'dom entries.   ',/)");
-                    write(nounit, "(' Tests performed with test threshold =',f8.2,/,/,"
+                    sprintnum_short(buf, thresh);
+                    write(nounit, "(' Tests performed with test threshold =',a,/,/,"
                                   "' 1 = | A VR - VR W | / ( n |A| ulp ) ',/,"
                                   "' 2 = | conj-trans(A) VL - VL conj-trans(W) | /',"
                                   "' ( n |A| ulp ) ',/,' 3 = | |VR(i)| - 1 | / ulp ',/,"
@@ -588,15 +568,16 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                                   "'  1/ulp otherwise',/,"
                                   "' 7 = 0 if VL same no matter if VR computed,',"
                                   "'  1/ulp otherwise',/)"),
-                        thresh;
+                        buf;
                     ntestf = 2;
                 }
                 //
                 for (j = 1; j <= 7; j = j + 1) {
                     if (result[j - 1] >= thresh) {
+                        sprintnum_short(buf, result[j - 1]);
                         write(nounit, "(' N=',i5,', IWK=',i2,', seed=',4(i4,','),' type ',i2,"
-                                      "', test(',i2,')=',g10.3)"),
-                            n, iwk, ioldsd, jtype, j, result(j);
+                                      "', test(',i2,')=',a)"),
+                            n, iwk, ioldsd, jtype, j, buf;
                     }
                 }
                 //
