@@ -39,14 +39,13 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER const nout, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *ai, COMPLEX *bi, COMPLEX *alpha, COMPLEX *beta, COMPLEX *vl, COMPLEX *vr, INTEGER const ilo, INTEGER const ihi, REAL *lscale, REAL *rscale, REAL *s, REAL *dtru, REAL *dif, REAL *diftru, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER const liwork, REAL *result, bool *bwork, INTEGER &info) {
-    a([lda * star]);
-    b([lda * star]);
-    ai([lda * star]);
-    bi([lda * star]);
-    vl([lda * star]);
-    vr([lda * star]);
-    result([4]);
-    common_read read(cmn);
+    INTEGER ldb = lda;
+    INTEGER ldai = lda;
+    INTEGER ldbi = lda;
+    INTEGER ldvl = lda;
+    INTEGER ldvr = lda;
+    char buf[1024];
+    common cmn;
     common_write write(cmn);
     INTEGER nmax = 0;
     const REAL zero = 0.0;
@@ -89,7 +88,7 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                                      "' over the 1st and 5th eigenvectors',/)";
     static const char *format_9997 = "(/,1x,a3,' -- Complex Expert Eigenvalue/vector',' problem driver')";
     static const char *format_9998 = "(' Cdrgvx: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
-                                     "' Bits of error=',0p,g10.3,',',9x,'N=',i6,', JTYPE=',i6,', IWA=',i5,"
+                                     "' Bits of error=',0p,a,',',9x,'N=',i6,', JTYPE=',i6,', IWA=',i5,"
                                      "', IWB=',i5,', IWX=',i5,', IWY=',i5)";
     //
     //  -- LAPACK test routine --
@@ -189,7 +188,7 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                         //
                         //                    generated a pair of test matrix
                         //
-                        zlatm6(iptype, 5, a, lda, b, vr, lda, vl, lda, weight[iwa - 1], weight[iwb - 1], weight[iwx - 1], weight[iwy - 1], dtru, diftru);
+                        Clatm6(iptype, 5, a, lda, b, vr, lda, vl, lda, weight[iwa - 1], weight[iwb - 1], weight[iwx - 1], weight[iwy - 1], dtru, diftru);
                         //
                         //                    Compute eigenvalues/eigenvectors of (A, B).
                         //                    Compute eigenvalue/eigenvector condition numbers
@@ -215,15 +214,17 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                         //                    Tests (1) and (2)
                         //
                         result[1 - 1] = zero;
-                        Cget52(true, n, a, lda, b, lda, vl, lda, alpha, beta, work, rwork, result[1 - 1]);
+                        Cget52(true, n, a, lda, b, lda, vl, lda, alpha, beta, work, rwork, &result[1 - 1]);
                         if (result[2 - 1] > thresh) {
-                            write(nout, format_9998), "Left", "Cggevx", result(2), n, iptype, iwa, iwb, iwx, iwy;
+                            sprintnum_short(buf, result[2 - 1]);
+                            write(nout, format_9998), "Left", "Cggevx", buf, n, iptype, iwa, iwb, iwx, iwy;
                         }
                         //
                         result[2 - 1] = zero;
-                        Cget52(false, n, a, lda, b, lda, vr, lda, alpha, beta, work, rwork, result[2 - 1]);
+                        Cget52(false, n, a, lda, b, lda, vr, lda, alpha, beta, work, rwork, &result[2 - 1]);
                         if (result[3 - 1] > thresh) {
-                            write(nout, format_9998), "Right", "Cggevx", result(3), n, iptype, iwa, iwb, iwx, iwy;
+                            sprintnum_short(buf, result[3 - 1]);
+                            write(nout, format_9998), "Right", "Cggevx", buf, n, iptype, iwa, iwb, iwx, iwy;
                         }
                         //
                         //                    Test (3)
@@ -240,7 +241,7 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                                 }
                             } else {
                                 rwork[i - 1] = max(abs(dtru[i - 1] / s[i - 1]), abs(s[i - 1] / dtru[i - 1]));
-                                result[3 - 1] = max(result[3 - 1], &rwork[i - 1]);
+                                result[3 - 1] = max(result[3 - 1], rwork[i - 1]);
                             }
                         }
                         //
@@ -301,13 +302,15 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                                 }
                                 nerrs++;
                                 if (result[j - 1] < 10000.0) {
+                                    sprintnum_short(buf, result[j - 1]);
                                     write(nout, "(' Type=',i2,',',' IWA=',i2,', IWB=',i2,', IWX=',i2,"
-                                                "', IWY=',i2,', result ',i2,' is',0p,f8.2)"),
-                                        iptype, iwa, iwb, iwx, iwy, j, result(j);
+                                                "', IWY=',i2,', result ',i2,' is',0p,buf)"),
+                                        iptype, iwa, iwb, iwx, iwy, j, buf;
                                 } else {
+                                    sprintnum_short(buf, result[j - 1]);
                                     write(nout, "(' Type=',i2,',',' IWA=',i2,', IWB=',i2,', IWX=',i2,"
-                                                "', IWY=',i2,', result ',i2,' is',1p,d10.3)"),
-                                        iptype, iwa, iwb, iwx, iwy, j, result(j);
+                                                "', IWY=',i2,', result ',i2,' is',1p,buf)"),
+                                        iptype, iwa, iwb, iwx, iwy, j, buf;
                                 }
                             }
                         }

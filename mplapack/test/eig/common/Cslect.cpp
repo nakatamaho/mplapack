@@ -31,13 +31,18 @@
 
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
-#include <mplapack_common.h>
+using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
 #include <mplapack_debug.h>
-bool Cslect(common &cmn, COMPLEX const z) {
+
+INTEGER seldim, selopt;
+bool selval[20];
+REAL selwi[20], selwr[20];
+
+bool Cslect(COMPLEX const z) {
     bool return_value = false;
     //
     //
@@ -68,16 +73,16 @@ bool Cslect(common &cmn, COMPLEX const z) {
     REAL rmin = 0.0;
     INTEGER i = 0;
     REAL x = 0.0;
-    if (cmn.selopt == 0) {
+    if (selopt == 0) {
         return_value = (z.real() < zero);
     } else {
-        rmin = abs(z - COMPLEX(cmn.selwr[1 - 1], cmn.selwi[1 - 1]));
-        return_value = cmn.selval[1 - 1];
-        for (i = 2; i <= cmn.seldim; i = i + 1) {
-            x = abs(z - COMPLEX(cmn.selwr[i - 1], cmn.selwi[i - 1]));
+        rmin = abs(z - COMPLEX(selwr[1 - 1], selwi[1 - 1]));
+        return_value = selval[1 - 1];
+        for (i = 2; i <= seldim; i = i + 1) {
+            x = abs(z - COMPLEX(selwr[i - 1], selwi[i - 1]));
             if (x <= rmin) {
                 rmin = x;
-                return_value = cmn.selval[i - 1];
+                return_value = selval[i - 1];
             }
         }
     }

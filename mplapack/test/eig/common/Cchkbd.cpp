@@ -39,36 +39,12 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const ntypes, bool *dotype, INTEGER const nrhs, INTEGER *iseed, REAL const thresh, COMPLEX *a, INTEGER const lda, REAL *bd, REAL *be, REAL *s1, REAL *s2, COMPLEX *x, INTEGER const ldx, COMPLEX *y, COMPLEX *z, COMPLEX *q, INTEGER const ldq, COMPLEX *pt, INTEGER const ldpt, COMPLEX *u, COMPLEX *vt, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const nout, INTEGER &info) {
-    FEM_CMN_SVE(Cchkbd);
-    iseed([4]);
-    a([lda * star]);
-    x([ldx * star]);
-    y([ldx * star]);
-    z([ldx * star]);
-    q([ldq * star]);
-    pt([ldpt * star]);
-    u([ldpt * star]);
-    vt([ldpt * star]);
+    common cmn;
     common_write write(cmn);
     const INTEGER maxtyp = 16;
-    INTEGER *kmagn(sve.kmagn, [maxtyp]);
-    INTEGER *kmode(sve.kmode, [maxtyp]);
-    INTEGER *ktype(sve.ktype, [maxtyp]);
-    if (is_called_first_time) {
-        data((values, 1, 2, 5 * datum(4), 5 * datum(6), 3 * datum(9), 10)), ktype;
-        {
-            data_values data;
-            data.values, 2 * datum(1), 3 * datum(1), 2, 3, 3 * datum(1), 2, 3, 1;
-            data.values, 2, 3, 0;
-            data, kmagn;
-        }
-        {
-            data_values data;
-            data.values, 2 * datum(0), 4, 3, 1, 4, 4, 4, 3;
-            data.values, 1, 4, 4, 0, 0, 0, 0;
-            data, kmode;
-        }
-    }
+    INTEGER ktype[16] = {1, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 9, 9, 9, 10};
+    INTEGER kmagn[16] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 0};
+    INTEGER kmode[16] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 0};
     bool badmm = false;
     bool badnn = false;
     INTEGER mmax = 0;
@@ -115,6 +91,11 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     REAL temp2 = 0.0;
     const REAL half = 0.5e0;
     REAL dumma[1];
+    INTEGER ldvt = ldpt;
+    INTEGER ldu = ldpt;
+    INTEGER ldy = ldx;
+    INTEGER ldz = ldx;
+    char buf[1024];
     static const char *format_9998 = "(' Cchkbd: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
                                      "', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')";
     //
@@ -203,8 +184,9 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     //
     //     Initialize constants
     //
-    path[(1 - 1)] = "Zomplex precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "BD";
+    path[0] = 'C';
+    path[1] = 'B';
+    path[2] = 'D';
     nfail = 0;
     ntest = 0;
     unfl = Rlamch("Safe minimum");
@@ -212,10 +194,9 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
     ulpinv = one / ulp;
-    log2ui = int(log(ulpinv) / log(two));
+    log2ui = castINTEGER(log(ulpinv) / log(two));
     rtunfl = sqrt(unfl);
     rtovfl = sqrt(ovfl);
-    cmn.infot = 0;
     //
     //     Loop over sizes, types
     //
@@ -223,7 +204,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
         m = mval[jsize - 1];
         n = nval[jsize - 1];
         mnmin = min(m, n);
-        amninv = one / max({m, n, 1});
+        amninv = one / max({m, n, (INTEGER)1});
         //
         if (nsizes != 1) {
             mtypes = min(maxtyp, ntypes);
@@ -244,7 +225,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 result[j - 1] = -one;
             }
             //
-            uplo = " ";
+            uplo = ' ';
             //
             //           Compute "A"
             //
@@ -319,37 +300,37 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //
                 //              Diagonal Matrix, [Eigen]values Specified
                 //
-                zlatms(mnmin, mnmin, "S", iseed, "N", rwork, imode, cond, anorm, 0, 0, "N", a, lda, work, iinfo);
+                Clatms(mnmin, mnmin, "S", iseed, "N", rwork, imode, cond, anorm, 0, 0, "N", a, lda, work, iinfo);
                 //
             } else if (itype == 5) {
                 //
                 //              Symmetric, eigenvalues specified
                 //
-                zlatms(mnmin, mnmin, "S", iseed, "S", rwork, imode, cond, anorm, m, n, "N", a, lda, work, iinfo);
+                Clatms(mnmin, mnmin, "S", iseed, "S", rwork, imode, cond, anorm, m, n, "N", a, lda, work, iinfo);
                 //
             } else if (itype == 6) {
                 //
                 //              Nonsymmetric, singular values specified
                 //
-                zlatms(m, n, "S", iseed, "N", rwork, imode, cond, anorm, m, n, "N", a, lda, work, iinfo);
+                Clatms(m, n, "S", iseed, "N", rwork, imode, cond, anorm, m, n, "N", a, lda, work, iinfo);
                 //
             } else if (itype == 7) {
                 //
                 //              Diagonal, random entries
                 //
-                zlatmr(mnmin, mnmin, "S", iseed, "N", work, 6, one, cone, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(2 * mnmin + 1) - 1], 1, one, "N", iwork, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
+                Clatmr(mnmin, mnmin, "S", iseed, "N", work, 6, one, cone, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(2 * mnmin + 1) - 1], 1, one, "N", iwork, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 8) {
                 //
                 //              Symmetric, random entries
                 //
-                zlatmr(mnmin, mnmin, "S", iseed, "S", work, 6, one, cone, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(m + mnmin + 1) - 1], 1, one, "N", iwork, m, n, zero, anorm, "NO", a, lda, iwork, iinfo);
+                Clatmr(mnmin, mnmin, "S", iseed, "S", work, 6, one, cone, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(m + mnmin + 1) - 1], 1, one, "N", iwork, m, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 9) {
                 //
                 //              Nonsymmetric, random entries
                 //
-                zlatmr(m, n, "S", iseed, "N", work, 6, one, cone, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(m + mnmin + 1) - 1], 1, one, "N", iwork, m, n, zero, anorm, "NO", a, lda, iwork, iinfo);
+                Clatmr(m, n, "S", iseed, "N", work, 6, one, cone, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(m + mnmin + 1) - 1], 1, one, "N", iwork, m, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 10) {
                 //
@@ -357,18 +338,18 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //
                 temp1 = -two * log(ulp);
                 for (j = 1; j <= mnmin; j = j + 1) {
-                    bd[j - 1] = exp(temp1 * dlarnd(2, iseed));
+                    bd[j - 1] = exp(temp1 * Rlarnd(2, iseed));
                     if (j < mnmin) {
-                        be[j - 1] = exp(temp1 * dlarnd(2, iseed));
+                        be[j - 1] = exp(temp1 * Rlarnd(2, iseed));
                     }
                 }
                 //
                 iinfo = 0;
                 bidiag = true;
                 if (m >= n) {
-                    uplo = "U";
+                    uplo = 'U';
                 } else {
-                    uplo = "L";
+                    uplo = 'L';
                 }
             } else {
                 iinfo = 1;
@@ -379,9 +360,9 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //              Generate Right-Hand Side
                 //
                 if (bidiag) {
-                    zlatmr(mnmin, nrhs, "S", iseed, "N", work, 6, one, cone, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(2 * mnmin + 1) - 1], 1, one, "N", iwork, mnmin, nrhs, zero, one, "NO", y, ldx, iwork, iinfo);
+                    Clatmr(mnmin, nrhs, "S", iseed, "N", work, 6, one, cone, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(2 * mnmin + 1) - 1], 1, one, "N", iwork, mnmin, nrhs, zero, one, "NO", y, ldx, iwork, iinfo);
                 } else {
-                    zlatmr(m, nrhs, "S", iseed, "N", work, 6, one, cone, "T", "N", &work[(m + 1) - 1], 1, one, &work[(2 * m + 1) - 1], 1, one, "N", iwork, m, nrhs, zero, one, "NO", x, ldx, iwork, iinfo);
+                    Clatmr(m, nrhs, "S", iseed, "N", work, 6, one, cone, "T", "N", &work[(m + 1) - 1], 1, one, &work[(2 * m + 1) - 1], 1, one, "N", iwork, m, nrhs, zero, one, "NO", x, ldx, iwork, iinfo);
                 }
             }
             //
@@ -415,9 +396,9 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //
                 Clacpy(" ", m, n, q, ldq, pt, ldpt);
                 if (m >= n) {
-                    uplo = "U";
+                    uplo = 'U';
                 } else {
-                    uplo = "L";
+                    uplo = 'L';
                 }
                 //
                 //              Generate Q
@@ -472,7 +453,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             Claset("Full", mnmin, mnmin, czero, cone, u, ldpt);
             Claset("Full", mnmin, mnmin, czero, cone, vt, ldpt);
             //
-            Cbdsqr(uplo, mnmin, mnmin, mnmin, nrhs, s1, rwork, vt, ldpt, u, ldpt, z, ldx, &rwork[(mnmin + 1) - 1], iinfo);
+            Cbdsqr(&uplo, mnmin, mnmin, mnmin, nrhs, s1, rwork, vt, ldpt, u, ldpt, z, ldx, &rwork[(mnmin + 1) - 1], iinfo);
             //
             //           Check error code from Cbdsqr.
             //
@@ -495,7 +476,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 Rcopy(mnmin - 1, be, 1, rwork, 1);
             }
             //
-            Cbdsqr(uplo, mnmin, 0, 0, 0, s2, rwork, vt, ldpt, u, ldpt, z, ldx, &rwork[(mnmin + 1) - 1], iinfo);
+            Cbdsqr(&uplo, mnmin, 0, 0, 0, s2, rwork, vt, ldpt, u, ldpt, z, ldx, &rwork[(mnmin + 1) - 1], iinfo);
             //
             //           Check error code from Cbdsqr.
             //
@@ -515,7 +496,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //                6:  Check the orthogonality of U
             //                7:  Check the orthogonality of VT
             //
-            Cbdt03(uplo, mnmin, 1, bd, be, u, ldpt, s1, vt, ldpt, work, result[4 - 1]);
+            Cbdt03(&uplo, mnmin, 1, bd, be, u, ldpt, s1, vt, ldpt, work, result[4 - 1]);
             Cbdt02(mnmin, nrhs, y, ldx, z, ldx, u, ldpt, work, rwork, result[5 - 1]);
             Cunt01("Columns", mnmin, mnmin, u, ldpt, work, lwork, rwork, result[6 - 1]);
             Cunt01("Rows", mnmin, mnmin, vt, ldpt, work, lwork, rwork, result[7 - 1]);
@@ -574,7 +555,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                     Rcopy(mnmin - 1, be, 1, rwork, 1);
                 }
                 //
-                Cbdsqr(uplo, mnmin, n, m, nrhs, s2, rwork, pt, ldpt, q, ldq, y, ldx, &rwork[(mnmin + 1) - 1], iinfo);
+                Cbdsqr(&uplo, mnmin, n, m, nrhs, s2, rwork, pt, ldpt, q, ldq, y, ldx, &rwork[(mnmin + 1) - 1], iinfo);
                 //
                 //              Test 11:  Check the decomposition A := Q*U * S2 * VT*PT
                 //                   12:  Check the computation Z := U' * Q' * X
@@ -595,9 +576,10 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                     if (nfail == 0) {
                         Rlahd2(nout, path);
                     }
+                    sprintnum_short(buf, result[j - 1]);
                     write(nout, "(' M=',i5,', N=',i5,', type ',i2,', seed=',4(i4,','),' test(',i2,"
-                                "')=',g11.4)"),
-                        m, n, jtype, ioldsd, j, result(j);
+                                "')=',a)"),
+                        m, n, jtype, ioldsd, j, buf;
                     nfail++;
                 }
             }

@@ -39,10 +39,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
-    rmax([3]);
-    lmax([3]);
-    ninfo([3]);
-    common_read read(cmn);
     REAL eps = 0.0;
     REAL smlnum = 0.0;
     const REAL one = 1.0;
@@ -260,7 +256,7 @@ statement_10:
         //        Compare condition numbers for eigenvalues
         //        taking their condition numbers into account
         //
-        v = max(two * n.real() * eps * tnrm, smlnum);
+        v = max(two * castREAL(n) * eps * tnrm, smlnum);
         if (tnrm == zero) {
             v = one;
         }

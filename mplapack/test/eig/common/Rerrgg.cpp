@@ -39,6 +39,7 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rerrgg(const char *path, INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
     // COMMON infoc
     INTEGER &infot = cmn.infot;

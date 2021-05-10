@@ -39,30 +39,13 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rchksb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *sd, REAL *se, REAL *u, INTEGER const ldu, REAL *work, INTEGER const lwork, REAL *result, INTEGER &info) {
-    FEM_CMN_SVE(Rchksb);
-    iseed([4]);
-    a([lda * star]);
-    u([ldu * star]);
+    common cmn;
     common_write write(cmn);
     const INTEGER maxtyp = 15;
-    INTEGER *kmagn(sve.kmagn, [maxtyp]);
-    INTEGER *kmode(sve.kmode, [maxtyp]);
-    INTEGER *ktype(sve.ktype, [maxtyp]);
-    if (is_called_first_time) {
-        data((values, 1, 2, 5 * datum(4), 5 * datum(5), 3 * datum(8))), ktype;
-        {
-            data_values data;
-            data.values, 2 * datum(1), 1, 1, 1, 2, 3, 1, 1;
-            data.values, 1, 2, 3, 1, 2, 3;
-            data, kmagn;
-        }
-        {
-            data_values data;
-            data.values, 2 * datum(0), 4, 3, 1, 4, 4, 4, 3;
-            data.values, 1, 4, 4, 0, 0, 0;
-            data, kmode;
-        }
-    }
+    char buf[1024];
+    INTEGER ktype[15] = {1, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 9, 9, 9};
+    INTEGER kmagn[15] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3};
+    INTEGER kmode[15] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0};
     INTEGER ntestt = 0;
     bool badnn = false;
     INTEGER nmax = 0;
@@ -205,7 +188,7 @@ void Rchksb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
     //
     for (jsize = 1; jsize <= nsizes; jsize = jsize + 1) {
         n = nn[jsize - 1];
-        aninv = one / (max((INTEGER)1, n)).real();
+        aninv = one / castREAL(max((INTEGER)1, n));
         //
         for (jwidth = 1; jwidth <= nwdths; jwidth = jwidth + 1) {
             k = kk[jwidth - 1];
@@ -309,31 +292,31 @@ void Rchksb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                     //
                     //                 Diagonal Matrix, [Eigen]values Specified
                     //
-                    dlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, 0, 0, "Q", &a[((k + 1) - 1)], lda, &work[(n + 1) - 1], iinfo);
+                    Rlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, 0, 0, "Q", &a[((k + 1) - 1)], lda, &work[(n + 1) - 1], iinfo);
                     //
                 } else if (itype == 5) {
                     //
                     //                 Symmetric, eigenvalues specified
                     //
-                    dlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, k, k, "Q", a, lda, &work[(n + 1) - 1], iinfo);
+                    Rlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, k, k, "Q", a, lda, &work[(n + 1) - 1], iinfo);
                     //
                 } else if (itype == 7) {
                     //
                     //                 Diagonal, random eigenvalues
                     //
-                    dlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "Q", &a[((k + 1) - 1)], lda, idumma, iinfo);
+                    Rlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "Q", &a[((k + 1) - 1)], lda, idumma, iinfo);
                     //
                 } else if (itype == 8) {
                     //
                     //                 Symmetric, random eigenvalues
                     //
-                    dlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, k, k, zero, anorm, "Q", a, lda, idumma, iinfo);
+                    Rlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, k, k, zero, anorm, "Q", a, lda, idumma, iinfo);
                     //
                 } else if (itype == 9) {
                     //
                     //                 Positive definite, eigenvalues specified.
                     //
-                    dlatms(n, n, "S", iseed, "P", work, imode, cond, anorm, k, k, "Q", a, lda, &work[(n + 1) - 1], iinfo);
+                    Rlatms(n, n, "S", iseed, "P", work, imode, cond, anorm, k, k, "Q", a, lda, &work[(n + 1) - 1], iinfo);
                     //
                 } else if (itype == 10) {
                     //
@@ -342,7 +325,7 @@ void Rchksb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                     if (n > 1) {
                         k = max((INTEGER)1, k);
                     }
-                    dlatms(n, n, "S", iseed, "P", work, imode, cond, anorm, 1, 1, "Q", &a[(k - 1)], lda, &work[(n + 1) - 1], iinfo);
+                    Rlatms(n, n, "S", iseed, "P", work, imode, cond, anorm, 1, 1, "Q", &a[(k - 1)], lda, &work[(n + 1) - 1], iinfo);
                     for (i = 2; i <= n; i = i + 1) {
                         temp1 = abs(a[(k - 1) + (i - 1) * lda]) / sqrt(abs(a[((k + 1) - 1) + ((i - 1) - 1) * lda] * a[((k + 1) - 1) + (i - 1) * lda]));
                         if (temp1 > half) {
@@ -383,7 +366,7 @@ void Rchksb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                 //
                 //              Do tests 1 and 2
                 //
-                Rsbt21("Upper", n, k, 1, a, lda, sd, se, u, ldu, work, result[1 - 1]);
+                Rsbt21("Upper", n, k, 1, a, lda, sd, se, u, ldu, work, &result[1 - 1]);
                 //
                 //              Convert A from Upper-Triangle-Only storage to
                 //              Lower-Triangle-Only storage.
@@ -420,7 +403,7 @@ void Rchksb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                 //
                 //              Do tests 3 and 4
                 //
-                Rsbt21("Lower", n, k, 1, a, lda, sd, se, u, ldu, work, result[3 - 1]);
+                Rsbt21("Lower", n, k, 1, a, lda, sd, se, u, ldu, work, &result[3 - 1]);
             //
             //              End of Loop -- Check for RESULT(j) > THRESH
             //
@@ -473,9 +456,10 @@ void Rchksb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                             }
                         }
                         nerrs++;
+                        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' N=',i5,', K=',i4,', seed=',4(i4,','),' type ',i2,', test(',"
-                                      "i2,')=',g10.3)"),
-                            n, k, ioldsd, jtype, jr, result(jr);
+                                      "i2,')=',a)"),
+                            n, k, ioldsd, jtype, jr, buf;
                     }
                 }
             //

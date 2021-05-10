@@ -39,30 +39,12 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, REAL *sd, REAL *se, COMPLEX *u, INTEGER const ldu, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result, INTEGER &info) {
-    FEM_CMN_SVE(Cchkhb);
-    iseed([4]);
-    a([lda * star]);
-    u([ldu * star]);
+    common cmn;
     common_write write(cmn);
     const INTEGER maxtyp = 15;
-    INTEGER *kmagn(sve.kmagn, [maxtyp]);
-    INTEGER *kmode(sve.kmode, [maxtyp]);
-    INTEGER *ktype(sve.ktype, [maxtyp]);
-    if (is_called_first_time) {
-        data((values, 1, 2, 5 * datum(4), 5 * datum(5), 3 * datum(8))), ktype;
-        {
-            data_values data;
-            data.values, 2 * datum(1), 1, 1, 1, 2, 3, 1, 1;
-            data.values, 1, 2, 3, 1, 2, 3;
-            data, kmagn;
-        }
-        {
-            data_values data;
-            data.values, 2 * datum(0), 4, 3, 1, 4, 4, 4, 3;
-            data.values, 1, 4, 4, 0, 0, 0;
-            data, kmode;
-        }
-    }
+    INTEGER ktype[15] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8};
+    INTEGER kmagn[15] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3};
+    INTEGER kmode[15] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0};
     INTEGER ntestt = 0;
     bool badnn = false;
     INTEGER nmax = 0;
@@ -104,6 +86,7 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
     const REAL half = one / two;
     INTEGER jc = 0;
     INTEGER jr = 0;
+    char buf[1024];
     static const char *format_9999 = "(' Cchkhb: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
@@ -207,7 +190,7 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
     //
     for (jsize = 1; jsize <= nsizes; jsize = jsize + 1) {
         n = nn[jsize - 1];
-        aninv = one / (max((INTEGER)1, n)).real();
+        aninv = one / castREAL(max((INTEGER)1, n));
         //
         for (jwidth = 1; jwidth <= nwdths; jwidth = jwidth + 1) {
             k = kk[jwidth - 1];
@@ -311,31 +294,31 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                     //
                     //                 Diagonal Matrix, [Eigen]values Specified
                     //
-                    zlatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, 0, 0, "Q", &a[((k + 1) - 1)], lda, work, iinfo);
+                    Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, 0, 0, "Q", &a[((k + 1) - 1)], lda, work, iinfo);
                     //
                 } else if (itype == 5) {
                     //
                     //                 Hermitian, eigenvalues specified
                     //
-                    zlatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, k, k, "Q", a, lda, work, iinfo);
+                    Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, k, k, "Q", a, lda, work, iinfo);
                     //
                 } else if (itype == 7) {
                     //
                     //                 Diagonal, random eigenvalues
                     //
-                    zlatmr(n, n, "S", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "Q", &a[((k + 1) - 1)], lda, idumma, iinfo);
+                    Clatmr(n, n, "S", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "Q", &a[((k + 1) - 1)], lda, idumma, iinfo);
                     //
                 } else if (itype == 8) {
                     //
                     //                 Hermitian, random eigenvalues
                     //
-                    zlatmr(n, n, "S", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, k, k, zero, anorm, "Q", a, lda, idumma, iinfo);
+                    Clatmr(n, n, "S", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, k, k, zero, anorm, "Q", a, lda, idumma, iinfo);
                     //
                 } else if (itype == 9) {
                     //
                     //                 Positive definite, eigenvalues specified.
                     //
-                    zlatms(n, n, "S", iseed, "P", rwork, imode, cond, anorm, k, k, "Q", a, lda, &work[(n + 1) - 1], iinfo);
+                    Clatms(n, n, "S", iseed, "P", rwork, imode, cond, anorm, k, k, "Q", a, lda, &work[(n + 1) - 1], iinfo);
                     //
                 } else if (itype == 10) {
                     //
@@ -344,7 +327,7 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                     if (n > 1) {
                         k = max((INTEGER)1, k);
                     }
-                    zlatms(n, n, "S", iseed, "P", rwork, imode, cond, anorm, 1, 1, "Q", &a[(k - 1)], lda, work, iinfo);
+                    Clatms(n, n, "S", iseed, "P", rwork, imode, cond, anorm, 1, 1, "Q", &a[(k - 1)], lda, work, iinfo);
                     for (i = 2; i <= n; i = i + 1) {
                         temp1 = abs(a[(k - 1) + (i - 1) * lda]) / sqrt(abs(a[((k + 1) - 1) + ((i - 1) - 1) * lda] * a[((k + 1) - 1) + (i - 1) * lda]));
                         if (temp1 > half) {
@@ -385,7 +368,7 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                 //
                 //              Do tests 1 and 2
                 //
-                Chbt21("Upper", n, k, 1, a, lda, sd, se, u, ldu, work, rwork, result[1 - 1]);
+                Chbt21("Upper", n, k, 1, a, lda, sd, se, u, ldu, work, rwork, &result[1 - 1]);
                 //
                 //              Convert A from Upper-Triangle-Only storage to
                 //              Lower-Triangle-Only storage.
@@ -422,7 +405,7 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                 //
                 //              Do tests 3 and 4
                 //
-                Chbt21("Lower", n, k, 1, a, lda, sd, se, u, ldu, work, rwork, result[3 - 1]);
+                Chbt21("Lower", n, k, 1, a, lda, sd, se, u, ldu, work, rwork, &result[3 - 1]);
             //
             //              End of Loop -- Check for RESULT(j) > THRESH
             //
@@ -435,7 +418,7 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                     if (result[jr - 1] >= thresh) {
                         //
                         //                    If this is the first test to fail,
-                        //                    prINTEGER a header to the data file.
+                        //                    print a header to the data file.
                         //
                         if (nerrs == 0) {
                             write(nounit, "(/,1x,a3,"
@@ -476,9 +459,10 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                             }
                         }
                         nerrs++;
+                        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' N=',i5,', K=',i4,', seed=',4(i4,','),' type ',i2,', test(',"
-                                      "i2,')=',g10.3)"),
-                            n, k, ioldsd, jtype, jr, result(jr);
+                                      "i2,')=',a)"),
+                            n, k, ioldsd, jtype, jr, buf;
                     }
                 }
             //

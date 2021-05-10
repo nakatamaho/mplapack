@@ -30,14 +30,19 @@
 #include <mplapack.h>
 
 #include <fem.hpp> // Fortran EMulation library of fable module
-#include <mplapack_common.h>
+using namespace fem::major_types;
+using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
 #include <mplapack_debug.h>
 
-bool Rslect(common &cmn, REAL const zr, REAL const zi) {
+INTEGER seldim, selopt;
+bool selval[20];
+REAL selwi[20], selwr[20];
+
+bool Rslect(REAL const zr, REAL const zi) {
     bool return_value = false;
     //
     //
@@ -68,16 +73,16 @@ bool Rslect(common &cmn, REAL const zr, REAL const zi) {
     REAL rmin = 0.0;
     INTEGER i = 0;
     REAL x = 0.0;
-    if (cmn.selopt == 0) {
+    if (selopt == 0) {
         return_value = (zr < zero);
     } else {
-        rmin = Rlapy2(zr - cmn.selwr[1 - 1], zi - cmn.selwi[1 - 1]);
-        return_value = cmn.selval[1 - 1];
-        for (i = 2; i <= cmn.seldim; i = i + 1) {
-            x = Rlapy2(zr - cmn.selwr[i - 1], zi - cmn.selwi[i - 1]);
+        rmin = Rlapy2(zr - selwr[1 - 1], zi - selwi[1 - 1]);
+        return_value = selval[1 - 1];
+        for (i = 2; i <= seldim; i = i + 1) {
+            x = Rlapy2(zr - selwr[i - 1], zi - selwi[i - 1]);
             if (x <= rmin) {
                 rmin = x;
-                return_value = cmn.selval[i - 1];
+                return_value = selval[i - 1];
             }
         }
     }
