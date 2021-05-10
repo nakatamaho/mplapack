@@ -35,100 +35,31 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
-
 #include <mplapack_debug.h>
 
 void Cdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *s, COMPLEX *t, COMPLEX *q, INTEGER const ldq, COMPLEX *z, COMPLEX *qe, INTEGER const ldqe, COMPLEX *alpha, COMPLEX *beta, COMPLEX *alpha1, COMPLEX *beta1, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result, INTEGER &info) {
-    FEM_CMN_SVE(Cdrgev);
-    iseed([4]);
-    a([lda * star]);
-    b([lda * star]);
-    s([lda * star]);
-    t([lda * star]);
-    q([ldq * star]);
-    z([ldq * star]);
-    qe([ldqe * star]);
+    INTEGER ldb = lda;
+    INTEGER lds = lda;
+    INTEGER ldt = lda;
+    INTEGER ldz = ldq;
+    char buf[1024];
+    common cmn;
     common_write write(cmn);
-    INTEGER *kadd(sve.kadd, [6]);
     const INTEGER maxtyp = 26;
-    INTEGER *kamagn(sve.kamagn, [maxtyp]);
-    INTEGER *katype(sve.katype, [maxtyp]);
-    INTEGER *kazero(sve.kazero, [maxtyp]);
-    INTEGER *kbmagn(sve.kbmagn, [maxtyp]);
-    INTEGER *kbtype(sve.kbtype, [maxtyp]);
-    INTEGER *kbzero(sve.kbzero, [maxtyp]);
-    INTEGER *kclass(sve.kclass, [maxtyp]);
-    INTEGER *ktrian(sve.ktrian, [maxtyp]);
-    INTEGER *kz1(sve.kz1, [6]);
-    INTEGER *kz2(sve.kz2, [6]);
-    bool *lasign(sve.lasign, [maxtyp]);
-    bool *lbsign(sve.lbsign, [maxtyp]);
-    if (is_called_first_time) {
-        data((values, 15 * datum(1), 10 * datum(2), 1 * datum(3))), kclass;
-        {
-            static const INTEGER values[] = {0, 1, 2, 1, 3, 3};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), kz1;
-        }
-        {
-            static const INTEGER values[] = {0, 0, 1, 2, 1, 1};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), kz2;
-        }
-        {
-            static const INTEGER values[] = {0, 0, 0, 0, 3, 2};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), kadd;
-        }
-        {
-            data_values data;
-            data.values, 0, 1, 0, 1, 2, 3, 4, 1;
-            data.values, 4, 4, 1, 1, 4, 4, 4, 2;
-            data.values, 4, 5, 8, 7, 9, 4 * datum(4), 0;
-            data, katype;
-        }
-        {
-            data_values data;
-            data.values, 0, 0, 1, 1, 2, -3, 1, 4;
-            data.values, 1, 1, 4, 4, 1, 1, -4, 2;
-            data.values, -4, 8 * datum(8), 0;
-            data, kbtype;
-        }
-        {
-            data_values data;
-            data.values, 6 * datum(1), 2, 1, 2 * datum(2), 2 * datum(1), 2 * datum(2), 3, 1;
-            data.values, 3, 4 * datum(5), 4 * datum(3), 1;
-            data, kazero;
-        }
-        {
-            data_values data;
-            data.values, 6 * datum(1), 1, 2, 2 * datum(1), 2 * datum(2), 2 * datum(1), 4, 1;
-            data.values, 4, 4 * datum(6), 4 * datum(4), 1;
-            data, kbzero;
-        }
-        {
-            data_values data;
-            data.values, 8 * datum(1), 2, 3, 2, 3, 2, 3, 7 * datum(1);
-            data.values, 2, 3, 3, 2, 1;
-            data, kamagn;
-        }
-        {
-            data_values data;
-            data.values, 8 * datum(1), 3, 2, 3, 2, 2, 3, 7 * datum(1);
-            data.values, 3, 2, 3, 2, 1;
-            data, kbmagn;
-        }
-        data((values, 16 * datum(0), 10 * datum(1))), ktrian;
-        {
-            data_values data;
-            data.values, 6 * datum(false), true, false, 2 * datum(true), 2 * datum(false), 3 * datum(true), false, true;
-            data.values, 3 * datum(false), 5 * datum(true), false;
-            data, lasign;
-        }
-        {
-            data_values data;
-            data.values, 7 * datum(false), true, 2 * datum(false), 2 * datum(true), 2 * datum(false), true, false, true;
-            data.values, 9 * datum(false);
-            data, lbsign;
-        }
-    }
+    INTEGER kclass[26] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3};
+    INTEGER kbmagn[26] = {1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 2, 3, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 1};
+    INTEGER ktrian[26] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    bool lasign[26] = {false, false, false, false, false, false, true, false, true, true, false, false, true, true, true, false, true, false, false, false, true, true, true, true, true, false};
+    bool lbsign[26] = {false, false, false, false, false, false, false, true, false, false, true, true, false, false, true, false, true, false, false, false, false, false, false, false, false, false};
+    INTEGER kz1[6] = {0, 1, 2, 1, 3, 3};
+    INTEGER kz2[6] = {0, 0, 1, 2, 1, 1};
+    INTEGER kadd[6] = {0, 0, 0, 0, 3, 2};
+    INTEGER katype[26] = {0, 1, 0, 1, 2, 3, 4, 1, 4, 4, 1, 1, 4, 4, 4, 2, 4, 5, 8, 7, 9, 4, 4, 4, 4, 0};
+    INTEGER kbtype[26] = {0, 0, 1, 1, 2, -3, 1, 4, 1, 1, 4, 4, 1, 1, -4, 2, -4, 8, 8, 8, 8, 8, 8, 8, 8, 0};
+    INTEGER kazero[26] = {1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 2, 2, 3, 1, 3, 5, 5, 5, 5, 3, 3, 3, 3, 1};
+    INTEGER kbzero[26] = {1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1, 4, 1, 4, 6, 6, 6, 6, 4, 4, 4, 4, 1};
+    INTEGER kamagn[26] = {1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 3, 2, 3, 1, 1, 1, 1, 1, 1, 1, 2, 3, 3, 2, 1};
+
     bool badnn = false;
     INTEGER nmax = 0;
     INTEGER j = 0;
@@ -141,7 +72,7 @@ void Cdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     const REAL one = 1.0;
     REAL safmax = 0.0;
     REAL ulpinv = 0.0;
-    REAL rmagn dim1(0, 3);
+    REAL rmagn[3];
     INTEGER ntestt = 0;
     INTEGER nerrs = 0;
     INTEGER nmats = 0;
@@ -273,7 +204,7 @@ void Cdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     for (jsize = 1; jsize <= nsizes; jsize = jsize + 1) {
         n = nn[jsize - 1];
         n1 = max((INTEGER)1, n);
-        rmagn[2 - 1] = safmax * ulp / n1.real();
+        rmagn[2 - 1] = safmax * ulp / castREAL(n1);
         rmagn[3 - 1] = safmin * ulpinv * n1;
         //
         if (nsizes != 1) {
@@ -362,21 +293,21 @@ void Cdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     for (jc = 1; jc <= n - 1; jc = jc + 1) {
                         for (jr = jc; jr <= n; jr = jr + 1) {
-                            q[(jr - 1) + (jc - 1) * ldq] = zlarnd(3, iseed);
-                            z[(jr - 1) + (jc - 1) * ldz] = zlarnd(3, iseed);
+                            q[(jr - 1) + (jc - 1) * ldq] = Clarnd(3, iseed);
+                            z[(jr - 1) + (jc - 1) * ldz] = Clarnd(3, iseed);
                         }
-                        Clarfg(n + 1 - jc, &q[(jc - 1) + (jc - 1) * ldq], &q[((jc + 1) - 1) + (jc - 1) * ldq], 1, &work[jc - 1]);
-                        work[(2 * n + jc) - 1] = sign(one, &q[(jc - 1) + (jc - 1) * ldq].real());
+                        Clarfg(n + 1 - jc, q[(jc - 1) + (jc - 1) * ldq], &q[((jc + 1) - 1) + (jc - 1) * ldq], 1, work[jc - 1]);
+                        work[(2 * n + jc) - 1] = sign(one, q[(jc - 1) + (jc - 1) * ldq].real());
                         q[(jc - 1) + (jc - 1) * ldq] = cone;
-                        Clarfg(n + 1 - jc, &z[(jc - 1) + (jc - 1) * ldz], &z[((jc + 1) - 1) + (jc - 1) * ldz], 1, &work[(n + jc) - 1]);
-                        work[(3 * n + jc) - 1] = sign(one, &z[(jc - 1) + (jc - 1) * ldz].real());
+                        Clarfg(n + 1 - jc, z[(jc - 1) + (jc - 1) * ldz], &z[((jc + 1) - 1) + (jc - 1) * ldz], 1, work[(n + jc) - 1]);
+                        work[(3 * n + jc) - 1] = sign(one, z[(jc - 1) + (jc - 1) * ldz].real());
                         z[(jc - 1) + (jc - 1) * ldz] = cone;
                     }
-                    ctemp = zlarnd(3, iseed);
+                    ctemp = Clarnd(3, iseed);
                     q[(n - 1) + (n - 1) * ldq] = cone;
                     work[n - 1] = czero;
                     work[(3 * n) - 1] = ctemp / abs(ctemp);
-                    ctemp = zlarnd(3, iseed);
+                    ctemp = Clarnd(3, iseed);
                     z[(n - 1) + (n - 1) * ldz] = cone;
                     work[(2 * n) - 1] = czero;
                     work[(4 * n) - 1] = ctemp / abs(ctemp);
@@ -412,8 +343,8 @@ void Cdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 for (jc = 1; jc <= n; jc = jc + 1) {
                     for (jr = 1; jr <= n; jr = jr + 1) {
-                        a[(jr - 1) + (jc - 1) * lda] = rmagn[kamagn[jtype - 1] - 1] * zlarnd(4, iseed);
-                        b[(jr - 1) + (jc - 1) * ldb] = rmagn[kbmagn[jtype - 1] - 1] * zlarnd(4, iseed);
+                        a[(jr - 1) + (jc - 1) * lda] = rmagn[kamagn[jtype - 1] - 1] * Clarnd(4, iseed);
+                        b[(jr - 1) + (jc - 1) * ldb] = rmagn[kbmagn[jtype - 1] - 1] * Clarnd(4, iseed);
                     }
                 }
             }
@@ -446,16 +377,18 @@ void Cdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             //           Do the tests (1) and (2)
             //
-            Cget52(true, n, a, lda, b, lda, q, ldq, alpha, beta, work, rwork, result[1 - 1]);
+            Cget52(true, n, a, lda, b, lda, q, ldq, alpha, beta, work, rwork, &result[1 - 1]);
             if (result[2 - 1] > thresh) {
-                write(nounit, format_9998), "Left", "Cggev1", result(2), n, jtype, ioldsd;
+                sprintnum_short(buf, result[2 - 1]);
+                write(nounit, format_9998), "Left", "Cggev1", buf, n, jtype, ioldsd;
             }
             //
             //           Do the tests (3) and (4)
             //
-            Cget52(false, n, a, lda, b, lda, z, ldq, alpha, beta, work, rwork, result[3 - 1]);
+            Cget52(false, n, a, lda, b, lda, z, ldq, alpha, beta, work, rwork, &result[3 - 1]);
             if (result[4 - 1] > thresh) {
-                write(nounit, format_9998), "Right", "Cggev1", result(4), n, jtype, ioldsd;
+                sprintnum_short(buf, result[4 - 1]);
+                write(nounit, format_9998), "Right", "Cggev1", buf, n, jtype, ioldsd;
             }
             //
             //           Do test (5)
@@ -583,13 +516,15 @@ void Cdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                     nerrs++;
                     if (result[jr - 1] < 10000.0) {
+                        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
-                                      "' result ',i2,' is',0p,f8.2)"),
-                            n, jtype, ioldsd, jr, result(jr);
+                                      "' result ',i2,' is',0p,a)"),
+                            n, jtype, ioldsd, jr, buf;
                     } else {
+                        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
-                                      "' result ',i2,' is',1p,d10.3)"),
-                            n, jtype, ioldsd, jr, result(jr);
+                                      "' result ',i2,' is',1p,a)"),
+                            n, jtype, ioldsd, jr, buf;
                     }
                 }
             }
