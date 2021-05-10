@@ -38,38 +38,76 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+INTEGER seldim, selopt;
+bool selval[20];
+REAL selwi[20], selwr[20];
+
+bool _Rslect(REAL const zr, REAL const zi) {
+    bool return_value = false;
+    //
+    //
+    //  -- LAPACK test routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Arrays in Common ..
+    //     ..
+    //     .. Scalars in Common ..
+    //     ..
+    //     .. Common blocks ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. Parameters ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    const REAL zero = 0.0;
+    REAL rmin = 0.0;
+    INTEGER i = 0;
+    REAL x = 0.0;
+    if (selopt == 0) {
+        return_value = (zr < zero);
+    } else {
+        rmin = Rlapy2(zr - selwr[1 - 1], zi - selwi[1 - 1]);
+        return_value = selval[1 - 1];
+        for (i = 2; i <= seldim; i = i + 1) {
+            x = Rlapy2(zr - selwr[i - 1], zi - selwi[i - 1]);
+            if (x <= rmin) {
+                rmin = x;
+                return_value = selval[i - 1];
+            }
+        }
+    }
+    return return_value;
+    //
+    //     End of Rslect
+    //
+}
+
+
+
+
 void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *h, REAL *ht, REAL *wr, REAL *wi, REAL *wrt, REAL *wit, REAL *vs, INTEGER const ldvs, REAL *result, REAL *work, INTEGER const nwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
-    FEM_CMN_SVE(Rdrves);
-    iseed([4]);
-    a([lda * star]);
-    h([lda * star]);
-    ht([lda * star]);
-    vs([ldvs * star]);
-    result([13]);
+
+  INTEGER ldh=lda;
+  INTEGER ldht=lda;
+  common cmn;
     common_write write(cmn);
     const INTEGER maxtyp = 21;
-    INTEGER *kconds(sve.kconds, [maxtyp]);
-    INTEGER *kmagn(sve.kmagn, [maxtyp]);
-    INTEGER *kmode(sve.kmode, [maxtyp]);
-    INTEGER *ktype(sve.ktype, [maxtyp]);
-    if (is_called_first_time) {
-        data((values, 1, 2, 3, 5 * datum(4), 4 * datum(6), 6 * datum(6), 3 * datum(9))), ktype;
-        {
-            data_values data;
-            data.values, 3 * datum(1), 1, 1, 1, 2, 3, 4 * datum(1), 1;
-            data.values, 1, 1, 1, 2, 3, 1, 2, 3;
-            data, kmagn;
-        }
-        {
-            data_values data;
-            data.values, 3 * datum(0), 4, 3, 1, 4, 4, 4, 3;
-            data.values, 1, 5, 4, 3, 1, 5, 5, 5;
-            data.values, 4, 3, 1;
-            data, kmode;
-        }
-        data((values, 3 * datum(0), 5 * datum(0), 4 * datum(1), 6 * datum(2), 3 * datum(0))), kconds;
-    }
+    INTEGER ktype[21] = { 1,2,3,4,4,4,4,4,6,6,6,6,6,6,6,6,6,6,9,9,9 };
+    INTEGER kmagn[21] = { 1,1,1,1,1,1,2,3,1,1,1,1,1,1,1,1,2,3,1,2,3 };
+    INTEGER kmode[21] = { 0,0,0,4,3,1,4,4,4,3,1,5,4,3,1,5,5,5,4,3,1 };
+    INTEGER kconds[21] = { 0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,2,2,0,0,0 };
     char path[3];
+    char buf[1024];    
     INTEGER ntestt = 0;
     INTEGER ntestf = 0;
     bool badnn = false;
@@ -147,15 +185,16 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     //     ..
     //     .. Executable Statements ..
     //
-    path[(1 - 1)] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "ES";
+    path[0] = 'R';
+    path[1] = 'E';
+    path[2] = 'S';
     //
     //     Check for errors
     //
     ntestt = 0;
     ntestf = 0;
     info = 0;
-    cmn.selopt = 0;
+    selopt = 0;
     //
     //     Important constants
     //
@@ -411,7 +450,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //                 Compute Schur form and Schur vectors, and test them
                     //
                     Rlacpy("F", n, n, a, lda, h, lda);
-                    Rgees("V", sort, Rslect, n, h, lda, sdim, wr, wi, vs, ldvs, work, nnwork, bwork, iinfo);
+                    Rgees("V", sort, _Rslect, n, h, lda, sdim, wr, wi, vs, ldvs, work, nnwork, bwork, iinfo);
                     if (iinfo != 0 && iinfo != n + 2) {
                         result[(1 + rsub) - 1] = ulpinv;
                         write(nounit, format_9992), "Rgees1", iinfo, n, jtype, ioldsd;
@@ -480,7 +519,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //                 Do Test (5) or Test (11)
                     //
                     Rlacpy("F", n, n, a, lda, ht, lda);
-                    Rgees("N", sort, Rslect, n, ht, lda, sdim, wrt, wit, vs, ldvs, work, nnwork, bwork, iinfo);
+                    Rgees("N", sort, _Rslect, n, ht, lda, sdim, wrt, wit, vs, ldvs, work, nnwork, bwork, iinfo);
                     if (iinfo != 0 && iinfo != n + 2) {
                         result[(5 + rsub) - 1] = ulpinv;
                         write(nounit, format_9992), "Rgees2", iinfo, n, jtype, ioldsd;
@@ -512,11 +551,11 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         result[13 - 1] = zero;
                         knteig = 0;
                         for (i = 1; i <= n; i = i + 1) {
-                            if (Rslect[(wr[i - 1] - 1) + (wi[i - 1] - 1) * ldRslect] || Rslect[(wr[i - 1] - 1) + (-wi[i - 1] - 1) * ldRslect]) {
+                            if (_Rslect[(wr[i - 1] - 1) + (wi[i - 1] - 1) * ld_Rslect] || _Rslect[(wr[i - 1] - 1) + (-wi[i - 1] - 1) * ld_Rslect]) {
                                 knteig++;
                             }
                             if (i < n) {
-                                if ((Rslect[((wr[(i + 1) - 1]) - 1) + ((wi[(i + 1) - 1]) - 1) * ldRslect] || Rslect[((wr[(i + 1) - 1]) - 1) + ((-wi[(i + 1) - 1]) - 1) * ldRslect]) && (!(Rslect[(wr[i - 1] - 1) + (wi[i - 1] - 1) * ldRslect] || Rslect[(wr[i - 1] - 1) + (-wi[i - 1] - 1) * ldRslect])) && iinfo != n + 2) {
+                                if ((_Rslect[((wr[(i + 1) - 1]) - 1) + ((wi[(i + 1) - 1]) - 1) * ld_Rslect] || _Rslect[((wr[(i + 1) - 1]) - 1) + ((-wi[(i + 1) - 1]) - 1) * ld_Rslect]) && (!(_Rslect[(wr[i - 1] - 1) + (wi[i - 1] - 1) * ld_Rslect] || _Rslect[(wr[i - 1] - 1) + (-wi[i - 1] - 1) * ld_Rslect])) && iinfo != n + 2) {
                                     result[13 - 1] = ulpinv;
                                 }
                             }
