@@ -32,7 +32,7 @@
 #define _MPLAPACK_LIN_H_
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-#include <mplapack_lin_gmp.h>
+#include <mplapack_eig_gmp.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
 typedef mpf_class REAL;
@@ -46,7 +46,7 @@ typedef mpc_class COMPLEX;
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-#include <mplapack_lin_mpfr.h>
+#include <mplapack_eig_mpfr.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
 typedef mpreal REAL;
@@ -60,7 +60,7 @@ typedef mpcomplex COMPLEX;
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_QD___
-#include <mplapack_lin_qd.h>
+#include <mplapack_eig_qd.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
 typedef qd_real REAL;
@@ -77,7 +77,7 @@ typedef qd_complex COMPLEX;
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DD___
-#include <mplapack_lin_dd.h>
+#include <mplapack_eig_dd.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
 typedef dd_real REAL;
@@ -94,7 +94,7 @@ typedef dd_complex COMPLEX;
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
-#include <mplapack_lin_double.h>
+#include <mplapack_eig_double.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
 typedef double REAL;
@@ -108,7 +108,7 @@ typedef std::complex<double> COMPLEX;
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-#include <mplapack_lin__Float64x.h>
+#include <mplapack_eig__Float64x.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
 typedef _Float64x REAL;
@@ -122,7 +122,7 @@ typedef std::complex<_Float64x> COMPLEX;
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-#include <mplapack_lin__Float128.h>
+#include <mplapack_eig__Float128.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
 typedef _Float128 REAL;
