@@ -882,6 +882,7 @@ Rsbevx.cpp \
 Rsbevx_2stage.cpp \
 Rsbgst.cpp \
 Rsbgv.cpp \
+Rsbgvd.cpp \
 Rsbgvx.cpp \
 Rsbtrd.cpp \
 Rsfrk.cpp \
