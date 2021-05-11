@@ -198,6 +198,7 @@ Chbevd_2stage.cpp \
 Chbevx.cpp \
 Chbevx_2stage.cpp \
 Chbgst.cpp \
+Chbgv.cpp \
 Chbgvd.cpp \
 Chbgvx.cpp \
 Chbtrd.cpp \
@@ -406,6 +407,7 @@ Cpptrs.cpp \
 Cpstf2.cpp \
 Cpstrf.cpp \
 Cptcon.cpp \
+Cpteqr.cpp \
 Cptrfs.cpp \
 Cptsv.cpp \
 Cptsvx.cpp \

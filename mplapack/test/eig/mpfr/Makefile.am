@@ -141,33 +141,28 @@ EIG_SOURCES = \
 ../common/Rdrvbd.cpp \
 ../common/Rchkbd.cpp \
 ../common/Rdrvsg.cpp \
-\
 ../common/Cdrvbd.cpp \
 ../common/Cdrvsg.cpp \
 ../common/Rerrgg.cpp \
 ../common/Cerrgg.cpp \
-../common/Rdrvsg2stg.cpp \
-../common/Cdrvsg2stg.cpp \
 ../common/Cerrst.cpp \
 ../common/Rerrst.cpp \
+../common/Rdrvsg2stg.cpp \
+../common/Cdrvsg2stg.cpp \
 ../common/Rchkst.cpp \
 ../common/Cchkst.cpp \
 ../common/Rchkst2stg.cpp \
 ../common/Cchkst2stg.cpp \
-../common/Rchkee.cpp \
-../common/Cchkee.cpp \
 ../common/Cdrvst.cpp \
 ../common/Cdrvst2stg.cpp \
 ../common/Rdrvst.cpp \
+\
 ../common/Rdrvst2stg.cpp \
 ../common/Cchkbk.cpp \
 ../common/Rchkbk.cpp \
-../common/Rchkbl.cpp \
-../common/Cchkbl.cpp \
 ../common/Cget36.cpp \
 ../common/Rchkgl.cpp \
 ../common/Cchkgl.cpp \
-../common/Rget40.cpp \
 ../common/Alareq.cpp \
 ../common/Alarqg.cpp \
 ../common/Rget36.cpp \
@@ -187,7 +182,10 @@ EIG_SOURCES = \
 ../common/Cdrvsx.cpp \
 ../common/Rdrvsx.cpp \
 ../common/Cdrgsx.cpp \
-../common/Rdrgsx.cpp
+../common/Rdrgsx.cpp \
+../common/Rget40.cpp \
+../common/Rchkbl.cpp \
+../common/Cchkbl.cpp
 
 libdepends = -L. -leig_mpfr -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr 
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lm
