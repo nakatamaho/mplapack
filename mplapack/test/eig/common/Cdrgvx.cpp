@@ -475,11 +475,11 @@ statement_90:
             nerrs++;
             if (result[j - 1] < 10000.0) {
                 write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
-                            "' is',0p,f8.2)"),
+                            "' is',0p,a)"),
                     nptknt, n, j, result(j);
             } else {
                 write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
-                            "' is',1p,d10.3)"),
+                            "' is',1p,a)"),
                     nptknt, n, j, result(j);
             }
         }

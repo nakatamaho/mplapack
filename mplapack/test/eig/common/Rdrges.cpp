@@ -457,7 +457,7 @@ void Rdrges(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                             }
                         }
                         if (!ilabad) {
-                            Rget53(s[(i1 - 1) + (i1 - 1) * lds], lda, &t[(i1 - 1) + (i1 - 1) * ldt], lda, beta[j - 1], alphar[j - 1], alphai[j - 1], temp2, ierr);
+                            Rget53(&s[(i1 - 1) + (i1 - 1) * lds], lda, &t[(i1 - 1) + (i1 - 1) * ldt], lda, beta[j - 1], alphar[j - 1], alphai[j - 1], temp2, ierr);
                             if (ierr >= 3) {
                                 write(nounit, "(' Rdrges: Rget53 returned INFO=',i1,' for eigenvalue ',i6,"
                                               "'.',/,9x,'N=',i6,', JTYPE=',i6,', ISEED=(',4(i4,','),i5,"
@@ -487,11 +487,11 @@ void Rdrges(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     result[12 - 1] = zero;
                     knteig = 0;
                     for (i = 1; i <= n; i = i + 1) {
-                        if (Rlctesalphar[i - 1], alphai[i - 1], beta[i - 1] || Rlctesalphar[i - 1], -alphai[i - 1], beta[i - 1]) {
+                        if (Rlctes(alphar[i - 1], beta[i - 1]) || Rlctes(alphar[i - 1],  beta[i - 1])) {
                             knteig++;
                         }
                         if (i < n) {
-                            if ((Rlctes[(alphar[(i + 1) - 1], alphai[(i + 1) - 1] - 1) + ((beta[(i + 1) - 1]) - 1) * ldRlctes] || Rlctes[(alphar[(i + 1) - 1], -alphai[(i + 1) - 1] - 1) + ((beta[(i + 1) - 1]) - 1) * ldRlctes]) && (!(Rlctesalphar[i - 1], alphai[i - 1], beta[i - 1] || Rlctesalphar[i - 1], -alphai[i - 1], beta[i - 1])) && iinfo != n + 2) {
+			  if ((Rlctes(alphar[(i + 1) - 1], beta[(i + 1) - 1]) || Rlctes(alphar[(i + 1) - 1], beta[(i + 1) - 1])) && (!(Rlctes(alphar[i - 1], beta[i - 1]) || Rlctes(alphar[i - 1], beta[i - 1]))) && iinfo != n + 2) {
                                 result[12 - 1] = ulpinv;
                             }
                         }
@@ -571,13 +571,15 @@ void Rdrges(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                     nerrs++;
                     if (result[jr - 1] < 10000.0) {
+		        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
-                                      "' result ',i2,' is',0p,f8.2)"),
-                            n, jtype, ioldsd, jr, result(jr);
+                                      "' result ',i2,' is',0p,a)"),
+			  n, jtype, ioldsd, jr, buf;
                     } else {
+		        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
-                                      "' result ',i2,' is',1p,d10.3)"),
-                            n, jtype, ioldsd, jr, result(jr);
+                                      "' result ',i2,' is',1p,a)"),
+			  n, jtype, ioldsd, jr, buf;
                     }
                 }
             }

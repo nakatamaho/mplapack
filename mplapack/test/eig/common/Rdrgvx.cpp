@@ -303,11 +303,11 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                                 nerrs++;
                                 if (result[j - 1] < 10000.0) {
                                     write(nout, "(' Type=',i2,',',' IWA=',i2,', IWB=',i2,', IWX=',i2,"
-                                                "', IWY=',i2,', result ',i2,' is',0p,f8.2)"),
+                                                "', IWY=',i2,', result ',i2,' is',0p,a)"),
                                         iptype, iwa, iwb, iwx, iwy, j, result(j);
                                 } else {
                                     write(nout, "(' Type=',i2,',',' IWA=',i2,', IWB=',i2,', IWX=',i2,"
-                                                "', IWY=',i2,', result ',i2,' is',1p,d10.3)"),
+                                                "', IWY=',i2,', result ',i2,' is',1p,a)"),
                                         iptype, iwa, iwb, iwx, iwy, j, result(j);
                                 }
                             }
@@ -474,11 +474,11 @@ statement_90:
             nerrs++;
             if (result[j - 1] < 10000.0) {
                 write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
-                            "' is',0p,f8.2)"),
+                            "' is',0p,a)"),
                     nptknt, n, j, result(j);
             } else {
                 write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
-                            "' is',1p,d10.3)"),
+                            "' is',1p,a)"),
                     nptknt, n, j, result(j);
             }
         }

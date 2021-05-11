@@ -885,7 +885,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                                   "' Tests performed: ( A is dense, U and V are unitary,',/,19x,"
                                   "' S is an array, and Upartial, VTpartial, and',/,19x,"
                                   "' Spartial are partially computed U, VT and S),',/)");
-                    write(nounit, "(' Tests performed with Test Threshold = ',f8.2,/,' Cgesvd: ',/,"
+                    write(nounit, "(' Tests performed with Test Threshold = ',a,/,' Cgesvd: ',/,"
                                   "' 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) ',/,"
                                   "' 2 = | I - U**T U | / ( M ulp ) ',/,"
                                   "' 3 = | I - VT VT**T | / ( N ulp ) ',/,"

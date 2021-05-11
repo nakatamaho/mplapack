@@ -938,7 +938,7 @@ statement_10:
     //
     read(nin, star), thresh;
     write(nout, "(/,' Routines pass computational tests if test ratio is ','less than',"
-                "f8.2,/)"),
+                "a,/)"),
         thresh;
     if (sep || svd || dgg) {
         //

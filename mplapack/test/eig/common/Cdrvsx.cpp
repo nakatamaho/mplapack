@@ -125,7 +125,7 @@ void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                                      "' 1/ulp otherwise',/,"
                                      "' 16 = | RCONDE - RCONDE(precomputed) | / cond(RCONDE),',/,"
                                      "' 17 = | RCONDV - RCONDV(precomputed) | / cond(RCONDV),')";
-    static const char *format_9995 = "(' Tests performed with test threshold =',f8.2,/,"
+    static const char *format_9995 = "(' Tests performed with test threshold =',a,/,"
                                      "' ( A denotes A on input and T denotes A on output)',/,/,"
                                      "' 1 = 0 if T in Schur form (no sort), ','  1/ulp otherwise',/,"
                                      "' 2 = | A - VS T transpose(VS) | / ( n |A| ulp ) (no sort)',/,"

@@ -642,11 +642,11 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     nerrs++;
                     if (result[jr - 1] < 10000.0) {
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
-                                      "' result ',i2,' is',0p,f8.2)"),
+                                      "' result ',i2,' is',0p,a)"),
                             n, jtype, ioldsd, jr, result(jr);
                     } else {
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
-                                      "' result ',i2,' is',1p,d10.3)"),
+                                      "' result ',i2,' is',1p,a)"),
                             n, jtype, ioldsd, jr, result(jr);
                     }
                 }

@@ -112,7 +112,7 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER ntest = 0;
     INTEGER nfail = 0;
     INTEGER i = 0;
-    static const char *format_9995 = "(' Tests performed with test threshold =',f8.2,/,/,"
+    static const char *format_9995 = "(' Tests performed with test threshold =',a,/,/,"
                                      "' 1 = | A VR - VR W | / ( n |A| ulp ) ',/,"
                                      "' 2 = | transpose(A) VL - VL W | / ( n |A| ulp ) ',/,"
                                      "' 3 = | |VR(i)| - 1 | / ulp ',/,' 4 = | |VL(i)| - 1 | / ulp ',/,"
