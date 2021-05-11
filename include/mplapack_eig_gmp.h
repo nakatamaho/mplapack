@@ -37,7 +37,7 @@
 
 bool Clctes(mpc_class const z, mpc_class const d);
 bool Clctsx(common &cmn, mpc_class const, mpc_class const);
-bool Rlctes(mpf_class const zr, mpf_class const, mpf_class const d);
+bool Rlctes(mpf_class const zr, mpf_class const d);
 bool Rlctsx(common &cmn, mpf_class const, mpf_class const, mpf_class const);
 mpf_class Rlamch_gmp(const char *cmach);
 mpf_class Rsxt1(mplapackint const ijob, mpf_class *d1, mplapackint const n1, mpf_class *d2, mplapackint const n2, mpf_class const abstol, mpf_class const ulp, mpf_class const unfl);

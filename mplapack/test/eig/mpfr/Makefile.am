@@ -119,7 +119,6 @@ EIG_SOURCES = \
 ../common/Cget24.cpp \
 ../common/Cchkbd.cpp \
 ../common/Cdrves.cpp \
-\
 ../common/Cdrvev.cpp \
 ../common/Rdrvev.cpp \
 ../common/Rchksb2stg.cpp \
@@ -130,12 +129,11 @@ EIG_SOURCES = \
 ../common/Cdrgev.cpp \
 ../common/Cdrgev3.cpp \
 ../common/Rdrves.cpp \
-../common/Cdrgsx.cpp \
 ../common/Rlahd2.cpp \
 ../common/Cdrges.cpp \
 ../common/Cdrges3.cpp \
 ../common/Cchkhs.cpp \
-../common/Rdrgsx.cpp \
+\
 ../common/Rchkhs.cpp \
 ../common/Rdrges.cpp \
 ../common/Rdrges3.cpp \
@@ -187,7 +185,9 @@ EIG_SOURCES = \
 ../common/Rdrvvx.cpp \
 ../common/Cdrvvx.cpp \
 ../common/Cdrvsx.cpp \
-../common/Rdrvsx.cpp
+../common/Rdrvsx.cpp \
+../common/Cdrgsx.cpp \
+../common/Rdrgsx.cpp
 
 libdepends = -L. -leig_mpfr -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr 
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lm

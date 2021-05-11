@@ -37,7 +37,7 @@
 
 bool Clctes(dd_complex const z, dd_complex const d);
 bool Clctsx(common &cmn, dd_complex const, dd_complex const);
-bool Rlctes(dd_real const zr, dd_real const, dd_real const d);
+bool Rlctes(dd_real const zr, dd_real const d);
 bool Rlctsx(common &cmn, dd_real const, dd_real const, dd_real const);
 dd_real Rlamch_dd(const char *cmach);
 dd_real Rsxt1(mplapackint const ijob, dd_real *d1, mplapackint const n1, dd_real *d2, mplapackint const n2, dd_real const abstol, dd_real const ulp, dd_real const unfl);
