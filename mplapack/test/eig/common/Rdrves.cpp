@@ -92,22 +92,19 @@ bool _Rslect(REAL const zr, REAL const zi) {
     //
 }
 
-
-
-
 void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *h, REAL *ht, REAL *wr, REAL *wi, REAL *wrt, REAL *wit, REAL *vs, INTEGER const ldvs, REAL *result, REAL *work, INTEGER const nwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
 
-  INTEGER ldh=lda;
-  INTEGER ldht=lda;
-  common cmn;
+    INTEGER ldh = lda;
+    INTEGER ldht = lda;
+    common cmn;
     common_write write(cmn);
     const INTEGER maxtyp = 21;
-    INTEGER ktype[21] = { 1,2,3,4,4,4,4,4,6,6,6,6,6,6,6,6,6,6,9,9,9 };
-    INTEGER kmagn[21] = { 1,1,1,1,1,1,2,3,1,1,1,1,1,1,1,1,2,3,1,2,3 };
-    INTEGER kmode[21] = { 0,0,0,4,3,1,4,4,4,3,1,5,4,3,1,5,5,5,4,3,1 };
-    INTEGER kconds[21] = { 0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,2,2,0,0,0 };
+    INTEGER ktype[21] = {1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9};
+    INTEGER kmagn[21] = {1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 2, 3};
+    INTEGER kmode[21] = {0, 0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1};
+    INTEGER kconds[21] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0};
     char path[3];
-    char buf[1024];    
+    char buf[1024];
     INTEGER ntestt = 0;
     INTEGER ntestf = 0;
     bool badnn = false;
@@ -134,7 +131,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     REAL cond = 0.0;
     INTEGER jcol = 0;
     REAL conds = 0.0;
-    char adumma;
+    char adumma[1];
     INTEGER idumma[1];
     INTEGER iwk = 0;
     INTEGER nnwork = 0;
@@ -354,13 +351,13 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 //              Diagonal Matrix, [Eigen]values Specified
                 //
-                dlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, 0, 0, "N", a, lda, &work[(n + 1) - 1], iinfo);
+                Rlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, 0, 0, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 5) {
                 //
                 //              Symmetric, eigenvalues specified
                 //
-                dlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, n, n, "N", a, lda, &work[(n + 1) - 1], iinfo);
+                Rlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, n, n, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 6) {
                 //
@@ -374,26 +371,26 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     conds = zero;
                 }
                 //
-                adumma[1 - 1] = " ";
-                dlatme(n, "S", iseed, work, imode, cond, one, adumma, "T", "T", "T", &work[(n + 1) - 1], 4, conds, n, n, anorm, a, lda, &work[(2 * n + 1) - 1], iinfo);
+                adumma[1 - 1] = ' ';
+                Rlatme(n, "S", iseed, work, imode, cond, one, adumma, "T", "T", "T", &work[(n + 1) - 1], 4, conds, n, n, anorm, a, lda, &work[(2 * n + 1) - 1], iinfo);
                 //
             } else if (itype == 7) {
                 //
                 //              Diagonal, random eigenvalues
                 //
-                dlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
+                Rlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 8) {
                 //
                 //              Symmetric, random eigenvalues
                 //
-                dlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
+                Rlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 9) {
                 //
                 //              General, random eigenvalues
                 //
-                dlatmr(n, n, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
+                Rlatmr(n, n, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 if (n >= 4) {
                     Rlaset("Full", 2, n, zero, zero, a, lda);
                     Rlaset("Full", n - 3, 1, zero, zero, &a[(3 - 1)], lda);
@@ -405,7 +402,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 //              Triangular, random eigenvalues
                 //
-                dlatmr(n, n, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
+                Rlatmr(n, n, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else {
                 //
@@ -440,17 +437,17 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 for (isort = 0; isort <= 1; isort = isort + 1) {
                     if (isort == 0) {
-                        sort = "N";
+                        sort = 'N';
                         rsub = 0;
                     } else {
-                        sort = "S";
+                        sort = 'S';
                         rsub = 6;
                     }
                     //
                     //                 Compute Schur form and Schur vectors, and test them
                     //
                     Rlacpy("F", n, n, a, lda, h, lda);
-                    Rgees("V", sort, _Rslect, n, h, lda, sdim, wr, wi, vs, ldvs, work, nnwork, bwork, iinfo);
+                    Rgees("V", &sort, _Rslect, n, h, lda, sdim, wr, wi, vs, ldvs, work, nnwork, bwork, iinfo);
                     if (iinfo != 0 && iinfo != n + 2) {
                         result[(1 + rsub) - 1] = ulpinv;
                         write(nounit, format_9992), "Rgees1", iinfo, n, jtype, ioldsd;
@@ -475,7 +472,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                     for (i = 1; i <= n - 1; i = i + 1) {
                         if (h[((i + 1) - 1) + (i - 1) * ldh] != zero) {
-                            if (h[(i - 1) + (i - 1) * ldh] != h[((i + 1) - 1) + ((i + 1) - 1) * ldh] || h[(i - 1) + ((i + 1) - 1) * ldh] == zero || sign(one, &h[((i + 1) - 1) + (i - 1) * ldh]) == sign(one, &h[(i - 1) + ((i + 1) - 1) * ldh])) {
+                            if (h[(i - 1) + (i - 1) * ldh] != h[((i + 1) - 1) + ((i + 1) - 1) * ldh] || h[(i - 1) + ((i + 1) - 1) * ldh] == zero || sign(one, h[((i + 1) - 1) + (i - 1) * ldh]) == sign(one, h[(i - 1) + ((i + 1) - 1) * ldh])) {
                                 result[(1 + rsub) - 1] = ulpinv;
                             }
                         }
@@ -519,7 +516,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //                 Do Test (5) or Test (11)
                     //
                     Rlacpy("F", n, n, a, lda, ht, lda);
-                    Rgees("N", sort, _Rslect, n, ht, lda, sdim, wrt, wit, vs, ldvs, work, nnwork, bwork, iinfo);
+                    Rgees("N", &sort, _Rslect, n, ht, lda, sdim, wrt, wit, vs, ldvs, work, nnwork, bwork, iinfo);
                     if (iinfo != 0 && iinfo != n + 2) {
                         result[(5 + rsub) - 1] = ulpinv;
                         write(nounit, format_9992), "Rgees2", iinfo, n, jtype, ioldsd;
@@ -551,11 +548,11 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         result[13 - 1] = zero;
                         knteig = 0;
                         for (i = 1; i <= n; i = i + 1) {
-                            if (_Rslect[(wr[i - 1] - 1) + (wi[i - 1] - 1) * ld_Rslect] || _Rslect[(wr[i - 1] - 1) + (-wi[i - 1] - 1) * ld_Rslect]) {
+                            if (_Rslect(wr[i - 1], wi[i - 1]) || _Rslect(wr[i - 1], -wi[i - 1])) {
                                 knteig++;
                             }
                             if (i < n) {
-                                if ((_Rslect[((wr[(i + 1) - 1]) - 1) + ((wi[(i + 1) - 1]) - 1) * ld_Rslect] || _Rslect[((wr[(i + 1) - 1]) - 1) + ((-wi[(i + 1) - 1]) - 1) * ld_Rslect]) && (!(_Rslect[(wr[i - 1] - 1) + (wi[i - 1] - 1) * ld_Rslect] || _Rslect[(wr[i - 1] - 1) + (-wi[i - 1] - 1) * ld_Rslect])) && iinfo != n + 2) {
+                                if ((_Rslect(wr[(i + 1) - 1], wi[(i + 1) - 1]) || _Rslect(wr[(i + 1) - 1], -wi[(i + 1) - 1])) && (!(_Rslect(wr[i - 1], wi[i - 1]) || _Rslect(wr[i - 1], -wi[i - 1]))) && iinfo != n + 2) {
                                     result[13 - 1] = ulpinv;
                                 }
                             }
@@ -608,7 +605,8 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     write(nounit, "(' 19=Matrix with random O(1) entries.    ',' 21=Matrix ',"
                                   "'with small random entries.',/,' 20=Matrix with large ran',"
                                   "'dom entries.   ',/)");
-                    write(nounit, "(' Tests performed with test threshold =',f8.2,/,"
+                    sprintnum_short(buf, thresh);
+                    write(nounit, "(' Tests performed with test threshold =',a,/,"
                                   "' ( A denotes A on input and T denotes A on output)',/,/,"
                                   "' 1 = 0 if T in Schur form (no sort), ','  1/ulp otherwise',/,"
                                   "' 2 = | A - VS T transpose(VS) | / ( n |A| ulp ) (no sort)',/,"
@@ -619,7 +617,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                                   "'  1/ulp otherwise',/,"
                                   "' 6 = 0 if WR, WI same no matter if VS computed (no sort)',"
                                   "',  1/ulp otherwise')"),
-                        thresh;
+                        buf;
                     write(nounit, "(' 7 = 0 if T in Schur form (sort), ','  1/ulp otherwise',/,"
                                   "' 8 = | A - VS T transpose(VS) | / ( n |A| ulp ) (sort)',/,"
                                   "' 9 = | I - VS transpose(VS) | / ( n ulp ) (sort) ',/,"
@@ -635,9 +633,10 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 for (j = 1; j <= 13; j = j + 1) {
                     if (result[j - 1] >= thresh) {
+                        sprintnum_short(buf, result[j - 1]);
                         write(nounit, "(' N=',i5,', IWK=',i2,', seed=',4(i4,','),' type ',i2,"
-                                      "', test(',i2,')=',g10.3)"),
-                            n, iwk, ioldsd, jtype, j, result(j);
+                                      "', test(',i2,')=',a)"),
+                            n, iwk, ioldsd, jtype, j, buf;
                     }
                 }
                 //

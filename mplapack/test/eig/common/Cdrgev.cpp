@@ -92,7 +92,7 @@ void Cdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     COMPLEX ctemp = 0.0;
     INTEGER i = 0;
     static const char *format_9998 = "(' Cdrgev: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
-                                     "' Bits of error=',0p,g10.3,',',3x,'N=',i4,', JTYPE=',i3,', ISEED=(',3(i4,"
+                                     "' Bits of error=',0p,a,',',3x,'N=',i4,', JTYPE=',i3,', ISEED=(',3(i4,"
                                      "','),i5,')')";
     static const char *format_9999 = "(' Cdrgev: ',a,' returned INFO=',i6,'.',/,3x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";

@@ -467,7 +467,7 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     for (j = 1; j <= 9; j = j + 1) {
                         if (result[j - 1] >= thresh) {
                             write(nounit, "(' BALANC=''',a1,''',N=',i4,',IWK=',i1,', seed=',4(i4,','),"
-                                          "' type ',i2,', test(',i2,')=',g10.3)"),
+                                          "' type ',i2,', test(',i2,')=',a)"),
                                 balanc, n, iwk, ioldsd, jtype, j, result(j);
                         }
                     }
@@ -543,7 +543,7 @@ statement_170:
     //
     for (j = 1; j <= 11; j = j + 1) {
         if (result[j - 1] >= thresh) {
-            write(nounit, "(' N=',i5,', input example =',i3,',  test(',i2,')=',g10.3)"), n, jtype, j, result(j);
+            write(nounit, "(' N=',i5,', input example =',i3,',  test(',i2,')=',a)"), n, jtype, j, result(j);
         }
     }
     //

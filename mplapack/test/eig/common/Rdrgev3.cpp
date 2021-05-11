@@ -88,7 +88,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     INTEGER i = 0;
     char buf[1024];
     static const char *format_9998 = "(' Rdrgev3: ',a,' Eigenvectors from ',a,' incorrectly normalized.',/,"
-                                     "' Bits of error=',0p,g10.3,',',3x,'N=',i4,', JTYPE=',i3,', ISEED=(',4(i4,"
+                                     "' Bits of error=',0p,a,',',3x,'N=',i4,', JTYPE=',i3,', ISEED=(',4(i4,"
                                      "','),i5,')')";
     static const char *format_9999 = "(' Rdrgev3: ',a,' returned INFO=',i6,'.',/,3x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',4(i4,','),i5,')')";

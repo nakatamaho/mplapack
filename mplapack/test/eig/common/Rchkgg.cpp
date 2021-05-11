@@ -39,104 +39,34 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, bool const tstdif, REAL const thrshn, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *b, REAL *h, REAL *t, REAL *s1, REAL *s2, REAL *p1, REAL *p2, REAL *u, INTEGER const ldu, REAL *v, REAL *q, REAL *z, REAL *alphr1, REAL *alphi1, REAL *beta1, REAL *alphr3, REAL *alphi3, REAL *beta3, REAL *evectl, REAL *evectr, REAL *work, INTEGER const lwork, bool *llwork, REAL *result, INTEGER &info) {
-    FEM_CMN_SVE(Rchkgg);
-    iseed([4]);
-    a([lda * star]);
-    b([lda * star]);
-    h([lda * star]);
-    t([lda * star]);
-    s1([lda * star]);
-    s2([lda * star]);
-    p1([lda * star]);
-    p2([lda * star]);
-    u([ldu * star]);
-    v([ldu * star]);
-    q([ldu * star]);
-    z([ldu * star]);
-    evectl([ldu * star]);
-    evectr([ldu * star]);
-    result([15]);
+    INTEGER ld INTEGER ldb = lda;
+    INTEGER ldh = lda;
+    INTEGER ldt = lda;
+    INTEGER lds1 = lda;
+    INTEGER lds2 = lda;
+    INTEGER ldp1 = lda;
+    INTEGER ldp2 = lda;
+    INTEGER ldv = ldu;
+    INTEGER ldq = ldu;
+    INTEGER ldz = ldu;
+    INTEGER ldevectl = ldu;
+    INTEGER ldevectr = ldu;
+    common cmn;
     common_write write(cmn);
     const INTEGER maxtyp = 26;
-    INTEGER *iasign(sve.iasign, [maxtyp]);
-    INTEGER *ibsign(sve.ibsign, [maxtyp]);
-    INTEGER *kadd(sve.kadd, [6]);
-    INTEGER *kamagn(sve.kamagn, [maxtyp]);
-    INTEGER *katype(sve.katype, [maxtyp]);
-    INTEGER *kazero(sve.kazero, [maxtyp]);
-    INTEGER *kbmagn(sve.kbmagn, [maxtyp]);
-    INTEGER *kbtype(sve.kbtype, [maxtyp]);
-    INTEGER *kbzero(sve.kbzero, [maxtyp]);
-    INTEGER *kclass(sve.kclass, [maxtyp]);
-    INTEGER *ktrian(sve.ktrian, [maxtyp]);
-    INTEGER *kz1(sve.kz1, [6]);
-    INTEGER *kz2(sve.kz2, [6]);
-    if (is_called_first_time) {
-        data((values, 15 * datum(1), 10 * datum(2), 1 * datum(3))), kclass;
-        {
-            static const INTEGER values[] = {0, 1, 2, 1, 3, 3};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), kz1;
-        }
-        {
-            static const INTEGER values[] = {0, 0, 1, 2, 1, 1};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), kz2;
-        }
-        {
-            static const INTEGER values[] = {0, 0, 0, 0, 3, 2};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), kadd;
-        }
-        {
-            data_values data;
-            data.values, 0, 1, 0, 1, 2, 3, 4, 1;
-            data.values, 4, 4, 1, 1, 4, 4, 4, 2;
-            data.values, 4, 5, 8, 7, 9, 4 * datum(4), 0;
-            data, katype;
-        }
-        {
-            data_values data;
-            data.values, 0, 0, 1, 1, 2, -3, 1, 4;
-            data.values, 1, 1, 4, 4, 1, 1, -4, 2;
-            data.values, -4, 8 * datum(8), 0;
-            data, kbtype;
-        }
-        {
-            data_values data;
-            data.values, 6 * datum(1), 2, 1, 2 * datum(2), 2 * datum(1), 2 * datum(2), 3, 1;
-            data.values, 3, 4 * datum(5), 4 * datum(3), 1;
-            data, kazero;
-        }
-        {
-            data_values data;
-            data.values, 6 * datum(1), 1, 2, 2 * datum(1), 2 * datum(2), 2 * datum(1), 4, 1;
-            data.values, 4, 4 * datum(6), 4 * datum(4), 1;
-            data, kbzero;
-        }
-        {
-            data_values data;
-            data.values, 8 * datum(1), 2, 3, 2, 3, 2, 3, 7 * datum(1);
-            data.values, 2, 3, 3, 2, 1;
-            data, kamagn;
-        }
-        {
-            data_values data;
-            data.values, 8 * datum(1), 3, 2, 3, 2, 2, 3, 7 * datum(1);
-            data.values, 3, 2, 3, 2, 1;
-            data, kbmagn;
-        }
-        data((values, 16 * datum(0), 10 * datum(1))), ktrian;
-        {
-            data_values data;
-            data.values, 6 * datum(0), 2, 0, 2 * datum(2), 2 * datum(0), 3 * datum(2), 0, 2;
-            data.values, 3 * datum(0), 5 * datum(2), 0;
-            data, iasign;
-        }
-        {
-            data_values data;
-            data.values, 7 * datum(0), 2, 2 * datum(0), 2 * datum(2), 2 * datum(0), 2, 0, 2;
-            data.values, 9 * datum(0);
-            data, ibsign;
-        }
-    }
+    INTEGER kclass[26] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3};
+    INTEGER kbmagn[26] = {1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 2, 3, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 1};
+    INTEGER ktrian[26] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    INTEGER iasign[26] = {0, 0, 0, 0, 0, 0, 2, 0, 2, 2, 0, 0, 2, 2, 2, 0, 2, 0, 0, 0, 2, 2, 2, 2, 2, 0};
+    INTEGER ibsign[26] = {0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 2, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    INTEGER kz1[6] = {0, 1, 2, 1, 3, 3};
+    INTEGER kz2[6] = {0, 0, 1, 2, 1, 1};
+    INTEGER kadd[6] = {0, 0, 0, 0, 3, 2};
+    INTEGER katype[26] = {0, 1, 0, 1, 2, 3, 4, 1, 4, 4, 1, 1, 4, 4, 4, 2, 4, 5, 8, 7, 9, 4, 4, 4, 4, 0};
+    INTEGER kbtype[26] = {0, 0, 1, 1, 2, -3, 1, 4, 1, 1, 4, 4, 1, 1, -4, 2, -4, 8, 8, 8, 8, 8, 8, 8, 8, 0};
+    INTEGER kazero[26] = {1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 2, 2, 3, 1, 3, 5, 5, 5, 5, 3, 3, 3, 3, 1};
+    INTEGER kbzero[26] = {1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1, 4, 1, 4, 6, 6, 6, 6, 4, 4, 4, 4, 1};
+    INTEGER kamagn[26] = {1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 3, 2, 3, 1, 1, 1, 1, 1, 1, 1, 2, 3, 3, 2, 1};
     bool badnn = false;
     INTEGER nmax = 0;
     INTEGER j = 0;
@@ -170,7 +100,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     REAL temp1 = 0.0;
     REAL temp2 = 0.0;
     static const char *format_9998 = "(' Rchkgg: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
-                                     "' Bits of error=',0p,g10.3,',',9x,'N=',i6,', JTYPE=',i6,', ISEED=(',3(i5,"
+                                     "' Bits of error=',0p,a,',',9x,'N=',i6,', JTYPE=',i6,', ISEED=(',3(i5,"
                                      "','),i5,')')";
     static const char *format_9999 = "(' Rchkgg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";

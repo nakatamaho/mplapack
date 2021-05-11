@@ -472,7 +472,7 @@ void Rdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 for (j = 1; j <= 15; j = j + 1) {
                     if (result[j - 1] >= thresh) {
                         write(nounit, "(' N=',i5,', IWK=',i2,', seed=',4(i4,','),' type ',i2,"
-                                      "', test(',i2,')=',g10.3)"),
+                                      "', test(',i2,')=',a)"),
                             n, iwk, ioldsd, jtype, j, result(j);
                     }
                 }
@@ -549,7 +549,7 @@ statement_160:
     }
     for (j = 1; j <= 17; j = j + 1) {
         if (result[j - 1] >= thresh) {
-            write(nounit, "(' N=',i5,', input example =',i3,',  test(',i2,')=',g10.3)"), n, jtype, j, result(j);
+            write(nounit, "(' N=',i5,', input example =',i3,',  test(',i2,')=',a)"), n, jtype, j, result(j);
         }
     }
     //

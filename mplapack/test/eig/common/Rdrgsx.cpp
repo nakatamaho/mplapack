@@ -40,11 +40,11 @@ using fem::common;
 
 void Rdrgsx(common &cmn, INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER const nin, INTEGER const nout, REAL *a, INTEGER const lda, REAL *b, REAL *ai, REAL *bi, REAL *z, REAL *q, REAL *alphar, REAL *alphai, REAL *beta, REAL *c, INTEGER const ldc, REAL *s, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, bool *bwork, INTEGER &info) {
     common_write write(cmn);
-    INTEGER m = cmn.m;
-    INTEGER n = cmn.n;
-    INTEGER mplusn = cmn.mplusn;
-    INTEGER k = cmn.k;
-    bool fs = cmn.fs;
+    INTEGER m;
+    INTEGER n;
+    INTEGER mplusn;
+    INTEGER k;
+    bool fs;
     //
     const REAL zero = 0.0;
     INTEGER minwrk = 0;
@@ -228,7 +228,7 @@ void Rdrgsx(common &cmn, INTEGER const nsize, INTEGER const ncmax, REAL const th
                     Rlaset("Full", mplusn, mplusn, zero, zero, ai, lda);
                     Rlaset("Full", mplusn, mplusn, zero, zero, bi, lda);
                     //
-                    dlatm5(prtype, m, n, ai, lda, ai[((m + 1) - 1) + ((m + 1) - 1) * ldai], lda, ai[((m + 1) - 1) * ldai], lda, bi, lda, bi[((m + 1) - 1) + ((m + 1) - 1) * ldbi], lda, bi[((m + 1) - 1) * ldbi], lda, q, lda, z, lda, weight, qba, qbb);
+                    Rlatm5(prtype, m, n, ai, lda, ai[((m + 1) - 1) + ((m + 1) - 1) * ldai], lda, ai[((m + 1) - 1) * ldai], lda, bi, lda, bi[((m + 1) - 1) + ((m + 1) - 1) * ldbi], lda, bi[((m + 1) - 1) * ldbi], lda, q, lda, z, lda, weight, qba, qbb);
                     //
                     //                 Compute the Schur factorization and swapping the
                     //                 m-by-m (1,1)-blocks with n-by-n (2,2)-blocks.
@@ -353,7 +353,7 @@ void Rdrgsx(common &cmn, INTEGER const nsize, INTEGER const ncmax, REAL const th
                         //                    Note: for either following two causes, there are
                         //                    almost same number of test cases fail the test.
                         //
-                        dlakf2(mm, mplusn - mm, ai, lda, ai[((mm + 1) - 1) + ((mm + 1) - 1) * ldai], bi, bi[((mm + 1) - 1) + ((mm + 1) - 1) * ldbi], c, ldc);
+                        Rlakf2(mm, mplusn - mm, ai, lda, ai[((mm + 1) - 1) + ((mm + 1) - 1) * ldai], bi, bi[((mm + 1) - 1) + ((mm + 1) - 1) * ldbi], c, ldc);
                         //
                         Rgesvd("N", "N", mn2, mn2, c, ldc, s, work, 1, &work[2 - 1], 1, &work[3 - 1], lwork - 2, info);
                         diftru = s[mn2 - 1];

@@ -39,6 +39,7 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rlahd2(INTEGER const iounit, const char *path) {
+    common cmn;
     common_write write(cmn);
     static const char *format_9969 = "(/,' Test ratios:  ','(B: upper bidiagonal, Q and P: ',a10,/,16x,"
                                      "'C: m x nrhs, PT = P'', Y = Q'' C)',/,"
@@ -197,13 +198,14 @@ void Rlahd2(INTEGER const iounit, const char *path) {
     if (iounit <= 0) {
         return;
     }
-    bool sord = Mlsame(path, "S") || Mlsame(path, "D");
+    bool sord = Mlsame(path, "R") || Mlsame(path, "D");
     bool corz = Mlsame(path, "C") || Mlsame(path, "Z");
     if (!sord && !corz) {
         write(iounit, format_9999), path;
     }
-    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
-    //
+    char c2[2];
+    c2[0] = path[1];
+    c2[1] = path[2];
     INTEGER j = 0;
     if (Mlsamen(2, c2, "HS")) {
         if (sord) {

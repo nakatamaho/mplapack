@@ -77,7 +77,7 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
     REAL ratio2 = 0.0;
     INTEGER j = 0;
     static const char *format_9986 = "(' Cdrgvx: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
-                                     "' Bits of error=',0p,g10.3,',',9x,'N=',i6,', Input Example #',i2,')')";
+                                     "' Bits of error=',0p,a,',',9x,'N=',i6,', Input Example #',i2,')')";
     static const char *format_9992 = "(/,' Tests performed:  ',/,4x,"
                                      "' a is alpha, b is beta, l is a left eigenvector, ',/,4x,"
                                      "' r is a right eigenvector and ',a,' means ',a,'.',/,"

@@ -47,32 +47,19 @@ void Cdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     common cmn;
     common_write write(cmn);
     const INTEGER maxtyp = 26;
-    INTEGER kclass[26] = { 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,
-	    2,2,2,3 };
-    INTEGER kbmagn[26] = { 1,1,1,1,1,1,1,1,3,2,3,2,2,3,1,1,1,1,1,1,1,3,
-	    2,3,2,1 };
-    INTEGER ktrian[26] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,
-	    1,1,1,1 };
-    bool lasign[26] = { false,false,false,false,false,false,
-	    true,false,true,true,false,false,true,true,true,false,
-	    true,false,false,false,true,true,true,true,true,false };
-    bool lbsign[26] = { false,false,false,false,false,false,
-	    false,true,false,false,true,true,false,false,true,false,
-	    true,false,false,false,false,false,false,false,false,
-	    false };
-    INTEGER kz1[6] = { 0,1,2,1,3,3 };
-    INTEGER kz2[6] = { 0,0,1,2,1,1 };
-    INTEGER kadd[6] = { 0,0,0,0,3,2 };
-    INTEGER katype[26] = { 0,1,0,1,2,3,4,1,4,4,1,1,4,4,4,2,4,5,8,7,9,4,
-	    4,4,4,0 };
-    INTEGER kbtype[26] = { 0,0,1,1,2,-3,1,4,1,1,4,4,1,1,-4,2,-4,8,8,8,
-	    8,8,8,8,8,0 };
-    INTEGER kazero[26] = { 1,1,1,1,1,1,2,1,2,2,1,1,2,2,3,1,3,5,5,5,5,3,
-	    3,3,3,1 };
-    INTEGER kbzero[26] = { 1,1,1,1,1,1,1,2,1,1,2,2,1,1,4,1,4,6,6,6,6,4,
-	    4,4,4,1 };
-    INTEGER kamagn[26] = { 1,1,1,1,1,1,1,1,2,3,2,3,2,3,1,1,1,1,1,1,1,2,
-	    3,3,2,1 };
+    INTEGER kclass[26] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3};
+    INTEGER kbmagn[26] = {1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 2, 3, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 1};
+    INTEGER ktrian[26] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    bool lasign[26] = {false, false, false, false, false, false, true, false, true, true, false, false, true, true, true, false, true, false, false, false, true, true, true, true, true, false};
+    bool lbsign[26] = {false, false, false, false, false, false, false, true, false, false, true, true, false, false, true, false, true, false, false, false, false, false, false, false, false, false};
+    INTEGER kz1[6] = {0, 1, 2, 1, 3, 3};
+    INTEGER kz2[6] = {0, 0, 1, 2, 1, 1};
+    INTEGER kadd[6] = {0, 0, 0, 0, 3, 2};
+    INTEGER katype[26] = {0, 1, 0, 1, 2, 3, 4, 1, 4, 4, 1, 1, 4, 4, 4, 2, 4, 5, 8, 7, 9, 4, 4, 4, 4, 0};
+    INTEGER kbtype[26] = {0, 0, 1, 1, 2, -3, 1, 4, 1, 1, 4, 4, 1, 1, -4, 2, -4, 8, 8, 8, 8, 8, 8, 8, 8, 0};
+    INTEGER kazero[26] = {1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 2, 2, 3, 1, 3, 5, 5, 5, 5, 3, 3, 3, 3, 1};
+    INTEGER kbzero[26] = {1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1, 4, 1, 4, 6, 6, 6, 6, 4, 4, 4, 4, 1};
+    INTEGER kamagn[26] = {1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 3, 2, 3, 1, 1, 1, 1, 1, 1, 1, 2, 3, 3, 2, 1};
     bool badnn = false;
     INTEGER nmax = 0;
     INTEGER j = 0;
@@ -85,7 +72,7 @@ void Cdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     const REAL one = 1.0;
     REAL safmax = 0.0;
     REAL ulpinv = 0.0;
-    REAL rmagn [3];
+    REAL rmagn[3];
     INTEGER ntestt = 0;
     INTEGER nerrs = 0;
     INTEGER nmats = 0;
@@ -105,7 +92,7 @@ void Cdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     COMPLEX ctemp = 0.0;
     INTEGER i = 0;
     static const char *format_9998 = "(' Cdrgev3: ',a,' Eigenvectors from ',a,' incorrectly normalized.',/,"
-                                     "' Bits of error=',0p,g10.3,',',3x,'N=',i4,', JTYPE=',i3,', ISEED=(',3(i4,"
+                                     "' Bits of error=',0p,a,',',3x,'N=',i4,', JTYPE=',i3,', ISEED=(',3(i4,"
                                      "','),i5,')')";
     static const char *format_9999 = "(' Cdrgev3: ',a,' returned INFO=',i6,'.',/,3x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
@@ -392,7 +379,7 @@ void Cdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             //
             Cget52(true, n, a, lda, b, lda, q, ldq, alpha, beta, work, rwork, &result[1 - 1]);
             if (result[2 - 1] > thresh) {
-	        sprintnum_short(buf, result[2 - 1]);
+                sprintnum_short(buf, result[2 - 1]);
                 write(nounit, format_9998), "Left", "Cggev31", buf, n, jtype, ioldsd;
             }
             //
@@ -400,7 +387,7 @@ void Cdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             //
             Cget52(false, n, a, lda, b, lda, z, ldq, alpha, beta, work, rwork, &result[3 - 1]);
             if (result[4 - 1] > thresh) {
-	        sprintnum_short(buf, result[4 - 1]);
+                sprintnum_short(buf, result[4 - 1]);
                 write(nounit, format_9998), "Right", "Cggev31", buf, n, jtype, ioldsd;
             }
             //
@@ -529,15 +516,15 @@ void Cdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     }
                     nerrs++;
                     if (result[jr - 1] < 10000.0) {
-		      sprintnum_short(buf, result[jr - 1]);
+                        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
                                       "' result ',i2,' is',0p,a)"),
-			  n, jtype, ioldsd, jr, buf;
+                            n, jtype, ioldsd, jr, buf;
                     } else {
-		      		      sprintnum_short(buf, result[jr - 1]);
+                        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
                                       "' result ',i2,' is',1p,a)"),
-			  n, jtype, ioldsd, jr, buf;
+                            n, jtype, ioldsd, jr, buf;
                     }
                 }
             }

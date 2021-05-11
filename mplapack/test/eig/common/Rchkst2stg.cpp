@@ -1401,7 +1401,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                     nerrs++;
                     write(nounit, "(' N=',i5,', seed=',4(i4,','),' type ',i2,', test(',i2,')=',"
-                                  "g10.3)"),
+                                  "a)"),
                         n, ioldsd, jtype, jr, result(jr);
                 }
             }

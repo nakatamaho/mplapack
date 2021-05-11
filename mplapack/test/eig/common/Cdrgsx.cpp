@@ -38,21 +38,90 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
+
+INTEGER m, n, mplusn, i;
+bool fs;
+
+bool _Clctsx(COMPLEX const /* alpha */, COMPLEX const /* beta */) {
+    bool return_value = false;
+    //
+    //
+    //  -- LAPACK test routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     DOUBLE PRECISION               ZERO
+    //     PARAMETER          ( ZERO = 0.0E+0 )
+    //     COMPLEX*16            CZERO
+    //     PARAMETER          ( CZERO = ( 0.0E+0, 0.0E+0 ) )
+    //     ..
+    //     .. Scalars in Common ..
+    //     ..
+    //     .. Common blocks ..
+    //     ..
+    //     .. Save statement ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    if (fs) {
+        i++;
+        if (i <= m) {
+            return_value = false;
+        } else {
+            return_value = true;
+        }
+        if (i == mplusn) {
+            fs = false;
+            i = 0;
+        }
+    } else {
+        i++;
+        if (i <= n) {
+            return_value = true;
+        } else {
+            return_value = false;
+        }
+        if (i == mplusn) {
+            fs = true;
+            i = 0;
+        }
+    }
+    //
+    //      IF( BETA.EQ.CZERO ) THEN
+    //         Clctsx = ( DBLE( ALPHA ).GT.ZERO )
+    //      ELSE
+    //         Clctsx = ( DBLE( ALPHA/BETA ).GT.ZERO )
+    //      END IF
+    //
+    return return_value;
+    //
+    //     End of Clctsx
+    //
+}
+
 void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER const nin, INTEGER const nout, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *ai, COMPLEX *bi, COMPLEX *z, COMPLEX *q, COMPLEX *alpha, COMPLEX *beta, COMPLEX *c, INTEGER const ldc, REAL *s, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER const liwork, bool *bwork, INTEGER &info) {
-    a([lda * star]);
-    b([lda * star]);
-    ai([lda * star]);
-    bi([lda * star]);
-    z([lda * star]);
-    q([lda * star]);
-    c([ldc * star]);
+    INTEGER ldb = lda;
+    INTEGER ldai = lda;
+    INTEGER ldbi = lda;
+    INTEGER ldz = lda;
+    INTEGER ldq = lda;
+    common cmn;
     common_read read(cmn);
     common_write write(cmn);
-    INTEGER &m = cmn.m;
-    INTEGER &n = cmn.n;
-    INTEGER &mplusn = cmn.mplusn;
-    INTEGER &k = cmn.k;
-    bool &fs = cmn.fs;
+    char buf0[1024];
+    char buf1[1024];
+    INTEGER m;
+    INTEGER n;
+    INTEGER mplusn;
+    INTEGER k;
+    bool fs;
     //
     COMPLEX x = 0.0;
     const REAL zero = 0.0;
@@ -138,7 +207,6 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1(x) = abs(x.real()) + abs(x.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -240,7 +308,7 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     Claset("Full", mplusn, mplusn, czero, czero, ai, lda);
                     Claset("Full", mplusn, mplusn, czero, czero, bi, lda);
                     //
-                    zlatm5(prtype, m, n, ai, lda, ai[((m + 1) - 1) + ((m + 1) - 1) * ldai], lda, ai[((m + 1) - 1) * ldai], lda, bi, lda, bi[((m + 1) - 1) + ((m + 1) - 1) * ldbi], lda, bi[((m + 1) - 1) * ldbi], lda, q, lda, z, lda, weight, qba, qbb);
+                    Clatm5(prtype, m, n, ai, lda, &ai[((m + 1) - 1) + ((m + 1) - 1) * ldai], lda, &ai[((m + 1) - 1) * ldai], lda, bi, lda, &bi[((m + 1) - 1) + ((m + 1) - 1) * ldbi], lda, &bi[((m + 1) - 1) * ldbi], lda, q, lda, z, lda, weight, qba, qbb);
                     //
                     //                 Compute the Schur factorization and swapping the
                     //                 m-by-m (1,1)-blocks with n-by-n (2,2)-blocks.
@@ -248,19 +316,19 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     //                 which is supplied below.
                     //
                     if (ifunc == 0) {
-                        sense = "N";
+                        sense = 'N';
                     } else if (ifunc == 1) {
-                        sense = "E";
+                        sense = 'E';
                     } else if (ifunc == 2) {
-                        sense = "V";
+                        sense = 'V';
                     } else if (ifunc == 3) {
-                        sense = "B";
+                        sense = 'B';
                     }
                     //
                     Clacpy("Full", mplusn, mplusn, ai, lda, a, lda);
                     Clacpy("Full", mplusn, mplusn, bi, lda, b, lda);
                     //
-                    Cggesx("V", "V", "S", Clctsx, sense, mplusn, ai, lda, bi, lda, mm, alpha, beta, q, lda, z, lda, pl, difest, work, lwork, rwork, iwork, liwork, bwork, linfo);
+                    Cggesx("V", "V", "S", _Clctsx, &sense, mplusn, ai, lda, bi, lda, mm, alpha, beta, q, lda, z, lda, pl, difest, work, lwork, rwork, iwork, liwork, bwork, linfo);
                     //
                     if (linfo != 0 && linfo != mplusn + 2) {
                         result[1 - 1] = ulpinv;
@@ -336,7 +404,7 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                         //                    Note: for either following two cases, there are
                         //                    almost same number of test cases fail the test.
                         //
-                        zlakf2(mm, mplusn - mm, ai, lda, ai[((mm + 1) - 1) + ((mm + 1) - 1) * ldai], bi, bi[((mm + 1) - 1) + ((mm + 1) - 1) * ldbi], c, ldc);
+                        Clakf2(mm, mplusn - mm, ai, lda, &ai[((mm + 1) - 1) + ((mm + 1) - 1) * ldai], bi, &bi[((mm + 1) - 1) + ((mm + 1) - 1) * ldbi], c, ldc);
                         //
                         Cgesvd("N", "N", mn2, mn2, c, ldc, s, work, 1, &work[2 - 1], 1, &work[3 - 1], lwork - 2, rwork, info);
                         diftru = s[mn2 - 1];
@@ -410,13 +478,17 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                             }
                             nerrs++;
                             if (result[j - 1] < 10000.0) {
-                                write(nout, "(' Matrix order=',i2,', type=',i2,', a=',d10.3,"
-                                            "', order(A_11)=',i2,', result ',i2,' is ',0p,f8.2)"),
-                                    mplusn, prtype, weight, m, j, result(j);
+                                sprintnum_short(buf0, weight);
+                                sprintnum_short(buf1, result[j - 1]);
+                                write(nout, "(' Matrix order=',i2,', type=',i2,', a=',a,"
+                                            "', order(A_11)=',i2,', result ',i2,' is ',0p,a)"),
+                                    mplusn, prtype, buf0, m, j, buf1;
                             } else {
-                                write(nout, "(' Matrix order=',i2,', type=',i2,', a=',d10.3,"
-                                            "', order(A_11)=',i2,', result ',i2,' is ',0p,d10.3)"),
-                                    mplusn, prtype, weight, m, j, result(j);
+                                sprintnum_short(buf0, weight);
+                                sprintnum_short(buf1, result[j - 1]);
+                                write(nout, "(' Matrix order=',i2,', type=',i2,', a=',a,"
+                                            "', order(A_11)=',i2,', result ',i2,' is ',0p,a)"),
+                                    mplusn, prtype, buf0, m, j, buf1;
                             }
                         }
                     }
@@ -479,7 +551,7 @@ statement_80:
     //     Compute the Schur factorization while swapping the
     //     m-by-m (1,1)-blocks with n-by-n (2,2)-blocks.
     //
-    Cggesx("V", "V", "S", Clctsx, "B", mplusn, ai, lda, bi, lda, mm, alpha, beta, q, lda, z, lda, pl, difest, work, lwork, rwork, iwork, liwork, bwork, linfo);
+    Cggesx("V", "V", "S", _Clctsx, "B", mplusn, ai, lda, bi, lda, mm, alpha, beta, q, lda, z, lda, pl, difest, work, lwork, rwork, iwork, liwork, bwork, linfo);
     //
     if (linfo != 0 && linfo != mplusn + 2) {
         result[1 - 1] = ulpinv;
