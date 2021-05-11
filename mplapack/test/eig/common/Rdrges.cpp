@@ -488,11 +488,11 @@ void Rdrges(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     result[12 - 1] = zero;
                     knteig = 0;
                     for (i = 1; i <= n; i = i + 1) {
-                        if (Rlctes(alphar[i - 1], beta[i - 1]) || Rlctes(alphar[i - 1],  beta[i - 1])) {
+                        if (Rlctes(alphar[i - 1], beta[i - 1]) || Rlctes(alphar[i - 1], beta[i - 1])) {
                             knteig++;
                         }
                         if (i < n) {
-			  if ((Rlctes(alphar[(i + 1) - 1], beta[(i + 1) - 1]) || Rlctes(alphar[(i + 1) - 1], beta[(i + 1) - 1])) && (!(Rlctes(alphar[i - 1], beta[i - 1]) || Rlctes(alphar[i - 1], beta[i - 1]))) && iinfo != n + 2) {
+                            if ((Rlctes(alphar[(i + 1) - 1], beta[(i + 1) - 1]) || Rlctes(alphar[(i + 1) - 1], beta[(i + 1) - 1])) && (!(Rlctes(alphar[i - 1], beta[i - 1]) || Rlctes(alphar[i - 1], beta[i - 1]))) && iinfo != n + 2) {
                                 result[12 - 1] = ulpinv;
                             }
                         }
@@ -572,15 +572,15 @@ void Rdrges(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                     nerrs++;
                     if (result[jr - 1] < 10000.0) {
-		        sprintnum_short(buf, result[jr - 1]);
+                        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
                                       "' result ',i2,' is',0p,a)"),
-			  n, jtype, ioldsd, jr, buf;
+                            n, jtype, ioldsd, jr, buf;
                     } else {
-		        sprintnum_short(buf, result[jr - 1]);
+                        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
                                       "' result ',i2,' is',1p,a)"),
-			  n, jtype, ioldsd, jr, buf;
+                            n, jtype, ioldsd, jr, buf;
                     }
                 }
             }

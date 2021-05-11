@@ -40,16 +40,16 @@ using fem::common;
 
 void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const ntypes, bool *dotype, INTEGER const nrhs, INTEGER *iseed, REAL const thresh, REAL *a, INTEGER const lda, REAL *bd, REAL *be, REAL *s1, REAL *s2, REAL *x, INTEGER const ldx, REAL *y, REAL *z, REAL *q, INTEGER const ldq, REAL *pt, INTEGER const ldpt, REAL *u, REAL *vt, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const nout, INTEGER &info) {
 
-    INTEGER ldy=ldx;
-    INTEGER ldz=ldx;
-    INTEGER ldu=ldpt;
-    INTEGER ldvt=ldpt;        
+    INTEGER ldy = ldx;
+    INTEGER ldz = ldx;
+    INTEGER ldu = ldpt;
+    INTEGER ldvt = ldpt;
     common cmn;
     common_write write(cmn);
     const INTEGER maxtyp = 16;
-    INTEGER ktype[16] = { 1,2,4,4,4,4,4,6,6,6,6,6,9,9,9,10 };
-    INTEGER kmagn[16] = { 1,1,1,1,1,2,3,1,1,1,2,3,1,2,3,0 };
-    INTEGER kmode[16] = { 0,0,4,3,1,4,4,4,3,1,4,4,0,0,0,0 };
+    INTEGER ktype[16] = {1, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 9, 9, 9, 10};
+    INTEGER kmagn[16] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 0};
+    INTEGER kmode[16] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 0};
     char buf[1024];
     bool badmm = false;
     bool badnn = false;
@@ -676,7 +676,8 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //              =================================
                 //              Matrix types temporarily disabled
                 //              =================================
-	        for (int p = 19; p <=33; p++)  result[p] = zero;
+                for (int p = 19; p <= 33; p++)
+                    result[p] = zero;
                 goto statement_270;
             }
             //
@@ -1008,10 +1009,10 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                     if (nfail == 0) {
                         Rlahd2(nout, path);
                     }
-		    sprintnum_short(buf, result[j - 1]);
+                    sprintnum_short(buf, result[j - 1]);
                     write(nout, "(' M=',i5,', N=',i5,', type ',i2,', seed=',4(i4,','),' test(',i2,"
                                 "')=',a)"),
-		      m, n, jtype, ioldsd, j, buf;
+                        m, n, jtype, ioldsd, j, buf;
                     nfail++;
                 }
             }

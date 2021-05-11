@@ -39,37 +39,27 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *b, REAL *s, REAL *t, REAL *q, INTEGER const ldq, REAL *z, REAL *alphar, REAL *alphai, REAL *beta, REAL *work, INTEGER const lwork, REAL *result, bool *bwork, INTEGER &info) {
-    INTEGER ldb=lda;
-    INTEGER lds=lda;
-    INTEGER ldt=lda;
-    INTEGER ldz=ldq;    
+    INTEGER ldb = lda;
+    INTEGER lds = lda;
+    INTEGER ldt = lda;
+    INTEGER ldz = ldq;
     common cmn;
     common_write write(cmn);
     char buf[1024];
     const INTEGER maxtyp = 26;
-    INTEGER kclass[26] = { 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,
-	    2,2,2,3 };
-    INTEGER kbmagn[26] = { 1,1,1,1,1,1,1,1,3,2,3,2,2,3,1,1,1,1,1,1,1,3,
-	    2,3,2,1 };
-    INTEGER ktrian[26] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,
-	    1,1,1,1 };
-    INTEGER iasign[26] = { 0,0,0,0,0,0,2,0,2,2,0,0,2,2,2,0,2,0,0,0,2,2,
-	    2,2,2,0 };
-    INTEGER ibsign[26] = { 0,0,0,0,0,0,0,2,0,0,2,2,0,0,2,0,2,0,0,0,0,0,
-	    0,0,0,0 };
-    INTEGER kz1[6] = { 0,1,2,1,3,3 };
-    INTEGER kz2[6] = { 0,0,1,2,1,1 };
-    INTEGER kadd[6] = { 0,0,0,0,3,2 };
-    INTEGER katype[26] = { 0,1,0,1,2,3,4,1,4,4,1,1,4,4,4,2,4,5,8,7,9,4,
-	    4,4,4,0 };
-    INTEGER kbtype[26] = { 0,0,1,1,2,-3,1,4,1,1,4,4,1,1,-4,2,-4,8,8,8,
-	    8,8,8,8,8,0 };
-    INTEGER kazero[26] = { 1,1,1,1,1,1,2,1,2,2,1,1,2,2,3,1,3,5,5,5,5,3,
-	    3,3,3,1 };
-    INTEGER kbzero[26] = { 1,1,1,1,1,1,1,2,1,1,2,2,1,1,4,1,4,6,6,6,6,4,
-	    4,4,4,1 };
-    INTEGER kamagn[26] = { 1,1,1,1,1,1,1,1,2,3,2,3,2,3,1,1,1,1,1,1,1,2,
-	    3,3,2,1 };
+    INTEGER kclass[26] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3};
+    INTEGER kbmagn[26] = {1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 2, 3, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 1};
+    INTEGER ktrian[26] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    INTEGER iasign[26] = {0, 0, 0, 0, 0, 0, 2, 0, 2, 2, 0, 0, 2, 2, 2, 0, 2, 0, 0, 0, 2, 2, 2, 2, 2, 0};
+    INTEGER ibsign[26] = {0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 2, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    INTEGER kz1[6] = {0, 1, 2, 1, 3, 3};
+    INTEGER kz2[6] = {0, 0, 1, 2, 1, 1};
+    INTEGER kadd[6] = {0, 0, 0, 0, 3, 2};
+    INTEGER katype[26] = {0, 1, 0, 1, 2, 3, 4, 1, 4, 4, 1, 1, 4, 4, 4, 2, 4, 5, 8, 7, 9, 4, 4, 4, 4, 0};
+    INTEGER kbtype[26] = {0, 0, 1, 1, 2, -3, 1, 4, 1, 1, 4, 4, 1, 1, -4, 2, -4, 8, 8, 8, 8, 8, 8, 8, 8, 0};
+    INTEGER kazero[26] = {1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 2, 2, 3, 1, 3, 5, 5, 5, 5, 3, 3, 3, 3, 1};
+    INTEGER kbzero[26] = {1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1, 4, 1, 4, 6, 6, 6, 6, 4, 4, 4, 4, 1};
+    INTEGER kamagn[26] = {1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 3, 2, 3, 1, 1, 1, 1, 1, 1, 1, 2, 3, 3, 2, 1};
     bool badnn = false;
     INTEGER nmax = 0;
     INTEGER j = 0;
@@ -502,7 +492,7 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                             knteig++;
                         }
                         if (i < n) {
-			  if ((Rlctes(alphar[(i + 1) - 1], beta[(i + 1) - 1]) || Rlctes(alphar[(i + 1) - 1], beta[(i + 1) - 1])) && (!(Rlctes(alphar[i - 1], beta[i - 1]) || Rlctes(alphar[i - 1], beta[i - 1]))) && iinfo != n + 2) {
+                            if ((Rlctes(alphar[(i + 1) - 1], beta[(i + 1) - 1]) || Rlctes(alphar[(i + 1) - 1], beta[(i + 1) - 1])) && (!(Rlctes(alphar[i - 1], beta[i - 1]) || Rlctes(alphar[i - 1], beta[i - 1]))) && iinfo != n + 2) {
                                 result[12 - 1] = ulpinv;
                             }
                         }
@@ -582,15 +572,15 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     }
                     nerrs++;
                     if (result[jr - 1] < 10000.0) {
-		        sprintnum_short(buf, result[jr - 1]);
+                        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
                                       "' result ',i2,' is',0p,a)"),
-			  n, jtype, ioldsd, jr, buf;
+                            n, jtype, ioldsd, jr, buf;
                     } else {
-      		        sprintnum_short(buf, result[jr - 1]);
+                        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
                                       "' result ',i2,' is',1p,a)"),
-			  n, jtype, ioldsd, jr, buf;
+                            n, jtype, ioldsd, jr, buf;
                     }
                 }
             }

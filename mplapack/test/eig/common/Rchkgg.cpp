@@ -505,7 +505,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rget52(true, n, s1, lda, p1, lda, evectl, ldu, alphr1, alphi1, beta1, work, &dumma[1 - 1]);
             result[9 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thrshn) {
-	        sprintnum_short(buf, dumma[2 - 1]);
+                sprintnum_short(buf, dumma[2 - 1]);
                 write(nounit, format_9998), "Left", "Rtgevc(HOWMNY=S)", buf, n, jtype, ioldsd;
             }
             //
@@ -525,7 +525,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rget52(true, n, h, lda, t, lda, evectl, ldu, alphr1, alphi1, beta1, work, &dumma[1 - 1]);
             result[10 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thrshn) {
-	        sprintnum_short(buf, dumma[2 - 1]);
+                sprintnum_short(buf, dumma[2 - 1]);
                 write(nounit, format_9998), "Left", "Rtgevc(HOWMNY=B)", buf, n, jtype, ioldsd;
             }
             //
@@ -570,8 +570,8 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rget52(false, n, s1, lda, p1, lda, evectr, ldu, alphr1, alphi1, beta1, work, &dumma[1 - 1]);
             result[11 - 1] = dumma[1 - 1];
-	    if (dumma[2 - 1] > thresh) {
-	       sprintnum_short(buf, dumma[2 - 1]); 
+            if (dumma[2 - 1] > thresh) {
+                sprintnum_short(buf, dumma[2 - 1]);
                 write(nounit, format_9998), "Right", "Rtgevc(HOWMNY=S)", buf, n, jtype, ioldsd;
             }
             //
@@ -591,7 +591,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rget52(false, n, h, lda, t, lda, evectr, ldu, alphr1, alphi1, beta1, work, &dumma[1 - 1]);
             result[12 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thresh) {
-      	       sprintnum_short(buf, dumma[2 - 1]); 
+                sprintnum_short(buf, dumma[2 - 1]);
                 write(nounit, format_9998), "Right", "Rtgevc(HOWMNY=B)", buf, n, jtype, ioldsd;
             }
             //
@@ -690,15 +690,15 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                     nerrs++;
                     if (result[jr - 1] < 10000.0) {
-	       sprintnum_short(buf, result[jr - 1]);
-	       write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
+                        sprintnum_short(buf, result[jr - 1]);
+                        write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
                                       "' result ',i2,' is',0p,a)"),
-		 n, jtype, ioldsd, jr, buf;
+                            n, jtype, ioldsd, jr, buf;
                     } else {
-	       sprintnum_short(buf, result[jr - 1]);
-	       write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
+                        sprintnum_short(buf, result[jr - 1]);
+                        write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
                                       "' result ',i2,' is',1p,a)"),
-		 n, jtype, ioldsd, jr, buf;
+                            n, jtype, ioldsd, jr, buf;
                     }
                 }
             }

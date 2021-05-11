@@ -55,32 +55,19 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     common cmn;
     common_write write(cmn);
     const INTEGER maxtyp = 26;
-    INTEGER kclass[26] = { 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,
-	    2,2,2,3 };
-    INTEGER kbmagn[26] = { 1,1,1,1,1,1,1,1,3,2,3,2,2,3,1,1,1,1,1,1,1,3,
-	    2,3,2,1 };
-    INTEGER ktrian[26] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,
-	    1,1,1,1 };
-    bool lasign[26] = { false,false,false,false,false,false,
-	    true,false,true,true,false,false,true,true,true,false,
-	    true,false,false,false,true,true,true,true,true,false };
-    bool lbsign[26] = { false,false,false,false,false,false,
-	    false,true,false,false,true,true,false,false,true,false,
-	    true,false,false,false,false,false,false,false,false,
-	    false };
-    INTEGER kz1[6] = { 0,1,2,1,3,3 };
-    INTEGER kz2[6] = { 0,0,1,2,1,1 };
-    INTEGER kadd[6] = { 0,0,0,0,3,2 };
-    INTEGER katype[26] = { 0,1,0,1,2,3,4,1,4,4,1,1,4,4,4,2,4,5,8,7,9,4,
-	    4,4,4,0 };
-    INTEGER kbtype[26] = { 0,0,1,1,2,-3,1,4,1,1,4,4,1,1,-4,2,-4,8,8,8,
-	    8,8,8,8,8,0 };
-    INTEGER kazero[26] = { 1,1,1,1,1,1,2,1,2,2,1,1,2,2,3,1,3,5,5,5,5,3,
-	    3,3,3,1 };
-    INTEGER kbzero[26] = { 1,1,1,1,1,1,1,2,1,1,2,2,1,1,4,1,4,6,6,6,6,4,
-	    4,4,4,1 };
-    INTEGER kamagn[26] = { 1,1,1,1,1,1,1,1,2,3,2,3,2,3,1,1,1,1,1,1,1,2,
-	    3,3,2,1 };
+    INTEGER kclass[26] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3};
+    INTEGER kbmagn[26] = {1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 2, 3, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 1};
+    INTEGER ktrian[26] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    bool lasign[26] = {false, false, false, false, false, false, true, false, true, true, false, false, true, true, true, false, true, false, false, false, true, true, true, true, true, false};
+    bool lbsign[26] = {false, false, false, false, false, false, false, true, false, false, true, true, false, false, true, false, true, false, false, false, false, false, false, false, false, false};
+    INTEGER kz1[6] = {0, 1, 2, 1, 3, 3};
+    INTEGER kz2[6] = {0, 0, 1, 2, 1, 1};
+    INTEGER kadd[6] = {0, 0, 0, 0, 3, 2};
+    INTEGER katype[26] = {0, 1, 0, 1, 2, 3, 4, 1, 4, 4, 1, 1, 4, 4, 4, 2, 4, 5, 8, 7, 9, 4, 4, 4, 4, 0};
+    INTEGER kbtype[26] = {0, 0, 1, 1, 2, -3, 1, 4, 1, 1, 4, 4, 1, 1, -4, 2, -4, 8, 8, 8, 8, 8, 8, 8, 8, 0};
+    INTEGER kazero[26] = {1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 2, 2, 3, 1, 3, 5, 5, 5, 5, 3, 3, 3, 3, 1};
+    INTEGER kbzero[26] = {1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1, 4, 1, 4, 6, 6, 6, 6, 4, 4, 4, 4, 1};
+    INTEGER kamagn[26] = {1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 3, 2, 3, 1, 1, 1, 1, 1, 1, 1, 2, 3, 3, 2, 1};
 
     bool badnn = false;
     INTEGER nmax = 0;
@@ -521,7 +508,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Cget52(true, n, s1, lda, p1, lda, evectl, ldu, alpha1, beta1, work, rwork, &dumma[1 - 1]);
             result[9 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thrshn) {
-	        sprintnum_short(buf, dumma[2 - 1]);
+                sprintnum_short(buf, dumma[2 - 1]);
                 write(nounit, format_9998), "Left", "Ctgevc(HOWMNY=S)", buf, n, jtype, ioldsd;
             }
             //
@@ -541,7 +528,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Cget52(true, n, h, lda, t, lda, evectl, ldu, alpha1, beta1, work, rwork, &dumma[1 - 1]);
             result[10 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thrshn) {
-	        sprintnum_short(buf, dumma[2 - 1]);
+                sprintnum_short(buf, dumma[2 - 1]);
                 write(nounit, format_9998), "Left", "Ctgevc(HOWMNY=B)", buf, n, jtype, ioldsd;
             }
             //
@@ -587,7 +574,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Cget52(false, n, s1, lda, p1, lda, evectr, ldu, alpha1, beta1, work, rwork, &dumma[1 - 1]);
             result[11 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thresh) {
-	        sprintnum_short(buf, dumma[2 - 1]);
+                sprintnum_short(buf, dumma[2 - 1]);
                 write(nounit, format_9998), "Right", "Ctgevc(HOWMNY=S)", buf, n, jtype, ioldsd;
             }
             //
@@ -607,7 +594,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Cget52(false, n, h, lda, t, lda, evectr, ldu, alpha1, beta1, work, rwork, &dumma[1 - 1]);
             result[12 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thresh) {
-	        sprintnum_short(buf, dumma[2 - 1]);
+                sprintnum_short(buf, dumma[2 - 1]);
                 write(nounit, format_9998), "Right", "Ctgevc(HOWMNY=B)", buf, n, jtype, ioldsd;
             }
             //
@@ -706,15 +693,15 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                     nerrs++;
                     if (result[jr - 1] < 10000.0) {
-	        sprintnum_short(buf, result[jr - 1]);
-		write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
+                        sprintnum_short(buf, result[jr - 1]);
+                        write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
                                       "' result ',i2,' is',0p,a)"),
-		  n, jtype, ioldsd, jr, buf;
+                            n, jtype, ioldsd, jr, buf;
                     } else {
-		      	        sprintnum_short(buf, result[jr - 1]);
+                        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
                                       "' result ',i2,' is',1p,a)"),
-			  n, jtype, ioldsd, jr, buf;
+                            n, jtype, ioldsd, jr, buf;
                     }
                 }
             }

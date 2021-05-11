@@ -39,14 +39,14 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, REAL *a, INTEGER const lda, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *asav, REAL *usav, REAL *vtsav, REAL *s, REAL *ssav, REAL *e, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const nout, INTEGER &info) {
-    INTEGER ldasav=lda;
-    INTEGER ldusav=ldu;
-    INTEGER ldvtsav=ldvt;
+    INTEGER ldasav = lda;
+    INTEGER ldusav = ldu;
+    INTEGER ldvtsav = ldvt;
 
     common cmn;
     common_write write(cmn);
     char cjob[4] = {'N', 'O', 'S', 'A'};
-    char cjobr[3] ={'A', 'V', 'I'};
+    char cjobr[3] = {'A', 'V', 'I'};
     char cjobv[2] = {'N', 'V'};
     char buf[1024];
     bool badmm = false;
@@ -862,10 +862,10 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                                         "'39 = 0 if S contains min(M,N) nonnegative values in',"
                                         "' decreasing order, else 1/ulp',/,/)");
                         }
-			sprintnum_short(buf, result[j - 1]);
+                        sprintnum_short(buf, result[j - 1]);
                         write(nout, "(' M=',i5,', N=',i5,', type ',i1,', IWS=',i1,', seed=',4(i4,"
                                     "','),' test(',i2,')=',a)"),
-			  m, n, jtype, iws, ioldsd, j, buf;
+                            m, n, jtype, iws, ioldsd, j, buf;
                         nfail++;
                     }
                 }

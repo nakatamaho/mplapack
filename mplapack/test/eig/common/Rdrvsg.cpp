@@ -39,14 +39,14 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *d, REAL *z, INTEGER const ldz, REAL *ab, REAL *bb, REAL *ap, REAL *bp, REAL *work, INTEGER const nwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
-    INTEGER ldab=lda;
-    INTEGER ldbb=ldb;    
+    INTEGER ldab = lda;
+    INTEGER ldbb = ldb;
     common cmn;
     common_write write(cmn);
     const INTEGER maxtyp = 21;
-    INTEGER ktype[21] = { 1,2,4,4,4,4,4,5,5,5,5,5,8,8,8,9,9,9,9,9,9 };
-    INTEGER kmagn[21] = { 1,1,1,1,1,2,3,1,1,1,2,3,1,2,3,1,1,1,1,1,1 };
-    INTEGER kmode[21] = { 0,0,4,3,1,4,4,4,3,1,4,4,0,0,0,4,4,4,4,4,4 };
+    INTEGER ktype[21] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9, 9, 9, 9};
+    INTEGER kmagn[21] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 1, 1, 1, 1, 1};
+    INTEGER kmode[21] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 4, 4, 4, 4, 4, 4};
     char buf[1024];
     INTEGER ntestt = 0;
     bool badnn = false;
@@ -397,12 +397,12 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     Rsygv(ibtype, "V", &uplo, n, z, ldz, bb, ldb, d, work, nwork, iinfo);
                     if (iinfo != 0) {
-  		      if (Mlsame(&uplo, "U"))
-		         write(nounit, format_9999), "Rsygv(V,U)", iinfo, n, jtype, ioldsd;
-		      else
-		         write(nounit, format_9999), "Rsygv(V,L)", iinfo, n, jtype, ioldsd;
-		      info = abs(iinfo);
-		      
+                        if (Mlsame(&uplo, "U"))
+                            write(nounit, format_9999), "Rsygv(V,U)", iinfo, n, jtype, ioldsd;
+                        else
+                            write(nounit, format_9999), "Rsygv(V,L)", iinfo, n, jtype, ioldsd;
+                        info = abs(iinfo);
+
                         if (iinfo < 0) {
                             return;
                         } else {
@@ -424,11 +424,11 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     Rsygvd(ibtype, "V", &uplo, n, z, ldz, bb, ldb, d, work, nwork, iwork, liwork, iinfo);
                     if (iinfo != 0) {
-  		      if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsygvd(V,U)", iinfo, n, jtype, ioldsd;
-		    else
-                        write(nounit, format_9999), "Rsygvd(V,L)", iinfo, n, jtype, ioldsd;
-		info = abs(iinfo);
+                        if (Mlsame(&uplo, "U"))
+                            write(nounit, format_9999), "Rsygvd(V,U)", iinfo, n, jtype, ioldsd;
+                        else
+                            write(nounit, format_9999), "Rsygvd(V,L)", iinfo, n, jtype, ioldsd;
+                        info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
                         } else {
@@ -450,11 +450,11 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     Rsygvx(ibtype, "V", "A", &uplo, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
-  		      if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsygvx(V,A,U)", iinfo, n, jtype, ioldsd;
-		      else
-                        write(nounit, format_9999), "Rsygvx(V,A,L)", iinfo, n, jtype, ioldsd;
-		      info = abs(iinfo);
+                        if (Mlsame(&uplo, "U"))
+                            write(nounit, format_9999), "Rsygvx(V,A,U)", iinfo, n, jtype, ioldsd;
+                        else
+                            write(nounit, format_9999), "Rsygvx(V,A,L)", iinfo, n, jtype, ioldsd;
+                        info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
                         } else {
@@ -481,11 +481,11 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     vu = anorm;
                     Rsygvx(ibtype, "V", "V", &uplo, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
-      		      if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsygvx(V,V,U)", iinfo, n, jtype, ioldsd;
-		      else
-                        write(nounit, format_9999), "Rsygvx(V,V,N)", iinfo, n, jtype, ioldsd;
-		      info = abs(iinfo);
+                        if (Mlsame(&uplo, "U"))
+                            write(nounit, format_9999), "Rsygvx(V,V,U)", iinfo, n, jtype, ioldsd;
+                        else
+                            write(nounit, format_9999), "Rsygvx(V,V,N)", iinfo, n, jtype, ioldsd;
+                        info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
                         } else {
@@ -505,11 +505,11 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     Rsygvx(ibtype, "V", "I", &uplo, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
-  		      if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsygvx(V,I,U)", iinfo, n, jtype, ioldsd;
-		      else
-                        write(nounit, format_9999), "Rsygvx(V,I,L)", iinfo, n, jtype, ioldsd;
-		      info = abs(iinfo);
+                        if (Mlsame(&uplo, "U"))
+                            write(nounit, format_9999), "Rsygvx(V,I,U)", iinfo, n, jtype, ioldsd;
+                        else
+                            write(nounit, format_9999), "Rsygvx(V,I,L)", iinfo, n, jtype, ioldsd;
+                        info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
                         } else {
@@ -552,11 +552,11 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     Rspgv(ibtype, "V", &uplo, n, ap, bp, d, z, ldz, work, iinfo);
                     if (iinfo != 0) {
-  		      if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rspgv(V,U)", iinfo, n, jtype, ioldsd;
-		    else
-                        write(nounit, format_9999), "Rspgv(V,L)", iinfo, n, jtype, ioldsd;
-		info = abs(iinfo);
+                        if (Mlsame(&uplo, "U"))
+                            write(nounit, format_9999), "Rspgv(V,U)", iinfo, n, jtype, ioldsd;
+                        else
+                            write(nounit, format_9999), "Rspgv(V,L)", iinfo, n, jtype, ioldsd;
+                        info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
                         } else {
@@ -597,11 +597,11 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     Rspgvd(ibtype, "V", &uplo, n, ap, bp, d, z, ldz, work, nwork, iwork, liwork, iinfo);
                     if (iinfo != 0) {
-  		      if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rspgvd(V,U)", iinfo, n, jtype, ioldsd;
-		      else
-                        write(nounit, format_9999), "Rspgvd(V,L)", iinfo, n, jtype, ioldsd;
-		      info = abs(iinfo);
+                        if (Mlsame(&uplo, "U"))
+                            write(nounit, format_9999), "Rspgvd(V,U)", iinfo, n, jtype, ioldsd;
+                        else
+                            write(nounit, format_9999), "Rspgvd(V,L)", iinfo, n, jtype, ioldsd;
+                        info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
                         } else {
@@ -642,7 +642,10 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     Rspgvx(ibtype, "V", "A", &uplo, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, info);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "Rspgvx(V,A" + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                        if (Mlsame(&uplo, "U"))
+                            write(nounit, format_9999), "Rspgvx(V,A,U)", iinfo, n, jtype, ioldsd;
+                        else
+                            write(nounit, format_9999), "Rspgvx(V,A,N)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -654,7 +657,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     //                 Do Test
                     //
-                    Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, result[ntest - 1]);
+                    Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
                     ntest++;
                     //
@@ -684,7 +687,10 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     vu = anorm;
                     Rspgvx(ibtype, "V", "V", &uplo, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, info);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "Rspgvx(V,V" + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                        if (Mlsame(&uplo, "U"))
+                            write(nounit, format_9999), "Rspgvx(V,V,U)", iinfo, n, jtype, ioldsd;
+                        else
+                            write(nounit, format_9999), "Rspgvx(V,V,L)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -696,7 +702,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     //                 Do Test
                     //
-                    Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, result[ntest - 1]);
+                    Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
                     ntest++;
                     //
@@ -724,10 +730,10 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     Rspgvx(ibtype, "V", "I", &uplo, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, info);
                     if (iinfo != 0) {
-  		      if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rspgvx(V,I,U)", iinfo, n, jtype, ioldsd;
-		      else
-                        write(nounit, format_9999), "Rspgvx(V,I,N)", iinfo, n, jtype, ioldsd;			
+                        if (Mlsame(&uplo, "U"))
+                            write(nounit, format_9999), "Rspgvx(V,I,U)", iinfo, n, jtype, ioldsd;
+                        else
+                            write(nounit, format_9999), "Rspgvx(V,I,N)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -739,7 +745,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     //                 Do Test
                     //
-                    Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, result[ntest - 1]);
+                    Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                 //
                 statement_310:
                     //
@@ -773,11 +779,11 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         //
                         Rsbgv("V", &uplo, n, ka, kb, ab, lda, bb, ldb, d, z, ldz, work, iinfo);
                         if (iinfo != 0) {
-  		      if (Mlsame(&uplo, "U"))
-			write(nounit, format_9999), "Rsbgv(V,U)", iinfo, n, jtype, ioldsd;
-                      else
-			write(nounit, format_9999), "Rsbgv(V,L)", iinfo, n, jtype, ioldsd;
-		      info = abs(iinfo);
+                            if (Mlsame(&uplo, "U"))
+                                write(nounit, format_9999), "Rsbgv(V,U)", iinfo, n, jtype, ioldsd;
+                            else
+                                write(nounit, format_9999), "Rsbgv(V,L)", iinfo, n, jtype, ioldsd;
+                            info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
                             } else {
@@ -788,7 +794,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         //
                         //                    Do Test
                         //
-                        Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, result[ntest - 1]);
+                        Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                         //
                         //                    TEST Rsbgvd
                         //
@@ -818,11 +824,11 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         //
                         Rsbgvd("V", &uplo, n, ka, kb, ab, lda, bb, ldb, d, z, ldz, work, nwork, iwork, liwork, iinfo);
                         if (iinfo != 0) {
-  		      if (Mlsame(&uplo, "U"))
-			write(nounit, format_9999), "Rsbgvd(V,U)", iinfo, n, jtype, ioldsd;
-		      else
-			write(nounit, format_9999), "Rsbgvd(V,L)", iinfo, n, jtype, ioldsd;
-		      info = abs(iinfo);
+                            if (Mlsame(&uplo, "U"))
+                                write(nounit, format_9999), "Rsbgvd(V,U)", iinfo, n, jtype, ioldsd;
+                            else
+                                write(nounit, format_9999), "Rsbgvd(V,L)", iinfo, n, jtype, ioldsd;
+                            info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
                             } else {
@@ -833,7 +839,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         //
                         //                    Do Test
                         //
-                        Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, result[ntest - 1]);
+                        Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                         //
                         //                    Test Rsbgvx
                         //
@@ -863,11 +869,11 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         //
                         Rsbgvx("V", "A", &uplo, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, iinfo);
                         if (iinfo != 0) {
-  		      if (Mlsame(&uplo, "U"))
-			write(nounit, format_9999), "Rsbgvx(V,A,U)", iinfo, n, jtype, ioldsd;
-		      else
-			write(nounit, format_9999), "Rsbgvx(V,A,L)", iinfo, n, jtype, ioldsd;
-		      info = abs(iinfo);
+                            if (Mlsame(&uplo, "U"))
+                                write(nounit, format_9999), "Rsbgvx(V,A,U)", iinfo, n, jtype, ioldsd;
+                            else
+                                write(nounit, format_9999), "Rsbgvx(V,A,L)", iinfo, n, jtype, ioldsd;
+                            info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
                             } else {
@@ -878,7 +884,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         //
                         //                    Do Test
                         //
-                        Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, result[ntest - 1]);
+                        Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                         //
                         ntest++;
                         //
@@ -908,11 +914,11 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         vu = anorm;
                         Rsbgvx("V", "V", &uplo, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, iinfo);
                         if (iinfo != 0) {
-  		      if (Mlsame(&uplo, "U"))
-			write(nounit, format_9999), "Rsbgvx(V,V,U)", iinfo, n, jtype, ioldsd;
-		      else
-			write(nounit, format_9999), "Rsbgvx(V,V,L)", iinfo, n, jtype, ioldsd;
-		      info = abs(iinfo);
+                            if (Mlsame(&uplo, "U"))
+                                write(nounit, format_9999), "Rsbgvx(V,V,U)", iinfo, n, jtype, ioldsd;
+                            else
+                                write(nounit, format_9999), "Rsbgvx(V,V,L)", iinfo, n, jtype, ioldsd;
+                            info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
                             } else {
@@ -923,7 +929,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         //
                         //                    Do Test
                         //
-                        Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, result[ntest - 1]);
+                        Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                         //
                         ntest++;
                         //
@@ -951,11 +957,11 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         //
                         Rsbgvx("V", "I", &uplo, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, iinfo);
                         if (iinfo != 0) {
-  		      if (Mlsame(&uplo, "U"))
-			write(nounit, format_9999), "Rsbgvx(V,I,U)", iinfo, n, jtype, ioldsd;
-		      else
-			write(nounit, format_9999), "Rsbgvx(V,I,N)", iinfo, n, jtype, ioldsd;
-		      info = abs(iinfo);
+                            if (Mlsame(&uplo, "U"))
+                                write(nounit, format_9999), "Rsbgvx(V,I,U)", iinfo, n, jtype, ioldsd;
+                            else
+                                write(nounit, format_9999), "Rsbgvx(V,I,N)", iinfo, n, jtype, ioldsd;
+                            info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
                             } else {
@@ -966,7 +972,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         //
                         //                    Do Test
                         //
-                        Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, result[ntest - 1]);
+                        Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                         //
                     }
                 //
