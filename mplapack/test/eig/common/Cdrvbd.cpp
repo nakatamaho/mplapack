@@ -39,34 +39,16 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, COMPLEX *a, INTEGER const lda, COMPLEX *u, INTEGER const ldu, COMPLEX *vt, INTEGER const ldvt, COMPLEX *asav, COMPLEX *usav, COMPLEX *vtsav, REAL *s, REAL *ssav, REAL *e, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER const nounit, INTEGER &info) {
-    FEM_CMN_SVE(Cdrvbd);
-    iseed([4]);
-    a([lda * star]);
-    u([ldu * star]);
-    vt([ldvt * star]);
-    asav([lda * star]);
-    usav([ldu * star]);
-    vtsav([ldvt * star]);
+    INTEGER ldasav = lda;
+    INTEGER ldusav = ldu;
+    INTEGER ldvtsav = ldvt;
+
+    common cmn;
     common_write write(cmn);
-    char &srnamt = cmn.srnamt;
-    //
-    str_arr_ref<1> cjob(sve.cjob, [4]);
-    str_arr_ref<1> cjobr(sve.cjobr, [3]);
-    str_arr_ref<1> cjobv(sve.cjobv, [2]);
-    if (is_called_first_time) {
-        {
-            static const char *values[] = {"N", "O", "S", "A"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), cjob;
-        }
-        {
-            static const char *values[] = {"A", "V", "I"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), cjobr;
-        }
-        {
-            static const char *values[] = {"N", "V"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), cjobv;
-        }
-    }
+    char cjob[4] = {'N', 'O', 'S', 'A'};
+    char cjobr[3] = {'A', 'V', 'I'};
+    char cjobv[2] = {'N', 'V'};
+    char buf[1024];
     INTEGER nerrs = 0;
     INTEGER ntestt = 0;
     INTEGER ntestf = 0;
@@ -187,7 +169,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
             badnn = true;
         }
         mnmax = max({mnmax, min(mm[j - 1], nn[j - 1])});
-        minwrk = max({minwrk, max({3 * min(mm[j - 1], nn[j - 1]) + pow2(max(mm[j - 1], nn[j - 1])), 5 * min(mm[j - 1], nn[j - 1]), 3 * max(mm[j - 1], nn[j - 1])})});
+        minwrk = max({minwrk, max({3 * min(mm[j - 1], nn[j - 1]) + max(mm[j - 1], nn[j - 1]) * max(mm[j - 1], nn[j - 1]), 5 * min(mm[j - 1], nn[j - 1]), 3 * max(mm[j - 1], nn[j - 1])})});
     }
     //
     //     Check for errors
@@ -291,7 +273,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 if (jtype == 5) {
                     anorm = ovfl * ulp;
                 }
-                zlatms(m, n, "U", iseed, "N", s, 4, mnmin.real(), anorm, m - 1, n - 1, "N", a, lda, work, iinfo);
+                Clatms(m, n, "U", iseed, "N", s, 4, castREAL(mnmin), anorm, m - 1, n - 1, "N", a, lda, work, iinfo);
                 if (iinfo != 0) {
                     write(nounit, "(' Cdrvbd: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
                                   "', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')"),
@@ -327,7 +309,6 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 if (iwspc > 1) {
                     Clacpy("F", m, n, asav, lda, a, lda);
                 }
-                srnamt = "Cgesvd";
                 Cgesvd("A", "A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, work, lswork, rwork, iinfo);
                 if (iinfo != 0) {
                     write(nounit, format_9995), "GESVD", iinfo, m, n, jtype, lswork, ioldsd;
@@ -370,8 +351,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         jobu = cjob[(iju + 1) - 1];
                         jobvt = cjob[(ijvt + 1) - 1];
                         Clacpy("F", m, n, asav, lda, a, lda);
-                        srnamt = "Cgesvd";
-                        Cgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, rwork, iinfo);
+                        Cgesvd(&jobu, &jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, rwork, iinfo);
                         //
                         //                    Compare U
                         //
@@ -404,7 +384,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         //                    Compare S
                         //
                         dif = zero;
-                        div = max(mnmin.real() * ulp * s[1 - 1], Rlamch("Safe minimum"));
+                        div = max(castREAL(mnmin) * ulp * s[1 - 1], Rlamch("Safe minimum"));
                         for (i = 1; i <= mnmin - 1; i = i + 1) {
                             if (ssav[i - 1] < ssav[(i + 1) - 1]) {
                                 dif = ulpinv;
@@ -432,7 +412,6 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 //              Factorize A
                 //
                 Clacpy("F", m, n, asav, lda, a, lda);
-                srnamt = "Cgesdd";
                 Cgesdd("A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, work, lswork, rwork, iwork, iinfo);
                 if (iinfo != 0) {
                     write(nounit, format_9995), "GESDD", iinfo, m, n, jtype, lswork, ioldsd;
@@ -470,8 +449,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 for (ijq = 0; ijq <= 2; ijq = ijq + 1) {
                     jobq = cjob[(ijq + 1) - 1];
                     Clacpy("F", m, n, asav, lda, a, lda);
-                    srnamt = "Cgesdd";
-                    Cgesdd(jobq, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, rwork, iwork, iinfo);
+                    Cgesdd(&jobq, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, rwork, iwork, iinfo);
                     //
                     //                 Compare U
                     //
@@ -508,7 +486,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     //                 Compare S
                     //
                     dif = zero;
-                    div = max(mnmin.real() * ulp * s[1 - 1], Rlamch("Safe minimum"));
+                    div = max(castREAL(mnmin) * ulp * s[1 - 1], Rlamch("Safe minimum"));
                     for (i = 1; i <= mnmin - 1; i = i + 1) {
                         if (ssav[i - 1] < ssav[(i + 1) - 1]) {
                             dif = ulpinv;
@@ -539,7 +517,6 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     //
                     Clacpy("F", m, n, asav, lda, a, lda);
-                    srnamt = "Cgesvdq";
                     //
                     lrwork = max({(INTEGER)2, m, 5 * n});
                     liwork = max(n, 1);
@@ -593,7 +570,6 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     //
                     Clacpy("F", m, n, asav, lda, usav, lda);
-                    srnamt = "Cgesvj";
                     Cgesvj("G", "U", "V", m, n, usav, lda, ssav, 0, a, ldvt, work, lwork, rwork, lrwork, iinfo);
                     //
                     //                 Cgesvj returns V not VH
@@ -651,7 +627,6 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     lrwork = max((INTEGER)7, n + 2 * m);
                     //
                     Clacpy("F", m, n, asav, lda, vtsav, lda);
-                    srnamt = "Cgejsv";
                     Cgejsv("G", "U", "V", "R", "N", "N", m, n, vtsav, lda, ssav, usav, ldu, a, ldvt, work, lwork, rwork, lrwork, iwork, iinfo);
                     //
                     //                 Cgejsv returns V not VH
@@ -696,7 +671,6 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 //              Factorize A
                 //
                 Clacpy("F", m, n, asav, lda, a, lda);
-                srnamt = "Cgesvdx";
                 Cgesvdx("V", "V", "A", m, n, a, lda, vl, vu, il, iu, ns, ssav, usav, ldu, vtsav, ldvt, work, lwork, rwork, iwork, iinfo);
                 if (iinfo != 0) {
                     write(nounit, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd;
@@ -743,8 +717,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         jobvt = cjobv[(ijvt + 1) - 1];
                         range = cjobr[1 - 1];
                         Clacpy("F", m, n, asav, lda, a, lda);
-                        srnamt = "Cgesvdx";
-                        Cgesvdx(jobu, jobvt, "A", m, n, a, lda, vl, vu, il, iu, ns, ssav, u, ldu, vt, ldvt, work, lwork, rwork, iwork, iinfo);
+                        Cgesvdx(&jobu, &jobvt, "A", m, n, a, lda, vl, vu, il, iu, ns, ssav, u, ldu, vt, ldvt, work, lwork, rwork, iwork, iinfo);
                         //
                         //                    Compare U
                         //
@@ -769,7 +742,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         //                    Compare S
                         //
                         dif = zero;
-                        div = max(mnmin.real() * ulp * s[1 - 1], Rlamch("Safe minimum"));
+                        div = max(castREAL(mnmin) * ulp * s[1 - 1], Rlamch("Safe minimum"));
                         for (i = 1; i <= mnmin - 1; i = i + 1) {
                             if (ssav[i - 1] < ssav[(i + 1) - 1]) {
                                 dif = ulpinv;
@@ -793,8 +766,8 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     il = 1;
                     iu = max((INTEGER)1, mnmin);
                 } else {
-                    il = 1 + int((mnmin - 1) * dlarnd(1, iseed2));
-                    iu = 1 + int((mnmin - 1) * dlarnd(1, iseed2));
+                    il = 1 + castINTEGER((mnmin - 1) * Rlarnd(1, iseed2));
+                    iu = 1 + castINTEGER((mnmin - 1) * Rlarnd(1, iseed2));
                     if (iu < il) {
                         itemp = iu;
                         iu = il;
@@ -802,7 +775,6 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                 }
                 Clacpy("F", m, n, asav, lda, a, lda);
-                srnamt = "Cgesvdx";
                 Cgesvdx("V", "V", "I", m, n, a, lda, vl, vu, il, iu, nsi, s, u, ldu, vt, ldvt, work, lwork, rwork, iwork, iinfo);
                 if (iinfo != 0) {
                     write(nounit, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd;
@@ -842,7 +814,6 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     vu = one;
                 }
                 Clacpy("F", m, n, asav, lda, a, lda);
-                srnamt = "Cgesvdx";
                 Cgesvdx("V", "V", "V", m, n, a, lda, vl, vu, il, iu, nsv, s, u, ldu, vt, ldvt, work, lwork, rwork, iwork, iinfo);
                 if (iinfo != 0) {
                     write(nounit, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd;
@@ -885,6 +856,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                                   "' Tests performed: ( A is dense, U and V are unitary,',/,19x,"
                                   "' S is an array, and Upartial, VTpartial, and',/,19x,"
                                   "' Spartial are partially computed U, VT and S),',/)");
+                    sprintnum_short(buf, thresh);
                     write(nounit, "(' Tests performed with Test Threshold = ',a,/,' Cgesvd: ',/,"
                                   "' 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) ',/,"
                                   "' 2 = | I - U**T U | / ( M ulp ) ',/,"
@@ -932,15 +904,16 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                                   "'38 = | I - VT VT**T | / ( N ulp ) ',/,"
                                   "'39 = 0 if S contains min(M,N) nonnegative values in',"
                                   "' decreasing order, else 1/ulp',/,/)"),
-                        thresh;
+                        buf;
                     ntestf = 2;
                 }
                 //
                 for (j = 1; j <= 39; j = j + 1) {
                     if (result[j - 1] >= thresh) {
+                        sprintnum_short(buf, result[j - 1]);
                         write(nounit, "(' M=',i5,', N=',i5,', type ',i1,', IWS=',i1,', seed=',4(i4,"
-                                      "','),' test(',i2,')=',g11.4)"),
-                            m, n, jtype, iwspc, ioldsd, j, result(j);
+                                      "','),' test(',i2,')=',a)"),
+                            m, n, jtype, iwspc, ioldsd, j, buf;
                     }
                 }
                 //

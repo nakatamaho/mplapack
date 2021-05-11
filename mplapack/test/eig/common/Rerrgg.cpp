@@ -34,20 +34,58 @@ using namespace fem::major_types;
 using fem::common;
 
 #include <mplapack_matgen.h>
+#include <mplapack_lin.h>
 #include <mplapack_eig.h>
 
 #include <mplapack_debug.h>
 
+bool _Rlctsx(REAL const /* ar */, REAL const /* ai */, REAL const /* beta */) {
+    bool return_value = true;
+    return return_value;
+    //
+    //     End of Rlctsx
+    //
+}
+
+bool _Rlctes(REAL const zr, REAL const d) {
+    bool return_value = false;
+    //
+    //  -- LAPACK test routine --
+    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Executable Statements ..
+    //
+    const REAL zero = 0.0;
+    const REAL one = 1.0;
+    if (d == zero) {
+        return_value = (zr < zero);
+    } else {
+        return_value = (sign(one, zr) != sign(one, d));
+    }
+    //
+    return return_value;
+    //
+    //     End of Rlctes
+    //
+}
+
 void Rerrgg(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    // COMMON srnamc
-    char &srnamt = cmn.srnamt;
+    INTEGER infot;
+    INTEGER nout;
+    bool ok;
+    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -76,8 +114,9 @@ void Rerrgg(const char *path, INTEGER const nunit) {
     //     .. Executable Statements ..
     //
     nout = nunit;
-    write(nout, star);
-    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2];
+    c2[0] = path[1];
+    c2[1] = path[2];
     //
     //     Set the variables to innocuous values.
     //
@@ -88,6 +127,8 @@ void Rerrgg(const char *path, INTEGER const nunit) {
     const REAL zero = 0.0;
     REAL a[nmax * nmax];
     REAL b[nmax * nmax];
+    INTEGER lda = nmax;
+    INTEGER ldb = nmax;
     for (j = 1; j <= nmax; j = j + 1) {
         sel[j - 1] = true;
         for (i = 1; i <= nmax; i = i + 1) {
@@ -143,7 +184,6 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         //
         //        Rgghrd
         //
-        srnamt = "Rgghrd";
         infot = 1;
         Rgghrd("/", "N", 0, 1, 0, a, 1, b, 1, q, 1, z, 1, info);
         chkxer("Rgghrd", infot, nout, lerr, ok);
@@ -175,7 +215,6 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         //
         //        Rgghd3
         //
-        srnamt = "Rgghd3";
         infot = 1;
         Rgghd3("/", "N", 0, 1, 0, a, 1, b, 1, q, 1, z, 1, w, lw, info);
         chkxer("Rgghd3", infot, nout, lerr, ok);
@@ -207,7 +246,6 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         //
         //        Rhgeqz
         //
-        srnamt = "Rhgeqz";
         infot = 1;
         Rhgeqz("/", "N", "N", 0, 1, 0, a, 1, b, 1, r1, r2, r3, q, 1, z, 1, w, lw, info);
         chkxer("Rhgeqz", infot, nout, lerr, ok);
@@ -242,7 +280,6 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         //
         //        Rtgevc
         //
-        srnamt = "Rtgevc";
         infot = 1;
         Rtgevc("/", "A", sel, 0, a, 1, b, 1, q, 1, z, 1, 0, m, w, info);
         chkxer("Rtgevc", infot, nout, lerr, ok);
@@ -275,7 +312,6 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         //
         //        Rggsvd3
         //
-        srnamt = "Rggsvd3";
         infot = 1;
         Rggsvd3("/", "N", "N", 0, 0, 0, dummyk, dummyl, a, 1, b, 1, r1, r2, u, 1, v, 1, q, 1, w, lwork, idum, info);
         chkxer("Rggsvd3", infot, nout, lerr, ok);
@@ -313,7 +349,6 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         //
         //        Rggsvp3
         //
-        srnamt = "Rggsvp3";
         infot = 1;
         Rggsvp3("/", "N", "N", 0, 0, 0, a, 1, b, 1, tola, tolb, dummyk, dummyl, u, 1, v, 1, q, 1, iw, tau, w, lwork, info);
         chkxer("Rggsvp3", infot, nout, lerr, ok);
@@ -351,7 +386,6 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         //
         //        Rtgsja
         //
-        srnamt = "Rtgsja";
         infot = 1;
         Rtgsja("/", "N", "N", 0, 0, 0, dummyk, dummyl, a, 1, b, 1, tola, tolb, r1, r2, u, 1, v, 1, q, 1, w, ncycle, info);
         chkxer("Rtgsja", infot, nout, lerr, ok);
@@ -393,7 +427,6 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         //
         //        Rggglm
         //
-        srnamt = "Rggglm";
         infot = 1;
         Rggglm(-1, 0, 0, a, 1, b, 1, r1, r2, r3, w, lw, info);
         chkxer("Rggglm", infot, nout, lerr, ok);
@@ -426,7 +459,6 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         //
         //        Rgglse
         //
-        srnamt = "Rgglse";
         infot = 1;
         Rgglse(-1, 0, 0, a, 1, b, 1, r1, r2, r3, w, lw, info);
         chkxer("Rgglse", infot, nout, lerr, ok);
@@ -459,7 +491,6 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         //
         //        Rorcsd
         //
-        srnamt = "Rorcsd";
         infot = 7;
         Rorcsd("Y", "Y", "Y", "Y", "N", "N", -1, 0, 0, a, 1, a, 1, a, 1, a, 1, a, a, 1, a, 1, a, 1, a, 1, w, lw, iw, info);
         chkxer("Rorcsd", infot, nout, lerr, ok);
@@ -492,7 +523,6 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         //
         //        Rggqrf
         //
-        srnamt = "Rggqrf";
         infot = 1;
         Rggqrf(-1, 0, 0, a, 1, r1, b, 1, r2, w, lw, info);
         chkxer("Rggqrf", infot, nout, lerr, ok);
@@ -515,7 +545,6 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         //
         //        Rggrqf
         //
-        srnamt = "Rggrqf";
         infot = 1;
         Rggrqf(-1, 0, 0, a, 1, r1, b, 1, r2, w, lw, info);
         chkxer("Rggrqf", infot, nout, lerr, ok);
@@ -542,127 +571,123 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         //
         //        Rgges
         //
-        srnamt = "Rgges ";
         infot = 1;
-        Rgges("/", "N", "S", Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges("/", "N", "S", _Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         infot = 2;
-        Rgges("N", "/", "S", Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges("N", "/", "S", _Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         infot = 3;
-        Rgges("N", "V", "/", Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges("N", "V", "/", _Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         infot = 5;
-        Rgges("N", "V", "S", Rlctes, -1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges("N", "V", "S", _Rlctes, -1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         infot = 7;
-        Rgges("N", "V", "S", Rlctes, 1, a, 0, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges("N", "V", "S", _Rlctes, 1, a, 0, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         infot = 9;
-        Rgges("N", "V", "S", Rlctes, 1, a, 1, b, 0, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges("N", "V", "S", _Rlctes, 1, a, 1, b, 0, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         infot = 15;
-        Rgges("N", "V", "S", Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 0, u, 1, w, 1, bw, info);
+        Rgges("N", "V", "S", _Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 0, u, 1, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         infot = 15;
-        Rgges("V", "V", "S", Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 1, u, 2, w, 1, bw, info);
+        Rgges("V", "V", "S", _Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 1, u, 2, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         infot = 17;
-        Rgges("N", "V", "S", Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 0, w, 1, bw, info);
+        Rgges("N", "V", "S", _Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 0, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         infot = 17;
-        Rgges("V", "V", "S", Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 1, w, 1, bw, info);
+        Rgges("V", "V", "S", _Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 1, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         infot = 19;
-        Rgges("V", "V", "S", Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 2, w, 1, bw, info);
+        Rgges("V", "V", "S", _Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 2, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         nt += 11;
         //
         //        Rgges3
         //
-        srnamt = "Rgges3 ";
         infot = 1;
-        Rgges3("/", "N", "S", Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges3("/", "N", "S", _Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         infot = 2;
-        Rgges3("N", "/", "S", Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges3("N", "/", "S", _Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         infot = 3;
-        Rgges3("N", "V", "/", Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges3("N", "V", "/", _Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         infot = 5;
-        Rgges3("N", "V", "S", Rlctes, -1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges3("N", "V", "S", _Rlctes, -1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         infot = 7;
-        Rgges3("N", "V", "S", Rlctes, 1, a, 0, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges3("N", "V", "S", _Rlctes, 1, a, 0, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         infot = 9;
-        Rgges3("N", "V", "S", Rlctes, 1, a, 1, b, 0, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges3("N", "V", "S", _Rlctes, 1, a, 1, b, 0, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         infot = 15;
-        Rgges3("N", "V", "S", Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 0, u, 1, w, 1, bw, info);
+        Rgges3("N", "V", "S", _Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 0, u, 1, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         infot = 15;
-        Rgges3("V", "V", "S", Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 1, u, 2, w, 1, bw, info);
+        Rgges3("V", "V", "S", _Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 1, u, 2, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         infot = 17;
-        Rgges3("N", "V", "S", Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 0, w, 1, bw, info);
+        Rgges3("N", "V", "S", _Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 0, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         infot = 17;
-        Rgges3("V", "V", "S", Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 1, w, 1, bw, info);
+        Rgges3("V", "V", "S", _Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 1, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         infot = 19;
-        Rgges3("V", "V", "S", Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 2, w, 1, bw, info);
+        Rgges3("V", "V", "S", _Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 2, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         nt += 11;
         //
         //        Rggesx
         //
-        srnamt = "Rggesx";
         infot = 1;
-        Rggesx("/", "N", "S", Rlctsx, "N", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("/", "N", "S", _Rlctsx, "N", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 2;
-        Rggesx("N", "/", "S", Rlctsx, "N", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("N", "/", "S", _Rlctsx, "N", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 3;
-        Rggesx("V", "V", "/", Rlctsx, "N", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("V", "V", "/", _Rlctsx, "N", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 5;
-        Rggesx("V", "V", "S", Rlctsx, "/", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("V", "V", "S", _Rlctsx, "/", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 6;
-        Rggesx("V", "V", "S", Rlctsx, "B", -1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("V", "V", "S", _Rlctsx, "B", -1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 8;
-        Rggesx("V", "V", "S", Rlctsx, "B", 1, a, 0, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("V", "V", "S", _Rlctsx, "B", 1, a, 0, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 10;
-        Rggesx("V", "V", "S", Rlctsx, "B", 1, a, 1, b, 0, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("V", "V", "S", _Rlctsx, "B", 1, a, 1, b, 0, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 16;
-        Rggesx("V", "V", "S", Rlctsx, "B", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 0, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("V", "V", "S", _Rlctsx, "B", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 0, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 16;
-        Rggesx("V", "V", "S", Rlctsx, "B", 2, a, 2, b, 2, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("V", "V", "S", _Rlctsx, "B", 2, a, 2, b, 2, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 18;
-        Rggesx("V", "V", "S", Rlctsx, "B", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 0, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("V", "V", "S", _Rlctsx, "B", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 0, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 18;
-        Rggesx("V", "V", "S", Rlctsx, "B", 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("V", "V", "S", _Rlctsx, "B", 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 22;
-        Rggesx("V", "V", "S", Rlctsx, "B", 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 2, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("V", "V", "S", _Rlctsx, "B", 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 2, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 24;
-        Rggesx("V", "V", "S", Rlctsx, "V", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 32, iw, 0, bw, info);
+        Rggesx("V", "V", "S", _Rlctsx, "V", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 32, iw, 0, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         nt += 13;
         //
         //        Rggev
         //
-        srnamt = "Rggev ";
         infot = 1;
         Rggev("/", "N", 1, a, 1, b, 1, r1, r2, r3, q, 1, u, 1, w, 1, info);
         chkxer("Rggev ", infot, nout, lerr, ok);
@@ -697,7 +722,6 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         //
         //        Rggev3
         //
-        srnamt = "Rggev3 ";
         infot = 1;
         Rggev3("/", "N", 1, a, 1, b, 1, r1, r2, r3, q, 1, u, 1, w, 1, info);
         chkxer("Rggev3 ", infot, nout, lerr, ok);
@@ -732,7 +756,6 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         //
         //        Rggevx
         //
-        srnamt = "Rggevx";
         infot = 1;
         Rggevx("/", "N", "N", "N", 1, a, 1, b, 1, r1, r2, r3, q, 1, u, 1, ilo, ihi, ls, rs, anrm, bnrm, rce, rcv, w, 1, iw, bw, info);
         chkxer("Rggevx", infot, nout, lerr, ok);
@@ -773,7 +796,6 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         //
         //        Rtgexc
         //
-        srnamt = "Rtgexc";
         infot = 3;
         Rtgexc(true, true, -1, a, 1, b, 1, q, 1, z, 1, ifst, ilst, w, 1, info);
         chkxer("Rtgexc", infot, nout, lerr, ok);
@@ -802,7 +824,6 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         //
         //        Rtgsen
         //
-        srnamt = "Rtgsen";
         infot = 1;
         Rtgsen(-1, true, true, sel, 1, a, 1, b, 1, r1, r2, r3, q, 1, z, 1, m, tola, tolb, rcv, w, 1, iw, 1, info);
         chkxer("Rtgsen", infot, nout, lerr, ok);
@@ -843,7 +864,6 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         //
         //        Rtgsna
         //
-        srnamt = "Rtgsna";
         infot = 1;
         Rtgsna("/", "A", sel, 1, a, 1, b, 1, q, 1, u, 1, r1, r2, 1, m, w, 1, iw, info);
         chkxer("Rtgsna", infot, nout, lerr, ok);
@@ -875,7 +895,6 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         //
         //        Rtgsyl
         //
-        srnamt = "Rtgsyl";
         infot = 1;
         Rtgsyl("/", 0, 1, 1, a, 1, b, 1, q, 1, u, 1, v, 1, z, 1, scale, dif, w, 1, iw, info);
         chkxer("Rtgsyl", infot, nout, lerr, ok);

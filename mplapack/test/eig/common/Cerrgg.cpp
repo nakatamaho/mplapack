@@ -34,19 +34,47 @@ using namespace fem::major_types;
 using fem::common;
 
 #include <mplapack_matgen.h>
+#include <mplapack_lin.h>
 #include <mplapack_eig.h>
 
 #include <mplapack_debug.h>
 
+bool _Clctsx(COMPLEX const /* alpha */, COMPLEX const /* beta */) {
+    bool return_value = false;
+    return return_value;
+}
+bool _Clctes(COMPLEX const z, COMPLEX const d) {
+    bool return_value = false;
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
+    const REAL zero = 0.0;
+    const REAL one = 1.0;
+    REAL zmax = 0.0;
+    if (d == czero) {
+        return_value = (z.real() < zero);
+    } else {
+        if (z.real() == zero || d.real() == zero) {
+            return_value = (sign(one, z.imag()) != sign(one, d.imag()));
+        } else if (z.imag() == zero || d.imag() == zero) {
+            return_value = (sign(one, z.real()) != sign(one, d.real()));
+        } else {
+            zmax = max(abs(z.real()), abs(z.imag()));
+            return_value = ((z.real() / zmax) * d.real() + (z.imag() / zmax) * d.imag() < zero);
+        }
+    }
+    //
+    return return_value;
+    //
+    //     End of Clctes
+    //
+}
+
 void Cerrgg(const char *path, INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    // COMMON srnamc
-    char &srnamt = cmn.srnamt;
+    INTEGER infot;
+    INTEGER nout;
+    bool ok;
+    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -75,8 +103,9 @@ void Cerrgg(const char *path, INTEGER const nunit) {
     //     .. Executable Statements ..
     //
     nout = nunit;
-    write(nout, star);
-    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2];
+    c2[0] = path[1];
+    c2[1] = path[2];
     //
     //     Set the variables to innocuous values.
     //
@@ -87,6 +116,8 @@ void Cerrgg(const char *path, INTEGER const nunit) {
     const REAL zero = 0.0;
     COMPLEX a[nmax * nmax];
     COMPLEX b[nmax * nmax];
+    INTEGER lda = nmax;
+    INTEGER ldb = nmax;
     for (j = 1; j <= nmax; j = j + 1) {
         sel[j - 1] = true;
         for (i = 1; i <= nmax; i = i + 1) {
@@ -144,7 +175,6 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cgghrd
         //
-        srnamt = "Cgghrd";
         infot = 1;
         Cgghrd("/", "N", 0, 1, 0, a, 1, b, 1, q, 1, z, 1, info);
         chkxer("Cgghrd", infot, nout, lerr, ok);
@@ -176,7 +206,6 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cgghd3
         //
-        srnamt = "Cgghd3";
         infot = 1;
         Cgghd3("/", "N", 0, 1, 0, a, 1, b, 1, q, 1, z, 1, w, lw, info);
         chkxer("Cgghd3", infot, nout, lerr, ok);
@@ -208,7 +237,6 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Chgeqz
         //
-        srnamt = "Chgeqz";
         infot = 1;
         Chgeqz("/", "N", "N", 0, 1, 0, a, 1, b, 1, alpha, beta, q, 1, z, 1, w, 1, rw, info);
         chkxer("Chgeqz", infot, nout, lerr, ok);
@@ -243,7 +271,6 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Ctgevc
         //
-        srnamt = "Ctgevc";
         infot = 1;
         Ctgevc("/", "A", sel, 0, a, 1, b, 1, q, 1, z, 1, 0, m, w, rw, info);
         chkxer("Ctgevc", infot, nout, lerr, ok);
@@ -276,7 +303,6 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cggsvd3
         //
-        srnamt = "Cggsvd3";
         infot = 1;
         Cggsvd3("/", "N", "N", 0, 0, 0, dummyk, dummyl, a, 1, b, 1, r1, r2, u, 1, v, 1, q, 1, w, lwork, rw, idum, info);
         chkxer("Cggsvd3", infot, nout, lerr, ok);
@@ -314,7 +340,6 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cggsvp3
         //
-        srnamt = "Cggsvp3";
         infot = 1;
         Cggsvp3("/", "N", "N", 0, 0, 0, a, 1, b, 1, tola, tolb, dummyk, dummyl, u, 1, v, 1, q, 1, iw, rw, tau, w, lwork, info);
         chkxer("Cggsvp3", infot, nout, lerr, ok);
@@ -352,7 +377,6 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Ctgsja
         //
-        srnamt = "Ctgsja";
         infot = 1;
         Ctgsja("/", "N", "N", 0, 0, 0, dummyk, dummyl, a, 1, b, 1, tola, tolb, r1, r2, u, 1, v, 1, q, 1, w, ncycle, info);
         chkxer("Ctgsja", infot, nout, lerr, ok);
@@ -394,7 +418,6 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cggglm
         //
-        srnamt = "Cggglm";
         infot = 1;
         Cggglm(-1, 0, 0, a, 1, b, 1, tau, alpha, beta, w, lw, info);
         chkxer("Cggglm", infot, nout, lerr, ok);
@@ -427,7 +450,6 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cgglse
         //
-        srnamt = "Cgglse";
         infot = 1;
         Cgglse(-1, 0, 0, a, 1, b, 1, tau, alpha, beta, w, lw, info);
         chkxer("Cgglse", infot, nout, lerr, ok);
@@ -460,7 +482,6 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cuncsd
         //
-        srnamt = "Cuncsd";
         infot = 7;
         Cuncsd("Y", "Y", "Y", "Y", "N", "N", -1, 0, 0, a, 1, a, 1, a, 1, a, 1, rs, a, 1, a, 1, a, 1, a, 1, w, lw, rw, lw, iw, info);
         chkxer("Cuncsd", infot, nout, lerr, ok);
@@ -493,7 +514,6 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cggqrf
         //
-        srnamt = "Cggqrf";
         infot = 1;
         Cggqrf(-1, 0, 0, a, 1, alpha, b, 1, beta, w, lw, info);
         chkxer("Cggqrf", infot, nout, lerr, ok);
@@ -516,7 +536,6 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cggrqf
         //
-        srnamt = "Cggrqf";
         infot = 1;
         Cggrqf(-1, 0, 0, a, 1, alpha, b, 1, beta, w, lw, info);
         chkxer("Cggrqf", infot, nout, lerr, ok);
@@ -543,127 +562,123 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cgges
         //
-        srnamt = "Cgges ";
         infot = 1;
-        Cgges("/", "N", "S", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges("/", "N", "S", _Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         infot = 2;
-        Cgges("N", "/", "S", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges("N", "/", "S", _Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         infot = 3;
-        Cgges("N", "V", "/", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges("N", "V", "/", _Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         infot = 5;
-        Cgges("N", "V", "S", Clctes, -1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges("N", "V", "S", _Clctes, -1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         infot = 7;
-        Cgges("N", "V", "S", Clctes, 1, a, 0, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges("N", "V", "S", _Clctes, 1, a, 0, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         infot = 9;
-        Cgges("N", "V", "S", Clctes, 1, a, 1, b, 0, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges("N", "V", "S", _Clctes, 1, a, 1, b, 0, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         infot = 14;
-        Cgges("N", "V", "S", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 0, u, 1, w, 1, rw, bw, info);
+        Cgges("N", "V", "S", _Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 0, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         infot = 14;
-        Cgges("V", "V", "S", Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 1, u, 2, w, 1, rw, bw, info);
+        Cgges("V", "V", "S", _Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 1, u, 2, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         infot = 16;
-        Cgges("N", "V", "S", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 0, w, 1, rw, bw, info);
+        Cgges("N", "V", "S", _Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 0, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         infot = 16;
-        Cgges("V", "V", "S", Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 1, w, 1, rw, bw, info);
+        Cgges("V", "V", "S", _Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         infot = 18;
-        Cgges("V", "V", "S", Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 2, w, 1, rw, bw, info);
+        Cgges("V", "V", "S", _Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 2, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         nt += 11;
         //
         //        Cgges3
         //
-        srnamt = "Cgges3";
         infot = 1;
-        Cgges3("/", "N", "S", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges3("/", "N", "S", _Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         infot = 2;
-        Cgges3("N", "/", "S", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges3("N", "/", "S", _Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         infot = 3;
-        Cgges3("N", "V", "/", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges3("N", "V", "/", _Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         infot = 5;
-        Cgges3("N", "V", "S", Clctes, -1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges3("N", "V", "S", _Clctes, -1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         infot = 7;
-        Cgges3("N", "V", "S", Clctes, 1, a, 0, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges3("N", "V", "S", _Clctes, 1, a, 0, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         infot = 9;
-        Cgges3("N", "V", "S", Clctes, 1, a, 1, b, 0, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges3("N", "V", "S", _Clctes, 1, a, 1, b, 0, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         infot = 14;
-        Cgges3("N", "V", "S", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 0, u, 1, w, 1, rw, bw, info);
+        Cgges3("N", "V", "S", _Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 0, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         infot = 14;
-        Cgges3("V", "V", "S", Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 1, u, 2, w, 1, rw, bw, info);
+        Cgges3("V", "V", "S", _Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 1, u, 2, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         infot = 16;
-        Cgges3("N", "V", "S", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 0, w, 1, rw, bw, info);
+        Cgges3("N", "V", "S", _Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 0, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         infot = 16;
-        Cgges3("V", "V", "S", Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 1, w, 1, rw, bw, info);
+        Cgges3("V", "V", "S", _Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         infot = 18;
-        Cgges3("V", "V", "S", Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 2, w, 1, rw, bw, info);
+        Cgges3("V", "V", "S", _Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 2, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         nt += 11;
         //
         //        Cggesx
         //
-        srnamt = "Cggesx";
         infot = 1;
-        Cggesx("/", "N", "S", Clctsx, "N", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("/", "N", "S", _Clctsx, "N", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 2;
-        Cggesx("N", "/", "S", Clctsx, "N", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("N", "/", "S", _Clctsx, "N", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 3;
-        Cggesx("V", "V", "/", Clctsx, "N", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("V", "V", "/", _Clctsx, "N", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 5;
-        Cggesx("V", "V", "S", Clctsx, "/", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("V", "V", "S", _Clctsx, "/", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 6;
-        Cggesx("V", "V", "S", Clctsx, "B", -1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("V", "V", "S", _Clctsx, "B", -1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 8;
-        Cggesx("V", "V", "S", Clctsx, "B", 1, a, 0, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("V", "V", "S", _Clctsx, "B", 1, a, 0, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 10;
-        Cggesx("V", "V", "S", Clctsx, "B", 1, a, 1, b, 0, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("V", "V", "S", _Clctsx, "B", 1, a, 1, b, 0, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 15;
-        Cggesx("V", "V", "S", Clctsx, "B", 1, a, 1, b, 1, sdim, alpha, beta, q, 0, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("V", "V", "S", _Clctsx, "B", 1, a, 1, b, 1, sdim, alpha, beta, q, 0, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 15;
-        Cggesx("V", "V", "S", Clctsx, "B", 2, a, 2, b, 2, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("V", "V", "S", _Clctsx, "B", 2, a, 2, b, 2, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 17;
-        Cggesx("V", "V", "S", Clctsx, "B", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 0, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("V", "V", "S", _Clctsx, "B", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 0, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 17;
-        Cggesx("V", "V", "S", Clctsx, "B", 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("V", "V", "S", _Clctsx, "B", 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 21;
-        Cggesx("V", "V", "S", Clctsx, "B", 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 2, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("V", "V", "S", _Clctsx, "B", 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 2, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 24;
-        Cggesx("V", "V", "S", Clctsx, "V", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 32, rw, iw, 0, bw, info);
+        Cggesx("V", "V", "S", _Clctsx, "V", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 32, rw, iw, 0, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         nt += 13;
         //
         //        Cggev
         //
-        srnamt = "Cggev ";
         infot = 1;
         Cggev("/", "N", 1, a, 1, b, 1, alpha, beta, q, 1, u, 1, w, 1, rw, info);
         chkxer("Cggev ", infot, nout, lerr, ok);
@@ -698,7 +713,6 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cggev3
         //
-        srnamt = "Cggev3";
         infot = 1;
         Cggev3("/", "N", 1, a, 1, b, 1, alpha, beta, q, 1, u, 1, w, 1, rw, info);
         chkxer("Cggev3", infot, nout, lerr, ok);
@@ -733,7 +747,6 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cggevx
         //
-        srnamt = "Cggevx";
         infot = 1;
         Cggevx("/", "N", "N", "N", 1, a, 1, b, 1, alpha, beta, q, 1, u, 1, ilo, ihi, ls, rs, anrm, bnrm, rce, rcv, w, 1, rw, iw, bw, info);
         chkxer("Cggevx", infot, nout, lerr, ok);
@@ -774,7 +787,6 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Ctgexc
         //
-        srnamt = "Ctgexc";
         infot = 3;
         Ctgexc(true, true, -1, a, 1, b, 1, q, 1, z, 1, ifst, ilst, info);
         chkxer("Ctgexc", infot, nout, lerr, ok);
@@ -800,7 +812,6 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Ctgsen
         //
-        srnamt = "Ctgsen";
         infot = 1;
         Ctgsen(-1, true, true, sel, 1, a, 1, b, 1, alpha, beta, q, 1, z, 1, m, tola, tolb, rcv, w, 1, iw, 1, info);
         chkxer("Ctgsen", infot, nout, lerr, ok);
@@ -835,7 +846,6 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Ctgsna
         //
-        srnamt = "Ctgsna";
         infot = 1;
         Ctgsna("/", "A", sel, 1, a, 1, b, 1, q, 1, u, 1, r1, r2, 1, m, w, 1, iw, info);
         chkxer("Ctgsna", infot, nout, lerr, ok);
@@ -867,7 +877,6 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Ctgsyl
         //
-        srnamt = "Ctgsyl";
         infot = 1;
         Ctgsyl("/", 0, 1, 1, a, 1, b, 1, q, 1, u, 1, v, 1, z, 1, scale, dif, w, 1, iw, info);
         chkxer("Ctgsyl", infot, nout, lerr, ok);

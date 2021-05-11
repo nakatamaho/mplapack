@@ -34,19 +34,18 @@ using namespace fem::major_types;
 using fem::common;
 
 #include <mplapack_matgen.h>
+#include <mplapack_lin.h>
 #include <mplapack_eig.h>
 
 #include <mplapack_debug.h>
 
 void Cerrst(const char *path, INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    // COMMON srnamc
-    char &srnamt = cmn.srnamt;
+    INTEGER infot;
+    INTEGER nout;
+    bool ok;
+    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -78,7 +77,9 @@ void Cerrst(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     write(nout, star);
-    char c2[2] = path[(2 - 1) + (3 - 1) * ldpath];
+    char c2[2];
+    c2[0] = path[1];
+    c2[1] = path[2];
     //
     //     Set the variables to innocuous values.
     //
@@ -86,9 +87,10 @@ void Cerrst(const char *path, INTEGER const nunit) {
     const INTEGER nmax = 3;
     INTEGER i = 0;
     COMPLEX a[nmax * nmax];
+    INTEGER lda = nmax;
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / (i + j).real();
+            a[(i - 1) + (j - 1) * lda] = 1.0 / castREAL(i + j);
         }
     }
     REAL d[nmax];
@@ -97,7 +99,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
     INTEGER i2[nmax];
     COMPLEX tau[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
-        d[j - 1] = j.real();
+        d[j - 1] = castREAL(j);
         e[j - 1] = 0.0;
         i1[j - 1] = j;
         i2[j - 1] = j;
@@ -126,7 +128,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chetrd
         //
-        srnamt = "Chetrd";
         infot = 1;
         Chetrd("/", 0, a, 1, d, e, tau, w, 1, info);
         chkxer("Chetrd", infot, nout, lerr, ok);
@@ -143,7 +144,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chetrd_2stage
         //
-        srnamt = "Chetrd_2stage";
         infot = 1;
         Chetrd_2stage("/", "U", 0, a, 1, d, e, tau, c, 1, w, 1, info);
         chkxer("Chetrd_2stage", infot, nout, lerr, ok);
@@ -169,7 +169,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chetrd_he2hb
         //
-        srnamt = "Chetrd_he2hb";
         infot = 1;
         Chetrd_he2hb("/", 0, 0, a, 1, c, 1, tau, w, 1, info);
         chkxer("Chetrd_he2hb", infot, nout, lerr, ok);
@@ -192,7 +191,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chetrd_HB2ST
         //
-        srnamt = "Chetrd_HB2ST";
         infot = 1;
         Chetrd_hb2st("/", "N", "U", 0, 0, a, 1, d, e, c, 1, w, 1, info);
         chkxer("Chetrd_HB2ST", infot, nout, lerr, ok);
@@ -224,7 +222,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cungtr
         //
-        srnamt = "Cungtr";
         infot = 1;
         Cungtr("/", 0, a, 1, tau, w, 1, info);
         chkxer("Cungtr", infot, nout, lerr, ok);
@@ -241,7 +238,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cunmtr
         //
-        srnamt = "Cunmtr";
         infot = 1;
         Cunmtr("/", "U", "N", 0, 0, a, 1, tau, c, 1, w, 1, info);
         chkxer("Cunmtr", infot, nout, lerr, ok);
@@ -276,7 +272,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chptrd
         //
-        srnamt = "Chptrd";
         infot = 1;
         Chptrd("/", 0, a, d, e, tau, info);
         chkxer("Chptrd", infot, nout, lerr, ok);
@@ -287,7 +282,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cupgtr
         //
-        srnamt = "Cupgtr";
         infot = 1;
         Cupgtr("/", 0, a, tau, z, 1, w, info);
         chkxer("Cupgtr", infot, nout, lerr, ok);
@@ -301,7 +295,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cupmtr
         //
-        srnamt = "Cupmtr";
         infot = 1;
         Cupmtr("/", "U", "N", 0, 0, a, tau, c, 1, w, info);
         chkxer("Cupmtr", infot, nout, lerr, ok);
@@ -324,7 +317,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cpteqr
         //
-        srnamt = "Cpteqr";
         infot = 1;
         Cpteqr("/", 0, d, e, z, 1, rw, info);
         chkxer("Cpteqr", infot, nout, lerr, ok);
@@ -338,7 +330,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cstein
         //
-        srnamt = "Cstein";
         infot = 1;
         Cstein(-1, d, e, 0, x, i1, i2, z, 1, rw, iw, i3, info);
         chkxer("Cstein", infot, nout, lerr, ok);
@@ -355,7 +346,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Csteqr
         //
-        srnamt = "Csteqr";
         infot = 1;
         Csteqr("/", 0, d, e, z, 1, rw, info);
         chkxer("Csteqr", infot, nout, lerr, ok);
@@ -369,7 +359,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cstedc
         //
-        srnamt = "Cstedc";
         infot = 1;
         Cstedc("/", 0, d, e, z, 1, w, 1, rw, 1, iw, 1, info);
         chkxer("Cstedc", infot, nout, lerr, ok);
@@ -407,7 +396,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cheevd
         //
-        srnamt = "Cheevd";
         infot = 1;
         Cheevd("/", "U", 0, a, 1, x, w, 1, rw, 1, iw, 1, info);
         chkxer("Cheevd", infot, nout, lerr, ok);
@@ -448,7 +436,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cheevd_2stage
         //
-        srnamt = "Cheevd_2stage";
         infot = 1;
         Cheevd_2stage("/", "U", 0, a, 1, x, w, 1, rw, 1, iw, 1, info);
         chkxer("Cheevd_2stage", infot, nout, lerr, ok);
@@ -495,7 +482,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cheev
         //
-        srnamt = "Cheev ";
         infot = 1;
         Cheev("/", "U", 0, a, 1, x, w, 1, rw, info);
         chkxer("Cheev ", infot, nout, lerr, ok);
@@ -515,7 +501,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cheev_2stage
         //
-        srnamt = "Cheev_2stage ";
         infot = 1;
         Cheev_2stage("/", "U", 0, a, 1, x, w, 1, rw, info);
         chkxer("Cheev_2stage ", infot, nout, lerr, ok);
@@ -538,7 +523,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cheevx
         //
-        srnamt = "Cheevx";
         infot = 1;
         Cheevx("/", "A", "U", 0, a, 1, 0.0, 0.0, 0, 0, 0.0, m, x, z, 1, w, 1, rw, iw, i3, info);
         chkxer("Cheevx", infot, nout, lerr, ok);
@@ -572,7 +556,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cheevx_2stage
         //
-        srnamt = "Cheevx_2stage";
         infot = 1;
         Cheevx_2stage("/", "A", "U", 0, a, 1, 0.0, 0.0, 0, 0, 0.0, m, x, z, 1, w, 1, rw, iw, i3, info);
         chkxer("Cheevx_2stage", infot, nout, lerr, ok);
@@ -609,41 +592,40 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cheevr
         //
-        srnamt = "Cheevr";
         n = 1;
         infot = 1;
-        Cheevr("/", "A", "U", 0, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr("/", "A", "U", 0, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr", infot, nout, lerr, ok);
         infot = 2;
-        Cheevr("V", "/", "U", 0, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr("V", "/", "U", 0, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr", infot, nout, lerr, ok);
         infot = 3;
-        Cheevr("V", "A", "/", -1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr("V", "A", "/", -1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr", infot, nout, lerr, ok);
         infot = 4;
-        Cheevr("V", "A", "U", -1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr("V", "A", "U", -1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr", infot, nout, lerr, ok);
         infot = 6;
-        Cheevr("V", "A", "U", 2, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr("V", "A", "U", 2, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr", infot, nout, lerr, ok);
         infot = 8;
-        Cheevr("V", "V", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr("V", "V", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr", infot, nout, lerr, ok);
         infot = 9;
-        Cheevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 0, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 0, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr", infot, nout, lerr, ok);
         infot = 10;
         //
-        Cheevr("V", "I", "U", 2, a, 2, 0.0, 0.0, 2, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr("V", "I", "U", 2, a, 2, 0.0, 0.0, 2, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr", infot, nout, lerr, ok);
         infot = 15;
-        Cheevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 0, iw, q, 2 * n, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 0, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr", infot, nout, lerr, ok);
         infot = 18;
-        Cheevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n - 1, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n - 1, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr", infot, nout, lerr, ok);
         infot = 20;
-        Cheevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n - 1, iw[(2 * n - 1) - 1], 10 * n, info);
+        Cheevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n - 1, &iw[(2 * n - 1) - 1], 10 * n, info);
         chkxer("Cheevr", infot, nout, lerr, ok);
         infot = 22;
         Cheevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, iw, 10 * n - 1, info);
@@ -652,43 +634,42 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cheevr_2stage
         //
-        srnamt = "Cheevr_2stage";
         n = 1;
         infot = 1;
-        Cheevr_2stage("/", "A", "U", 0, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr_2stage("/", "A", "U", 0, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr_2stage", infot, nout, lerr, ok);
         infot = 1;
-        Cheevr_2stage("V", "A", "U", 0, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr_2stage("V", "A", "U", 0, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr_2stage", infot, nout, lerr, ok);
         infot = 2;
-        Cheevr_2stage("N", "/", "U", 0, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr_2stage("N", "/", "U", 0, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr_2stage", infot, nout, lerr, ok);
         infot = 3;
-        Cheevr_2stage("N", "A", "/", -1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr_2stage("N", "A", "/", -1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr_2stage", infot, nout, lerr, ok);
         infot = 4;
-        Cheevr_2stage("N", "A", "U", -1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr_2stage("N", "A", "U", -1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr_2stage", infot, nout, lerr, ok);
         infot = 6;
-        Cheevr_2stage("N", "A", "U", 2, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr_2stage("N", "A", "U", 2, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr_2stage", infot, nout, lerr, ok);
         infot = 8;
-        Cheevr_2stage("N", "V", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr_2stage("N", "V", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr_2stage", infot, nout, lerr, ok);
         infot = 9;
-        Cheevr_2stage("N", "I", "U", 1, a, 1, 0.0, 0.0, 0, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr_2stage("N", "I", "U", 1, a, 1, 0.0, 0.0, 0, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr_2stage", infot, nout, lerr, ok);
         infot = 10;
-        Cheevr_2stage("N", "I", "U", 2, a, 2, 0.0, 0.0, 2, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr_2stage("N", "I", "U", 2, a, 2, 0.0, 0.0, 2, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr_2stage", infot, nout, lerr, ok);
         infot = 15;
-        Cheevr_2stage("N", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 0, iw, q, 2 * n, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr_2stage("N", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 0, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr_2stage", infot, nout, lerr, ok);
         infot = 18;
-        Cheevr_2stage("N", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n - 1, rw, 24 * n, iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr_2stage("N", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n - 1, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Cheevr_2stage", infot, nout, lerr, ok);
         infot = 20;
-        Cheevr_2stage("N", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 26 * n, rw, 24 * n - 1, iw[(2 * n - 1) - 1], 10 * n, info);
+        Cheevr_2stage("N", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 26 * n, rw, 24 * n - 1, &iw[(2 * n - 1) - 1], 10 * n, info);
         chkxer("Cheevr_2stage", infot, nout, lerr, ok);
         infot = 22;
         Cheevr_2stage("N", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 26 * n, rw, 24 * n, iw, 10 * n - 1, info);
@@ -697,7 +678,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chpevd
         //
-        srnamt = "Chpevd";
         infot = 1;
         Chpevd("/", "U", 0, a, x, z, 1, w, 1, rw, 1, iw, 1, info);
         chkxer("Chpevd", infot, nout, lerr, ok);
@@ -741,7 +721,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chpev
         //
-        srnamt = "Chpev ";
         infot = 1;
         Chpev("/", "U", 0, a, x, z, 1, w, rw, info);
         chkxer("Chpev ", infot, nout, lerr, ok);
@@ -758,7 +737,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chpevx
         //
-        srnamt = "Chpevx";
         infot = 1;
         Chpevx("/", "A", "U", 0, a, 0.0, 0.0, 0, 0, 0.0, m, x, z, 1, w, rw, iw, i3, info);
         chkxer("Chpevx", infot, nout, lerr, ok);
@@ -791,7 +769,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chbtrd
         //
-        srnamt = "Chbtrd";
         infot = 1;
         Chbtrd("/", "U", 0, 0, a, 1, d, e, z, 1, w, info);
         chkxer("Chbtrd", infot, nout, lerr, ok);
@@ -814,7 +791,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chetrd_HB2ST
         //
-        srnamt = "Chetrd_HB2ST";
         infot = 1;
         Chetrd_hb2st("/", "N", "U", 0, 0, a, 1, d, e, c, 1, w, 1, info);
         chkxer("Chetrd_HB2ST", infot, nout, lerr, ok);
@@ -846,7 +822,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chbevd
         //
-        srnamt = "Chbevd";
         infot = 1;
         Chbevd("/", "U", 0, 0, a, 1, x, z, 1, w, 1, rw, 1, iw, 1, info);
         chkxer("Chbevd", infot, nout, lerr, ok);
@@ -896,7 +871,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chbevd_2stage
         //
-        srnamt = "Chbevd_2stage";
         infot = 1;
         Chbevd_2stage("/", "U", 0, 0, a, 1, x, z, 1, w, 1, rw, 1, iw, 1, info);
         chkxer("Chbevd_2stage", infot, nout, lerr, ok);
@@ -952,7 +926,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chbev
         //
-        srnamt = "Chbev ";
         infot = 1;
         Chbev("/", "U", 0, 0, a, 1, x, z, 1, w, rw, info);
         chkxer("Chbev ", infot, nout, lerr, ok);
@@ -975,7 +948,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chbev_2stage
         //
-        srnamt = "Chbev_2stage ";
         infot = 1;
         Chbev_2stage("/", "U", 0, 0, a, 1, x, z, 1, w, 0, rw, info);
         chkxer("Chbev_2stage ", infot, nout, lerr, ok);
@@ -1004,7 +976,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chbevx
         //
-        srnamt = "Chbevx";
         infot = 1;
         Chbevx("/", "A", "U", 0, 0, a, 1, q, 1, 0.0, 0.0, 0, 0, 0.0, m, x, z, 1, w, rw, iw, i3, info);
         chkxer("Chbevx", infot, nout, lerr, ok);
@@ -1041,7 +1012,6 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chbevx_2stage
         //
-        srnamt = "Chbevx_2stage";
         infot = 1;
         Chbevx_2stage("/", "A", "U", 0, 0, a, 1, q, 1, 0.0, 0.0, 0, 0, 0.0, m, x, z, 1, w, 0, rw, iw, i3, info);
         infot = 1;

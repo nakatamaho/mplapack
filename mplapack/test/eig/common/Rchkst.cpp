@@ -39,31 +39,15 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *ap, REAL *sd, REAL *se, REAL *d1, REAL *d2, REAL *d3, REAL *d4, REAL *d5, REAL *wa1, REAL *wa2, REAL *wa3, REAL *wr, REAL *u, INTEGER const ldu, REAL *v, REAL *vp, REAL *tau, REAL *z, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
-    FEM_CMN_SVE(Rchkst);
-    iseed([4]);
-    a([lda * star]);
-    u([ldu * star]);
-    v([ldu * star]);
-    z([ldu * star]);
+    INTEGER ldv = ldu;
+    INTEGER ldz = ldu;
+    common cmn;
     common_write write(cmn);
     const INTEGER maxtyp = 21;
-    INTEGER *kmagn(sve.kmagn, [maxtyp]);
-    INTEGER *kmode(sve.kmode, [maxtyp]);
-    INTEGER *ktype(sve.ktype, [maxtyp]);
-    if (is_called_first_time) {
-        {
-            static const INTEGER values[] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9, 9, 9, 10};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), ktype;
-        }
-        {
-            static const INTEGER values[] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 1, 1, 2, 3, 1};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), kmagn;
-        }
-        {
-            static const INTEGER values[] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 4, 3, 1, 4, 4, 3};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), kmode;
-        }
-    }
+    char buf[1024];
+    INTEGER ktype[21] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9, 9, 9, 10};
+    INTEGER kmagn[21] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 1, 1, 2, 3, 1};
+    INTEGER kmode[21] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 4, 3, 1, 4, 4, 3};
     INTEGER idumma[1];
     INTEGER ntestt = 0;
     bool badnn = false;
@@ -211,7 +195,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     Rlabad(unfl, ovfl);
     ulp = Rlamch("Epsilon") * Rlamch("Base");
     ulpinv = one / ulp;
-    log2ui = int(log(ulpinv) / log(two));
+    log2ui = castINTEGER(log(ulpinv) / log(two));
     rtunfl = sqrt(unfl);
     rtovfl = sqrt(ovfl);
     //
@@ -226,7 +210,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     for (jsize = 1; jsize <= nsizes; jsize = jsize + 1) {
         n = nn[jsize - 1];
         if (n > 0) {
-            lgn = int(log(n.real()) / log(two));
+            lgn = castINTEGER(log(castREAL(n)) / log(two));
             if (pow(2, lgn) < n) {
                 lgn++;
             }
@@ -240,7 +224,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             liwedc = 12;
         }
         nap = (n * (n + 1)) / 2;
-        aninv = one / (max((INTEGER)1, n)).real();
+        aninv = one / castREAL(max((INTEGER)1, n));
         //
         if (nsizes != 1) {
             mtypes = min(maxtyp, ntypes);
@@ -336,37 +320,37 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 //              Diagonal Matrix, [Eigen]values Specified
                 //
-                dlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, 0, 0, "N", a, lda, &work[(n + 1) - 1], iinfo);
+                Rlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, 0, 0, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 5) {
                 //
                 //              Symmetric, eigenvalues specified
                 //
-                dlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, n, n, "N", a, lda, &work[(n + 1) - 1], iinfo);
+                Rlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, n, n, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 7) {
                 //
                 //              Diagonal, random eigenvalues
                 //
-                dlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
+                Rlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 8) {
                 //
                 //              Symmetric, random eigenvalues
                 //
-                dlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
+                Rlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 9) {
                 //
                 //              Positive definite, eigenvalues specified.
                 //
-                dlatms(n, n, "S", iseed, "P", work, imode, cond, anorm, n, n, "N", a, lda, &work[(n + 1) - 1], iinfo);
+                Rlatms(n, n, "S", iseed, "P", work, imode, cond, anorm, n, n, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 10) {
                 //
                 //              Positive definite tridiagonal, eigenvalues specified.
                 //
-                dlatms(n, n, "S", iseed, "P", work, imode, cond, anorm, 1, 1, "N", a, lda, &work[(n + 1) - 1], iinfo);
+                Rlatms(n, n, "S", iseed, "P", work, imode, cond, anorm, 1, 1, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 for (i = 2; i <= n; i = i + 1) {
                     temp1 = abs(a[((i - 1) - 1) + (i - 1) * lda]) / sqrt(abs(a[((i - 1) - 1) + ((i - 1) - 1) * lda] * a[(i - 1) + (i - 1) * lda]));
                     if (temp1 > half) {
@@ -424,8 +408,8 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             //           Do tests 1 and 2
             //
-            Rsyt21(2, "Upper", n, 1, a, lda, sd, se, u, ldu, v, ldu, tau, work, result[1 - 1]);
-            Rsyt21(3, "Upper", n, 1, a, lda, sd, se, u, ldu, v, ldu, tau, work, result[2 - 1]);
+            Rsyt21(2, "Upper", n, 1, a, lda, sd, se, u, ldu, v, ldu, tau, work, &result[1 - 1]);
+            Rsyt21(3, "Upper", n, 1, a, lda, sd, se, u, ldu, v, ldu, tau, work, &result[2 - 1]);
             //
             //           Call Rsytrd and Rorgtr to compute S and U from
             //           lower triangle, do tests.
@@ -461,8 +445,8 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
             //
-            Rsyt21(2, "Lower", n, 1, a, lda, sd, se, u, ldu, v, ldu, tau, work, result[3 - 1]);
-            Rsyt21(3, "Lower", n, 1, a, lda, sd, se, u, ldu, v, ldu, tau, work, result[4 - 1]);
+            Rsyt21(2, "Lower", n, 1, a, lda, sd, se, u, ldu, v, ldu, tau, work, &result[3 - 1]);
+            Rsyt21(3, "Lower", n, 1, a, lda, sd, se, u, ldu, v, ldu, tau, work, &result[4 - 1]);
             //
             //           Store the upper triangle of A in AP
             //
@@ -507,8 +491,8 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             //           Do tests 5 and 6
             //
-            Rspt21(2, "Upper", n, 1, ap, sd, se, u, ldu, vp, tau, work, result[5 - 1]);
-            Rspt21(3, "Upper", n, 1, ap, sd, se, u, ldu, vp, tau, work, result[6 - 1]);
+            Rspt21(2, "Upper", n, 1, ap, sd, se, u, ldu, vp, tau, work, &result[5 - 1]);
+            Rspt21(3, "Upper", n, 1, ap, sd, se, u, ldu, vp, tau, work, &result[6 - 1]);
             //
             //           Store the lower triangle of A in AP
             //
@@ -551,8 +535,8 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
             //
-            Rspt21(2, "Lower", n, 1, ap, sd, se, u, ldu, vp, tau, work, result[7 - 1]);
-            Rspt21(3, "Lower", n, 1, ap, sd, se, u, ldu, vp, tau, work, result[8 - 1]);
+            Rspt21(2, "Lower", n, 1, ap, sd, se, u, ldu, vp, tau, work, &result[7 - 1]);
+            Rspt21(3, "Lower", n, 1, ap, sd, se, u, ldu, vp, tau, work, &result[8 - 1]);
             //
             //           Call Rsteqr to compute D1, D2, and Z, do tests.
             //
@@ -619,7 +603,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             //           Do Tests 9 and 10
             //
-            Rstt21(n, 0, sd, se, d1, dumma, z, ldu, work, result[9 - 1]);
+            Rstt21(n, 0, sd, se, d1, dumma, z, ldu, work, &result[9 - 1]);
             //
             //           Do Tests 11 and 12
             //
@@ -683,7 +667,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 //              Do Tests 14 and 15
                 //
-                Rstt21(n, 0, sd, se, d4, dumma, z, ldu, work, result[14 - 1]);
+                Rstt21(n, 0, sd, se, d4, dumma, z, ldu, work, &result[14 - 1]);
                 //
                 //              Compute D5
                 //
@@ -747,7 +731,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 //              Do test 17
                 //
-                temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / pow4((one - half));
+                temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / ((one - half) * (one - half) * (one - half) * (one - half));
                 //
                 temp1 = zero;
                 for (j = 1; j <= n; j = j + 1) {
@@ -794,8 +778,8 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 il = 1;
                 iu = n;
             } else {
-                il = 1 + (n - 1) * int(dlarnd(1, iseed2));
-                iu = 1 + (n - 1) * int(dlarnd(1, iseed2));
+                il = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
+                iu = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
                 if (iu < il) {
                     itemp = iu;
                     iu = il;
@@ -896,7 +880,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             //           Do tests 20 and 21
             //
-            Rstt21(n, 0, sd, se, wa1, dumma, z, ldu, work, result[20 - 1]);
+            Rstt21(n, 0, sd, se, wa1, dumma, z, ldu, work, &result[20 - 1]);
             //
             //           Call Rstedc(I) to compute D1 and Z, do tests.
             //
@@ -923,7 +907,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             //           Do Tests 22 and 23
             //
-            Rstt21(n, 0, sd, se, d1, dumma, z, ldu, work, result[22 - 1]);
+            Rstt21(n, 0, sd, se, d1, dumma, z, ldu, work, &result[22 - 1]);
             //
             //           Call Rstedc(V) to compute D1 and Z, do tests.
             //
@@ -950,7 +934,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             //           Do Tests 24 and 25
             //
-            Rstt21(n, 0, sd, se, d1, dumma, z, ldu, work, result[24 - 1]);
+            Rstt21(n, 0, sd, se, d1, dumma, z, ldu, work, &result[24 - 1]);
             //
             //           Call Rstedc(N) to compute D2, do tests.
             //
@@ -1017,7 +1001,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     //              Do test 27
                     //
-                    temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / pow4((one - half));
+                    temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / ((one - half) * (one - half) * (one - half) * (one - half));
                     //
                     temp1 = zero;
                     for (j = 1; j <= n; j = j + 1) {
@@ -1026,8 +1010,8 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     result[27 - 1] = temp1 / temp2;
                     //
-                    il = 1 + (n - 1) * int(dlarnd(1, iseed2));
-                    iu = 1 + (n - 1) * int(dlarnd(1, iseed2));
+                    il = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
+                    iu = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
                     if (iu < il) {
                         itemp = iu;
                         iu = il;
@@ -1052,7 +1036,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         //
                         //                 Do test 28
                         //
-                        temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / pow4((one - half));
+                        temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / ((one - half) * (one - half) * (one - half) * (one - half));
                         //
                         temp1 = zero;
                         for (j = il; j <= iu; j = j + 1) {
@@ -1080,8 +1064,8 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 if (srange) {
                     ntest = 29;
-                    il = 1 + (n - 1) * int(dlarnd(1, iseed2));
-                    iu = 1 + (n - 1) * int(dlarnd(1, iseed2));
+                    il = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
+                    iu = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
                     if (iu < il) {
                         itemp = iu;
                         iu = il;
@@ -1101,7 +1085,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     //           Do Tests 29 and 30
                     //
-                    Rstt22(n, m, 0, sd, se, d1, dumma, z, ldu, work, m, result[29 - 1]);
+                    Rstt22(n, m, 0, sd, se, d1, dumma, z, ldu, work, m, &result[29 - 1]);
                     //
                     //           Call Rstemr to compute D2, do tests.
                     //
@@ -1179,7 +1163,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     //           Do Tests 32 and 33
                     //
-                    Rstt22(n, m, 0, sd, se, d1, dumma, z, ldu, work, m, result[32 - 1]);
+                    Rstt22(n, m, 0, sd, se, d1, dumma, z, ldu, work, m, &result[32 - 1]);
                     //
                     //           Call Rstemr to compute D2, do tests.
                     //
@@ -1248,7 +1232,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 //           Do Tests 35 and 36
                 //
-                Rstt22(n, m, 0, sd, se, d1, dumma, z, ldu, work, m, result[35 - 1]);
+                Rstt22(n, m, 0, sd, se, d1, dumma, z, ldu, work, m, &result[35 - 1]);
                 //
                 //           Call Rstemr to compute D2, do tests.
                 //
@@ -1332,9 +1316,10 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         write(nounit, "(/,'Test performed:  see Rchkst for details.',/)");
                     }
                     nerrs++;
+                    sprintnum_short(buf, result[jr - 1]);
                     write(nounit, "(' N=',i5,', seed=',4(i4,','),' type ',i2,', test(',i2,')=',"
                                   "a)"),
-                        n, ioldsd, jtype, jr, result(jr);
+                        n, ioldsd, jtype, jr, buf;
                 }
             }
         statement_300:;
