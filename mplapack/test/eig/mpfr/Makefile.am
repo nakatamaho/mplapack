@@ -133,7 +133,6 @@ EIG_SOURCES = \
 ../common/Cdrges.cpp \
 ../common/Cdrges3.cpp \
 ../common/Cchkhs.cpp \
-\
 ../common/Rchkhs.cpp \
 ../common/Rdrges.cpp \
 ../common/Rdrges3.cpp \
@@ -142,6 +141,7 @@ EIG_SOURCES = \
 ../common/Rdrvbd.cpp \
 ../common/Rchkbd.cpp \
 ../common/Rdrvsg.cpp \
+\
 ../common/Cdrvbd.cpp \
 ../common/Cdrvsg.cpp \
 ../common/Rerrgg.cpp \
