@@ -925,6 +925,7 @@ Rsyevx.cpp \
 Rsyevx_2stage.cpp \
 Rsygs2.cpp \
 Rsygst.cpp \
+Rsygv.cpp \
 Rsygv_2stage.cpp \
 Rsygvd.cpp \
 Rsygvx.cpp \
