@@ -215,6 +215,7 @@ Cheevx.cpp \
 Cheevx_2stage.cpp \
 Chegs2.cpp \
 Chegst.cpp \
+Chegv.cpp \
 Chegv_2stage.cpp \
 Chegvd.cpp \
 Chegvx.cpp \
