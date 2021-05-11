@@ -39,7 +39,7 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, bool const tstdif, REAL const thrshn, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *b, REAL *h, REAL *t, REAL *s1, REAL *s2, REAL *p1, REAL *p2, REAL *u, INTEGER const ldu, REAL *v, REAL *q, REAL *z, REAL *alphr1, REAL *alphi1, REAL *beta1, REAL *alphr3, REAL *alphi3, REAL *beta3, REAL *evectl, REAL *evectr, REAL *work, INTEGER const lwork, bool *llwork, REAL *result, INTEGER &info) {
-    INTEGER ld INTEGER ldb = lda;
+    INTEGER ldb = lda;
     INTEGER ldh = lda;
     INTEGER ldt = lda;
     INTEGER lds1 = lda;
@@ -51,6 +51,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER ldz = ldu;
     INTEGER ldevectl = ldu;
     INTEGER ldevectr = ldu;
+    char buf[1024];
     common cmn;
     common_write write(cmn);
     const INTEGER maxtyp = 26;
@@ -77,7 +78,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     const REAL one = 1.0;
     REAL safmax = 0.0;
     REAL ulpinv = 0.0;
-    REAL rmagn dim1(0, 3);
+    REAL rmagn[3];
     INTEGER ntestt = 0;
     INTEGER nerrs = 0;
     INTEGER nmats = 0;
@@ -148,7 +149,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     //     Maximum blocksize and shift -- we assume that blocksize and number
     //     of shifts are monotone increasing functions of N.
     //
-    lwkopt = max({6 * nmax, 2 * nmax * nmax, 1});
+    lwkopt = max({6 * nmax, 2 * nmax * nmax, (INTEGER)1});
     //
     //     Check for errors
     //
@@ -200,7 +201,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     for (jsize = 1; jsize <= nsizes; jsize = jsize + 1) {
         n = nn[jsize - 1];
         n1 = max((INTEGER)1, n);
-        rmagn[2 - 1] = safmax * ulp / n1.real();
+        rmagn[2 - 1] = safmax * ulp / castREAL(n1);
         rmagn[3 - 1] = safmin * ulpinv * n1;
         //
         if (nsizes != 1) {
@@ -298,22 +299,22 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     for (jc = 1; jc <= n - 1; jc = jc + 1) {
                         for (jr = jc; jr <= n; jr = jr + 1) {
-                            u[(jr - 1) + (jc - 1) * ldu] = dlarnd(3, iseed);
-                            v[(jr - 1) + (jc - 1) * ldv] = dlarnd(3, iseed);
+                            u[(jr - 1) + (jc - 1) * ldu] = Rlarnd(3, iseed);
+                            v[(jr - 1) + (jc - 1) * ldv] = Rlarnd(3, iseed);
                         }
-                        Rlarfg(n + 1 - jc, &u[(jc - 1) + (jc - 1) * ldu], &u[((jc + 1) - 1) + (jc - 1) * ldu], 1, &work[jc - 1]);
-                        work[(2 * n + jc) - 1] = sign(one, &u[(jc - 1) + (jc - 1) * ldu]);
+                        Rlarfg(n + 1 - jc, u[(jc - 1) + (jc - 1) * ldu], &u[((jc + 1) - 1) + (jc - 1) * ldu], 1, work[jc - 1]);
+                        work[(2 * n + jc) - 1] = sign(one, u[(jc - 1) + (jc - 1) * ldu]);
                         u[(jc - 1) + (jc - 1) * ldu] = one;
-                        Rlarfg(n + 1 - jc, &v[(jc - 1) + (jc - 1) * ldv], &v[((jc + 1) - 1) + (jc - 1) * ldv], 1, &work[(n + jc) - 1]);
-                        work[(3 * n + jc) - 1] = sign(one, &v[(jc - 1) + (jc - 1) * ldv]);
+                        Rlarfg(n + 1 - jc, v[(jc - 1) + (jc - 1) * ldv], &v[((jc + 1) - 1) + (jc - 1) * ldv], 1, work[(n + jc) - 1]);
+                        work[(3 * n + jc) - 1] = sign(one, v[(jc - 1) + (jc - 1) * ldv]);
                         v[(jc - 1) + (jc - 1) * ldv] = one;
                     }
                     u[(n - 1) + (n - 1) * ldu] = one;
                     work[n - 1] = zero;
-                    work[(3 * n) - 1] = sign(one, dlarnd(2, iseed));
+                    work[(3 * n) - 1] = sign(one, Rlarnd(2, iseed));
                     v[(n - 1) + (n - 1) * ldv] = one;
                     work[(2 * n) - 1] = zero;
-                    work[(4 * n) - 1] = sign(one, dlarnd(2, iseed));
+                    work[(4 * n) - 1] = sign(one, Rlarnd(2, iseed));
                     //
                     //                 Apply the diagonal matrices
                     //
@@ -346,8 +347,8 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 for (jc = 1; jc <= n; jc = jc + 1) {
                     for (jr = 1; jr <= n; jr = jr + 1) {
-                        a[(jr - 1) + (jc - 1) * lda] = rmagn[kamagn[jtype - 1] - 1] * dlarnd(2, iseed);
-                        b[(jr - 1) + (jc - 1) * ldb] = rmagn[kbmagn[jtype - 1] - 1] * dlarnd(2, iseed);
+                        a[(jr - 1) + (jc - 1) * lda] = rmagn[kamagn[jtype - 1] - 1] * Rlarnd(2, iseed);
+                        b[(jr - 1) + (jc - 1) * ldb] = rmagn[kbmagn[jtype - 1] - 1] * Rlarnd(2, iseed);
                     }
                 }
             }
@@ -494,17 +495,18 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 llwork[j - 1] = true;
             }
             //
-            Rtgevc("L", "S", llwork, n, s1, lda, p1, lda, evectl[((i1 + 1) - 1) * ldevectl], ldu, dumma, ldu, n, in, work, iinfo);
+            Rtgevc("L", "S", llwork, n, s1, lda, p1, lda, &evectl[((i1 + 1) - 1) * ldevectl], ldu, dumma, ldu, n, in, work, iinfo);
             if (iinfo != 0) {
                 write(nounit, format_9999), "Rtgevc(L,S2)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_210;
             }
             //
-            Rget52(true, n, s1, lda, p1, lda, evectl, ldu, alphr1, alphi1, beta1, work, dumma[1 - 1]);
+            Rget52(true, n, s1, lda, p1, lda, evectl, ldu, alphr1, alphi1, beta1, work, &dumma[1 - 1]);
             result[9 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thrshn) {
-                write(nounit, format_9998), "Left", "Rtgevc(HOWMNY=S)", dumma(2), n, jtype, ioldsd;
+	        sprintnum_short(buf, dumma[2 - 1]);
+                write(nounit, format_9998), "Left", "Rtgevc(HOWMNY=S)", buf, n, jtype, ioldsd;
             }
             //
             //           10: Compute the left eigenvector Matrix with
@@ -520,10 +522,11 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 goto statement_210;
             }
             //
-            Rget52(true, n, h, lda, t, lda, evectl, ldu, alphr1, alphi1, beta1, work, dumma[1 - 1]);
+            Rget52(true, n, h, lda, t, lda, evectl, ldu, alphr1, alphi1, beta1, work, &dumma[1 - 1]);
             result[10 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thrshn) {
-                write(nounit, format_9998), "Left", "Rtgevc(HOWMNY=B)", dumma(2), n, jtype, ioldsd;
+	        sprintnum_short(buf, dumma[2 - 1]);
+                write(nounit, format_9998), "Left", "Rtgevc(HOWMNY=B)", buf, n, jtype, ioldsd;
             }
             //
             //           11: Compute the right eigenvector Matrix without
@@ -558,17 +561,18 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 llwork[j - 1] = true;
             }
             //
-            Rtgevc("R", "S", llwork, n, s1, lda, p1, lda, dumma, ldu, evectr[((i1 + 1) - 1) * ldevectr], ldu, n, in, work, iinfo);
+            Rtgevc("R", "S", llwork, n, s1, lda, p1, lda, dumma, ldu, &evectr[((i1 + 1) - 1) * ldevectr], ldu, n, in, work, iinfo);
             if (iinfo != 0) {
                 write(nounit, format_9999), "Rtgevc(R,S2)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_210;
             }
             //
-            Rget52(false, n, s1, lda, p1, lda, evectr, ldu, alphr1, alphi1, beta1, work, dumma[1 - 1]);
+            Rget52(false, n, s1, lda, p1, lda, evectr, ldu, alphr1, alphi1, beta1, work, &dumma[1 - 1]);
             result[11 - 1] = dumma[1 - 1];
-            if (dumma[2 - 1] > thresh) {
-                write(nounit, format_9998), "Right", "Rtgevc(HOWMNY=S)", dumma(2), n, jtype, ioldsd;
+	    if (dumma[2 - 1] > thresh) {
+	       sprintnum_short(buf, dumma[2 - 1]); 
+                write(nounit, format_9998), "Right", "Rtgevc(HOWMNY=S)", buf, n, jtype, ioldsd;
             }
             //
             //           12: Compute the right eigenvector Matrix with
@@ -584,10 +588,11 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 goto statement_210;
             }
             //
-            Rget52(false, n, h, lda, t, lda, evectr, ldu, alphr1, alphi1, beta1, work, dumma[1 - 1]);
+            Rget52(false, n, h, lda, t, lda, evectr, ldu, alphr1, alphi1, beta1, work, &dumma[1 - 1]);
             result[12 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thresh) {
-                write(nounit, format_9998), "Right", "Rtgevc(HOWMNY=B)", dumma(2), n, jtype, ioldsd;
+      	       sprintnum_short(buf, dumma[2 - 1]); 
+                write(nounit, format_9998), "Right", "Rtgevc(HOWMNY=B)", buf, n, jtype, ioldsd;
             }
             //
             //           Tests 13--15 are done only on request
@@ -685,13 +690,15 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                     nerrs++;
                     if (result[jr - 1] < 10000.0) {
-                        write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
+	       sprintnum_short(buf, result[jr - 1]);
+	       write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
                                       "' result ',i2,' is',0p,a)"),
-                            n, jtype, ioldsd, jr, result(jr);
+		 n, jtype, ioldsd, jr, buf;
                     } else {
-                        write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
+	       sprintnum_short(buf, result[jr - 1]);
+	       write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
                                       "' result ',i2,' is',1p,a)"),
-                            n, jtype, ioldsd, jr, result(jr);
+		 n, jtype, ioldsd, jr, buf;
                     }
                 }
             }

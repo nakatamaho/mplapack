@@ -39,36 +39,18 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const ntypes, bool *dotype, INTEGER const nrhs, INTEGER *iseed, REAL const thresh, REAL *a, INTEGER const lda, REAL *bd, REAL *be, REAL *s1, REAL *s2, REAL *x, INTEGER const ldx, REAL *y, REAL *z, REAL *q, INTEGER const ldq, REAL *pt, INTEGER const ldpt, REAL *u, REAL *vt, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const nout, INTEGER &info) {
-    FEM_CMN_SVE(Rchkbd);
-    iseed([4]);
-    a([lda * star]);
-    x([ldx * star]);
-    y([ldx * star]);
-    z([ldx * star]);
-    q([ldq * star]);
-    pt([ldpt * star]);
-    u([ldpt * star]);
-    vt([ldpt * star]);
+
+    INTEGER ldy=ldx;
+    INTEGER ldz=ldx;
+    INTEGER ldu=ldpt;
+    INTEGER ldvt=ldpt;        
+    common cmn;
     common_write write(cmn);
     const INTEGER maxtyp = 16;
-    INTEGER *kmagn(sve.kmagn, [maxtyp]);
-    INTEGER *kmode(sve.kmode, [maxtyp]);
-    INTEGER *ktype(sve.ktype, [maxtyp]);
-    if (is_called_first_time) {
-        data((values, 1, 2, 5 * datum(4), 5 * datum(6), 3 * datum(9), 10)), ktype;
-        {
-            data_values data;
-            data.values, 2 * datum(1), 3 * datum(1), 2, 3, 3 * datum(1), 2, 3, 1;
-            data.values, 2, 3, 0;
-            data, kmagn;
-        }
-        {
-            data_values data;
-            data.values, 2 * datum(0), 4, 3, 1, 4, 4, 4, 3;
-            data.values, 1, 4, 4, 0, 0, 0, 0;
-            data, kmode;
-        }
-    }
+    INTEGER ktype[16] = { 1,2,4,4,4,4,4,6,6,6,6,6,9,9,9,10 };
+    INTEGER kmagn[16] = { 1,1,1,1,1,2,3,1,1,1,2,3,1,2,3,0 };
+    INTEGER kmode[16] = { 0,0,4,3,1,4,4,4,3,1,4,4,0,0,0,0 };
+    char buf[1024];
     bool badmm = false;
     bool badnn = false;
     INTEGER mmax = 0;
@@ -217,8 +199,9 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     //
     //     Initialize constants
     //
-    path[(1 - 1)] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "BD";
+    path[0] = 'D';
+    path[1] = 'B';
+    path[2] = 'D';
     nfail = 0;
     ntest = 0;
     unfl = Rlamch("Safe minimum");
@@ -226,10 +209,9 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
     ulpinv = one / ulp;
-    log2ui = int(log(ulpinv) / log(two));
+    log2ui = castINTEGER(log(ulpinv) / log(two));
     rtunfl = sqrt(unfl);
     rtovfl = sqrt(ovfl);
-    cmn.infot = 0;
     abstol = 2 * unfl;
     //
     //     Loop over sizes, types
@@ -238,7 +220,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
         m = mval[jsize - 1];
         n = nval[jsize - 1];
         mnmin = min(m, n);
-        amninv = one / max({m, n, 1});
+        amninv = one / max({m, n, (INTEGER)1});
         //
         if (nsizes != 1) {
             mtypes = min(maxtyp, ntypes);
@@ -259,7 +241,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 result[j - 1] = -one;
             }
             //
-            uplo = " ";
+            uplo = ' ';
             //
             //           Compute "A"
             //
@@ -334,37 +316,37 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //
                 //              Diagonal Matrix, [Eigen]values Specified
                 //
-                dlatms(mnmin, mnmin, "S", iseed, "N", work, imode, cond, anorm, 0, 0, "N", a, lda, &work[(mnmin + 1) - 1], iinfo);
+                Rlatms(mnmin, mnmin, "S", iseed, "N", work, imode, cond, anorm, 0, 0, "N", a, lda, &work[(mnmin + 1) - 1], iinfo);
                 //
             } else if (itype == 5) {
                 //
                 //              Symmetric, eigenvalues specified
                 //
-                dlatms(mnmin, mnmin, "S", iseed, "S", work, imode, cond, anorm, m, n, "N", a, lda, &work[(mnmin + 1) - 1], iinfo);
+                Rlatms(mnmin, mnmin, "S", iseed, "S", work, imode, cond, anorm, m, n, "N", a, lda, &work[(mnmin + 1) - 1], iinfo);
                 //
             } else if (itype == 6) {
                 //
                 //              Nonsymmetric, singular values specified
                 //
-                dlatms(m, n, "S", iseed, "N", work, imode, cond, anorm, m, n, "N", a, lda, &work[(mnmin + 1) - 1], iinfo);
+                Rlatms(m, n, "S", iseed, "N", work, imode, cond, anorm, m, n, "N", a, lda, &work[(mnmin + 1) - 1], iinfo);
                 //
             } else if (itype == 7) {
                 //
                 //              Diagonal, random entries
                 //
-                dlatmr(mnmin, mnmin, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(2 * mnmin + 1) - 1], 1, one, "N", iwork, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
+                Rlatmr(mnmin, mnmin, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(2 * mnmin + 1) - 1], 1, one, "N", iwork, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 8) {
                 //
                 //              Symmetric, random entries
                 //
-                dlatmr(mnmin, mnmin, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(m + mnmin + 1) - 1], 1, one, "N", iwork, m, n, zero, anorm, "NO", a, lda, iwork, iinfo);
+                Rlatmr(mnmin, mnmin, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(m + mnmin + 1) - 1], 1, one, "N", iwork, m, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 9) {
                 //
                 //              Nonsymmetric, random entries
                 //
-                dlatmr(m, n, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(m + mnmin + 1) - 1], 1, one, "N", iwork, m, n, zero, anorm, "NO", a, lda, iwork, iinfo);
+                Rlatmr(m, n, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(m + mnmin + 1) - 1], 1, one, "N", iwork, m, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 10) {
                 //
@@ -372,18 +354,18 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //
                 temp1 = -two * log(ulp);
                 for (j = 1; j <= mnmin; j = j + 1) {
-                    bd[j - 1] = exp(temp1 * dlarnd(2, iseed));
+                    bd[j - 1] = exp(temp1 * Rlarnd(2, iseed));
                     if (j < mnmin) {
-                        be[j - 1] = exp(temp1 * dlarnd(2, iseed));
+                        be[j - 1] = exp(temp1 * Rlarnd(2, iseed));
                     }
                 }
                 //
                 iinfo = 0;
                 bidiag = true;
                 if (m >= n) {
-                    uplo = "U";
+                    uplo = 'U';
                 } else {
-                    uplo = "L";
+                    uplo = 'L';
                 }
             } else {
                 iinfo = 1;
@@ -394,9 +376,9 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //              Generate Right-Hand Side
                 //
                 if (bidiag) {
-                    dlatmr(mnmin, nrhs, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(2 * mnmin + 1) - 1], 1, one, "N", iwork, mnmin, nrhs, zero, one, "NO", y, ldx, iwork, iinfo);
+                    Rlatmr(mnmin, nrhs, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(2 * mnmin + 1) - 1], 1, one, "N", iwork, mnmin, nrhs, zero, one, "NO", y, ldx, iwork, iinfo);
                 } else {
-                    dlatmr(m, nrhs, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(m + 1) - 1], 1, one, &work[(2 * m + 1) - 1], 1, one, "N", iwork, m, nrhs, zero, one, "NO", x, ldx, iwork, iinfo);
+                    Rlatmr(m, nrhs, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(m + 1) - 1], 1, one, &work[(2 * m + 1) - 1], 1, one, "N", iwork, m, nrhs, zero, one, "NO", x, ldx, iwork, iinfo);
                 }
             }
             //
@@ -430,9 +412,9 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //
                 Rlacpy(" ", m, n, q, ldq, pt, ldpt);
                 if (m >= n) {
-                    uplo = "U";
+                    uplo = 'U';
                 } else {
-                    uplo = "L";
+                    uplo = 'L';
                 }
                 //
                 //              Generate Q
@@ -487,7 +469,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             Rlaset("Full", mnmin, mnmin, zero, one, u, ldpt);
             Rlaset("Full", mnmin, mnmin, zero, one, vt, ldpt);
             //
-            Rbdsqr(uplo, mnmin, mnmin, mnmin, nrhs, s1, work, vt, ldpt, u, ldpt, z, ldx, &work[(mnmin + 1) - 1], iinfo);
+            Rbdsqr(&uplo, mnmin, mnmin, mnmin, nrhs, s1, work, vt, ldpt, u, ldpt, z, ldx, &work[(mnmin + 1) - 1], iinfo);
             //
             //           Check error code from Rbdsqr.
             //
@@ -510,7 +492,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 Rcopy(mnmin - 1, be, 1, work, 1);
             }
             //
-            Rbdsqr(uplo, mnmin, 0, 0, 0, s2, work, vt, ldpt, u, ldpt, z, ldx, &work[(mnmin + 1) - 1], iinfo);
+            Rbdsqr(&uplo, mnmin, 0, 0, 0, s2, work, vt, ldpt, u, ldpt, z, ldx, &work[(mnmin + 1) - 1], iinfo);
             //
             //           Check error code from Rbdsqr.
             //
@@ -530,7 +512,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //                6:  Check the orthogonality of U
             //                7:  Check the orthogonality of VT
             //
-            Rbdt03(uplo, mnmin, 1, bd, be, u, ldpt, s1, vt, ldpt, work, result[4 - 1]);
+            Rbdt03(&uplo, mnmin, 1, bd, be, u, ldpt, s1, vt, ldpt, work, result[4 - 1]);
             Rbdt02(mnmin, nrhs, y, ldx, z, ldx, u, ldpt, work, result[5 - 1]);
             Rort01("Columns", mnmin, mnmin, u, ldpt, work, lwork, result[6 - 1]);
             Rort01("Rows", mnmin, mnmin, vt, ldpt, work, lwork, result[7 - 1]);
@@ -589,7 +571,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                     Rcopy(mnmin - 1, be, 1, work, 1);
                 }
                 //
-                Rbdsqr(uplo, mnmin, n, m, nrhs, s2, work, pt, ldpt, q, ldq, y, ldx, &work[(mnmin + 1) - 1], iinfo);
+                Rbdsqr(&uplo, mnmin, n, m, nrhs, s2, work, pt, ldpt, q, ldq, y, ldx, &work[(mnmin + 1) - 1], iinfo);
                 //
                 //              Test 11:  Check the decomposition A := Q*U * S2 * VT*PT
                 //                   12:  Check the computation Z := U' * Q' * X
@@ -612,7 +594,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             Rlaset("Full", mnmin, mnmin, zero, one, u, ldpt);
             Rlaset("Full", mnmin, mnmin, zero, one, vt, ldpt);
             //
-            Rbdsdc(uplo, "I", mnmin, s1, work, u, ldpt, vt, ldpt, dum, idum, &work[(mnmin + 1) - 1], iwork, iinfo);
+            Rbdsdc(&uplo, "I", mnmin, s1, work, u, ldpt, vt, ldpt, dum, idum, &work[(mnmin + 1) - 1], iwork, iinfo);
             //
             //           Check error code from Rbdsdc.
             //
@@ -635,7 +617,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 Rcopy(mnmin - 1, be, 1, work, 1);
             }
             //
-            Rbdsdc(uplo, "N", mnmin, s2, work, dum, 1, dum, 1, dum, idum, &work[(mnmin + 1) - 1], iwork, iinfo);
+            Rbdsdc(&uplo, "N", mnmin, s2, work, dum, 1, dum, 1, dum, idum, &work[(mnmin + 1) - 1], iwork, iinfo);
             //
             //           Check error code from Rbdsdc.
             //
@@ -654,7 +636,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //                16:  Check the orthogonality of U
             //                17:  Check the orthogonality of VT
             //
-            Rbdt03(uplo, mnmin, 1, bd, be, u, ldpt, s1, vt, ldpt, work, result[15 - 1]);
+            Rbdt03(&uplo, mnmin, 1, bd, be, u, ldpt, s1, vt, ldpt, work, result[15 - 1]);
             Rort01("Columns", mnmin, mnmin, u, ldpt, work, lwork, result[16 - 1]);
             Rort01("Rows", mnmin, mnmin, vt, ldpt, work, lwork, result[17 - 1]);
             //
@@ -694,7 +676,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //              =================================
                 //              Matrix types temporarily disabled
                 //              =================================
-                result[(20 - 1) + (34 - 1) * ldresult] = zero;
+	        for (int p = 19; p <=33; p++)  result[p] = zero;
                 goto statement_270;
             }
             //
@@ -710,7 +692,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 Rcopy(mnmin - 1, be, 1, &work[iwbe - 1], 1);
             }
             //
-            Rbdsvdx(uplo, "V", "A", mnmin, &work[iwbd - 1], &work[iwbe - 1], zero, zero, 0, 0, ns1, s1, &work[iwbz - 1], mnmin2, &work[iwwork - 1], iwork, iinfo);
+            Rbdsvdx(&uplo, "V", "A", mnmin, &work[iwbd - 1], &work[iwbe - 1], zero, zero, 0, 0, ns1, s1, &work[iwbz - 1], mnmin2, &work[iwwork - 1], iwork, iinfo);
             //
             //           Check error code from Rbdsvdx.
             //
@@ -749,7 +731,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 Rcopy(mnmin - 1, be, 1, &work[iwbe - 1], 1);
             }
             //
-            Rbdsvdx(uplo, "N", "A", mnmin, &work[iwbd - 1], &work[iwbe - 1], zero, zero, 0, 0, ns2, s2, &work[iwbz - 1], mnmin2, &work[iwwork - 1], iwork, iinfo);
+            Rbdsvdx(&uplo, "N", "A", mnmin, &work[iwbd - 1], &work[iwbe - 1], zero, zero, 0, 0, ns2, s2, &work[iwbz - 1], mnmin2, &work[iwwork - 1], iwork, iinfo);
             //
             //           Check error code from Rbdsvdx.
             //
@@ -775,7 +757,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //                     non-increasing order and are non-negative
             //                24:  Compare Rbdsvdx with and without singular vectors
             //
-            Rbdt03(uplo, mnmin, 1, bd, be, u, ldpt, s1, vt, ldpt, &work[(iwbs + mnmin) - 1], result[20 - 1]);
+            Rbdt03(&uplo, mnmin, 1, bd, be, u, ldpt, s1, vt, ldpt, &work[(iwbs + mnmin) - 1], result[20 - 1]);
             Rort01("Columns", mnmin, mnmin, u, ldpt, &work[(iwbs + mnmin) - 1], lwork - mnmin, result[21 - 1]);
             Rort01("Rows", mnmin, mnmin, vt, ldpt, &work[(iwbs + mnmin) - 1], lwork - mnmin, result[22 - 1]);
             //
@@ -813,8 +795,8 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 il = 1;
                 iu = mnmin;
             } else {
-                il = 1 + int((mnmin - 1) * dlarnd(1, iseed2));
-                iu = 1 + int((mnmin - 1) * dlarnd(1, iseed2));
+                il = 1 + castINTEGER((mnmin - 1) * Rlarnd(1, iseed2));
+                iu = 1 + castINTEGER((mnmin - 1) * Rlarnd(1, iseed2));
                 if (iu < il) {
                     itemp = iu;
                     iu = il;
@@ -827,7 +809,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 Rcopy(mnmin - 1, be, 1, &work[iwbe - 1], 1);
             }
             //
-            Rbdsvdx(uplo, "V", "I", mnmin, &work[iwbd - 1], &work[iwbe - 1], zero, zero, il, iu, ns1, s1, &work[iwbz - 1], mnmin2, &work[iwwork - 1], iwork, iinfo);
+            Rbdsvdx(&uplo, "V", "I", mnmin, &work[iwbd - 1], &work[iwbe - 1], zero, zero, il, iu, ns1, s1, &work[iwbz - 1], mnmin2, &work[iwwork - 1], iwork, iinfo);
             //
             //           Check error code from Rbdsvdx.
             //
@@ -858,7 +840,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 Rcopy(mnmin - 1, be, 1, &work[iwbe - 1], 1);
             }
             //
-            Rbdsvdx(uplo, "N", "I", mnmin, &work[iwbd - 1], &work[iwbe - 1], zero, zero, il, iu, ns2, s2, &work[iwbz - 1], mnmin2, &work[iwwork - 1], iwork, iinfo);
+            Rbdsvdx(&uplo, "N", "I", mnmin, &work[iwbd - 1], &work[iwbe - 1], zero, zero, il, iu, ns2, s2, &work[iwbz - 1], mnmin2, &work[iwwork - 1], iwork, iinfo);
             //
             //           Check error code from Rbdsvdx.
             //
@@ -880,7 +862,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //                     non-increasing order and are non-negative
             //                29:  Compare Rbdsvdx with and without singular vectors
             //
-            Rbdt04(uplo, mnmin, bd, be, s1, ns1, u, ldpt, vt, ldpt, &work[(iwbs + mnmin) - 1], result[25 - 1]);
+            Rbdt04(&uplo, mnmin, bd, be, s1, ns1, u, ldpt, vt, ldpt, &work[(iwbs + mnmin) - 1], result[25 - 1]);
             Rort01("Columns", mnmin, ns1, u, ldpt, &work[(iwbs + mnmin) - 1], lwork - mnmin, result[26 - 1]);
             Rort01("Rows", ns1, mnmin, vt, ldpt, &work[(iwbs + mnmin) - 1], lwork - mnmin, result[27 - 1]);
             //
@@ -938,7 +920,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 Rcopy(mnmin - 1, be, 1, &work[iwbe - 1], 1);
             }
             //
-            Rbdsvdx(uplo, "V", "V", mnmin, &work[iwbd - 1], &work[iwbe - 1], vl, vu, 0, 0, ns1, s1, &work[iwbz - 1], mnmin2, &work[iwwork - 1], iwork, iinfo);
+            Rbdsvdx(&uplo, "V", "V", mnmin, &work[iwbd - 1], &work[iwbe - 1], vl, vu, 0, 0, ns1, s1, &work[iwbz - 1], mnmin2, &work[iwwork - 1], iwork, iinfo);
             //
             //           Check error code from Rbdsvdx.
             //
@@ -969,7 +951,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 Rcopy(mnmin - 1, be, 1, &work[iwbe - 1], 1);
             }
             //
-            Rbdsvdx(uplo, "N", "V", mnmin, &work[iwbd - 1], &work[iwbe - 1], vl, vu, 0, 0, ns2, s2, &work[iwbz - 1], mnmin2, &work[iwwork - 1], iwork, iinfo);
+            Rbdsvdx(&uplo, "N", "V", mnmin, &work[iwbd - 1], &work[iwbe - 1], vl, vu, 0, 0, ns2, s2, &work[iwbz - 1], mnmin2, &work[iwwork - 1], iwork, iinfo);
             //
             //           Check error code from Rbdsvdx.
             //
@@ -991,7 +973,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //                     non-increasing order and are non-negative
             //                34:  Compare Rbdsvdx with and without singular vectors
             //
-            Rbdt04(uplo, mnmin, bd, be, s1, ns1, u, ldpt, vt, ldpt, &work[(iwbs + mnmin) - 1], result[30 - 1]);
+            Rbdt04(&uplo, mnmin, bd, be, s1, ns1, u, ldpt, vt, ldpt, &work[(iwbs + mnmin) - 1], result[30 - 1]);
             Rort01("Columns", mnmin, ns1, u, ldpt, &work[(iwbs + mnmin) - 1], lwork - mnmin, result[31 - 1]);
             Rort01("Rows", ns1, mnmin, vt, ldpt, &work[(iwbs + mnmin) - 1], lwork - mnmin, result[32 - 1]);
             //
@@ -1026,9 +1008,10 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                     if (nfail == 0) {
                         Rlahd2(nout, path);
                     }
+		    sprintnum_short(buf, result[j - 1]);
                     write(nout, "(' M=',i5,', N=',i5,', type ',i2,', seed=',4(i4,','),' test(',i2,"
-                                "')=',g11.4)"),
-                        m, n, jtype, ioldsd, j, result(j);
+                                "')=',a)"),
+		      m, n, jtype, ioldsd, j, buf;
                     nfail++;
                 }
             }

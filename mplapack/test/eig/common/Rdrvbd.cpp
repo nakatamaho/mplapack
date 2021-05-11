@@ -39,34 +39,16 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, REAL *a, INTEGER const lda, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *asav, REAL *usav, REAL *vtsav, REAL *s, REAL *ssav, REAL *e, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const nout, INTEGER &info) {
-    FEM_CMN_SVE(Rdrvbd);
-    iseed([4]);
-    a([lda * star]);
-    u([ldu * star]);
-    vt([ldvt * star]);
-    asav([lda * star]);
-    usav([ldu * star]);
-    vtsav([ldvt * star]);
+    INTEGER ldasav=lda;
+    INTEGER ldusav=ldu;
+    INTEGER ldvtsav=ldvt;
+
+    common cmn;
     common_write write(cmn);
-    char &srnamt = cmn.srnamt;
-    //
-    str_arr_ref<1> cjob(sve.cjob, [4]);
-    str_arr_ref<1> cjobr(sve.cjobr, [3]);
-    str_arr_ref<1> cjobv(sve.cjobv, [2]);
-    if (is_called_first_time) {
-        {
-            static const char *values[] = {"N", "O", "S", "A"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), cjob;
-        }
-        {
-            static const char *values[] = {"A", "V", "I"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), cjobr;
-        }
-        {
-            static const char *values[] = {"N", "V"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), cjobv;
-        }
-    }
+    char cjob[4] = {'N', 'O', 'S', 'A'};
+    char cjobr[3] ={'A', 'V', 'I'};
+    char cjobv[2] = {'N', 'V'};
+    char buf[1024];
     bool badmm = false;
     bool badnn = false;
     INTEGER mmax = 0;
@@ -180,7 +162,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
             badnn = true;
         }
         mnmax = max({mnmax, min(mm[j - 1], nn[j - 1])});
-        minwrk = max({minwrk, max({3 * min(mm[j - 1], nn[j - 1]) + max(mm[j - 1], nn[j - 1]), 5 * min(mm[j - 1], nn[j - 1] - 4)}) + 2 * pow2(min(mm[j - 1], nn[j - 1]))});
+        minwrk = max(minwrk, max({3 * min(mm[j - 1], nn[j - 1]) + max(mm[j - 1], nn[j - 1]), 5 * min(mm[j - 1], nn[j - 1] - 4)}) + 2 * pow2(min(mm[j - 1], nn[j - 1])));
     }
     //
     //     Check for errors
@@ -210,8 +192,9 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     //
     //     Initialize constants
     //
-    path[(1 - 1)] = "Double precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "BD";
+    path[0] = 'D';
+    path[1] = 'B';
+    path[2] = 'D';
     nfail = 0;
     ntest = 0;
     unfl = Rlamch("Safe minimum");
@@ -220,7 +203,6 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     ulp = Rlamch("Precision");
     rtunfl = sqrt(unfl);
     ulpinv = one / ulp;
-    cmn.infot = 0;
     //
     //     Loop over sizes, types
     //
@@ -275,7 +257,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 if (jtype == 5) {
                     anorm = ovfl * ulp;
                 }
-                dlatms(m, n, "U", iseed, "N", s, 4, mnmin.real(), anorm, m - 1, n - 1, "N", a, lda, work, iinfo);
+                Rlatms(m, n, "U", iseed, "N", s, 4, castREAL(mnmin), anorm, m - 1, n - 1, "N", a, lda, work, iinfo);
                 if (iinfo != 0) {
                     write(nout, "(' Rdrvbd: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
                                 "', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')"),
@@ -309,7 +291,6 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 if (iws > 1) {
                     Rlacpy("F", m, n, asav, lda, a, lda);
                 }
-                srnamt = "Rgesvd";
                 Rgesvd("A", "A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, work, lswork, iinfo);
                 if (iinfo != 0) {
                     write(nout, format_9995), "GESVD", iinfo, m, n, jtype, lswork, ioldsd;
@@ -352,8 +333,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         jobu = cjob[(iju + 1) - 1];
                         jobvt = cjob[(ijvt + 1) - 1];
                         Rlacpy("F", m, n, asav, lda, a, lda);
-                        srnamt = "Rgesvd";
-                        Rgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, iinfo);
+                        Rgesvd(&jobu, &jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, iinfo);
                         //
                         //                    Compare U
                         //
@@ -412,7 +392,6 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 }
                 //
                 Rlacpy("F", m, n, asav, lda, a, lda);
-                srnamt = "Rgesdd";
                 Rgesdd("A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, work, lswork, iwork, iinfo);
                 if (iinfo != 0) {
                     write(nout, format_9995), "GESDD", iinfo, m, n, jtype, lswork, ioldsd;
@@ -450,8 +429,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 for (ijq = 0; ijq <= 2; ijq = ijq + 1) {
                     jobq = cjob[(ijq + 1) - 1];
                     Rlacpy("F", m, n, asav, lda, a, lda);
-                    srnamt = "Rgesdd";
-                    Rgesdd(jobq, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, iwork, iinfo);
+                    Rgesdd(&jobq, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, iwork, iinfo);
                     //
                     //                 Compare U
                     //
@@ -519,7 +497,6 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     //
                     Rlacpy("F", m, n, asav, lda, a, lda);
-                    srnamt = "Rgesvdq";
                     //
                     lrwork = 2;
                     liwork = max(n, 1);
@@ -572,7 +549,6 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     //
                     Rlacpy("F", m, n, asav, lda, usav, lda);
-                    srnamt = "Rgesvj";
                     Rgesvj("G", "U", "V", m, n, usav, lda, ssav, 0, a, ldvt, work, lwork, info);
                     //
                     //                 Rgesvj returns V not VT
@@ -629,7 +605,6 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     //
                     Rlacpy("F", m, n, asav, lda, vtsav, lda);
-                    srnamt = "Rgejsv";
                     Rgejsv("G", "U", "V", "R", "N", "N", m, n, vtsav, lda, ssav, usav, ldu, a, ldvt, work, lwork, iwork, info);
                     //
                     //                 Rgejsv returns V not VT
@@ -718,7 +693,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         jobvt = cjobv[(ijvt + 1) - 1];
                         range = cjobr[1 - 1];
                         Rlacpy("F", m, n, asav, lda, a, lda);
-                        Rgesvdx(jobu, jobvt, range, m, n, a, lda, vl, vu, il, iu, ns, s, u, ldu, vt, ldvt, work, lwork, iwork, iinfo);
+                        Rgesvdx(&jobu, &jobvt, &range, m, n, a, lda, vl, vu, il, iu, ns, s, u, ldu, vt, ldvt, work, lwork, iwork, iinfo);
                         //
                         //                    Compare U
                         //
@@ -767,8 +742,8 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     il = 1;
                     iu = max((INTEGER)1, mnmin);
                 } else {
-                    il = 1 + int((mnmin - 1) * dlarnd(1, iseed2));
-                    iu = 1 + int((mnmin - 1) * dlarnd(1, iseed2));
+                    il = 1 + castREAL((mnmin - 1) * Rlarnd(1, iseed2));
+                    iu = 1 + castREAL((mnmin - 1) * Rlarnd(1, iseed2));
                     if (iu < il) {
                         itemp = iu;
                         iu = il;
@@ -887,9 +862,10 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                                         "'39 = 0 if S contains min(M,N) nonnegative values in',"
                                         "' decreasing order, else 1/ulp',/,/)");
                         }
+			sprintnum_short(buf, result[j - 1]);
                         write(nout, "(' M=',i5,', N=',i5,', type ',i1,', IWS=',i1,', seed=',4(i4,"
-                                    "','),' test(',i2,')=',g11.4)"),
-                            m, n, jtype, iws, ioldsd, j, result(j);
+                                    "','),' test(',i2,')=',a)"),
+			  m, n, jtype, iws, ioldsd, j, buf;
                         nfail++;
                     }
                 }

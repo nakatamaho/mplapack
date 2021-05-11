@@ -39,104 +39,49 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, bool const tstdif, REAL const thrshn, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *h, COMPLEX *t, COMPLEX *s1, COMPLEX *s2, COMPLEX *p1, COMPLEX *p2, COMPLEX *u, INTEGER const ldu, COMPLEX *v, COMPLEX *q, COMPLEX *z, COMPLEX *alpha1, COMPLEX *beta1, COMPLEX *alpha3, COMPLEX *beta3, COMPLEX *evectl, COMPLEX *evectr, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *llwork, REAL *result, INTEGER &info) {
-    FEM_CMN_SVE(Cchkgg);
-    iseed([4]);
-    a([lda * star]);
-    b([lda * star]);
-    h([lda * star]);
-    t([lda * star]);
-    s1([lda * star]);
-    s2([lda * star]);
-    p1([lda * star]);
-    p2([lda * star]);
-    u([ldu * star]);
-    v([ldu * star]);
-    q([ldu * star]);
-    z([ldu * star]);
-    evectl([ldu * star]);
-    evectr([ldu * star]);
-    result([15]);
+    INTEGER ldb = lda;
+    INTEGER ldh = lda;
+    INTEGER ldt = lda;
+    INTEGER lds1 = lda;
+    INTEGER lds2 = lda;
+    INTEGER ldp1 = lda;
+    INTEGER ldp2 = lda;
+    INTEGER ldv = ldu;
+    INTEGER ldq = ldu;
+    INTEGER ldz = ldu;
+    INTEGER ldevectl = ldu;
+    INTEGER ldevectr = ldu;
+    char buf[1024];
+    common cmn;
     common_write write(cmn);
-    INTEGER *kadd(sve.kadd, [6]);
     const INTEGER maxtyp = 26;
-    INTEGER *kamagn(sve.kamagn, [maxtyp]);
-    INTEGER *katype(sve.katype, [maxtyp]);
-    INTEGER *kazero(sve.kazero, [maxtyp]);
-    INTEGER *kbmagn(sve.kbmagn, [maxtyp]);
-    INTEGER *kbtype(sve.kbtype, [maxtyp]);
-    INTEGER *kbzero(sve.kbzero, [maxtyp]);
-    INTEGER *kclass(sve.kclass, [maxtyp]);
-    INTEGER *ktrian(sve.ktrian, [maxtyp]);
-    INTEGER *kz1(sve.kz1, [6]);
-    INTEGER *kz2(sve.kz2, [6]);
-    bool *lasign(sve.lasign, [maxtyp]);
-    bool *lbsign(sve.lbsign, [maxtyp]);
-    if (is_called_first_time) {
-        data((values, 15 * datum(1), 10 * datum(2), 1 * datum(3))), kclass;
-        {
-            static const INTEGER values[] = {0, 1, 2, 1, 3, 3};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), kz1;
-        }
-        {
-            static const INTEGER values[] = {0, 0, 1, 2, 1, 1};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), kz2;
-        }
-        {
-            static const INTEGER values[] = {0, 0, 0, 0, 3, 2};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), kadd;
-        }
-        {
-            data_values data;
-            data.values, 0, 1, 0, 1, 2, 3, 4, 1;
-            data.values, 4, 4, 1, 1, 4, 4, 4, 2;
-            data.values, 4, 5, 8, 7, 9, 4 * datum(4), 0;
-            data, katype;
-        }
-        {
-            data_values data;
-            data.values, 0, 0, 1, 1, 2, -3, 1, 4;
-            data.values, 1, 1, 4, 4, 1, 1, -4, 2;
-            data.values, -4, 8 * datum(8), 0;
-            data, kbtype;
-        }
-        {
-            data_values data;
-            data.values, 6 * datum(1), 2, 1, 2 * datum(2), 2 * datum(1), 2 * datum(2), 3, 1;
-            data.values, 3, 4 * datum(5), 4 * datum(3), 1;
-            data, kazero;
-        }
-        {
-            data_values data;
-            data.values, 6 * datum(1), 1, 2, 2 * datum(1), 2 * datum(2), 2 * datum(1), 4, 1;
-            data.values, 4, 4 * datum(6), 4 * datum(4), 1;
-            data, kbzero;
-        }
-        {
-            data_values data;
-            data.values, 8 * datum(1), 2, 3, 2, 3, 2, 3, 7 * datum(1);
-            data.values, 2, 3, 3, 2, 1;
-            data, kamagn;
-        }
-        {
-            data_values data;
-            data.values, 8 * datum(1), 3, 2, 3, 2, 2, 3, 7 * datum(1);
-            data.values, 3, 2, 3, 2, 1;
-            data, kbmagn;
-        }
-        data((values, 16 * datum(0), 10 * datum(1))), ktrian;
-        {
-            data_values data;
-            data.values, 6 * datum(false), true, false, 2 * datum(true), 2 * datum(false), 3 * datum(true), false, true;
-            data.values, 3 * datum(false), 5 * datum(true), false;
-            data, lasign;
-        }
-        {
-            data_values data;
-            data.values, 7 * datum(false), true, 2 * datum(false), 2 * datum(true), 2 * datum(false), true, false, true;
-            data.values, 9 * datum(false);
-            data, lbsign;
-        }
-    }
+    INTEGER kclass[26] = { 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,
+	    2,2,2,3 };
+    INTEGER kbmagn[26] = { 1,1,1,1,1,1,1,1,3,2,3,2,2,3,1,1,1,1,1,1,1,3,
+	    2,3,2,1 };
+    INTEGER ktrian[26] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,
+	    1,1,1,1 };
+    bool lasign[26] = { false,false,false,false,false,false,
+	    true,false,true,true,false,false,true,true,true,false,
+	    true,false,false,false,true,true,true,true,true,false };
+    bool lbsign[26] = { false,false,false,false,false,false,
+	    false,true,false,false,true,true,false,false,true,false,
+	    true,false,false,false,false,false,false,false,false,
+	    false };
+    INTEGER kz1[6] = { 0,1,2,1,3,3 };
+    INTEGER kz2[6] = { 0,0,1,2,1,1 };
+    INTEGER kadd[6] = { 0,0,0,0,3,2 };
+    INTEGER katype[26] = { 0,1,0,1,2,3,4,1,4,4,1,1,4,4,4,2,4,5,8,7,9,4,
+	    4,4,4,0 };
+    INTEGER kbtype[26] = { 0,0,1,1,2,-3,1,4,1,1,4,4,1,1,-4,2,-4,8,8,8,
+	    8,8,8,8,8,0 };
+    INTEGER kazero[26] = { 1,1,1,1,1,1,2,1,2,2,1,1,2,2,3,1,3,5,5,5,5,3,
+	    3,3,3,1 };
+    INTEGER kbzero[26] = { 1,1,1,1,1,1,1,2,1,1,2,2,1,1,4,1,4,6,6,6,6,4,
+	    4,4,4,1 };
+    INTEGER kamagn[26] = { 1,1,1,1,1,1,1,1,2,3,2,3,2,3,1,1,1,1,1,1,1,2,
+	    3,3,2,1 };
+
     bool badnn = false;
     INTEGER nmax = 0;
     INTEGER j = 0;
@@ -147,7 +92,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     const REAL one = 1.0;
     REAL safmax = 0.0;
     REAL ulpinv = 0.0;
-    REAL rmagn dim1(0, 3);
+    REAL rmagn[4];
     INTEGER ntestt = 0;
     INTEGER nerrs = 0;
     INTEGER nmats = 0;
@@ -219,7 +164,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         }
     }
     //
-    lwkopt = max({(INTEGER)2 * nmax * nmax, 4 * nmax, 1});
+    lwkopt = max({(INTEGER)2 * nmax * nmax, 4 * nmax, (INTEGER)1});
     //
     //     Check for errors
     //
@@ -259,8 +204,8 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     //
     //     The values RMAGN(2:3) depend on N, see below.
     //
-    rmagn[0 - 1] = zero;
-    rmagn[1 - 1] = one;
+    rmagn[0] = zero;
+    rmagn[1] = one;
     //
     //     Loop over sizes, types
     //
@@ -271,7 +216,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     for (jsize = 1; jsize <= nsizes; jsize = jsize + 1) {
         n = nn[jsize - 1];
         n1 = max((INTEGER)1, n);
-        rmagn[2 - 1] = safmax * ulp / n1.real();
+        rmagn[2 - 1] = safmax * ulp / castREAL(n1);
         rmagn[3 - 1] = safmin * ulpinv * n1;
         //
         if (nsizes != 1) {
@@ -339,7 +284,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Clatm4(katype[jtype - 1], in, kz1[kazero[jtype - 1] - 1], kz2[kazero[jtype - 1] - 1], lasign[jtype - 1], rmagn[kamagn[jtype - 1] - 1], ulp, rmagn[(ktrian[jtype - 1] * kamagn[jtype - 1]) - 1], 4, iseed, a, lda);
                 iadd = kadd[kazero[jtype - 1] - 1];
                 if (iadd > 0 && iadd <= n) {
-                    a[(iadd - 1) + (iadd - 1) * lda] = rmagn[kamagn[jtype - 1] - 1];
+                    a[(iadd - 1) + (iadd - 1) * lda] = rmagn[kamagn[jtype - 1]];
                 }
                 //
                 //              Generate B (w/o rotation)
@@ -355,7 +300,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Clatm4(kbtype[jtype - 1], in, kz1[kbzero[jtype - 1] - 1], kz2[kbzero[jtype - 1] - 1], lbsign[jtype - 1], rmagn[kbmagn[jtype - 1] - 1], one, rmagn[(ktrian[jtype - 1] * kbmagn[jtype - 1]) - 1], 4, iseed, b, lda);
                 iadd = kadd[kbzero[jtype - 1] - 1];
                 if (iadd != 0) {
-                    b[(iadd - 1) + (iadd - 1) * ldb] = rmagn[kbmagn[jtype - 1] - 1];
+                    b[(iadd - 1) + (iadd - 1) * ldb] = rmagn[kbmagn[jtype - 1]];
                 }
                 //
                 if (kclass[jtype - 1] == 2 && n > 0) {
@@ -368,21 +313,21 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     for (jc = 1; jc <= n - 1; jc = jc + 1) {
                         for (jr = jc; jr <= n; jr = jr + 1) {
-                            u[(jr - 1) + (jc - 1) * ldu] = zlarnd(3, iseed);
-                            v[(jr - 1) + (jc - 1) * ldv] = zlarnd(3, iseed);
+                            u[(jr - 1) + (jc - 1) * ldu] = Clarnd(3, iseed);
+                            v[(jr - 1) + (jc - 1) * ldv] = Clarnd(3, iseed);
                         }
-                        Clarfg(n + 1 - jc, &u[(jc - 1) + (jc - 1) * ldu], &u[((jc + 1) - 1) + (jc - 1) * ldu], 1, &work[jc - 1]);
-                        work[(2 * n + jc) - 1] = sign(one, &u[(jc - 1) + (jc - 1) * ldu].real());
+                        Clarfg(n + 1 - jc, u[(jc - 1) + (jc - 1) * ldu], &u[((jc + 1) - 1) + (jc - 1) * ldu], 1, work[jc - 1]);
+                        work[(2 * n + jc) - 1] = sign(one, u[(jc - 1) + (jc - 1) * ldu].real());
                         u[(jc - 1) + (jc - 1) * ldu] = cone;
-                        Clarfg(n + 1 - jc, &v[(jc - 1) + (jc - 1) * ldv], &v[((jc + 1) - 1) + (jc - 1) * ldv], 1, &work[(n + jc) - 1]);
-                        work[(3 * n + jc) - 1] = sign(one, &v[(jc - 1) + (jc - 1) * ldv].real());
+                        Clarfg(n + 1 - jc, v[(jc - 1) + (jc - 1) * ldv], &v[((jc + 1) - 1) + (jc - 1) * ldv], 1, work[(n + jc) - 1]);
+                        work[(3 * n + jc) - 1] = sign(one, v[(jc - 1) + (jc - 1) * ldv].real());
                         v[(jc - 1) + (jc - 1) * ldv] = cone;
                     }
-                    ctemp = zlarnd(3, iseed);
+                    ctemp = Clarnd(3, iseed);
                     u[(n - 1) + (n - 1) * ldu] = cone;
                     work[n - 1] = czero;
                     work[(3 * n) - 1] = ctemp / abs(ctemp);
-                    ctemp = zlarnd(3, iseed);
+                    ctemp = Clarnd(3, iseed);
                     v[(n - 1) + (n - 1) * ldv] = cone;
                     work[(2 * n) - 1] = czero;
                     work[(4 * n) - 1] = ctemp / abs(ctemp);
@@ -418,8 +363,8 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 for (jc = 1; jc <= n; jc = jc + 1) {
                     for (jr = 1; jr <= n; jr = jr + 1) {
-                        a[(jr - 1) + (jc - 1) * lda] = rmagn[kamagn[jtype - 1] - 1] * zlarnd(4, iseed);
-                        b[(jr - 1) + (jc - 1) * ldb] = rmagn[kbmagn[jtype - 1] - 1] * zlarnd(4, iseed);
+                        a[(jr - 1) + (jc - 1) * lda] = rmagn[kamagn[jtype - 1]] * Clarnd(4, iseed);
+                        b[(jr - 1) + (jc - 1) * ldb] = rmagn[kbmagn[jtype - 1]] * Clarnd(4, iseed);
                     }
                 }
             }
@@ -566,17 +511,18 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 llwork[j - 1] = true;
             }
             //
-            Ctgevc("L", "S", llwork, n, s1, lda, p1, lda, evectl[((i1 + 1) - 1) * ldevectl], ldu, cdumma, ldu, n, in, work, rwork, iinfo);
+            Ctgevc("L", "S", llwork, n, s1, lda, p1, lda, &evectl[((i1 + 1) - 1) * ldevectl], ldu, cdumma, ldu, n, in, work, rwork, iinfo);
             if (iinfo != 0) {
                 write(nounit, format_9999), "Ctgevc(L,S2)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_210;
             }
             //
-            Cget52(true, n, s1, lda, p1, lda, evectl, ldu, alpha1, beta1, work, rwork, dumma[1 - 1]);
+            Cget52(true, n, s1, lda, p1, lda, evectl, ldu, alpha1, beta1, work, rwork, &dumma[1 - 1]);
             result[9 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thrshn) {
-                write(nounit, format_9998), "Left", "Ctgevc(HOWMNY=S)", dumma(2), n, jtype, ioldsd;
+	        sprintnum_short(buf, dumma[2 - 1]);
+                write(nounit, format_9998), "Left", "Ctgevc(HOWMNY=S)", buf, n, jtype, ioldsd;
             }
             //
             //           10: Compute the left eigenvector Matrix with
@@ -592,10 +538,11 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 goto statement_210;
             }
             //
-            Cget52(true, n, h, lda, t, lda, evectl, ldu, alpha1, beta1, work, rwork, dumma[1 - 1]);
+            Cget52(true, n, h, lda, t, lda, evectl, ldu, alpha1, beta1, work, rwork, &dumma[1 - 1]);
             result[10 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thrshn) {
-                write(nounit, format_9998), "Left", "Ctgevc(HOWMNY=B)", dumma(2), n, jtype, ioldsd;
+	        sprintnum_short(buf, dumma[2 - 1]);
+                write(nounit, format_9998), "Left", "Ctgevc(HOWMNY=B)", buf, n, jtype, ioldsd;
             }
             //
             //           11: Compute the right eigenvector Matrix without
@@ -630,17 +577,18 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 llwork[j - 1] = true;
             }
             //
-            Ctgevc("R", "S", llwork, n, s1, lda, p1, lda, cdumma, ldu, evectr[((i1 + 1) - 1) * ldevectr], ldu, n, in, work, rwork, iinfo);
+            Ctgevc("R", "S", llwork, n, s1, lda, p1, lda, cdumma, ldu, &evectr[((i1 + 1) - 1) * ldevectr], ldu, n, in, work, rwork, iinfo);
             if (iinfo != 0) {
                 write(nounit, format_9999), "Ctgevc(R,S2)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_210;
             }
             //
-            Cget52(false, n, s1, lda, p1, lda, evectr, ldu, alpha1, beta1, work, rwork, dumma[1 - 1]);
+            Cget52(false, n, s1, lda, p1, lda, evectr, ldu, alpha1, beta1, work, rwork, &dumma[1 - 1]);
             result[11 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thresh) {
-                write(nounit, format_9998), "Right", "Ctgevc(HOWMNY=S)", dumma(2), n, jtype, ioldsd;
+	        sprintnum_short(buf, dumma[2 - 1]);
+                write(nounit, format_9998), "Right", "Ctgevc(HOWMNY=S)", buf, n, jtype, ioldsd;
             }
             //
             //           12: Compute the right eigenvector Matrix with
@@ -656,10 +604,11 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 goto statement_210;
             }
             //
-            Cget52(false, n, h, lda, t, lda, evectr, ldu, alpha1, beta1, work, rwork, dumma[1 - 1]);
+            Cget52(false, n, h, lda, t, lda, evectr, ldu, alpha1, beta1, work, rwork, &dumma[1 - 1]);
             result[12 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thresh) {
-                write(nounit, format_9998), "Right", "Ctgevc(HOWMNY=B)", dumma(2), n, jtype, ioldsd;
+	        sprintnum_short(buf, dumma[2 - 1]);
+                write(nounit, format_9998), "Right", "Ctgevc(HOWMNY=B)", buf, n, jtype, ioldsd;
             }
             //
             //           Tests 13--15 are done only on request
@@ -757,13 +706,15 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                     nerrs++;
                     if (result[jr - 1] < 10000.0) {
-                        write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
+	        sprintnum_short(buf, result[jr - 1]);
+		write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
                                       "' result ',i2,' is',0p,a)"),
-                            n, jtype, ioldsd, jr, result(jr);
+		  n, jtype, ioldsd, jr, buf;
                     } else {
+		      	        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
                                       "' result ',i2,' is',1p,a)"),
-                            n, jtype, ioldsd, jr, result(jr);
+			  n, jtype, ioldsd, jr, buf;
                     }
                 }
             }

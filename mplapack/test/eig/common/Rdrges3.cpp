@@ -39,96 +39,37 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *b, REAL *s, REAL *t, REAL *q, INTEGER const ldq, REAL *z, REAL *alphar, REAL *alphai, REAL *beta, REAL *work, INTEGER const lwork, REAL *result, bool *bwork, INTEGER &info) {
-    FEM_CMN_SVE(Rdrges3);
-    iseed([4]);
-    a([lda * star]);
-    b([lda * star]);
-    s([lda * star]);
-    t([lda * star]);
-    q([ldq * star]);
-    z([ldq * star]);
-    result([13]);
+    INTEGER ldb=lda;
+    INTEGER lds=lda;
+    INTEGER ldt=lda;
+    INTEGER ldz=ldq;    
+    common cmn;
     common_write write(cmn);
+    char buf[1024];
     const INTEGER maxtyp = 26;
-    INTEGER *iasign(sve.iasign, [maxtyp]);
-    INTEGER *ibsign(sve.ibsign, [maxtyp]);
-    INTEGER *kadd(sve.kadd, [6]);
-    INTEGER *kamagn(sve.kamagn, [maxtyp]);
-    INTEGER *katype(sve.katype, [maxtyp]);
-    INTEGER *kazero(sve.kazero, [maxtyp]);
-    INTEGER *kbmagn(sve.kbmagn, [maxtyp]);
-    INTEGER *kbtype(sve.kbtype, [maxtyp]);
-    INTEGER *kbzero(sve.kbzero, [maxtyp]);
-    INTEGER *kclass(sve.kclass, [maxtyp]);
-    INTEGER *ktrian(sve.ktrian, [maxtyp]);
-    INTEGER *kz1(sve.kz1, [6]);
-    INTEGER *kz2(sve.kz2, [6]);
-    if (is_called_first_time) {
-        data((values, 15 * datum(1), 10 * datum(2), 1 * datum(3))), kclass;
-        {
-            static const INTEGER values[] = {0, 1, 2, 1, 3, 3};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), kz1;
-        }
-        {
-            static const INTEGER values[] = {0, 0, 1, 2, 1, 1};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), kz2;
-        }
-        {
-            static const INTEGER values[] = {0, 0, 0, 0, 3, 2};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), kadd;
-        }
-        {
-            data_values data;
-            data.values, 0, 1, 0, 1, 2, 3, 4, 1;
-            data.values, 4, 4, 1, 1, 4, 4, 4, 2;
-            data.values, 4, 5, 8, 7, 9, 4 * datum(4), 0;
-            data, katype;
-        }
-        {
-            data_values data;
-            data.values, 0, 0, 1, 1, 2, -3, 1, 4;
-            data.values, 1, 1, 4, 4, 1, 1, -4, 2;
-            data.values, -4, 8 * datum(8), 0;
-            data, kbtype;
-        }
-        {
-            data_values data;
-            data.values, 6 * datum(1), 2, 1, 2 * datum(2), 2 * datum(1), 2 * datum(2), 3, 1;
-            data.values, 3, 4 * datum(5), 4 * datum(3), 1;
-            data, kazero;
-        }
-        {
-            data_values data;
-            data.values, 6 * datum(1), 1, 2, 2 * datum(1), 2 * datum(2), 2 * datum(1), 4, 1;
-            data.values, 4, 4 * datum(6), 4 * datum(4), 1;
-            data, kbzero;
-        }
-        {
-            data_values data;
-            data.values, 8 * datum(1), 2, 3, 2, 3, 2, 3, 7 * datum(1);
-            data.values, 2, 3, 3, 2, 1;
-            data, kamagn;
-        }
-        {
-            data_values data;
-            data.values, 8 * datum(1), 3, 2, 3, 2, 2, 3, 7 * datum(1);
-            data.values, 3, 2, 3, 2, 1;
-            data, kbmagn;
-        }
-        data((values, 16 * datum(0), 10 * datum(1))), ktrian;
-        {
-            data_values data;
-            data.values, 6 * datum(0), 2, 0, 2 * datum(2), 2 * datum(0), 3 * datum(2), 0, 2;
-            data.values, 3 * datum(0), 5 * datum(2), 0;
-            data, iasign;
-        }
-        {
-            data_values data;
-            data.values, 7 * datum(0), 2, 2 * datum(0), 2 * datum(2), 2 * datum(0), 2, 0, 2;
-            data.values, 9 * datum(0);
-            data, ibsign;
-        }
-    }
+    INTEGER kclass[26] = { 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,
+	    2,2,2,3 };
+    INTEGER kbmagn[26] = { 1,1,1,1,1,1,1,1,3,2,3,2,2,3,1,1,1,1,1,1,1,3,
+	    2,3,2,1 };
+    INTEGER ktrian[26] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,
+	    1,1,1,1 };
+    INTEGER iasign[26] = { 0,0,0,0,0,0,2,0,2,2,0,0,2,2,2,0,2,0,0,0,2,2,
+	    2,2,2,0 };
+    INTEGER ibsign[26] = { 0,0,0,0,0,0,0,2,0,0,2,2,0,0,2,0,2,0,0,0,0,0,
+	    0,0,0,0 };
+    INTEGER kz1[6] = { 0,1,2,1,3,3 };
+    INTEGER kz2[6] = { 0,0,1,2,1,1 };
+    INTEGER kadd[6] = { 0,0,0,0,3,2 };
+    INTEGER katype[26] = { 0,1,0,1,2,3,4,1,4,4,1,1,4,4,4,2,4,5,8,7,9,4,
+	    4,4,4,0 };
+    INTEGER kbtype[26] = { 0,0,1,1,2,-3,1,4,1,1,4,4,1,1,-4,2,-4,8,8,8,
+	    8,8,8,8,8,0 };
+    INTEGER kazero[26] = { 1,1,1,1,1,1,2,1,2,2,1,1,2,2,3,1,3,5,5,5,5,3,
+	    3,3,3,1 };
+    INTEGER kbzero[26] = { 1,1,1,1,1,1,1,2,1,1,2,2,1,1,4,1,4,6,6,6,6,4,
+	    4,4,4,1 };
+    INTEGER kamagn[26] = { 1,1,1,1,1,1,1,1,2,3,2,3,2,3,1,1,1,1,1,1,1,2,
+	    3,3,2,1 };
     bool badnn = false;
     INTEGER nmax = 0;
     INTEGER j = 0;
@@ -141,7 +82,7 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     const REAL one = 1.0;
     REAL safmax = 0.0;
     REAL ulpinv = 0.0;
-    REAL rmagn dim1(0, 3);
+    REAL rmagn[3];
     INTEGER ntestt = 0;
     INTEGER nerrs = 0;
     INTEGER nmats = 0;
@@ -276,8 +217,8 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     for (jsize = 1; jsize <= nsizes; jsize = jsize + 1) {
         n = nn[jsize - 1];
         n1 = max((INTEGER)1, n);
-        rmagn[2 - 1] = safmax * ulp / n1.real();
-        rmagn[3 - 1] = safmin * ulpinv * n1.real();
+        rmagn[2 - 1] = safmax * ulp / castREAL(n1);
+        rmagn[3 - 1] = safmin * ulpinv * castREAL(n1);
         //
         if (nsizes != 1) {
             mtypes = min(maxtyp, ntypes);
@@ -376,22 +317,22 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     //
                     for (jc = 1; jc <= n - 1; jc = jc + 1) {
                         for (jr = jc; jr <= n; jr = jr + 1) {
-                            q[(jr - 1) + (jc - 1) * ldq] = dlarnd(3, iseed);
-                            z[(jr - 1) + (jc - 1) * ldz] = dlarnd(3, iseed);
+                            q[(jr - 1) + (jc - 1) * ldq] = Rlarnd(3, iseed);
+                            z[(jr - 1) + (jc - 1) * ldz] = Rlarnd(3, iseed);
                         }
-                        Rlarfg(n + 1 - jc, &q[(jc - 1) + (jc - 1) * ldq], &q[((jc + 1) - 1) + (jc - 1) * ldq], 1, &work[jc - 1]);
-                        work[(2 * n + jc) - 1] = sign(one, &q[(jc - 1) + (jc - 1) * ldq]);
+                        Rlarfg(n + 1 - jc, q[(jc - 1) + (jc - 1) * ldq], &q[((jc + 1) - 1) + (jc - 1) * ldq], 1, work[jc - 1]);
+                        work[(2 * n + jc) - 1] = sign(one, q[(jc - 1) + (jc - 1) * ldq]);
                         q[(jc - 1) + (jc - 1) * ldq] = one;
-                        Rlarfg(n + 1 - jc, &z[(jc - 1) + (jc - 1) * ldz], &z[((jc + 1) - 1) + (jc - 1) * ldz], 1, &work[(n + jc) - 1]);
-                        work[(3 * n + jc) - 1] = sign(one, &z[(jc - 1) + (jc - 1) * ldz]);
+                        Rlarfg(n + 1 - jc, z[(jc - 1) + (jc - 1) * ldz], &z[((jc + 1) - 1) + (jc - 1) * ldz], 1, work[(n + jc) - 1]);
+                        work[(3 * n + jc) - 1] = sign(one, z[(jc - 1) + (jc - 1) * ldz]);
                         z[(jc - 1) + (jc - 1) * ldz] = one;
                     }
                     q[(n - 1) + (n - 1) * ldq] = one;
                     work[n - 1] = zero;
-                    work[(3 * n) - 1] = sign(one, dlarnd(2, iseed));
+                    work[(3 * n) - 1] = sign(one, Rlarnd(2, iseed));
                     z[(n - 1) + (n - 1) * ldz] = one;
                     work[(2 * n) - 1] = zero;
-                    work[(4 * n) - 1] = sign(one, dlarnd(2, iseed));
+                    work[(4 * n) - 1] = sign(one, Rlarnd(2, iseed));
                     //
                     //                 Apply the diagonal matrices
                     //
@@ -424,8 +365,8 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 //
                 for (jc = 1; jc <= n; jc = jc + 1) {
                     for (jr = 1; jr <= n; jr = jr + 1) {
-                        a[(jr - 1) + (jc - 1) * lda] = rmagn[kamagn[jtype - 1] - 1] * dlarnd(2, iseed);
-                        b[(jr - 1) + (jc - 1) * ldb] = rmagn[kbmagn[jtype - 1] - 1] * dlarnd(2, iseed);
+                        a[(jr - 1) + (jc - 1) * lda] = rmagn[kamagn[jtype - 1] - 1] * Rlarnd(2, iseed);
+                        b[(jr - 1) + (jc - 1) * ldb] = rmagn[kbmagn[jtype - 1] - 1] * Rlarnd(2, iseed);
                     }
                 }
             }
@@ -448,10 +389,10 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             //
             for (isort = 0; isort <= 1; isort = isort + 1) {
                 if (isort == 0) {
-                    sort = "N";
+                    sort = 'N';
                     rsub = 0;
                 } else {
-                    sort = "S";
+                    sort = 'S';
                     rsub = 5;
                 }
                 //
@@ -461,7 +402,7 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 Rlacpy("Full", n, n, b, lda, t, lda);
                 ntest = 1 + rsub + isort;
                 result[(1 + rsub + isort) - 1] = ulpinv;
-                Rgges3("V", "V", sort, Rlctes, n, s, lda, t, lda, sdim, alphar, alphai, beta, q, ldq, z, ldq, work, lwork, bwork, iinfo);
+                Rgges3("V", "V", &sort, Rlctes, n, s, lda, t, lda, sdim, alphar, alphai, beta, q, ldq, z, ldq, work, lwork, bwork, iinfo);
                 if (iinfo != 0 && iinfo != n + 2) {
                     result[(1 + rsub + isort) - 1] = ulpinv;
                     write(nounit, format_9999), "Rgges3", iinfo, n, jtype, ioldsd;
@@ -527,7 +468,7 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                             }
                         }
                         if (!ilabad) {
-                            Rget53(s[(i1 - 1) + (i1 - 1) * lds], lda, &t[(i1 - 1) + (i1 - 1) * ldt], lda, beta[j - 1], alphar[j - 1], alphai[j - 1], temp2, ierr);
+                            Rget53(&s[(i1 - 1) + (i1 - 1) * lds], lda, &t[(i1 - 1) + (i1 - 1) * ldt], lda, beta[j - 1], alphar[j - 1], alphai[j - 1], temp2, ierr);
                             if (ierr >= 3) {
                                 write(nounit, "(' Rdrges3: Rget53 returned INFO=',i1,' for eigenvalue ',"
                                               "i6,'.',/,9x,'N=',i6,', JTYPE=',i6,', ISEED=(',4(i4,','),i5,"
@@ -557,11 +498,11 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     result[12 - 1] = zero;
                     knteig = 0;
                     for (i = 1; i <= n; i = i + 1) {
-                        if (Rlctesalphar[i - 1], alphai[i - 1], beta[i - 1] || Rlctesalphar[i - 1], -alphai[i - 1], beta[i - 1]) {
+                        if (Rlctes(alphar[i - 1], beta[i - 1]) || Rlctes(alphar[i - 1], beta[i - 1])) {
                             knteig++;
                         }
                         if (i < n) {
-                            if ((Rlctes[(alphar[(i + 1) - 1], alphai[(i + 1) - 1] - 1) + ((beta[(i + 1) - 1]) - 1) * ldRlctes] || Rlctes[(alphar[(i + 1) - 1], -alphai[(i + 1) - 1] - 1) + ((beta[(i + 1) - 1]) - 1) * ldRlctes]) && (!(Rlctesalphar[i - 1], alphai[i - 1], beta[i - 1] || Rlctesalphar[i - 1], -alphai[i - 1], beta[i - 1])) && iinfo != n + 2) {
+			  if ((Rlctes(alphar[(i + 1) - 1], beta[(i + 1) - 1]) || Rlctes(alphar[(i + 1) - 1], beta[(i + 1) - 1])) && (!(Rlctes(alphar[i - 1], beta[i - 1]) || Rlctes(alphar[i - 1], beta[i - 1]))) && iinfo != n + 2) {
                                 result[12 - 1] = ulpinv;
                             }
                         }
@@ -641,13 +582,15 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     }
                     nerrs++;
                     if (result[jr - 1] < 10000.0) {
+		        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
                                       "' result ',i2,' is',0p,a)"),
-                            n, jtype, ioldsd, jr, result(jr);
+			  n, jtype, ioldsd, jr, buf;
                     } else {
+      		        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
                                       "' result ',i2,' is',1p,a)"),
-                            n, jtype, ioldsd, jr, result(jr);
+			  n, jtype, ioldsd, jr, buf;
                     }
                 }
             }

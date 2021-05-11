@@ -43,6 +43,7 @@ void Rdrges(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER lds = lda;
     INTEGER ldt = lda;
     INTEGER ldz = ldq;
+    char buf[1024];
     common cmn;
     common_write write(cmn);
     const INTEGER maxtyp = 26;
