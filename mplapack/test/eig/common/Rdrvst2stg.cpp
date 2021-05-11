@@ -39,15 +39,10 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *d1, REAL *d2, REAL *d3, REAL *d4, REAL *eveigs, REAL *wa1, REAL *wa2, REAL *wa3, REAL *u, INTEGER const ldu, REAL *v, REAL *tau, REAL *z, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
-    FEM_CMN_SVE(Rdrvst2stg);
-    iseed([4]);
-    a([lda * star]);
-    u([ldu * star]);
-    v([ldu * star]);
-    z([ldu * star]);
+    INTEGER ldv = ldu;
+    INTEGER ldz = ldu;
+    common cmn;
     common_write write(cmn);
-    char &srnamt = cmn.srnamt;
-    //
     const INTEGER maxtyp = 18;
     INTEGER *kmagn(sve.kmagn, [maxtyp]);
     INTEGER *kmode(sve.kmode, [maxtyp]);
