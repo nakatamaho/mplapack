@@ -71,7 +71,7 @@ void Rdrges(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     const REAL one = 1.0;
     REAL safmax = 0.0;
     REAL ulpinv = 0.0;
-    REAL rmagn dim1(0, 3);
+    REAL rmagn[3];
     INTEGER ntestt = 0;
     INTEGER nerrs = 0;
     INTEGER nmats = 0;
@@ -206,8 +206,8 @@ void Rdrges(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     for (jsize = 1; jsize <= nsizes; jsize = jsize + 1) {
         n = nn[jsize - 1];
         n1 = max((INTEGER)1, n);
-        rmagn[2 - 1] = safmax * ulp / n1.real();
-        rmagn[3 - 1] = safmin * ulpinv * n1.real();
+        rmagn[2 - 1] = safmax * ulp / castREAL(n1);
+        rmagn[3 - 1] = safmin * ulpinv * castREAL(n1);
         //
         if (nsizes != 1) {
             mtypes = min(maxtyp, ntypes);
@@ -306,22 +306,22 @@ void Rdrges(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     for (jc = 1; jc <= n - 1; jc = jc + 1) {
                         for (jr = jc; jr <= n; jr = jr + 1) {
-                            q[(jr - 1) + (jc - 1) * ldq] = dlarnd(3, iseed);
-                            z[(jr - 1) + (jc - 1) * ldz] = dlarnd(3, iseed);
+                            q[(jr - 1) + (jc - 1) * ldq] = Rlarnd(3, iseed);
+                            z[(jr - 1) + (jc - 1) * ldz] = Rlarnd(3, iseed);
                         }
-                        Rlarfg(n + 1 - jc, &q[(jc - 1) + (jc - 1) * ldq], &q[((jc + 1) - 1) + (jc - 1) * ldq], 1, &work[jc - 1]);
-                        work[(2 * n + jc) - 1] = sign(one, &q[(jc - 1) + (jc - 1) * ldq]);
+                        Rlarfg(n + 1 - jc, q[(jc - 1) + (jc - 1) * ldq], &q[((jc + 1) - 1) + (jc - 1) * ldq], 1, work[jc - 1]);
+                        work[(2 * n + jc) - 1] = sign(one, q[(jc - 1) + (jc - 1) * ldq]);
                         q[(jc - 1) + (jc - 1) * ldq] = one;
-                        Rlarfg(n + 1 - jc, &z[(jc - 1) + (jc - 1) * ldz], &z[((jc + 1) - 1) + (jc - 1) * ldz], 1, &work[(n + jc) - 1]);
-                        work[(3 * n + jc) - 1] = sign(one, &z[(jc - 1) + (jc - 1) * ldz]);
+                        Rlarfg(n + 1 - jc, z[(jc - 1) + (jc - 1) * ldz], &z[((jc + 1) - 1) + (jc - 1) * ldz], 1, work[(n + jc) - 1]);
+                        work[(3 * n + jc) - 1] = sign(one, z[(jc - 1) + (jc - 1) * ldz]);
                         z[(jc - 1) + (jc - 1) * ldz] = one;
                     }
                     q[(n - 1) + (n - 1) * ldq] = one;
                     work[n - 1] = zero;
-                    work[(3 * n) - 1] = sign(one, dlarnd(2, iseed));
+                    work[(3 * n) - 1] = sign(one, Rlarnd(2, iseed));
                     z[(n - 1) + (n - 1) * ldz] = one;
                     work[(2 * n) - 1] = zero;
-                    work[(4 * n) - 1] = sign(one, dlarnd(2, iseed));
+                    work[(4 * n) - 1] = sign(one, Rlarnd(2, iseed));
                     //
                     //                 Apply the diagonal matrices
                     //
@@ -354,8 +354,8 @@ void Rdrges(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 for (jc = 1; jc <= n; jc = jc + 1) {
                     for (jr = 1; jr <= n; jr = jr + 1) {
-                        a[(jr - 1) + (jc - 1) * lda] = rmagn[kamagn[jtype - 1] - 1] * dlarnd(2, iseed);
-                        b[(jr - 1) + (jc - 1) * ldb] = rmagn[kbmagn[jtype - 1] - 1] * dlarnd(2, iseed);
+                        a[(jr - 1) + (jc - 1) * lda] = rmagn[kamagn[jtype - 1] - 1] * Rlarnd(2, iseed);
+                        b[(jr - 1) + (jc - 1) * ldb] = rmagn[kbmagn[jtype - 1] - 1] * Rlarnd(2, iseed);
                     }
                 }
             }
@@ -378,10 +378,10 @@ void Rdrges(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             for (isort = 0; isort <= 1; isort = isort + 1) {
                 if (isort == 0) {
-                    sort = "N";
+                    sort = 'N';
                     rsub = 0;
                 } else {
-                    sort = "S";
+                    sort = 'S';
                     rsub = 5;
                 }
                 //
@@ -391,7 +391,7 @@ void Rdrges(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Rlacpy("Full", n, n, b, lda, t, lda);
                 ntest = 1 + rsub + isort;
                 result[(1 + rsub + isort) - 1] = ulpinv;
-                Rgges("V", "V", sort, Rlctes, n, s, lda, t, lda, sdim, alphar, alphai, beta, q, ldq, z, ldq, work, lwork, bwork, iinfo);
+                Rgges("V", "V", &sort, Rlctes, n, s, lda, t, lda, sdim, alphar, alphai, beta, q, ldq, z, ldq, work, lwork, bwork, iinfo);
                 if (iinfo != 0 && iinfo != n + 2) {
                     result[(1 + rsub + isort) - 1] = ulpinv;
                     write(nounit, format_9999), "Rgges", iinfo, n, jtype, ioldsd;
