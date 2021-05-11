@@ -39,34 +39,14 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, REAL *d1, REAL *d2, REAL *d3, REAL *wa1, REAL *wa2, REAL *wa3, COMPLEX *u, INTEGER const ldu, COMPLEX *v, COMPLEX *tau, COMPLEX *z, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
-    FEM_CMN_SVE(Cdrvst2stg);
-    iseed([4]);
-    a([lda * star]);
-    u([ldu * star]);
-    v([ldu * star]);
-    z([ldu * star]);
+    INTEGER ldv = ldu;
+    INTEGER ldz = ldu;
+    common cmn;
     common_write write(cmn);
     const INTEGER maxtyp = 18;
-    INTEGER *kmagn(sve.kmagn, [maxtyp]);
-    INTEGER *kmode(sve.kmode, [maxtyp]);
-    INTEGER *ktype(sve.ktype, [maxtyp]);
-    if (is_called_first_time) {
-        data((values, 1, 2, 5 * datum(4), 5 * datum(5), 3 * datum(8), 3 * datum(9))), ktype;
-        {
-            data_values data;
-            data.values, 2 * datum(1), 1, 1, 1, 2, 3, 1, 1;
-            data.values, 1, 2, 3, 1, 2, 3, 1, 2;
-            data.values, 3;
-            data, kmagn;
-        }
-        {
-            data_values data;
-            data.values, 2 * datum(0), 4, 3, 1, 4, 4, 4, 3;
-            data.values, 1, 4, 4, 0, 0, 0, 4, 4;
-            data.values, 4;
-            data, kmode;
-        }
-    }
+    INTEGER ktype[18] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9};
+    INTEGER kmagn[18] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 2, 3};
+    INTEGER kmode[18] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 4, 4, 4};
     INTEGER ntestt = 0;
     bool badnn = false;
     INTEGER nmax = 0;
@@ -225,7 +205,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     for (jsize = 1; jsize <= nsizes; jsize = jsize + 1) {
         n = nn[jsize - 1];
         if (n > 0) {
-            lgn = int(log(n.real()) / log(two));
+            lgn = castINTEGER(log(castREAL(n)) / log(two));
             if (pow(2, lgn) < n) {
                 lgn++;
             }
@@ -240,7 +220,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             lrwedc = 8;
             liwedc = 8;
         }
-        aninv = one / (max((INTEGER)1, n)).real();
+        aninv = one / castREAL(max((INTEGER)1, n));
         //
         if (nsizes != 1) {
             mtypes = min(maxtyp, ntypes);
@@ -331,32 +311,32 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 //              Diagonal Matrix, [Eigen]values Specified
                 //
-                zlatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, 0, 0, "N", a, lda, work, iinfo);
+                Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, 0, 0, "N", a, lda, work, iinfo);
                 //
             } else if (itype == 5) {
                 //
                 //              Hermitian, eigenvalues specified
                 //
-                zlatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, n, n, "N", a, lda, work, iinfo);
+                Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, n, n, "N", a, lda, work, iinfo);
                 //
             } else if (itype == 7) {
                 //
                 //              Diagonal, random eigenvalues
                 //
-                zlatmr(n, n, "S", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
+                Clatmr(n, n, "S", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 8) {
                 //
                 //              Hermitian, random eigenvalues
                 //
-                zlatmr(n, n, "S", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
+                Clatmr(n, n, "S", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 9) {
                 //
                 //              Hermitian banded, eigenvalues specified
                 //
-                ihbw = int((n - 1) * dlarnd(1, iseed3));
-                zlatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, ihbw, ihbw, "Z", u, ldu, work, iinfo);
+                ihbw = castINTEGER((n - 1) * Rlarnd(1, iseed3));
+                Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, ihbw, ihbw, "Z", u, ldu, work, iinfo);
                 //
                 //              Store as dense matrix for most routines.
                 //
@@ -387,8 +367,8 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 il = 1;
                 iu = n;
             } else {
-                il = 1 + int((n - 1) * dlarnd(1, iseed2));
-                iu = 1 + int((n - 1) * dlarnd(1, iseed2));
+                il = 1 + castINTEGER((n - 1) * Rlarnd(1, iseed2));
+                iu = 1 + castINTEGER((n - 1) * Rlarnd(1, iseed2));
                 if (il > iu) {
                     itemp = il;
                     il = iu;
@@ -401,9 +381,9 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             for (iuplo = 0; iuplo <= 1; iuplo = iuplo + 1) {
                 if (iuplo == 0) {
-                    uplo = "L";
+                    uplo = 'L';
                 } else {
-                    uplo = "U";
+                    uplo = 'U';
                 }
                 //
                 //              Call Cheevd and CHEEVX.
@@ -411,9 +391,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Clacpy(" ", n, n, a, lda, v, ldu);
                 //
                 ntest++;
-                Cheevd("V", uplo, n, a, ldu, d1, work, lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
+                Cheevd("V", &uplo, n, a, ldu, d1, work, lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cheevd(V," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Cheevd(V,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Cheevd(V,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -427,14 +410,17 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 //              Do tests 1 and 2.
                 //
-                Chet21(1, uplo, n, 0, v, ldu, d1, d2, a, ldu, z, ldu, tau, work, rwork, result[ntest - 1]);
+                Chet21(1, &uplo, n, 0, v, ldu, d1, d2, a, ldu, z, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
                 ntest += 2;
-                Cheevd_2stage("N", uplo, n, a, ldu, d3, work, lwork, rwork, lrwedc, iwork, liwedc, iinfo);
+                Cheevd_2stage("N", &uplo, n, a, ldu, d3, work, lwork, rwork, lrwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cheevd_2stage(N," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Cheevd_2stage(N,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Cheevd_2stage(N,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -477,9 +463,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     vu = one;
                 }
                 //
-                Cheevx("V", "A", uplo, n, a, ldu, vl, vu, il, iu, abstol, m, wa1, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Cheevx("V", "A", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m, wa1, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cheevx(V,A," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Cheevx(V,A,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Cheevx(V,A,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -495,12 +484,15 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
-                Chet21(1, uplo, n, 0, a, ldu, wa1, d2, z, ldu, v, ldu, tau, work, rwork, result[ntest - 1]);
+                Chet21(1, &uplo, n, 0, a, ldu, wa1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
-                Cheevx_2stage("N", "A", uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Cheevx_2stage("N", "A", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cheevx_2stage(N,A," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Cheevx_2stage(N,A,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Cheevx_2stage(N,A,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -525,9 +517,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 ntest++;
                 //
-                Cheevx("V", "I", uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Cheevx("V", "I", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cheevx(V,I," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Cheevx(V,I,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Cheevx(V,I,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -541,13 +536,16 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
-                Chet22(1, uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, result[ntest - 1]);
+                Chet22(1, &uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
                 //
-                Cheevx_2stage("N", "I", uplo, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Cheevx_2stage("N", "I", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cheevx_2stage(N,I," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Cheevx_2stage(N,I,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Cheevx_2stage(N,I,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -573,9 +571,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 ntest++;
                 //
-                Cheevx("V", "V", uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Cheevx("V", "V", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cheevx(V,V," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Cheevx(V,V,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Cheevx(V,V,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -589,13 +590,16 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
-                Chet22(1, uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, result[ntest - 1]);
+                Chet22(1, &uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
                 //
-                Cheevx_2stage("N", "V", uplo, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Cheevx_2stage("N", "V", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cheevx_2stage(N,V," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Cheevx_2stage(N,V,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Cheevx_2stage(N,V,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -630,7 +634,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //              Load array WORK with the upper or lower triangular
                 //              part of the matrix in packed form.
                 //
-                if (iuplo == 1) {
+                if (i & uplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -650,9 +654,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 ntest++;
                 indwrk = n * (n + 1) / 2 + 1;
-                Chpevd("V", uplo, n, work, d1, z, ldu, &work[indwrk - 1], lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
+                Chpevd("V", &uplo, n, work, d1, z, ldu, &work[indwrk - 1], lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Chpevd(V," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Chpevd(V,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Chpevd(V,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -666,9 +673,9 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 //              Do tests 13 and 14.
                 //
-                Chet21(1, uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, result[ntest - 1]);
+                Chet21(1, &uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
-                if (iuplo == 1) {
+                if (i & uplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -688,9 +695,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 ntest += 2;
                 indwrk = n * (n + 1) / 2 + 1;
-                Chpevd("N", uplo, n, work, d3, z, ldu, &work[indwrk - 1], lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
+                Chpevd("N", &uplo, n, work, d3, z, ldu, &work[indwrk - 1], lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Chpevd(N," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Chpevd(N,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Chpevd(N,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -714,7 +724,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //              of the matrix in packed form.
             //
             statement_270:
-                if (iuplo == 1) {
+                if (i & uplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -752,9 +762,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     vu = one;
                 }
                 //
-                Chpevx("V", "A", uplo, n, work, vl, vu, il, iu, abstol, m, wa1, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chpevx("V", "A", &uplo, n, work, vl, vu, il, iu, abstol, m, wa1, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Chpevx(V,A," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Chpevx(V,A,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Chpevx(V,A,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -768,11 +781,11 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 //              Do tests 16 and 17.
                 //
-                Chet21(1, uplo, n, 0, a, ldu, wa1, d2, z, ldu, v, ldu, tau, work, rwork, result[ntest - 1]);
+                Chet21(1, &uplo, n, 0, a, ldu, wa1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
                 //
-                if (iuplo == 1) {
+                if (i & uplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -790,9 +803,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                Chpevx("N", "A", uplo, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chpevx("N", "A", &uplo, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Chpevx(N,A," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Chpevx(N,A,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Chpevx(N,A,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -814,7 +830,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             statement_370:
                 ntest++;
-                if (iuplo == 1) {
+                if (i & uplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -832,9 +848,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                Chpevx("V", "I", uplo, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chpevx("V", "I", &uplo, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Chpevx(V,I," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Chpevx(V,I,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Chpevx(V,I,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -848,11 +867,11 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 //              Do tests 19 and 20.
                 //
-                Chet22(1, uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, result[ntest - 1]);
+                Chet22(1, &uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
                 //
-                if (iuplo == 1) {
+                if (i & uplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -870,9 +889,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                Chpevx("N", "I", uplo, n, work, vl, vu, il, iu, abstol, m3, wa3, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chpevx("N", "I", &uplo, n, work, vl, vu, il, iu, abstol, m3, wa3, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Chpevx(N,I," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Chpevx(N,I,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Chpevx(N,I,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -895,7 +917,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             statement_460:
                 ntest++;
-                if (iuplo == 1) {
+                if (i & uplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -913,9 +935,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                Chpevx("V", "V", uplo, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chpevx("V", "V", &uplo, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Chpevx(V,V," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Chpevx(V,V,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Chpevx(V,V,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -929,11 +954,11 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 //              Do tests 22 and 23.
                 //
-                Chet22(1, uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, result[ntest - 1]);
+                Chet22(1, &uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
                 //
-                if (iuplo == 1) {
+                if (i & uplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -951,9 +976,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                Chpevx("N", "V", uplo, n, work, vl, vu, il, iu, abstol, m3, wa3, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chpevx("N", "V", &uplo, n, work, vl, vu, il, iu, abstol, m3, wa3, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Chpevx(N,V," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Chpevx(N,V,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Chpevx(N,V,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -994,7 +1022,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //              Load array V with the upper or lower triangular part
                 //              of the matrix in band form.
                 //
-                if (iuplo == 1) {
+                if (i & uplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
@@ -1009,9 +1037,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 //
                 ntest++;
-                Chbevd("V", uplo, n, kd, v, ldu, d1, z, ldu, work, lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
+                Chbevd("V", &uplo, n, kd, v, ldu, d1, z, ldu, work, lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9998), "Chbevd(V," + uplo + const char *(")"), iinfo, n, kd, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9998), "Chbevd(V,U)", iinfo, n, kd, jtype, ioldsd;
+                    else
+                        write(nounit, format_9998), "Chbevd(V,L)", iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1025,9 +1056,9 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 //              Do tests 25 and 26.
                 //
-                Chet21(1, uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, result[ntest - 1]);
+                Chet21(1, &uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
-                if (iuplo == 1) {
+                if (i & uplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
@@ -1042,9 +1073,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 //
                 ntest += 2;
-                Chbevd_2stage("N", uplo, n, kd, v, ldu, d3, z, ldu, work, lwork, rwork, lrwedc, iwork, liwedc, iinfo);
+                Chbevd_2stage("N", &uplo, n, kd, v, ldu, d3, z, ldu, work, lwork, rwork, lrwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9998), "Chbevd_2stage(N," + uplo + const char *(")"), iinfo, n, kd, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9998), "Chbevd_2stage(N,U)", iinfo, n, kd, jtype, ioldsd;
+                    else
+                        write(nounit, format_9998), "Chbevd_2stage(N,L)", iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1068,7 +1102,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //              of the matrix in band form.
             //
             statement_650:
-                if (iuplo == 1) {
+                if (i & uplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
@@ -1083,9 +1117,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 //
                 ntest++;
-                Chbevx("V", "A", uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m, wa1, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chbevx("V", "A", &uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m, wa1, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Chbevx(V,A," + uplo + const char *(")"), iinfo, n, kd, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Chbevx(V,A,U)", iinfo, n, kd, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Chbevx(V,A,L)", iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1099,11 +1136,11 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 //              Do tests 28 and 29.
                 //
-                Chet21(1, uplo, n, 0, a, ldu, wa1, d2, z, ldu, v, ldu, tau, work, rwork, result[ntest - 1]);
+                Chet21(1, &uplo, n, 0, a, ldu, wa1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
                 //
-                if (iuplo == 1) {
+                if (i & uplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
@@ -1117,9 +1154,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                Chbevx_2stage("N", "A", uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chbevx_2stage("N", "A", &uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9998), "Chbevx_2stage(N,A," + uplo + const char *(")"), iinfo, n, kd, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9998), "Chbevx_2stage(N,A,U)", iinfo, n, kd, jtype, ioldsd;
+                    else
+                        write(nounit, format_9998), "Chbevx_2stage(N,A,L)", iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1144,7 +1184,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             statement_750:
                 ntest++;
-                if (iuplo == 1) {
+                if (i & uplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
@@ -1158,9 +1198,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                Chbevx("V", "I", uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chbevx("V", "I", &uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9998), "Chbevx(V,I," + uplo + const char *(")"), iinfo, n, kd, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9998), "Chbevx(V,I,U)", iinfo, n, kd, jtype, ioldsd;
+                    else
+                        write(nounit, format_9998), "Chbevx(V,I,L)", iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1174,11 +1217,11 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 //              Do tests 31 and 32.
                 //
-                Chet22(1, uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, result[ntest - 1]);
+                Chet22(1, &uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
                 //
-                if (iuplo == 1) {
+                if (i & uplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
@@ -1191,9 +1234,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                 }
-                Chbevx_2stage("N", "I", uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chbevx_2stage("N", "I", &uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9998), "Chbevx_2stage(N,I," + uplo + const char *(")"), iinfo, n, kd, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9998), "Chbevx_2stage(N,I,U)", iinfo, n, kd, jtype, ioldsd;
+                    else
+                        write(nounit, format_9998), "Chbevx_2stage(N,I,L)", iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1219,7 +1265,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             statement_840:
                 ntest++;
-                if (iuplo == 1) {
+                if (i & uplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
@@ -1232,9 +1278,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                 }
-                Chbevx("V", "V", uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chbevx("V", "V", &uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9998), "Chbevx(V,V," + uplo + const char *(")"), iinfo, n, kd, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9998), "Chbevx(V,V,U)", iinfo, n, kd, jtype, ioldsd;
+                    else
+                        write(nounit, format_9998), "Chbevx(V,V,L)", iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1248,11 +1297,11 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 //              Do tests 34 and 35.
                 //
-                Chet22(1, uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, result[ntest - 1]);
+                Chet22(1, &uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
                 //
-                if (iuplo == 1) {
+                if (i & uplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
@@ -1265,9 +1314,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                 }
-                Chbevx_2stage("N", "V", uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chbevx_2stage("N", "V", &uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9998), "Chbevx_2stage(N,V," + uplo + const char *(")"), iinfo, n, kd, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9998), "Chbevx_2stage(N,V,U)", iinfo, n, kd, jtype, ioldsd;
+                    else
+                        write(nounit, format_9998), "Chbevx_2stage(N,V,L)", iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1300,9 +1352,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Clacpy(" ", n, n, a, lda, v, ldu);
                 //
                 ntest++;
-                Cheev("V", uplo, n, a, ldu, d1, work, lwork, rwork, iinfo);
+                Cheev("V", &uplo, n, a, ldu, d1, work, lwork, rwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cheev(V," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Cheev(V,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Cheev(V,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1316,14 +1371,17 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 //              Do tests 37 and 38
                 //
-                Chet21(1, uplo, n, 0, v, ldu, d1, d2, a, ldu, z, ldu, tau, work, rwork, result[ntest - 1]);
+                Chet21(1, &uplo, n, 0, v, ldu, d1, d2, a, ldu, z, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
                 ntest += 2;
-                Cheev_2stage("N", uplo, n, a, ldu, d3, work, lwork, rwork, iinfo);
+                Cheev_2stage("N", &uplo, n, a, ldu, d3, work, lwork, rwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cheev_2stage(N," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Cheev_2stage(N,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Cheev_2stage(N,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1352,7 +1410,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //              Load array WORK with the upper or lower triangular
                 //              part of the matrix in packed form.
                 //
-                if (iuplo == 1) {
+                if (i & uplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -1372,9 +1430,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 ntest++;
                 indwrk = n * (n + 1) / 2 + 1;
-                Chpev("V", uplo, n, work, d1, z, ldu, &work[indwrk - 1], rwork, iinfo);
+                Chpev("V", &uplo, n, work, d1, z, ldu, &work[indwrk - 1], rwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Chpev(V," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Chpev(V,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Chpev(V,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1388,9 +1449,9 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 //              Do tests 40 and 41.
                 //
-                Chet21(1, uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, result[ntest - 1]);
+                Chet21(1, &uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
-                if (iuplo == 1) {
+                if (i & uplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -1410,9 +1471,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 ntest += 2;
                 indwrk = n * (n + 1) / 2 + 1;
-                Chpev("N", uplo, n, work, d3, z, ldu, &work[indwrk - 1], rwork, iinfo);
+                Chpev("N", &uplo, n, work, d3, z, ldu, &work[indwrk - 1], rwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Chpev(N," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Chpev(N,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Chpev(N,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1447,7 +1511,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //              Load array V with the upper or lower triangular part
                 //              of the matrix in band form.
                 //
-                if (iuplo == 1) {
+                if (i & uplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
@@ -1462,9 +1526,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 //
                 ntest++;
-                Chbev("V", uplo, n, kd, v, ldu, d1, z, ldu, work, rwork, iinfo);
+                Chbev("V", &uplo, n, kd, v, ldu, d1, z, ldu, work, rwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9998), "Chbev(V," + uplo + const char *(")"), iinfo, n, kd, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9998), "Chbev(V,U)", iinfo, n, kd, jtype, ioldsd;
+                    else
+                        write(nounit, format_9998), "Chbev(V,L)", iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1478,9 +1545,9 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 //              Do tests 43 and 44.
                 //
-                Chet21(1, uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, result[ntest - 1]);
+                Chet21(1, &uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
-                if (iuplo == 1) {
+                if (i & uplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
@@ -1495,9 +1562,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 //
                 ntest += 2;
-                Chbev_2stage("N", uplo, n, kd, v, ldu, d3, z, ldu, work, lwork, rwork, iinfo);
+                Chbev_2stage("N", &uplo, n, kd, v, ldu, d3, z, ldu, work, lwork, rwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9998), "Chbev_2stage(N," + uplo + const char *(")"), iinfo, n, kd, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9998), "Chbev_2stage(N,U)", iinfo, n, kd, jtype, ioldsd;
+                    else
+                        write(nounit, format_9998), "Chbev_2stage(N,L)", iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1521,9 +1591,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Clacpy(" ", n, n, a, lda, v, ldu);
                 ntest++;
-                Cheevr("V", "A", uplo, n, a, ldu, vl, vu, il, iu, abstol, m, wa1, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
+                Cheevr("V", "A", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m, wa1, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cheevr(V,A," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Cheevr(V,A,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Cheevr(V,A,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1539,12 +1612,15 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
-                Chet21(1, uplo, n, 0, a, ldu, wa1, d2, z, ldu, v, ldu, tau, work, rwork, result[ntest - 1]);
+                Chet21(1, &uplo, n, 0, a, ldu, wa1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
-                Cheevr_2stage("N", "A", uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
+                Cheevr_2stage("N", "A", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cheevr_2stage(N,A," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Cheevr_2stage(N,A,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Cheevr_2stage(N,A,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1568,9 +1644,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 ntest++;
                 Clacpy(" ", n, n, v, ldu, a, lda);
-                Cheevr("V", "I", uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
+                Cheevr("V", "I", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cheevr(V,I," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Cheevr(V,I,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Cheevr(V,I,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1586,13 +1665,16 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
-                Chet22(1, uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, result[ntest - 1]);
+                Chet22(1, &uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
                 Clacpy(" ", n, n, v, ldu, a, lda);
-                Cheevr_2stage("N", "I", uplo, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
+                Cheevr_2stage("N", "I", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cheevr_2stage(N,I," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Cheevr_2stage(N,I,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Cheevr_2stage(N,I,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1611,9 +1693,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 ntest++;
                 Clacpy(" ", n, n, v, ldu, a, lda);
-                Cheevr("V", "V", uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
+                Cheevr("V", "V", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cheevr(V,V," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Cheevr(V,V,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Cheevr(V,V,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1629,13 +1714,16 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
-                Chet22(1, uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, result[ntest - 1]);
+                Chet22(1, &uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
                 Clacpy(" ", n, n, v, ldu, a, lda);
-                Cheevr_2stage("N", "V", uplo, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
+                Cheevr_2stage("N", "V", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cheevr_2stage(N,V," + uplo + const char *(")"), iinfo, n, jtype, ioldsd;
+                    if (Mlsame(&uplo, "U"))
+                        write(nounit, format_9999), "Cheevr_2stage(N,V,U)", iinfo, n, jtype, ioldsd;
+                    else
+                        write(nounit, format_9999), "Cheevr_2stage(N,V,L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
