@@ -39,46 +39,6 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
-bool _Rlctsx(REAL const /* ar */, REAL const /* ai */, REAL const /* beta */) {
-    bool return_value = true;
-    return return_value;
-    //
-    //     End of Rlctsx
-    //
-}
-
-bool _Rlctes(REAL const zr, REAL const d) {
-    bool return_value = false;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    const REAL zero = 0.0;
-    const REAL one = 1.0;
-    if (d == zero) {
-        return_value = (zr < zero);
-    } else {
-        return_value = (sign(one, zr) != sign(one, d));
-    }
-    //
-    return return_value;
-    //
-    //     End of Rlctes
-    //
-}
-
 void Rerrgg(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
@@ -572,117 +532,117 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         //        Rgges
         //
         infot = 1;
-        Rgges("/", "N", "S", _Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges("/", "N", "S", Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         infot = 2;
-        Rgges("N", "/", "S", _Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges("N", "/", "S", Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         infot = 3;
-        Rgges("N", "V", "/", _Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges("N", "V", "/", Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         infot = 5;
-        Rgges("N", "V", "S", _Rlctes, -1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges("N", "V", "S", Rlctes, -1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         infot = 7;
-        Rgges("N", "V", "S", _Rlctes, 1, a, 0, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges("N", "V", "S", Rlctes, 1, a, 0, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         infot = 9;
-        Rgges("N", "V", "S", _Rlctes, 1, a, 1, b, 0, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges("N", "V", "S", Rlctes, 1, a, 1, b, 0, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         infot = 15;
-        Rgges("N", "V", "S", _Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 0, u, 1, w, 1, bw, info);
+        Rgges("N", "V", "S", Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 0, u, 1, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         infot = 15;
-        Rgges("V", "V", "S", _Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 1, u, 2, w, 1, bw, info);
+        Rgges("V", "V", "S", Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 1, u, 2, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         infot = 17;
-        Rgges("N", "V", "S", _Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 0, w, 1, bw, info);
+        Rgges("N", "V", "S", Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 0, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         infot = 17;
-        Rgges("V", "V", "S", _Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 1, w, 1, bw, info);
+        Rgges("V", "V", "S", Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 1, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         infot = 19;
-        Rgges("V", "V", "S", _Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 2, w, 1, bw, info);
+        Rgges("V", "V", "S", Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 2, w, 1, bw, info);
         chkxer("Rgges ", infot, nout, lerr, ok);
         nt += 11;
         //
         //        Rgges3
         //
         infot = 1;
-        Rgges3("/", "N", "S", _Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges3("/", "N", "S", Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         infot = 2;
-        Rgges3("N", "/", "S", _Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges3("N", "/", "S", Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         infot = 3;
-        Rgges3("N", "V", "/", _Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges3("N", "V", "/", Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         infot = 5;
-        Rgges3("N", "V", "S", _Rlctes, -1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges3("N", "V", "S", Rlctes, -1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         infot = 7;
-        Rgges3("N", "V", "S", _Rlctes, 1, a, 0, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges3("N", "V", "S", Rlctes, 1, a, 0, b, 1, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         infot = 9;
-        Rgges3("N", "V", "S", _Rlctes, 1, a, 1, b, 0, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
+        Rgges3("N", "V", "S", Rlctes, 1, a, 1, b, 0, sdim, r1, r2, r3, q, 1, u, 1, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         infot = 15;
-        Rgges3("N", "V", "S", _Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 0, u, 1, w, 1, bw, info);
+        Rgges3("N", "V", "S", Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 0, u, 1, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         infot = 15;
-        Rgges3("V", "V", "S", _Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 1, u, 2, w, 1, bw, info);
+        Rgges3("V", "V", "S", Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 1, u, 2, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         infot = 17;
-        Rgges3("N", "V", "S", _Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 0, w, 1, bw, info);
+        Rgges3("N", "V", "S", Rlctes, 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 0, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         infot = 17;
-        Rgges3("V", "V", "S", _Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 1, w, 1, bw, info);
+        Rgges3("V", "V", "S", Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 1, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         infot = 19;
-        Rgges3("V", "V", "S", _Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 2, w, 1, bw, info);
+        Rgges3("V", "V", "S", Rlctes, 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 2, w, 1, bw, info);
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         nt += 11;
         //
         //        Rggesx
         //
         infot = 1;
-        Rggesx("/", "N", "S", _Rlctsx, "N", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("/", "N", "S", Rlctsx, "N", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 2;
-        Rggesx("N", "/", "S", _Rlctsx, "N", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("N", "/", "S", Rlctsx, "N", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 3;
-        Rggesx("V", "V", "/", _Rlctsx, "N", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("V", "V", "/", Rlctsx, "N", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 5;
-        Rggesx("V", "V", "S", _Rlctsx, "/", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("V", "V", "S", Rlctsx, "/", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 6;
-        Rggesx("V", "V", "S", _Rlctsx, "B", -1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("V", "V", "S", Rlctsx, "B", -1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 8;
-        Rggesx("V", "V", "S", _Rlctsx, "B", 1, a, 0, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("V", "V", "S", Rlctsx, "B", 1, a, 0, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 10;
-        Rggesx("V", "V", "S", _Rlctsx, "B", 1, a, 1, b, 0, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("V", "V", "S", Rlctsx, "B", 1, a, 1, b, 0, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 16;
-        Rggesx("V", "V", "S", _Rlctsx, "B", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 0, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("V", "V", "S", Rlctsx, "B", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 0, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 16;
-        Rggesx("V", "V", "S", _Rlctsx, "B", 2, a, 2, b, 2, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("V", "V", "S", Rlctsx, "B", 2, a, 2, b, 2, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 18;
-        Rggesx("V", "V", "S", _Rlctsx, "B", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 0, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("V", "V", "S", Rlctsx, "B", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 0, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 18;
-        Rggesx("V", "V", "S", _Rlctsx, "B", 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("V", "V", "S", Rlctsx, "B", 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 1, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 22;
-        Rggesx("V", "V", "S", _Rlctsx, "B", 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 2, rce, rcv, w, 1, iw, 1, bw, info);
+        Rggesx("V", "V", "S", Rlctsx, "B", 2, a, 2, b, 2, sdim, r1, r2, r3, q, 2, u, 2, rce, rcv, w, 1, iw, 1, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         infot = 24;
-        Rggesx("V", "V", "S", _Rlctsx, "V", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 32, iw, 0, bw, info);
+        Rggesx("V", "V", "S", Rlctsx, "V", 1, a, 1, b, 1, sdim, r1, r2, r3, q, 1, u, 1, rce, rcv, w, 32, iw, 0, bw, info);
         chkxer("Rggesx", infot, nout, lerr, ok);
         nt += 13;
         //

@@ -79,7 +79,7 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //
         //        Return a value from the common block.
         //
-        return_value = iparms[ispec - 1];
+        return_value = iparms(ispec);
         //
     } else if (ispec == 10) {
         //
@@ -105,7 +105,7 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //
         //     12 <= ISPEC <= 16: xHSEQR or one of its subroutines.
         //
-        return_value = iMparms(ispec);
+        return_value = iparms[ispec - 1];
         //         WRITE(*,*) 'ISPEC = ',ISPEC,' iMlaenv =',iMlaenv
         //         iMlaenv = IPARMQ( ISPEC, NAME, OPTS, N1, N2, N3, N4 )
         //
@@ -114,9 +114,9 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //     17 <= ISPEC <= 21: 2stage eigenvalues SVD routines.
         //
         if (ispec == 17) {
-            return_value = iMparms(1);
+            return_value = iparms[1 - 1];
         } else {
-            return_value = iMparam2stage(ispec, name, opts, n1, n2, n3, n4);
+            return_value = iparam2stage(ispec, name, opts, n1, n2, n3, n4);
         }
         //
     } else {

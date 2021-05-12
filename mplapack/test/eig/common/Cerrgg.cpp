@@ -39,35 +39,6 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
-bool _Clctsx(COMPLEX const /* alpha */, COMPLEX const /* beta */) {
-    bool return_value = false;
-    return return_value;
-}
-bool _Clctes(COMPLEX const z, COMPLEX const d) {
-    bool return_value = false;
-    const COMPLEX czero = COMPLEX(0.0, 0.0);
-    const REAL zero = 0.0;
-    const REAL one = 1.0;
-    REAL zmax = 0.0;
-    if (d == czero) {
-        return_value = (z.real() < zero);
-    } else {
-        if (z.real() == zero || d.real() == zero) {
-            return_value = (sign(one, z.imag()) != sign(one, d.imag()));
-        } else if (z.imag() == zero || d.imag() == zero) {
-            return_value = (sign(one, z.real()) != sign(one, d.real()));
-        } else {
-            zmax = max(abs(z.real()), abs(z.imag()));
-            return_value = ((z.real() / zmax) * d.real() + (z.imag() / zmax) * d.imag() < zero);
-        }
-    }
-    //
-    return return_value;
-    //
-    //     End of Clctes
-    //
-}
-
 void Cerrgg(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
@@ -563,117 +534,117 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //        Cgges
         //
         infot = 1;
-        Cgges("/", "N", "S", _Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges("/", "N", "S", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         infot = 2;
-        Cgges("N", "/", "S", _Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges("N", "/", "S", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         infot = 3;
-        Cgges("N", "V", "/", _Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges("N", "V", "/", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         infot = 5;
-        Cgges("N", "V", "S", _Clctes, -1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges("N", "V", "S", Clctes, -1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         infot = 7;
-        Cgges("N", "V", "S", _Clctes, 1, a, 0, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges("N", "V", "S", Clctes, 1, a, 0, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         infot = 9;
-        Cgges("N", "V", "S", _Clctes, 1, a, 1, b, 0, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges("N", "V", "S", Clctes, 1, a, 1, b, 0, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         infot = 14;
-        Cgges("N", "V", "S", _Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 0, u, 1, w, 1, rw, bw, info);
+        Cgges("N", "V", "S", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 0, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         infot = 14;
-        Cgges("V", "V", "S", _Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 1, u, 2, w, 1, rw, bw, info);
+        Cgges("V", "V", "S", Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 1, u, 2, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         infot = 16;
-        Cgges("N", "V", "S", _Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 0, w, 1, rw, bw, info);
+        Cgges("N", "V", "S", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 0, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         infot = 16;
-        Cgges("V", "V", "S", _Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 1, w, 1, rw, bw, info);
+        Cgges("V", "V", "S", Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         infot = 18;
-        Cgges("V", "V", "S", _Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 2, w, 1, rw, bw, info);
+        Cgges("V", "V", "S", Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 2, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
         nt += 11;
         //
         //        Cgges3
         //
         infot = 1;
-        Cgges3("/", "N", "S", _Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges3("/", "N", "S", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         infot = 2;
-        Cgges3("N", "/", "S", _Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges3("N", "/", "S", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         infot = 3;
-        Cgges3("N", "V", "/", _Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges3("N", "V", "/", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         infot = 5;
-        Cgges3("N", "V", "S", _Clctes, -1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges3("N", "V", "S", Clctes, -1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         infot = 7;
-        Cgges3("N", "V", "S", _Clctes, 1, a, 0, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges3("N", "V", "S", Clctes, 1, a, 0, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         infot = 9;
-        Cgges3("N", "V", "S", _Clctes, 1, a, 1, b, 0, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
+        Cgges3("N", "V", "S", Clctes, 1, a, 1, b, 0, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         infot = 14;
-        Cgges3("N", "V", "S", _Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 0, u, 1, w, 1, rw, bw, info);
+        Cgges3("N", "V", "S", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 0, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         infot = 14;
-        Cgges3("V", "V", "S", _Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 1, u, 2, w, 1, rw, bw, info);
+        Cgges3("V", "V", "S", Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 1, u, 2, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         infot = 16;
-        Cgges3("N", "V", "S", _Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 0, w, 1, rw, bw, info);
+        Cgges3("N", "V", "S", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 0, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         infot = 16;
-        Cgges3("V", "V", "S", _Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 1, w, 1, rw, bw, info);
+        Cgges3("V", "V", "S", Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         infot = 18;
-        Cgges3("V", "V", "S", _Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 2, w, 1, rw, bw, info);
+        Cgges3("V", "V", "S", Clctes, 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 2, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
         nt += 11;
         //
         //        Cggesx
         //
         infot = 1;
-        Cggesx("/", "N", "S", _Clctsx, "N", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("/", "N", "S", Clctsx, "N", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 2;
-        Cggesx("N", "/", "S", _Clctsx, "N", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("N", "/", "S", Clctsx, "N", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 3;
-        Cggesx("V", "V", "/", _Clctsx, "N", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("V", "V", "/", Clctsx, "N", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 5;
-        Cggesx("V", "V", "S", _Clctsx, "/", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("V", "V", "S", Clctsx, "/", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 6;
-        Cggesx("V", "V", "S", _Clctsx, "B", -1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("V", "V", "S", Clctsx, "B", -1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 8;
-        Cggesx("V", "V", "S", _Clctsx, "B", 1, a, 0, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("V", "V", "S", Clctsx, "B", 1, a, 0, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 10;
-        Cggesx("V", "V", "S", _Clctsx, "B", 1, a, 1, b, 0, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("V", "V", "S", Clctsx, "B", 1, a, 1, b, 0, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 15;
-        Cggesx("V", "V", "S", _Clctsx, "B", 1, a, 1, b, 1, sdim, alpha, beta, q, 0, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("V", "V", "S", Clctsx, "B", 1, a, 1, b, 1, sdim, alpha, beta, q, 0, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 15;
-        Cggesx("V", "V", "S", _Clctsx, "B", 2, a, 2, b, 2, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("V", "V", "S", Clctsx, "B", 2, a, 2, b, 2, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 17;
-        Cggesx("V", "V", "S", _Clctsx, "B", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 0, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("V", "V", "S", Clctsx, "B", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 0, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 17;
-        Cggesx("V", "V", "S", _Clctsx, "B", 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("V", "V", "S", Clctsx, "B", 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 21;
-        Cggesx("V", "V", "S", _Clctsx, "B", 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 2, rce, rcv, w, 1, rw, iw, 1, bw, info);
+        Cggesx("V", "V", "S", Clctsx, "B", 2, a, 2, b, 2, sdim, alpha, beta, q, 2, u, 2, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         infot = 24;
-        Cggesx("V", "V", "S", _Clctsx, "V", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 32, rw, iw, 0, bw, info);
+        Cggesx("V", "V", "S", Clctsx, "V", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 32, rw, iw, 0, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
         nt += 13;
         //

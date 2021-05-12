@@ -38,60 +38,6 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
-INTEGER seldim, selopt;
-bool selval[20];
-REAL selwi[20], selwr[20];
-
-bool _Cslect(COMPLEX const z) {
-    bool return_value = false;
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Arrays in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    const REAL zero = 0.0;
-    REAL rmin = 0.0;
-    INTEGER i = 0;
-    REAL x = 0.0;
-    if (selopt == 0) {
-        return_value = (z.real() < zero);
-    } else {
-        rmin = abs(z - COMPLEX(selwr[1 - 1], selwi[1 - 1]));
-        return_value = selval[1 - 1];
-        for (i = 2; i <= seldim; i = i + 1) {
-            x = abs(z - COMPLEX(selwr[i - 1], selwi[i - 1]));
-            if (x <= rmin) {
-                rmin = x;
-                return_value = selval[i - 1];
-            }
-        }
-    }
-    return return_value;
-    //
-    //     End of Cslect
-    //
-}
-
 void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *ht, COMPLEX *w, COMPLEX *wt, COMPLEX *vs, INTEGER const ldvs, REAL *result, COMPLEX *work, INTEGER const nwork, REAL *rwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
     INTEGER ldh = lda;
     INTEGER ldht = lda;
@@ -447,7 +393,7 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //                 Compute Schur form and Schur vectors, and test them
                     //
                     Clacpy("F", n, n, a, lda, h, lda);
-                    Cgees("V", &sort, _Cslect, n, h, lda, sdim, w, vs, ldvs, work, nnwork, rwork, bwork, iinfo);
+                    Cgees("V", &sort, Cslect, n, h, lda, sdim, w, vs, ldvs, work, nnwork, rwork, bwork, iinfo);
                     if (iinfo != 0) {
                         result[(1 + rsub) - 1] = ulpinv;
                         write(nounit, format_9992), "Cgees1", iinfo, n, jtype, ioldsd;
@@ -485,7 +431,7 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //                 Do Test (5) or Test (11)
                     //
                     Clacpy("F", n, n, a, lda, ht, lda);
-                    Cgees("N", &sort, _Cslect, n, ht, lda, sdim, wt, vs, ldvs, work, nnwork, rwork, bwork, iinfo);
+                    Cgees("N", &sort, Cslect, n, ht, lda, sdim, wt, vs, ldvs, work, nnwork, rwork, bwork, iinfo);
                     if (iinfo != 0) {
                         result[(5 + rsub) - 1] = ulpinv;
                         write(nounit, format_9992), "Cgees2", iinfo, n, jtype, ioldsd;
@@ -517,11 +463,11 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         result[13 - 1] = zero;
                         knteig = 0;
                         for (i = 1; i <= n; i = i + 1) {
-                            if (_Cslect(w[i - 1])) {
+                            if (Cslect(w[i - 1])) {
                                 knteig++;
                             }
                             if (i < n) {
-                                if (_Cslect(w[(i + 1) - 1]) && (!_Cslect(w[i - 1]))) {
+                                if (Cslect(w[(i + 1) - 1]) && (!Cslect(w[i - 1]))) {
                                     result[13 - 1] = ulpinv;
                                 }
                             }

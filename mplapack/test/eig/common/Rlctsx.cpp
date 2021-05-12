@@ -31,20 +31,22 @@
 
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
-#include <mplapack_common.h>
+using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
+#define __MPLAPACK_RLCTSX__
+
 #include <mplapack_debug.h>
 
-bool Rlctsx(common &cmn, REAL const /* ar */, REAL const /* ai */, REAL const /* beta */) {
+bool Rlctsx(REAL const /* ar */, REAL const /* ai */, REAL const /* beta */) {
     bool return_value = false;
-    INTEGER mplusn = cmn.mplusn;
-    INTEGER m = cmn.m;
-    INTEGER i = cmn.i;
-    INTEGER n = cmn.n;
-    bool fs = cmn.fs;
+    INTEGER mplusn = _MPLAPACK_RLCTSX_mplusn;
+    INTEGER m = _MPLAPACK_RLCTSX_m;
+    INTEGER n = _MPLAPACK_RLCTSX_n;
+    INTEGER i = _MPLAPACK_RLCTSX_i;
+    bool fs = _MPLAPACK_RLCTSX_fs;
     //
     //
     //  -- LAPACK test routine --
@@ -77,7 +79,7 @@ bool Rlctsx(common &cmn, REAL const /* ar */, REAL const /* ai */, REAL const /*
         }
     } else {
         i++;
-        if (i <= cmn.n) {
+        if (i <= n) {
             return_value = true;
         } else {
             return_value = false;

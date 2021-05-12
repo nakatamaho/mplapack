@@ -38,20 +38,10 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
-void program_Rchkee(INTEGER argc, char const *argv[]) {
-    common cmn(argc, argv);
-    FEM_CMN_SVE(program_Rchkee);
+void Rchkee(void) {
+    common cmn;
     common_read read(cmn);
     common_write write(cmn);
-    char &intstr = sve.intstr;
-    INTEGER *ioldsd(sve.ioldsd, [4]);
-    if (is_called_first_time) {
-        intstr = "0123456789";
-        {
-            static const INTEGER values[] = {0, 0, 0, 1};
-            data_of_type<int>(FEM_VALUES_AND_SIZE), ioldsd;
-        }
-    }
     INTEGER allocatestatus = 0;
     REAL a = 0.0;
     REAL b = 0.0;
@@ -129,18 +119,6 @@ void program_Rchkee(INTEGER argc, char const *argv[]) {
     INTEGER ic = 0;
     INTEGER maxtyp = 0;
     bool dotype[maxt];
-    INTEGER &a[(1 - 1) + (1 - 1) * lda] = 0;
-    INTEGER &a[(1 - 1) + (2 - 1) * lda] = 0;
-    INTEGER &a[(1 - 1) + (3 - 1) * lda] = 0;
-    INTEGER &a[(1 - 1) + (4 - 1) * lda] = 0;
-    INTEGER &a[(1 - 1) + (5 - 1) * lda] = 0;
-    INTEGER &a[(1 - 1) + (6 - 1) * lda] = 0;
-    INTEGER &a[(1 - 1) + (7 - 1) * lda] = 0;
-    INTEGER &a[(1 - 1) + (8 - 1) * lda] = 0;
-    INTEGER &a[(1 - 1) + (9 - 1) * lda] = 0;
-    INTEGER &a[(1 - 1) + (10 - 1) * lda] = 0;
-    INTEGER &a[(1 - 1) + (11 - 1) * lda] = 0;
-    INTEGER &a[(1 - 1) + (12 - 1) * lda] = 0;
     REAL work = 0.0;
     const INTEGER lwork = nmax * (5 * nmax + 5) + 1;
     const INTEGER liwork = nmax * (5 * nmax + 20);
@@ -151,17 +129,9 @@ void program_Rchkee(INTEGER argc, char const *argv[]) {
     INTEGER nrhs = 0;
     bool tstdif = false;
     REAL thrshn = 0.0;
-    INTEGER &a[(1 - 1) + (13 - 1) * lda] = 0;
-    INTEGER &a[(1 - 1) + (14 - 1) * lda] = 0;
     const INTEGER ncmax = 20;
-    INTEGER &c[(1 - 1) + (1 - 1) * ldc] = 0;
-    INTEGER &b[(1 - 1) + (1 - 1) * ldb] = 0;
-    INTEGER &b[(1 - 1) + (2 - 1) * ldb] = 0;
     REAL x[5 * nmax];
     REAL taua[nmax];
-    INTEGER &b[(1 - 1) + (3 - 1) * ldb] = 0;
-    INTEGER &b[(1 - 1) + (4 - 1) * ldb] = 0;
-    INTEGER &b[(1 - 1) + (5 - 1) * ldb] = 0;
     REAL taub[nmax];
     REAL s2 = 0.0;
     static const char *format_9973 = "(/,1x,71('-'))";
@@ -204,23 +174,10 @@ void program_Rchkee(INTEGER argc, char const *argv[]) {
     //     ..
     //     .. Allocate memory dynamically ..
     //
-    FEM_THROW_UNHANDLED("executable allocate: allocate(a(nmax*nmax,need),stat=allocatestatus)");
-    if (allocatestatus != 0) {
-        FEM_STOP("*** Not enough memory ***");
-    }
-    FEM_THROW_UNHANDLED("executable allocate: allocate(b(nmax*nmax,5),stat=allocatestatus)");
-    if (allocatestatus != 0) {
-        FEM_STOP("*** Not enough memory ***");
-    }
-    FEM_THROW_UNHANDLED("executable allocate: allocate(c(ncmax*ncmax,ncmax*ncmax),stat=allocatesta"
-                        "tus)");
-    if (allocatestatus != 0) {
-        FEM_STOP("*** Not enough memory ***");
-    }
-    FEM_THROW_UNHANDLED("executable allocate: allocate(work(lwork),stat=allocatestatus)");
-    if (allocatestatus != 0) {
-        FEM_STOP("*** Not enough memory ***");
-    }
+    REAL *a = new REAL[nmax * nmax * need];
+    REAL *b = new REAL[nmax * nmax * 5];
+    REAL *c = new REAL[ncmax * ncmax * ncmax * ncmax];
+    REAL *work = new REAL[lwork];
     //     ..
     //     .. Executable Statements ..
     //
@@ -230,7 +187,6 @@ void program_Rchkee(INTEGER argc, char const *argv[]) {
     d = 0.0f;
     s1 = dsecnd[-1];
     fatal = false;
-    cmn.nunit = nout;
 //
 //     Return to here to read multiple sets of data
 //
@@ -542,14 +498,14 @@ statement_10:
         xlaenv(14, inibl[1 - 1]);
         xlaenv(15, ishfts[1 - 1]);
         xlaenv(16, iacc22[1 - 1]);
-        write(nout, format_9983), "NB:   ", nbval(1);
-        write(nout, format_9983), "NBMIN:", nbmin(1);
-        write(nout, format_9983), "NX:   ", nxval(1);
-        write(nout, format_9983), "INMIN:   ", inmin(1);
-        write(nout, format_9983), "INWIN: ", inwin(1);
-        write(nout, format_9983), "INIBL: ", inibl(1);
-        write(nout, format_9983), "ISHFTS: ", ishfts(1);
-        write(nout, format_9983), "IACC22: ", iacc22(1);
+        write(nout, format_9983), "NB:   ", nbval[1 - 1];
+        write(nout, format_9983), "NBMIN:", nbmin[1 - 1];
+        write(nout, format_9983), "NX:   ", nxval[1 - 1];
+        write(nout, format_9983), "INMIN:   ", inmin[1 - 1];
+        write(nout, format_9983), "INWIN: ", inwin[1 - 1];
+        write(nout, format_9983), "INIBL: ", inibl[1 - 1];
+        write(nout, format_9983), "ISHFTS: ", ishfts[1 - 1];
+        write(nout, format_9983), "IACC22: ", iacc22[1 - 1];
         //
     } else if (dgs || dgx || dgv || dxv) {
         //
@@ -1626,13 +1582,13 @@ statement_380:
     s2 = dsecnd[-1];
     write(nout, "(' Total time used = ',f12.2,' seconds',/)"), s2 - s1;
     //
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(a,stat=allocatestatus)");
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(b,stat=allocatestatus)");
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(c,stat=allocatestatus)");
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(work,stat=allocatestatus)");
+    delete[] a;
+    delete[] b;
+    delete[] c;
+    delete[] work;
     //
     //     End of Rchkee
     //
 }
 
-INTEGER main(INTEGER argc, char const *argv[]) { return main_with_catch(argc, argv, placeholder_please_replace::program_Rchkee); }
+int main(int argc, char const *argv[]) { Rchkee(); }

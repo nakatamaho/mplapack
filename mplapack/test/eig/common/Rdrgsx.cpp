@@ -38,38 +38,6 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
-bool _Rlctes(REAL const zr, REAL const d) {
-    bool return_value = false;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    const REAL zero = 0.0;
-    const REAL one = 1.0;
-    if (d == zero) {
-        return_value = (zr < zero);
-    } else {
-        return_value = (sign(one, zr) != sign(one, d));
-    }
-    //
-    return return_value;
-    //
-    //     End of Rlctes
-    //
-}
-
 void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER const nin, INTEGER const nout, REAL *a, INTEGER const lda, REAL *b, REAL *ai, REAL *bi, REAL *z, REAL *q, REAL *alphar, REAL *alphai, REAL *beta, REAL *c, INTEGER const ldc, REAL *s, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, bool *bwork, INTEGER &info) {
     common cmn;
     common_read read(cmn);
@@ -288,7 +256,7 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     Rlacpy("Full", mplusn, mplusn, ai, lda, a, lda);
                     Rlacpy("Full", mplusn, mplusn, bi, lda, b, lda);
                     //
-                    Rggesx("V", "V", "S", _Rlctsx, &sense, mplusn, ai, lda, bi, lda, mm, alphar, alphai, beta, q, lda, z, lda, pl, difest, work, lwork, iwork, liwork, bwork, linfo);
+                    Rggesx("V", "V", "S", Rlctsx, &sense, mplusn, ai, lda, bi, lda, mm, alphar, alphai, beta, q, lda, z, lda, pl, difest, work, lwork, iwork, liwork, bwork, linfo);
                     //
                     if (linfo != 0 && linfo != mplusn + 2) {
                         result[1 - 1] = ulpinv;
@@ -536,7 +504,7 @@ statement_80:
         //     Compute the Schur factorization while swapping the
         //     m-by-m (1,1)-blocks with n-by-n (2,2)-blocks.
         //
-        Rggesx("V", "V", "S", _Rlctsx, "B", mplusn, ai, lda, bi, lda, mm, alphar, alphai, beta, q, lda, z, lda, pl, difest, work, lwork, iwork, liwork, bwork, linfo);
+        Rggesx("V", "V", "S", Rlctsx, "B", mplusn, ai, lda, bi, lda, mm, alphar, alphai, beta, q, lda, z, lda, pl, difest, work, lwork, iwork, liwork, bwork, linfo);
         //
         if (linfo != 0 && linfo != mplusn + 2) {
             result[1 - 1] = ulpinv;

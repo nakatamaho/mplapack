@@ -39,8 +39,6 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
-bool _Rslect(REAL dummy1, REAL dummy2) { return true; }
-
 void Rerred(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
@@ -162,22 +160,22 @@ void Rerred(const char *path, INTEGER const nunit) {
         memset(srnamt, 0, sizeof(srnamt));
         strncpy(srnamt, "Rgees ", 16);
         infot = 1;
-        Rgees("X", "N", _Rslect, 0, a, 1, sdim, wr, wi, vl, 1, w, 1, b, info);
+        Rgees("X", "N", Rslect, 0, a, 1, sdim, wr, wi, vl, 1, w, 1, b, info);
         chkxer("Rgees ", infot, nout, lerr, ok);
         infot = 2;
-        Rgees("N", "X", _Rslect, 0, a, 1, sdim, wr, wi, vl, 1, w, 1, b, info);
+        Rgees("N", "X", Rslect, 0, a, 1, sdim, wr, wi, vl, 1, w, 1, b, info);
         chkxer("Rgees ", infot, nout, lerr, ok);
         infot = 4;
-        Rgees("N", "S", _Rslect, -1, a, 1, sdim, wr, wi, vl, 1, w, 1, b, info);
+        Rgees("N", "S", Rslect, -1, a, 1, sdim, wr, wi, vl, 1, w, 1, b, info);
         chkxer("Rgees ", infot, nout, lerr, ok);
         infot = 6;
-        Rgees("N", "S", _Rslect, 2, a, 1, sdim, wr, wi, vl, 1, w, 6, b, info);
+        Rgees("N", "S", Rslect, 2, a, 1, sdim, wr, wi, vl, 1, w, 6, b, info);
         chkxer("Rgees ", infot, nout, lerr, ok);
         infot = 11;
-        Rgees("V", "S", _Rslect, 2, a, 2, sdim, wr, wi, vl, 1, w, 6, b, info);
+        Rgees("V", "S", Rslect, 2, a, 2, sdim, wr, wi, vl, 1, w, 6, b, info);
         chkxer("Rgees ", infot, nout, lerr, ok);
         infot = 13;
-        Rgees("N", "S", _Rslect, 1, a, 1, sdim, wr, wi, vl, 1, w, 2, b, info);
+        Rgees("N", "S", Rslect, 1, a, 1, sdim, wr, wi, vl, 1, w, 2, b, info);
         chkxer("Rgees ", infot, nout, lerr, ok);
         nt += 6;
         //
@@ -229,25 +227,25 @@ void Rerred(const char *path, INTEGER const nunit) {
         memset(srnamt, 0, sizeof(srnamt));
         strncpy(srnamt, "Rgeesx", 16);
         infot = 1;
-        Rgeesx("X", "N", _Rslect, "N", 0, a, 1, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, iw, 1, b, info);
+        Rgeesx("X", "N", Rslect, "N", 0, a, 1, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, iw, 1, b, info);
         chkxer("Rgeesx", infot, nout, lerr, ok);
         infot = 2;
-        Rgeesx("N", "X", _Rslect, "N", 0, a, 1, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, iw, 1, b, info);
+        Rgeesx("N", "X", Rslect, "N", 0, a, 1, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, iw, 1, b, info);
         chkxer("Rgeesx", infot, nout, lerr, ok);
         infot = 4;
-        Rgeesx("N", "N", _Rslect, "X", 0, a, 1, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, iw, 1, b, info);
+        Rgeesx("N", "N", Rslect, "X", 0, a, 1, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, iw, 1, b, info);
         chkxer("Rgeesx", infot, nout, lerr, ok);
         infot = 5;
-        Rgeesx("N", "N", _Rslect, "N", -1, a, 1, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, iw, 1, b, info);
+        Rgeesx("N", "N", Rslect, "N", -1, a, 1, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, iw, 1, b, info);
         chkxer("Rgeesx", infot, nout, lerr, ok);
         infot = 7;
-        Rgeesx("N", "N", _Rslect, "N", 2, a, 1, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 6, iw, 1, b, info);
+        Rgeesx("N", "N", Rslect, "N", 2, a, 1, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 6, iw, 1, b, info);
         chkxer("Rgeesx", infot, nout, lerr, ok);
         infot = 12;
-        Rgeesx("V", "N", _Rslect, "N", 2, a, 2, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 6, iw, 1, b, info);
+        Rgeesx("V", "N", Rslect, "N", 2, a, 2, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 6, iw, 1, b, info);
         chkxer("Rgeesx", infot, nout, lerr, ok);
         infot = 16;
-        Rgeesx("N", "N", _Rslect, "N", 1, a, 1, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 2, iw, 1, b, info);
+        Rgeesx("N", "N", Rslect, "N", 1, a, 1, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 2, iw, 1, b, info);
         chkxer("Rgeesx", infot, nout, lerr, ok);
         nt += 7;
         //

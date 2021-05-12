@@ -85,6 +85,9 @@ void Alarqg(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
             dotype[i - 1] = true;
         }
     } else {
+        printf("Not yet supported \n");
+        exit(-1);
+#ifdef NOTYET
         for (i = 1; i <= ntypes; i = i + 1) {
             dotype[i - 1] = false;
         }
@@ -162,6 +165,7 @@ void Alarqg(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
             }
         }
     statement_80:;
+#endif
     }
     return;
 //

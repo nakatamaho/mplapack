@@ -36,11 +36,8 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
+#define __MPLAPACK_RSLECT__
 #include <mplapack_debug.h>
-
-INTEGER seldim, selopt;
-bool selval[20];
-REAL selwi[20], selwr[20];
 
 bool Cslect(COMPLEX const z) {
     bool return_value = false;

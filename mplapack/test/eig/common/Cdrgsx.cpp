@@ -40,72 +40,6 @@ using fem::common;
 
 inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
 
-INTEGER m, n, mplusn, i;
-bool fs;
-
-bool _Clctsx(COMPLEX const /* alpha */, COMPLEX const /* beta */) {
-    bool return_value = false;
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     DOUBLE PRECISION               ZERO
-    //     PARAMETER          ( ZERO = 0.0E+0 )
-    //     COMPLEX*16            CZERO
-    //     PARAMETER          ( CZERO = ( 0.0E+0, 0.0E+0 ) )
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Save statement ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    if (fs) {
-        i++;
-        if (i <= m) {
-            return_value = false;
-        } else {
-            return_value = true;
-        }
-        if (i == mplusn) {
-            fs = false;
-            i = 0;
-        }
-    } else {
-        i++;
-        if (i <= n) {
-            return_value = true;
-        } else {
-            return_value = false;
-        }
-        if (i == mplusn) {
-            fs = true;
-            i = 0;
-        }
-    }
-    //
-    //      IF( BETA.EQ.CZERO ) THEN
-    //         Clctsx = ( DBLE( ALPHA ).GT.ZERO )
-    //      ELSE
-    //         Clctsx = ( DBLE( ALPHA/BETA ).GT.ZERO )
-    //      END IF
-    //
-    return return_value;
-    //
-    //     End of Clctsx
-    //
-}
-
 void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER const nin, INTEGER const nout, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *ai, COMPLEX *bi, COMPLEX *z, COMPLEX *q, COMPLEX *alpha, COMPLEX *beta, COMPLEX *c, INTEGER const ldc, REAL *s, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER const liwork, bool *bwork, INTEGER &info) {
     INTEGER ldb = lda;
     INTEGER ldai = lda;
@@ -331,7 +265,7 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     Clacpy("Full", mplusn, mplusn, ai, lda, a, lda);
                     Clacpy("Full", mplusn, mplusn, bi, lda, b, lda);
                     //
-                    Cggesx("V", "V", "S", _Clctsx, &sense, mplusn, ai, lda, bi, lda, mm, alpha, beta, q, lda, z, lda, pl, difest, work, lwork, rwork, iwork, liwork, bwork, linfo);
+                    Cggesx("V", "V", "S", Clctsx, &sense, mplusn, ai, lda, bi, lda, mm, alpha, beta, q, lda, z, lda, pl, difest, work, lwork, rwork, iwork, liwork, bwork, linfo);
                     //
                     if (linfo != 0 && linfo != mplusn + 2) {
                         result[1 - 1] = ulpinv;
@@ -552,7 +486,7 @@ statement_70:
         //     Compute the Schur factorization while swapping the
         //     m-by-m (1,1)-blocks with n-by-n (2,2)-blocks.
         //
-        Cggesx("V", "V", "S", _Clctsx, "B", mplusn, ai, lda, bi, lda, mm, alpha, beta, q, lda, z, lda, pl, difest, work, lwork, rwork, iwork, liwork, bwork, linfo);
+        Cggesx("V", "V", "S", Clctsx, "B", mplusn, ai, lda, bi, lda, mm, alpha, beta, q, lda, z, lda, pl, difest, work, lwork, rwork, iwork, liwork, bwork, linfo);
         //
         if (linfo != 0 && linfo != mplusn + 2) {
             result[1 - 1] = ulpinv;

@@ -38,60 +38,6 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
-INTEGER seldim, selopt;
-bool selval[20];
-REAL selwi[20], selwr[20];
-
-bool _Rslect(REAL const zr, REAL const zi) {
-    bool return_value = false;
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Arrays in Common ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Parameters ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    const REAL zero = 0.0;
-    REAL rmin = 0.0;
-    INTEGER i = 0;
-    REAL x = 0.0;
-    if (selopt == 0) {
-        return_value = (zr < zero);
-    } else {
-        rmin = Rlapy2(zr - selwr[1 - 1], zi - selwi[1 - 1]);
-        return_value = selval[1 - 1];
-        for (i = 2; i <= seldim; i = i + 1) {
-            x = Rlapy2(zr - selwr[i - 1], zi - selwi[i - 1]);
-            if (x <= rmin) {
-                rmin = x;
-                return_value = selval[i - 1];
-            }
-        }
-    }
-    return return_value;
-    //
-    //     End of Rslect
-    //
-}
-
 void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *h, REAL *ht, REAL *wr, REAL *wi, REAL *wrt, REAL *wit, REAL *vs, INTEGER const ldvs, REAL *result, REAL *work, INTEGER const nwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
 
     INTEGER ldh = lda;
@@ -447,7 +393,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //                 Compute Schur form and Schur vectors, and test them
                     //
                     Rlacpy("F", n, n, a, lda, h, lda);
-                    Rgees("V", &sort, _Rslect, n, h, lda, sdim, wr, wi, vs, ldvs, work, nnwork, bwork, iinfo);
+                    Rgees("V", &sort, Rslect, n, h, lda, sdim, wr, wi, vs, ldvs, work, nnwork, bwork, iinfo);
                     if (iinfo != 0 && iinfo != n + 2) {
                         result[(1 + rsub) - 1] = ulpinv;
                         write(nounit, format_9992), "Rgees1", iinfo, n, jtype, ioldsd;
@@ -516,7 +462,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //                 Do Test (5) or Test (11)
                     //
                     Rlacpy("F", n, n, a, lda, ht, lda);
-                    Rgees("N", &sort, _Rslect, n, ht, lda, sdim, wrt, wit, vs, ldvs, work, nnwork, bwork, iinfo);
+                    Rgees("N", &sort, Rslect, n, ht, lda, sdim, wrt, wit, vs, ldvs, work, nnwork, bwork, iinfo);
                     if (iinfo != 0 && iinfo != n + 2) {
                         result[(5 + rsub) - 1] = ulpinv;
                         write(nounit, format_9992), "Rgees2", iinfo, n, jtype, ioldsd;
@@ -548,11 +494,11 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         result[13 - 1] = zero;
                         knteig = 0;
                         for (i = 1; i <= n; i = i + 1) {
-                            if (_Rslect(wr[i - 1], wi[i - 1]) || _Rslect(wr[i - 1], -wi[i - 1])) {
+                            if (Rslect(wr[i - 1], wi[i - 1]) || Rslect(wr[i - 1], -wi[i - 1])) {
                                 knteig++;
                             }
                             if (i < n) {
-                                if ((_Rslect(wr[(i + 1) - 1], wi[(i + 1) - 1]) || _Rslect(wr[(i + 1) - 1], -wi[(i + 1) - 1])) && (!(_Rslect(wr[i - 1], wi[i - 1]) || _Rslect(wr[i - 1], -wi[i - 1]))) && iinfo != n + 2) {
+                                if ((Rslect(wr[(i + 1) - 1], wi[(i + 1) - 1]) || Rslect(wr[(i + 1) - 1], -wi[(i + 1) - 1])) && (!(Rslect(wr[i - 1], wi[i - 1]) || Rslect(wr[i - 1], -wi[i - 1]))) && iinfo != n + 2) {
                                     result[13 - 1] = ulpinv;
                                 }
                             }

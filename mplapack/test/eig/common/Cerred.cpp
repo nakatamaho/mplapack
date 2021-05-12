@@ -31,14 +31,15 @@
 
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
+using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 #include <mplapack_eig.h>
-#include <mplapack_common.h>
 #include <mplapack_debug.h>
 
-bool _Cslect(COMPLEX dummy) { return true; }
+
+#include <mplapack_eig_mpfr.h>
 
 void Cerred(const char *path, INTEGER const nunit) {
     common cmn;
@@ -162,22 +163,22 @@ void Cerred(const char *path, INTEGER const nunit) {
         memset(srnamt, 0, sizeof(srnamt));
         strncpy(srnamt, "Cgees ", 16);
         infot = 1;
-        Cgees("X", "N", _Cslect, 0, a, 1, sdim, x, vl, 1, w, 1, rw, b, info);
+        Cgees("X", "N", Cslect, 0, a, 1, sdim, x, vl, 1, w, 1, rw, b, info);
         chkxer("Cgees ", infot, nout, lerr, ok);
         infot = 2;
-        Cgees("N", "X", _Cslect, 0, a, 1, sdim, x, vl, 1, w, 1, rw, b, info);
+        Cgees("N", "X", Cslect, 0, a, 1, sdim, x, vl, 1, w, 1, rw, b, info);
         chkxer("Cgees ", infot, nout, lerr, ok);
         infot = 4;
-        Cgees("N", "S", _Cslect, -1, a, 1, sdim, x, vl, 1, w, 1, rw, b, info);
+        Cgees("N", "S", Cslect, -1, a, 1, sdim, x, vl, 1, w, 1, rw, b, info);
         chkxer("Cgees ", infot, nout, lerr, ok);
         infot = 6;
-        Cgees("N", "S", _Cslect, 2, a, 1, sdim, x, vl, 1, w, 4, rw, b, info);
+        Cgees("N", "S", Cslect, 2, a, 1, sdim, x, vl, 1, w, 4, rw, b, info);
         chkxer("Cgees ", infot, nout, lerr, ok);
         infot = 10;
-        Cgees("V", "S", _Cslect, 2, a, 2, sdim, x, vl, 1, w, 4, rw, b, info);
+        Cgees("V", "S", Cslect, 2, a, 2, sdim, x, vl, 1, w, 4, rw, b, info);
         chkxer("Cgees ", infot, nout, lerr, ok);
         infot = 12;
-        Cgees("N", "S", _Cslect, 1, a, 1, sdim, x, vl, 1, w, 1, rw, b, info);
+        Cgees("N", "S", Cslect, 1, a, 1, sdim, x, vl, 1, w, 1, rw, b, info);
         chkxer("Cgees ", infot, nout, lerr, ok);
         nt += 6;
         //
@@ -226,25 +227,25 @@ void Cerred(const char *path, INTEGER const nunit) {
         memset(srnamt, 0, sizeof(srnamt));
         strncpy(srnamt, "Cgeesx", 16);
         infot = 1;
-        Cgeesx("X", "N", _Cslect, "N", 0, a, 1, sdim, x, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, rw, b, info);
+        Cgeesx("X", "N", Cslect, "N", 0, a, 1, sdim, x, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, rw, b, info);
         chkxer("Cgeesx", infot, nout, lerr, ok);
         infot = 2;
-        Cgeesx("N", "X", _Cslect, "N", 0, a, 1, sdim, x, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, rw, b, info);
+        Cgeesx("N", "X", Cslect, "N", 0, a, 1, sdim, x, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, rw, b, info);
         chkxer("Cgeesx", infot, nout, lerr, ok);
         infot = 4;
-        Cgeesx("N", "N", _Cslect, "X", 0, a, 1, sdim, x, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, rw, b, info);
+        Cgeesx("N", "N", Cslect, "X", 0, a, 1, sdim, x, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, rw, b, info);
         chkxer("Cgeesx", infot, nout, lerr, ok);
         infot = 5;
-        Cgeesx("N", "N", _Cslect, "N", -1, a, 1, sdim, x, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, rw, b, info);
+        Cgeesx("N", "N", Cslect, "N", -1, a, 1, sdim, x, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, rw, b, info);
         chkxer("Cgeesx", infot, nout, lerr, ok);
         infot = 7;
-        Cgeesx("N", "N", _Cslect, "N", 2, a, 1, sdim, x, vl, 1, r1[1 - 1], r2[1 - 1], w, 4, rw, b, info);
+        Cgeesx("N", "N", Cslect, "N", 2, a, 1, sdim, x, vl, 1, r1[1 - 1], r2[1 - 1], w, 4, rw, b, info);
         chkxer("Cgeesx", infot, nout, lerr, ok);
         infot = 11;
-        Cgeesx("V", "N", _Cslect, "N", 2, a, 2, sdim, x, vl, 1, r1[1 - 1], r2[1 - 1], w, 4, rw, b, info);
+        Cgeesx("V", "N", Cslect, "N", 2, a, 2, sdim, x, vl, 1, r1[1 - 1], r2[1 - 1], w, 4, rw, b, info);
         chkxer("Cgeesx", infot, nout, lerr, ok);
         infot = 15;
-        Cgeesx("N", "N", _Cslect, "N", 1, a, 1, sdim, x, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, rw, b, info);
+        Cgeesx("N", "N", Cslect, "N", 1, a, 1, sdim, x, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, rw, b, info);
         chkxer("Cgeesx", infot, nout, lerr, ok);
         nt += 7;
         //
