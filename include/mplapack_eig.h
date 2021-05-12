@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef _MPLAPACK_LIN_H_
-#define _MPLAPACK_LIN_H_
+#ifndef _MPLAPACK_EIG_H_
+#define _MPLAPACK_EIG_H_
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
 #include <mplapack_eig_gmp.h>

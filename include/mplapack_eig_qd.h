@@ -37,11 +37,10 @@
 
 bool Clctes(qd_complex const z, qd_complex const d);
 bool Clctsx(common &cmn, qd_complex const, qd_complex const);
+bool Cslect(qd_complex const z);
 bool Rlctes(qd_real const zr, qd_real const d);
-bool Rlctsx(common &cmn, qd_real const, qd_real const, qd_real const);
-bool _Clctes(qd_complex const z, qd_complex const d);
-bool _Rlctes(qd_real const zr, qd_real const d);
-bool _Rlctsx(qd_real const, qd_real const, qd_real const);
+bool Rlctsx(qd_real const, qd_real const, qd_real const);
+bool Rslect(qd_real const zr, qd_real const zi);
 mplapackint iMlaenv2stage_qd(mplapackint ispec, const char *name, const char *opts, mplapackint n1, mplapackint n2, mplapackint n3, mplapackint n4);
 mplapackint iMlaenv_qd(mplapackint ispec, const char *name, const char *opts, mplapackint n1, mplapackint n2, mplapackint n3, mplapackint n4);
 qd_real Rlamch_qd(const char *cmach);
@@ -156,7 +155,7 @@ void Rdrges(mplapackint const nsizes, mplapackint *nn, mplapackint const ntypes,
 void Rdrges3(mplapackint const nsizes, mplapackint *nn, mplapackint const ntypes, bool *dotype, mplapackint *iseed, qd_real const thresh, mplapackint const nounit, qd_real *a, mplapackint const lda, qd_real *b, qd_real *s, qd_real *t, qd_real *q, mplapackint const ldq, qd_real *z, qd_real *alphar, qd_real *alphai, qd_real *beta, qd_real *work, mplapackint const lwork, qd_real *result, bool *bwork, mplapackint &info);
 void Rdrgev(mplapackint const nsizes, mplapackint *nn, mplapackint const ntypes, bool *dotype, mplapackint *iseed, qd_real const thresh, mplapackint const nounit, qd_real *a, mplapackint const lda, qd_real *b, qd_real *s, qd_real *t, qd_real *q, mplapackint const ldq, qd_real *z, qd_real *qe, mplapackint const ldqe, qd_real *alphar, qd_real *alphai, qd_real *beta, qd_real *alphr1, qd_real *alphi1, qd_real *beta1, qd_real *work, mplapackint const lwork, qd_real *result, mplapackint &info);
 void Rdrgev3(mplapackint const nsizes, mplapackint *nn, mplapackint const ntypes, bool *dotype, mplapackint *iseed, qd_real const thresh, mplapackint const nounit, qd_real *a, mplapackint const lda, qd_real *b, qd_real *s, qd_real *t, qd_real *q, mplapackint const ldq, qd_real *z, qd_real *qe, mplapackint const ldqe, qd_real *alphar, qd_real *alphai, qd_real *beta, qd_real *alphr1, qd_real *alphi1, qd_real *beta1, qd_real *work, mplapackint const lwork, qd_real *result, mplapackint &info);
-void Rdrgsx(common &cmn, mplapackint const nsize, mplapackint const ncmax, qd_real const thresh, mplapackint const nin, mplapackint const nout, qd_real *a, mplapackint const lda, qd_real *b, qd_real *ai, qd_real *bi, qd_real *z, qd_real *q, qd_real *alphar, qd_real *alphai, qd_real *beta, qd_real *c, mplapackint const ldc, qd_real *s, qd_real *work, mplapackint const lwork, mplapackint *iwork, mplapackint const liwork, bool *bwork, mplapackint &info);
+void Rdrgsx(mplapackint const nsize, mplapackint const ncmax, qd_real const thresh, mplapackint const nin, mplapackint const nout, qd_real *a, mplapackint const lda, qd_real *b, qd_real *ai, qd_real *bi, qd_real *z, qd_real *q, qd_real *alphar, qd_real *alphai, qd_real *beta, qd_real *c, mplapackint const ldc, qd_real *s, qd_real *work, mplapackint const lwork, mplapackint *iwork, mplapackint const liwork, bool *bwork, mplapackint &info);
 void Rdrgvx(mplapackint const nsize, qd_real const thresh, mplapackint const nin, mplapackint const nout, qd_real *a, mplapackint const lda, qd_real *b, qd_real *ai, qd_real *bi, qd_real *alphar, qd_real *alphai, qd_real *beta, qd_real *vl, qd_real *vr, mplapackint const ilo, mplapackint const ihi, qd_real *lscale, qd_real *rscale, qd_real *s, qd_real *dtru, qd_real *dif, qd_real *diftru, qd_real *work, mplapackint const lwork, mplapackint *iwork, mplapackint const liwork, qd_real *result, bool *bwork, mplapackint &info);
 void Rdrvbd(mplapackint const nsizes, mplapackint *mm, mplapackint *nn, mplapackint const ntypes, bool *dotype, mplapackint *iseed, qd_real const thresh, qd_real *a, mplapackint const lda, qd_real *u, mplapackint const ldu, qd_real *vt, mplapackint const ldvt, qd_real *asav, qd_real *usav, qd_real *vtsav, qd_real *s, qd_real *ssav, qd_real *e, qd_real *work, mplapackint const lwork, mplapackint *iwork, mplapackint const nout, mplapackint &info);
 void Rdrves(mplapackint const nsizes, mplapackint *nn, mplapackint const ntypes, bool *dotype, mplapackint *iseed, qd_real const thresh, mplapackint const nounit, qd_real *a, mplapackint const lda, qd_real *h, qd_real *ht, qd_real *wr, qd_real *wi, qd_real *wrt, qd_real *wit, qd_real *vs, mplapackint const ldvs, qd_real *result, qd_real *work, mplapackint const nwork, mplapackint *iwork, bool *bwork, mplapackint &info);

@@ -28,18 +28,17 @@
  *
  */
 
-#ifndef _MPLAPACK_LIN_DOUBLE_H_
-#define _MPLAPACK_LIN_DOUBLE_H_
+#ifndef _MPLAPACK_EIG_DOUBLE_H_
+#define _MPLAPACK_EIG_DOUBLE_H_
 
 #include "mplapack_config.h"
 
 bool Clctes(std::complex<double> const z, std::complex<double> const d);
 bool Clctsx(common &cmn, std::complex<double> const, std::complex<double> const);
+bool Cslect(std::complex<double> const z);
 bool Rlctes(double const zr, double const d);
-bool Rlctsx(common &cmn, double const, double const, double const);
-bool _Clctes(std::complex<double> const z, std::complex<double> const d);
-bool _Rlctes(double const zr, double const d);
-bool _Rlctsx(double const, double const, double const);
+bool Rlctsx(double const, double const, double const);
+bool Rslect(double const zr, double const zi);
 double Rlamch_double(const char *cmach);
 double Rsxt1(mplapackint const ijob, double *d1, mplapackint const n1, double *d2, mplapackint const n2, double const abstol, double const ulp, double const unfl);
 mplapackint iMlaenv2stage_double(mplapackint ispec, const char *name, const char *opts, mplapackint n1, mplapackint n2, mplapackint n3, mplapackint n4);
@@ -154,7 +153,7 @@ void Rdrges(mplapackint const nsizes, mplapackint *nn, mplapackint const ntypes,
 void Rdrges3(mplapackint const nsizes, mplapackint *nn, mplapackint const ntypes, bool *dotype, mplapackint *iseed, double const thresh, mplapackint const nounit, double *a, mplapackint const lda, double *b, double *s, double *t, double *q, mplapackint const ldq, double *z, double *alphar, double *alphai, double *beta, double *work, mplapackint const lwork, double *result, bool *bwork, mplapackint &info);
 void Rdrgev(mplapackint const nsizes, mplapackint *nn, mplapackint const ntypes, bool *dotype, mplapackint *iseed, double const thresh, mplapackint const nounit, double *a, mplapackint const lda, double *b, double *s, double *t, double *q, mplapackint const ldq, double *z, double *qe, mplapackint const ldqe, double *alphar, double *alphai, double *beta, double *alphr1, double *alphi1, double *beta1, double *work, mplapackint const lwork, double *result, mplapackint &info);
 void Rdrgev3(mplapackint const nsizes, mplapackint *nn, mplapackint const ntypes, bool *dotype, mplapackint *iseed, double const thresh, mplapackint const nounit, double *a, mplapackint const lda, double *b, double *s, double *t, double *q, mplapackint const ldq, double *z, double *qe, mplapackint const ldqe, double *alphar, double *alphai, double *beta, double *alphr1, double *alphi1, double *beta1, double *work, mplapackint const lwork, double *result, mplapackint &info);
-void Rdrgsx(common &cmn, mplapackint const nsize, mplapackint const ncmax, double const thresh, mplapackint const nin, mplapackint const nout, double *a, mplapackint const lda, double *b, double *ai, double *bi, double *z, double *q, double *alphar, double *alphai, double *beta, double *c, mplapackint const ldc, double *s, double *work, mplapackint const lwork, mplapackint *iwork, mplapackint const liwork, bool *bwork, mplapackint &info);
+void Rdrgsx(mplapackint const nsize, mplapackint const ncmax, double const thresh, mplapackint const nin, mplapackint const nout, double *a, mplapackint const lda, double *b, double *ai, double *bi, double *z, double *q, double *alphar, double *alphai, double *beta, double *c, mplapackint const ldc, double *s, double *work, mplapackint const lwork, mplapackint *iwork, mplapackint const liwork, bool *bwork, mplapackint &info);
 void Rdrgvx(mplapackint const nsize, double const thresh, mplapackint const nin, mplapackint const nout, double *a, mplapackint const lda, double *b, double *ai, double *bi, double *alphar, double *alphai, double *beta, double *vl, double *vr, mplapackint const ilo, mplapackint const ihi, double *lscale, double *rscale, double *s, double *dtru, double *dif, double *diftru, double *work, mplapackint const lwork, mplapackint *iwork, mplapackint const liwork, double *result, bool *bwork, mplapackint &info);
 void Rdrvbd(mplapackint const nsizes, mplapackint *mm, mplapackint *nn, mplapackint const ntypes, bool *dotype, mplapackint *iseed, double const thresh, double *a, mplapackint const lda, double *u, mplapackint const ldu, double *vt, mplapackint const ldvt, double *asav, double *usav, double *vtsav, double *s, double *ssav, double *e, double *work, mplapackint const lwork, mplapackint *iwork, mplapackint const nout, mplapackint &info);
 void Rdrves(mplapackint const nsizes, mplapackint *nn, mplapackint const ntypes, bool *dotype, mplapackint *iseed, double const thresh, mplapackint const nounit, double *a, mplapackint const lda, double *h, double *ht, double *wr, double *wi, double *wrt, double *wit, double *vs, mplapackint const ldvs, double *result, double *work, mplapackint const nwork, mplapackint *iwork, bool *bwork, mplapackint &info);

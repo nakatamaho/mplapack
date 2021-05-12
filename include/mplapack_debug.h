@@ -162,6 +162,28 @@ inline double drand48() {
 #define _MPLAPACK_DEBUG_EXTERN_ extern
 #endif
 
+#if defined __MPLAPACK_RSLECT__
+#define _MPLAPACK_RSLECT_EXTERN_
+#else
+#define _MPLAPACK_RSLECT_EXTERN_ extern
+#endif
+
+_MPLAPACK_RSLECT_EXTERN_ INTEGER seldim, selopt;
+_MPLAPACK_RSLECT_EXTERN_  bool selval[20];
+_MPLAPACK_RSLECT_EXTERN_  REAL selwi[20], selwr[20];
+
+#if defined __MPLAPACK_RLCTSX__
+#define _MPLAPACK_RLCTSX_EXTERN_
+#else
+#define _MPLAPACK_RLCTSX_EXTERN_ extern
+#endif
+
+_MPLAPACK_RLCTSX_EXTERN_  INTEGER _MPLAPACK_RLCTSX_mplusn;
+_MPLAPACK_RLCTSX_EXTERN_  INTEGER _MPLAPACK_RLCTSX_n;
+_MPLAPACK_RLCTSX_EXTERN_  INTEGER _MPLAPACK_RLCTSX_m;
+_MPLAPACK_RLCTSX_EXTERN_  INTEGER _MPLAPACK_RLCTSX_i;
+_MPLAPACK_RLCTSX_EXTERN_  bool _MPLAPACK_RLCTSX_fs;
+
 #if defined(___MPLAPACK_BUILD_WITH_GMP___) || defined(___MPLAPACK_BUILD_WITH_QD___) || defined(___MPLAPACK_BUILD_WITH_DD___) || defined(___MPLAPACK_BUILD_WITH_DOUBLE___) || defined(___MPLAPACK_BUILD_WITH__FLOAT64X___) || defined(___MPLAPACK_BUILD_WITH__FLOAT128___)
 #include <mpblas_mpfr.h>
 #include <mplapack_mpfr.h>

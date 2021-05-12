@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef _MPLAPACK_LIN__FLOAT64X_H_
-#define _MPLAPACK_LIN__FLOAT64X_H_
+#ifndef _MPLAPACK_EIG__FLOAT64X_H_
+#define _MPLAPACK_EIG__FLOAT64X_H_
 
 #include "mplapack_config.h"
 
@@ -37,11 +37,10 @@ _Float64x Rlamch__Float64x(const char *cmach);
 _Float64x Rsxt1(mplapackint const ijob, _Float64x *d1, mplapackint const n1, _Float64x *d2, mplapackint const n2, _Float64x const abstol, _Float64x const ulp, _Float64x const unfl);
 bool Clctes(std::complex<_Float64x> const z, std::complex<_Float64x> const d);
 bool Clctsx(common &cmn, std::complex<_Float64x> const, std::complex<_Float64x> const);
+bool Cslect(std::complex<_Float64x> const z);
 bool Rlctes(_Float64x const zr, _Float64x const d);
-bool Rlctsx(common &cmn, _Float64x const, _Float64x const, _Float64x const);
-bool _Clctes(std::complex<_Float64x> const z, std::complex<_Float64x> const d);
-bool _Rlctes(_Float64x const zr, _Float64x const d);
-bool _Rlctsx(_Float64x const, _Float64x const, _Float64x const);
+bool Rlctsx(_Float64x const, _Float64x const, _Float64x const);
+bool Rslect(_Float64x const zr, _Float64x const zi);
 mplapackint iMlaenv2stage__Float64x(mplapackint ispec, const char *name, const char *opts, mplapackint n1, mplapackint n2, mplapackint n3, mplapackint n4);
 mplapackint iMlaenv__Float64x(mplapackint ispec, const char *name, const char *opts, mplapackint n1, mplapackint n2, mplapackint n3, mplapackint n4);
 void Alahdg(mplapackint const iounit, const char *path);
@@ -154,7 +153,7 @@ void Rdrges(mplapackint const nsizes, mplapackint *nn, mplapackint const ntypes,
 void Rdrges3(mplapackint const nsizes, mplapackint *nn, mplapackint const ntypes, bool *dotype, mplapackint *iseed, _Float64x const thresh, mplapackint const nounit, _Float64x *a, mplapackint const lda, _Float64x *b, _Float64x *s, _Float64x *t, _Float64x *q, mplapackint const ldq, _Float64x *z, _Float64x *alphar, _Float64x *alphai, _Float64x *beta, _Float64x *work, mplapackint const lwork, _Float64x *result, bool *bwork, mplapackint &info);
 void Rdrgev(mplapackint const nsizes, mplapackint *nn, mplapackint const ntypes, bool *dotype, mplapackint *iseed, _Float64x const thresh, mplapackint const nounit, _Float64x *a, mplapackint const lda, _Float64x *b, _Float64x *s, _Float64x *t, _Float64x *q, mplapackint const ldq, _Float64x *z, _Float64x *qe, mplapackint const ldqe, _Float64x *alphar, _Float64x *alphai, _Float64x *beta, _Float64x *alphr1, _Float64x *alphi1, _Float64x *beta1, _Float64x *work, mplapackint const lwork, _Float64x *result, mplapackint &info);
 void Rdrgev3(mplapackint const nsizes, mplapackint *nn, mplapackint const ntypes, bool *dotype, mplapackint *iseed, _Float64x const thresh, mplapackint const nounit, _Float64x *a, mplapackint const lda, _Float64x *b, _Float64x *s, _Float64x *t, _Float64x *q, mplapackint const ldq, _Float64x *z, _Float64x *qe, mplapackint const ldqe, _Float64x *alphar, _Float64x *alphai, _Float64x *beta, _Float64x *alphr1, _Float64x *alphi1, _Float64x *beta1, _Float64x *work, mplapackint const lwork, _Float64x *result, mplapackint &info);
-void Rdrgsx(common &cmn, mplapackint const nsize, mplapackint const ncmax, _Float64x const thresh, mplapackint const nin, mplapackint const nout, _Float64x *a, mplapackint const lda, _Float64x *b, _Float64x *ai, _Float64x *bi, _Float64x *z, _Float64x *q, _Float64x *alphar, _Float64x *alphai, _Float64x *beta, _Float64x *c, mplapackint const ldc, _Float64x *s, _Float64x *work, mplapackint const lwork, mplapackint *iwork, mplapackint const liwork, bool *bwork, mplapackint &info);
+void Rdrgsx(mplapackint const nsize, mplapackint const ncmax, _Float64x const thresh, mplapackint const nin, mplapackint const nout, _Float64x *a, mplapackint const lda, _Float64x *b, _Float64x *ai, _Float64x *bi, _Float64x *z, _Float64x *q, _Float64x *alphar, _Float64x *alphai, _Float64x *beta, _Float64x *c, mplapackint const ldc, _Float64x *s, _Float64x *work, mplapackint const lwork, mplapackint *iwork, mplapackint const liwork, bool *bwork, mplapackint &info);
 void Rdrgvx(mplapackint const nsize, _Float64x const thresh, mplapackint const nin, mplapackint const nout, _Float64x *a, mplapackint const lda, _Float64x *b, _Float64x *ai, _Float64x *bi, _Float64x *alphar, _Float64x *alphai, _Float64x *beta, _Float64x *vl, _Float64x *vr, mplapackint const ilo, mplapackint const ihi, _Float64x *lscale, _Float64x *rscale, _Float64x *s, _Float64x *dtru, _Float64x *dif, _Float64x *diftru, _Float64x *work, mplapackint const lwork, mplapackint *iwork, mplapackint const liwork, _Float64x *result, bool *bwork, mplapackint &info);
 void Rdrvbd(mplapackint const nsizes, mplapackint *mm, mplapackint *nn, mplapackint const ntypes, bool *dotype, mplapackint *iseed, _Float64x const thresh, _Float64x *a, mplapackint const lda, _Float64x *u, mplapackint const ldu, _Float64x *vt, mplapackint const ldvt, _Float64x *asav, _Float64x *usav, _Float64x *vtsav, _Float64x *s, _Float64x *ssav, _Float64x *e, _Float64x *work, mplapackint const lwork, mplapackint *iwork, mplapackint const nout, mplapackint &info);
 void Rdrves(mplapackint const nsizes, mplapackint *nn, mplapackint const ntypes, bool *dotype, mplapackint *iseed, _Float64x const thresh, mplapackint const nounit, _Float64x *a, mplapackint const lda, _Float64x *h, _Float64x *ht, _Float64x *wr, _Float64x *wi, _Float64x *wrt, _Float64x *wit, _Float64x *vs, mplapackint const ldvs, _Float64x *result, _Float64x *work, mplapackint const nwork, mplapackint *iwork, bool *bwork, mplapackint &info);
