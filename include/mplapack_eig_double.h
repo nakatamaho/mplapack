@@ -34,7 +34,7 @@
 #include "mplapack_config.h"
 
 bool Clctes(std::complex<double> const z, std::complex<double> const d);
-bool Clctsx(common &cmn, std::complex<double> const, std::complex<double> const);
+bool Clctsx(std::complex<double> const, std::complex<double> const);
 bool Cslect(std::complex<double> const z);
 bool Rlctes(double const zr, double const d);
 bool Rlctsx(double const, double const, double const);

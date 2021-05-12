@@ -40,7 +40,7 @@
 using namespace mpfr;
 
 bool Clctes(mpcomplex const z, mpcomplex const d);
-bool Clctsx(common &cmn, mpcomplex const, mpcomplex const);
+bool Clctsx(mpcomplex const, mpcomplex const);
 bool Cslect(mpcomplex const z);
 bool Rlctes(mpreal const zr, mpreal const d);
 bool Rlctsx(mpreal const, mpreal const, mpreal const);

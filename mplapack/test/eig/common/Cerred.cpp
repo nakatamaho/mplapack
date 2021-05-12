@@ -38,7 +38,6 @@ using fem::common;
 #include <mplapack_eig.h>
 #include <mplapack_debug.h>
 
-
 #include <mplapack_eig_mpfr.h>
 
 void Cerred(const char *path, INTEGER const nunit) {

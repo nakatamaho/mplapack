@@ -36,7 +36,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#define __MPLAPACK_RSLECT__
 #include <mplapack_debug.h>
 
 bool Cslect(COMPLEX const z) {

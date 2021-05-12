@@ -1,9 +1,11 @@
 lib_LTLIBRARIES = libeig_mpfr.la
-
 libeig_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mplapack/test/fable
 libeig_mpfr_la_SOURCES = $(EIG_SOURCES)
 
 EIG_SOURCES = \
+../common/Cslect.cpp \
+../common/Rslect.cpp \
+../common/Rlctsx.cpp \
 ../common/Rlacsg.cpp \
 ../common/Clacsg.cpp \
 ../common/Rlasum.cpp \
@@ -14,9 +16,6 @@ EIG_SOURCES = \
 ../common/Rlarfy.cpp \
 ../common/Clarfy.cpp \
 ../common/Clctes.cpp \
-../common/Rlctsx.cpp \
-../common/Cslect.cpp \
-../common/Rslect.cpp \
 ../common/Rsxt1.cpp \
 ../common/Clctsx.cpp \
 ../common/Rget10.cpp \
@@ -143,9 +142,9 @@ EIG_SOURCES = \
 ../common/Rdrvsg.cpp \
 ../common/Cdrvbd.cpp \
 ../common/Cdrvsg.cpp \
-../common/Rerrgg.cpp \
 ../common/Cerrgg.cpp \
 ../common/Cerrst.cpp \
+../common/Rerrgg.cpp \
 ../common/Rerrst.cpp \
 ../common/Rdrvsg2stg.cpp \
 ../common/Cdrvsg2stg.cpp \
@@ -156,36 +155,36 @@ EIG_SOURCES = \
 ../common/Cdrvst.cpp \
 ../common/Cdrvst2stg.cpp \
 ../common/Rdrvst.cpp \
-\
 ../common/Rdrvst2stg.cpp \
 ../common/Cchkbk.cpp \
 ../common/Rchkbk.cpp \
 ../common/Cget36.cpp \
 ../common/Rchkgl.cpp \
 ../common/Cchkgl.cpp \
-../common/Alareq.cpp \
-../common/Alarqg.cpp \
 ../common/Rget36.cpp \
 ../common/Rchkgk.cpp \
 ../common/Cchkgk.cpp \
 ../common/Cget35.cpp \
-../common/iMlaenv.cpp \
 ../common/Rget35.cpp \
 ../common/Rget38.cpp \
 ../common/Cget38.cpp \
 ../common/Cget37.cpp \
 ../common/Rget37.cpp \
 ../common/Cdrgvx.cpp \
+../common/Rget40.cpp \
 ../common/Rdrgvx.cpp \
+../common/Rchkbl.cpp \
+../common/Cchkbl.cpp \
 ../common/Rdrvvx.cpp \
 ../common/Cdrvvx.cpp \
 ../common/Cdrvsx.cpp \
 ../common/Rdrvsx.cpp \
 ../common/Cdrgsx.cpp \
 ../common/Rdrgsx.cpp \
-../common/Rget40.cpp \
-../common/Rchkbl.cpp \
-../common/Cchkbl.cpp
+../common/Alareq.cpp \
+../common/Alarqg.cpp
+
+#../common/iMlaenv.cpp
 
 libdepends = -L. -leig_mpfr -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr 
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lm

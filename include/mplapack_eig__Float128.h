@@ -1,7 +1,7 @@
 _Float128 Rlamch__Float128(const char *cmach);
 _Float128 Rsxt1(mplapackint const ijob, _Float128 *d1, mplapackint const n1, _Float128 *d2, mplapackint const n2, _Float128 const abstol, _Float128 const ulp, _Float128 const unfl);
 bool Clctes(std::complex<_Float128> const z, std::complex<_Float128> const d);
-bool Clctsx(common &cmn, std::complex<_Float128> const, std::complex<_Float128> const);
+bool Clctsx(std::complex<_Float128> const, std::complex<_Float128> const);
 bool Cslect(std::complex<_Float128> const z);
 bool Rlctes(_Float128 const zr, _Float128 const d);
 bool Rlctsx(_Float128 const, _Float128 const, _Float128 const);

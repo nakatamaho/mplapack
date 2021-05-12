@@ -36,7 +36,7 @@
 #include "qd_complex.h"
 
 bool Clctes(qd_complex const z, qd_complex const d);
-bool Clctsx(common &cmn, qd_complex const, qd_complex const);
+bool Clctsx(qd_complex const, qd_complex const);
 bool Cslect(qd_complex const z);
 bool Rlctes(qd_real const zr, qd_real const d);
 bool Rlctsx(qd_real const, qd_real const, qd_real const);

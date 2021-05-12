@@ -36,7 +36,7 @@
 _Float64x Rlamch__Float64x(const char *cmach);
 _Float64x Rsxt1(mplapackint const ijob, _Float64x *d1, mplapackint const n1, _Float64x *d2, mplapackint const n2, _Float64x const abstol, _Float64x const ulp, _Float64x const unfl);
 bool Clctes(std::complex<_Float64x> const z, std::complex<_Float64x> const d);
-bool Clctsx(common &cmn, std::complex<_Float64x> const, std::complex<_Float64x> const);
+bool Clctsx(std::complex<_Float64x> const, std::complex<_Float64x> const);
 bool Cslect(std::complex<_Float64x> const z);
 bool Rlctes(_Float64x const zr, _Float64x const d);
 bool Rlctsx(_Float64x const, _Float64x const, _Float64x const);

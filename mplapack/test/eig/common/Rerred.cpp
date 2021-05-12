@@ -36,7 +36,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 #include <mplapack_eig.h>
-
 #include <mplapack_debug.h>
 
 void Rerred(const char *path, INTEGER const nunit) {

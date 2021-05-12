@@ -36,7 +36,7 @@
 #include "mpc_class.h"
 
 bool Clctes(mpc_class const z, mpc_class const d);
-bool Clctsx(common &cmn, mpc_class const, mpc_class const);
+bool Clctsx(mpc_class const, mpc_class const);
 bool Cslect(mpc_class const z);
 bool Rlctes(mpf_class const zr, mpf_class const d);
 bool Rlctsx(mpf_class const, mpf_class const, mpf_class const);

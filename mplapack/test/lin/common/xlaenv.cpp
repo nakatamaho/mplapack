@@ -30,22 +30,17 @@
 #include <mplapack.h>
 
 #include <fem.hpp> // Fortran EMulation library of fable module
-#include <mplapack_common.h>
+using namespace fem::major_types;
+using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#define __MPLAPACK_CLCTSX__
+#define __MPLAPACK_XLAENV__
 #include <mplapack_debug.h>
 
-bool Clctsx(COMPLEX const /* alpha */, COMPLEX const /* beta */) {
-    bool return_value = false;
-    INTEGER mplusn = _MPLAPACK_CLCTSX_mplusn;
-    INTEGER m = _MPLAPACK_CLCTSX_m;
-    INTEGER n = _MPLAPACK_CLCTSX_n;
-    INTEGER i = _MPLAPACK_CLCTSX_i;
-    bool fs = _MPLAPACK_CLCTSX_fs;
-    //
+void xlaenv(INTEGER const &ispec, INTEGER const &nvalue) {
+    // COMMON claenv
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -56,13 +51,7 @@ bool Clctsx(COMPLEX const /* alpha */, COMPLEX const /* beta */) {
     //
     //  =====================================================================
     //
-    //     .. Parameters ..
-    //     DOUBLE PRECISION               ZERO
-    //     PARAMETER          ( ZERO = 0.0E+0 )
-    //     COMPLEX*16            CZERO
-    //     PARAMETER          ( CZERO = ( 0.0E+0, 0.0E+0 ) )
-    //     ..
-    //     .. Scalars in Common ..
+    //     .. Arrays in Common ..
     //     ..
     //     .. Common blocks ..
     //     ..
@@ -70,38 +59,11 @@ bool Clctsx(COMPLEX const /* alpha */, COMPLEX const /* beta */) {
     //     ..
     //     .. Executable Statements ..
     //
-    if (fs) {
-        i++;
-        if (i <= m) {
-            return_value = false;
-        } else {
-            return_value = true;
-        }
-        if (i == mplusn) {
-            fs = false;
-            i = 0;
-        }
-    } else {
-        i++;
-        if (i <= n) {
-            return_value = true;
-        } else {
-            return_value = false;
-        }
-        if (i == mplusn) {
-            fs = true;
-            i = 0;
-        }
+    if (ispec >= 1 && ispec <= 16) {
+        iparms[ispec - 1] = nvalue;
     }
     //
-    //      IF( BETA.EQ.CZERO ) THEN
-    //         Clctsx = ( DBLE( ALPHA ).GT.ZERO )
-    //      ELSE
-    //         Clctsx = ( DBLE( ALPHA/BETA ).GT.ZERO )
-    //      END IF
-    //
-    return return_value;
-    //
-    //     End of Clctsx
+    //     End of XLAENV
     //
 }
+

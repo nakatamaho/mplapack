@@ -38,17 +38,16 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+#include <time.h>
 void Rchkee(void) {
     common cmn;
     common_read read(cmn);
     common_write write(cmn);
     INTEGER allocatestatus = 0;
-    REAL a = 0.0;
-    REAL b = 0.0;
-    REAL c = 0.0;
+    INTEGER need = 14;
     const INTEGER nmax = 132;
     REAL d[nmax * 12];
-    REAL s1 = 0.0;
+    time_t s1;
     bool fatal = false;
     const INTEGER nout = 6;
     const INTEGER nin = 5;
@@ -119,7 +118,6 @@ void Rchkee(void) {
     INTEGER ic = 0;
     INTEGER maxtyp = 0;
     bool dotype[maxt];
-    REAL work = 0.0;
     const INTEGER lwork = nmax * (5 * nmax + 5) + 1;
     const INTEGER liwork = nmax * (5 * nmax + 20);
     INTEGER iwork[liwork];
@@ -133,7 +131,7 @@ void Rchkee(void) {
     REAL x[5 * nmax];
     REAL taua[nmax];
     REAL taub[nmax];
-    REAL s2 = 0.0;
+    time_t s2;
     static const char *format_9973 = "(/,1x,71('-'))";
     static const char *format_9980 = "(' *** Error code from ',a,' = ',i4)";
     static const char *format_9981 = "(' Relative machine ',a,' is taken to be',d16.6)";
@@ -181,11 +179,11 @@ void Rchkee(void) {
     //     ..
     //     .. Executable Statements ..
     //
-    a = 0.0f;
-    b = 0.0f;
-    c = 0.0f;
-    d = 0.0f;
-    s1 = dsecnd[-1];
+    for (int ppp = 0 ; ppp< nmax * nmax * need; ppp++) a[ppp]=0.0;
+    for (int ppp = 0 ; ppp< nmax * nmax * 5 ; ppp++) b[ppp]=0.0;
+    for (int ppp = 0 ; ppp< ncmax * ncmax * ncmax * ncmax ; ppp++) c[ppp]=0.0;
+    for (int ppp = 0 ; ppp< lwork ; ppp++) work[ppp]=0.0;            
+    s1 = time(NULL);
     fatal = false;
 //
 //     Return to here to read multiple sets of data
@@ -320,9 +318,10 @@ statement_10:
         write(nout, format_9992), path;
         goto statement_10;
     }
-    ilaver(vers_major, vers_minor, vers_patch);
-    write(nout, "(/,' LAPACK VERSION ',i1,'.',i1,'.',i1)"), vers_major, vers_minor, vers_patch;
-    write(nout, "(/,' The following parameter values will be used:')");
+    iMlaver(mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch);
+    write(nout, "(' Tests of the Multiple precision version of LAPACK MPLAPACK VERSION ',i1,'.',i1,'.',i1,/, "
+                "' Based on original LAPACK VERSION ',i1,'.',i1,'.',i1,/,/, 'The following parameter values will be used:')"),
+        mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch;
     //
     //     Read the number of values of M, P, and N.
     //
@@ -1579,8 +1578,8 @@ statement_190:
     }
 statement_380:
     write(nout, "(/,/,' End of tests')");
-    s2 = dsecnd[-1];
-    write(nout, "(' Total time used = ',f12.2,' seconds',/)"), s2 - s1;
+    s2 = time(NULL);
+    write(nout, "(' Total time used = ',f12.2,' seconds',/)"), double(s2 - s1);
     //
     delete[] a;
     delete[] b;

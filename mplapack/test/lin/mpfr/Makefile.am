@@ -4,6 +4,7 @@ liblin_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INC
 liblin_mpfr_la_SOURCES = $(LIN_SOURCES)
 
 LIN_SOURCES = \
+../common/xlaenv.cpp \
 ../common/Rdrvpp.cpp \
 ../common/Cdrvpp.cpp \
 ../common/Alaesm.cpp \
