@@ -8,7 +8,7 @@ ENV TZ Asia/Tokyo
 RUN apt install -y python3 sudo expect
 RUN apt install -y build-essential gfortran
 RUN apt install -y autotools-dev automake libtool
-RUN apt install -y git wget ccache time
+RUN apt install -y git wget ccache time unifdef clang-format
 RUN apt install -y ng-common ng-cjk emacs-nox
 
 ARG DOCKER_UID=1000
@@ -61,8 +61,10 @@ RUN echo -e "\n\
         email = ${GIT_EMAIL}\n\
         name = ${GIT_NAME}\n\
 " >> /home/$DOCKER_USER/.gitconfig
+RUN cd /home/$DOCKER_USER && git clone https://github.com/universal-ctags/ctags.git
+RUN cd /home/$DOCKER_USER && ctags && ./autogen && ./configure --prefix=/usr/llocal && make && make install
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
-RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git -b v0.9.3 --depth 1
+RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git
 RUN cd /home/$DOCKER_USER/mplapack && git log -1
 RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.ubuntu18.04.sh
 RUN cd /home/$DOCKER_USER/mplapack && make -j4
