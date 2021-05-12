@@ -41,6 +41,7 @@ using fem::common;
 INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
     INTEGER return_value = 0;
     //
+    //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
     //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -72,14 +73,13 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //
         //        Compute SVD crossover point.
         //
-        return_value = castINTEGER(castREAL(min(n1, n2)) * 1.6e0)
-
+        return_value = castINTEGER(castREAL(min(n1, n2) * 1.6e0f));
         //
     } else if (ispec >= 7 && ispec <= 9) {
         //
         //        Return a value from the common block.
         //
-        return_value = iparms(ispec);
+        return_value = iparms[ispec - 1];
         //
     } else if (ispec == 10) {
         //
@@ -88,7 +88,7 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //        iMlaenv = 0
         return_value = 1;
         if (return_value == 1) {
-            return_value = iMeeeck(1, 0.0, 1.0);
+            return_value = iMieeeck(1, 0.0f, 1.0f);
         }
         //
     } else if (ispec == 11) {
@@ -98,7 +98,7 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //        iMlaenv = 0
         return_value = 1;
         if (return_value == 1) {
-            return_value = iMeeeck(0, 0.0, 1.0);
+            return_value = iMieeeck(0, 0.0f, 1.0f);
         }
         //
     } else if ((ispec >= 12) && (ispec <= 16)) {
@@ -116,7 +116,9 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
         if (ispec == 17) {
             return_value = iparms[1 - 1];
         } else {
-            return_value = iparam2stage(ispec, name, opts, n1, n2, n3, n4);
+            printf("notyet \n");
+            exit(0);
+            return_value = iMparam2stage(ispec, name, opts, n1, n2, n3, n4);
         }
         //
     } else {
@@ -134,6 +136,9 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
 
 INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
     INTEGER return_value = 0;
+#ifdef NOTYET
+    // COMMON claenv
+    INTEGER *iparms(cmn.iparms, [100]);
     //
     //     .. Scalar Arguments ..
     //     ..
@@ -170,11 +175,13 @@ INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, I
         return_value = -1;
     }
     //
+#endif
     return return_value;
 }
 
-INTEGER iMparmq(INTEGER const ispec, const char * /* name */, const char * /* opts */, INTEGER const /* n */, INTEGER const ilo, INTEGER const ihi, INTEGER const /* lwork */) {
+INTEGER iparmq(INTEGER const ispec, const char * /* name */, const char * /* opts */, INTEGER const /* n */, INTEGER const ilo, INTEGER const ihi, INTEGER const /* lwork */) {
     INTEGER return_value = 0;
+#ifdef NOTYET
     //
     //     ..
     //     .. Scalar Arguments ..
@@ -278,6 +285,7 @@ INTEGER iMparmq(INTEGER const ispec, const char * /* name */, const char * /* op
         return_value = -1;
         //
     }
+#endif
     return return_value;
     //
     //     ==== End of IPARMQ ====

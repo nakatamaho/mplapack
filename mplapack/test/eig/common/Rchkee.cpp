@@ -39,6 +39,11 @@ using fem::common;
 #include <mplapack_debug.h>
 
 #include <time.h>
+#include <iostream>
+#include <sstream>
+#include <vector>
+using namespace std;
+
 void Rchkee(void) {
     common cmn;
     common_read read(cmn);
@@ -51,7 +56,6 @@ void Rchkee(void) {
     bool fatal = false;
     const INTEGER nout = 6;
     const INTEGER nin = 5;
-    char line[80];
     char path[3];
     bool nep = false;
     bool sep = false;
@@ -132,6 +136,12 @@ void Rchkee(void) {
     REAL taua[nmax];
     REAL taub[nmax];
     time_t s2;
+    INTEGER mplapack_vers_major = 0;
+    INTEGER mplapack_vers_minor = 0;
+    INTEGER mplapack_vers_patch = 0;
+    INTEGER lapack_vers_major = 0;
+    INTEGER lapack_vers_minor = 0;
+    INTEGER lapack_vers_patch = 0;
     static const char *format_9973 = "(/,1x,71('-'))";
     static const char *format_9980 = "(' *** Error code from ',a,' = ',i4)";
     static const char *format_9981 = "(' Relative machine ',a,' is taken to be',d16.6)";
@@ -179,10 +189,16 @@ void Rchkee(void) {
     //     ..
     //     .. Executable Statements ..
     //
-    for (int ppp = 0 ; ppp< nmax * nmax * need; ppp++) a[ppp]=0.0;
-    for (int ppp = 0 ; ppp< nmax * nmax * 5 ; ppp++) b[ppp]=0.0;
-    for (int ppp = 0 ; ppp< ncmax * ncmax * ncmax * ncmax ; ppp++) c[ppp]=0.0;
-    for (int ppp = 0 ; ppp< lwork ; ppp++) work[ppp]=0.0;            
+    for (int ppp = 0; ppp < nmax * nmax * need; ppp++)
+        a[ppp] = 0.0;
+    for (int ppp = 0; ppp < nmax * nmax * 5; ppp++)
+        b[ppp] = 0.0;
+    for (int ppp = 0; ppp < ncmax * ncmax * ncmax * ncmax; ppp++)
+        c[ppp] = 0.0;
+    for (int ppp = 0; ppp < lwork; ppp++)
+        work[ppp] = 0.0;
+    std::string str;
+    stringstream ss(str);
     s1 = time(NULL);
     fatal = false;
 //
@@ -192,12 +208,12 @@ statement_10:
     //
     //     Read the first line and set the 3-character test path
     //
-    try {
-        read(nin, "(a80)"), line;
-    } catch (read_end const) {
-        goto statement_380;
-    }
-    path = line[(3 - 1) * ldline];
+    getline(cin, str);
+    char line[1024];
+    ss >> line;
+    path[0] = line[0];
+    path[1] = line[1];
+    path[2] = line[2];
     nep = Mlsamen(3, path, "NEP") || Mlsamen(3, path, "DHS");
     sep = Mlsamen(3, path, "SEP") || Mlsamen(3, path, "DST") || Mlsamen(3, path, "DSG") || Mlsamen(3, path, "SE2");
     svd = Mlsamen(3, path, "SVD") || Mlsamen(3, path, "DBD");
@@ -325,7 +341,8 @@ statement_10:
     //
     //     Read the number of values of M, P, and N.
     //
-    read(nin, star), nn;
+    getline(cin, str);
+    ss >> nn;
     if (nn < 0) {
         write(nout, format_9989), "   NN ", nn, 1;
         nn = 0;
@@ -342,20 +359,20 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (i = 1; i <= nn; i = i + 1) {
-                rloop, mval(i);
+                rloop, mval[i - 1];
             }
         }
         if (svd) {
-            vname = "    M ";
+            strncmp(vname, "    M ", 8);
         } else {
-            vname = "    N ";
+            strncmp(vname, "    N ", 8);
         }
         for (i = 1; i <= nn; i = i + 1) {
             if (mval[i - 1] < 0) {
-                write(nout, format_9989), vname, mval(i), 0;
+                write(nout, format_9989), vname, mval[i - 1], 0;
                 fatal = true;
             } else if (mval[i - 1] > nmax) {
-                write(nout, format_9988), vname, mval(i), nmax;
+                write(nout, format_9988), vname, mval[i - 1], nmax;
                 fatal = true;
             }
         }
@@ -363,7 +380,7 @@ statement_10:
             write_loop wloop(cmn, nout, format_9983);
             wloop, "M:    ";
             for (i = 1; i <= nn; i = i + 1) {
-                wloop, mval(i);
+                wloop, mval[i - 1];
             }
         }
     }
@@ -374,15 +391,15 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (i = 1; i <= nn; i = i + 1) {
-                rloop, pval(i);
+                rloop, pval[i - 1];
             }
         }
         for (i = 1; i <= nn; i = i + 1) {
             if (pval[i - 1] < 0) {
-                write(nout, format_9989), " P  ", pval(i), 0;
+                write(nout, format_9989), " P  ", pval[i - 1], 0;
                 fatal = true;
             } else if (pval[i - 1] > nmax) {
-                write(nout, format_9988), " P  ", pval(i), nmax;
+                write(nout, format_9988), " P  ", pval[i - 1], nmax;
                 fatal = true;
             }
         }
@@ -390,7 +407,7 @@ statement_10:
             write_loop wloop(cmn, nout, format_9983);
             wloop, "P:    ";
             for (i = 1; i <= nn; i = i + 1) {
-                wloop, pval(i);
+                wloop, pval[i - 1];
             }
         }
     }
@@ -401,15 +418,15 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (i = 1; i <= nn; i = i + 1) {
-                rloop, nval(i);
+                rloop, nval[i - 1];
             }
         }
         for (i = 1; i <= nn; i = i + 1) {
             if (nval[i - 1] < 0) {
-                write(nout, format_9989), "    N ", nval(i), 0;
+                write(nout, format_9989), "    N ", nval[i - 1], 0;
                 fatal = true;
             } else if (nval[i - 1] > nmax) {
-                write(nout, format_9988), "    N ", nval(i), nmax;
+                write(nout, format_9988), "    N ", nval[i - 1], nmax;
                 fatal = true;
             }
         }
@@ -423,7 +440,7 @@ statement_10:
             write_loop wloop(cmn, nout, format_9983);
             wloop, "N:    ";
             for (i = 1; i <= nn; i = i + 1) {
-                wloop, nval(i);
+                wloop, nval[i - 1];
             }
         }
     } else {
@@ -437,15 +454,15 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (i = 1; i <= nk; i = i + 1) {
-                rloop, kval(i);
+                rloop, kval[i - 1];
             }
         }
         for (i = 1; i <= nk; i = i + 1) {
             if (kval[i - 1] < 0) {
-                write(nout, format_9989), "    K ", kval(i), 0;
+                write(nout, format_9989), "    K ", kval[i - 1], 0;
                 fatal = true;
             } else if (kval[i - 1] > nmax) {
-                write(nout, format_9988), "    K ", kval(i), nmax;
+                write(nout, format_9988), "    K ", kval[i - 1], nmax;
                 fatal = true;
             }
         }
@@ -453,7 +470,7 @@ statement_10:
             write_loop wloop(cmn, nout, format_9983);
             wloop, "K:    ";
             for (i = 1; i <= nk; i = i + 1) {
-                wloop, kval(i);
+                wloop, kval[i - 1];
             }
         }
     }
@@ -463,30 +480,30 @@ statement_10:
         //        For the nonsymmetric QR driver routines, only one set of
         //        parameters is allowed.
         //
-        read(nin, star), nbval(1), nbmin(1), nxval(1), inmin(1), inwin(1), inibl(1), ishfts(1), iacc22(1);
+        read(nin, star), nbval[1 - 1], nbmin[1 - 1], nxval[1 - 1], inmin[1 - 1], inwin[1 - 1], inibl[1 - 1], ishfts[1 - 1], iacc22[1 - 1];
         if (nbval[1 - 1] < 1) {
-            write(nout, format_9989), "   NB ", nbval(1), 1;
+            write(nout, format_9989), "   NB ", nbval[1 - 1], 1;
             fatal = true;
         } else if (nbmin[1 - 1] < 1) {
-            write(nout, format_9989), "NBMIN ", nbmin(1), 1;
+            write(nout, format_9989), "NBMIN ", nbmin[1 - 1], 1;
             fatal = true;
         } else if (nxval[1 - 1] < 1) {
-            write(nout, format_9989), "   NX ", nxval(1), 1;
+            write(nout, format_9989), "   NX ", nxval[1 - 1], 1;
             fatal = true;
         } else if (inmin[1 - 1] < 1) {
-            write(nout, format_9989), "   INMIN ", inmin(1), 1;
+            write(nout, format_9989), "   INMIN ", inmin[1 - 1], 1;
             fatal = true;
         } else if (inwin[1 - 1] < 1) {
-            write(nout, format_9989), "   INWIN ", inwin(1), 1;
+            write(nout, format_9989), "   INWIN ", inwin[1 - 1], 1;
             fatal = true;
         } else if (inibl[1 - 1] < 1) {
-            write(nout, format_9989), "   INIBL ", inibl(1), 1;
+            write(nout, format_9989), "   INIBL ", inibl[1 - 1], 1;
             fatal = true;
         } else if (ishfts[1 - 1] < 1) {
-            write(nout, format_9989), "   ISHFTS ", ishfts(1), 1;
+            write(nout, format_9989), "   ISHFTS ", ishfts[1 - 1], 1;
             fatal = true;
         } else if (iacc22[1 - 1] < 0) {
-            write(nout, format_9989), "   IACC22 ", iacc22(1), 0;
+            write(nout, format_9989), "   IACC22 ", iacc22[1 - 1], 0;
             fatal = true;
         }
         xlaenv(1, nbval[1 - 1]);
@@ -511,21 +528,21 @@ statement_10:
         //        For the nonsymmetric generalized driver routines, only one set
         //        of parameters is allowed.
         //
-        read(nin, star), nbval(1), nbmin(1), nxval(1), nsval(1), mxbval(1);
+        read(nin, star), nbval[1 - 1], nbmin[1 - 1], nxval[1 - 1], nsval[1 - 1], mxbval[1 - 1];
         if (nbval[1 - 1] < 1) {
-            write(nout, format_9989), "   NB ", nbval(1), 1;
+            write(nout, format_9989), "   NB ", nbval[1 - 1], 1;
             fatal = true;
         } else if (nbmin[1 - 1] < 1) {
-            write(nout, format_9989), "NBMIN ", nbmin(1), 1;
+            write(nout, format_9989), "NBMIN ", nbmin[1 - 1], 1;
             fatal = true;
         } else if (nxval[1 - 1] < 1) {
-            write(nout, format_9989), "   NX ", nxval(1), 1;
+            write(nout, format_9989), "   NX ", nxval[1 - 1], 1;
             fatal = true;
         } else if (nsval[1 - 1] < 2) {
-            write(nout, format_9989), "   NS ", nsval(1), 2;
+            write(nout, format_9989), "   NS ", nsval[1 - 1], 2;
             fatal = true;
         } else if (mxbval[1 - 1] < 1) {
-            write(nout, format_9989), " MAXB ", mxbval(1), 1;
+            write(nout, format_9989), " MAXB ", mxbval[1 - 1], 1;
             fatal = true;
         }
         xlaenv(1, nbval[1 - 1]);
@@ -533,13 +550,14 @@ statement_10:
         xlaenv(3, nxval[1 - 1]);
         xlaenv(4, nsval[1 - 1]);
         xlaenv(8, mxbval[1 - 1]);
-        write(nout, format_9983), "NB:   ", nbval(1);
-        write(nout, format_9983), "NBMIN:", nbmin(1);
-        write(nout, format_9983), "NX:   ", nxval(1);
-        write(nout, format_9983), "NS:   ", nsval(1);
-        write(nout, format_9983), "MAXB: ", mxbval(1);
-        //
-    } else if (!dsb && !glm && !gqr && !gsv && !csd && !lse) {
+        write(nout, format_9983), "NB:   ", nbval[1 - 1];
+        write(nout, format_9983), "NBMIN:", nbmin[1 - 1];
+        write(nout, format_9983), "NX:   ", nxval[1 - 1];
+        write(nout, format_9983), "NS:   ", nsval[1 - 1];
+        write(nout, format_9983), "MAXB: ", mxbval[1 - 1];
+    }
+#ifdef NOTYET
+    else if (!dsb && !glm && !gqr && !gsv && !csd && !lse) {
         //
         //        For the other paths, the number of parameters can be varied
         //        from the input file.  Read the number of parameter values.
@@ -1577,6 +1595,7 @@ statement_190:
         goto statement_190;
     }
 statement_380:
+#endif
     write(nout, "(/,/,' End of tests')");
     s2 = time(NULL);
     write(nout, "(' Total time used = ',f12.2,' seconds',/)"), double(s2 - s1);
