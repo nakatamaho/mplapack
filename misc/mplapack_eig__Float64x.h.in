@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef _MPLAPACK_LIN__FLOAT64X_H_
-#define _MPLAPACK_LIN__FLOAT64X_H_
+#ifndef _MPLAPACK_EIG__FLOAT64X_H_
+#define _MPLAPACK_EIG__FLOAT64X_H_
 
 #include "mplapack_config.h"
 

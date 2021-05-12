@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef _MPLAPACK_LIN_MPFR_H_
-#define _MPLAPACK_LIN_MPFR_H_
+#ifndef _MPLAPACK_EIG_MPFR_H_
+#define _MPLAPACK_EIG_MPFR_H_
 
 #include "mplapack_config.h"
 #include "mpc_class.h"

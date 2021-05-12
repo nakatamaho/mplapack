@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef _MPLAPACK_LIN_DOUBLE_H_
-#define _MPLAPACK_LIN_DOUBLE_H_
+#ifndef _MPLAPACK_EIG_DOUBLE_H_
+#define _MPLAPACK_EIG_DOUBLE_H_
 
 #include "mplapack_config.h"
 
