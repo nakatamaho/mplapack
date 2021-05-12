@@ -218,4 +218,6 @@ void Rsvdch(mplapackint const n, dd_real *s, dd_real *e, dd_real *svd, dd_real c
 void Rsvdct(mplapackint const n, dd_real *s, dd_real *e, dd_real const shift, mplapackint &num);
 void Rsyt21(mplapackint const itype, const char *uplo, mplapackint const n, mplapackint const kband, dd_real *a, mplapackint const lda, dd_real *d, dd_real *e, dd_real *u, mplapackint const ldu, dd_real *v, mplapackint const ldv, dd_real *tau, dd_real *work, dd_real *result);
 void Rsyt22(mplapackint const itype, const char *uplo, mplapackint const n, mplapackint const m, mplapackint const kband, dd_real *a, mplapackint const lda, dd_real *d, dd_real *e, dd_real *u, mplapackint const ldu, dd_real *, mplapackint const ldv, dd_real *, dd_real *work, dd_real *result);
+void chkxer(const char *srnamt, mplapackint const &infot, mplapackint const &nout, bool &lerr, bool &ok);
+void xlaenv(mplapackint const &ispec, mplapackint const &nvalue);
 #endif

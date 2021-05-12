@@ -182,11 +182,12 @@ EIG_SOURCES = \
 ../common/Cdrgsx.cpp \
 ../common/Rdrgsx.cpp \
 ../common/Alareq.cpp \
-../common/Alarqg.cpp
+../common/Alarqg.cpp \
+../common/iMlaenv.cpp \
+../common/chkxer.cpp \
+../common/xlaenv.cpp 
 
-#../common/iMlaenv.cpp
-
-libdepends = -L. -leig_mpfr -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr 
+libdepends = -L. -leig_mpfr -L../../matgen -lmatgen_mpfr -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr 
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mplapack/test/fable
 
@@ -197,7 +198,7 @@ mplapack_mpfr_eigtest_PROGRAMS = \
 xeigtstR_mpfr \
 xeigtstC_mpfr
 
-xeigtstR_mpfr_SOURCES  = ../common/Rchkee.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xeigtstR_mpfr_SOURCES  = ../common/Rchkee.cpp  ../../../../mpblas/test/common/mplapack.test.cpp
 xeigtstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs)
 xeigtstR_mpfr_CXXFLAGS = $(cxxflags)
 
