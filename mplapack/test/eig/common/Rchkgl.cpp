@@ -39,8 +39,10 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rchkgl(INTEGER const nin, INTEGER const nout) {
+    common cmn;
     common_read read(cmn);
     common_write write(cmn);
+    char buf[1024];
     INTEGER lmax[5];
     INTEGER ninfo = 0;
     INTEGER knt = 0;
@@ -58,6 +60,8 @@ void Rchkgl(INTEGER const nin, INTEGER const nout) {
     INTEGER ihiin = 0;
     REAL ain[lda * lda];
     REAL bin[ldb * ldb];
+    INTEGER ldain = lda;
+    INTEGER ldbin = ldb;
     REAL lsclin[lda];
     REAL rsclin[lda];
     const INTEGER lwork = 6 * lda;
@@ -100,6 +104,7 @@ void Rchkgl(INTEGER const nin, INTEGER const nout) {
     ninfo = 0;
     knt = 0;
     rmax = zero;
+    double dtmp;
     //
     eps = Rlamch("Precision");
 //
@@ -113,7 +118,8 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, a(i, j);
+                rloop, dtmp;
+                a[(i - 1) + (j - 1) * lda] = dtmp;
             }
         }
     }
@@ -122,7 +128,8 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, b(i, j);
+                rloop, dtmp;
+                b[(i - 1) + (j - 1) * ldb] = dtmp;
             }
         }
     }
@@ -132,7 +139,8 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, ain(i, j);
+                rloop, dtmp;
+                ain[(i - 1) + (j - 1) * ldain] = dtmp;
             }
         }
     }
@@ -140,7 +148,8 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, bin(i, j);
+                rloop, dtmp;
+                bin[(i - 1) + (j - 1) * ldbin] = dtmp;
             }
         }
     }
@@ -148,13 +157,15 @@ statement_10:
     {
         read_loop rloop(cmn, nin, star);
         for (i = 1; i <= n; i = i + 1) {
-            rloop, lsclin(i);
+            rloop, dtmp;
+            lsclin[i - 1] = dtmp;
         }
     }
     {
         read_loop rloop(cmn, nin, star);
         for (i = 1; i <= n; i = i + 1) {
-            rloop, rsclin(i);
+            rloop, dtmp;
+            rsclin[i - 1] = dtmp;
         }
     }
     //
@@ -201,10 +212,11 @@ statement_90:
     //
     write(nout, "(1x,'.. test output of Rggbal .. ')");
     //
-    write(nout, "(1x,'value of largest test error            = ',d12.3)"), rmax;
-    write(nout, "(1x,'example number where info is not zero  = ',i4)"), lmax((INTEGER)1);
-    write(nout, "(1x,'example number where ILO or IHI wrong  = ',i4)"), lmax((INTEGER)2);
-    write(nout, "(1x,'example number having largest error    = ',i4)"), lmax(3);
+    sprintnum_short(buf, rmax);
+    write(nout, "(1x,'value of largest test error            = ',a)"), buf;
+    write(nout, "(1x,'example number where info is not zero  = ',i4)"), lmax[1 - 1];
+    write(nout, "(1x,'example number where ILO or IHI wrong  = ',i4)"), lmax[2 - 1];
+    write(nout, "(1x,'example number having largest error    = ',i4)"), lmax[3 - 1];
     write(nout, "(1x,'number of examples where info is not 0 = ',i4)"), ninfo;
     write(nout, "(1x,'total number of examples tested        = ',i4)"), knt;
     //

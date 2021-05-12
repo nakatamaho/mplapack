@@ -39,6 +39,11 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
+    common cmn;
+    common_read read(cmn);
+    common_write write(cmn);
+    double dtmp;
+    char buf[1024];
     REAL eps = 0.0;
     REAL smlnum = 0.0;
     const REAL one = 1.0;
@@ -77,6 +82,8 @@ void Rget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     INTEGER itmp = 0;
     REAL qsav[ldt * ldt];
     REAL tsav1[ldt * ldt];
+    INTEGER ldqsav = ldt;
+    INTEGER ldtsav1 = ldt;
     INTEGER m = 0;
     REAL s = 0.0;
     REAL sep = 0.0;
@@ -94,6 +101,7 @@ void Rget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     REAL qtmp[ldt * ldt];
     INTEGER ldttmp = ldt;
     INTEGER ldq = ldt;
+    INTEGER ldqtmp = ldt;
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -155,14 +163,15 @@ statement_10:
     {
         read_loop rloop(cmn, nin, star);
         for (i = 1; i <= ndim; i = i + 1) {
-            rloop, iselec(i);
+            rloop, iselec[i - 1];
         }
     }
     for (i = 1; i <= n; i = i + 1) {
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, tmp(i, j);
+                rloop, dtmp;
+                tmp[(i - 1) + (j - 1) * ldtmp] = dtmp;
             }
         }
     }

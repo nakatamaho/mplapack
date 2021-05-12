@@ -39,43 +39,22 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const niunit, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *w, COMPLEX *w1, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, COMPLEX *lre, INTEGER const ldlre, REAL *rcondv, REAL *rcndv1, REAL *rcdvin, REAL *rconde, REAL *rcnde1, REAL *rcdein, REAL *scale, REAL *scale1, REAL *result, COMPLEX *work, INTEGER const nwork, REAL *rwork, INTEGER &info) {
-    FEM_CMN_SVE(Cdrvvx);
-    iseed([4]);
-    a([lda * star]);
-    h([lda * star]);
-    vl([ldvl * star]);
-    vr([ldvr * star]);
-    lre([ldlre * star]);
-    result([11]);
+
+    INTEGER ldh = lda;
+    common cmn;
     common_read read(cmn);
     common_write write(cmn);
-    str_arr_ref<1> bal(sve.bal, [4]);
     const INTEGER maxtyp = 21;
-    INTEGER *kconds(sve.kconds, [maxtyp]);
-    INTEGER *kmagn(sve.kmagn, [maxtyp]);
-    INTEGER *kmode(sve.kmode, [maxtyp]);
-    INTEGER *ktype(sve.ktype, [maxtyp]);
-    if (is_called_first_time) {
-        data((values, 1, 2, 3, 5 * datum(4), 4 * datum(6), 6 * datum(6), 3 * datum(9))), ktype;
-        {
-            data_values data;
-            data.values, 3 * datum(1), 1, 1, 1, 2, 3, 4 * datum(1), 1;
-            data.values, 1, 1, 1, 2, 3, 1, 2, 3;
-            data, kmagn;
-        }
-        {
-            data_values data;
-            data.values, 3 * datum(0), 4, 3, 1, 4, 4, 4, 3;
-            data.values, 1, 5, 4, 3, 1, 5, 5, 5;
-            data.values, 4, 3, 1;
-            data, kmode;
-        }
-        data((values, 3 * datum(0), 5 * datum(0), 4 * datum(1), 6 * datum(2), 3 * datum(0))), kconds;
-        {
-            static const char *values[] = {"N", "P", "S", "B"};
-            data_of_type_str(FEM_VALUES_AND_SIZE), bal;
-        }
-    }
+    INTEGER ktype[21] = {1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9};
+    INTEGER kmagn[21] = {1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 2, 3};
+    INTEGER kmode[21] = {0, 0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1};
+    INTEGER kconds[21] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0};
+    char bal[1 * 4] = {'N', 'P', 'S', 'B'};
+    char buf[1024];
+    double dtmp;
+    double dtmp1, dtmp2, dtmp3, dtmp4;
+    complex<double> ctmp;
+    complex<double> ctmp1, ctmp2, ctmp3, ctmp4;
     char path[3];
     INTEGER ntestt = 0;
     INTEGER ntestf = 0;
@@ -178,8 +157,9 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     //     ..
     //     .. Executable Statements ..
     //
-    path[(1 - 1)] = "Zomplex precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "VX";
+    path[0] = 'C';
+    path[1] = 'V';
+    path[2] = 'X';
     //
     //     Check for errors
     //
@@ -351,13 +331,13 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 //              Diagonal Matrix, [Eigen]values Specified
                 //
-                zlatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, 0, 0, "N", a, lda, &work[(n + 1) - 1], iinfo);
+                Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, 0, 0, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 5) {
                 //
                 //              Symmetric, eigenvalues specified
                 //
-                zlatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, n, n, "N", a, lda, &work[(n + 1) - 1], iinfo);
+                Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, n, n, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 6) {
                 //
@@ -371,25 +351,25 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     conds = zero;
                 }
                 //
-                zlatme(n, "D", iseed, work, imode, cond, cone, "T", "T", "T", rwork, 4, conds, n, n, anorm, a, lda, &work[(2 * n + 1) - 1], iinfo);
+                Clatme(n, "D", iseed, work, imode, cond, cone, "T", "T", "T", rwork, 4, conds, n, n, anorm, a, lda, &work[(2 * n + 1) - 1], iinfo);
                 //
             } else if (itype == 7) {
                 //
                 //              Diagonal, random eigenvalues
                 //
-                zlatmr(n, n, "D", iseed, "S", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, idumma, iinfo);
+                Clatmr(n, n, "D", iseed, "S", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, idumma, iinfo);
                 //
             } else if (itype == 8) {
                 //
                 //              Symmetric, random eigenvalues
                 //
-                zlatmr(n, n, "D", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, idumma, iinfo);
+                Clatmr(n, n, "D", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, idumma, iinfo);
                 //
             } else if (itype == 9) {
                 //
                 //              General, random eigenvalues
                 //
-                zlatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, idumma, iinfo);
+                Clatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, idumma, iinfo);
                 if (n >= 4) {
                     Claset("Full", 2, n, czero, czero, a, lda);
                     Claset("Full", n - 3, 1, czero, czero, &a[(3 - 1)], lda);
@@ -401,7 +381,7 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 //              Triangular, random eigenvalues
                 //
-                zlatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, 0, zero, anorm, "NO", a, lda, idumma, iinfo);
+                Clatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, 0, zero, anorm, "NO", a, lda, idumma, iinfo);
                 //
             } else {
                 //
@@ -437,7 +417,7 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     //                 Perform tests
                     //
-                    Cget23(false, 0, balanc, jtype, thresh, ioldsd, nounit, n, a, lda, h, w, w1, vl, ldvl, vr, ldvr, lre, ldlre, rcondv, rcndv1, rcdvin, rconde, rcnde1, rcdein, scale, scale1, result, work, nnwork, rwork, info);
+                    Cget23(false, 0, &balanc, jtype, thresh, ioldsd, nounit, n, a, lda, h, w, w1, vl, ldvl, vr, ldvr, lre, ldlre, rcondv, rcndv1, rcdvin, rconde, rcnde1, rcdein, scale, scale1, result, work, nnwork, rwork, info);
                     //
                     //                 Check for RESULT(j) > THRESH
                     //
@@ -456,19 +436,21 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         ntestf++;
                     }
                     if (ntestf == 1) {
+                        sprintnum_short(buf, thresh);
                         write(nounit, format_9999), path;
                         write(nounit, format_9998);
                         write(nounit, format_9997);
                         write(nounit, format_9996);
-                        write(nounit, format_9995), thresh;
+                        write(nounit, format_9995), buf;
                         ntestf = 2;
                     }
                     //
                     for (j = 1; j <= 9; j = j + 1) {
                         if (result[j - 1] >= thresh) {
+                            sprintnum_short(buf, thresh);
                             write(nounit, "(' BALANC=''',a1,''',N=',i4,',IWK=',i1,', seed=',4(i4,','),"
                                           "' type ',i2,', test(',i2,')=',a)"),
-                                balanc, n, iwk, ioldsd, jtype, j, result(j);
+                                balanc, n, iwk, ioldsd, jtype, j, buf;
                         }
                     }
                     //
@@ -488,69 +470,69 @@ statement_160:
     //     by real part, then decreasing by imaginary part)
     //
     jtype = 0;
-statement_170:
-    try {
+
+    while (1) {
         read(niunit, star), n, isrt;
-    } catch (read_end const) {
-        goto statement_220;
-    }
-    //
-    //     Read input data until N=0
-    //
-    if (n == 0) {
-        goto statement_220;
-    }
-    jtype++;
-    iseed[1 - 1] = jtype;
-    for (i = 1; i <= n; i = i + 1) {
-        {
-            read_loop rloop(cmn, niunit, star);
-            for (j = 1; j <= n; j = j + 1) {
-                rloop, a(i, j);
+        //
+        //     Read input data until N=0
+        //
+        if (n == 0)
+            break;
+        jtype++;
+        iseed[1 - 1] = jtype;
+        for (i = 1; i <= n; i = i + 1) {
+            {
+                read_loop rloop(cmn, niunit, star);
+                for (j = 1; j <= n; j = j + 1) {
+                    rloop, ctmp;
+                    a[(i - 1) + (j - 1) * lda] = ctmp;
+                }
             }
         }
-    }
-    for (i = 1; i <= n; i = i + 1) {
-        read(niunit, star), wr, wi, rcdein(i), rcdvin(i);
-        w1[i - 1] = COMPLEX(wr, wi);
-    }
-    Cget23(true, isrt, "N", 22, thresh, iseed, nounit, n, a, lda, h, w, w1, vl, ldvl, vr, ldvr, lre, ldlre, rcondv, rcndv1, rcdvin, rconde, rcnde1, rcdein, scale, scale1, result, work, 6 * n + 2 * pow2(n), rwork, info);
-    //
-    //     Check for RESULT(j) > THRESH
-    //
-    ntest = 0;
-    nfail = 0;
-    for (j = 1; j <= 11; j = j + 1) {
-        if (result[j - 1] >= zero) {
-            ntest++;
+        for (i = 1; i <= n; i = i + 1) {
+            read(niunit, star), wr, wi, dtmp1, dtmp2;
+            w1[i - 1] = COMPLEX(wr, wi);
+            rcdein[i - 1] = dtmp1;
+            rcdvin[i - 1] = dtmp2;
         }
-        if (result[j - 1] >= thresh) {
-            nfail++;
+        Cget23(true, isrt, "N", 22, thresh, iseed, nounit, n, a, lda, h, w, w1, vl, ldvl, vr, ldvr, lre, ldlre, rcondv, rcndv1, rcdvin, rconde, rcnde1, rcdein, scale, scale1, result, work, 6 * n + 2 * pow2(n), rwork, info);
+        //
+        //     Check for RESULT(j) > THRESH
+        //
+        ntest = 0;
+        nfail = 0;
+        for (j = 1; j <= 11; j = j + 1) {
+            if (result[j - 1] >= zero) {
+                ntest++;
+            }
+            if (result[j - 1] >= thresh) {
+                nfail++;
+            }
         }
-    }
-    //
-    if (nfail > 0) {
-        ntestf++;
-    }
-    if (ntestf == 1) {
-        write(nounit, format_9999), path;
-        write(nounit, format_9998);
-        write(nounit, format_9997);
-        write(nounit, format_9996);
-        write(nounit, format_9995), thresh;
-        ntestf = 2;
-    }
-    //
-    for (j = 1; j <= 11; j = j + 1) {
-        if (result[j - 1] >= thresh) {
-            write(nounit, "(' N=',i5,', input example =',i3,',  test(',i2,')=',a)"), n, jtype, j, result(j);
+        //
+        if (nfail > 0) {
+            ntestf++;
         }
+        if (ntestf == 1) {
+            sprintnum_short(buf, thresh);
+            write(nounit, format_9999), path;
+            write(nounit, format_9998);
+            write(nounit, format_9997);
+            write(nounit, format_9996);
+            write(nounit, format_9995), buf;
+            ntestf = 2;
+        }
+        //
+        for (j = 1; j <= 11; j = j + 1) {
+            if (result[j - 1] >= thresh) {
+                sprintnum_short(buf, thresh);
+                write(nounit, "(' N=',i5,', input example =',i3,',  test(',i2,')=',a)"), n, jtype, j, buf;
+            }
+        }
+        //
+        nerrs += nfail;
+        ntestt += ntest;
     }
-    //
-    nerrs += nfail;
-    ntestt += ntest;
-    goto statement_170;
-statement_220:
     //
     //     Summary
     //

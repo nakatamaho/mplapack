@@ -49,13 +49,17 @@ void Cget36(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER con
     INTEGER i = 0;
     const INTEGER ldt = 10;
     COMPLEX tmp[ldt * ldt];
+    INTEGER ldtmp = ldt;
     INTEGER j = 0;
     COMPLEX t1[ldt * ldt];
     COMPLEX t2[ldt * ldt];
+    INTEGER ldt1 = ldt;
+    INTEGER ldt2 = ldt;
     REAL res = 0.0;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     COMPLEX q[ldt * ldt];
+    INTEGER ldq = ldt;
     INTEGER info1 = 0;
     const REAL one = 1.0;
     INTEGER info2 = 0;
@@ -92,6 +96,7 @@ void Cget36(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER con
     lmax = 0;
     knt = 0;
     ninfo = 0;
+    complex<double> ctmp;
 //
 //     Read input data until N=0
 //
@@ -105,7 +110,8 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, tmp(i, j);
+                rloop, ctmp;
+                tmp[(i - 1) + (j - 1) * ldtmp] = ctmp;
             }
         }
     }

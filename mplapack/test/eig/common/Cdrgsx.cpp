@@ -117,6 +117,9 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
     common_write write(cmn);
     char buf0[1024];
     char buf1[1024];
+    complex<double> ctmp;
+    double dtmp;
+    double dtmp1, dtmp2;
     INTEGER m;
     INTEGER n;
     INTEGER mplusn;
@@ -507,206 +510,202 @@ statement_70:
     //     Read input data until N=0
     //
     nptknt = 0;
-//
-statement_80:
-    try {
-        read(nin, star), mplusn;
-    } catch (read_end const) {
-        goto statement_140;
-    }
-    if (mplusn == 0) {
-        goto statement_140;
-    }
-    try {
+    //
+    read(nin, star), mplusn;
+    if (mplusn == 0)
+        goto statement_150;
+
+    while (1) {
+
         read(nin, star), n;
-    } catch (read_end const) {
-        goto statement_140;
-    }
-    for (i = 1; i <= mplusn; i = i + 1) {
-        {
-            read_loop rloop(cmn, nin, star);
-            for (j = 1; j <= mplusn; j = j + 1) {
-                rloop, ai(i, j);
-            }
-        }
-    }
-    for (i = 1; i <= mplusn; i = i + 1) {
-        {
-            read_loop rloop(cmn, nin, star);
-            for (j = 1; j <= mplusn; j = j + 1) {
-                rloop, bi(i, j);
-            }
-        }
-    }
-    read(nin, star), pltru, diftru;
-    //
-    nptknt++;
-    fs = true;
-    k = 0;
-    m = mplusn - n;
-    //
-    Clacpy("Full", mplusn, mplusn, ai, lda, a, lda);
-    Clacpy("Full", mplusn, mplusn, bi, lda, b, lda);
-    //
-    //     Compute the Schur factorization while swapping the
-    //     m-by-m (1,1)-blocks with n-by-n (2,2)-blocks.
-    //
-    Cggesx("V", "V", "S", _Clctsx, "B", mplusn, ai, lda, bi, lda, mm, alpha, beta, q, lda, z, lda, pl, difest, work, lwork, rwork, iwork, liwork, bwork, linfo);
-    //
-    if (linfo != 0 && linfo != mplusn + 2) {
-        result[1 - 1] = ulpinv;
-        write(nout, "(' Cdrgsx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
-                    "', Input Example #',i2,')')"),
-            "Cggesx", linfo, mplusn, nptknt;
-        goto statement_130;
-    }
-    //
-    //     Compute the norm(A, B)
-    //        (should this be norm of (A,B) or (AI,BI)?)
-    //
-    Clacpy("Full", mplusn, mplusn, ai, lda, work, mplusn);
-    Clacpy("Full", mplusn, mplusn, bi, lda, &work[(mplusn * mplusn + 1) - 1], mplusn);
-    abnrm = Clange("Fro", mplusn, 2 * mplusn, work, mplusn, rwork);
-    //
-    //     Do tests (1) to (4)
-    //
-    Cget51(1, mplusn, a, lda, ai, lda, q, lda, z, lda, work, rwork, result[1 - 1]);
-    Cget51(1, mplusn, b, lda, bi, lda, q, lda, z, lda, work, rwork, result[2 - 1]);
-    Cget51(3, mplusn, b, lda, bi, lda, q, lda, q, lda, work, rwork, result[3 - 1]);
-    Cget51(3, mplusn, b, lda, bi, lda, z, lda, z, lda, work, rwork, result[4 - 1]);
-    //
-    //     Do tests (5) and (6): check Schur form of A and compare
-    //     eigenvalues with diagonals.
-    //
-    ntest = 6;
-    temp1 = zero;
-    result[5 - 1] = zero;
-    result[6 - 1] = zero;
-    //
-    for (j = 1; j <= mplusn; j = j + 1) {
-        ilabad = false;
-        temp2 = (abs1(alpha[j - 1] - ai[(j - 1) + (j - 1) * ldai]) / max({smlnum, abs1(alpha[j - 1]), abs1(ai[(j - 1) + (j - 1) * ldai])}) + abs1(beta[j - 1] - bi[(j - 1) + (j - 1) * ldbi]) / max({smlnum, abs1(beta[j - 1]), abs1(bi[(j - 1) + (j - 1) * ldbi])})) / ulp;
-        if (j < mplusn) {
-            if (ai[((j + 1) - 1) + (j - 1) * ldai] != zero) {
-                ilabad = true;
-                result[5 - 1] = ulpinv;
-            }
-        }
-        if (j > 1) {
-            if (ai[(j - 1) + ((j - 1) - 1) * ldai] != zero) {
-                ilabad = true;
-                result[5 - 1] = ulpinv;
-            }
-        }
-        temp1 = max(temp1, temp2);
-        if (ilabad) {
-            write(nout, format_9997), j, mplusn, nptknt;
-        }
-    }
-    result[6 - 1] = temp1;
-    //
-    //     Test (7) (if sorting worked)  <--------- need to be checked.
-    //
-    ntest = 7;
-    result[7 - 1] = zero;
-    if (linfo == mplusn + 3) {
-        result[7 - 1] = ulpinv;
-    }
-    //
-    //     Test (8): compare the estimated value of DIF and its true value.
-    //
-    ntest = 8;
-    result[8 - 1] = zero;
-    if (difest[2 - 1] == zero) {
-        if (diftru > abnrm * ulp) {
-            result[8 - 1] = ulpinv;
-        }
-    } else if (diftru == zero) {
-        if (difest[2 - 1] > abnrm * ulp) {
-            result[8 - 1] = ulpinv;
-        }
-    } else if ((diftru > thrsh2 * difest[2 - 1]) || (diftru * thrsh2 < difest[2 - 1])) {
-        result[8 - 1] = max(diftru / difest[2 - 1], difest[2 - 1] / diftru);
-    }
-    //
-    //     Test (9)
-    //
-    ntest = 9;
-    result[9 - 1] = zero;
-    if (linfo == (mplusn + 2)) {
-        if (diftru > abnrm * ulp) {
-            result[9 - 1] = ulpinv;
-        }
-        if ((ifunc > 1) && (difest[2 - 1] != zero)) {
-            result[9 - 1] = ulpinv;
-        }
-        if ((ifunc == 1) && (pl[1 - 1] != zero)) {
-            result[9 - 1] = ulpinv;
-        }
-    }
-    //
-    //     Test (10): compare the estimated value of PL and it true value.
-    //
-    ntest = 10;
-    result[10 - 1] = zero;
-    if (pl[1 - 1] == zero) {
-        if (pltru > abnrm * ulp) {
-            result[10 - 1] = ulpinv;
-        }
-    } else if (pltru == zero) {
-        if (pl[1 - 1] > abnrm * ulp) {
-            result[10 - 1] = ulpinv;
-        }
-    } else if ((pltru > thresh * pl[1 - 1]) || (pltru * thresh < pl[1 - 1])) {
-        result[10 - 1] = ulpinv;
-    }
-    //
-    ntestt += ntest;
-    //
-    //     Print out tests which fail.
-    //
-    for (j = 1; j <= ntest; j = j + 1) {
-        if (result[j - 1] >= thresh) {
-            //
-            //           If this is the first test to fail,
-            //           prINTEGER a header to the data file.
-            //
-            if (nerrs == 0) {
-                write(nout, format_9996), "ZGX";
-                //
-                //              Matrix types
-                //
-                write(nout, "('Input Example')");
-                //
-                //              Tests performed
-                //
-                {
-                    write_loop wloop(cmn, nout, format_9993);
-                    wloop, "unitary", "'", "transpose";
-                    for (i = 1; i <= 4; i = i + 1) {
-                        wloop, "'";
-                    }
+
+        for (i = 1; i <= mplusn; i = i + 1) {
+            {
+                read_loop rloop(cmn, nin, star);
+                for (j = 1; j <= mplusn; j = j + 1) {
+                    rloop, ctmp;
+                    ai[(i - 1) + (j - 1) * ldai] = ctmp;
                 }
-                //
             }
-            nerrs++;
-            if (result[j - 1] < 10000.0) {
-                write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
-                            "' is',0p,a)"),
-                    nptknt, mplusn, j, result(j);
-            } else {
-                write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
-                            "' is',1p,a)"),
-                    nptknt, mplusn, j, result(j);
+        }
+        for (i = 1; i <= mplusn; i = i + 1) {
+            {
+                read_loop rloop(cmn, nin, star);
+                for (j = 1; j <= mplusn; j = j + 1) {
+                    rloop, ctmp;
+                    bi[(i - 1) + (j - 1) * ldai] = ctmp;
+                }
+            }
+        }
+        read(nin, star), dtmp1, dtmp2;
+        pltru = dtmp1;
+        diftru = dtmp2;
+        //
+        nptknt++;
+        fs = true;
+        k = 0;
+        m = mplusn - n;
+        //
+        Clacpy("Full", mplusn, mplusn, ai, lda, a, lda);
+        Clacpy("Full", mplusn, mplusn, bi, lda, b, lda);
+        //
+        //     Compute the Schur factorization while swapping the
+        //     m-by-m (1,1)-blocks with n-by-n (2,2)-blocks.
+        //
+        Cggesx("V", "V", "S", _Clctsx, "B", mplusn, ai, lda, bi, lda, mm, alpha, beta, q, lda, z, lda, pl, difest, work, lwork, rwork, iwork, liwork, bwork, linfo);
+        //
+        if (linfo != 0 && linfo != mplusn + 2) {
+            result[1 - 1] = ulpinv;
+            write(nout, "(' Cdrgsx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
+                        "', Input Example #',i2,')')"),
+                "Cggesx", linfo, mplusn, nptknt;
+            continue;
+        }
+        //
+        //     Compute the norm(A, B)
+        //        (should this be norm of (A,B) or (AI,BI)?)
+        //
+        Clacpy("Full", mplusn, mplusn, ai, lda, work, mplusn);
+        Clacpy("Full", mplusn, mplusn, bi, lda, &work[(mplusn * mplusn + 1) - 1], mplusn);
+        abnrm = Clange("Fro", mplusn, 2 * mplusn, work, mplusn, rwork);
+        //
+        //     Do tests (1) to (4)
+        //
+        Cget51(1, mplusn, a, lda, ai, lda, q, lda, z, lda, work, rwork, result[1 - 1]);
+        Cget51(1, mplusn, b, lda, bi, lda, q, lda, z, lda, work, rwork, result[2 - 1]);
+        Cget51(3, mplusn, b, lda, bi, lda, q, lda, q, lda, work, rwork, result[3 - 1]);
+        Cget51(3, mplusn, b, lda, bi, lda, z, lda, z, lda, work, rwork, result[4 - 1]);
+        //
+        //     Do tests (5) and (6): check Schur form of A and compare
+        //     eigenvalues with diagonals.
+        //
+        ntest = 6;
+        temp1 = zero;
+        result[5 - 1] = zero;
+        result[6 - 1] = zero;
+        //
+        for (j = 1; j <= mplusn; j = j + 1) {
+            ilabad = false;
+            temp2 = (abs1(alpha[j - 1] - ai[(j - 1) + (j - 1) * ldai]) / max({smlnum, abs1(alpha[j - 1]), abs1(ai[(j - 1) + (j - 1) * ldai])}) + abs1(beta[j - 1] - bi[(j - 1) + (j - 1) * ldbi]) / max({smlnum, abs1(beta[j - 1]), abs1(bi[(j - 1) + (j - 1) * ldbi])})) / ulp;
+            if (j < mplusn) {
+                if (ai[((j + 1) - 1) + (j - 1) * ldai] != zero) {
+                    ilabad = true;
+                    result[5 - 1] = ulpinv;
+                }
+            }
+            if (j > 1) {
+                if (ai[(j - 1) + ((j - 1) - 1) * ldai] != zero) {
+                    ilabad = true;
+                    result[5 - 1] = ulpinv;
+                }
+            }
+            temp1 = max(temp1, temp2);
+            if (ilabad) {
+                write(nout, format_9997), j, mplusn, nptknt;
+            }
+        }
+        result[6 - 1] = temp1;
+        //
+        //     Test (7) (if sorting worked)  <--------- need to be checked.
+        //
+        ntest = 7;
+        result[7 - 1] = zero;
+        if (linfo == mplusn + 3) {
+            result[7 - 1] = ulpinv;
+        }
+        //
+        //     Test (8): compare the estimated value of DIF and its true value.
+        //
+        ntest = 8;
+        result[8 - 1] = zero;
+        if (difest[2 - 1] == zero) {
+            if (diftru > abnrm * ulp) {
+                result[8 - 1] = ulpinv;
+            }
+        } else if (diftru == zero) {
+            if (difest[2 - 1] > abnrm * ulp) {
+                result[8 - 1] = ulpinv;
+            }
+        } else if ((diftru > thrsh2 * difest[2 - 1]) || (diftru * thrsh2 < difest[2 - 1])) {
+            result[8 - 1] = max(diftru / difest[2 - 1], difest[2 - 1] / diftru);
+        }
+        //
+        //     Test (9)
+        //
+        ntest = 9;
+        result[9 - 1] = zero;
+        if (linfo == (mplusn + 2)) {
+            if (diftru > abnrm * ulp) {
+                result[9 - 1] = ulpinv;
+            }
+            if ((ifunc > 1) && (difest[2 - 1] != zero)) {
+                result[9 - 1] = ulpinv;
+            }
+            if ((ifunc == 1) && (pl[1 - 1] != zero)) {
+                result[9 - 1] = ulpinv;
             }
         }
         //
+        //     Test (10): compare the estimated value of PL and it true value.
+        //
+        ntest = 10;
+        result[10 - 1] = zero;
+        if (pl[1 - 1] == zero) {
+            if (pltru > abnrm * ulp) {
+                result[10 - 1] = ulpinv;
+            }
+        } else if (pltru == zero) {
+            if (pl[1 - 1] > abnrm * ulp) {
+                result[10 - 1] = ulpinv;
+            }
+        } else if ((pltru > thresh * pl[1 - 1]) || (pltru * thresh < pl[1 - 1])) {
+            result[10 - 1] = ulpinv;
+        }
+        //
+        ntestt += ntest;
+        //
+        //     Print out tests which fail.
+        //
+        for (j = 1; j <= ntest; j = j + 1) {
+            if (result[j - 1] >= thresh) {
+                //
+                //           If this is the first test to fail,
+                //           prINTEGER a header to the data file.
+                //
+                if (nerrs == 0) {
+                    write(nout, format_9996), "ZGX";
+                    //
+                    //              Matrix types
+                    //
+                    write(nout, "('Input Example')");
+                    //
+                    //              Tests performed
+                    //
+                    {
+                        write_loop wloop(cmn, nout, format_9993);
+                        wloop, "unitary", "'", "transpose";
+                        for (i = 1; i <= 4; i = i + 1) {
+                            wloop, "'";
+                        }
+                    }
+                    //
+                }
+                nerrs++;
+                if (result[j - 1] < 10000.0) {
+                    sprintnum_short(buf0, result[j - 1]);
+                    write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
+                                "' is',0p,a)"),
+                        nptknt, mplusn, j, buf0;
+                } else {
+                    sprintnum_short(buf0, result[j - 1]);
+                    write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
+                                "' is',1p,a)"),
+                        nptknt, mplusn, j, buf0;
+                }
+            }
+            //
+        }
     }
-//
-statement_130:
-    goto statement_80;
-statement_140:
-//
 statement_150:
     //
     //     Summary

@@ -39,6 +39,11 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget40(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
+    common cmn;
+    common_read read(cmn);
+    common_write write(cmn);
+    double dtmp;
+    char buf[1024];
     REAL eps = 0.0;
     const REAL zero = 0.0;
     INTEGER n = 0;
@@ -54,6 +59,12 @@ void Rget40(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     REAL s[ldt * ldt];
     REAL s1[ldt * ldt];
     REAL s2[ldt * ldt];
+    INTEGER ldtmp = ldt;
+    INTEGER ldt1 = ldt;
+    INTEGER ldt2 = ldt;
+    INTEGER lds = ldt;
+    INTEGER lds1 = ldt;
+    INTEGER lds2 = ldt;
     INTEGER ifstsv = 0;
     INTEGER ilstsv = 0;
     INTEGER ifst1 = 0;
@@ -64,6 +75,8 @@ void Rget40(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     const REAL one = 1.0;
     REAL q[ldt * ldt];
     REAL z[ldt * ldt];
+    INTEGER ldq = ldt;
+    INTEGER ldz = ldt;
     const INTEGER lwork = 100 + 4 * ldt + 16;
     REAL work[lwork];
     INTEGER info1 = 0;
@@ -115,7 +128,7 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, tmp(i, j);
+                rloop, tmp[(i - 1) + (j - 1) * ldtmp];
             }
         }
     }
@@ -126,7 +139,7 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, tmp(i, j);
+                rloop, tmp[(i - 1) + (j - 1) * ldtmp];
             }
         }
     }

@@ -39,38 +39,22 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const niunit, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *ht, COMPLEX *w, COMPLEX *wt, COMPLEX *wtmp, COMPLEX *vs, INTEGER const ldvs, COMPLEX *vs1, REAL *result, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
-    FEM_CMN_SVE(Cdrvsx);
-    iseed([4]);
-    a([lda * star]);
-    h([lda * star]);
-    ht([lda * star]);
-    vs([ldvs * star]);
-    vs1([ldvs * star]);
-    result([17]);
+    INTEGER ldh = lda;
+    INTEGER ldht = lda;
+    INTEGER ldvs1 = ldvs;
+    common cmn;
     common_read read(cmn);
     common_write write(cmn);
     const INTEGER maxtyp = 21;
-    INTEGER *kconds(sve.kconds, [maxtyp]);
-    INTEGER *kmagn(sve.kmagn, [maxtyp]);
-    INTEGER *kmode(sve.kmode, [maxtyp]);
-    INTEGER *ktype(sve.ktype, [maxtyp]);
-    if (is_called_first_time) {
-        data((values, 1, 2, 3, 5 * datum(4), 4 * datum(6), 6 * datum(6), 3 * datum(9))), ktype;
-        {
-            data_values data;
-            data.values, 3 * datum(1), 1, 1, 1, 2, 3, 4 * datum(1), 1;
-            data.values, 1, 1, 1, 2, 3, 1, 2, 3;
-            data, kmagn;
-        }
-        {
-            data_values data;
-            data.values, 3 * datum(0), 4, 3, 1, 4, 4, 4, 3;
-            data.values, 1, 5, 4, 3, 1, 5, 5, 5;
-            data.values, 4, 3, 1;
-            data, kmode;
-        }
-        data((values, 3 * datum(0), 5 * datum(0), 4 * datum(1), 6 * datum(2), 3 * datum(0))), kconds;
-    }
+    INTEGER ktype[21] = {1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9};
+    INTEGER kmagn[21] = {1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 2, 3};
+    INTEGER kmode[21] = {0, 0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1};
+    INTEGER kconds[21] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0};
+    char bal[1 * 4] = {'N', 'P', 'S', 'B'};
+    char buf[1024];
+    double dtmp;
+    double dtmp1, dtmp2;
+    complex<double> ctmp;
     char path[3];
     INTEGER ntestt = 0;
     INTEGER ntestf = 0;
@@ -189,8 +173,9 @@ void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     //     ..
     //     .. Executable Statements ..
     //
-    path[(1 - 1)] = "Zomplex precision";
-    path[(2 - 1) + (3 - 1) * ldpath] = "SX";
+    path[0] = 'C';
+    path[1] = 'S';
+    path[2] = 'X';
     //
     //     Check for errors
     //
@@ -363,13 +348,13 @@ void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 //              Diagonal Matrix, [Eigen]values Specified
                 //
-                zlatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, 0, 0, "N", a, lda, &work[(n + 1) - 1], iinfo);
+                Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, 0, 0, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 5) {
                 //
                 //              Symmetric, eigenvalues specified
                 //
-                zlatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, n, n, "N", a, lda, &work[(n + 1) - 1], iinfo);
+                Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, n, n, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 6) {
                 //
@@ -383,25 +368,25 @@ void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     conds = zero;
                 }
                 //
-                zlatme(n, "D", iseed, work, imode, cond, cone, "T", "T", "T", rwork, 4, conds, n, n, anorm, a, lda, &work[(2 * n + 1) - 1], iinfo);
+                Clatme(n, "D", iseed, work, imode, cond, cone, "T", "T", "T", rwork, 4, conds, n, n, anorm, a, lda, &work[(2 * n + 1) - 1], iinfo);
                 //
             } else if (itype == 7) {
                 //
                 //              Diagonal, random eigenvalues
                 //
-                zlatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, idumma, iinfo);
+                Clatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, idumma, iinfo);
                 //
             } else if (itype == 8) {
                 //
                 //              Symmetric, random eigenvalues
                 //
-                zlatmr(n, n, "D", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, idumma, iinfo);
+                Clatmr(n, n, "D", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, idumma, iinfo);
                 //
             } else if (itype == 9) {
                 //
                 //              General, random eigenvalues
                 //
-                zlatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, idumma, iinfo);
+                Clatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, idumma, iinfo);
                 if (n >= 4) {
                     Claset("Full", 2, n, czero, czero, a, lda);
                     Claset("Full", n - 3, 1, czero, czero, &a[(3 - 1)], lda);
@@ -413,7 +398,7 @@ void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 //              Triangular, random eigenvalues
                 //
-                zlatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, 0, zero, anorm, "NO", a, lda, idumma, iinfo);
+                Clatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, 0, zero, anorm, "NO", a, lda, idumma, iinfo);
                 //
             } else {
                 //
@@ -459,20 +444,22 @@ void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     ntestf++;
                 }
                 if (ntestf == 1) {
+                    sprintnum_short(buf, thresh);
                     write(nounit, format_9999), path;
                     write(nounit, format_9998);
                     write(nounit, format_9997);
                     write(nounit, format_9996);
-                    write(nounit, format_9995), thresh;
+                    write(nounit, format_9995), buf;
                     write(nounit, format_9994);
                     ntestf = 2;
                 }
                 //
                 for (j = 1; j <= 15; j = j + 1) {
                     if (result[j - 1] >= thresh) {
+                        sprintnum_short(buf, result[j - 1]);
                         write(nounit, "(' N=',i5,', IWK=',i2,', seed=',4(i4,','),' type ',i2,"
                                       "', test(',i2,')=',a)"),
-                            n, iwk, ioldsd, jtype, j, result(j);
+                            n, iwk, ioldsd, jtype, j, buf;
                     }
                 }
                 //
@@ -490,70 +477,69 @@ statement_150:
     //     Read input data until N=0
     //
     jtype = 0;
-statement_160:
-    try {
+    while (1) {
         read(niunit, star), n, nslct, isrt;
-    } catch (read_end const) {
-        goto statement_200;
-    }
-    if (n == 0) {
-        goto statement_200;
-    }
-    jtype++;
-    iseed[1 - 1] = jtype;
-    {
-        read_loop rloop(cmn, niunit, star);
-        for (i = 1; i <= nslct; i = i + 1) {
-            rloop, islct(i);
-        }
-    }
-    for (i = 1; i <= n; i = i + 1) {
+        if (n == 0)
+            break;
+        jtype++;
+        iseed[1 - 1] = jtype;
         {
             read_loop rloop(cmn, niunit, star);
-            for (j = 1; j <= n; j = j + 1) {
-                rloop, a(i, j);
+            for (i = 1; i <= nslct; i = i + 1) {
+                rloop, islct[i - 1];
             }
         }
-    }
-    read(niunit, star), rcdein, rcdvin;
-    //
-    Cget24(true, 22, thresh, iseed, nounit, n, a, lda, h, ht, w, wt, wtmp, vs, ldvs, vs1, rcdein, rcdvin, nslct, islct, isrt, result, work, lwork, rwork, bwork, info);
-    //
-    //     Check for RESULT(j) > THRESH
-    //
-    ntest = 0;
-    nfail = 0;
-    for (j = 1; j <= 17; j = j + 1) {
-        if (result[j - 1] >= zero) {
-            ntest++;
+        for (i = 1; i <= n; i = i + 1) {
+            {
+                read_loop rloop(cmn, niunit, star);
+                for (j = 1; j <= n; j = j + 1) {
+                    rloop, ctmp;
+                    a[(i - 1) + (j - 1) * lda] = ctmp;
+                }
+            }
         }
-        if (result[j - 1] >= thresh) {
-            nfail++;
+        read(niunit, star), dtmp1, dtmp2;
+        rcdein = dtmp1;
+        rcdvin = dtmp2;
+        //
+        Cget24(true, 22, thresh, iseed, nounit, n, a, lda, h, ht, w, wt, wtmp, vs, ldvs, vs1, rcdein, rcdvin, nslct, islct, isrt, result, work, lwork, rwork, bwork, info);
+        //
+        //     Check for RESULT(j) > THRESH
+        //
+        ntest = 0;
+        nfail = 0;
+        for (j = 1; j <= 17; j = j + 1) {
+            if (result[j - 1] >= zero) {
+                ntest++;
+            }
+            if (result[j - 1] >= thresh) {
+                nfail++;
+            }
         }
-    }
-    //
-    if (nfail > 0) {
-        ntestf++;
-    }
-    if (ntestf == 1) {
-        write(nounit, format_9999), path;
-        write(nounit, format_9998);
-        write(nounit, format_9997);
-        write(nounit, format_9996);
-        write(nounit, format_9995), thresh;
-        write(nounit, format_9994);
-        ntestf = 2;
-    }
-    for (j = 1; j <= 17; j = j + 1) {
-        if (result[j - 1] >= thresh) {
-            write(nounit, "(' N=',i5,', input example =',i3,',  test(',i2,')=',a)"), n, jtype, j, result(j);
+        //
+        if (nfail > 0) {
+            ntestf++;
         }
+        if (ntestf == 1) {
+            sprintnum_short(buf, thresh);
+            write(nounit, format_9999), path;
+            write(nounit, format_9998);
+            write(nounit, format_9997);
+            write(nounit, format_9996);
+            write(nounit, format_9995), buf;
+            write(nounit, format_9994);
+            ntestf = 2;
+        }
+        for (j = 1; j <= 17; j = j + 1) {
+            if (result[j - 1] >= thresh) {
+                sprintnum_short(buf, result[j - 1]);
+                write(nounit, "(' N=',i5,', input example =',i3,',  test(',i2,')=',a)"), n, jtype, j, buf;
+            }
+        }
+        //
+        nerrs += nfail;
+        ntestt += ntest;
     }
-    //
-    nerrs += nfail;
-    ntestt += ntest;
-    goto statement_160;
-statement_200:
     //
     //     Summary
     //

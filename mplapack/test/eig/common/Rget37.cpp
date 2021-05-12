@@ -39,10 +39,11 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
-    rmax([3]);
-    lmax([3]);
-    ninfo([3]);
+    common cmn;
     common_read read(cmn);
+    common_write write(cmn);
+    double dtmp;
+    char buf[1024];
     REAL eps = 0.0;
     REAL smlnum = 0.0;
     const REAL one = 1.0;
@@ -54,6 +55,7 @@ void Rget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     INTEGER i = 0;
     const INTEGER ldt = 20;
     REAL tmp[ldt * ldt];
+    INTEGER ldtmp = ldt;
     INTEGER j = 0;
     REAL wrin[ldt];
     REAL wiin[ldt];
@@ -72,6 +74,8 @@ void Rget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     bool select[ldt];
     REAL le[ldt * ldt];
     REAL re[ldt * ldt];
+    INTEGER ldle = ldt;
+    INTEGER ldre = ldt;
     INTEGER m = 0;
     REAL s[ldt];
     REAL sep[ldt];
@@ -153,12 +157,13 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, tmp(i, j);
+                rloop, dtmp;
+                tmp[(i - 1) + (j - 1) * ldtmp] = dtmp;
             }
         }
     }
     for (i = 1; i <= n; i = i + 1) {
-        read(nin, star), wrin(i), wiin(i), sin(i), sepin(i);
+        read(nin, star), wrin[i - 1], wiin[i - 1], sin[i - 1], sepin[i - 1];
     }
     tnrm = Rlange("M", n, n, tmp, ldt, work);
     //
@@ -248,7 +253,7 @@ statement_10:
         //        Compare condition numbers for eigenvalues
         //        taking their condition numbers into account
         //
-        v = max(two * n.real() * eps * tnrm, smlnum);
+        v = max(two * castREAL(n) * eps * tnrm, smlnum);
         if (tnrm == zero) {
             v = one;
         }
@@ -265,14 +270,14 @@ statement_10:
             }
             tol = max(tol, smlnum / eps);
             tolin = max(tolin, smlnum / eps);
-            if (eps * (sin(i) - tolin) > stmp[i - 1] + tol) {
+            if (eps * (sin[i - 1] - tolin) > stmp[i - 1] + tol) {
                 vmax = one / eps;
-            } else if (sin(i) - tolin > stmp[i - 1] + tol) {
-                vmax = (sin(i) - tolin) / (stmp[i - 1] + tol);
-            } else if (sin(i) + tolin < eps * (stmp[i - 1] - tol)) {
+            } else if (sin[i - 1] - tolin > stmp[i - 1] + tol) {
+                vmax = (sin[i - 1] - tolin) / (stmp[i - 1] + tol);
+            } else if (sin[i - 1] + tolin < eps * (stmp[i - 1] - tol)) {
                 vmax = one / eps;
-            } else if (sin(i) + tolin < stmp[i - 1] - tol) {
-                vmax = (stmp[i - 1] - tol) / (sin(i) + tolin);
+            } else if (sin[i - 1] + tolin < stmp[i - 1] - tol) {
+                vmax = (stmp[i - 1] - tol) / (sin[i - 1] + tolin);
             } else {
                 vmax = one;
             }
@@ -293,10 +298,10 @@ statement_10:
             } else {
                 tol = v / stmp[i - 1];
             }
-            if (v > sepin[i - 1] * sin(i)) {
+            if (v > sepin[i - 1] * sin[i - 1]) {
                 tolin = sepin[i - 1];
             } else {
-                tolin = v / sin(i);
+                tolin = v / sin[i - 1];
             }
             tol = max(tol, smlnum / eps);
             tolin = max(tolin, smlnum / eps);
@@ -323,16 +328,16 @@ statement_10:
         //        without taking their condition numbers into account
         //
         for (i = 1; i <= n; i = i + 1) {
-            if (sin(i) <= (2 * n).real() * eps && stmp[i - 1] <= (2 * n).real() * eps) {
+            if (sin[i - 1] <= castREAL(2 * n) * eps && stmp[i - 1] <= castREAL(2 * n) * eps) {
                 vmax = one;
-            } else if (eps * sin(i) > stmp[i - 1]) {
+            } else if (eps * sin[i - 1] > stmp[i - 1]) {
                 vmax = one / eps;
-            } else if (sin(i) > stmp[i - 1]) {
-                vmax = sin(i) / stmp[i - 1];
-            } else if (sin(i) < eps * stmp[i - 1]) {
+            } else if (sin[i - 1] > stmp[i - 1]) {
+                vmax = sin[i - 1] / stmp[i - 1];
+            } else if (sin[i - 1] < eps * stmp[i - 1]) {
                 vmax = one / eps;
-            } else if (sin(i) < stmp[i - 1]) {
-                vmax = stmp[i - 1] / sin(i);
+            } else if (sin[i - 1] < stmp[i - 1]) {
+                vmax = stmp[i - 1] / sin[i - 1];
             } else {
                 vmax = one;
             }
@@ -487,10 +492,10 @@ statement_10:
                     ifnd = 1;
                     lcmp[2 - 1] = i;
                     lcmp[3 - 1] = i + 1;
-                    Rcopy(n, re[(i - 1) * ldre], 1, re[(2 - 1) * ldre], 1);
-                    Rcopy(n, re[((i + 1) - 1) * ldre], 1, re[(3 - 1) * ldre], 1);
-                    Rcopy(n, le[(i - 1) * ldle], 1, le[(2 - 1) * ldle], 1);
-                    Rcopy(n, le[((i + 1) - 1) * ldle], 1, le[(3 - 1) * ldle], 1);
+                    Rcopy(n, &re[(i - 1) * ldre], 1, &re[(2 - 1) * ldre], 1);
+                    Rcopy(n, &re[((i + 1) - 1) * ldre], 1, &re[(3 - 1) * ldre], 1);
+                    Rcopy(n, &le[(i - 1) * ldle], 1, &le[(2 - 1) * ldle], 1);
+                    Rcopy(n, &le[((i + 1) - 1) * ldle], 1, &le[(3 - 1) * ldle], 1);
                 }
             }
             if (ifnd == 0) {
@@ -508,8 +513,8 @@ statement_10:
                 } else {
                     lcmp[3 - 1] = i;
                     ifnd = 1;
-                    Rcopy(n, re[(i - 1) * ldre], 1, re[(3 - 1) * ldre], 1);
-                    Rcopy(n, le[(i - 1) * ldle], 1, le[(3 - 1) * ldle], 1);
+                    Rcopy(n, &re[(i - 1) * ldre], 1, &re[(3 - 1) * ldre], 1);
+                    Rcopy(n, &le[(i - 1) * ldle], 1, &le[(3 - 1) * ldle], 1);
                 }
             }
             if (ifnd == 0) {

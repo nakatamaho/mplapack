@@ -39,10 +39,12 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
-    rmax([3]);
-    lmax([3]);
-    ninfo([3]);
+    common cmn;
     common_read read(cmn);
+    common_write write(cmn);
+    double dtmp;
+    complex<double> ctmp;
+    char buf[1024];
     REAL eps = 0.0;
     REAL smlnum = 0.0;
     const REAL one = 1.0;
@@ -57,6 +59,7 @@ void Cget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     INTEGER iselec[ldt];
     INTEGER i = 0;
     COMPLEX tmp[ldt * ldt];
+    INTEGER ldtmp = ldt;
     INTEGER j = 0;
     REAL sin = 0.0;
     REAL sepin = 0.0;
@@ -80,6 +83,8 @@ void Cget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     INTEGER itmp = 0;
     COMPLEX qsav[ldt * ldt];
     COMPLEX tsav1[ldt * ldt];
+    INTEGER ldqsav = ldt;
+    INTEGER ldtsav1 = ldt;
     COMPLEX wtmp[ldt];
     INTEGER m = 0;
     REAL s = 0.0;
@@ -94,6 +99,9 @@ void Cget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     REAL tolin = 0.0;
     COMPLEX ttmp[ldt * ldt];
     COMPLEX qtmp[ldt * ldt];
+    INTEGER ldttmp = ldt;
+    INTEGER ldq = ldt;
+    INTEGER ldqtmp = ldt;
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -154,14 +162,15 @@ statement_10:
     {
         read_loop rloop(cmn, nin, star);
         for (i = 1; i <= ndim; i = i + 1) {
-            rloop, iselec(i);
+            rloop, iselec[i - 1];
         }
     }
     for (i = 1; i <= n; i = i + 1) {
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, tmp(i, j);
+                rloop, ctmp;
+                tmp[(i - 1) + (j - 1) * ldtmp] = ctmp;
             }
         }
     }
@@ -272,7 +281,7 @@ statement_10:
         //        Compare condition number for eigenvalue cluster
         //        taking its condition number into account
         //
-        v = max(two * n.real() * eps * tnrm, smlnum);
+        v = max(two * castREAL(n) * eps * tnrm, smlnum);
         if (tnrm == zero) {
             v = one;
         }
@@ -342,7 +351,7 @@ statement_10:
         //        Compare condition number for eigenvalue cluster
         //        without taking its condition number into account
         //
-        if (sin <= (2 * n).real() * eps && stmp <= (2 * n).real() * eps) {
+        if (sin <= castREAL(2 * n) * eps && stmp <= castREAL(2 * n) * eps) {
             vmax = one;
         } else if (eps * sin > stmp) {
             vmax = one / eps;

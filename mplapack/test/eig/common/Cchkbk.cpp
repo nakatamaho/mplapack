@@ -38,9 +38,13 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+inline REAL abs1(COMPLEX cdum) { return abs(cdum.real()) + abs(cdum.imag()); }
+
 void Cchkbk(INTEGER const nin, INTEGER const nout) {
+    common cmn;
     common_read read(cmn);
     common_write write(cmn);
+    char buf[1024];
     COMPLEX cdum = 0.0;
     INTEGER lmax[2];
     INTEGER ninfo = 0;
@@ -58,9 +62,11 @@ void Cchkbk(INTEGER const nin, INTEGER const nout) {
     COMPLEX e[lde * lde];
     INTEGER j = 0;
     COMPLEX ein[lde * lde];
+    INTEGER ldein = lde;
     INTEGER info = 0;
     REAL vmax = 0.0;
     REAL x = 0.0;
+    double dtmp;
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -86,7 +92,6 @@ void Cchkbk(INTEGER const nin, INTEGER const nout) {
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1(cdum) = abs(cdum.real()) + abs(cdum.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -108,14 +113,16 @@ statement_10:
     {
         read_loop rloop(cmn, nin, star);
         for (i = 1; i <= n; i = i + 1) {
-            rloop, scale(i);
+            rloop, dtmp;
+            scale[i - 1] = dtmp;
         }
     }
     for (i = 1; i <= n; i = i + 1) {
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, e(i, j);
+                rloop, dtmp;
+                e[(i - 1) + (j - 1) * lde] = dtmp;
             }
         }
     }
@@ -124,7 +131,8 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, ein(i, j);
+                rloop, dtmp;
+                ein[(i - 1) + (j - 1) * ldein] = dtmp;
             }
         }
     }
@@ -159,9 +167,10 @@ statement_60:
     //
     write(nout, "(1x,'.. test output of Cgebak .. ')");
     //
-    write(nout, "(1x,'value of largest test error             = ',d12.3)"), rmax;
-    write(nout, "(1x,'example number where info is not zero   = ',i4)"), lmax((INTEGER)1);
-    write(nout, "(1x,'example number having largest error     = ',i4)"), lmax((INTEGER)2);
+    sprintnum_short(buf, rmax);
+    write(nout, "(1x,'value of largest test error             = ',a)"), buf;
+    write(nout, "(1x,'example number where info is not zero   = ',i4)"), lmax[1 - 1];
+    write(nout, "(1x,'example number having largest error     = ',i4)"), lmax[2 - 1];
     write(nout, "(1x,'number of examples where info is not 0  = ',i4)"), ninfo;
     write(nout, "(1x,'total number of examples tested         = ',i4)"), knt;
     //

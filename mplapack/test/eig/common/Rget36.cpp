@@ -39,8 +39,9 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget36(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
-    ninfo([3]);
+    common cmn;
     common_read read(cmn);
+    double dtmp;
     REAL eps = 0.0;
     const REAL zero = 0.0;
     INTEGER n = 0;
@@ -49,9 +50,12 @@ void Rget36(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     INTEGER i = 0;
     const INTEGER ldt = 10;
     REAL tmp[ldt * ldt];
+    INTEGER ldtmp = ldt;
     INTEGER j = 0;
     REAL t1[ldt * ldt];
     REAL t2[ldt * ldt];
+    INTEGER ldt1 = ldt;
+    INTEGER ldt2 = ldt;
     INTEGER ifstsv = 0;
     INTEGER ilstsv = 0;
     INTEGER ifst1 = 0;
@@ -61,6 +65,7 @@ void Rget36(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     REAL res = 0.0;
     const REAL one = 1.0;
     REAL q[ldt * ldt];
+    INTEGER ldq = ldt;
     const INTEGER lwork = 2 * ldt * ldt;
     REAL work[lwork];
     INTEGER info1 = 0;
@@ -113,7 +118,8 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, tmp(i, j);
+                rloop, dtmp;
+                tmp[(i - 1) + (j - 1) * ldtmp] = dtmp;
             }
         }
     }

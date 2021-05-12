@@ -39,10 +39,9 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const ntypes, INTEGER const nin, INTEGER const nout) {
-
-    if (is_called_first_time) {
-        intstr = "0123456789";
-    }
+    common cmn;
+    common_read read(cmn);
+    common_write write(cmn);
     INTEGER i = 0;
     bool firstt = false;
     char line[80];
@@ -86,6 +85,9 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
             dotype[i - 1] = true;
         }
     } else {
+        printf("Not yet supported \n");
+        exit(-1);
+#ifdef NOTYET
         for (i = 1; i <= ntypes; i = i + 1) {
             dotype[i - 1] = false;
         }
@@ -163,6 +165,7 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
             }
         }
     statement_80:;
+#endif
     }
     return;
 //

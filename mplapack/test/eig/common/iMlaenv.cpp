@@ -72,7 +72,8 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //
         //        Compute SVD crossover point.
         //
-        return_value = int(real[(min(n1 - 1) + (n2)-1) * ldreal] * 1.6e0f);
+        return_value = castINTEGER(castREAL(min(n1, n2)) * 1.6e0)
+
         //
     } else if (ispec >= 7 && ispec <= 9) {
         //
@@ -87,7 +88,7 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //        iMlaenv = 0
         return_value = 1;
         if (return_value == 1) {
-            return_value = ieeeck1, 0.0f, 1.0f;
+            return_value = iMeeeck(1, 0.0, 1.0);
         }
         //
     } else if (ispec == 11) {
@@ -97,14 +98,14 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //        iMlaenv = 0
         return_value = 1;
         if (return_value == 1) {
-            return_value = ieeeck0, 0.0f, 1.0f;
+            return_value = iMeeeck(0, 0.0, 1.0);
         }
         //
     } else if ((ispec >= 12) && (ispec <= 16)) {
         //
         //     12 <= ISPEC <= 16: xHSEQR or one of its subroutines.
         //
-        return_value = iparms[ispec - 1];
+        return_value = iMparms(ispec);
         //         WRITE(*,*) 'ISPEC = ',ISPEC,' iMlaenv =',iMlaenv
         //         iMlaenv = IPARMQ( ISPEC, NAME, OPTS, N1, N2, N3, N4 )
         //
@@ -113,9 +114,9 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //     17 <= ISPEC <= 21: 2stage eigenvalues SVD routines.
         //
         if (ispec == 17) {
-            return_value = iparms[1 - 1];
+            return_value = iMparms(1);
         } else {
-            return_value = iparam2stage(ispec, name, opts, n1, n2, n3, n4);
+            return_value = iMparam2stage(ispec, name, opts, n1, n2, n3, n4);
         }
         //
     } else {
@@ -133,8 +134,6 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
 
 INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
     INTEGER return_value = 0;
-    // COMMON claenv
-    INTEGER *iparms(cmn.iparms, [100]);
     //
     //     .. Scalar Arguments ..
     //     ..
@@ -174,7 +173,7 @@ INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, I
     return return_value;
 }
 
-INTEGER iparmq(INTEGER const ispec, const char * /* name */, const char * /* opts */, INTEGER const /* n */, INTEGER const ilo, INTEGER const ihi, INTEGER const /* lwork */) {
+INTEGER iMparmq(INTEGER const ispec, const char * /* name */, const char * /* opts */, INTEGER const /* n */, INTEGER const ilo, INTEGER const ihi, INTEGER const /* lwork */) {
     INTEGER return_value = 0;
     //
     //     ..

@@ -39,7 +39,12 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Cget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER const nin) {
+    common cmn;
     common_read read(cmn);
+    common_write write(cmn);
+    double dtmp;
+    complex<double> _ctmp;
+    char buf[1024];
     REAL eps = 0.0;
     REAL smlnum = 0.0;
     const REAL one = 1.0;
@@ -54,9 +59,12 @@ void Cget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER con
     INTEGER i = 0;
     const INTEGER ldt = 10;
     COMPLEX atmp[ldt * ldt];
+    INTEGER ldatmp = ldt;
     INTEGER j = 0;
     COMPLEX btmp[ldt * ldt];
     COMPLEX ctmp[ldt * ldt];
+    INTEGER ldbtmp = ldt;
+    INTEGER ldctmp = ldt;
     INTEGER imla = 0;
     INTEGER imlad = 0;
     INTEGER imlb = 0;
@@ -71,6 +79,10 @@ void Cget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER con
     COMPLEX b[ldt * ldt];
     COMPLEX c[ldt * ldt];
     COMPLEX csav[ldt * ldt];
+    INTEGER lda = ldt;
+    INTEGER ldb = ldt;
+    INTEGER ldc = ldt;
+    INTEGER ldcsav = ldt;
     REAL scale = 0.0;
     INTEGER info = 0;
     REAL dum[1];
@@ -135,7 +147,8 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= m; j = j + 1) {
-                rloop, atmp(i, j);
+                rloop, _ctmp;
+                atmp[(i - 1) + (j - 1) * ldatmp] = _ctmp;
             }
         }
     }
@@ -143,7 +156,8 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, btmp(i, j);
+                rloop, _ctmp;
+                btmp[(i - 1) + (j - 1) * ldbtmp] = _ctmp;
             }
         }
     }
@@ -151,7 +165,8 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, ctmp(i, j);
+                rloop, _ctmp;
+                ctmp[(i - 1) + (j - 1) * ldctmp] = _ctmp;
             }
         }
     }
@@ -163,16 +178,16 @@ statement_10:
                         for (itranb = 1; itranb <= 2; itranb = itranb + 1) {
                             for (isgn = -1; isgn <= 1; isgn = isgn + 2) {
                                 if (itrana == 1) {
-                                    trana = "N";
+                                    trana = 'N';
                                 }
                                 if (itrana == 2) {
-                                    trana = "C";
+                                    trana = 'C';
                                 }
                                 if (itranb == 1) {
-                                    tranb = "N";
+                                    tranb = 'N';
                                 }
                                 if (itranb == 2) {
-                                    tranb = "C";
+                                    tranb = 'C';
                                 }
                                 tnrm = zero;
                                 for (i = 1; i <= m; i = i + 1) {
@@ -199,7 +214,7 @@ statement_10:
                                     }
                                 }
                                 knt++;
-                                Ctrsyl(trana, tranb, isgn, m, n, a, ldt, b, ldt, c, ldt, scale, info);
+                                Ctrsyl(&trana, &tranb, isgn, m, n, a, ldt, b, ldt, c, ldt, scale, info);
                                 if (info != 0) {
                                     ninfo++;
                                 }
@@ -211,8 +226,8 @@ statement_10:
                                         rmul = cone / rmul;
                                     }
                                 }
-                                Cgemm(trana, "N", m, n, m, rmul, a, ldt, c, ldt, -scale * rmul, csav, ldt);
-                                Cgemm("N", tranb, m, n, n, isgn.real() * rmul, c, ldt, b, ldt, cone, csav, ldt);
+                                Cgemm(&trana, "N", m, n, m, rmul, a, ldt, c, ldt, -scale * rmul, csav, ldt);
+                                Cgemm("N", &tranb, m, n, n, castREAL(isgn) * rmul, c, ldt, b, ldt, cone, csav, ldt);
                                 res1 = Clange("M", m, n, csav, ldt, dum);
                                 res = res1 / max({smlnum, smlnum * xnrm, ((abs(rmul) * tnrm) * eps) * xnrm});
                                 if (res > rmax) {

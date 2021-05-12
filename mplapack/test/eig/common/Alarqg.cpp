@@ -39,13 +39,9 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Alarqg(const char *path, INTEGER const nmats, bool *dotype, INTEGER const ntypes, INTEGER const nin, INTEGER const nout) {
-    FEM_CMN_SVE(Alarqg);
+    common cmn;
     common_read read(cmn);
     common_write write(cmn);
-    char &intstr = sve.intstr;
-    if (is_called_first_time) {
-        intstr = "0123456789";
-    }
     INTEGER i = 0;
     bool firstt = false;
     char line[80];
@@ -175,7 +171,6 @@ statement_90:
                 "' right number of types for each path',/)"),
         path;
     write(nout, star);
-    FEM_STOP(0);
     //
     //     End of Alarqg
     //

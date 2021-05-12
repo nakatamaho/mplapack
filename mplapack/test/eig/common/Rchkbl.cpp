@@ -40,7 +40,10 @@ using fem::common;
 
 void Rchkbl(INTEGER const nin, INTEGER const nout) {
     common cmn;
+    common_read read(cmn);
     common_write write(cmn);
+    double dtmp;
+    char buf[1024];
     INTEGER lmax[3];
     INTEGER ninfo = 0;
     INTEGER knt = 0;
@@ -57,6 +60,7 @@ void Rchkbl(INTEGER const nin, INTEGER const nout) {
     INTEGER iloin = 0;
     INTEGER ihiin = 0;
     REAL ain[lda * lda];
+    INTEGER ldain = lda;
     REAL scalin[lda];
     REAL dummy[1];
     REAL anorm = 0.0;
@@ -109,7 +113,8 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, a(i, j);
+                rloop, dtmp;
+                a[(i - 1) + (j - 1) * lda] = dtmp;
             }
         }
     }
@@ -119,14 +124,15 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, ain(i, j);
+                rloop, dtmp;
+                ain[(i - 1) + (j - 1) * ldain] = dtmp;
             }
         }
     }
     {
         read_loop rloop(cmn, nin, star);
         for (i = 1; i <= n; i = i + 1) {
-            rloop, scalin(i);
+            rloop, scalin[i - 1];
         }
     }
     //
@@ -170,10 +176,11 @@ statement_70:
     //
     write(nout, "(1x,'.. test output of Rgebal .. ')");
     //
-    write(nout, "(1x,'value of largest test error            = ',d12.3)"), rmax;
-    write(nout, "(1x,'example number where info is not zero  = ',i4)"), lmax((INTEGER)1);
-    write(nout, "(1x,'example number where ILO or IHI wrong  = ',i4)"), lmax((INTEGER)2);
-    write(nout, "(1x,'example number having largest error    = ',i4)"), lmax(3);
+    sprintnum_short(buf, rmax);
+    write(nout, "(1x,'value of largest test error            = ',a)"), buf;
+    write(nout, "(1x,'example number where info is not zero  = ',i4)"), lmax[1 - 1];
+    write(nout, "(1x,'example number where ILO or IHI wrong  = ',i4)"), lmax[2 - 1];
+    write(nout, "(1x,'example number having largest error    = ',i4)"), lmax[3 - 1];
     write(nout, "(1x,'number of examples where info is not 0 = ',i4)"), ninfo;
     write(nout, "(1x,'total number of examples tested        = ',i4)"), knt;
     //

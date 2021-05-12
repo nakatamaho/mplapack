@@ -39,8 +39,11 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rchkgk(INTEGER const nin, INTEGER const nout) {
+    common cmn;
     common_read read(cmn);
     common_write write(cmn);
+    double dtmp;
+    char buf[1024];
     INTEGER lmax[4];
     INTEGER ninfo = 0;
     INTEGER knt = 0;
@@ -72,6 +75,8 @@ void Rchkgk(INTEGER const nin, INTEGER const nout) {
     INTEGER info = 0;
     REAL vlf[ldvl * ldvl];
     REAL vrf[ldvr * ldvr];
+    INTEGER ldvlf = ldvl;
+    INTEGER ldvrf = ldvr;
     const REAL one = 1.0;
     const INTEGER lde = 50;
     REAL e[lde * lde];
@@ -124,7 +129,8 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, a(i, j);
+                rloop, dtmp;
+                a[(i - 1) + (j - 1) * lda] = dtmp;
             }
         }
     }
@@ -133,7 +139,8 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, b(i, j);
+                rloop, dtmp;
+                b[(i - 1) + (j - 1) * ldb] = dtmp;
             }
         }
     }
@@ -142,7 +149,8 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= m; j = j + 1) {
-                rloop, vl(i, j);
+                rloop, dtmp;
+                vl[(i - 1) + (j - 1) * ldvl] = dtmp;
             }
         }
     }
@@ -151,7 +159,8 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= m; j = j + 1) {
-                rloop, vr(i, j);
+                rloop, dtmp;
+                vr[(i - 1) + (j - 1) * ldvr] = dtmp;
             }
         }
     }
@@ -234,11 +243,12 @@ statement_100:
     //
     write(nout, "(1x,'.. test output of Rggbak .. ')");
     //
-    write(nout, "(' value of largest test error                  =',d12.3)"), rmax;
-    write(nout, "(' example number where Rggbal info is not 0    =',i4)"), lmax(1);
-    write(nout, "(' example number where Rggbak(L) info is not 0 =',i4)"), lmax(2);
-    write(nout, "(' example number where Rggbak(R) info is not 0 =',i4)"), lmax(3);
-    write(nout, "(' example number having largest error          =',i4)"), lmax(4);
+    sprintnum_short(buf, rmax);
+    write(nout, "(' value of largest test error                  =',a"), buf;
+    write(nout, "(' example number where Rggbal info is not 0    =',i4)"), lmax[1 - 1];
+    write(nout, "(' example number where Rggbak(L) info is not 0 =',i4)"), lmax[2 - 1];
+    write(nout, "(' example number where Rggbak(R) info is not 0 =',i4)"), lmax[3 - 1];
+    write(nout, "(' example number having largest error          =',i4)"), lmax[4 - 1];
     write(nout, "(' number of examples where info is not 0       =',i4)"), ninfo;
     write(nout, "(' total number of examples tested              =',i4)"), knt;
     //

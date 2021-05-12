@@ -39,15 +39,17 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER const nout, REAL *a, INTEGER const lda, REAL *b, REAL *ai, REAL *bi, REAL *alphar, REAL *alphai, REAL *beta, REAL *vl, REAL *vr, INTEGER const ilo, INTEGER const ihi, REAL *lscale, REAL *rscale, REAL *s, REAL *dtru, REAL *dif, REAL *diftru, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, REAL *result, bool *bwork, INTEGER &info) {
-    a([lda * star]);
-    b([lda * star]);
-    ai([lda * star]);
-    bi([lda * star]);
-    vl([lda * star]);
-    vr([lda * star]);
-    result([4]);
+    common cmn;
     common_read read(cmn);
     common_write write(cmn);
+    INTEGER ldb = lda;
+    INTEGER ldai = lda;
+    INTEGER ldbi = lda;
+    INTEGER ldvl = lda;
+    INTEGER ldvr = lda;
+    double dtmp;
+    complex<double> ctmp;
+    char buf[1024];
     INTEGER nmax = 0;
     const REAL zero = 0.0;
     INTEGER minwrk = 0;
@@ -189,7 +191,7 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                         //
                         //                    generated a test matrix pair
                         //
-                        dlatm6(iptype, 5, a, lda, b, vr, lda, vl, lda, weight[iwa - 1], weight[iwb - 1], weight[iwx - 1], weight[iwy - 1], dtru, diftru);
+                        Rlatm6(iptype, 5, a, lda, b, vr, lda, vl, lda, weight[iwa - 1], weight[iwb - 1], weight[iwx - 1], weight[iwy - 1], dtru, diftru);
                         //
                         //                    Compute eigenvalues/eigenvectors of (A, B).
                         //                    Compute eigenvalue/eigenvector condition numbers
@@ -216,15 +218,17 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                         //                    Tests (1) and (2)
                         //
                         result[1 - 1] = zero;
-                        Rget52(true, n, a, lda, b, lda, vl, lda, alphar, alphai, beta, work, result[1 - 1]);
+                        Rget52(true, n, a, lda, b, lda, vl, lda, alphar, alphai, beta, work, &result[1 - 1]);
                         if (result[2 - 1] > thresh) {
-                            write(nout, format_9998), "Left", "Rggevx", result(2), n, iptype, iwa, iwb, iwx, iwy;
+                            sprintnum_short(buf, result[2 - 1]);
+                            write(nout, format_9998), "Left", "Rggevx", buf, n, iptype, iwa, iwb, iwx, iwy;
                         }
                         //
                         result[2 - 1] = zero;
-                        Rget52(false, n, a, lda, b, lda, vr, lda, alphar, alphai, beta, work, result[2 - 1]);
+                        Rget52(false, n, a, lda, b, lda, vr, lda, alphar, alphai, beta, work, &result[2 - 1]);
                         if (result[3 - 1] > thresh) {
-                            write(nout, format_9998), "Right", "Rggevx", result(3), n, iptype, iwa, iwb, iwx, iwy;
+                            sprintnum_short(buf, result[3 - 1]);
+                            write(nout, format_9998), "Right", "Rggevx", buf, n, iptype, iwa, iwb, iwx, iwy;
                         }
                         //
                         //                    Test (3)
@@ -241,7 +245,7 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                                 }
                             } else {
                                 work[i - 1] = max(abs(dtru[i - 1] / s[i - 1]), abs(s[i - 1] / dtru[i - 1]));
-                                result[3 - 1] = max(result[3 - 1], &work[i - 1]);
+                                result[3 - 1] = max(result[3 - 1], work[i - 1]);
                             }
                         }
                         //
@@ -278,7 +282,7 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                             if ((result[j - 1] >= thrsh2 && j >= 4) || (result[j - 1] >= thresh && j <= 3)) {
                                 //
                                 //                       If this is the first test to fail,
-                                //                       prINTEGER a header to the data file.
+                                //                       print a header to the data file.
                                 //
                                 if (nerrs == 0) {
                                     write(nout, format_9997), "DXV";
@@ -302,13 +306,15 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                                 }
                                 nerrs++;
                                 if (result[j - 1] < 10000.0) {
+                                    sprintnum_short(buf, result[j - 1]);
                                     write(nout, "(' Type=',i2,',',' IWA=',i2,', IWB=',i2,', IWX=',i2,"
                                                 "', IWY=',i2,', result ',i2,' is',0p,a)"),
-                                        iptype, iwa, iwb, iwx, iwy, j, result(j);
+                                        iptype, iwa, iwb, iwx, iwy, j, buf;
                                 } else {
+                                    sprintnum_short(buf, result[j - 1]);
                                     write(nout, "(' Type=',i2,',',' IWA=',i2,', IWB=',i2,', IWX=',i2,"
                                                 "', IWY=',i2,', result ',i2,' is',1p,a)"),
-                                        iptype, iwa, iwb, iwx, iwy, j, result(j);
+                                        iptype, iwa, iwb, iwx, iwy, j, buf;
                                 }
                             }
                         }
@@ -328,165 +334,169 @@ statement_90:
     //     Read in data from file to check accuracy of condition estimation
     //     Read input data until N=0
     //
-    try {
+    while (1) {
         read(nin, star), n;
-    } catch (read_end const) {
-        goto statement_150;
-    }
-    if (n == 0) {
-        goto statement_150;
-    }
-    for (i = 1; i <= n; i = i + 1) {
+        if (n == 0)
+            break;
+        for (i = 1; i <= n; i = i + 1) {
+            {
+                read_loop rloop(cmn, nin, star);
+                for (j = 1; j <= n; j = j + 1) {
+                    rloop, dtmp;
+                    a[(i - 1) + (j - 1) * lda] = dtmp;
+                }
+            }
+        }
+        for (i = 1; i <= n; i = i + 1) {
+            {
+                read_loop rloop(cmn, nin, star);
+                for (j = 1; j <= n; j = j + 1) {
+                    rloop, dtmp;
+                    b[(i - 1) + (j - 1) * ldb] = dtmp;
+                }
+            }
+        }
         {
             read_loop rloop(cmn, nin, star);
-            for (j = 1; j <= n; j = j + 1) {
-                rloop, a(i, j);
+            for (i = 1; i <= n; i = i + 1) {
+                rloop, dtmp;
+                dtru[i - 1] = dtmp;
             }
         }
-    }
-    for (i = 1; i <= n; i = i + 1) {
         {
             read_loop rloop(cmn, nin, star);
-            for (j = 1; j <= n; j = j + 1) {
-                rloop, b(i, j);
+            for (i = 1; i <= n; i = i + 1) {
+                rloop, dtmp;
+                diftru[i - 1] = dtmp;
             }
         }
-    }
-    {
-        read_loop rloop(cmn, nin, star);
-        for (i = 1; i <= n; i = i + 1) {
-            rloop, dtru(i);
+        //
+        nptknt++;
+        //
+        //     Compute eigenvalues/eigenvectors of (A, B).
+        //     Compute eigenvalue/eigenvector condition numbers
+        //     using computed eigenvectors.
+        //
+        Rlacpy("F", n, n, a, lda, ai, lda);
+        Rlacpy("F", n, n, b, lda, bi, lda);
+        //
+        Rggevx("N", "V", "V", "B", n, ai, lda, bi, lda, alphar, alphai, beta, vl, lda, vr, lda, ilo, ihi, lscale, rscale, anorm, bnorm, s, dif, work, lwork, iwork, bwork, linfo);
+        //
+        if (linfo != 0) {
+            result[1 - 1] = ulpinv;
+            write(nout, "(' Rdrgvx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
+                        "', Input example #',i2,')')"),
+                "Rggevx", linfo, n, nptknt;
+            goto statement_140;
         }
-    }
-    {
-        read_loop rloop(cmn, nin, star);
-        for (i = 1; i <= n; i = i + 1) {
-            rloop, diftru(i);
+        //
+        //     Compute the norm(A, B)
+        //
+        Rlacpy("Full", n, n, ai, lda, work, n);
+        Rlacpy("Full", n, n, bi, lda, &work[(n * n + 1) - 1], n);
+        abnorm = Rlange("Fro", n, 2 * n, work, n, work);
+        //
+        //     Tests (1) and (2)
+        //
+        result[1 - 1] = zero;
+        Rget52(true, n, a, lda, b, lda, vl, lda, alphar, alphai, beta, work, &result[1 - 1]);
+        if (result[2 - 1] > thresh) {
+            sprintnum_short(buf, result[2 - 1]);
+            write(nout, format_9986), "Left", "Rggevx", buf, n, nptknt;
         }
-    }
-    //
-    nptknt++;
-    //
-    //     Compute eigenvalues/eigenvectors of (A, B).
-    //     Compute eigenvalue/eigenvector condition numbers
-    //     using computed eigenvectors.
-    //
-    Rlacpy("F", n, n, a, lda, ai, lda);
-    Rlacpy("F", n, n, b, lda, bi, lda);
-    //
-    Rggevx("N", "V", "V", "B", n, ai, lda, bi, lda, alphar, alphai, beta, vl, lda, vr, lda, ilo, ihi, lscale, rscale, anorm, bnorm, s, dif, work, lwork, iwork, bwork, linfo);
-    //
-    if (linfo != 0) {
-        result[1 - 1] = ulpinv;
-        write(nout, "(' Rdrgvx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
-                    "', Input example #',i2,')')"),
-            "Rggevx", linfo, n, nptknt;
-        goto statement_140;
-    }
-    //
-    //     Compute the norm(A, B)
-    //
-    Rlacpy("Full", n, n, ai, lda, work, n);
-    Rlacpy("Full", n, n, bi, lda, &work[(n * n + 1) - 1], n);
-    abnorm = Rlange("Fro", n, 2 * n, work, n, work);
-    //
-    //     Tests (1) and (2)
-    //
-    result[1 - 1] = zero;
-    Rget52(true, n, a, lda, b, lda, vl, lda, alphar, alphai, beta, work, result[1 - 1]);
-    if (result[2 - 1] > thresh) {
-        write(nout, format_9986), "Left", "Rggevx", result(2), n, nptknt;
-    }
-    //
-    result[2 - 1] = zero;
-    Rget52(false, n, a, lda, b, lda, vr, lda, alphar, alphai, beta, work, result[2 - 1]);
-    if (result[3 - 1] > thresh) {
-        write(nout, format_9986), "Right", "Rggevx", result(3), n, nptknt;
-    }
-    //
-    //     Test (3)
-    //
-    result[3 - 1] = zero;
-    for (i = 1; i <= n; i = i + 1) {
-        if (s[i - 1] == zero) {
-            if (dtru[i - 1] > abnorm * ulp) {
-                result[3 - 1] = ulpinv;
+        //
+        result[2 - 1] = zero;
+        Rget52(false, n, a, lda, b, lda, vr, lda, alphar, alphai, beta, work, &result[2 - 1]);
+        if (result[3 - 1] > thresh) {
+            sprintnum_short(buf, result[3 - 1]);
+            write(nout, format_9986), "Right", "Rggevx", buf, n, nptknt;
+        }
+        //
+        //     Test (3)
+        //
+        result[3 - 1] = zero;
+        for (i = 1; i <= n; i = i + 1) {
+            if (s[i - 1] == zero) {
+                if (dtru[i - 1] > abnorm * ulp) {
+                    result[3 - 1] = ulpinv;
+                }
+            } else if (dtru[i - 1] == zero) {
+                if (s[i - 1] > abnorm * ulp) {
+                    result[3 - 1] = ulpinv;
+                }
+            } else {
+                work[i - 1] = max(abs(dtru[i - 1] / s[i - 1]), abs(s[i - 1] / dtru[i - 1]));
+                result[3 - 1] = max(result[3 - 1], work[i - 1]);
             }
-        } else if (dtru[i - 1] == zero) {
-            if (s[i - 1] > abnorm * ulp) {
-                result[3 - 1] = ulpinv;
+        }
+        //
+        //     Test (4)
+        //
+        result[4 - 1] = zero;
+        if (dif[1 - 1] == zero) {
+            if (diftru[1 - 1] > abnorm * ulp) {
+                result[4 - 1] = ulpinv;
+            }
+        } else if (diftru[1 - 1] == zero) {
+            if (dif[1 - 1] > abnorm * ulp) {
+                result[4 - 1] = ulpinv;
+            }
+        } else if (dif[5 - 1] == zero) {
+            if (diftru[5 - 1] > abnorm * ulp) {
+                result[4 - 1] = ulpinv;
+            }
+        } else if (diftru[5 - 1] == zero) {
+            if (dif[5 - 1] > abnorm * ulp) {
+                result[4 - 1] = ulpinv;
             }
         } else {
-            work[i - 1] = max(abs(dtru[i - 1] / s[i - 1]), abs(s[i - 1] / dtru[i - 1]));
-            result[3 - 1] = max(result[3 - 1], &work[i - 1]);
+            ratio1 = max(abs(diftru[1 - 1] / dif[1 - 1]), abs(dif[1 - 1] / diftru[1 - 1]));
+            ratio2 = max(abs(diftru[5 - 1] / dif[5 - 1]), abs(dif[5 - 1] / diftru[5 - 1]));
+            result[4 - 1] = max(ratio1, ratio2);
         }
-    }
-    //
-    //     Test (4)
-    //
-    result[4 - 1] = zero;
-    if (dif[1 - 1] == zero) {
-        if (diftru[1 - 1] > abnorm * ulp) {
-            result[4 - 1] = ulpinv;
-        }
-    } else if (diftru[1 - 1] == zero) {
-        if (dif[1 - 1] > abnorm * ulp) {
-            result[4 - 1] = ulpinv;
-        }
-    } else if (dif[5 - 1] == zero) {
-        if (diftru[5 - 1] > abnorm * ulp) {
-            result[4 - 1] = ulpinv;
-        }
-    } else if (diftru[5 - 1] == zero) {
-        if (dif[5 - 1] > abnorm * ulp) {
-            result[4 - 1] = ulpinv;
-        }
-    } else {
-        ratio1 = max(abs(diftru[1 - 1] / dif[1 - 1]), abs(dif[1 - 1] / diftru[1 - 1]));
-        ratio2 = max(abs(diftru[5 - 1] / dif[5 - 1]), abs(dif[5 - 1] / diftru[5 - 1]));
-        result[4 - 1] = max(ratio1, ratio2);
-    }
-    //
-    ntestt += 4;
-    //
-    //     Print out tests which fail.
-    //
-    for (j = 1; j <= 4; j = j + 1) {
-        if (result[j - 1] >= thrsh2) {
-            //
-            //           If this is the first test to fail,
-            //           prINTEGER a header to the data file.
-            //
-            if (nerrs == 0) {
-                write(nout, format_9997), "DXV";
+        //
+        ntestt += 4;
+        //
+        //     Print out tests which fail.
+        //
+        for (j = 1; j <= 4; j = j + 1) {
+            if (result[j - 1] >= thrsh2) {
                 //
-                //              Print out messages for built-in examples
+                //           If this is the first test to fail,
+                //           prINTEGER a header to the data file.
                 //
-                //              Matrix types
-                //
-                write(nout, "(' Input Example')");
-                //
-                //              Tests performed
-                //
-                write(nout, format_9992), "'", "transpose", "'";
-                //
-            }
-            nerrs++;
-            if (result[j - 1] < 10000.0) {
-                write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
-                            "' is',0p,a)"),
-                    nptknt, n, j, result(j);
-            } else {
-                write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
-                            "' is',1p,a)"),
-                    nptknt, n, j, result(j);
+                if (nerrs == 0) {
+                    write(nout, format_9997), "DXV";
+                    //
+                    //              Print out messages for built-in examples
+                    //
+                    //              Matrix types
+                    //
+                    write(nout, "(' Input Example')");
+                    //
+                    //              Tests performed
+                    //
+                    write(nout, format_9992), "'", "transpose", "'";
+                    //
+                }
+                nerrs++;
+                if (result[j - 1] < 10000.0) {
+                    sprintnum_short(buf, result[j - 1]);
+                    write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
+                                "' is',0p,a)"),
+                        nptknt, n, j, buf;
+                } else {
+                    sprintnum_short(buf, result[j - 1]);
+                    write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
+                                "' is',1p,a)"),
+                        nptknt, n, j, buf;
+                }
             }
         }
-    }
-//
-statement_140:
     //
-    goto statement_90;
+    statement_140:;
+        //
+    }
 statement_150:
     //
     //     Summary

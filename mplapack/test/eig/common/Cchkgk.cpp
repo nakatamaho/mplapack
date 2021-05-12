@@ -38,9 +38,15 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+inline REAL abs1(COMPLEX cdum) { return abs(cdum.real()) + abs(cdum.imag()); }
+
 void Cchkgk(INTEGER const nin, INTEGER const nout) {
+    common cmn;
     common_read read(cmn);
     common_write write(cmn);
+    double dtmp;
+    complex<double> ctmp;
+    char buf[1024];
     COMPLEX cdum = 0.0;
     INTEGER lmax[4];
     INTEGER ninfo = 0;
@@ -73,6 +79,8 @@ void Cchkgk(INTEGER const nin, INTEGER const nout) {
     INTEGER info = 0;
     COMPLEX vlf[ldvl * ldvl];
     COMPLEX vrf[ldvr * ldvr];
+    INTEGER ldvlf = ldvl;
+    INTEGER ldvrf = ldvr;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const INTEGER ldwork = 50;
@@ -107,7 +115,6 @@ void Cchkgk(INTEGER const nin, INTEGER const nout) {
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1(cdum) = abs(cdum.real()) + abs(cdum.imag());
     //     ..
     //     .. Executable Statements ..
     //
@@ -131,7 +138,8 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, a(i, j);
+                rloop, ctmp;
+                a[(i - 1) + (j - 1) * lda] = ctmp;
             }
         }
     }
@@ -140,7 +148,8 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, b(i, j);
+                rloop, ctmp;
+                b[(i - 1) + (j - 1) * ldb] = ctmp;
             }
         }
     }
@@ -149,7 +158,8 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= m; j = j + 1) {
-                rloop, vl(i, j);
+                rloop, ctmp;
+                vl[(i - 1) + (j - 1) * ldvl] = ctmp;
             }
         }
     }
@@ -158,7 +168,8 @@ statement_10:
         {
             read_loop rloop(cmn, nin, star);
             for (j = 1; j <= m; j = j + 1) {
-                rloop, vr(i, j);
+                rloop, ctmp;
+                vr[(i - 1) + (j - 1) * ldvr] = ctmp;
             }
         }
     }
@@ -241,11 +252,12 @@ statement_100:
     //
     write(nout, "(1x,'.. test output of Cggbak .. ')");
     //
-    write(nout, "(' value of largest test error                  =',d12.3)"), rmax;
-    write(nout, "(' example number where Cggbal info is not 0    =',i4)"), lmax(1);
-    write(nout, "(' example number where Cggbak(L) info is not 0 =',i4)"), lmax(2);
-    write(nout, "(' example number where Cggbak(R) info is not 0 =',i4)"), lmax(3);
-    write(nout, "(' example number having largest error          =',i4)"), lmax(4);
+    sprintnum_short(buf, rmax);
+    write(nout, "(' value of largest test error                  =',a)"), buf;
+    write(nout, "(' example number where Cggbal info is not 0    =',i4)"), lmax[1 - 1];
+    write(nout, "(' example number where Cggbak(L) info is not 0 =',i4)"), lmax[2 - 1];
+    write(nout, "(' example number where Cggbak(R) info is not 0 =',i4)"), lmax[3 - 1];
+    write(nout, "(' example number having largest error          =',i4)"), lmax[4 - 1];
     write(nout, "(' number of examples where info is not 0       =',i4)"), ninfo;
     write(nout, "(' total number of examples tested              =',i4)"), knt;
     //
