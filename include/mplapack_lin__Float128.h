@@ -244,6 +244,7 @@ void Ctrt06(_Float128 const rcond, _Float128 const rcondc, const char *uplo, con
 void Ctsqr01(const char *tssw, mplapackint &m, mplapackint &n, mplapackint const mb, mplapackint const nb, _Float128 *result);
 void Cunhr_col01(mplapackint const m, mplapackint const n, mplapackint const mb1, mplapackint const nb1, mplapackint const nb2, _Float128 *result);
 void Cunhr_col02(mplapackint const m, mplapackint const n, mplapackint const mb1, mplapackint const nb1, mplapackint const nb2, _Float128 *result);
+void Mxerbla__Float128(const char *srname, mplapackint const &info);
 void Rchkeq(_Float128 const thresh, mplapackint const nout);
 void Rchkgb(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nns, mplapackint *nsval, _Float128 const thresh, bool const tsterr, _Float128 *a, mplapackint const la, _Float128 *afac, mplapackint const lafac, _Float128 *b, _Float128 *x, _Float128 *xact, _Float128 *work, _Float128 *rwork, mplapackint *iwork, mplapackint const nout);
 void Rchkge(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nns, mplapackint *nsval, _Float128 const thresh, bool const tsterr, mplapackint const nmax, _Float128 *a, _Float128 *afac, _Float128 *ainv, _Float128 *b, _Float128 *x, _Float128 *xact, _Float128 *work, _Float128 *rwork, mplapackint *iwork, mplapackint const nout);
@@ -403,4 +404,5 @@ void Rtrt06(_Float128 const rcond, _Float128 const rcondc, const char *uplo, con
 void Rtsqr01(const char *tssw, mplapackint const m, mplapackint const n, mplapackint const mb, mplapackint const nb, _Float128 *result);
 void chkxer(const char *srnamt, mplapackint const &infot, mplapackint const &nout, bool &lerr, bool &ok);
 void icopy(mplapackint const &n, mplapackint *sx, mplapackint const &incx, mplapackint *sy, mplapackint const &incy);
+void xlaenv(mplapackint const &ispec, mplapackint const &nvalue);
 #endif

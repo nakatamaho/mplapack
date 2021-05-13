@@ -246,6 +246,7 @@ void Ctrt06(mpf_class const rcond, mpf_class const rcondc, const char *uplo, con
 void Ctsqr01(const char *tssw, mplapackint &m, mplapackint &n, mplapackint const mb, mplapackint const nb, mpf_class *result);
 void Cunhr_col01(mplapackint const m, mplapackint const n, mplapackint const mb1, mplapackint const nb1, mplapackint const nb2, mpf_class *result);
 void Cunhr_col02(mplapackint const m, mplapackint const n, mplapackint const mb1, mplapackint const nb1, mplapackint const nb2, mpf_class *result);
+void Mxerbla_gmp(const char *srname, mplapackint const &info);
 void Rchkeq(mpf_class const thresh, mplapackint const nout);
 void Rchkgb(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nns, mplapackint *nsval, mpf_class const thresh, bool const tsterr, mpf_class *a, mplapackint const la, mpf_class *afac, mplapackint const lafac, mpf_class *b, mpf_class *x, mpf_class *xact, mpf_class *work, mpf_class *rwork, mplapackint *iwork, mplapackint const nout);
 void Rchkge(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nns, mplapackint *nsval, mpf_class const thresh, bool const tsterr, mplapackint const nmax, mpf_class *a, mpf_class *afac, mpf_class *ainv, mpf_class *b, mpf_class *x, mpf_class *xact, mpf_class *work, mpf_class *rwork, mplapackint *iwork, mplapackint const nout);
@@ -405,4 +406,5 @@ void Rtrt06(mpf_class const rcond, mpf_class const rcondc, const char *uplo, con
 void Rtsqr01(const char *tssw, mplapackint const m, mplapackint const n, mplapackint const mb, mplapackint const nb, mpf_class *result);
 void chkxer(const char *srnamt, mplapackint const &infot, mplapackint const &nout, bool &lerr, bool &ok);
 void icopy(mplapackint const &n, mplapackint *sx, mplapackint const &incx, mplapackint *sy, mplapackint const &incy);
+void xlaenv(mplapackint const &ispec, mplapackint const &nvalue);
 #endif
