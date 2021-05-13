@@ -152,6 +152,8 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     //
     nb = 1;
     nbmin = 2;
+    xlaenv(1, nb);
+    xlaenv(2, nbmin);
     //
     //     Do for each value of N in NVAL
     //
