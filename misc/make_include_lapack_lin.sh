@@ -26,6 +26,7 @@ for mplib in $MPLIBS; do
         sed -i -e 's/REAL/mpf_class/g' mplapack_lin_${mplib}.h 
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_lin_${mplib}.h
+        sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mplapack_lin_${mplib}.h
         sed -i -e "s/iMlaenv2stage/iMlaenv2stage_${mplib}/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/iMlaenv(/iMlaenv_${mplib}(/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_lin_${mplib}.h 
@@ -39,6 +40,7 @@ for mplib in $MPLIBS; do
         sed -i -e 's/COMPLEX/mpcomplex/g' mplapack_lin_${mplib}.h 
         sed -i -e 's/REAL/mpreal/g' mplapack_lin_${mplib}.h 
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_lin_${mplib}.h 
+        sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mplapack_lin_${mplib}.h
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_lin_${mplib}.h
         sed -i -e "s/iMlaenv2stage/iMlaenv2stage_${mplib}/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/iMlaenv(/iMlaenv_${mplib}(/g" mplapack_lin_${mplib}.h 
@@ -54,6 +56,7 @@ for mplib in $MPLIBS; do
         sed -i -e 's/REAL/double/g' mplapack_lin_${mplib}.h 
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_lin_${mplib}.h
+        sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mplapack_lin_${mplib}.h
         sed -i -e "s/iMlaenv2stage/iMlaenv2stage_${mplib}/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/iMlaenv(/iMlaenv_${mplib}(/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_lin_${mplib}.h 
@@ -68,6 +71,7 @@ for mplib in $MPLIBS; do
         sed -i -e 's/REAL/dd_real/g' mplapack_lin_${mplib}.h 
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_lin_${mplib}.h
+        sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mplapack_lin_${mplib}.h
         sed -i -e "s/iMlaenv2stage/iMlaenv2stage_${mplib}/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/iMlaenv(/iMlaenv_${mplib}(/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_lin_${mplib}.h 
@@ -82,6 +86,7 @@ for mplib in $MPLIBS; do
         sed -i -e 's/REAL/qd_real/g' mplapack_lin_${mplib}.h 
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_lin_${mplib}.h
+        sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mplapack_lin_${mplib}.h
         sed -i -e "s/iMlaenv2stage/iMlaenv2stage_${mplib}/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/iMlaenv(/iMlaenv_${mplib}(/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_lin_${mplib}.h 
@@ -96,6 +101,7 @@ for mplib in $MPLIBS; do
         sed -i -e 's/REAL/_Float128/g' mplapack_lin_${mplib}.h 
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_lin_${mplib}.h
+        sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mplapack_lin_${mplib}.h
         sed -i -e "s/iMlaenv2stage/iMlaenv2stage_${mplib}/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/iMlaenv(/iMlaenv_${mplib}(/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_lin_${mplib}.h 
@@ -110,6 +116,7 @@ for mplib in $MPLIBS; do
         sed -i -e 's/REAL/_Float64x/g' mplapack_lin_${mplib}.h 
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_lin_${mplib}.h
+        sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mplapack_lin_${mplib}.h
         sed -i -e "s/iMlaenv2stage/iMlaenv2stage_${mplib}/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/iMlaenv(/iMlaenv_${mplib}(/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_lin_${mplib}.h 
