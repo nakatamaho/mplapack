@@ -136,9 +136,11 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Test the error exits
     //
+    xlaenv(1, 1);
     if (tsterr) {
         Rerrge(path, nout);
     }
+    xlaenv(2, 2);
     //
     //     Do for each value of M in MVAL
     //
@@ -218,6 +220,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 //
                 for (inb = 1; inb <= nnb; inb = inb + 1) {
                     nb = nbval[inb - 1];
+                    xlaenv(1, nb);
                     //
                     //                 Compute the LU factorization of the matrix.
                     //

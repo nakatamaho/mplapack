@@ -141,6 +141,7 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     if (tsterr) {
         Rerrpo(path, nout);
     }
+    xlaenv(2, 2);
     kdval[1 - 1] = 0;
     //
     //     Do for each value of N in NVAL
@@ -275,6 +276,7 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     for (inb = 1; inb <= nnb; inb = inb + 1) {
                         nb = nbval[inb - 1];
+                        xlaenv(1, nb);
                         //
                         //                    Compute the L*L' or U'*U factorization of the band
                         //                    matrix.

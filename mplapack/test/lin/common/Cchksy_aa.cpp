@@ -286,6 +286,7 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     //                 returned by iMlaenv.
                     //
                     nb = nbval[inb - 1];
+                    xlaenv(1, nb);
                     //
                     //                 Copy the test matrix A into matrix AFAC which
                     //                 will be factorized in place. This is needed to

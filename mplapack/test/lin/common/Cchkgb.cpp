@@ -147,11 +147,9 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Test the error exits
     //
-    xlaenv(1, 1);
     if (tsterr) {
         Cerrge(path, nout);
     }
-    xlaenv(2, 2);
     //
     //     Initialize the first value for the lower and upper bandwidths.
     //
