@@ -137,9 +137,11 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Test the error exits
     //
+    xlaenv(1, 1);
     if (tsterr) {
         Cerrge(path, nout);
     }
+    xlaenv(2, 2);
     //
     //     Do for each value of M in MVAL
     //

@@ -143,8 +143,8 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     //
     //     Set the minimum block size for which the block routine should
     //     be used, which will be later returned by iMlaenv
-    xlaenv(2, 2);
     //
+    xlaenv(2, 2);
     //
     //     Do for each value of N in NVAL
     //
