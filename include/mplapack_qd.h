@@ -52,7 +52,7 @@ mplapackint iMlatrans(const char *trans);
 mplapackint iMlauplo(const char *uplo);
 mplapackint iMlazlc(mplapackint const m, mplapackint const n, qd_complex *a, mplapackint const lda);
 mplapackint iMlazlr(mplapackint const m, mplapackint const n, qd_complex *a, mplapackint const lda);
-mplapackint iMparam2stage(mplapackint const ispec, const char *name, const char *opts, mplapackint const ni, mplapackint const nbi, mplapackint const ibi, mplapackint const nxi);
+mplapackint iMparam2stage_qd(mplapackint const ispec, const char *name, const char *opts, mplapackint const ni, mplapackint const nbi, mplapackint const ibi, mplapackint const nxi);
 mplapackint iMparmq_qd(mplapackint const ispec, const char *name, const char *opts, mplapackint const n, mplapackint const ilo, mplapackint const ihi, mplapackint const lwork);
 qd_complex Cladiv(qd_complex const x, qd_complex const y);
 qd_real Clangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, qd_complex *ab, mplapackint const ldab, qd_real *work);

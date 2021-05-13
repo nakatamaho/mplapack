@@ -57,7 +57,7 @@ mplapackint iMlatrans(const char *trans);
 mplapackint iMlauplo(const char *uplo);
 mplapackint iMlazlc(mplapackint const m, mplapackint const n, mpcomplex *a, mplapackint const lda);
 mplapackint iMlazlr(mplapackint const m, mplapackint const n, mpcomplex *a, mplapackint const lda);
-mplapackint iMparam2stage(mplapackint const ispec, const char *name, const char *opts, mplapackint const ni, mplapackint const nbi, mplapackint const ibi, mplapackint const nxi);
+mplapackint iMparam2stage_mpfr(mplapackint const ispec, const char *name, const char *opts, mplapackint const ni, mplapackint const nbi, mplapackint const ibi, mplapackint const nxi);
 mplapackint iMparmq_mpfr(mplapackint const ispec, const char *name, const char *opts, mplapackint const n, mplapackint const ilo, mplapackint const ihi, mplapackint const lwork);
 mpreal Clangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, mpcomplex *ab, mplapackint const ldab, mpreal *work);
 mpreal Clange(const char *norm, mplapackint const m, mplapackint const n, mpcomplex *a, mplapackint const lda, mpreal *work);

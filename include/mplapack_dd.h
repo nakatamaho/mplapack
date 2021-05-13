@@ -94,7 +94,7 @@ mplapackint iMlatrans(const char *trans);
 mplapackint iMlauplo(const char *uplo);
 mplapackint iMlazlc(mplapackint const m, mplapackint const n, dd_complex *a, mplapackint const lda);
 mplapackint iMlazlr(mplapackint const m, mplapackint const n, dd_complex *a, mplapackint const lda);
-mplapackint iMparam2stage(mplapackint const ispec, const char *name, const char *opts, mplapackint const ni, mplapackint const nbi, mplapackint const ibi, mplapackint const nxi);
+mplapackint iMparam2stage_dd(mplapackint const ispec, const char *name, const char *opts, mplapackint const ni, mplapackint const nbi, mplapackint const ibi, mplapackint const nxi);
 mplapackint iMparmq_dd(mplapackint const ispec, const char *name, const char *opts, mplapackint const n, mplapackint const ilo, mplapackint const ihi, mplapackint const lwork);
 void CRrscl(mplapackint const n, dd_real const sa, dd_complex *sx, mplapackint const incx);
 void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char *jobv2t, const char *trans, mplapackint const m, mplapackint const p, mplapackint const q, dd_real *theta, dd_real *phi, dd_complex *u1, mplapackint const ldu1, dd_complex *u2, mplapackint const ldu2, dd_complex *v1t, mplapackint const ldv1t, dd_complex *v2t, mplapackint const ldv2t, dd_real *b11d, dd_real *b11e, dd_real *b12d, dd_real *b12e, dd_real *b21d, dd_real *b21e, dd_real *b22d, dd_real *b22e, dd_real *rwork, mplapackint const lrwork, mplapackint &info);

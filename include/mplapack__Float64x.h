@@ -91,7 +91,7 @@ mplapackint iMlatrans(const char *trans);
 mplapackint iMlauplo(const char *uplo);
 mplapackint iMlazlc(mplapackint const m, mplapackint const n, std::complex<_Float64x> *a, mplapackint const lda);
 mplapackint iMlazlr(mplapackint const m, mplapackint const n, std::complex<_Float64x> *a, mplapackint const lda);
-mplapackint iMparam2stage(mplapackint const ispec, const char *name, const char *opts, mplapackint const ni, mplapackint const nbi, mplapackint const ibi, mplapackint const nxi);
+mplapackint iMparam2stage__Float64x(mplapackint const ispec, const char *name, const char *opts, mplapackint const ni, mplapackint const nbi, mplapackint const ibi, mplapackint const nxi);
 mplapackint iMparmq__Float64x(mplapackint const ispec, const char *name, const char *opts, mplapackint const n, mplapackint const ilo, mplapackint const ihi, mplapackint const lwork);
 std::complex<_Float64x> Cladiv(std::complex<_Float64x> const x, std::complex<_Float64x> const y);
 void CRrscl(mplapackint const n, _Float64x const sa, std::complex<_Float64x> *sx, mplapackint const incx);

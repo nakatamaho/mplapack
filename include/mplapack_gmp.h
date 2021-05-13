@@ -94,7 +94,7 @@ mplapackint iMlatrans(const char *trans);
 mplapackint iMlauplo(const char *uplo);
 mplapackint iMlazlc(mplapackint const m, mplapackint const n, mpc_class *a, mplapackint const lda);
 mplapackint iMlazlr(mplapackint const m, mplapackint const n, mpc_class *a, mplapackint const lda);
-mplapackint iMparam2stage(mplapackint const ispec, const char *name, const char *opts, mplapackint const ni, mplapackint const nbi, mplapackint const ibi, mplapackint const nxi);
+mplapackint iMparam2stage_gmp(mplapackint const ispec, const char *name, const char *opts, mplapackint const ni, mplapackint const nbi, mplapackint const ibi, mplapackint const nxi);
 mplapackint iMparmq_gmp(mplapackint const ispec, const char *name, const char *opts, mplapackint const n, mplapackint const ilo, mplapackint const ihi, mplapackint const lwork);
 void CRrscl(mplapackint const n, mpf_class const sa, mpc_class *sx, mplapackint const incx);
 void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char *jobv2t, const char *trans, mplapackint const m, mplapackint const p, mplapackint const q, mpf_class *theta, mpf_class *phi, mpc_class *u1, mplapackint const ldu1, mpc_class *u2, mplapackint const ldu2, mpc_class *v1t, mplapackint const ldv1t, mpc_class *v2t, mplapackint const ldv2t, mpf_class *b11d, mpf_class *b11e, mpf_class *b12d, mpf_class *b12e, mpf_class *b21d, mpf_class *b21e, mpf_class *b22d, mpf_class *b22e, mpf_class *rwork, mplapackint const lrwork, mplapackint &info);
