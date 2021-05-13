@@ -46,6 +46,7 @@ typedef mpc_class COMPLEX;
 #define iMlaver iMlaver_gmp
 #define iMieeeck iMieeeck_gmp
 #define iMparmq iMparmq_gmp
+#define iMparam2stage iMparam2stage_gmp
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
@@ -63,6 +64,7 @@ typedef mpcomplex COMPLEX;
 #define iMlaver iMlaver_mpfr
 #define iMieeeck iMieeeck_mpfr
 #define iMparmq iMparmq_mpfr
+#define iMparam2stage iMparam2stage_mpfr
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_QD___
@@ -80,6 +82,7 @@ typedef qd_complex COMPLEX;
 #define iMlaver iMlaver_qd
 #define iMieeeck iMieeeck_qd
 #define iMparmq iMparmq_qd
+#define iMparam2stage iMparam2stage_qd
 #if !defined __MUTILS_CPP__
 #define nint __qd_nint
 #endif
@@ -100,6 +103,7 @@ typedef dd_complex COMPLEX;
 #define iMlaver iMlaver_dd
 #define iMieeeck iMieeeck_dd
 #define iMparmq iMparmq_dd
+#define iMparam2stage iMparam2stage_dd
 #if !defined __MUTILS_CPP__
 #define nint __dd_nint
 #endif
@@ -120,6 +124,7 @@ typedef std::complex<double> COMPLEX;
 #define iMlaver iMlaver_double
 #define iMieeeck iMieeeck_double
 #define iMparmq iMparmq_double
+#define iMparam2stage iMparam2stage_double
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
@@ -136,6 +141,7 @@ typedef std::complex<_Float64x> COMPLEX;
 #define iMlaenv2stage iMlaenv2stage__Float64x
 #define iMieeeck iMieeeck__Float64x
 #define iMparmq iMparmq__Float64x
+#define iMparam2stage iMparam2stage__Float64x
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
@@ -152,6 +158,7 @@ typedef std::complex<_Float128> COMPLEX;
 #define iMlaenv2stage iMlaenv2stage__Float128
 #define iMieeeck iMieeeck__Float128
 #define iMparmq iMparmq__Float128
+#define iMparam2stage iMparam2stage__Float128
 #endif
 
 #endif

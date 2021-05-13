@@ -204,6 +204,17 @@ _MPLAPACK_CLCTSX_EXTERN_  bool _MPLAPACK_CLCTSX_fs;
 
 _MPLAPACK_XLAENV_EXTERN_ INTEGER iparms[100];
 
+#if defined __MPLAPACK_MXERBLA__
+#define _MPLAPACK_MXERBLA_EXTERN_
+#else
+#define _MPLAPACK_MXERBLA_EXTERN_ extern
+#endif
+
+_MPLAPACK_MXERBLA_EXTERN_ INTEGER infot;
+_MPLAPACK_MXERBLA_EXTERN_ INTEGER nout;
+_MPLAPACK_MXERBLA_EXTERN_ INTEGER ok;
+_MPLAPACK_MXERBLA_EXTERN_ char *srnamt;
+
 #if defined(___MPLAPACK_BUILD_WITH_GMP___) || defined(___MPLAPACK_BUILD_WITH_QD___) || defined(___MPLAPACK_BUILD_WITH_DD___) || defined(___MPLAPACK_BUILD_WITH_DOUBLE___) || defined(___MPLAPACK_BUILD_WITH__FLOAT64X___) || defined(___MPLAPACK_BUILD_WITH__FLOAT128___)
 #include <mpblas_mpfr.h>
 #include <mplapack_mpfr.h>
