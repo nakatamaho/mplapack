@@ -372,7 +372,8 @@ LIN_SOURCES = \
 ../common/Cdrvsy.cpp \
 ../common/Rdrvpo.cpp \
 ../common/Cdrvpo.cpp \
-../common/iMlaenv.cpp
+../common/iMlaenv.cpp \
+../common/Mxerbla.cpp
 
 libdepends = -L. -llin_mpfr -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr 
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lm

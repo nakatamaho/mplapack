@@ -29,14 +29,17 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+
+#include <mplapack_matgen.h>
+#include <mplapack_lin.h>
+#include <mplapack_debug.h>
+
 void Mxerbla(const char *srname, INTEGER const &info) {
+    common cmn;
     common_write write(cmn);
-    // COMMON infoc
-    INTEGER &infot = cmn.infot;
-    INTEGER &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    // COMMON srnamc
-    char &srnamt = cmn.srnamt;
     //
     //
     //  -- LAPACK test routine --
@@ -56,21 +59,20 @@ void Mxerbla(const char *srname, INTEGER const &info) {
     //     ..
     //     .. Executable Statements ..
     //
-    cmn.lerr = true;
     if (info != infot) {
         if (infot != 0) {
             write(nout, "(' *** XERBLA was called from ',a,' with INFO = ',i6,' instead of ',"
                         "i2,' ***')"),
-                srnamt(1, len_trim(srnamt)), info, infot;
+                srnamt, info, infot;
         } else {
             write(nout, "(' *** On entry to ',a,' parameter number ',i6,"
                         "' had an illegal value ***')"),
-                srname(1, len_trim(srname)), info;
+                srname, info;
         }
         ok = false;
     }
     if (srname != srnamt) {
-        write(nout, "(' *** XERBLA was called with SRNAME = ',a,' instead of ',a9,' ***')"), srname(1, len_trim(srname)), srnamt(1, len_trim(srnamt));
+        write(nout, "(' *** XERBLA was called with SRNAME = ',a,' instead of ',a9,' ***')"), srname, srnamt;
         ok = false;
     }
     //
