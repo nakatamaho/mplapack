@@ -130,6 +130,7 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     if (tsterr) {
         Rerrpo(path, nout);
     }
+    xlaenv(2, 2);
     //
     //     Do for each value of N in NVAL
     //

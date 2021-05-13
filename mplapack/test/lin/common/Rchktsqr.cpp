@@ -152,8 +152,10 @@ void Rchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
             if (min(m, n) != 0) {
                 for (inb = 1; inb <= nnb; inb = inb + 1) {
                     mb = nbval[inb - 1];
+                    xlaenv(1, mb);
                     for (imb = 1; imb <= nnb; imb = imb + 1) {
                         nb = nbval[imb - 1];
+                        xlaenv(2, nb);
                         //
                         //                 Test Rgeqr and Rgemqr
                         //

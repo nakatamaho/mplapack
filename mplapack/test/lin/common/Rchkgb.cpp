@@ -150,6 +150,7 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     if (tsterr) {
         Rerrge(path, nout);
     }
+    xlaenv(2, 2);
     //
     //     Initialize the first value for the lower and upper bandwidths.
     //
