@@ -137,6 +137,7 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     if (tsterr) {
         Cerrhe(path, nout);
     }
+    xlaenv(1, 1);
     //
     //     Set the minimum block size for which the block routine should
     //     be used, which will be later returned by iMlaenv
@@ -275,6 +276,7 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //                 returned by iMlaenv.
                     //
                     nb = nbval[inb - 1];
+                    xlaenv(1, nb);
                     //
                     //                 Copy the test matrix A into matrix AFAC which
                     //                 will be factorized in place. This is needed to

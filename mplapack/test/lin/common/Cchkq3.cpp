@@ -191,7 +191,9 @@ void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //                 Do for each pair of values (NB,NX) in NBVAL and NXVAL.
                     //
                     nb = nbval[inb - 1];
+                    xlaenv(1, nb);
                     nx = nxval[inb - 1];
+                    xlaenv(3, nx);
                     //
                     //                 Save A and its singular values and a copy of
                     //                 vector IWORK.
