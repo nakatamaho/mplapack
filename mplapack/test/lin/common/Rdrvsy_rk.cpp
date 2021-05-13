@@ -155,6 +155,8 @@ void Rdrvsy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
     //
     nb = 1;
     nbmin = 2;
+    xlaenv(1, nb);
+    xlaenv(2, nbmin);
     //
     //     Do for each value of N in NVAL
     //

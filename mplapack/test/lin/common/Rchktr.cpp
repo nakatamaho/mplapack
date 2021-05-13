@@ -139,6 +139,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     if (tsterr) {
         Rerrtr(path, nout);
     }
+    xlaenv(2, 2);
     //
     for (in = 1; in <= nn; in = in + 1) {
         //
@@ -179,6 +180,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //                 Do for each blocksize in NBVAL
                     //
                     nb = nbval[inb - 1];
+                    xlaenv(1, nb);
                     //
                     //+    TEST 1
                     //                 Form the inverse of A.

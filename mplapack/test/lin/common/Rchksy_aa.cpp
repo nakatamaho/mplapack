@@ -142,6 +142,7 @@ void Rchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     //
     //     Set the minimum block size for which the block routine should
     //     be used, which will be later returned by iMlaenv
+    xlaenv(2, 2);
     //
     //
     //     Do for each value of N in NVAL
@@ -285,6 +286,7 @@ void Rchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     //                 returned by iMlaenv.
                     //
                     nb = nbval[inb - 1];
+                    xlaenv(1, nb);
                     //
                     //                 Copy the test matrix A into matrix AFAC which
                     //                 will be factorized in place. This is needed to
