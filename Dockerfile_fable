@@ -7,7 +7,7 @@ RUN apt install -y tzdata
 ENV TZ Asia/Tokyo
 RUN apt install -y python3 sudo expect
 RUN apt install -y build-essential gfortran
-RUN apt install -y autotools-dev automake libtool pkg-config
+RUN apt install -y autotools-dev automake libtool libtool-bin pkg-config
 RUN apt install -y git wget ccache time unifdef clang-format
 RUN apt install -y ng-common ng-cjk emacs-nox
 
