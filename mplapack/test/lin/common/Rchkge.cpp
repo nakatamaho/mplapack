@@ -137,10 +137,10 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //     Test the error exits
     //
     xlaenv(1, 1);
-//    if (tsterr) {
+    if (tsterr) {
         Rerrge(path, nout);
 
-//    }
+    }
     infot = 0;
     xlaenv(2, 2);
     //

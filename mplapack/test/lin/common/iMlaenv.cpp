@@ -62,14 +62,10 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char * /* opts */, 
     //     ..
     //     .. Executable Statements ..
     //
-    char subname[10];
-    subname[0] = name[1];
-    subname[1] = name[2];
-    subname[2] = name[3];
-    subname[3] = name[4];
-    subname[4] = '\0';
-
-        if (ispec >= 1 && ispec <= 5) {
+    std::string str = name;
+    char* subname = new char[str.size() + 1];
+    std::strcpy(subname, str.c_str());
+    if (ispec >= 1 && ispec <= 5) {
         //
         //        Return a value from the common block.
         //
@@ -133,6 +129,7 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char * /* opts */, 
         return_value = -1;
     }
     //
+    delete [] subname;
     return return_value;
     //
     //     End of iMlaenv
