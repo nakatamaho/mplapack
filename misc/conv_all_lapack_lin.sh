@@ -124,5 +124,4 @@ EOF
 sed -i "/#include <mplapack.h>/r insert_lin.txt" ${newfilename}.cpp  #GNU sed only
 rm -f ${oldfilename}.cpp
 done
-sed -i '/srnamt = /d' *cpp
 rm insert_lin.txt

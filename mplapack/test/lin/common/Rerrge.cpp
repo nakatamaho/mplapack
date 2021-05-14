@@ -35,11 +35,9 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Rerrge(const char *path, INTEGER const nunit) {
-    bool ok;
-    bool lerr;
-    bool infot;
     //
     //
     //  -- LAPACK test routine --
@@ -54,6 +52,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
     //     .. Parameters ..
     //     ..
     //     .. Local Scalars ..
+
     //     ..
     //     .. Local Arrays ..
     //     ..
@@ -117,6 +116,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgetrf
         //
+        strncpy(srnamt, "Rgetrf", srnamt_len);
         infot = 1;
         Rgetrf(-1, 0, a, 1, ip, info);
         chkxer("Rgetrf", infot, nout, lerr, ok);
@@ -129,6 +129,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgetf2
         //
+        strncpy(srnamt, "Rgetf2", srnamt_len);
         infot = 1;
         Rgetf2(-1, 0, a, 1, ip, info);
         chkxer("Rgetf2", infot, nout, lerr, ok);
@@ -141,6 +142,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgetri
         //
+        strncpy(srnamt, "Rgetri", srnamt_len);
         infot = 1;
         Rgetri(-1, a, 1, ip, w, lw, info);
         chkxer("Rgetri", infot, nout, lerr, ok);
@@ -150,6 +152,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgetrs
         //
+        strncpy(srnamt, "Rgetrs", srnamt_len);
         infot = 1;
         Rgetrs("/", 0, 0, a, 1, ip, b, 1, info);
         chkxer("Rgetrs", infot, nout, lerr, ok);
@@ -168,6 +171,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgerfs
         //
+        strncpy(srnamt, "Rgerfs", srnamt_len);
         infot = 1;
         Rgerfs("/", 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
         chkxer("Rgerfs", infot, nout, lerr, ok);
@@ -192,6 +196,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgecon
         //
+        strncpy(srnamt, "Rgecon", srnamt_len);
         infot = 1;
         Rgecon("/", 0, a, 1, anrm, rcond, w, iw, info);
         chkxer("Rgecon", infot, nout, lerr, ok);
@@ -204,6 +209,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgeequ
         //
+        strncpy(srnamt, "Rgeequ", srnamt_len);
         infot = 1;
         Rgeequ(-1, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
         chkxer("Rgeequ", infot, nout, lerr, ok);
@@ -221,6 +227,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgbtrf
         //
+        strncpy(srnamt, "Rgbtrf", srnamt_len);
         infot = 1;
         Rgbtrf(-1, 0, 0, 0, a, 1, ip, info);
         chkxer("Rgbtrf", infot, nout, lerr, ok);

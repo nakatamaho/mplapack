@@ -487,6 +487,7 @@ void Rchkaa(void) {
             } else {
                 write(nout, format_9989), path;
             }
+	    exit(1);
             //
             if (tstdrv) {
                 Rdrvge(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1)], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], s, work, rwork, iwork, nout);

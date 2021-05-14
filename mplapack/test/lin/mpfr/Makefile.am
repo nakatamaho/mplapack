@@ -1,4 +1,4 @@
-lib_LTLIBRARIES = liblin_mpfr.la
+lib_LTLIBRARIES = liblin_mpfr.la liblin_override.la
 
 liblin_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mplapack/test/fable
 liblin_mpfr_la_SOURCES = $(LIN_SOURCES)
@@ -371,11 +371,12 @@ LIN_SOURCES = \
 ../common/Cdrvhe.cpp \
 ../common/Cdrvsy.cpp \
 ../common/Rdrvpo.cpp \
-../common/Cdrvpo.cpp \
-../common/iMlaenv.cpp \
-../common/Mxerbla.cpp
+../common/Cdrvpo.cpp 
 
-libdepends = -L. -llin_mpfr -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr 
+liblin_override_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mplapack/test/fable
+liblin_override_la_SOURCES = ../common/Mxerbla.cpp ../common/iMlaenv.cpp
+
+libdepends = -L. -llin_mpfr -llin_override -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mplapack/test/fable
 
@@ -388,7 +389,7 @@ xlintstC_mpfr \
 xlintstrfR_mpfr \
 xlintstrfC_mpfr
 
-xlintstR_mpfr_SOURCES  = ../common/Rchkaa.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xlintstR_mpfr_SOURCES  = ../common/Rchkaa.cpp ../../../../mpblas/test/common/mplapack.test.cpp 
 xlintstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs)
 xlintstR_mpfr_CXXFLAGS = $(cxxflags)
 

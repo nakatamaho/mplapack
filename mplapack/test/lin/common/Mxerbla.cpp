@@ -33,11 +33,14 @@
 using namespace fem::major_types;
 using fem::common;
 
+#define __MPLAPACK_MXERBLA__
+
+#include <string>
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 #include <mplapack_debug.h>
 
-void Mxerbla(const char *srname, INTEGER const &info) {
+void Mxerbla(const char *srname, int info) {
     common cmn;
     common_write write(cmn);
     //
@@ -59,6 +62,7 @@ void Mxerbla(const char *srname, INTEGER const &info) {
     //     ..
     //     .. Executable Statements ..
     //
+    lerr = true;
     if (info != infot) {
         if (infot != 0) {
             write(nout, "(' *** XERBLA was called from ',a,' with INFO = ',i6,' instead of ',"
@@ -71,7 +75,9 @@ void Mxerbla(const char *srname, INTEGER const &info) {
         }
         ok = false;
     }
-    if (srname != srnamt) {
+    std::string _srname = srname;
+    std::string _srnamt = srnamt;
+    if ( _srname != _srnamt )  {
         write(nout, "(' *** XERBLA was called with SRNAME = ',a,' instead of ',a9,' ***')"), srname, srnamt;
         ok = false;
     }

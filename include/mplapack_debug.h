@@ -209,11 +209,12 @@ _MPLAPACK_XLAENV_EXTERN_ INTEGER iparms[100];
 #else
 #define _MPLAPACK_MXERBLA_EXTERN_ extern
 #endif
-
-_MPLAPACK_MXERBLA_EXTERN_ INTEGER infot;
+#define srnamt_len 1024
+_MPLAPACK_MXERBLA_EXTERN_ int infot;
 _MPLAPACK_MXERBLA_EXTERN_ INTEGER nout;
-_MPLAPACK_MXERBLA_EXTERN_ INTEGER ok;
-_MPLAPACK_MXERBLA_EXTERN_ char *srnamt;
+_MPLAPACK_MXERBLA_EXTERN_ bool ok;
+_MPLAPACK_MXERBLA_EXTERN_ bool lerr;
+_MPLAPACK_MXERBLA_EXTERN_ char srnamt[srnamt_len];
 
 #if defined(___MPLAPACK_BUILD_WITH_GMP___) || defined(___MPLAPACK_BUILD_WITH_QD___) || defined(___MPLAPACK_BUILD_WITH_DD___) || defined(___MPLAPACK_BUILD_WITH_DOUBLE___) || defined(___MPLAPACK_BUILD_WITH__FLOAT64X___) || defined(___MPLAPACK_BUILD_WITH__FLOAT128___)
 #include <mpblas_mpfr.h>

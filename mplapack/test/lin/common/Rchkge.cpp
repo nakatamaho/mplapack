@@ -137,9 +137,11 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //     Test the error exits
     //
     xlaenv(1, 1);
-    if (tsterr) {
+//    if (tsterr) {
         Rerrge(path, nout);
-    }
+
+//    }
+    infot = 0;
     xlaenv(2, 2);
     //
     //     Do for each value of M in MVAL
@@ -178,6 +180,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 //
                 Rlatb4(path, imat, m, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                 //
+                strncpy (srnamt, "Rlatms", strlen(srnamt));
                 Rlatms(m, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
                 //
                 //              Check error code from Rlatms.
@@ -225,6 +228,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //                 Compute the LU factorization of the matrix.
                     //
                     Rlacpy("Full", m, n, a, lda, afac, lda);
+                    strncpy (srnamt, "Rgetrf", strlen(srnamt)); 
                     Rgetrf(m, n, afac, lda, iwork, info);
                     //
                     //                 Check error code from Rgetrf.
@@ -247,6 +251,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //
                     if (m == n && info == 0) {
                         Rlacpy("Full", n, n, afac, lda, ainv, lda);
+                        strncpy (srnamt, "Rgetri", strlen(srnamt));  
                         nrhs = nsval[1 - 1];
                         lwork = nmax * max(3, nrhs);
                         Rgetri(n, ainv, lda, iwork, work, lwork, info);
@@ -328,10 +333,12 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //+    TEST 3
                             //                       Solve and compute residual for A * X = B.
                             //
+                            strncpy (srnamt, "Rlarhs", strlen(srnamt));
                             Rlarhs(path, &xtype, " ", &trans, n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                             xtype = 'C';
                             //
                             Rlacpy("Full", n, nrhs, b, lda, x, lda);
+                            strncpy (srnamt, "Rgetrs", strlen(srnamt));
                             Rgetrs(&trans, n, nrhs, afac, lda, iwork, x, lda, info);
                             //
                             //                       Check error code from Rgetrs.
@@ -356,6 +363,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //
                             //                       Check error code from Rgerfs.
                             //
+                            strncpy (srnamt, "Rgerfs", strlen(srnamt));
                             if (info != 0) {
                                 Alaerh(path, "Rgerfs", info, 0, &trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
@@ -396,6 +404,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             rcondc = rcondi;
                             norm = 'I';
                         }
+                        strncpy (srnamt, "Rgecon", strlen(srnamt)); 
                         Rgecon(&norm, n, afac, lda, anorm, rcond, work, &iwork[(n + 1) - 1], info);
                         //
                         //                       Check error code from Rgecon.

@@ -49,13 +49,10 @@ void chkxer(const char *srnamt, INTEGER const &infot, INTEGER const &nout, bool 
     //     .. Executable Statements ..
     common cmn;
     common_write write(cmn);
-    char srnmat_trimmed[1024];
-    memset(srnmat_trimmed, '\0', sizeof(srnmat_trimmed));
-    strncpy(srnmat_trimmed, srnamt, 6);
     if (!lerr) {
         write(nout, "(' *** Illegal value of parameter number ',i2,' not detected by ',a6,"
                     "' ***')"),
-            infot, srnmat_trimmed;
+            infot, srnamt;
         ok = false;
     }
     lerr = false;

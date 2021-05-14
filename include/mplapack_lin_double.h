@@ -244,7 +244,7 @@ void Ctrt06(double const rcond, double const rcondc, const char *uplo, const cha
 void Ctsqr01(const char *tssw, mplapackint &m, mplapackint &n, mplapackint const mb, mplapackint const nb, double *result);
 void Cunhr_col01(mplapackint const m, mplapackint const n, mplapackint const mb1, mplapackint const nb1, mplapackint const nb2, double *result);
 void Cunhr_col02(mplapackint const m, mplapackint const n, mplapackint const mb1, mplapackint const nb1, mplapackint const nb2, double *result);
-void Mxerbla_double(const char *srname, mplapackint const &info);
+void Mxerbla_double(const char *srname, int info);
 void Rchkeq(double const thresh, mplapackint const nout);
 void Rchkgb(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nns, mplapackint *nsval, double const thresh, bool const tsterr, double *a, mplapackint const la, double *afac, mplapackint const lafac, double *b, double *x, double *xact, double *work, double *rwork, mplapackint *iwork, mplapackint const nout);
 void Rchkge(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nns, mplapackint *nsval, double const thresh, bool const tsterr, mplapackint const nmax, double *a, double *afac, double *ainv, double *b, double *x, double *xact, double *work, double *rwork, mplapackint *iwork, mplapackint const nout);

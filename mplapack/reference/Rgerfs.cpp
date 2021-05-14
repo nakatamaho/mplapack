@@ -97,7 +97,7 @@ void Rgerfs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *a, INT
         info = -12;
     }
     if (info != 0) {
-        Mxerbla("RgerFS", -info);
+        Mxerbla("Rgerfs", -info);
         return;
     }
     //
