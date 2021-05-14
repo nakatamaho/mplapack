@@ -139,7 +139,6 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     xlaenv(1, 1);
     if (tsterr) {
         Rerrge(path, nout);
-
     }
     infot = 0;
     xlaenv(2, 2);

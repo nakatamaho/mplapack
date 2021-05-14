@@ -36,12 +36,10 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 #include <mplapack_debug.h>
+
 void Rerrvx(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER nout;
-    bool ok;
-    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -120,6 +118,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rgesv
         //
+        strncpy(srnamt, "Rgesv ", srnamt_len);
         infot = 1;
         Rgesv(-1, 0, a, 1, ip, b, 1, info);
         chkxer("Rgesv ", infot, nout, lerr, ok);
@@ -135,6 +134,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rgesvx
         //
+        strncpy(srnamt, "Rgesvx", srnamt_len);
         infot = 1;
         Rgesvx("/", "N", 0, 0, a, 1, af, 1, ip, &eq, r, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rgesvx", infot, nout, lerr, ok);
@@ -176,6 +176,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rgbsv
         //
+        strncpy(srnamt, "Rgbsv ", srnamt_len);
         infot = 1;
         Rgbsv(-1, 0, 0, 0, a, 1, ip, b, 1, info);
         chkxer("Rgbsv ", infot, nout, lerr, ok);
@@ -197,6 +198,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rgbsvx
         //
+        strncpy(srnamt, "Rgbsvx", srnamt_len);
         infot = 1;
         Rgbsvx("/", "N", 0, 0, 0, 0, a, 1, af, 1, ip, &eq, r, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rgbsvx", infot, nout, lerr, ok);
@@ -244,6 +246,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rgtsv
         //
+        strncpy(srnamt, "Rgtsv", srnamt_len);
         infot = 1;
         Rgtsv(-1, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], b, 1, info);
         chkxer("Rgtsv ", infot, nout, lerr, ok);
@@ -257,6 +260,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //        Rgtsvx
         //
         infot = 1;
+        strncpy(srnamt, "Rgtsvx", srnamt_len);
         Rgtsvx("/", "N", 0, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &af[(1 - 1)], &af[(2 - 1) * ldaf], &af[(3 - 1) * ldaf], &af[(4 - 1) * ldaf], ip, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rgtsvx", infot, nout, lerr, ok);
         infot = 2;
@@ -279,6 +283,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rposv
         //
+        strncpy(srnamt, "Rposv ", srnamt_len);
         infot = 1;
         Rposv("/", 0, 0, a, 1, b, 1, info);
         chkxer("Rposv ", infot, nout, lerr, ok);
@@ -297,6 +302,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rposvx
         //
+        strncpy(srnamt, "Rposvx", srnamt_len);
         infot = 1;
         Rposvx("/", "U", 0, 0, a, 1, af, 1, &eq, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rposvx", infot, nout, lerr, ok);
@@ -334,6 +340,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rppsv
         //
+        strncpy(srnamt, "Rppsv ", srnamt_len);
         infot = 1;
         Rppsv("/", 0, 0, a, b, 1, info);
         chkxer("Rppsv ", infot, nout, lerr, ok);
@@ -349,6 +356,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rppsvx
         //
+        strncpy(srnamt, "Rppsvx", srnamt_len);
         infot = 1;
         Rppsvx("/", "U", 0, 0, a, af, &eq, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rppsvx", infot, nout, lerr, ok);
@@ -380,6 +388,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rpbsv
         //
+        strncpy(srnamt, "Rpbsv ", srnamt_len);
         infot = 1;
         Rpbsv("/", 0, 0, 0, a, 1, b, 1, info);
         chkxer("Rpbsv ", infot, nout, lerr, ok);
@@ -401,6 +410,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rpbsvx
         //
+        strncpy(srnamt, "Rpbsvx", srnamt_len);
         infot = 1;
         Rpbsvx("/", "U", 0, 0, 0, a, 1, af, 1, &eq, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rpbsvx", infot, nout, lerr, ok);
@@ -441,6 +451,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rptsv
         //
+        strncpy(srnamt, "Rptsv ", srnamt_len);
         infot = 1;
         Rptsv(-1, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], b, 1, info);
         chkxer("Rptsv ", infot, nout, lerr, ok);
@@ -454,6 +465,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //        Rptsvx
         //
         infot = 1;
+        strncpy(srnamt, "Rptsvx", srnamt_len);
         Rptsvx("/", 0, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &af[(1 - 1)], &af[(2 - 1) * ldaf], b, 1, x, 1, rcond, r1, r2, w, info);
         chkxer("Rptsvx", infot, nout, lerr, ok);
         infot = 2;
@@ -473,6 +485,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rsysv
         //
+        strncpy(srnamt, "Rsysv ", srnamt_len);
         infot = 1;
         Rsysv("/", 0, 0, a, 1, ip, b, 1, w, 1, info);
         chkxer("Rsysv ", infot, nout, lerr, ok);
@@ -497,6 +510,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rsysvx
         //
+        strncpy(srnamt, "Rsysvx", srnamt_len);
         infot = 1;
         Rsysvx("/", "U", 0, 0, a, 1, af, 1, ip, b, 1, x, 1, rcond, r1, r2, w, 1, iw, info);
         chkxer("Rsysvx", infot, nout, lerr, ok);
@@ -529,6 +543,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rsysv_rook
         //
+        strncpy(srnamt, "Rsysv_rook", srnamt_len);
         infot = 1;
         Rsysv_rook("/", 0, 0, a, 1, ip, b, 1, w, 1, info);
         chkxer("Rsysv_rook", infot, nout, lerr, ok);
@@ -563,6 +578,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //        L (or U) is stored in A, diagonal of D is stored on the
         //        diagonal of A, subdiagonal of D is stored in a separate array E.
         //
+        strncpy(srnamt, "Rsysv_rk", srnamt_len);
         infot = 1;
         Rsysv_rk("/", 0, 0, a, 1, e, ip, b, 1, w, 1, info);
         chkxer("Rsysv_rk", infot, nout, lerr, ok);
@@ -589,6 +605,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rsysv_aa
         //
+        strncpy(srnamt, "Rsysv_aa", srnamt_len);
         infot = 1;
         Rsysv_aa("/", 0, 0, a, 1, ip, b, 1, w, 1, info);
         chkxer("Rsysv_aa", infot, nout, lerr, ok);
@@ -604,8 +621,9 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "S2")) {
         //
-        //        Rsysv_aaSEN_2STAGE
+        //        Rsysv_aa_2stage
         //
+        strncpy(srnamt, "Rsysv_aa_2stage", srnamt_len);
         infot = 1;
         Rsysv_aa_2stage("/", 0, 0, a, 1, a, 1, ip, ip, b, 1, w, 1, info);
         chkxer("Rsysv_aa_2stage", infot, nout, lerr, ok);
@@ -629,6 +647,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rspsv
         //
+        strncpy(srnamt, "Rspsv ", srnamt_len);
         infot = 1;
         Rspsv("/", 0, 0, a, ip, b, 1, info);
         chkxer("Rspsv ", infot, nout, lerr, ok);
@@ -644,6 +663,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rspsvx
         //
+        strncpy(srnamt, "Rspsvx", srnamt_len);
         infot = 1;
         Rspsvx("/", "U", 0, 0, a, af, ip, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         chkxer("Rspsvx", infot, nout, lerr, ok);
