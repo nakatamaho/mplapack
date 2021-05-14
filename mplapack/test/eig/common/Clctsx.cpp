@@ -30,7 +30,6 @@
 #include <mplapack.h>
 
 #include <fem.hpp> // Fortran EMulation library of fable module
-#include <mplapack_common.h>
 
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
