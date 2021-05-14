@@ -109,9 +109,8 @@ void Rerrvx(const char *path, INTEGER const nunit) {
     }
     char eq;
     ok = true;
+    INTEGER info;
     //
-    INTEGER info = 0;
-    bool infot = 0;
     REAL rcond = 0.0;
     INTEGER iw[nmax];
     if (Mlsamen(2, c2, "GE")) {
