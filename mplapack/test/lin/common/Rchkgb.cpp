@@ -508,12 +508,8 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     rcondc = rcondi;
                                     norm = 'I';
                                 }
-                                printf("AB=");
-                                printvec(afac, ldfac);
-                                printf("\n");
                                 strncpy(srnamt, "Rgbcon", srnamt_len);
                                 Rgbcon(&norm, n, kl, ku, afac, ldafac, iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);
-                                printf("\n");
                                 //
                                 //                             Check error code from Rgbcon.
                                 //
