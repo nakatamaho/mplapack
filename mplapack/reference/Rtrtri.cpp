@@ -132,7 +132,7 @@ void Rtrtri(const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGE
             //           Compute inverse of lower triangular matrix
             //
             nn = ((n - 1) / nb) * nb + 1;
-            for (j = nn; j <= 1; j = j - nb) {
+            for (j = nn; j >= 1; j = j - nb) {
                 jb = min(nb, n - j + 1);
                 if (j + jb <= n) {
                     //
