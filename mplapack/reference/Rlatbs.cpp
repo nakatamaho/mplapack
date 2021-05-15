@@ -195,7 +195,7 @@ void Rlatbs(const char *uplo, const char *trans, const char *diag, const char *n
             //
             grow = one / max(xbnd, smlnum);
             xbnd = grow;
-            for (j = jfirst; j <= jlast; j = j + jinc) {
+            for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 //              Exit the loop if the growth factor is too small.
                 //
@@ -227,7 +227,7 @@ void Rlatbs(const char *uplo, const char *trans, const char *diag, const char *n
             //           Compute GROW = 1/G(j), where G(0) = max{x(i), i=1,...,n}.
             //
             grow = min(one, REAL(one / max(xbnd, smlnum)));
-            for (j = jfirst; j <= jlast; j = j + jinc) {
+            for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 //              Exit the loop if the growth factor is too small.
                 //
@@ -272,7 +272,7 @@ void Rlatbs(const char *uplo, const char *trans, const char *diag, const char *n
             //
             grow = one / max(xbnd, smlnum);
             xbnd = grow;
-            for (j = jfirst; j <= jlast; j = j + jinc) {
+            for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 //              Exit the loop if the growth factor is too small.
                 //
@@ -300,7 +300,7 @@ void Rlatbs(const char *uplo, const char *trans, const char *diag, const char *n
             //           Compute GROW = 1/G(j), where G(0) = max{x(i), i=1,...,n}.
             //
             grow = min(one, REAL(one / max(xbnd, smlnum)));
-            for (j = jfirst; j <= jlast; j = j + jinc) {
+            for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 //              Exit the loop if the growth factor is too small.
                 //
@@ -341,7 +341,7 @@ void Rlatbs(const char *uplo, const char *trans, const char *diag, const char *n
             //
             //           Solve A * x = b
             //
-            for (j = jfirst; j <= jlast; j = j + jinc) {
+            for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 //              Compute x(j) = b(j) / A(j,j), scaling x if necessary.
                 //
@@ -462,7 +462,7 @@ void Rlatbs(const char *uplo, const char *trans, const char *diag, const char *n
             //
             //           Solve A**T * x = b
             //
-            for (j = jfirst; j <= jlast; j = j + jinc) {
+            for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 //              Compute x(j) = b(j) - sum A(k,j)*x(k).
                 //                                    k<>j
