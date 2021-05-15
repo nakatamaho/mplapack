@@ -276,7 +276,7 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             sprintnum_short(buf, result[k - 1]);
                             write(nout, "(' UPLO = ''',a1,''', N =',i5,', NB =',i4,', type ',i2,"
                                         "', test ',i2,', ratio =',a)"),
-                                uplo, n, nb, imat, k, buf;
+                                &uplo, n, nb, imat, k, buf;
                             nfail++;
                         }
                     }
@@ -342,7 +342,7 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                                 sprintnum_short(buf, result[k - 1]);
                                 write(nout, "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
                                             "', test(',i2,') =',a)"),
-                                    uplo, n, nrhs, imat, k, buf;
+                                    &uplo, n, nrhs, imat, k, buf;
                                 nfail++;
                             }
                         }
@@ -373,7 +373,7 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         sprintnum_short(buf, result[8 - 1]);
                         write(nout, "(' UPLO = ''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,"
                                     "') =',a)"),
-                            uplo, n, imat, 8, buf;
+                            &uplo, n, imat, 8, buf;
                         nfail++;
                     }
                     nrun++;
