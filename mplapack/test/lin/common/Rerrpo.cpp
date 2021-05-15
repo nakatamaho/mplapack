@@ -36,6 +36,8 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rerrpo(const char *path, INTEGER const nunit) {
     //
     //
@@ -66,11 +68,6 @@ void Rerrpo(const char *path, INTEGER const nunit) {
     //     ..
     //     .. Executable Statements ..
     //
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    nout = nunit;
     char c2[2];
     c2[0] = path[1];
     c2[1] = path[2];
@@ -114,6 +111,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
         //        Rpotrf
         //
+        strncpy(srnamt, "Rpotrf", srnamt_len);
         infot = 1;
         Rpotrf("/", 0, a, 1, info);
         chkxer("Rpotrf", infot, nout, lerr, ok);
@@ -126,6 +124,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
         //        Rpotf2
         //
+        strncpy(srnamt, "Rpotf2", srnamt_len);
         infot = 1;
         Rpotf2("/", 0, a, 1, info);
         chkxer("Rpotf2", infot, nout, lerr, ok);
@@ -138,6 +137,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
         //        Rpotri
         //
+        strncpy(srnamt, "Rpotri", srnamt_len);
         infot = 1;
         Rpotri("/", 0, a, 1, info);
         chkxer("Rpotri", infot, nout, lerr, ok);
@@ -150,6 +150,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
         //        Rpotrs
         //
+        strncpy(srnamt, "Rpotrs", srnamt_len);
         infot = 1;
         Rpotrs("/", 0, 0, a, 1, b, 1, info);
         chkxer("Rpotrs", infot, nout, lerr, ok);
@@ -168,6 +169,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
         //        Rporfs
         //
+        strncpy(srnamt, "Rporfs", srnamt_len);
         infot = 1;
         Rporfs("/", 0, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, iw, info);
         chkxer("Rporfs", infot, nout, lerr, ok);
@@ -192,6 +194,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
         //        Rpocon
         //
+        strncpy(srnamt, "Rpocon", srnamt_len);
         infot = 1;
         Rpocon("/", 0, a, 1, anrm, rcond, w, iw, info);
         chkxer("Rpocon", infot, nout, lerr, ok);
@@ -204,6 +207,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
         //        Rpoequ
         //
+        strncpy(srnamt, "Rpoequ", srnamt_len);
         infot = 1;
         Rpoequ(-1, a, 1, r1, rcond, anrm, info);
         chkxer("Rpoequ", infot, nout, lerr, ok);
@@ -218,6 +222,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
         //        Rpptrf
         //
+        strncpy(srnamt, "Rpptrf", srnamt_len);
         infot = 1;
         Rpptrf("/", 0, a, info);
         chkxer("Rpptrf", infot, nout, lerr, ok);
@@ -227,6 +232,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
         //        Rpptri
         //
+        strncpy(srnamt, "Rpptri", srnamt_len);
         infot = 1;
         Rpptri("/", 0, a, info);
         chkxer("Rpptri", infot, nout, lerr, ok);
@@ -236,6 +242,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
         //        Rpptrs
         //
+        strncpy(srnamt, "Rpptrs", srnamt_len);
         infot = 1;
         Rpptrs("/", 0, 0, a, b, 1, info);
         chkxer("Rpptrs", infot, nout, lerr, ok);
@@ -251,6 +258,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
         //        Rpprfs
         //
+        strncpy(srnamt, "Rpprfs", srnamt_len);
         infot = 1;
         Rpprfs("/", 0, 0, a, af, b, 1, x, 1, r1, r2, w, iw, info);
         chkxer("Rpprfs", infot, nout, lerr, ok);
@@ -269,6 +277,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
         //        Rppcon
         //
+        strncpy(srnamt, "Rppcon", srnamt_len);
         infot = 1;
         Rppcon("/", 0, a, anrm, rcond, w, iw, info);
         chkxer("Rppcon", infot, nout, lerr, ok);
@@ -278,6 +287,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
         //        Rppequ
         //
+        strncpy(srnamt, "Rppequ", srnamt_len);
         infot = 1;
         Rppequ("/", 0, a, r1, rcond, anrm, info);
         chkxer("Rppequ", infot, nout, lerr, ok);
@@ -292,6 +302,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
         //        Rpbtrf
         //
+        strncpy(srnamt, "Rpbtrf", srnamt_len);
         infot = 1;
         Rpbtrf("/", 0, 0, a, 1, info);
         chkxer("Rpbtrf", infot, nout, lerr, ok);
@@ -307,6 +318,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
         //        Rpbtf2
         //
+        strncpy(srnamt, "Rpbtf2", srnamt_len);
         infot = 1;
         Rpbtf2("/", 0, 0, a, 1, info);
         chkxer("Rpbtf2", infot, nout, lerr, ok);
@@ -322,6 +334,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
         //        Rpbtrs
         //
+        strncpy(srnamt, "Rpbtrs", srnamt_len);
         infot = 1;
         Rpbtrs("/", 0, 0, 0, a, 1, b, 1, info);
         chkxer("Rpbtrs", infot, nout, lerr, ok);
@@ -343,6 +356,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
         //        Rpbrfs
         //
+        strncpy(srnamt, "Rpbrfs", srnamt_len);
         infot = 1;
         Rpbrfs("/", 0, 0, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, iw, info);
         chkxer("Rpbrfs", infot, nout, lerr, ok);
@@ -370,6 +384,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
         //        Rpbcon
         //
+        strncpy(srnamt, "Rpbcon", srnamt_len);
         infot = 1;
         Rpbcon("/", 0, 0, a, 1, anrm, rcond, w, iw, info);
         chkxer("Rpbcon", infot, nout, lerr, ok);
@@ -385,6 +400,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
         //        Rpbequ
         //
+        strncpy(srnamt, "Rpbequ", srnamt_len);
         infot = 1;
         Rpbequ("/", 0, 0, a, 1, r1, rcond, anrm, info);
         chkxer("Rpbequ", infot, nout, lerr, ok);

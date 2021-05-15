@@ -121,6 +121,7 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     nrun = 0;
     nfail = 0;
     nerrs = 0;
+    infot = 0;
     for (i = 1; i <= 4; i = i + 1) {
         iseed[i - 1] = iseedy[i - 1];
     }
@@ -169,6 +170,7 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //
                 Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                 //
+                strncpy(srnamt, "Rlatms", srnamt_len);
                 Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
                 //
                 //              Check error code from Rlatms.
@@ -226,6 +228,7 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //                 Compute the L*L' or U'*U factorization of the matrix.
                     //
                     Rlacpy(&uplo, n, n, a, lda, afac, lda);
+                    strncpy(srnamt, "Rpotrf", srnamt_len);
                     Rpotrf(&uplo, n, afac, lda, info);
                     //
                     //                 Check error code from Rpotrf.
@@ -251,6 +254,7 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //                 Form the inverse and compute the residual.
                     //
                     Rlacpy(&uplo, n, n, afac, lda, ainv, lda);
+                    strncpy(srnamt, "Rpotri", srnamt_len);
                     Rpotri(&uplo, n, ainv, lda, info);
                     //
                     //                 Check error code from Rpotri.
@@ -292,8 +296,10 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                 Solve and compute residual for A * X = B .
                         //
                         Rlarhs(path, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        strncpy(srnamt, "Rlarhs", srnamt_len);
                         Rlacpy("Full", n, nrhs, b, lda, x, lda);
                         //
+                        strncpy(srnamt, "Rpotrs", srnamt_len);
                         Rpotrs(&uplo, n, nrhs, afac, lda, x, lda, info);
                         //
                         //                 Check error code from Rpotrs.
@@ -313,6 +319,7 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //+    TESTS 5, 6, and 7
                         //                 Use iterative refinement to improve the solution.
                         //
+                        strncpy(srnamt, "Rporfs", srnamt_len);
                         Rporfs(&uplo, n, nrhs, a, lda, afac, lda, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
                         //
                         //                 Check error code from Rporfs.
@@ -346,6 +353,7 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //                 Get an estimate of RCOND = 1/CNDNUM.
                     //
                     anorm = Rlansy("1", &uplo, n, a, lda, rwork);
+                    strncpy(srnamt, "Rpocon", srnamt_len);
                     Rpocon(&uplo, n, afac, lda, anorm, rcond, work, iwork, info);
                     //
                     //                 Check error code from Rpocon.
