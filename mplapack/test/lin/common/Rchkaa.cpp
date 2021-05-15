@@ -419,7 +419,7 @@ void Rchkaa(void) {
     getline(cin, str);
     ss.str(str);
     ss >> tsterr_str;
-      if (Mlsame(tsterr_str, "T"))
+    if (Mlsame(tsterr_str, "T"))
         tsterr = true;
     else
         tsterr = false;

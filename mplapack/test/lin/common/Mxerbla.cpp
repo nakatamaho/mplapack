@@ -77,7 +77,7 @@ void Mxerbla(const char *srname, int info) {
     }
     std::string _srname = srname;
     std::string _srnamt = srnamt;
-    if ( _srname != _srnamt )  {
+    if (_srname != _srnamt) {
         write(nout, "(' *** XERBLA was called with SRNAME = ',a,' instead of ',a9,' ***')"), srname, srnamt;
         ok = false;
     }

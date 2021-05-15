@@ -66,4 +66,3 @@ void xlaenv(INTEGER const &ispec, INTEGER const &nvalue) {
     //     End of XLAENV
     //
 }
-

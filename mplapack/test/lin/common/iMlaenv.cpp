@@ -63,7 +63,7 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char * /* opts */, 
     //     .. Executable Statements ..
     //
     std::string str = name;
-    char* subname = new char[str.size() + 1];
+    char *subname = new char[str.size() + 1];
     std::strcpy(subname, str.c_str());
     if (ispec >= 1 && ispec <= 5) {
         //
@@ -85,22 +85,19 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char * /* opts */, 
             return_value = iparms[ispec - 1];
         }
         //
-    }
-    else if (ispec == 6) {
+    } else if (ispec == 6) {
         //
         //        Compute SVD crossover point.
         //
         return_value = castINTEGER(castREAL(min(n1, n2 * 1.6e0f)));
         //
-    }
-    else if (ispec >= 7 && ispec <= 9) {
+    } else if (ispec >= 7 && ispec <= 9) {
         //
         //        Return a value from the common block.
         //
         return_value = iparms[ispec - 1];
         //
-    }
-    else if (ispec == 10) {
+    } else if (ispec == 10) {
         //
         //        IEEE NaN arithmetic can be trusted not to trap
         //
@@ -110,8 +107,7 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char * /* opts */, 
             return_value = iMieeeck(1, 0.0, 1.0);
         }
         //
-    }
-    else if (ispec == 11) {
+    } else if (ispec == 11) {
         //
         //        Infinity arithmetic can be trusted not to trap
         //
@@ -121,15 +117,14 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char * /* opts */, 
             return_value = iMieeeck(1, 0.0, 1.0);
         }
         //
-    }
-    else {
+    } else {
         //
         //        Invalid value for ISPEC
         //
         return_value = -1;
     }
     //
-    delete [] subname;
+    delete[] subname;
     return return_value;
     //
     //     End of iMlaenv

@@ -246,6 +246,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgbtf2
         //
+        strncpy(srnamt, "Rgbtf2", srnamt_len);
         infot = 1;
         Rgbtf2(-1, 0, 0, 0, a, 1, ip, info);
         chkxer("Rgbtf2", infot, nout, lerr, ok);
@@ -264,6 +265,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgbtrs
         //
+        strncpy(srnamt, "Rgbtrs", srnamt_len);
         infot = 1;
         Rgbtrs("/", 0, 0, 0, 1, a, 1, ip, b, 1, info);
         chkxer("Rgbtrs", infot, nout, lerr, ok);
@@ -288,6 +290,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgbrfs
         //
+        strncpy(srnamt, "Rgbrfs", srnamt_len);
         infot = 1;
         Rgbrfs("/", 0, 0, 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
         chkxer("Rgbrfs", infot, nout, lerr, ok);
@@ -318,6 +321,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgbcon
         //
+        strncpy(srnamt, "Rgbcon", srnamt_len);
         infot = 1;
         Rgbcon("/", 0, 0, 0, a, 1, ip, anrm, rcond, w, iw, info);
         chkxer("Rgbcon", infot, nout, lerr, ok);
@@ -336,6 +340,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
         //        Rgbequ
         //
+        strncpy(srnamt, "Rgbequ", srnamt_len);
         infot = 1;
         Rgbequ(-1, 0, 0, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
         chkxer("Rgbequ", infot, nout, lerr, ok);

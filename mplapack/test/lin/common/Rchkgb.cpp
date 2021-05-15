@@ -138,9 +138,9 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Initialize constants and the random number seed.
     //
-    path[0] = 'D';
+    path[0] = 'R';
     path[1] = 'G';
-    path[1] = 'B';
+    path[2] = 'B';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -150,6 +150,7 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     if (tsterr) {
         Rerrge(path, nout);
     }
+    infot = 0;
     xlaenv(2, 2);
     //
     //     Initialize the first value for the lower and upper bandwidths.
@@ -269,6 +270,7 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             for (i = 1; i <= koff - 1; i = i + 1) {
                                 a[i - 1] = zero;
                             }
+                            strncpy(srnamt, "Rlatms", srnamt_len);
                             Rlatms(m, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "Z", &a[koff - 1], lda, work, info);
                             //
                             //                       Check the error code from Rlatms.
@@ -337,6 +339,7 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (m > 0 && n > 0) {
                                 Rlacpy("Full", kl + ku + 1, n, a, lda, &afac[(kl + 1) - 1], ldafac);
                             }
+                            strncpy(srnamt, "Rgbtrf", srnamt_len);
                             Rgbtrf(m, n, kl, ku, afac, ldafac, iwork, info);
                             //
                             //                       Check error code from Rgbtrf.
@@ -384,6 +387,7 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 //
                                 ldb = max((INTEGER)1, n);
                                 Rlaset("Full", n, n, zero, one, work, ldb);
+                                strncpy(srnamt, "Rgbtrs", srnamt_len);
                                 Rgbtrs("No transpose", n, kl, ku, n, afac, ldafac, iwork, work, ldb, info);
                                 //
                                 //                          Compute the 1-norm condition number of A.
@@ -436,10 +440,12 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     //+    TEST 2:
                                     //                             Solve and compute residual for A * X = B.
                                     //
+                                    strncpy(srnamt, "Rlarhs", srnamt_len);
                                     Rlarhs(path, &xtype, " ", &trans, n, n, kl, ku, nrhs, a, lda, xact, ldb, b, ldb, iseed, info);
                                     xtype = 'C';
                                     Rlacpy("Full", n, nrhs, b, ldb, x, ldb);
                                     //
+                                    strncpy(srnamt, "Rgbtrs", srnamt_len);
                                     Rgbtrs(&trans, n, kl, ku, nrhs, afac, ldafac, iwork, x, ldb, info);
                                     //
                                     //                             Check error code from Rgbtrs.
@@ -461,6 +467,7 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     //                             Use iterative refinement to improve the
                                     //                             solution.
                                     //
+                                    strncpy(srnamt, "Rgbrfs", srnamt_len);
                                     Rgbrfs(&trans, n, kl, ku, nrhs, a, lda, afac, ldafac, iwork, b, ldb, x, ldb, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                                     //
                                     //                             Check error code from Rgbrfs.
@@ -501,7 +508,12 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     rcondc = rcondi;
                                     norm = 'I';
                                 }
+                                printf("AB=");
+                                printvec(afac, ldfac);
+                                printf("\n");
+                                strncpy(srnamt, "Rgbcon", srnamt_len);
                                 Rgbcon(&norm, n, kl, ku, afac, ldafac, iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);
+                                printf("\n");
                                 //
                                 //                             Check error code from Rgbcon.
                                 //
