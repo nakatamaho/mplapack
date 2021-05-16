@@ -36,13 +36,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rerrps(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -98,6 +96,7 @@ void Rerrps(const char *path, INTEGER const nunit) {
     //
     //        Rpstrf
     //
+    strncpy(srnamt, "Rpstrf", srnamt_len);    
     infot = 1;
     INTEGER rank = 0;
     INTEGER info = 0;
@@ -112,6 +111,7 @@ void Rerrps(const char *path, INTEGER const nunit) {
     //
     //        Rpstf2
     //
+    strncpy(srnamt, "Rpstf2", srnamt_len);
     infot = 1;
     Rpstf2("/", 0, a, 1, piv, rank, -1.0, work, info);
     chkxer("Rpstf2", infot, nout, lerr, ok);
