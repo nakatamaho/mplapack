@@ -35,11 +35,9 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Rerrsy(const char *path, INTEGER const nunit) {
-    INTEGER nout;
-    bool ok;
-    bool lerr;
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --

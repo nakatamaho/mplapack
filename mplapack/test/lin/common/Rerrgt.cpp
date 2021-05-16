@@ -36,13 +36,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rerrgt(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -108,12 +106,14 @@ void Rerrgt(const char *path, INTEGER const nunit) {
         //
         //        Rgttrf
         //
+        strncpy(srnamt, "Rgttrf", srnamt_len);
         infot = 1;
         Rgttrf(-1, c, d, e, f, ip, info);
         chkxer("Rgttrf", infot, nout, lerr, ok);
         //
         //        Rgttrs
         //
+        strncpy(srnamt, "Rgttrs", srnamt_len);
         infot = 1;
         Rgttrs("/", 0, 0, c, d, e, f, ip, x, 1, info);
         chkxer("Rgttrs", infot, nout, lerr, ok);
@@ -129,6 +129,7 @@ void Rerrgt(const char *path, INTEGER const nunit) {
         //
         //        Rgtrfs
         //
+        strncpy(srnamt, "Rgtrfs", srnamt_len);
         infot = 1;
         Rgtrfs("/", 0, 0, c, d, e, cf, df, ef, f, ip, b, 1, x, 1, r1, r2, w, iw, info);
         chkxer("Rgtrfs", infot, nout, lerr, ok);
@@ -147,6 +148,7 @@ void Rerrgt(const char *path, INTEGER const nunit) {
         //
         //        Rgtcon
         //
+        strncpy(srnamt, "Rgtcon", srnamt_len);
         infot = 1;
         Rgtcon("/", 0, c, d, e, f, ip, anorm, rcond, w, iw, info);
         chkxer("Rgtcon", infot, nout, lerr, ok);
@@ -164,12 +166,14 @@ void Rerrgt(const char *path, INTEGER const nunit) {
         //
         //        Rpttrf
         //
+        strncpy(srnamt, "Rpttrf", srnamt_len);
         infot = 1;
         Rpttrf(-1, d, e, info);
         chkxer("Rpttrf", infot, nout, lerr, ok);
         //
         //        Rpttrs
         //
+        strncpy(srnamt, "Rpttrs", srnamt_len);
         infot = 1;
         Rpttrs(-1, 0, d, e, x, 1, info);
         chkxer("Rpttrs", infot, nout, lerr, ok);
@@ -182,6 +186,7 @@ void Rerrgt(const char *path, INTEGER const nunit) {
         //
         //        Rptrfs
         //
+        strncpy(srnamt, "Rptrfs", srnamt_len);
         infot = 1;
         Rptrfs(-1, 0, d, e, df, ef, b, 1, x, 1, r1, r2, w, info);
         chkxer("Rptrfs", infot, nout, lerr, ok);
@@ -197,6 +202,7 @@ void Rerrgt(const char *path, INTEGER const nunit) {
         //
         //        Rptcon
         //
+        strncpy(srnamt, "Rptcon", srnamt_len);
         infot = 1;
         Rptcon(-1, d, e, anorm, rcond, w, info);
         chkxer("Rptcon", infot, nout, lerr, ok);

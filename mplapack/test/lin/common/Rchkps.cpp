@@ -61,8 +61,8 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER irank = 0;
     INTEGER rank = 0;
     INTEGER iuplo = 0;
-    char uplo;
-    char type;
+    char uplo[1];
+    char type[1];
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
@@ -162,20 +162,20 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //           Do first for UPLO = 'U', then for UPLO = 'L'
                 //
                 for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
-                    uplo = uplos[iuplo - 1];
+                    uplo[0] = uplos[iuplo - 1];
                     //
                     //              Set up parameters with Rlatb5 and generate a test matrix
                     //              with Rlatmt.
                     //
-                    Rlatb5(path, imat, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+                    Rlatb5(path, imat, n, type, kl, ku, anorm, mode, cndnum, &dist);
                     //
-                    strncpy(srnamt, "Rlatmt", srnamt_len);                    
-                    Rlatmt(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, rank, kl, ku, &uplo, a, lda, work, info);
+                    strncpy(srnamt, "Rlatmt", srnamt_len);
+                    Rlatmt(n, n, &dist, iseed, type, rwork, mode, cndnum, anorm, rank, kl, ku, uplo, a, lda, work, info);
                     //
                     //              Check error code from Rlatmt.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Rlatmt", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rlatmt", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         goto statement_120;
                     }
                     //
@@ -188,18 +188,18 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                 Compute the pivoted L*L' or U'*U factorization
                         //                 of the matrix.
                         //
-                        Rlacpy(&uplo, n, n, a, lda, afac, lda);
-                        strncpy(srnamt, "Rpstrf", srnamt_len);                    
+                        Rlacpy(uplo, n, n, a, lda, afac, lda);
+                        strncpy(srnamt, "Rpstrf", srnamt_len);
                         //
                         //                 Use default tolerance
                         //
                         tol = -one;
-                        Rpstrf(&uplo, n, afac, lda, piv, comprank, tol, work, info);
+                        Rpstrf(uplo, n, afac, lda, piv, comprank, tol, work, info);
                         //
                         //                 Check error code from Rpstrf.
                         //
                         if ((info < izero) || (info != izero && rank == n) || (info <= izero && rank < n)) {
-                            Alaerh(path, "Rpstrf", info, izero, &uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rpstrf", info, izero, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                             goto statement_110;
                         }
                         //
@@ -213,7 +213,7 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //
                         //                 PERM holds permuted L*L^T or U^T*U
                         //
-                        Rpst01(&uplo, n, a, lda, afac, lda, perm, lda, piv, rwork, result, comprank);
+                        Rpst01(uplo, n, a, lda, afac, lda, perm, lda, piv, rwork, result, comprank);
                         //
                         //                 Print information about the tests that did not pass
                         //                 the threshold or where computed rank was not RANK.
@@ -227,12 +227,9 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                                 Alahd(nout, path);
                             }
                             sprintnum_short(buf, result);
-			    printf("HOMA failed\n");
-#ifdef WRONG			    
                             write(nout, "(' UPLO = ''',a1,''', N =',i5,', RANK =',i3,', Diff =',i5,"
                                         "', NB =',i4,', type ',i2,', Ratio =',a)"),
-                                &uplo, n, rank, rankdiff, nb, imat, buf;
-#endif
+                                uplo, n, rank, rankdiff, nb, imat, buf;
                             nfail++;
                         }
                         nrun++;

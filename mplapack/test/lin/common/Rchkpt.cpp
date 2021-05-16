@@ -129,6 +129,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     if (tsterr) {
         Rerrgt(path, nout);
     }
+    infot = 0;
     //
     for (in = 1; in <= nn; in = in + 1) {
         //
@@ -159,6 +160,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //              Type 1-6:  generate a symmetric tridiagonal matrix of
                 //              known condition number in lower triangular band storage.
                 //
+                strncpy(srnamt, "Rlatms", srnamt_len);
                 Rlatms(n, n, &dist, iseed, &type, rwork, mode, cond, anorm, kl, ku, "B", a, 2, work, info);
                 //
                 //              Check the error code from Rlatms.
@@ -359,6 +361,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //+    TESTS 4, 5, and 6
                 //           Use iterative refinement to improve the solution.
                 //
+                strncpy(srnamt, "Rptrfs", srnamt_len);
                 Rptrfs(n, nrhs, d, e, &d[(n + 1) - 1], &e[(n + 1) - 1], b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, info);
                 //
                 //           Check error code from Rptrfs.
@@ -393,6 +396,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         //           matrix.
         //
         statement_90:
+            strncpy(srnamt, "Rptcon", srnamt_len);
             Rptcon(n, &d[(n + 1) - 1], &e[(n + 1) - 1], anorm, rcond, rwork, info);
             //
             //           Check error code from Rptcon.

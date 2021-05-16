@@ -445,7 +445,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
         //        xPP, xHP, or xSP:  Symmetric or Hermitian packed matrices
         //
-        uplo [0] = opts[(1 - 1)];
+        uplo[0] = opts[(1 - 1)];
         if (Mlsamen(3, c3, "TRF")) {
             if (info != infoe && infoe != 0) {
                 write(nout, "(' *** ',a,' returned with INFO =',i5,' instead of ',i2,/,"
@@ -487,7 +487,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
         //        xPB:  Symmetric (Hermitian) positive definite band matrix
         //
-        uplo [0] = opts[(1 - 1)];
+        uplo[0] = opts[(1 - 1)];
         if (Mlsamen(3, c3, "TRF")) {
             if (info != infoe && infoe != 0) {
                 write(nout, "(' *** ',a,' returned with INFO =',i5,' instead of ',i2,/,"

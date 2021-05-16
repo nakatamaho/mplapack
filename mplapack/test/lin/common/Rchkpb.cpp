@@ -141,6 +141,7 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     if (tsterr) {
         Rerrpo(path, nout);
     }
+    infot = 0;
     xlaenv(2, 2);
     kdval[1 - 1] = 0;
     //
@@ -207,6 +208,7 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //
                         Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                         //
+                        strncpy(srnamt, "Rlatms", srnamt_len);
                         Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kd, kd, &packit, &a[koff - 1], ldab, work, info);
                         //
                         //                    Check error code from Rlatms.
@@ -282,6 +284,7 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                    matrix.
                         //
                         Rlacpy("Full", kd + 1, n, a, ldab, afac, ldab);
+                        strncpy(srnamt, "Rpbtrf", srnamt_len);
                         Rpbtrf(&uplo, n, kd, afac, ldab, info);
                         //
                         //                    Check error code from Rpbtrf.
@@ -328,6 +331,7 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                    of RCONDC = 1/(norm(A) * norm(inv(A))).
                         //
                         Rlaset("Full", n, n, zero, one, ainv, lda);
+                        strncpy(srnamt, "Rpbtrs", srnamt_len);
                         Rpbtrs(&uplo, n, kd, n, afac, ldab, ainv, lda, info);
                         //
                         //                    Compute RCONDC = 1/(norm(A) * norm(inv(A))).
@@ -347,8 +351,10 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             //                    Solve and compute residual for A * X = B.
                             //
                             Rlarhs(path, &xtype, &uplo, " ", n, n, kd, kd, nrhs, a, ldab, xact, lda, b, lda, iseed, info);
+                            strncpy(srnamt, "Rlarhs", srnamt_len);
                             Rlacpy("Full", n, nrhs, b, lda, x, lda);
                             //
+                            strncpy(srnamt, "Rpbtrs", srnamt_len);
                             Rpbtrs(&uplo, n, kd, nrhs, afac, ldab, x, lda, info);
                             //
                             //                    Check error code from Rpbtrs.
@@ -368,6 +374,7 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             //+    TESTS 4, 5, and 6
                             //                    Use iterative refinement to improve the solution.
                             //
+                            strncpy(srnamt, "Rpbrfs", srnamt_len);
                             Rpbrfs(&uplo, n, kd, nrhs, a, ldab, afac, ldab, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
                             //
                             //                    Check error code from Rpbrfs.
@@ -400,6 +407,7 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //+    TEST 7
                         //                    Get an estimate of RCOND = 1/CNDNUM.
                         //
+                        strncpy(srnamt, "Rpbcon", srnamt_len);
                         Rpbcon(&uplo, n, kd, afac, ldab, anorm, rcond, work, iwork, info);
                         //
                         //                    Check error code from Rpbcon.

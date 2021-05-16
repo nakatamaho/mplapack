@@ -37,30 +37,22 @@ INTEGER Mmaxloc(REAL *dx, INTEGER const start, INTEGER const end, INTEGER const 
     REAL dmax = 0.0;
     INTEGER i = 0;
     INTEGER ix = 0;
+    INTEGER counter = 1;
     if (incx == 1) {
         //
         //        code for increment equal to 1
         //
-        for (i = start; i <= end; i = i + 1) {
+        dmax = dx[start - 1];
+        for (i = start + 1; i <= end; i = i + 1) {
             if (dx[i - 1] > dmax) {
-                return_value = i;
+                return_value = counter;
                 dmax = dx[i - 1];
             }
+            counter++;
         }
     } else {
-        //
-        //        code for increment not equal to 1
-        //
-        ix = 1;
-        dmax = abs(dx[start - 1]);
-        ix += incx;
-        for (i = start + 1; i <= end; i = i + 1) {
-            if (dx[ix - 1] > dmax) {
-                return_value = i;
-                dmax = dx[ix - 1];
-            }
-            ix += incx;
-        }
+        printf("Mmaxloc: not yet implimented\n");
+        exit(0);
     }
     return return_value;
 }

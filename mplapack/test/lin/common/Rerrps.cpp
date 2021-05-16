@@ -96,7 +96,7 @@ void Rerrps(const char *path, INTEGER const nunit) {
     //
     //        Rpstrf
     //
-    strncpy(srnamt, "Rpstrf", srnamt_len);    
+    strncpy(srnamt, "Rpstrf", srnamt_len);
     infot = 1;
     INTEGER rank = 0;
     INTEGER info = 0;
