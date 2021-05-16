@@ -109,7 +109,7 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     //
     //     Initialize constants and the random number seed.
     //
-    path[0] = 'D';
+    path[0] = 'R';
     path[1] = 'P';
     path[2] = 'S';
     nrun = 0;
@@ -124,6 +124,7 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     if (tsterr) {
         Rerrps(path, nout);
     }
+    infot = 0;
     xlaenv(2, 2);
     //
     //     Do for each value of N in NVAL
@@ -168,6 +169,7 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     Rlatb5(path, imat, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                     //
+                    strncpy(srnamt, "Rlatmt", srnamt_len);                    
                     Rlatmt(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, rank, kl, ku, &uplo, a, lda, work, info);
                     //
                     //              Check error code from Rlatmt.
@@ -187,6 +189,7 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                 of the matrix.
                         //
                         Rlacpy(&uplo, n, n, a, lda, afac, lda);
+                        strncpy(srnamt, "Rpstrf", srnamt_len);                    
                         //
                         //                 Use default tolerance
                         //
@@ -224,9 +227,12 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                                 Alahd(nout, path);
                             }
                             sprintnum_short(buf, result);
+			    printf("HOMA failed\n");
+#ifdef WRONG			    
                             write(nout, "(' UPLO = ''',a1,''', N =',i5,', RANK =',i3,', Diff =',i5,"
                                         "', NB =',i4,', type ',i2,', Ratio =',a)"),
-                                uplo, n, rank, rankdiff, nb, imat, buf;
+                                &uplo, n, rank, rankdiff, nb, imat, buf;
+#endif
                             nfail++;
                         }
                         nrun++;
