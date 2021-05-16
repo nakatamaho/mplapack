@@ -107,7 +107,6 @@ void Rerrsy(const char *path, INTEGER const nunit) {
     ok = true;
     //
     INTEGER info = 0;
-    bool infot = 0;
     if (Mlsamen(2, c2, "SY")) {
         //
         //        Test error exits of the routines that use factorization
