@@ -116,6 +116,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytrf
         //
+        strncpy(srnamt, "Rsytrf", srnamt_len);
         infot = 1;
         Rsytrf("/", 0, a, 1, ip, w, 1, info);
         chkxer("Rsytrf", infot, nout, lerr, ok);
@@ -134,6 +135,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytf2
         //
+        strncpy(srnamt, "Rsytf2", srnamt_len);
         infot = 1;
         Rsytf2("/", 0, a, 1, ip, info);
         chkxer("Rsytf2", infot, nout, lerr, ok);
@@ -146,6 +148,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytri
         //
+        strncpy(srnamt, "Rsytri", srnamt_len);
         infot = 1;
         Rsytri("/", 0, a, 1, ip, w, info);
         chkxer("Rsytri", infot, nout, lerr, ok);
@@ -158,6 +161,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytri2
         //
+        strncpy(srnamt, "Rsytri2", srnamt_len);
         infot = 1;
         Rsytri2("/", 0, a, 1, ip, w, iw[1 - 1], info);
         chkxer("Rsytri2", infot, nout, lerr, ok);
@@ -170,6 +174,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytri2x
         //
+        strncpy(srnamt, "Rsytri2x", srnamt_len);
         infot = 1;
         Rsytri2x("/", 0, a, 1, ip, w, 1, info);
         chkxer("Rsytri2x", infot, nout, lerr, ok);
@@ -182,6 +187,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytrs
         //
+        strncpy(srnamt, "Rsytrs", srnamt_len);
         infot = 1;
         Rsytrs("/", 0, 0, a, 1, ip, b, 1, info);
         chkxer("Rsytrs", infot, nout, lerr, ok);
@@ -198,32 +204,34 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsytrs("U", 2, 1, a, 2, ip, b, 1, info);
         chkxer("Rsytrs", infot, nout, lerr, ok);
         //
-        //        RsyrFS
+        //        Rsyrfs
         //
+        strncpy(srnamt, "Rsyrfs", srnamt_len);
         infot = 1;
         Rsyrfs("/", 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("RsyrFS", infot, nout, lerr, ok);
+        chkxer("Rsyrfs", infot, nout, lerr, ok);
         infot = 2;
         Rsyrfs("U", -1, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("RsyrFS", infot, nout, lerr, ok);
+        chkxer("Rsyrfs", infot, nout, lerr, ok);
         infot = 3;
         Rsyrfs("U", 0, -1, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("RsyrFS", infot, nout, lerr, ok);
+        chkxer("Rsyrfs", infot, nout, lerr, ok);
         infot = 5;
         Rsyrfs("U", 2, 1, a, 1, af, 2, ip, b, 2, x, 2, r1, r2, w, iw, info);
-        chkxer("RsyrFS", infot, nout, lerr, ok);
+        chkxer("Rsyrfs", infot, nout, lerr, ok);
         infot = 7;
         Rsyrfs("U", 2, 1, a, 2, af, 1, ip, b, 2, x, 2, r1, r2, w, iw, info);
-        chkxer("RsyrFS", infot, nout, lerr, ok);
+        chkxer("Rsyrfs", infot, nout, lerr, ok);
         infot = 10;
         Rsyrfs("U", 2, 1, a, 2, af, 2, ip, b, 1, x, 2, r1, r2, w, iw, info);
-        chkxer("RsyrFS", infot, nout, lerr, ok);
+        chkxer("Rsyrfs", infot, nout, lerr, ok);
         infot = 12;
         Rsyrfs("U", 2, 1, a, 2, af, 2, ip, b, 2, x, 1, r1, r2, w, iw, info);
-        chkxer("RsyrFS", infot, nout, lerr, ok);
+        chkxer("Rsyrfs", infot, nout, lerr, ok);
         //
         //        Rsycon
         //
+        strncpy(srnamt, "Rsycon", srnamt_len);
         infot = 1;
         Rsycon("/", 0, a, 1, ip, anrm, rcond, w, iw, info);
         chkxer("Rsycon", infot, nout, lerr, ok);
@@ -245,6 +253,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytrf_rook
         //
+        strncpy(srnamt, "Rsytrf_rook", srnamt_len);
         infot = 1;
         Rsytrf_rook("/", 0, a, 1, ip, w, 1, info);
         chkxer("Rsytrf_rook", infot, nout, lerr, ok);
@@ -263,6 +272,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytf2_rook
         //
+        strncpy(srnamt, "Rsytf2_rook", srnamt_len);
         infot = 1;
         Rsytf2_rook("/", 0, a, 1, ip, info);
         chkxer("Rsytf2_rook", infot, nout, lerr, ok);
@@ -275,6 +285,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytri_rook
         //
+        strncpy(srnamt, "Rsytri_rook", srnamt_len);
         infot = 1;
         Rsytri_rook("/", 0, a, 1, ip, w, info);
         chkxer("Rsytri_rook", infot, nout, lerr, ok);
@@ -287,6 +298,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytrs_rook
         //
+        strncpy(srnamt, "Rsytrs_rook", srnamt_len);
         infot = 1;
         Rsytrs_rook("/", 0, 0, a, 1, ip, b, 1, info);
         chkxer("Rsytrs_rook", infot, nout, lerr, ok);
@@ -305,6 +317,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsycon_rook
         //
+        strncpy(srnamt, "Rsycon_rook", srnamt_len);
         infot = 1;
         Rsycon_rook("/", 0, a, 1, ip, anrm, rcond, w, iw, info);
         chkxer("Rsycon_rook", infot, nout, lerr, ok);
@@ -330,6 +343,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytrf_rk
         //
+        strncpy(srnamt, "Rsytrf_rk", srnamt_len);
         infot = 1;
         Rsytrf_rk("/", 0, a, 1, e, ip, w, 1, info);
         chkxer("Rsytrf_rk", infot, nout, lerr, ok);
@@ -348,6 +362,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytf2_rk
         //
+        strncpy(srnamt, "Rsytf2_rk", srnamt_len);
         infot = 1;
         Rsytf2_rk("/", 0, a, 1, e, ip, info);
         chkxer("Rsytf2_rk", infot, nout, lerr, ok);
@@ -360,6 +375,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytri_3
         //
+        strncpy(srnamt, "Rsytri_3", srnamt_len);
         infot = 1;
         Rsytri_3("/", 0, a, 1, e, ip, w, 1, info);
         chkxer("Rsytri_3", infot, nout, lerr, ok);
@@ -378,6 +394,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytri_3x
         //
+        strncpy(srnamt, "Rsytri_3x", srnamt_len);
         infot = 1;
         Rsytri_3x("/", 0, a, 1, e, ip, w, 1, info);
         chkxer("Rsytri_3x", infot, nout, lerr, ok);
@@ -390,6 +407,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytrs_3
         //
+        strncpy(srnamt, "Rsytrs_3", srnamt_len);
         infot = 1;
         Rsytrs_3("/", 0, 0, a, 1, e, ip, b, 1, info);
         chkxer("Rsytrs_3", infot, nout, lerr, ok);
@@ -408,6 +426,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsycon_3
         //
+        strncpy(srnamt, "Rsycon_3", srnamt_len);
         infot = 1;
         Rsycon_3("/", 0, a, 1, e, ip, anrm, rcond, w, iw, info);
         chkxer("Rsycon_3", infot, nout, lerr, ok);
@@ -428,6 +447,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytrf_aa
         //
+        strncpy(srnamt, "Rsytrf_aa", srnamt_len);
         infot = 1;
         Rsytrf_aa("/", 0, a, 1, ip, w, 1, info);
         chkxer("Rsytrf_aa", infot, nout, lerr, ok);
@@ -446,6 +466,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytrs_aa
         //
+        strncpy(srnamt, "Rsytrs_aa", srnamt_len);
         infot = 1;
         Rsytrs_aa("/", 0, 0, a, 1, ip, b, 1, w, 1, info);
         chkxer("Rsytrs_aa", infot, nout, lerr, ok);
@@ -475,6 +496,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytrf_aa_2stage
         //
+        strncpy(srnamt, "Rsytrf_aa_2stage", srnamt_len);
         infot = 1;
         Rsytrf_aa_2stage("/", 0, a, 1, a, 1, ip, ip, w, 1, info);
         chkxer("Rsytrf_aa_2stage", infot, nout, lerr, ok);
@@ -493,6 +515,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsytrs_aa_2stage
         //
+        strncpy(srnamt, "Rsytrs_aa_2stage", srnamt_len);
         infot = 1;
         Rsytrs_aa_2stage("/", 0, 0, a, 1, a, 1, ip, ip, b, 1, info);
         chkxer("Rsytrs_aa_2stage", infot, nout, lerr, ok);
@@ -519,6 +542,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsptrf
         //
+        strncpy(srnamt, "Rsptrf", srnamt_len);
         infot = 1;
         Rsptrf("/", 0, a, ip, info);
         chkxer("Rsptrf", infot, nout, lerr, ok);
@@ -528,6 +552,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsptri
         //
+        strncpy(srnamt, "Rsptri", srnamt_len);
         infot = 1;
         Rsptri("/", 0, a, ip, w, info);
         chkxer("Rsptri", infot, nout, lerr, ok);
@@ -537,6 +562,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
         //        Rsptrs
         //
+        strncpy(srnamt, "Rsptrs", srnamt_len);
         infot = 1;
         Rsptrs("/", 0, 0, a, ip, b, 1, info);
         chkxer("Rsptrs", infot, nout, lerr, ok);
@@ -550,27 +576,29 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsptrs("U", 2, 1, a, ip, b, 1, info);
         chkxer("Rsptrs", infot, nout, lerr, ok);
         //
-        //        RsprFS
+        //        Rsprfs
         //
+        strncpy(srnamt, "Rsprfs", srnamt_len);
         infot = 1;
         Rsprfs("/", 0, 0, a, af, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("RsprFS", infot, nout, lerr, ok);
+        chkxer("Rsprfs", infot, nout, lerr, ok);
         infot = 2;
         Rsprfs("U", -1, 0, a, af, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("RsprFS", infot, nout, lerr, ok);
+        chkxer("Rsprfs", infot, nout, lerr, ok);
         infot = 3;
         Rsprfs("U", 0, -1, a, af, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("RsprFS", infot, nout, lerr, ok);
+        chkxer("Rsprfs", infot, nout, lerr, ok);
         infot = 8;
         Rsprfs("U", 2, 1, a, af, ip, b, 1, x, 2, r1, r2, w, iw, info);
-        chkxer("RsprFS", infot, nout, lerr, ok);
+        chkxer("Rsprfs", infot, nout, lerr, ok);
         infot = 10;
         Rsprfs("U", 2, 1, a, af, ip, b, 2, x, 1, r1, r2, w, iw, info);
-        chkxer("RsprFS", infot, nout, lerr, ok);
+        chkxer("Rsprfs", infot, nout, lerr, ok);
         //
         //        Rspcon
         //
         infot = 1;
+        strncpy(srnamt, "Rspcon", srnamt_len);
         Rspcon("/", 0, a, ip, anrm, rcond, w, iw, info);
         chkxer("Rspcon", infot, nout, lerr, ok);
         infot = 2;
