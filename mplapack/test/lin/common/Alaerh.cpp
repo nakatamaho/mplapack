@@ -137,7 +137,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
     //     Print the message detailing the error and form of recovery,
     //     if any.
     //
-    char uplo;
+    char uplo[1];
     if (Mlsamen(2, p2, "GE")) {
         //
         //        xGE:  General matrices
@@ -302,7 +302,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
         //        xPO:  Symmetric or Hermitian positive definite matrices
         //
-        uplo = opts[(1 - 1)];
+        uplo[0] = opts[(1 - 1)];
         if (Mlsamen(3, c3, "TRF")) {
             if (info != infoe && infoe != 0) {
                 write(nout, format_9980), subnam_trimmed, info, infoe, uplo, m, n5, imat;
@@ -346,7 +346,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
         //        xPS:  Symmetric or Hermitian positive semi-definite matrices
         //
-        uplo = opts[(1 - 1)];
+        uplo[0] = opts[(1 - 1)];
         if (Mlsamen(3, c3, "TRF")) {
             if (info != infoe && infoe != 0) {
                 write(nout, format_9980), subnam, info, infoe, uplo, m, n5, imat;
@@ -405,7 +405,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //        xHA: Hermitian matrices
         //             Aasen Algorithm
         //
-        uplo = opts[(1 - 1)];
+        uplo[0] = opts[(1 - 1)];
         if (Mlsamen(3, c3, "TRF")) {
             if (info != infoe && infoe != 0) {
                 write(nout, format_9980), subnam_trimmed, info, infoe, uplo, m, n5, imat;
@@ -445,7 +445,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
         //        xPP, xHP, or xSP:  Symmetric or Hermitian packed matrices
         //
-        uplo = opts[(1 - 1)];
+        uplo [0] = opts[(1 - 1)];
         if (Mlsamen(3, c3, "TRF")) {
             if (info != infoe && infoe != 0) {
                 write(nout, "(' *** ',a,' returned with INFO =',i5,' instead of ',i2,/,"
@@ -487,7 +487,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
         //        xPB:  Symmetric (Hermitian) positive definite band matrix
         //
-        uplo = opts[(1 - 1)];
+        uplo [0] = opts[(1 - 1)];
         if (Mlsamen(3, c3, "TRF")) {
             if (info != infoe && infoe != 0) {
                 write(nout, "(' *** ',a,' returned with INFO =',i5,' instead of ',i2,/,"
