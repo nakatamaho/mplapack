@@ -96,7 +96,7 @@ void Rsyrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
         info = -12;
     }
     if (info != 0) {
-        Mxerbla("RsyrFS", -info);
+        Mxerbla("Rsyrfs", -info);
         return;
     }
     //
