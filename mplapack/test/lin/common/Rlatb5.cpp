@@ -37,12 +37,7 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rlatb5(const char *path, INTEGER const imat, INTEGER const n, char *type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, char *dist) {
-    REAL badc1 = badc1;
-    REAL badc2 = badc2;
-    REAL eps = eps;
-    bool first = first;
-    REAL large = large;
-    REAL small = small;
+
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -74,6 +69,11 @@ void Rlatb5(const char *path, INTEGER const imat, INTEGER const n, char *type, I
     const REAL tenth = 0.1e+0;
     const REAL one = 1.0;
     const REAL shrink = 0.25e0;
+    REAL badc1;
+    REAL badc2;
+    REAL eps;
+    REAL large;
+    REAL small;
     eps = Rlamch("Precision");
     badc2 = tenth / eps;
     badc1 = sqrt(badc2);
