@@ -82,7 +82,7 @@ void Rsysv_rk(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
     }
     //
     if (info != 0) {
-        Mxerbla("Rsysv_rk ", -info);
+        Mxerbla("Rsysv_rk", -info);
         return;
     } else if (lquery) {
         return;
