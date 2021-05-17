@@ -139,13 +139,13 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
     //
     //     Test path
     //
-    path[0] = 'D';
+    path[0] = 'R';
     path[1] = 'S';
     path[2] = 'R';
     //
     //     Path to generate matrices
     //
-    matpath[0] = 'D';
+    matpath[0] = 'R';
     matpath[1] = 'S';
     matpath[2] = 'Y';
     //
@@ -161,6 +161,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
     if (tsterr) {
         Rerrsy(path, nout);
     }
+    infot = 0;
     //
     //     Set the minimum block size for which the block routine should
     //     be used, which will be later returned by iMlaenv
@@ -316,6 +317,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                     //                 block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)2, nb) * lda;
+                    strncpy(srnamt, "Rsytrf_rook", srnamt_len);
                     Rsytrf_rook(&uplo, n, afac, lda, iwork, ainv, lwork, info);
                     //
                     //                 Adjust the expected value of INFO to account for
@@ -363,6 +365,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                     //
                     if (inb == 1 && !trfcon) {
                         Rlacpy(&uplo, n, n, afac, lda, ainv, lda);
+                        strncpy(srnamt, "Rsytri_rook", srnamt_len);
                         Rsytri_rook(&uplo, n, ainv, lda, iwork, work, info);
                         //
                         //                    Check error code from Rsytri_rook and handle error.
@@ -615,9 +618,11 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                         //                    Choose a set of NRHS random solution vectors
                         //                    stored in XACT and set up the right hand side B
                         //
+                        strncpy(srnamt, "Rlarhs", srnamt_len);
                         Rlarhs(matpath, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Rlacpy("Full", n, nrhs, b, lda, x, lda);
                         //
+                        strncpy(srnamt, "Rsytrs_rook", srnamt_len);
                         Rsytrs_rook(&uplo, n, nrhs, afac, lda, iwork, x, lda, info);
                         //
                         //                    Check error code from Rsytrs_rook and handle error.
@@ -663,6 +668,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                 //
                 statement_230:
                     anorm = Rlansy("1", &uplo, n, a, lda, rwork);
+                    strncpy(srnamt, "Rsycon_rook", srnamt_len);
                     Rsycon_rook(&uplo, n, afac, lda, iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);
                     //
                     //                 Check error code from Rsycon_rook and handle error.

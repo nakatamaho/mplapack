@@ -139,6 +139,7 @@ void Rchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     if (tsterr) {
         Rerrsy(path, nout);
     }
+    infot = 0;
     //
     //     Set the minimum block size for which the block routine should
     //     be used, which will be later returned by iMlaenv
@@ -194,6 +195,7 @@ void Rchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                 //
                 //              Generate a matrix with Rlatms.
                 //
+                strncpy(srnamt, "Rlatms", srnamt_len);
                 Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
                 //
                 //              Check error code from Rlatms and handle error.
@@ -300,6 +302,7 @@ void Rchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     //                 block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)1, n * nb + n);
+                    strncpy(srnamt, "Rsytrf_aa", srnamt_len);
                     Rsytrf_aa(&uplo, n, afac, lda, iwork, ainv, lwork, info);
                     //
                     //                 Adjust the expected value of INFO to account for
@@ -368,10 +371,12 @@ void Rchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         //                    Choose a set of NRHS random solution vectors
                         //                    stored in XACT and set up the right hand side B
                         //
+                        strncpy(srnamt, "Rlarhs", srnamt_len);
                         Rlarhs(matpath, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Rlacpy("Full", n, nrhs, b, lda, x, lda);
                         //
                         lwork = max((INTEGER)1, 3 * n - 2);
+                        strncpy(srnamt, "Rsytrs_aa", srnamt_len);
                         Rsytrs_aa(&uplo, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
                         //
                         //                    Check error code from Rsytrs and handle error.
