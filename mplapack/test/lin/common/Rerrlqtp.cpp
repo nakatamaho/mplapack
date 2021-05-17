@@ -36,13 +36,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rerrlqtp(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -101,6 +99,7 @@ void Rerrlqtp(const char *path, INTEGER const nunit) {
     infot = 1;
     REAL b[nmax * nmax];
     INTEGER info = 0;
+    strncpy(srnamt, "Rtplqt", srnamt_len);
     Rtplqt(-1, 1, 0, 1, a, 1, b, 1, t, 1, w, info);
     chkxer("Rtplqt", infot, nout, lerr, ok);
     infot = 2;
@@ -131,6 +130,7 @@ void Rerrlqtp(const char *path, INTEGER const nunit) {
     //     Rtplqt2
     //
     infot = 1;
+    strncpy(srnamt, "Rtplqt2", srnamt_len);
     Rtplqt2(-1, 0, 0, a, 1, b, 1, t, 1, info);
     chkxer("Rtplqt2", infot, nout, lerr, ok);
     infot = 2;
@@ -152,6 +152,7 @@ void Rerrlqtp(const char *path, INTEGER const nunit) {
     //     Rtpmlqt
     //
     infot = 1;
+    strncpy(srnamt, "Rtpmlqt", srnamt_len);
     Rtpmlqt("/", "N", 0, 0, 0, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
     chkxer("Rtpmlqt", infot, nout, lerr, ok);
     infot = 2;

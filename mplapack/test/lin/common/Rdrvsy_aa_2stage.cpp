@@ -123,13 +123,13 @@ void Rdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
     //
     //     Test path
     //
-    path[0] = 'D';
+    path[0] = 'R';
     path[1] = 'S';
     path[2] = '2';
     //
     //     Path to generate matrices
     //
-    matpath[0] = 'D';
+    matpath[0] = 'R';
     matpath[1] = 'S';
     matpath[2] = 'Y';
     //

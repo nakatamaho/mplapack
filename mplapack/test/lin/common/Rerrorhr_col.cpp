@@ -36,13 +36,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rerrorhr_col(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -99,6 +97,7 @@ void Rerrorhr_col(const char *path, INTEGER const nunit) {
     //
     infot = 1;
     INTEGER info = 0;
+    strncpy(srnamt, "Rorhr_col", srnamt_len);
     Rorhr_col(-1, 0, 1, a, 1, t, 1, d, info);
     chkxer("Rorhr_col", infot, nout, lerr, ok);
     //

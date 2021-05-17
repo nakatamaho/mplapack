@@ -36,13 +36,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rerrtsqr(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -101,6 +99,7 @@ void Rerrtsqr(const char *path, INTEGER const nunit) {
     infot = 1;
     REAL tau[nmax * 2];
     INTEGER info = 0;
+    strncpy(srnamt, "Rgeqr", srnamt_len);
     Rgeqr(-1, 0, a, 1, tau, 1, w, 1, info);
     chkxer("Rgeqr", infot, nout, lerr, ok);
     infot = 2;
@@ -124,6 +123,7 @@ void Rerrtsqr(const char *path, INTEGER const nunit) {
     tau[4 - 1] = 1;
     INTEGER nb = 1;
     infot = 1;
+    strncpy(srnamt, "Rgemqr", srnamt_len);
     Rgemqr("/", "N", 0, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
     chkxer("Rgemqr", infot, nout, lerr, ok);
     infot = 2;
@@ -160,6 +160,7 @@ void Rerrtsqr(const char *path, INTEGER const nunit) {
     //     Rgelq
     //
     infot = 1;
+    strncpy(srnamt, "Rgelq", srnamt_len);
     Rgelq(-1, 0, a, 1, tau, 1, w, 1, info);
     chkxer("Rgelq", infot, nout, lerr, ok);
     infot = 2;
@@ -181,6 +182,7 @@ void Rerrtsqr(const char *path, INTEGER const nunit) {
     tau[2 - 1] = 1;
     nb = 1;
     infot = 1;
+    strncpy(srnamt, "Rgemlq", srnamt_len);
     Rgemlq("/", "N", 0, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
     chkxer("Rgemlq", infot, nout, lerr, ok);
     infot = 2;

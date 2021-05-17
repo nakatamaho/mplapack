@@ -72,7 +72,7 @@ void Rchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
     //     Initialize constants
     //
     char path[3];
-    path[0] = 'D';
+    path[0] = 'R';
     path[1] = 'T';
     path[2] = 'S';
     char buf[1024];

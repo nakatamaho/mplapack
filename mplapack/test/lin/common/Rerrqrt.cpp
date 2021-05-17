@@ -36,13 +36,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rerrqrt(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -100,6 +98,7 @@ void Rerrqrt(const char *path, INTEGER const nunit) {
     //
     infot = 1;
     INTEGER info = 0;
+    strncpy(srnamt, "Rgeqrt", srnamt_len);
     Rgeqrt(-1, 0, 1, a, 1, t, 1, w, info);
     chkxer("Rgeqrt", infot, nout, lerr, ok);
     infot = 2;
@@ -118,6 +117,7 @@ void Rerrqrt(const char *path, INTEGER const nunit) {
     //     Rgeqrt2
     //
     infot = 1;
+    strncpy(srnamt, "Rgeqrt2", srnamt_len);
     Rgeqrt2(-1, 0, a, 1, t, 1, info);
     chkxer("Rgeqrt2", infot, nout, lerr, ok);
     infot = 2;
@@ -133,6 +133,7 @@ void Rerrqrt(const char *path, INTEGER const nunit) {
     //     Rgeqrt3
     //
     infot = 1;
+    strncpy(srnamt, "Rgeqrt3", srnamt_len);
     Rgeqrt3(-1, 0, a, 1, t, 1, info);
     chkxer("Rgeqrt3", infot, nout, lerr, ok);
     infot = 2;
@@ -148,6 +149,7 @@ void Rerrqrt(const char *path, INTEGER const nunit) {
     //     Rgemqrt
     //
     infot = 1;
+    strncpy(srnamt, "Rgemqrt", srnamt_len);
     Rgemqrt("/", "N", 0, 0, 0, 1, a, 1, t, 1, c, 1, w, info);
     chkxer("Rgemqrt", infot, nout, lerr, ok);
     infot = 2;

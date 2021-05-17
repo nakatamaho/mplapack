@@ -72,7 +72,7 @@ void Rchkorhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
     //     Initialize constants
     //
     char path[3];
-    path[0] = 'D';
+    path[0] = 'R';
     path[1] = 'H';
     path[2] = 'H';
     char buf[1024];

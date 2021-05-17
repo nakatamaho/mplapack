@@ -136,7 +136,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Initialize constants and the random number seed.
     //
-    path[0] = 'D';
+    path[0] = 'R';
     path[1] = 'L';
     path[2] = 'S';
     nrun = 0;

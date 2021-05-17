@@ -36,14 +36,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rerrlqt(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -99,6 +96,7 @@ void Rerrlqt(const char *path, INTEGER const nunit) {
     //     Rgelqt
     //
     infot = 1;
+    strncpy(srnamt, "Rgelqt", srnamt_len);
     INTEGER info = 0;
     Rgelqt(-1, 0, 1, a, 1, t, 1, w, info);
     chkxer("Rgelqt", infot, nout, lerr, ok);
@@ -118,6 +116,7 @@ void Rerrlqt(const char *path, INTEGER const nunit) {
     //     Rgelqt3
     //
     infot = 1;
+    strncpy(srnamt, "Rgelqt3", srnamt_len);
     Rgelqt3(-1, 0, a, 1, t, 1, info);
     chkxer("Rgelqt3", infot, nout, lerr, ok);
     infot = 2;
@@ -133,6 +132,7 @@ void Rerrlqt(const char *path, INTEGER const nunit) {
     //     Rgemlqt
     //
     infot = 1;
+    strncpy(srnamt, "Rgemlqt", srnamt_len);
     Rgemlqt("/", "N", 0, 0, 0, 1, a, 1, t, 1, c, 1, w, info);
     chkxer("Rgemlqt", infot, nout, lerr, ok);
     infot = 2;

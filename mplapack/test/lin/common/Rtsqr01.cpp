@@ -109,8 +109,6 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
     INTEGER ldcf = m;
     REAL *df = new REAL[n * m];
     INTEGER lddf = n;
-    REAL *t = new REAL[tsize];
-    REAL *work = new REAL[lwork];
     const REAL zero = 0.0f;
     const REAL one = 1.0f;
     REAL *q = new REAL[l * l];
@@ -127,13 +125,17 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
     INTEGER ldd = n;
     REAL dnorm = 0.0;
     REAL lq[l * n];
+    REAL *t;
+    REAL *work;
     if (ts) {
         //
         //     Factor the matrix A in the array AF.
         //
         Rgeqr(m, n, af, m, tquery, -1, workquery, -1, info);
         tsize = castINTEGER(tquery[1 - 1]);
+        t = new REAL[tsize];
         lwork = castINTEGER(workquery[1 - 1]);
+        work = new REAL[lwork];
         Rgemqr("L", "N", m, m, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemqr("L", "N", m, n, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
@@ -259,7 +261,9 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
     } else {
         Rgelq(m, n, af, m, tquery, -1, workquery, -1, info);
         tsize = castINTEGER(tquery[1 - 1]);
+        t = new REAL[tsize];
         lwork = castINTEGER(workquery[1 - 1]);
+        work = new REAL[lwork];
         Rgemlq("R", "N", n, n, k, af, m, tquery, tsize, q, n, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemlq("L", "N", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);

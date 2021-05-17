@@ -36,13 +36,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rerrtr(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -99,6 +97,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //        Rtrtri
         //
         infot = 1;
+        strncpy(srnamt, "Rtrtri", srnamt_len);
         Rtrtri("/", "N", 0, a, 1, info);
         chkxer("Rtrtri", infot, nout, lerr, ok);
         infot = 2;
@@ -114,6 +113,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //        Rtrti2
         //
         infot = 1;
+        strncpy(srnamt, "Rtrti2", srnamt_len);
         Rtrti2("/", "N", 0, a, 1, info);
         chkxer("Rtrti2", infot, nout, lerr, ok);
         infot = 2;
@@ -129,6 +129,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //        Rtrtrs
         //
         infot = 1;
+        strncpy(srnamt, "Rtrtrs", srnamt_len);
         Rtrtrs("/", "N", "N", 0, 0, a, 1, x, 1, info);
         chkxer("Rtrtrs", infot, nout, lerr, ok);
         infot = 2;
@@ -153,6 +154,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //        Rtrrfs
         //
         infot = 1;
+        strncpy(srnamt, "Rtrrfs", srnamt_len);
         Rtrrfs("/", "N", "N", 0, 0, a, 1, b, 1, x, 1, r1, r2, w, iw, info);
         chkxer("Rtrrfs", infot, nout, lerr, ok);
         infot = 2;
@@ -180,6 +182,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //        Rtrcon
         //
         infot = 1;
+        strncpy(srnamt, "Rtrcon", srnamt_len);
         Rtrcon("/", "U", "N", 0, a, 1, rcond, w, iw, info);
         chkxer("Rtrcon", infot, nout, lerr, ok);
         infot = 2;
@@ -198,6 +201,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //        Rlatrs
         //
         infot = 1;
+        strncpy(srnamt, "Rlatrs", srnamt_len);
         Rlatrs("/", "N", "N", "N", 0, a, 1, x, scale, w, info);
         chkxer("Rlatrs", infot, nout, lerr, ok);
         infot = 2;
@@ -223,6 +227,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //        Rtptri
         //
         infot = 1;
+        strncpy(srnamt, "Rtptri", srnamt_len);
         Rtptri("/", "N", 0, a, info);
         chkxer("Rtptri", infot, nout, lerr, ok);
         infot = 2;
@@ -235,6 +240,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //        Rtptrs
         //
         infot = 1;
+        strncpy(srnamt, "Rtptrs", srnamt_len);
         Rtptrs("/", "N", "N", 0, 0, a, x, 1, info);
         chkxer("Rtptrs", infot, nout, lerr, ok);
         infot = 2;
@@ -256,6 +262,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //        Rtprfs
         //
         infot = 1;
+        strncpy(srnamt, "Rtprfs", srnamt_len);
         Rtprfs("/", "N", "N", 0, 0, a, b, 1, x, 1, r1, r2, w, iw, info);
         chkxer("Rtprfs", infot, nout, lerr, ok);
         infot = 2;
@@ -280,6 +287,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //        Rtpcon
         //
         infot = 1;
+        strncpy(srnamt, "Rtpcon", srnamt_len);
         Rtpcon("/", "U", "N", 0, a, rcond, w, iw, info);
         chkxer("Rtpcon", infot, nout, lerr, ok);
         infot = 2;
@@ -295,6 +303,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //        Rlatps
         //
         infot = 1;
+        strncpy(srnamt, "Rlatps", srnamt_len);
         Rlatps("/", "N", "N", "N", 0, a, x, scale, w, info);
         chkxer("Rlatps", infot, nout, lerr, ok);
         infot = 2;
@@ -317,6 +326,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //        Rtbtrs
         //
         infot = 1;
+        strncpy(srnamt, "Rtbtrs", srnamt_len);
         Rtbtrs("/", "N", "N", 0, 0, 0, a, 1, x, 1, info);
         chkxer("Rtbtrs", infot, nout, lerr, ok);
         infot = 2;
@@ -344,6 +354,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //        Rtbrfs
         //
         infot = 1;
+        strncpy(srnamt, "Rtbrfs", srnamt_len);
         Rtbrfs("/", "N", "N", 0, 0, 0, a, 1, b, 1, x, 1, r1, r2, w, iw, info);
         chkxer("Rtbrfs", infot, nout, lerr, ok);
         infot = 2;
@@ -374,6 +385,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //        Rtbcon
         //
         infot = 1;
+        strncpy(srnamt, "Rtbcon", srnamt_len);
         Rtbcon("/", "U", "N", 0, 0, a, 1, rcond, w, iw, info);
         chkxer("Rtbcon", infot, nout, lerr, ok);
         infot = 2;
@@ -395,6 +407,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //        Rlatbs
         //
         infot = 1;
+        strncpy(srnamt, "Rlatbs", srnamt_len);
         Rlatbs("/", "N", "N", "N", 0, 0, a, 1, x, scale, w, info);
         chkxer("Rlatbs", infot, nout, lerr, ok);
         infot = 2;

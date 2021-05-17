@@ -68,7 +68,7 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
     char path[3];
     char buf1[1024];
     char buf2[1024];
-    path[0] = 'D';
+    path[0] = 'R';
     path[1] = 'E';
     path[2] = 'Q';
     //

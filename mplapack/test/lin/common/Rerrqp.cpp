@@ -36,11 +36,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rerrqp(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    bool ok;
-    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -86,7 +86,6 @@ void Rerrqp(const char *path, INTEGER const nunit) {
     REAL tau[nmax];
     REAL w[3 * nmax + 1];
     INTEGER info = 0;
-    bool infot = 0;
     if (Mlsamen(2, c2, "QP")) {
         //
         //        Test error exits for QR factorization with pivoting
@@ -94,6 +93,7 @@ void Rerrqp(const char *path, INTEGER const nunit) {
         //        Rgeqp3
         //
         infot = 1;
+        strncpy(srnamt, "Rgeqp3", srnamt_len);
         Rgeqp3(-1, 0, a, 1, ip, tau, w, lw, info);
         chkxer("Rgeqp3", infot, nout, lerr, ok);
         infot = 2;

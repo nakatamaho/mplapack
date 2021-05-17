@@ -138,13 +138,13 @@ void Rchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     alpha = (one + sqrt(sevten)) / eight;
     //
     //     Test path
-    path[0] = 'D';
+    path[0] = 'R';
     path[1] = 'S';
     path[2] = 'K';
     //
     //     Path to generate matrices
     //
-    matpath[0] = 'D';
+    matpath[0] = 'R';
     matpath[1] = 'S';
     matpath[1] = 'Y';
     //
@@ -210,6 +210,7 @@ void Rchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                 //
                 //              Generate a matrix with Rlatms.
                 //
+                strncpy(srnamt, "Rlatms", srnamt_len);
                 Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
                 //
                 //              Check error code from Rlatms and handle error.
@@ -315,6 +316,7 @@ void Rchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     //                 block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)2, nb) * lda;
+                    strncpy(srnamt, "Rsytrf_rk", srnamt_len);
                     Rsytrf_rk(&uplo, n, afac, lda, e, iwork, ainv, lwork, info);
                     //
                     //                 Adjust the expected value of INFO to account for
@@ -362,6 +364,7 @@ void Rchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     //
                     if (inb == 1 && !trfcon) {
                         Rlacpy(&uplo, n, n, afac, lda, ainv, lda);
+                        strncpy(srnamt, "Rsytri_3", srnamt_len);
                         //
                         //                    Another reason that we need to compute the inverse
                         //                    is that Rpot03 produces RCONDC which is used later
@@ -620,9 +623,11 @@ void Rchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         //                    Choose a set of NRHS random solution vectors
                         //                    stored in XACT and set up the right hand side B
                         //
+                        strncpy(srnamt, "Rlarhs", srnamt_len);
                         Rlarhs(matpath, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Rlacpy("Full", n, nrhs, b, lda, x, lda);
                         //
+                        strncpy(srnamt, "Rsytrs_3", srnamt_len);
                         Rsytrs_3(&uplo, n, nrhs, afac, lda, e, iwork, x, lda, info);
                         //
                         //                    Check error code from Rsytrs_3 and handle error.
@@ -668,6 +673,7 @@ void Rchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                 //
                 statement_230:
                     anorm = Rlansy("1", &uplo, n, a, lda, rwork);
+                    strncpy(srnamt, "Rsycon_3", srnamt_len);
                     Rsycon_3(&uplo, n, afac, lda, e, iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);
                     //
                     //                 Check error code from Rsycon_3 and handle error.
