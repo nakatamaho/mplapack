@@ -123,7 +123,7 @@ void Rormr3(const char *side, const char *trans, INTEGER const m, INTEGER const 
     }
     //
     INTEGER i = 0;
-    for (i = i1; i <= i2; i = i + i3) {
+    for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
         if (left) {
             //
             //           H(i) or H(i)**T is applied to C(i:m,1:n)

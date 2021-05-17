@@ -63,7 +63,7 @@ void Rgerq2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         info = -4;
     }
     if (info != 0) {
-        Mxerbla("RgerQ2", -info);
+        Mxerbla("Rgerq2", -info);
         return;
     }
     //

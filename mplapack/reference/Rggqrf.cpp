@@ -56,7 +56,7 @@ void Rggqrf(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER 
     //
     info = 0;
     INTEGER nb1 = iMlaenv(1, "Rgeqrf", " ", n, m, -1, -1);
-    INTEGER nb2 = iMlaenv(1, "RgerQF", " ", n, p, -1, -1);
+    INTEGER nb2 = iMlaenv(1, "Rgerqf", " ", n, p, -1, -1);
     INTEGER nb3 = iMlaenv(1, "Rormqr", " ", n, m, p, -1);
     INTEGER nb = max({nb1, nb2, nb3});
     INTEGER lwkopt = max({n, m, p}) * nb;

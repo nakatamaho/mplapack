@@ -36,13 +36,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rerrlq(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -101,6 +99,7 @@ void Rerrlq(const char *path, INTEGER const nunit) {
     //
     infot = 1;
     INTEGER info = 0;
+    strncpy(srnamt, "Rgelqf", srnamt_len);
     Rgelqf(-1, 0, a, 1, b, w, 1, info);
     chkxer("Rgelqf", infot, nout, lerr, ok);
     infot = 2;
@@ -116,6 +115,7 @@ void Rerrlq(const char *path, INTEGER const nunit) {
     //     Rgelq2
     //
     infot = 1;
+    strncpy(srnamt, "Rgelq2", srnamt_len);
     Rgelq2(-1, 0, a, 1, b, w, info);
     chkxer("Rgelq2", infot, nout, lerr, ok);
     infot = 2;
@@ -128,6 +128,7 @@ void Rerrlq(const char *path, INTEGER const nunit) {
     //     Rgelqs
     //
     infot = 1;
+    strncpy(srnamt, "Rgelqs", srnamt_len);
     Rgelqs(-1, 0, 0, a, 1, x, b, 1, w, 1, info);
     chkxer("Rgelqs", infot, nout, lerr, ok);
     infot = 2;
@@ -152,6 +153,7 @@ void Rerrlq(const char *path, INTEGER const nunit) {
     //     Rorglq
     //
     infot = 1;
+    strncpy(srnamt, "Rorglq", srnamt_len);
     Rorglq(-1, 0, 0, a, 1, x, w, 1, info);
     chkxer("Rorglq", infot, nout, lerr, ok);
     infot = 2;
@@ -176,6 +178,7 @@ void Rerrlq(const char *path, INTEGER const nunit) {
     //     Rorgl2
     //
     infot = 1;
+    strncpy(srnamt, "Rorgl2", srnamt_len);
     Rorgl2(-1, 0, 0, a, 1, x, w, info);
     chkxer("Rorgl2", infot, nout, lerr, ok);
     infot = 2;
@@ -197,6 +200,7 @@ void Rerrlq(const char *path, INTEGER const nunit) {
     //     Rormlq
     //
     infot = 1;
+    strncpy(srnamt, "Rormlq", srnamt_len);
     Rormlq("/", "N", 0, 0, 0, a, 1, x, af, 1, w, 1, info);
     chkxer("Rormlq", infot, nout, lerr, ok);
     infot = 2;
@@ -236,6 +240,7 @@ void Rerrlq(const char *path, INTEGER const nunit) {
     //     Rorml2
     //
     infot = 1;
+    strncpy(srnamt, "Rorml2", srnamt_len);
     Rorml2("/", "N", 0, 0, 0, a, 1, x, af, 1, w, info);
     chkxer("Rorml2", infot, nout, lerr, ok);
     infot = 2;

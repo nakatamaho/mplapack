@@ -77,7 +77,7 @@ void Rtzrzf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
             //
             //           Determine the block size.
             //
-            nb = iMlaenv(1, "RgerQF", " ", m, n, -1, -1);
+            nb = iMlaenv(1, "Rgerqf", " ", m, n, -1, -1);
             lwkopt = m * nb;
             lwkmin = max((INTEGER)1, m);
         }
@@ -116,7 +116,7 @@ void Rtzrzf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         //
         //        Determine when to cross over from blocked to unblocked code.
         //
-        nx = max((INTEGER)0, iMlaenv(3, "RgerQF", " ", m, n, -1, -1));
+        nx = max((INTEGER)0, iMlaenv(3, "Rgerqf", " ", m, n, -1, -1));
         if (nx < m) {
             //
             //           Determine if workspace is large enough for blocked code.
@@ -129,7 +129,7 @@ void Rtzrzf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
                 //              determine the minimum value of NB.
                 //
                 nb = lwork / ldwork;
-                nbmin = max((INTEGER)2, iMlaenv(2, "RgerQF", " ", m, n, -1, -1));
+                nbmin = max((INTEGER)2, iMlaenv(2, "Rgerqf", " ", m, n, -1, -1));
             }
         }
     }

@@ -100,7 +100,7 @@ void Rchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Initialize constants and the random number seed.
     //
-    path[0] = 'D';
+    path[0] = 'R';
     path[1] = 'T';
     path[2] = 'Z';
     nrun = 0;

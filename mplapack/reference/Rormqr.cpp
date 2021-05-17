@@ -173,7 +173,7 @@ void Rormqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
             ic = 1;
         }
         //
-        for (i = i1; i <= i2; i = i + i3) {
+        for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
             ib = min(nb, k - i + 1);
             //
             //           Form the triangular factor of the block reflector

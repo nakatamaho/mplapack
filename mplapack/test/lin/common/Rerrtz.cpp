@@ -36,11 +36,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rerrtz(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    bool ok;
-    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -68,7 +68,6 @@ void Rerrtz(const char *path, INTEGER const nunit) {
     //     ..
     //     .. Executable Statements ..
     //
-    INTEGER nout = nunit;
     char c2[2];
     c2[0] = path[1];
     c2[1] = path[2];
@@ -86,7 +85,6 @@ void Rerrtz(const char *path, INTEGER const nunit) {
     //
     REAL tau[nmax];
     INTEGER info = 0;
-    bool infot = 0;
     if (Mlsamen(2, c2, "TZ")) {
         //
         //        Test error exits for the trapezoidal routines.
@@ -94,6 +92,7 @@ void Rerrtz(const char *path, INTEGER const nunit) {
         //        Rtzrzf
         //
         infot = 1;
+        strncpy(srnamt, "Rtzrzf", srnamt_len);
         Rtzrzf(-1, 0, a, 1, tau, w, 1, info);
         chkxer("Rtzrzf", infot, nout, lerr, ok);
         infot = 2;

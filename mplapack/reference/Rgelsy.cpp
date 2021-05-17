@@ -114,7 +114,7 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
             lwkopt = 1;
         } else {
             nb1 = iMlaenv(1, "Rgeqrf", " ", m, n, -1, -1);
-            nb2 = iMlaenv(1, "RgerQF", " ", m, n, -1, -1);
+            nb2 = iMlaenv(1, "Rgerqf", " ", m, n, -1, -1);
             nb3 = iMlaenv(1, "Rormqr", " ", m, n, nrhs, -1);
             nb4 = iMlaenv(1, "Rormrq", " ", m, n, nrhs, -1);
             nb = max({nb1, nb2, nb3, nb4});

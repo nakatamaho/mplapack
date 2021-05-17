@@ -404,7 +404,7 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
             //             or U**T*(xr,xi) = scale*(vr,vi) for a left eigenvector,
             //           overwriting (xr,xi) on (vr,vi).
             //
-            for (i = i1; i <= i2; i = i + i3) {
+            for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
                 //
                 if (work[i - 1] > vcrit) {
                     rec = one / vmax;

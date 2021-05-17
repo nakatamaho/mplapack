@@ -86,7 +86,7 @@ void Rggglm(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER 
             lwkopt = 1;
         } else {
             nb1 = iMlaenv(1, "Rgeqrf", " ", n, m, -1, -1);
-            nb2 = iMlaenv(1, "RgerQF", " ", n, m, -1, -1);
+            nb2 = iMlaenv(1, "Rgerqf", " ", n, m, -1, -1);
             nb3 = iMlaenv(1, "Rormqr", " ", n, m, p, -1);
             nb4 = iMlaenv(1, "Rormrq", " ", n, m, p, -1);
             nb = max({nb1, nb2, nb3, nb4});
