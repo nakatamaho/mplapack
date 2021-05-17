@@ -29,15 +29,13 @@
 #include <mplapack.h>
 
 INTEGER Mmaxloc(REAL *dx, INTEGER const start, INTEGER const end, INTEGER const incx) {
-    INTEGER return_value = 0;
-    return_value = 0;
+    INTEGER return_value = 1;
     if (incx <= 0) {
         return return_value;
     }
     REAL dmax = 0.0;
     INTEGER i = 0;
     INTEGER ix = 0;
-    INTEGER counter = 1;
     if (incx == 1) {
         //
         //        code for increment equal to 1
@@ -45,10 +43,9 @@ INTEGER Mmaxloc(REAL *dx, INTEGER const start, INTEGER const end, INTEGER const 
         dmax = dx[start - 1];
         for (i = start + 1; i <= end; i = i + 1) {
             if (dx[i - 1] > dmax) {
-                return_value = counter;
                 dmax = dx[i - 1];
             }
-            counter++;
+            return_value++;
         }
     } else {
         printf("Mmaxloc: not yet implimented\n");
