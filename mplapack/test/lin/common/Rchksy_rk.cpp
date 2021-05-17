@@ -146,7 +146,7 @@ void Rchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     //
     matpath[0] = 'R';
     matpath[1] = 'S';
-    matpath[1] = 'Y';
+    matpath[2] = 'Y';
     //
     nrun = 0;
     nfail = 0;
@@ -160,6 +160,7 @@ void Rchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     if (tsterr) {
         Rerrsy(path, nout);
     }
+    infot = 0;
     //
     //     Set the minimum block size for which the block routine should
     //     be used, which will be later returned by iMlaenv

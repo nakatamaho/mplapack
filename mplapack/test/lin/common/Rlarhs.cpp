@@ -73,7 +73,7 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
     bool sym = Mlsame(&path[1], "P") || Mlsame(&path[1], "S");
     bool tri = Mlsame(&path[1], "T");
     bool band = Mlsame(&path[2], "B");
-    if (!Mlsame(c1, "Real precision")) {
+    if (!Mlsame(&c1[0], "R")) {
         info = -1;
     } else if (!(Mlsame(xtype, "N") || Mlsame(xtype, "C"))) {
         info = -2;
