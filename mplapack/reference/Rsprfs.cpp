@@ -94,7 +94,7 @@ void Rsprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REA
         info = -10;
     }
     if (info != 0) {
-        Mxerbla("RsprFS", -info);
+        Mxerbla("Rsprfs", -info);
         return;
     }
     //
