@@ -36,6 +36,8 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rqrt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *r, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     // COMMON srnamc
     //
@@ -80,6 +82,7 @@ void Rqrt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //     Factorize the matrix A in the array AF.
     //
     INTEGER info = 0;
+    strncpy(srnamt, "Rgeqrf", srnamt_len);
     Rgeqrf(m, n, af, lda, tau, work, lwork, info);
     //
     //     Copy details of Q
@@ -90,6 +93,7 @@ void Rqrt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //
     //     Generate the m-by-m matrix Q
     //
+    strncpy(srnamt, "Rorgqr", srnamt_len);
     Rorgqr(m, m, minmn, q, lda, tau, work, lwork, info);
     //
     //     Copy R

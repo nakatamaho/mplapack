@@ -36,13 +36,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rerrrq(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -98,61 +96,65 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     //
     //     Error exits for RQ factorization
     //
-    //     RgerQF
+    //     Rgerqf
     //
     infot = 1;
     INTEGER info = 0;
+    strncpy(srnamt, "Rgerqf", srnamt_len);
     Rgerqf(-1, 0, a, 1, b, w, 1, info);
-    chkxer("RgerQF", infot, nout, lerr, ok);
+    chkxer("Rgerqf", infot, nout, lerr, ok);
     infot = 2;
     Rgerqf(0, -1, a, 1, b, w, 1, info);
-    chkxer("RgerQF", infot, nout, lerr, ok);
+    chkxer("Rgerqf", infot, nout, lerr, ok);
     infot = 4;
     Rgerqf(2, 1, a, 1, b, w, 2, info);
-    chkxer("RgerQF", infot, nout, lerr, ok);
+    chkxer("Rgerqf", infot, nout, lerr, ok);
     infot = 7;
     Rgerqf(2, 1, a, 2, b, w, 1, info);
-    chkxer("RgerQF", infot, nout, lerr, ok);
+    chkxer("Rgerqf", infot, nout, lerr, ok);
     //
-    //     RgerQ2
+    //     Rgerq2
     //
     infot = 1;
+    strncpy(srnamt, "Rgerq2", srnamt_len);
     Rgerq2(-1, 0, a, 1, b, w, info);
-    chkxer("RgerQ2", infot, nout, lerr, ok);
+    chkxer("Rgerq2", infot, nout, lerr, ok);
     infot = 2;
     Rgerq2(0, -1, a, 1, b, w, info);
-    chkxer("RgerQ2", infot, nout, lerr, ok);
+    chkxer("Rgerq2", infot, nout, lerr, ok);
     infot = 4;
     Rgerq2(2, 1, a, 1, b, w, info);
-    chkxer("RgerQ2", infot, nout, lerr, ok);
+    chkxer("Rgerq2", infot, nout, lerr, ok);
     //
-    //     RgerQS
+    //     Rgerqs
     //
     infot = 1;
+    strncpy(srnamt, "Rgerqs", srnamt_len);
     Rgerqs(-1, 0, 0, a, 1, x, b, 1, w, 1, info);
-    chkxer("RgerQS", infot, nout, lerr, ok);
+    chkxer("Rgerqs", infot, nout, lerr, ok);
     infot = 2;
     Rgerqs(0, -1, 0, a, 1, x, b, 1, w, 1, info);
-    chkxer("RgerQS", infot, nout, lerr, ok);
+    chkxer("Rgerqs", infot, nout, lerr, ok);
     infot = 2;
     Rgerqs(2, 1, 0, a, 2, x, b, 1, w, 1, info);
-    chkxer("RgerQS", infot, nout, lerr, ok);
+    chkxer("Rgerqs", infot, nout, lerr, ok);
     infot = 3;
     Rgerqs(0, 0, -1, a, 1, x, b, 1, w, 1, info);
-    chkxer("RgerQS", infot, nout, lerr, ok);
+    chkxer("Rgerqs", infot, nout, lerr, ok);
     infot = 5;
     Rgerqs(2, 2, 0, a, 1, x, b, 2, w, 1, info);
-    chkxer("RgerQS", infot, nout, lerr, ok);
+    chkxer("Rgerqs", infot, nout, lerr, ok);
     infot = 8;
     Rgerqs(2, 2, 0, a, 2, x, b, 1, w, 1, info);
-    chkxer("RgerQS", infot, nout, lerr, ok);
+    chkxer("Rgerqs", infot, nout, lerr, ok);
     infot = 10;
     Rgerqs(1, 1, 2, a, 1, x, b, 1, w, 1, info);
-    chkxer("RgerQS", infot, nout, lerr, ok);
+    chkxer("Rgerqs", infot, nout, lerr, ok);
     //
     //     Rorgrq
     //
     infot = 1;
+    strncpy(srnamt, "Rorgrq", srnamt_len);
     Rorgrq(-1, 0, 0, a, 1, x, w, 1, info);
     chkxer("Rorgrq", infot, nout, lerr, ok);
     infot = 2;
@@ -177,6 +179,7 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     //     Rorgr2
     //
     infot = 1;
+    strncpy(srnamt, "Rorgr2", srnamt_len);
     Rorgr2(-1, 0, 0, a, 1, x, w, info);
     chkxer("Rorgr2", infot, nout, lerr, ok);
     infot = 2;
@@ -198,6 +201,7 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     //     Rormrq
     //
     infot = 1;
+    strncpy(srnamt, "Rormrq", srnamt_len);
     Rormrq("/", "N", 0, 0, 0, a, 1, x, af, 1, w, 1, info);
     chkxer("Rormrq", infot, nout, lerr, ok);
     infot = 2;
@@ -237,6 +241,7 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     //     Rormr2
     //
     infot = 1;
+    strncpy(srnamt, "Rormr2", srnamt_len);
     Rormr2("/", "N", 0, 0, 0, a, 1, x, af, 1, w, info);
     chkxer("Rormr2", infot, nout, lerr, ok);
     infot = 2;

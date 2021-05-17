@@ -74,7 +74,7 @@ void Rgerqs(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         info = -10;
     }
     if (info != 0) {
-        Mxerbla("RgerQS", -info);
+        Mxerbla("Rgerqs", -info);
         return;
     }
     //
