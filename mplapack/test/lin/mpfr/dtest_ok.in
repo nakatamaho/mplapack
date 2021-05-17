@@ -29,7 +29,6 @@ DTR   18               List types on next line if 0 < NTYPES < 18
 DTP   18               List types on next line if 0 < NTYPES < 18
 DTB   17               List types on next line if 0 < NTYPES < 17
 DTZ    3               List types on next line if 0 < NTYPES <  3
-DEQ
 DQT
 DQX
 DXQ
