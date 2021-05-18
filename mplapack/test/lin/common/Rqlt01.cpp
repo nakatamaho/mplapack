@@ -36,6 +36,8 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rqlt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *l, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
     //
@@ -100,6 +102,7 @@ void Rqlt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //
     //     Generate the m-by-m matrix Q
     //
+    strncpy(srnamt, "Rorgql", srnamt_len);
     Rorgql(m, m, minmn, q, lda, tau, work, lwork, info);
     //
     //     Copy L

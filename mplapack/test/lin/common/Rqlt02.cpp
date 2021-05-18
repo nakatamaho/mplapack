@@ -36,6 +36,8 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rqlt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af, REAL *q, REAL *l, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
     //  -- LAPACK test routine --
@@ -93,6 +95,7 @@ void Rqlt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     //     Generate the last n columns of the matrix Q
     //
     INTEGER info = 0;
+    strncpy(srnamt, "Rorgql", srnamt_len);
     Rorgql(m, n, k, q, lda, &tau[(n - k + 1) - 1], work, lwork, info);
     //
     //     Copy L(m-n+1:m,n-k+1:n)
