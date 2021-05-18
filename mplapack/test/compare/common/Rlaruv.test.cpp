@@ -84,8 +84,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace std;
 
 int main(int argc, char *argv[]) {
-//    mpreal::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
-//    mpcomplex::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
+    //    mpreal::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
+    //    mpcomplex::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
     printf("*** Testing Rlaruv start ***\n");
     INTEGER *seed; // ignored
     for (int n = 0; n < MAX_N; n++) {

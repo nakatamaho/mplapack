@@ -35,51 +35,49 @@
 #include <iostream>
 #endif
 
-void Mlsame_test()
-{
-//  char a="A";
-//  char b="A";
+void Mlsame_test() {
+    //  char a="A";
+    //  char b="A";
     int errorflag = FALSE;
 
     if (Mlsamen(2, "AB", "AB")) {
 #if defined VERBOSE_TEST
-	printf("same letter ok\n");
+        printf("same letter ok\n");
 #endif
     } else {
 #if defined VERBOSE_TEST
-	printf("same letter NG\n");
+        printf("same letter NG\n");
 #endif
-	errorflag = TRUE;
+        errorflag = TRUE;
     }
     if (Mlsamen(2, "AB", "ab")) {
 #if defined VERBOSE_TEST
-	printf("Uppercase/lowercase ok\n");
+        printf("Uppercase/lowercase ok\n");
 #endif
     } else {
 #if defined VERBOSE_TEST
-	printf("Uppercase/lowercase NG\n");
+        printf("Uppercase/lowercase NG\n");
 #endif
-	errorflag = TRUE;
+        errorflag = TRUE;
     }
 
     if (Mlsamen(3, "abc", "def")) {
 #if defined VERBOSE_TEST
-	printf("same! but should not be the same ng\n");
-	errorflag = TRUE;
+        printf("same! but should not be the same ng\n");
+        errorflag = TRUE;
 #endif
     } else {
 #if defined VERBOSE_TEST
-	printf("different ok\n");
+        printf("different ok\n");
 #endif
     }
     if (errorflag == TRUE) {
         printf("*** Testing Mlsamen failed ***\n");
-	exit(1);
+        exit(1);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Mlsamen start ***\n");
     Mlsame_test();
     printf("*** Testing Mlsamen successful ***\n");

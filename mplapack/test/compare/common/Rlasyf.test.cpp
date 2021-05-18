@@ -93,7 +93,7 @@ void Rlasyf_test2(const char *uplo) {
                         j = 0;
                         while (j < MAX_ITER) {
                             set_random_vector(A_ref, A, matlen(lda, n));
-			    kbl = kb;
+                            kbl = kb;
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                             dlasyf_f77(uplo, &n, &nb, &kb, A_ref, &lda, ipiv_ref, W_ref, &ldw, &info_ref);
 #else

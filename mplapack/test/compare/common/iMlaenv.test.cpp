@@ -37,23 +37,21 @@
 #include <iostream>
 #endif
 
-
-
 void iMlaenv_test(void) {
     char name[16], name_ref[16], opts[16];
     int ispec_ref, n1_ref, n2_ref, n3_ref, n4_ref, ret_ref;
     INTEGER ispec, n1, n2, n3, n4, ret;
-    
-    ispec_ref = 1; 
-    n1_ref = 16;   
-    n2_ref = -1;   
-    n3_ref = -1;   
-    n4_ref = -1;   
-    char teststr[]="RTRTRI";
-    char testopts[]="UN";
+
+    ispec_ref = 1;
+    n1_ref = 16;
+    n2_ref = -1;
+    n3_ref = -1;
+    n4_ref = -1;
+    char teststr[] = "RTRTRI";
+    char testopts[] = "UN";
     strncpy(name, teststr, strlen(teststr));
     strncpy(name_ref, teststr, strlen(teststr));
-/* we set ilaenv (d,z) and iMlaenv (R, C) are equivalent */
+    /* we set ilaenv (d,z) and iMlaenv (R, C) are equivalent */
     if (name_ref[0] == 'R') {
         name_ref[0] = 'd';
     }
@@ -61,16 +59,16 @@ void iMlaenv_test(void) {
         name_ref[0] = 'z';
     }
     strncpy(opts, testopts, strlen(testopts));
-    ispec = (INTEGER)ispec_ref; 
-    n1 = (INTEGER)n1_ref;       
-    n2 = (INTEGER)n2_ref;       
-    n3 = (INTEGER)n3_ref;           
-    n4 = (INTEGER)n4_ref;       
+    ispec = (INTEGER)ispec_ref;
+    n1 = (INTEGER)n1_ref;
+    n2 = (INTEGER)n2_ref;
+    n3 = (INTEGER)n3_ref;
+    n4 = (INTEGER)n4_ref;
 
-    ret_ref=ilaenv_f77(&ispec_ref, name_ref, opts, &n1_ref, &n2_ref, &n3_ref, &n4_ref);
+    ret_ref = ilaenv_f77(&ispec_ref, name_ref, opts, &n1_ref, &n2_ref, &n3_ref, &n4_ref);
     ret = iMlaenv(ispec, name, opts, n1, n2, n3, n4);
     printf("%s %s, LAPACK:%d  MPLAPACK:%d\n", name, opts, (int)ret_ref, (int)ret);
-    if ((int)ret_ref !=  (int)ret) {
+    if ((int)ret_ref != (int)ret) {
         printf("*** Testing iMlaenv failed ***\n");
         printf("%s %s, LAPACK:%d  MPLAPACK:%d\n", name, opts, (int)ret_ref, (int)ret);
     }
