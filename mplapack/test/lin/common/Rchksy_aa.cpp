@@ -61,7 +61,7 @@ void Rchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo;
+    char uplo[1];
     char type;
     INTEGER kl = 0;
     INTEGER ku = 0;
@@ -184,7 +184,7 @@ void Rchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
             //           Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
-                uplo = uplos[iuplo - 1];
+                uplo[0] = uplos[iuplo - 1];
                 //
                 //              Begin generate the test matrix A.
                 //
@@ -196,12 +196,12 @@ void Rchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                 //              Generate a matrix with Rlatms.
                 //
                 strncpy(srnamt, "Rlatms", srnamt_len);
-                Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
+                Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
                 //              Check error code from Rlatms and handle error.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Rlatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rlatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     //
                     //                    Skip all tests for this generated matrix
                     //
@@ -294,7 +294,7 @@ void Rchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     //                 will be factorized in place. This is needed to
                     //                 preserve the test matrix A for subsequent tests.
                     //
-                    Rlacpy(&uplo, n, n, a, lda, afac, lda);
+                    Rlacpy(uplo, n, n, a, lda, afac, lda);
                     //
                     //                 Compute the L*D*L**T or U*D*U**T factorization of the
                     //                 matrix. IWORK stores details of the interchanges and
@@ -303,7 +303,7 @@ void Rchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     //
                     lwork = max((INTEGER)1, n * nb + n);
                     strncpy(srnamt, "Rsytrf_aa", srnamt_len);
-                    Rsytrf_aa(&uplo, n, afac, lda, iwork, ainv, lwork, info);
+                    Rsytrf_aa(uplo, n, afac, lda, iwork, ainv, lwork, info);
                     //
                     //                 Adjust the expected value of INFO to account for
                     //                 pivoting.
@@ -328,13 +328,13 @@ void Rchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     //                 Check error code from Rsytrf and handle error.
                     //
                     if (info != k) {
-                        Alaerh(path, "Rsytrf_aa", info, k, &uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rsytrf_aa", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
                     //+    TEST 1
                     //                 Reconstruct matrix from factors and compute residual.
                     //
-                    Rsyt01_aa(&uplo, n, a, lda, afac, lda, iwork, ainv, lda, rwork, result[1 - 1]);
+                    Rsyt01_aa(uplo, n, a, lda, afac, lda, iwork, ainv, lda, rwork, result[1 - 1]);
                     nt = 1;
                     //
                     //                 Print information about the tests that did not pass
@@ -372,25 +372,25 @@ void Rchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         //                    stored in XACT and set up the right hand side B
                         //
                         strncpy(srnamt, "Rlarhs", srnamt_len);
-                        Rlarhs(matpath, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        Rlarhs(matpath, &xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Rlacpy("Full", n, nrhs, b, lda, x, lda);
                         //
                         lwork = max((INTEGER)1, 3 * n - 2);
                         strncpy(srnamt, "Rsytrs_aa", srnamt_len);
-                        Rsytrs_aa(&uplo, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
+                        Rsytrs_aa(uplo, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
                         //
                         //                    Check error code from Rsytrs and handle error.
                         //
                         if (info != 0) {
                             if (izero == 0) {
-                                Alaerh(path, "Rsytrs_aa", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Rsytrs_aa", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                         } else {
                             Rlacpy("Full", n, nrhs, b, lda, work, lda);
                             //
                             //                       Compute the residual for the solution
                             //
-                            Rpot02(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
+                            Rpot02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
                             //
                             //                       Print information about the tests that did not pass
                             //                       the threshold.

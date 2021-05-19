@@ -109,7 +109,7 @@ REAL Rqpt01(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
         Raxpy(m, -one, &a[(jpvt[j - 1] - 1) * lda], 1, &work[((j - 1) * m + 1) - 1], 1);
     }
     //
-    return_value = Rlange("One-norm", m, n, work, m, rwork) / castREAL((max(m, n)) * Rlamch("Epsilon"));
+    return_value = Rlange("One-norm", m, n, work, m, rwork) / (castREAL(max(m, n)) * Rlamch("Epsilon"));
     if (norma != zero) {
         return_value = return_value / norma;
     }
