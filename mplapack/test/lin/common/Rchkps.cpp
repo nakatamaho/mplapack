@@ -189,11 +189,11 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                 of the matrix.
                         //
                         Rlacpy(uplo, n, n, a, lda, afac, lda);
-                        strncpy(srnamt, "Rpstrf", srnamt_len);
                         //
                         //                 Use default tolerance
                         //
                         tol = -one;
+                        strncpy(srnamt, "Rpstrf", srnamt_len);
                         Rpstrf(uplo, n, afac, lda, piv, comprank, tol, work, info);
                         //
                         //                 Check error code from Rpstrf.

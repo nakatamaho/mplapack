@@ -227,11 +227,11 @@ void Rchkql(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 //                          Generate a solution and set the right
                                 //                          hand side.
                                 //
-                                strncpy(srnamt, "Rlarhs", srnamt_len); 
+                                strncpy(srnamt, "Rlarhs", srnamt_len);
                                 Rlarhs(path, "New", "Full", "No transpose", m, n, 0, 0, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                                 //
                                 Rlacpy("Full", m, nrhs, b, lda, x, lda);
-                                strncpy(srnamt, "Rgeqls", srnamt_len);  
+                                strncpy(srnamt, "Rgeqls", srnamt_len);
                                 Rgeqls(m, n, nrhs, af, lda, tau, x, lda, work, lwork, info);
                                 //
                                 //                          Check error code from Rgeqls.

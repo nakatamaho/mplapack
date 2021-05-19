@@ -36,6 +36,8 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rlqt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c, REAL *cc, REAL *q, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
     //  -- LAPACK test routine --
@@ -85,6 +87,7 @@ void Rlqt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
     //     Generate the n-by-n matrix Q
     //
     INTEGER info = 0;
+    strncpy(srnamt, "Rorglq", srnamt_len);
     Rorglq(n, n, k, q, lda, tau, work, lwork, info);
     //
     INTEGER iside = 0;
@@ -131,6 +134,7 @@ void Rlqt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
             //
             //           Apply Q or Q' to C
             //
+            strncpy(srnamt, "Rormlq", srnamt_len);
             Rormlq(&side, &trans, mc, nc, k, af, lda, tau, cc, lda, work, lwork, info);
             //
             //           Form explicit product and subtract

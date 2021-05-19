@@ -36,11 +36,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *l, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    INTEGER ldaf = lda;
-    INTEGER ldq = lda;
-    INTEGER ldl = lda;
-    // COMMON srnamc
     //
     //
     //  -- LAPACK test routine --
@@ -70,6 +68,8 @@ void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //     ..
     //     .. Executable Statements ..
     //
+    INTEGER ldaf = lda;
+    INTEGER ldq = lda;
     INTEGER minmn = min(m, n);
     REAL eps = Rlamch("Epsilon");
     //
@@ -80,6 +80,7 @@ void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //     Factorize the matrix A in the array AF.
     //
     INTEGER info = 0;
+    strncpy(srnamt, "Rgelqf", srnamt_len);
     Rgelqf(m, n, af, lda, tau, work, lwork, info);
     //
     //     Copy details of Q
@@ -92,6 +93,7 @@ void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //
     //     Generate the n-by-n matrix Q
     //
+    strncpy(srnamt, "Rorglq", srnamt_len);
     Rorglq(n, n, minmn, q, lda, tau, work, lwork, info);
     //
     //     Copy L
