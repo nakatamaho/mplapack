@@ -81,7 +81,7 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
     }
     const INTEGER nsz = 5;
     const INTEGER npow = 2 * nsz + 1;
-    const REAL ten = 1.0e1;
+    const REAL ten = 10.0;
     REAL mpow[npow];
     const REAL one = 1.0;
     REAL rpow[npow];
@@ -273,7 +273,7 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
             }
         }
     }
-    a[max(nsz - 1, 1) - 1 + max(nsz - 1, 1) * lda] = -one;
+    a[max(nsz - 1, 1) - 1 + (max(nsz - 1, 1)-1) * lda] = -one;
     Rpoequ(nsz, a, nsz, r, rcond, norm, info);
     if (info != max(nsz - 1, 1)) {
         reslts[3 - 1] = one;
