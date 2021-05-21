@@ -77,8 +77,8 @@ void Rgeqr(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
     INTEGER mb = 0;
     INTEGER nb = 0;
     if (min(m, n) > 0) {
-        mb = iMlaenv(1, "Rgeqr ", " ", m, n, 1, -1);
-        nb = iMlaenv(1, "Rgeqr ", " ", m, n, 2, -1);
+        mb = iMlaenv(1, "Rgeqr", " ", m, n, 1, -1);
+        nb = iMlaenv(1, "Rgeqr", " ", m, n, 2, -1);
     } else {
         mb = m;
         nb = 1;
@@ -122,7 +122,7 @@ void Rgeqr(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
         info = -2;
     } else if (lda < max((INTEGER)1, m)) {
         info = -4;
-    } else if (tsize < max((INTEGER)1, nb * n * nblcks + 5) && (!lquery) && (!lminws)) {
+    } else if ((tsize < max((INTEGER)1, nb * n * nblcks + 5)) && (!lquery) && (!lminws)) {
         info = -6;
     } else if ((lwork < max((INTEGER)1, n * nb)) && (!lquery) && (!lminws)) {
         info = -8;
