@@ -273,7 +273,7 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
             }
         }
     }
-    a[max(nsz - 1, 1) - 1 + (max(nsz - 1, 1)-1) * lda] = -one;
+    a[max(nsz - 1, 1) - 1 + (max(nsz - 1, 1) - 1) * lda] = -one;
     Rpoequ(nsz, a, nsz, r, rcond, norm, info);
     if (info != max(nsz - 1, 1)) {
         reslts[3 - 1] = one;

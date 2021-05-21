@@ -59,7 +59,7 @@ void xlaenv(INTEGER const &ispec, INTEGER const &nvalue) {
     //     ..
     //     .. Executable Statements ..
     //
-    if (ispec >= 1 && ispec <= 16) {
+    if (ispec >= 1 && ispec <= 9) {
         iparms[ispec - 1] = nvalue;
     }
     //

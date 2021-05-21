@@ -36,6 +36,8 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const nb, REAL *result) {
     //
     //  -- LAPACK test routine --
@@ -133,9 +135,7 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
         //
         Rgeqr(m, n, af, m, tquery, -1, workquery, -1, info);
         tsize = castINTEGER(tquery[1 - 1]);
-        t = new REAL[tsize];
         lwork = castINTEGER(workquery[1 - 1]);
-        work = new REAL[lwork];
         Rgemqr("L", "N", m, m, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemqr("L", "N", m, n, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
@@ -146,11 +146,15 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemqr("R", "T", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
+        t = new REAL[tsize];
+        work = new REAL[lwork];
+        strncpy(srnamt, "Rgeqr", srnamt_len);
         Rgeqr(m, n, af, m, t, tsize, work, lwork, info);
         //
         //     Generate the m-by-m matrix Q
         //
         Rlaset("Full", m, m, zero, one, q, m);
+        strncpy(srnamt, "Rgemqr", srnamt_len);
         Rgemqr("L", "N", m, m, k, af, m, t, tsize, q, m, work, lwork, info);
         //
         //     Copy R
@@ -186,6 +190,7 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
         //
         //     Apply Q to C as Q*C
         //
+        strncpy(srnamt, "Rgemqr", srnamt_len);
         Rgemqr("L", "N", m, n, k, af, m, t, tsize, cf, m, work, lwork, info);
         //
         //     Compute |Q*C - Q*C| / |C|
@@ -204,6 +209,7 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
         //
         //     Apply Q to C as QT*C
         //
+        strncpy(srnamt, "Rgemqr", srnamt_len);
         Rgemqr("L", "T", m, n, k, af, m, t, tsize, cf, m, work, lwork, info);
         //
         //     Compute |QT*C - QT*C| / |C|
@@ -226,6 +232,7 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
         //
         //     Apply Q to D as D*Q
         //
+        strncpy(srnamt, "Rgemqr", srnamt_len);
         Rgemqr("R", "N", n, m, k, af, m, t, tsize, df, n, work, lwork, info);
         //
         //     Compute |D*Q - D*Q| / |D|
@@ -261,9 +268,7 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
     } else {
         Rgelq(m, n, af, m, tquery, -1, workquery, -1, info);
         tsize = castINTEGER(tquery[1 - 1]);
-        t = new REAL[tsize];
         lwork = castINTEGER(workquery[1 - 1]);
-        work = new REAL[lwork];
         Rgemlq("R", "N", n, n, k, af, m, tquery, tsize, q, n, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemlq("L", "N", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);
@@ -274,11 +279,15 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemlq("R", "T", m, n, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
+        t = new REAL[tsize];
+        work = new REAL[lwork];
+        strncpy(srnamt, "Rgelq", srnamt_len);
         Rgelq(m, n, af, m, t, tsize, work, lwork, info);
         //
         //     Generate the n-by-n matrix Q
         //
         Rlaset("Full", n, n, zero, one, q, n);
+        strncpy(srnamt, "Rgemlq", srnamt_len);
         Rgemlq("R", "N", n, n, k, af, m, t, tsize, q, n, work, lwork, info);
         //
         //     Copy R

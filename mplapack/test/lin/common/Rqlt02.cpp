@@ -127,7 +127,7 @@ void Rqlt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     //
     resid = Rlansy("1", "Upper", n, l, lda, rwork);
     //
-    result[2 - 1] = (resid / castREAL(max((INTEGER)1, n)) ) / eps;
+    result[2 - 1] = (resid / castREAL(max((INTEGER)1, n))) / eps;
     //
     //     End of Rqlt02
     //

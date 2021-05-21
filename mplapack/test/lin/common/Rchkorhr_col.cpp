@@ -85,6 +85,7 @@ void Rchkorhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
     if (tsterr) {
         Rerrorhr_col(path, nout);
     }
+    infot = 0;
     //
     //     Do for each value of M in MVAL.
     //

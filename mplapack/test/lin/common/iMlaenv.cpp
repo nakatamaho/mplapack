@@ -69,13 +69,13 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char * /* opts */, 
         //
         //        Return a value from the common block.
         //
-        if (strncmp(subname, "GEQR ", 5)) {
+        if (strncmp(&subname[1], "geqr", 4) == 0) {
             if (n3 == 2) {
                 return_value = iparms[2 - 1];
             } else {
                 return_value = iparms[1 - 1];
             }
-        } else if (strncmp(subname, "GELQ ", 5)) {
+        } else if (strncmp(&subname[1], "gelq", 4) == 0) {
             if (n3 == 2) {
                 return_value = iparms[2 - 1];
             } else {
