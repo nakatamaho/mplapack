@@ -36,22 +36,13 @@ using fem::common;
 void Alaesm(const char *path, bool const ok, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Executable Statements ..
-    //
+    char _path[4];
+    strncpy(_path, path, 3);
+    _path[3] = '\0';
     if (ok) {
-        write(nout, "(1x,a3,' routines passed the tests of the error exits')"), path;
+        write(nout, "(1x,a3,' routines passed the tests of the error exits')"), _path;
     } else {
-        write(nout, "(' *** ',a3,' routines failed the tests of the error ','exits ***')"), path;
+        write(nout, "(' *** ',a3,' routines failed the tests of the error ','exits ***')"), _path;
     }
     //
     //     End of Alaesm
