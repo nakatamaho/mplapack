@@ -203,10 +203,6 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         iseed[i - 1] = mod(abs(iseed[i - 1]), 4096);
     }
     //
-    if (mod(iseed[4 - 1], 2) != 1) {
-        iseed[4 - 1]++;
-    }
-    //
     //     2)      Set up D  if indicated.
     //
     //             Compute D according to COND and MODE
