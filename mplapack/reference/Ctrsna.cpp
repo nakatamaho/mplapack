@@ -85,7 +85,6 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    abs1(cdum) = abs(cdum.real()) + abs(cdum.imag());
     //     ..
     //     .. Executable Statements ..
     //

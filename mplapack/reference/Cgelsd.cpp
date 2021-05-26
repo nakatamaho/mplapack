@@ -134,7 +134,7 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
                 //
                 //              Path 1 - overdetermined or exactly determined.
                 //
-                lrwork = 10 * n + 2 * n * smlsiz + 8 * n * nlvl + 3 * smlsiz * nrhs + max(pow2((smlsiz + 1)), n * (1 + nrhs) + 2 * nrhs);
+                lrwork = 10 * n + 2 * n * smlsiz + 8 * n * nlvl + 3 * smlsiz * nrhs + max((smlsiz + 1) * (smlsiz + 1), n * (1 + nrhs) + 2 * nrhs);
                 maxwrk = max({maxwrk, 2 * n + (mm + n) * iMlaenv(1, "Cgebrd", " ", mm, n, -1, -1)});
                 maxwrk = max({maxwrk, 2 * n + nrhs * iMlaenv(1, "Cunmbr", "QLC", mm, nrhs, n, -1)});
                 maxwrk = max({maxwrk, 2 * n + (n - 1) * iMlaenv(1, "Cunmbr", "PLN", n, nrhs, n, -1)});

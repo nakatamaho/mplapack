@@ -58,7 +58,7 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
     //
     info = 0;
     INTEGER nb = iMlaenv(1, "Cgghd3", " ", n, ilo, ihi, -1);
-    INTEGER lwkopt = max(6 * n * nb, 1);
+    INTEGER lwkopt = max(6 * n * nb, (INTEGER)1);
     work[1 - 1] = COMPLEX(lwkopt);
     bool initq = Mlsame(compq, "I");
     bool wantq = initq || Mlsame(compq, "V");

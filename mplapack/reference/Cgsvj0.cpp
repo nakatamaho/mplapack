@@ -169,7 +169,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
     //     The boundaries are determined dynamically, based on the number of
     //     pivots above a threshold.
     //
-    kbl = min(8, n);
+    kbl = min((INTEGER)8, n);
     //[TP] KBL is a tuning parameter that defines the tile size in the
     //     tiling of the p-q loops of pivot pairs. In general, an optimal
     //     parameters of the computer's memory.
@@ -179,10 +179,10 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
         nbl++;
     }
     //
-    blskip = pow2(kbl);
+    blskip = kbl * kbl;
     //[TP] BLKSKIP is a tuning parameter that depends on SWBAND and KBL.
     //
-    rowskip = min(5, kbl);
+    rowskip = min((INTEGER)5, kbl);
     //[TP] ROWSKIP is a tuning parameter.
     //
     lkahead = 1;

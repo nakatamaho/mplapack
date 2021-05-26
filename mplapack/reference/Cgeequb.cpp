@@ -57,8 +57,6 @@ void Cgeequb(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    COMPLEX zdum = 0.0;
-    abs1(zdum) = abs(zdum.real()) + abs(zdum.imag());
     //     ..
     //     .. Executable Statements ..
     //

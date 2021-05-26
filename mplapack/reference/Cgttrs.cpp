@@ -53,14 +53,14 @@ void Cgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
     //     .. Executable Statements ..
     //
     info = 0;
-    bool notran = (trans == "N" || trans == "n");
-    if (!notran && !(trans == "T" || trans == "t") && !(trans == "C" || trans == "c")) {
+    bool notran = (Mlsame(trans, "N"));
+    if (!notran && !(Mlsame(trans, "N")) && !(Mlsame(trans, "C"))) {
         info = -1;
     } else if (n < 0) {
         info = -2;
     } else if (nrhs < 0) {
         info = -3;
-    } else if (ldb < max(n, 1)) {
+    } else if (ldb < max(n, (INTEGER)1)) {
         info = -10;
     }
     if (info != 0) {
@@ -79,7 +79,7 @@ void Cgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
     INTEGER itrans = 0;
     if (notran) {
         itrans = 0;
-    } else if (trans == "T" || trans == "t") {
+    } else if (Mlsame(trans, "T")) {
         itrans = 1;
     } else {
         itrans = 2;

@@ -179,14 +179,14 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
         lwqp3 = n + 1;
         //        .. minimal workspace length for Cunmqr to build left singular vectors
         if (wntus || wntur) {
-            lwunq = max(n, 1);
+            lwunq = max(n, (INTEGER)1);
         } else if (wntua) {
-            lwunq = max(m, 1);
+            lwunq = max(m, (INTEGER)1);
         }
         //        .. minimal workspace length for Cpocon of an N x N matrix
         lwcon = 2 * n;
         //        .. Cgesvd of an N x N matrix
-        lwsvd = max(3 * n, 1);
+        lwsvd = max(3 * n, (INTEGER)1);
         if (lquery) {
             Cgeqp3(m, n, a, lda, iwork, cdummy, cdummy, -1, rdummy, ierr);
             lwrk_Cgeqp3 = castINTEGER(cdummy[1 - 1].real());
@@ -272,10 +272,10 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 minwrk += n;
                 if (wntva) {
                     //                   .. minimal workspace length for N x N/2 Cgeqrf
-                    lwqrf = max(n / 2, 1);
+                    lwqrf = max(n / 2, (INTEGER)1);
                     //                   .. minimal workspace length for N/2 x N/2 Cgesvd
-                    lwsvd2 = max(3 * (n / 2), 1);
-                    lwunq2 = max(n, 1);
+                    lwsvd2 = max(3 * (n / 2), (INTEGER)1);
+                    lwunq2 = max(n, (INTEGER)1);
                     minwrk2 = max({lwqp3, n / 2 + lwqrf, n / 2 + lwsvd2, n / 2 + lwunq2, lwunq});
                     if (conda) {
                         minwrk2 = max(minwrk2, lwcon);
@@ -291,9 +291,9 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 minwrk += n;
                 if (wntva) {
                     //                   .. minimal workspace length for N/2 x N Cgelqf
-                    lwlqf = max(n / 2, 1);
-                    lwsvd2 = max(3 * (n / 2), 1);
-                    lwunlq = max(n, 1);
+                    lwlqf = max(n / 2, (INTEGER)1);
+                    lwsvd2 = max(3 * (n / 2), (INTEGER)1);
+                    lwunlq = max(n, (INTEGER)1);
                     minwrk2 = max({lwqp3, n / 2 + lwlqf, n / 2 + lwsvd2, n / 2 + lwunlq, lwunq});
                     if (conda) {
                         minwrk2 = max(minwrk2, lwcon);

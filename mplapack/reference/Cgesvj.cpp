@@ -158,7 +158,7 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         info = -12;
     } else if ((lwork < (m + n)) && (!lquery)) {
         info = -13;
-    } else if ((lrwork < max(n, 6)) && (!lquery)) {
+    } else if ((lrwork < max(n, (INTEGER)6)) && (!lquery)) {
         info = -15;
     } else {
         info = 0;
@@ -170,7 +170,7 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         return;
     } else if (lquery) {
         cwork[1 - 1] = m + n;
-        rwork[1 - 1] = max(n, 6);
+        rwork[1 - 1] = max(n, (INTEGER)6);
         return;
     }
     //
@@ -425,7 +425,7 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     //     The boundaries are determined dynamically, based on the number of
     //     pivots above a threshold.
     //
-    kbl = min(8, n);
+    kbl = min((INTEGER)8, n);
     //[TP] KBL is a tuning parameter that defines the tile size in the
     //     tiling of the p-q loops of pivot pairs. In general, an optimal
     //     parameters of the computer's memory.
@@ -438,7 +438,7 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     blskip = pow2(kbl);
     //[TP] BLKSKIP is a tuning parameter that depends on SWBAND and KBL.
     //
-    rowskip = min(5, kbl);
+    rowskip = min((INTEGER)5, kbl);
     //[TP] ROWSKIP is a tuning parameter.
     //
     lkahead = 1;
@@ -448,7 +448,7 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     //     structure of the input matrix. The quasi-block-cycling usually
     //     invokes cubic convergence. Big part of this cycle is done inside
     //
-    if ((lower || upper) && (n > max(64, 4 * kbl))) {
+    if ((lower || upper) && (n > max((INTEGER)64, 4 * kbl))) {
         //[TP] The number of partition levels and the actual partition are
         //     tuning parameters.
         n4 = n / 4;
@@ -1035,7 +1035,7 @@ statement_1995:
     }
     //
     //     Undo scaling, if necessary (and possible).
-    if (((skl > one) && (sva[1 - 1] < (big / skl))) || ((skl < one) && (sva[(max(n2, 1) - 1)]) > (sfmin / skl))) {
+    if (((skl > one) && (sva[1 - 1] < (big / skl))) || ((skl < one) && (sva[(max(n2, (INTEGER)1) - 1)]) > (sfmin / skl))) {
         for (p = 1; p <= n; p = p + 1) {
             sva[p - 1] = skl * sva[p - 1];
         }

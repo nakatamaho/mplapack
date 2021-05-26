@@ -549,7 +549,7 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                         //
                         k = newfst;
                         windex = wbegin + k - 1;
-                        windmn = max(windex - 1, 1);
+                        windmn = max(windex - 1, (INTEGER)1);
                         windpl = min(windex + 1, m);
                         lambda = work[windex - 1];
                         done++;

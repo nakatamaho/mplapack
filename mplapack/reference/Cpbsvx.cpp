@@ -159,7 +159,7 @@ void Cpbsvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const k
         //
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
-                j1 = max(j - kd, 1);
+                j1 = max(j - kd, (INTEGER)1);
                 Ccopy(j - j1 + 1, &ab[((kd + 1 - j + j1) - 1) + (j - 1) * ldab], 1, &afb[((kd + 1 - j + j1) - 1) + (j - 1) * ldafb], 1);
             }
         } else {

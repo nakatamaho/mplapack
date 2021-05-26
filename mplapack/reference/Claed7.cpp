@@ -59,7 +59,7 @@ void Claed7(INTEGER const n, INTEGER const cutpnt, INTEGER const qsiz, INTEGER c
     //     ELSE IF( N.LT.0 ) THEN
     if (n < 0) {
         info = -1;
-    } else if (min(1, n) > cutpnt || n < cutpnt) {
+    } else if (min((INTEGER)1, n) > cutpnt || n < cutpnt) {
         info = -2;
     } else if (qsiz < n) {
         info = -3;

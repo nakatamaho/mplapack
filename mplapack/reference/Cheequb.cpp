@@ -57,37 +57,6 @@ void Cheequb(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, R
     REAL smin = 0.0;
     REAL smax = 0.0;
     REAL base = 0.0;
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function Definitions ..
-    abs1(zdum) = abs(zdum.real()) + abs(zdum.imag());
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
-    //
     info = 0;
     if (!(Mlsame(uplo, "U") || Mlsame(uplo, "L"))) {
         info = -1;

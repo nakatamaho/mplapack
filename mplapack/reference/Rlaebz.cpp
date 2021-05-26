@@ -358,7 +358,7 @@ void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER c
 //     Converged
 //
 statement_140:
-    info = max(kl + 1 - kf, 0);
+    info = max(kl + 1 - kf, (INTEGER)0);
     mout = kl;
     //
     //     End of Rlaebz

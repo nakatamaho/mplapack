@@ -87,7 +87,7 @@ void Claed8(INTEGER &k, INTEGER const n, INTEGER const qsiz, COMPLEX *q, INTEGER
         info = -3;
     } else if (ldq < max((INTEGER)1, n)) {
         info = -5;
-    } else if (cutpnt < min(1, n) || cutpnt > n) {
+    } else if (cutpnt < min((INTEGER)1, n) || cutpnt > n) {
         info = -8;
     } else if (ldq2 < max((INTEGER)1, n)) {
         info = -12;

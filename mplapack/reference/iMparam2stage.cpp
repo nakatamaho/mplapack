@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <string.h>
+
 INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, INTEGER const ni, INTEGER const nbi, INTEGER const ibi, INTEGER const nxi) {
     INTEGER return_value = 0;
     //
@@ -71,7 +73,7 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
     bool rprec = false;
     bool cprec = false;
 
-    name_len = min((int)strlen(name), strlen(subnam));
+    name_len = min((int)strlen(name), (int)strlen(subnam));
     strncpy(subnam, name, name_len);
     for (int i = 0; i < strlen(subnam); i++) {
         subnam[i] = toupper(subnam[i]);

@@ -93,7 +93,7 @@ void Cgetsqrhrt(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER con
             //
             nb1local = min(nb1, n);
             //
-            num_all_row_blocks = max((INTEGER)1, ceil(castREAL(m - n) / castREAL(mb1 - n)));
+            num_all_row_blocks = max((INTEGER)1, castINTEGER(ceil(castREAL(m - n) / castREAL(mb1 - n))));
             //
             //           T array in TSQR.
             //

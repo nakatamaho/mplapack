@@ -230,17 +230,31 @@ inline long nint(_Float128 a) {
     return i;
 }
 
-inline _Float128 _atan2(_Float128 &a, _Float128 &b) {
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
+inline _Float128 atan2(_Float128 &a, _Float128 &b) {
     return atan2q(a, b);
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-    return atan2l(a, b);
-#elif defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___
-    return atan2f128(a, b);
-#elif defined ___MPLAPACK__FLOAT128_ONLY___
-    return atan2f128(a, b);
-#endif
 }
+#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+inline _Float128 atan2(_Float128 &a, _Float128 &b) {
+    return atan2l(a, b);
+}
+#elif defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___
+inline _Float128 atan2(_Float128 &a, _Float128 &b) {
+    return atan2f128(a, b);
+}
+#elif defined ___MPLAPACK__FLOAT128_ONLY___
+inline _Float128 atan2(_Float128 a, _Float128 b) {
+    return atan2f128(a, b);
+}
+#endif
+
+
+#if defined ___MPLAPACK__FLOAT128_ONLY___
+inline _Float128 ceil(_Float128 a) {
+    return ceilf128(a);
+}
+#endif
+
 
 inline double cast2double(_Float128 a) { return (double)a; }
 

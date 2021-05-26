@@ -57,8 +57,6 @@ void Cgbequb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const k
     //     .. Statement Functions ..
     //     ..
     //     .. Statement Function definitions ..
-    COMPLEX zdum = 0.0;
-    abs1(zdum) = abs(zdum.real()) + abs(zdum.imag());
     //     ..
     //     .. Executable Statements ..
     //

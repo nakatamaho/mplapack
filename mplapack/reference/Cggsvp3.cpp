@@ -95,7 +95,7 @@ void Cggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
             lwkopt = max(lwkopt, n);
         }
         Cgeqp3(m, n, a, lda, iwork, tau, work, -1, rwork, info);
-        lwkopt = max(lwkopt, castREAL(work[1 - 1].real()));
+        lwkopt = max(lwkopt, castINTEGER(work[1 - 1].real()));
         lwkopt = max((INTEGER)1, lwkopt);
         work[1 - 1] = castREAL(lwkopt);
     }

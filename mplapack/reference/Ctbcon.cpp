@@ -110,7 +110,7 @@ void Ctbcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
     }
     //
     rcond = zero;
-    smlnum = Rlamch("Safe minimum") * castREAL(max(n, 1));
+    smlnum = Rlamch("Safe minimum") * castREAL(max(n, (INTEGER)1));
     //
     //     Compute the 1-norm of the triangular matrix A or A**H.
     //
