@@ -58,4 +58,13 @@ Rgemm__Float128_CXXFLAGS= $(_Float128cxxflags)
 Rgemm__Float128_LDFLAGS= $(_Float128_libdepends)
 endif
 
+if ENABLE__FLOAT64X
+blasexamples_PROGRAMS += Rgemm._Float64x
+_Float64xcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
+_Float64x_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas__Float64x
+Rgemm__Float64x_SOURCES= Rgemm__Float64x.cpp
+Rgemm__Float64x_CXXFLAGS= $(_Float64xcxxflags)
+Rgemm__Float64x_LDFLAGS= $(_Float64x_libdepends)
+endif
+
 blasexamplesdir=$(prefix)/share/mplapack/examples
