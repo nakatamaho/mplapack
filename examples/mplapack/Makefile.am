@@ -150,4 +150,32 @@ condition_num__Float128_LDFLAGS= $(_Float128_libdepends)
 
 endif
 
+if ENABLE__FLOAT64X
+lapackexamples_PROGRAMS += eigenvalue__Float64x inv_mat__Float64x \
+			hilbert__Float64x condition_num__Float64x
+_Float64xcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
+if WANT_QUADMATH
+_Float64x_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -L$(top_builddir)/mpblas/reference -lmpblas__Float64x -lquadmath
+else
+_Float64x_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -L$(top_builddir)/mpblas/reference -lmpblas__Float64x
+endif
+
+eigenvalue__Float64x_SOURCES= eigenvalue__Float64x.cpp
+eigenvalue__Float64x_CXXFLAGS= $(_Float64xcxxflags)
+eigenvalue__Float64x_LDFLAGS= $(_Float64x_libdepends)
+
+inv_mat__Float64x_SOURCES= inv_mat__Float64x.cpp
+inv_mat__Float64x_CXXFLAGS= $(_Float64xcxxflags)
+inv_mat__Float64x_LDFLAGS= $(_Float64x_libdepends)
+
+hilbert__Float64x_SOURCES= hilbert__Float64x.cpp
+hilbert__Float64x_CXXFLAGS= $(_Float64xcxxflags)
+hilbert__Float64x_LDFLAGS= $(_Float64x_libdepends)
+
+condition_num__Float64x_SOURCES= condition_num__Float64x.cpp
+condition_num__Float64x_CXXFLAGS= $(_Float64xcxxflags)
+condition_num__Float64x_LDFLAGS= $(_Float64x_libdepends)
+
+endif
+
 lapackexamplesdir=$(prefix)/share/mplapack/examples
