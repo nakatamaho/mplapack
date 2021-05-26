@@ -135,7 +135,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
     REAL tolmul = max(ten, min(hundred, pow(eps, meighth)));
     REAL tol = tolmul * eps;
     const INTEGER maxitr = 6;
-    REAL thresh = max(tol, maxitr * q * q * unfl);
+    REAL thresh = max(tol, REAL(maxitr * q * q * unfl));
     //
     //     Test for negligible sines or cosines
     //

@@ -200,8 +200,8 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         lwcon = 2 * n;
         //        .. minimal workspace length for Cgesvj of an N x N matrix,
         //         without and with explicit accumulation of Jacobi rotations
-        lwsvdj = max((INTEGER)2 * n, 1);
-        lwsvdjv = max((INTEGER)2 * n, 1);
+        lwsvdj = max((INTEGER)2 * n, (INTEGER)1);
+        lwsvdjv = max((INTEGER)2 * n, (INTEGER)1);
         //         .. minimal REAL workspace length for Cgeqp3, Cpocon, Cgesvj
         lrwqp3 = 2 * n;
         lrwcon = n;
@@ -402,7 +402,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         cwork[1 - 1] = optwrk;
         cwork[2 - 1] = minwrk;
         rwork[1 - 1] = minrwrk;
-        iwork[1 - 1] = max(4, miniwrk);
+        iwork[1 - 1] = max((INTEGER)4, miniwrk);
         return;
     }
     //

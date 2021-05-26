@@ -152,7 +152,7 @@ void Cgeequ(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     //
     for (j = 1; j <= n; j = j + 1) {
         for (i = 1; i <= m; i = i + 1) {
-            c[j - 1] = max(c[j - 1], abs1(a[(i - 1) + (j - 1) * lda]) * r[i - 1]);
+            c[j - 1] = max(c[j - 1], REAL(abs1(a[(i - 1) + (j - 1) * lda]) * r[i - 1]));
         }
     }
     //

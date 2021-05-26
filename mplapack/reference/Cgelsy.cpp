@@ -238,7 +238,7 @@ statement_10:
     //     B(1:M,1:NRHS) := Q**H * B(1:M,1:NRHS)
     //
     Cunmqr("Left", "Conjugate transpose", m, nrhs, mn, a, lda, &work[1 - 1], b, ldb, &work[(2 * mn + 1) - 1], lwork - 2 * mn, info);
-    wsize = max(wsize, 2 * mn + work[(2 * mn + 1) - 1].real());
+    wsize = max(wsize, REAL(2 * mn + work[(2 * mn + 1) - 1].real()));
     //
     //     complex workspace: 2*MN+NB*NRHS.
     //

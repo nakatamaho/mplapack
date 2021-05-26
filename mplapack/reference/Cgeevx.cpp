@@ -377,7 +377,7 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
 //
 statement_50:
     if (scalea) {
-        Clascl("G", 0, 0, cscale, anrm, n - info, 1, &w[(info + 1) - 1], max(n - info, 1), ierr);
+        Clascl("G", 0, 0, cscale, anrm, n - info, 1, &w[(info + 1) - 1], max(n - info, (INTEGER)1), ierr);
         if (info == 0) {
             if ((wntsnv || wntsnb) && icond == 0) {
                 Rlascl("G", 0, 0, cscale, anrm, n, 1, rcondv, n, ierr);

@@ -118,7 +118,7 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         if (minmn > 0) {
             smlsiz = iMlaenv(9, "Cgelsd", " ", 0, 0, 0, 0);
             mnthr = iMlaenv(6, "Cgelsd", " ", m, n, nrhs, -1);
-            nlvl = max(castINTEGER(log(castREAL(minmn) / castREAL(smlsiz + 1)) / log(two)) + 1, 0);
+            nlvl = max(castINTEGER(log(castREAL(minmn) / castREAL(smlsiz + 1)) / log(two)) + 1, (INTEGER)0);
             liwork = 3 * minmn * nlvl + 11 * minmn;
             mm = m;
             if (m >= n && m >= mnthr) {
@@ -142,7 +142,7 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
                 minwrk = max((INTEGER)2 * n + mm, 2 * n + n * nrhs);
             }
             if (n > m) {
-                lrwork = 10 * m + 2 * m * smlsiz + 8 * m * nlvl + 3 * smlsiz * nrhs + max(pow2((smlsiz + 1)), n * (1 + nrhs) + 2 * nrhs);
+                lrwork = 10 * m + 2 * m * smlsiz + 8 * m * nlvl + 3 * smlsiz * nrhs + max((smlsiz + 1) * (smlsiz + 1), INTEGER(n * (1 + nrhs) + 2 * nrhs));
                 if (n >= mnthr) {
                     //
                     //                 Path 2a - underdetermined, with many more columns

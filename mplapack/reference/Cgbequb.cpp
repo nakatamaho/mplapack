@@ -111,7 +111,7 @@ void Cgbequb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const k
     INTEGER kd = ku + 1;
     INTEGER j = 0;
     for (j = 1; j <= n; j = j + 1) {
-        for (i = max(j - ku, 1); i <= min(j + kl, m); i = i + 1) {
+        for (i = max(j - ku, (INTEGER)1); i <= min(j + kl, m); i = i + 1) {
             r[i - 1] = max(r[i - 1], abs1(ab[((kd + i - j) - 1) + (j - 1) * ldab]));
         }
     }
@@ -164,8 +164,8 @@ void Cgbequb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const k
     //     assuming the row scaling computed above.
     //
     for (j = 1; j <= n; j = j + 1) {
-        for (i = max(j - ku, 1); i <= min(j + kl, m); i = i + 1) {
-            c[j - 1] = max(c[j - 1], abs1(ab[((kd + i - j) - 1) + (j - 1) * ldab]) * r[i - 1]);
+        for (i = max(j - ku, (INTEGER)1); i <= min(j + kl, m); i = i + 1) {
+            c[j - 1] = max(c[j - 1], REAL(abs1(ab[((kd + i - j) - 1) + (j - 1) * ldab]) * r[i - 1]));
         }
         if (c[j - 1] > zero) {
             c[j - 1] = pow(radix, castINTEGER(log(c[j - 1]) / logrdx));

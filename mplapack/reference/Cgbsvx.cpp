@@ -193,7 +193,7 @@ void Cgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         //        Compute the LU factorization of the band matrix A.
         //
         for (j = 1; j <= n; j = j + 1) {
-            j1 = max(j - ku, 1);
+            j1 = max(j - ku, (INTEGER)1);
             j2 = min(j + kl, n);
             Ccopy(j2 - j1 + 1, &ab[((ku + 1 - j + j1) - 1) + (j - 1) * ldab], 1, &afb[((kl + ku + 1 - j + j1) - 1) + (j - 1) * ldafb], 1);
         }
@@ -209,7 +209,7 @@ void Cgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
             //
             anorm = zero;
             for (j = 1; j <= info; j = j + 1) {
-                for (i = max(ku + 2 - j, 1); i <= min(n + ku + 1 - j, kl + ku + 1); i = i + 1) {
+                for (i = max(ku + 2 - j, (INTEGER)1); i <= min(n + ku + 1 - j, kl + ku + 1); i = i + 1) {
                     anorm = max(anorm, abs(ab[(i - 1) + (j - 1) * ldab]));
                 }
             }
