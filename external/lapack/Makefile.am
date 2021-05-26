@@ -43,14 +43,16 @@ else
 endif
 	echo "TOPSRCDIR = $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "BLASLIB      = \$$(TOPSRCDIR)/libblas.a"     >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "CBLASLIB     = \$$(TOPSRCDIR)/libcblas.a"    >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "LAPACKLIB    = \$$(TOPSRCDIR)/liblapack.a"   >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "LAPACKELIB   = \$$(TOPSRCDIR)/liblapacke.a"  >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "TMGLIB       = \$$(TOPSRCDIR)/libtmglib.a"   >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "LAPACK_WITH_TMG = Yes"                       >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
 	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/BLAS/SRC ; ${MAKE} -j1
 	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION) ; ${MAKE} -j1
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/LAPACKE ; ${MAKE} -j1
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
@@ -59,8 +61,12 @@ work/$(CHECK_STAMP): work/$(BUILD_STAMP)
 work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
 	rm -rf $(abs_builddir)/../i/LAPACK
 	mkdir -p $(abs_builddir)/../i/LAPACK/lib
-	cp $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/liblapack.* $(abs_builddir)/../i/LAPACK/lib 
-	cp $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/libblas.*   $(abs_builddir)/../i/LAPACK/lib 
+	mkdir -p $(abs_builddir)/../i/LAPACK/include
+	cp $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/liblapack.*  $(abs_builddir)/../i/LAPACK/lib 
+	cp $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/libblas.*    $(abs_builddir)/../i/LAPACK/lib
+	cp $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/libtmglib.*  $(abs_builddir)/../i/LAPACK/lib
+	cp $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/liblapacke.* $(abs_builddir)/../i/LAPACK/lib
+	cp $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/LAPACKE/include/*.h $(abs_builddir)/../i/LAPACK/include
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
 extract: work/$(EXTRACT_STAMP)
@@ -76,7 +82,7 @@ check: work/$(CHECK_STAMP)
 install_internal: work/$(INSTALL_INTERNAL_STAMP)
 
 distdir:
-	
+
 clean:
 	rm -rf work
 distclean:
