@@ -707,6 +707,10 @@ fi
 if test x$enable_test = x"yes"; then
 AC_MSG_RESULT([Enable test])
 AC_SUBST(LAPACK_DIR, [lapack])
+LAPACK_INCLUDEDIR=$highest_abs_top_srcdir/external/i/LAPACK/include/
+LAPACK_LIBDIR=$highest_abs_top_srcdir/external/i/LAPACK/lib/
+AC_SUBST(LAPACK_INCLUDEDIR, [$LAPACK_INCLUDEDIR])
+AC_SUBST(LAPACK_LIBDIR, [$LAPACK_LIBDIR])
 else
 AC_MSG_RESULT([Disable test])
 fi
@@ -790,9 +794,9 @@ if test x"$enable_optimization" = x"yes"; then
            FCFLAGS="$FCFLAGS -mcpu=native -O2 -finline-functions -funroll-all-loops"
        ;;
        * ) 
-           CFLAGS="$CFLAGS -march=native -O2 -finline-functions -funroll-all-loops"
-           CXXFLAGS="$CXXFLAGS -march=native -O2 -finline-functions -funroll-all-loops"
-           FCFLAGS="$FCFLAGS -march=native -O2 -finline-functions -funroll-all-loops"
+           CFLAGS="$CFLAGS -march=native -g -O2 -finline-functions -funroll-all-loops"
+           CXXFLAGS="$CXXFLAGS -march=native -g -O2 -finline-functions -funroll-all-loops"
+           FCFLAGS="$FCFLAGS -march=native -g -O2 -finline-functions -funroll-all-loops"
        ;;
     esac
     if test x"is_intelcc" = x"1"; then
