@@ -129,7 +129,6 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     //     Factor the matrix A in the array AF.
     //
-    REAL *work = new REAL[lwork];
     Rgetsqrhrt(m, n, mb1, nb1, nb2, af, m, t2, nb2, work, lwork, info);
     //
     //     End Householder reconstruction routines.
