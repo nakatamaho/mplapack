@@ -1,3 +1,6 @@
+2021/5/26   Nakata Maho <maho@riken.jp> 1.0.0
+            * dtest.in passed for MPFR version (without test for driver routines)
+
 2021/5/12   Nakata Maho <maho@riken.jp> 1.0.0
             * Import all test program and libraries from LAPACK.
 
