@@ -36,6 +36,8 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER const nb1, INTEGER const nb2, REAL *result) {
     //
     //  -- LAPACK test routine --
@@ -112,13 +114,14 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     REAL workquery[1];
     INTEGER info = 0;
     Rgetsqrhrt(m, n, mb1, nb1, nb2, af, m, t2, nb2, workquery, -1, info);
-    //
     INTEGER lwork = castINTEGER(workquery[1 - 1]);
+    //
     //
     //     In Rgemqrt, WORK is N*NB2_UB if SIDE = 'L',
     //                or  M*NB2_UB if SIDE = 'R'.
     //
     lwork = max({lwork, nb2_ub * n, nb2_ub * m});
+    REAL *work = new REAL[lwork];
     //
     //     End allocate memory for WORK.
     //
@@ -137,7 +140,8 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     const REAL one = 1.0;
     REAL *q = new REAL[l * l];
     INTEGER ldq = l;
-    //
+    Rlaset("Full", m, m, zero, one, q, m);
+    strncpy(srnamt, "Rgemqrt", srnamt_len);
     Rgemqrt("L", "N", m, m, k, nb2_ub, af, m, t2, nb2, q, m, work, info);
     //
     //     Copy R
@@ -268,6 +272,7 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     delete[] q;
     delete[] r;
     delete[] rwork;
+    delete[] work;
     delete[] t2;
     delete[] c;
     delete[] d;
