@@ -16,7 +16,7 @@ void printmat(int N, int M, _Float64x * A, int LDA)
 	printf("[ ");
 	for (int j = 0; j < M; j++) {
 	    mtmp = A[i + j * LDA];
-	    printf("%5.2le", mtmp);
+	    printf("%5.2e", (double)mtmp);
 	    if (j < M - 1)
 		printf(", ");
 	}
