@@ -262,7 +262,7 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
         Rlarnv(2, iseed, n, &d[(j - 1) * ldd]);
     }
     REAL dnorm = Rlange("1", n, m, d, n, rwork);
-    REAL df[n * m];
+    REAL *df = new REAL[n * m];
     Rlacpy("Full", n, m, d, n, df, n);
     //
     //     Apply Q to D as D*Q = DF
@@ -303,16 +303,17 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     delete[] a;
     delete[] af;
-    delete[] t1;
-    delete[] work;
-    delete[] rwork;
+    delete[] q;
     delete[] r;
+    delete[] rwork;
+    delete[] work;
+    delete[] t1;
     delete[] t2;
     delete[] diag;
-    delete[] q;
     delete[] c;
-    delete[] cf;
     delete[] d;
+    delete[] cf;
+    delete[] df;
     //
     //     End of Rorhr_col01
     //
