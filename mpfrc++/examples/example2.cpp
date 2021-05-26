@@ -33,6 +33,9 @@
 using namespace mpfr;
 using namespace std;
 
+//Rump's example
+//S. M. Rump: Approximate inverses of almost singular matrices still contain useful information, Forschungsschwerpunktes Informations-und Kommunikationstechnik, Technical Report 90.1, Technical University Hamburg Hamburg, 1990.
+
 void rump_example(int prec) {
     mpreal::set_default_prec(prec);
     mpreal x = "77617";

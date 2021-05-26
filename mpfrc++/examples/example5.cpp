@@ -26,22 +26,15 @@
  *
  */
 
-#include "mpreal.h"
-#include <iostream>
+#include <math.h>
+#include <stdio.h>
 
-using namespace mpfr;
-using namespace std;
-
-
-//Worst Cases for Correct Rounding of the Elementary Functions in Double Precision
-//Vincent Lefevre, Jean-Michel Muller. Worst Cases for Correct Rounding of the Elementary Functionsin Double Precision. [Research Report] Laboratoire de l'iformatique du parall'eisme. 2000, 2+14p. hal-02102093
-//https://hal.inria.fr/inria-00072594/file/RR2000-35.pdf
+//Yamanaka (private commnication)
 
 int main(int argc, char *argv[]) {
 
-    mpreal x;
-    x = 1.737429606443346566788426e+204;
-    mpfr_printf("%20.30Re\n", log(x));
-    mpfr_printf("%20.60Rb\n", log(x));
+    double a = 18.0; 
+    double b = pow(2,57); 
+    printf("%lf\n", (a+b) - b); 
     return 0;
 }
