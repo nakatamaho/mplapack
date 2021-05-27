@@ -445,7 +445,7 @@ void Rchkaa(void) {
         //
         //     Check first character for correct precision.
         //
-        if (!Mlsame(c1, "Double precision")) {
+        if (!Mlsame(c1, "Double precision") && !Mlsame(c1, "R")) {
             write(nout, format_9990), path;
             //
         } else if (nmats <= 0) {

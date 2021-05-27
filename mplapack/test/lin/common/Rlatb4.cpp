@@ -43,33 +43,6 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
     REAL large;
     REAL small;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Save statement ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Set some constants for use in the subroutine.
-    //
     const REAL tenth = 0.1e+0;
     const REAL one = 1.0;
     const REAL shrink = 0.25e0;

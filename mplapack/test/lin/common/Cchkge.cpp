@@ -56,7 +56,7 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER lda = 0;
     INTEGER in = 0;
     INTEGER n = 0;
-    char xtype;
+    char xtype[1];
     const INTEGER ntypes = 11;
     INTEGER nimat = 0;
     INTEGER imat = 0;
@@ -67,7 +67,7 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    char dist[1];
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
@@ -89,44 +89,11 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER k = 0;
     INTEGER irhs = 0;
     INTEGER itran = 0;
-    char trans;
+    char trans[1];
     REAL rcondc = 0.0;
-    char norm;
+    char norm[1];
     REAL rcond = 0.0;
     REAL dummy = 0.0;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize constants and the random number seed.
     //
     path[0] = 'Z';
     path[1] = 'G';
@@ -141,6 +108,7 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     if (tsterr) {
         Cerrge(path, nout);
     }
+    infot = 0;
     xlaenv(2, 2);
     //
     //     Do for each value of M in MVAL
@@ -153,7 +121,7 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         //
         for (in = 1; in <= nn; in = in + 1) {
             n = nval[in - 1];
-            xtype = 'N';
+            xtype[0] = 'N';
             nimat = ntypes;
             if (m <= 0 || n <= 0) {
                 nimat = 1;
@@ -177,9 +145,10 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 //              Set up parameters with Clatb4 and generate a test matrix
                 //              with Clatms.
                 //
-                Clatb4(path, imat, m, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+                Clatb4(path, imat, m, n, &type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                Clatms(m, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
+                strncpy(srnamt, "Clatms", srnamt_len);
+                Clatms(m, n, dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
                 //
                 //              Check error code from Clatms.
                 //
@@ -226,6 +195,7 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //                 Compute the LU factorization of the matrix.
                     //
                     Clacpy("Full", m, n, a, lda, afac, lda);
+                    strncpy(srnamt, "Cgetrf", srnamt_len);
                     Cgetrf(m, n, afac, lda, iwork, info);
                     //
                     //                 Check error code from Cgetrf.
@@ -250,6 +220,7 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         Clacpy("Full", n, n, afac, lda, ainv, lda);
                         nrhs = nsval[1 - 1];
                         lwork = nmax * max(3, nrhs);
+                        strncpy(srnamt, "Cgetri", srnamt_len);
                         Cgetri(n, ainv, lda, iwork, work, lwork, info);
                         //
                         //                    Check error code from Cgetri.
@@ -316,10 +287,10 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //
                     for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                         nrhs = nsval[irhs - 1];
-                        xtype = 'N';
+                        xtype[0] = 'N';
                         //
                         for (itran = 1; itran <= ntran; itran = itran + 1) {
-                            trans = transs[itran - 1];
+                            trans[0] = transs[itran - 1];
                             if (itran == 1) {
                                 rcondc = rcondo;
                             } else {
@@ -329,20 +300,22 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //+    TEST 3
                             //                       Solve and compute residual for A * X = B.
                             //
-                            Clarhs(path, &xtype, " ", &trans, n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                            xtype = 'C';
+                            strncpy(srnamt, "Clarhs", srnamt_len);
+                            Clarhs(path, xtype, " ", trans, n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                            xtype[0] = 'C';
                             //
                             Clacpy("Full", n, nrhs, b, lda, x, lda);
-                            Cgetrs(&trans, n, nrhs, afac, lda, iwork, x, lda, info);
+                            strncpy(srnamt, "Cgetrs", srnamt_len);
+                            Cgetrs(trans, n, nrhs, afac, lda, iwork, x, lda, info);
                             //
                             //                       Check error code from Cgetrs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "Cgetrs", info, 0, &trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Cgetrs", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Clacpy("Full", n, nrhs, b, lda, work, lda);
-                            Cget02(&trans, n, n, nrhs, a, lda, x, lda, work, lda, rwork, result[3 - 1]);
+                            Cget02(trans, n, n, nrhs, a, lda, x, lda, work, lda, rwork, result[3 - 1]);
                             //
                             //+    TEST 4
                             //                       Check solution from generated exact solution.
@@ -353,16 +326,17 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //                       Use iterative refinement to improve the
                             //                       solution.
                             //
-                            Cgerfs(&trans, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                            strncpy(srnamt, "Cgerfs", srnamt_len);
+                            Cgerfs(trans, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                             //
                             //                       Check error code from Cgerfs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "Cgerfs", info, 0, &trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Cgerfs", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
-                            Cget07(&trans, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, true, &rwork[(nrhs + 1) - 1], &result[6 - 1]);
+                            Cget07(trans, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, true, &rwork[(nrhs + 1) - 1], &result[6 - 1]);
                             //
                             //                       Print information about the tests that did not
                             //                       pass the threshold.
@@ -391,18 +365,19 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         if (itran == 1) {
                             anorm = anormo;
                             rcondc = rcondo;
-                            norm = 'O';
+                            norm[0] = 'O';
                         } else {
                             anorm = anormi;
                             rcondc = rcondi;
-                            norm = 'I';
+                            norm[0] = 'I';
                         }
-                        Cgecon(&norm, n, afac, lda, anorm, rcond, work, rwork, info);
+                        strncpy(srnamt, "Cgecon", srnamt_len);
+                        Cgecon(norm, n, afac, lda, anorm, rcond, work, rwork, info);
                         //
                         //                       Check error code from Cgecon.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Cgecon", info, 0, &norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cgecon", info, 0, norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         //                       This line is needed on a Sun SPARCstation.

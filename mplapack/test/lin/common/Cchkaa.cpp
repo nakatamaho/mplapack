@@ -43,7 +43,6 @@ using fem::common;
 #include <vector>
 
 using namespace std;
-void Cchkaa(void);
 
 void Cchkaa(void) {
     common cmn;
@@ -98,20 +97,20 @@ void Cchkaa(void) {
     char c2[2];
     INTEGER ntypes = 0;
     bool dotype[matmax];
-    COMPLEX work[nmax * nmax + maxrhs + 10];
-    REAL rwork[150 * nmax + 2 * maxrhs];
+    COMPLEX *work = new COMPLEX[nmax * nmax + maxrhs + 10];
+    REAL *rwork = new REAL[150 * nmax + 2 * maxrhs];
     INTEGER iwork[25 * nmax];
-    REAL s[2 * nmax];
+    REAL *s = new REAL[2 * nmax];
     const INTEGER kdmax = nmax + (nmax + 1) / 4;
     INTEGER la = 0;
     INTEGER lafac = 0;
     INTEGER piv[nmax];
-    COMPLEX a[((kdmax + 1) * nmax) * 7];
+    COMPLEX *a = new COMPLEX[((kdmax + 1) * nmax) * 7];
     INTEGER ldaorg = (kdmax + 1) * nmax;
     INTEGER lda;
-    COMPLEX b[(nmax * maxrhs) * 4];
+    COMPLEX *b = new COMPLEX[(nmax * maxrhs) * 4];
     INTEGER ldb = (nmax * maxrhs);
-    COMPLEX e[nmax];
+    COMPLEX *e = new COMPLEX[nmax];
     static const char *format_9988 = "(/,1x,a3,' driver routines were not tested')";
     static const char *format_9989 = "(/,1x,a3,' routines were not tested')";
     static const char *format_9990 = "(/,1x,a3,':  Unrecognized path name')";
@@ -119,32 +118,6 @@ void Cchkaa(void) {
     static const char *format_9993 = "(4x,a4,':  ',10i6,/,11x,10i6)";
     static const char *format_9995 = "(' Invalid input value: ',a4,'=',i6,'; must be <=',i6)";
     static const char *format_9996 = "(' Invalid input value: ',a4,'=',i6,'; must be >=',i6)";
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Arrays in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
     //
     std::string str;
     s1 = time(NULL);
@@ -419,7 +392,7 @@ void Cchkaa(void) {
     ss.str("");
     getline(cin, str);
     ss.str(str);
-    ss >> tsterr;
+    ss >> tsterr_str;
     if (Mlsame(tsterr_str, "T"))
         tsterr = true;
     else
@@ -467,7 +440,7 @@ void Cchkaa(void) {
         //
         //     Check first character for correct precision.
         //
-        if (!Mlsame(c1, "Double precision")) {
+        if (!Mlsame(c1, "C") && !Mlsame(c1, "Z")) {
             write(nout, format_9990), path;
             //
         } else if (nmats <= 0) {
@@ -484,13 +457,13 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchkge(dotype, nm, mval, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cchkge(dotype, nm, mval, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
             //
             if (tstdrv) {
-                Cdrvge(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], &b[(1 - 1) + (4 - 1) * ldb], s, work, rwork, iwork, nout);
+                Cdrvge(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], &b[(1 - 1) + (4 - 1) * ldb], s, work, rwork, iwork, nout);
             } else {
                 write(nout, format_9988), path;
             }
@@ -505,13 +478,13 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchkgb(dotype, nm, mval, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, &a[(1 - 1) + (1 - 1) * lda], la, &a[(1 - 1) + (3 - 1) * lda], lafac, &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cchkgb(dotype, nm, mval, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, &a[(1 - 1) + (1 - 1) * ldaorg], la, &a[(1 - 1) + (3 - 1) * ldaorg], lafac, &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
             //
             if (tstdrv) {
-                Cdrvgb(dotype, nn, nval, nrhs, thresh, tsterr, &a[(1 - 1) + (1 - 1) * lda], la, &a[(1 - 1) + (3 - 1) * lda], lafac, &a[(1 - 1) + (6 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], &b[(1 - 1) + (4 - 1) * ldb], s, work, rwork, iwork, nout);
+                Cdrvgb(dotype, nn, nval, nrhs, thresh, tsterr, &a[(1 - 1) + (1 - 1) * ldaorg], la, &a[(1 - 1) + (3 - 1) * ldaorg], lafac, &a[(1 - 1) + (6 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], &b[(1 - 1) + (4 - 1) * ldb], s, work, rwork, iwork, nout);
             } else {
                 write(nout, format_9988), path;
             }
@@ -524,13 +497,13 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchkgt(dotype, nn, nval, nns, nsval, thresh, tsterr, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cchkgt(dotype, nn, nval, nns, nsval, thresh, tsterr, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
             //
             if (tstdrv) {
-                Cdrvgt(dotype, nn, nval, nrhs, thresh, tsterr, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cdrvgt(dotype, nn, nval, nrhs, thresh, tsterr, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9988), path;
             }
@@ -543,13 +516,13 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchkpo(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, nout);
+                Cchkpo(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
             //
             if (tstdrv) {
-                Cdrvpo(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], &b[(1 - 1) + (4 - 1) * ldb], s, work, rwork, nout);
+                Cdrvpo(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], &b[(1 - 1) + (4 - 1) * ldb], s, work, rwork, nout);
             } else {
                 write(nout, format_9988), path;
             }
@@ -563,7 +536,7 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchkps(dotype, nn, nval, nnb2, nbval2, nrank, rankval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], piv, work, rwork, nout);
+                Cchkps(dotype, nn, nval, nnb2, nbval2, nrank, rankval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], piv, work, rwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
@@ -576,13 +549,13 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchkpp(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, nout);
+                Cchkpp(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
             //
             if (tstdrv) {
-                Cdrvpp(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], &b[(1 - 1) + (4 - 1) * ldb], s, work, rwork, nout);
+                Cdrvpp(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], &b[(1 - 1) + (4 - 1) * ldb], s, work, rwork, nout);
             } else {
                 write(nout, format_9988), path;
             }
@@ -595,13 +568,13 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchkpb(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, nout);
+                Cchkpb(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
             //
             if (tstdrv) {
-                Cdrvpb(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], &b[(1 - 1) + (4 - 1) * ldb], s, work, rwork, nout);
+                Cdrvpb(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], &b[(1 - 1) + (4 - 1) * ldb], s, work, rwork, nout);
             } else {
                 write(nout, format_9988), path;
             }
@@ -614,13 +587,13 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchkpt(dotype, nn, nval, nns, nsval, thresh, tsterr, &a[(1 - 1) + (1 - 1) * lda], s, &a[(1 - 1) + (2 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, nout);
+                Cchkpt(dotype, nn, nval, nns, nsval, thresh, tsterr, &a[(1 - 1) + (1 - 1) * lda], s, &a[(1 - 1) + (2 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
             //
             if (tstdrv) {
-                Cdrvpt(dotype, nn, nval, nrhs, thresh, tsterr, &a[(1 - 1) + (1 - 1) * lda], s, &a[(1 - 1) + (2 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, nout);
+                Cdrvpt(dotype, nn, nval, nrhs, thresh, tsterr, &a[(1 - 1) + (1 - 1) * ldaorg], s, &a[(1 - 1) + (2 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, nout);
             } else {
                 write(nout, format_9988), path;
             }
@@ -633,13 +606,13 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchkhe(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cchkhe(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
             //
             if (tstdrv) {
-                Cdrvhe(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cdrvhe(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9988), path;
             }
@@ -653,13 +626,13 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchkhe_rook(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cchkhe_rook(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
             //
             if (tstdrv) {
-                Cdrvhe_rook(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cdrvhe_rook(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9988), path;
             }
@@ -674,13 +647,13 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchkhe_rk(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], e, &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cchkhe_rk(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], e, &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
             //
             if (tstdrv) {
-                Cdrvhe_rk(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], e, &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cdrvhe_rk(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], e, &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9988), path;
             }
@@ -694,13 +667,13 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchkhe_aa(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cchkhe_aa(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
             //
             if (tstdrv) {
-                Cdrvhe_aa(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cdrvhe_aa(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9988), path;
             }
@@ -714,13 +687,13 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchkhe_aa_2stage(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cchkhe_aa_2stage(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
             //
             if (tstdrv) {
-                Cdrvhe_aa_2stage(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cdrvhe_aa_2stage(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9988), path;
             }
@@ -733,13 +706,13 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchkhp(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cchkhp(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
             //
             if (tstdrv) {
-                Cdrvhp(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cdrvhp(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9988), path;
             }
@@ -753,13 +726,13 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchksy(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cchksy(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
             //
             if (tstdrv) {
-                Cdrvsy(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cdrvsy(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9988), path;
             }
@@ -773,13 +746,13 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchksy_rook(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cchksy_rook(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
             //
             if (tstdrv) {
-                Cdrvsy_rook(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cdrvsy_rook(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9988), path;
             }
@@ -794,13 +767,13 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchksy_rk(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], e, &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cchksy_rk(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], e, &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
             //
             if (tstdrv) {
-                Cdrvsy_rk(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], e, &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cdrvsy_rk(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], e, &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9988), path;
             }
@@ -813,13 +786,13 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchksy_aa(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cchksy_aa(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
             //
             if (tstdrv) {
-                Cdrvsy_aa(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cdrvsy_aa(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9988), path;
             }
@@ -833,13 +806,13 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchksy_aa_2stage(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cchksy_aa_2stage(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
             //
             if (tstdrv) {
-                Cdrvsy_aa_2stage(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cdrvsy_aa_2stage(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9988), path;
             }
@@ -853,13 +826,13 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchksp(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cchksp(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
             //
             if (tstdrv) {
-                Cdrvsp(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cdrvsp(dotype, nn, nval, nrhs, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9988), path;
             }
@@ -872,7 +845,7 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchktr(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, nout);
+                Cchktr(dotype, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
@@ -885,7 +858,7 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchktp(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, nout);
+                Cchktp(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
@@ -898,7 +871,7 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchktb(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, nout);
+                Cchktb(dotype, nn, nval, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
@@ -911,7 +884,7 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchkqr(dotype, nm, mval, nn, nval, nnb, nbval, nxval, nrhs, thresh, tsterr, nmax, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (5 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], &b[(1 - 1) + (4 - 1) * ldb], work, rwork, iwork, nout);
+                Cchkqr(dotype, nm, mval, nn, nval, nnb, nbval, nxval, nrhs, thresh, tsterr, nmax, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &a[(1 - 1) + (4 - 1) * ldaorg], &a[(1 - 1) + (5 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], &b[(1 - 1) + (4 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
@@ -924,7 +897,7 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchklq(dotype, nm, mval, nn, nval, nnb, nbval, nxval, nrhs, thresh, tsterr, nmax, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (5 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], &b[(1 - 1) + (4 - 1) * ldb], work, rwork, nout);
+                Cchklq(dotype, nm, mval, nn, nval, nnb, nbval, nxval, nrhs, thresh, tsterr, nmax, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &a[(1 - 1) + (4 - 1) * ldaorg], &a[(1 - 1) + (5 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], &b[(1 - 1) + (4 - 1) * ldb], work, rwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
@@ -937,7 +910,7 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchkql(dotype, nm, mval, nn, nval, nnb, nbval, nxval, nrhs, thresh, tsterr, nmax, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (5 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], &b[(1 - 1) + (4 - 1) * ldb], work, rwork, nout);
+                Cchkql(dotype, nm, mval, nn, nval, nnb, nbval, nxval, nrhs, thresh, tsterr, nmax, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &a[(1 - 1) + (4 - 1) * ldaorg], &a[(1 - 1) + (5 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], &b[(1 - 1) + (4 - 1) * ldb], work, rwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
@@ -950,7 +923,7 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchkrq(dotype, nm, mval, nn, nval, nnb, nbval, nxval, nrhs, thresh, tsterr, nmax, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (5 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], &b[(1 - 1) + (4 - 1) * ldb], work, rwork, iwork, nout);
+                Cchkrq(dotype, nm, mval, nn, nval, nnb, nbval, nxval, nrhs, thresh, tsterr, nmax, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &a[(1 - 1) + (4 - 1) * ldaorg], &a[(1 - 1) + (5 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], &b[(1 - 1) + (4 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
@@ -974,7 +947,7 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchktz(dotype, nm, mval, nn, nval, thresh, tsterr, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &s[1 - 1], &b[(1 - 1) + (1 - 1) * ldb], work, rwork, nout);
+                Cchktz(dotype, nm, mval, nn, nval, thresh, tsterr, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &s[1 - 1], &b[(1 - 1) + (1 - 1) * ldb], work, rwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
@@ -987,7 +960,7 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchkq3(dotype, nm, mval, nn, nval, nnb, nbval, nxval, thresh, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &s[1 - 1], &b[(1 - 1) + (1 - 1) * ldb], work, rwork, iwork, nout);
+                Cchkq3(dotype, nm, mval, nn, nval, nnb, nbval, nxval, thresh, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &s[1 - 1], &b[(1 - 1) + (1 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
@@ -1000,7 +973,7 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstdrv) {
-                Cdrvls(dotype, nm, mval, nn, nval, nns, nsval, nnb, nbval, nxval, thresh, tsterr, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (5 - 1) * lda], &s[1 - 1], &s[(nmax + 1) - 1], nout);
+                Cdrvls(dotype, nm, mval, nn, nval, nns, nsval, nnb, nbval, nxval, thresh, tsterr, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &a[(1 - 1) + (4 - 1) * ldaorg], &a[(1 - 1) + (5 - 1) * ldaorg], &s[1 - 1], &s[(nmax + 1) - 1], nout);
             } else {
                 write(nout, format_9989), path;
             }
@@ -1109,9 +1082,15 @@ void Cchkaa(void) {
         s2 = time(NULL);
         write(nout, "(/,' End of tests')");
         write(nout, "(' Total time used = ',f12.2,' seconds',/)"), int(s2 - s1);
-        //
-        //     End of Cchkaa
-        //
     }
+    delete[] s;
+    delete[] e;
+    delete[] b;
+    delete[] a;
+    delete[] rwork;
+    delete[] work;
+    //
+    //     End of Cchkaa
+    //
 }
 int main(int argc, char const *argv[]) { Cchkaa(); }

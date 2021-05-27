@@ -35,42 +35,9 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Cerrge(const char *path, INTEGER const nunit) {
-    common cmn;
-    common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     char c2[2];
@@ -118,6 +85,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgetrf
         //
+        strncpy(srnamt, "Cgetrf", srnamt_len);
         infot = 1;
         Cgetrf(-1, 0, a, 1, ip, info);
         chkxer("Cgetrf", infot, nout, lerr, ok);
@@ -130,6 +98,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgetf2
         //
+        strncpy(srnamt, "Cgetf2", srnamt_len);
         infot = 1;
         Cgetf2(-1, 0, a, 1, ip, info);
         chkxer("Cgetf2", infot, nout, lerr, ok);
@@ -142,6 +111,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgetri
         //
+        strncpy(srnamt, "Cgetri", srnamt_len);
         infot = 1;
         Cgetri(-1, a, 1, ip, w, 1, info);
         chkxer("Cgetri", infot, nout, lerr, ok);
@@ -154,6 +124,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgetrs
         //
+        strncpy(srnamt, "Cgetrs", srnamt_len);
         infot = 1;
         Cgetrs("/", 0, 0, a, 1, ip, b, 1, info);
         chkxer("Cgetrs", infot, nout, lerr, ok);
@@ -172,6 +143,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgerfs
         //
+        strncpy(srnamt, "Cgerfs", srnamt_len);
         infot = 1;
         Cgerfs("/", 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, r, info);
         chkxer("Cgerfs", infot, nout, lerr, ok);
@@ -196,6 +168,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgecon
         //
+        strncpy(srnamt, "Cgecon", srnamt_len);
         infot = 1;
         Cgecon("/", 0, a, 1, anrm, rcond, w, r, info);
         chkxer("Cgecon", infot, nout, lerr, ok);
@@ -208,6 +181,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgeequ
         //
+        strncpy(srnamt, "Cgeequ", srnamt_len);
         infot = 1;
         Cgeequ(-1, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
         chkxer("Cgeequ", infot, nout, lerr, ok);
@@ -225,6 +199,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgbtrf
         //
+        strncpy(srnamt, "Cgbtrf", srnamt_len);
         infot = 1;
         Cgbtrf(-1, 0, 0, 0, a, 1, ip, info);
         chkxer("Cgbtrf", infot, nout, lerr, ok);
@@ -243,6 +218,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgbtf2
         //
+        strncpy(srnamt, "Cgbtf2", srnamt_len);
         infot = 1;
         Cgbtf2(-1, 0, 0, 0, a, 1, ip, info);
         chkxer("Cgbtf2", infot, nout, lerr, ok);
@@ -261,6 +237,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgbtrs
         //
+        strncpy(srnamt, "Cgbtrs", srnamt_len);
         infot = 1;
         Cgbtrs("/", 0, 0, 0, 1, a, 1, ip, b, 1, info);
         chkxer("Cgbtrs", infot, nout, lerr, ok);
@@ -285,6 +262,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgbrfs
         //
+        strncpy(srnamt, "Cgbrfs", srnamt_len);
         infot = 1;
         Cgbrfs("/", 0, 0, 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, r, info);
         chkxer("Cgbrfs", infot, nout, lerr, ok);
@@ -315,6 +293,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgbcon
         //
+        strncpy(srnamt, "Cgbcon", srnamt_len);
         infot = 1;
         Cgbcon("/", 0, 0, 0, a, 1, ip, anrm, rcond, w, r, info);
         chkxer("Cgbcon", infot, nout, lerr, ok);
@@ -333,6 +312,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         //
         //        Cgbequ
         //
+        strncpy(srnamt, "Cgbequ", srnamt_len);
         infot = 1;
         Cgbequ(-1, 0, 0, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
         chkxer("Cgbequ", infot, nout, lerr, ok);
