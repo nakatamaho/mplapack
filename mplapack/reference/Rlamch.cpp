@@ -165,12 +165,13 @@ REAL RlamchO_mpfr(void) {
     if (called)
         return overflow;
 
-    REAL one = 1.0, rtmp;
+    REAL one = 1.0;
+    REAL rtmp;
     mp_prec_t prec = one.get_prec();
     mp_exp_t emax = one.get_emax();
     rtmp = exp2(-(long)prec);
     overflow = mul_2si(one, emax - 1);
-    overflow = overflow * (1.0 - rtmp) * 2.0;
+    overflow = overflow * (one - rtmp) * 2.0;
     return overflow;
 }
 
