@@ -684,33 +684,37 @@ inline mpreal &mpreal::operator=(const mpq_t v) {
 }
 // XXX other operator= should add mpfr_init2
 inline mpreal &mpreal::operator=(const long double v) {
-    mpfr_init2(mp, default_prec);
+    mpfr_set_prec(mp, default_prec);
     mpfr_set_ld(mp, v, default_rnd);
     return *this;
 }
 
 inline mpreal &mpreal::operator=(const double v) {
-    mpfr_init2(mp, default_prec);
+    mpfr_set_prec(mp, default_prec);
     mpfr_set_d(mp, v, default_rnd);
     return *this;
 }
 
 inline mpreal &mpreal::operator=(const unsigned long int v) {
+    mpfr_set_prec(mp, default_prec);
     mpfr_set_ui(mp, v, default_rnd);
     return *this;
 }
 
 inline mpreal &mpreal::operator=(const unsigned int v) {
+    mpfr_set_prec(mp, default_prec);
     mpfr_set_ui(mp, v, default_rnd);
     return *this;
 }
 
 inline mpreal &mpreal::operator=(const long int v) {
+    mpfr_set_prec(mp, default_prec);
     mpfr_set_si(mp, v, default_rnd);
     return *this;
 }
 
 inline mpreal &mpreal::operator=(const int v) {
+    mpfr_set_prec(mp, default_prec);
     mpfr_set_si(mp, v, default_rnd);
     return *this;
 }
@@ -1895,6 +1899,7 @@ inline mpreal::mpreal() {
 
 inline mpreal::mpreal(const mpreal &u) {
     mpfr_init2(mp, u.get_prec());
+    mpfr_set_prec(mp, default_prec);
     mpfr_set(mp, u.mp, default_rnd);
 }
 
