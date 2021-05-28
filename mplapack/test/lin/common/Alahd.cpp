@@ -38,7 +38,7 @@ using fem::common;
 #include <string>
 #include <iostream>
 
-void Alahd(INTEGER const iounit, const char *path) {
+void Alahd(INTEGER const iounit, const char *_path) {
     common cmn;
     common_write write(cmn);
     char subnam_trimmed[1024];
@@ -124,6 +124,9 @@ void Alahd(INTEGER const iounit, const char *path) {
     if (iounit <= 0) {
         return;
     }
+    char path[4];
+    strncpy(path, _path, 3);
+    path[3] = '\0';
     char c1[1];
     c1[0] = path[0];
     char c3[1];
@@ -132,7 +135,7 @@ void Alahd(INTEGER const iounit, const char *path) {
     p2[0] = path[1];
     p2[1] = path[2];
     bool sord = Mlsame(c1, "R");
-    bool corz = Mlsame(c1, "C");
+    bool corz = Mlsame(c1, "C") || Mlsame(c1, "Z");
     if (!(sord || corz)) {
         return;
     }
@@ -140,6 +143,7 @@ void Alahd(INTEGER const iounit, const char *path) {
     char sym[9];
     char eigcnm[4];
     char subnam[32];
+
     if (Mlsamen(2, p2, "GE")) {
         //
         //        GE: General dense
