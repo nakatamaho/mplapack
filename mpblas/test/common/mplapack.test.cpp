@@ -37,6 +37,12 @@ void mplapack_debug_initialize(void)
     gmp_randinit_default(uniformrandomstate_mpfr);
 }
 
+void __attribute__ ((destructor)) mplapack_debug_finalize(void);
+void mplapack_debug_finalize(void)
+{
+    gmp_randclear(uniformrandomstate_mpfr);
+}
+
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
 void __attribute__ ((constructor)) mplapack_debug_initialize_gmp(void);
 void mplapack_debug_initialize_gmp(void)
