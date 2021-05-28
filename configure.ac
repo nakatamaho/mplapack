@@ -100,6 +100,11 @@ AC_ARG_ENABLE(test,
 [  --enable-test    Enable test])
 AM_CONDITIONAL(ENABLE_TEST, test x$enable_test = xyes)
 
+dnl disable optimization and add more info to gdb.
+AC_ARG_ENABLE(debug,
+[  --enable-debug    Enable debug])
+AM_CONDITIONAL(ENABLE_DEBUG, test x$enable_debug = xyes)
+
 AC_ARG_ENABLE(optimization,
 AS_HELP_STRING([--enable-optimization], [Enable compiler level optimization]),
 [case "${enableval}" in
@@ -107,6 +112,10 @@ AS_HELP_STRING([--enable-optimization], [Enable compiler level optimization]),
     no)  enable_optimization=no  ;;
     *) AC_MSG_ERROR(bad value ${enableval} for --enable-optimization) ;;
         esac],[enable_optimization=yes])
+
+if test x"$enable_optimization" = x"yes" && test x"$enable_debug" = x"yes" ; then
+        AC_MSG_ERROR([you cannot set both enable-optimization=yes and enable-debug=yes])
+fi
 
 AC_ARG_ENABLE(cuda,
 [  --enable-cuda    Enable compiler level cuda])
@@ -790,7 +799,13 @@ DO_LAPACKBENCH=yes
 fi
 AM_CONDITIONAL(DO_LAPACKBENCH, test x$DO_LAPACKBENCH = xyes)
 
-if test x"$enable_optimization" = x"yes"; then
+if test x"$enable_optimization" = x"no" && test x"$enable_debug" = x"yes" ; then
+    CFLAGS="-O0 -g"
+    CXXFLAGS="-O0 -g"
+    FCFLAGS="-O0 -g"
+fi
+
+if test x"$enable_optimization" = x"yes" && test x"$enable_debug" = x"no" ; then    
     case $target in
        powerpc*-*-*)
            CFLAGS="$CFLAGS -mcpu=native -O2 -finline-functions -funroll-all-loops"
@@ -808,11 +823,11 @@ if test x"$enable_optimization" = x"yes"; then
         CFLAGS="$CFLAGS -xHost -O3"
         FCFLAGS="$FCFLAGS -xHost -O3"
     fi
-    AC_SUBST(CFLAGS)
-    AC_SUBST(CXXFLAGS)
-    AC_SUBST(FCFLAGS)
 fi
 
+AC_SUBST(CFLAGS)
+AC_SUBST(CXXFLAGS)
+AC_SUBST(FCFLAGS)
 
 ############ select created libraries for the pkg-config ###############
 
