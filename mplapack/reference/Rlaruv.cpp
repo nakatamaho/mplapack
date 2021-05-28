@@ -34,6 +34,8 @@
 gmp_randstate_t random_mplapack_mpfr_state;
 void __attribute__((constructor)) mplapack_Rlaruv_mpfr_initialize(void);
 void mplapack_Rlaruv_mpfr_initialize(void) { gmp_randinit_default(random_mplapack_mpfr_state); } // this is gmp_randinit_mt
+void __attribute__((destructor)) mplapack_Rlaruv_mpfr_finalize(void);
+void mplapack_Rlaruv_mpfr_finalize(void) { gmp_randclear(random_mplapack_mpfr_state); } // this is gmp_randinit_mt
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
