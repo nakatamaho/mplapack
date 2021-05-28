@@ -37,36 +37,11 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Clarhs(const char *path, const char *xtype, const char *uplo, const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, INTEGER *iseed, INTEGER &info) {
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
-    //
     info = 0;
     char c1;
     char c2[2];
     char c3;
+    c1 = path[0];
     c2[0] = path[1];
     c2[1] = path[2];
     bool tran = Mlsame(trans, "T") || Mlsame(trans, "C");
@@ -76,7 +51,7 @@ void Clarhs(const char *path, const char *xtype, const char *uplo, const char *t
     bool sym = Mlsame(&c2[0], "P") || Mlsame(&c2[0], "S") || Mlsame(&c2[0], "H");
     bool tri = Mlsame(&c2[0], "T");
     bool band = Mlsame(&c2[1], "B");
-    if (!Mlsame(&c1, "Zomplex precision")) {
+    if (!Mlsame(&c1, "Z") && !Mlsame(&c1, "C")) {
         info = -1;
     } else if (!(Mlsame(xtype, "N") || Mlsame(xtype, "C"))) {
         info = -2;
