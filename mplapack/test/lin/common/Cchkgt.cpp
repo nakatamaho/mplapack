@@ -57,13 +57,13 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     const INTEGER ntypes = 12;
     INTEGER nimat = 0;
     INTEGER imat = 0;
-    char type;
+    char type[1];
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cond = 0.0;
-    char dist;
+    char dist[1];
     bool zerot = false;
     INTEGER koff = 0;
     INTEGER info = 0;
@@ -75,8 +75,8 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     const INTEGER ntests = 7;
     REAL result[ntests];
     INTEGER itran = 0;
-    char trans;
-    char norm;
+    char trans[1];
+    char norm[1];
     REAL ainvnm = 0.0;
     INTEGER j = 0;
     REAL rcondc = 0.0;
@@ -119,7 +119,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     //     ..
     //     .. Executable Statements ..
     //
-    path[0] = 'C';
+    path[0] = 'Z';
     path[1] = 'G';
     path[2] = 'T';
     nrun = 0;
@@ -134,6 +134,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     if (tsterr) {
         Cerrge(path, nout);
     }
+    infot = 0;
     //
     for (in = 1; in <= nn; in = in + 1) {
         //
@@ -157,7 +158,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //
             //           Set up parameters with Clatb4.
             //
-            Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cond, &dist);
+            Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cond, dist);
             //
             zerot = imat >= 8 && imat <= 10;
             if (imat <= 6) {
@@ -165,7 +166,8 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //              Types 1-6:  generate matrices of known condition number.
                 //
                 koff = max({(INTEGER)2 - ku, 3 - max((INTEGER)1, n)});
-                Clatms(n, n, &dist, iseed, &type, rwork, mode, cond, anorm, kl, ku, "Z", &af[koff - 1], 3, work, info);
+                strncpy(srnamt, "Clatms", srnamt_len); 
+                Clatms(n, n, dist, iseed, type, rwork, mode, cond, anorm, kl, ku, "Z", &af[koff - 1], 3, work, info);
                 //
                 //              Check the error code from Clatms.
                 //
@@ -249,6 +251,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //              norm(L*U - A) / (n * norm(A) * EPS )
             //
             Ccopy(n + 2 * m, a, 1, af, 1);
+            strncpy(srnamt, "Cgttrf", srnamt_len); 
             Cgttrf(n, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, info);
             //
             //           Check error code from Cgttrf.
@@ -273,13 +276,13 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             nrun++;
             //
             for (itran = 1; itran <= 2; itran = itran + 1) {
-                trans = transs[itran - 1];
+                trans[0] = transs[itran - 1];
                 if (itran == 1) {
-                    norm = 'O';
+                    norm[0] = 'O';
                 } else {
-                    norm = 'I';
+                    norm[0] = 'I';
                 }
-                anorm = Clangt(&norm, n, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1]);
+                anorm = Clangt(norm, n, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1]);
                 //
                 if (!trfcon) {
                     //
@@ -292,7 +295,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             x[j - 1] = zero;
                         }
                         x[i - 1] = one;
-                        Cgttrs(&trans, n, 1, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
+                        Cgttrs(trans, n, 1, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
                         ainvnm = max({ainvnm, RCasum(n, x, 1)});
                     }
                     //
@@ -316,12 +319,13 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //              Estimate the reciprocal of the condition number of the
                 //              matrix.
                 //
-                Cgtcon(&norm, n, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, anorm, rcond, work, info);
+                strncpy(srnamt, "Cgtcon", srnamt_len);
+                Cgtcon(norm, n, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, anorm, rcond, work, info);
                 //
                 //              Check error code from Cgtcon.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Cgtcon", info, 0, &norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Cgtcon", info, 0, norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 //
                 result[7 - 1] = Rget06(rcond, rcondc);
@@ -359,7 +363,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 }
                 //
                 for (itran = 1; itran <= 3; itran = itran + 1) {
-                    trans = transs[itran - 1];
+                    trans[0] = transs[itran - 1];
                     if (itran == 1) {
                         rcondc = rcondo;
                     } else {
@@ -368,22 +372,23 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //
                     //                 Set the right hand side.
                     //
-                    Clagtm(&trans, n, nrhs, one, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], xact, lda, zero, b, lda);
+                    Clagtm(trans, n, nrhs, one, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], xact, lda, zero, b, lda);
                     //
                     //+    TEST 2
                     //              Solve op(A) * X = B and compute the residual.
                     //
                     Clacpy("Full", n, nrhs, b, lda, x, lda);
-                    Cgttrs(&trans, n, nrhs, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
+                    strncpy(srnamt, "Cgttrs", srnamt_len);
+                    Cgttrs(trans, n, nrhs, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
                     //
                     //              Check error code from Cgttrs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Cgttrs", info, 0, &trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Cgttrs", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Clacpy("Full", n, nrhs, b, lda, work, lda);
-                    Cgtt02(&trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], x, lda, work, lda, result[2 - 1]);
+                    Cgtt02(trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], x, lda, work, lda, result[2 - 1]);
                     //
                     //+    TEST 3
                     //              Check solution from generated exact solution.
@@ -393,16 +398,17 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //+    TESTS 4, 5, and 6
                     //              Use iterative refinement to improve the solution.
                     //
-                    Cgtrfs(&trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                    strncpy(srnamt, "Cgtrfs", srnamt_len);
+ Cgtrfs(trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                     //
                     //              Check error code from Cgtrfs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Cgtrfs", info, 0, &trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Cgtrfs", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
-                    Cgtt05(&trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[5 - 1]);
+                    Cgtt05(trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[5 - 1]);
                     //
                     //              Print information about the tests that did not pass the
                     //              threshold.
