@@ -433,7 +433,8 @@ inline mpcomplex::mpcomplex(const char *s, const char *t, mp_prec_t pr, mp_prec_
 
 inline mpcomplex::mpcomplex(const mpreal &a) {
     mpreal tmp(a);
-    mpc_init3(mpc, default_real_prec, default_imag_prec);
+    mp_prec_t pr = a.get_prec();
+    mpc_init3(mpc, pr, pr);
     mpc_set_fr(mpc, (mpfr_ptr)(tmp), default_rnd);
 }
 
@@ -576,15 +577,21 @@ inline const mpcomplex operator+(const std::complex<long double> a, const mpcomp
 inline const mpcomplex operator+(const char *a, const mpcomplex &b) { return mpcomplex(a) += b; }
 
 inline const mpcomplex operator+(const mpcomplex &a, const mpreal b) {
-    mpcomplex tmp(a);
-    tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec()), a.get_prec_im(), mpcomplex::default_rnd);
-    return tmp += b;
+    return mpcomplex(a) += b;
+    /*
+        mpcomplex tmp(a);
+        tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec()), a.get_prec_im(), mpcomplex::default_rnd);
+        return tmp += b;
+    */
 }
 
 inline const mpcomplex operator+(const mpreal a, const mpcomplex &b) {
-    mpcomplex tmp(b);
-    tmp.set_prec2(std::max(b.get_prec_re(), a.get_prec()), b.get_prec_im(), mpcomplex::default_rnd);
-    return tmp += a;
+    return mpcomplex(a) += b;
+    /*
+        mpcomplex tmp(b);
+        tmp.set_prec2(std::max(a.get_prec(), b.get_prec_re()), b.get_prec_im(), mpcomplex::default_rnd);
+        return tmp += a;
+    */
 }
 
 inline const mpcomplex operator+(const double a, const mpcomplex &b) {
@@ -725,28 +732,37 @@ inline mpcomplex &mpcomplex::operator*=(const double a) {
 }
 
 inline const mpcomplex operator*(const mpcomplex &a, const mpcomplex &b) {
-    if (!a.get_prec() == 0 && !b.get_prec() == 0) {
-        if (a.get_prec() > b.get_prec())
-            return mpcomplex(a) *= b;
-        else
-            return mpcomplex(b) *= a;
-    } else {
-        mpcomplex tmp(a);
-        tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec_re()), std::max(a.get_prec_im(), b.get_prec_im()), mpcomplex::default_rnd);
-        return tmp *= b;
-    }
+    return mpcomplex(a) *= b;
+    /*
+        if (!a.get_prec() == 0 && !b.get_prec() == 0) {
+            if (a.get_prec() > b.get_prec())
+                return mpcomplex(a) *= b;
+            else
+                return mpcomplex(b) *= a;
+        } else {
+            mpcomplex tmp(a);
+            tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec_re()), std::max(a.get_prec_im(), b.get_prec_im()), mpcomplex::default_rnd);
+            return tmp *= b;
+        }
+    */
 }
 
 inline const mpcomplex operator*(const mpcomplex &a, const mpreal &b) {
-    mpcomplex tmp(a);
-    tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec()), a.get_prec_im(), mpcomplex::default_rnd);
-    return tmp *= mpcomplex(b);
+    return mpcomplex(a) *= mpcomplex(b);
+    /*
+        mpcomplex tmp(a);
+        tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec()), a.get_prec_im(), mpcomplex::default_rnd);
+        return tmp *= mpcomplex(b);
+    */
 }
 
 inline const mpcomplex operator*(const mpreal &a, const mpcomplex &b) {
-    mpcomplex tmp(a);
-    tmp.set_prec2(std::max(b.get_prec_re(), a.get_prec()), b.get_prec_im(), mpcomplex::default_rnd);
-    return tmp *= b;
+    return mpcomplex(a) *= mpcomplex(b);
+    /*
+        mpcomplex tmp(a);
+        tmp.set_prec2(std::max(b.get_prec_re(), a.get_prec()), b.get_prec_im(), mpcomplex::default_rnd);
+        return tmp *= b;
+    */
 }
 
 // / division
@@ -823,21 +839,30 @@ inline mpcomplex::operator std::complex<long double>() const {
 }
 
 inline const mpcomplex operator/(const mpcomplex &a, const mpcomplex &b) {
-    mpcomplex tmp(a);
-    tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec_re()), std::max(a.get_prec_im(), b.get_prec_im()), mpcomplex::default_rnd);
-    return tmp /= b;
+    return mpcomplex(a) /= b;
+    /*
+        mpcomplex tmp(a);
+        tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec_re()), std::max(a.get_prec_im(), b.get_prec_im()), mpcomplex::default_rnd);
+        return tmp /= b;
+    */
 }
 
 inline const mpcomplex operator/(const mpreal &a, const mpcomplex &b) {
-    mpcomplex tmp(a);
-    tmp.set_prec2(std::max(a.get_prec(), b.get_prec_re()), std::max(a.get_prec(), b.get_prec_im()), mpcomplex::default_rnd);
-    return tmp /= b;
+    return mpcomplex(a) /= b;
+    /*
+        mpcomplex tmp(a);
+        tmp.set_prec2(std::max(a.get_prec(), b.get_prec_re()), std::max(a.get_prec(), b.get_prec_im()), mpcomplex::default_rnd);
+        return tmp /= b;
+    */
 }
 
 inline const mpcomplex operator/(const mpcomplex &a, const mpreal &b) {
-    mpcomplex tmp(a);
-    tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec()), std::max(a.get_prec_im(), b.get_prec()), mpcomplex::default_rnd);
-    return tmp /= b;
+    return mpcomplex(a) /= b;
+    /*
+        mpcomplex tmp(a);
+        tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec()), std::max(a.get_prec_im(), b.get_prec()), mpcomplex::default_rnd);
+        return tmp /= b;
+    */
 }
 
 inline const mpreal abs(const mpcomplex &a, mpfr_rnd_t rnd_mode = mpreal::default_rnd) {
