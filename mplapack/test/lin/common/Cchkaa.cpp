@@ -88,7 +88,7 @@ void Cchkaa(void) {
     REAL eps = 0.0;
     INTEGER nrhs = 0;
     char aline[72];
-    char path[3];
+    char path[4];
     const INTEGER matmax = 30;
     INTEGER nmats = 0;
     char c1[1];
@@ -425,6 +425,7 @@ void Cchkaa(void) {
                 path[0] = result[0][0];
                 path[1] = result[0][1];
                 path[2] = result[0][2];
+                path[3] = '\0';
                 c1[0] = result[0][0];
                 c2[0] = result[0][1];
                 c2[1] = result[0][2];
@@ -457,7 +458,7 @@ void Cchkaa(void) {
             Alareq(path, nmats, dotype, ntypes, nin, nout);
             //
             if (tstchk) {
-                Cchkge(dotype, nm, mval, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1) + (1 - 1) * ldaorg], &a[(1 - 1) + (2 - 1) * ldaorg], &a[(1 - 1) + (3 - 1) * ldaorg], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], work, rwork, iwork, nout);
+                Cchkge(dotype, nm, mval, nn, nval, nnb2, nbval2, nns, nsval, thresh, tsterr, lda, &a[(1 - 1)], &a[(2 - 1) * ldaorg], &a[(3 - 1) * ldaorg], &b[(1 - 1) * ldb], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], work, rwork, iwork, nout);
             } else {
                 write(nout, format_9989), path;
             }
