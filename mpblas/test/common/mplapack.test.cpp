@@ -41,6 +41,7 @@ void __attribute__ ((destructor)) mplapack_debug_finalize(void);
 void mplapack_debug_finalize(void)
 {
     gmp_randclear(uniformrandomstate_mpfr);
+    mpfr_free_cache(); //we always use MPFR. 
 }
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
