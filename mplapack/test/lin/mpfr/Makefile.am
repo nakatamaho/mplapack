@@ -381,13 +381,14 @@ mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lg
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mplapack/test/fable
 
 check_PROGRAMS = $(mplapack_mpfr_lintest_PROGRAMS)
-TESTS = $(check_PROGRAMS)
 mplapack_mpfr_lintestdir = $(prefix)/share/mplapack/test/mplapack/lin/mpfr
 mplapack_mpfr_lintest_PROGRAMS = \
 xlintstR_mpfr \
 xlintstC_mpfr \
 xlintstrfR_mpfr \
 xlintstrfC_mpfr
+
+$(mplapack_mpfr_lintest_PROGRAMS): $(lib_LTLIBRARIES)
 
 xlintstR_mpfr_SOURCES  = ../common/Rchkaa.cpp ../../../../mpblas/test/common/mplapack.test.cpp 
 xlintstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
