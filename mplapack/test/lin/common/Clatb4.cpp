@@ -51,6 +51,8 @@ void Clatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
     badc1 = sqrt(badc2);
     small = Rlamch("Safe minimum");
     large = one / small;
+    small = shrink * (small / eps);
+    large = one / small;
     //
     char c2[2];
     c2[0] = path[1];
