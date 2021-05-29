@@ -61,7 +61,7 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char type;
+    char type[1];
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
@@ -145,10 +145,10 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 //              Set up parameters with Clatb4 and generate a test matrix
                 //              with Clatms.
                 //
-                Clatb4(path, imat, m, n, &type, kl, ku, anorm, mode, cndnum, dist);
+                Clatb4(path, imat, m, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
                 strncpy(srnamt, "Clatms", srnamt_len);
-                Clatms(m, n, dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
+                Clatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
                 //
                 //              Check error code from Clatms.
                 //
