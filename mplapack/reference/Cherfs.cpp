@@ -103,7 +103,7 @@ void Cherfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
         info = -12;
     }
     if (info != 0) {
-        Mxerbla("CherFS", -info);
+        Mxerbla("Cherfs", -info);
         return;
     }
     //

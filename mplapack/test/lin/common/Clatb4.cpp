@@ -45,7 +45,7 @@ void Clatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
     //
     const REAL tenth = 0.1e+0;
     const REAL one = 1.0;
-    const REAL shrink = 0.25e0;
+    const REAL shrink = 0.025e0;
     eps = Rlamch("Precision");
     badc2 = tenth / eps;
     badc1 = sqrt(badc2);

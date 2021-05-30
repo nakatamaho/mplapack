@@ -37,34 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rlatb5(const char *path, INTEGER const imat, INTEGER const n, char *type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, char *dist) {
-
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Save statement ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Set some constants for use in the subroutine.
     //
     const REAL tenth = 0.1e+0;
     const REAL one = 1.0;
@@ -80,10 +52,6 @@ void Rlatb5(const char *path, INTEGER const imat, INTEGER const n, char *type, I
     small = Rlamch("Safe minimum");
     large = one / small;
     //
-    //        If it looks like we're on a Cray, take the square root of
-    //        SMALL and LARGE to avoid overflow and underflow problems.
-    //
-    Rlabad(small, large);
     small = shrink * (small / eps);
     large = one / small;
     //

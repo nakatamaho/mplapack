@@ -35,38 +35,9 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Cerrps(const char *path, INTEGER const nunit) {
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     //
@@ -96,6 +67,7 @@ void Cerrps(const char *path, INTEGER const nunit) {
     //
     //        Cpstrf
     //
+    strncpy(srnamt, "Cpstrf", srnamt_len);
     infot = 1;
     INTEGER rank = 0;
     INTEGER info = 0;
@@ -110,6 +82,7 @@ void Cerrps(const char *path, INTEGER const nunit) {
     //
     //        Cpstf2
     //
+    strncpy(srnamt, "Cpstf2", srnamt_len);
     infot = 1;
     Cpstf2("/", 0, a, 1, piv, rank, -1.0, rwork, info);
     chkxer("Cpstf2", infot, nout, lerr, ok);

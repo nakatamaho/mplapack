@@ -61,14 +61,14 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER irank = 0;
     INTEGER rank = 0;
     INTEGER iuplo = 0;
-    char uplo;
-    char type;
+    char uplo[1];
+    char type[1];
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    char dist[1];
     INTEGER info = 0;
     INTEGER inb = 0;
     INTEGER nb = 0;
@@ -77,37 +77,6 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER comprank = 0;
     REAL result = 0.0;
     INTEGER rankdiff = 0;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize constants and the random number seed.
     //
     path[0] = 'Z';
     path[1] = 'P';
@@ -124,6 +93,7 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     if (tsterr) {
         Cerrps(path, nout);
     }
+    infot = 0;
     //
     //     Do for each value of N in NVAL
     //
@@ -160,19 +130,20 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //           Do first for UPLO = 'U', then for UPLO = 'L'
                 //
                 for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
-                    uplo = uplos[iuplo - 1];
+                    uplo[0] = uplos[iuplo - 1];
                     //
                     //              Set up parameters with Clatb5 and generate a test matrix
                     //              with Clatmt.
                     //
-                    Clatb5(path, imat, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+                    Clatb5(path, imat, n, type, kl, ku, anorm, mode, cndnum, dist);
                     //
-                    Clatmt(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, rank, kl, ku, &uplo, a, lda, work, info);
+                    strncpy(srnamt, "Clatmt", srnamt_len); 
+                    Clatmt(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, rank, kl, ku, uplo, a, lda, work, info);
                     //
                     //              Check error code from Clatmt.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Clatmt", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Clatmt", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         goto statement_120;
                     }
                     //
@@ -185,17 +156,18 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                 Compute the pivoted L*L' or U'*U factorization
                         //                 of the matrix.
                         //
-                        Clacpy(&uplo, n, n, a, lda, afac, lda);
+                        Clacpy(uplo, n, n, a, lda, afac, lda);
+                        strncpy(srnamt, "Cpstrf", srnamt_len);  
                         //
                         //                 Use default tolerance
                         //
                         tol = -one;
-                        Cpstrf(&uplo, n, afac, lda, piv, comprank, tol, rwork, info);
+                        Cpstrf(uplo, n, afac, lda, piv, comprank, tol, rwork, info);
                         //
                         //                 Check error code from Cpstrf.
                         //
                         if ((info < izero) || (info != izero && rank == n) || (info <= izero && rank < n)) {
-                            Alaerh(path, "Cpstrf", info, izero, &uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cpstrf", info, izero, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                             goto statement_110;
                         }
                         //
@@ -209,7 +181,7 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //
                         //                 PERM holds permuted L*L^T or U^T*U
                         //
-                        Cpst01(&uplo, n, a, lda, afac, lda, perm, lda, piv, rwork, result, comprank);
+                        Cpst01(uplo, n, a, lda, afac, lda, perm, lda, piv, rwork, result, comprank);
                         //
                         //                 Print information about the tests that did not pass
                         //                 the threshold or where computed rank was not RANK.

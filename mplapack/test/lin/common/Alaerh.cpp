@@ -83,36 +83,19 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
     static const char *format_9997 = "(' *** Error code from ',a,' =',i5,/,' ==> FACT=''',a1,''', TRANS=''',a1,"
                                      "''', N =',i5,', NRHS =',i4,', type ',i2)";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     if (info == 0) {
         return;
     }
     char p2[2];
     p2[0] = path[1];
     p2[1] = path[2];
+    char c2[3];
+    c2[0] = subnam[3];
+    c2[1] = subnam[4];
     char c3[3];
     c3[0] = subnam[3];
     c3[1] = subnam[4];
     c3[2] = subnam[5];
-
     char c5[5];
     c5[0] = subnam[1];
     c5[1] = subnam[2];
