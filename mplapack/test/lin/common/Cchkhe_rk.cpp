@@ -50,7 +50,7 @@ void Cchkhe_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     const REAL eight = 8.0e+0;
     REAL alpha = 0.0;
     char path[3];
-    char matpath[4];
+    char matpath[3];
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
@@ -118,8 +118,6 @@ void Cchkhe_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     matpath[0] = 'Z';
     matpath[1] = 'H';
     matpath[2] = 'E';
-    matpath[3] = '\0';
-printf("Cchkhe-rk: matpath %s\n", matpath);
     //
     nrun = 0;
     nfail = 0;
@@ -184,7 +182,7 @@ printf("Cchkhe-rk: matpath %s\n", matpath);
                 //
                 //                 Generate a matrix with Clatms.
                 //
-                strncpy(srnamt, "Clatms", srnamt_len);                
+                strncpy(srnamt, "Clatms", srnamt_len);
                 Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
                 //                 Check error code from Clatms and handle error.
@@ -290,7 +288,7 @@ printf("Cchkhe-rk: matpath %s\n", matpath);
                     //                 block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)2, nb) * lda;
-                    strncpy(srnamt, "Chetrf_rk", srnamt_len);                
+                    strncpy(srnamt, "Chetrf_rk", srnamt_len);
                     Chetrf_rk(uplo, n, afac, lda, e, iwork, ainv, lwork, info);
                     //
                     //                 Adjust the expected value of INFO to account for
@@ -338,7 +336,7 @@ printf("Cchkhe-rk: matpath %s\n", matpath);
                     //
                     if (inb == 1 && !trfcon) {
                         Clacpy(uplo, n, n, afac, lda, ainv, lda);
-                        strncpy(srnamt, "Chetri_3", srnamt_len);                
+                        strncpy(srnamt, "Chetri_3", srnamt_len);
                         //
                         //                    Another reason that we need to compute the inverse
                         //                    is that Cpot03 produces RCONDC which is used later
@@ -599,11 +597,11 @@ printf("Cchkhe-rk: matpath %s\n", matpath);
                         //                    Choose a set of NRHS random solution vectors
                         //                    stored in XACT and set up the right hand side B
                         //
-                        strncpy(srnamt, "Clarhs", srnamt_len);                
+                        strncpy(srnamt, "Clarhs", srnamt_len);
                         Clarhs(matpath, &xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        strncpy(srnamt, "Chetrs_3", srnamt_len);                
+                        strncpy(srnamt, "Chetrs_3", srnamt_len);
                         Chetrs_3(uplo, n, nrhs, afac, lda, e, iwork, x, lda, info);
                         //
                         //                    Check error code from Chetrs_3 and handle error.

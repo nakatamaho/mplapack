@@ -109,7 +109,7 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     if (tsterr) {
         Cerrhe(path, nout);
     }
-    infot = 0;   
+    infot = 0;
     //
     //     Set the minimum block size for which the block routine should
     //     be used, which will be later returned by iMlaenv

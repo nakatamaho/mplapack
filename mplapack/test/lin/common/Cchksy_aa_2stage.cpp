@@ -84,45 +84,14 @@ void Cchksy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize constants and the random number seed.
-    //
     //     Test path
     //
-    path[0] = 'C';
+    path[0] = 'Z';
     path[1] = 'S';
     path[2] = '2';
     //     Path to generate matrices
     //
-    matpath[0] = 'C';
+    matpath[0] = 'Z';
     matpath[1] = 'S';
     matpath[2] = 'Y';
     nrun = 0;

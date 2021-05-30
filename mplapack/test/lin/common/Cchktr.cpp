@@ -63,8 +63,8 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER imat = 0;
     const INTEGER ntype1 = 10;
     INTEGER iuplo = 0;
-    char uplo;
-    char diag;
+    char uplo[1];
+    char diag[1];
     INTEGER info = 0;
     INTEGER idiag = 0;
     INTEGER inb = 0;
@@ -80,8 +80,8 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     INTEGER itran = 0;
-    char trans;
-    char norm;
+    char trans[1];
+    char norm[1];
     REAL rcondc = 0.0;
     REAL dummy = 0.0;
     INTEGER k = 0;
@@ -91,40 +91,9 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     static const char *format_9996 = "(1x,a,'( ''',a1,''', ''',a1,''', ''',a1,''', ''',a1,''',',i5,"
                                      "', ... ), type ',i2,', test(',i2,')=',g12.5)";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Initialize constants and the random number seed.
     //
-    path[0] = 'C';
+    path[0] = 'Z';
     path[1] = 'T';
     path[2] = 'R';
     nrun = 0;
@@ -139,6 +108,7 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     if (tsterr) {
         Cerrtr(path, nout);
     }
+    infot = 0;
     //
     for (in = 1; in <= nn; in = in + 1) {
         //
@@ -160,15 +130,16 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //
                 //              Do first for UPLO = 'U', then for UPLO = 'L'
                 //
-                uplo = uplos[iuplo - 1];
+                uplo[0] = uplos[iuplo - 1];
                 //
                 //              Call Clattr to generate a triangular test matrix.
                 //
-                Clattr(imat, &uplo, "No transpose", &diag, iseed, n, a, lda, x, work, rwork, info);
+                strncpy(srnamt, "Clattr", srnamt_len);
+                Clattr(imat, uplo, "No transpose", diag, iseed, n, a, lda, x, work, rwork, info);
                 //
                 //              Set IDIAG = 1 for non-unit matrices, 2 for unit.
                 //
-                if (Mlsame(&diag, "N")) {
+                if (Mlsame(diag, "N")) {
                     idiag = 1;
                 } else {
                     idiag = 2;
@@ -184,22 +155,23 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //+    TEST 1
                     //                 Form the inverse of A.
                     //
-                    Clacpy(&uplo, n, n, a, lda, ainv, lda);
-                    Ctrtri(&uplo, &diag, n, ainv, lda, info);
+                    Clacpy(uplo, n, n, a, lda, ainv, lda);
+                    strncpy(srnamt, "Ctrtri", srnamt_len);
+                    Ctrtri(uplo, diag, n, ainv, lda, info);
                     //
                     //                 Check error code from Ctrtri.
                     //
                     if (info != 0) {
-                        uplo_diag[0] = uplo;
-                        uplo_diag[1] = diag;
+                        uplo_diag[0] = uplo[0];
+                        uplo_diag[1] = diag[0];
                         uplo_diag[2] = '\0';
                         Alaerh(path, "Ctrtri", info, 0, uplo_diag, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
                     //                 Compute the infinity-norm condition number of A.
                     //
-                    anorm = Clantr("I", &uplo, &diag, n, n, a, lda, rwork);
-                    ainvnm = Clantr("I", &uplo, &diag, n, n, ainv, lda, rwork);
+                    anorm = Clantr("I", uplo, diag, n, n, a, lda, rwork);
+                    ainvnm = Clantr("I", uplo, diag, n, n, ainv, lda, rwork);
                     if (anorm <= zero || ainvnm <= zero) {
                         rcondi = one;
                     } else {
@@ -210,7 +182,7 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //                 its inverse.  Also compute the 1-norm condition number
                     //                 of A.
                     //
-                    Ctrt01(&uplo, &diag, n, a, lda, ainv, lda, rcondo, rwork, result[1 - 1]);
+                    Ctrt01(uplo, diag, n, a, lda, ainv, lda, rcondo, rwork, result[1 - 1]);
                     //                 Print the test ratio if it is .GE. THRESH.
                     //
                     if (result[1 - 1] >= thresh) {
@@ -239,30 +211,32 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             //
                             //                    Do for op(A) = A, A**T, or A**H.
                             //
-                            trans = transs[itran - 1];
+                            trans[0] = transs[itran - 1];
                             if (itran == 1) {
-                                norm = 'O';
+                                norm[0] = 'O';
                                 rcondc = rcondo;
                             } else {
-                                norm = 'I';
+                                norm[0] = 'I';
                                 rcondc = rcondi;
                             }
                             //
                             //+    TEST 2
                             //                       Solve and compute residual for op(A)*x = b.
                             //
-                            Clarhs(path, &xtype, &uplo, &trans, n, n, 0, idiag, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                            strncpy(srnamt, "Clarhs", srnamt_len);
+                            Clarhs(path, &xtype, uplo, trans, n, n, 0, idiag, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                             xtype = 'C';
                             Clacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            Ctrtrs(&uplo, &trans, &diag, n, nrhs, a, lda, x, lda, info);
+                            strncpy(srnamt, "Ctrtrs", srnamt_len);
+                            Ctrtrs(uplo, trans, diag, n, nrhs, a, lda, x, lda, info);
                             //
                             //                       Check error code from Ctrtrs.
                             //
                             if (info != 0) {
-                                uplo_trans_diag[0] = uplo;
-                                uplo_trans_diag[1] = trans;
-                                uplo_trans_diag[3] = diag;
+                                uplo_trans_diag[0] = uplo[0];
+                                uplo_trans_diag[1] = trans[0];
+                                uplo_trans_diag[3] = diag[0];
                                 uplo_trans_diag[4] = '\0';
                                 Alaerh(path, "Ctrtrs", info, 0, uplo_trans_diag, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
@@ -273,7 +247,7 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                                 dummy = a[1 - 1].real();
                             }
                             //
-                            Ctrt02(&uplo, &trans, &diag, n, nrhs, a, lda, x, lda, b, lda, work, rwork, result[2 - 1]);
+                            Ctrt02(uplo, trans, diag, n, nrhs, a, lda, x, lda, b, lda, work, rwork, result[2 - 1]);
                             //
                             //+    TEST 3
                             //                       Check solution from generated exact solution.
@@ -284,20 +258,21 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             //                       Use iterative refinement to improve the solution
                             //                       and compute error bounds.
                             //
-                            Ctrrfs(&uplo, &trans, &diag, n, nrhs, a, lda, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                            strncpy(srnamt, "Ctrrfs", srnamt_len);
+                            Ctrrfs(uplo, trans, diag, n, nrhs, a, lda, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                             //
                             //                       Check error code from Ctrrfs.
                             //
                             if (info != 0) {
-                                uplo_trans_diag[0] = uplo;
-                                uplo_trans_diag[1] = trans;
-                                uplo_trans_diag[3] = diag;
+                                uplo_trans_diag[0] = uplo[0];
+                                uplo_trans_diag[1] = trans[0];
+                                uplo_trans_diag[3] = diag[0];
                                 uplo_trans_diag[4] = '\0';
                                 Alaerh(path, "Ctrrfs", info, 0, uplo_trans_diag, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
-                            Ctrt05(&uplo, &trans, &diag, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[5 - 1]);
+                            Ctrt05(uplo, trans, diag, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[5 - 1]);
                             //
                             //                       Print information about the tests that did not
                             //                       pass the threshold.
@@ -324,25 +299,26 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     for (itran = 1; itran <= 2; itran = itran + 1) {
                         if (itran == 1) {
-                            norm = 'O';
+                            norm[0] = 'O';
                             rcondc = rcondo;
                         } else {
-                            norm = 'I';
+                            norm[0] = 'I';
                             rcondc = rcondi;
                         }
-                        Ctrcon(&norm, &uplo, &diag, n, a, lda, rcond, work, rwork, info);
+                        strncpy(srnamt, "Ctrcon", srnamt_len);
+                        Ctrcon(norm, uplo, diag, n, a, lda, rcond, work, rwork, info);
                         //
                         //                       Check error code from Ctrcon.
                         //
                         if (info != 0) {
-                            norm_uplo_diag[0] = norm;
-                            norm_uplo_diag[1] = uplo;
-                            norm_uplo_diag[2] = diag;
+                            norm_uplo_diag[0] = norm[0];
+                            norm_uplo_diag[1] = uplo[0];
+                            norm_uplo_diag[2] = diag[0];
                             norm_uplo_diag[3] = '\0';
                             Alaerh(path, "Ctrcon", info, 0, norm_uplo_diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
-                        Ctrt06(rcond, rcondc, &uplo, &diag, n, a, lda, rwork, result[7 - 1]);
+                        Ctrt06(rcond, rcondc, uplo, diag, n, a, lda, rwork, result[7 - 1]);
                         //
                         //                    Print the test ratio if it is .GE. THRESH.
                         //
@@ -378,52 +354,54 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //
                 //              Do first for UPLO = 'U', then for UPLO = 'L'
                 //
-                uplo = uplos[iuplo - 1];
+                uplo[0] = uplos[iuplo - 1];
                 for (itran = 1; itran <= ntran; itran = itran + 1) {
                     //
                     //                 Do for op(A) = A, A**T, and A**H.
                     //
-                    trans = transs[itran - 1];
+                    trans[0] = transs[itran - 1];
                     //
                     //                 Call Clattr to generate a triangular test matrix.
                     //
-                    Clattr(imat, &uplo, &trans, &diag, iseed, n, a, lda, x, work, rwork, info);
+                    strncpy(srnamt, "Clattr", srnamt_len);
+                    Clattr(imat, uplo, trans, diag, iseed, n, a, lda, x, work, rwork, info);
                     //
                     //+    TEST 8
                     //                 Solve the system op(A)*x = b.
                     //
+                    strncpy(srnamt, "Clatrs", srnamt_len);
                     Ccopy(n, x, 1, b, 1);
-                    Clatrs(&uplo, &trans, &diag, "N", n, a, lda, b, scale, rwork, info);
+                    Clatrs(uplo, trans, diag, "N", n, a, lda, b, scale, rwork, info);
                     //
                     //                 Check error code from Clatrs.
                     //
                     if (info != 0) {
-                        uplo_trans_diag[0] = uplo;
-                        uplo_trans_diag[1] = trans;
-                        uplo_trans_diag[2] = diag;
+                        uplo_trans_diag[0] = uplo[0];
+                        uplo_trans_diag[1] = trans[0];
+                        uplo_trans_diag[2] = diag[0];
                         uplo_trans_diag[3] = 'N';
                         Alaerh(path, "Clatrs", info, 0, uplo_trans_diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
-                    Ctrt03(&uplo, &trans, &diag, n, 1, a, lda, scale, rwork, one, b, lda, x, lda, work, result[8 - 1]);
+                    Ctrt03(uplo, trans, diag, n, 1, a, lda, scale, rwork, one, b, lda, x, lda, work, result[8 - 1]);
                     //
                     //+    TEST 9
                     //                 Solve op(A)*X = b again with NORMIN = 'Y'.
                     //
                     Ccopy(n, x, 1, &b[(n + 1) - 1], 1);
-                    Clatrs(&uplo, &trans, &diag, "Y", n, a, lda, &b[(n + 1) - 1], scale, rwork, info);
+                    Clatrs(uplo, trans, diag, "Y", n, a, lda, &b[(n + 1) - 1], scale, rwork, info);
                     //
                     //                 Check error code from Clatrs.
                     //
                     if (info != 0) {
-                        uplo_trans_diag[0] = uplo;
-                        uplo_trans_diag[1] = trans;
-                        uplo_trans_diag[2] = diag;
+                        uplo_trans_diag[0] = uplo[0];
+                        uplo_trans_diag[1] = trans[0];
+                        uplo_trans_diag[2] = diag[0];
                         uplo_trans_diag[3] = 'Y';
                         Alaerh(path, "Clatrs", info, 0, uplo_trans_diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
-                    Ctrt03(&uplo, &trans, &diag, n, 1, a, lda, scale, rwork, one, &b[(n + 1) - 1], lda, x, lda, work, result[9 - 1]);
+                    Ctrt03(uplo, trans, diag, n, 1, a, lda, scale, rwork, one, &b[(n + 1) - 1], lda, x, lda, work, result[9 - 1]);
                     //
                     //                 Print information about the tests that did not pass
                     //                 the threshold.

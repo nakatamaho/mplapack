@@ -137,7 +137,7 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     Clatb5(path, imat, n, type, kl, ku, anorm, mode, cndnum, dist);
                     //
-                    strncpy(srnamt, "Clatmt", srnamt_len); 
+                    strncpy(srnamt, "Clatmt", srnamt_len);
                     Clatmt(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, rank, kl, ku, uplo, a, lda, work, info);
                     //
                     //              Check error code from Clatmt.
@@ -157,7 +157,7 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                 of the matrix.
                         //
                         Clacpy(uplo, n, n, a, lda, afac, lda);
-                        strncpy(srnamt, "Cpstrf", srnamt_len);  
+                        strncpy(srnamt, "Cpstrf", srnamt_len);
                         //
                         //                 Use default tolerance
                         //

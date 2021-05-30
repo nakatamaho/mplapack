@@ -81,14 +81,14 @@ void Cerrgt(const char *path, INTEGER const nunit) {
         //
         //        Cgttrf
         //
-        strncpy(srnamt, "Cgttrf", srnamt_len); 
+        strncpy(srnamt, "Cgttrf", srnamt_len);
         infot = 1;
         Cgttrf(-1, dl, e, du, du2, ip, info);
         chkxer("Cgttrf", infot, nout, lerr, ok);
         //
         //        Cgttrs
         //
-        strncpy(srnamt, "Cgttrs", srnamt_len); 
+        strncpy(srnamt, "Cgttrs", srnamt_len);
         infot = 1;
         Cgttrs("/", 0, 0, dl, e, du, du2, ip, x, 1, info);
         chkxer("Cgttrs", infot, nout, lerr, ok);
@@ -104,7 +104,7 @@ void Cerrgt(const char *path, INTEGER const nunit) {
         //
         //        Cgtrfs
         //
-        strncpy(srnamt, "Cgtrfs", srnamt_len);  
+        strncpy(srnamt, "Cgtrfs", srnamt_len);
         infot = 1;
         Cgtrfs("/", 0, 0, dl, e, du, dlf, ef, duf, du2, ip, b, 1, x, 1, r1, r2, w, rw, info);
         chkxer("Cgtrfs", infot, nout, lerr, ok);
@@ -123,7 +123,7 @@ void Cerrgt(const char *path, INTEGER const nunit) {
         //
         //        Cgtcon
         //
-        strncpy(srnamt, "Cgtcon", srnamt_len);  
+        strncpy(srnamt, "Cgtcon", srnamt_len);
         infot = 1;
         Cgtcon("/", 0, dl, e, du, du2, ip, anorm, rcond, w, info);
         chkxer("Cgtcon", infot, nout, lerr, ok);
@@ -141,14 +141,14 @@ void Cerrgt(const char *path, INTEGER const nunit) {
         //
         //        Cpttrf
         //
-        strncpy(srnamt, "Cpttrf", srnamt_len);  
+        strncpy(srnamt, "Cpttrf", srnamt_len);
         infot = 1;
         Cpttrf(-1, d, e, info);
         chkxer("Cpttrf", infot, nout, lerr, ok);
         //
         //        Cpttrs
         //
-        strncpy(srnamt, "Cpttrs", srnamt_len);   
+        strncpy(srnamt, "Cpttrs", srnamt_len);
         infot = 1;
         Cpttrs("/", 1, 0, d, e, x, 1, info);
         chkxer("Cpttrs", infot, nout, lerr, ok);
@@ -164,7 +164,7 @@ void Cerrgt(const char *path, INTEGER const nunit) {
         //
         //        Cptrfs
         //
-        strncpy(srnamt, "Cptrfs", srnamt_len);    
+        strncpy(srnamt, "Cptrfs", srnamt_len);
         infot = 1;
         Cptrfs("/", 1, 0, d, e, df, ef, b, 1, x, 1, r1, r2, w, rw, info);
         chkxer("Cptrfs", infot, nout, lerr, ok);
@@ -183,7 +183,7 @@ void Cerrgt(const char *path, INTEGER const nunit) {
         //
         //        Cptcon
         //
-        strncpy(srnamt, "Cptcon", srnamt_len);     
+        strncpy(srnamt, "Cptcon", srnamt_len);
         infot = 1;
         Cptcon(-1, d, e, anorm, rcond, rw, info);
         chkxer("Cptcon", infot, nout, lerr, ok);

@@ -35,42 +35,9 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Cerrqr(const char *path, INTEGER const nunit) {
-    common cmn;
-    common_write write(cmn);
-
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    //
-    //
-    //  -- LAPACK test routine (--
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     nout = nunit;
     //
     //     Set the variables to innocuous values.
@@ -100,6 +67,7 @@ void Cerrqr(const char *path, INTEGER const nunit) {
     //
     //     Cgeqrf
     //
+    strncpy(srnamt, "Cgeqrf", srnamt_len);
     infot = 1;
     INTEGER info = 0;
     Cgeqrf(-1, 0, a, 1, b, w, 1, info);
@@ -116,6 +84,7 @@ void Cerrqr(const char *path, INTEGER const nunit) {
     //
     //     Cgeqrfp
     //
+    strncpy(srnamt, "Cgeqrfp", srnamt_len);
     infot = 1;
     Cgeqrfp(-1, 0, a, 1, b, w, 1, info);
     chkxer("Cgeqrfp", infot, nout, lerr, ok);
@@ -131,6 +100,7 @@ void Cerrqr(const char *path, INTEGER const nunit) {
     //
     //     Cgeqr2
     //
+    strncpy(srnamt, "Cgeqr2", srnamt_len);
     infot = 1;
     Cgeqr2(-1, 0, a, 1, b, w, info);
     chkxer("Cgeqr2", infot, nout, lerr, ok);
@@ -143,6 +113,7 @@ void Cerrqr(const char *path, INTEGER const nunit) {
     //
     //     Cgeqr2p
     //
+    strncpy(srnamt, "Cgeqr2p", srnamt_len);
     infot = 1;
     Cgeqr2p(-1, 0, a, 1, b, w, info);
     chkxer("Cgeqr2p", infot, nout, lerr, ok);
@@ -155,6 +126,7 @@ void Cerrqr(const char *path, INTEGER const nunit) {
     //
     //     Cgeqrs
     //
+    strncpy(srnamt, "Cgeqrs", srnamt_len);
     infot = 1;
     Cgeqrs(-1, 0, 0, a, 1, x, b, 1, w, 1, info);
     chkxer("Cgeqrs", infot, nout, lerr, ok);
@@ -179,6 +151,7 @@ void Cerrqr(const char *path, INTEGER const nunit) {
     //
     //     Cungqr
     //
+    strncpy(srnamt, "Cungqr", srnamt_len);
     infot = 1;
     Cungqr(-1, 0, 0, a, 1, x, w, 1, info);
     chkxer("Cungqr", infot, nout, lerr, ok);
@@ -203,6 +176,7 @@ void Cerrqr(const char *path, INTEGER const nunit) {
     //
     //     Cung2r
     //
+    strncpy(srnamt, "Cung2r", srnamt_len);
     infot = 1;
     Cung2r(-1, 0, 0, a, 1, x, w, info);
     chkxer("Cung2r", infot, nout, lerr, ok);
@@ -224,6 +198,7 @@ void Cerrqr(const char *path, INTEGER const nunit) {
     //
     //     Cunmqr
     //
+    strncpy(srnamt, "Cunmqr", srnamt_len);
     infot = 1;
     Cunmqr("/", "N", 0, 0, 0, a, 1, x, af, 1, w, 1, info);
     chkxer("Cunmqr", infot, nout, lerr, ok);
@@ -263,6 +238,7 @@ void Cerrqr(const char *path, INTEGER const nunit) {
     //
     //     Cunm2r
     //
+    strncpy(srnamt, "Cunm2r", srnamt_len);
     infot = 1;
     Cunm2r("/", "N", 0, 0, 0, a, 1, x, af, 1, w, info);
     chkxer("Cunm2r", infot, nout, lerr, ok);

@@ -287,7 +287,7 @@ void Cchkhe_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                     //                 block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)2, nb) * lda;
-                    strncpy(srnamt, "Chetrf_rook", srnamt_len); 
+                    strncpy(srnamt, "Chetrf_rook", srnamt_len);
                     Chetrf_rook(uplo, n, afac, lda, iwork, ainv, lwork, info);
                     //
                     //                 Adjust the expected value of INFO to account for
@@ -335,7 +335,7 @@ void Cchkhe_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                     //
                     if (inb == 1 && !trfcon) {
                         Clacpy(uplo, n, n, afac, lda, ainv, lda);
-                        strncpy(srnamt, "Chetri_rook", srnamt_len); 
+                        strncpy(srnamt, "Chetri_rook", srnamt_len);
                         Chetri_rook(uplo, n, ainv, lda, iwork, work, info);
                         //
                         //                    Check error code from Chetri_rook and handle error.
@@ -590,11 +590,11 @@ void Cchkhe_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                         //                    Choose a set of NRHS random solution vectors
                         //                    stored in XACT and set up the right hand side B
                         //
-                        strncpy(srnamt, "Clarhs", srnamt_len); 
+                        strncpy(srnamt, "Clarhs", srnamt_len);
                         Clarhs(matpath, &xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        strncpy(srnamt, "Chetrs_rook", srnamt_len); 
+                        strncpy(srnamt, "Chetrs_rook", srnamt_len);
                         Chetrs_rook(uplo, n, nrhs, afac, lda, iwork, x, lda, info);
                         //
                         //                    Check error code from Chetrs_rook and handle error.

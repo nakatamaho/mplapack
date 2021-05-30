@@ -60,13 +60,13 @@ void Cchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER minmn = 0;
     INTEGER imat = 0;
     const INTEGER ntypes = 8;
-    char type;
+    char type[1];
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    char dist[1];
     INTEGER info = 0;
     INTEGER kval[4];
     INTEGER nk = 0;
@@ -80,41 +80,7 @@ void Cchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     REAL result[ntests];
     INTEGER nt = 0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize constants and the random number seed.
-    //
-    //
-    path[0] = 'C';
+    path[0] = 'Z';
     path[1] = 'Q';
     path[2] = 'R';
     nrun = 0;
@@ -129,6 +95,7 @@ void Cchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     if (tsterr) {
         Cerrqr(path, nout);
     }
+    infot = 0;
     xlaenv(2, 2);
     //
     lda = nmax;
@@ -155,9 +122,10 @@ void Cchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 //              Set up parameters with Clatb4 and generate a test matrix
                 //              with Clatms.
                 //
-                Clatb4(path, imat, m, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+                Clatb4(path, imat, m, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                Clatms(m, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
+                strncpy(srnamt, "Clatms", srnamt_len);
+                Clatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
                 //
                 //              Check error code from Clatms.
                 //
@@ -238,9 +206,11 @@ void Cchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 //                          Generate a solution and set the right
                                 //                          hand side.
                                 //
+                                strncpy(srnamt, "Clarhs", srnamt_len);
                                 Clarhs(path, "New", "Full", "No transpose", m, n, 0, 0, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                                 //
                                 Clacpy("Full", m, nrhs, b, lda, x, lda);
+                                strncpy(srnamt, "Cgeqrs", srnamt_len);
                                 Cgeqrs(m, n, nrhs, af, lda, tau, x, lda, work, lwork, info);
                                 //
                                 //                          Check error code from Cgeqrs.

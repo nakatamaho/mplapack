@@ -259,7 +259,7 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //                 block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)2, nb) * lda;
-                    strncpy(srnamt, "Chetrf", srnamt_len); 
+                    strncpy(srnamt, "Chetrf", srnamt_len);
                     Chetrf(uplo, n, afac, lda, iwork, ainv, lwork, info);
                     //
                     //                 Adjust the expected value of INFO to account for
@@ -304,7 +304,7 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     if (inb == 1 && !trfcon) {
                         Clacpy(uplo, n, n, afac, lda, ainv, lda);
-                        strncpy(srnamt, "Chetri2", srnamt_len); 
+                        strncpy(srnamt, "Chetri2", srnamt_len);
                         lwork = (n + nb + 1) * (nb + 3);
                         Chetri2(uplo, n, ainv, lda, iwork, work, lwork, info);
                         //
@@ -363,11 +363,11 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                    Choose a set of NRHS random solution vectors
                         //                    stored in XACT and set up the right hand side B
                         //
-                        strncpy(srnamt, "Clarhs", srnamt_len); 
+                        strncpy(srnamt, "Clarhs", srnamt_len);
                         Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        strncpy(srnamt, "Chetrs", srnamt_len); 
+                        strncpy(srnamt, "Chetrs", srnamt_len);
                         Chetrs(uplo, n, nrhs, afac, lda, iwork, x, lda, info);
                         //
                         //                    Check error code from Chetrs and handle error.
@@ -388,11 +388,11 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                    Choose a set of NRHS random solution vectors
                         //                    stored in XACT and set up the right hand side B
                         //
-                        strncpy(srnamt, "Clarhs", srnamt_len); 
+                        strncpy(srnamt, "Clarhs", srnamt_len);
                         Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        strncpy(srnamt, "Chetrs2", srnamt_len); 
+                        strncpy(srnamt, "Chetrs2", srnamt_len);
                         Chetrs2(uplo, n, nrhs, afac, lda, iwork, x, lda, work, info);
                         //
                         //                    Check error code from Chetrs2 and handle error.
@@ -415,7 +415,7 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //+    TESTS 6, 7, and 8
                         //                 Use iterative refinement to improve the solution.
                         //
-                        strncpy(srnamt, "Cherfs", srnamt_len);  
+                        strncpy(srnamt, "Cherfs", srnamt_len);
                         Cherfs(uplo, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                         //
                         //                    Check error code from Cherfs.
@@ -453,7 +453,7 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //
                 statement_140:
                     anorm = Clanhe("1", uplo, n, a, lda, rwork);
-                    strncpy(srnamt, "Checon", srnamt_len);  
+                    strncpy(srnamt, "Checon", srnamt_len);
                     Checon(uplo, n, afac, lda, iwork, anorm, rcond, work, info);
                     //
                     //                 Check error code from Checon and handle error.
