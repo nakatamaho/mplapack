@@ -31,30 +31,9 @@
 
 void Cgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *du2, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     info = 0;
     bool notran = (Mlsame(trans, "N"));
-    if (!notran && !(Mlsame(trans, "N")) && !(Mlsame(trans, "C"))) {
+    if (!notran && !(Mlsame(trans, "T")) && !(Mlsame(trans, "C"))) {
         info = -1;
     } else if (n < 0) {
         info = -2;
