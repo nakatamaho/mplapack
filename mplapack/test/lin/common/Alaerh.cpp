@@ -163,9 +163,9 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         } else if (Mlsamen(3, c3, "SVX")) {
             //
             if (info != infoe && infoe != 0) {
-                write(nout, format_9992), subnam_trimmed, info, infoe, opts[0], opts[1], n, n5, imat;
+                write(nout, format_9992), subnam_trimmed, info, infoe, &opts[0], &opts[1], n, n5, imat;
             } else {
-                write(nout, format_9997), subnam_trimmed, info, opts[0], opts[1], n, n5, imat;
+                write(nout, format_9997), subnam_trimmed, info, &opts[0], &opts[1], n, n5, imat;
             }
             //
         } else if (Mlsamen(3, c3, "TRI")) {
@@ -178,13 +178,13 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
             //
         } else if (Mlsamen(3, c3, "CON")) {
             //
-            write(nout, format_9969), subnam_trimmed, info, opts[0], m, imat;
+            write(nout, format_9969), subnam_trimmed, info, &opts[0], m, imat;
             //
         } else if (Mlsamen(3, c3, "LS ")) {
             //
             write(nout, "(' *** Error code from ',a,' =',i5,/,' ==> TRANS = ''',a1,''', M =',"
                         "i5,', N =',i5,', NRHS =',i4,', NB =',i4,', type ',i2)"),
-                subnam_trimmed, info, opts[0], m, n, kl, n5, imat;
+                subnam_trimmed, info, &opts[0], m, n, kl, n5, imat;
             //
         } else if (Mlsamen(3, c3, "LSX") || Mlsamen(3, c3, "LSS")) {
             //
@@ -192,7 +192,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
             //
         } else {
             //
-            write(nout, format_9963), subnam_trimmed, info, opts[0], m, n5, imat;
+            write(nout, format_9963), subnam_trimmed, info, &opts[0], m, n5, imat;
         }
         //
     } else if (Mlsamen(2, p2, "GB")) {
@@ -232,12 +232,12 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
                 write(nout, "(' *** ',a,' returned with INFO =',i5,' instead of ',i2,/,"
                             "' ==> FACT=''',a1,''', TRANS=''',a1,''', N=',i5,', KL=',i5,', KU=',"
                             "i5,', NRHS=',i4,', type ',i1)"),
-                    subnam_trimmed, info, infoe, opts[0], opts[1], n, kl, ku, n5, imat;
+                    subnam_trimmed, info, infoe, &opts[0], &opts[1], n, kl, ku, n5, imat;
             } else {
                 write(nout, "(' *** Error code from ',a,' =',i5,/,' ==> FACT=''',a1,"
                             "''', TRANS=''',a1,''', N=',i5,', KL=',i5,', KU=',i5,', NRHS=',i4,"
                             "', type ',i1)"),
-                    subnam_trimmed, info, opts[0], opts[1], n, kl, ku, n5, imat;
+                    subnam_trimmed, info, &opts[0], &opts[1], n, kl, ku, n5, imat;
             }
             //
         } else if (Mlsamen(5, c5, "LATMS")) {
@@ -250,13 +250,13 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
             //
             write(nout, "(' *** Error code from ',a,' =',i5,/,' ==> NORM =''',a1,''', N =',i5,"
                         "', KL =',i5,', KU =',i5,', type ',i2)"),
-                subnam_trimmed, info, opts[0], m, kl, ku, imat;
+                subnam_trimmed, info, &opts[0], m, kl, ku, imat;
             //
         } else {
             //
             write(nout, "(' *** Error code from ',a,'=',i5,/,' ==> TRANS=''',a1,''', N =',i5,"
                         "', KL =',i5,', KU =',i5,', NRHS =',i4,', type ',i2)"),
-                subnam_trimmed, info, opts[0], m, kl, ku, n5, imat;
+                subnam_trimmed, info, &opts[0], m, kl, ku, n5, imat;
         }
         //
     } else if (Mlsamen(2, p2, "GT")) {
@@ -273,7 +273,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
                 write(nout, format_9949);
             }
             //
-        } else if (Mlsamen(3, c3, "SV ")) {
+        } else if (Mlsamen(2, c2, "SV")) {
             //
             if (info != infoe && infoe != 0) {
                 write(nout, format_9984), subnam_trimmed, info, infoe, n, n5, imat;
@@ -284,18 +284,18 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         } else if (Mlsamen(3, c3, "SVX")) {
             //
             if (info != infoe && infoe != 0) {
-                write(nout, format_9992), subnam_trimmed, info, infoe, opts[0], opts[1], n, n5, imat;
+                write(nout, format_9992), subnam_trimmed, info, infoe, &opts[0], &opts[1], n, n5, imat;
             } else {
-                write(nout, format_9997), subnam_trimmed, info, opts[0], opts[1], n, n5, imat;
+                write(nout, format_9997), subnam_trimmed, info, &opts[0], &opts[1], n, n5, imat;
             }
             //
         } else if (Mlsamen(3, c3, "CON")) {
             //
-            write(nout, format_9969), subnam_trimmed, info, opts[0], m, imat;
+            write(nout, format_9969), subnam_trimmed, info, &opts[0], m, imat;
             //
         } else {
             //
-            write(nout, format_9963), subnam_trimmed, info, opts[0], m, n5, imat;
+            write(nout, format_9963), subnam_trimmed, info, &opts[0], m, n5, imat;
         }
         //
     } else if (Mlsamen(2, p2, "PO")) {
@@ -324,9 +324,9 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         } else if (Mlsamen(3, c3, "SVX")) {
             //
             if (info != infoe && infoe != 0) {
-                write(nout, format_9990), subnam_trimmed, info, infoe, opts[0], opts[1], n, n5, imat;
+                write(nout, format_9990), subnam_trimmed, info, infoe, &opts[0], &opts[1], n, n5, imat;
             } else {
-                write(nout, format_9995), subnam_trimmed, info, opts[0], opts[1], n, n5, imat;
+                write(nout, format_9995), subnam_trimmed, info, &opts[0], &opts[1], n, n5, imat;
             }
             //
         } else if (Mlsamen(3, c3, "TRI")) {
@@ -368,9 +368,9 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         } else if (Mlsamen(3, c3, "SVX")) {
             //
             if (info != infoe && infoe != 0) {
-                write(nout, format_9990), subnam, info, infoe, opts[0], opts[1], n, n5, imat;
+                write(nout, format_9990), subnam, info, infoe, &opts[0], &opts[1], n, n5, imat;
             } else {
-                write(nout, format_9995), subnam, info, opts[0], opts[1], n, n5, imat;
+                write(nout, format_9995), subnam, info, &opts[0], &opts[1], n, n5, imat;
             }
             //
         } else if (Mlsamen(3, c3, "TRI")) {
@@ -427,9 +427,9 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         } else if (Mlsamen(3, c3, "SVX")) {
             //
             if (info != infoe && infoe != 0) {
-                write(nout, format_9990), subnam_trimmed, info, infoe, opts[0], opts[1], n, n5, imat;
+                write(nout, format_9990), subnam_trimmed, info, infoe, &opts[0], &opts[1], n, n5, imat;
             } else {
-                write(nout, format_9995), subnam_trimmed, info, opts[0], opts[1], n, n5, imat;
+                write(nout, format_9995), subnam_trimmed, info, &opts[0], &opts[1], n, n5, imat;
             }
             //
         } else if (Mlsamen(5, c5, "LATMS") || Mlsamen(3, c3, "TRI") || Mlsamen(3, c3, "CON")) {
@@ -469,9 +469,9 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         } else if (Mlsamen(3, c3, "SVX")) {
             //
             if (info != infoe && infoe != 0) {
-                write(nout, format_9990), subnam_trimmed, info, infoe, opts[0], opts[1], n, n5, imat;
+                write(nout, format_9990), subnam_trimmed, info, infoe, &opts[0], &opts[1], n, n5, imat;
             } else {
-                write(nout, format_9995), subnam_trimmed, info, opts[0], opts[1], n, n5, imat;
+                write(nout, format_9995), subnam_trimmed, info, &opts[0], &opts[1], n, n5, imat;
             }
             //
         } else if (Mlsamen(5, c5, "LATMS") || Mlsamen(3, c3, "TRI") || Mlsamen(3, c3, "CON")) {
@@ -520,11 +520,11 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
                 write(nout, "(' *** ',a,' returned with INFO =',i5,' instead of ',i2,/,"
                             "' ==> FACT=''',a1,''', UPLO=''',a1,''', N=',i5,', KD=',i5,"
                             "', NRHS=',i4,', type ',i2)"),
-                    subnam_trimmed, info, infoe, opts[0], opts[1], n, kl, n5, imat;
+                    subnam_trimmed, info, infoe, &opts[0], &opts[1], n, kl, n5, imat;
             } else {
                 write(nout, "(' *** Error code from ',a,' =',i5,/,' ==> FACT=''',a1,"
                             "''', UPLO=''',a1,''', N=',i5,', KD=',i5,', NRHS=',i4,', type ',i2)"),
-                    subnam_trimmed, info, opts[0], opts[1], n, kl, n5, imat;
+                    subnam_trimmed, info, &opts[0], &opts[1], n, kl, n5, imat;
             }
             //
         } else if (Mlsamen(5, c5, "LATMS") || Mlsamen(3, c3, "CON")) {
@@ -565,11 +565,11 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
             if (info != infoe && infoe != 0) {
                 write(nout, "(' *** ',a,' returned with INFO =',i5,' instead of ',i2,/,"
                             "' ==> FACT=''',a1,''', N =',i5,', NRHS =',i4,', type ',i2)"),
-                    subnam_trimmed, info, infoe, opts[0], n, n5, imat;
+                    subnam_trimmed, info, infoe, &opts[0], n, n5, imat;
             } else {
                 write(nout, "(' *** Error code from ',a,'=',i5,', FACT=''',a1,''', N=',i5,"
                             "', NRHS=',i4,', type ',i2)"),
-                    subnam_trimmed, info, opts[0], n, n5, imat;
+                    subnam_trimmed, info, &opts[0], n, n5, imat;
             }
             //
         } else if (Mlsamen(3, c3, "CON")) {
@@ -577,12 +577,12 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
             if (Mlsame(&subnam[0], "R")) {
                 write(nout, format_9973), subnam_trimmed, info, m, imat;
             } else {
-                write(nout, format_9969), subnam_trimmed, info, opts[0], m, imat;
+                write(nout, format_9969), subnam_trimmed, info, &opts[0], m, imat;
             }
             //
         } else {
             //
-            write(nout, format_9963), subnam_trimmed, info, opts[0], m, n5, imat;
+            write(nout, format_9963), subnam_trimmed, info, &opts[0], m, n5, imat;
         }
         //
     } else if (Mlsamen(2, p2, "TR")) {
@@ -592,13 +592,13 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         if (Mlsamen(3, c3, "TRI")) {
             write(nout, "(' *** Error code from ',a,' =',i5,/,' ==> UPLO=''',a1,"
                         "''', DIAG =''',a1,''', N =',i5,', NB =',i4,', type ',i2)"),
-                subnam_trimmed, info, opts[0], opts[1], m, n5, imat;
+                subnam_trimmed, info, &opts[0], &opts[1], m, n5, imat;
         } else if (Mlsamen(3, c3, "CON")) {
-            write(nout, format_9967), subnam_trimmed, info, opts[0], opts[1], opts[2], m, imat;
+            write(nout, format_9967), subnam_trimmed, info, &opts[0], &opts[1], &opts[2], m, imat;
         } else if (Mlsamen(5, c5, "LATRS")) {
-            write(nout, format_9952), subnam_trimmed, info, opts[0], opts[1], opts[2], opts[3], m, imat;
+            write(nout, format_9952), subnam_trimmed, info, &opts[0], &opts[1], &opts[2], &opts[3], m, imat;
         } else {
-            write(nout, format_9953), subnam_trimmed, info, opts[0], opts[1], opts[2], m, n5, imat;
+            write(nout, format_9953), subnam_trimmed, info, &opts[0], &opts[1], &opts[2], m, n5, imat;
         }
         //
     } else if (Mlsamen(2, p2, "TP")) {
@@ -608,13 +608,13 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         if (Mlsamen(3, c3, "TRI")) {
             write(nout, "(' *** Error code from ',a,' =',i5,/,' ==> UPLO=''',a1,"
                         "''', DIAG =''',a1,''', N =',i5,', type ',i2)"),
-                subnam_trimmed, info, opts[0], opts[1], m, imat;
+                subnam_trimmed, info, &opts[0], &opts[1], m, imat;
         } else if (Mlsamen(3, c3, "CON")) {
-            write(nout, format_9967), subnam_trimmed, info, opts[0], opts[1], opts[2], m, imat;
+            write(nout, format_9967), subnam_trimmed, info, &opts[0], &opts[1], &opts[2], m, imat;
         } else if (Mlsamen(5, c5, "LATPS")) {
-            write(nout, format_9952), subnam_trimmed, info, opts[0], opts[1], opts[2], opts[3], m, imat;
+            write(nout, format_9952), subnam_trimmed, info, &opts[0], &opts[1], &opts[2], &opts[3], m, imat;
         } else {
-            write(nout, format_9953), subnam_trimmed, info, opts[0], opts[1], opts[2], m, n5, imat;
+            write(nout, format_9953), subnam_trimmed, info, &opts[0], &opts[1], &opts[2], m, n5, imat;
         }
         //
     } else if (Mlsamen(2, p2, "TB")) {
@@ -625,17 +625,17 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
             write(nout, "(' *** Error code from ',a,' =',i5,/,' ==> NORM=''',a1,"
                         "''', UPLO =''',a1,''', DIAG=''',a1,''', N=',i5,', KD=',i5,', type ',"
                         "i2)"),
-                subnam_trimmed, info, opts[0], opts[1], opts[2], m, kl, imat;
+                subnam_trimmed, info, &opts[0], &opts[1], &opts[2], m, kl, imat;
         } else if (Mlsamen(5, c5, "LATBS")) {
             write(nout, "(' *** Error code from ',a,' =',i5,/,' ==> UPLO=''',a1,"
                         "''', TRANS=''',a1,''', DIAG=''',a1,''', NORMIN=''',a1,''', N=',i5,"
                         "', KD=',i5,', type ',i2)"),
-                subnam_trimmed, info, opts[0], opts[1], opts[2], opts[3], m, kl, imat;
+                subnam_trimmed, info, &opts[0], &opts[1], &opts[2], &opts[3], m, kl, imat;
         } else {
             write(nout, "(' *** Error code from ',a,' =',i5,/,' ==> UPLO=''',a1,"
                         "''', TRANS=''',a1,''', DIAG=''',a1,''', N=',i5,', KD=',i5,', NRHS=',"
                         "i4,', type ',i2)"),
-                subnam_trimmed, info, opts[0], opts[1], opts[2], m, kl, n5, imat;
+                subnam_trimmed, info, &opts[0], &opts[1], &opts[2], m, kl, n5, imat;
         }
         //
     } else if (Mlsamen(2, p2, "QR")) {

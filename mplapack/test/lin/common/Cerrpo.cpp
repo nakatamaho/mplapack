@@ -35,40 +35,9 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Cerrpo(const char *path, INTEGER const nunit) {
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
     //
     nout = nunit;
     char c2[2];
@@ -113,6 +82,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpotrf
         //
+        strncpy(srnamt, "Cpotrf", srnamt_len);
         infot = 1;
         Cpotrf("/", 0, a, 1, info);
         chkxer("Cpotrf", infot, nout, lerr, ok);
@@ -125,6 +95,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpotf2
         //
+        strncpy(srnamt, "Cpotf2", srnamt_len);
         infot = 1;
         Cpotf2("/", 0, a, 1, info);
         chkxer("Cpotf2", infot, nout, lerr, ok);
@@ -137,6 +108,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpotri
         //
+        strncpy(srnamt, "Cpotri", srnamt_len);
         infot = 1;
         Cpotri("/", 0, a, 1, info);
         chkxer("Cpotri", infot, nout, lerr, ok);
@@ -149,6 +121,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpotrs
         //
+        strncpy(srnamt, "Cpotrs", srnamt_len);
         infot = 1;
         Cpotrs("/", 0, 0, a, 1, b, 1, info);
         chkxer("Cpotrs", infot, nout, lerr, ok);
@@ -167,6 +140,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cporfs
         //
+        strncpy(srnamt, "Cporfs", srnamt_len);
         infot = 1;
         Cporfs("/", 0, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, r, info);
         chkxer("Cporfs", infot, nout, lerr, ok);
@@ -191,6 +165,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpocon
         //
+        strncpy(srnamt, "Cpocon", srnamt_len);
         infot = 1;
         Cpocon("/", 0, a, 1, anrm, rcond, w, r, info);
         chkxer("Cpocon", infot, nout, lerr, ok);
@@ -206,6 +181,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpoequ
         //
+        strncpy(srnamt, "Cpoequ", srnamt_len);
         infot = 1;
         Cpoequ(-1, a, 1, r1, rcond, anrm, info);
         chkxer("Cpoequ", infot, nout, lerr, ok);
@@ -220,6 +196,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpptrf
         //
+        strncpy(srnamt, "Cpptrf", srnamt_len);
         infot = 1;
         Cpptrf("/", 0, a, info);
         chkxer("Cpptrf", infot, nout, lerr, ok);
@@ -229,6 +206,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpptri
         //
+        strncpy(srnamt, "Cpptri", srnamt_len);
         infot = 1;
         Cpptri("/", 0, a, info);
         chkxer("Cpptri", infot, nout, lerr, ok);
@@ -238,6 +216,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpptrs
         //
+        strncpy(srnamt, "Cpptrs", srnamt_len);
         infot = 1;
         Cpptrs("/", 0, 0, a, b, 1, info);
         chkxer("Cpptrs", infot, nout, lerr, ok);
@@ -253,6 +232,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpprfs
         //
+        strncpy(srnamt, "Cpprfs", srnamt_len);
         infot = 1;
         Cpprfs("/", 0, 0, a, af, b, 1, x, 1, r1, r2, w, r, info);
         chkxer("Cpprfs", infot, nout, lerr, ok);
@@ -271,6 +251,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cppcon
         //
+        strncpy(srnamt, "Cppcon", srnamt_len);
         infot = 1;
         Cppcon("/", 0, a, anrm, rcond, w, r, info);
         chkxer("Cppcon", infot, nout, lerr, ok);
@@ -283,6 +264,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cppequ
         //
+        strncpy(srnamt, "Cppequ", srnamt_len);
         infot = 1;
         Cppequ("/", 0, a, r1, rcond, anrm, info);
         chkxer("Cppequ", infot, nout, lerr, ok);
@@ -297,6 +279,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpbtrf
         //
+        strncpy(srnamt, "Cpbtrf", srnamt_len);
         infot = 1;
         Cpbtrf("/", 0, 0, a, 1, info);
         chkxer("Cpbtrf", infot, nout, lerr, ok);
@@ -312,6 +295,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpbtf2
         //
+        strncpy(srnamt, "Cpbtf2", srnamt_len);
         infot = 1;
         Cpbtf2("/", 0, 0, a, 1, info);
         chkxer("Cpbtf2", infot, nout, lerr, ok);
@@ -327,6 +311,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpbtrs
         //
+        strncpy(srnamt, "Cpbtrs", srnamt_len);
         infot = 1;
         Cpbtrs("/", 0, 0, 0, a, 1, b, 1, info);
         chkxer("Cpbtrs", infot, nout, lerr, ok);
@@ -348,6 +333,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpbrfs
         //
+        strncpy(srnamt, "Cpbrfs", srnamt_len);
         infot = 1;
         Cpbrfs("/", 0, 0, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, r, info);
         chkxer("Cpbrfs", infot, nout, lerr, ok);
@@ -375,6 +361,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpbcon
         //
+        strncpy(srnamt, "Cpbcon", srnamt_len);
         infot = 1;
         Cpbcon("/", 0, 0, a, 1, anrm, rcond, w, r, info);
         chkxer("Cpbcon", infot, nout, lerr, ok);
@@ -393,6 +380,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         //
         //        Cpbequ
         //
+        strncpy(srnamt, "Cpbequ", srnamt_len);
         infot = 1;
         Cpbequ("/", 0, 0, a, 1, r1, rcond, anrm, info);
         chkxer("Cpbequ", infot, nout, lerr, ok);
