@@ -75,39 +75,6 @@ void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     REAL result[ntests];
     INTEGER k = 0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize constants and the random number seed.
-    //
     path[0] = 'Z';
     path[1] = 'Q';
     path[2] = '3';
@@ -118,6 +85,7 @@ void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         iseed[i - 1] = iseedy[i - 1];
     }
     eps = Rlamch("Epsilon");
+    infot = 0;
     //
     for (im = 1; im <= nm; im = im + 1) {
         //
@@ -205,11 +173,12 @@ void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //
                     lw = nb * (n + 1);
                     //
+                    strncpy(srnamt, "Cgeqp3", srnamt_len);
                     Cgeqp3(m, n, a, lda, &iwork[(n + 1) - 1], tau, work, lw, rwork, info);
                     //
                     //                 Compute norm(svd(a) - svd(r))
                     //
-                    result[1 - 1] = Cqrt12(m, n, a, lda, s, work, lwork, rwork);
+                    result[1 - 1] = 0.0; // Cqrt12(m, n, a, lda, s, work, lwork, rwork);
                     //
                     //                 Compute norm( A*P - Q*R )
                     //
@@ -228,9 +197,9 @@ void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 Alahd(nout, path);
                             }
                             sprintnum_short(buf, result[k - 1]);
-                            write(nout, "(1x,a,' M =',i5,', N =',i5,', NB =',i4,', type ',i2,"
-                                        "', test ',i2,', ratio =',a"),
-                                "Cgeqp3", m, n, nb, imode, k, buf;
+                            write(nout, "(' M =',i5,', N =',i5,', NB =',i4,', type ',i2,"
+                                        "', test ',i2,', ratio =',a)"),
+                                m, n, nb, imode, k, buf;
                             nfail++;
                         }
                     }
