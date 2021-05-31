@@ -38,27 +38,6 @@ using fem::common;
 
 void Clqt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb, REAL *result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     .. Return values ..
-    //
-    //  =====================================================================
-    //
-    //     ..
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     .. Local allocatable arrays
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Data statements ..
-    //
     INTEGER iseed[] = {1988, 1989, 1990, 1991};
     REAL eps = Rlamch("Epsilon");
     INTEGER k = m;
@@ -75,11 +54,11 @@ void Clqt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     //     Put random stuff into A
     //
-    const COMPLEX czero = COMPLEX(0.0f, 0.0f);
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
     COMPLEX *a = new COMPLEX[m * n2];
     INTEGER lda = m;
     Claset("Full", m, n2, czero, czero, a, m);
-    COMPLEX *t = new COMPLEX[nb * n];
+    COMPLEX *t = new COMPLEX[nb * m];
     INTEGER ldt = nb;
     Claset("Full", nb, m, czero, czero, t, nb);
     INTEGER j = 0;
@@ -111,7 +90,7 @@ void Clqt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     //     Generate the (M+N)-by-(M+N) matrix Q by applying H to I
     //
-    const COMPLEX one = COMPLEX(1.0f, 0.0f);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     COMPLEX *q = new COMPLEX[n2 * n2];
     INTEGER ldq = n2;
     Claset("Full", n2, n2, czero, one, q, n2);
