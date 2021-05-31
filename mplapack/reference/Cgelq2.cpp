@@ -31,27 +31,6 @@
 
 void Cgelq2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input arguments
     //
     info = 0;
@@ -78,7 +57,7 @@ void Cgelq2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         //
         Clacgv(n - i + 1, &a[(i - 1) + (i - 1) * lda], lda);
         alpha = a[(i - 1) + (i - 1) * lda];
-        Clarfg(n - i + 1, a[(i - 1) + (i - 1) * lda], &a[(i - 1) + (min(i + 1, n) - 1) * lda], lda, tau[i - 1]);
+        Clarfg(n - i + 1, alpha, &a[(i - 1) + (min(i + 1, n) - 1) * lda], lda, tau[i - 1]);
         if (i < m) {
             //
             //           Apply H(i) to A(i+1:m,i:n) from the right
