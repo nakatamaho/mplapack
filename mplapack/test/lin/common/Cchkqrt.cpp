@@ -42,31 +42,6 @@ void Cchkqrt(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mv
     common cmn;
     common_write write(cmn);
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Initialize constants
     //
     char path[3];
@@ -83,6 +58,7 @@ void Cchkqrt(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mv
     if (tsterr) {
         Cerrqrt(path, nout);
     }
+    infot = 0;
     //
     //     Do for each value of M in MVAL.
     //

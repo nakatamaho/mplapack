@@ -414,6 +414,10 @@ void Cchkaa(void) {
     //
     //     Read a test path and the number of matrix types to use.
     //
+    for (int i = 0; i < 100; i++) {
+        iparms[i] = (INTEGER)0;
+    }
+    nmats = matmax;
     while (getline(cin, str)) {
         istringstream iss(str);
         vector<string> result;

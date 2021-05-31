@@ -419,6 +419,7 @@ void Rchkaa(void) {
     for (int i = 0; i < 100; i++) {
         iparms[i] = (INTEGER)0;
     }
+    nmats = matmax;
     while (getline(cin, str)) {
         istringstream iss(str);
         vector<string> result;

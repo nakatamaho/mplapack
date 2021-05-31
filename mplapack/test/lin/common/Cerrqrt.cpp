@@ -37,38 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cerrqrt(const char *path, INTEGER const nunit) {
-    common cmn;
-    common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     write(nout, star);
@@ -99,6 +67,7 @@ void Cerrqrt(const char *path, INTEGER const nunit) {
     //
     //     Cgeqrt
     //
+    strncpy(srnamt, "Cgeqrt", srnamt_len);
     infot = 1;
     INTEGER info = 0;
     Cgeqrt(-1, 0, 1, a, 1, t, 1, w, info);
@@ -118,6 +87,7 @@ void Cerrqrt(const char *path, INTEGER const nunit) {
     //
     //     Cgeqrt2
     //
+    strncpy(srnamt, "Cgeqrt2", srnamt_len);
     infot = 1;
     Cgeqrt2(-1, 0, a, 1, t, 1, info);
     chkxer("Cgeqrt2", infot, nout, lerr, ok);
@@ -133,6 +103,7 @@ void Cerrqrt(const char *path, INTEGER const nunit) {
     //
     //     Cgeqrt3
     //
+    strncpy(srnamt, "Cgeqrt3", srnamt_len);
     infot = 1;
     Cgeqrt3(-1, 0, a, 1, t, 1, info);
     chkxer("Cgeqrt3", infot, nout, lerr, ok);
@@ -148,6 +119,7 @@ void Cerrqrt(const char *path, INTEGER const nunit) {
     //
     //     Cgemqrt
     //
+    strncpy(srnamt, "Cgemqrt", srnamt_len);
     infot = 1;
     Cgemqrt("/", "N", 0, 0, 0, 1, a, 1, t, 1, c, 1, w, info);
     chkxer("Cgemqrt", infot, nout, lerr, ok);

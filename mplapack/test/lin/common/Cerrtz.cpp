@@ -35,43 +35,9 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Cerrtz(const char *path, INTEGER const nunit) {
-    common cmn;
-    common_write write(cmn);
-    // COMMON infoc
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     char c2[2];
@@ -97,6 +63,7 @@ void Cerrtz(const char *path, INTEGER const nunit) {
         //
         //        Ctzrzf
         //
+        strncpy(srnamt, "Ctzrzf", srnamt_len);
         infot = 1;
         Ctzrzf(-1, 0, a, 1, tau, w, 1, info);
         chkxer("Ctzrzf", infot, nout, lerr, ok);
