@@ -1,3 +1,23 @@
+    __complex__ double *afac_d;
+    __complex__ double *tau_d;
+    {
+        afac_d = new __complex__ double[std::max(int(lda * n), 1)];
+        tau_d = new __complex__ double[std::max(int(max(m, n)), 1)];
+        for (int p = 1; p <= m; p++) {
+            for (int q = 1; q <= n; q++) {
+                __real__ afac_d[(p - 1) + (q - 1) * lda] = a[(p - 1) + (q - 1) * lda].real();
+                __imag__ afac_d[(p - 1) + (q - 1) * lda] = a[(p - 1) + (q - 1) * lda].imag();
+            }
+        }
+        LAPACKE_zgelqf(LAPACK_COL_MAJOR, m, n, afac_d, lda, tau_d);
+        printf("af_d=");
+        printmat(m, n, afac_d, lda);
+        printf("\n");
+    }
+    delete[] afac_d;
+    delete[] tau_d;
+
+
     double *a_d = new double [ m * n];
     double *afac_d = new double [ m * n];
     double *work_d = new double [ lwork * 10] ;
