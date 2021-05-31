@@ -847,6 +847,12 @@ void printnum(complex < double >ctmp)
     return;
 }
 
+void printnum(__complex__ double ctmp)
+{
+    printf(P_FORMAT P_FORMAT "i", __real__ ctmp, __imag__ ctmp);
+    return;
+}
+
 void printnum(double rtmp)
 {
     printf(P_FORMAT, rtmp);
