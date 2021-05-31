@@ -36,6 +36,8 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
 #include <time.h>
 
 #include <iostream>

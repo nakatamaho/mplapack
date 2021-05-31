@@ -35,11 +35,9 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Cerrqrt(const char *path, INTEGER const nunit) {
-    //
-    nout = nunit;
-    write(nout, star);
     //
     //     Set the variables to innocuous values.
     //
