@@ -247,6 +247,7 @@ void printnum(double rtmp);
 void printnum(complex<double> ctmp);
 void printnum(long double rtmp);
 void printnum(complex<long double> ctmp);
+void printnum(__complex__ double ctmp);
 void sprintnum(char *buf, mpreal rtmp);
 void sprintnum_short(char *buf, mpreal rtmp);
 void sprintnum(char *buf, mpcomplex rtmp);
