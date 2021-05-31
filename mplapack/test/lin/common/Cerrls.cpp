@@ -35,41 +35,11 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Cerrls(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    // COMMON srnamc
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     char c2[2];
@@ -99,6 +69,7 @@ void Cerrls(const char *path, INTEGER const nunit) {
         //        Cgels
         //
         infot = 1;
+	strncpy(srnamt, "Cgels", srnamt_len);
         Cgels("/", 0, 0, 0, a, 1, b, 1, w, 1, info);
         chkxer("Cgels ", infot, nout, lerr, ok);
         infot = 2;
@@ -122,6 +93,7 @@ void Cerrls(const char *path, INTEGER const nunit) {
         //
         //        Cgelss
         //
+	strncpy(srnamt, "Cgelss", srnamt_len);
         infot = 1;
         Cgelss(-1, 0, 0, a, 1, b, 1, s, rcond, irnk, w, 1, rw, info);
         chkxer("Cgelss", infot, nout, lerr, ok);
@@ -140,6 +112,7 @@ void Cerrls(const char *path, INTEGER const nunit) {
         //
         //        Cgelsy
         //
+	strncpy(srnamt, "Cgelsy", srnamt_len);
         infot = 1;
         Cgelsy(-1, 0, 0, a, 1, b, 1, ip, rcond, irnk, w, 10, rw, info);
         chkxer("Cgelsy", infot, nout, lerr, ok);
@@ -161,6 +134,7 @@ void Cerrls(const char *path, INTEGER const nunit) {
         //
         //        Cgelsd
         //
+	strncpy(srnamt, "Cgelsd", srnamt_len);
         infot = 1;
         Cgelsd(-1, 0, 0, a, 1, b, 1, s, rcond, irnk, w, 10, rw, ip, info);
         chkxer("Cgelsd", infot, nout, lerr, ok);

@@ -35,41 +35,11 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Cerrqrtp(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     nout = nunit;
     //
     //     Set the variables to innocuous values.
@@ -98,6 +68,7 @@ void Cerrqrtp(const char *path, INTEGER const nunit) {
     //
     //     Ctpqrt
     //
+    strncpy(srnamt, "Ctpqrt", srnamt_len);
     infot = 1;
     COMPLEX b[nmax * nmax];
     INTEGER info = 0;
@@ -130,6 +101,7 @@ void Cerrqrtp(const char *path, INTEGER const nunit) {
     //
     //     Ctpqrt2
     //
+    strncpy(srnamt, "Ctpqrt2", srnamt_len);
     infot = 1;
     Ctpqrt2(-1, 0, 0, a, 1, b, 1, t, 1, info);
     chkxer("Ctpqrt2", infot, nout, lerr, ok);
@@ -151,6 +123,7 @@ void Cerrqrtp(const char *path, INTEGER const nunit) {
     //
     //     Ctpmqrt
     //
+    strncpy(srnamt, "Ctpmqrt", srnamt_len);
     infot = 1;
     Ctpmqrt("/", "N", 0, 0, 0, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
     chkxer("Ctpmqrt", infot, nout, lerr, ok);

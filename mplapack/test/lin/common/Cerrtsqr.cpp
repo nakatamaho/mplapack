@@ -35,40 +35,11 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Cerrtsqr(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     //
@@ -98,6 +69,7 @@ void Cerrtsqr(const char *path, INTEGER const nunit) {
     //
     //     Cgeqr
     //
+    strncpy(srnamt, "Cgeqr", srnamt_len);
     infot = 1;
     COMPLEX tau[nmax];
     INTEGER info = 0;
@@ -121,6 +93,7 @@ void Cerrtsqr(const char *path, INTEGER const nunit) {
     tau[1 - 1] = 1;
     tau[2 - 1] = 1;
     INTEGER nb = 1;
+    strncpy(srnamt, "Cgemqr", srnamt_len);
     infot = 1;
     Cgemqr("/", "N", 0, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
     chkxer("Cgemqr", infot, nout, lerr, ok);
@@ -157,6 +130,7 @@ void Cerrtsqr(const char *path, INTEGER const nunit) {
     //
     //     Cgelq
     //
+    strncpy(srnamt, "Cgelq", srnamt_len);
     infot = 1;
     Cgelq(-1, 0, a, 1, tau, 1, w, 1, info);
     chkxer("Cgelq", infot, nout, lerr, ok);
@@ -178,6 +152,7 @@ void Cerrtsqr(const char *path, INTEGER const nunit) {
     tau[1 - 1] = 1;
     tau[2 - 1] = 1;
     nb = 1;
+    strncpy(srnamt, "Cgemlq", srnamt_len);
     infot = 1;
     Cgemlq("/", "N", 0, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
     chkxer("Cgemlq", infot, nout, lerr, ok);

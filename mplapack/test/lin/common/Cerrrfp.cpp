@@ -35,38 +35,11 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Cerrrfp(INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     ok = true;
@@ -78,6 +51,7 @@ void Cerrrfp(INTEGER const nunit) {
     COMPLEX calpha = COMPLEX(1.0, 1.0);
     REAL beta = 1.0;
     //
+    strncpy(srnamt, "Cpftrf", srnamt_len);
     infot = 1;
     INTEGER info = 0;
     Cpftrf("/", "U", 0, a, info);
@@ -89,6 +63,7 @@ void Cerrrfp(INTEGER const nunit) {
     Cpftrf("N", "U", -1, a, info);
     chkxer("Cpftrf", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Cpftrs", srnamt_len);
     infot = 1;
     Cpftrs("/", "U", 0, 0, a, b, 1, info);
     chkxer("Cpftrs", infot, nout, lerr, ok);
@@ -105,6 +80,7 @@ void Cerrrfp(INTEGER const nunit) {
     Cpftrs("N", "U", 0, 0, a, b, 0, info);
     chkxer("Cpftrs", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Cpftri", srnamt_len);
     infot = 1;
     Cpftri("/", "U", 0, a, info);
     chkxer("Cpftri", infot, nout, lerr, ok);
@@ -115,6 +91,7 @@ void Cerrrfp(INTEGER const nunit) {
     Cpftri("N", "U", -1, a, info);
     chkxer("Cpftri", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Ctfsm", srnamt_len);
     infot = 1;
     Ctfsm("/", "L", "U", "C", "U", 0, 0, calpha, a, b, 1);
     chkxer("Ctfsm ", infot, nout, lerr, ok);
@@ -140,6 +117,7 @@ void Cerrrfp(INTEGER const nunit) {
     Ctfsm("N", "L", "U", "C", "U", 0, 0, calpha, a, b, 0);
     chkxer("Ctfsm ", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Ctftri", srnamt_len);
     infot = 1;
     Ctftri("/", "L", "N", 0, a, info);
     chkxer("Ctftri", infot, nout, lerr, ok);
@@ -153,6 +131,7 @@ void Cerrrfp(INTEGER const nunit) {
     Ctftri("N", "L", "N", -1, a, info);
     chkxer("Ctftri", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Ctfttr", srnamt_len);
     infot = 1;
     Ctfttr("/", "U", 0, a, b, 1, info);
     chkxer("Ctfttr", infot, nout, lerr, ok);
@@ -166,6 +145,7 @@ void Cerrrfp(INTEGER const nunit) {
     Ctfttr("N", "U", 0, a, b, 0, info);
     chkxer("Ctfttr", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Ctrttf", srnamt_len);
     infot = 1;
     Ctrttf("/", "U", 0, a, 1, b, info);
     chkxer("Ctrttf", infot, nout, lerr, ok);
@@ -179,6 +159,7 @@ void Cerrrfp(INTEGER const nunit) {
     Ctrttf("N", "U", 0, a, 0, b, info);
     chkxer("Ctrttf", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Ctfttp", srnamt_len);
     infot = 1;
     Ctfttp("/", "U", 0, a, b, info);
     chkxer("Ctfttp", infot, nout, lerr, ok);
@@ -189,6 +170,7 @@ void Cerrrfp(INTEGER const nunit) {
     Ctfttp("N", "U", -1, a, b, info);
     chkxer("Ctfttp", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Ctpttf", srnamt_len);
     infot = 1;
     Ctpttf("/", "U", 0, a, b, info);
     chkxer("Ctpttf", infot, nout, lerr, ok);
@@ -199,6 +181,7 @@ void Cerrrfp(INTEGER const nunit) {
     Ctpttf("N", "U", -1, a, b, info);
     chkxer("Ctpttf", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Ctrttp", srnamt_len);
     infot = 1;
     Ctrttp("/", 0, a, 1, b, info);
     chkxer("Ctrttp", infot, nout, lerr, ok);
@@ -209,6 +192,7 @@ void Cerrrfp(INTEGER const nunit) {
     Ctrttp("U", 0, a, 0, b, info);
     chkxer("Ctrttp", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Ctpttr", srnamt_len);
     infot = 1;
     Ctpttr("/", 0, a, b, 1, info);
     chkxer("Ctpttr", infot, nout, lerr, ok);
@@ -219,6 +203,7 @@ void Cerrrfp(INTEGER const nunit) {
     Ctpttr("U", 0, a, b, 0, info);
     chkxer("Ctpttr", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Chfrk", srnamt_len);
     infot = 1;
     Chfrk("/", "U", "N", 0, 0, alpha, a, 1, beta, b);
     chkxer("Chfrk ", infot, nout, lerr, ok);

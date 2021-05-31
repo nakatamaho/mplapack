@@ -35,39 +35,11 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Cerrlqt(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     //
@@ -97,6 +69,7 @@ void Cerrlqt(const char *path, INTEGER const nunit) {
     //
     //     Cgelqt
     //
+    strncpy(srnamt, "Cgelqt", srnamt_len);
     infot = 1;
     INTEGER info = 0;
     Cgelqt(-1, 0, 1, a, 1, t, 1, w, info);
@@ -116,6 +89,7 @@ void Cerrlqt(const char *path, INTEGER const nunit) {
     //
     //     Cgelqt3
     //
+    strncpy(srnamt, "Cgelqt3", srnamt_len);
     infot = 1;
     Cgelqt3(-1, 0, a, 1, t, 1, info);
     chkxer("Cgelqt3", infot, nout, lerr, ok);
@@ -131,6 +105,7 @@ void Cerrlqt(const char *path, INTEGER const nunit) {
     //
     //     Cgemlqt
     //
+    strncpy(srnamt, "Cgemlqt", srnamt_len);
     infot = 1;
     Cgemlqt("/", "N", 0, 0, 0, 1, a, 1, t, 1, c, 1, w, info);
     chkxer("Cgemlqt", infot, nout, lerr, ok);

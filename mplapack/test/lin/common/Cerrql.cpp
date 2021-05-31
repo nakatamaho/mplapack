@@ -35,40 +35,11 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Cerrql(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     write(nout, star);
@@ -100,6 +71,7 @@ void Cerrql(const char *path, INTEGER const nunit) {
     //
     //     Cgeqlf
     //
+    strncpy(srnamt, "Cgeqlf", srnamt_len);
     infot = 1;
     INTEGER info = 0;
     Cgeqlf(-1, 0, a, 1, b, w, 1, info);
@@ -116,6 +88,7 @@ void Cerrql(const char *path, INTEGER const nunit) {
     //
     //     Cgeql2
     //
+    strncpy(srnamt, "Cgeql2", srnamt_len);
     infot = 1;
     Cgeql2(-1, 0, a, 1, b, w, info);
     chkxer("Cgeql2", infot, nout, lerr, ok);
@@ -128,6 +101,7 @@ void Cerrql(const char *path, INTEGER const nunit) {
     //
     //     Cgeqls
     //
+    strncpy(srnamt, "Cgeqls", srnamt_len);
     infot = 1;
     Cgeqls(-1, 0, 0, a, 1, x, b, 1, w, 1, info);
     chkxer("Cgeqls", infot, nout, lerr, ok);
@@ -152,6 +126,7 @@ void Cerrql(const char *path, INTEGER const nunit) {
     //
     //     Cungql
     //
+    strncpy(srnamt, "Cungql", srnamt_len);
     infot = 1;
     Cungql(-1, 0, 0, a, 1, x, w, 1, info);
     chkxer("Cungql", infot, nout, lerr, ok);
@@ -176,6 +151,7 @@ void Cerrql(const char *path, INTEGER const nunit) {
     //
     //     Cung2l
     //
+    strncpy(srnamt, "Cung2l", srnamt_len);
     infot = 1;
     Cung2l(-1, 0, 0, a, 1, x, w, info);
     chkxer("Cung2l", infot, nout, lerr, ok);
@@ -197,6 +173,7 @@ void Cerrql(const char *path, INTEGER const nunit) {
     //
     //     Cunmql
     //
+    strncpy(srnamt, "Cunmql", srnamt_len);
     infot = 1;
     Cunmql("/", "N", 0, 0, 0, a, 1, x, af, 1, w, 1, info);
     chkxer("Cunmql", infot, nout, lerr, ok);
@@ -236,6 +213,7 @@ void Cerrql(const char *path, INTEGER const nunit) {
     //
     //     Cunm2l
     //
+    strncpy(srnamt, "Cunm2l", srnamt_len);
     infot = 1;
     Cunm2l("/", "N", 0, 0, 0, a, 1, x, af, 1, w, info);
     chkxer("Cunm2l", infot, nout, lerr, ok);

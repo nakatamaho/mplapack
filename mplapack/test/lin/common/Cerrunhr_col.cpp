@@ -35,42 +35,11 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Cerrunhr_col(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    // COMMON infoc
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     nout = nunit;
     //
     //     Set the variables to innocuous values.
@@ -97,6 +66,7 @@ void Cerrunhr_col(const char *path, INTEGER const nunit) {
     //     Cunhr_col
     //
     //
+    strncpy(srnamt, "Cunhr_col", srnamt_len);
     infot = 1;
     INTEGER info = 0;
     Cunhr_col(-1, 0, 1, a, 1, t, 1, d, info);

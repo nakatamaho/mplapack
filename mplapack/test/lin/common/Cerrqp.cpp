@@ -35,43 +35,11 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Cerrqp(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     char c2[2];
@@ -98,6 +66,7 @@ void Cerrqp(const char *path, INTEGER const nunit) {
         //
         //        Cgeqp3
         //
+        strncpy(srnamt, "Cgeqp3", srnamt_len);
         infot = 1;
         Cgeqp3(-1, 0, a, 1, ip, tau, w, lw, rw, info);
         chkxer("Cgeqp3", infot, nout, lerr, ok);
