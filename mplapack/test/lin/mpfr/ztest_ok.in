@@ -32,8 +32,12 @@ ZSY   11               List types on next line if 0 < NTYPES < 11
 ZTR   18               List types on next line if 0 < NTYPES < 18
 ZTP   18               List types on next line if 0 < NTYPES < 18
 ZTB   17               List types on next line if 0 < NTYPES < 17
+ZQR    8               List types on next line if 0 < NTYPES <  8
+ZRQ    8               List types on next line if 0 < NTYPES <  8
+ZQL    8               List types on next line if 0 < NTYPES <  8
 ZEQ
 ZQT
 ZQX
 ZTQ
 ZTS
+ZHH
