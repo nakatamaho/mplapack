@@ -3,7 +3,7 @@
  *	Nakata, Maho
  * 	All rights reserved.
  *
- * $Id: Clacgv.debug.cpp,v 1.9 2010/08/07 05:50:10 nakatamaho Exp $
+ * $Id: Rlaset.debug.cpp,v 1.8 2010/08/07 05:50:10 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,7 +27,6 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
 #include <mplapack.h>
 #include <mplapack_debug.h>
@@ -39,39 +38,47 @@
 #include <iostream>
 #endif
 
-#define MIN_INCX -10
-#define MAX_INCX 10
-#define MAX_N 100
+#define MIN_N 0
+#define MAX_N 10
+#define MIN_INC 1
+#define MAX_INC 1
 #define MAX_ITER 10
 
 REAL_REF maxdiff = 0.0;
 
-void Clacgv_test() {
+void Clacgv_test(void) {
     int errorflag = FALSE;
+    int j = 0;
     REAL_REF diff;
-    for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
-        for (int n = 0; n < MAX_N; n++) {
-#if defined VERBOSE_TEST
-            printf("# n:%d incx:%d\n", n, incx);
-#endif
+
+    for (int n = MIN_N; n < MAX_N; n++) {
+        for (int incx = 1; incx <= MAX_INC; incx++) {
             COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
             COMPLEX *x = new COMPLEX[veclen(n, incx)];
-            int j = 0;
+            j = 0;
+#if defined VERBOSE_TEST
+            printf("#n:%d incx:%d \n", n, incx);
+#endif
             while (j < MAX_ITER) {
                 set_random_vector(x_ref, x, veclen(n, incx));
+                printf("x=");
+                printvec(x, veclen(n, incx));
+                printf("\n");
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-                zlacgv_f77(&n, x_ref, &incx);
+                int incx_ref = (int)incx;
+                zlacgv_f77(&n, x_ref, &incx_ref);
 #else
                 Clacgv(n, x_ref, incx);
 #endif
                 Clacgv(n, x, incx);
-
+                printf("xout=");
+                printvec(x, veclen(n, incx));
+                printf("\n");
                 diff = infnorm(x_ref, x, veclen(n, incx), 1);
                 if (diff > EPSILON) {
-                    printf("error: ");
-                    printnum(diff);
-                    printf("\n");
                     errorflag = TRUE;
+                    printf("Error\n");
+                    printvec(x_ref, n);
                 }
                 if (maxdiff < diff)
                     maxdiff = diff;
@@ -82,12 +89,12 @@ void Clacgv_test() {
 #endif
                 j++;
             }
-            delete[] x_ref;
             delete[] x;
+            delete[] x_ref;
         }
     }
     if (errorflag == TRUE) {
-        printf("*** Testing Clacgv failed ***\n");
+        printf("*** Testing Rlaset failed ***\n");
         exit(1);
     }
 }

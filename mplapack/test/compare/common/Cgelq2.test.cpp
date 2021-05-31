@@ -34,6 +34,7 @@
 #include <blas.h>
 #include <lapack.h>
 
+#define VERBOSE_TEST
 #if defined VERBOSE_TEST
 #include <iostream>
 #endif
@@ -62,15 +63,15 @@ void Cgelq2_test() {
         for (n = MIN_N; n <= m; n++) {
             for (lda = max(1, m); lda <= MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
-                printf("# m %d n %d k %d lda %d\n", (int)m, (int)n, (int)k, (int)lda);
+                printf("# m %d n %d lda %d\n", (int)m, (int)n, (int)lda);
 #endif
                 COMPLEX *A = new COMPLEX[matlen(lda, n)];
-                COMPLEX *tau = new COMPLEX[veclen(k, 1)];
-                COMPLEX *work = new COMPLEX[veclen(n, 1)];
+                COMPLEX *tau = new COMPLEX[veclen(min(m, n), 1)];
+                COMPLEX *work = new COMPLEX[veclen(m, 1)];
 
                 COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
-                COMPLEX_REF *tau_ref = new COMPLEX_REF[veclen(k, 1)];
-                COMPLEX_REF *work_ref = new COMPLEX_REF[veclen(n, 1)];
+                COMPLEX_REF *tau_ref = new COMPLEX_REF[veclen(min(m, n), 1)];
+                COMPLEX_REF *work_ref = new COMPLEX_REF[veclen(m, 1)];
 
                 for (iter = 0; iter < MAX_ITER; iter++) {
                     set_random_vector(A_ref, A, matlen(lda, n));
@@ -89,10 +90,16 @@ void Cgelq2_test() {
                         printnum(diff);
                         printf("\n");
                         errorflag = TRUE;
+                        printf("A=");
+                        printmat(lda, n, A, lda);
+                        printf("\n");
+                        printf("A_ref=");
+                        printmat(lda, n, A_ref, lda);
+                        printf("\n");
                     }
                     if (maxdiff < diff)
                         maxdiff = diff;
-                    diff = infnorm(tau_ref, tau, veclen(k, 1), 1);
+                    diff = infnorm(tau_ref, tau, veclen(min(m, n), 1), 1);
                     if (diff > EPSILON2) {
                         printf("error in t: ");
                         printnum(diff);
@@ -102,7 +109,7 @@ void Cgelq2_test() {
                     if (maxdiff < diff)
                         maxdiff = diff;
 
-                    diff = infnorm(work_ref, work, veclen(n, 1), 1);
+                    diff = infnorm(work_ref, work, veclen(m, 1), 1);
                     if (diff > EPSILON2) {
                         printf("error in t: ");
                         printnum(diff);
