@@ -39,31 +39,6 @@ using fem::common;
 REAL Cqpt01(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPLEX *af, INTEGER const lda, COMPLEX *tau, INTEGER *jpvt, COMPLEX *work, INTEGER const lwork) {
     REAL return_value = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     const REAL zero = 0.0;
     return_value = zero;
     //
