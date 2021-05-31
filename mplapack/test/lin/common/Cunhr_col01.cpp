@@ -38,36 +38,6 @@ using fem::common;
 
 void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER const nb1, INTEGER const nb2, REAL *result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     .. Return values ..
-    //
-    //  =====================================================================
-    //
-    //     ..
-    //     .. Local allocatable arrays
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //
     //     TEST MATRICES WITH HALF OF MATRIX BEING ZEROS
     //
     INTEGER iseed[4] = {1988, 1989, 1990, 1991};
@@ -126,7 +96,6 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     lwork = max({lwork, nb2_ub * n, nb2_ub * m});
     //
-    FEM_THROW_UNHANDLED("executable allocate: allocate(work(lwork))");
     //
     //     End allocate memory for WORK.
     //
