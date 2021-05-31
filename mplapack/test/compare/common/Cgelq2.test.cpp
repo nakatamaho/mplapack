@@ -140,8 +140,8 @@ void Cgelq2_test() {
 }
 
 int main(int argc, char *argv[]) {
-    printf("*** Testing Cung2l start ***\n");
+    printf("*** Testing Cgelq2 start ***\n");
     Cgelq2_test();
-    printf("*** Testing Cung2l successful ***\n");
+    printf("*** Testing Cgelq2 successful ***\n");
     return (0);
 }
