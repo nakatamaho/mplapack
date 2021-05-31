@@ -69,33 +69,6 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
     INTEGER jp2 = 0;
     COMPLEX d21 = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     info = 0;
     //
     //     Initialize ALPHA for use in choosing pivot block size.
@@ -381,7 +354,7 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
         //
         //        computing blocks of NB columns at a time
         //
-        for (j = ((k - 1) / nb) * nb + 1; j <= 1; j = j - nb) {
+        for (j = ((k - 1) / nb) * nb + 1; j >= 1; j = j - nb) {
             jb = min(nb, k - j + 1);
             //
             //           Update the upper triangle of the diagonal block
