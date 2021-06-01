@@ -78,7 +78,7 @@ void Cgeqrf_test() {
                 for (iter = 0; iter < MAX_ITER; iter++) {
                     set_random_vector(A_ref, A, matlen(lda, n));
                     set_random_vector(tau_ref, tau, veclen(min(m, n), 1));
-                    set_random_vector(work_ref, work, veclen(n*64, 1));
+                    set_random_vector(work_ref, work, veclen(n * 64, 1));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                     zgeqrf_f77(&m, &n, A_ref, &lda, tau_ref, work_ref, &lwork_ref, &info_ref);
 #else
