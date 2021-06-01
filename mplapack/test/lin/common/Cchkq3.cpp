@@ -178,7 +178,7 @@ void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //
                     //                 Compute norm(svd(a) - svd(r))
                     //
-                    result[1 - 1] = 0.0; // Cqrt12(m, n, a, lda, s, work, lwork, rwork);
+                    result[1 - 1] = Cqrt12(m, n, a, lda, s, work, lwork, rwork);
                     //
                     //                 Compute norm( A*P - Q*R )
                     //
