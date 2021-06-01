@@ -1,3 +1,6 @@
+2021/6/1    Nakata Maho <maho@riken.jp> 1.0.0
+            * ztest.in passed for MPFR version (without test for driver routines). Some tests using SVDs fail, however, may not be a big problem and will be fixed.
+
 2021/5/26   Nakata Maho <maho@riken.jp> 1.0.0
             * dtest.in passed for MPFR version (without test for driver routines)
             * add examples for _Float64x
