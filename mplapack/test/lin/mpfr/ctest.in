@@ -1,4 +1,4 @@
-Data file for testing COMPLEX*16 LAPACK linear equation routines
+Data file for testing MULTIPLE PRECISION COMPLEX MPLAPACK linear equation routines
 7                      Number of values of M
 0 1 2 3 5 10 50        Values of M (row dimension)
 7                      Number of values of N
