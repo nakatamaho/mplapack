@@ -31,23 +31,6 @@
 
 void Cgesv(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     info = 0;
@@ -61,7 +44,7 @@ void Cgesv(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, I
         info = -7;
     }
     if (info != 0) {
-        Mxerbla("Cgesv ", -info);
+        Mxerbla("Cgesv", -info);
         return;
     }
     //

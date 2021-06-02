@@ -166,7 +166,7 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
     }
     //
     if (info != 0) {
-        Mxerbla("Cgges ", -info);
+        Mxerbla("Cgges", -info);
         return;
     } else if (lquery) {
         return;

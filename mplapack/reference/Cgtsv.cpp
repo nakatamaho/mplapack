@@ -32,29 +32,6 @@
 inline REAL cabs1(COMPLEX zdum) { return (abs(zdum.real()) + abs(zdum.imag())); }
 
 void Cgtsv(INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
-    //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
     COMPLEX zdum = 0.0;
     //     ..
     //     .. Executable Statements ..
@@ -68,7 +45,7 @@ void Cgtsv(INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX
         info = -7;
     }
     if (info != 0) {
-        Mxerbla("Cgtsv ", -info);
+        Mxerbla("Cgtsv", -info);
         return;
     }
     //

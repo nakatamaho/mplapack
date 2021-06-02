@@ -172,7 +172,7 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
     }
     //
     if (info != 0) {
-        Mxerbla("Cggev3 ", -info);
+        Mxerbla("Cggev3", -info);
         return;
     } else if (lquery) {
         return;

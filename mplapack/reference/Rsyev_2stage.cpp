@@ -31,29 +31,6 @@
 
 void Rsyev_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *w, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -90,7 +67,7 @@ void Rsyev_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a, 
     }
     //
     if (info != 0) {
-        Mxerbla("Rsyev_2stage ", -info);
+        Mxerbla("Rsyev_2stage", -info);
         return;
     } else if (lquery) {
         return;

@@ -82,7 +82,7 @@ void Rsysv_rook(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, 
     }
     //
     if (info != 0) {
-        Mxerbla("Rsysv_rook ", -info);
+        Mxerbla("Rsysv_rook", -info);
         return;
     } else if (lquery) {
         return;

@@ -31,29 +31,6 @@
 
 void Chpev(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, REAL *rwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -70,7 +47,7 @@ void Chpev(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, REA
     }
     //
     if (info != 0) {
-        Mxerbla("Chpev ", -info);
+        Mxerbla("Chpev", -info);
         return;
     }
     //

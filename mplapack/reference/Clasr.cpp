@@ -31,29 +31,6 @@
 
 void Clasr(const char *side, const char *pivot, const char *direct, INTEGER const m, INTEGER const n, REAL *c, REAL *s, COMPLEX *a, INTEGER const lda) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters
     //
     INTEGER info = 0;
@@ -71,7 +48,7 @@ void Clasr(const char *side, const char *pivot, const char *direct, INTEGER cons
         info = 9;
     }
     if (info != 0) {
-        Mxerbla("Clasr ", info);
+        Mxerbla("Clasr", info);
         return;
     }
     //

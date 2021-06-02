@@ -31,25 +31,6 @@
 
 void Rsbgv(const char *jobz, const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const kb, REAL *ab, INTEGER const ldab, REAL *bb, INTEGER const ldbb, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -74,7 +55,7 @@ void Rsbgv(const char *jobz, const char *uplo, INTEGER const n, INTEGER const ka
         info = -12;
     }
     if (info != 0) {
-        Mxerbla("Rsbgv ", -info);
+        Mxerbla("Rsbgv", -info);
         return;
     }
     //

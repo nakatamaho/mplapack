@@ -31,33 +31,6 @@
 
 void Cgees(const char *jobvs, const char *sort, bool (*select)(COMPLEX), INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER &sdim, COMPLEX *w, COMPLEX *vs, INTEGER const ldvs, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //     .. Function Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input arguments
     //
     info = 0;
@@ -117,7 +90,7 @@ void Cgees(const char *jobvs, const char *sort, bool (*select)(COMPLEX), INTEGER
     }
     //
     if (info != 0) {
-        Mxerbla("Cgees ", -info);
+        Mxerbla("Cgees", -info);
         return;
     } else if (lquery) {
         return;

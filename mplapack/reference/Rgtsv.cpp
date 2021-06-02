@@ -36,27 +36,6 @@ void Rgtsv(INTEGER const n, INTEGER const nrhs, REAL *dl, REAL *d, REAL *du, REA
     REAL temp = 0.0;
     INTEGER j = 0;
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     info = 0;
     if (n < 0) {
         info = -1;
@@ -66,7 +45,7 @@ void Rgtsv(INTEGER const n, INTEGER const nrhs, REAL *dl, REAL *d, REAL *du, REA
         info = -7;
     }
     if (info != 0) {
-        Mxerbla("Rgtsv ", -info);
+        Mxerbla("Rgtsv", -info);
         return;
     }
     //

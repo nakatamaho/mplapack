@@ -49,31 +49,6 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
     INTEGER j = 0;
     INTEGER i = 0;
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input arguments.
     //
     info = 0;
@@ -126,7 +101,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
     }
     //
     if (info != 0) {
-        Mxerbla("Rgels ", -info);
+        Mxerbla("Rgels", -info);
         return;
     } else if (lquery) {
         return;

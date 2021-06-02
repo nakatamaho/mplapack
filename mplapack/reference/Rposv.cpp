@@ -31,25 +31,6 @@
 
 void Rposv(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     info = 0;
@@ -65,7 +46,7 @@ void Rposv(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         info = -7;
     }
     if (info != 0) {
-        Mxerbla("Rposv ", -info);
+        Mxerbla("Rposv", -info);
         return;
     }
     //

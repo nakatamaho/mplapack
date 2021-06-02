@@ -31,27 +31,6 @@
 
 void Cspmv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *ap, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     INTEGER info = 0;
@@ -65,7 +44,7 @@ void Cspmv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *ap, 
         info = 9;
     }
     if (info != 0) {
-        Mxerbla("Cspmv ", info);
+        Mxerbla("Cspmv", info);
         return;
     }
     //

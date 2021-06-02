@@ -31,25 +31,6 @@
 
 void Cpbsv(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const nrhs, COMPLEX *ab, INTEGER const ldab, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     info = 0;
@@ -67,7 +48,7 @@ void Cpbsv(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const nr
         info = -8;
     }
     if (info != 0) {
-        Mxerbla("Cpbsv ", -info);
+        Mxerbla("Cpbsv", -info);
         return;
     }
     //

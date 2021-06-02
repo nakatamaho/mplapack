@@ -31,29 +31,6 @@
 
 void Rla_geamv(INTEGER const trans, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     INTEGER info = 0;
@@ -71,7 +48,7 @@ void Rla_geamv(INTEGER const trans, INTEGER const m, INTEGER const n, REAL const
         info = 11;
     }
     if (info != 0) {
-        Mxerbla("Rla_geamv ", info);
+        Mxerbla("Rla_geamv", info);
         return;
     }
     //

@@ -31,29 +31,6 @@
 
 void Ctfsm(const char *transr, const char *side, const char *uplo, const char *trans, const char *diag, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, COMPLEX *b, INTEGER const ldb) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //     ..
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     INTEGER info = 0;
@@ -79,7 +56,7 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
         info = -11;
     }
     if (info != 0) {
-        Mxerbla("Ctfsm ", -info);
+        Mxerbla("Ctfsm", -info);
         return;
     }
     //

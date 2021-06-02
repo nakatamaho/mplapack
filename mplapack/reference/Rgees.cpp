@@ -146,7 +146,7 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
     }
     //
     if (info != 0) {
-        Mxerbla("Rgees ", -info);
+        Mxerbla("Rgees", -info);
         return;
     } else if (lquery) {
         return;

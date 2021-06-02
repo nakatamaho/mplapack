@@ -31,23 +31,6 @@
 
 void Rgesv(INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *b, INTEGER const ldb, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     info = 0;
@@ -61,7 +44,7 @@ void Rgesv(INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, INTE
         info = -7;
     }
     if (info != 0) {
-        Mxerbla("Rgesv ", -info);
+        Mxerbla("Rgesv", -info);
         return;
     }
     //

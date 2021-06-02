@@ -74,29 +74,6 @@ void Rsbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     INTEGER jj = 0;
     INTEGER itmp1 = 0;
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     wantz = Mlsame(jobz, "V");
@@ -158,7 +135,7 @@ void Rsbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     }
     //
     if (info != 0) {
-        Mxerbla("Rsbevx_2stage ", -info);
+        Mxerbla("Rsbevx_2stage", -info);
         return;
     } else if (lquery) {
         return;

@@ -31,25 +31,6 @@
 
 void Cppsv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     info = 0;
@@ -63,7 +44,7 @@ void Cppsv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, C
         info = -6;
     }
     if (info != 0) {
-        Mxerbla("Cppsv ", -info);
+        Mxerbla("Cppsv", -info);
         return;
     }
     //

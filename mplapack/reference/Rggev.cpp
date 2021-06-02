@@ -65,31 +65,6 @@ void Rggev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
     REAL temp = 0.0;
     INTEGER jr = 0;
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Decode the input arguments
     //
     if (Mlsame(jobvl, "N")) {
@@ -158,7 +133,7 @@ void Rggev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
     }
     //
     if (info != 0) {
-        Mxerbla("Rggev ", -info);
+        Mxerbla("Rggev", -info);
         return;
     } else if (lquery) {
         return;

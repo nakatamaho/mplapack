@@ -31,29 +31,6 @@
 
 void Rla_gbamv(INTEGER const trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL const alpha, REAL *ab, INTEGER const ldab, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     INTEGER info = 0;
@@ -75,7 +52,7 @@ void Rla_gbamv(INTEGER const trans, INTEGER const m, INTEGER const n, INTEGER co
         info = 11;
     }
     if (info != 0) {
-        Mxerbla("Rla_gbamv ", info);
+        Mxerbla("Rla_gbamv", info);
         return;
     }
     //

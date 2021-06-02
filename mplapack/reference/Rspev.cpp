@@ -31,29 +31,6 @@
 
 void Rspev(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -70,7 +47,7 @@ void Rspev(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL *
     }
     //
     if (info != 0) {
-        Mxerbla("Rspev ", -info);
+        Mxerbla("Rspev", -info);
         return;
     }
     //

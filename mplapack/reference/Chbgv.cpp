@@ -31,25 +31,6 @@
 
 void Chbgv(const char *jobz, const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const kb, COMPLEX *ab, INTEGER const ldab, COMPLEX *bb, INTEGER const ldbb, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, REAL *rwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -74,7 +55,7 @@ void Chbgv(const char *jobz, const char *uplo, INTEGER const n, INTEGER const ka
         info = -12;
     }
     if (info != 0) {
-        Mxerbla("Chbgv ", -info);
+        Mxerbla("Chbgv", -info);
         return;
     }
     //

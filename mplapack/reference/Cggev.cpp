@@ -168,7 +168,7 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
     }
     //
     if (info != 0) {
-        Mxerbla("Cggev ", -info);
+        Mxerbla("Cggev", -info);
         return;
     } else if (lquery) {
         return;
