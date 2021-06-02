@@ -31,29 +31,6 @@
 
 void Rgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *af, INTEGER const ldaf, INTEGER *ipiv, char *equed, REAL *r, REAL *c, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL &rcond, REAL *ferr, REAL *berr, REAL *work, INTEGER *iwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     info = 0;
     bool nofact = Mlsame(fact, "N");
     bool equil = Mlsame(fact, "E");
@@ -64,7 +41,7 @@ void Rgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
     const REAL one = 1.0;
     REAL bignum = 0.0;
     if (nofact || equil) {
-        equed = (char *)"N";
+        *equed = 'N';
         rowequ = false;
         colequ = false;
     } else {
