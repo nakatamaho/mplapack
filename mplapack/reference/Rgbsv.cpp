@@ -31,23 +31,6 @@
 
 void Rgbsv(INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, REAL *ab, INTEGER const ldab, INTEGER *ipiv, REAL *b, INTEGER const ldb, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     info = 0;
@@ -65,7 +48,7 @@ void Rgbsv(INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nr
         info = -9;
     }
     if (info != 0) {
-        Mxerbla("Rgbsv ", -info);
+        Mxerbla("Rgbsv", -info);
         return;
     }
     //
