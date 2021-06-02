@@ -62,7 +62,7 @@ void Cposvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const n
     const REAL one = 1.0;
     REAL bignum = 0.0;
     if (nofact || equil) {
-        equed = (char *)'N';
+        *equed = 'N';
         rcequ = false;
     } else {
         rcequ = Mlsame(equed, "Y");

@@ -31,31 +31,10 @@
 
 void Claqhp(const char *uplo, INTEGER const n, COMPLEX *ap, REAL *s, REAL const scond, REAL const amax, char *equed) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Quick return if possible
     //
     if (n <= 0) {
-        equed = (char *)"N";
+        *equed = 'N';
         return;
     }
     //
@@ -74,7 +53,7 @@ void Claqhp(const char *uplo, INTEGER const n, COMPLEX *ap, REAL *s, REAL const 
         //
         //        No equilibration
         //
-        equed = (char *)"N";
+        *equed = 'N';
     } else {
         //
         //        Replace A by diag(S) * A * diag(S).
@@ -106,7 +85,7 @@ void Claqhp(const char *uplo, INTEGER const n, COMPLEX *ap, REAL *s, REAL const 
                 jc += n - j + 1;
             }
         }
-        equed = (char *)"Y";
+        *equed = 'Y';
     }
     //
     //     End of Claqhp

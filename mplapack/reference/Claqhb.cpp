@@ -55,7 +55,7 @@ void Claqhb(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
     //     Quick return if possible
     //
     if (n <= 0) {
-        equed = (char *)"N";
+        *equed = 'N';
         return;
     }
     //
@@ -73,7 +73,7 @@ void Claqhb(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
         //
         //        No equilibration
         //
-        equed = (char *)"N";
+        *equed = 'N';
     } else {
         //
         //        Replace A by diag(S) * A * diag(S).
@@ -101,7 +101,7 @@ void Claqhb(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
                 }
             }
         }
-        equed = (char *)"Y";
+        *equed = 'Y';
     }
     //
     //     End of Claqhb

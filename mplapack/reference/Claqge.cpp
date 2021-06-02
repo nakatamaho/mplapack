@@ -53,7 +53,7 @@ void Claqge(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     //     Quick return if possible
     //
     if (m <= 0 || n <= 0) {
-        equed = (char *)"N";
+        *equed = 'N';
         return;
     }
     //
@@ -75,7 +75,7 @@ void Claqge(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
             //
             //           No column scaling
             //
-            equed = (char *)"N";
+            *equed = 'N';
         } else {
             //
             //           Column scaling
@@ -86,7 +86,7 @@ void Claqge(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
                     a[(i - 1) + (j - 1) * lda] = cj * a[(i - 1) + (j - 1) * lda];
                 }
             }
-            equed = (char *)"C";
+            *equed = 'C';
         }
     } else if (colcnd >= thresh) {
         //
@@ -97,7 +97,7 @@ void Claqge(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
                 a[(i - 1) + (j - 1) * lda] = r[i - 1] * a[(i - 1) + (j - 1) * lda];
             }
         }
-        equed = (char *)"R";
+        *equed = 'R';
     } else {
         //
         //        Row and column scaling
@@ -108,7 +108,7 @@ void Claqge(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
                 a[(i - 1) + (j - 1) * lda] = cj * r[i - 1] * a[(i - 1) + (j - 1) * lda];
             }
         }
-        equed = (char *)"B";
+        *equed = 'B';
     }
     //
     //     End of Claqge

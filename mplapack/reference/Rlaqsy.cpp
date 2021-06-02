@@ -31,29 +31,10 @@
 
 void Rlaqsy(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *s, REAL const scond, REAL const amax, char *equed) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Quick return if possible
     //
     if (n <= 0) {
-        equed = (char *)"N";
+        *equed = 'N';
         return;
     }
     //
@@ -71,7 +52,7 @@ void Rlaqsy(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
         //
         //        No equilibration
         //
-        equed = (char *)"N";
+        *equed = 'N';
     } else {
         //
         //        Replace A by diag(S) * A * diag(S).
@@ -97,7 +78,7 @@ void Rlaqsy(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
                 }
             }
         }
-        equed = (char *)"Y";
+        *equed = 'Y';
     }
     //
     //     End of Rlaqsy

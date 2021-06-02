@@ -64,7 +64,7 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
     const REAL one = 1.0;
     REAL bignum = 0.0;
     if (nofact || equil) {
-        equed = (char *)"N";
+        *equed = 'N';
         rowequ = false;
         colequ = false;
     } else {
