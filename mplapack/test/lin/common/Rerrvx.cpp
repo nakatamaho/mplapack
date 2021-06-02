@@ -41,34 +41,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
     //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     nout = nunit;
     char c2[2];
     c2[0] = path[1];
@@ -117,19 +89,19 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rgesv
         //
-        strncpy(srnamt, "Rgesv ", srnamt_len);
+        strncpy(srnamt, "Rgesv", srnamt_len);
         infot = 1;
         Rgesv(-1, 0, a, 1, ip, b, 1, info);
-        chkxer("Rgesv ", infot, nout, lerr, ok);
+        chkxer("Rgesv", infot, nout, lerr, ok);
         infot = 2;
         Rgesv(0, -1, a, 1, ip, b, 1, info);
-        chkxer("Rgesv ", infot, nout, lerr, ok);
+        chkxer("Rgesv", infot, nout, lerr, ok);
         infot = 4;
         Rgesv(2, 1, a, 1, ip, b, 2, info);
-        chkxer("Rgesv ", infot, nout, lerr, ok);
+        chkxer("Rgesv", infot, nout, lerr, ok);
         infot = 7;
         Rgesv(2, 1, a, 2, ip, b, 1, info);
-        chkxer("Rgesv ", infot, nout, lerr, ok);
+        chkxer("Rgesv", infot, nout, lerr, ok);
         //
         //        Rgesvx
         //
@@ -175,25 +147,25 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rgbsv
         //
-        strncpy(srnamt, "Rgbsv ", srnamt_len);
+        strncpy(srnamt, "Rgbsv", srnamt_len);
         infot = 1;
         Rgbsv(-1, 0, 0, 0, a, 1, ip, b, 1, info);
-        chkxer("Rgbsv ", infot, nout, lerr, ok);
+        chkxer("Rgbsv", infot, nout, lerr, ok);
         infot = 2;
         Rgbsv(1, -1, 0, 0, a, 1, ip, b, 1, info);
-        chkxer("Rgbsv ", infot, nout, lerr, ok);
+        chkxer("Rgbsv", infot, nout, lerr, ok);
         infot = 3;
         Rgbsv(1, 0, -1, 0, a, 1, ip, b, 1, info);
-        chkxer("Rgbsv ", infot, nout, lerr, ok);
+        chkxer("Rgbsv", infot, nout, lerr, ok);
         infot = 4;
         Rgbsv(0, 0, 0, -1, a, 1, ip, b, 1, info);
-        chkxer("Rgbsv ", infot, nout, lerr, ok);
+        chkxer("Rgbsv", infot, nout, lerr, ok);
         infot = 6;
         Rgbsv(1, 1, 1, 0, a, 3, ip, b, 1, info);
-        chkxer("Rgbsv ", infot, nout, lerr, ok);
+        chkxer("Rgbsv", infot, nout, lerr, ok);
         infot = 9;
         Rgbsv(2, 0, 0, 0, a, 1, ip, b, 1, info);
-        chkxer("Rgbsv ", infot, nout, lerr, ok);
+        chkxer("Rgbsv", infot, nout, lerr, ok);
         //
         //        Rgbsvx
         //
@@ -248,13 +220,13 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         strncpy(srnamt, "Rgtsv", srnamt_len);
         infot = 1;
         Rgtsv(-1, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], b, 1, info);
-        chkxer("Rgtsv ", infot, nout, lerr, ok);
+        chkxer("Rgtsv", infot, nout, lerr, ok);
         infot = 2;
         Rgtsv(0, -1, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], b, 1, info);
-        chkxer("Rgtsv ", infot, nout, lerr, ok);
+        chkxer("Rgtsv", infot, nout, lerr, ok);
         infot = 7;
         Rgtsv(2, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], b, 1, info);
-        chkxer("Rgtsv ", infot, nout, lerr, ok);
+        chkxer("Rgtsv", infot, nout, lerr, ok);
         //
         //        Rgtsvx
         //
@@ -282,22 +254,22 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rposv
         //
-        strncpy(srnamt, "Rposv ", srnamt_len);
+        strncpy(srnamt, "Rposv", srnamt_len);
         infot = 1;
         Rposv("/", 0, 0, a, 1, b, 1, info);
-        chkxer("Rposv ", infot, nout, lerr, ok);
+        chkxer("Rposv", infot, nout, lerr, ok);
         infot = 2;
         Rposv("U", -1, 0, a, 1, b, 1, info);
-        chkxer("Rposv ", infot, nout, lerr, ok);
+        chkxer("Rposv", infot, nout, lerr, ok);
         infot = 3;
         Rposv("U", 0, -1, a, 1, b, 1, info);
-        chkxer("Rposv ", infot, nout, lerr, ok);
+        chkxer("Rposv", infot, nout, lerr, ok);
         infot = 5;
         Rposv("U", 2, 0, a, 1, b, 2, info);
-        chkxer("Rposv ", infot, nout, lerr, ok);
+        chkxer("Rposv", infot, nout, lerr, ok);
         infot = 7;
         Rposv("U", 2, 0, a, 2, b, 1, info);
-        chkxer("Rposv ", infot, nout, lerr, ok);
+        chkxer("Rposv", infot, nout, lerr, ok);
         //
         //        Rposvx
         //
@@ -339,19 +311,19 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rppsv
         //
-        strncpy(srnamt, "Rppsv ", srnamt_len);
+        strncpy(srnamt, "Rppsv", srnamt_len);
         infot = 1;
         Rppsv("/", 0, 0, a, b, 1, info);
-        chkxer("Rppsv ", infot, nout, lerr, ok);
+        chkxer("Rppsv", infot, nout, lerr, ok);
         infot = 2;
         Rppsv("U", -1, 0, a, b, 1, info);
-        chkxer("Rppsv ", infot, nout, lerr, ok);
+        chkxer("Rppsv", infot, nout, lerr, ok);
         infot = 3;
         Rppsv("U", 0, -1, a, b, 1, info);
-        chkxer("Rppsv ", infot, nout, lerr, ok);
+        chkxer("Rppsv", infot, nout, lerr, ok);
         infot = 6;
         Rppsv("U", 2, 0, a, b, 1, info);
-        chkxer("Rppsv ", infot, nout, lerr, ok);
+        chkxer("Rppsv", infot, nout, lerr, ok);
         //
         //        Rppsvx
         //
@@ -387,25 +359,25 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rpbsv
         //
-        strncpy(srnamt, "Rpbsv ", srnamt_len);
+        strncpy(srnamt, "Rpbsv", srnamt_len);
         infot = 1;
         Rpbsv("/", 0, 0, 0, a, 1, b, 1, info);
-        chkxer("Rpbsv ", infot, nout, lerr, ok);
+        chkxer("Rpbsv", infot, nout, lerr, ok);
         infot = 2;
         Rpbsv("U", -1, 0, 0, a, 1, b, 1, info);
-        chkxer("Rpbsv ", infot, nout, lerr, ok);
+        chkxer("Rpbsv", infot, nout, lerr, ok);
         infot = 3;
         Rpbsv("U", 1, -1, 0, a, 1, b, 1, info);
-        chkxer("Rpbsv ", infot, nout, lerr, ok);
+        chkxer("Rpbsv", infot, nout, lerr, ok);
         infot = 4;
         Rpbsv("U", 0, 0, -1, a, 1, b, 1, info);
-        chkxer("Rpbsv ", infot, nout, lerr, ok);
+        chkxer("Rpbsv", infot, nout, lerr, ok);
         infot = 6;
         Rpbsv("U", 1, 1, 0, a, 1, b, 2, info);
-        chkxer("Rpbsv ", infot, nout, lerr, ok);
+        chkxer("Rpbsv", infot, nout, lerr, ok);
         infot = 8;
         Rpbsv("U", 2, 0, 0, a, 1, b, 1, info);
-        chkxer("Rpbsv ", infot, nout, lerr, ok);
+        chkxer("Rpbsv", infot, nout, lerr, ok);
         //
         //        Rpbsvx
         //
@@ -450,16 +422,16 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rptsv
         //
-        strncpy(srnamt, "Rptsv ", srnamt_len);
+        strncpy(srnamt, "Rptsv", srnamt_len);
         infot = 1;
         Rptsv(-1, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], b, 1, info);
-        chkxer("Rptsv ", infot, nout, lerr, ok);
+        chkxer("Rptsv", infot, nout, lerr, ok);
         infot = 2;
         Rptsv(0, -1, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], b, 1, info);
-        chkxer("Rptsv ", infot, nout, lerr, ok);
+        chkxer("Rptsv", infot, nout, lerr, ok);
         infot = 6;
         Rptsv(2, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], b, 1, info);
-        chkxer("Rptsv ", infot, nout, lerr, ok);
+        chkxer("Rptsv", infot, nout, lerr, ok);
         //
         //        Rptsvx
         //
@@ -484,28 +456,28 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rsysv
         //
-        strncpy(srnamt, "Rsysv ", srnamt_len);
+        strncpy(srnamt, "Rsysv", srnamt_len);
         infot = 1;
         Rsysv("/", 0, 0, a, 1, ip, b, 1, w, 1, info);
-        chkxer("Rsysv ", infot, nout, lerr, ok);
+        chkxer("Rsysv", infot, nout, lerr, ok);
         infot = 2;
         Rsysv("U", -1, 0, a, 1, ip, b, 1, w, 1, info);
-        chkxer("Rsysv ", infot, nout, lerr, ok);
+        chkxer("Rsysv", infot, nout, lerr, ok);
         infot = 3;
         Rsysv("U", 0, -1, a, 1, ip, b, 1, w, 1, info);
-        chkxer("Rsysv ", infot, nout, lerr, ok);
+        chkxer("Rsysv", infot, nout, lerr, ok);
         infot = 5;
         Rsysv("U", 2, 0, a, 1, ip, b, 2, w, 1, info);
         chkxer("Rsysv_rook", infot, nout, lerr, ok);
         infot = 8;
         Rsysv("U", 2, 0, a, 2, ip, b, 1, w, 1, info);
-        chkxer("Rsysv ", infot, nout, lerr, ok);
+        chkxer("Rsysv", infot, nout, lerr, ok);
         infot = 10;
         Rsysv("U", 0, 0, a, 1, ip, b, 1, w, 0, info);
-        chkxer("Rsysv ", infot, nout, lerr, ok);
+        chkxer("Rsysv", infot, nout, lerr, ok);
         infot = 10;
         Rsysv("U", 0, 0, a, 1, ip, b, 1, w, -2, info);
-        chkxer("Rsysv ", infot, nout, lerr, ok);
+        chkxer("Rsysv", infot, nout, lerr, ok);
         //
         //        Rsysvx
         //
@@ -646,19 +618,19 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
         //        Rspsv
         //
-        strncpy(srnamt, "Rspsv ", srnamt_len);
+        strncpy(srnamt, "Rspsv", srnamt_len);
         infot = 1;
         Rspsv("/", 0, 0, a, ip, b, 1, info);
-        chkxer("Rspsv ", infot, nout, lerr, ok);
+        chkxer("Rspsv", infot, nout, lerr, ok);
         infot = 2;
         Rspsv("U", -1, 0, a, ip, b, 1, info);
-        chkxer("Rspsv ", infot, nout, lerr, ok);
+        chkxer("Rspsv", infot, nout, lerr, ok);
         infot = 3;
         Rspsv("U", 0, -1, a, ip, b, 1, info);
-        chkxer("Rspsv ", infot, nout, lerr, ok);
+        chkxer("Rspsv", infot, nout, lerr, ok);
         infot = 7;
         Rspsv("U", 2, 0, a, ip, b, 1, info);
-        chkxer("Rspsv ", infot, nout, lerr, ok);
+        chkxer("Rspsv", infot, nout, lerr, ok);
         //
         //        Rspsvx
         //

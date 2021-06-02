@@ -89,7 +89,7 @@ void Clavsy(const char *uplo, const char *trans, const char *diag, INTEGER const
         info = -9;
     }
     if (info != 0) {
-        Mxerbla("Clavsy ", -info);
+        Mxerbla("Clavsy", -info);
         return;
     }
     //

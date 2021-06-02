@@ -89,7 +89,7 @@ void Rlavsp(const char *uplo, const char *trans, const char *diag, INTEGER const
         info = -8;
     }
     if (info != 0) {
-        Mxerbla("Rlavsp ", -info);
+        Mxerbla("Rlavsp", -info);
         return;
     }
     //

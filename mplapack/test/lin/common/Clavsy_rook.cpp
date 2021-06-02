@@ -89,7 +89,7 @@ void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
         info = -9;
     }
     if (info != 0) {
-        Mxerbla("Clavsy_rook ", -info);
+        Mxerbla("Clavsy_rook", -info);
         return;
     }
     //

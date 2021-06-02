@@ -78,7 +78,7 @@ void Csbmv(const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alp
         info = 11;
     }
     if (info != 0) {
-        Mxerbla("Csbmv ", info);
+        Mxerbla("Csbmv", info);
         return;
     }
     //

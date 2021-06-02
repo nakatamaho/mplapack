@@ -89,7 +89,7 @@ void Clavsp(const char *uplo, const char *trans, const char *diag, INTEGER const
         info = -8;
     }
     if (info != 0) {
-        Mxerbla("Clavsp ", -info);
+        Mxerbla("Clavsp", -info);
         return;
     }
     //

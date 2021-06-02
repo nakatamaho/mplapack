@@ -89,7 +89,7 @@ void Rlavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
         info = -9;
     }
     if (info != 0) {
-        Mxerbla("Rlavsy_rook ", -info);
+        Mxerbla("Rlavsy_rook", -info);
         return;
     }
     //
