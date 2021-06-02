@@ -146,7 +146,7 @@ void Rpot05(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
                 axbi = min(axbi, tmp);
             }
         }
-        tmp = berr[k - 1] / ((n + 1) * eps + (n + 1) * unfl / max(axbi, (n + 1) * unfl));
+        tmp = berr[k - 1] / (castREAL(n + 1) * eps + castREAL(n + 1) * unfl / max(axbi, castREAL(n + 1) * unfl));
         if (k == 1) {
             reslts[2 - 1] = tmp;
         } else {
