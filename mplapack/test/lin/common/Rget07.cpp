@@ -50,27 +50,6 @@ void Rget07(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *a, INT
     REAL tmp = 0.0;
     REAL axbi = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Quick exit if N = 0 or NRHS = 0.
     //
     if (n <= 0 || nrhs <= 0) {
@@ -139,7 +118,7 @@ void Rget07(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *a, INT
                 axbi = min(axbi, tmp);
             }
         }
-        tmp = berr[k - 1] / ((n + 1) * eps + (n + 1) * unfl / max(axbi, (n + 1) * unfl));
+        tmp = berr[k - 1] / ((castREAL(n) + 1) * eps + (castREAL(n) + 1) * unfl / max(axbi, (castREAL(n) + 1) * unfl));
         if (k == 1) {
             reslts[2 - 1] = tmp;
         } else {

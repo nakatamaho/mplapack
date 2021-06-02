@@ -112,39 +112,6 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     static const char *format_9998 = "(1x,a,', FACT=''',a1,''', TRANS=''',a1,''', N=',i5,', type ',i2,"
                                      "', test(',i1,')=',a)";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize constants and the random number seed.
-    //
     path[0] = 'R';
     path[1] = 'G';
     path[2] = 'E';
@@ -157,6 +124,7 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     if (tsterr) {
         Rerrvx(path, nout);
     }
+    infot = 0;
     //
     //     Set the block size and minimum block size for testing.
     //
@@ -197,6 +165,7 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
             rcondc = one / cndnum;
             //
+            strncpy(srnamt, "Rlatms", srnamt_len);
             Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
             //
             //           Check error code from Rlatms.
@@ -301,12 +270,14 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         //                    Factor the matrix A.
                         //
+                        strncpy(srnamt, "Rgetrf", srnamt_len);
                         Rgetrf(n, n, afac, lda, iwork, info);
                         //
                         //                    Form the inverse of A.
                         //
                         Rlacpy("Full", n, n, afac, lda, a, lda);
                         lwork = nmax * max(3, nrhs);
+                        strncpy(srnamt, "Rgetri", srnamt_len);
                         Rgetri(n, a, lda, iwork, work, lwork, info);
                         //
                         //                    Compute the 1-norm condition number of A.
@@ -345,6 +316,7 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         //                    Form an exact solution and set the right hand side.
                         //
+                        strncpy(srnamt, "Rlarhs", srnamt_len);
                         Rlarhs(path, &xtype, "Full", trans, n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         xtype = 'C';
                         Rlacpy("Full", n, nrhs, b, lda, bsav, lda);
@@ -359,12 +331,13 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             Rlacpy("Full", n, n, a, lda, afac, lda);
                             Rlacpy("Full", n, nrhs, b, lda, x, lda);
                             //
+                            strncpy(srnamt, "Rgesv", srnamt_len);
                             Rgesv(n, nrhs, afac, lda, iwork, x, lda, info);
                             //
                             //                       Check error code from Rgesv .
                             //
                             if (info != izero) {
-                                Alaerh(path, "Rgesv ", info, izero, " ", n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Rgesv", info, izero, " ", n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             //                       Reconstruct matrix from factors and compute
@@ -394,7 +367,7 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                         Aladhd(nout, path);
                                     }
                                     sprintnum_short(buf, result[k - 1]);
-                                    write(nout, "(1x,a,', N =',i5,', type ',i2,', test(',i2,') =',a)"), "Rgesv ", n, imat, k, buf;
+                                    write(nout, "(1x,a,', N =',i5,', type ',i2,', test(',i2,') =',a)"), "Rgesv", n, imat, k, buf;
                                     nfail++;
                                 }
                             }
@@ -418,6 +391,7 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //                    Solve the system and compute the condition number
                         //                    and error bounds using Rgesvx.
                         //
+                        strncpy(srnamt, "Rgesvx", srnamt_len);
                         Rgesvx(fact, trans, n, nrhs, a, lda, afac, lda, iwork, equed, s, &s[(n + 1) - 1], b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                         //
                         //                    Check the error code from Rgesvx.
