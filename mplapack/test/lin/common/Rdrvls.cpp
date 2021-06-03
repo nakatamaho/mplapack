@@ -489,8 +489,8 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //                       Test 7:  Compute relative error in svd
                             //
                             if (rank > 0) {
-                                Raxpy(mnmin, -one, copys, 1, s, 1);
-                                result[7 - 1] = Rasum(mnmin, s, 1) / Rasum(mnmin, copys, 1) / (eps * castREAL(mnmin));
+                                Raxpy(castREAL(mnmin), -one, copys, 1, s, 1);
+                                result[7 - 1] = Rasum(castREAL(mnmin), s, 1) / Rasum(castREAL(mnmin), copys, 1) / (eps * castREAL(mnmin));
                             } else {
                                 result[7 - 1] = zero;
                             }
@@ -538,8 +538,8 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //                       Test 11:  Compute relative error in svd
                             //
                             if (rank > 0) {
-                                Raxpy(mnmin, -one, copys, 1, s, 1);
-                                result[11 - 1] = Rasum(mnmin, s, 1) / Rasum(mnmin, copys, 1) / (eps * castREAL(mnmin));
+                                Raxpy(castREAL(mnmin), -one, copys, 1, s, 1);
+                                result[11 - 1] = Rasum(castREAL(mnmin), s, 1) / Rasum(castREAL(mnmin), copys, 1) / (eps * castREAL(mnmin));
                             } else {
                                 result[11 - 1] = zero;
                             }

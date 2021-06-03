@@ -38,29 +38,6 @@ using fem::common;
 
 void Rqrt16(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Quick exit if M = 0 or N = 0 or NRHS = 0
     //
     const REAL zero = 0.0;
@@ -104,7 +81,7 @@ void Rqrt16(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         } else if (anorm <= zero || xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max({resid, ((bnorm / anorm) / xnorm) / (max(m, n) * eps)});
+            resid = max(resid, ((bnorm / anorm) / xnorm) / (castREAL(max(m, n)) * eps));
         }
     }
     //
