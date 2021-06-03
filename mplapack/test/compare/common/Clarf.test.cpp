@@ -147,8 +147,10 @@ void Clarf_test2(const char *side) {
                         printf("\n");
 #endif
                     }
+                    delete[] work_ref;
                     delete[] v_ref;
                     delete[] C_ref;
+                    delete[] work;
                     delete[] v;
                     delete[] C;
                 }
