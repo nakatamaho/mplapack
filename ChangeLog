@@ -1,6 +1,7 @@
-2021/6/1    Nakata Maho <maho@riken.jp> 1.0.0
-            * tests for some driver routines passed for MPFR version.
-              (e.g., RGE, RGT, RPP, RPT and RSY).
+2021/6/3    Nakata Maho <maho@riken.jp> 1.0.0
+            * rtests.in for driver routines passed for MPFR version except for 
+              RGB and RPO.
+              Some test in RLS using SVDs failed, it will be fixed.
 
 2021/6/1    Nakata Maho <maho@riken.jp> 1.0.0
             * ztest.in passed for MPFR version (without test for driver routines). 
