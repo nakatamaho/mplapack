@@ -1,5 +1,5 @@
 lib_LTLIBRARIES = libeig_mpfr.la
-libeig_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mplapack/test/fable
+libeig_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mplapack/test/fable
 libeig_mpfr_la_SOURCES = $(EIG_SOURCES)
 
 EIG_SOURCES = \
@@ -198,10 +198,12 @@ mplapack_mpfr_eigtest_PROGRAMS = \
 xeigtstR_mpfr \
 xeigtstC_mpfr
 
+$(mplapack_mpfr_eigtest_PROGRAMS): $(lib_LTLIBRARIES)
+
 xeigtstR_mpfr_SOURCES  = ../common/Rchkee.cpp  ../../../../mpblas/test/common/mplapack.test.cpp
-xeigtstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs)
+xeigtstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR_mpfr_CXXFLAGS = $(cxxflags)
 
 xeigtstC_mpfr_SOURCES  = ../common/Cchkee.cpp ../../../../mpblas/test/common/mplapack.test.cpp
-xeigtstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs)
+xeigtstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_mpfr_CXXFLAGS = $(cxxflags)
