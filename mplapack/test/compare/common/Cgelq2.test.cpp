@@ -34,7 +34,6 @@
 #include <blas.h>
 #include <lapack.h>
 
-#define VERBOSE_TEST
 #if defined VERBOSE_TEST
 #include <iostream>
 #endif
