@@ -42,32 +42,6 @@ void Rerrtz(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
     //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     char c2[2];
     c2[0] = path[1];
     c2[1] = path[2];
@@ -91,6 +65,7 @@ void Rerrtz(const char *path, INTEGER const nunit) {
         //
         //        Rtzrzf
         //
+        strncpy(srnamt, "Rtzrzf", srnamt_len);
         infot = 1;
         strncpy(srnamt, "Rtzrzf", srnamt_len);
         Rtzrzf(-1, 0, a, 1, tau, w, 1, info);

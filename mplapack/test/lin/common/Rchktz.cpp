@@ -67,39 +67,6 @@ void Rchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     REAL result[ntests];
     INTEGER k = 0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize constants and the random number seed.
-    //
     path[0] = 'R';
     path[1] = 'T';
     path[2] = 'Z';
@@ -116,6 +83,7 @@ void Rchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     if (tsterr) {
         Rerrtz(path, nout);
     }
+    infot = 0;
     //
     for (im = 1; im <= nm; im = im + 1) {
         //
@@ -169,6 +137,7 @@ void Rchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //                 Call Rtzrzf to reduce the upper trapezoidal matrix to
                     //                 upper triangular form.
                     //
+                    strncpy(srnamt, "Rtzrzf", srnamt_len);
                     Rtzrzf(m, n, a, lda, tau, work, lwork, info);
                     //
                     //                 Compute norm(svd(a) - svd(r))

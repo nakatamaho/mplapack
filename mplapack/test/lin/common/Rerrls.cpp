@@ -35,40 +35,11 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Rerrls(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     char c2[2];
@@ -96,30 +67,32 @@ void Rerrls(const char *path, INTEGER const nunit) {
         //
         //        Rgels
         //
+        strncpy(srnamt, "Rgels", srnamt_len);
         infot = 1;
         Rgels("/", 0, 0, 0, a, 1, b, 1, w, 1, info);
-        chkxer("Rgels ", infot, nout, lerr, ok);
+        chkxer("Rgels", infot, nout, lerr, ok);
         infot = 2;
         Rgels("N", -1, 0, 0, a, 1, b, 1, w, 1, info);
-        chkxer("Rgels ", infot, nout, lerr, ok);
+        chkxer("Rgels", infot, nout, lerr, ok);
         infot = 3;
         Rgels("N", 0, -1, 0, a, 1, b, 1, w, 1, info);
-        chkxer("Rgels ", infot, nout, lerr, ok);
+        chkxer("Rgels", infot, nout, lerr, ok);
         infot = 4;
         Rgels("N", 0, 0, -1, a, 1, b, 1, w, 1, info);
-        chkxer("Rgels ", infot, nout, lerr, ok);
+        chkxer("Rgels", infot, nout, lerr, ok);
         infot = 6;
         Rgels("N", 2, 0, 0, a, 1, b, 2, w, 2, info);
-        chkxer("Rgels ", infot, nout, lerr, ok);
+        chkxer("Rgels", infot, nout, lerr, ok);
         infot = 8;
         Rgels("N", 2, 0, 0, a, 2, b, 1, w, 2, info);
-        chkxer("Rgels ", infot, nout, lerr, ok);
+        chkxer("Rgels", infot, nout, lerr, ok);
         infot = 10;
         Rgels("N", 1, 1, 0, a, 1, b, 1, w, 1, info);
-        chkxer("Rgels ", infot, nout, lerr, ok);
+        chkxer("Rgels", infot, nout, lerr, ok);
         //
         //        Rgelss
         //
+        strncpy(srnamt, "Rgelss", srnamt_len);
         infot = 1;
         Rgelss(-1, 0, 0, a, 1, b, 1, s, rcond, irnk, w, 1, info);
         chkxer("Rgelss", infot, nout, lerr, ok);
@@ -138,6 +111,7 @@ void Rerrls(const char *path, INTEGER const nunit) {
         //
         //        Rgelsy
         //
+        strncpy(srnamt, "Rgelsy", srnamt_len);
         infot = 1;
         Rgelsy(-1, 0, 0, a, 1, b, 1, ip, rcond, irnk, w, 10, info);
         chkxer("Rgelsy", infot, nout, lerr, ok);
@@ -159,6 +133,7 @@ void Rerrls(const char *path, INTEGER const nunit) {
         //
         //        Rgelsd
         //
+        strncpy(srnamt, "Rgelsd", srnamt_len);
         infot = 1;
         Rgelsd(-1, 0, 0, a, 1, b, 1, s, rcond, irnk, w, 10, ip, info);
         chkxer("Rgelsd", infot, nout, lerr, ok);

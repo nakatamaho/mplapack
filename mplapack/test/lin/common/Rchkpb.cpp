@@ -54,7 +54,7 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype;
+    char xtype[1];
     INTEGER nkd = 0;
     const INTEGER ntypes = 8;
     INTEGER nimat = 0;
@@ -63,17 +63,17 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER ldab = 0;
     INTEGER iuplo = 0;
     INTEGER koff = 0;
-    char uplo;
-    char packit;
+    char uplo[1];
+    char packit[1];
     INTEGER imat = 0;
     bool zerot = false;
-    char type;
+    char type[1];
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    char dist[1];
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER iw = 0;
@@ -92,39 +92,6 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER nrhs = 0;
     INTEGER k = 0;
     REAL rcond = 0.0;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize constants and the random number seed.
     //
     path[0] = 'R';
     path[1] = 'P';
@@ -150,7 +117,7 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, 1);
-        xtype = 'N';
+        xtype[0] = 'N';
         //
         //        Set limits on the number of loop iterations.
         //
@@ -178,12 +145,12 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 koff = 1;
                 if (iuplo == 1) {
-                    uplo = 'U';
+                    uplo[0] = 'U';
                     koff = max((INTEGER)1, kd + 2 - n);
-                    packit = 'Q';
+                    packit[0] = 'Q';
                 } else {
-                    uplo = 'L';
-                    packit = 'B';
+                    uplo[0] = 'L';
+                    packit[0] = 'B';
                 }
                 //
                 for (imat = 1; imat <= nimat; imat = imat + 1) {
@@ -206,15 +173,15 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                    Set up parameters with Rlatb4 and generate a test
                         //                    matrix with Rlatms.
                         //
-                        Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+                        Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                         //
                         strncpy(srnamt, "Rlatms", srnamt_len);
-                        Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kd, kd, &packit, &a[koff - 1], ldab, work, info);
+                        Rlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kd, kd, packit, &a[koff - 1], ldab, work, info);
                         //
                         //                    Check error code from Rlatms.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Rlatms", info, 0, &uplo, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rlatms", info, 0, uplo, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
                             goto statement_60;
                         }
                     } else if (izero > 0) {
@@ -285,12 +252,12 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //
                         Rlacpy("Full", kd + 1, n, a, ldab, afac, ldab);
                         strncpy(srnamt, "Rpbtrf", srnamt_len);
-                        Rpbtrf(&uplo, n, kd, afac, ldab, info);
+                        Rpbtrf(uplo, n, kd, afac, ldab, info);
                         //
                         //                    Check error code from Rpbtrf.
                         //
                         if (info != izero) {
-                            Alaerh(path, "Rpbtrf", info, izero, &uplo, n, n, kd, kd, nb, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rpbtrf", info, izero, uplo, n, n, kd, kd, nb, imat, nfail, nerrs, nout);
                             goto statement_50;
                         }
                         //
@@ -305,7 +272,7 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                    residual.
                         //
                         Rlacpy("Full", kd + 1, n, afac, ldab, ainv, ldab);
-                        Rpbt01(&uplo, n, kd, a, ldab, ainv, ldab, rwork, result[1 - 1]);
+                        Rpbt01(uplo, n, kd, a, ldab, ainv, ldab, rwork, result[1 - 1]);
                         //
                         //                    Print the test ratio if it is .GE. THRESH.
                         //
@@ -332,11 +299,11 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //
                         Rlaset("Full", n, n, zero, one, ainv, lda);
                         strncpy(srnamt, "Rpbtrs", srnamt_len);
-                        Rpbtrs(&uplo, n, kd, n, afac, ldab, ainv, lda, info);
+                        Rpbtrs(uplo, n, kd, n, afac, ldab, ainv, lda, info);
                         //
                         //                    Compute RCONDC = 1/(norm(A) * norm(inv(A))).
                         //
-                        anorm = Rlansb("1", &uplo, n, kd, a, ldab, rwork);
+                        anorm = Rlansb("1", uplo, n, kd, a, ldab, rwork);
                         ainvnm = Rlange("1", n, n, ainv, lda, rwork);
                         if (anorm <= zero || ainvnm <= zero) {
                             rcondc = one;
@@ -350,21 +317,21 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             //+    TEST 2
                             //                    Solve and compute residual for A * X = B.
                             //
-                            Rlarhs(path, &xtype, &uplo, " ", n, n, kd, kd, nrhs, a, ldab, xact, lda, b, lda, iseed, info);
+                            Rlarhs(path, xtype, uplo, " ", n, n, kd, kd, nrhs, a, ldab, xact, lda, b, lda, iseed, info);
                             strncpy(srnamt, "Rlarhs", srnamt_len);
                             Rlacpy("Full", n, nrhs, b, lda, x, lda);
                             //
                             strncpy(srnamt, "Rpbtrs", srnamt_len);
-                            Rpbtrs(&uplo, n, kd, nrhs, afac, ldab, x, lda, info);
+                            Rpbtrs(uplo, n, kd, nrhs, afac, ldab, x, lda, info);
                             //
                             //                    Check error code from Rpbtrs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "Rpbtrs", info, 0, &uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Rpbtrs", info, 0, uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Rlacpy("Full", n, nrhs, b, lda, work, lda);
-                            Rpbt02(&uplo, n, kd, nrhs, a, ldab, x, lda, work, lda, rwork, result[2 - 1]);
+                            Rpbt02(uplo, n, kd, nrhs, a, ldab, x, lda, work, lda, rwork, result[2 - 1]);
                             //
                             //+    TEST 3
                             //                    Check solution from generated exact solution.
@@ -375,16 +342,16 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             //                    Use iterative refinement to improve the solution.
                             //
                             strncpy(srnamt, "Rpbrfs", srnamt_len);
-                            Rpbrfs(&uplo, n, kd, nrhs, a, ldab, afac, ldab, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
+                            Rpbrfs(uplo, n, kd, nrhs, a, ldab, afac, ldab, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
                             //
                             //                    Check error code from Rpbrfs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "Rpbrfs", info, 0, &uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Rpbrfs", info, 0, uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
-                            Rpbt05(&uplo, n, kd, nrhs, a, ldab, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[5 - 1]);
+                            Rpbt05(uplo, n, kd, nrhs, a, ldab, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[5 - 1]);
                             //
                             //                       Print information about the tests that did not
                             //                       pass the threshold.
@@ -408,12 +375,12 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                    Get an estimate of RCOND = 1/CNDNUM.
                         //
                         strncpy(srnamt, "Rpbcon", srnamt_len);
-                        Rpbcon(&uplo, n, kd, afac, ldab, anorm, rcond, work, iwork, info);
+                        Rpbcon(uplo, n, kd, afac, ldab, anorm, rcond, work, iwork, info);
                         //
                         //                    Check error code from Rpbcon.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Rpbcon", info, 0, &uplo, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rpbcon", info, 0, uplo, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         result[7 - 1] = Rget06(rcond, rcondc);

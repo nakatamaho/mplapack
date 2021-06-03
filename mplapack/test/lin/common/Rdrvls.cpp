@@ -72,7 +72,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER iscale = 0;
     INTEGER itype = 0;
     INTEGER itran = 0;
-    char trans;
+    char trans[1];
     REAL wq[1];
     INTEGER info = 0;
     INTEGER lwork_Rgels = 0;
@@ -90,7 +90,6 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER nrows = 0;
     INTEGER ncols = 0;
     INTEGER ldwork = 0;
-    REAL work[lwork];
     const REAL one = 1.0;
     const INTEGER ntests = 16;
     REAL result[ntests];
@@ -99,42 +98,6 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER rank = 0;
     REAL normb = 0.0;
     INTEGER j = 0;
-    INTEGER iwork[liwork];
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Allocatable Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize constants and the random number seed.
     //
     path[0] = 'R';
     path[1] = 'L';
@@ -153,7 +116,8 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Test the error exits
     //
-
+    xlaenv(2, 2);
+    xlaenv(9, smlsiz);
     if (tsterr) {
         Rerrls(path, nout);
     }
@@ -163,6 +127,9 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     if ((nm == 0 || nn == 0) && thresh == zero) {
         Alahd(nout, path);
     }
+    infot = 0;
+    xlaenv(2, 2);
+    xlaenv(9, smlsiz);
     //
     //     Compute maximal workspace needed for all routines
     //
@@ -214,16 +181,16 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (irank == 1) {
                                 for (itran = 1; itran <= 2; itran = itran + 1) {
                                     if (itran == 1) {
-                                        trans = 'N';
+                                        trans[0] = 'N';
                                     } else {
-                                        trans = 'T';
+                                        trans[0] = 'T';
                                     }
                                     //
                                     //                             Compute workspace needed for Rgels
-                                    Rgels(&trans, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
+                                    Rgels(trans, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
                                     lwork_Rgels = castINTEGER(wq[1 - 1]);
                                     //                             Compute workspace needed for Rgetsls
-                                    Rgetsls(&trans, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
+                                    Rgetsls(trans, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
                                     lwork_Rgetsls = castINTEGER(wq[1 - 1]);
                                 }
                             }
@@ -249,6 +216,8 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     lwlsy = lwork;
     //
+    REAL *work = new REAL[lwork];
+    INTEGER *iwork = new INTEGER[liwork];
     for (im = 1; im <= nm; im = im + 1) {
         m = mval[im - 1];
         lda = max((INTEGER)1, m);
@@ -281,11 +250,11 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 //
                                 for (itran = 1; itran <= 2; itran = itran + 1) {
                                     if (itran == 1) {
-                                        trans = 'N';
+                                        trans[0] = 'N';
                                         nrows = m;
                                         ncols = n;
                                     } else {
-                                        trans = 'T';
+                                        trans[0] = 'T';
                                         nrows = n;
                                         ncols = m;
                                     }
@@ -297,7 +266,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         Rlarnv(2, iseed, ncols * nrhs, work);
                                         Rscal(ncols * nrhs, one / castREAL(ncols), work, 1);
                                     }
-                                    Rgemm(&trans, "No transpose", nrows, nrhs, ncols, one, copya, lda, work, ldwork, zero, b, ldb);
+                                    Rgemm(trans, "No transpose", nrows, nrhs, ncols, one, copya, lda, work, ldwork, zero, b, ldb);
                                     Rlacpy("Full", nrows, nrhs, b, ldb, copyb, ldb);
                                     //
                                     //                             Solve LS or overdetermined system
@@ -306,9 +275,10 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         Rlacpy("Full", m, n, copya, lda, a, lda);
                                         Rlacpy("Full", nrows, nrhs, copyb, ldb, b, ldb);
                                     }
-                                    Rgels(&trans, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
+                                    strncpy(srnamt, "Rgels", srnamt_len);
+                                    Rgels(trans, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
                                     if (info != 0) {
-                                        Alaerh(path, "Rgels ", info, 0, &trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
+                                        Alaerh(path, "Rgels", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                                     }
                                     //
                                     //                             Check correctness of results
@@ -317,18 +287,18 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     if (nrows > 0 && nrhs > 0) {
                                         Rlacpy("Full", nrows, nrhs, copyb, ldb, c, ldb);
                                     }
-                                    Rqrt16(&trans, m, n, nrhs, copya, lda, b, ldb, c, ldb, work, result[1 - 1]);
+                                    Rqrt16(trans, m, n, nrhs, copya, lda, b, ldb, c, ldb, work, result[1 - 1]);
                                     //
                                     if ((itran == 1 && m >= n) || (itran == 2 && m < n)) {
                                         //
                                         //                                Solving LS system
                                         //
-                                        result[2 - 1] = Rqrt17(&trans, 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
+                                        result[2 - 1] = Rqrt17(trans, 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
                                     } else {
                                         //
                                         //                                Solving overdetermined system
                                         //
-                                        result[2 - 1] = Rqrt14(&trans, m, n, nrhs, copya, lda, b, ldb, work, lwork);
+                                        result[2 - 1] = Rqrt14(trans, m, n, nrhs, copya, lda, b, ldb, work, lwork);
                                     }
                                     //
                                     //                             Print information about the tests that
@@ -362,11 +332,11 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     //
                                     for (itran = 1; itran <= 2; itran = itran + 1) {
                                         if (itran == 1) {
-                                            trans = 'N';
+                                            trans[0] = 'N';
                                             nrows = m;
                                             ncols = n;
                                         } else {
-                                            trans = 'T';
+                                            trans[0] = 'T';
                                             nrows = n;
                                             ncols = m;
                                         }
@@ -378,7 +348,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                             Rlarnv(2, iseed, ncols * nrhs, work);
                                             Rscal(ncols * nrhs, one / castREAL(ncols), work, 1);
                                         }
-                                        Rgemm(&trans, "No transpose", nrows, nrhs, ncols, one, copya, lda, work, ldwork, zero, b, ldb);
+                                        Rgemm(trans, "No transpose", nrows, nrhs, ncols, one, copya, lda, work, ldwork, zero, b, ldb);
                                         Rlacpy("Full", nrows, nrhs, b, ldb, copyb, ldb);
                                         //
                                         //                             Solve LS or overdetermined system
@@ -387,9 +357,10 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                             Rlacpy("Full", m, n, copya, lda, a, lda);
                                             Rlacpy("Full", nrows, nrhs, copyb, ldb, b, ldb);
                                         }
-                                        Rgetsls(&trans, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
+                                        strncpy(srnamt, "Rgetsls", srnamt_len);
+                                        Rgetsls(trans, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
                                         if (info != 0) {
-                                            Alaerh(path, "Rgetsls ", info, 0, &trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
+                                            Alaerh(path, "Rgetsls", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                                         }
                                         //
                                         //                             Check correctness of results
@@ -398,18 +369,18 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         if (nrows > 0 && nrhs > 0) {
                                             Rlacpy("Full", nrows, nrhs, copyb, ldb, c, ldb);
                                         }
-                                        Rqrt16(&trans, m, n, nrhs, copya, lda, b, ldb, c, ldb, work, result[15 - 1]);
+                                        Rqrt16(trans, m, n, nrhs, copya, lda, b, ldb, c, ldb, work, result[15 - 1]);
                                         //
                                         if ((itran == 1 && m >= n) || (itran == 2 && m < n)) {
                                             //
                                             //                                Solving LS system
                                             //
-                                            result[16 - 1] = Rqrt17(&trans, 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
+                                            result[16 - 1] = Rqrt17(trans, 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
                                         } else {
                                             //
                                             //                                Solving overdetermined system
                                             //
-                                            result[16 - 1] = Rqrt14(&trans, m, n, nrhs, copya, lda, b, ldb, work, lwork);
+                                            result[16 - 1] = Rqrt14(trans, m, n, nrhs, copya, lda, b, ldb, work, lwork);
                                         }
                                         //
                                         //                             Print information about the tests that
@@ -464,6 +435,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Rlacpy("Full", m, n, copya, lda, a, lda);
                             Rlacpy("Full", m, nrhs, copyb, ldb, b, ldb);
                             //
+                            strncpy(srnamt, "Rgelsy", srnamt_len);
                             Rgelsy(m, n, nrhs, a, lda, b, ldb, iwork, rcond, crank, work, lwlsy, info);
                             if (info != 0) {
                                 Alaerh(path, "Rgelsy", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
@@ -505,6 +477,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //
                             Rlacpy("Full", m, n, copya, lda, a, lda);
                             Rlacpy("Full", m, nrhs, copyb, ldb, b, ldb);
+                            strncpy(srnamt, "Rgelss", srnamt_len);
                             Rgelss(m, n, nrhs, a, lda, b, ldb, s, rcond, crank, work, lwork, info);
                             if (info != 0) {
                                 Alaerh(path, "Rgelss", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
@@ -556,6 +529,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Rlacpy("Full", m, n, copya, lda, a, lda);
                             Rlacpy("Full", m, nrhs, copyb, ldb, b, ldb);
                             //
+                            strncpy(srnamt, "Rgelsd", srnamt_len);
                             Rgelsd(m, n, nrhs, a, lda, b, ldb, s, rcond, crank, work, lwork, iwork, info);
                             if (info != 0) {
                                 Alaerh(path, "Rgelsd", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
@@ -618,8 +592,8 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     Alasvm(path, nout, nfail, nrun, nerrs);
     //
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(work)");
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(iwork)");
+    delete[] work;
+    delete[] iwork;
     //
     //     End of Rdrvls
     //
