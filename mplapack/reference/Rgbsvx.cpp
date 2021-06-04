@@ -31,29 +31,6 @@
 
 void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, REAL *ab, INTEGER const ldab, REAL *afb, INTEGER const ldafb, INTEGER *ipiv, char *equed, REAL *r, REAL *c, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL &rcond, REAL *ferr, REAL *berr, REAL *work, INTEGER *iwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     info = 0;
     bool nofact = Mlsame(fact, "N");
     bool equil = Mlsame(fact, "E");
