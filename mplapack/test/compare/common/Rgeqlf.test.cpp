@@ -86,7 +86,6 @@ void Rgeqlf_test() {
                 delete[] work_ref;
                 lwork_ref = max(lwork_ref, 1);
                 lwork = max(lwork, (INTEGER)1);
-                printf("work size %d %d\n", (int)lwork_ref, (int)lwork);
                 work_ref = new REAL_REF[lwork_ref];
                 work = new REAL[lwork];
                 j = 0;
