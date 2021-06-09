@@ -38,6 +38,16 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <regex>
+
+using namespace std;
+using std::regex;
+using std::regex_replace;
+
 void Rchkbl(INTEGER const nin, INTEGER const nout) {
     common cmn;
     common_read read(cmn);
@@ -70,29 +80,6 @@ void Rchkbl(INTEGER const nin, INTEGER const nout) {
     INTEGER info = 0;
     REAL temp = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    // ======================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     lmax[1 - 1] = 0;
     lmax[2 - 1] = 0;
     lmax[3 - 1] = 0;
@@ -102,75 +89,100 @@ void Rchkbl(INTEGER const nin, INTEGER const nout) {
     vmax = zero;
     sfmin = Rlamch("S");
     meps = Rlamch("E");
-//
-statement_10:
+    string str;
+    char line[1024];
     //
-    read(nin, star), n;
-    if (n == 0) {
-        goto statement_70;
-    }
-    for (i = 1; i <= n; i = i + 1) {
-        {
-            read_loop rloop(cmn, nin, star);
-            for (j = 1; j <= n; j = j + 1) {
-                rloop, dtmp;
-                a[(i - 1) + (j - 1) * lda] = dtmp;
-            }
+    while (1) {
+        getline(cin, str);
+        stringstream ss(str);
+        ss >> n;
+        if (n == 0) {
+            goto statement_70;
         }
-    }
-    //
-    read(nin, star), iloin, ihiin;
-    for (i = 1; i <= n; i = i + 1) {
-        {
-            read_loop rloop(cmn, nin, star);
-            for (j = 1; j <= n; j = j + 1) {
-                rloop, dtmp;
-                ain[(i - 1) + (j - 1) * ldain] = dtmp;
-            }
-        }
-    }
-    {
-        read_loop rloop(cmn, nin, star);
+        // printf("n is %d\n", (int)n);
         for (i = 1; i <= n; i = i + 1) {
-            rloop, scalin[i - 1];
+            {
+                getline(cin, str);
+                string _r = regex_replace(str, regex("D\\+"), "e+");
+                str = regex_replace(_r, regex("D\\-"), "e-");
+                istringstream iss(str);
+                for (j = 1; j <= n; j = j + 1) {
+                    iss >> dtmp;
+                    a[(i - 1) + (j - 1) * lda] = dtmp;
+                }
+            }
         }
-    }
-    //
-    anorm = Rlange("M", n, n, a, lda, dummy);
-    knt++;
-    //
-    Rgebal("B", n, a, lda, ilo, ihi, scale, info);
-    //
-    if (info != 0) {
-        ninfo++;
-        lmax[1 - 1] = knt;
-    }
-    //
-    if (ilo != iloin || ihi != ihiin) {
-        ninfo++;
-        lmax[2 - 1] = knt;
-    }
-    //
-    for (i = 1; i <= n; i = i + 1) {
-        for (j = 1; j <= n; j = j + 1) {
-            temp = max(a[(i - 1) + (j - 1) * lda], ain[(i - 1) + (j - 1) * ldain]);
+        // printf("a=");printmat(n,n,a,n);printf("\n");
+        getline(cin, str);
+        getline(cin, str);
+        istringstream iss(str);
+        iss >> iloin;
+        iss >> ihiin;
+        // printf("iloin: %d ihiin: %d\n", (int)iloin, (int)ihiin);
+        for (i = 1; i <= n; i = i + 1) {
+            {
+                getline(cin, str);
+                string _r = regex_replace(str, regex("D\\+"), "e+");
+                str = regex_replace(_r, regex("D\\-"), "e-");
+                istringstream iss(str);
+                for (j = 1; j <= n; j = j + 1) {
+                    iss >> dtmp;
+                    ain[(i - 1) + (j - 1) * ldain] = dtmp;
+                }
+            }
+        }
+        // printf("a=");printmat(n,n,ain,n);printf("\n");
+        getline(cin, str);
+        getline(cin, str);
+        {
+            string _r = regex_replace(str, regex("D\\+"), "e+");
+            str = regex_replace(_r, regex("D\\-"), "e-");
+            // cout << "scaling" << str << endl;
+            istringstream iss(str);
+            for (i = 1; i <= n; i = i + 1) {
+                iss >> dtmp;
+                scalin[i - 1] = dtmp;
+            }
+        }
+        getline(cin, str);
+        //
+        anorm = Rlange("M", n, n, a, lda, dummy);
+        knt++;
+        //
+        Rgebal("B", n, a, lda, ilo, ihi, scale, info);
+        //
+        // printf("Rgebal: %d\n", (int)info);
+        if (info != 0) {
+            ninfo++;
+            lmax[1 - 1] = knt;
+        }
+        //
+        if (ilo != iloin || ihi != ihiin) {
+            ninfo++;
+            lmax[2 - 1] = knt;
+        }
+        //
+        for (i = 1; i <= n; i = i + 1) {
+            for (j = 1; j <= n; j = j + 1) {
+                temp = max(a[(i - 1) + (j - 1) * lda], ain[(i - 1) + (j - 1) * ldain]);
+                temp = max(temp, sfmin);
+                vmax = max(vmax, abs(a[(i - 1) + (j - 1) * lda] - ain[(i - 1) + (j - 1) * ldain]) / temp);
+            }
+        }
+        //
+        for (i = 1; i <= n; i = i + 1) {
+            temp = max(scale[i - 1], scalin[i - 1]);
             temp = max(temp, sfmin);
-            vmax = max(vmax, abs(a[(i - 1) + (j - 1) * lda] - ain[(i - 1) + (j - 1) * ldain]) / temp);
+            vmax = max(vmax, abs(scale[i - 1] - scalin[i - 1]) / temp);
         }
+        // printf("vmax="); printnum(vmax); printf("\n");
+        //
+        if (vmax > rmax) {
+            lmax[3 - 1] = knt;
+            rmax = vmax;
+        }
+        //
     }
-    //
-    for (i = 1; i <= n; i = i + 1) {
-        temp = max(scale[i - 1], scalin[i - 1]);
-        temp = max(temp, sfmin);
-        vmax = max(vmax, abs(scale[i - 1] - scalin[i - 1]) / temp);
-    }
-    //
-    if (vmax > rmax) {
-        lmax[3 - 1] = knt;
-        rmax = vmax;
-    }
-    //
-    goto statement_10;
 //
 statement_70:
     //

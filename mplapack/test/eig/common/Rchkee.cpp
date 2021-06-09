@@ -41,6 +41,7 @@ using fem::common;
 #include <time.h>
 #include <iostream>
 #include <sstream>
+#include <string>
 #include <vector>
 using namespace std;
 
@@ -152,42 +153,12 @@ void Rchkee(void) {
     static const char *format_9992 = "(1x,a3,':  Unrecognized path name')";
     static const char *format_9997 = "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4)";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Allocatable Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Arrays in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
     //     .. Allocate memory dynamically ..
     //
     REAL *a = new REAL[nmax * nmax * need];
     REAL *b = new REAL[nmax * nmax * 5];
     REAL *c = new REAL[ncmax * ncmax * ncmax * ncmax];
     REAL *work = new REAL[lwork];
-    //     ..
-    //     .. Executable Statements ..
     //
     for (int ppp = 0; ppp < nmax * nmax * need; ppp++)
         a[ppp] = 0.0;
@@ -198,7 +169,6 @@ void Rchkee(void) {
     for (int ppp = 0; ppp < lwork; ppp++)
         work[ppp] = 0.0;
     std::string str;
-    stringstream ss(str);
     s1 = time(NULL);
     fatal = false;
 //
@@ -208,8 +178,9 @@ statement_10:
     //
     //     Read the first line and set the 3-character test path
     //
-    getline(cin, str);
     char line[1024];
+    getline(cin, str);
+    stringstream ss(str);
     ss >> line;
     path[0] = line[0];
     path[1] = line[1];
@@ -297,6 +268,7 @@ statement_10:
         //        Rgebal:  Balancing
         //
         Rchkbl(nin, nout);
+        exit(1);
         goto statement_10;
     } else if (dbk) {
         //
@@ -897,7 +869,7 @@ statement_10:
         }
     }
     //
-    //     Calculate and prINTEGER the machine dependent constants.
+    //     Calculate and print the machine dependent constants.
     //
     write(nout, star);
     eps = Rlamch("Underflow threshold");
