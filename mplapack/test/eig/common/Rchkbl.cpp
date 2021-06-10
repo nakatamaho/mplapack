@@ -92,13 +92,11 @@ void Rchkbl(INTEGER const nin, INTEGER const nout) {
     string str;
     char line[1024];
     //
-    while (1) {
-        getline(cin, str);
+    while (getline(cin, str)) {
         stringstream ss(str);
         ss >> n;
-        if (n == 0) {
-            goto statement_70;
-        }
+        if (n == 0)
+            break;
         // printf("n is %d\n", (int)n);
         for (i = 1; i <= n; i = i + 1) {
             {
@@ -112,7 +110,7 @@ void Rchkbl(INTEGER const nin, INTEGER const nout) {
                 }
             }
         }
-        // printf("a=");printmat(n,n,a,n);printf("\n");
+        //  printf("a=");printmat(n,n,a,lda);printf("\n");
         getline(cin, str);
         getline(cin, str);
         istringstream iss(str);
@@ -131,13 +129,11 @@ void Rchkbl(INTEGER const nin, INTEGER const nout) {
                 }
             }
         }
-        // printf("a=");printmat(n,n,ain,n);printf("\n");
         getline(cin, str);
         getline(cin, str);
         {
             string _r = regex_replace(str, regex("D\\+"), "e+");
             str = regex_replace(_r, regex("D\\-"), "e-");
-            // cout << "scaling" << str << endl;
             istringstream iss(str);
             for (i = 1; i <= n; i = i + 1) {
                 iss >> dtmp;
@@ -148,10 +144,15 @@ void Rchkbl(INTEGER const nin, INTEGER const nout) {
         //
         anorm = Rlange("M", n, n, a, lda, dummy);
         knt++;
-        //
+
+        // printf("ain=");printmat(n,n,ain,ldain);printf("\n");
+        // printf("aorg=");printmat(n,n,a,lda);printf("\n");
         Rgebal("B", n, a, lda, ilo, ihi, scale, info);
+        // printf("aout=");printmat(n,n,a,lda);printf("\n");
+        // printf("scale=");printvec(scale,n);printf("\n");
+        // printf("scalein=");printvec(scalin,n);printf("\n");
+        // printf("\n");
         //
-        // printf("Rgebal: %d\n", (int)info);
         if (info != 0) {
             ninfo++;
             lmax[1 - 1] = knt;
@@ -175,7 +176,6 @@ void Rchkbl(INTEGER const nin, INTEGER const nout) {
             temp = max(temp, sfmin);
             vmax = max(vmax, abs(scale[i - 1] - scalin[i - 1]) / temp);
         }
-        // printf("vmax="); printnum(vmax); printf("\n");
         //
         if (vmax > rmax) {
             lmax[3 - 1] = knt;
@@ -183,8 +183,6 @@ void Rchkbl(INTEGER const nin, INTEGER const nout) {
         }
         //
     }
-//
-statement_70:
     //
     write(nout, "(1x,'.. test output of Rgebal .. ')");
     //
