@@ -87,10 +87,10 @@ void Rchkbl(INTEGER const nin, INTEGER const nout) {
     knt = 0;
     rmax = zero;
     vmax = zero;
-    sfmin = Rlamch("S");
-    meps = Rlamch("E");
+    sfmin = 2.2250738585072014E-308; // Rlamch("S");
     string str;
     char line[1024];
+    istringstream iss;
     //
     while (getline(cin, str)) {
         stringstream ss(str);
@@ -99,15 +99,14 @@ void Rchkbl(INTEGER const nin, INTEGER const nout) {
             break;
         // printf("n is %d\n", (int)n);
         for (i = 1; i <= n; i = i + 1) {
-            {
-                getline(cin, str);
-                string _r = regex_replace(str, regex("D\\+"), "e+");
-                str = regex_replace(_r, regex("D\\-"), "e-");
-                istringstream iss(str);
-                for (j = 1; j <= n; j = j + 1) {
-                    iss >> dtmp;
-                    a[(i - 1) + (j - 1) * lda] = dtmp;
-                }
+            getline(cin, str);
+            string _r = regex_replace(str, regex("D\\+"), "e+");
+            str = regex_replace(_r, regex("D\\-"), "e-");
+            iss.clear();
+            iss.str(str);
+            for (j = 1; j <= n; j = j + 1) {
+                iss >> dtmp;
+                a[(i - 1) + (j - 1) * lda] = dtmp;
             }
         }
         //  printf("a=");printmat(n,n,a,lda);printf("\n");
@@ -118,28 +117,28 @@ void Rchkbl(INTEGER const nin, INTEGER const nout) {
         iss >> ihiin;
         // printf("iloin: %d ihiin: %d\n", (int)iloin, (int)ihiin);
         for (i = 1; i <= n; i = i + 1) {
-            {
-                getline(cin, str);
-                string _r = regex_replace(str, regex("D\\+"), "e+");
-                str = regex_replace(_r, regex("D\\-"), "e-");
-                istringstream iss(str);
-                for (j = 1; j <= n; j = j + 1) {
-                    iss >> dtmp;
-                    ain[(i - 1) + (j - 1) * ldain] = dtmp;
-                }
-            }
-        }
-        getline(cin, str);
-        getline(cin, str);
-        {
+            getline(cin, str);
             string _r = regex_replace(str, regex("D\\+"), "e+");
             str = regex_replace(_r, regex("D\\-"), "e-");
-            istringstream iss(str);
-            for (i = 1; i <= n; i = i + 1) {
+            iss.clear();
+            iss.str(str);
+            for (j = 1; j <= n; j = j + 1) {
                 iss >> dtmp;
-                scalin[i - 1] = dtmp;
+                ain[(i - 1) + (j - 1) * ldain] = dtmp;
             }
         }
+        getline(cin, str);
+        getline(cin, str);
+
+        string _r = regex_replace(str, regex("D\\+"), "e+");
+        str = regex_replace(_r, regex("D\\-"), "e-");
+        iss.clear();
+        iss.str(str);
+        for (i = 1; i <= n; i = i + 1) {
+            iss >> dtmp;
+            scalin[i - 1] = dtmp;
+        }
+
         getline(cin, str);
         //
         anorm = Rlange("M", n, n, a, lda, dummy);
@@ -196,4 +195,5 @@ void Rchkbl(INTEGER const nin, INTEGER const nout) {
     //
     //     End of Rchkbl
     //
+    return;
 }
