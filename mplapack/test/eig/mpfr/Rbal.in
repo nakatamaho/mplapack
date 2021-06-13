@@ -1,4 +1,4 @@
-DBL:  Tests DGEBAL
+DBL:  Tests DGEBAL #trimmed 13-th example, it depends on precision.
   5
   0.1000D+01  0.0000D+00  0.0000D+00  0.0000D+00  0.0000D+00
   0.0000D+00  0.2000D+01  0.0000D+00  0.0000D+00  0.0000D+00
@@ -193,3 +193,5 @@ DBL:  Tests DGEBAL
 
   3.2000D+01  5.0000D-01   4.0000D+00   2.5000D-01  1.2500D-01
 
+  0
+  
