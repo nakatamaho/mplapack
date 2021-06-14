@@ -424,6 +424,55 @@ void division_complex_test()
     printf("*** COMPLEX Division test successful ***\n");
 }
 
+void mp_rounding2integer()
+{
+  REAL rtmp1;
+  long b;
+
+  printf("*** Rounding test start ***\n");
+
+  rtmp1 = 1.3;
+  b = castINTEGER(rtmp1);
+  printf("rtmp1: "); printnum(rtmp1); printf("  cast2intger: %ld\n", b);
+  if ( b != 1 )  {printf("*** Rounding test failed ***\n"); exit(1);}
+
+  rtmp1 = 1.5;
+  b = castINTEGER(rtmp1);
+  printf("rtmp1: "); printnum(rtmp1); printf("  cast2intger: %ld\n", b);
+  if ( b != 1 )  {printf("*** Rounding test failed ***\n"); exit(1);}
+
+  rtmp1 = -1.75;
+  b = castINTEGER(rtmp1);
+  printf("rtmp1: "); printnum(rtmp1); printf("  cast2intger: %ld\n", b);
+  if ( b != -1 )  {printf("*** Rounding test failed ***\n"); exit(1);}
+
+  rtmp1 = -1.4;
+  b = castINTEGER(rtmp1);
+  printf("rtmp1: "); printnum(rtmp1); printf("  cast2intger: %ld\n", b);
+  if ( b != -1 )  {printf("*** Rounding test failed ***\n"); exit(1);}
+
+  rtmp1 = 1.3;
+  b = rtmp1;
+  printf("rtmp1: "); printnum(rtmp1); printf("  cast2intger: %ld\n", b);
+  if ( b != 1 )  {printf("*** Rounding test failed ***\n"); exit(1);}
+
+  rtmp1 = 1.5;
+  b = rtmp1;
+  printf("rtmp1: "); printnum(rtmp1); printf("  cast2intger: %ld\n", b);
+  if ( b != 1 )  {printf("*** Rounding test failed ***\n"); exit(1);}
+
+  rtmp1 = -1.75;
+  b = rtmp1;
+  printf("rtmp1: "); printnum(rtmp1); printf("  cast2intger: %ld\n", b);
+  if ( b != -1 )  {printf("*** Rounding test failed ***\n"); exit(1);}
+
+  rtmp1 = -1.4;
+  b = rtmp1;
+  printf("rtmp1: "); printnum(rtmp1); printf("  cast2intger: %ld\n", b);
+  if ( b != -1 )  {printf("*** Rounding test failed ***\n"); exit(1);}
+
+  printf("*** Rounding test successful ***\n");
+}
 int main(int argc, char *argv[])
 {
     printf("*** Testing arithmetic start ***\n");
@@ -435,6 +484,8 @@ int main(int argc, char *argv[])
 //we need to specify explicitly.
     mpreal::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
     mpcomplex::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
+
+    mp_rounding2integer();
 
     subst_test1();
     subst_test2();
@@ -451,7 +502,6 @@ int main(int argc, char *argv[])
 
     mp_sub_test_real();
     mp_sub_test_complex();
-
     printf("*** Testing arithmetic successful ***\n");
     return (0);
 }
