@@ -132,7 +132,7 @@ void Rchkbk(INTEGER const nin, INTEGER const nout) {
         // printf("ein=");printmat(n,n,ein,lde);printf("\n");
         Rgebak("B", "R", n, ilo, ihi, scale, n, e, lde, info);
         // printf("eout=");printmat(n,n,e,lde);printf("\n");
-	// printf("ein-eout\n");
+        // printf("ein-eout\n");
         //
         if (info != 0) {
             ninfo++;

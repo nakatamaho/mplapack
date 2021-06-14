@@ -38,6 +38,16 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <regex>
+
+using namespace std;
+using std::regex;
+using std::regex_replace;
+
 void Rchkgk(INTEGER const nin, INTEGER const nout) {
     common cmn;
     common_read read(cmn);
@@ -84,29 +94,6 @@ void Rchkgk(INTEGER const nin, INTEGER const nout) {
     REAL f[ldf * ldf];
     REAL vmax = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Initialization
     //
     lmax[1 - 1] = 0;
@@ -116,135 +103,156 @@ void Rchkgk(INTEGER const nin, INTEGER const nout) {
     ninfo = 0;
     knt = 0;
     rmax = zero;
+    istringstream iss;
+    // following should be double of Rlamch("P") since input data is at most in double prec.
+    eps = 2.2204460492503131E-016; // Rlamch("P");
     //
-    eps = Rlamch("Precision");
-//
-statement_10:
-    read(nin, star), n, m;
-    if (n == 0) {
-        goto statement_100;
-    }
-    //
-    for (i = 1; i <= n; i = i + 1) {
-        {
-            read_loop rloop(cmn, nin, star);
+    string str;
+    char line[1024];
+
+    while (getline(cin, str)) {
+        stringstream ss(str);
+        ss >> n;
+        ss >> m;
+        if (n == 0)
+            break;
+        //
+        for (i = 1; i <= n; i = i + 1) {
+            getline(cin, str);
+            string _r = regex_replace(str, regex("D\\+"), "e+");
+            str = regex_replace(_r, regex("D\\-"), "e-");
+            iss.clear();
+            iss.str(str);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, dtmp;
+                iss >> dtmp;
                 a[(i - 1) + (j - 1) * lda] = dtmp;
             }
         }
-    }
-    //
-    for (i = 1; i <= n; i = i + 1) {
-        {
-            read_loop rloop(cmn, nin, star);
+        getline(cin, str);
+        // printf("a=");printmat(n,n,a,lda);printf("\n");
+        //
+        for (i = 1; i <= n; i = i + 1) {
+            getline(cin, str);
+            string _r = regex_replace(str, regex("D\\+"), "e+");
+            str = regex_replace(_r, regex("D\\-"), "e-");
+            iss.clear();
+            iss.str(str);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, dtmp;
+                iss >> dtmp;
                 b[(i - 1) + (j - 1) * ldb] = dtmp;
             }
         }
-    }
-    //
-    for (i = 1; i <= n; i = i + 1) {
-        {
-            read_loop rloop(cmn, nin, star);
+        // printf("b=");printmat(n,n,b,ldb);printf("\n");
+        getline(cin, str);
+        //
+        for (i = 1; i <= n; i = i + 1) {
+            getline(cin, str);
+            string _r = regex_replace(str, regex("D\\+"), "e+");
+            str = regex_replace(_r, regex("D\\-"), "e-");
+            iss.clear();
+            iss.str(str);
             for (j = 1; j <= m; j = j + 1) {
-                rloop, dtmp;
+                iss >> dtmp;
                 vl[(i - 1) + (j - 1) * ldvl] = dtmp;
             }
         }
-    }
-    //
-    for (i = 1; i <= n; i = i + 1) {
-        {
-            read_loop rloop(cmn, nin, star);
+        // printf("vl=");printmat(n,m,vl,ldvl);printf("\n");
+        getline(cin, str);
+        //
+        for (i = 1; i <= n; i = i + 1) {
+            getline(cin, str);
+            string _r = regex_replace(str, regex("D\\+"), "e+");
+            str = regex_replace(_r, regex("D\\-"), "e-");
+            iss.clear();
+            iss.str(str);
             for (j = 1; j <= m; j = j + 1) {
-                rloop, dtmp;
+                iss >> dtmp;
                 vr[(i - 1) + (j - 1) * ldvr] = dtmp;
             }
         }
-    }
-    //
-    knt++;
-    //
-    anorm = Rlange("M", n, n, a, lda, work);
-    bnorm = Rlange("M", n, n, b, ldb, work);
-    //
-    Rlacpy("FULL", n, n, a, lda, af, lda);
-    Rlacpy("FULL", n, n, b, ldb, bf, ldb);
-    //
-    Rggbal("B", n, a, lda, b, ldb, ilo, ihi, lscale, rscale, work, info);
-    if (info != 0) {
-        ninfo++;
-        lmax[1 - 1] = knt;
-    }
-    //
-    Rlacpy("FULL", n, m, vl, ldvl, vlf, ldvl);
-    Rlacpy("FULL", n, m, vr, ldvr, vrf, ldvr);
-    //
-    Rggbak("B", "L", n, ilo, ihi, lscale, rscale, m, vl, ldvl, info);
-    if (info != 0) {
-        ninfo++;
-        lmax[2 - 1] = knt;
-    }
-    //
-    Rggbak("B", "R", n, ilo, ihi, lscale, rscale, m, vr, ldvr, info);
-    if (info != 0) {
-        ninfo++;
-        lmax[3 - 1] = knt;
-    }
-    //
-    //     Test of Rggbak
-    //
-    //     Check tilde(VL)'*A*tilde(VR) - VL'*tilde(A)*VR
-    //     where tilde(A) denotes the transformed matrix.
-    //
-    Rgemm("N", "N", n, m, n, one, af, lda, vr, ldvr, zero, work, ldwork);
-    Rgemm("T", "N", m, m, n, one, vl, ldvl, work, ldwork, zero, e, lde);
-    //
-    Rgemm("N", "N", n, m, n, one, a, lda, vrf, ldvr, zero, work, ldwork);
-    Rgemm("T", "N", m, m, n, one, vlf, ldvl, work, ldwork, zero, f, ldf);
-    //
-    vmax = zero;
-    for (j = 1; j <= m; j = j + 1) {
-        for (i = 1; i <= m; i = i + 1) {
-            vmax = max(vmax, abs(e[(i - 1) + (j - 1) * lde] - f[(i - 1) + (j - 1) * ldf]));
+        getline(cin, str);
+        // printf("vr=");printmat(n,m,vr,ldvr);printf("\n");
+        //
+        knt++;
+        //
+        anorm = Rlange("M", n, n, a, lda, work);
+        bnorm = Rlange("M", n, n, b, ldb, work);
+        //
+        Rlacpy("FULL", n, n, a, lda, af, lda);
+        Rlacpy("FULL", n, n, b, ldb, bf, ldb);
+        //
+        Rggbal("B", n, a, lda, b, ldb, ilo, ihi, lscale, rscale, work, info);
+        if (info != 0) {
+            ninfo++;
+            lmax[1 - 1] = knt;
         }
-    }
-    vmax = vmax / (eps * max(anorm, bnorm));
-    if (vmax > rmax) {
-        lmax[4 - 1] = knt;
-        rmax = vmax;
-    }
-    //
-    //     Check tilde(VL)'*B*tilde(VR) - VL'*tilde(B)*VR
-    //
-    Rgemm("N", "N", n, m, n, one, bf, ldb, vr, ldvr, zero, work, ldwork);
-    Rgemm("T", "N", m, m, n, one, vl, ldvl, work, ldwork, zero, e, lde);
-    //
-    Rgemm("N", "N", n, m, n, one, b, ldb, vrf, ldvr, zero, work, ldwork);
-    Rgemm("T", "N", m, m, n, one, vlf, ldvl, work, ldwork, zero, f, ldf);
-    //
-    vmax = zero;
-    for (j = 1; j <= m; j = j + 1) {
-        for (i = 1; i <= m; i = i + 1) {
-            vmax = max(vmax, abs(e[(i - 1) + (j - 1) * lde] - f[(i - 1) + (j - 1) * ldf]));
+        //
+        Rlacpy("FULL", n, m, vl, ldvl, vlf, ldvl);
+        Rlacpy("FULL", n, m, vr, ldvr, vrf, ldvr);
+        //
+        Rggbak("B", "L", n, ilo, ihi, lscale, rscale, m, vl, ldvl, info);
+        if (info != 0) {
+            ninfo++;
+            lmax[2 - 1] = knt;
         }
+        //
+        Rggbak("B", "R", n, ilo, ihi, lscale, rscale, m, vr, ldvr, info);
+        if (info != 0) {
+            ninfo++;
+            lmax[3 - 1] = knt;
+        }
+        //
+        //     Test of Rggbak
+        //
+        //     Check tilde(VL)'*A*tilde(VR) - VL'*tilde(A)*VR
+        //     where tilde(A) denotes the transformed matrix.
+        //
+        Rgemm("N", "N", n, m, n, one, af, lda, vr, ldvr, zero, work, ldwork);
+        Rgemm("T", "N", m, m, n, one, vl, ldvl, work, ldwork, zero, e, lde);
+        //
+        Rgemm("N", "N", n, m, n, one, a, lda, vrf, ldvr, zero, work, ldwork);
+        Rgemm("T", "N", m, m, n, one, vlf, ldvl, work, ldwork, zero, f, ldf);
+        //
+        vmax = zero;
+        for (j = 1; j <= m; j = j + 1) {
+            for (i = 1; i <= m; i = i + 1) {
+                vmax = max(vmax, abs(e[(i - 1) + (j - 1) * lde] - f[(i - 1) + (j - 1) * ldf]));
+            }
+        }
+        vmax = vmax / (eps * max(anorm, bnorm));
+        if (vmax > rmax) {
+            lmax[4 - 1] = knt;
+            rmax = vmax;
+        }
+        //
+        //     Check tilde(VL)'*B*tilde(VR) - VL'*tilde(B)*VR
+        //
+        Rgemm("N", "N", n, m, n, one, bf, ldb, vr, ldvr, zero, work, ldwork);
+        Rgemm("T", "N", m, m, n, one, vl, ldvl, work, ldwork, zero, e, lde);
+        //
+        Rgemm("N", "N", n, m, n, one, b, ldb, vrf, ldvr, zero, work, ldwork);
+        Rgemm("T", "N", m, m, n, one, vlf, ldvl, work, ldwork, zero, f, ldf);
+        //
+        vmax = zero;
+        for (j = 1; j <= m; j = j + 1) {
+            for (i = 1; i <= m; i = i + 1) {
+                vmax = max(vmax, abs(e[(i - 1) + (j - 1) * lde] - f[(i - 1) + (j - 1) * ldf]));
+            }
+        }
+        vmax = vmax / (eps * max(anorm, bnorm));
+        if (vmax > rmax) {
+            lmax[4 - 1] = knt;
+            rmax = vmax;
+        }
+        //
     }
-    vmax = vmax / (eps * max(anorm, bnorm));
-    if (vmax > rmax) {
-        lmax[4 - 1] = knt;
-        rmax = vmax;
-    }
-    //
-    goto statement_10;
 //
 statement_100:
     //
     write(nout, "(1x,'.. test output of Rggbak .. ')");
     //
     sprintnum_short(buf, rmax);
-    write(nout, "(' value of largest test error                  =',a"), buf;
+    write(nout, "(' value of largest test error                  =',a)"), buf;
     write(nout, "(' example number where Rggbal info is not 0    =',i4)"), lmax[1 - 1];
     write(nout, "(' example number where Rggbak(L) info is not 0 =',i4)"), lmax[2 - 1];
     write(nout, "(' example number where Rggbak(R) info is not 0 =',i4)"), lmax[3 - 1];
