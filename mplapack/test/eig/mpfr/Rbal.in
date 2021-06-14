@@ -1,4 +1,4 @@
-DBL:  Tests DGEBAL #trimmed 13-th example, it depends on precision.
+DBL:  Tests DGEBAL # (trimmed 13-th example, it depends on precision. to enable, comment 'sfmin1 = Rlamch("S") / Rlamch("P");' of Rgebal.cpp)
   5
   0.1000D+01  0.0000D+00  0.0000D+00  0.0000D+00  0.0000D+00
   0.0000D+00  0.2000D+01  0.0000D+00  0.0000D+00  0.0000D+00

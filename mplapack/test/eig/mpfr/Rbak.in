@@ -1,4 +1,4 @@
-DBK:  Tests DGEBAK
+DBK:  Tests DGEBAK  # largest test error +1.4605533e+00(MPFR), 0.160D+01(LAPACK)
   5  1  1
   0.1000D+01  0.2000D+01  0.3000D+01  0.4000D+01  0.5000D+01
 
