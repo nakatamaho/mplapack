@@ -54,31 +54,6 @@ void Rtrsen(const char *job, const char *compq, bool *select, INTEGER const n, R
     INTEGER kase = 0;
     INTEGER isave[3];
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Decode and test the input parameters
     //
     wantbh = Mlsame(job, "B");
@@ -110,17 +85,17 @@ void Rtrsen(const char *job, const char *compq, bool *select, INTEGER const n, R
             } else {
                 if (k < n) {
                     if (t[((k + 1) - 1) + (k - 1) * ldt] == zero) {
-                        if (select[k]) {
+                        if (select[k - 1]) {
                             m++;
                         }
                     } else {
                         pair = true;
-                        if (select[k] || select[k + 1]) {
+                        if (select[k - 1] || select[k]) {
                             m += 2;
                         }
                     }
                 } else {
-                    if (select[n]) {
+                    if (select[n - 1]) {
                         m++;
                     }
                 }
