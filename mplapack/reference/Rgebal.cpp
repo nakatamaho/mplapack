@@ -180,7 +180,8 @@ statement_120:
     //     Iterative loop for norm reduction
     //
     sfmin1 = Rlamch("S") / Rlamch("P");
-    //    sfmin1 = 2.2250738585072014E-308 / 2.2204460492503131E-016; // (double)
+    // uncomment the following to pass 13rd test of dbal.in.
+    // sfmin1 = 2.2250738585072014E-308 / 2.2204460492503131E-016; // (double)
     sfmax1 = one / sfmin1;
     sfmin2 = sfmin1 * sclfac;
     sfmax2 = one / sfmin2;
