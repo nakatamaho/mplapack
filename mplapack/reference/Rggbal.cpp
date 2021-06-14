@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_debug.h>
+
 void Rggbal(const char *job, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, INTEGER &ilo, INTEGER &ihi, REAL *lscale, REAL *rscale, REAL *work, INTEGER &info) {
     const REAL one = 1.0;
     INTEGER i = 0;
@@ -77,29 +79,6 @@ void Rggbal(const char *job, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     REAL cab = 0.0;
     INTEGER lcab = 0;
     INTEGER jc = 0;
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Test the input parameters
     //
@@ -420,14 +399,14 @@ statement_250:
     if (it <= nrp2) {
         goto statement_250;
     }
-//
-//     End generalized conjugate gradient iteration
-//
+    //
+    //     End generalized conjugate gradient iteration
+    //
 statement_350:
     sfmin = Rlamch("S");
     sfmax = one / sfmin;
-    lsfmin = castINTEGER(log10(sfmin - 1) / basl + one);
-    lsfmax = castINTEGER(log10(sfmax - 1) / basl);
+    lsfmin = castINTEGER(log10(sfmin) / basl + one);
+    lsfmax = castINTEGER(log10(sfmax) / basl);
     for (i = ilo; i <= ihi; i = i + 1) {
         irab = iRamax(n - ilo + 1, &a[(i - 1) + (ilo - 1) * lda], lda);
         rab = abs(a[(i - 1) + ((irab + ilo - 1) - 1) * lda]);
