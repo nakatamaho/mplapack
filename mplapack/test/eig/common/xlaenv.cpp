@@ -37,6 +37,7 @@ using fem::common;
 #include <mplapack_eig.h>
 
 #define __MPLAPACK_XLAENV__
+#define __MPLAPACK_MXERBLA__
 #include <mplapack_debug.h>
 
 void xlaenv(INTEGER const &ispec, INTEGER const &nvalue) {

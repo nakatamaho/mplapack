@@ -34,42 +34,13 @@ using namespace fem::major_types;
 using fem::common;
 
 #include <mplapack_matgen.h>
-#include <mplapack_lin.h>
 #include <mplapack_eig.h>
-
 #include <mplapack_debug.h>
 
 void Rerrec(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
     //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     ok = true;
@@ -104,6 +75,7 @@ void Rerrec(const char *path, INTEGER const nunit) {
     REAL c[nmax * nmax];
     REAL scale = 0.0;
     INTEGER info = 0;
+    strncpy(srnamt, "Rtrsyl", srnamt_len);
     Rtrsyl("X", "N", 1, 0, 0, a, 1, b, 1, c, 1, scale, info);
     chkxer("Rtrsyl", infot, nout, lerr, ok);
     infot = 2;
@@ -135,6 +107,7 @@ void Rerrec(const char *path, INTEGER const nunit) {
     INTEGER ilst = 1;
     infot = 1;
     REAL work[nmax];
+    strncpy(srnamt, "Rtrexc", srnamt_len);
     Rtrexc("X", 1, a, 1, b, 1, ifst, ilst, work, info);
     chkxer("Rtrexc", infot, nout, lerr, ok);
     infot = 2;
@@ -174,6 +147,7 @@ void Rerrec(const char *path, INTEGER const nunit) {
     REAL sep[nmax];
     INTEGER m = 0;
     INTEGER iwork[nmax];
+    strncpy(srnamt, "Rtrsna", srnamt_len);
     Rtrsna("X", "A", sel, 0, a, 1, b, 1, c, 1, s, sep, 1, m, work, 1, iwork, info);
     chkxer("Rtrsna", infot, nout, lerr, ok);
     infot = 2;
@@ -208,6 +182,7 @@ void Rerrec(const char *path, INTEGER const nunit) {
     infot = 1;
     REAL wr[nmax];
     REAL wi[nmax];
+    strncpy(srnamt, "Rtrsen", srnamt_len);
     Rtrsen("X", "N", sel, 0, a, 1, b, 1, wr, wi, m, s[1 - 1], sep[1 - 1], work, 1, iwork, 1, info);
     chkxer("Rtrsen", infot, nout, lerr, ok);
     infot = 2;

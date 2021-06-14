@@ -43,7 +43,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     common_write write(cmn);
     //
     char path[3];
-    path[0] = 'D';
+    path[0] = 'R';
     path[1] = 'E';
     path[2] = 'C';
     char buf0[1024];
@@ -54,7 +54,6 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     //
     //     Print header information
     //
-
     sprintnum_short(buf0, eps);
     sprintnum_short(buf1, sfmin);
     write(nout, "(' Tests of the Nonsymmetric eigenproblem condition estim',"
@@ -74,7 +73,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
         Rerrec(path, nout);
     }
     //
-    bool ok = true;
+    ok = true;
     REAL rlaln2 = 0.0;
     INTEGER llaln2 = 0;
     INTEGER nlaln2[2];
