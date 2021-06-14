@@ -61,10 +61,7 @@ inline mplapackint nint(mpreal a) {
 
 inline mplapackint castINTEGER_mpfr(mpreal a) {
     mplapackint i;
-    mpreal tmp;
-    a = a + 0.5;
-    tmp = floor(a);
-    i = tmp; // cast to long
+    i = a;
     return i;
 }
 
