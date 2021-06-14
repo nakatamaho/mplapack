@@ -80,11 +80,10 @@ void Rchkbk(INTEGER const nin, INTEGER const nout) {
     rmax = zero;
     safmin = Rlamch("S");
     // following should be double of Rlamch("E") since input data is at most in double prec.
-    eps = 2.2204460492503131E-016; // Rlamch("E");
+    eps = 1.1102230246251565E-016; // Rlamch("E");
     string str;
     char line[1024];
     double dtmp;
-    //
     //
     while (getline(cin, str)) {
         stringstream ss(str);
