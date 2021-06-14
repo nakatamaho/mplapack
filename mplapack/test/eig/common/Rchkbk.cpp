@@ -127,12 +127,12 @@ void Rchkbk(INTEGER const nin, INTEGER const nout) {
                 ein[(i - 1) + (j - 1) * ldein] = dtmp;
             }
         }
-        // printf("ein=");printmat(n,n,ein,lde);printf("\n");
         //
         knt++;
-
+        // printf("ein=");printmat(n,n,ein,lde);printf("\n");
         Rgebak("B", "R", n, ilo, ihi, scale, n, e, lde, info);
         // printf("eout=");printmat(n,n,e,lde);printf("\n");
+	// printf("ein-eout\n");
         //
         if (info != 0) {
             ninfo++;
