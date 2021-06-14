@@ -57,8 +57,8 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     sprintnum_short(buf0, eps);
     sprintnum_short(buf1, sfmin);
     write(nout, "(' Tests of the Nonsymmetric eigenproblem condition estim',"
-                "'ation routines',/,' Rlaln2, Rlasy2, Rlanv2, Rlaexc, DTRS',"
-                "'YL, Rtrexc, Rtrsna, Rtrsen, Rlaqtr, Rtgexc',/)");
+                "'ation routines',/,' Rlaln2, Rlasy2, Rlanv2, Rlaexc, Rtrsyl, ',"
+                "'Rtrexc, Rtrsna, Rtrsen, Rlaqtr, Rtgexc',/)");
     write(nout, "(' Relative machine precision (EPS) = ',a,/,' Safe ',"
                 "'minimum (SFMIN)             = ',a,/)"),
         buf0, buf1;

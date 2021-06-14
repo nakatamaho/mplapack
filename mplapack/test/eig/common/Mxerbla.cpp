@@ -33,14 +33,17 @@
 using namespace fem::major_types;
 using fem::common;
 
-#include <mplapack_matgen.h>
-#include <mplapack_eig.h>
+#define __MPLAPACK_MXERBLA__
 
-#define __MPLAPACK_XLAENV__
+#include <string>
+#include <mplapack_matgen.h>
+#include <mplapack_lin.h>
 #include <mplapack_debug.h>
 
-void xlaenv(INTEGER const &ispec, INTEGER const &nvalue) {
-    // COMMON claenv
+void Mxerbla(const char *srname, int info) {
+    common cmn;
+    common_write write(cmn);
+    //
     //
     //  -- LAPACK test routine --
     //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -51,18 +54,34 @@ void xlaenv(INTEGER const &ispec, INTEGER const &nvalue) {
     //
     //  =====================================================================
     //
-    //     .. Arrays in Common ..
+    //     .. Scalars in Common ..
+    //     ..
+    //     .. Intrinsic Functions ..
     //     ..
     //     .. Common blocks ..
     //     ..
-    //     .. Save statement ..
-    //     ..
     //     .. Executable Statements ..
     //
-    if (ispec >= 1 && ispec <= 16) {
-        iparms[ispec - 1] = nvalue;
+    lerr = true;
+    if (info != infot) {
+        if (infot != 0) {
+            write(nout, "(' *** XERBLA was called from ',a,' with INFO = ',i6,' instead of ',"
+                        "i2,' ***')"),
+                srnamt, info, infot;
+        } else {
+            write(nout, "(' *** On entry to ',a,' parameter number ',i6,"
+                        "' had an illegal value ***')"),
+                srname, info;
+        }
+        ok = false;
+    }
+    std::string _srname = srname;
+    std::string _srnamt = srnamt;
+    if (_srname != _srnamt) {
+        write(nout, "(' *** XERBLA was called with SRNAME = ',a,' instead of ',a9,' ***')"), srname, srnamt;
+        ok = false;
     }
     //
-    //     End of XLAENV
+    //     End of XERBLA
     //
 }
