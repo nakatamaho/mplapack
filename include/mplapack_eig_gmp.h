@@ -127,6 +127,7 @@ void Cstt21(mplapackint const n, mplapackint const kband, mpf_class *ad, mpf_cla
 void Cstt22(mplapackint const n, mplapackint const m, mplapackint const kband, mpf_class *ad, mpf_class *ae, mpf_class *sd, mpf_class *se, mpc_class *u, mplapackint const ldu, mpc_class *work, mplapackint const ldwork, mpf_class *rwork, mpf_class *result);
 void Cunt01(const char *rowcol, mplapackint const m, mplapackint const n, mpc_class *u, mplapackint const ldu, mpc_class *work, mplapackint const lwork, mpf_class *rwork, mpf_class &resid);
 void Cunt03(const char *rc, mplapackint const mu, mplapackint const mv, mplapackint const n, mplapackint const k, mpc_class *u, mplapackint const ldu, mpc_class *v, mplapackint const ldv, mpc_class *work, mplapackint const lwork, mpf_class *rwork, mpf_class &result, mplapackint &info);
+void Mxerbla(const char *srname, int info);
 void Rbdt01(mplapackint const m, mplapackint const n, mplapackint const kd, mpf_class *a, mplapackint const lda, mpf_class *q, mplapackint const ldq, mpf_class *d, mpf_class *e, mpf_class *pt, mplapackint const ldpt, mpf_class *work, mpf_class &resid);
 void Rbdt02(mplapackint const m, mplapackint const n, mpf_class *b, mplapackint const ldb, mpf_class *c, mplapackint const ldc, mpf_class *u, mplapackint const ldu, mpf_class *work, mpf_class &resid);
 void Rbdt03(const char *uplo, mplapackint const n, mplapackint const kd, mpf_class *d, mpf_class *e, mpf_class *u, mplapackint const ldu, mpf_class *s, mpf_class *vt, mplapackint const ldvt, mpf_class *work, mpf_class &resid);

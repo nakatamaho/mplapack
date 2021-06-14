@@ -125,6 +125,7 @@ void Cstt21(mplapackint const n, mplapackint const kband, double *ad, double *ae
 void Cstt22(mplapackint const n, mplapackint const m, mplapackint const kband, double *ad, double *ae, double *sd, double *se, std::complex<double> *u, mplapackint const ldu, std::complex<double> *work, mplapackint const ldwork, double *rwork, double *result);
 void Cunt01(const char *rowcol, mplapackint const m, mplapackint const n, std::complex<double> *u, mplapackint const ldu, std::complex<double> *work, mplapackint const lwork, double *rwork, double &resid);
 void Cunt03(const char *rc, mplapackint const mu, mplapackint const mv, mplapackint const n, mplapackint const k, std::complex<double> *u, mplapackint const ldu, std::complex<double> *v, mplapackint const ldv, std::complex<double> *work, mplapackint const lwork, double *rwork, double &result, mplapackint &info);
+void Mxerbla_double(const char *srname, int info);
 void Rbdt01(mplapackint const m, mplapackint const n, mplapackint const kd, double *a, mplapackint const lda, double *q, mplapackint const ldq, double *d, double *e, double *pt, mplapackint const ldpt, double *work, double &resid);
 void Rbdt02(mplapackint const m, mplapackint const n, double *b, mplapackint const ldb, double *c, mplapackint const ldc, double *u, mplapackint const ldu, double *work, double &resid);
 void Rbdt03(const char *uplo, mplapackint const n, mplapackint const kd, double *d, double *e, double *u, mplapackint const ldu, double *s, double *vt, mplapackint const ldvt, double *work, double &resid);
