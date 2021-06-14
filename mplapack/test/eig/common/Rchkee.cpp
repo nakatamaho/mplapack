@@ -293,7 +293,9 @@ void Rchkee(void) {
             //
             //        DEC:  Eigencondition estimation
             //
-            read(nin, star), thresh;
+            getline(cin, str);
+            ss.str(str);
+            ss >> thresh;
             xlaenv(1, 1);
             xlaenv(12, 11);
             xlaenv(13, 2);
