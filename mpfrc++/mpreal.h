@@ -1272,7 +1272,7 @@ inline mpreal::operator float() const { return (float)mpfr_get_d(mp, default_rnd
 inline mpreal::operator long double() const { return mpfr_get_ld(mp, default_rnd); }
 inline mpreal::operator unsigned long() const { return mpfr_get_ui(mp, default_rnd); }
 inline mpreal::operator unsigned int() const { return static_cast<unsigned int>(mpfr_get_ui(mp, default_rnd)); }
-inline mpreal::operator long() const { return mpfr_get_si(mp, default_rnd); }
+inline mpreal::operator long() const { return mpfr_get_si(mp, MPFR_RNDZ); }
 inline mpreal::operator mpfr_ptr() { return mp; }
 
 //////////////////////////////////////////////////////////////////////////
