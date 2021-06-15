@@ -40,43 +40,19 @@ using fem::common;
 
 void Rget31(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-
-    const bool ltrans[] = {false, true};
+    const bool ltrans[] = {true, false};  //somehow dget31 uses ltrans in very unusual way.
     //
     //     Get machine parameters
     //
-    REAL eps = Rlamch("P");
+    // REAL eps = 2.2204460492503131E-016;
+    // REAL unfl = 2.2250738585072014E-308;
+    // REAL smlnum = 2.2250738585072014E-308 / eps;
+    REAL eps =  Rlamch("P");
     REAL unfl = Rlamch("U");
     REAL smlnum = Rlamch("S") / eps;
-    const REAL one = 1.0;
+
+    REAL one = 1.0;
     REAL bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     //     Set up test case parameters
     //
@@ -162,7 +138,7 @@ void Rget31(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
             d2 = vdd[id2 - 1];
             for (ica = 1; ica <= 5; ica = ica + 1) {
                 ca = vca[ica - 1];
-                for (itrans = 0; itrans <= 1; itrans = itrans + 1) {
+                for (itrans = 1; itrans <= 2; itrans = itrans + 1) {
                     for (ismin = 1; ismin <= 4; ismin = ismin + 1) {
                         smin = vsmin[ismin - 1];
                         //

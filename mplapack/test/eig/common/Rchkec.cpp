@@ -84,7 +84,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
         sprintnum_short(buf0, rlaln2);
         write(nout, "(' Error in Rlaln2: RMAX =',a,/,' LMAX = ',i8,' N','INFO=',2i8,"
                     "' KNT=',i8)"),
-            buf0, llaln2, nlaln2, klaln2;
+            buf0, llaln2, nlaln2[0], nlaln2[1], klaln2;
     }
     //
     REAL rlasy2 = 0.0;
