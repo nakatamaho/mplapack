@@ -29,12 +29,20 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_debug.h>
+
+#define ci (equiv_0)
+#define cr (equiv_1)
+#define civ (equiv_0)
+#define crv (equiv_1)
+
 void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const smin, REAL const ca, REAL *a, INTEGER const lda, REAL const d1, REAL const d2, REAL *b, INTEGER const ldb, REAL const wr, REAL const wi, REAL *x, INTEGER const ldx, REAL &scale, REAL &xnorm, INTEGER &info) {
     static bool zswap[] = {false, false, true, true};
     static bool rswap[] = {false, true, false, true};
     static INTEGER ipivot[] = {1, 2, 3, 4, 2, 1, 4, 3, 3, 4, 1, 2, 4, 3, 2, 1};
     const REAL two = 2.0;
     REAL smlnum = two * Rlamch("Safe minimum");
+    //REAL smlnum = two * 2.2250738585072014E-308;
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
     REAL smini = max(smin, smlnum);
@@ -82,10 +90,8 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
     REAL bi1 = 0.0;
     REAL xi2 = 0.0;
     REAL xi1 = 0.0;
-    REAL ci[4];
-    REAL civ[4];
-    REAL cr[4];
-    REAL crv[4];
+    REAL equiv_0[4];
+    REAL equiv_1[4];
     INTEGER ldci = 2;
     INTEGER ldcr = 2;
     INTEGER ldipivot = 4;
