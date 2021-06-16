@@ -42,7 +42,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
     static INTEGER ipivot[] = {1, 2, 3, 4, 2, 1, 4, 3, 3, 4, 1, 2, 4, 3, 2, 1};
     const REAL two = 2.0;
     REAL smlnum = two * Rlamch("Safe minimum");
-    //REAL smlnum = two * 2.2250738585072014E-308;
+    // REAL smlnum = two * 2.2250738585072014E-308;
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
     REAL smini = max(smin, smlnum);

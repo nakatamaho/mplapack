@@ -62,31 +62,6 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
     REAL xnorm = 0.0;
     INTEGER ierr = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Decode and Test input parameters
     //
     notrna = Mlsame(trana, "N");
@@ -127,8 +102,7 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
-    smlnum = smlnum * m * castREAL(n) / eps;
+    smlnum = smlnum * castREAL(m * n) / eps;
     bignum = one / smlnum;
     //
     smin = max({smlnum, REAL(eps * Rlange("M", m, m, a, lda, dum)), REAL(eps * Rlange("M", n, n, b, ldb, dum))});
@@ -196,7 +170,7 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                 }
                 //
                 if (l1 == l2 && k1 == k2) {
-                    suml = Rdot(m - k1, &a[(k1 - 1) + (min(k1 + 1, m) - 1) * lda], lda, &c[min(k1 + 1, m) - 1 + (l1 - 1) * ldc], 1);
+                    suml = Rdot(m - k1, &a[(k1 - 1) + (min(k1 + 1, m) - 1) * lda], lda, &c[(min(k1 + 1, m) - 1) + (l1 - 1) * ldc], 1);
                     sumr = Rdot(l1 - 1, &c[(k1 - 1)], ldc, &b[(l1 - 1) * ldb], 1);
                     vec[0] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
                     scaloc = one;
@@ -810,17 +784,33 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                     sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
                     vec[(1 - 1)] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
                     //
-                    suml = Rdot(m - k2, &a[(k1 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (n - 1) * ldc], 1);
+                    suml = Rdot(m - k2, &a[(k1 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l2 - 1) * ldc], 1);
                     sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l2 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
                     vec[(2 - 1) * ldvec] = c[(k1 - 1) + (l2 - 1) * ldc] - (suml + sgn * sumr);
                     //
-                    suml = Rdot(m - k2, &a[(k2 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l2 - 1) * ldc], 1);
+                    suml = Rdot(m - k2, &a[(k2 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l1 - 1) * ldc], 1);
                     sumr = Rdot(n - l2, &c[(k2 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
                     vec[(2 - 1)] = c[(k2 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
                     //
                     suml = Rdot(m - k2, &a[(k2 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l2 - 1) * ldc], 1);
-                    sumr = Rdot(n - l2, &a[(k2 - 1) + (min(l2 + 1, n) - 1) * lda], lda, &b[(l2 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
-                    vec[(3 - 1)] = c[(k2 - 1) + (l2 - 1) * ldc] - (suml + sgn * sumr);
+                    sumr = Rdot(n - l2, &c[(k2 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l2 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
+                    vec[(2 - 1) + (2 - 1) * ldvec] = c[(k2 - 1) + (l2 - 1) * ldc] - (suml + sgn * sumr);
+                    //
+                    Rlasy2(false, true, isgn, 2, 2, &a[(k1 - 1) + (k1 - 1) * lda], lda, &b[(l1 - 1) + (l1 - 1) * ldb], ldb, vec, 2, scaloc, x, 2, xnorm, ierr);
+                    if (ierr != 0) {
+                        info = 1;
+                    }
+                    //
+                    if (scaloc != one) {
+                        for (j = 1; j <= n; j = j + 1) {
+                            Rscal(m, scaloc, &c[(j - 1) * ldc], 1);
+                        }
+                        scale = scale * scaloc;
+                    }
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l2 - 1) * ldc] = x[(2 - 1) * ldx];
+                    c[(k2 - 1) + (l1 - 1) * ldc] = x[(2 - 1)];
+                    c[(k2 - 1) + (l2 - 1) * ldc] = x[(2 - 1) + (2 - 1) * ldx];
                 }
             //
             statement_230:;
