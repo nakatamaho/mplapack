@@ -39,52 +39,27 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
-    INTEGER idim[8];
+    INTEGER idim[8] = {1, 2, 3, 4, 3, 3, 6, 4};
     INTEGER ival[6 * 6 * 8] = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 5, 1, 2, 0, 0, 0, -8, -2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 0, 0, 0, 0, -5, 3, 0, 0, 0, 0, 1, 2, 1, 4, 0, 0, -3, -9, -1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 5, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 3, -4, 0, 0, 0, 2, 5, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 5, 6, 3, 4, 0, 0, -1, -9, -5, 2, 0, 0, 8, 8, 8, 8, 5, 6, 9, 9, 9, 9, -7, 5, 1, 0, 0, 0, 0, 0, 1, 5, 2, 0, 0, 0, 2, -21, 5, 0, 0, 0, 1, 2, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Get machine parameters
-    //
-    REAL eps = Rlamch("P");
     const REAL four = 4.0;
-    REAL smlnum = Rlamch("S") * four / eps;
     const REAL one = 1.0;
+    REAL eps = Rlamch("P");
+    REAL smlnum = Rlamch("S") * four / eps;
+    // REAL eps = 2.2204460492503131E-016;
+    // REAL smlnum = 2.2250738585072014E-308 * four / eps;
     REAL bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     //     Set up test case parameters
     //
+    const REAL two = 2.0;
     REAL vm1[3];
+    REAL vm2[3];
     vm1[1 - 1] = sqrt(smlnum);
     vm1[2 - 1] = one;
     vm1[3 - 1] = sqrt(bignum);
-    REAL vm2[3];
+
     vm2[1 - 1] = one;
-    const REAL two = 2.0;
     vm2[2 - 1] = one + two * eps;
     vm2[3 - 1] = two;
     //
