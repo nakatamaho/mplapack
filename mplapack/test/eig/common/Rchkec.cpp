@@ -123,7 +123,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
         sprintnum_short(buf0, rlaexc);
         write(nout, "(' Error in Rlaexc: RMAX =',a,/,' LMAX = ',i8,' N','INFO=',2i8,"
                     "' KNT=',i8)"),
-            buf0, llaexc, nlaexc, klaexc;
+            buf0, llaexc, nlaexc[0], nlaexc[1], klaexc;
     }
     //
     REAL rtrsyl = 0.0;
