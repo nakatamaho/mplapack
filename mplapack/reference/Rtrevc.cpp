@@ -70,31 +70,6 @@ void Rtrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     REAL vmax = 0.0;
     REAL vcrit = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Decode and test the input parameters
     //
     bothv = Mlsame(side, "B");
@@ -174,9 +149,8 @@ void Rtrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
-    Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
-    smlnum = unfl * (n / ulp);
+    smlnum = unfl * (castREAL(n) / ulp);
     bignum = (one - ulp) / smlnum;
     //
     //     Compute 1-norm of each column of strictly upper triangular

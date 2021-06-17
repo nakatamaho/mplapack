@@ -31,42 +31,6 @@
 
 void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *h, INTEGER const ldh, REAL *wr, REAL *wi, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //
-    //     ==== Matrices of order NTINY or smaller must be processed by
-    //     .    Rlahqr because of insufficient subdiagonal scratch space.
-    //     .    (This is a hard limit.) ====
-    //
-    //     ==== NL allocates some local workspace to help small matrices
-    //     .    through a rare Rlahqr failure.  NL > NTINY = 15 is
-    //     .    required and NL <= NMIN = iMlaenv(ISPEC=12,...) is recom-
-    //     .    mended.  (The default value of NMIN is 75.)  Using NL = 49
-    //     .    allows up to six simultaneous shifts and a 16-by-16
-    //     .    deflation window.  ====
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     ==== Decode and check the input parameters. ====
     //
     bool wantt = Mlsame(job, "S");
