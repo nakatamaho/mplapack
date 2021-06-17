@@ -121,7 +121,7 @@ void Rgbt05(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
                 axbi = min(axbi, tmp);
             }
         }
-        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, nz * unfl));
+        tmp = berr[k - 1] / (castREAL(nz) * eps + castREAL(nz) * unfl / max(axbi, castREAL(nz) * unfl));
         if (k == 1) {
             reslts[2 - 1] = tmp;
         } else {
