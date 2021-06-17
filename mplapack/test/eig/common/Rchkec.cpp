@@ -149,7 +149,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
         sprintnum_short(buf0, rtrexc);
         write(nout, "(' Error in Rtrexc: RMAX =',a,/,' LMAX = ',i8,' N','INFO=',3i8,"
                     "' KNT=',i8)"),
-            buf0, ltrexc, ntrexc, ktrexc;
+            buf0, ltrexc, ntrexc[0], ntrexc[1], ntrexc[2], ktrexc;
     }
     //
     REAL rtrsna[3];
@@ -164,7 +164,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
         sprintnum_short(buf2, rtrsna[2]);
         write(nout, "(' Error in Rtrsna: RMAX =',3a,/,' LMAX = ',3i8,' NINFO=',3i8,"
                     "' KNT=',i8)"),
-            buf0, buf1, buf2, ltrsna, ntrsna, ktrsna;
+            buf0, buf1, buf2, ltrsna[0], ltrsna[1], ltrsna[2], ntrsna[0], ntrsna[1], ntrsna[2], ktrsna;
     }
     //
     REAL rtrsen[3];
