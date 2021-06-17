@@ -38,6 +38,18 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <regex>
+
+#include <lapacke.h>
+
+using namespace std;
+using std::regex;
+using std::regex_replace;
+
 void Rget40(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
     common cmn;
     common_read read(cmn);
@@ -81,31 +93,11 @@ void Rget40(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     REAL work[lwork];
     INTEGER info1 = 0;
     INTEGER info2 = 0;
+    //
     REAL result[4];
+    string str;
+    char line[1024];
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
     //     .. Executable Statements ..
     //
     eps = Rlamch("P");
@@ -119,28 +111,36 @@ void Rget40(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
 //     Read input data until N=0
 //
 statement_10:
-    read(nin, star), n, ifst, ilst;
+    getline(cin, str);
+    stringstream ss(str);
+    ss >> n;
+    ss >> ifst;
+    ss >> ilst;    
     if (n == 0) {
         return;
     }
     knt++;
     for (i = 1; i <= n; i = i + 1) {
-        {
-            read_loop rloop(cmn, nin, star);
-            for (j = 1; j <= n; j = j + 1) {
-                rloop, tmp[(i - 1) + (j - 1) * ldtmp];
-            }
+        getline(cin, str);
+        string _r = regex_replace(str, regex("D\\+"), "e+");
+        str = regex_replace(_r, regex("D\\-"), "e-");
+        istringstream iss(str);
+        for (j = 1; j <= n; j = j + 1) {
+            iss >> dtmp;
+            tmp[(i - 1) + (j - 1) * ldtmp] = dtmp;
         }
     }
     Rlacpy("F", n, n, tmp, ldt, t, ldt);
     Rlacpy("F", n, n, tmp, ldt, t1, ldt);
     Rlacpy("F", n, n, tmp, ldt, t2, ldt);
     for (i = 1; i <= n; i = i + 1) {
-        {
-            read_loop rloop(cmn, nin, star);
-            for (j = 1; j <= n; j = j + 1) {
-                rloop, tmp[(i - 1) + (j - 1) * ldtmp];
-            }
+        getline(cin, str);
+        string _r = regex_replace(str, regex("D\\+"), "e+");
+        str = regex_replace(_r, regex("D\\-"), "e-");
+        istringstream iss(str);
+        for (j = 1; j <= n; j = j + 1) {
+            iss >> dtmp;
+            tmp[(i - 1) + (j - 1) * ldtmp] = dtmp;
         }
     }
     Rlacpy("F", n, n, tmp, ldt, s, ldt);
