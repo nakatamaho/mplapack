@@ -103,7 +103,6 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
     REAL safmin = Rlamch("SAFE MINIMUM");
     const REAL one = 1.0;
     REAL safmax = one / safmin;
-    Rlabad(safmin, safmax);
     REAL ulp = Rlamch("PRECISION");
     REAL smlnum = safmin * (castREAL(n) / ulp);
     //
