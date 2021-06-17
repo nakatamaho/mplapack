@@ -342,8 +342,7 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                 //              .    This may be lowered (slightly) if Rlaqr3
                 //              .    did not provide that many shifts. ====
                 //
-                INTEGER itmp = max((INTEGER)2, kbot - ktop);
-                ns = min({nsmax, nsr, itmp});
+                ns = min({nsmax, nsr, max((INTEGER)2, kbot - ktop)});
                 ns = ns - mod(ns, 2);
                 //
                 //              ==== If there have been no deflations
