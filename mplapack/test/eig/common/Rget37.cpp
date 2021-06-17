@@ -138,9 +138,7 @@ void Rget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     //     lexicographically (increasing by real part, then decreasing by
     //     imaginary part)
     //
-    int count = 0;
 statement_10:
-    count++;
     getline(cin, str);
     stringstream ss(str);
     ss >> n;
