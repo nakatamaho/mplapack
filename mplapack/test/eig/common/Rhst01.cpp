@@ -40,29 +40,6 @@ using fem::common;
 
 void Rhst01(INTEGER const n, INTEGER const /* ilo */, INTEGER const /* ihi */, REAL *a, INTEGER const lda, REAL *h, INTEGER const ldh, REAL *q, INTEGER const ldq, REAL *work, INTEGER const lwork, REAL *result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Quick return if possible
     //
     const REAL zero = 0.0;
@@ -76,7 +53,6 @@ void Rhst01(INTEGER const n, INTEGER const /* ilo */, INTEGER const /* ihi */, R
     REAL eps = Rlamch("Precision");
     const REAL one = 1.0;
     REAL ovfl = one / unfl;
-    Rlabad(unfl, ovfl);
     REAL smlnum = unfl * n / eps;
     //
     //     Test 1:  Compute norm( A - Q*H*Q' ) / ( norm(A) * N * EPS )

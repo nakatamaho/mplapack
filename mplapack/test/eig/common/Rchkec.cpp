@@ -179,7 +179,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
         sprintnum_short(buf2, rtrsen[2]);
         write(nout, "(' Error in Rtrsen: RMAX =',3a,/,' LMAX = ',3i8,' NINFO=',3i8,"
                     "' KNT=',i8)"),
-            buf0, buf1, buf2, ltrsen, ntrsen, ktrsen;
+            buf0, buf1, buf2, ltrsen[0], ltrsen[1], ltrsen[2], ntrsen[0], ntrsen[1], ntrsen[2], ktrsen;
     }
     //
     REAL rlaqtr = 0.0;
