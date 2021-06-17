@@ -473,6 +473,38 @@ void mp_rounding2integer()
 
   printf("*** Rounding test successful ***\n");
 }
+
+void mp_nint()
+{
+  REAL rtmp1;
+  long b;
+
+  printf("*** Nint test start ***\n");
+
+  rtmp1 = 1.3;
+  b = nint(rtmp1);
+  printf("rtmp1: "); printnum(rtmp1); printf("  nint: %ld\n", b);
+  if ( b != 1 )  {printf("*** Nint test failed ***\n"); exit(1);}
+
+  rtmp1 = 1.5;
+  b = nint(rtmp1);
+  printf("rtmp1: "); printnum(rtmp1); printf("  nint: %ld\n", b);
+  if ( b != 2 )  {printf("*** Nint test failed ***\n"); exit(1);}
+
+  rtmp1 = -1.75;
+  b = nint(rtmp1);
+  printf("rtmp1: "); printnum(rtmp1); printf("  nint: %ld\n", b);
+  if ( b != -2 )  {printf("*** Nint test failed ***\n"); exit(1);}
+
+  rtmp1 = -1.4;
+  b = nint(rtmp1);
+  printf("rtmp1: "); printnum(rtmp1); printf("  nint: %ld\n", b);
+  if ( b != -1 )  {printf("*** Nint test failed ***\n"); exit(1);}
+
+  printf("*** Nint test successful ***\n");
+}
+
+
 int main(int argc, char *argv[])
 {
     printf("*** Testing arithmetic start ***\n");
@@ -486,6 +518,7 @@ int main(int argc, char *argv[])
     mpcomplex::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
 
     mp_rounding2integer();
+    mp_nint();
 
     subst_test1();
     subst_test2();
