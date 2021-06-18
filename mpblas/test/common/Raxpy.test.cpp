@@ -33,71 +33,75 @@
 #include <iostream>
 #endif
 
-#define MAX_INCX  10
+#define MAX_INCX 10
 #define MIN_INCX -10
-#define MAX_INCY  10
+#define MAX_INCY 10
 #define MIN_INCY -10
-#define MAX_N     10
-#define MAX_ITER  10
+#define MAX_N 10
+#define MAX_ITER 10
 
 REAL_REF maxdiff = 0.0;
 
-void Raxpy_test2(REAL_REF alpha_ref, REAL alpha)
-{
+void Raxpy_test2(REAL_REF alpha_ref, REAL alpha) {
 
     int errorflag = FALSE;
 
     for (int incx = MAX_INCX; incx >= MIN_INCX; incx--) {
-	for (int incy = MAX_INCY; incy >= MIN_INCY; incy--) {
-	    for (int n = 0; n < MAX_N; n++) {
+        for (int incy = MAX_INCY; incy >= MIN_INCY; incy--) {
+            for (int n = 0; n < MAX_N; n++) {
 #if defined VERBOSE_TEST
-		printf("# n:%d incx:%d, incy:%d\n", n, incx, incy);
+                printf("# n:%d incx:%d, incy:%d\n", n, incx, incy);
 #endif
-		REAL_REF *x_ref = new REAL_REF[veclen(n, incx)];
-		REAL_REF *y_ref = new REAL_REF[veclen(n, incy)];
-		REAL *x = new REAL[veclen(n, incx)];
-		REAL *y = new REAL[veclen(n, incy)];
-		int j = 0;
+                REAL_REF *x_ref = new REAL_REF[veclen(n, incx)];
+                REAL_REF *y_ref = new REAL_REF[veclen(n, incy)];
+                REAL *x = new REAL[veclen(n, incx)];
+                REAL *y = new REAL[veclen(n, incy)];
+                int j = 0;
 
-		while (j < MAX_ITER) {
-		    set_random_vector(x_ref, x, veclen(n, incx));
-		    set_random_vector(y_ref, y, veclen(n, incy));
+                while (j < MAX_ITER) {
+                    set_random_vector(x_ref, x, veclen(n, incx));
+                    set_random_vector(y_ref, y, veclen(n, incy));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		    daxpy_f77(&n, &alpha_ref, x_ref, &incx, y_ref, &incy);
+                    daxpy_f77(&n, &alpha_ref, x_ref, &incx, y_ref, &incy);
 #else
-		    Raxpy(n, alpha, x_ref, incx, y_ref, incy);
+                    Raxpy(n, alpha, x_ref, incx, y_ref, incy);
 #endif
-		    Raxpy(n, alpha, x, incx, y, incy);
+                    Raxpy(n, alpha, x, incx, y, incy);
 
-		    REAL_REF diff = infnorm(y_ref, y, veclen(n, incy), 1);
-		    if (diff > EPSILON) {
+                    REAL_REF diff = infnorm(y_ref, y, veclen(n, incy), 1);
+                    if (diff > EPSILON) {
 #if defined VERBOSE_TEST
-			printf("error: "); printnum(diff); printf("\n");
+                        printf("error: ");
+                        printnum(diff);
+                        printf("\n");
 #endif
-			errorflag = TRUE;
-		    }
-		    if (maxdiff < diff)
-			maxdiff = diff;
-		    j++;
-		}
-		delete[]x;
-		delete[]x_ref;
-		delete[]y;
-		delete[]y_ref;
-	    }
-	}
-	if (errorflag == TRUE) {
-	    printf("error: "); printnum(maxdiff); printf("\n");
+                        errorflag = TRUE;
+                    }
+                    if (maxdiff < diff)
+                        maxdiff = diff;
+                    j++;
+                }
+                delete[] x;
+                delete[] x_ref;
+                delete[] y;
+                delete[] y_ref;
+            }
+        }
+        if (errorflag == TRUE) {
+            printf("error: ");
+            printnum(maxdiff);
+            printf("\n");
             printf("*** Testing Raxpy failed ***\n");
-	    exit(1);
-    } else {
-        printf("maxerror: "); printnum(maxdiff); printf("\n");
-    }
+            exit(1);
+        } else {
+            printf("maxerror: ");
+            printnum(maxdiff);
+            printf("\n");
+        }
     }
 }
 
-void Raxpy_test()
-{
+void Raxpy_test() {
     REAL_REF alpha_ref;
     REAL alpha;
 
@@ -113,8 +117,7 @@ void Raxpy_test()
     Raxpy_test2(alpha_ref, alpha);
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Raxpy start ***\n");
     Raxpy_test();
     printf("*** Testing Raxpy successful ***\n");

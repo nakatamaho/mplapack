@@ -34,12 +34,11 @@
 #include <iostream>
 #endif
 
-#define MAX_ITER  100
+#define MAX_ITER 100
 
 REAL_REF maxdiff = 0.0;
 
-void Rrotg_test()
-{
+void Rrotg_test() {
     int errorflag = FALSE;
     REAL_REF a_ref;
     REAL_REF b_ref;
@@ -52,47 +51,54 @@ void Rrotg_test()
     REAL s;
     int j = 0;
     while (j < MAX_ITER) {
-	set_random_number(a_ref, a);
-	set_random_number(b_ref, b);
-	set_random_number(c_ref, c);
+        set_random_number(a_ref, a);
+        set_random_number(b_ref, b);
+        set_random_number(c_ref, c);
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-	drotg_f77(&a_ref, &b_ref, &c_ref, &s_ref);
+        drotg_f77(&a_ref, &b_ref, &c_ref, &s_ref);
 #else
-	Rrotg(a_ref, b_ref, c_ref, s_ref);
+        Rrotg(a_ref, b_ref, c_ref, s_ref);
 #endif
-	Rrotg(a, b, c, s);
-	diff[0] = abs(a - a_ref);
-	diff[1] = abs(b - b_ref);
-	diff[2] = abs(c - c_ref);
-	diff[3] = abs(s - s_ref);
+        Rrotg(a, b, c, s);
+        diff[0] = abs(a - a_ref);
+        diff[1] = abs(b - b_ref);
+        diff[2] = abs(c - c_ref);
+        diff[3] = abs(s - s_ref);
 #if defined VERBOSE_TEST
-	for (int p = 0; p < 4; p++) {
-	    printf("diff[%d]=", p); printnum(diff[p]); printf("\n");
-	}
+        for (int p = 0; p < 4; p++) {
+            printf("diff[%d]=", p);
+            printnum(diff[p]);
+            printf("\n");
+        }
 #endif
-	for (int p = 0; p < 4; p++) {
-	    if (maxdiff < diff[p])
-	   	 maxdiff = diff[p];
-	    if (diff[p] > EPSILON2) {
+        for (int p = 0; p < 4; p++) {
+            if (maxdiff < diff[p])
+                maxdiff = diff[p];
+            if (diff[p] > EPSILON2) {
 #if defined VERBOSE_TEST
-		printf("error %d,\n", p); printnum(diff[p]); printf("\n");
+                printf("error %d,\n", p);
+                printnum(diff[p]);
+                printf("\n");
 #endif
-		errorflag = TRUE;
-	    }
-	}
-	j++;
+                errorflag = TRUE;
+            }
+        }
+        j++;
     }
     if (errorflag == TRUE) {
-        printf("error: "); printnum(maxdiff); printf("\n");
+        printf("error: ");
+        printnum(maxdiff);
+        printf("\n");
         printf("*** Testing Rrotg failed ***\n");
-	exit(1);
+        exit(1);
     } else {
-        printf("maxerror: "); printnum(maxdiff); printf("\n");
+        printf("maxerror: ");
+        printnum(maxdiff);
+        printf("\n");
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rrotg start ***\n");
     Rrotg_test();
     printf("*** Testing Rrotg successful ***\n");

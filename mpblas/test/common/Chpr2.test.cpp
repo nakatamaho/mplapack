@@ -33,102 +33,105 @@
 #include <iostream>
 #endif
 
-#define MIN_INCX   -1
-#define MAX_INCX    8
-#define MIN_INCY   -1
-#define MAX_INCY    8
-#define MIN_N      -2
-#define MAX_N      10
-#define MAX_ITER    2
+#define MIN_INCX -1
+#define MAX_INCX 8
+#define MIN_INCY -1
+#define MAX_INCY 8
+#define MIN_N -2
+#define MAX_N 10
+#define MAX_ITER 2
 
 REAL_REF maxdiff = 0.0;
 
-void Chpr2_test2(const char *uplo)
-{
+void Chpr2_test2(const char *uplo) {
     int errorflag = FALSE;
     int mplapack_errno1, mplapack_errno2;
     for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
-	for (int incy = MIN_INCY; incy < MAX_INCY; incy++) {
-	    for (int n = MIN_N; n < MAX_N; n++) {
+        for (int incy = MIN_INCY; incy < MAX_INCY; incy++) {
+            for (int n = MIN_N; n < MAX_N; n++) {
 #if defined VERBOSE_TEST
-		printf("#n is %d, incx is %d, incy is %d, uplo is %s.\n", n, incx, incy, uplo);
+                printf("#n is %d, incx is %d, incy is %d, uplo is %s.\n", n, incx, incy, uplo);
 #endif
-		COMPLEX_REF alpha_ref;
-		COMPLEX_REF *x_ref;
-		COMPLEX_REF *y_ref;
-		COMPLEX_REF *AP_ref;
-		COMPLEX alpha;
-		COMPLEX *x;
-		COMPLEX *y;
-		COMPLEX *AP;
+                COMPLEX_REF alpha_ref;
+                COMPLEX_REF *x_ref;
+                COMPLEX_REF *y_ref;
+                COMPLEX_REF *AP_ref;
+                COMPLEX alpha;
+                COMPLEX *x;
+                COMPLEX *y;
+                COMPLEX *AP;
 
-		x_ref = new COMPLEX_REF[veclen(n, incx)];
-		y_ref = new COMPLEX_REF[veclen(n, incy)];
-		AP_ref = new COMPLEX_REF[vecplen(n)];
-		x = new COMPLEX[veclen(n, incx)];
-		y = new COMPLEX[veclen(n, incy)];
-		AP = new COMPLEX[vecplen(n)];
+                x_ref = new COMPLEX_REF[veclen(n, incx)];
+                y_ref = new COMPLEX_REF[veclen(n, incy)];
+                AP_ref = new COMPLEX_REF[vecplen(n)];
+                x = new COMPLEX[veclen(n, incx)];
+                y = new COMPLEX[veclen(n, incy)];
+                AP = new COMPLEX[vecplen(n)];
 
-		for (int i = 0; i < MAX_ITER; i++) {
-		    set_random_vector(AP_ref, AP, vecplen(n));
-		    set_random_vector(x_ref, x, veclen(n, incx));
-		    set_random_vector(y_ref, y, veclen(n, incy));
-		    set_random_number(alpha_ref, alpha);
+                for (int i = 0; i < MAX_ITER; i++) {
+                    set_random_vector(AP_ref, AP, vecplen(n));
+                    set_random_vector(x_ref, x, veclen(n, incx));
+                    set_random_vector(y_ref, y, veclen(n, incy));
+                    set_random_number(alpha_ref, alpha);
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		    zhpr2_f77(uplo, &n, &alpha_ref, x_ref, &incx, y_ref, &incy, AP_ref);
-		    mplapack_errno1 = blas_errno;
+                    zhpr2_f77(uplo, &n, &alpha_ref, x_ref, &incx, y_ref, &incy, AP_ref);
+                    mplapack_errno1 = blas_errno;
 #else
-		    Chpr2(uplo, n, alpha_ref, x_ref, incx, y_ref, incy, AP_ref);
-		    mplapack_errno1 = mplapack_errno;
+                    Chpr2(uplo, n, alpha_ref, x_ref, incx, y_ref, incy, AP_ref);
+                    mplapack_errno1 = mplapack_errno;
 #endif
-		    Chpr2(uplo, n, alpha, x, incx, y, incy, AP);
-		    mplapack_errno2 = mplapack_errno;
+                    Chpr2(uplo, n, alpha, x, incx, y, incy, AP);
+                    mplapack_errno2 = mplapack_errno;
 #if defined VERBOSE_TEST
-		    printf("errno: mplapack %d, ref %d\n", mplapack_errno1, mplapack_errno2);
+                    printf("errno: mplapack %d, ref %d\n", mplapack_errno1, mplapack_errno2);
 #endif
-		    if (mplapack_errno1 != mplapack_errno2) {
+                    if (mplapack_errno1 != mplapack_errno2) {
 #if defined VERBOSE_TEST
-			printf("error in Mxerbla!!\n");
+                        printf("error in Mxerbla!!\n");
 #endif
-			errorflag = TRUE;
-		    }
-		    REAL_REF diff = infnorm(AP_ref, AP, vecplen(n), 1);
-		    if (diff > EPSILON) {
+                        errorflag = TRUE;
+                    }
+                    REAL_REF diff = infnorm(AP_ref, AP, vecplen(n), 1);
+                    if (diff > EPSILON) {
 #if defined VERBOSE_TEST
-			printf("error: "); printnum(diff); printf("\n");
+                        printf("error: ");
+                        printnum(diff);
+                        printf("\n");
 #endif
-			errorflag = TRUE;
-		    }
-		    if (maxdiff < diff)
-			maxdiff = diff;
-		}
-		delete[]AP_ref;
-		delete[]y_ref;
-		delete[]x_ref;
-		delete[]AP;
-		delete[]y;
-		delete[]x;
-	    }
-	}
+                        errorflag = TRUE;
+                    }
+                    if (maxdiff < diff)
+                        maxdiff = diff;
+                }
+                delete[] AP_ref;
+                delete[] y_ref;
+                delete[] x_ref;
+                delete[] AP;
+                delete[] y;
+                delete[] x;
+            }
+        }
     }
     if (errorflag == TRUE) {
-	printf("error: "); printnum(maxdiff); printf("\n");
-	printf("*** Testing Chpr2 failed ***\n");
-	exit(1);
+        printf("error: ");
+        printnum(maxdiff);
+        printf("\n");
+        printf("*** Testing Chpr2 failed ***\n");
+        exit(1);
     } else {
-        printf("maxerror: "); printnum(maxdiff); printf("\n");
+        printf("maxerror: ");
+        printnum(maxdiff);
+        printf("\n");
     }
 }
 
-void Chpr2_test()
-{
+void Chpr2_test() {
     Chpr2_test2("U");
     Chpr2_test2("L");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Chpr2 start ***\n");
     Chpr2_test();
     printf("*** Testing Chpr2 successful ***\n");

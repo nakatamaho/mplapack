@@ -34,62 +34,66 @@
 #endif
 
 #define MIN_INCX -10
-#define MAX_INCX  10
-#define MAX_N     100
-#define MAX_ITER  10
+#define MAX_INCX 10
+#define MAX_N 100
+#define MAX_ITER 10
 
 REAL_REF maxdiff = 0.0;
 
-void Rasum_test()
-{
+void Rasum_test() {
     int errorflag = FALSE;
     REAL_REF dtemp;
     REAL rtemp;
 
     for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
-	for (int n = 0; n < MAX_N; n++) {
+        for (int n = 0; n < MAX_N; n++) {
 #if defined VERBOSE_TEST
-	    printf("# n:%d incx:%d\n", n, incx);
+            printf("# n:%d incx:%d\n", n, incx);
 #endif
-	    REAL_REF *x_ref = new REAL_REF[veclen(n, incx)];
-	    REAL *x = new REAL[veclen(n, incx)];
+            REAL_REF *x_ref = new REAL_REF[veclen(n, incx)];
+            REAL *x = new REAL[veclen(n, incx)];
 
-	    int j = 0;
-	    while (j < MAX_ITER) {
-		set_random_vector(x_ref, x, veclen(n, incx));
+            int j = 0;
+            while (j < MAX_ITER) {
+                set_random_vector(x_ref, x, veclen(n, incx));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		dtemp = dasum_f77(&n, x_ref, &incx);
+                dtemp = dasum_f77(&n, x_ref, &incx);
 #else
-		dtemp = Rasum(n, x_ref, incx);
+                dtemp = Rasum(n, x_ref, incx);
 #endif
-		rtemp = Rasum(n, x, incx);
+                rtemp = Rasum(n, x, incx);
 
-		REAL_REF diff = rtemp - dtemp;
-		if (diff > EPSILON) {
+                REAL_REF diff = rtemp - dtemp;
+                if (diff > EPSILON) {
 #if defined VERBOSE_TEST
-		    printf("error: "); printnum(diff); printf("\n");
+                    printf("error: ");
+                    printnum(diff);
+                    printf("\n");
 #endif
-		    errorflag = TRUE;
-		}
-		if (maxdiff < diff)
-		    maxdiff = diff;
-		j++;
-	    }
-	    delete[]x_ref;
-	    delete[]x;
-	}
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
+                j++;
+            }
+            delete[] x_ref;
+            delete[] x;
+        }
     }
     if (errorflag != FALSE) {
-	printf("error: "); printnum(maxdiff); printf("\n");
+        printf("error: ");
+        printnum(maxdiff);
+        printf("\n");
         printf("*** Testing Rasum failed ***\n");
-	exit(1);
+        exit(1);
     } else {
-        printf("maxerror: "); printnum(maxdiff); printf("\n");
+        printf("maxerror: ");
+        printnum(maxdiff);
+        printf("\n");
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rasum start ***\n");
     Rasum_test();
     printf("*** Testing Rasum successful ***\n");

@@ -6,14 +6,12 @@
 #include <iostream>
 #endif
 
-void Mxerbla_test()
-{
+void Mxerbla_test() {
     Mxerbla("Fasum", 10);
     Mxerbla("Maho", 100);
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Mxerbla start ***\n");
     Mxerbla_test();
     printf("*** Testing Mxerbla successful ***\n");

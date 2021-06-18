@@ -33,63 +33,61 @@
 #include <iostream>
 #endif
 
-void Mlsame_test()
-{
-//  char a="A";
-//  char b="A";
+void Mlsame_test() {
+    //  char a="A";
+    //  char b="A";
     int errorflag = FALSE;
 
     if (Mlsame("A", "A")) {
 #if defined VERBOSE_TEST
-	printf("same letter ok\n");
+        printf("same letter ok\n");
 #endif
     } else {
 #if defined VERBOSE_TEST
-	printf("same letter NG\n");
+        printf("same letter NG\n");
 #endif
-	errorflag = TRUE;
+        errorflag = TRUE;
     }
     if (Mlsame("A", "a")) {
 #if defined VERBOSE_TEST
-	printf("Uppercase/lowercase ok\n");
+        printf("Uppercase/lowercase ok\n");
 #endif
     } else {
 #if defined VERBOSE_TEST
-	printf("Uppercase/lowercase NG\n");
+        printf("Uppercase/lowercase NG\n");
 #endif
-	errorflag = TRUE;
+        errorflag = TRUE;
     }
 
     if (Mlsame("A", "aho")) {
 #if defined VERBOSE_TEST
-	printf("Only looks for the first char ok\n");
+        printf("Only looks for the first char ok\n");
 #endif
     } else {
 #if defined VERBOSE_TEST
-	printf("Only looks for the first char NG\n");
+        printf("Only looks for the first char NG\n");
 #endif
-	errorflag = TRUE;
+        errorflag = TRUE;
     }
 
     if (Mlsame("Inv", "inv")) {
 #if defined VERBOSE_TEST
-	printf("Only looks for the first char ok\n");
+        printf("Only looks for the first char ok\n");
 #endif
     } else {
 #if defined VERBOSE_TEST
-	printf("Only looks for the first char NG\n");
+        printf("Only looks for the first char NG\n");
 #endif
-	errorflag = TRUE;
+        errorflag = TRUE;
     }
 
     if (errorflag == TRUE) {
         printf("*** Testing Mlsame failed ***\n");
-	exit(1);
+        exit(1);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Mlsame start ***\n");
     Mlsame_test();
     printf("*** Testing Mlsame successful ***\n");

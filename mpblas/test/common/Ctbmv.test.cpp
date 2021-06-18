@@ -46,76 +46,81 @@
 
 REAL_REF maxdiff = 0.0;
 
-void Ctbmv_test2(const char *uplo, const char *trans, const char *diag)
-{
+void Ctbmv_test2(const char *uplo, const char *trans, const char *diag) {
     int errorflag = FALSE;
     int mplapack_errno1, mplapack_errno2;
     for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
-	for (int n = MIN_N; n < MAX_N; n++) {
-	    for (int k = 0; k < MAX_K; k++) {
-		for (int lda = k + 1; lda < MAX_LDA; lda++) {
+        for (int n = MIN_N; n < MAX_N; n++) {
+            for (int k = 0; k < MAX_K; k++) {
+                for (int lda = k + 1; lda < MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
-		    printf("#n is %d, lda is %d, incx is %d ", n, lda, incx);
-		    printf("uplo is %s trans is %s, diag is %s \n", uplo, trans, diag);
+                    printf("#n is %d, lda is %d, incx is %d ", n, lda, incx);
+                    printf("uplo is %s trans is %s, diag is %s \n", uplo, trans, diag);
 #endif
-		    COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
-		    COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
-		    COMPLEX *A = new COMPLEX[matlen(lda, n)];
-		    COMPLEX *x = new COMPLEX[veclen(n, incx)];
+                    COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
+                    COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
+                    COMPLEX *A = new COMPLEX[matlen(lda, n)];
+                    COMPLEX *x = new COMPLEX[veclen(n, incx)];
 
-		    for (int iter = 0; iter < MAX_ITER; iter++) {
-			set_random_vector(A_ref, A, matlen(lda, n));
-			set_random_vector(x_ref, x, veclen(n, incx));
+                    for (int iter = 0; iter < MAX_ITER; iter++) {
+                        set_random_vector(A_ref, A, matlen(lda, n));
+                        set_random_vector(x_ref, x, veclen(n, incx));
 
-			mplapack_errno = 0; blas_errno = 0;
+                        mplapack_errno = 0;
+                        blas_errno = 0;
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-			ztbmv_f77(uplo, trans, diag, &n, &k, A_ref, &lda, x_ref, &incx);
-			mplapack_errno1 = blas_errno;
+                        ztbmv_f77(uplo, trans, diag, &n, &k, A_ref, &lda, x_ref, &incx);
+                        mplapack_errno1 = blas_errno;
 #else
-			Ctbmv(uplo, trans, diag, n, k, A_ref, lda, x_ref, incx);
-			mplapack_errno1 = mplapack_errno;
+                        Ctbmv(uplo, trans, diag, n, k, A_ref, lda, x_ref, incx);
+                        mplapack_errno1 = mplapack_errno;
 #endif
-			Ctbmv(uplo, trans, diag, n, k, A, lda, x, incx);
-			mplapack_errno2 = mplapack_errno;
+                        Ctbmv(uplo, trans, diag, n, k, A, lda, x, incx);
+                        mplapack_errno2 = mplapack_errno;
 
 #if defined VERBOSE_TEST
-			printf("errno: mplapack %d, ref %d\n", mplapack_errno1, mplapack_errno2);
+                        printf("errno: mplapack %d, ref %d\n", mplapack_errno1, mplapack_errno2);
 #endif
-			if (mplapack_errno1 != mplapack_errno2) {
+                        if (mplapack_errno1 != mplapack_errno2) {
 #if defined VERBOSE_TEST
-			    printf("error in Mxerbla!!\n");
+                            printf("error in Mxerbla!!\n");
 #endif
-			    errorflag = TRUE;
-			}
-			REAL_REF diff = infnorm(x_ref, x, veclen(n, incx), 1);
-			if (diff > EPSILON) {
+                            errorflag = TRUE;
+                        }
+                        REAL_REF diff = infnorm(x_ref, x, veclen(n, incx), 1);
+                        if (diff > EPSILON) {
 #if defined VERBOSE_TEST
-			    printf("error: "); printnum(diff); printf("\n");
+                            printf("error: ");
+                            printnum(diff);
+                            printf("\n");
 #endif
-			    errorflag = TRUE;
-			}
-			if (maxdiff < diff)
-			    maxdiff = diff;
-		    }
-		    delete[]A_ref;
-		    delete[]x_ref;
-		    delete[]x;
-		    delete[]A;
-		}
-	    }
-	}
+                            errorflag = TRUE;
+                        }
+                        if (maxdiff < diff)
+                            maxdiff = diff;
+                    }
+                    delete[] A_ref;
+                    delete[] x_ref;
+                    delete[] x;
+                    delete[] A;
+                }
+            }
+        }
     }
     if (errorflag == TRUE) {
-	printf("error: "); printnum(maxdiff); printf("\n");
-	printf("*** Testing Ctbmv failed ***\n");
-	exit(1);
+        printf("error: ");
+        printnum(maxdiff);
+        printf("\n");
+        printf("*** Testing Ctbmv failed ***\n");
+        exit(1);
     } else {
-        printf("maxerror: "); printnum(maxdiff); printf("\n");
+        printf("maxerror: ");
+        printnum(maxdiff);
+        printf("\n");
     }
 }
 
-void Ctbmv_test()
-{
+void Ctbmv_test() {
     Ctbmv_test2("U", "N", "U");
     Ctbmv_test2("U", "N", "N");
     Ctbmv_test2("U", "T", "U");
@@ -130,8 +135,7 @@ void Ctbmv_test()
     Ctbmv_test2("L", "C", "N");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Ctbmv start ***\n");
     Ctbmv_test();
     printf("*** Testing Ctbmv successful ***\n");

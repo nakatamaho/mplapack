@@ -33,72 +33,78 @@
 #include <iostream>
 #endif
 
-#define MAX_INCX  5
+#define MAX_INCX 5
 #define MIN_INCX -5
-#define MAX_INCY  5
+#define MAX_INCY 5
 #define MIN_INCY -5
-#define MAX_N     10
-#define MAX_ITER  10
+#define MAX_N 10
+#define MAX_ITER 10
 
 REAL_REF maxdiff = 0.0;
 
-void Caxpy_test2(COMPLEX_REF alpha_ref, COMPLEX alpha)
-{
+void Caxpy_test2(COMPLEX_REF alpha_ref, COMPLEX alpha) {
     int errorflag = FALSE;
     COMPLEX ctemp;
 
     for (int incx = MAX_INCX; incx >= MIN_INCX; incx--) {
-	for (int incy = MAX_INCY; incy >= MIN_INCY; incy--) {
-	    for (int n = 0; n < MAX_N; n++) {
+        for (int incy = MAX_INCY; incy >= MIN_INCY; incy--) {
+            for (int n = 0; n < MAX_N; n++) {
 #if defined VERBOSE_TEST
-		printf("# n:%d incx:%d, incy:%d\n", n, incx, incy);
+                printf("# n:%d incx:%d, incy:%d\n", n, incx, incy);
 #endif
-		COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
-		COMPLEX_REF *y_ref = new COMPLEX_REF[veclen(n, incy)];
-		COMPLEX *x = new COMPLEX[veclen(n, incx)];
-		COMPLEX *y = new COMPLEX[veclen(n, incy)];
-		int j = 0;
-		while (j < MAX_ITER) {
-		    set_random_vector(x_ref, x, veclen(n, incx));
-		    set_random_vector(y_ref, y, veclen(n, incy));
+                COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
+                COMPLEX_REF *y_ref = new COMPLEX_REF[veclen(n, incy)];
+                COMPLEX *x = new COMPLEX[veclen(n, incx)];
+                COMPLEX *y = new COMPLEX[veclen(n, incy)];
+                int j = 0;
+                while (j < MAX_ITER) {
+                    set_random_vector(x_ref, x, veclen(n, incx));
+                    set_random_vector(y_ref, y, veclen(n, incy));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		    zaxpy_f77(&n, &alpha_ref, x_ref, &incx, y_ref, &incy);
+                    zaxpy_f77(&n, &alpha_ref, x_ref, &incx, y_ref, &incy);
 #else
-		    Caxpy(n, alpha_ref, x_ref, incx, y_ref, incy);
+                    Caxpy(n, alpha_ref, x_ref, incx, y_ref, incy);
 #endif
-		    Caxpy(n, alpha, x, incx, y, incy);
-		    REAL_REF diff = infnorm(y_ref, y, veclen(n, incy), 1);
-		    if (abs(diff) > EPSILON) {
+                    Caxpy(n, alpha, x, incx, y, incy);
+                    REAL_REF diff = infnorm(y_ref, y, veclen(n, incy), 1);
+                    if (abs(diff) > EPSILON) {
 #if defined VERBOSE_TEST
-			printf("error: "); printnum(diff); printf("\n");
+                        printf("error: ");
+                        printnum(diff);
+                        printf("\n");
 #endif
-			errorflag = TRUE;
-		    }
-		    if (maxdiff < diff)
-			maxdiff = diff;
+                        errorflag = TRUE;
+                    }
+                    if (maxdiff < diff)
+                        maxdiff = diff;
 #if defined VERBOSE_TEST
-		    printf("max error: "); printnum(diff); printf("\n");
+                    printf("max error: ");
+                    printnum(diff);
+                    printf("\n");
 #endif
-		    j++;
-		}
-		delete[]x;
-		delete[]x_ref;
-		delete[]y;
-		delete[]y_ref;
-	    }
-	}
+                    j++;
+                }
+                delete[] x;
+                delete[] x_ref;
+                delete[] y;
+                delete[] y_ref;
+            }
+        }
     }
     if (errorflag == TRUE) {
-        printf("max error: "); printnum(maxdiff); printf("\n");
+        printf("max error: ");
+        printnum(maxdiff);
+        printf("\n");
         printf("*** Testing Caxpy failed ***\n");
-	exit(1);
+        exit(1);
     } else {
-        printf("maxerror: "); printnum(maxdiff); printf("\n");
+        printf("maxerror: ");
+        printnum(maxdiff);
+        printf("\n");
     }
 }
 
-void Caxpy_test()
-{
+void Caxpy_test() {
     COMPLEX_REF alpha_ref;
     COMPLEX alpha;
 
@@ -120,8 +126,7 @@ void Caxpy_test()
     Caxpy_test2(alpha_ref, alpha);
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Caxpy start ***\n");
     Caxpy_test();
     printf("*** Testing Caxpy successful ***\n");

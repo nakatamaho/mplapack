@@ -33,94 +33,98 @@
 #include <iostream>
 #endif
 
-#define MIN_INCX   -2
-#define MAX_INCX    4
-#define MIN_N       2
-#define MAX_N      10
-#define MAX_ITER    3
+#define MIN_INCX -2
+#define MAX_INCX 4
+#define MIN_N 2
+#define MAX_N 10
+#define MAX_ITER 3
 
 REAL_REF maxdiff = 0.0;
 
-void Chpr_test2(const char *uplo)
-{
+void Chpr_test2(const char *uplo) {
     int errorflag = FALSE;
     int mplapack_errno1, mplapack_errno2;
     for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
-	for (int n = MIN_N; n <= MAX_N; n++) {
+        for (int n = MIN_N; n <= MAX_N; n++) {
 #if defined VERBOSE_TEST
-	    printf("#n is %d, incx is %d ", n, incx);
-	    printf("uplo is %s \n", uplo);
+            printf("#n is %d, incx is %d ", n, incx);
+            printf("uplo is %s \n", uplo);
 #endif
-	    COMPLEX_REF *x_ref;
-	    COMPLEX_REF *AP_ref;
-	    REAL_REF alpha_ref;
+            COMPLEX_REF *x_ref;
+            COMPLEX_REF *AP_ref;
+            REAL_REF alpha_ref;
 
-	    COMPLEX *x;
-	    COMPLEX *AP;
-	    REAL alpha;
+            COMPLEX *x;
+            COMPLEX *AP;
+            REAL alpha;
 
-	    x_ref = new COMPLEX_REF[veclen(n, incx)];
-	    AP_ref = new COMPLEX_REF[vecplen(n)];
-	    x = new COMPLEX[veclen(n, incx)];
-	    AP = new COMPLEX[vecplen(n)];
+            x_ref = new COMPLEX_REF[veclen(n, incx)];
+            AP_ref = new COMPLEX_REF[vecplen(n)];
+            x = new COMPLEX[veclen(n, incx)];
+            AP = new COMPLEX[vecplen(n)];
 
-	    for (int i = 0; i < MAX_ITER; i++) {
-		set_random_vector(AP_ref, AP, vecplen(n));
-		set_random_vector(x_ref, x, veclen(n, incx));
-		set_random_number(alpha_ref, alpha);
+            for (int i = 0; i < MAX_ITER; i++) {
+                set_random_vector(AP_ref, AP, vecplen(n));
+                set_random_vector(x_ref, x, veclen(n, incx));
+                set_random_number(alpha_ref, alpha);
 
-		mplapack_errno = 0; blas_errno = 0;
+                mplapack_errno = 0;
+                blas_errno = 0;
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		zhpr_f77(uplo, &n, &alpha_ref, x_ref, &incx, AP_ref);
-		mplapack_errno1 = blas_errno;
+                zhpr_f77(uplo, &n, &alpha_ref, x_ref, &incx, AP_ref);
+                mplapack_errno1 = blas_errno;
 #else
-		Chpr(uplo, n, alpha_ref, x_ref, incx, AP_ref);
-		mplapack_errno1 = mplapack_errno;
+                Chpr(uplo, n, alpha_ref, x_ref, incx, AP_ref);
+                mplapack_errno1 = mplapack_errno;
 #endif
-		Chpr(uplo, n, alpha, x, incx, AP);
-		mplapack_errno2 = mplapack_errno;
+                Chpr(uplo, n, alpha, x, incx, AP);
+                mplapack_errno2 = mplapack_errno;
 #if defined VERBOSE_TEST
-		printf("errno: mplapack %d, ref %d\n", mplapack_errno1, mplapack_errno2);
+                printf("errno: mplapack %d, ref %d\n", mplapack_errno1, mplapack_errno2);
 #endif
-		if (mplapack_errno1 != mplapack_errno2) {
+                if (mplapack_errno1 != mplapack_errno2) {
 #if defined VERBOSE_TEST
-		    printf("error in Mxerbla!!\n");
+                    printf("error in Mxerbla!!\n");
 #endif
-		    errorflag = TRUE;
-		}
-		REAL_REF diff = infnorm(AP_ref, AP, vecplen(n), 1);
-		if (diff > EPSILON) {
+                    errorflag = TRUE;
+                }
+                REAL_REF diff = infnorm(AP_ref, AP, vecplen(n), 1);
+                if (diff > EPSILON) {
 #if defined VERBOSE_TEST
-		    printf("error: "); printnum(diff); printf("\n");
+                    printf("error: ");
+                    printnum(diff);
+                    printf("\n");
 #endif
-		    errorflag = TRUE;
-		}
-		if (maxdiff < diff)
-		    maxdiff = diff;
-	    }
-	    delete[]AP_ref;
-	    delete[]x_ref;
-	    delete[]AP;
-	    delete[]x;
-	}
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
+            }
+            delete[] AP_ref;
+            delete[] x_ref;
+            delete[] AP;
+            delete[] x;
+        }
     }
     if (errorflag) {
-	printf("error: "); printnum(maxdiff); printf("\n");
+        printf("error: ");
+        printnum(maxdiff);
+        printf("\n");
         printf("*** Testing Chpr failed ***\n");
-	exit(1);
+        exit(1);
     } else {
-        printf("maxerror: "); printnum(maxdiff); printf("\n");
+        printf("maxerror: ");
+        printnum(maxdiff);
+        printf("\n");
     }
 }
 
-void Chpr_test()
-{
+void Chpr_test() {
     Chpr_test2("U");
     Chpr_test2("L");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Chpr start ***\n");
     Chpr_test();
     printf("*** Testing Chpr successful ***\n");

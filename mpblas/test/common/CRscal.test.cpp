@@ -34,61 +34,65 @@
 #endif
 
 #define MIN_INCX -10
-#define MAX_INCX  10
-#define MAX_N     30
-#define MAX_ITER  10
+#define MAX_INCX 10
+#define MAX_N 30
+#define MAX_ITER 10
 
 REAL_REF maxdiff = 0.0;
 
-void CRscal_test()
-{
+void CRscal_test() {
     int errorflag = FALSE;
     for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
-	for (int n = 0; n < MAX_N; n++) {
+        for (int n = 0; n < MAX_N; n++) {
 #if defined VERBOSE_TEST
-	    printf("# n:%d incx:%d\n", n, incx);
+            printf("# n:%d incx:%d\n", n, incx);
 #endif
-	    COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
-	    COMPLEX *x = new COMPLEX[veclen(n, incx)];
-	    REAL_REF diff;
-	    int j = 0;
-	    while (j < MAX_ITER) {
-		REAL_REF alpha_ref;
-		REAL alpha;
-		set_random_number(alpha_ref, alpha);
-		set_random_vector(x_ref, x, veclen(n, incx));
+            COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
+            COMPLEX *x = new COMPLEX[veclen(n, incx)];
+            REAL_REF diff;
+            int j = 0;
+            while (j < MAX_ITER) {
+                REAL_REF alpha_ref;
+                REAL alpha;
+                set_random_number(alpha_ref, alpha);
+                set_random_vector(x_ref, x, veclen(n, incx));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		zdscal_f77(&n, &alpha_ref, x_ref, &incx);
+                zdscal_f77(&n, &alpha_ref, x_ref, &incx);
 #else
-		CRscal(n, alpha_ref, x_ref, incx);
+                CRscal(n, alpha_ref, x_ref, incx);
 #endif
-		CRscal(n, alpha, x, incx);
-		diff = infnorm(x_ref, x, veclen(n, incx), 1);
-		if (diff > EPSILON) {
+                CRscal(n, alpha, x, incx);
+                diff = infnorm(x_ref, x, veclen(n, incx), 1);
+                if (diff > EPSILON) {
 #if defined VERBOSE_TEST
-		    printf("error: "); printnum(diff); printf("\n");
+                    printf("error: ");
+                    printnum(diff);
+                    printf("\n");
 #endif
-		    errorflag = TRUE;
-		}
-		if (maxdiff < diff)
-		    maxdiff = diff;
-		j++;
-	    }
-	    delete[]x_ref;
-	    delete[]x;
-	}
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
+                j++;
+            }
+            delete[] x_ref;
+            delete[] x;
+        }
     }
     if (errorflag == TRUE) {
-        printf("max error "); printnum(maxdiff); printf("\n");
-	printf("*** Testing CRrot failed ***\n");
-	exit(1);
+        printf("max error ");
+        printnum(maxdiff);
+        printf("\n");
+        printf("*** Testing CRrot failed ***\n");
+        exit(1);
     } else {
-        printf("maxerror: "); printnum(maxdiff); printf("\n");
+        printf("maxerror: ");
+        printnum(maxdiff);
+        printf("\n");
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing CRscal start ***\n");
     CRscal_test();
     printf("*** Testing CRscal successful ***\n");

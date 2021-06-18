@@ -47,181 +47,193 @@
 
 REAL_REF maxdiff = 0.0;
 
-void Csyr2k_test3(const char *uplo, const char *trans, COMPLEX_REF alpha_ref, COMPLEX_REF beta_ref, COMPLEX alpha, COMPLEX beta)
-{
+void Csyr2k_test3(const char *uplo, const char *trans, COMPLEX_REF alpha_ref, COMPLEX_REF beta_ref, COMPLEX alpha, COMPLEX beta) {
 
     int errorflag = FALSE;
     int mplapack_errno1, mplapack_errno2;
     for (int n = MIN_N; n < MAX_N; n++) {
-	for (int k = MIN_K; k < MAX_K; k++) {
+        for (int k = MIN_K; k < MAX_K; k++) {
 
-	    int minlda;
+            int minlda;
 
-	    if (Mlsame(trans, "N"))
-		minlda = max(1, n);
-	    else
-		minlda = max(1, k);
+            if (Mlsame(trans, "N"))
+                minlda = max(1, n);
+            else
+                minlda = max(1, k);
 
-	    int minldb;
+            int minldb;
 
-	    if (Mlsame(trans, "N"))
-		minldb = max(1, n);
-	    else
-		minldb = max(1, k);
+            if (Mlsame(trans, "N"))
+                minldb = max(1, n);
+            else
+                minldb = max(1, k);
 
-	    for (int lda = minlda; lda < MAX_LDA; lda++) {
-		for (int ldb = minldb; ldb < MAX_LDB; ldb++) {
-		    for (int ldc = max(1, n); ldc < MAX_LDC; ldc++) {
+            for (int lda = minlda; lda < MAX_LDA; lda++) {
+                for (int ldb = minldb; ldb < MAX_LDB; ldb++) {
+                    for (int ldc = max(1, n); ldc < MAX_LDC; ldc++) {
 #if defined VERBOSE_TEST
-			printf("#n is %d, k is %d, lda is %d, ldb is %d, ldc is %d ", n, k, lda, ldb, ldc);
-			printf("uplo is %s, trans is %s \n", uplo, trans);
+                        printf("#n is %d, k is %d, lda is %d, ldb is %d, ldc is %d ", n, k, lda, ldb, ldc);
+                        printf("uplo is %s, trans is %s \n", uplo, trans);
 #endif
-			COMPLEX_REF *A_ref;
-			COMPLEX_REF *B_ref;
-			COMPLEX_REF *C_ref;
-			COMPLEX *A;
-			COMPLEX *B;
-			COMPLEX *C;
+                        COMPLEX_REF *A_ref;
+                        COMPLEX_REF *B_ref;
+                        COMPLEX_REF *C_ref;
+                        COMPLEX *A;
+                        COMPLEX *B;
+                        COMPLEX *C;
 
-			int ka, kb;
+                        int ka, kb;
 
-			if (Mlsame(trans, "N"))
-			    ka = k;
-			else
-			    ka = n;
-			if (Mlsame(trans, "N"))
-			    kb = k;
-			else
-			    kb = n;
+                        if (Mlsame(trans, "N"))
+                            ka = k;
+                        else
+                            ka = n;
+                        if (Mlsame(trans, "N"))
+                            kb = k;
+                        else
+                            kb = n;
 
-			A_ref = new COMPLEX_REF[matlen(lda, ka)];
-			B_ref = new COMPLEX_REF[matlen(ldb, kb)];
-			C_ref = new COMPLEX_REF[matlen(ldc, n)];
-			A = new COMPLEX[matlen(lda, ka)];
-			B = new COMPLEX[matlen(ldb, kb)];
-			C = new COMPLEX[matlen(ldc, n)];
+                        A_ref = new COMPLEX_REF[matlen(lda, ka)];
+                        B_ref = new COMPLEX_REF[matlen(ldb, kb)];
+                        C_ref = new COMPLEX_REF[matlen(ldc, n)];
+                        A = new COMPLEX[matlen(lda, ka)];
+                        B = new COMPLEX[matlen(ldb, kb)];
+                        C = new COMPLEX[matlen(ldc, n)];
 
-			for (int iter = 0; iter < MAX_ITER; iter++) {
-			    set_random_vector(A_ref, A, matlen(lda, ka));
-			    set_random_vector(B_ref, B, matlen(ldb, kb));
-			    set_random_vector(C_ref, C, matlen(ldc, n));
+                        for (int iter = 0; iter < MAX_ITER; iter++) {
+                            set_random_vector(A_ref, A, matlen(lda, ka));
+                            set_random_vector(B_ref, B, matlen(ldb, kb));
+                            set_random_vector(C_ref, C, matlen(ldc, n));
 
-			    mplapack_errno = 0; blas_errno = 0;
+                            mplapack_errno = 0;
+                            blas_errno = 0;
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-			    zsyr2k_f77(uplo, trans, &n, &k, &alpha_ref, A_ref, &lda, B_ref, &ldb, &beta_ref, C_ref, &ldc);
-			    mplapack_errno1 = blas_errno;
+                            zsyr2k_f77(uplo, trans, &n, &k, &alpha_ref, A_ref, &lda, B_ref, &ldb, &beta_ref, C_ref, &ldc);
+                            mplapack_errno1 = blas_errno;
 #else
-			    Csyr2k(uplo, trans, n, k, alpha_ref, A_ref, lda, B_ref, ldb, beta_ref, C_ref, ldc);
-			    mplapack_errno1 = mplapack_errno;
+                            Csyr2k(uplo, trans, n, k, alpha_ref, A_ref, lda, B_ref, ldb, beta_ref, C_ref, ldc);
+                            mplapack_errno1 = mplapack_errno;
 #endif
-			    Csyr2k(uplo, trans, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
-			    mplapack_errno2 = mplapack_errno;
+                            Csyr2k(uplo, trans, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+                            mplapack_errno2 = mplapack_errno;
 
 #if defined VERBOSE_TEST
-			    printf("errno: mplapack %d, ref %d\n", mplapack_errno1, mplapack_errno2);
+                            printf("errno: mplapack %d, ref %d\n", mplapack_errno1, mplapack_errno2);
 #endif
-			    if (mplapack_errno1 != mplapack_errno2) {
+                            if (mplapack_errno1 != mplapack_errno2) {
 #if defined VERBOSE_TEST
-				printf("error in Mxerbla!!\n");
+                                printf("error in Mxerbla!!\n");
 #endif
-				errorflag = TRUE;
-			    }
-			    REAL_REF diff = infnorm(C_ref, C, matlen(ldc, n), 1);
-			    if (diff > EPSILON) {
+                                errorflag = TRUE;
+                            }
+                            REAL_REF diff = infnorm(C_ref, C, matlen(ldc, n), 1);
+                            if (diff > EPSILON) {
 #if defined VERBOSE_TEST
-				printf("error: "); printnum(diff); printf("\n");
+                                printf("error: ");
+                                printnum(diff);
+                                printf("\n");
 #endif
-				errorflag = TRUE;
-			    }
-			    if (maxdiff < diff)
-				maxdiff = diff;
-			}
-			delete[]C_ref;
-			delete[]B_ref;
-			delete[]A_ref;
-			delete[]C;
-			delete[]B;
-			delete[]A;
-		    }
-		}
-	    }
-	}
+                                errorflag = TRUE;
+                            }
+                            if (maxdiff < diff)
+                                maxdiff = diff;
+                        }
+                        delete[] C_ref;
+                        delete[] B_ref;
+                        delete[] A_ref;
+                        delete[] C;
+                        delete[] B;
+                        delete[] A;
+                    }
+                }
+            }
+        }
     }
     if (errorflag == TRUE) {
-	printf("error: "); printnum(maxdiff); printf("\n");
-	printf("*** Testing Csyr2k failed ***\n");
-	exit(1);
+        printf("error: ");
+        printnum(maxdiff);
+        printf("\n");
+        printf("*** Testing Csyr2k failed ***\n");
+        exit(1);
     } else {
-        printf("maxerror: "); printnum(maxdiff); printf("\n");
+        printf("maxerror: ");
+        printnum(maxdiff);
+        printf("\n");
     }
 }
 
-void Csyr2k_test2(const char *uplo, const char *trans)
-{
+void Csyr2k_test2(const char *uplo, const char *trans) {
     COMPLEX_REF alpha_ref;
     COMPLEX_REF beta_ref;
     COMPLEX alpha;
     COMPLEX beta;
 
-//alpha=*, beta=*
+    // alpha=*, beta=*
     set_random_number(alpha_ref, alpha);
     set_random_number(beta_ref, beta);
     Csyr2k_test3(uplo, trans, alpha_ref, beta_ref, alpha, beta);
 
-//a=0, b=*;
+    // a=0, b=*;
     alpha_ref = 0.0;
     alpha = 0.0;
     set_random_number(beta_ref, beta);
     Csyr2k_test3(uplo, trans, alpha_ref, beta_ref, alpha, beta);
 
-//a=*, b=0;
+    // a=*, b=0;
     set_random_number(alpha_ref, alpha);
     beta_ref = 0.0;
     beta = 0.0;
     Csyr2k_test3(uplo, trans, alpha_ref, beta_ref, alpha, beta);
 
-//a=*, b=1;
+    // a=*, b=1;
     set_random_number(alpha_ref, alpha);
     beta_ref = 1.0;
     beta = 1.0;
     Csyr2k_test3(uplo, trans, alpha_ref, beta_ref, alpha, beta);
 
-//a=0, b=0;
-    alpha_ref = 0.0; beta_ref = 0.0;
-    alpha = 0.0; beta = 0.0;
+    // a=0, b=0;
+    alpha_ref = 0.0;
+    beta_ref = 0.0;
+    alpha = 0.0;
+    beta = 0.0;
     Csyr2k_test3(uplo, trans, alpha_ref, beta_ref, alpha, beta);
 
-//a=0, b=1;
-    alpha_ref = 0.0; beta_ref = 1.0;
-    alpha = 0.0; beta = 1.0;
+    // a=0, b=1;
+    alpha_ref = 0.0;
+    beta_ref = 1.0;
+    alpha = 0.0;
+    beta = 1.0;
     Csyr2k_test3(uplo, trans, alpha_ref, beta_ref, alpha, beta);
 
-//a=1, b=0;
-    alpha_ref = 1.0; beta_ref = 0.0;
-    alpha = 1.0; beta = 0.0;
+    // a=1, b=0;
+    alpha_ref = 1.0;
+    beta_ref = 0.0;
+    alpha = 1.0;
+    beta = 0.0;
     Csyr2k_test3(uplo, trans, alpha_ref, beta_ref, alpha, beta);
 
-//a=1, b=1;
-    alpha_ref = 1.0; beta_ref = 1.0;
-    alpha = 1.0; beta = 1.0;
+    // a=1, b=1;
+    alpha_ref = 1.0;
+    beta_ref = 1.0;
+    alpha = 1.0;
+    beta = 1.0;
     Csyr2k_test3(uplo, trans, alpha_ref, beta_ref, alpha, beta);
 
-//a=1, b=*;
-    alpha_ref = 1.0; beta_ref = 1.0;
+    // a=1, b=*;
+    alpha_ref = 1.0;
+    beta_ref = 1.0;
     set_random_number(beta_ref, beta);
     Csyr2k_test3(uplo, trans, alpha_ref, beta_ref, alpha, beta);
 }
 
-void Csyr2k_test()
-{
+void Csyr2k_test() {
     Csyr2k_test2("U", "N");
     Csyr2k_test2("U", "T");
     Csyr2k_test2("L", "N");
     Csyr2k_test2("L", "T");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Csyr2k start ***\n");
     Csyr2k_test();
     printf("*** Testing Csyr2k successful ***\n");

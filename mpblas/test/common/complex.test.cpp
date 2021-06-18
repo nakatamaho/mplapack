@@ -36,8 +36,7 @@
 
 #define MAX_ITER 10
 
-void mpc_subst_test1()
-{
+void mpc_subst_test1() {
     printf("Complex <= Real test \n");
     REAL_REF diff;
     COMPLEX Ctemp1, Ctemp2, cdummy;
@@ -46,37 +45,44 @@ void mpc_subst_test1()
 
     int flag = 0;
     for (int i = 0; i < MAX_ITER; i++) {
-	Ctemp1 = mpc_randomnumber(cdummy);
+        Ctemp1 = mpc_randomnumber(cdummy);
 #if defined VERBOSE_TEST
-	cout << "c1       ";	printnum(Ctemp1);	cout << endl;
+        cout << "c1       ";
+        printnum(Ctemp1);
+        cout << endl;
 #endif
-	Ftemp = mpf_randomnumber(rdummy);
-	Ctemp1 = Ftemp;		//this is what we want to test
+        Ftemp = mpf_randomnumber(rdummy);
+        Ctemp1 = Ftemp; // this is what we want to test
 #if defined VERBOSE_TEST
-	cout << "r1=      ";	printnum(Ftemp);	cout << endl;
-	cout << "c2=      ";	printnum(Ctemp1);	cout << endl;
-	cout << "residue=r1-c2 " << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "r1=      ";
+        printnum(Ftemp);
+        cout << endl;
+        cout << "c2=      ";
+        printnum(Ctemp1);
+        cout << endl;
+        cout << "residue=r1-c2 " << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
 #endif
-	Ctemp2 = Ctemp1 - Ftemp;
-	diff = abs(Ctemp2);
+        Ctemp2 = Ctemp1 - Ftemp;
+        diff = abs(Ctemp2);
 #if defined VERBOSE_TEST
-	cout << "DIFF ";	printnum(diff);	cout << endl;
+        cout << "DIFF ";
+        printnum(diff);
+        cout << endl;
 #endif
-	if (abs(diff) > EPSILON) {
-	    flag = 1;
-	}
+        if (abs(diff) > EPSILON) {
+            flag = 1;
+        }
     }
     if (flag) {
-	printf("Complex <= Real subst test failed\n");
-	exit(1);
+        printf("Complex <= Real subst test failed\n");
+        exit(1);
     } else {
-	printf("Complex <= Real subst test passed\n");
+        printf("Complex <= Real subst test passed\n");
     }
 }
 
-void mpc_abs_test()
-{
+void mpc_abs_test() {
     printf("Complex abs test \n");
     COMPLEX_REF ctemp1;
     REAL_REF ftemp1;
@@ -87,39 +93,46 @@ void mpc_abs_test()
     int flag = 0;
 
     for (int i = 0; i < MAX_ITER; i++) {
-	set_random_number(ctemp1, Ctemp1);
-	Ftemp1 = abs(Ctemp1);
-	ftemp1 = abs(ctemp1);
-	diff = abs(Ftemp1 - ftemp1);
+        set_random_number(ctemp1, Ctemp1);
+        Ftemp1 = abs(Ctemp1);
+        ftemp1 = abs(ctemp1);
+        diff = abs(Ftemp1 - ftemp1);
 #if defined VERBOSE_TEST
-	cout << "C1 = ";	printnum(Ctemp1);	cout << endl;
-	cout << "F1 = ";	printnum(Ftemp1);	cout << endl;
-	cout << endl;
-	cout << "c1 = ";	printnum(ctemp1);	cout << endl;
-	cout << "f1 = ";	printnum(ftemp1);	cout << endl;
-	cout << "residue=sqrt(c1*conj(c1))-f1 " << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
-	cout << "residue=F1-f1 " << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
-	cout << "DIFF = ";
-	printnum(diff);
-	cout << endl;
-	cout << endl;
+        cout << "C1 = ";
+        printnum(Ctemp1);
+        cout << endl;
+        cout << "F1 = ";
+        printnum(Ftemp1);
+        cout << endl;
+        cout << endl;
+        cout << "c1 = ";
+        printnum(ctemp1);
+        cout << endl;
+        cout << "f1 = ";
+        printnum(ftemp1);
+        cout << endl;
+        cout << "residue=sqrt(c1*conj(c1))-f1 " << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "residue=F1-f1 " << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "DIFF = ";
+        printnum(diff);
+        cout << endl;
+        cout << endl;
 #endif
-	if (diff > EPSILON) {
-	    flag = 1;
-	}
+        if (diff > EPSILON) {
+            flag = 1;
+        }
     }
     if (flag) {
-	printf("Complex ABS test failed\n");
-	exit(1);
+        printf("Complex ABS test failed\n");
+        exit(1);
     } else {
-	printf("Complex ABS test passed\n");
+        printf("Complex ABS test passed\n");
     }
 }
 
-void mpc_add_test1()
-{
+void mpc_add_test1() {
     printf("Complex + Complex test \n");
     COMPLEX_REF ctemp1;
     COMPLEX_REF ctemp2;
@@ -134,45 +147,56 @@ void mpc_add_test1()
     int flag = 0;
 
     for (int i = 0; i < MAX_ITER; i++) {
-	set_random_number(ctemp1, Ctemp1);
-	set_random_number(ctemp2, Ctemp2);
+        set_random_number(ctemp1, Ctemp1);
+        set_random_number(ctemp2, Ctemp2);
 
-	Ctemp3 = Ctemp1 + Ctemp2;
-	ctemp3 = ctemp1 + ctemp2;
-	diff = abs(Ctemp3 - ctemp3);
+        Ctemp3 = Ctemp1 + Ctemp2;
+        ctemp3 = ctemp1 + ctemp2;
+        diff = abs(Ctemp3 - ctemp3);
 
 #if defined VERBOSE_TEST
-	cout << "C1 = "; printnum(Ctemp1); cout << endl;
-	cout << "C2 = "; printnum(Ctemp2); cout << endl;
-	cout << "C3 = "; printnum(Ctemp3); cout << endl;
-	cout << endl;
-	cout << "c1 = "; printnum(ctemp1); cout << endl;
-	cout << "c2 = "; printnum(ctemp2); cout << endl;
-	cout << "c3 = "; printnum(ctemp3); cout << endl;
+        cout << "C1 = ";
+        printnum(Ctemp1);
+        cout << endl;
+        cout << "C2 = ";
+        printnum(Ctemp2);
+        cout << endl;
+        cout << "C3 = ";
+        printnum(Ctemp3);
+        cout << endl;
+        cout << endl;
+        cout << "c1 = ";
+        printnum(ctemp1);
+        cout << endl;
+        cout << "c2 = ";
+        printnum(ctemp2);
+        cout << endl;
+        cout << "c3 = ";
+        printnum(ctemp3);
+        cout << endl;
 
-	cout << "residue=C1+C2-C3" << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
-	cout << "residue=C3-c3 " << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
-	cout << "DIFF = ";
-	printnum(diff);
-	cout << endl;
-	cout << endl;
+        cout << "residue=C1+C2-C3" << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "residue=C3-c3 " << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "DIFF = ";
+        printnum(diff);
+        cout << endl;
+        cout << endl;
 #endif
-	if (abs(diff) > EPSILON) {
-	    flag = 1;
-	}
+        if (abs(diff) > EPSILON) {
+            flag = 1;
+        }
     }
     if (flag) {
-	printf("Complex + Complex ADD test failed\n");
-	exit(1);
+        printf("Complex + Complex ADD test failed\n");
+        exit(1);
     } else {
-	printf("Complex + Complex ADD test passed\n");
+        printf("Complex + Complex ADD test passed\n");
     }
 }
 
-void mpc_add_test2()
-{
+void mpc_add_test2() {
     printf("Complex + Real test \n");
     COMPLEX_REF ctemp1;
     REAL_REF ftemp2;
@@ -186,42 +210,55 @@ void mpc_add_test2()
     int flag = 0;
 
     for (int i = 0; i < MAX_ITER; i++) {
-	set_random_number(ctemp1, Ctemp1);
-	set_random_number(ftemp2, Ftemp2);
+        set_random_number(ctemp1, Ctemp1);
+        set_random_number(ftemp2, Ftemp2);
 
-	Ctemp3 = Ctemp1 + Ftemp2;
-	ctemp3 = ctemp1 + ftemp2;
-	diff = abs(Ctemp3 - ctemp3);
+        Ctemp3 = Ctemp1 + Ftemp2;
+        ctemp3 = ctemp1 + ftemp2;
+        diff = abs(Ctemp3 - ctemp3);
 #if defined VERBOSE_TEST
-	cout << "C1 = ";	printnum(Ctemp1);	cout << endl;
-	cout << "F2 = ";	printnum(Ftemp2);	cout << endl;
-	cout << "C3 = ";	printnum(Ctemp3);	cout << endl;
-	cout << endl;
-	cout << "c1 = ";	printnum(ctemp1);	cout << endl;
-	cout << "f2 = ";	printnum(ftemp2);	cout << endl;
-	cout << "c3 = ";	printnum(ctemp3);	cout << endl;
+        cout << "C1 = ";
+        printnum(Ctemp1);
+        cout << endl;
+        cout << "F2 = ";
+        printnum(Ftemp2);
+        cout << endl;
+        cout << "C3 = ";
+        printnum(Ctemp3);
+        cout << endl;
+        cout << endl;
+        cout << "c1 = ";
+        printnum(ctemp1);
+        cout << endl;
+        cout << "f2 = ";
+        printnum(ftemp2);
+        cout << endl;
+        cout << "c3 = ";
+        printnum(ctemp3);
+        cout << endl;
 
-	cout << "residue=C1+F2-C3" << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
-	cout << "residue=C3-c3 " << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
-	cout << "DIFF = ";	printnum(diff);	cout << endl;
-	cout << endl;
+        cout << "residue=C1+F2-C3" << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "residue=C3-c3 " << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "DIFF = ";
+        printnum(diff);
+        cout << endl;
+        cout << endl;
 #endif
-	if (diff > EPSILON) {
-	    flag = 1;
-	}
+        if (diff > EPSILON) {
+            flag = 1;
+        }
     }
     if (flag) {
-	printf("Complex + Real ADD test failed\n");
-	exit(1);
+        printf("Complex + Real ADD test failed\n");
+        exit(1);
     } else {
-	printf("Complex + Real ADD test passed\n");
+        printf("Complex + Real ADD test passed\n");
     }
 }
 
-void mpc_add_test3()
-{
+void mpc_add_test3() {
     printf("Real + Complex test \n");
     COMPLEX_REF ctemp2;
     REAL_REF ftemp1;
@@ -235,43 +272,56 @@ void mpc_add_test3()
     int flag = 0;
 
     for (int i = 0; i < MAX_ITER; i++) {
-	set_random_number(ftemp1, Ftemp1);
-	set_random_number(ctemp2, Ctemp2);
+        set_random_number(ftemp1, Ftemp1);
+        set_random_number(ctemp2, Ctemp2);
 
-	Ctemp3 = Ftemp1 + Ctemp2;
-	ctemp3 = ftemp1 + ctemp2;
+        Ctemp3 = Ftemp1 + Ctemp2;
+        ctemp3 = ftemp1 + ctemp2;
 #if defined VERBOSE_TEST
-	cout << "F1 = ";	printnum(Ftemp1);	cout << endl;
-	cout << "C2 = ";	printnum(Ctemp2);	cout << endl;
-	cout << "C3 = ";	printnum(Ctemp3);	cout << endl;
-	cout << endl;
-	cout << "f1 = ";	printnum(ftemp1);	cout << endl;
-	cout << "c2 = ";	printnum(ctemp2);	cout << endl;
-	cout << "c3 = ";	printnum(ctemp3);	cout << endl;
+        cout << "F1 = ";
+        printnum(Ftemp1);
+        cout << endl;
+        cout << "C2 = ";
+        printnum(Ctemp2);
+        cout << endl;
+        cout << "C3 = ";
+        printnum(Ctemp3);
+        cout << endl;
+        cout << endl;
+        cout << "f1 = ";
+        printnum(ftemp1);
+        cout << endl;
+        cout << "c2 = ";
+        printnum(ctemp2);
+        cout << endl;
+        cout << "c3 = ";
+        printnum(ctemp3);
+        cout << endl;
 #endif
-	diff = abs(Ctemp3 - ctemp3);
+        diff = abs(Ctemp3 - ctemp3);
 #if defined VERBOSE_TEST
-	cout << "residue=F1+C2-C3" << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
-	cout << "residue=C3-c3 " << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
-	cout << "DIFF = ";	printnum(diff);	cout << endl;
-	cout << endl;
+        cout << "residue=F1+C2-C3" << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "residue=C3-c3 " << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "DIFF = ";
+        printnum(diff);
+        cout << endl;
+        cout << endl;
 #endif
-	if (abs(diff) > EPSILON) {
-	    flag = 1;
-	}
+        if (abs(diff) > EPSILON) {
+            flag = 1;
+        }
     }
     if (flag) {
-	printf("Real + Complex test failed\n");
-	exit(1);
+        printf("Real + Complex test failed\n");
+        exit(1);
     } else {
-	printf("Real + Complex test passed\n");
+        printf("Real + Complex test passed\n");
     }
 }
 
-void mpc_mul_test1()
-{
+void mpc_mul_test1() {
     printf("Complex * Complex test \n");
     COMPLEX_REF ctemp1;
     COMPLEX_REF ctemp2;
@@ -285,46 +335,57 @@ void mpc_mul_test1()
     int flag = 0;
 
     for (int i = 0; i < MAX_ITER; i++) {
-	set_random_number(ctemp1, Ctemp1);
-	set_random_number(ctemp2, Ctemp2);
+        set_random_number(ctemp1, Ctemp1);
+        set_random_number(ctemp2, Ctemp2);
 
-	Ctemp3 = Ctemp1 * Ctemp2;
-	ctemp3 = ctemp1 * ctemp2;
+        Ctemp3 = Ctemp1 * Ctemp2;
+        ctemp3 = ctemp1 * ctemp2;
 
 #if defined VERBOSE_TEST
-	cout << "C1 = ";	printnum(Ctemp1);	cout << endl;
-	cout << "C2 = ";	printnum(Ctemp2);	cout << endl;
-	cout << "C3 = ";	printnum(Ctemp3);	cout << endl;
-	cout << endl;
-	cout << "c1 = ";	printnum(ctemp1);	cout << endl;
-	cout << "c2 = ";	printnum(ctemp2);	cout << endl;
-	cout << "c3 = ";	printnum(ctemp3);	cout << endl;
+        cout << "C1 = ";
+        printnum(Ctemp1);
+        cout << endl;
+        cout << "C2 = ";
+        printnum(Ctemp2);
+        cout << endl;
+        cout << "C3 = ";
+        printnum(Ctemp3);
+        cout << endl;
+        cout << endl;
+        cout << "c1 = ";
+        printnum(ctemp1);
+        cout << endl;
+        cout << "c2 = ";
+        printnum(ctemp2);
+        cout << endl;
+        cout << "c3 = ";
+        printnum(ctemp3);
+        cout << endl;
 #endif
-	diff = abs(Ctemp3 - ctemp3);
+        diff = abs(Ctemp3 - ctemp3);
 #if defined VERBOSE_TEST
-	cout << "residue=C1*C2-C3" << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
-	cout << "residue=C3-c3 " << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
-	cout << "DIFF = ";
-	printnum(diff);
-	cout << endl;
-	cout << endl;
+        cout << "residue=C1*C2-C3" << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "residue=C3-c3 " << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "DIFF = ";
+        printnum(diff);
+        cout << endl;
+        cout << endl;
 #endif
-	if (abs(diff) > EPSILON) {
-	    flag = 1;
-	}
+        if (abs(diff) > EPSILON) {
+            flag = 1;
+        }
     }
     if (flag) {
-	printf("Complex * Complex test failed\n");
-	exit(1);
+        printf("Complex * Complex test failed\n");
+        exit(1);
     } else {
-	printf("Complex * Complex test passed\n");
+        printf("Complex * Complex test passed\n");
     }
 }
 
-void mpc_mul_test2()
-{
+void mpc_mul_test2() {
     printf("Complex * Real test \n");
     COMPLEX_REF ctemp1;
     REAL_REF ftemp2;
@@ -338,46 +399,59 @@ void mpc_mul_test2()
     int flag = 0;
 
     for (int i = 0; i < MAX_ITER; i++) {
-	set_random_number(ctemp1, Ctemp1);
-	set_random_number(ftemp2, Ftemp2);
+        set_random_number(ctemp1, Ctemp1);
+        set_random_number(ftemp2, Ftemp2);
 
-	ctemp1 = Ctemp1;
-	ftemp2 = Ftemp2;
-	Ctemp3 = Ctemp1 * Ftemp2;
-	ctemp3 = ctemp1 * ftemp2;
+        ctemp1 = Ctemp1;
+        ftemp2 = Ftemp2;
+        Ctemp3 = Ctemp1 * Ftemp2;
+        ctemp3 = ctemp1 * ftemp2;
 
 #if defined VERBOSE_TEST
-	cout << "C1 = ";	printnum(Ctemp1);	cout << endl;
-	cout << "F2 = ";	printnum(Ftemp2);	cout << endl;
-	cout << "C3 = ";	printnum(Ctemp3);	cout << endl;
-	cout << endl;
-	cout << "c1 = ";	printnum(ctemp1);	cout << endl;
-	cout << "f2 = ";	printnum(ftemp2);	cout << endl;
-	cout << "c3 = ";	printnum(ctemp3);	cout << endl;
+        cout << "C1 = ";
+        printnum(Ctemp1);
+        cout << endl;
+        cout << "F2 = ";
+        printnum(Ftemp2);
+        cout << endl;
+        cout << "C3 = ";
+        printnum(Ctemp3);
+        cout << endl;
+        cout << endl;
+        cout << "c1 = ";
+        printnum(ctemp1);
+        cout << endl;
+        cout << "f2 = ";
+        printnum(ftemp2);
+        cout << endl;
+        cout << "c3 = ";
+        printnum(ctemp3);
+        cout << endl;
 #endif
-	diff = abs(Ctemp3 - ctemp3);
+        diff = abs(Ctemp3 - ctemp3);
 #if defined VERBOSE_TEST
-	cout << "residue=C1*F2-C3" << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
-	cout << "residue=C3-c3 " << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
-	cout << "DIFF = ";	printnum(diff);	cout << endl;
-	cout << endl;
+        cout << "residue=C1*F2-C3" << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "residue=C3-c3 " << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "DIFF = ";
+        printnum(diff);
+        cout << endl;
+        cout << endl;
 #endif
-	if (abs(diff) > EPSILON) {
-	    flag = 1;
-	}
+        if (abs(diff) > EPSILON) {
+            flag = 1;
+        }
     }
     if (flag) {
-	printf("Complex * Real test failed\n");
-	exit(1);
+        printf("Complex * Real test failed\n");
+        exit(1);
     } else {
-	printf("Complex * Real test passed\n");
+        printf("Complex * Real test passed\n");
     }
 }
 
-void mpc_mul_test3()
-{
+void mpc_mul_test3() {
     printf("Real * Complex test \n");
     COMPLEX_REF ctemp2;
     REAL_REF ftemp1;
@@ -391,45 +465,58 @@ void mpc_mul_test3()
     int flag = 0;
 
     for (int i = 0; i < MAX_ITER; i++) {
-	set_random_number(ftemp1, Ftemp1);
-	set_random_number(ctemp2, Ctemp2);
+        set_random_number(ftemp1, Ftemp1);
+        set_random_number(ctemp2, Ctemp2);
 
-	ctemp2 = Ctemp2;
-	ftemp1 = Ftemp1;
-	Ctemp3 = Ftemp1 * Ctemp2;
-	ctemp3 = ftemp1 * ctemp2;
+        ctemp2 = Ctemp2;
+        ftemp1 = Ftemp1;
+        Ctemp3 = Ftemp1 * Ctemp2;
+        ctemp3 = ftemp1 * ctemp2;
 #if defined VERBOSE_TEST
-	cout << "F1 = ";	printnum(Ftemp1);	cout << endl;
-	cout << "C2 = ";	printnum(Ctemp2);	cout << endl;
-	cout << "C3 = ";	printnum(Ctemp3);	cout << endl;
-	cout << endl;
-	cout << "f1 = ";	printnum(ftemp1);	cout << endl;
-	cout << "c2 = ";	printnum(ctemp2);	cout << endl;
-	cout << "c3 = ";	printnum(ctemp3);	cout << endl;
+        cout << "F1 = ";
+        printnum(Ftemp1);
+        cout << endl;
+        cout << "C2 = ";
+        printnum(Ctemp2);
+        cout << endl;
+        cout << "C3 = ";
+        printnum(Ctemp3);
+        cout << endl;
+        cout << endl;
+        cout << "f1 = ";
+        printnum(ftemp1);
+        cout << endl;
+        cout << "c2 = ";
+        printnum(ctemp2);
+        cout << endl;
+        cout << "c3 = ";
+        printnum(ctemp3);
+        cout << endl;
 #endif
-	diff = abs(Ctemp3 - ctemp3);
+        diff = abs(Ctemp3 - ctemp3);
 #if defined VERBOSE_TEST
-	cout << "residue=C1*F2-C3" << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
-	cout << "residue=C3-c3 " << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
-	cout << "DIFF = ";	printnum(diff);	cout << endl;
-	cout << endl;
+        cout << "residue=C1*F2-C3" << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "residue=C3-c3 " << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "DIFF = ";
+        printnum(diff);
+        cout << endl;
+        cout << endl;
 #endif
-	if (abs(diff) > EPSILON) {
-	    flag = 1;
-	}
+        if (abs(diff) > EPSILON) {
+            flag = 1;
+        }
     }
     if (flag) {
-	printf("Complex * Real test failed\n");
-	exit(1);
+        printf("Complex * Real test failed\n");
+        exit(1);
     } else {
-	printf("Complex * Real test passed\n");
+        printf("Complex * Real test passed\n");
     }
 }
 
-void mpc_div_test1()
-{
+void mpc_div_test1() {
     printf("Complex / Complex test \n");
     REAL_REF diff;
     COMPLEX_REF ctemp1;
@@ -443,44 +530,57 @@ void mpc_div_test1()
     int flag = 0;
 
     for (int i = 0; i < MAX_ITER; i++) {
-	set_random_number(ctemp1, Ctemp1);
-	set_random_number(ctemp2, Ctemp2);
+        set_random_number(ctemp1, Ctemp1);
+        set_random_number(ctemp2, Ctemp2);
 
-	Ctemp3 = Ctemp1 / Ctemp2;
-	ctemp3 = ctemp1 / ctemp2;
+        Ctemp3 = Ctemp1 / Ctemp2;
+        ctemp3 = ctemp1 / ctemp2;
 
 #if defined VERBOSE_TEST
-	cout << "C1 = ";	printnum(Ctemp1);	cout << endl;
-	cout << "C2 = ";	printnum(Ctemp2);	cout << endl;
-	cout << "C3 = ";	printnum(Ctemp3);	cout << endl;
-	cout << endl;
-	cout << "c1 = ";	printnum(ctemp1);	cout << endl;
-	cout << "c2 = ";	printnum(ctemp2);	cout << endl;
-	cout << "c3 = ";	printnum(ctemp3);	cout << endl;
+        cout << "C1 = ";
+        printnum(Ctemp1);
+        cout << endl;
+        cout << "C2 = ";
+        printnum(Ctemp2);
+        cout << endl;
+        cout << "C3 = ";
+        printnum(Ctemp3);
+        cout << endl;
+        cout << endl;
+        cout << "c1 = ";
+        printnum(ctemp1);
+        cout << endl;
+        cout << "c2 = ";
+        printnum(ctemp2);
+        cout << endl;
+        cout << "c3 = ";
+        printnum(ctemp3);
+        cout << endl;
 #endif
-	diff = abs(Ctemp3 - ctemp3);
+        diff = abs(Ctemp3 - ctemp3);
 #if defined VERBOSE_TEST
-	cout << "residue=C1/F2-C3" << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
-	cout << "residue=C3-c3 " << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
-	cout << "DIFF = ";	printnum(diff);	cout << endl;
-	cout << endl;
+        cout << "residue=C1/F2-C3" << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "residue=C3-c3 " << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "DIFF = ";
+        printnum(diff);
+        cout << endl;
+        cout << endl;
 #endif
-	if (abs(diff) > EPSILON) {
-	    flag = 1;
-	}
+        if (abs(diff) > EPSILON) {
+            flag = 1;
+        }
     }
     if (flag) {
-	printf("Complex / Complex test failed\n");
-	exit(1);
+        printf("Complex / Complex test failed\n");
+        exit(1);
     } else {
-	printf("Complex / Complex test passed\n");
+        printf("Complex / Complex test passed\n");
     }
 }
 
-void mpc_div_test2()
-{
+void mpc_div_test2() {
     printf("Complex / Real test \n");
 
     COMPLEX_REF ctemp1;
@@ -495,42 +595,55 @@ void mpc_div_test2()
     int flag = 0;
 
     for (int i = 0; i < MAX_ITER; i++) {
-	set_random_number(ctemp1, Ctemp1);
-	set_random_number(ftemp2, Ftemp2);
+        set_random_number(ctemp1, Ctemp1);
+        set_random_number(ftemp2, Ftemp2);
 
-	Ctemp3 = Ctemp1 / Ftemp2;
-	ctemp3 = ctemp1 / ftemp2;
+        Ctemp3 = Ctemp1 / Ftemp2;
+        ctemp3 = ctemp1 / ftemp2;
 #if defined VERBOSE_TEST
-	cout << "C1 = ";	printnum(Ctemp1);	cout << endl;
-	cout << "f2 = ";	printnum(Ftemp2);	cout << endl;
-	cout << "C3 = ";	printnum(Ctemp3);	cout << endl;
-	cout << endl;
-	cout << "c1 = ";	printnum(ctemp1);	cout << endl;
-	cout << "f2 = ";	printnum(ftemp2);	cout << endl;
-	cout << "c3 = ";	printnum(ctemp3);	cout << endl;
+        cout << "C1 = ";
+        printnum(Ctemp1);
+        cout << endl;
+        cout << "f2 = ";
+        printnum(Ftemp2);
+        cout << endl;
+        cout << "C3 = ";
+        printnum(Ctemp3);
+        cout << endl;
+        cout << endl;
+        cout << "c1 = ";
+        printnum(ctemp1);
+        cout << endl;
+        cout << "f2 = ";
+        printnum(ftemp2);
+        cout << endl;
+        cout << "c3 = ";
+        printnum(ctemp3);
+        cout << endl;
 #endif
-	diff = abs(Ctemp3 - ctemp3);
+        diff = abs(Ctemp3 - ctemp3);
 #if defined VERBOSE_TEST
-	cout << "residue=C1/F2-C3" << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
-	cout << "residue=C3-c3 " << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
-	cout << "DIFF = ";	printnum(diff);	cout << endl;
-	cout << endl;
+        cout << "residue=C1/F2-C3" << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "residue=C3-c3 " << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "DIFF = ";
+        printnum(diff);
+        cout << endl;
+        cout << endl;
 #endif
-	if (abs(diff) > EPSILON) {
-	    flag = 1;
-	}
+        if (abs(diff) > EPSILON) {
+            flag = 1;
+        }
     }
     if (flag) {
-	printf("Complex / Real test failed\n");
+        printf("Complex / Real test failed\n");
     } else {
-	printf("Complex / Real test passed\n");
+        printf("Complex / Real test passed\n");
     }
 }
 
-void mpc_div_test3()
-{
+void mpc_div_test3() {
     printf("Real / Complex test \n");
     COMPLEX_REF ctemp2;
     REAL_REF ftemp1;
@@ -544,50 +657,63 @@ void mpc_div_test3()
     int flag = 0;
 
     for (int i = 0; i < MAX_ITER; i++) {
-	set_random_number(ftemp1, Ftemp1);
-	set_random_number(ctemp2, Ctemp2);
+        set_random_number(ftemp1, Ftemp1);
+        set_random_number(ctemp2, Ctemp2);
 
-	Ctemp3 = Ftemp1 / Ctemp2;
-    ctemp3 = ftemp1 / ctemp2;
+        Ctemp3 = Ftemp1 / Ctemp2;
+        ctemp3 = ftemp1 / ctemp2;
 #if defined VERBOSE_TEST
-	cout << "F1 = ";	printnum(Ftemp1);	cout << endl;
-	cout << "C2 = ";	printnum(Ctemp2);	cout << endl;
-	cout << "C3 = ";	printnum(Ctemp3);	cout << endl;
-	cout << endl;
-	cout << "f1 = ";	printnum(ftemp1);	cout << endl;
-	cout << "c2 = ";	printnum(ctemp2);	cout << endl;
-	cout << "c3 = ";	printnum(ctemp3);	cout << endl;
+        cout << "F1 = ";
+        printnum(Ftemp1);
+        cout << endl;
+        cout << "C2 = ";
+        printnum(Ctemp2);
+        cout << endl;
+        cout << "C3 = ";
+        printnum(Ctemp3);
+        cout << endl;
+        cout << endl;
+        cout << "f1 = ";
+        printnum(ftemp1);
+        cout << endl;
+        cout << "c2 = ";
+        printnum(ctemp2);
+        cout << endl;
+        cout << "c3 = ";
+        printnum(ctemp3);
+        cout << endl;
 #endif
-	diff = abs(Ctemp3 - ctemp3);
+        diff = abs(Ctemp3 - ctemp3);
 #if defined VERBOSE_TEST
-	cout << "residue=F1/C2-C3" << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
-	cout << "residue=C3-c3 " << endl;
-	cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
-	cout << "DIFF = ";	printnum(diff);	cout << endl;
-	cout << endl;
+        cout << "residue=F1/C2-C3" << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "residue=C3-c3 " << endl;
+        cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
+        cout << "DIFF = ";
+        printnum(diff);
+        cout << endl;
+        cout << endl;
 #endif
-	if (abs(diff) > EPSILON) {
-	    flag = 1;
-	}
+        if (abs(diff) > EPSILON) {
+            flag = 1;
+        }
     }
     if (flag) {
-	printf("Real / Complex test failed\n");
-	exit(1);
+        printf("Real / Complex test failed\n");
+        exit(1);
     } else {
-	printf("Real / Complex test passed\n");
+        printf("Real / Complex test passed\n");
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing complex start ***\n");
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
     mpf_set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
 #endif
 
-//we need to specify explicitly.
+    // we need to specify explicitly.
     mpreal::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
     mpcomplex::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
 

@@ -34,76 +34,80 @@
 #endif
 
 #define MIN_INCX -10
-#define MAX_INCX  10
-#define MAX_N     100
-#define MAX_ITER  10
+#define MAX_INCX 10
+#define MAX_N 100
+#define MAX_ITER 10
 
 REAL_REF maxdiff = 0.0;
 
-void Rscal_test()
-{
+void Rscal_test() {
     int errorflag = FALSE;
     int mplapack_errno1, mplapack_errno2;
     for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
-	for (int n = 0; n < MAX_N; n++) {
+        for (int n = 0; n < MAX_N; n++) {
 #if defined VERBOSE_TEST
-	    printf("# n:%d incx:%d\n", n, incx);
+            printf("# n:%d incx:%d\n", n, incx);
 #endif
-	    REAL_REF *x_ref = new REAL_REF[veclen(n, incx)];
-	    REAL *x = new REAL[veclen(n, incx)];
-	    int j = 0;
-	    while (j < MAX_ITER) {
-		REAL_REF alpha_ref;
-		REAL alpha;
+            REAL_REF *x_ref = new REAL_REF[veclen(n, incx)];
+            REAL *x = new REAL[veclen(n, incx)];
+            int j = 0;
+            while (j < MAX_ITER) {
+                REAL_REF alpha_ref;
+                REAL alpha;
 
-		set_random_number(alpha_ref, alpha);
-		set_random_vector(x_ref, x, veclen(n, incx));
+                set_random_number(alpha_ref, alpha);
+                set_random_vector(x_ref, x, veclen(n, incx));
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		dscal_f77(&n, &alpha_ref, x_ref, &incx);
-		mplapack_errno1 = blas_errno;
+                dscal_f77(&n, &alpha_ref, x_ref, &incx);
+                mplapack_errno1 = blas_errno;
 #else
-		Rscal(n, alpha_ref, x_ref, incx);
-		mplapack_errno1 = mplapack_errno;
+                Rscal(n, alpha_ref, x_ref, incx);
+                mplapack_errno1 = mplapack_errno;
 #endif
-		Rscal(n, alpha, x, incx);
-		mplapack_errno2 = mplapack_errno;
+                Rscal(n, alpha, x, incx);
+                mplapack_errno2 = mplapack_errno;
 
 #if defined VERBOSE_TEST
-		printf("errno: mplapack %d, ref %d\n", mplapack_errno1, mplapack_errno2);
+                printf("errno: mplapack %d, ref %d\n", mplapack_errno1, mplapack_errno2);
 #endif
-		if (mplapack_errno1 != mplapack_errno2) {
+                if (mplapack_errno1 != mplapack_errno2) {
 #if defined VERBOSE_TEST
-		    printf("error in Mxerbla!!\n");
+                    printf("error in Mxerbla!!\n");
 #endif
-		    errorflag = TRUE;
-		}
-		REAL_REF diff = infnorm(x_ref, x, veclen(n, incx), 1);
-		if (diff > EPSILON) {
+                    errorflag = TRUE;
+                }
+                REAL_REF diff = infnorm(x_ref, x, veclen(n, incx), 1);
+                if (diff > EPSILON) {
 #if defined VERBOSE_TEST
-		    printf("error: "); printnum(diff); printf("\n");
+                    printf("error: ");
+                    printnum(diff);
+                    printf("\n");
 #endif
-		    errorflag = TRUE;
-		}
-		if (maxdiff < diff)
-		    maxdiff = diff;
-		j++;
-	    }
-	    delete[]x_ref;
-	    delete[]x;
-	}
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
+                j++;
+            }
+            delete[] x_ref;
+            delete[] x;
+        }
     }
     if (errorflag == TRUE) {
-	printf("error: "); printnum(maxdiff); printf("\n");
+        printf("error: ");
+        printnum(maxdiff);
+        printf("\n");
         printf("*** Testing Rscal failed ***\n");
-	exit(1);
+        exit(1);
     } else {
-        printf("maxerror: "); printnum(maxdiff); printf("\n");
+        printf("maxerror: ");
+        printnum(maxdiff);
+        printf("\n");
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rscal start ***\n");
     Rscal_test();
     printf("*** Testing Rscal successful ***\n");

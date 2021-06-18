@@ -33,84 +33,90 @@
 #include <iostream>
 #endif
 
-#define MAX_INCX  10
+#define MAX_INCX 10
 #define MIN_INCX -10
-#define MAX_INCY  10
+#define MAX_INCY 10
 #define MIN_INCY -10
-#define MAX_N     10
-#define MAX_ITER  10
+#define MAX_N 10
+#define MAX_ITER 10
 
 REAL_REF maxdiff = 0.0;
 
-void Rrot_test()
-{
+void Rrot_test() {
     int errorflag = FALSE;
     for (int incx = MAX_INCX; incx >= MIN_INCX; incx--) {
-	for (int incy = MAX_INCY; incy >= MIN_INCY; incy--) {
-	    for (int n = 3; n < MAX_N; n++) {
+        for (int incy = MAX_INCY; incy >= MIN_INCY; incy--) {
+            for (int n = 3; n < MAX_N; n++) {
 #if defined VERBOSE_TEST
-		printf("# n:%d incx:%d, incy:%d\n", n, incx, incy);
+                printf("# n:%d incx:%d, incy:%d\n", n, incx, incy);
 #endif
-		REAL_REF *x_ref = new REAL_REF[veclen(n, incx)];
-		REAL_REF *y_ref = new REAL_REF[veclen(n, incy)];
-		REAL_REF c_ref, s_ref;
+                REAL_REF *x_ref = new REAL_REF[veclen(n, incx)];
+                REAL_REF *y_ref = new REAL_REF[veclen(n, incy)];
+                REAL_REF c_ref, s_ref;
 
-		REAL *x = new REAL[veclen(n, incx)];
-		REAL *y = new REAL[veclen(n, incy)];
-		REAL c, s;
+                REAL *x = new REAL[veclen(n, incx)];
+                REAL *y = new REAL[veclen(n, incy)];
+                REAL c, s;
 
-		int j = 0;
-		while (j < MAX_ITER) {
-		    set_random_vector(x_ref, x, veclen(n, incx));
-		    set_random_vector(y_ref, y, veclen(n, incy));
-		    set_random_number(c_ref, c);
-		    set_random_number(s_ref, s);
+                int j = 0;
+                while (j < MAX_ITER) {
+                    set_random_vector(x_ref, x, veclen(n, incx));
+                    set_random_vector(y_ref, y, veclen(n, incy));
+                    set_random_number(c_ref, c);
+                    set_random_number(s_ref, s);
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		    drot_f77(&n, x_ref, &incx, y_ref, &incy, &c_ref, &s_ref);
+                    drot_f77(&n, x_ref, &incx, y_ref, &incy, &c_ref, &s_ref);
 #else
-		    Rrot(n, x_ref, incx, y_ref, incy, c_ref, s_ref);
+                    Rrot(n, x_ref, incx, y_ref, incy, c_ref, s_ref);
 #endif
-		    Rrot(n, x, incx, y, incy, c, s);
+                    Rrot(n, x, incx, y, incy, c, s);
 
-		    REAL_REF diff = infnorm(x_ref, x, n, abs(incx));
-		    if (diff > EPSILON) {
+                    REAL_REF diff = infnorm(x_ref, x, n, abs(incx));
+                    if (diff > EPSILON) {
 #if defined VERBOSE_TEST
-		        printf("x :error: "); printnum(diff); printf("\n");
+                        printf("x :error: ");
+                        printnum(diff);
+                        printf("\n");
 #endif
-			errorflag = TRUE;
-		    }
-		    if (maxdiff < diff)
-			maxdiff = diff;
-		    diff = infnorm(y_ref, y, n, abs(incy));
-		    if (diff > EPSILON) {
+                        errorflag = TRUE;
+                    }
+                    if (maxdiff < diff)
+                        maxdiff = diff;
+                    diff = infnorm(y_ref, y, n, abs(incy));
+                    if (diff > EPSILON) {
 #if defined VERBOSE_TEST
-		        printf("y: error: "); printnum(diff); printf("\n");
+                        printf("y: error: ");
+                        printnum(diff);
+                        printf("\n");
 #endif
-			errorflag = TRUE;
-		    }
-		    if (maxdiff < diff)
-			maxdiff = diff;
-		    j++;
-		}
-		delete[]x;
-		delete[]y;
-		delete[]x_ref;
-		delete[]y_ref;
-	    }
-	}
+                        errorflag = TRUE;
+                    }
+                    if (maxdiff < diff)
+                        maxdiff = diff;
+                    j++;
+                }
+                delete[] x;
+                delete[] y;
+                delete[] x_ref;
+                delete[] y_ref;
+            }
+        }
     }
     if (errorflag == TRUE) {
-	printf("error: "); printnum(maxdiff); printf("\n");
+        printf("error: ");
+        printnum(maxdiff);
+        printf("\n");
         printf("*** Testing Rrot failed ***\n");
-	exit(1);
+        exit(1);
     } else {
-        printf("maxerror: "); printnum(maxdiff); printf("\n");
+        printf("maxerror: ");
+        printnum(maxdiff);
+        printf("\n");
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rrot start ***\n");
     Rrot_test();
     printf("*** Testing Rrot successful ***\n");

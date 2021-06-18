@@ -33,68 +33,72 @@
 #include <iostream>
 #endif
 
-#define MAX_INCX  10
+#define MAX_INCX 10
 #define MIN_INCX -10
-#define MAX_INCY  10
+#define MAX_INCY 10
 #define MIN_INCY -10
-#define MAX_N     10
-#define MAX_ITER  10
+#define MAX_N 10
+#define MAX_ITER 10
 
 REAL_REF maxdiff = 0.0;
 
-void Ccopy_test()
-{
+void Ccopy_test() {
     int errorflag = FALSE;
     for (int incx = MAX_INCX; incx >= MIN_INCX; incx--) {
-	for (int incy = MAX_INCY; incy >= MIN_INCY; incy--) {
-	    for (int n = 0; n < MAX_N; n++) {
+        for (int incy = MAX_INCY; incy >= MIN_INCY; incy--) {
+            for (int n = 0; n < MAX_N; n++) {
 #if defined VERBOSE_TEST
-		printf("# n:%d incx:%d, incy:%d\n", n, incx, incy);
+                printf("# n:%d incx:%d, incy:%d\n", n, incx, incy);
 #endif
-		COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
-		COMPLEX_REF *y_ref = new COMPLEX_REF[veclen(n, incy)];
-		COMPLEX *x = new COMPLEX[veclen(n, incx)];
-		COMPLEX *y = new COMPLEX[veclen(n, incy)];
-		int j = 0;
+                COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
+                COMPLEX_REF *y_ref = new COMPLEX_REF[veclen(n, incy)];
+                COMPLEX *x = new COMPLEX[veclen(n, incx)];
+                COMPLEX *y = new COMPLEX[veclen(n, incy)];
+                int j = 0;
 
-		while (j < MAX_ITER) {
-		    set_random_vector(x_ref, x, veclen(n, incx));
-		    set_random_vector(y_ref, y, veclen(n, incy));
+                while (j < MAX_ITER) {
+                    set_random_vector(x_ref, x, veclen(n, incx));
+                    set_random_vector(y_ref, y, veclen(n, incy));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		    zcopy_f77(&n, x_ref, &incx, y_ref, &incy);
+                    zcopy_f77(&n, x_ref, &incx, y_ref, &incy);
 #else
-		    Ccopy(n, x_ref, incx, y_ref, incy);
+                    Ccopy(n, x_ref, incx, y_ref, incy);
 #endif
-		    Ccopy(n, x, incx, y, incy);
-		    REAL_REF diff = infnorm(y_ref, y, veclen(n, incy), 1);
-		    if (diff > EPSILON) {
+                    Ccopy(n, x, incx, y, incy);
+                    REAL_REF diff = infnorm(y_ref, y, veclen(n, incy), 1);
+                    if (diff > EPSILON) {
 #if defined VERBOSE_TEST
-			printf("error: "); printnum(diff); printf("\n");
+                        printf("error: ");
+                        printnum(diff);
+                        printf("\n");
 #endif
-			errorflag = TRUE;
-		    }
-		    if (maxdiff < diff)
-			maxdiff = diff;
-		    j++;
-		}
-		delete[]x;
-		delete[]y;
-		delete[]x_ref;
-		delete[]y_ref;
-	    }
-	}
+                        errorflag = TRUE;
+                    }
+                    if (maxdiff < diff)
+                        maxdiff = diff;
+                    j++;
+                }
+                delete[] x;
+                delete[] y;
+                delete[] x_ref;
+                delete[] y_ref;
+            }
+        }
     }
     if (errorflag == TRUE) {
-	printf("error: "); printnum(maxdiff); printf("\n");
+        printf("error: ");
+        printnum(maxdiff);
+        printf("\n");
         printf("*** Testing Ccopy failed ***\n");
-	exit(1);
+        exit(1);
     } else {
-        printf("maxerror: "); printnum(maxdiff); printf("\n");
+        printf("maxerror: ");
+        printnum(maxdiff);
+        printf("\n");
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Ccopy start ***\n");
     Ccopy_test();
     printf("*** Testing Ccopy successful ***\n");

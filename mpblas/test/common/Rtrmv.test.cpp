@@ -43,84 +43,89 @@
 
 REAL_REF maxdiff = 0.0;
 
-void Rtrmv_test2(const char *uplo, const char *trans, const char *diag)
-{
+void Rtrmv_test2(const char *uplo, const char *trans, const char *diag) {
     int errorflag = FALSE;
     int mplapack_errno1, mplapack_errno2;
     for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
-	for (int n = MIN_N; n < MAX_N; n++) {
-	    for (int lda = max(1, n); lda < MAX_LDA; lda++) {
+        for (int n = MIN_N; n < MAX_N; n++) {
+            for (int lda = max(1, n); lda < MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
-		printf("#n is %d, lda is %d, incx is %d, uplo is %s, trans is %s, diag is %s \n", n, lda, incx, uplo, trans, diag);
+                printf("#n is %d, lda is %d, incx is %d, uplo is %s, trans is %s, diag is %s \n", n, lda, incx, uplo, trans, diag);
 #endif
-		REAL_REF *x_ref;
-		REAL_REF *A_ref;
-		REAL *x;
-		REAL *A;
+                REAL_REF *x_ref;
+                REAL_REF *A_ref;
+                REAL *x;
+                REAL *A;
 
-		A_ref = new REAL_REF[matlen(lda, n)];
-		x_ref = new REAL_REF[veclen(n, incx)];
-		A = new REAL[matlen(lda, n)];
-		x = new REAL[veclen(n, incx)];
+                A_ref = new REAL_REF[matlen(lda, n)];
+                x_ref = new REAL_REF[veclen(n, incx)];
+                A = new REAL[matlen(lda, n)];
+                x = new REAL[veclen(n, incx)];
 
-		for (int i = 0; i < MAX_ITER; i++) {
-		    set_random_vector(A_ref, A, matlen(lda, n));
-		    set_random_vector(x_ref, x, veclen(n, incx));
+                for (int i = 0; i < MAX_ITER; i++) {
+                    set_random_vector(A_ref, A, matlen(lda, n));
+                    set_random_vector(x_ref, x, veclen(n, incx));
 
-		    mplapack_errno = 0;blas_errno = 0;
+                    mplapack_errno = 0;
+                    blas_errno = 0;
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		    dtrmv_f77(uplo, trans, diag, &n, A_ref, &lda, x_ref, &incx);
-		    mplapack_errno1 = blas_errno;
+                    dtrmv_f77(uplo, trans, diag, &n, A_ref, &lda, x_ref, &incx);
+                    mplapack_errno1 = blas_errno;
 #else
-		    Rtrmv(uplo, trans, diag, n, A_ref, lda, x_ref, incx);
-		    mplapack_errno1 = mplapack_errno;
+                    Rtrmv(uplo, trans, diag, n, A_ref, lda, x_ref, incx);
+                    mplapack_errno1 = mplapack_errno;
 #endif
-		    Rtrmv(uplo, trans, diag, n, A, lda, x, incx);
-		    mplapack_errno2 = mplapack_errno;
+                    Rtrmv(uplo, trans, diag, n, A, lda, x, incx);
+                    mplapack_errno2 = mplapack_errno;
 
 #if defined VERBOSE_TEST
-		    printf("errno: mplapack %d, ref %d\n", mplapack_errno1, mplapack_errno2);
+                    printf("errno: mplapack %d, ref %d\n", mplapack_errno1, mplapack_errno2);
 #endif
-		    if (mplapack_errno1 != mplapack_errno2) {
+                    if (mplapack_errno1 != mplapack_errno2) {
 #if defined VERBOSE_TEST
-			printf("error in Mxerbla!!\n");
+                        printf("error in Mxerbla!!\n");
 #endif
-			errorflag = TRUE;		        
-		    }
-		    REAL_REF diff;
-		    if (Mlsame(trans, "N")) {
-			diff = infnorm(x_ref, x, (veclen(n, incx)), 1);
-		    } else {
-			diff = infnorm(x_ref, x, (veclen(n, incx)), 1);
-		    }
+                        errorflag = TRUE;
+                    }
+                    REAL_REF diff;
+                    if (Mlsame(trans, "N")) {
+                        diff = infnorm(x_ref, x, (veclen(n, incx)), 1);
+                    } else {
+                        diff = infnorm(x_ref, x, (veclen(n, incx)), 1);
+                    }
 
-		    if (diff > EPSILON) {
+                    if (diff > EPSILON) {
 #if defined VERBOSE_TEST
-			printf("error: "); printnum(diff); printf("\n");
+                        printf("error: ");
+                        printnum(diff);
+                        printf("\n");
 #endif
-			errorflag = TRUE;
-		    }
-		    if (maxdiff < diff)
-			maxdiff = diff;
-		}
-		delete[]x;
-		delete[]A;
-		delete[]x_ref;
-		delete[]A_ref;
-	    }
-	}
+                        errorflag = TRUE;
+                    }
+                    if (maxdiff < diff)
+                        maxdiff = diff;
+                }
+                delete[] x;
+                delete[] A;
+                delete[] x_ref;
+                delete[] A_ref;
+            }
+        }
     }
     if (errorflag == TRUE) {
-	printf("error: "); printnum(maxdiff); printf("\n");
+        printf("error: ");
+        printnum(maxdiff);
+        printf("\n");
         printf("*** Testing Rtrmv failed ***\n");
-	exit(1);
+        exit(1);
     } else {
-        printf("maxerror: "); printnum(maxdiff); printf("\n");
+        printf("maxerror: ");
+        printnum(maxdiff);
+        printf("\n");
     }
 }
 
-void Rtrmv_test()
-{
+void Rtrmv_test() {
     Rtrmv_test2("U", "N", "U");
     Rtrmv_test2("U", "N", "N");
     Rtrmv_test2("U", "T", "U");
@@ -136,8 +141,7 @@ void Rtrmv_test()
     Rtrmv_test2("L", "C", "N");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rtrmv start ***\n");
     Rtrmv_test();
     printf("*** Testing Rtrmv successful ***\n");

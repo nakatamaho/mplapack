@@ -33,58 +33,56 @@
 #include <iostream>
 #endif
 
-#define MIN_INCX  1
-#define MAX_INCX  2
-#define MIN_N     1
-#define MAX_N     10
+#define MIN_INCX 1
+#define MAX_INCX 2
+#define MIN_N 1
+#define MAX_N 10
 #define MAX_ITER 10
 
-void iCamax_test()
-{
+void iCamax_test() {
     int errorflag = FALSE;
     INTEGER_REF izmax;
     INTEGER icmax;
 
     for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
-	for (int n = MIN_N; n < MAX_N; n++) {
+        for (int n = MIN_N; n < MAX_N; n++) {
 #if defined VERBOSE_TEST
-	    printf("#n:%d incx:%d \n", n, incx);
+            printf("#n:%d incx:%d \n", n, incx);
 #endif
-	    COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
-	    COMPLEX *x = new COMPLEX[veclen(n, incx)];
-	    int j = 0;
-	    while (j < MAX_ITER) {
-		set_random_vector(x_ref, x, veclen(n, incx));
+            COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
+            COMPLEX *x = new COMPLEX[veclen(n, incx)];
+            int j = 0;
+            while (j < MAX_ITER) {
+                set_random_vector(x_ref, x, veclen(n, incx));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		izmax = izamax_f77(&n, x_ref, &incx);
+                izmax = izamax_f77(&n, x_ref, &incx);
 #else
-		izmax = iCamax(n, x_ref, incx);
+                izmax = iCamax(n, x_ref, incx);
 #endif
-		icmax = iCamax(n, x, incx);
+                icmax = iCamax(n, x, incx);
 #if defined VERBOSE_TEST
-		cout << "iCamax:" << icmax << endl;
-		cout << "izamax:" << izmax << endl;
+                cout << "iCamax:" << icmax << endl;
+                cout << "izamax:" << izmax << endl;
 #endif
-		if (icmax != izmax) {
+                if (icmax != izmax) {
 #if defined VERBOSE_TEST
-		    printf("icmax!=icmax_ref\n");
+                    printf("icmax!=icmax_ref\n");
 #endif
-		    errorflag = TRUE;
-		}
-		j++;
-	    }
-	    delete[]x;
-	    delete[]x_ref;
-	}
+                    errorflag = TRUE;
+                }
+                j++;
+            }
+            delete[] x;
+            delete[] x_ref;
+        }
     }
     if (errorflag == TRUE) {
-	printf("*** Testing iCamax failed ***\n");
-	exit(1);
+        printf("*** Testing iCamax failed ***\n");
+        exit(1);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing iCamax start ***\n");
     iCamax_test();
     printf("*** Testing iCamax successful ***\n");

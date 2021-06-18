@@ -36,172 +36,262 @@
 
 #define MAX_ITER 10
 
-void subst_test1()
-{
-  char buf1[BUFLEN], buf2[BUFLEN], buf3[BUFLEN];
-  REAL tmp1;
-  REAL_REF tmp2;
+void subst_test1() {
+    char buf1[BUFLEN], buf2[BUFLEN], buf3[BUFLEN];
+    REAL tmp1;
+    REAL_REF tmp2;
 
-  printf("*** Substitution test 1 ***\n");
-  strcpy (buf1, "-1.234567890123456789012345678901234567890123456789012345678901234567890E1");
-//tmp1 = buf1;
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ 
-  #if defined ___MPLAPACK_WANT_LIBQUADMATH___
-  tmp1 = strtoflt128(buf1, NULL);
-  #elif !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___  
-  tmp1 = strtof128(buf1, NULL);
-  #else
-  sscanf(buf1, "%Le", &tmp1);
-  #endif
-#elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
-  sscanf(buf1, "%le", &tmp1);
-#elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-  sscanf(buf1, "%Le", &tmp1);
+    printf("*** Substitution test 1 ***\n");
+    strcpy(buf1, "-1.234567890123456789012345678901234567890123456789012345678901234567890E1");
+// tmp1 = buf1;
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+#if defined ___MPLAPACK_WANT_LIBQUADMATH___
+    tmp1 = strtoflt128(buf1, NULL);
+#elif !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+    tmp1 = strtof128(buf1, NULL);
 #else
-  tmp1 = buf1;
+    sscanf(buf1, "%Le", &tmp1);
+#endif
+#elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+    sscanf(buf1, "%le", &tmp1);
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
+    sscanf(buf1, "%Le", &tmp1);
+#else
+    tmp1 = buf1;
 #endif
 
-  tmp2 = tmp1;
+    tmp2 = tmp1;
 
-  sprintnum(buf2, tmp1);
-  sprintnum(buf3, tmp2);
+    sprintnum(buf2, tmp1);
+    sprintnum(buf3, tmp2);
 
 #if defined VERBOSE_TEST
-  printf("original  :%s\n",buf1);
-  printf("mplib     :%s\n",buf2);
-  printf("subst2refm:%s\n",buf3);
+    printf("original  :%s\n", buf1);
+    printf("mplib     :%s\n", buf2);
+    printf("subst2refm:%s\n", buf3);
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-  if (strncmp(buf1, buf2, 19)==0 && strncmp(buf2, buf3, 19)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
+    if (strncmp(buf1, buf2, 19) == 0 && strncmp(buf2, buf3, 19) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
 #elif defined ___MPLAPACK_BUILD_WITH_GMP___
-  if (strncmp(buf1, buf2, 65)==0 && strncmp(buf2, buf3, BUFLEN)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
+    if (strncmp(buf1, buf2, 65) == 0 && strncmp(buf2, buf3, BUFLEN) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
 #elif defined ___MPLAPACK_BUILD_WITH_DD___
-  if (strncmp(buf1, buf2, 34)==0 && strncmp(buf2, buf3, 34)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
+    if (strncmp(buf1, buf2, 34) == 0 && strncmp(buf2, buf3, 34) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
 #elif defined ___MPLAPACK_BUILD_WITH_QD___
-  if (strncmp(buf1, buf2, 66)==0 && strncmp(buf2, buf3, 66)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
+    if (strncmp(buf1, buf2, 66) == 0 && strncmp(buf2, buf3, 66) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
-  if (strncmp(buf1, buf2, 19)==0 && strncmp(buf2, buf3, 19)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
+    if (strncmp(buf1, buf2, 19) == 0 && strncmp(buf2, buf3, 19) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-  if (strncmp(buf1, buf2, 37)==0 && strncmp(buf2, buf3, 37)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
+    if (strncmp(buf1, buf2, 37) == 0 && strncmp(buf2, buf3, 37) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-  if (strncmp(buf1, buf2, 21)==0 && strncmp(buf2, buf3, 21)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
+    if (strncmp(buf1, buf2, 21) == 0 && strncmp(buf2, buf3, 21) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
 #endif
-  printf("*** Substitution test 1 successful ***\n");
+    printf("*** Substitution test 1 successful ***\n");
 }
 
-void subst_test2()
-{
-  char buf1[BUFLEN], buf2[BUFLEN], buf3[BUFLEN];
-  REAL tmp1;
-  REAL_REF tmp2;
-  printf("*** Substitution test 2 ***\n");
-  strcpy (buf1, "-1.234567890123456789012345678901234567890123456789012345678901234567890E1");
+void subst_test2() {
+    char buf1[BUFLEN], buf2[BUFLEN], buf3[BUFLEN];
+    REAL tmp1;
+    REAL_REF tmp2;
+    printf("*** Substitution test 2 ***\n");
+    strcpy(buf1, "-1.234567890123456789012345678901234567890123456789012345678901234567890E1");
 
-//tmp2 = buf1;
+// tmp2 = buf1;
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-  sscanf(buf1, "%lf", &tmp2);
+    sscanf(buf1, "%lf", &tmp2);
 #else
-  tmp2 = buf1;
+    tmp2 = buf1;
 #endif
 
-//tmp1 = tmp2;
+// tmp1 = tmp2;
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-  tmp1 = tmp2;
+    tmp1 = tmp2;
 #elif defined ___MPLAPACK_BUILD_WITH_GMP___
-  tmp1 = cast2mpf_class(tmp2);
+    tmp1 = cast2mpf_class(tmp2);
 #elif defined ___MPLAPACK_BUILD_WITH_DD___
-  tmp1 = cast2dd_real(tmp2);
+    tmp1 = cast2dd_real(tmp2);
 #elif defined ___MPLAPACK_BUILD_WITH_QD___
-  tmp1 = cast2qd_real(tmp2);
+    tmp1 = cast2qd_real(tmp2);
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
-  tmp1 = cast2double(tmp2);
+    tmp1 = cast2double(tmp2);
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-  tmp1 = cast2_Float64x(tmp2);  
+    tmp1 = cast2_Float64x(tmp2);
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-  tmp1 = cast2_Float128(tmp2);
+    tmp1 = cast2_Float128(tmp2);
 #endif
 
-  sprintnum(buf2, tmp2);
-  sprintnum(buf3, tmp1);
+    sprintnum(buf2, tmp2);
+    sprintnum(buf3, tmp1);
 #if defined VERBOSE_TEST
-  printf("original  :%s\n",buf1);
-  printf("referencem:%s\n",buf2);
-  printf("castedtomp:%s\n",buf3);
+    printf("original  :%s\n", buf1);
+    printf("referencem:%s\n", buf2);
+    printf("castedtomp:%s\n", buf3);
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-  if (strncmp(buf1, buf2, 19)==0 && strncmp(buf2, buf3, 19)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
+    if (strncmp(buf1, buf2, 19) == 0 && strncmp(buf2, buf3, 19) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
 #elif defined ___MPLAPACK_BUILD_WITH_GMP___
-  if (strncmp(buf1, buf2, 65)==0 && strncmp(buf2, buf3, BUFLEN)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
+    if (strncmp(buf1, buf2, 65) == 0 && strncmp(buf2, buf3, BUFLEN) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
 #elif defined ___MPLAPACK_BUILD_WITH_DD___
-  if (strncmp(buf1, buf2, 34)==0 && strncmp(buf2, buf3, 34)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
+    if (strncmp(buf1, buf2, 34) == 0 && strncmp(buf2, buf3, 34) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
 #elif defined ___MPLAPACK_BUILD_WITH_QD___
-  if (strncmp(buf1, buf2, 66)==0 && strncmp(buf2, buf3, 66)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
+    if (strncmp(buf1, buf2, 66) == 0 && strncmp(buf2, buf3, 66) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
-  if (strncmp(buf1, buf2, 19)==0 && strncmp(buf2, buf3, 19)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);}
+    if (strncmp(buf1, buf2, 19) == 0 && strncmp(buf2, buf3, 19) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-  if (strncmp(buf1, buf2, 19)==0 && strncmp(buf2, buf3, 19)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);}
+    if (strncmp(buf1, buf2, 19) == 0 && strncmp(buf2, buf3, 19) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-  if (strncmp(buf1, buf2, 36)==0 && strncmp(buf2, buf3, 36)==0)  printf("ok!\n"); else {printf("failed!\n"); exit(1);} 
+    if (strncmp(buf1, buf2, 36) == 0 && strncmp(buf2, buf3, 36) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
 #endif
-  printf("*** Substitution test 2 successful ***\n");
+    printf("*** Substitution test 2 successful ***\n");
 }
 
-void mp_sub_test_complex()
-{
+void mp_sub_test_complex() {
     COMPLEX_REF Ctemp1r, Ctemp2r, dummy;
     COMPLEX Ctemp1;
     REAL_REF diff;
 
     set_random_number(Ctemp1r, Ctemp1);
 
-    cout << "C1R  = "; printnum(Ctemp1r); cout << endl;
-    cout << "C1   = "; printnum(Ctemp1);  cout << endl;
+    cout << "C1R  = ";
+    printnum(Ctemp1r);
+    cout << endl;
+    cout << "C1   = ";
+    printnum(Ctemp1);
+    cout << endl;
 
     Ctemp2r = Ctemp1 - Ctemp1r;
     diff = abs(Ctemp2r);
-    cout << "diff = "; printnum(diff); cout << endl;
-    if (abs(diff) > EPSILON) { printf("error\n"); exit(1); }
+    cout << "diff = ";
+    printnum(diff);
+    cout << endl;
+    if (abs(diff) > EPSILON) {
+        printf("error\n");
+        exit(1);
+    }
 }
 
-void mp_sub_test_real()
-{
+void mp_sub_test_real() {
     REAL_REF Rtemp1r, Rtemp2r, Rtemp3r;
     REAL Rtemp1;
     REAL_REF diff;
 
     printf("Substitution test\n");
     set_random_number(Rtemp1r, Rtemp1);
-    printnum(Rtemp1r); printf("\n");
-    printnum(Rtemp1);  printf("\n");
+    printnum(Rtemp1r);
+    printf("\n");
+    printnum(Rtemp1);
+    printf("\n");
     Rtemp2r = Rtemp1 - Rtemp1r;
-    printnum(Rtemp2r); printf("\n");
+    printnum(Rtemp2r);
+    printf("\n");
     Rtemp3r = Rtemp1r - Rtemp1;
-    printnum(Rtemp3r); printf("\n");
+    printnum(Rtemp3r);
+    printf("\n");
 
     diff = abs(Rtemp2r);
-    cout << "diff = "; printnum(diff); cout << endl;
-    if (abs(diff) > EPSILON) { printf("error\n"); exit(1); }
+    cout << "diff = ";
+    printnum(diff);
+    cout << endl;
+    if (abs(diff) > EPSILON) {
+        printf("error\n");
+        exit(1);
+    }
 
     diff = abs(Rtemp3r);
-    cout << "diff = "; printnum(diff); cout << endl;
-    if (abs(diff) > EPSILON) { printf("error\n"); exit(1); }
+    cout << "diff = ";
+    printnum(diff);
+    cout << endl;
+    if (abs(diff) > EPSILON) {
+        printf("error\n");
+        exit(1);
+    }
     printf("Substitution test successful\n");
 
     printf("Subtraction test\n");
     Rtemp1r = 1.0;
     Rtemp1 = 2.0;
-    Rtemp2r = Rtemp1r - Rtemp1;    
-    printnum(Rtemp2r);  printf("\n");
+    Rtemp2r = Rtemp1r - Rtemp1;
+    printnum(Rtemp2r);
+    printf("\n");
 
     Rtemp2r = Rtemp1 - Rtemp1r;
-    printnum(Rtemp2r);  printf("\n");
+    printnum(Rtemp2r);
+    printf("\n");
     printf("Subtraction test successful\n");
 }
 
-void addition_real_test()
-{
+void addition_real_test() {
     REAL_REF Rtemp1r, Rtemp2r, Rtemp3r;
     REAL Rtemp1, Rtemp2, Rtemp3;
     REAL_REF diff;
@@ -211,25 +301,37 @@ void addition_real_test()
     set_random_number(Rtemp2r, Rtemp2);
 
     Rtemp3r = Rtemp1r + Rtemp2r;
-    Rtemp3  = Rtemp1  + Rtemp2;
+    Rtemp3 = Rtemp1 + Rtemp2;
 
-    printnum(Rtemp1r); printf("\n");
-    printnum(Rtemp1); printf("\n");
-    printf("+"); printf("\n");
-    printnum(Rtemp2r); printf("\n");
-    printnum(Rtemp2); printf("\n");
-    printf("="); printf("\n");
-    printnum(Rtemp3r); printf("\n");
-    printnum(Rtemp3); printf("\n");
+    printnum(Rtemp1r);
+    printf("\n");
+    printnum(Rtemp1);
+    printf("\n");
+    printf("+");
+    printf("\n");
+    printnum(Rtemp2r);
+    printf("\n");
+    printnum(Rtemp2);
+    printf("\n");
+    printf("=");
+    printf("\n");
+    printnum(Rtemp3r);
+    printf("\n");
+    printnum(Rtemp3);
+    printf("\n");
 
     diff = abs(Rtemp3r - Rtemp3);
-    cout << "diff = "; printnum(diff); cout << endl;
-    if (abs(diff) > EPSILON) { printf("*** REAL Addition test failed ***\n"); exit(1); }
+    cout << "diff = ";
+    printnum(diff);
+    cout << endl;
+    if (abs(diff) > EPSILON) {
+        printf("*** REAL Addition test failed ***\n");
+        exit(1);
+    }
     printf("*** REAL Addition test successful ***\n");
 }
 
-void subtraction_real_test()
-{
+void subtraction_real_test() {
     REAL_REF Rtemp1r, Rtemp2r, Rtemp3r;
     REAL Rtemp1, Rtemp2, Rtemp3;
     REAL_REF diff;
@@ -239,25 +341,37 @@ void subtraction_real_test()
     set_random_number(Rtemp2r, Rtemp2);
 
     Rtemp3r = Rtemp1r - Rtemp2r;
-    Rtemp3  = Rtemp1  - Rtemp2;
+    Rtemp3 = Rtemp1 - Rtemp2;
 
-    printnum(Rtemp1r); printf("\n");
-    printnum(Rtemp1); printf("\n");
-    printf("-"); printf("\n");
-    printnum(Rtemp2r); printf("\n");
-    printnum(Rtemp2); printf("\n");
-    printf("="); printf("\n");
-    printnum(Rtemp3r); printf("\n");
-    printnum(Rtemp3); printf("\n");
+    printnum(Rtemp1r);
+    printf("\n");
+    printnum(Rtemp1);
+    printf("\n");
+    printf("-");
+    printf("\n");
+    printnum(Rtemp2r);
+    printf("\n");
+    printnum(Rtemp2);
+    printf("\n");
+    printf("=");
+    printf("\n");
+    printnum(Rtemp3r);
+    printf("\n");
+    printnum(Rtemp3);
+    printf("\n");
 
     diff = abs(Rtemp3r - Rtemp3);
-    cout << "diff = "; printnum(diff); cout << endl;
-    if (abs(diff) > EPSILON) { printf("*** REAL Subtraction test failed ***\n"); exit(1); }
+    cout << "diff = ";
+    printnum(diff);
+    cout << endl;
+    if (abs(diff) > EPSILON) {
+        printf("*** REAL Subtraction test failed ***\n");
+        exit(1);
+    }
     printf("*** REAL Subtraction test successful ***\n");
 }
 
-void multiplication_real_test()
-{
+void multiplication_real_test() {
     REAL_REF Rtemp1r, Rtemp2r, Rtemp3r;
     REAL Rtemp1, Rtemp2, Rtemp3;
     REAL_REF diff;
@@ -267,25 +381,37 @@ void multiplication_real_test()
     set_random_number(Rtemp2r, Rtemp2);
 
     Rtemp3r = Rtemp1r * Rtemp2r;
-    Rtemp3  = Rtemp1  * Rtemp2;
+    Rtemp3 = Rtemp1 * Rtemp2;
 
-    printnum(Rtemp1r); printf("\n");
-    printnum(Rtemp1); printf("\n");
-    printf("*"); printf("\n");
-    printnum(Rtemp2r); printf("\n");
-    printnum(Rtemp2); printf("\n");
-    printf("="); printf("\n");
-    printnum(Rtemp3r); printf("\n");
-    printnum(Rtemp3); printf("\n");
+    printnum(Rtemp1r);
+    printf("\n");
+    printnum(Rtemp1);
+    printf("\n");
+    printf("*");
+    printf("\n");
+    printnum(Rtemp2r);
+    printf("\n");
+    printnum(Rtemp2);
+    printf("\n");
+    printf("=");
+    printf("\n");
+    printnum(Rtemp3r);
+    printf("\n");
+    printnum(Rtemp3);
+    printf("\n");
 
     diff = abs(Rtemp3r - Rtemp3);
-    cout << "diff = "; printnum(diff); cout << endl;
-    if (abs(diff) > EPSILON) { printf("*** REAL Multiplication test failed ***\n"); exit(1); }
+    cout << "diff = ";
+    printnum(diff);
+    cout << endl;
+    if (abs(diff) > EPSILON) {
+        printf("*** REAL Multiplication test failed ***\n");
+        exit(1);
+    }
     printf("*** REAL Multiplication test successful ***\n");
 }
 
-void division_real_test()
-{
+void division_real_test() {
     REAL_REF Rtemp1r, Rtemp2r, Rtemp3r;
     REAL Rtemp1, Rtemp2, Rtemp3;
     REAL_REF diff;
@@ -295,25 +421,37 @@ void division_real_test()
     set_random_number(Rtemp2r, Rtemp2);
 
     Rtemp3r = Rtemp1r / Rtemp2r;
-    Rtemp3  = Rtemp1  / Rtemp2;
+    Rtemp3 = Rtemp1 / Rtemp2;
 
-    printnum(Rtemp1r); printf("\n");
-    printnum(Rtemp1); printf("\n");
-    printf("/"); printf("\n");
-    printnum(Rtemp2r); printf("\n");
-    printnum(Rtemp2); printf("\n");
-    printf("="); printf("\n");
-    printnum(Rtemp3r); printf("\n");
-    printnum(Rtemp3); printf("\n");
+    printnum(Rtemp1r);
+    printf("\n");
+    printnum(Rtemp1);
+    printf("\n");
+    printf("/");
+    printf("\n");
+    printnum(Rtemp2r);
+    printf("\n");
+    printnum(Rtemp2);
+    printf("\n");
+    printf("=");
+    printf("\n");
+    printnum(Rtemp3r);
+    printf("\n");
+    printnum(Rtemp3);
+    printf("\n");
 
     diff = abs(Rtemp3r - Rtemp3);
-    cout << "diff = "; printnum(diff); cout << endl;
-    if (abs(diff) > EPSILON) { printf("*** REAL Division test failed ***\n"); exit(1); }
+    cout << "diff = ";
+    printnum(diff);
+    cout << endl;
+    if (abs(diff) > EPSILON) {
+        printf("*** REAL Division test failed ***\n");
+        exit(1);
+    }
     printf("*** REAL Division test successful ***\n");
 }
 
-void addition_complex_test()
-{
+void addition_complex_test() {
     COMPLEX_REF Ctemp1r, Ctemp2r, Ctemp3r;
     COMPLEX Ctemp1, Ctemp2, Ctemp3;
     COMPLEX_REF diff;
@@ -323,25 +461,37 @@ void addition_complex_test()
     set_random_number(Ctemp2r, Ctemp2);
 
     Ctemp3r = Ctemp1r + Ctemp2r;
-    Ctemp3  = Ctemp1  + Ctemp2;
+    Ctemp3 = Ctemp1 + Ctemp2;
 
-    printnum(Ctemp1r); printf("\n");
-    printnum(Ctemp1); printf("\n");
-    printf("+"); printf("\n");
-    printnum(Ctemp2r); printf("\n");
-    printnum(Ctemp2); printf("\n");
-    printf("="); printf("\n");
-    printnum(Ctemp3r); printf("\n");
-    printnum(Ctemp3); printf("\n");
+    printnum(Ctemp1r);
+    printf("\n");
+    printnum(Ctemp1);
+    printf("\n");
+    printf("+");
+    printf("\n");
+    printnum(Ctemp2r);
+    printf("\n");
+    printnum(Ctemp2);
+    printf("\n");
+    printf("=");
+    printf("\n");
+    printnum(Ctemp3r);
+    printf("\n");
+    printnum(Ctemp3);
+    printf("\n");
 
     diff = abs(Ctemp3r - Ctemp3);
-    cout << "diff = "; printnum(diff); cout << endl;
-    if (abs(diff) > EPSILON) { printf("*** COMPLEX Addition test failed ***\n"); exit(1); }
+    cout << "diff = ";
+    printnum(diff);
+    cout << endl;
+    if (abs(diff) > EPSILON) {
+        printf("*** COMPLEX Addition test failed ***\n");
+        exit(1);
+    }
     printf("*** COMPLEX Addition test successful ***\n");
 }
 
-void subtraction_complex_test()
-{
+void subtraction_complex_test() {
     COMPLEX_REF Ctemp1r, Ctemp2r, Ctemp3r;
     COMPLEX Ctemp1, Ctemp2, Ctemp3;
     COMPLEX_REF diff;
@@ -351,25 +501,37 @@ void subtraction_complex_test()
     set_random_number(Ctemp2r, Ctemp2);
 
     Ctemp3r = Ctemp1r - Ctemp2r;
-    Ctemp3  = Ctemp1  - Ctemp2;
+    Ctemp3 = Ctemp1 - Ctemp2;
 
-    printnum(Ctemp1r); printf("\n");
-    printnum(Ctemp1); printf("\n");
-    printf("-"); printf("\n");
-    printnum(Ctemp2r); printf("\n");
-    printnum(Ctemp2); printf("\n");
-    printf("="); printf("\n");
-    printnum(Ctemp3r); printf("\n");
-    printnum(Ctemp3); printf("\n");
+    printnum(Ctemp1r);
+    printf("\n");
+    printnum(Ctemp1);
+    printf("\n");
+    printf("-");
+    printf("\n");
+    printnum(Ctemp2r);
+    printf("\n");
+    printnum(Ctemp2);
+    printf("\n");
+    printf("=");
+    printf("\n");
+    printnum(Ctemp3r);
+    printf("\n");
+    printnum(Ctemp3);
+    printf("\n");
 
     diff = abs(Ctemp3r - Ctemp3);
-    cout << "diff = "; printnum(diff); cout << endl;
-    if (abs(diff) > EPSILON) { printf("*** COMPLEX Subtraction test failed ***\n"); exit(1); }
+    cout << "diff = ";
+    printnum(diff);
+    cout << endl;
+    if (abs(diff) > EPSILON) {
+        printf("*** COMPLEX Subtraction test failed ***\n");
+        exit(1);
+    }
     printf("*** COMPLEX Subtraction test successful ***\n");
 }
 
-void multiplication_complex_test()
-{
+void multiplication_complex_test() {
     COMPLEX_REF Ctemp1r, Ctemp2r, Ctemp3r;
     COMPLEX Ctemp1, Ctemp2, Ctemp3;
     COMPLEX_REF diff;
@@ -379,25 +541,37 @@ void multiplication_complex_test()
     set_random_number(Ctemp2r, Ctemp2);
 
     Ctemp3r = Ctemp1r * Ctemp2r;
-    Ctemp3  = Ctemp1  * Ctemp2;
+    Ctemp3 = Ctemp1 * Ctemp2;
 
-    printnum(Ctemp1r); printf("\n");
-    printnum(Ctemp1); printf("\n");
-    printf("*"); printf("\n");
-    printnum(Ctemp2r); printf("\n");
-    printnum(Ctemp2); printf("\n");
-    printf("="); printf("\n");
-    printnum(Ctemp3r); printf("\n");
-    printnum(Ctemp3); printf("\n");
+    printnum(Ctemp1r);
+    printf("\n");
+    printnum(Ctemp1);
+    printf("\n");
+    printf("*");
+    printf("\n");
+    printnum(Ctemp2r);
+    printf("\n");
+    printnum(Ctemp2);
+    printf("\n");
+    printf("=");
+    printf("\n");
+    printnum(Ctemp3r);
+    printf("\n");
+    printnum(Ctemp3);
+    printf("\n");
 
     diff = abs(Ctemp3r - Ctemp3);
-    cout << "diff = "; printnum(diff); cout << endl;
-    if (abs(diff) > EPSILON) { printf("*** COMPLEX Multiplication test failed ***\n"); exit(1); }
+    cout << "diff = ";
+    printnum(diff);
+    cout << endl;
+    if (abs(diff) > EPSILON) {
+        printf("*** COMPLEX Multiplication test failed ***\n");
+        exit(1);
+    }
     printf("*** COMPLEX Multiplication test successful ***\n");
 }
 
-void division_complex_test()
-{
+void division_complex_test() {
     COMPLEX_REF Ctemp1r, Ctemp2r, Ctemp3r;
     COMPLEX Ctemp1, Ctemp2, Ctemp3;
     COMPLEX_REF diff;
@@ -407,113 +581,182 @@ void division_complex_test()
     set_random_number(Ctemp2r, Ctemp2);
 
     Ctemp3r = Ctemp1r / Ctemp2r;
-    Ctemp3  = Ctemp1  / Ctemp2;
+    Ctemp3 = Ctemp1 / Ctemp2;
 
-    printnum(Ctemp1r); printf("\n");
-    printnum(Ctemp1); printf("\n");
-    printf("/"); printf("\n");
-    printnum(Ctemp2r); printf("\n");
-    printnum(Ctemp2); printf("\n");
-    printf("="); printf("\n");
-    printnum(Ctemp3r); printf("\n");
-    printnum(Ctemp3); printf("\n");
+    printnum(Ctemp1r);
+    printf("\n");
+    printnum(Ctemp1);
+    printf("\n");
+    printf("/");
+    printf("\n");
+    printnum(Ctemp2r);
+    printf("\n");
+    printnum(Ctemp2);
+    printf("\n");
+    printf("=");
+    printf("\n");
+    printnum(Ctemp3r);
+    printf("\n");
+    printnum(Ctemp3);
+    printf("\n");
 
     diff = abs(Ctemp3r - Ctemp3);
-    cout << "diff = "; printnum(diff); cout << endl;
-    if (abs(diff) > EPSILON) { printf("*** COMPLEX Division test failed ***\n"); exit(1); }
+    cout << "diff = ";
+    printnum(diff);
+    cout << endl;
+    if (abs(diff) > EPSILON) {
+        printf("*** COMPLEX Division test failed ***\n");
+        exit(1);
+    }
     printf("*** COMPLEX Division test successful ***\n");
 }
 
-void mp_rounding2integer()
-{
-  REAL rtmp1;
-  long b;
+void mp_rounding2integer() {
+    REAL rtmp1;
+    long b;
 
-  printf("*** Rounding test start ***\n");
+    printf("*** Rounding test start ***\n");
 
-  rtmp1 = 1.3;
-  b = castINTEGER(rtmp1);
-  printf("rtmp1: "); printnum(rtmp1); printf("  cast2intger: %ld\n", b);
-  if ( b != 1 )  {printf("*** Rounding test failed ***\n"); exit(1);}
+    rtmp1 = 1.3;
+    b = castINTEGER(rtmp1);
+    printf("rtmp1: ");
+    printnum(rtmp1);
+    printf("  cast2intger: %ld\n", b);
+    if (b != 1) {
+        printf("*** Rounding test failed ***\n");
+        exit(1);
+    }
 
-  rtmp1 = 1.5;
-  b = castINTEGER(rtmp1);
-  printf("rtmp1: "); printnum(rtmp1); printf("  cast2intger: %ld\n", b);
-  if ( b != 1 )  {printf("*** Rounding test failed ***\n"); exit(1);}
+    rtmp1 = 1.5;
+    b = castINTEGER(rtmp1);
+    printf("rtmp1: ");
+    printnum(rtmp1);
+    printf("  cast2intger: %ld\n", b);
+    if (b != 1) {
+        printf("*** Rounding test failed ***\n");
+        exit(1);
+    }
 
-  rtmp1 = -1.75;
-  b = castINTEGER(rtmp1);
-  printf("rtmp1: "); printnum(rtmp1); printf("  cast2intger: %ld\n", b);
-  if ( b != -1 )  {printf("*** Rounding test failed ***\n"); exit(1);}
+    rtmp1 = -1.75;
+    b = castINTEGER(rtmp1);
+    printf("rtmp1: ");
+    printnum(rtmp1);
+    printf("  cast2intger: %ld\n", b);
+    if (b != -1) {
+        printf("*** Rounding test failed ***\n");
+        exit(1);
+    }
 
-  rtmp1 = -1.4;
-  b = castINTEGER(rtmp1);
-  printf("rtmp1: "); printnum(rtmp1); printf("  cast2intger: %ld\n", b);
-  if ( b != -1 )  {printf("*** Rounding test failed ***\n"); exit(1);}
+    rtmp1 = -1.4;
+    b = castINTEGER(rtmp1);
+    printf("rtmp1: ");
+    printnum(rtmp1);
+    printf("  cast2intger: %ld\n", b);
+    if (b != -1) {
+        printf("*** Rounding test failed ***\n");
+        exit(1);
+    }
 
-  rtmp1 = 1.3;
-  b = rtmp1;
-  printf("rtmp1: "); printnum(rtmp1); printf("  cast2intger: %ld\n", b);
-  if ( b != 1 )  {printf("*** Rounding test failed ***\n"); exit(1);}
+    rtmp1 = 1.3;
+    b = rtmp1;
+    printf("rtmp1: ");
+    printnum(rtmp1);
+    printf("  cast2intger: %ld\n", b);
+    if (b != 1) {
+        printf("*** Rounding test failed ***\n");
+        exit(1);
+    }
 
-  rtmp1 = 1.5;
-  b = rtmp1;
-  printf("rtmp1: "); printnum(rtmp1); printf("  cast2intger: %ld\n", b);
-  if ( b != 1 )  {printf("*** Rounding test failed ***\n"); exit(1);}
+    rtmp1 = 1.5;
+    b = rtmp1;
+    printf("rtmp1: ");
+    printnum(rtmp1);
+    printf("  cast2intger: %ld\n", b);
+    if (b != 1) {
+        printf("*** Rounding test failed ***\n");
+        exit(1);
+    }
 
-  rtmp1 = -1.75;
-  b = rtmp1;
-  printf("rtmp1: "); printnum(rtmp1); printf("  cast2intger: %ld\n", b);
-  if ( b != -1 )  {printf("*** Rounding test failed ***\n"); exit(1);}
+    rtmp1 = -1.75;
+    b = rtmp1;
+    printf("rtmp1: ");
+    printnum(rtmp1);
+    printf("  cast2intger: %ld\n", b);
+    if (b != -1) {
+        printf("*** Rounding test failed ***\n");
+        exit(1);
+    }
 
-  rtmp1 = -1.4;
-  b = rtmp1;
-  printf("rtmp1: "); printnum(rtmp1); printf("  cast2intger: %ld\n", b);
-  if ( b != -1 )  {printf("*** Rounding test failed ***\n"); exit(1);}
+    rtmp1 = -1.4;
+    b = rtmp1;
+    printf("rtmp1: ");
+    printnum(rtmp1);
+    printf("  cast2intger: %ld\n", b);
+    if (b != -1) {
+        printf("*** Rounding test failed ***\n");
+        exit(1);
+    }
 
-  printf("*** Rounding test successful ***\n");
+    printf("*** Rounding test successful ***\n");
 }
 
-void mp_nint()
-{
-  REAL rtmp1;
-  long b;
+void mp_nint() {
+    REAL rtmp1;
+    long b;
 
-  printf("*** Nint test start ***\n");
+    printf("*** Nint test start ***\n");
 
-  rtmp1 = 1.3;
-  b = nint(rtmp1);
-  printf("rtmp1: "); printnum(rtmp1); printf("  nint: %ld\n", b);
-  if ( b != 1 )  {printf("*** Nint test failed ***\n"); exit(1);}
+    rtmp1 = 1.3;
+    b = nint(rtmp1);
+    printf("rtmp1: ");
+    printnum(rtmp1);
+    printf("  nint: %ld\n", b);
+    if (b != 1) {
+        printf("*** Nint test failed ***\n");
+        exit(1);
+    }
 
-  rtmp1 = 1.5;
-  b = nint(rtmp1);
-  printf("rtmp1: "); printnum(rtmp1); printf("  nint: %ld\n", b);
-  if ( b != 2 )  {printf("*** Nint test failed ***\n"); exit(1);}
+    rtmp1 = 1.5;
+    b = nint(rtmp1);
+    printf("rtmp1: ");
+    printnum(rtmp1);
+    printf("  nint: %ld\n", b);
+    if (b != 2) {
+        printf("*** Nint test failed ***\n");
+        exit(1);
+    }
 
-  rtmp1 = -1.75;
-  b = nint(rtmp1);
-  printf("rtmp1: "); printnum(rtmp1); printf("  nint: %ld\n", b);
-  if ( b != -2 )  {printf("*** Nint test failed ***\n"); exit(1);}
+    rtmp1 = -1.75;
+    b = nint(rtmp1);
+    printf("rtmp1: ");
+    printnum(rtmp1);
+    printf("  nint: %ld\n", b);
+    if (b != -2) {
+        printf("*** Nint test failed ***\n");
+        exit(1);
+    }
 
-  rtmp1 = -1.4;
-  b = nint(rtmp1);
-  printf("rtmp1: "); printnum(rtmp1); printf("  nint: %ld\n", b);
-  if ( b != -1 )  {printf("*** Nint test failed ***\n"); exit(1);}
+    rtmp1 = -1.4;
+    b = nint(rtmp1);
+    printf("rtmp1: ");
+    printnum(rtmp1);
+    printf("  nint: %ld\n", b);
+    if (b != -1) {
+        printf("*** Nint test failed ***\n");
+        exit(1);
+    }
 
-  printf("*** Nint test successful ***\n");
+    printf("*** Nint test successful ***\n");
 }
 
-
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing arithmetic start ***\n");
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
     mpf_set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
 #endif
 
-//we need to specify explicitly.
+    // we need to specify explicitly.
     mpreal::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
     mpcomplex::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
 

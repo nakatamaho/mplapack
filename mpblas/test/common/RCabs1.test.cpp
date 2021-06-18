@@ -37,8 +37,7 @@
 
 REAL_REF maxdiff = 0.0;
 
-void RCabs1_test()
-{
+void RCabs1_test() {
     int errorflag = FALSE;
     COMPLEX_REF z_ref;
     REAL_REF dtemp;
@@ -49,44 +48,57 @@ void RCabs1_test()
     int j = 0;
 
     while (j < MAX_ITER) {
-	set_random_number(z_ref, z);
+        set_random_number(z_ref, z);
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-	dtemp = dcabs1_f77(&z_ref);
+        dtemp = dcabs1_f77(&z_ref);
 #else
-	dtemp = RCabs1(z_ref);
+        dtemp = RCabs1(z_ref);
 #endif
-	Ftemp = RCabs1(z);
+        Ftemp = RCabs1(z);
 
 #if defined VERBOSE_TEST
-	printf("Z     ="); printnum(z); printf("\n");
-	printf("z_ref ="); printnum(z_ref); printf("\n");
+        printf("Z     =");
+        printnum(z);
+        printf("\n");
+        printf("z_ref =");
+        printnum(z_ref);
+        printf("\n");
 
-	printf("RCabs1 = "); printnum(Ftemp); printf("\n");
-	printf("dcabs1 = "); printnum(dtemp); printf("\n");
+        printf("RCabs1 = ");
+        printnum(Ftemp);
+        printf("\n");
+        printf("dcabs1 = ");
+        printnum(dtemp);
+        printf("\n");
 #endif
-	REAL_REF diff = abs(Ftemp - dtemp);
-	if (diff > EPSILON) {
+        REAL_REF diff = abs(Ftemp - dtemp);
+        if (diff > EPSILON) {
 #if defined VERBOSE_TEST
-	    printf("error: "); printnum(diff); printf("\n");
+            printf("error: ");
+            printnum(diff);
+            printf("\n");
 #endif
-	    errorflag = TRUE;
-	}
-	if (maxdiff < diff)
-	    maxdiff = diff;
-	j++;
+            errorflag = TRUE;
+        }
+        if (maxdiff < diff)
+            maxdiff = diff;
+        j++;
     }
     if (errorflag == TRUE) {
-	printf("error: "); printnum(maxdiff); printf("\n");
-	printf("*** Testing RCabs1 failed ***\n");
+        printf("error: ");
+        printnum(maxdiff);
+        printf("\n");
+        printf("*** Testing RCabs1 failed ***\n");
         exit(1);
     } else {
-        printf("maxerror: "); printnum(maxdiff); printf("\n");
+        printf("maxerror: ");
+        printnum(maxdiff);
+        printf("\n");
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing RCabs1 start ***\n");
     RCabs1_test();
     printf("*** Testing RCabs1 successful ***\n");

@@ -41,72 +41,77 @@
 
 REAL_REF maxdiff = 0.0;
 
-void Ctpsv_test2(const char *uplo, const char *trans, const char *diag)
-{
+void Ctpsv_test2(const char *uplo, const char *trans, const char *diag) {
     int errorflag = FALSE;
     int mplapack_errno1, mplapack_errno2;
     for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
-	for (int n = MIN_N; n < MAX_N; n++) {
+        for (int n = MIN_N; n < MAX_N; n++) {
 #if defined VERBOSE_TEST
-	    printf("#n is %d, incx is %d ", n, incx);
-	    printf("uplo is %s trans is %s, diag is %s \n", uplo, trans, diag);
+            printf("#n is %d, incx is %d ", n, incx);
+            printf("uplo is %s trans is %s, diag is %s \n", uplo, trans, diag);
 #endif
-	    COMPLEX_REF *AP_ref = new COMPLEX_REF[vecplen(n)];
-	    COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
-	    COMPLEX *AP = new COMPLEX[vecplen(n)];
-	    COMPLEX *x = new COMPLEX[veclen(n, incx)];
+            COMPLEX_REF *AP_ref = new COMPLEX_REF[vecplen(n)];
+            COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
+            COMPLEX *AP = new COMPLEX[vecplen(n)];
+            COMPLEX *x = new COMPLEX[veclen(n, incx)];
 
-	    for (int iter = 0; iter < MAX_ITER; iter++) {
-		set_random_vector(AP_ref, AP, vecplen(n));
-		set_random_vector(x_ref, x, veclen(n, incx));
+            for (int iter = 0; iter < MAX_ITER; iter++) {
+                set_random_vector(AP_ref, AP, vecplen(n));
+                set_random_vector(x_ref, x, veclen(n, incx));
 
-		mplapack_errno = 0; blas_errno = 0;
+                mplapack_errno = 0;
+                blas_errno = 0;
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		ztpsv_f77(uplo, trans, diag, &n, AP_ref, x_ref, &incx);
-		mplapack_errno1 = blas_errno;
+                ztpsv_f77(uplo, trans, diag, &n, AP_ref, x_ref, &incx);
+                mplapack_errno1 = blas_errno;
 #else
-		Ctpsv(uplo, trans, diag, n, AP_ref, x_ref, incx);
-		mplapack_errno1 = mplapack_errno;
+                Ctpsv(uplo, trans, diag, n, AP_ref, x_ref, incx);
+                mplapack_errno1 = mplapack_errno;
 #endif
-		Ctpsv(uplo, trans, diag, n, AP, x, incx);
-		mplapack_errno2 = mplapack_errno;
+                Ctpsv(uplo, trans, diag, n, AP, x, incx);
+                mplapack_errno2 = mplapack_errno;
 
 #if defined VERBOSE_TEST
-		printf("errno: mplapack %d, ref %d\n", mplapack_errno1, mplapack_errno2);
+                printf("errno: mplapack %d, ref %d\n", mplapack_errno1, mplapack_errno2);
 #endif
-		if (mplapack_errno1 != mplapack_errno2) {
+                if (mplapack_errno1 != mplapack_errno2) {
 #if defined VERBOSE_TEST
-		    printf("error in Mxerbla!!\n");
+                    printf("error in Mxerbla!!\n");
 #endif
-		    errorflag = TRUE;
-		}
-		REAL_REF diff = infnorm(x_ref, x, veclen(n, incx), 1);
-		if (diff > EPSILON10) {
+                    errorflag = TRUE;
+                }
+                REAL_REF diff = infnorm(x_ref, x, veclen(n, incx), 1);
+                if (diff > EPSILON10) {
 #if defined VERBOSE_TEST
-		    printf("error: "); printnum(diff); printf("\n");
+                    printf("error: ");
+                    printnum(diff);
+                    printf("\n");
 #endif
-		    errorflag = TRUE;
-		}
-		if (maxdiff < diff)
-		    maxdiff = diff;
-	    }
-	    delete[]AP_ref;
-	    delete[]AP;
-	    delete[]x_ref;
-	    delete[]x;
-	}
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
+            }
+            delete[] AP_ref;
+            delete[] AP;
+            delete[] x_ref;
+            delete[] x;
+        }
     }
     if (errorflag == TRUE) {
-	printf("error: "); printnum(maxdiff); printf("\n");
+        printf("error: ");
+        printnum(maxdiff);
+        printf("\n");
         printf("*** Testing Ctpsv failed ***\n");
-	exit(1);
+        exit(1);
     } else {
-        printf("maxerror: "); printnum(maxdiff); printf("\n");
+        printf("maxerror: ");
+        printnum(maxdiff);
+        printf("\n");
     }
 }
 
-void Ctpsv_test()
-{
+void Ctpsv_test() {
     Ctpsv_test2("U", "N", "U");
     Ctpsv_test2("U", "N", "N");
     Ctpsv_test2("U", "T", "U");
@@ -122,8 +127,7 @@ void Ctpsv_test()
     Ctpsv_test2("L", "C", "N");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Ctpsv start ***\n");
     Ctpsv_test();
     printf("*** Testing Ctpsv successful ***\n");

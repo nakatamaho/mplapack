@@ -45,155 +45,166 @@
 
 REAL_REF maxdiff = 0.0;
 
-void Rsyrk_test3(const char *uplo, const char *trans, REAL_REF alpha_ref, REAL_REF beta_ref, REAL alpha, REAL beta)
-{
+void Rsyrk_test3(const char *uplo, const char *trans, REAL_REF alpha_ref, REAL_REF beta_ref, REAL alpha, REAL beta) {
     int errorflag = FALSE;
     int mplapack_errno1, mplapack_errno2;
     for (int n = MIN_N; n < MAX_N; n++) {
-	for (int k = MIN_K; k < MAX_K; k++) {
-	    int minlda;
-	    if (Mlsame(trans, "N"))
-		minlda = max(1, n);
-	    else
-		minlda = max(1, k);
-	    for (int lda = minlda; lda < MAX_LDA; lda++) {
-		for (int ldc = max(1, n); ldc < MAX_LDC; ldc++) {
+        for (int k = MIN_K; k < MAX_K; k++) {
+            int minlda;
+            if (Mlsame(trans, "N"))
+                minlda = max(1, n);
+            else
+                minlda = max(1, k);
+            for (int lda = minlda; lda < MAX_LDA; lda++) {
+                for (int ldc = max(1, n); ldc < MAX_LDC; ldc++) {
 #if defined VERBOSE_TEST
-		    printf("#n is %d, k is %d, lda is %d, ldc is %d ", n, k, lda, ldc);
-		    printf("uplo is %s, trans is %s \n", uplo, trans);
+                    printf("#n is %d, k is %d, lda is %d, ldc is %d ", n, k, lda, ldc);
+                    printf("uplo is %s, trans is %s \n", uplo, trans);
 #endif
-		    REAL_REF *A_ref;
-		    REAL_REF *C_ref;
-		    REAL *A;
-		    REAL *C;
+                    REAL_REF *A_ref;
+                    REAL_REF *C_ref;
+                    REAL *A;
+                    REAL *C;
 
-		    int ka;
-		    if (Mlsame(trans, "N"))
-			ka = k;
-		    else
-			ka = n;
+                    int ka;
+                    if (Mlsame(trans, "N"))
+                        ka = k;
+                    else
+                        ka = n;
 
-		    A_ref = new REAL_REF[matlen(lda, ka)];
-		    C_ref = new REAL_REF[matlen(ldc, n)];
-		    A = new REAL[matlen(lda, ka)];
-		    C = new REAL[matlen(ldc, n)];
+                    A_ref = new REAL_REF[matlen(lda, ka)];
+                    C_ref = new REAL_REF[matlen(ldc, n)];
+                    A = new REAL[matlen(lda, ka)];
+                    C = new REAL[matlen(ldc, n)];
 
-		    for (int iter = 0; iter < MAX_ITER; iter++) {
-			set_random_vector(A_ref, A, matlen(lda, ka));
-			set_random_vector(C_ref, C, matlen(ldc, n));
+                    for (int iter = 0; iter < MAX_ITER; iter++) {
+                        set_random_vector(A_ref, A, matlen(lda, ka));
+                        set_random_vector(C_ref, C, matlen(ldc, n));
 
-			mplapack_errno = 0; blas_errno = 0;
+                        mplapack_errno = 0;
+                        blas_errno = 0;
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-			dsyrk_f77(uplo, trans, &n, &k, &alpha_ref, A_ref, &lda, &beta_ref, C_ref, &ldc);
-			mplapack_errno1 = blas_errno;
+                        dsyrk_f77(uplo, trans, &n, &k, &alpha_ref, A_ref, &lda, &beta_ref, C_ref, &ldc);
+                        mplapack_errno1 = blas_errno;
 #else
-			Rsyrk(uplo, trans, n, k, alpha_ref, A_ref, lda, beta_ref, C_ref, ldc);
-			mplapack_errno1 = mplapack_errno;
+                        Rsyrk(uplo, trans, n, k, alpha_ref, A_ref, lda, beta_ref, C_ref, ldc);
+                        mplapack_errno1 = mplapack_errno;
 #endif
-			Rsyrk(uplo, trans, n, k, alpha, A, lda, beta, C, ldc);
-			mplapack_errno2 = mplapack_errno;
+                        Rsyrk(uplo, trans, n, k, alpha, A, lda, beta, C, ldc);
+                        mplapack_errno2 = mplapack_errno;
 #if defined VERBOSE_TEST
-			printf("errno: mplapack %d, ref %d\n", mplapack_errno1, mplapack_errno2);
+                        printf("errno: mplapack %d, ref %d\n", mplapack_errno1, mplapack_errno2);
 #endif
-			if (mplapack_errno1 != mplapack_errno2) {
+                        if (mplapack_errno1 != mplapack_errno2) {
 #if defined VERBOSE_TEST
-			    printf("error in Mxerbla!!\n");
+                            printf("error in Mxerbla!!\n");
 #endif
-			    errorflag = TRUE;
-			}
+                            errorflag = TRUE;
+                        }
 
-			REAL_REF diff = infnorm(C_ref, C, matlen(ldc, n), 1);
-			if (diff > EPSILON) {
+                        REAL_REF diff = infnorm(C_ref, C, matlen(ldc, n), 1);
+                        if (diff > EPSILON) {
 #if defined VERBOSE_TEST
-			    printf("error: "); printnum(diff);  printf("\n");
+                            printf("error: ");
+                            printnum(diff);
+                            printf("\n");
 #endif
-			    errorflag = TRUE;
-			}
-			if (maxdiff < diff)
-			    maxdiff = diff;
-		    }
-		    delete[]C_ref;
-		    delete[]A_ref;
-		    delete[]C;
-		    delete[]A;
-		}
-	    }
-	}
+                            errorflag = TRUE;
+                        }
+                        if (maxdiff < diff)
+                            maxdiff = diff;
+                    }
+                    delete[] C_ref;
+                    delete[] A_ref;
+                    delete[] C;
+                    delete[] A;
+                }
+            }
+        }
     }
     if (errorflag == TRUE) {
-	printf("error: "); printnum(maxdiff); printf("\n");
+        printf("error: ");
+        printnum(maxdiff);
+        printf("\n");
         printf("*** Testing Rsyrk failed ***\n");
-	exit(1);
+        exit(1);
     } else {
-        printf("maxerror: "); printnum(maxdiff); printf("\n");
+        printf("maxerror: ");
+        printnum(maxdiff);
+        printf("\n");
     }
 }
 
-void Rsyrk_test2(const char *side, const char *uplo)
-{
+void Rsyrk_test2(const char *side, const char *uplo) {
     REAL_REF alpha_ref, beta_ref;
     REAL alpha, beta;
 
-//a=*, b=*;
+    // a=*, b=*;
     set_random_number(alpha_ref, alpha);
     set_random_number(beta_ref, beta);
     Rsyrk_test3(side, uplo, alpha_ref, beta_ref, alpha, beta);
 
-//a=*, b=1;
+    // a=*, b=1;
     set_random_number(alpha_ref, alpha);
     beta_ref = 1.0;
     beta = 1.0;
     Rsyrk_test3(side, uplo, alpha_ref, beta_ref, alpha, beta);
 
-//a=1, b=*;
+    // a=1, b=*;
     alpha_ref = 1.0;
     alpha = 1.0;
     set_random_number(beta_ref, beta);
     Rsyrk_test3(side, uplo, alpha_ref, beta_ref, alpha, beta);
 
-//a=*, b=0;
+    // a=*, b=0;
     set_random_number(alpha_ref, alpha);
     beta_ref = 0.0;
     beta = 0.0;
     Rsyrk_test3(side, uplo, alpha_ref, beta_ref, alpha, beta);
 
-//a=1, b=0;
-    alpha_ref = 1.0; beta_ref = 0.0;
-    alpha = 1.0; beta = 0.0;
+    // a=1, b=0;
+    alpha_ref = 1.0;
+    beta_ref = 0.0;
+    alpha = 1.0;
+    beta = 0.0;
     Rsyrk_test3(side, uplo, alpha_ref, beta_ref, alpha, beta);
 
-//a=1, b=1;
-    alpha_ref = 1.0; beta_ref = 1.0;
-    alpha = 1.0; beta = 1.0;
+    // a=1, b=1;
+    alpha_ref = 1.0;
+    beta_ref = 1.0;
+    alpha = 1.0;
+    beta = 1.0;
     Rsyrk_test3(side, uplo, alpha_ref, beta_ref, alpha, beta);
 
-//a=0, b=*;
+    // a=0, b=*;
     alpha_ref = 0.0;
     alpha = 0.0;
     set_random_number(beta_ref, beta);
     Rsyrk_test3(side, uplo, alpha_ref, beta_ref, alpha, beta);
 
-//a=0, b=0;
-    alpha_ref = 0.0; beta_ref = 0.0;
-    alpha = 0.0; beta = 0.0;
+    // a=0, b=0;
+    alpha_ref = 0.0;
+    beta_ref = 0.0;
+    alpha = 0.0;
+    beta = 0.0;
     Rsyrk_test3(side, uplo, alpha_ref, beta_ref, alpha, beta);
 
-//a=0, b=1;
-    alpha_ref = 0.0; beta_ref = 1.0;
-    alpha = 0.0; beta = 1.0;
+    // a=0, b=1;
+    alpha_ref = 0.0;
+    beta_ref = 1.0;
+    alpha = 0.0;
+    beta = 1.0;
     Rsyrk_test3(side, uplo, alpha_ref, beta_ref, alpha, beta);
 }
 
-void Rsyrk_test()
-{
+void Rsyrk_test() {
     Rsyrk_test2("U", "N");
     Rsyrk_test2("L", "N");
     Rsyrk_test2("U", "C");
     Rsyrk_test2("L", "C");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rsyrk start ***\n");
     Rsyrk_test();
     printf("*** Testing Rsyrk successful ***\n");

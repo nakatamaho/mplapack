@@ -34,63 +34,67 @@
 #endif
 
 #define MIN_INCX -10
-#define MAX_INCX  10
-#define MAX_N     100
-#define MAX_ITER  10
+#define MAX_INCX 10
+#define MAX_N 100
+#define MAX_ITER 10
 
 REAL_REF maxdiff = 0.0;
 
-void RCnrm2_test()
-{
+void RCnrm2_test() {
     int errorflag = FALSE;
     for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
-	for (int n = 0; n < MAX_N; n++) {
+        for (int n = 0; n < MAX_N; n++) {
 #if defined VERBOSE_TEST
-	    printf("# n:%d incx:%d\n", n, incx);
+            printf("# n:%d incx:%d\n", n, incx);
 #endif
-	    COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
-	    COMPLEX *x = new COMPLEX[veclen(n, incx)];
+            COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
+            COMPLEX *x = new COMPLEX[veclen(n, incx)];
 
-	    int j = 0;
-	    while (j < MAX_ITER) {
-		REAL_REF dtmp;
-		REAL Rtmp;
+            int j = 0;
+            while (j < MAX_ITER) {
+                REAL_REF dtmp;
+                REAL Rtmp;
 
-		set_random_vector(x_ref, x, veclen(n, incx));
+                set_random_vector(x_ref, x, veclen(n, incx));
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		dtmp = dznrm2_f77(&n, x_ref, &incx);
+                dtmp = dznrm2_f77(&n, x_ref, &incx);
 #else
-		dtmp = RCnrm2(n, x_ref, incx);
+                dtmp = RCnrm2(n, x_ref, incx);
 #endif
-		Rtmp = RCnrm2(n, x, incx);
+                Rtmp = RCnrm2(n, x, incx);
 
-		REAL_REF diff = Rtmp - dtmp;
-		if (diff > EPSILON) {
+                REAL_REF diff = Rtmp - dtmp;
+                if (diff > EPSILON) {
 #if defined VERBOSE_TEST
-		    printf("error: "); printnum(diff); printf("\n");
+                    printf("error: ");
+                    printnum(diff);
+                    printf("\n");
 #endif
-		    errorflag = TRUE;
-		}
-		if (maxdiff < diff)
-		    maxdiff = diff;
-		j++;
-	    }
-	    delete[]x_ref;
-	    delete[]x;
-	}
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
+                j++;
+            }
+            delete[] x_ref;
+            delete[] x;
+        }
     }
     if (errorflag == TRUE) {
-	printf("error: "); printnum(maxdiff); printf("\n");
-	printf("*** Testing RCnrm2 failed ***\n");
-	exit(1);
+        printf("error: ");
+        printnum(maxdiff);
+        printf("\n");
+        printf("*** Testing RCnrm2 failed ***\n");
+        exit(1);
     } else {
-        printf("maxerror: "); printnum(maxdiff); printf("\n");
+        printf("maxerror: ");
+        printnum(maxdiff);
+        printf("\n");
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing RCnrm2 start ***\n");
     RCnrm2_test();
     printf("*** Testing RCnrm2 successful ***\n");

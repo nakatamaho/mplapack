@@ -34,62 +34,66 @@
 #endif
 
 #define MIN_INCX -10
-#define MAX_INCX  10
-#define MAX_N     100
-#define MAX_ITER  3
+#define MAX_INCX 10
+#define MAX_N 100
+#define MAX_ITER 3
 
 REAL_REF maxdiff = 0.0;
 
-void Cscal_test()
-{
+void Cscal_test() {
     int errorflag = FALSE;
     for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
-	for (int n = 0; n < MAX_N; n++) {
+        for (int n = 0; n < MAX_N; n++) {
 #if defined VERBOSE_TEST
-	    printf("# n:%d incx:%d\n", n, incx);
+            printf("# n:%d incx:%d\n", n, incx);
 #endif
-	    COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
-	    COMPLEX *x = new COMPLEX[veclen(n, incx)];
-	    int j = 0;
-	    while (j < MAX_ITER) {
-		COMPLEX_REF alpha_ref;
-		COMPLEX alpha;
+            COMPLEX_REF *x_ref = new COMPLEX_REF[veclen(n, incx)];
+            COMPLEX *x = new COMPLEX[veclen(n, incx)];
+            int j = 0;
+            while (j < MAX_ITER) {
+                COMPLEX_REF alpha_ref;
+                COMPLEX alpha;
 
-		set_random_number(alpha_ref, alpha);
-		set_random_vector(x_ref, x, veclen(n, incx));
+                set_random_number(alpha_ref, alpha);
+                set_random_vector(x_ref, x, veclen(n, incx));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		zscal_f77(&n, &alpha_ref, x_ref, &incx);
+                zscal_f77(&n, &alpha_ref, x_ref, &incx);
 #else
-		Cscal(n, alpha_ref, x_ref, incx);
+                Cscal(n, alpha_ref, x_ref, incx);
 #endif
-		Cscal(n, alpha, x, incx);
+                Cscal(n, alpha, x, incx);
 
-		REAL_REF diff = infnorm(x_ref, x, veclen(n, incx), 1);
-		if (diff > EPSILON) {
+                REAL_REF diff = infnorm(x_ref, x, veclen(n, incx), 1);
+                if (diff > EPSILON) {
 #if defined VERBOSE_TEST
-		    printf("error: "); printnum(diff); printf("\n");
+                    printf("error: ");
+                    printnum(diff);
+                    printf("\n");
 #endif
-		    errorflag = TRUE;
-		}
-		if (maxdiff < diff)
-		    maxdiff = diff;
-		j++;
-	    }
-	    delete[]x_ref;
-	    delete[]x;
-	}
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
+                j++;
+            }
+            delete[] x_ref;
+            delete[] x;
+        }
     }
     if (errorflag == TRUE) {
-	printf("error: "); printnum(maxdiff); printf("\n");
-	printf("*** Testing Cscal failed ***\n");
-	exit(1);
+        printf("error: ");
+        printnum(maxdiff);
+        printf("\n");
+        printf("*** Testing Cscal failed ***\n");
+        exit(1);
     } else {
-        printf("maxerror: "); printnum(maxdiff); printf("\n");
+        printf("maxerror: ");
+        printnum(maxdiff);
+        printf("\n");
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Cscal start ***\n");
     Cscal_test();
     printf("*** Testing Cscal successful ***\n");

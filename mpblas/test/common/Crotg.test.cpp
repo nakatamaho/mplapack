@@ -37,8 +37,7 @@
 
 REAL_REF maxdiff = 0.0;
 
-void Crotg_test()
-{
+void Crotg_test() {
     int errorflag = FALSE;
 
     COMPLEX_REF ca_ref;
@@ -57,74 +56,103 @@ void Crotg_test()
 
     int j = 0;
     while (j < MAX_ITER) {
-	set_random_number(ca_ref, ca);
-	set_random_number(cb_ref, cb);
-	set_random_number(cc_ref, cc);
+        set_random_number(ca_ref, ca);
+        set_random_number(cb_ref, cb);
+        set_random_number(cc_ref, cc);
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-	zrotg_f77(&ca_ref, &cb_ref, &cc_ref, &cs_ref);
+        zrotg_f77(&ca_ref, &cb_ref, &cc_ref, &cs_ref);
 #else
-	Crotg(ca_ref, cb_ref, cc_ref, cs_ref);
+        Crotg(ca_ref, cb_ref, cc_ref, cs_ref);
 #endif
-	Crotg(ca, cb, cc, cs);
+        Crotg(ca, cb, cc, cs);
 
-	diff1 = abs(ca_ref - ca);
-	diff2 = abs(cb_ref - cb);
-	diff3 = abs(cc_ref - cc);
-	diff4 = abs(cs_ref - cs);
+        diff1 = abs(ca_ref - ca);
+        diff2 = abs(cb_ref - cb);
+        diff3 = abs(cc_ref - cc);
+        diff4 = abs(cs_ref - cs);
 
 #if defined VERBOSE_TEST
-	printf("diff1="); printnum(diff1); printf("\n");
-	printf("diff2="); printnum(diff2); printf("\n");
-	printf("diff3="); printnum(diff3); printf("\n");
-	printf("diff4="); printnum(diff4);printf("\n");
+        printf("diff1=");
+        printnum(diff1);
+        printf("\n");
+        printf("diff2=");
+        printnum(diff2);
+        printf("\n");
+        printf("diff3=");
+        printnum(diff3);
+        printf("\n");
+        printf("diff4=");
+        printnum(diff4);
+        printf("\n");
 #endif
-	if (maxdiff < diff1) maxdiff = diff1;
-	if (maxdiff < diff2) maxdiff = diff2;
-	if (maxdiff < diff3) maxdiff = diff3;
-	if (maxdiff < diff4) maxdiff = diff4;
+        if (maxdiff < diff1)
+            maxdiff = diff1;
+        if (maxdiff < diff2)
+            maxdiff = diff2;
+        if (maxdiff < diff3)
+            maxdiff = diff3;
+        if (maxdiff < diff4)
+            maxdiff = diff4;
 
-	if (diff1 > EPSILON) {
+        if (diff1 > EPSILON) {
 #if defined VERBOSE_TEST
-	    printf("error: "); printnum(diff1); printf("\n");
+            printf("error: ");
+            printnum(diff1);
+            printf("\n");
 #endif
-	    errorflag = TRUE;
-	}
-	if (diff2 > EPSILON) {
+            errorflag = TRUE;
+        }
+        if (diff2 > EPSILON) {
 #if defined VERBOSE_TEST
-	    printf("error: "); printnum(diff2); printf("\n");
+            printf("error: ");
+            printnum(diff2);
+            printf("\n");
 #endif
-	    errorflag = TRUE;
-	}
-	if (diff3 > EPSILON) {
+            errorflag = TRUE;
+        }
+        if (diff3 > EPSILON) {
 #if defined VERBOSE_TEST
-	    printf("error: "); printnum(diff3); printf("\n");
+            printf("error: ");
+            printnum(diff3);
+            printf("\n");
 #endif
-	    errorflag = TRUE;
-	}
-	if (diff4 > EPSILON) {
+            errorflag = TRUE;
+        }
+        if (diff4 > EPSILON) {
 #if defined VERBOSE_TEST
-	    printf("error: "); printnum(diff4); printf("\n");
+            printf("error: ");
+            printnum(diff4);
+            printf("\n");
 #endif
-	    errorflag = TRUE;
-	}
-	j++;
+            errorflag = TRUE;
+        }
+        j++;
     }
 
     if (errorflag == TRUE) {
-	printf("error: "); printnum(diff1); printf("\n");
-	printf("error: "); printnum(diff2); printf("\n");
-	printf("error: "); printnum(diff3); printf("\n");
-	printf("error: "); printnum(diff4); printf("\n");
-	printf("*** Testing Crotg failed ***\n");
-	exit(1);
+        printf("error: ");
+        printnum(diff1);
+        printf("\n");
+        printf("error: ");
+        printnum(diff2);
+        printf("\n");
+        printf("error: ");
+        printnum(diff3);
+        printf("\n");
+        printf("error: ");
+        printnum(diff4);
+        printf("\n");
+        printf("*** Testing Crotg failed ***\n");
+        exit(1);
     } else {
-        printf("maxerror: "); printnum(maxdiff); printf("\n");
+        printf("maxerror: ");
+        printnum(maxdiff);
+        printf("\n");
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Crotg start ***\n");
     Crotg_test();
     printf("*** Testing Crotg successful ***\n");

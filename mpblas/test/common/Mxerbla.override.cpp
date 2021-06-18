@@ -32,7 +32,7 @@ Based on http://www.netlib.org/blas/xerbla.f
 Mxerbla is an error handler for the Mplapack routines.
 */
 
-#if !defined  __MPLAPACK_ERRNO__
+#if !defined __MPLAPACK_ERRNO__
 #define __MPLAPACK_ERRNO__
 #endif
 
@@ -40,44 +40,37 @@ Mxerbla is an error handler for the Mplapack routines.
 
 int mplapack_errno;
 
-void Mxerbla__Float128(const char *srname, int info)
-{
+void Mxerbla__Float128(const char *srname, int info) {
     mplapack_errno = info;
     return;
 }
 
-void Mxerbla__Float64x(const char *srname, int info)
-{
+void Mxerbla__Float64x(const char *srname, int info) {
     mplapack_errno = info;
     return;
 }
 
-void Mxerbla_mpfr(const char *srname, int info)
-{
+void Mxerbla_mpfr(const char *srname, int info) {
     mplapack_errno = info;
     return;
 }
 
-void Mxerbla_double(const char *srname, int info)
-{
+void Mxerbla_double(const char *srname, int info) {
     mplapack_errno = info;
     return;
 }
 
-void Mxerbla_dd(const char *srname, int info)
-{
+void Mxerbla_dd(const char *srname, int info) {
     mplapack_errno = info;
     return;
 }
 
-void Mxerbla_qd(const char *srname, int info)
-{
+void Mxerbla_qd(const char *srname, int info) {
     mplapack_errno = info;
     return;
 }
 
-void Mxerbla_gmp(const char *srname, int info)
-{
+void Mxerbla_gmp(const char *srname, int info) {
     mplapack_errno = info;
     return;
 }

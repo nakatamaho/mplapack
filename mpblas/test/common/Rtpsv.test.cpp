@@ -41,72 +41,77 @@
 
 REAL_REF maxdiff = 0.0;
 
-void Rtpsv_test2(const char *uplo, const char *trans, const char *diag)
-{
+void Rtpsv_test2(const char *uplo, const char *trans, const char *diag) {
     int errorflag = FALSE;
     int mplapack_errno1, mplapack_errno2;
     for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
-	for (int n = MIN_N; n < MAX_N; n++) {
+        for (int n = MIN_N; n < MAX_N; n++) {
 #if defined VERBOSE_TEST
-	    printf("#n is %d, incx is %d ", n, incx);
-	    printf("uplo is %s trans is %s, diag is %s \n", uplo, trans, diag);
+            printf("#n is %d, incx is %d ", n, incx);
+            printf("uplo is %s trans is %s, diag is %s \n", uplo, trans, diag);
 #endif
-	    REAL_REF *AP_ref = new REAL_REF[vecplen(n)];
-	    REAL_REF *x_ref = new REAL_REF[veclen(n, incx)];
-	    REAL *AP = new REAL[vecplen(n)];
-	    REAL *x = new REAL[veclen(n, incx)];
+            REAL_REF *AP_ref = new REAL_REF[vecplen(n)];
+            REAL_REF *x_ref = new REAL_REF[veclen(n, incx)];
+            REAL *AP = new REAL[vecplen(n)];
+            REAL *x = new REAL[veclen(n, incx)];
 
-	    for (int iter = 0; iter < MAX_ITER; iter++) {
-		set_random_vector(AP_ref, AP, vecplen(n));
-		set_random_vector(x_ref, x, veclen(n, incx));
+            for (int iter = 0; iter < MAX_ITER; iter++) {
+                set_random_vector(AP_ref, AP, vecplen(n));
+                set_random_vector(x_ref, x, veclen(n, incx));
 
-		mplapack_errno = 0; blas_errno = 0;
+                mplapack_errno = 0;
+                blas_errno = 0;
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-		dtpsv_f77(uplo, trans, diag, &n, AP_ref, x_ref, &incx);
-		mplapack_errno1 = blas_errno;
+                dtpsv_f77(uplo, trans, diag, &n, AP_ref, x_ref, &incx);
+                mplapack_errno1 = blas_errno;
 #else
-		Rtpsv(uplo, trans, diag, n, AP_ref, x_ref, incx);
-		mplapack_errno1 = mplapack_errno;
+                Rtpsv(uplo, trans, diag, n, AP_ref, x_ref, incx);
+                mplapack_errno1 = mplapack_errno;
 #endif
-		Rtpsv(uplo, trans, diag, n, AP, x, incx);
-		mplapack_errno2 = mplapack_errno;
+                Rtpsv(uplo, trans, diag, n, AP, x, incx);
+                mplapack_errno2 = mplapack_errno;
 
 #if defined VERBOSE_TEST
-		printf("errno: mplapack %d, ref %d\n", mplapack_errno1, mplapack_errno2);
+                printf("errno: mplapack %d, ref %d\n", mplapack_errno1, mplapack_errno2);
 #endif
-		if (mplapack_errno1 != mplapack_errno2) {
+                if (mplapack_errno1 != mplapack_errno2) {
 #if defined VERBOSE_TEST
-		    printf("error in Mxerbla!!\n");
+                    printf("error in Mxerbla!!\n");
 #endif
-		    errorflag = TRUE;
-		}
-		REAL_REF diff = infnorm(x_ref, x, veclen(n, incx), 1);
-		if (diff > EPSILON12) {
+                    errorflag = TRUE;
+                }
+                REAL_REF diff = infnorm(x_ref, x, veclen(n, incx), 1);
+                if (diff > EPSILON12) {
 #if defined VERBOSE_TEST
-		    printf("error: "); printnum(diff); printf("\n");
+                    printf("error: ");
+                    printnum(diff);
+                    printf("\n");
 #endif
-		    errorflag = TRUE;
-		}
-		if (maxdiff < diff)
-		    maxdiff = diff;
-	    }
-	    delete[]AP_ref;
-	    delete[]AP;
-	    delete[]x_ref;
-	    delete[]x;
-	}
+                    errorflag = TRUE;
+                }
+                if (maxdiff < diff)
+                    maxdiff = diff;
+            }
+            delete[] AP_ref;
+            delete[] AP;
+            delete[] x_ref;
+            delete[] x;
+        }
     }
     if (errorflag == TRUE) {
-	printf("error: "); printnum(maxdiff); printf("\n");
+        printf("error: ");
+        printnum(maxdiff);
+        printf("\n");
         printf("*** Testing Rtpsv failed ***\n");
-	exit(1);
+        exit(1);
     } else {
-        printf("maxerror: "); printnum(maxdiff); printf("\n");
+        printf("maxerror: ");
+        printnum(maxdiff);
+        printf("\n");
     }
 }
 
-void Rtpsv_test()
-{
+void Rtpsv_test() {
     Rtpsv_test2("U", "N", "U");
     Rtpsv_test2("U", "N", "N");
     Rtpsv_test2("U", "T", "U");
@@ -122,11 +127,9 @@ void Rtpsv_test()
     Rtpsv_test2("L", "C", "N");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     printf("*** Testing Rtpsv start ***\n");
     Rtpsv_test();
     printf("*** Testing Rtpsv successful ***\n");
     return (0);
 }
-
