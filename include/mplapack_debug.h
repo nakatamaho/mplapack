@@ -136,7 +136,7 @@ using namespace mpfr;
 //#define MPFR_P_FORMAT "%+36.32Re"
 #define GMP_P_FORMAT "%+68.64Fe"
 #define MPFR_P_FORMAT "%+68.64Re"
-#define MPFR_SHORT_FORMAT "%+16.7Re"
+#define MPFR_SHORT_FORMAT "%+21.16Re"
 // double
 //#define GMP_P_FORMAT  "%+21.16Fe"
 //#define MPFR_P_FORMAT "%+21.16Re"
@@ -248,6 +248,15 @@ void printnum(complex<double> ctmp);
 void printnum(long double rtmp);
 void printnum(complex<long double> ctmp);
 void printnum(__complex__ double ctmp);
+
+void printnum_short(mpreal rtmp);
+void printnum_short(mpcomplex ctmp);
+void printnum_short(double rtmp);
+void printnum_short(complex<double> ctmp);
+void printnum_short(long double rtmp);
+void printnum_short(complex<long double> ctmp);
+void printnum_short(__complex__ double ctmp);
+
 void sprintnum(char *buf, mpreal rtmp);
 void sprintnum_short(char *buf, mpreal rtmp);
 void sprintnum(char *buf, mpcomplex rtmp);
@@ -369,7 +378,7 @@ template <class X> void printmat(int N, int M, X *A, int LDA) {
         printf("[ ");
         for (int j = 0; j < M; j++) {
             tmp = A[i + j * LDA];
-            printnum(tmp);
+            printnum_short(tmp);
             if (j < M - 1)
                 printf(", ");
         }
@@ -386,7 +395,7 @@ template <class X> void printvec(X *A, int len) {
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = A[i];
-        printnum(tmp);
+        printnum_short(tmp);
         if (i < len - 1)
             printf(", ");
     }
@@ -407,6 +416,10 @@ template <class X_REF, class X> void set_random_psdmat(X_REF *p_ref, X *p, int l
     X *tmpmat = new X[matlen(ldp, n)];
     X mtmp;
 
+    for (int i = 0; i < matlen(ldp, n); i++) {
+         tmpmat_ref[i] = 0.0;
+	 tmpmat[i] = 0.0;
+    }
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < n; i++) {
             set_random_number1to2(tmpmat_ref[i + j * ldp], tmpmat[i + j * ldp]);
@@ -435,10 +448,9 @@ template <class X_REF, class X> void set_random_symmmat_cond(X_REF *p_ref, X *p,
     mpreal *tmpmat3_mpreal = new mpreal[matlen(ldp, n)];
     mpreal rtmp;
 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            tmpmat1_mpreal[i + j * ldp] = 0.0;
-        }
+    for (int i = 0; i < matlen(ldp, n); i++) {
+        p[i] = 0.0;
+        p_ref[i] = 0.0;
     }
     for (int i = 0; i < n; i++) {
         rtmp = mpreal(cond) * mpreal(2.0 * (i + 1) - n) / mpreal(2.0 * n);
