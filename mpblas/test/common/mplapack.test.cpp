@@ -855,12 +855,27 @@ void printnum(complex<double> ctmp) {
     return;
 }
 
+void printnum_short(complex<double> ctmp) {
+    printf(P_FORMAT P_FORMAT "i", ctmp.real(), ctmp.imag());
+    return;
+}
+
 void printnum(__complex__ double ctmp) {
     printf(P_FORMAT P_FORMAT "i", __real__ ctmp, __imag__ ctmp);
     return;
 }
 
+void printnum_short(__complex__ double ctmp) {
+    printf(P_FORMAT P_FORMAT "i", __real__ ctmp, __imag__ ctmp);
+    return;
+}
+
 void printnum(double rtmp) {
+    printf(P_FORMAT, rtmp);
+    return;
+}
+
+void printnum_short(double rtmp) {
     printf(P_FORMAT, rtmp);
     return;
 }
