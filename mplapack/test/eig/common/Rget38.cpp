@@ -141,8 +141,6 @@ void Rget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     val[3 - 1] = sqrt(sqrt(bignum));
 //
     string str;
-    char line[1024];
-    stringstream ss;
     istringstream iss;
 //
 //     Read input data until N=0.  Assume input eigenvalues are sorted
@@ -151,8 +149,10 @@ void Rget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
 //
 statement_10:
     getline(cin, str);
-    ss >> n;
-    ss >> ndim;
+    iss.clear();
+    iss.str(str);
+    iss >> n;
+    iss >> ndim;    
     if (n == 0) {
         return;
     }

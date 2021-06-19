@@ -133,7 +133,6 @@ void Rget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     val[3 - 1] = sqrt(bignum);
     //
     string str;
-    char line[1024];
     //     Read input data until N=0.  Assume input eigenvalues are sorted
     //     lexicographically (increasing by real part, then decreasing by
     //     imaginary part)
