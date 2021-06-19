@@ -108,8 +108,8 @@ void Rget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     INTEGER ifnd = 0;
     INTEGER icmp = 0;
     //
-    //eps = 2.2204460492503131E-016;
-    //smlnum = 2.2250738585072014E-308 / eps;
+    // eps = 2.2204460492503131E-016;
+    // smlnum = 2.2250738585072014E-308 / eps;
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
     bignum = one / smlnum;
@@ -159,10 +159,10 @@ statement_10:
         string _r = regex_replace(str, regex("D\\+"), "e+");
         str = regex_replace(_r, regex("D\\-"), "e-");
         istringstream iss(str);
-        iss >> dtmp;  wrin[i - 1] = dtmp;
-        iss >> dtmp;  wiin[i - 1] = dtmp;
-        iss >> dtmp;  sin[i - 1] = dtmp;
-        iss >> dtmp;  sepin[i - 1] = dtmp;
+        iss >> dtmp;   wrin[i - 1] = dtmp;
+        iss >> dtmp;   wiin[i - 1] = dtmp;
+        iss >> dtmp;   sin[i - 1] = dtmp;
+        iss >> dtmp;   sepin[i - 1] = dtmp;
     }
     tnrm = Rlange("M", n, n, tmp, ldt, work);
     //
