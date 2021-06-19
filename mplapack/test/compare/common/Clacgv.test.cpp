@@ -61,9 +61,6 @@ void Clacgv_test(void) {
 #endif
             while (j < MAX_ITER) {
                 set_random_vector(x_ref, x, veclen(n, incx));
-                printf("x=");
-                printvec(x, veclen(n, incx));
-                printf("\n");
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 int incx_ref = (int)incx;
                 zlacgv_f77(&n, x_ref, &incx_ref);
@@ -71,9 +68,6 @@ void Clacgv_test(void) {
                 Clacgv(n, x_ref, incx);
 #endif
                 Clacgv(n, x, incx);
-                printf("xout=");
-                printvec(x, veclen(n, incx));
-                printf("\n");
                 diff = infnorm(x_ref, x, veclen(n, incx), 1);
                 if (diff > EPSILON) {
                     errorflag = TRUE;
