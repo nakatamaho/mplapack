@@ -115,7 +115,7 @@ statement_10:
     stringstream ss(str);
     ss >> n;
     ss >> ifst;
-    ss >> ilst;    
+    ss >> ilst;
     if (n == 0) {
         return;
     }
