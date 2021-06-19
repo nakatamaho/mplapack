@@ -62,6 +62,10 @@ void Rpotri_test2(const char *uplo) {
 #endif
             j = 0;
             while (j < MAX_ITER) {
+                for (int p = 0; p < matlen(lda, n); p++) {
+                    A[p] = 0.0;
+                    A_ref[p] = 0.0; 
+		}
                 set_random_symmmat_cond(A_ref, A, lda, n, 2);
 //		set_random_psdmat(A_ref, A, lda, n);
 // numerical error measure: first do inversion
