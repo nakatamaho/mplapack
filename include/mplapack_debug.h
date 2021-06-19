@@ -416,10 +416,6 @@ template <class X_REF, class X> void set_random_psdmat(X_REF *p_ref, X *p, int l
     X *tmpmat = new X[matlen(ldp, n)];
     X mtmp;
 
-    for (int i = 0; i < matlen(ldp, n); i++) {
-         tmpmat_ref[i] = 0.0;
-	 tmpmat[i] = 0.0;
-    }
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < n; i++) {
             set_random_number1to2(tmpmat_ref[i + j * ldp], tmpmat[i + j * ldp]);
