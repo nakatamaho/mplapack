@@ -159,10 +159,14 @@ statement_10:
         string _r = regex_replace(str, regex("D\\+"), "e+");
         str = regex_replace(_r, regex("D\\-"), "e-");
         istringstream iss(str);
-        iss >> dtmp;   wrin[i - 1] = dtmp;
-        iss >> dtmp;   wiin[i - 1] = dtmp;
-        iss >> dtmp;   sin[i - 1] = dtmp;
-        iss >> dtmp;   sepin[i - 1] = dtmp;
+        iss >> dtmp;
+        wrin[i - 1] = dtmp;
+        iss >> dtmp;
+        wiin[i - 1] = dtmp;
+        iss >> dtmp;
+        sin[i - 1] = dtmp;
+        iss >> dtmp;
+        sepin[i - 1] = dtmp;
     }
     tnrm = Rlange("M", n, n, tmp, ldt, work);
     //

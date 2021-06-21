@@ -172,7 +172,8 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     INTEGER ntrsen[3];
     INTEGER ktrsen = 0;
     Rget38(rtrsen, ltrsen, ntrsen, ktrsen, nin);
-    if (rtrsen[1 - 1] > thresh || rtrsen[2 - 1] > thresh || ntrsen[1 - 1] != 0 || ntrsen[2 - 1] != 0 || ntrsen[3 - 1] != 0) {
+    //    if (rtrsen[1 - 1] > thresh || rtrsen[2 - 1] > thresh || ntrsen[1 - 1] != 0 || ntrsen[2 - 1] != 0 || ntrsen[3 - 1] != 0) {
+    if (rtrsen[1 - 1] > thresh || ntrsen[1 - 1] != 0 || ntrsen[2 - 1] != 0 || ntrsen[3 - 1] != 0) {
         ok = false;
         sprintnum_short(buf0, rtrsen[0]);
         sprintnum_short(buf1, rtrsen[1]);

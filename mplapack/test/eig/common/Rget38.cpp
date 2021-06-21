@@ -139,7 +139,7 @@ void Rget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     val[1 - 1] = sqrt(smlnum);
     val[2 - 1] = one;
     val[3 - 1] = sqrt(sqrt(bignum));
-//
+    //
     string str;
     istringstream iss;
 //
@@ -152,7 +152,7 @@ statement_10:
     iss.clear();
     iss.str(str);
     iss >> n;
-    iss >> ndim;    
+    iss >> ndim;
     if (n == 0) {
         return;
     }
@@ -162,8 +162,8 @@ statement_10:
     iss.clear();
     iss.str(str);
     for (i = 1; i <= ndim; i = i + 1) {
-      iss >> itmp;
-      iselec[i - 1] = itmp;
+        iss >> itmp;
+        iselec[i - 1] = itmp;
     }
     for (i = 1; i <= n; i = i + 1) {
         getline(cin, str);
@@ -181,8 +181,10 @@ statement_10:
     str = regex_replace(_r, regex("D\\-"), "e-");
     iss.clear();
     iss.str(str);
-    iss >> dtmp;  dtmp = sin;
-    iss >> dtmp;  dtmp = sepin;
+    iss >> dtmp;
+    dtmp = sin;
+    iss >> dtmp;
+    dtmp = sepin;
     //
     tnrm = Rlange("M", n, n, tmp, ldt, work);
     for (iscl = 1; iscl <= 3; iscl = iscl + 1) {
@@ -214,7 +216,7 @@ statement_10:
         Rlacpy("L", n, n, t, ldt, q, ldt);
         Rorghr(n, 1, n, q, ldt, &work[1 - 1], &work[(n + 1) - 1], lwork - n, info);
         //
-        //        Compute Schur form
+        //        Compute eigenvalues and the Schur form T
         //
         Rhseqr("S", "V", n, 1, n, t, ldt, wr, wi, q, ldt, work, lwork, info);
         if (info != 0) {
