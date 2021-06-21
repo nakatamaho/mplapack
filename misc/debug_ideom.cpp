@@ -1,4 +1,87 @@
-	{
+        {
+	  double *t_d = new double[ldt * n];
+	  double *work_d = new double[max((INTEGER)1, lwork)];
+	  double scale_d;
+          double dtmp;
+	  int ierr_d;
+	  for (int pp=0; pp < ldt * n; pp++) t_d[pp] = t[pp];
+	  for (int pp=0; pp < max(1,lwork); pp++) work_d[pp] = work[pp];
+	  printf("# n1 %d n2 %d \n", (int)n1, (int)n2);
+	  printf("a_d ="); printmat(n1, n1, t_d, ldt); printf("\n");
+	  printf("b_d ="); printmat(n2, n2, &t_d[((n1 + 1) - 1) + ((n1 + 1) - 1) * ldt], ldt); printf("\n");
+	  printf("c_d ="); printmat(n1, n2, work_d, n1); printf("\n");	  	  
+          LAPACKE_dtrsyl(LAPACK_COL_MAJOR, 'N', 'N', -1, (int)n1, (int)n2, t_d, (int)ldt, &t_d[((n1 + 1) - 1) + ((n1 + 1) - 1) * ldt], (int)ldt, work_d, (int)n1, &scale_d);
+	  printf("scale_d = "); printnum(scale_d);printf("\n");
+	  printf("x_d ="); printmat(n1, n2, work_d, n1); printf("\n");
+	  delete []t_d;
+	  delete []work_d;
+	}
+        printf("a ="); printmat(n1, n1, t, ldt); printf("\n");
+        printf("b ="); printmat(n2, n2, &t[((n1 + 1) - 1) + ((n1 + 1) - 1) * ldt], ldt); printf("\n");
+        printf("c ="); printmat(n1, n2, work, n1); printf("\n");
+	Rtrsyl("N", "N", -1, n1, n2, t, ldt, &t[((n1 + 1) - 1) + ((n1 + 1) - 1) * ldt], ldt, work, n1, scale, ierr);
+        printf("scale = "); printnum_short(scale);printf("\n");	  
+        printf("x ="); printmat(n1, n2, work, n1);printf("\n");
+
+        {   
+	  printf("dtrsen start\n");
+	  double *t_d = new double[ldt * ldt];
+	  double *q_d = new double[ldt * ldq];
+	  double *wi_d = new double[n];
+	  double *wr_d = new double[n];
+	  double s_d;
+	  double sep_d;
+	  int select_d[ldt];
+	  int m_d;
+	  for (int pp = 1; pp <= n; pp++) {
+	    for (int qq = 1; qq <= n; qq++) {
+	      t_d[(pp - 1) + (qq - 1) * ldt] = t[(pp - 1) + (qq - 1) * ldt];
+	      q_d[(pp - 1) + (qq - 1) * ldq] = q[(pp - 1) + (qq - 1) * ldq];
+	    }
+	  }
+	  for (int pp = 1; pp <= n; pp++) {
+	    select_d[pp-1]=select[pp-1];
+	  }
+	  LAPACKE_dtrsen(LAPACK_COL_MAJOR, 'B', 'V', select_d, (int)n, t_d, (int)ldt, q_d, (int)ldt, wr_d, wi_d, &m_d, &s_d, &sep_d);
+	  printf("#n %d s_d, sep_d = ", count); printnum_short (s_d); printf(" "); printnum_short(sep_d); printf("\n");
+	  for (int i = 1; i <= n; i = i + 1) {
+            printf("dtrsen: wr_d, wi_d %d = ", (int)i);
+            printnum(wr_d[i - 1]); printf(" "); printnum(wi_d[i - 1]);
+            printf("\n");
+	  }
+	  delete []t_d; 
+	  delete []q_d;
+	  delete []wi_d;
+	  delete []wr_d;
+	  printf("dtrsen end\n");
+	}	
+
+        {
+            double *t_d = new double[n * n];
+            double *q_d = new double[n * n];
+            double *wi_d = new double[n];
+            double *wr_d = new double[n];
+            for (int pp = 1; pp <= n; pp++) {
+                for (int qq = 1; qq <= n; qq++) {
+                    t_d[(pp - 1) + (qq - 1) * ldt] = t[(pp - 1) + (qq - 1) * ldt];
+                    q_d[(pp - 1) + (qq - 1) * ldq] = q[(pp - 1) + (qq - 1) * ldq];
+                }
+            }
+	    //            printf("tshur_d=");    printmat(n, n, t, ldt);     printf("\n");
+            LAPACKE_dhseqr(LAPACK_COL_MAJOR, 'S', 'V', (int)n, 1, (int)n, t_d, (int)ldt, wr_d, wi_d, q_d, (int)ldq);
+            for (int i = 1; i <= n; i = i + 1) {
+                printf("wr_d, wi_d %d = ", (int)i);
+                printnum(wr_d[i - 1]); printf(" "); printnum(wi_d[i - 1]);
+                printf("\n");
+            }
+            delete[] wr_d;
+            delete[] wi_d;
+            delete[] t_d;
+            delete[] q_d;
+        }
+
+
+{
    	    double *t_d = new double [ldt * n];
    	    double *q_d = new double [ldq * n];
 	    double s_d, sep_d;
