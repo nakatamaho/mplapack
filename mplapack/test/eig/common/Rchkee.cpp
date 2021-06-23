@@ -1036,7 +1036,7 @@ void Rchkee(void) {
                 write(nout, "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4,', INMIN=',i4,"
                             "', INWIN =',i4,', INIBL =',i4,', ISHFTS =',i4,', IACC22 =',i4)"),
                     c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], max((INTEGER)11, inmin[i - 1]), inwin[i - 1], inibl[i - 1], ishfts[i - 1], iacc22[i - 1];
-                Rchkhs(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (5 - 1) * lda], nmax, &a[(1 - 1) + (6 - 1) * lda], &a[(1 - 1) + (7 - 1) * lda], &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], &d[(4 - 1) * ldd], &d[(5 - 1) * ldd], &d[(6 - 1) * ldd], &a[(1 - 1) + (8 - 1) * lda], &a[(1 - 1) + (9 - 1) * lda], &a[(1 - 1) + (10 - 1) * lda], &a[(1 - 1) + (11 - 1) * lda], &a[(1 - 1) + (12 - 1) * lda], &d[(7 - 1) * ldd], work, lwork, iwork, logwrk, result, info);
+                Rchkhs(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], nmax, &a[nmax * nmax * 5], &a[nmax * nmax * 6], &d[0], &d[nmax], &d[nmax * 2], &d[nmax * 3], &d[nmax * 4], &d[nmax * 5], &a[nmax * nmax * 7], &a[nmax * nmax * 8], &a[nmax * nmax * 9], &a[nmax * nmax * 10], &a[nmax * nmax * 11], &d[nmax * 6], work, lwork, iwork, logwrk, result, info);
                 if (info != 0) {
                     write(nout, format_9980), "Rchkhs", info;
                 }
