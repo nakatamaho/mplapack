@@ -486,7 +486,7 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 if (result[jr - 1] >= thresh) {
                     //
                     //                 If this is the first test to fail,
-                    //                 prINTEGER a header to the data file.
+                    //                 print a header to the data file.
                     //
                     if (nerrs == 0) {
                         write(nounit, "(/,1x,a3,' -- Complex Generalized Schur from problem ',"

@@ -404,7 +404,7 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                         if (result[j - 1] >= thresh) {
                             //
                             //                       If this is the first test to fail,
-                            //                       prINTEGER a header to the data file.
+                            //                       print a header to the data file.
                             //
                             if (nerrs == 0) {
                                 write(nout, format_9995), "DGX";
@@ -652,7 +652,7 @@ statement_80:
             if (result[j - 1] >= thresh) {
                 //
                 //           If this is the first test to fail,
-                //           prINTEGER a header to the data file.
+                //           print a header to the data file.
                 //
                 if (nerrs == 0) {
                     write(nout, format_9995), "DGX";

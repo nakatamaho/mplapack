@@ -463,7 +463,7 @@ statement_90:
             if (result[j - 1] >= thrsh2) {
                 //
                 //           If this is the first test to fail,
-                //           prINTEGER a header to the data file.
+                //           print a header to the data file.
                 //
                 if (nerrs == 0) {
                     write(nout, format_9997), "DXV";

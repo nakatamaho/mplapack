@@ -897,7 +897,7 @@ statement_10:
         }
     }
     //
-    //     Calculate and prINTEGER the machine dependent constants.
+    //     Calculate and print the machine dependent constants.
     //
     write(nout, star);
     eps = Rlamch("Underflow threshold");
