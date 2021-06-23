@@ -53,6 +53,7 @@ void Rchkee(void) {
     INTEGER need = 14;
     const INTEGER nmax = 132;
     REAL d[nmax * 12];
+    INTEGER ldd = nmax;
     time_t s1;
     bool fatal = false;
     const INTEGER nout = 6;
@@ -112,9 +113,9 @@ void Rchkee(void) {
     bool tstdrv = false;
     INTEGER newsd = 0;
     INTEGER iseed[4];
+    INTEGER ioldsd[4];
     char c3[3];
     INTEGER lenp = 0;
-    INTEGER itmp = 0;
     INTEGER i1 = 0;
     const INTEGER maxt = 30;
     INTEGER ntypes = 0;
@@ -127,6 +128,7 @@ void Rchkee(void) {
     const INTEGER liwork = nmax * (5 * nmax + 20);
     INTEGER iwork[liwork];
     bool logwrk[nmax];
+    INTEGER ldb = nmax;
     REAL result[500];
     INTEGER info = 0;
     INTEGER nrhs = 0;
@@ -145,7 +147,7 @@ void Rchkee(void) {
     INTEGER lapack_vers_patch = 0;
     static const char *format_9973 = "(/,1x,71('-'))";
     static const char *format_9980 = "(' *** Error code from ',a,' = ',i4)";
-    static const char *format_9981 = "(' Relative machine ',a,' is taken to be',d16.6)";
+    static const char *format_9981 = "(' Relative machine ',a,' is taken to be',a)";
     static const char *format_9983 = "(4x,a,10i6,/,10x,10i6)";
     static const char *format_9988 = "(' Invalid input value: ',a,'=',i6,'; must be <=',i6)";
     static const char *format_9989 = "(' Invalid input value: ',a,'=',i6,'; must be >=',i6)";
@@ -156,8 +158,10 @@ void Rchkee(void) {
     //     .. Allocate memory dynamically ..
     //
     REAL *a = new REAL[nmax * nmax * need];
+    INTEGER lda = nmax;
     REAL *b = new REAL[nmax * nmax * 5];
     REAL *c = new REAL[ncmax * ncmax * ncmax * ncmax];
+    INTEGER ldc = ncmax;
     REAL *work = new REAL[lwork];
     //
     for (int ppp = 0; ppp < nmax * nmax * need; ppp++)
@@ -168,10 +172,16 @@ void Rchkee(void) {
         c[ppp] = 0.0;
     for (int ppp = 0; ppp < lwork; ppp++)
         work[ppp] = 0.0;
-    std::string str;
+    //
+    string str;
+    istringstream iss;
+    char line[1024];
+    char buf0[1024];
+    double dtmp;
+    int itmp;
+    //
     s1 = time(NULL);
     fatal = false;
-    char line[1024];
     //
     //     Return to here to read multiple sets of data
     //
@@ -317,7 +327,9 @@ void Rchkee(void) {
         //     Read the number of values of M, P, and N.
         //
         getline(cin, str);
-        ss >> nn;
+        iss.clear();
+        iss.str(str);
+        iss >> nn;
         if (nn < 0) {
             write(nout, format_9989), "   NN ", nn, 1;
             nn = 0;
@@ -331,16 +343,16 @@ void Rchkee(void) {
         //     Read the values of M
         //
         if (!(dgx || dxv)) {
-            {
-                read_loop rloop(cmn, nin, star);
-                for (i = 1; i <= nn; i = i + 1) {
-                    rloop, mval[i - 1];
-                }
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            for (i = 1; i <= nn; i = i + 1) {
+                iss >> mval[i - 1];
             }
             if (svd) {
-                strncmp(vname, "    M ", 8);
+                strncpy(vname, "    M ", 8);
             } else {
-                strncmp(vname, "    N ", 8);
+                strncpy(vname, "    N ", 8);
             }
             for (i = 1; i <= nn; i = i + 1) {
                 if (mval[i - 1] < 0) {
@@ -351,23 +363,22 @@ void Rchkee(void) {
                     fatal = true;
                 }
             }
-            {
-                write_loop wloop(cmn, nout, format_9983);
-                wloop, "M:    ";
-                for (i = 1; i <= nn; i = i + 1) {
-                    wloop, mval[i - 1];
-                }
+            write_loop wloop(cmn, nout, format_9983);
+            wloop, "M:    ";
+            for (i = 1; i <= nn; i = i + 1) {
+                wloop, mval[i - 1];
             }
         }
         //
         //     Read the values of P
         //
         if (glm || gqr || gsv || csd || lse) {
-            {
-                read_loop rloop(cmn, nin, star);
-                for (i = 1; i <= nn; i = i + 1) {
-                    rloop, pval[i - 1];
-                }
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            for (i = 1; i <= nn; i = i + 1) {
+                iss >> itmp;
+                pval[i - 1] = itmp;
             }
             for (i = 1; i <= nn; i = i + 1) {
                 if (pval[i - 1] < 0) {
@@ -378,23 +389,22 @@ void Rchkee(void) {
                     fatal = true;
                 }
             }
-            {
-                write_loop wloop(cmn, nout, format_9983);
-                wloop, "P:    ";
-                for (i = 1; i <= nn; i = i + 1) {
-                    wloop, pval[i - 1];
-                }
+            write_loop wloop(cmn, nout, format_9983);
+            wloop, "P:    ";
+            for (i = 1; i <= nn; i = i + 1) {
+                wloop, pval[i - 1];
             }
         }
         //
         //     Read the values of N
         //
         if (svd || dbb || glm || gqr || gsv || csd || lse) {
-            {
-                read_loop rloop(cmn, nin, star);
-                for (i = 1; i <= nn; i = i + 1) {
-                    rloop, nval[i - 1];
-                }
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            for (i = 1; i <= nn; i = i + 1) {
+                iss >> itmp;
+                pval[i - 1] = itmp;
             }
             for (i = 1; i <= nn; i = i + 1) {
                 if (nval[i - 1] < 0) {
@@ -411,12 +421,10 @@ void Rchkee(void) {
             }
         }
         if (!(dgx || dxv)) {
-            {
-                write_loop wloop(cmn, nout, format_9983);
-                wloop, "N:    ";
-                for (i = 1; i <= nn; i = i + 1) {
-                    wloop, nval[i - 1];
-                }
+            write_loop wloop(cmn, nout, format_9983);
+            wloop, "N:    ";
+            for (i = 1; i <= nn; i = i + 1) {
+                wloop, nval[i - 1];
             }
         } else {
             write(nout, format_9983), "N:    ", nn;
@@ -425,12 +433,16 @@ void Rchkee(void) {
         //     Read the number of values of K, followed by the values of K
         //
         if (dsb || dbb) {
-            read(nin, star), nk;
-            {
-                read_loop rloop(cmn, nin, star);
-                for (i = 1; i <= nk; i = i + 1) {
-                    rloop, kval[i - 1];
-                }
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            iss >> nk;
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            for (i = 1; i <= nk; i = i + 1) {
+                iss >> itmp;
+                kval[i - 1] = itmp;
             }
             for (i = 1; i <= nk; i = i + 1) {
                 if (kval[i - 1] < 0) {
@@ -441,12 +453,10 @@ void Rchkee(void) {
                     fatal = true;
                 }
             }
-            {
-                write_loop wloop(cmn, nout, format_9983);
-                wloop, "K:    ";
-                for (i = 1; i <= nk; i = i + 1) {
-                    wloop, kval[i - 1];
-                }
+            write_loop wloop(cmn, nout, format_9983);
+            wloop, "K:    ";
+            for (i = 1; i <= nk; i = i + 1) {
+                wloop, kval[i - 1];
             }
         }
         //
@@ -455,7 +465,17 @@ void Rchkee(void) {
             //        For the nonsymmetric QR driver routines, only one set of
             //        parameters is allowed.
             //
-            read(nin, star), nbval[1 - 1], nbmin[1 - 1], nxval[1 - 1], inmin[1 - 1], inwin[1 - 1], inibl[1 - 1], ishfts[1 - 1], iacc22[1 - 1];
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            iss >> nbval[1 - 1];
+            iss >> nbmin[1 - 1];
+            iss >> nxval[1 - 1];
+            iss >> inmin[1 - 1];
+            iss >> inwin[1 - 1];
+            iss >> inibl[1 - 1];
+            iss >> ishfts[1 - 1];
+            iss >> iacc22[1 - 1];
             if (nbval[1 - 1] < 1) {
                 write(nout, format_9989), "   NB ", nbval[1 - 1], 1;
                 fatal = true;
@@ -503,7 +523,14 @@ void Rchkee(void) {
             //        For the nonsymmetric generalized driver routines, only one set
             //        of parameters is allowed.
             //
-            read(nin, star), nbval[1 - 1], nbmin[1 - 1], nxval[1 - 1], nsval[1 - 1], mxbval[1 - 1];
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            iss >> nbval[1 - 1];
+            iss >> nbmin[1 - 1];
+            iss >> nxval[1 - 1];
+            iss >> nsval[1 - 1];
+            iss >> mxbval[1 - 1];
             if (nbval[1 - 1] < 1) {
                 write(nout, format_9989), "   NB ", nbval[1 - 1], 1;
                 fatal = true;
@@ -530,14 +557,15 @@ void Rchkee(void) {
             write(nout, format_9983), "NX:   ", nxval[1 - 1];
             write(nout, format_9983), "NS:   ", nsval[1 - 1];
             write(nout, format_9983), "MAXB: ", mxbval[1 - 1];
-        }
-#ifdef NOTYET
-        else if (!dsb && !glm && !gqr && !gsv && !csd && !lse) {
+        } else if (!dsb && !glm && !gqr && !gsv && !csd && !lse) {
             //
             //        For the other paths, the number of parameters can be varied
             //        from the input file.  Read the number of parameter values.
             //
-            read(nin, star), nparms;
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            iss >> nparms;
             if (nparms < 1) {
                 write(nout, format_9989), "NPARMS", nparms, 1;
                 nparms = 0;
@@ -551,54 +579,51 @@ void Rchkee(void) {
             //        Read the values of NB
             //
             if (!dbb) {
-                {
-                    read_loop rloop(cmn, nin, star);
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        rloop, nbval(i);
-                    }
+                getline(cin, str);
+                iss.clear();
+                iss.str(str);
+                for (i = 1; i <= nparms; i = i + 1) {
+                    iss >> itmp;
+                    nbval[i - 1] = itmp;
                 }
                 for (i = 1; i <= nparms; i = i + 1) {
                     if (nbval[i - 1] < 0) {
-                        write(nout, format_9989), "   NB ", nbval(i), 0;
+                        write(nout, format_9989), "   NB ", nbval[i - 1], 0;
                         fatal = true;
                     } else if (nbval[i - 1] > nmax) {
-                        write(nout, format_9988), "   NB ", nbval(i), nmax;
+                        write(nout, format_9988), "   NB ", nbval[i - 1], nmax;
                         fatal = true;
                     }
                 }
-                {
-                    write_loop wloop(cmn, nout, format_9983);
-                    wloop, "NB:   ";
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        wloop, nbval(i);
-                    }
+                write_loop wloop(cmn, nout, format_9983);
+                wloop, "NB:   ";
+                for (i = 1; i <= nparms; i = i + 1) {
+                    wloop, nbval[i - 1];
                 }
             }
             //
             //        Read the values of NBMIN
             //
             if (nep || sep || svd || dgg) {
-                {
-                    read_loop rloop(cmn, nin, star);
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        rloop, nbmin(i);
-                    }
+                getline(cin, str);
+                iss.clear();
+                iss.str(str);
+                for (i = 1; i <= nparms; i = i + 1) {
+                    iss >> nbmin[i - 1];
                 }
                 for (i = 1; i <= nparms; i = i + 1) {
                     if (nbmin[i - 1] < 0) {
-                        write(nout, format_9989), "NBMIN ", nbmin(i), 0;
+                        write(nout, format_9989), "NBMIN ", nbmin[i - 1], 0;
                         fatal = true;
                     } else if (nbmin[i - 1] > nmax) {
-                        write(nout, format_9988), "NBMIN ", nbmin(i), nmax;
+                        write(nout, format_9988), "NBMIN ", nbmin[i - 1], nmax;
                         fatal = true;
                     }
                 }
-                {
-                    write_loop wloop(cmn, nout, format_9983);
-                    wloop, "NBMIN:";
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        wloop, nbmin(i);
-                    }
+                write_loop wloop(cmn, nout, format_9983);
+                wloop, "NBMIN:";
+                for (i = 1; i <= nparms; i = i + 1) {
+                    wloop, nbmin[i - 1];
                 }
             } else {
                 for (i = 1; i <= nparms; i = i + 1) {
@@ -609,27 +634,25 @@ void Rchkee(void) {
             //        Read the values of NX
             //
             if (nep || sep || svd) {
-                {
-                    read_loop rloop(cmn, nin, star);
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        rloop, nxval(i);
-                    }
+                getline(cin, str);
+                iss.clear();
+                iss.str(str);
+                for (i = 1; i <= nparms; i = i + 1) {
+                    iss >> nxval[i - 1];
                 }
                 for (i = 1; i <= nparms; i = i + 1) {
                     if (nxval[i - 1] < 0) {
-                        write(nout, format_9989), "   NX ", nxval(i), 0;
+                        write(nout, format_9989), "   NX ", nxval[i - 1], 0;
                         fatal = true;
                     } else if (nxval[i - 1] > nmax) {
-                        write(nout, format_9988), "   NX ", nxval(i), nmax;
+                        write(nout, format_9988), "   NX ", nxval[i - 1], nmax;
                         fatal = true;
                     }
                 }
-                {
-                    write_loop wloop(cmn, nout, format_9983);
-                    wloop, "NX:   ";
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        wloop, nxval(i);
-                    }
+                write_loop wloop(cmn, nout, format_9983);
+                wloop, "NX:   ";
+                for (i = 1; i <= nparms; i = i + 1) {
+                    wloop, nxval[i - 1];
                 }
             } else {
                 for (i = 1; i <= nparms; i = i + 1) {
@@ -641,27 +664,25 @@ void Rchkee(void) {
             //        or DBB).
             //
             if (svd || dbb || dgg) {
-                {
-                    read_loop rloop(cmn, nin, star);
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        rloop, nsval(i);
-                    }
+                getline(cin, str);
+                iss.clear();
+                iss.str(str);
+                for (i = 1; i <= nparms; i = i + 1) {
+                    iss >> nsval[i - 1];
                 }
                 for (i = 1; i <= nparms; i = i + 1) {
                     if (nsval[i - 1] < 0) {
-                        write(nout, format_9989), "   NS ", nsval(i), 0;
+                        write(nout, format_9989), "   NS ", nsval[i - 1], 0;
                         fatal = true;
                     } else if (nsval[i - 1] > nmax) {
-                        write(nout, format_9988), "   NS ", nsval(i), nmax;
+                        write(nout, format_9988), "   NS ", nsval[i - 1], nmax;
                         fatal = true;
                     }
                 }
-                {
-                    write_loop wloop(cmn, nout, format_9983);
-                    wloop, "NS:   ";
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        wloop, nsval(i);
-                    }
+                write_loop wloop(cmn, nout, format_9983);
+                wloop, "NS:   ";
+                for (i = 1; i <= nparms; i = i + 1) {
+                    wloop, nsval[i - 1];
                 }
             } else {
                 for (i = 1; i <= nparms; i = i + 1) {
@@ -673,26 +694,26 @@ void Rchkee(void) {
             //
             if (dgg) {
                 {
-                    read_loop rloop(cmn, nin, star);
+                    getline(cin, str);
+                    iss.clear();
+                    iss.str(str);
                     for (i = 1; i <= nparms; i = i + 1) {
-                        rloop, mxbval(i);
+                        iss >> mxbval[i - 1];
                     }
                 }
                 for (i = 1; i <= nparms; i = i + 1) {
                     if (mxbval[i - 1] < 0) {
-                        write(nout, format_9989), " MAXB ", mxbval(i), 0;
+                        write(nout, format_9989), " MAXB ", mxbval[i - 1], 0;
                         fatal = true;
                     } else if (mxbval[i - 1] > nmax) {
-                        write(nout, format_9988), " MAXB ", mxbval(i), nmax;
+                        write(nout, format_9988), " MAXB ", mxbval[i - 1], nmax;
                         fatal = true;
                     }
                 }
-                {
-                    write_loop wloop(cmn, nout, format_9983);
-                    wloop, "MAXB: ";
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        wloop, mxbval(i);
-                    }
+                write_loop wloop(cmn, nout, format_9983);
+                wloop, "MAXB: ";
+                for (i = 1; i <= nparms; i = i + 1) {
+                    wloop, mxbval[i - 1];
                 }
             } else {
                 for (i = 1; i <= nparms; i = i + 1) {
@@ -704,23 +725,23 @@ void Rchkee(void) {
             //
             if (nep) {
                 {
-                    read_loop rloop(cmn, nin, star);
+                    getline(cin, str);
+                    iss.clear();
+                    iss.str(str);
                     for (i = 1; i <= nparms; i = i + 1) {
-                        rloop, inmin(i);
+                        iss >> inmin[i - 1];
                     }
                 }
                 for (i = 1; i <= nparms; i = i + 1) {
                     if (inmin[i - 1] < 0) {
-                        write(nout, format_9989), " INMIN ", inmin(i), 0;
+                        write(nout, format_9989), " INMIN ", inmin[i - 1], 0;
                         fatal = true;
                     }
                 }
-                {
-                    write_loop wloop(cmn, nout, format_9983);
-                    wloop, "INMIN: ";
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        wloop, inmin(i);
-                    }
+                write_loop wloop(cmn, nout, format_9983);
+                wloop, "INMIN: ";
+                for (i = 1; i <= nparms; i = i + 1) {
+                    wloop, inmin[i - 1];
                 }
             } else {
                 for (i = 1; i <= nparms; i = i + 1) {
@@ -732,23 +753,23 @@ void Rchkee(void) {
             //
             if (nep) {
                 {
-                    read_loop rloop(cmn, nin, star);
+                    getline(cin, str);
+                    iss.clear();
+                    iss.str(str);
                     for (i = 1; i <= nparms; i = i + 1) {
-                        rloop, inwin(i);
+                        iss >> inwin[i - 1];
                     }
                 }
                 for (i = 1; i <= nparms; i = i + 1) {
                     if (inwin[i - 1] < 0) {
-                        write(nout, format_9989), " INWIN ", inwin(i), 0;
+                        write(nout, format_9989), " INWIN ", inwin[i - 1], 0;
                         fatal = true;
                     }
                 }
-                {
-                    write_loop wloop(cmn, nout, format_9983);
-                    wloop, "INWIN: ";
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        wloop, inwin(i);
-                    }
+                write_loop wloop(cmn, nout, format_9983);
+                wloop, "INWIN: ";
+                for (i = 1; i <= nparms; i = i + 1) {
+                    wloop, inwin[i - 1];
                 }
             } else {
                 for (i = 1; i <= nparms; i = i + 1) {
@@ -759,24 +780,22 @@ void Rchkee(void) {
             //        Read the values for INIBL.
             //
             if (nep) {
-                {
-                    read_loop rloop(cmn, nin, star);
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        rloop, inibl(i);
-                    }
+                getline(cin, str);
+                iss.clear();
+                iss.str(str);
+                for (i = 1; i <= nparms; i = i + 1) {
+                    iss >> inibl[i - 1];
                 }
                 for (i = 1; i <= nparms; i = i + 1) {
                     if (inibl[i - 1] < 0) {
-                        write(nout, format_9989), " INIBL ", inibl(i), 0;
+                        write(nout, format_9989), " INIBL ", inibl[i - 1], 0;
                         fatal = true;
                     }
                 }
-                {
-                    write_loop wloop(cmn, nout, format_9983);
-                    wloop, "INIBL: ";
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        wloop, inibl(i);
-                    }
+                write_loop wloop(cmn, nout, format_9983);
+                wloop, "INIBL: ";
+                for (i = 1; i <= nparms; i = i + 1) {
+                    wloop, inibl[i - 1];
                 }
             } else {
                 for (i = 1; i <= nparms; i = i + 1) {
@@ -787,24 +806,22 @@ void Rchkee(void) {
             //        Read the values for ISHFTS.
             //
             if (nep) {
-                {
-                    read_loop rloop(cmn, nin, star);
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        rloop, ishfts(i);
-                    }
+                getline(cin, str);
+                iss.clear();
+                iss.str(str);
+                for (i = 1; i <= nparms; i = i + 1) {
+                    iss >> ishfts[i - 1];
                 }
                 for (i = 1; i <= nparms; i = i + 1) {
                     if (ishfts[i - 1] < 0) {
-                        write(nout, format_9989), " ISHFTS ", ishfts(i), 0;
+                        write(nout, format_9989), " ISHFTS ", ishfts[i - 1], 0;
                         fatal = true;
                     }
                 }
-                {
-                    write_loop wloop(cmn, nout, format_9983);
-                    wloop, "ISHFTS: ";
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        wloop, ishfts(i);
-                    }
+                write_loop wloop(cmn, nout, format_9983);
+                wloop, "ISHFTS: ";
+                for (i = 1; i <= nparms; i = i + 1) {
+                    wloop, ishfts[i - 1];
                 }
             } else {
                 for (i = 1; i <= nparms; i = i + 1) {
@@ -815,24 +832,22 @@ void Rchkee(void) {
             //        Read the values for IACC22.
             //
             if (nep || dgg) {
-                {
-                    read_loop rloop(cmn, nin, star);
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        rloop, iacc22(i);
-                    }
+                getline(cin, str);
+                iss.clear();
+                iss.str(str);
+                for (i = 1; i <= nparms; i = i + 1) {
+                    iss >> iacc22[i - 1];
                 }
                 for (i = 1; i <= nparms; i = i + 1) {
                     if (iacc22[i - 1] < 0) {
-                        write(nout, format_9989), " IACC22 ", iacc22(i), 0;
+                        write(nout, format_9989), " IACC22 ", iacc22[i - 1], 0;
                         fatal = true;
                     }
                 }
-                {
-                    write_loop wloop(cmn, nout, format_9983);
-                    wloop, "IACC22: ";
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        wloop, iacc22(i);
-                    }
+                write_loop wloop(cmn, nout, format_9983);
+                wloop, "IACC22: ";
+                for (i = 1; i <= nparms; i = i + 1) {
+                    wloop, iacc22[i - 1];
                 }
             } else {
                 for (i = 1; i <= nparms; i = i + 1) {
@@ -843,27 +858,25 @@ void Rchkee(void) {
             //        Read the values for NBCOL.
             //
             if (dgg) {
-                {
-                    read_loop rloop(cmn, nin, star);
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        rloop, nbcol(i);
-                    }
+                getline(cin, str);
+                iss.clear();
+                iss.str(str);
+                for (i = 1; i <= nparms; i = i + 1) {
+                    iss >> nbcol[i - 1];
                 }
                 for (i = 1; i <= nparms; i = i + 1) {
                     if (nbcol[i - 1] < 0) {
-                        write(nout, format_9989), "NBCOL ", nbcol(i), 0;
+                        write(nout, format_9989), "NBCOL ", nbcol[i - 1], 0;
                         fatal = true;
                     } else if (nbcol[i - 1] > nmax) {
-                        write(nout, format_9988), "NBCOL ", nbcol(i), nmax;
+                        write(nout, format_9988), "NBCOL ", nbcol[i - 1], nmax;
                         fatal = true;
                     }
                 }
-                {
-                    write_loop wloop(cmn, nout, format_9983);
-                    wloop, "NBCOL:";
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        wloop, nbcol(i);
-                    }
+                write_loop wloop(cmn, nout, format_9983);
+                wloop, "NBCOL:";
+                for (i = 1; i <= nparms; i = i + 1) {
+                    wloop, nbcol[i - 1];
                 }
             } else {
                 for (i = 1; i <= nparms; i = i + 1) {
@@ -876,45 +889,63 @@ void Rchkee(void) {
         //
         write(nout, star);
         eps = Rlamch("Underflow threshold");
-        write(nout, format_9981), "underflow", eps;
+        sprintnum_short(buf0, eps);
+        write(nout, format_9981), "underflow", buf0;
         eps = Rlamch("Overflow threshold");
-        write(nout, format_9981), "overflow ", eps;
+        sprintnum_short(buf0, eps);
+        write(nout, format_9981), "overflow ", buf0;
         eps = Rlamch("Epsilon");
-        write(nout, format_9981), "precision", eps;
+        sprintnum_short(buf0, eps);
+        write(nout, format_9981), "precision", buf0;
         //
         //     Read the threshold value for the test ratios.
         //
-        read(nin, star), thresh;
-        write(nout, "(/,' Routines pass computational tests if test ratio is ','less than',"
-                    "a,/)"),
-            thresh;
+        getline(cin, str);
+        iss.clear();
+        iss.str(str);
+        iss >> dtmp;
+        thresh = dtmp;
+        sprintnum_short(buf0, thresh);
+        write(nout, "(/,' Routines pass computational tests if test ratio is ','less than',a,/)"), buf0;
         if (sep || svd || dgg) {
             //
             //        Read the flag that indicates whether to test LAPACK routines.
             //
-            read(nin, star), tstchk;
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            iss >> tstchk;
             //
             //        Read the flag that indicates whether to test driver routines.
             //
-            read(nin, star), tstdrv;
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            iss >> tstdrv;
         }
         //
         //     Read the flag that indicates whether to test the error exits.
         //
-        read(nin, star), tsterr;
+        getline(cin, str);
+        iss.clear();
+        iss.str(str);
+        iss >> tsterr;
         //
         //     Read the code describing how to set the random number seed.
         //
-        read(nin, star), newsd;
+        getline(cin, str);
+        iss.clear();
+        iss.str(str);
+        iss >> newsd;
         //
         //     If NEWSD = 2, read another line with 4 integers for the seed.
         //
         if (newsd == 2) {
-            {
-                read_loop rloop(cmn, nin, star);
-                for (i = 1; i <= 4; i = i + 1) {
-                    rloop, ioldsd(i);
-                }
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            for (i = 1; i <= 4; i = i + 1) {
+                iss >> ioldsd[i - 1];
             }
         }
         //
@@ -924,79 +955,39 @@ void Rchkee(void) {
         //
         if (fatal) {
             write(nout, "(/,' Execution not attempted due to input errors')");
-            FEM_STOP(0);
+            exit(1);
         }
-    //
-    //     Read the input lines indicating the test path and its parameters.
-    //     The first three characters indicate the test path, and the number
-    //     of test matrix types must be the first nonblank item in columns
-    //     4-80.
-    //
-    statement_190:
+        //
+        //     Read the input lines indicating the test path and its parameters.
+        //     The first three characters indicate the test path, and the number
+        //     of test matrix types must be the first nonblank item in columns
+        //     4-80.
+        //
         //
         if (!(dgx || dxv)) {
-        //
-        statement_200:
-            try {
-                read(nin, "(a80)"), line;
-            } catch (read_end const) {
-                goto statement_380;
-            }
-            c3 = line[(3 - 1) * ldline];
-            lenp = len[line - 1];
-            i = 3;
-            itmp = 0;
-            i1 = 0;
-        statement_210:
-            i++;
-            if (i > lenp) {
-                if (i1 > 0) {
-                    goto statement_240;
-                } else {
-                    ntypes = maxt;
-                    goto statement_240;
-                }
-            }
-            if (line[(i - 1) + (i - 1) * ldline] != " " && line[(i - 1) + (i - 1) * ldline] != ",") {
-                i1 = i;
-                c1 = line[(i1 - 1) + (i1 - 1) * ldline];
-                //
-                //        Check that a valid integer was read
-                //
-                for (k = 1; k <= 10; k = k + 1) {
-                    if (c1 == intstr[(k - 1) + (k - 1) * ldintstr]) {
-                        ic = k - 1;
-                        goto statement_230;
-                    }
-                }
-                write(nout, "(/,/,' *** Invalid integer value in column ',i2,' of input',' line:',"
-                            "/,a79)"),
-                    i, line;
-                goto statement_200;
-            statement_230:
-                itmp = 10 * itmp + ic;
-                goto statement_210;
-            } else if (i1 > 0) {
-                goto statement_240;
-            } else {
-                goto statement_210;
-            }
-        statement_240:
-            ntypes = itmp;
+            //
+            string _str;
+            getline(cin, str);
+            c3[0] = str[0];
+            c3[1] = str[1];
+            c3[2] = str[2];
+            iss.clear();
+            iss.str(str);
+            iss >> _str; // dummy read
+            iss >> ntypes;
             //
             //     Skip the tests if NTYPES is <= 0.
             //
             if (!(dev || des || dvx || dsx || dgv || dgs) && ntypes <= 0) {
                 write(nout, format_9990), c3;
-                goto statement_200;
-            }
-            //
+                continue;
+            } //
         } else {
             if (dxv) {
-                c3 = "DXV";
+                strncpy(c3, "DXV", 3);
             }
             if (dgx) {
-                c3 = "DGX";
+                strncpy(c3, "DGX", 3);
             }
         }
         //
@@ -1044,7 +1035,7 @@ void Rchkee(void) {
                 }
                 write(nout, "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4,', INMIN=',i4,"
                             "', INWIN =',i4,', INIBL =',i4,', ISHFTS =',i4,', IACC22 =',i4)"),
-                    c3, nbval(i), nbmin(i), nxval(i), max((INTEGER)11, inmin(i)), inwin(i), inibl(i), ishfts(i), iacc22(i);
+                    c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], max((INTEGER)11, inmin[i - 1]), inwin[i - 1], inibl[i - 1], ishfts[i - 1], iacc22[i - 1];
                 Rchkhs(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (5 - 1) * lda], nmax, &a[(1 - 1) + (6 - 1) * lda], &a[(1 - 1) + (7 - 1) * lda], &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], &d[(4 - 1) * ldd], &d[(5 - 1) * ldd], &d[(6 - 1) * ldd], &a[(1 - 1) + (8 - 1) * lda], &a[(1 - 1) + (9 - 1) * lda], &a[(1 - 1) + (10 - 1) * lda], &a[(1 - 1) + (11 - 1) * lda], &a[(1 - 1) + (12 - 1) * lda], &d[(7 - 1) * ldd], work, lwork, iwork, logwrk, result, info);
                 if (info != 0) {
                     write(nout, format_9980), "Rchkhs", info;
@@ -1079,7 +1070,7 @@ void Rchkee(void) {
                         iseed[k - 1] = ioldsd[k - 1];
                     }
                 }
-                write(nout, format_9997), c3, nbval(i), nbmin(i), nxval(i);
+                write(nout, format_9997), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1];
                 if (tstchk) {
                     if (Mlsamen(3, c3, "SE2")) {
                         Rchkst2stg(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], &d[(4 - 1) * ldd], &d[(5 - 1) * ldd], &d[(6 - 1) * ldd], &d[(7 - 1) * ldd], &d[(8 - 1) * ldd], &d[(9 - 1) * ldd], &d[(10 - 1) * ldd], &d[(11 - 1) * ldd], &a[(1 - 1) + (3 - 1) * lda], nmax, &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (5 - 1) * lda], &d[(12 - 1) * ldd], &a[(1 - 1) + (6 - 1) * lda], work, lwork, iwork, liwork, result, info);
@@ -1126,7 +1117,7 @@ void Rchkee(void) {
                         iseed[k - 1] = ioldsd[k - 1];
                     }
                 }
-                write(nout, format_9997), c3, nbval(i), nbmin(i), nxval(i);
+                write(nout, format_9997), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1];
                 if (tstchk) {
                     //               CALL Rdrvsg( NN, NVAL, MAXTYP, DOTYPE, ISEED, THRESH,
                     //     $                      NOUT, &a[(1-1)+(1-1)*lda], NMAX, &a[(1-1)+(2-1)*lda], NMAX,
@@ -1176,7 +1167,7 @@ void Rchkee(void) {
                         iseed[k - 1] = ioldsd[k - 1];
                     }
                 }
-                write(nout, "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4,', NRHS =',i4)"), c3, nbval(i), nbmin(i), nxval(i), nrhs;
+                write(nout, "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4,', NRHS =',i4)"), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], nrhs;
                 if (tstchk) {
                     Rchkbd(nn, mval, nval, maxtyp, dotype, nrhs, iseed, thresh, &a[(1 - 1) + (1 - 1) * lda], nmax, &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], &d[(4 - 1) * ldd], &a[(1 - 1) + (2 - 1) * lda], nmax, &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (5 - 1) * lda], nmax, &a[(1 - 1) + (6 - 1) * lda], nmax, &a[(1 - 1) + (7 - 1) * lda], &a[(1 - 1) + (8 - 1) * lda], work, lwork, iwork, nout, info);
                     if (info != 0) {
@@ -1318,7 +1309,7 @@ void Rchkee(void) {
                 }
                 write(nout, "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NS =',i4,', MAXB =',i4,"
                             "', IACC22 =',i4,', NBCOL =',i4)"),
-                    c3, nbval(i), nbmin(i), nsval(i), mxbval(i), iacc22(i), nbcol(i);
+                    c3, nbval[i - 1], nbmin[i - 1], nsval[i - 1], mxbval[i - 1], iacc22[i - 1], nbcol[i - 1];
                 tstdif = false;
                 thrshn = 10.0;
                 if (tstchk) {
@@ -1433,7 +1424,7 @@ void Rchkee(void) {
                     Rerrgg(c3, nout);
                 }
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                Rdrgvx(nn, thresh, nin, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], &a[(1 - 1) + (5 - 1) * lda], &a[(1 - 1) + (6 - 1) * lda], &iwork[1 - 1], &iwork[2 - 1], &d[(4 - 1) * ldd], &d[(5 - 1) * ldd], &d[(6 - 1) * ldd], &d[(7 - 1) * ldd], &d[(8 - 1) * ldd], &d[(9 - 1) * ldd], work, lwork, &iwork[3 - 1], liwork - 2, result, logwrk, info);
+                Rdrgvx(nn, thresh, nin, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], &a[(1 - 1) + (5 - 1) * lda], &a[(1 - 1) + (6 - 1) * lda], iwork[1 - 1], iwork[2 - 1], &d[(4 - 1) * ldd], &d[(5 - 1) * ldd], &d[(6 - 1) * ldd], &d[(7 - 1) * ldd], &d[(8 - 1) * ldd], &d[(9 - 1) * ldd], work, lwork, &iwork[3 - 1], liwork - 2, result, logwrk, info);
                 //
                 if (info != 0) {
                     write(nout, format_9980), "Rdrgvx", info;
@@ -1569,8 +1560,6 @@ void Rchkee(void) {
         if (!(dgx || dxv)) {
             continue;
         }
-    statement_380:
-#endif
     }
     write(nout, "(/,/,' End of tests')");
     s2 = time(NULL);
