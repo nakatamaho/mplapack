@@ -1073,9 +1073,9 @@ void Rchkee(void) {
                 write(nout, format_9997), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1];
                 if (tstchk) {
                     if (Mlsamen(3, c3, "SE2")) {
-                        Rchkst2stg(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], &d[(4 - 1) * ldd], &d[(5 - 1) * ldd], &d[(6 - 1) * ldd], &d[(7 - 1) * ldd], &d[(8 - 1) * ldd], &d[(9 - 1) * ldd], &d[(10 - 1) * ldd], &d[(11 - 1) * ldd], &a[(1 - 1) + (3 - 1) * lda], nmax, &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (5 - 1) * lda], &d[(12 - 1) * ldd], &a[(1 - 1) + (6 - 1) * lda], work, lwork, iwork, liwork, result, info);
+                        Rchkst2stg(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &d[0], &d[nmax], &d[nmax * 2], &d[nmax * 3], &d[nmax * 4], &d[nmax * 5], &d[nmax * 6], &d[nmax * 7], &d[nmax * 8], &d[nmax * 9], &d[nmax * 10], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], &a[nmax * nmax * 4], &d[nmax * 11], &a[nmax * nmax * 5], work, lwork, iwork, liwork, result, info);
                     } else {
-                        Rchkst(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], &d[(4 - 1) * ldd], &d[(5 - 1) * ldd], &d[(6 - 1) * ldd], &d[(7 - 1) * ldd], &d[(8 - 1) * ldd], &d[(9 - 1) * ldd], &d[(10 - 1) * ldd], &d[(11 - 1) * ldd], &a[(1 - 1) + (3 - 1) * lda], nmax, &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (5 - 1) * lda], &d[(12 - 1) * ldd], &a[(1 - 1) + (6 - 1) * lda], work, lwork, iwork, liwork, result, info);
+                        Rchkst(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &d[0], &d[nmax], &d[nmax * 2], &d[nmax * 3], &d[nmax * 4], &d[nmax * 5], &d[nmax * 6], &d[nmax * 7], &d[nmax * 8], &d[nmax * 9], &d[nmax * 10], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], &a[nmax * nmax * 4], &d[nmax * 11], &a[nmax * nmax * 5], work, lwork, iwork, liwork, result, info);
                     }
                     if (info != 0) {
                         write(nout, format_9980), "Rchkst", info;
@@ -1083,9 +1083,9 @@ void Rchkee(void) {
                 }
                 if (tstdrv) {
                     if (Mlsamen(3, c3, "SE2")) {
-                        Rdrvst2stg(nn, nval, 18, dotype, iseed, thresh, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &d[(3 - 1) * ldd], &d[(4 - 1) * ldd], &d[(5 - 1) * ldd], &d[(6 - 1) * ldd], &d[(8 - 1) * ldd], &d[(9 - 1) * ldd], &d[(10 - 1) * ldd], &d[(11 - 1) * ldd], &a[(1 - 1) + (2 - 1) * lda], nmax, &a[(1 - 1) + (3 - 1) * lda], &d[(12 - 1) * ldd], &a[(1 - 1) + (4 - 1) * lda], work, lwork, iwork, liwork, result, info);
+                        Rdrvst2stg(nn, nval, 18, dotype, iseed, thresh, nout, &a[0], nmax, &d[nmax * 2], &d[nmax * 3], &d[nmax * 4], &d[nmax * 5], &d[nmax * 7], &d[nmax * 8], &d[nmax * 9], &d[nmax * 10], &a[nmax * nmax], nmax, &a[nmax * nmax * 2], &d[nmax * 11], &a[nmax * nmax * 3], work, lwork, iwork, liwork, result, info);
                     } else {
-                        Rdrvst(nn, nval, 18, dotype, iseed, thresh, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &d[(3 - 1) * ldd], &d[(4 - 1) * ldd], &d[(5 - 1) * ldd], &d[(6 - 1) * ldd], &d[(8 - 1) * ldd], &d[(9 - 1) * ldd], &d[(10 - 1) * ldd], &d[(11 - 1) * ldd], &a[(1 - 1) + (2 - 1) * lda], nmax, &a[(1 - 1) + (3 - 1) * lda], &d[(12 - 1) * ldd], &a[(1 - 1) + (4 - 1) * lda], work, lwork, iwork, liwork, result, info);
+                        Rdrvst(nn, nval, 18, dotype, iseed, thresh, nout, &a[0], nmax, &d[nmax * 2], &d[nmax * 3], &d[nmax * 4], &d[nmax * 5], &d[nmax * 7], &d[nmax * 8], &d[nmax * 9], &d[nmax * 10], &a[nmax * nmax], nmax, &a[nmax * nmax * 2], &d[nmax * 11], &a[nmax * nmax * 3], work, lwork, iwork, liwork, result, info);
                     }
                     if (info != 0) {
                         write(nout, format_9980), "Rdrvst", info;
@@ -1124,7 +1124,7 @@ void Rchkee(void) {
                     //     $                      D( 1, 3 ), &a[(1-1)+(3-1)*lda], NMAX, &a[(1-1)+(4-1)*lda],
                     //     $                      &a[(1-1)+(5-1)*lda], &a[(1-1)+(6-1)*lda], &a[(1-1)+(7-1)*lda], WORK,
                     //     $                      LWORK, IWORK, LIWORK, RESULT, INFO )
-                    Rdrvsg2stg(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], nmax, &d[(3 - 1) * ldd], &d[(3 - 1) * ldd], &a[(1 - 1) + (3 - 1) * lda], nmax, &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (5 - 1) * lda], &a[(1 - 1) + (6 - 1) * lda], &a[(1 - 1) + (7 - 1) * lda], work, lwork, iwork, liwork, result, info);
+                    Rdrvsg2stg(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], nmax, &d[nmax * 2], &d[nmax * 2], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], &a[nmax * nmax * 4], &a[nmax * nmax * 5], &a[nmax * nmax * 6], work, lwork, iwork, liwork, result, info);
                     if (info != 0) {
                         write(nout, format_9980), "Rdrvsg", info;
                     }
@@ -1169,13 +1169,13 @@ void Rchkee(void) {
                 }
                 write(nout, "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4,', NRHS =',i4)"), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], nrhs;
                 if (tstchk) {
-                    Rchkbd(nn, mval, nval, maxtyp, dotype, nrhs, iseed, thresh, &a[(1 - 1) + (1 - 1) * lda], nmax, &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], &d[(4 - 1) * ldd], &a[(1 - 1) + (2 - 1) * lda], nmax, &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (5 - 1) * lda], nmax, &a[(1 - 1) + (6 - 1) * lda], nmax, &a[(1 - 1) + (7 - 1) * lda], &a[(1 - 1) + (8 - 1) * lda], work, lwork, iwork, nout, info);
+                    Rchkbd(nn, mval, nval, maxtyp, dotype, nrhs, iseed, thresh, &a[0], nmax, &d[0], &d[nmax], &d[nmax * 2], &d[nmax * 3], &a[nmax * nmax], nmax, &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], nmax, &a[nmax * nmax * 5], nmax, &a[nmax * nmax * 6], &a[nmax * nmax * 7], work, lwork, iwork, nout, info);
                     if (info != 0) {
                         write(nout, format_9980), "Rchkbd", info;
                     }
                 }
                 if (tstdrv) {
-                    Rdrvbd(nn, mval, nval, maxtyp, dotype, iseed, thresh, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], nmax, &a[(1 - 1) + (3 - 1) * lda], nmax, &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (5 - 1) * lda], &a[(1 - 1) + (6 - 1) * lda], &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], work, lwork, iwork, nout, info);
+                    Rdrvbd(nn, mval, nval, maxtyp, dotype, iseed, thresh, &a[0], nmax, &a[nmax * nmax], nmax, &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], &a[nmax * nmax * 4], &a[nmax * nmax * 5], &d[0], &d[nmax], &d[nmax * 2], work, lwork, iwork, nout, info);
                 }
             }
             //
@@ -1195,7 +1195,7 @@ void Rchkee(void) {
                     Rerred(c3, nout);
                 }
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                Rdrvev(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], &d[(4 - 1) * ldd], &a[(1 - 1) + (3 - 1) * lda], nmax, &a[(1 - 1) + (4 - 1) * lda], nmax, &a[(1 - 1) + (5 - 1) * lda], nmax, result, work, lwork, iwork, info);
+                Rdrvev(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &d[0], &d[nmax], &d[nmax * 2], &d[nmax * 3], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], nmax, result, work, lwork, iwork, info);
                 if (info != 0) {
                     write(nout, format_9980), "Rgeev", info;
                 }
@@ -1219,7 +1219,7 @@ void Rchkee(void) {
                     Rerred(c3, nout);
                 }
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                Rdrves(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], &d[(4 - 1) * ldd], &a[(1 - 1) + (4 - 1) * lda], nmax, result, work, lwork, iwork, logwrk, info);
+                Rdrves(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &d[0], &d[nmax], &d[nmax * 2], &d[nmax * 3], &a[nmax * nmax * 3], nmax, result, work, lwork, iwork, logwrk, info);
                 if (info != 0) {
                     write(nout, format_9980), "Rgees", info;
                 }
@@ -1243,7 +1243,7 @@ void Rchkee(void) {
                     Rerred(c3, nout);
                 }
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                Rdrvvx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], &d[(4 - 1) * ldd], &a[(1 - 1) + (3 - 1) * lda], nmax, &a[(1 - 1) + (4 - 1) * lda], nmax, &a[(1 - 1) + (5 - 1) * lda], nmax, &d[(5 - 1) * ldd], &d[(6 - 1) * ldd], &d[(7 - 1) * ldd], &d[(8 - 1) * ldd], &d[(9 - 1) * ldd], &d[(10 - 1) * ldd], &d[(11 - 1) * ldd], &d[(12 - 1) * ldd], result, work, lwork, iwork, info);
+                Rdrvvx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[0], nmax, &a[nmax * nmax], &d[0], &d[nmax], &d[nmax * 2], &d[nmax * 3], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], nmax, &d[nmax * 4], &d[nmax * 5], &d[nmax * 6], &d[nmax * 7], &d[nmax * 8], &d[nmax * 9], &d[nmax * 10], &d[nmax * 11], result, work, lwork, iwork, info);
                 if (info != 0) {
                     write(nout, format_9980), "Rgeevx", info;
                 }
@@ -1267,7 +1267,7 @@ void Rchkee(void) {
                     Rerred(c3, nout);
                 }
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                Rdrvsx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], &d[(4 - 1) * ldd], &d[(5 - 1) * ldd], &d[(6 - 1) * ldd], &a[(1 - 1) + (4 - 1) * lda], nmax, &a[(1 - 1) + (5 - 1) * lda], result, work, lwork, iwork, logwrk, info);
+                Rdrvsx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &d[0], &d[nmax], &d[nmax * 2], &d[nmax * 3], &d[nmax * 4], &d[nmax * 5], &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], result, work, lwork, iwork, logwrk, info);
                 if (info != 0) {
                     write(nout, format_9980), "Rgeesx", info;
                 }
@@ -1313,7 +1313,7 @@ void Rchkee(void) {
                 tstdif = false;
                 thrshn = 10.0;
                 if (tstchk) {
-                    Rchkgg(nn, nval, maxtyp, dotype, iseed, thresh, tstdif, thrshn, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (5 - 1) * lda], &a[(1 - 1) + (6 - 1) * lda], &a[(1 - 1) + (7 - 1) * lda], &a[(1 - 1) + (8 - 1) * lda], &a[(1 - 1) + (9 - 1) * lda], nmax, &a[(1 - 1) + (10 - 1) * lda], &a[(1 - 1) + (11 - 1) * lda], &a[(1 - 1) + (12 - 1) * lda], &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], &d[(4 - 1) * ldd], &d[(5 - 1) * ldd], &d[(6 - 1) * ldd], &a[(1 - 1) + (13 - 1) * lda], &a[(1 - 1) + (14 - 1) * lda], work, lwork, logwrk, result, info);
+                    Rchkgg(nn, nval, maxtyp, dotype, iseed, thresh, tstdif, thrshn, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], &a[nmax * nmax * 5], &a[nmax * nmax * 6], &a[nmax * nmax * 7], &a[nmax * nmax * 8], nmax, &a[nmax * nmax * 9], &a[nmax * nmax * 10], &a[nmax * nmax * 11], &d[0], &d[nmax], &d[nmax * 2], &d[nmax * 3], &d[nmax * 4], &d[nmax * 5], &a[(1 - 1) + (13 - 1) * lda], &a[(1 - 1) + (14 - 1) * lda], work, lwork, logwrk, result, info);
                     if (info != 0) {
                         write(nout, format_9980), "Rchkgg", info;
                     }
@@ -1336,7 +1336,7 @@ void Rchkee(void) {
                     Rerrgg(c3, nout);
                 }
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                Rdrges(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (7 - 1) * lda], nmax, &a[(1 - 1) + (8 - 1) * lda], &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], work, lwork, result, logwrk, info);
+                Rdrges(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 6], nmax, &a[nmax * nmax * 7], &d[0], &d[nmax], &d[nmax * 2], work, lwork, result, logwrk, info);
                 if (info != 0) {
                     write(nout, format_9980), "Rdrges", info;
                 }
@@ -1344,7 +1344,7 @@ void Rchkee(void) {
                 //     Blocked version
                 //
                 xlaenv(16, 2);
-                Rdrges3(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (7 - 1) * lda], nmax, &a[(1 - 1) + (8 - 1) * lda], &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], work, lwork, result, logwrk, info);
+                Rdrges3(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 6], nmax, &a[nmax * nmax * 7], &d[0], &d[nmax], &d[nmax * 2], work, lwork, result, logwrk, info);
                 if (info != 0) {
                     write(nout, format_9980), "Rdrges3", info;
                 }
@@ -1369,7 +1369,7 @@ void Rchkee(void) {
                 }
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
                 xlaenv(5, 2);
-                Rdrgsx(nn, ncmax, thresh, nin, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (5 - 1) * lda], &a[(1 - 1) + (6 - 1) * lda], &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], &c[(1 - 1) + (1 - 1) * ldc], ncmax * ncmax, &a[(1 - 1) + (12 - 1) * lda], work, lwork, iwork, liwork, logwrk, info);
+                Rdrgsx(nn, ncmax, thresh, nin, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], &a[nmax * nmax * 5], &d[0], &d[nmax], &d[nmax * 2], &c[0], ncmax * ncmax, &a[nmax * nmax * 11], work, lwork, iwork, liwork, logwrk, info);
                 if (info != 0) {
                     write(nout, format_9980), "Rdrgsx", info;
                 }
@@ -1393,14 +1393,14 @@ void Rchkee(void) {
                     Rerrgg(c3, nout);
                 }
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                Rdrgev(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (7 - 1) * lda], nmax, &a[(1 - 1) + (8 - 1) * lda], &a[(1 - 1) + (9 - 1) * lda], nmax, &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], &d[(4 - 1) * ldd], &d[(5 - 1) * ldd], &d[(6 - 1) * ldd], work, lwork, result, info);
+                Rdrgev(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 6], nmax, &a[nmax * nmax * 7], &a[nmax * nmax * 8], nmax, &d[0], &d[nmax], &d[nmax * 2], &d[nmax * 3], &d[nmax * 4], &d[nmax * 5], work, lwork, result, info);
                 if (info != 0) {
                     write(nout, format_9980), "Rdrgev", info;
                 }
                 //
                 //     Blocked version
                 //
-                Rdrgev3(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (7 - 1) * lda], nmax, &a[(1 - 1) + (8 - 1) * lda], &a[(1 - 1) + (9 - 1) * lda], nmax, &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], &d[(4 - 1) * ldd], &d[(5 - 1) * ldd], &d[(6 - 1) * ldd], work, lwork, result, info);
+                Rdrgev3(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 6], nmax, &a[nmax * nmax * 7], &a[nmax * nmax * 8], nmax, &d[0], &d[nmax], &d[nmax * 2], &d[nmax * 3], &d[nmax * 4], &d[nmax * 5], work, lwork, result, info);
                 if (info != 0) {
                     write(nout, format_9980), "Rdrgev3", info;
                 }
@@ -1424,7 +1424,7 @@ void Rchkee(void) {
                     Rerrgg(c3, nout);
                 }
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                Rdrgvx(nn, thresh, nin, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], &a[(1 - 1) + (5 - 1) * lda], &a[(1 - 1) + (6 - 1) * lda], iwork[1 - 1], iwork[2 - 1], &d[(4 - 1) * ldd], &d[(5 - 1) * ldd], &d[(6 - 1) * ldd], &d[(7 - 1) * ldd], &d[(8 - 1) * ldd], &d[(9 - 1) * ldd], work, lwork, &iwork[3 - 1], liwork - 2, result, logwrk, info);
+                Rdrgvx(nn, thresh, nin, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &d[0], &d[nmax], &d[nmax * 2], &a[nmax * nmax * 4], &a[nmax * nmax * 5], iwork[1 - 1], iwork[2 - 1], &d[nmax * 3], &d[nmax * 4], &d[nmax * 5], &d[nmax * 6], &d[nmax * 7], &d[nmax * 8], work, lwork, &iwork[3 - 1], liwork - 2, result, logwrk, info);
                 //
                 if (info != 0) {
                     write(nout, format_9980), "Rdrgvx", info;
@@ -1448,7 +1448,7 @@ void Rchkee(void) {
             //         CALL Rchksb( NN, NVAL, NK, KVAL, MAXTYP, DOTYPE, ISEED, THRESH,
             //     $                NOUT, &a[(1-1)+(1-1)*lda], NMAX, D( 1, 1 ), D( 1, 2 ),
             //     $                &a[(1-1)+(2-1)*lda], NMAX, WORK, LWORK, RESULT, INFO )
-            Rchksb2stg(nn, nval, nk, kval, maxtyp, dotype, iseed, thresh, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &d[(1 - 1)], &d[(2 - 1) * ldd], &d[(3 - 1) * ldd], &d[(4 - 1) * ldd], &d[(5 - 1) * ldd], &a[(1 - 1) + (2 - 1) * lda], nmax, work, lwork, result, info);
+            Rchksb2stg(nn, nval, nk, kval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &d[0], &d[nmax], &d[nmax * 2], &d[nmax * 3], &d[nmax * 4], &a[nmax * nmax], nmax, work, lwork, result, info);
             if (info != 0) {
                 write(nout, format_9980), "Rchksb", info;
             }
@@ -1471,7 +1471,7 @@ void Rchkee(void) {
                     }
                 }
                 write(nout, "(/,/,1x,a3,':  NRHS =',i4)"), c3, nrhs;
-                Rchkbb(nn, mval, nval, nk, kval, maxtyp, dotype, nrhs, iseed, thresh, nout, &a[(1 - 1) + (1 - 1) * lda], nmax, &a[(1 - 1) + (2 - 1) * lda], 2 * nmax, &d[(1 - 1)], &d[(2 - 1) * ldd], &a[(1 - 1) + (4 - 1) * lda], nmax, &a[(1 - 1) + (5 - 1) * lda], nmax, &a[(1 - 1) + (6 - 1) * lda], nmax, &a[(1 - 1) + (7 - 1) * lda], work, lwork, result, info);
+                Rchkbb(nn, mval, nval, nk, kval, maxtyp, dotype, nrhs, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], 2 * nmax, &d[0], &d[nmax], &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], nmax, &a[nmax * nmax * 5], nmax, &a[nmax * nmax * 6], work, lwork, result, info);
                 if (info != 0) {
                     write(nout, format_9980), "Rchkbb", info;
                 }
@@ -1487,7 +1487,7 @@ void Rchkee(void) {
             if (tsterr) {
                 Rerrgg("GLM", nout);
             }
-            Rckglm(nn, mval, pval, nval, ntypes, iseed, thresh, nmax, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], x, work, &d[(1 - 1)], nin, nout, info);
+            Rckglm(nn, mval, pval, nval, ntypes, iseed, thresh, nmax, &a[0], &a[nmax * nmax], &b[0], &b[nmax * nmax], x, work, &d[0], nin, nout, info);
             if (info != 0) {
                 write(nout, format_9980), "Rckglm", info;
             }
@@ -1502,7 +1502,7 @@ void Rchkee(void) {
             if (tsterr) {
                 Rerrgg("GQR", nout);
             }
-            Rckgqr(nn, mval, nn, pval, nn, nval, ntypes, iseed, thresh, nmax, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], taua, &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &b[(1 - 1) + (3 - 1) * ldb], &b[(1 - 1) + (4 - 1) * ldb], &b[(1 - 1) + (5 - 1) * ldb], taub, work, &d[(1 - 1)], nin, nout, info);
+            Rckgqr(nn, mval, nn, pval, nn, nval, ntypes, iseed, thresh, nmax, &a[0], &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], taua, &b[0], &b[nmax * nmax], &b[nmax * nmax * 2], &b[nmax * nmax * 3], &b[nmax * nmax * 4], taub, work, &d[0], nin, nout, info);
             if (info != 0) {
                 write(nout, format_9980), "Rckgqr", info;
             }
@@ -1517,7 +1517,7 @@ void Rchkee(void) {
             if (tsterr) {
                 Rerrgg("GSV", nout);
             }
-            Rckgsv(nn, mval, pval, nval, ntypes, iseed, thresh, nmax, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], &a[(1 - 1) + (3 - 1) * lda], &b[(1 - 1) + (3 - 1) * ldb], &a[(1 - 1) + (4 - 1) * lda], taua, taub, &b[(1 - 1) + (4 - 1) * ldb], iwork, work, &d[(1 - 1)], nin, nout, info);
+            Rckgsv(nn, mval, pval, nval, ntypes, iseed, thresh, nmax, &a[0], &a[nmax * nmax], &b[0], &b[nmax * nmax], &a[nmax * nmax * 2], &b[nmax * nmax * 2], &a[nmax * nmax * 3], taua, taub, &b[nmax * nmax * 3], iwork, work, &d[0], nin, nout, info);
             if (info != 0) {
                 write(nout, format_9980), "Rckgsv", info;
             }
@@ -1532,7 +1532,7 @@ void Rchkee(void) {
             if (tsterr) {
                 Rerrgg("CSD", nout);
             }
-            Rckcsd(nn, mval, pval, nval, ntypes, iseed, thresh, nmax, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], &a[(1 - 1) + (4 - 1) * lda], &a[(1 - 1) + (5 - 1) * lda], &a[(1 - 1) + (6 - 1) * lda], &a[(1 - 1) + (7 - 1) * lda], iwork, work, &d[(1 - 1)], nin, nout, info);
+            Rckcsd(nn, mval, pval, nval, ntypes, iseed, thresh, nmax, &a[0], &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], &a[nmax * nmax * 5], &a[nmax * nmax * 6], iwork, work, &d[0], nin, nout, info);
             if (info != 0) {
                 write(nout, format_9980), "Rckcsd", info;
             }
@@ -1547,7 +1547,7 @@ void Rchkee(void) {
             if (tsterr) {
                 Rerrgg("LSE", nout);
             }
-            Rcklse(nn, mval, pval, nval, ntypes, iseed, thresh, nmax, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &b[(1 - 1) + (1 - 1) * ldb], &b[(1 - 1) + (2 - 1) * ldb], x, work, &d[(1 - 1)], nin, nout, info);
+            Rcklse(nn, mval, pval, nval, ntypes, iseed, thresh, nmax, &a[0], &a[nmax * nmax], &b[0], &b[nmax * nmax], x, work, &d[0], nin, nout, info);
             if (info != 0) {
                 write(nout, format_9980), "Rcklse", info;
             }
