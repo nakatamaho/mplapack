@@ -193,13 +193,6 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
     //     Initialize random number generator
     //
     INTEGER i = 0;
-    for (i = 1; i <= 4; i = i + 1) {
-        iseed[i - 1] = mod(abs(iseed[i - 1]), 4096);
-    }
-    //
-    if (mod(iseed[4 - 1], 2) != 1) {
-        iseed[4 - 1]++;
-    }
     //
     //     2)      Set up diagonal of A
     //
