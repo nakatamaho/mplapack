@@ -223,7 +223,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 goto statement_100;
             }
             //
-            ktype[jtype - 1];
+            itype = ktype[jtype - 1];
             imode = kmode[jtype - 1];
             //
             //           Compute norm
