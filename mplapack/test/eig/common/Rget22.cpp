@@ -40,31 +40,6 @@ using fem::common;
 
 void Rget22(const char *transa, const char *transe, const char *transw, INTEGER const n, REAL *a, INTEGER const lda, REAL *e, INTEGER const lde, REAL *wr, REAL *wi, REAL *work, REAL *result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Initialize RESULT (in case N=0)
     //
     const REAL zero = 0.0;
@@ -81,6 +56,8 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
     INTEGER ince = 1;
     char norma;
     char norme;
+    norma = 'O';
+    norme = 'O';
     //
     if (Mlsame(transa, "T") || Mlsame(transa, "C")) {
         norma = 'I';
@@ -169,11 +146,11 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
     //
     //     Norm of A:
     //
-    REAL anorm = max({Rlange(&norma, n, n, a, lda, work), unfl});
+    REAL anorm = max(Rlange(&norma, n, n, a, lda, work), unfl);
     //
     //     Norm of E:
     //
-    REAL enorm = max({Rlange(&norme, n, n, e, lde, work), ulp});
+    REAL enorm = max(Rlange(&norme, n, n, e, lde, work), ulp);
     //
     //     Norm of error:
     //
