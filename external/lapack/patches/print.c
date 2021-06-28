@@ -33,16 +33,15 @@ void printmat_(char *s, int *len, int *N, int *M, double *A, int *LDA) {
     printf("\n");
 }
 
-void printvec_(char *s, int *len, double *A, int *len) {
-    double tmp;
+void printvec_(char *s, int *len, double *A, int *lenvec) {
     memset(buf, 0, sizeof(buf));
     strncpy(buf, s, *len);
     double tmp;
     printf("%s[ ", buf);
-    for (int i = 0; i < *len; i++) {
+    for (int i = 0; i < *lenvec; i++) {
         tmp = A[i];
         printf("%+21.16e", tmp);
-        if (i < *len - 1)
+        if (i < *lenvec - 1)
             printf(", ");
     }
     printf("]");
