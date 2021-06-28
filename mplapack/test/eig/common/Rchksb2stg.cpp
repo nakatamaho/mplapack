@@ -90,35 +90,8 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
     REAL temp3 = 0.0;
     REAL temp4 = 0.0;
     char buf[1024];
-    static const char *format_9999 = "(' RchksbSTG: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9999 = "(' Rchksbstg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Check for errors
     //
@@ -167,7 +140,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
     }
     //
     if (info != 0) {
-        Mxerbla("RchksbSTG", -info);
+        Mxerbla("Rchksbstg", -info);
         return;
     }
     //
@@ -402,7 +375,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                     }
                 }
                 //
-                //              Rsytrd_SB2ST Upper case is used to compute D2.
+                //              Rsytrd_sb2st Upper case is used to compute D2.
                 //              Note to set SD and SE to zero to be sure not reusing
                 //              the one from above. Compare it with D1 computed
                 //              using the Rsbtrd.
