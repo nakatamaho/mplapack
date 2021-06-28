@@ -42,38 +42,6 @@ using fem::common;
 void Rerrbd(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     char c2[2];
@@ -118,6 +86,7 @@ void Rerrbd(const char *path, INTEGER const nunit) {
         //        Rgebrd
         //
         infot = 1;
+        strncpy(srnamt, "Rgebrd", srnamt_len);
         Rgebrd(-1, 0, a, 1, d, e, tq, tp, w, 1, info);
         chkxer("Rgebrd", infot, nout, lerr, ok);
         infot = 2;
