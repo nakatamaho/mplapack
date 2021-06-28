@@ -40,29 +40,6 @@ using fem::common;
 
 void Rsyt22(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER const m, INTEGER const kband, REAL *a, INTEGER const lda, REAL *d, REAL *e, REAL *u, INTEGER const ldu, REAL * /* v */, INTEGER const ldv, REAL * /* tau */, REAL *work, REAL *result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     const REAL zero = 0.0;
     result[1 - 1] = zero;
     result[2 - 1] = zero;
@@ -77,7 +54,7 @@ void Rsyt22(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     //
     //     Norm of A:
     //
-    REAL anorm = max({Rlansy("1", uplo, n, a, lda, work), unfl});
+    REAL anorm = max(Rlansy("1", uplo, n, a, lda, work), unfl);
     //
     //     Compute error matrix:
     //
@@ -107,12 +84,12 @@ void Rsyt22(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     REAL wnorm = Rlansy("1", uplo, m, &work[nnp1 - 1], n, &work[1 - 1]);
     //
     if (anorm > wnorm) {
-        result[1 - 1] = (wnorm / anorm) / (m * ulp);
+        result[1 - 1] = (wnorm / anorm) / (castREAL(m) * ulp);
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(wnorm, m * anorm) / anorm) / (m * ulp);
+            result[1 - 1] = (min(wnorm, m * anorm) / anorm) / (castREAL(m) * ulp);
         } else {
-            result[1 - 1] = min(wnorm / anorm, castREAL(m)) / (m * ulp);
+            result[1 - 1] = min(wnorm / anorm, castREAL(m)) / (castREAL(m) * ulp);
         }
     }
     //
