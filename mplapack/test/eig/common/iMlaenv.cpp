@@ -41,28 +41,6 @@ using fem::common;
 INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
     INTEGER return_value = 0;
     //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Arrays in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Save statement ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     if (ispec >= 1 && ispec <= 5) {
         //
         //        Return a value from the common block.
@@ -136,25 +114,6 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
 
 INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
     INTEGER return_value = 0;
-#ifdef NOTYET
-    // COMMON claenv
-    INTEGER *iparms(cmn.iparms, [100]);
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local variables ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Arrays in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Save statement ..
-    //     ..
-    //     .. Executable Statements ..
     //
     INTEGER iispec = 0;
     if ((ispec >= 1) && (ispec <= 5)) {
@@ -165,7 +124,7 @@ INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, I
             return_value = iparms[1 - 1];
         } else {
             iispec = 16 + ispec;
-            return_value = iparam2stage(iispec, name, opts, n1, n2, n3, n4);
+            return_value = iMparam2stage(iispec, name, opts, n1, n2, n3, n4);
         }
         //
     } else {
@@ -175,28 +134,18 @@ INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, I
         return_value = -1;
     }
     //
-#endif
     return return_value;
 }
 
 INTEGER iparmq(INTEGER const ispec, const char * /* name */, const char * /* opts */, INTEGER const /* n */, INTEGER const ilo, INTEGER const ihi, INTEGER const /* lwork */) {
     INTEGER return_value = 0;
-#ifdef NOTYET
     //
-    //     ..
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     const INTEGER ishfts = 15;
     const INTEGER inwin = 13;
     const INTEGER iacc22 = 16;
     INTEGER nh = 0;
     INTEGER ns = 0;
-    const float two = 2.0f;
+    const REAL two = 2.0;
     if ((ispec == ishfts) || (ispec == inwin) || (ispec == iacc22)) {
         //
         //        ==== Set the number simultaneous shifts ====
@@ -210,7 +159,7 @@ INTEGER iparmq(INTEGER const ispec, const char * /* name */, const char * /* opt
             ns = 10;
         }
         if (nh >= 150) {
-            ns = max((INTEGER)10, nh / nint(log(real[nh - 1]) / log(two)));
+            ns = max((INTEGER)10, nh / nint(log(castREAL(nh)) / log(two)));
         }
         if (nh >= 590) {
             ns = 64;
@@ -285,7 +234,6 @@ INTEGER iparmq(INTEGER const ispec, const char * /* name */, const char * /* opt
         return_value = -1;
         //
     }
-#endif
     return return_value;
     //
     //     ==== End of IPARMQ ====
