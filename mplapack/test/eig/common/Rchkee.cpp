@@ -189,7 +189,8 @@ void Rchkee(void) {
         getline(cin, str);
         if (cin.bad() || cin.eof()) {
             break;
-        } //
+        }
+        //
         //     Read the first line and set the 3-character test path
         //
         stringstream ss(str);
@@ -693,13 +694,11 @@ void Rchkee(void) {
             //        Read the values for MAXB.
             //
             if (dgg) {
-                {
-                    getline(cin, str);
-                    iss.clear();
-                    iss.str(str);
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        iss >> mxbval[i - 1];
-                    }
+                getline(cin, str);
+                iss.clear();
+                iss.str(str);
+                for (i = 1; i <= nparms; i = i + 1) {
+                    iss >> mxbval[i - 1];
                 }
                 for (i = 1; i <= nparms; i = i + 1) {
                     if (mxbval[i - 1] < 0) {
@@ -724,13 +723,11 @@ void Rchkee(void) {
             //        Read the values for INMIN.
             //
             if (nep) {
-                {
-                    getline(cin, str);
-                    iss.clear();
-                    iss.str(str);
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        iss >> inmin[i - 1];
-                    }
+                getline(cin, str);
+                iss.clear();
+                iss.str(str);
+                for (i = 1; i <= nparms; i = i + 1) {
+                    iss >> inmin[i - 1];
                 }
                 for (i = 1; i <= nparms; i = i + 1) {
                     if (inmin[i - 1] < 0) {
@@ -752,13 +749,11 @@ void Rchkee(void) {
             //        Read the values for INWIN.
             //
             if (nep) {
-                {
-                    getline(cin, str);
-                    iss.clear();
-                    iss.str(str);
-                    for (i = 1; i <= nparms; i = i + 1) {
-                        iss >> inwin[i - 1];
-                    }
+                getline(cin, str);
+                iss.clear();
+                iss.str(str);
+                for (i = 1; i <= nparms; i = i + 1) {
+                    iss >> inwin[i - 1];
                 }
                 for (i = 1; i <= nparms; i = i + 1) {
                     if (inwin[i - 1] < 0) {
@@ -912,31 +907,44 @@ void Rchkee(void) {
             //        Read the flag that indicates whether to test LAPACK routines.
             //
             getline(cin, str);
-            iss.clear();
-            iss.str(str);
-            iss >> tstchk;
+            ss.clear();
+            ss.str(str);
+            ss >> line;
+            if (Mlsame(line, "T"))
+                tstchk = true;
+            else
+                tstchk = false;
             //
             //        Read the flag that indicates whether to test driver routines.
             //
             getline(cin, str);
-            iss.clear();
-            iss.str(str);
-            iss >> tstdrv;
+            ss.clear();
+            ss.str(str);
+            ss >> line;
+            if (Mlsame(line, "T"))
+                tstdrv = true;
+            else
+                tstdrv = false;
         }
         //
         //     Read the flag that indicates whether to test the error exits.
         //
         getline(cin, str);
-        iss.clear();
-        iss.str(str);
-        iss >> tsterr;
+        ss.clear();
+        ss.str(str);
+        ss >> line;
+        if (Mlsame(line, "T"))
+            tsterr = true;
+        else
+            tsterr = false;
+
         //
         //     Read the code describing how to set the random number seed.
         //
         getline(cin, str);
-        iss.clear();
-        iss.str(str);
-        iss >> newsd;
+        ss.clear();
+        ss.str(str);
+        ss >> newsd;
         //
         //     If NEWSD = 2, read another line with 4 integers for the seed.
         //
