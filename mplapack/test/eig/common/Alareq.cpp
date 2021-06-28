@@ -114,9 +114,9 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
             }
         statement_80:;
         }
-        return;
         //
     }
+    return;
 statement_90:
     write(nout, "(/,' *** End of file reached when trying to read matrix ','types for ',"
                 "a3,/,' *** Check that you are requesting the',"
