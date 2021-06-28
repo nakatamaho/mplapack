@@ -231,7 +231,7 @@ void Rsyt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
             work[((n + 1) * (j - 1) + 1) - 1] = work[((n + 1) * (j - 1) + 1) - 1] - one;
         }
         //
-        result[2 - 1] = min({Rlange("1", n, n, work, n, &work[(pow2(n) + 1) - 1]), castREAL(n)}) / (n * ulp);
+        result[2 - 1] = min({Rlange("1", n, n, work, n, &work[(pow2(n) + 1) - 1]), castREAL(n)}) / (castREAL(n) * ulp);
     }
     //
     //     End of Rsyt21
