@@ -44,24 +44,6 @@ void Mxerbla(const char *srname, int info) {
     common cmn;
     common_write write(cmn);
     //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     lerr = true;
     if (info != infot) {
         if (infot != 0) {

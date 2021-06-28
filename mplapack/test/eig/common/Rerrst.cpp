@@ -129,7 +129,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         Rsytrd_2stage("N", "U", 2, a, 1, d, e, tau, c, 1, w, 1, info);
         chkxer("Rsytrd_2stage", infot, nout, lerr, ok);
         infot = 10;
-        Rsytrd_2stage("N", "U", 0, a, 1, d, e, tau, c, 0, w, 1, info);
+        Rsytrd_2stage("N", "U", 0, a, 1, d, e, tau, c, (INTEGER)0, w, 1, info);
         chkxer("Rsytrd_2stage", infot, nout, lerr, ok);
         infot = 12;
         Rsytrd_2stage("N", "U", 0, a, 1, d, e, tau, c, 1, w, 0, info);
