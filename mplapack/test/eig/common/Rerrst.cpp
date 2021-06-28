@@ -42,39 +42,6 @@ using fem::common;
 void Rerrst(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     NMAX has to be at least 3 or LIW may be too small
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     char c2[2];
@@ -129,6 +96,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rsytrd
         //
         infot = 1;
+        strncpy(srnamt, "Rsytrd", srnamt_len);
         Rsytrd("/", 0, a, 1, d, e, tau, w, 1, info);
         chkxer("Rsytrd", infot, nout, lerr, ok);
         infot = 2;
@@ -145,6 +113,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rsytrd_2stage
         //
         infot = 1;
+        strncpy(srnamt, "Rsytrd_2stage", srnamt_len);
         Rsytrd_2stage("/", "U", 0, a, 1, d, e, tau, c, 1, w, 1, info);
         chkxer("Rsytrd_2stage", infot, nout, lerr, ok);
         infot = 1;
@@ -170,6 +139,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rsytrd_sy2sb
         //
         infot = 1;
+        strncpy(srnamt, "Rsytrd_sy2sb", srnamt_len);
         Rsytrd_sy2sb("/", 0, 0, a, 1, c, 1, tau, w, 1, info);
         chkxer("Rsytrd_sy2sb", infot, nout, lerr, ok);
         infot = 2;
@@ -189,40 +159,42 @@ void Rerrst(const char *path, INTEGER const nunit) {
         chkxer("Rsytrd_sy2sb", infot, nout, lerr, ok);
         nt += 6;
         //
-        //        Rsytrd_SB2ST
+        //        Rsytrd_sb2st
         //
         infot = 1;
+        strncpy(srnamt, "Rsytrd_sb2st", srnamt_len);
         Rsytrd_sb2st("/", "N", "U", 0, 0, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Rsytrd_SB2ST", infot, nout, lerr, ok);
+        chkxer("Rsytrd_sb2st", infot, nout, lerr, ok);
         infot = 2;
         Rsytrd_sb2st("Y", "/", "U", 0, 0, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Rsytrd_SB2ST", infot, nout, lerr, ok);
+        chkxer("Rsytrd_sb2st", infot, nout, lerr, ok);
         infot = 2;
         Rsytrd_sb2st("Y", "H", "U", 0, 0, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Rsytrd_SB2ST", infot, nout, lerr, ok);
+        chkxer("Rsytrd_sb2st", infot, nout, lerr, ok);
         infot = 3;
         Rsytrd_sb2st("Y", "N", "/", 0, 0, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Rsytrd_SB2ST", infot, nout, lerr, ok);
+        chkxer("Rsytrd_sb2st", infot, nout, lerr, ok);
         infot = 4;
         Rsytrd_sb2st("Y", "N", "U", -1, 0, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Rsytrd_SB2ST", infot, nout, lerr, ok);
+        chkxer("Rsytrd_sb2st", infot, nout, lerr, ok);
         infot = 5;
         Rsytrd_sb2st("Y", "N", "U", 0, -1, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Rsytrd_SB2ST", infot, nout, lerr, ok);
+        chkxer("Rsytrd_sb2st", infot, nout, lerr, ok);
         infot = 7;
         Rsytrd_sb2st("Y", "N", "U", 0, 1, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Rsytrd_SB2ST", infot, nout, lerr, ok);
+        chkxer("Rsytrd_sb2st", infot, nout, lerr, ok);
         infot = 11;
         Rsytrd_sb2st("Y", "N", "U", 0, 0, a, 1, d, e, c, 0, w, 1, info);
-        chkxer("Rsytrd_SB2ST", infot, nout, lerr, ok);
+        chkxer("Rsytrd_sb2st", infot, nout, lerr, ok);
         infot = 13;
         Rsytrd_sb2st("Y", "N", "U", 0, 0, a, 1, d, e, c, 1, w, 0, info);
-        chkxer("Rsytrd_SB2ST", infot, nout, lerr, ok);
+        chkxer("Rsytrd_sb2st", infot, nout, lerr, ok);
         nt += 9;
         //
         //        Rorgtr
         //
         infot = 1;
+        strncpy(srnamt, "Rorgtr", srnamt_len);
         Rorgtr("/", 0, a, 1, tau, w, 1, info);
         chkxer("Rorgtr", infot, nout, lerr, ok);
         infot = 2;
@@ -239,6 +211,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rormtr
         //
         infot = 1;
+        strncpy(srnamt, "Rormtr", srnamt_len);
         Rormtr("/", "U", "N", 0, 0, a, 1, tau, c, 1, w, 1, info);
         chkxer("Rormtr", infot, nout, lerr, ok);
         infot = 2;
@@ -273,6 +246,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rsptrd
         //
         infot = 1;
+        strncpy(srnamt, "Rsptrd", srnamt_len);
         Rsptrd("/", 0, a, d, e, tau, info);
         chkxer("Rsptrd", infot, nout, lerr, ok);
         infot = 2;
@@ -283,6 +257,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Ropgtr
         //
         infot = 1;
+        strncpy(srnamt, "Ropgtr", srnamt_len);
         Ropgtr("/", 0, a, tau, z, 1, w, info);
         chkxer("Ropgtr", infot, nout, lerr, ok);
         infot = 2;
@@ -296,6 +271,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Ropmtr
         //
         infot = 1;
+        strncpy(srnamt, "Ropmtr", srnamt_len);
         Ropmtr("/", "U", "N", 0, 0, a, tau, c, 1, w, info);
         chkxer("Ropmtr", infot, nout, lerr, ok);
         infot = 2;
@@ -318,6 +294,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rpteqr
         //
         infot = 1;
+        strncpy(srnamt, "Rpteqr", srnamt_len);
         Rpteqr("/", 0, d, e, z, 1, w, info);
         chkxer("Rpteqr", infot, nout, lerr, ok);
         infot = 2;
@@ -331,6 +308,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rstebz
         //
         infot = 1;
+        strncpy(srnamt, "Rstebz", srnamt_len);
         Rstebz("/", "E", 0, 0.0, 1.0, 1, 0, 0.0, d, e, m, nsplit, x, i1, i2, w, iw, info);
         chkxer("Rstebz", infot, nout, lerr, ok);
         infot = 2;
@@ -359,6 +337,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rstein
         //
         infot = 1;
+        strncpy(srnamt, "Rstein", srnamt_len);
         Rstein(-1, d, e, 0, x, i1, i2, z, 1, w, iw, i3, info);
         chkxer("Rstein", infot, nout, lerr, ok);
         infot = 4;
@@ -375,6 +354,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rsteqr
         //
         infot = 1;
+        strncpy(srnamt, "Rsteqr", srnamt_len);
         Rsteqr("/", 0, d, e, z, 1, w, info);
         chkxer("Rsteqr", infot, nout, lerr, ok);
         infot = 2;
@@ -388,6 +368,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rsterf
         //
         infot = 1;
+        strncpy(srnamt, "Rsterf", srnamt_len);
         Rsterf(-1, d, e, info);
         chkxer("Rsterf", infot, nout, lerr, ok);
         nt++;
@@ -395,6 +376,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rstedc
         //
         infot = 1;
+        strncpy(srnamt, "Rstedc", srnamt_len);
         Rstedc("/", 0, d, e, z, 1, w, 1, iw, 1, info);
         chkxer("Rstedc", infot, nout, lerr, ok);
         infot = 2;
@@ -426,6 +408,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rstevd
         //
         infot = 1;
+        strncpy(srnamt, "Rstevd", srnamt_len);
         Rstevd("/", 0, d, e, z, 1, w, 1, iw, 1, info);
         chkxer("Rstevd", infot, nout, lerr, ok);
         infot = 2;
@@ -451,6 +434,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rstev
         //
         infot = 1;
+        strncpy(srnamt, "Rstev", srnamt_len);
         Rstev("/", 0, d, e, z, 1, w, info);
         chkxer("Rstev ", infot, nout, lerr, ok);
         infot = 2;
@@ -464,6 +448,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rstevx
         //
         infot = 1;
+        strncpy(srnamt, "Rstevx", srnamt_len);
         Rstevx("/", "A", 0, d, e, 0.0, 0.0, 0, 0, 0.0, m, x, z, 1, w, iw, i3, info);
         chkxer("Rstevx", infot, nout, lerr, ok);
         infot = 2;
@@ -496,6 +481,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //
         n = 1;
         infot = 1;
+        strncpy(srnamt, "Rstevr", srnamt_len);
         Rstevr("/", "A", 0, d, e, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, x, 20 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Rstevr", infot, nout, lerr, ok);
         infot = 2;
@@ -529,6 +515,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rsyevd
         //
         infot = 1;
+        strncpy(srnamt, "Rsyevd", srnamt_len);
         Rsyevd("/", "U", 0, a, 1, x, w, 1, iw, 1, info);
         chkxer("Rsyevd", infot, nout, lerr, ok);
         infot = 2;
@@ -563,6 +550,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rsyevd_2stage
         //
         infot = 1;
+        strncpy(srnamt, "Rsyevd_2stage", srnamt_len);
         Rsyevd_2stage("/", "U", 0, a, 1, x, w, 1, iw, 1, info);
         chkxer("Rsyevd_2stage", infot, nout, lerr, ok);
         infot = 1;
@@ -587,6 +575,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //         CALL Rsyevd_2stage( 'V', 'U', 2, A, 2, X, W, 20, IW, 12, INFO )
         //         CALL CHKXER( 'Rsyevd_2stage', INFOT, NOUT, LERR, OK )
         infot = 10;
+        strncpy(srnamt, "Rsyevd_2stage", srnamt_len);
         Rsyevd_2stage("N", "U", 1, a, 1, x, w, 1, iw, 0, info);
         chkxer("Rsyevd_2stage", infot, nout, lerr, ok);
         infot = 10;
@@ -601,6 +590,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //
         n = 1;
         infot = 1;
+        strncpy(srnamt, "Rsyevr", srnamt_len);
         Rsyevr("/", "A", "U", 0, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 26 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Rsyevr", infot, nout, lerr, ok);
         infot = 2;
@@ -640,6 +630,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //
         n = 1;
         infot = 1;
+        strncpy(srnamt, "Rsyevr_2stage", srnamt_len);
         Rsyevr_2stage("/", "A", "U", 0, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 26 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         chkxer("Rsyevr_2stage", infot, nout, lerr, ok);
         infot = 1;
@@ -680,6 +671,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rsyev
         //
         infot = 1;
+        strncpy(srnamt, "Rsyev", srnamt_len);
         Rsyev("/", "U", 0, a, 1, x, w, 1, info);
         chkxer("Rsyev ", infot, nout, lerr, ok);
         infot = 2;
@@ -699,28 +691,30 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rsyev_2stage
         //
         infot = 1;
+        strncpy(srnamt, "Rsyev_2stage", srnamt_len);
         Rsyev_2stage("/", "U", 0, a, 1, x, w, 1, info);
-        chkxer("Rsyev_2stage ", infot, nout, lerr, ok);
+        chkxer("Rsyev_2stage", infot, nout, lerr, ok);
         infot = 1;
         Rsyev_2stage("V", "U", 0, a, 1, x, w, 1, info);
-        chkxer("Rsyev_2stage ", infot, nout, lerr, ok);
+        chkxer("Rsyev_2stage", infot, nout, lerr, ok);
         infot = 2;
         Rsyev_2stage("N", "/", 0, a, 1, x, w, 1, info);
-        chkxer("Rsyev_2stage ", infot, nout, lerr, ok);
+        chkxer("Rsyev_2stage", infot, nout, lerr, ok);
         infot = 3;
         Rsyev_2stage("N", "U", -1, a, 1, x, w, 1, info);
-        chkxer("Rsyev_2stage ", infot, nout, lerr, ok);
+        chkxer("Rsyev_2stage", infot, nout, lerr, ok);
         infot = 5;
         Rsyev_2stage("N", "U", 2, a, 1, x, w, 3, info);
-        chkxer("Rsyev_2stage ", infot, nout, lerr, ok);
+        chkxer("Rsyev_2stage", infot, nout, lerr, ok);
         infot = 8;
         Rsyev_2stage("N", "U", 1, a, 1, x, w, 1, info);
-        chkxer("Rsyev_2stage ", infot, nout, lerr, ok);
+        chkxer("Rsyev_2stage", infot, nout, lerr, ok);
         nt += 6;
         //
         //        Rsyevx
         //
         infot = 1;
+        strncpy(srnamt, "Rsyevx", srnamt_len);
         Rsyevx("/", "A", "U", 0, a, 1, 0.0, 0.0, 0, 0, 0.0, m, x, z, 1, w, 1, iw, i3, info);
         chkxer("Rsyevx", infot, nout, lerr, ok);
         infot = 2;
@@ -760,6 +754,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rsyevx_2stage
         //
         infot = 1;
+        strncpy(srnamt, "Rsyevx_2stage", srnamt_len);
         Rsyevx_2stage("/", "A", "U", 0, a, 1, 0.0, 0.0, 0, 0, 0.0, m, x, z, 1, w, 1, iw, i3, info);
         chkxer("Rsyevx_2stage", infot, nout, lerr, ok);
         infot = 1;
@@ -802,6 +797,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rspevd
         //
         infot = 1;
+        strncpy(srnamt, "Rspevd", srnamt_len);
         Rspevd("/", "U", 0, a, x, z, 1, w, 1, iw, 1, info);
         chkxer("Rspevd", infot, nout, lerr, ok);
         infot = 2;
@@ -836,6 +832,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rspev
         //
         infot = 1;
+        strncpy(srnamt, "Rspev", srnamt_len);
         Rspev("/", "U", 0, a, w, z, 1, x, info);
         chkxer("Rspev ", infot, nout, lerr, ok);
         infot = 2;
@@ -852,6 +849,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rspevx
         //
         infot = 1;
+        strncpy(srnamt, "Rspevx", srnamt_len);
         Rspevx("/", "A", "U", 0, a, 0.0, 0.0, 0, 0, 0.0, m, x, z, 1, w, iw, i3, info);
         chkxer("Rspevx", infot, nout, lerr, ok);
         infot = 2;
@@ -889,6 +887,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rsbtrd
         //
         infot = 1;
+        strncpy(srnamt, "Rsbtrd", srnamt_len);
         Rsbtrd("/", "U", 0, 0, a, 1, d, e, z, 1, w, info);
         chkxer("Rsbtrd", infot, nout, lerr, ok);
         infot = 2;
@@ -908,40 +907,42 @@ void Rerrst(const char *path, INTEGER const nunit) {
         chkxer("Rsbtrd", infot, nout, lerr, ok);
         nt += 6;
         //
-        //        Rsytrd_SB2ST
+        //        Rsytrd_sb2st
         //
         infot = 1;
+        strncpy(srnamt, "Rsytrd_sb2st", srnamt_len);
         Rsytrd_sb2st("/", "N", "U", 0, 0, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Rsytrd_SB2ST", infot, nout, lerr, ok);
+        chkxer("Rsytrd_sb2st", infot, nout, lerr, ok);
         infot = 2;
         Rsytrd_sb2st("N", "/", "U", 0, 0, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Rsytrd_SB2ST", infot, nout, lerr, ok);
+        chkxer("Rsytrd_sb2st", infot, nout, lerr, ok);
         infot = 2;
         Rsytrd_sb2st("N", "H", "U", 0, 0, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Rsytrd_SB2ST", infot, nout, lerr, ok);
+        chkxer("Rsytrd_sb2st", infot, nout, lerr, ok);
         infot = 3;
         Rsytrd_sb2st("N", "N", "/", 0, 0, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Rsytrd_SB2ST", infot, nout, lerr, ok);
+        chkxer("Rsytrd_sb2st", infot, nout, lerr, ok);
         infot = 4;
         Rsytrd_sb2st("N", "N", "U", -1, 0, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Rsytrd_SB2ST", infot, nout, lerr, ok);
+        chkxer("Rsytrd_sb2st", infot, nout, lerr, ok);
         infot = 5;
         Rsytrd_sb2st("N", "N", "U", 0, -1, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Rsytrd_SB2ST", infot, nout, lerr, ok);
+        chkxer("Rsytrd_sb2st", infot, nout, lerr, ok);
         infot = 7;
         Rsytrd_sb2st("N", "N", "U", 0, 1, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Rsytrd_SB2ST", infot, nout, lerr, ok);
+        chkxer("Rsytrd_sb2st", infot, nout, lerr, ok);
         infot = 11;
         Rsytrd_sb2st("N", "N", "U", 0, 0, a, 1, d, e, c, 0, w, 1, info);
-        chkxer("Rsytrd_SB2ST", infot, nout, lerr, ok);
+        chkxer("Rsytrd_sb2st", infot, nout, lerr, ok);
         infot = 13;
         Rsytrd_sb2st("N", "N", "U", 0, 0, a, 1, d, e, c, 1, w, 0, info);
-        chkxer("Rsytrd_SB2ST", infot, nout, lerr, ok);
+        chkxer("Rsytrd_sb2st", infot, nout, lerr, ok);
         nt += 9;
         //
         //        Rsbevd
         //
         infot = 1;
+        strncpy(srnamt, "Rsbevd", srnamt_len);
         Rsbevd("/", "U", 0, 0, a, 1, x, z, 1, w, 1, iw, 1, info);
         chkxer("Rsbevd", infot, nout, lerr, ok);
         infot = 2;
@@ -979,6 +980,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rsbevd_2stage
         //
         infot = 1;
+        strncpy(srnamt, "Rsbevd_2stage", srnamt_len);
         Rsbevd_2stage("/", "U", 0, 0, a, 1, x, z, 1, w, 1, iw, 1, info);
         chkxer("Rsbevd_2stage", infot, nout, lerr, ok);
         infot = 1;
@@ -1023,6 +1025,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rsbev
         //
         infot = 1;
+        strncpy(srnamt, "Rsbev", srnamt_len);
         Rsbev("/", "U", 0, 0, a, 1, x, z, 1, w, info);
         chkxer("Rsbev ", infot, nout, lerr, ok);
         infot = 2;
@@ -1045,6 +1048,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rsbev_2stage
         //
         infot = 1;
+        strncpy(srnamt, "Rsbev_2stage", srnamt_len);
         Rsbev_2stage("/", "U", 0, 0, a, 1, x, z, 1, w, 0, info);
         chkxer("Rsbev_2stage ", infot, nout, lerr, ok);
         infot = 1;
@@ -1073,6 +1077,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rsbevx
         //
         infot = 1;
+        strncpy(srnamt, "Rsbevx", srnamt_len);
         Rsbevx("/", "A", "U", 0, 0, a, 1, q, 1, 0.0, 0.0, 0, 0, 0.0, m, x, z, 1, w, iw, i3, info);
         chkxer("Rsbevx", infot, nout, lerr, ok);
         infot = 2;
@@ -1116,6 +1121,7 @@ void Rerrst(const char *path, INTEGER const nunit) {
         //        Rsbevx_2stage
         //
         infot = 1;
+        strncpy(srnamt, "Rsbevx_2stage", srnamt_len);
         Rsbevx_2stage("/", "A", "U", 0, 0, a, 1, q, 1, 0.0, 0.0, 0, 0, 0.0, m, x, z, 1, w, 0, iw, i3, info);
         chkxer("Rsbevx_2stage", infot, nout, lerr, ok);
         infot = 1;
