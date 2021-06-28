@@ -31,25 +31,6 @@
 
 void Rsytrd_2stage(const char *vect, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *d, REAL *e, REAL *tau, REAL *hous2, INTEGER const lhous2, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters
     //
     info = 0;

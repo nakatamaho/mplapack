@@ -32,31 +32,6 @@
 REAL Rlansy(const char *norm, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *work) {
     REAL return_value = 0.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     const REAL zero = 0.0;
     REAL value = 0.0;
     INTEGER j = 0;
@@ -92,7 +67,7 @@ REAL Rlansy(const char *norm, const char *uplo, INTEGER const n, REAL *a, INTEGE
                 }
             }
         }
-    } else if ((Mlsame(norm, "I")) || (Mlsame(norm, "O")) || ((Mlsame(norm, "1")))) {
+    } else if ((Mlsame(norm, "I")) || (Mlsame(norm, "O")) || (Mlsame(norm, "1"))) {
         //
         //        Find normI(A) ( = norm1(A), since A is symmetric).
         //
