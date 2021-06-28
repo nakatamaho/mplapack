@@ -51,7 +51,7 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //
         //        Compute SVD crossover point.
         //
-        return_value = castINTEGER(castREAL(min(n1, n2) * 1.6e0f));
+        return_value = castINTEGER(castREAL(min(n1, n2)) * 1.6);
         //
     } else if (ispec >= 7 && ispec <= 9) {
         //
@@ -94,8 +94,6 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
         if (ispec == 17) {
             return_value = iparms[1 - 1];
         } else {
-            printf("notyet \n");
-            exit(0);
             return_value = iMparam2stage(ispec, name, opts, n1, n2, n3, n4);
         }
         //
