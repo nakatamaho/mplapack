@@ -33,22 +33,6 @@ INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, I
     INTEGER return_value = 0;
     INTEGER iispec = 0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //     July 2017
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     switch (ispec) {
     case 1:
         goto statement_10;

@@ -40,10 +40,10 @@ void Rsytrd_2stage(const char *vect, const char *uplo, INTEGER const n, REAL *a,
     //
     //     Determine the block size, the workspace size and the hous size.
     //
-    INTEGER kd = iMlaenv2stage(1, "Rsytrd_2stage", vect, n, -1, -1, -1);
-    INTEGER ib = iMlaenv2stage(2, "Rsytrd_2stage", vect, n, kd, -1, -1);
-    INTEGER lhmin = iMlaenv2stage(3, "Rsytrd_2stage", vect, n, kd, ib, -1);
-    INTEGER lwmin = iMlaenv2stage(4, "Rsytrd_2stage", vect, n, kd, ib, -1);
+    INTEGER kd = iMlaenv2stage((INTEGER)1, "Rsytrd_2stage", vect, n, -1, -1, -1);
+    INTEGER ib = iMlaenv2stage((INTEGER)2, "Rsytrd_2stage", vect, n, kd, -1, -1);
+    INTEGER lhmin = iMlaenv2stage((INTEGER)3, "Rsytrd_2stage", vect, n, kd, ib, -1);
+    INTEGER lwmin = iMlaenv2stage((INTEGER)4, "Rsytrd_2stage", vect, n, kd, ib, -1);
     //      WRITE(*,*),'Rsytrd_2stage N KD UPLO LHMIN LWMIN ',N, KD, UPLO,
     //     $            LHMIN, LWMIN
     //

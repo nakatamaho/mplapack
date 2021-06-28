@@ -31,24 +31,10 @@
 
 #include <string.h>
 
+#define SUBNAM_LEN 128
+
 INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, INTEGER const ni, INTEGER const nbi, INTEGER const ibi, INTEGER const nxi) {
     INTEGER return_value = 0;
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //
-    //  ================================================================
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Invalid value for ISPEC
     //
@@ -62,7 +48,7 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
     INTEGER nthreads = 1;
     //      WRITE(*,*) 'IPARAM VOICI NTHREADS ISPEC ',NTHREADS, ISPEC
     //
-    char subnam[12];
+    char subnam[SUBNAM_LEN];
     INTEGER ic = 0;
     INTEGER iz = 0;
     INTEGER i = 0;
@@ -73,12 +59,11 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
     bool rprec = false;
     bool cprec = false;
 
-    name_len = min((int)strlen(name), (int)strlen(subnam));
+    name_len = min((int)strlen(name), SUBNAM_LEN);
     strncpy(subnam, name, name_len);
-    for (int i = 0; i < strlen(subnam); i++) {
+    for (int i = 0; i < name_len; i++) {
         subnam[i] = toupper(subnam[i]);
     }
-
     if (ispec != 19) {
         //
         //        Convert NAME to upper case if the first character is lower case.
