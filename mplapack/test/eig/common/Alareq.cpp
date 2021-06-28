@@ -83,16 +83,16 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
         //        Read a line of matrix types if 0 < NMATS < NTYPES.
         //
         if (nmats > 0) {
-                getline(cin, str);
-                for (j = 1; j <= nmats; j = j + 1) {
-                    nreq[j - 1] = 0;
-                }
-                iss.clear();
-                iss.str(str);
-                for (j = 1; j <= nmats; j = j + 1) {
-                    iss >> itmp;
-                    nreq[j - 1] = itmp;
-                }
+            getline(cin, str);
+            for (j = 1; j <= nmats; j = j + 1) {
+                nreq[j - 1] = 0;
+            }
+            iss.clear();
+            iss.str(str);
+            for (j = 1; j <= nmats; j = j + 1) {
+                iss >> itmp;
+                nreq[j - 1] = itmp;
+            }
             for (i = 1; i <= nmats; i = i + 1) {
                 nt = nreq[i - 1];
                 if (nt > 0 && nt <= ntypes) {
@@ -111,19 +111,19 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
                                 "': must satisfy  1 <= type <= ',i2)"),
                         path, nt, ntypes;
                 }
-	    }
+            }
         statement_80:;
-	}
+        }
         return;
+        //
+    }
+statement_90:
+    write(nout, "(/,' *** End of file reached when trying to read matrix ','types for ',"
+                "a3,/,' *** Check that you are requesting the',"
+                "' right number of types for each path',/)"),
+        path;
+    write(nout, star);
     //
-    }
-    statement_90:
-        write(nout, "(/,' *** End of file reached when trying to read matrix ','types for ',"
-                    "a3,/,' *** Check that you are requesting the',"
-                    "' right number of types for each path',/)"),
-            path;
-        write(nout, star);
-        //
-        //     End of Alareq
-        //
-    }
+    //     End of Alareq
+    //
+}
