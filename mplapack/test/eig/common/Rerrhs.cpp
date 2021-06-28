@@ -42,10 +42,6 @@ using fem::common;
 void Rerrhs(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
     //
     //
     //  -- LAPACK test routine --
@@ -120,6 +116,7 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         //        Rgebal
         //
         infot = 1;
+        strncpy(srnamt, "Rgebal", srnamt_len);
         Rgebal("/", 0, a, 1, ilo, ihi, s, info);
         chkxer("Rgebal", infot, nout, lerr, ok);
         infot = 2;
@@ -133,6 +130,7 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         //        Rgebak
         //
         infot = 1;
+        strncpy(srnamt, "Rgebak", srnamt_len);
         Rgebak("/", "R", 0, 1, 0, s, 0, a, 1, info);
         chkxer("Rgebak", infot, nout, lerr, ok);
         infot = 2;
@@ -164,6 +162,7 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         //        Rgehrd
         //
         infot = 1;
+        strncpy(srnamt, "Rgehrd", srnamt_len);
         Rgehrd(-1, 1, 1, a, 1, tau, w, 1, info);
         chkxer("Rgehrd", infot, nout, lerr, ok);
         infot = 2;
@@ -189,6 +188,7 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         //        Rorghr
         //
         infot = 1;
+        strncpy(srnamt, "Rorghr", srnamt_len);
         Rorghr(-1, 1, 1, a, 1, tau, w, 1, info);
         chkxer("Rorghr", infot, nout, lerr, ok);
         infot = 2;
@@ -214,6 +214,7 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         //        Rormhr
         //
         infot = 1;
+        strncpy(srnamt, "Rormhr", srnamt_len);
         Rormhr("/", "N", 0, 0, 1, 0, a, 1, tau, c, 1, w, 1, info);
         chkxer("Rormhr", infot, nout, lerr, ok);
         infot = 2;
@@ -266,6 +267,7 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         //        Rhseqr
         //
         infot = 1;
+        strncpy(srnamt, "Rhseqr", srnamt_len);
         Rhseqr("/", "N", 0, 1, 0, a, 1, wr, wi, c, 1, w, 1, info);
         chkxer("Rhseqr", infot, nout, lerr, ok);
         infot = 2;
@@ -297,6 +299,7 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         //        Rhsein
         //
         infot = 1;
+        strncpy(srnamt, "Rhsein", srnamt_len);
         Rhsein("/", "N", "N", sel, 0, a, 1, wr, wi, vl, 1, vr, 1, 0, m, w, ifaill, ifailr, info);
         chkxer("Rhsein", infot, nout, lerr, ok);
         infot = 2;
@@ -325,6 +328,7 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         //        Rtrevc
         //
         infot = 1;
+        strncpy(srnamt, "Rtrevc", srnamt_len);
         Rtrevc("/", "A", sel, 0, a, 1, vl, 1, vr, 1, 0, m, w, info);
         chkxer("Rtrevc", infot, nout, lerr, ok);
         infot = 2;
