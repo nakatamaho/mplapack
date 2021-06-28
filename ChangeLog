@@ -1,3 +1,12 @@
+2021/6/29   Nakata Maho <maho@riken.jp> 1.0.0
+            * Tests of Rsbtrd (Rsb.in)
+              (reduction of a symmetric band matrix to tridiagonal form)
+              have passed for MPFR version.
+
+            * Tests of the symmetric eigenproblem using
+              the 2-stage reduction techniques (se2.in)
+              have passed for MPFR version.
+
 2021/6/28   Nakata Maho <maho@riken.jp> 1.0.0
             * Tests of the symmetric eigenproblem (sep.in)
               have passed for MPFR version.
