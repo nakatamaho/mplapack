@@ -1,4 +1,52 @@
-        {
+		#ifdef DONE
+                {
+                    printf("Rdrvst.cpp ntest %d: LAPACKE\n", (int)ntest);
+                    double *v_d = new double[n * ldv];
+                    double *u_d = new double[n * ldu];
+                    double *z_d = new double[n * ldu];
+                    double *wa2_d = new double[n];
+                    double abstol_d = abstol;
+                    double vl_d = vl;
+                    double vu_d = vu;
+                    int m2_d = m2;
+                    int ifail;
+		    printf("kd %d\n", (int)kd);
+                    if (iuplo == 1) {
+                        for (j = 1; j <= n; j = j + 1) {
+                            for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
+			        v_d[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+			        printf("a_u="); printnum( a[(i - 1) + (j - 1) * lda]);printf("\n");
+				printf("%d ,%d\n",(int)(kd + 1 + i - j) - 1, (int)(j-1));
+                            }
+                        }
+                    } else {
+                        for (j = 1; j <= n; j = j + 1) {
+                            for (i = j; i <= min(n, j + kd); i = i + 1) {
+                                v_d[((1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+			        printf("a_l="); printnum( a[(i - 1) + (j - 1) * lda]);printf("\n");
+				printf("%d ,%d\n",(int)((1 + i - j) - 1), (int)(j-1));
+                            }
+                        }
+                    }
+                    printf("kd=%d\n", (int)kd);
+                    printf("il=%d\n", (int)il);
+                    printf("iu=%d\n", (int)iu);
+                    printf("ldu=%d\n", (int)ldu);
+                    printf("v_d="); printmat(n, n, v_d, ldu); printf("\n");
+                    LAPACKE_dsbevx(LAPACK_COL_MAJOR, 'V', 'I', uplo, (int)n, (int)kd, v_d, (int)ldu, u_d, (int)ldu, vl_d, vu_d, (int)il, (int)iu, abstol, &m2_d, wa2_d, z_d, ldu, &ifail);
+                    printf("z_d="); printmat(m2, m2, z_d, ldu); printf("\n");
+                    printf("w_d="); printvec(wa2_d, m2_d); printf("\n");
+                    printf("vl_d="); printnum(vl_d); printf("\n");
+                    printf("vu_d="); printnum(vu_d); printf("\n");
+                    printf("m2_d=%d\n", (int)m2_d);
+                    delete[] wa2_d;
+                    delete[] z_d;
+                    delete[] u_d;
+                    delete[] v_d;
+                }
+		#endif
+
+{
 	  double *t_d = new double[ldt * n];
 	  double *work_d = new double[max((INTEGER)1, lwork)];
 	  double scale_d;
