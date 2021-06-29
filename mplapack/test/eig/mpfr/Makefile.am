@@ -202,7 +202,17 @@ mplapack_mpfr_eigtest_PROGRAMS = \
 xeigtstR_mpfr \
 xeigtstC_mpfr
 
-do-tests: Rbal.out Rbak.out Rnep.out Rsep.out
+$(mplapack_mpfr_eigtest_PROGRAMS): $(lib_LTLIBRARIES)
+
+xeigtstR_mpfr_SOURCES  = ../common/Rchkee.cpp  ../../../../mpblas/test/common/mplapack.test.cpp
+xeigtstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstR_mpfr_CXXFLAGS = $(cxxflags)
+
+xeigtstC_mpfr_SOURCES  = ../common/Cchkee.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xeigtstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstC_mpfr_CXXFLAGS = $(cxxflags)
+
+do-tests: Rbal.out Rbak.out Rnep.out Rsep.out Red.out
 
 Rbal.out:
 	@echo Rgebal: Testing the balancing of a general matrix
@@ -220,12 +230,6 @@ Rsep.out:
 	@echo SEP: Testing Symmetric Eigenvalue Problem routines
 	./xeigtstR_mpfr < sep.in >& Rsep.out
 
-$(mplapack_mpfr_eigtest_PROGRAMS): $(lib_LTLIBRARIES)
-
-xeigtstR_mpfr_SOURCES  = ../common/Rchkee.cpp  ../../../../mpblas/test/common/mplapack.test.cpp
-xeigtstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xeigtstR_mpfr_CXXFLAGS = $(cxxflags)
-
-xeigtstC_mpfr_SOURCES  = ../common/Cchkee.cpp ../../../../mpblas/test/common/mplapack.test.cpp
-xeigtstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xeigtstC_mpfr_CXXFLAGS = $(cxxflags)
+Red.out:
+	@echo DEV: Testing DOUBLE PRECISION Nonsymmetric Eigenvalue Driver
+	./xeigtstR_mpfr < Red.in >& Red.out
