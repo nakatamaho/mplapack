@@ -41,49 +41,14 @@ using fem::common;
 void Rerred(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
     //
     static const char *format_9998 = "(' *** ',a,' failed the tests of the error exits ***')";
     static const char *format_9999 = "(1x,a,' passed the tests of the error exits (',i3,' tests done)')";
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Arrays in Common ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     char c2[2];
     c2[0] = path[1];
     c2[1] = path[2];
-    char srnamt[32];
-    memset(srnamt, 0, sizeof(srnamt));
     //
     //     Initialize A
     //
@@ -127,63 +92,60 @@ void Rerred(const char *path, INTEGER const nunit) {
         //
         //        Test Rgeev
         //
-        memset(srnamt, 0, sizeof(srnamt));
-        strncpy(srnamt, "Rgeev ", 16);
+        strncpy(srnamt, "Rgeev", srnamt_len);
         infot = 1;
         Rgeev("X", "N", 0, a, 1, wr, wi, vl, 1, vr, 1, w, 1, info);
-        chkxer("Rgeev ", infot, nout, lerr, ok);
+        chkxer("Rgeev", infot, nout, lerr, ok);
         infot = 2;
         Rgeev("N", "X", 0, a, 1, wr, wi, vl, 1, vr, 1, w, 1, info);
-        chkxer("Rgeev ", infot, nout, lerr, ok);
+        chkxer("Rgeev", infot, nout, lerr, ok);
         infot = 3;
         Rgeev("N", "N", -1, a, 1, wr, wi, vl, 1, vr, 1, w, 1, info);
-        chkxer("Rgeev ", infot, nout, lerr, ok);
+        chkxer("Rgeev", infot, nout, lerr, ok);
         infot = 5;
         Rgeev("N", "N", 2, a, 1, wr, wi, vl, 1, vr, 1, w, 6, info);
-        chkxer("Rgeev ", infot, nout, lerr, ok);
+        chkxer("Rgeev", infot, nout, lerr, ok);
         infot = 9;
         Rgeev("V", "N", 2, a, 2, wr, wi, vl, 1, vr, 1, w, 8, info);
-        chkxer("Rgeev ", infot, nout, lerr, ok);
+        chkxer("Rgeev", infot, nout, lerr, ok);
         infot = 11;
         Rgeev("N", "V", 2, a, 2, wr, wi, vl, 1, vr, 1, w, 8, info);
-        chkxer("Rgeev ", infot, nout, lerr, ok);
+        chkxer("Rgeev", infot, nout, lerr, ok);
         infot = 13;
         Rgeev("V", "V", 1, a, 1, wr, wi, vl, 1, vr, 1, w, 3, info);
-        chkxer("Rgeev ", infot, nout, lerr, ok);
+        chkxer("Rgeev", infot, nout, lerr, ok);
         nt += 7;
         //
     } else if (Mlsamen(2, c2, "ES")) {
         //
         //        Test Rgees
         //
-        memset(srnamt, 0, sizeof(srnamt));
-        strncpy(srnamt, "Rgees ", 16);
+        strncpy(srnamt, "Rgees", srnamt_len);
         infot = 1;
         Rgees("X", "N", Rslect, 0, a, 1, sdim, wr, wi, vl, 1, w, 1, b, info);
-        chkxer("Rgees ", infot, nout, lerr, ok);
+        chkxer("Rgees", infot, nout, lerr, ok);
         infot = 2;
         Rgees("N", "X", Rslect, 0, a, 1, sdim, wr, wi, vl, 1, w, 1, b, info);
-        chkxer("Rgees ", infot, nout, lerr, ok);
+        chkxer("Rgees", infot, nout, lerr, ok);
         infot = 4;
         Rgees("N", "S", Rslect, -1, a, 1, sdim, wr, wi, vl, 1, w, 1, b, info);
-        chkxer("Rgees ", infot, nout, lerr, ok);
+        chkxer("Rgees", infot, nout, lerr, ok);
         infot = 6;
         Rgees("N", "S", Rslect, 2, a, 1, sdim, wr, wi, vl, 1, w, 6, b, info);
-        chkxer("Rgees ", infot, nout, lerr, ok);
+        chkxer("Rgees", infot, nout, lerr, ok);
         infot = 11;
         Rgees("V", "S", Rslect, 2, a, 2, sdim, wr, wi, vl, 1, w, 6, b, info);
-        chkxer("Rgees ", infot, nout, lerr, ok);
+        chkxer("Rgees", infot, nout, lerr, ok);
         infot = 13;
         Rgees("N", "S", Rslect, 1, a, 1, sdim, wr, wi, vl, 1, w, 2, b, info);
-        chkxer("Rgees ", infot, nout, lerr, ok);
+        chkxer("Rgees", infot, nout, lerr, ok);
         nt += 6;
         //
     } else if (Mlsamen(2, c2, "VX")) {
         //
         //        Test Rgeevx
         //
-        memset(srnamt, 0, sizeof(srnamt));
-        strncpy(srnamt, "Rgeevx", 16);
+        strncpy(srnamt, "Rgeevx", srnamt_len);
         infot = 1;
         Rgeevx("X", "N", "N", "N", 0, a, 1, wr, wi, vl, 1, vr, 1, ilo, ihi, s, abnrm, r1, r2, w, 1, iw, info);
         chkxer("Rgeevx", infot, nout, lerr, ok);
@@ -223,8 +185,7 @@ void Rerred(const char *path, INTEGER const nunit) {
         //
         //        Test Rgeesx
         //
-        memset(srnamt, 0, sizeof(srnamt));
-        strncpy(srnamt, "Rgeesx", 16);
+        strncpy(srnamt, "Rgeesx", srnamt_len);
         infot = 1;
         Rgeesx("X", "N", Rslect, "N", 0, a, 1, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, iw, 1, b, info);
         chkxer("Rgeesx", infot, nout, lerr, ok);
@@ -252,8 +213,7 @@ void Rerred(const char *path, INTEGER const nunit) {
         //
         //        Test Rgesvd
         //
-        memset(srnamt, 0, sizeof(srnamt));
-        strncpy(srnamt, "Rgesvd", 16);
+        strncpy(srnamt, "Rgesvd", srnamt_len);
         infot = 1;
         Rgesvd("X", "N", 0, 0, a, 1, s, u, 1, vt, 1, w, 1, info);
         chkxer("Rgesvd", infot, nout, lerr, ok);
@@ -287,8 +247,7 @@ void Rerred(const char *path, INTEGER const nunit) {
         //
         //        Test Rgesdd
         //
-        memset(srnamt, 0, sizeof(srnamt));
-        strncpy(srnamt, "Rgesdd", 16);
+        strncpy(srnamt, "Rgesdd", srnamt_len);
         infot = 1;
         Rgesdd("X", 0, 0, a, 1, s, u, 1, vt, 1, w, 1, iw, info);
         chkxer("Rgesdd", infot, nout, lerr, ok);
@@ -360,8 +319,7 @@ void Rerred(const char *path, INTEGER const nunit) {
         //
         //        Test Rgesvdx
         //
-        memset(srnamt, 0, sizeof(srnamt));
-        strncpy(srnamt, "Rgesvdx", 16);
+        strncpy(srnamt, "Rgesvdx", srnamt_len);
         infot = 1;
         Rgesvdx("X", "N", "A", 0, 0, a, 1, zero, zero, 0, 0, ns, s, u, 1, vt, 1, w, 1, iw, info);
         chkxer("Rgesvdx", infot, nout, lerr, ok);
@@ -407,8 +365,7 @@ void Rerred(const char *path, INTEGER const nunit) {
         //
         //        Test Rgesvdq
         //
-        memset(srnamt, 0, sizeof(srnamt));
-        strncpy(srnamt, "Rgesvdq", 16);
+        strncpy(srnamt, "Rgesvdq", srnamt_len);
         infot = 1;
         Rgesvdq("X", "P", "T", "A", "A", 0, 0, a, 1, s, u, 0, vt, 0, ns, iw, 1, w, 1, w, 1, info);
         chkxer("Rgesvdq", infot, nout, lerr, ok);

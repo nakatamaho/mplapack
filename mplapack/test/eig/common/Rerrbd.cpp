@@ -85,8 +85,8 @@ void Rerrbd(const char *path, INTEGER const nunit) {
         //
         //        Rgebrd
         //
-        infot = 1;
         strncpy(srnamt, "Rgebrd", srnamt_len);
+        infot = 1;
         Rgebrd(-1, 0, a, 1, d, e, tq, tp, w, 1, info);
         chkxer("Rgebrd", infot, nout, lerr, ok);
         infot = 2;
@@ -102,6 +102,7 @@ void Rerrbd(const char *path, INTEGER const nunit) {
         //
         //        Rgebd2
         //
+        strncpy(srnamt, "Rgebd2", srnamt_len);
         infot = 1;
         Rgebd2(-1, 0, a, 1, d, e, tq, tp, w, info);
         chkxer("Rgebd2", infot, nout, lerr, ok);
@@ -115,6 +116,7 @@ void Rerrbd(const char *path, INTEGER const nunit) {
         //
         //        Rorgbr
         //
+        strncpy(srnamt, "Rorgbr", srnamt_len);
         infot = 1;
         Rorgbr("/", 0, 0, 0, a, 1, tq, w, 1, info);
         chkxer("Rorgbr", infot, nout, lerr, ok);
@@ -149,6 +151,7 @@ void Rerrbd(const char *path, INTEGER const nunit) {
         //
         //        Rormbr
         //
+        strncpy(srnamt, "Rormbr", srnamt_len);
         infot = 1;
         Rormbr("/", "L", "T", 0, 0, 0, a, 1, tq, u, 1, w, 1, info);
         chkxer("Rormbr", infot, nout, lerr, ok);
@@ -192,6 +195,7 @@ void Rerrbd(const char *path, INTEGER const nunit) {
         //
         //        Rbdsqr
         //
+        strncpy(srnamt, "Rbdsqr", srnamt_len);
         infot = 1;
         Rbdsqr("/", 0, 0, 0, 0, d, e, v, 1, u, 1, a, 1, w, info);
         chkxer("Rbdsqr", infot, nout, lerr, ok);
@@ -220,6 +224,7 @@ void Rerrbd(const char *path, INTEGER const nunit) {
         //
         //        Rbdsdc
         //
+        strncpy(srnamt, "Rbdsdc", srnamt_len);
         infot = 1;
         Rbdsdc("/", "N", 0, d, e, u, 1, v, 1, q, iq, w, iw, info);
         chkxer("Rbdsdc", infot, nout, lerr, ok);
@@ -239,6 +244,7 @@ void Rerrbd(const char *path, INTEGER const nunit) {
         //
         //        Rbdsvdx
         //
+        strncpy(srnamt, "Rbdsvdx", srnamt_len);
         infot = 1;
         Rbdsvdx("X", "N", "A", 1, d, e, zero, one, 0, 0, ns, s, q, 1, w, iw, info);
         chkxer("Rbdsvdx", infot, nout, lerr, ok);
