@@ -405,7 +405,7 @@ void Rchkee(void) {
             iss.str(str);
             for (i = 1; i <= nn; i = i + 1) {
                 iss >> itmp;
-                pval[i - 1] = itmp;
+                nval[i - 1] = itmp;
             }
             for (i = 1; i <= nn; i = i + 1) {
                 if (nval[i - 1] < 0) {
