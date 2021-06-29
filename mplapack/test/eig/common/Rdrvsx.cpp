@@ -38,6 +38,16 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <regex>
+
+using namespace std;
+using std::regex;
+using std::regex_replace;
+
 void Rdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const niunit, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *h, REAL *ht, REAL *wr, REAL *wi, REAL *wrt, REAL *wit, REAL *wrtmp, REAL *witmp, REAL *vs, INTEGER const ldvs, REAL *vs1, REAL *result, REAL *work, INTEGER const lwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
     INTEGER ldh = lda;
     INTEGER ldht = lda;
@@ -138,37 +148,6 @@ void Rdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     static const char *format_9999 = "(/,1x,a3,' -- Real Schur Form Decomposition Expert ','Driver',/,"
                                      "' Matrix types (see Rdrvsx for details):')";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Arrays in Common ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
     //     .. Executable Statements ..
     //
     path[0] = 'R';
@@ -475,31 +454,48 @@ statement_150:
     //     Read input data until N=0
     //
     jtype = 0;
+    string str;
+    istringstream iss;
     while (1) {
-        read(niunit, star), n, nslct;
+        getline(cin, str);
+        iss.clear();
+        iss.str(str);
+        iss >> n;
+        iss >> nslct;
         if (n == 0)
             break;
-
         jtype++;
         iseed[1 - 1] = jtype;
         if (nslct > 0) {
-            {
-                read_loop rloop(cmn, niunit, star);
-                for (i = 1; i <= nslct; i = i + 1) {
-                    rloop, islct[i - 1];
-                }
+            getline(cin, str);
+            string _r = regex_replace(str, regex("D\\+"), "e+");
+            str = regex_replace(_r, regex("D\\-"), "e-");
+            iss.clear();
+            iss.str(str);
+            for (i = 1; i <= nslct; i = i + 1) {
+                iss >> islct[i - 1];
             }
         }
         for (i = 1; i <= n; i = i + 1) {
-            {
-                read_loop rloop(cmn, niunit, star);
-                for (j = 1; j <= n; j = j + 1) {
-                    rloop, dtmp;
-                    a[(i - 1) + (j - 1) * lda] = dtmp;
-                }
+            getline(cin, str);
+            string _r = regex_replace(str, regex("D\\+"), "e+");
+            str = regex_replace(_r, regex("D\\-"), "e-");
+            iss.clear();
+            iss.str(str);
+            for (j = 1; j <= n; j = j + 1) {
+                iss >> dtmp;
+                a[(i - 1) + (j - 1) * lda] = dtmp;
             }
         }
-        read(niunit, star), rcdein, rcdvin;
+        getline(cin, str);
+        string _r = regex_replace(str, regex("D\\+"), "e+");
+        str = regex_replace(_r, regex("D\\-"), "e-");
+        iss.clear();
+        iss.str(str);
+        iss >> dtmp;
+        dtmp = rcdein;
+        iss >> dtmp;
+        dtmp = rcdvin;
         //
         Rget24(true, 22, thresh, iseed, nounit, n, a, lda, h, ht, wr, wi, wrt, wit, wrtmp, witmp, vs, ldvs, vs1, rcdein, rcdvin, nslct, islct, result, work, lwork, iwork, bwork, info);
         //

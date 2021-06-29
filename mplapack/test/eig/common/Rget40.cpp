@@ -44,8 +44,6 @@ using fem::common;
 #include <vector>
 #include <regex>
 
-#include <lapacke.h>
-
 using namespace std;
 using std::regex;
 using std::regex_replace;

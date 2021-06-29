@@ -38,6 +38,16 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <regex>
+
+using namespace std;
+using std::regex;
+using std::regex_replace;
+
 void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const niunit, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *h, REAL *wr, REAL *wi, REAL *wr1, REAL *wi1, REAL *vl, INTEGER const ldvl, REAL *vr, INTEGER const ldvr, REAL *lre, INTEGER const ldlre, REAL *rcondv, REAL *rcndv1, REAL *rcdvin, REAL *rconde, REAL *rcnde1, REAL *rcdein, REAL *scale, REAL *scale1, REAL *result, REAL *work, INTEGER const nwork, INTEGER *iwork, INTEGER &info) {
 
     INTEGER ldh = lda;
@@ -123,31 +133,7 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     static const char *format_9999 = "(/,1x,a3,' -- Real Eigenvalue-Eigenvector Decomposition',"
                                      "' Expert Driver',/,' Matrix types (see Rdrvvx for details): ')";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
     //     .. Executable Statements ..
     //
     path[0] = 'R';
@@ -211,7 +197,6 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
-    Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
     ulpinv = one / ulp;
     rtulp = sqrt(ulp);
@@ -464,8 +449,13 @@ statement_160:
     //     by real part, then decreasing by imaginary part)
     //
     jtype = 0;
+    string str;
+    istringstream iss;
     while (1) {
-        read(niunit, star), n;
+        getline(cin, str);
+        iss.clear();
+        iss.str(str);
+        iss >> n;
         //
         //     Read input data until N=0
         //
@@ -474,16 +464,26 @@ statement_160:
         jtype++;
         iseed[1 - 1] = jtype;
         for (i = 1; i <= n; i = i + 1) {
-            {
-                read_loop rloop(cmn, niunit, star);
-                for (j = 1; j <= n; j = j + 1) {
-                    rloop, dtmp;
-                    a[(i - 1) + (j - 1) * lda] = dtmp;
-                }
+            getline(cin, str);
+            string _r = regex_replace(str, regex("D\\+"), "e+");
+            str = regex_replace(_r, regex("D\\-"), "e-");
+            iss.clear();
+            iss.str(str);
+            for (j = 1; j <= n; j = j + 1) {
+                iss >> dtmp;
+                a[(i - 1) + (j - 1) * lda] = dtmp;
             }
         }
         for (i = 1; i <= n; i = i + 1) {
-            read(niunit, star), dtmp1, dtmp2, dtmp3, dtmp4;
+            getline(cin, str);
+            string _r = regex_replace(str, regex("D\\+"), "e+");
+            str = regex_replace(_r, regex("D\\-"), "e-");
+            iss.clear();
+            iss.str(str);
+            iss >> dtmp1;
+            iss >> dtmp2;
+            iss >> dtmp3;
+            iss >> dtmp4;
             wr1[i - 1] = dtmp1;
             wi1[i - 1] = dtmp2;
             rcdein[i - 1] = dtmp3;
