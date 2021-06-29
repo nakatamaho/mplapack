@@ -144,7 +144,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
     if (iinfo != 0) {
         result[1 - 1] = ulpinv;
         if (jtype != 22) {
-            write(nounit, format_9998), "Rgeevx1", iinfo, n, jtype, balanc, iseed;
+	  write(nounit, format_9998), "Rgeevx1", iinfo, n, jtype, balanc, iseed[0], iseed[1], iseed[2], iseed[3];
         } else {
             write(nounit, format_9999), "Rgeevx1", iinfo, n, iseed[1 - 1];
         }
