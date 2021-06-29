@@ -196,7 +196,7 @@ mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lg
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mplapack/test/fable
 
 check_PROGRAMS = $(mplapack_mpfr_eigtest_PROGRAMS)
-TESTS = $(check_PROGRAMS) $(LOGFILES)
+TESTS = $(check_PROGRAMS) do-tests
 mplapack_mpfr_eigtestdir = $(prefix)/share/mplapack/test/mplapack/eig/mpfr
 mplapack_mpfr_eigtest_PROGRAMS = \
 xeigtstR_mpfr \
@@ -213,6 +213,9 @@ xeigtstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -l
 xeigtstC_mpfr_CXXFLAGS = $(cxxflags)
 
 do-tests: Rbal.out Rbak.out Rnep.out Rsep.out Red.out
+
+clean-local:
+	rm -f *.out
 
 Rbal.out:
 	@echo Rgebal: Testing the balancing of a general matrix
@@ -231,5 +234,5 @@ Rsep.out:
 	./xeigtstR_mpfr < sep.in >& Rsep.out
 
 Red.out:
-	@echo DEV: Testing DOUBLE PRECISION Nonsymmetric Eigenvalue Driver
+	@echo DEV: Testing Nonsymmetric Eigenvalue Driver
 	./xeigtstR_mpfr < Red.in >& Red.out
