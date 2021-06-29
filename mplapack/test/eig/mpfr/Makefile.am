@@ -196,38 +196,35 @@ mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lg
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mplapack/test/fable
 
 check_PROGRAMS = $(mplapack_mpfr_eigtest_PROGRAMS)
-TESTS = $(check_PROGRAMS)
+TESTS = $(check_PROGRAMS) $(LOGFILES)
 mplapack_mpfr_eigtestdir = $(prefix)/share/mplapack/test/mplapack/eig/mpfr
 mplapack_mpfr_eigtest_PROGRAMS = \
-Rtrsyl_test_mpfr \
 xeigtstR_mpfr \
 xeigtstC_mpfr
+
+do-tests: Rbal.out Rbak.out Rnep.out Rsep.out
+
+Rbal.out:
+	@echo Rgebal: Testing the balancing of a general matrix
+	./xeigtstR_mpfr < Rbal.in >& Rbal.out
+
+Rbak.out:
+	@echo Rgebak: Testing the back transformation of balanced matrix
+	./xeigtstR_mpfr < Rbak.in >& Rbak.out
+
+Rnep.out:
+	@echo NEP: Testing Nonsymmetric Eigenvalue Problem routines
+	./xeigtstR_mpfr < nep.in >& Rnep.out
+
+Rsep.out:
+	@echo SEP: Testing Symmetric Eigenvalue Problem routines
+	./xeigtstR_mpfr < sep.in >& Rsep.out
 
 $(mplapack_mpfr_eigtest_PROGRAMS): $(lib_LTLIBRARIES)
 
 xeigtstR_mpfr_SOURCES  = ../common/Rchkee.cpp  ../../../../mpblas/test/common/mplapack.test.cpp
 xeigtstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR_mpfr_CXXFLAGS = $(cxxflags)
-
-Rtrsyl_test_mpfr_SOURCES  = Rtrsyl_test.cpp
-Rtrsyl_test_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-Rtrsyl_test_mpfr_CXXFLAGS = $(cxxflags)
-
-Rlahqr_test_5x5_mpfr_SOURCES  = Rlahqr_test_5x5.cpp
-Rlahqr_test_5x5_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-Rlahqr_test_5x5_mpfr_CXXFLAGS = $(cxxflags)
-
-Rlahqr_test_4x4_mpfr_SOURCES  = Rlahqr_test_4x4.cpp
-Rlahqr_test_4x4_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-Rlahqr_test_4x4_mpfr_CXXFLAGS = $(cxxflags)
-
-Rlahqr_test_3x3_mpfr_SOURCES  = Rlahqr_test_3x3.cpp
-Rlahqr_test_3x3_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-Rlahqr_test_3x3_mpfr_CXXFLAGS = $(cxxflags)
-
-Rlahqr_test_2x2_mpfr_SOURCES  = Rlahqr_test_2x2.cpp
-Rlahqr_test_2x2_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-Rlahqr_test_2x2_mpfr_CXXFLAGS = $(cxxflags)
 
 xeigtstC_mpfr_SOURCES  = ../common/Cchkee.cpp ../../../../mpblas/test/common/mplapack.test.cpp
 xeigtstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
