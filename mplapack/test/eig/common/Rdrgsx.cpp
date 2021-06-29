@@ -199,7 +199,6 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
     ulpinv = one / ulp;
     smlnum = Rlamch("S") / ulp;
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     thrsh2 = ten * thresh;
     ntestt = 0;
     nerrs = 0;

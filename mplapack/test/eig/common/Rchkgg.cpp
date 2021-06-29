@@ -157,7 +157,6 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     ulp = Rlamch("Epsilon") * Rlamch("Base");
     safmin = safmin / ulp;
     safmax = one / safmin;
-    Rlabad(safmin, safmax);
     ulpinv = one / ulp;
     //
     //     The values RMAGN(2:3) depend on N, see below.

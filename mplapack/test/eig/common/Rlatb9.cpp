@@ -87,7 +87,6 @@ void Rlatb9(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
     //        If it looks like we're on a Cray, take the square root of
     //        SMALL and LARGE to avoid overflow and underflow problems.
     //
-    Rlabad(small, large);
     small = shrink * (small / eps);
     large = one / small;
     //

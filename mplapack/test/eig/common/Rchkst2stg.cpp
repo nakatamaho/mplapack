@@ -167,7 +167,6 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
-    Rlabad(unfl, ovfl);
     ulp = Rlamch("Epsilon") * Rlamch("Base");
     ulpinv = one / ulp;
     log2ui = castINTEGER(log(ulpinv) / log(two));

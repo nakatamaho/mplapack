@@ -349,10 +349,11 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //              Compute eigenvalues and eigenvectors, and test them
                 //
                 Rlacpy("F", n, n, a, lda, h, lda);
+		//		printf("a="); printmat(n,n,a,lda);printf("\n");
                 Rgeev("V", "V", n, h, lda, wr, wi, vl, ldvl, vr, ldvr, work, nnwork, iinfo);
                 if (iinfo != 0) {
                     result[1 - 1] = ulpinv;
-                    write(nounit, format_9993), "Rgeev1", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9993), "Rgeev1", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     goto statement_220;
                 }
@@ -561,7 +562,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         sprintnum_short(buf, result[j - 1]);
                         write(nounit, "(' N=',i5,', IWK=',i2,', seed=',4(i4,','),' type ',i2,"
                                       "', test(',i2,')=',a)"),
-                            n, iwk, ioldsd, jtype, j, buf;
+                            n, iwk, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jtype, j, buf;
                     }
                 }
                 //
