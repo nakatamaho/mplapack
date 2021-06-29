@@ -84,33 +84,6 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
     static const char *format_9999 = "(' Rget23: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
                                      "', INPUT EXAMPLE NUMBER = ',i4)";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Check for errors
     //
     nobal = Mlsame(balanc, "N");
