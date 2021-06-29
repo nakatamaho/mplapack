@@ -160,7 +160,6 @@ void Rgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     eps = Rlamch("P");
     safmin = Rlamch("S");
     safmax = one / safmin;
-    Rlabad(safmin, safmax);
     smlnum = sqrt(safmin) / eps;
     bignum = one / smlnum;
     //

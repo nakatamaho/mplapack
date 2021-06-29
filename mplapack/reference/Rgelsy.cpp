@@ -146,7 +146,6 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     //
     smlnum = Rlamch("S") / Rlamch("P");
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     //     Scale A, B if max entries outside range [SMLNUM,BIGNUM]
     //

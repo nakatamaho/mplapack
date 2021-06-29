@@ -118,7 +118,6 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
     //
     smlnum = Rlamch("S") / Rlamch("P");
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     //     Scale A, B if max element outside range [SMLNUM,BIGNUM]
     //

@@ -164,7 +164,6 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //

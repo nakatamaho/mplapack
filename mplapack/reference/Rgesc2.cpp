@@ -60,7 +60,6 @@ void Rgesc2(INTEGER const n, REAL *a, INTEGER const lda, REAL *rhs, INTEGER *ipi
     REAL smlnum = Rlamch("S") / eps;
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     //     Apply permutations IPIV to RHS
     //

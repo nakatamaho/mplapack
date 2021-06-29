@@ -68,7 +68,6 @@ void Rgetc2(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER 
     REAL smlnum = Rlamch("S") / eps;
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     //     Handle the case N=1 by itself
     //

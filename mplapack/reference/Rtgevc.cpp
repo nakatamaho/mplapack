@@ -251,11 +251,10 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     //
     safmin = Rlamch("Safe minimum");
     big = one / safmin;
-    Rlabad(safmin, big);
     ulp = Rlamch("Epsilon") * Rlamch("Base");
-    small = safmin * n / ulp;
+    small = safmin * castREAL(n) / ulp;
     big = one / small;
-    bignum = one / (safmin * n);
+    bignum = one / (safmin * castREAL(n));
     //
     //     Compute the 1-norm of each column of the strictly upper triangular
     //     part (i.e., excluding all elements belonging to the diagonal

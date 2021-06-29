@@ -251,7 +251,6 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     sfmin = Rlamch("S");
     smlnum = sfmin / eps;
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     //     Scale A if max element outside range [SMLNUM,BIGNUM]
     //

@@ -33,7 +33,7 @@ void Rlaqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     const REAL one = 1.0;
     const INTEGER ntiny = 15;
     INTEGER lwkopt = 0;
-    char jbcmpz[4];
+    char jbcmpz[2];
     INTEGER nwr = 0;
     INTEGER nsr = 0;
     INTEGER ls = 0;
@@ -82,44 +82,6 @@ void Rlaqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     INTEGER ku = 0;
     INTEGER kwh = 0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  ================================================================
-    //     .. Parameters ..
-    //
-    //     ==== Matrices of order NTINY or smaller must be processed by
-    //     .    Rlahqr because of insufficient subdiagonal scratch space.
-    //     .    (This is a hard limit.) ====
-    //
-    //     ==== Exceptional deflation windows:  try to cure rare
-    //     .    slow convergence by varying the size of the
-    //     .    deflation window after KEXNW iterations. ====
-    //
-    //     ==== Exceptional shifts: try to cure rare slow convergence
-    //     .    with ad-hoc exceptional shifts every KEXSH iterations.
-    //     .    ====
-    //
-    //     ==== The constants WILK1 and WILK2 are used to form the
-    //     .    exceptional shifts. ====
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     info = 0;
     //
     //     ==== Quick return for N = 0: nothing to do. ====
@@ -154,9 +116,9 @@ void Rlaqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
             jbcmpz[0] = 'E';
         }
         if (wantz) {
-            jbcmpz[3] = 'V';
+            jbcmpz[1] = 'V';
         } else {
-            jbcmpz[3] = 'N';
+            jbcmpz[1] = 'N';
         }
         //
         //        ==== NWR = recommended deflation window size.  At this

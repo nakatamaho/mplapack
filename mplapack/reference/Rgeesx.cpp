@@ -189,7 +189,6 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
