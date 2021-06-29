@@ -14,6 +14,22 @@
             * Tests of the Singular Value Decomposition routines (svd.in)
               have passed for MPFR version.
 
+            * Tests of the Nonsymmetric Eigenvalue Problem Driver (Red.in)
+              Rgeev (eigenvalues and eigevectors)
+              have passed for MPFR version.
+
+            * Tests of the Nonsymmetric Eigenvalue Problem Driver (Red.in)
+              Rgees (Schur form)
+              have passed for MPFR version.
+
+            * Tests of the Nonsymmetric Eigenvalue Problem Expert Driver (Red.in)
+              Rgeevx (eigenvalues, eigenvectors and condition numbers)
+              have passed for MPFR version.
+
+            * Tests of the Nonsymmetric Eigenvalue Problem Expert Driver (Red.in)
+              Rgeesx (Schur form and condition numbers)
+              have passed for MPFR version.
+
 2021/6/28   Nakata Maho <maho@riken.jp> 1.0.0
             * Tests of the symmetric eigenproblem (sep.in)
               have passed for MPFR version.
