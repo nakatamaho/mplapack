@@ -1,7 +1,0 @@
-* Understand MPFR C++ interface more and write a test cases
-  ** REAL version
-  ** COMPLEX version
-* rename MPBLAS to MPBLAS
-* rename MPLAPACK to MPLAPACK
-* Clean up and unified treatment for complex values.
-
