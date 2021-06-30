@@ -129,8 +129,7 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
         //
         //        ==== Rlaqr0 for big matrices; Rlahqr for small ones ====
         //
-        //if (n > nmin) { // original
-        if (0) { //XXX TODO Rlaqr0 has some bugs.
+        if (n > nmin) {
             Rlaqr0(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo, ihi, z, ldz, work, lwork, info);
         } else {
             //

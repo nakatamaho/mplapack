@@ -307,9 +307,9 @@ void Rgeev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
             }
         }
     }
-//
-//     Undo scaling if necessary
-//
+    //
+    //     Undo scaling if necessary
+    //
 statement_50:
     if (scalea) {
         Rlascl("G", 0, 0, cscale, anrm, n - info, 1, &wr[(info + 1) - 1], max(n - info, (INTEGER)1), ierr);
