@@ -349,7 +349,6 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //              Compute eigenvalues and eigenvectors, and test them
                 //
                 Rlacpy("F", n, n, a, lda, h, lda);
-                //		printf("a="); printmat(n,n,a,lda);printf("\n");
                 Rgeev("V", "V", n, h, lda, wr, wi, vl, ldvl, vr, ldvr, work, nnwork, iinfo);
                 if (iinfo != 0) {
                     result[1 - 1] = ulpinv;
