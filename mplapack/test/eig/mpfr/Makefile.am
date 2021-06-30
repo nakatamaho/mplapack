@@ -212,7 +212,7 @@ xeigtstC_mpfr_SOURCES  = ../common/Cchkee.cpp ../../../../mpblas/test/common/mpl
 xeigtstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_mpfr_CXXFLAGS = $(cxxflags)
 
-do-tests: Rbal.out Rbak.out Rnep.out Rsep.out Rse2.out Red.out Rbb.out Rgg.out Rdgqr.out
+do-tests: Rbal.out Rbak.out Rnep.out Rsep.out Rse2.out Red.out Rbb.out Rgg.out Rdgqr.out Rec.out
 
 clean-local:
 	rm -f *.out *~ \#*
@@ -228,6 +228,10 @@ Rsep.out:
 Rse2.out:
 	@echo SEP: Testing Symmetric Eigenvalue Problem routines
 	./xeigtstR_mpfr < se2.in > $@ 2>&1
+
+Rec.out:
+	@echo DEC: Testing Eigen Condition Routines
+	./xeigtstR_mpfr < Rec.in > $@ 2>&1
 
 Red.out:
 	@echo DEV: Testing Nonsymmetric Eigenvalue Driver
