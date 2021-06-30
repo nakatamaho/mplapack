@@ -1,3 +1,6 @@
+2021/7/1    Nakata Maho <maho@riken.jp> 1.0.0
+            * MPLAPACK now use Rlaqr0 in Rhseqr.cpp for big (n>=15) matrices
+
 2021/6/30   Nakata Maho <maho@riken.jp> 1.0.0
             * Tests of the Nonsymmetric Eigenvalue Problem Driver (Red.in)
               Rgeev (eigenvalues and eigevectors)
