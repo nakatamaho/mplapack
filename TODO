@@ -1,0 +1,3 @@
+2021/06/30   Nakata Maho <maho@riken.jp> 1.0.0
+
+           * Rhseqr.cpp: L.134 use Rlaqr0 for big matrices.
