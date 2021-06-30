@@ -212,27 +212,39 @@ xeigtstC_mpfr_SOURCES  = ../common/Cchkee.cpp ../../../../mpblas/test/common/mpl
 xeigtstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_mpfr_CXXFLAGS = $(cxxflags)
 
-do-tests: Rbal.out Rbak.out Rnep.out Rsep.out Red.out
+do-tests: Rbal.out Rbak.out Rnep.out Rsep.out Rse2.out Red.out Rbb.out Rgg.out
 
 clean-local:
 	rm -f *.out
 
 Rbal.out:
 	@echo Rgebal: Testing the balancing of a general matrix
-	./xeigtstR_mpfr < Rbal.in >& Rbal.out
+	./xeigtstR_mpfr < Rbal.in > $@ 2>&1
 
 Rbak.out:
 	@echo Rgebak: Testing the back transformation of balanced matrix
-	./xeigtstR_mpfr < Rbak.in >& Rbak.out
+	./xeigtstR_mpfr < Rbak.in > $@ 2>&1
 
 Rnep.out:
 	@echo NEP: Testing Nonsymmetric Eigenvalue Problem routines
-	./xeigtstR_mpfr < nep.in >& Rnep.out
+	./xeigtstR_mpfr < nep.in > $@ 2>&1
 
 Rsep.out:
 	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstR_mpfr < sep.in >& Rsep.out
+	./xeigtstR_mpfr < sep.in > $@ 2>&1
+
+Rse2.out:
+	@echo SEP: Testing Symmetric Eigenvalue Problem routines
+	./xeigtstR_mpfr < se2.in > $@ 2>&1
 
 Red.out:
 	@echo DEV: Testing Nonsymmetric Eigenvalue Driver
-	./xeigtstR_mpfr < Red.in >& Red.out
+	./xeigtstR_mpfr < Red.in > $@ 2>&1
+
+Rbb.out:
+	@echo DBB: Testing banded Singular Value Decomposition routines
+	./xeigtstR_mpfr < Rbb.in > $@ 2>&1
+
+Rgg.out:
+	@echo DGG: Testing Nonsymmetric Generalized Eigenvalue Problem routines
+	./xeigtstR_mpfr < Rgg.in > $@ 2>&1
