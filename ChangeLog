@@ -18,6 +18,9 @@
             * Note that currently MPLAPACK use Rhseqr.cpp: L.134 use Rlaqr0 instead of
               Rlahqr for big matrices.
 
+            * Testing Generalized QR and RQ factorization routines
+              have passed for MPFR version.
+
 2021/6/29   Nakata Maho <maho@riken.jp> 1.0.0
             * Tests of Rsbtrd (Rsb.in)
               (reduction of a symmetric band matrix to tridiagonal form)
