@@ -205,7 +205,7 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
             //           ==== Done when KBOT falls below ILO ====
             //
             if (kbot < ilo)
-                break;
+                goto statement_90;
             //
             //           ==== Locate active block ====
             //
@@ -472,9 +472,10 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         //        .    the problem occurred and exit. ====
         //
         info = kbot;
+    statement_90:;
     }
     //
-    //     ==== Return the optimal value of LWORK. ====
+    //     ==== return the optimal value of LWORK. ====
     //
     work[1 - 1] = castREAL(lwkopt);
     //
