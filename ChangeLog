@@ -15,7 +15,7 @@
               Rgeesx (Schur form and condition numbers)
               have passed for MPFR version.
 
-            * Note that currently MPLAPACK use Rhseqr.cpp: L.134 use Rlaqr0 instead of 
+            * Note that currently MPLAPACK use Rhseqr.cpp: L.134 use Rlaqr0 instead of
               Rlahqr for big matrices.
 
 2021/6/29   Nakata Maho <maho@riken.jp> 1.0.0
@@ -26,7 +26,7 @@
             * Tests of the symmetric eigenproblem using
               the 2-stage reduction techniques (se2.in)
               have passed for MPFR version.
-          
+
             * Tests of Rgbbrd (Rbb.in)
               (reduction of a general band matrix to real bidiagonal form)
               have passed for MPFR version.
@@ -41,16 +41,16 @@
 
 2021/6/21   Nakata Maho <maho@riken.jp> 1.0.0
             * Tests of the nonsymmetric eigenproblem condition estimation routines
-              have passed (Rlaln2, Rlansy2, Rlanv2, Rlaexc, Rtrsyl, Rtrexc, Rtrsna, 
+              have passed (Rlaln2, Rlansy2, Rlanv2, Rlaexc, Rtrsyl, Rtrexc, Rtrsna,
               Rtrsen, Rlaqtr and Rtgexc) for MPFR version.
 
 2021/6/3    Nakata Maho <maho@riken.jp> 1.0.0
-            * rtests.in for driver routines passed for MPFR version except for 
+            * rtests.in for driver routines passed for MPFR version except for
               RGB and RPO.
               Some test in RLS using SVDs failed, it will be fixed.
 
 2021/6/1    Nakata Maho <maho@riken.jp> 1.0.0
-            * ztest.in passed for MPFR version (without test for driver routines). 
+            * ztest.in passed for MPFR version (without test for driver routines).
               Some tests using SVDs fail, however, may not be
               a big problem and will be fixed.
 
@@ -99,7 +99,7 @@
             * rename from MPLAPACK to MPLAPACK
 
 2012/12/18  Nakata Maho <maho@riken.jp> 0.8.0.
-	    * Intel Xeon Phi support 
+	    * Intel Xeon Phi support
 		This build is supported by
 		very unusual way.
 	      Please see
@@ -128,11 +128,11 @@
             * All files are now 2 clause BSD style license.
 
 2010/08/05  Nakata Maho <maho@riken.jp> 0.6.6
-            * build fixes on various environments just using internal 
+            * build fixes on various environments just using internal
               MP libraries.
             * Now 92 mlapack routines.
             * mpfr has been update to 3.0.0.
-            
+
 2010/05/20  Nakata Maho <maho@riken.jp> 0.6.5
             * working towards 0.6.5 release
 
@@ -142,7 +142,7 @@
 
 2010/03/15  Nakata Maho <maho@riken.jp> 0.6.5
             * license has been changed to two clause BSD license.
-            * using std::complex<double> instead of double_complex 
+            * using std::complex<double> instead of double_complex
 
 2010/02/03  Nakata Maho <maho@riken.jp> 0.6.5
             * Environment variable MPACK_GMP_PRECISION, and MPACK_MPFR_PRECISION
