@@ -45,7 +45,7 @@
 2021/6/21   Nakata Maho <maho@riken.jp> 1.0.0
             * Tests of the nonsymmetric eigenproblem condition estimation routines
               have passed (Rlaln2, Rlansy2, Rlanv2, Rlaexc, Rtrsyl, Rtrexc, Rtrsna,
-              Rtrsen, Rlaqtr and Rtgexc) for MPFR version.
+              Rtrsen, Rlaqtr and Rtgexc) for MPFR version (Rec.in).
 
 2021/6/3    Nakata Maho <maho@riken.jp> 1.0.0
             * rtests.in for driver routines passed for MPFR version except for
