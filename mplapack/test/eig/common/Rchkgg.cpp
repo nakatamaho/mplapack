@@ -158,6 +158,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     safmin = safmin / ulp;
     safmax = one / safmin;
     ulpinv = one / ulp;
+    Rlabad(safmin, safmax); //This is necessary since Rhgeqz doesn't perform scaling
     //
     //     The values RMAGN(2:3) depend on N, see below.
     //
@@ -347,14 +348,14 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rgeqr2(n, n, t, lda, work, &work[(n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rgeqr2", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rgeqr2", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
             //
             Rorm2r("L", "T", n, n, n, t, lda, work, h, lda, &work[(n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rorm2r", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rorm2r", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -362,14 +363,14 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rlaset("Full", n, n, zero, one, u, ldu);
             Rorm2r("R", "N", n, n, n, t, lda, work, u, ldu, &work[(n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rorm2r", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rorm2r", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
             //
             Rgghrd("V", "I", n, 1, n, h, lda, t, lda, u, ldu, v, ldu, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rgghrd", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rgghrd", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -392,10 +393,9 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rlacpy(" ", n, n, t, lda, p2, lda);
             ntest = 5;
             result[5 - 1] = ulpinv;
-            //
             Rhgeqz("E", "N", "N", n, 1, n, s2, lda, p2, lda, alphr3, alphi3, beta3, q, ldu, z, ldu, work, lwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rhgeqz(E)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rhgeqz(E)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -407,7 +407,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rhgeqz("S", "N", "N", n, 1, n, s2, lda, p2, lda, alphr1, alphi1, beta1, q, ldu, z, ldu, work, lwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rhgeqz(S)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rhgeqz(S)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -419,7 +419,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rhgeqz("S", "I", "I", n, 1, n, s1, lda, p1, lda, alphr1, alphi1, beta1, q, ldu, z, ldu, work, lwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rhgeqz(V)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rhgeqz(V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -454,7 +454,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rtgevc("L", "S", llwork, n, s1, lda, p1, lda, evectl, ldu, dumma, ldu, n, in, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rtgevc(L,S1)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rtgevc(L,S1)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -469,7 +469,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rtgevc("L", "S", llwork, n, s1, lda, p1, lda, &evectl[((i1 + 1) - 1) * ldevectl], ldu, dumma, ldu, n, in, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rtgevc(L,S2)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rtgevc(L,S2)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -489,7 +489,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rlacpy("F", n, n, q, ldu, evectl, ldu);
             Rtgevc("L", "B", llwork, n, s1, lda, p1, lda, evectl, ldu, dumma, ldu, n, in, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rtgevc(L,B)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rtgevc(L,B)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -498,7 +498,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             result[10 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thrshn) {
                 sprintnum_short(buf, dumma[2 - 1]);
-                write(nounit, format_9998), "Left", "Rtgevc(HOWMNY=B)", buf, n, jtype, ioldsd;
+                write(nounit, format_9998), "Left", "Rtgevc(HOWMNY=B)", buf, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
             }
             //
             //           11: Compute the right eigenvector Matrix without
@@ -520,7 +520,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rtgevc("R", "S", llwork, n, s1, lda, p1, lda, dumma, ldu, evectr, ldu, n, in, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rtgevc(R,S1)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rtgevc(R,S1)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -535,7 +535,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rtgevc("R", "S", llwork, n, s1, lda, p1, lda, dumma, ldu, &evectr[((i1 + 1) - 1) * ldevectr], ldu, n, in, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rtgevc(R,S2)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rtgevc(R,S2)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -544,7 +544,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             result[11 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thresh) {
                 sprintnum_short(buf, dumma[2 - 1]);
-                write(nounit, format_9998), "Right", "Rtgevc(HOWMNY=S)", buf, n, jtype, ioldsd;
+                write(nounit, format_9998), "Right", "Rtgevc(HOWMNY=S)", buf, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
             }
             //
             //           12: Compute the right eigenvector Matrix with
@@ -555,7 +555,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rlacpy("F", n, n, z, ldu, evectr, ldu);
             Rtgevc("R", "B", llwork, n, s1, lda, p1, lda, dumma, ldu, evectr, ldu, n, in, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rtgevc(R,B)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rtgevc(R,B)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -564,7 +564,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             result[12 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thresh) {
                 sprintnum_short(buf, dumma[2 - 1]);
-                write(nounit, format_9998), "Right", "Rtgevc(HOWMNY=B)", buf, n, jtype, ioldsd;
+                write(nounit, format_9998), "Right", "Rtgevc(HOWMNY=B)", buf, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
             }
             //
             //           Tests 13--15 are done only on request
