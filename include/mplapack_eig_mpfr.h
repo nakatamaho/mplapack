@@ -42,7 +42,7 @@ using namespace mpfr;
 bool Clctes(mpcomplex const z, mpcomplex const d);
 bool Clctsx(mpcomplex const, mpcomplex const);
 bool Cslect(mpcomplex const z);
-bool Rlctes(mpreal const zr, mpreal const d);
+bool Rlctes(mpreal const zr, mpreal const zi, mpreal const d);
 bool Rlctsx(mpreal const, mpreal const, mpreal const);
 bool Rslect(mpreal const zr, mpreal const zi);
 mplapackint iMlaenv2stage_mpfr(mplapackint ispec, const char *name, const char *opts, mplapackint n1, mplapackint n2, mplapackint n3, mplapackint n4);

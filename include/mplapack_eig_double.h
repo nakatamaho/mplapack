@@ -36,7 +36,7 @@
 bool Clctes(std::complex<double> const z, std::complex<double> const d);
 bool Clctsx(std::complex<double> const, std::complex<double> const);
 bool Cslect(std::complex<double> const z);
-bool Rlctes(double const zr, double const d);
+bool Rlctes(double const zr, double const zi, double const d);
 bool Rlctsx(double const, double const, double const);
 bool Rslect(double const zr, double const zi);
 double Rlamch_double(const char *cmach);

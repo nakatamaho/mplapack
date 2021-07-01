@@ -38,7 +38,7 @@
 bool Clctes(dd_complex const z, dd_complex const d);
 bool Clctsx(dd_complex const, dd_complex const);
 bool Cslect(dd_complex const z);
-bool Rlctes(dd_real const zr, dd_real const d);
+bool Rlctes(dd_real const zr, dd_real const zi, dd_real const d);
 bool Rlctsx(dd_real const, dd_real const, dd_real const);
 bool Rslect(dd_real const zr, dd_real const zi);
 dd_real Rlamch_dd(const char *cmach);
