@@ -38,7 +38,7 @@
 bool Clctes(qd_complex const z, qd_complex const d);
 bool Clctsx(qd_complex const, qd_complex const);
 bool Cslect(qd_complex const z);
-bool Rlctes(qd_real const zr, qd_real const zi, qd_real const d);
+bool Rlctes(qd_real const zr, qd_real const d);
 bool Rlctsx(qd_real const, qd_real const, qd_real const);
 bool Rslect(qd_real const zr, qd_real const zi);
 mplapackint iMlaenv2stage_qd(mplapackint ispec, const char *name, const char *opts, mplapackint n1, mplapackint n2, mplapackint n3, mplapackint n4);

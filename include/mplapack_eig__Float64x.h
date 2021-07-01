@@ -38,7 +38,7 @@ _Float64x Rsxt1(mplapackint const ijob, _Float64x *d1, mplapackint const n1, _Fl
 bool Clctes(std::complex<_Float64x> const z, std::complex<_Float64x> const d);
 bool Clctsx(std::complex<_Float64x> const, std::complex<_Float64x> const);
 bool Cslect(std::complex<_Float64x> const z);
-bool Rlctes(_Float64x const zr, _Float64x const zi, _Float64x const d);
+bool Rlctes(_Float64x const zr, _Float64x const d);
 bool Rlctsx(_Float64x const, _Float64x const, _Float64x const);
 bool Rslect(_Float64x const zr, _Float64x const zi);
 mplapackint iMlaenv2stage__Float64x(mplapackint ispec, const char *name, const char *opts, mplapackint n1, mplapackint n2, mplapackint n3, mplapackint n4);
