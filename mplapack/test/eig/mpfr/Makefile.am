@@ -245,6 +245,10 @@ Rgg.out:
 	@echo DGG: Testing Nonsymmetric Generalized Eigenvalue Problem routines
 	./xeigtstR_mpfr < Rgg.in > $@ 2>&1
 
+Rgd.out:
+	@echo DGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routines
+	./xeigtstR_mpfr < Rgd.in > $@ 2>&1
+
 Rbal.out:
 	@echo Rgebal: Testing the balancing of a general matrix
 	./xeigtstR_mpfr < Rbal.in > $@ 2>&1
