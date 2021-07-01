@@ -180,7 +180,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     log2ui = castINTEGER(log(ulpinv) / log(two));
     rtunfl = sqrt(unfl);
     rtovfl = sqrt(ovfl);
-    abstol = 2 * unfl;
+    abstol = castREAL(2) * unfl;
     //
     //     Loop over sizes, types
     //

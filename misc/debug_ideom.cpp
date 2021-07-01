@@ -1,3 +1,42 @@
+                REAL *a_org = new REAL[n * n];
+                REAL *h_org = new REAL[n * n];
+                for (int pp = 0; pp < n; pp++) {
+                    for (int qq = 0; qq < n; qq++) {
+                        a_org[pp + qq * n] = a[pp + qq * lda];
+                        h_org[pp + qq * n] = h[pp + qq * lda];
+                    }
+                }
+                Rgeev("V", "V", n, h, lda, wr, wi, vl, ldvl, vr, ldvr, work, nnwork, iinfo);
+                if (iinfo != 0) {
+                    printf("a=");
+                    printmat(n, n, a_org, n);
+                    printf("\n");
+                    {
+                        double *a_d = new double[n * n];
+                        double *h_d = new double[n * n];
+                        double *wr_d = new double[n];
+                        double *wi_d = new double[n];
+                        double *vl_d = new double[n * n];
+                        double *vr_d = new double[n * n];
+                        for (int pp = 0; pp < n * n; pp++) {
+                            a_d[pp] = a_org[pp];
+                            h_d[pp] = h_org[pp];
+                        }
+                        LAPACKE_dgeev(LAPACK_COL_MAJOR, 'V', 'V', (int)n, h_d, (int)n, wr_d, wi_d, vl_d, (int)n, vr_d, (int)n);
+                        printf("wr="); printvec(wr, n); printf("\n");
+                        printf("wi="); printvec(wi, n); printf("\n");
+                        printf("wr_d="); printvec(wr_d, n); printf("\n");
+                        printf("wi_d="); printvec(wi_d, n); printf("\n");
+                        delete[] vr_d;
+                        delete[] vl_d;
+                        delete[] wi_d;
+                        delete[] wr_d;
+                        delete[] a_d;
+                        delete[] h_d;
+                        exit(1);
+                    }
+
+
 		#ifdef DONE
                 {
                     printf("Rdrvst.cpp ntest %d: LAPACKE\n", (int)ntest);

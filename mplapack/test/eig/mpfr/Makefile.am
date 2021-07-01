@@ -249,6 +249,14 @@ Rgd.out:
 	@echo DGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routines
 	./xeigtstR_mpfr < Rgd.in > $@ 2>&1
 
+Rsb.out:
+	@echo DSB: Testing DOUBLE PRECISION Symmetric Eigenvalue Problem routines
+	./xeigtstR_mpfr < Rsb.in > $@ 2>&1
+
+Rsg.out:
+	@echo DSG: Testing DOUBLE PRECISION Symmetric Generalized Eigenvalue Problem routines
+	./xeigtstR_mpfr < Rsg.in > $@ 2>&1
+
 Rbal.out:
 	@echo Rgebal: Testing the balancing of a general matrix
 	./xeigtstR_mpfr < Rbal.in > $@ 2>&1
