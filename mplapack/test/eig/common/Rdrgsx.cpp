@@ -454,7 +454,8 @@ statement_70:
         iss.clear();
         iss.str(str);
         iss >> mplusn;
-        if (mplusn == 0) break;
+        if (mplusn == 0)
+            break;
         getline(cin, str);
         iss.clear();
         iss.str(str);

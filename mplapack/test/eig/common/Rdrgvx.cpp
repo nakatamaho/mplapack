@@ -38,6 +38,16 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <regex>
+
+using namespace std;
+using std::regex;
+using std::regex_replace;
+
 void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER const nout, REAL *a, INTEGER const lda, REAL *b, REAL *ai, REAL *bi, REAL *alphar, REAL *alphai, REAL *beta, REAL *vl, REAL *vr, INTEGER const ilo, INTEGER const ihi, REAL *lscale, REAL *rscale, REAL *s, REAL *dtru, REAL *dif, REAL *diftru, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, REAL *result, bool *bwork, INTEGER &info) {
     common cmn;
     common_read read(cmn);
@@ -79,6 +89,10 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
     REAL ratio1 = 0.0;
     REAL ratio2 = 0.0;
     INTEGER j = 0;
+    string str;
+    istringstream iss;
+    string _r;
+
     static const char *format_9986 = "(' Rdrgvx: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
                                      "' Bits of error=',0p,a,',',9x,'N=',i6,', Input Example #',i2,')')";
     static const char *format_9992 = "(/,' Tests performed:  ',/,4x,"
@@ -93,31 +107,6 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
     static const char *format_9998 = "(' Rdrgvx: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
                                      "' Bits of error=',0p,a,',',9x,'N=',i6,', JTYPE=',i6,', IWA=',i5,"
                                      "', IWB=',i5,', IWX=',i5,', IWY=',i5)";
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Check for errors
     //
@@ -335,40 +324,51 @@ statement_90:
     //     Read input data until N=0
     //
     while (1) {
-        read(nin, star), n;
+        getline(cin, str);
+        iss.clear();
+        iss.str(str);
+        iss >> n;
         if (n == 0)
             break;
         for (i = 1; i <= n; i = i + 1) {
-            {
-                read_loop rloop(cmn, nin, star);
-                for (j = 1; j <= n; j = j + 1) {
-                    rloop, dtmp;
-                    a[(i - 1) + (j - 1) * lda] = dtmp;
-                }
+            getline(cin, str);
+            _r = regex_replace(str, regex("D\\+"), "e+");
+            str = regex_replace(_r, regex("D\\-"), "e-");
+            iss.clear();
+            iss.str(str);
+            for (j = 1; j <= n; j = j + 1) {
+                iss >> dtmp;
+                a[(i - 1) + (j - 1) * lda] = dtmp;
             }
         }
         for (i = 1; i <= n; i = i + 1) {
-            {
-                read_loop rloop(cmn, nin, star);
-                for (j = 1; j <= n; j = j + 1) {
-                    rloop, dtmp;
-                    b[(i - 1) + (j - 1) * ldb] = dtmp;
-                }
+            getline(cin, str);
+            _r = regex_replace(str, regex("D\\+"), "e+");
+            str = regex_replace(_r, regex("D\\-"), "e-");
+            iss.clear();
+            iss.str(str);
+            for (j = 1; j <= n; j = j + 1) {
+                iss >> dtmp;
+                b[(i - 1) + (j - 1) * ldb] = dtmp;
             }
         }
-        {
-            read_loop rloop(cmn, nin, star);
-            for (i = 1; i <= n; i = i + 1) {
-                rloop, dtmp;
-                dtru[i - 1] = dtmp;
-            }
+        getline(cin, str);
+        _r = regex_replace(str, regex("D\\+"), "e+");
+        str = regex_replace(_r, regex("D\\-"), "e-");
+        iss.clear();
+        iss.str(str);
+        for (i = 1; i <= n; i = i + 1) {
+            iss >> dtmp;
+            dtru[i - 1] = dtmp;
         }
-        {
-            read_loop rloop(cmn, nin, star);
-            for (i = 1; i <= n; i = i + 1) {
-                rloop, dtmp;
-                diftru[i - 1] = dtmp;
-            }
+        getline(cin, str);
+        _r = regex_replace(str, regex("D\\+"), "e+");
+        str = regex_replace(_r, regex("D\\-"), "e-");
+        iss.clear();
+        iss.str(str);
+        for (i = 1; i <= n; i = i + 1) {
+            iss >> dtmp;
+            diftru[i - 1] = dtmp;
         }
         //
         nptknt++;
