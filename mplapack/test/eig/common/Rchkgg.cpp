@@ -158,7 +158,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     safmin = safmin / ulp;
     safmax = one / safmin;
     ulpinv = one / ulp;
-    Rlabad(safmin, safmax); //This is necessary since Rhgeqz doesn't perform scaling
+    Rlabad(safmin, safmax); // This is necessary since Rhgeqz doesn't perform scaling
     //
     //     The values RMAGN(2:3) depend on N, see below.
     //
