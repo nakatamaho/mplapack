@@ -38,6 +38,16 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <regex>
+
+using namespace std;
+using std::regex;
+using std::regex_replace;
+
 void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER const nin, INTEGER const nout, REAL *a, INTEGER const lda, REAL *b, REAL *ai, REAL *bi, REAL *z, REAL *q, REAL *alphar, REAL *alphai, REAL *beta, REAL *c, INTEGER const ldc, REAL *s, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, bool *bwork, INTEGER &info) {
     common cmn;
     common_read read(cmn);
@@ -91,6 +101,9 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
     INTEGER i = 0;
     INTEGER nptknt = 0;
     REAL pltru = 0.0;
+    string str;
+    istringstream iss;
+
     static const char *format_9992 = "(/,' Tests performed:  (S is Schur, T is triangular, ','Q and Z are ',a,"
                                      "',',/,19x,' a is alpha, b is beta, and ',a,' means ',a,'.)',/,"
                                      "'  1 = | A - Q S Z',a,' | / ( |A| n ulp )      2 = | B - Q T Z',a,"
@@ -434,33 +447,48 @@ statement_70:
     //     Read input data until N=0
     //
     nptknt = 0;
-//
-statement_80:
-    read(nin, star), mplusn;
-    if (mplusn == 0) {
-        goto statement_150;
-    }
+    //
+
     while (1) {
-        read(nin, star), n;
+        getline(cin, str);
+        iss.clear();
+        iss.str(str);
+        iss >> mplusn;
+        if (mplusn == 0) break;
+        getline(cin, str);
+        iss.clear();
+        iss.str(str);
+        iss >> n;
         for (i = 1; i <= mplusn; i = i + 1) {
-            {
-                read_loop rloop(cmn, nin, star);
-                for (j = 1; j <= mplusn; j = j + 1) {
-                    rloop, dtmp;
-                    ai[(i - 1) + (j - 1) * ldai] = dtmp;
-                }
+            getline(cin, str);
+            string _r = regex_replace(str, regex("D\\+"), "e+");
+            str = regex_replace(_r, regex("D\\-"), "e-");
+            iss.clear();
+            iss.str(str);
+            for (j = 1; j <= mplusn; j = j + 1) {
+                iss >> dtmp;
+                ai[(i - 1) + (j - 1) * ldai] = dtmp;
             }
         }
         for (i = 1; i <= mplusn; i = i + 1) {
-            {
-                read_loop rloop(cmn, nin, star);
-                for (j = 1; j <= mplusn; j = j + 1) {
-                    rloop, dtmp;
-                    bi[(i - 1) + (j - 1) * ldbi] = dtmp;
-                }
+            getline(cin, str);
+            string _r = regex_replace(str, regex("D\\+"), "e+");
+            str = regex_replace(_r, regex("D\\-"), "e-");
+            iss.clear();
+            iss.str(str);
+            for (j = 1; j <= mplusn; j = j + 1) {
+                iss >> dtmp;
+                bi[(i - 1) + (j - 1) * ldbi] = dtmp;
             }
         }
-        read(nin, star), pltru, dtmp;
+        getline(cin, str);
+        string _r = regex_replace(str, regex("D\\+"), "e+");
+        str = regex_replace(_r, regex("D\\-"), "e-");
+        iss.clear();
+        iss.str(str);
+        iss >> dtmp;
+        pltru = dtmp;
+        iss >> dtmp;
         diftru = dtmp;
         //
         nptknt++;
