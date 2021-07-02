@@ -100,12 +100,12 @@ void Rget51(INTEGER const itype, INTEGER const n, REAL *a, INTEGER const lda, RE
         wnorm = Rlange("1", n, n, work, n, &work[(pow2(n) + 1) - 1]);
         //
         if (anorm > wnorm) {
-            result = (wnorm / anorm) / (n * ulp);
+            result = (wnorm / anorm) / (castREAL(n) * ulp);
         } else {
             if (anorm < one) {
-                result = (min(wnorm, n * anorm) / anorm) / (n * ulp);
+                result = (min(wnorm, castREAL(n) * anorm) / anorm) / (castREAL(n) * ulp);
             } else {
-                result = min(wnorm / anorm, castREAL(n)) / (n * ulp);
+                result = min(wnorm / anorm, castREAL(n)) / (castREAL(n) * ulp);
             }
         }
         //

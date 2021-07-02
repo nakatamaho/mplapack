@@ -41,21 +41,6 @@ using fem::common;
 bool Rlctes(REAL const zr, REAL const d) {
     bool return_value = false;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     const REAL zero = 0.0;
     const REAL one = 1.0;
     if (d == zero) {
