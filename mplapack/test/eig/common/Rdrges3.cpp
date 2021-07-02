@@ -460,11 +460,11 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     result[12 - 1] = zero;
                     knteig = 0;
                     for (i = 1; i <= n; i = i + 1) {
-                        if (Rlctes(alphar[i - 1], beta[i - 1]) || Rlctes(alphar[i - 1], beta[i - 1])) {
+                        if (Rlctes(alphar[i - 1], alphai[i - 1], beta[i - 1]) || Rlctes(alphar[i - 1], -alphai[i - 1], beta[i - 1])) {
                             knteig++;
                         }
                         if (i < n) {
-                            if ((Rlctes(alphar[(i + 1) - 1], beta[(i + 1) - 1]) || Rlctes(alphar[(i + 1) - 1], beta[(i + 1) - 1])) && (!(Rlctes(alphar[i - 1], beta[i - 1]) || Rlctes(alphar[i - 1], beta[i - 1]))) && iinfo != n + 2) {
+                            if ((Rlctes(alphar[(i + 1) - 1], alphai[(i + 1) - 1], beta[(i + 1) - 1]) || Rlctes(alphar[(i + 1) - 1], alphai[(i + 1) - 1], beta[(i + 1) - 1])) && (!(Rlctes(alphar[i - 1], alphai[i - 1], beta[i - 1]) || Rlctes(alphar[i - 1], -alphai[i - 1], beta[i - 1]))) && iinfo != n + 2) {
                                 result[12 - 1] = ulpinv;
                             }
                         }
