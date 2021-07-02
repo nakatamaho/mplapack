@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selctg)(REAL, REAL), INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, INTEGER &sdim, REAL *alphar, REAL *alphai, REAL *beta, REAL *vsl, INTEGER const ldvsl, REAL *vsr, INTEGER const ldvsr, REAL *work, INTEGER const lwork, bool *bwork, INTEGER &info) {
+void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selctg)(REAL, REAL, REAL), INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, INTEGER &sdim, REAL *alphar, REAL *alphai, REAL *beta, REAL *vsl, INTEGER const ldvsl, REAL *vsr, INTEGER const ldvsr, REAL *work, INTEGER const lwork, bool *bwork, INTEGER &info) {
     INTEGER ijobvl = 0;
     bool ilvsl = false;
     INTEGER ijobvr = 0;
@@ -275,7 +275,7 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
         //        Select eigenvalues
         //
         for (i = 1; i <= n; i = i + 1) {
-            bwork[i - 1] = selctg(alphar[i - 1], alphai[i - 1]);
+            bwork[i - 1] = selctg(alphar[i - 1], alphai[i - 1], beta[i - 1]);
         }
         //
         Rtgsen(0, ilvsl, ilvsr, bwork, n, a, lda, b, ldb, alphar, alphai, beta, vsl, ldvsl, vsr, ldvsr, sdim, pvsl, pvsr, dif, &work[iwrk - 1], lwork - iwrk + 1, idum, 1, ierr);
@@ -353,7 +353,7 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
         sdim = 0;
         ip = 0;
         for (i = 1; i <= n; i = i + 1) {
-            cursl = selctg(alphar[i - 1], alphai[i - 1]);
+            cursl = selctg(alphar[i - 1], alphai[i - 1], beta[i - 1]);
             if (alphai[i - 1] == zero) {
                 if (cursl) {
                     sdim++;
