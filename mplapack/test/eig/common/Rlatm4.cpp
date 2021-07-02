@@ -92,12 +92,6 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
     }
     Rlaset("Full", n, n, zero, zero, a, lda);
     //
-    //     Insure a correct ISEED
-    //
-    if (mod(iseed[4 - 1], 2) != 1) {
-        iseed[4 - 1]++;
-    }
-    //
     //     Compute diagonal and subdiagonal according to ITYPE, NZ1, NZ2,
     //     and RCOND
     //
