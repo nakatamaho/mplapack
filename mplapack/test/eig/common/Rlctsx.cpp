@@ -48,24 +48,6 @@ bool Rlctsx(REAL const /* ar */, REAL const /* ai */, REAL const /* beta */) {
     INTEGER i = _MPLAPACK_RLCTSX_i;
     bool fs = _MPLAPACK_RLCTSX_fs;
     //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Save statement ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     if (fs) {
         i++;
         if (i <= m) {

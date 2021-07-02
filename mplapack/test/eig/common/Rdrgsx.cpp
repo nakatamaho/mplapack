@@ -48,15 +48,16 @@ using namespace std;
 using std::regex;
 using std::regex_replace;
 
+#define n _MPLAPACK_RLCTSX_n
+#define m _MPLAPACK_RLCTSX_m
+#define fs _MPLAPACK_RLCTSX_fs
+#define mplusn _MPLAPACK_RLCTSX_mplusn
+
 void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER const nin, INTEGER const nout, REAL *a, INTEGER const lda, REAL *b, REAL *ai, REAL *bi, REAL *z, REAL *q, REAL *alphar, REAL *alphai, REAL *beta, REAL *c, INTEGER const ldc, REAL *s, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, bool *bwork, INTEGER &info) {
     common cmn;
     common_read read(cmn);
     common_write write(cmn);
-    INTEGER m;
-    INTEGER n;
-    INTEGER mplusn;
     INTEGER k;
-    bool fs;
     INTEGER ldai = lda;
     INTEGER ldbi = lda;
     INTEGER ldq = lda;
