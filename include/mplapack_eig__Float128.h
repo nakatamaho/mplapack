@@ -3,7 +3,7 @@ _Float128 Rsxt1(mplapackint const ijob, _Float128 *d1, mplapackint const n1, _Fl
 bool Clctes(std::complex<_Float128> const z, std::complex<_Float128> const d);
 bool Clctsx(std::complex<_Float128> const, std::complex<_Float128> const);
 bool Cslect(std::complex<_Float128> const z);
-bool Rlctes(_Float128 const zr, _Float128 const d);
+bool Rlctes(_Float128 const zr, _Float128 const zi, _Float128 const d);
 bool Rlctsx(_Float128 const, _Float128 const, _Float128 const);
 bool Rslect(_Float128 const zr, _Float128 const zi);
 mplapackint iMlaenv2stage__Float128(mplapackint ispec, const char *name, const char *opts, mplapackint n1, mplapackint n2, mplapackint n3, mplapackint n4);
