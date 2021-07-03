@@ -217,58 +217,58 @@ do-tests: Rbal.out Rbak.out Rnep.out Rsep.out Rse2.out Rsvd.out Red.out Rbb.out 
 clean-local:
 	rm -f *.out *~ \#*
 
-Rnep.out:
+Rnep.out:   #Ok
 	@echo NEP: Testing Nonsymmetric Eigenvalue Problem routines
 	./xeigtstR_mpfr < nep.in > $@ 2>&1
 
-Rsep.out:
+Rsep.out:   #Ok
 	@echo SEP: Testing Symmetric Eigenvalue Problem routines
 	./xeigtstR_mpfr < sep.in > $@ 2>&1
 
-Rse2.out:
+Rse2.out:   #Ok
 	@echo SEP: Testing Symmetric Eigenvalue Problem routines
 	./xeigtstR_mpfr < se2.in > $@ 2>&1
 
-Rsvd.out:
+Rsvd.out:   #ng
 	@echo SVD: Testing Singular Value Decomposition routines
 	./xeigtstR_mpfr < svd.in > $@ 2>&1
 
-Rec.out:
+Rec.out:   #Ok
 	@echo DEC: Testing Eigen Condition Routines
 	./xeigtstR_mpfr < Rec.in > $@ 2>&1
 
-Red.out:
+Red.out:   #Ok
 	@echo DEV: Testing Nonsymmetric Eigenvalue Driver
 	./xeigtstR_mpfr < Red.in > $@ 2>&1
 
-Rgg.out:
+Rgg.out:   #Ok
 	@echo DGG: Testing Nonsymmetric Generalized Eigenvalue Problem routines
 	./xeigtstR_mpfr < Rgg.in > $@ 2>&1
 
-Rgd.out:
+Rgd.out:   #NG (uses partially Rgesvd)
 	@echo DGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routines
 	./xeigtstR_mpfr < Rgd.in > $@ 2>&1
 
-Rsb.out:
-	@echo DSB: Testing DOUBLE PRECISION Symmetric Eigenvalue Problem routines
+Rsb.out:   #ok
+	@echo DSB: Testing Symmetric Eigenvalue Problem routines
 	./xeigtstR_mpfr < Rsb.in > $@ 2>&1
 
-Rsg.out:
-	@echo DSG: Testing DOUBLE PRECISION Symmetric Generalized Eigenvalue Problem routines
+Rsg.out:   #NG inf. loop.
+	@echo DSG: Testing Symmetric Generalized Eigenvalue Problem routines
 	./xeigtstR_mpfr < Rsg.in > $@ 2>&1
 
-Rbal.out:
+Rbal.out:  #ok
 	@echo Rgebal: Testing the balancing of a general matrix
 	./xeigtstR_mpfr < Rbal.in > $@ 2>&1
 
-Rbak.out:
+Rbak.out:  #ok
 	@echo Rgebak: Testing the back transformation of balanced matrix
 	./xeigtstR_mpfr < Rbak.in > $@ 2>&1
 
-Rbb.out:
+Rbb.out:   #ok
 	@echo DBB: Testing banded Singular Value Decomposition routines
 	./xeigtstR_mpfr < Rbb.in > $@ 2>&1
 
-Rdgqr.out:
+Rdgqr.out: #ok
 	@echo GQR: Testing Generalized QR and RQ factorization routines
 	./xeigtstR_mpfr < gqr.in > $@ 2>&1
