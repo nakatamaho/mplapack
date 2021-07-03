@@ -58,26 +58,6 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
     INTEGER next = 0;
     const REAL half = 0.5e0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     info = 0;
     //
     //     Quick return if possible
@@ -87,6 +67,8 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
     }
     //
     maxitr = castINTEGER((log(spdiam + pivmin) - log(pivmin)) / log(two)) + (INTEGER)2;
+    if (maxitr >= 1024)
+        maxitr = 1024; // XXX maxitr can be too large for MPFR (=10^8)
     //
     //     Initialize unconverged intervals in [ WORK(2*I-1), WORK(2*I) ].
     //     The Sturm Count, Count( WORK(2*I-1) ) is arranged to be I-1, while

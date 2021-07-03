@@ -201,12 +201,12 @@ void Rbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
         }
     statement_50:
         sminoa = sminoa / sqrt(castREAL(n));
-        thresh = max(REAL(tol * sminoa), REAL(maxitr * (n * (n * unfl))));
+        thresh = max(REAL(tol * sminoa), REAL(castREAL(maxitr * n * n) * unfl));
     } else {
         //
         //        Absolute accuracy desired
         //
-        thresh = max(REAL(abs(tol) * smax), REAL(maxitr * (n * (n * unfl))));
+        thresh = max(REAL(abs(tol) * smax), REAL(castREAL(maxitr * n * n) * unfl));
     }
     //
     //     Prepare for main iteration loop for the singular values

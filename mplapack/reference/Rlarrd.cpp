@@ -80,32 +80,6 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
     INTEGER itmp1 = 0;
     INTEGER itmp2 = 0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     info = 0;
     //
     //     Quick return if possible
@@ -220,6 +194,8 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
         //        IL through IU. The initial interval [GL,GU] from the global
         //        Gerschgorin bounds GL and GU is refined by Rlaebz.
         itmax = castREAL((log(tnorm + pivmin) - log(pivmin)) / log(two)) + 2;
+        if (itmax >= 1024)
+            itmax = 1024; // XXX itmax can be too large for MPFR (=10^8)
         work[(n + 1) - 1] = gl;
         work[(n + 2) - 1] = gl;
         work[(n + 3) - 1] = gu;

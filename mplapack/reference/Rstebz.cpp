@@ -80,31 +80,6 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
     INTEGER ie = 0;
     INTEGER itmp1 = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     info = 0;
     //
     //     Decode RANGE
@@ -248,6 +223,9 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         //        Compute Iteration parameters
         //
         itmax = castINTEGER((log(tnorm + pivmin) - log(pivmin)) / log(two)) + 2;
+        if (itmax >= 1024)
+            itmax = 1024; // XXX itmax can be too large for MPFR (=10^8)
+
         if (abstol <= zero) {
             atoli = ulp * tnorm;
         } else {
@@ -403,6 +381,8 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
             //           Compute Eigenvalues
             //
             itmax = castINTEGER((log(gu - gl + pivmin) - log(pivmin)) / log(two)) + 2;
+            if (itmax >= 1024)
+                itmax = 1024; // XXX itmax can be too large for MPFR (=10^8)
             Rlaebz(2, itmax, in, in, 1, nb, atoli, rtoli, pivmin, &d[ibegin - 1], &e[ibegin - 1], &work[ibegin - 1], idumma, &work[(n + 1) - 1], &work[(n + 2 * in + 1) - 1], iout, iwork, &w[(m + 1) - 1], &iblock[(m + 1) - 1], iinfo);
             //
             //           Copy Eigenvalues Into W and IBLOCK

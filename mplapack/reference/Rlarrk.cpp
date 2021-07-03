@@ -48,27 +48,6 @@ void Rlarrk(INTEGER const n, INTEGER const iw, REAL const gl, REAL const gu, REA
     const REAL zero = 0.0;
     INTEGER i = 0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Quick return if possible
     //
     if (n <= 0) {
@@ -84,6 +63,8 @@ void Rlarrk(INTEGER const n, INTEGER const iw, REAL const gl, REAL const gu, REA
     atoli = fudge * two * pivmin;
     //
     itmax = castREAL((log(tnorm + pivmin) - log(pivmin)) / log(two)) + 2;
+    if (itmax > 1024)
+        itmax = 1024; // XXX itmax can be too large for MPFR (=10^8)
     //
     info = -1;
     //
