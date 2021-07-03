@@ -256,7 +256,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             goto statement_70;
         //
         statement_60:
-            anorm = rtunfl * max(m, n) * ulpinv;
+            anorm = rtunfl * castREAL(max(m, n)) * ulpinv;
             goto statement_70;
         //
         statement_70:
@@ -353,7 +353,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //           Error Exit
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "Generator", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Generator", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 return;
             }
@@ -373,7 +373,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //              Check error code from Rgebrd.
                 //
                 if (iinfo != 0) {
-                    write(nout, format_9998), "Rgebrd", iinfo, m, n, jtype, ioldsd;
+                    write(nout, format_9998), "Rgebrd", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     return;
                 }
@@ -396,7 +396,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //              Check error code from Rorgbr.
                 //
                 if (iinfo != 0) {
-                    write(nout, format_9998), "Rorgbr(Q)", iinfo, m, n, jtype, ioldsd;
+                    write(nout, format_9998), "Rorgbr(Q)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     return;
                 }
@@ -408,7 +408,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //              Check error code from Rorgbr.
                 //
                 if (iinfo != 0) {
-                    write(nout, format_9998), "Rorgbr(P)", iinfo, m, n, jtype, ioldsd;
+                    write(nout, format_9998), "Rorgbr(P)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     return;
                 }
@@ -442,7 +442,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //           Check error code from Rbdsqr.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "Rbdsqr(vects)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Rbdsqr(vects)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -465,7 +465,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //           Check error code from Rbdsqr.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "Rbdsqr(values)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Rbdsqr(values)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -567,7 +567,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //           Check error code from Rbdsdc.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "Rbdsdc(vects)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Rbdsdc(vects)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -590,7 +590,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //           Check error code from Rbdsdc.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "Rbdsdc(values)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Rbdsdc(values)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -666,7 +666,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //           Check error code from Rbdsvdx.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "Rbdsvdx(vects,A)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Rbdsvdx(vects,A)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -705,7 +705,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //           Check error code from Rbdsvdx.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "Rbdsvdx(values,A)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Rbdsvdx(values,A)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -783,7 +783,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //           Check error code from Rbdsvdx.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "Rbdsvdx(vects,I)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Rbdsvdx(vects,I)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -814,7 +814,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //           Check error code from Rbdsvdx.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "Rbdsvdx(values,I)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Rbdsvdx(values,I)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -894,7 +894,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //           Check error code from Rbdsvdx.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "Rbdsvdx(vects,V)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Rbdsvdx(vects,V)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -925,7 +925,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //           Check error code from Rbdsvdx.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "Rbdsvdx(values,V)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Rbdsvdx(values,V)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -980,7 +980,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                     sprintnum_short(buf, result[j - 1]);
                     write(nout, "(' M=',i5,', N=',i5,', type ',i2,', seed=',4(i4,','),' test(',i2,"
                                 "')=',a)"),
-                        m, n, jtype, ioldsd, j, buf;
+                        m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], j, buf;
                     nfail++;
                 }
             }
