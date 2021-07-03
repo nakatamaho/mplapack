@@ -48,10 +48,11 @@ using namespace std;
 using std::regex;
 using std::regex_replace;
 
-#define n _MPLAPACK_RLCTSX_n
 #define m _MPLAPACK_RLCTSX_m
-#define fs _MPLAPACK_RLCTSX_fs
+#define n _MPLAPACK_RLCTSX_n
 #define mplusn _MPLAPACK_RLCTSX_mplusn
+#define i _MPLAPACK_RLCTSX_i
+#define fs _MPLAPACK_RLCTSX_fs
 
 void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER const nin, INTEGER const nout, REAL *a, INTEGER const lda, REAL *b, REAL *ai, REAL *bi, REAL *z, REAL *q, REAL *alphar, REAL *alphai, REAL *beta, REAL *c, INTEGER const ldc, REAL *s, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, bool *bwork, INTEGER &info) {
     common cmn;
@@ -99,7 +100,6 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
     INTEGER iinfo = 0;
     INTEGER mn2 = 0;
     REAL diftru = 0.0;
-    INTEGER i = 0;
     INTEGER nptknt = 0;
     REAL pltru = 0.0;
     string str;
@@ -330,8 +330,10 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     result[7 - 1] = zero;
                     if (linfo == mplusn + 3) {
                         result[7 - 1] = ulpinv;
+                        printf("Rdrgsx.cpp l333 \n");
                     } else if (mm != n) {
                         result[7 - 1] = ulpinv;
+                        printf("Rdrgsx.cpp l336 \n");
                     }
                     ntest++;
                     //
@@ -352,10 +354,12 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                         //
                         if (difest[2 - 1] == zero) {
                             if (diftru > abnrm * ulp) {
+                                printf("Rdrgsx.cpp l355 \n");
                                 result[8 - 1] = ulpinv;
                             }
                         } else if (diftru == zero) {
                             if (difest[2 - 1] > abnrm * ulp) {
+                                printf("Rdrgsx.cpp l360 \n");
                                 result[8 - 1] = ulpinv;
                             }
                         } else if ((diftru > thrsh2 * difest[2 - 1]) || (diftru * thrsh2 < difest[2 - 1])) {
@@ -418,19 +422,11 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                                 //
                             }
                             nerrs++;
-                            if (result[j - 1] < 10000.0) {
-                                sprintnum_short(buf0, weight);
-                                sprintnum_short(buf1, result[j - 1]);
-                                write(nout, "(' Matrix order=',i2,', type=',i2,', a=',a,"
-                                            "', order(A_11)=',i2,', result ',i2,' is ',0p,a)"),
-                                    mplusn, prtype, buf0, m, j, buf1;
-                            } else {
-                                sprintnum_short(buf0, weight);
-                                sprintnum_short(buf1, result[j - 1]);
-                                write(nout, "(' Matrix order=',i2,', type=',i2,', a=',a,"
-                                            "', order(A_11)=',i2,', result ',i2,' is ',0p,a)"),
-                                    mplusn, prtype, buf0, m, j, buf1;
-                            }
+                            sprintnum_short(buf0, weight);
+                            sprintnum_short(buf1, result[j - 1]);
+                            write(nout, "(' Matrix order=',i2,', type=',i2,', a=',a,"
+                                        "', order(A_11)=',i2,', result ',i2,' is ',a)"),
+                                mplusn, prtype, buf0, m, j, buf1;
                         }
                     }
                 //
@@ -602,10 +598,12 @@ statement_70:
         result[8 - 1] = zero;
         if (difest[2 - 1] == zero) {
             if (diftru > abnrm * ulp) {
+                printf("Rdrgsx.cpp l605\n");
                 result[8 - 1] = ulpinv;
             }
         } else if (diftru == zero) {
             if (difest[2 - 1] > abnrm * ulp) {
+                printf("Rdrgsx.cpp l610\n");
                 result[8 - 1] = ulpinv;
             }
         } else if ((diftru > thrsh2 * difest[2 - 1]) || (diftru * thrsh2 < difest[2 - 1])) {
