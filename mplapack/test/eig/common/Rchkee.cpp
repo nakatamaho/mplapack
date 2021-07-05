@@ -58,7 +58,7 @@ void Rchkee(void) {
     bool fatal = false;
     const INTEGER nout = 6;
     const INTEGER nin = 5;
-    char path[3];
+    char path[4];
     bool nep = false;
     bool sep = false;
     bool svd = false;
@@ -198,6 +198,7 @@ void Rchkee(void) {
         path[0] = line[0];
         path[1] = line[1];
         path[2] = line[2];
+        path[3] = '\0';
         nep = Mlsamen(3, path, "NEP") || Mlsamen(3, path, "DHS");
         sep = Mlsamen(3, path, "SEP") || Mlsamen(3, path, "DST") || Mlsamen(3, path, "DSG") || Mlsamen(3, path, "SE2");
         svd = Mlsamen(3, path, "SVD") || Mlsamen(3, path, "DBD");
