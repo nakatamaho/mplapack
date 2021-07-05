@@ -9,7 +9,7 @@ SVD:  Data file for testing Singular Value Decomposition routines
 2 0  2  2  2                                  Values of NRHS
 50.0                                          Threshold value
 T                                             Put T to test the LAPACK routines
-F                                             Put T to test the driver routines
+T                                             Put T to test the driver routines
 T                                             Put T to test the error exits
 1                                             Code to interpret the seed
 SVD 16

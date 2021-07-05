@@ -42,7 +42,6 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     INTEGER ldasav = lda;
     INTEGER ldusav = ldu;
     INTEGER ldvtsav = ldvt;
-
     common cmn;
     common_write write(cmn);
     char cjob[4] = {'N', 'O', 'S', 'A'};
@@ -108,41 +107,6 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     static const char *format_9995 = "(' Rdrvbd: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
                                      "', JTYPE=',i6,', LSWORK=',i6,/,9x,'ISEED=(',3(i5,','),i5,')')";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Scalars for Rgesvdq ..
-    //     ..
-    //     .. Local Arrays for Rgesvdq ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Check for errors
     //
     info = 0;
@@ -199,9 +163,11 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     ntest = 0;
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
+    Rlabad( unfl, ovfl );
     ulp = Rlamch("Precision");
     rtunfl = sqrt(unfl);
     ulpinv = one / ulp;
+    infot = 0;
     //
     //     Loop over sizes, types
     //
@@ -290,6 +256,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 if (iws > 1) {
                     Rlacpy("F", m, n, asav, lda, a, lda);
                 }
+                strncpy(srnamt, "Rgesvd", srnamt_len);
                 Rgesvd("A", "A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, work, lswork, iinfo);
                 if (iinfo != 0) {
                     write(nout, format_9995), "GESVD", iinfo, m, n, jtype, lswork, ioldsd;
@@ -332,6 +299,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         jobu = cjob[(iju + 1) - 1];
                         jobvt = cjob[(ijvt + 1) - 1];
                         Rlacpy("F", m, n, asav, lda, a, lda);
+                        strncpy(srnamt, "Rgesvd", srnamt_len);
                         Rgesvd(&jobu, &jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, iinfo);
                         //
                         //                    Compare U
@@ -391,6 +359,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 }
                 //
                 Rlacpy("F", m, n, asav, lda, a, lda);
+                strncpy(srnamt, "Rgesdd", srnamt_len);
                 Rgesdd("A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, work, lswork, iwork, iinfo);
                 if (iinfo != 0) {
                     write(nout, format_9995), "GESDD", iinfo, m, n, jtype, lswork, ioldsd;
@@ -428,6 +397,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 for (ijq = 0; ijq <= 2; ijq = ijq + 1) {
                     jobq = cjob[(ijq + 1) - 1];
                     Rlacpy("F", m, n, asav, lda, a, lda);
+                    strncpy(srnamt, "Rgesdd", srnamt_len);
                     Rgesdd(&jobq, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, iwork, iinfo);
                     //
                     //                 Compare U
@@ -499,6 +469,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     //
                     lrwork = 2;
                     liwork = max(n, 1);
+                    strncpy(srnamt, "Rgesvdq", srnamt_len);
                     Rgesvdq("H", "N", "N", "A", "A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, numrank, iwork, liwork, work, lwork, rwork, lrwork, iinfo);
                     //
                     if (iinfo != 0) {
@@ -548,6 +519,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     //
                     Rlacpy("F", m, n, asav, lda, usav, lda);
+                    strncpy(srnamt, "Rgesvj", srnamt_len);
                     Rgesvj("G", "U", "V", m, n, usav, lda, ssav, 0, a, ldvt, work, lwork, info);
                     //
                     //                 Rgesvj returns V not VT

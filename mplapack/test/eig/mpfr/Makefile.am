@@ -225,13 +225,13 @@ Rsep.out:   #Ok
 	@echo SEP: Testing Symmetric Eigenvalue Problem routines
 	./xeigtstR_mpfr < sep.in > $@ 2>&1
 
+Rsvd.out:   #ok
+	@echo SVD: Testing Singular Value Decomposition routines
+	./xeigtstR_mpfr < svd.in > $@ 2>&1
+
 Rse2.out:   #Ok
 	@echo SEP: Testing Symmetric Eigenvalue Problem routines
 	./xeigtstR_mpfr < se2.in > $@ 2>&1
-
-Rsvd.out:   #ng
-	@echo SVD: Testing Singular Value Decomposition routines
-	./xeigtstR_mpfr < svd.in > $@ 2>&1
 
 Rec.out:   #Ok
 	@echo DEC: Testing Eigen Condition Routines

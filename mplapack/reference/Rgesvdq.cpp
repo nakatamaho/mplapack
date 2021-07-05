@@ -87,21 +87,6 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
     REAL sconda = 0.0;
     INTEGER n1 = 0;
     INTEGER optratio = 0;
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     .. Local Scalars ..
-    //     .. Local Arrays
-    //     ..
-    //     .. External Subroutines (BLAS, LAPACK)
-    //     ..
-    //     .. External Functions (BLAS, LAPACK)
-    //     ..
-    //     .. Intrinsic Functions ..
     //
     //     Test the input arguments
     //

@@ -1,3 +1,7 @@
+2021/7/5    Nakata Maho <maho@riken.jp> 1.0.0
+            * Tests Singular Value Decomposition routines (svd.in)
+              have passed for MPFR version.
+
 2021/7/1    Nakata Maho <maho@riken.jp> 1.0.0
             * MPLAPACK now use Rlaqr0 in Rhseqr.cpp for big (n>=15) matrices
 
