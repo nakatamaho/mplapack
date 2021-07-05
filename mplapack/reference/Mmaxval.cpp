@@ -29,21 +29,19 @@
 #include <mplapack.h>
 
 REAL Mmaxval(REAL *dx, INTEGER const start, INTEGER const end, INTEGER incx) {
-    INTEGER return_value = 0;
-    return_value = 0;
-    if (incx <= 0) {
-        return return_value;
-    }
     REAL dmax = 0.0;
+    if (incx <= 0) {
+        return dx[start];
+    }
     INTEGER i = 0;
     INTEGER ix = 0;
     if (incx == 1) {
         //
         //        code for increment equal to 1
         //
-        for (i = start; i <= end; i = i + 1) {
+        dmax = dx[start - 1];
+        for (i = start + 1; i <= end; i = i + 1) {
             if (dx[i - 1] > dmax) {
-                return_value = i;
                 dmax = dx[i - 1];
             }
         }
@@ -52,11 +50,10 @@ REAL Mmaxval(REAL *dx, INTEGER const start, INTEGER const end, INTEGER incx) {
         //        code for increment not equal to 1
         //
         ix = 1;
-        dmax = abs(dx[start - 1]);
+        dmax = dx[start - 1];
         ix += incx;
         for (i = start + 1; i <= end; i = i + 1) {
             if (dx[ix - 1] > dmax) {
-                return_value = i;
                 dmax = dx[ix - 1];
             }
             ix += incx;

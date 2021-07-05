@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_debug.h>
+
 void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER const n, REAL *d, REAL *e, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, INTEGER &ns, REAL *s, REAL *z, INTEGER const ldz, REAL *work, INTEGER *iwork, INTEGER &info) {
     //
     //     Test the input parameters.
@@ -38,7 +40,6 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
     bool indsv = Mlsame(range, "I");
     bool wantz = Mlsame(jobz, "V");
     bool lower = Mlsame(uplo, "L");
-    INTEGER ldwork = 14;
     //
     info = 0;
     const REAL zero = 0.0;
@@ -116,7 +117,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
     const REAL ten = 10.0;
     const REAL hndrd = 100.0;
     const REAL meigth = -0.1250e0;
-    REAL tol = max({ten, min({hndrd, pow(eps, meigth)})}) * eps;
+    REAL tol = max(ten, min(hndrd, pow(eps, meigth))) * eps;
     //
     //     Compute approximate maximum, minimum singular values.
     //
@@ -194,7 +195,8 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
         rngvx = 'V';
         vltgk = -vu;
         vutgk = -vl;
-        work[(idtgk - 1) + ((idtgk + 2 * n - 1) - 1) * ldwork] = zero;
+        for (int l = idtgk; l <= idtgk + 2 * n - 1; l++)
+            work[l - 1] = zero;
         Rcopy(n, d, 1, &work[ietgk - 1], 2);
         Rcopy(n - 1, e, 1, &work[(ietgk + 1) - 1], 2);
         Rstevx("N", "V", n * 2, &work[idtgk - 1], &work[ietgk - 1], vltgk, vutgk, iltgk, iltgk, abstol, ns, s, z, ldz, &work[itemp - 1], &iwork[iiwork - 1], &iwork[iifail - 1], info);
@@ -217,12 +219,14 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
         iltgk = il;
         iutgk = iu;
         rngvx = 'V';
-        work[(idtgk - 1) + ((idtgk + 2 * n - 1) - 1) * ldwork] = zero;
+        for (int l = idtgk; l <= idtgk + 2 * n - 1; l++)
+            work[l - 1] = zero;
         Rcopy(n, d, 1, &work[ietgk - 1], 2);
         Rcopy(n - 1, e, 1, &work[(ietgk + 1) - 1], 2);
         Rstevx("N", "I", n * 2, &work[idtgk - 1], &work[ietgk - 1], vltgk, vltgk, iltgk, iltgk, abstol, ns, s, z, ldz, &work[itemp - 1], &iwork[iiwork - 1], &iwork[iifail - 1], info);
         vltgk = s[1 - 1] - fudge * smax * ulp * n;
-        work[(idtgk - 1) + ((idtgk + 2 * n - 1) - 1) * ldwork] = zero;
+        for (int l = idtgk; l <= idtgk + 2 * n - 1; l++)
+            work[l - 1] = zero;
         Rcopy(n, d, 1, &work[ietgk - 1], 2);
         Rcopy(n - 1, e, 1, &work[(ietgk + 1) - 1], 2);
         Rstevx("N", "I", n * 2, &work[idtgk - 1], &work[ietgk - 1], vutgk, vutgk, iutgk, iutgk, abstol, ns, s, z, ldz, &work[itemp - 1], &iwork[iiwork - 1], &iwork[iifail - 1], info);
@@ -265,7 +269,8 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
     for (int i = 1; i <= n; i++)
         s[i - 1] = zero;
     work[(ietgk + 2 * n - 1) - 1] = zero;
-    work[(idtgk - 1) + ((idtgk + 2 * n - 1) - 1) * ldwork] = zero;
+    for (int l = idtgk; l <= idtgk + 2 * n - 1; l++)
+        work[l - 1] = zero;
     Rcopy(n, d, 1, &work[ietgk - 1], 2);
     Rcopy(n - 1, e, 1, &work[(ietgk + 1) - 1], 2);
     //
