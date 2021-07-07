@@ -31,27 +31,6 @@
 
 void Rggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const n, INTEGER const p, INTEGER k, INTEGER l, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alpha, REAL *beta, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *q, INTEGER const ldq, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Decode and test the input parameters
     //
     bool wantu = Mlsame(jobu, "U");
@@ -119,8 +98,8 @@ void Rggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     //
     REAL ulp = Rlamch("Precision");
     REAL unfl = Rlamch("Safe Minimum");
-    tola = max(m, n) * max(anorm, unfl) * ulp;
-    tolb = max(p, n) * max(bnorm, unfl) * ulp;
+    tola = castREAL(max(m, n)) * max(anorm, unfl) * ulp;
+    tolb = castREAL(max(p, n)) * max(bnorm, unfl) * ulp;
     //
     //     Preprocessing
     //

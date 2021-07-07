@@ -40,29 +40,6 @@ using fem::common;
 
 void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf, INTEGER const ldx, REAL *u1, INTEGER const ldu1, REAL *u2, INTEGER const ldu2, REAL *v1t, INTEGER const ldv1t, REAL *v2t, INTEGER const ldv2t, REAL *theta, INTEGER *iwork, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     INTEGER ldxf = ldx;
     REAL ulp = Rlamch("Precision");
     const REAL realone = 1.0;
@@ -76,7 +53,7 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     Rsyrk("Upper", "Conjugate transpose", m, m, -one, x, ldx, one, work, ldx);
     REAL eps2 = 0.0;
     if (m > 0) {
-        eps2 = max({ulp, Rlange("1", m, m, work, ldx, rwork) / castREAL(m)});
+        eps2 = max(ulp, Rlange("1", m, m, work, ldx, rwork) / castREAL(m));
     } else {
         eps2 = ulp;
     }

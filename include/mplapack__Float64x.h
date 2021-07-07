@@ -662,7 +662,7 @@ void Rlaein(bool const rightv, bool const noinit, mplapackint const n, _Float64x
 void Rlaev2(_Float64x const a, _Float64x const b, _Float64x const c, _Float64x &rt1, _Float64x &rt2, _Float64x &cs1, _Float64x &sn1);
 void Rlaexc(bool const wantq, mplapackint const n, _Float64x *t, mplapackint const ldt, _Float64x *q, mplapackint const ldq, mplapackint const j1, mplapackint const n1, mplapackint const n2, _Float64x *work, mplapackint &info);
 void Rlag2(_Float64x *a, mplapackint const lda, _Float64x *b, mplapackint const ldb, _Float64x const safmin, _Float64x &scale1, _Float64x &scale2, _Float64x &wr1, _Float64x &wr2, _Float64x &wi);
-void Rlags2(bool const upper, _Float64x const a1, _Float64x const a2, _Float64x const a3, _Float64x const b1, _Float64x const b2, _Float64x const b3, _Float64x &csu, _Float64x &snu, _Float64x &csv, _Float64x &snv, _Float64x csq, _Float64x snq);
+void Rlags2(bool const upper, _Float64x const a1, _Float64x const a2, _Float64x const a3, _Float64x const b1, _Float64x const b2, _Float64x const b3, _Float64x &csu, _Float64x &snu, _Float64x &csv, _Float64x &snv, _Float64x &csq, _Float64x &snq);
 void Rlagtf(mplapackint const n, _Float64x *a, _Float64x const lambda, _Float64x *b, _Float64x *c, _Float64x const tol, _Float64x *d, mplapackint *in, mplapackint &info);
 void Rlagtm(const char *trans, mplapackint const n, mplapackint const nrhs, _Float64x const alpha, _Float64x *dl, _Float64x *d, _Float64x *du, _Float64x *x, mplapackint const ldx, _Float64x const beta, _Float64x *b, mplapackint const ldb);
 void Rlagts(mplapackint const job, mplapackint const n, _Float64x *a, _Float64x *b, _Float64x *c, _Float64x *d, mplapackint *in, _Float64x *y, _Float64x &tol, mplapackint &info);

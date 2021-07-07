@@ -29,26 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlags2(bool const upper, REAL const a1, REAL const a2, REAL const a3, REAL const b1, REAL const b2, REAL const b3, REAL &csu, REAL &snu, REAL &csv, REAL &snv, REAL csq, REAL snq) {
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
+void Rlags2(bool const upper, REAL const a1, REAL const a2, REAL const a3, REAL const b1, REAL const b2, REAL const b3, REAL &csu, REAL &snu, REAL &csv, REAL &snv, REAL &csq, REAL &snq) {
     //
     REAL a = 0.0;
     REAL d = 0.0;

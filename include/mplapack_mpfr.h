@@ -668,7 +668,7 @@ void Rlaein(bool const rightv, bool const noinit, mplapackint const n, mpreal *h
 void Rlaev2(mpreal const a, mpreal const b, mpreal const c, mpreal &rt1, mpreal &rt2, mpreal &cs1, mpreal &sn1);
 void Rlaexc(bool const wantq, mplapackint const n, mpreal *t, mplapackint const ldt, mpreal *q, mplapackint const ldq, mplapackint const j1, mplapackint const n1, mplapackint const n2, mpreal *work, mplapackint &info);
 void Rlag2(mpreal *a, mplapackint const lda, mpreal *b, mplapackint const ldb, mpreal const safmin, mpreal &scale1, mpreal &scale2, mpreal &wr1, mpreal &wr2, mpreal &wi);
-void Rlags2(bool const upper, mpreal const a1, mpreal const a2, mpreal const a3, mpreal const b1, mpreal const b2, mpreal const b3, mpreal &csu, mpreal &snu, mpreal &csv, mpreal &snv, mpreal csq, mpreal snq);
+void Rlags2(bool const upper, mpreal const a1, mpreal const a2, mpreal const a3, mpreal const b1, mpreal const b2, mpreal const b3, mpreal &csu, mpreal &snu, mpreal &csv, mpreal &snv, mpreal &csq, mpreal &snq);
 void Rlagtf(mplapackint const n, mpreal *a, mpreal const lambda, mpreal *b, mpreal *c, mpreal const tol, mpreal *d, mplapackint *in, mplapackint &info);
 void Rlagtm(const char *trans, mplapackint const n, mplapackint const nrhs, mpreal const alpha, mpreal *dl, mpreal *d, mpreal *du, mpreal *x, mplapackint const ldx, mpreal const beta, mpreal *b, mplapackint const ldb);
 void Rlagts(mplapackint const job, mplapackint const n, mpreal *a, mpreal *b, mpreal *c, mpreal *d, mplapackint *in, mpreal *y, mpreal &tol, mplapackint &info);

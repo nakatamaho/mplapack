@@ -281,7 +281,7 @@ Rglm.out: #ng
 	@echo GLM: Testing Generalized Linear Regression Model routines
 	./xeigtstR_mpfr < glm.in > $@ 2>&1
 
-Rgqr.out: #ng
+Rgqr.out:
         @echo GQR: Testing Generalized QR and RQ factorization routines
 	./xeigtstR_mpfr < gqr.in > $@ 2>&1
 
@@ -293,6 +293,6 @@ Rcsd.out: #ng
 	@echo CSD: Testing CS Decomposition routines
 	./xeigtstR_mpfr < csd.in > $@ 2>&1
 
-Rlse.out: #ng
+Rlse.out:
 	@echo LSE: Testing Constrained Linear Least Squares routines
 	./xeigtstR_mpfr < lse.in > $@ 2>&1

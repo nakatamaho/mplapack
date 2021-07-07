@@ -664,7 +664,7 @@ void Rlaein(bool const rightv, bool const noinit, mplapackint const n, dd_real *
 void Rlaev2(dd_real const a, dd_real const b, dd_real const c, dd_real &rt1, dd_real &rt2, dd_real &cs1, dd_real &sn1);
 void Rlaexc(bool const wantq, mplapackint const n, dd_real *t, mplapackint const ldt, dd_real *q, mplapackint const ldq, mplapackint const j1, mplapackint const n1, mplapackint const n2, dd_real *work, mplapackint &info);
 void Rlag2(dd_real *a, mplapackint const lda, dd_real *b, mplapackint const ldb, dd_real const safmin, dd_real &scale1, dd_real &scale2, dd_real &wr1, dd_real &wr2, dd_real &wi);
-void Rlags2(bool const upper, dd_real const a1, dd_real const a2, dd_real const a3, dd_real const b1, dd_real const b2, dd_real const b3, dd_real &csu, dd_real &snu, dd_real &csv, dd_real &snv, dd_real csq, dd_real snq);
+void Rlags2(bool const upper, dd_real const a1, dd_real const a2, dd_real const a3, dd_real const b1, dd_real const b2, dd_real const b3, dd_real &csu, dd_real &snu, dd_real &csv, dd_real &snv, dd_real &csq, dd_real &snq);
 void Rlagtf(mplapackint const n, dd_real *a, dd_real const lambda, dd_real *b, dd_real *c, dd_real const tol, dd_real *d, mplapackint *in, mplapackint &info);
 void Rlagtm(const char *trans, mplapackint const n, mplapackint const nrhs, dd_real const alpha, dd_real *dl, dd_real *d, dd_real *du, dd_real *x, mplapackint const ldx, dd_real const beta, dd_real *b, mplapackint const ldb);
 void Rlagts(mplapackint const job, mplapackint const n, dd_real *a, dd_real *b, dd_real *c, dd_real *d, mplapackint *in, dd_real *y, dd_real &tol, mplapackint &info);

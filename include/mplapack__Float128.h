@@ -666,7 +666,7 @@ void Rlaein(bool const rightv, bool const noinit, mplapackint const n, _Float128
 void Rlaev2(_Float128 const a, _Float128 const b, _Float128 const c, _Float128 &rt1, _Float128 &rt2, _Float128 &cs1, _Float128 &sn1);
 void Rlaexc(bool const wantq, mplapackint const n, _Float128 *t, mplapackint const ldt, _Float128 *q, mplapackint const ldq, mplapackint const j1, mplapackint const n1, mplapackint const n2, _Float128 *work, mplapackint &info);
 void Rlag2(_Float128 *a, mplapackint const lda, _Float128 *b, mplapackint const ldb, _Float128 const safmin, _Float128 &scale1, _Float128 &scale2, _Float128 &wr1, _Float128 &wr2, _Float128 &wi);
-void Rlags2(bool const upper, _Float128 const a1, _Float128 const a2, _Float128 const a3, _Float128 const b1, _Float128 const b2, _Float128 const b3, _Float128 &csu, _Float128 &snu, _Float128 &csv, _Float128 &snv, _Float128 csq, _Float128 snq);
+void Rlags2(bool const upper, _Float128 const a1, _Float128 const a2, _Float128 const a3, _Float128 const b1, _Float128 const b2, _Float128 const b3, _Float128 &csu, _Float128 &snu, _Float128 &csv, _Float128 &snv, _Float128 &csq, _Float128 &snq);
 void Rlagtf(mplapackint const n, _Float128 *a, _Float128 const lambda, _Float128 *b, _Float128 *c, _Float128 const tol, _Float128 *d, mplapackint *in, mplapackint &info);
 void Rlagtm(const char *trans, mplapackint const n, mplapackint const nrhs, _Float128 const alpha, _Float128 *dl, _Float128 *d, _Float128 *du, _Float128 *x, mplapackint const ldx, _Float128 const beta, _Float128 *b, mplapackint const ldb);
 void Rlagts(mplapackint const job, mplapackint const n, _Float128 *a, _Float128 *b, _Float128 *c, _Float128 *d, mplapackint *in, _Float128 *y, _Float128 &tol, mplapackint &info);
