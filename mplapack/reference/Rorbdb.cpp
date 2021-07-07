@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -30,29 +30,6 @@
 #include <mplapack.h>
 
 void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEGER const ldx11, REAL *x12, INTEGER const ldx12, REAL *x21, INTEGER const ldx21, REAL *x22, INTEGER const ldx22, REAL *theta, REAL *phi, REAL *taup1, REAL *taup2, REAL *tauq1, REAL *tauq2, REAL *work, INTEGER const lwork, INTEGER &info) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  ====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Test input arguments
     //
