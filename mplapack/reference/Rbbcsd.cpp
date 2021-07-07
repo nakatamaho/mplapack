@@ -31,29 +31,6 @@
 
 void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char *jobv2t, const char *trans, INTEGER const m, INTEGER const p, INTEGER const q, REAL *theta, REAL *phi, REAL *u1, INTEGER const ldu1, REAL *u2, INTEGER const ldu2, REAL *v1t, INTEGER const ldv1t, REAL *v2t, INTEGER const ldv2t, REAL *b11d, REAL *b11e, REAL *b12d, REAL *b12e, REAL *b21d, REAL *b21e, REAL *b22d, REAL *b22e, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  ===================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test input arguments
     //
     info = 0;
