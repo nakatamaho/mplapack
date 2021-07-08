@@ -40,3 +40,44 @@ The following parameter values will be used:
  Total time used =  39 seconds
 
  ZGB routines passed the tests of the error exits
+
+ All tests for ZGB routines passed the threshold (  28938 tests run)
+ *** XERBLA was called from Cgbsv with INFO =      1 instead of  6 ***
+ *** XERBLA was called from Cgbsv with INFO =      2 instead of  6 ***
+ *** XERBLA was called from Cgbsv with INFO =      3 instead of  6 ***
+ *** XERBLA was called from Cgbsv with INFO =      4 instead of  6 ***
+ *** XERBLA was called from Cgbsv with INFO =      9 instead of  6 ***
+ *** XERBLA was called from Cgbsvx with INFO =      1 instead of  6 ***
+ *** XERBLA was called from Cgbsvx with INFO =      2 instead of  6 ***
+ *** XERBLA was called from Cgbsvx with INFO =      3 instead of  6 ***
+ *** XERBLA was called from Cgbsvx with INFO =      4 instead of  6 ***
+ *** XERBLA was called from Cgbsvx with INFO =      5 instead of  6 ***
+ *** XERBLA was called from Cgbsvx with INFO =      8 instead of  6 ***
+ *** XERBLA was called from Cgbsvx with INFO =     10 instead of  6 ***
+ *** XERBLA was called from Cgbsvx with INFO =     12 instead of  6 ***
+ *** XERBLA was called from Cgbsvx with INFO =     13 instead of  6 ***
+ *** XERBLA was called from Cgbsvx with INFO =     14 instead of  6 ***
+ *** XERBLA was called from Cgbsvx with INFO =     16 instead of  6 ***
+ *** XERBLA was called from Cgbsvx with INFO =     18 instead of  6 ***
+ *** CGB drivers failed the tests of the error exits ***
+ *** XERBLA was called from Cgbsvx with INFO =      1 instead of  6 ***
+
+ CGB drivers:  General band matrices
+ Matrix types:
+    1. Random, CNDNUM = 2              5. Random, CNDNUM = sqrt(0.1/EPS)
+    2. First column zero               6. Random, CNDNUM = 0.1/EPS
+    3. Last column zero                7. Scaled near underflow
+    4. Last n/2 columns zero           8. Scaled near overflow
+ Test ratios:
+    1: norm( L * U - A )  / ( N * norm(A) * EPS )
+    2: norm( B - A * X )  / ( norm(A) * norm(X) * EPS )
+    3: norm( X - XACT )   / ( norm(XACT) * CNDNUM * EPS )
+    4: norm( X - XACT )   / ( norm(XACT) * (error bound) )
+    5: (backward error)   / EPS
+    6: RCOND * CNDNUM - 1.0
+    7: abs( WORK(1) - RPVGRW ) / ( max( WORK(1), RPVGRW ) * EPS )
+ Messages:
+ *** Error code from Cgbsvx =   -1
+ ==> FACT='C', TRANS='N', N=    0, KL=    0, KU=    0, NRHS=   1, type 1
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  Not implemented: ../../../../mplapack/test/fable/fem/write.hpp(237)
