@@ -40,10 +40,10 @@ using fem::common;
 
 void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf, INTEGER const ldx, REAL *u1, INTEGER const ldu1, REAL *u2, INTEGER const ldu2, REAL *v1t, INTEGER const ldv1t, REAL *v2t, INTEGER const ldv2t, REAL *theta, INTEGER *iwork, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
-    INTEGER ldxf = ldx;
     REAL ulp = Rlamch("Precision");
     const REAL realone = 1.0;
     REAL ulpinv = realone / ulp;
+    REAL dummy;
     //
     //     The first half of the routine checks the 2-by-2 CSD
     //
@@ -66,7 +66,7 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     //     Compute the CSD
     //
     INTEGER info = 0;
-    Rorcsd("Y", "Y", "Y", "Y", "N", "D", m, p, q, &xf[(1 - 1)], ldx, &xf[((q + 1) - 1) * ldxf], ldx, &xf[((p + 1) - 1)], ldx, &xf[((p + 1) - 1) + ((q + 1) - 1) * ldxf], ldx, theta, u1, ldu1, u2, ldu2, v1t, ldv1t, v2t, ldv2t, work, lwork, iwork, info);
+    Rorcsd("Y", "Y", "Y", "Y", "N", "D", m, p, q, &xf[(1 - 1)], ldx, &xf[((q + 1) - 1) * ldx], ldx, &xf[((p + 1) - 1)], ldx, &xf[((p + 1) - 1) + ((q + 1) - 1) * ldx], ldx, theta, u1, ldu1, u2, ldu2, v1t, ldv1t, v2t, ldv2t, work, lwork, iwork, info);
     //
     //     Compute XF := diag(U1,U2)'*X*diag(V1,V2) - [D11 D12; D21 D22]
     //
@@ -78,21 +78,21 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     //
     INTEGER i = 0;
     for (i = 1; i <= min(p, q) - r; i = i + 1) {
-        xf[(i - 1) + (i - 1) * ldxf] = xf[(i - 1) + (i - 1) * ldxf] - one;
+        xf[(i - 1) + (i - 1) * ldx] = xf[(i - 1) + (i - 1) * ldx] - one;
     }
     for (i = 1; i <= r; i = i + 1) {
         xf[(min(p, q) - r + i - 1) + (min(p, q) - r + i - 1) * ldx] = xf[(min(p, q) - r + i - 1) + (min(p, q) - r + i - 1) * ldx] - cos(theta[i - 1]);
     }
     //
-    Rgemm("No transpose", "Conjugate transpose", p, m - q, m - q, one, &xf[((q + 1) - 1) * ldxf], ldx, v2t, ldv2t, zero, work, ldx);
+    Rgemm("No transpose", "Conjugate transpose", p, m - q, m - q, one, &xf[((q + 1) - 1) * ldx], ldx, v2t, ldv2t, zero, work, ldx);
     //
-    Rgemm("Conjugate transpose", "No transpose", p, m - q, p, one, u1, ldu1, work, ldx, zero, &xf[((q + 1) - 1) * ldxf], ldx);
+    Rgemm("Conjugate transpose", "No transpose", p, m - q, p, one, u1, ldu1, work, ldx, zero, &xf[((q + 1) - 1) * ldx], ldx);
     //
     for (i = 1; i <= min(p, m - q) - r; i = i + 1) {
-        xf[((p - i + 1) - 1) + ((m - i + 1) - 1) * ldxf] += one;
+        xf[((p - i + 1) - 1) + ((m - i + 1) - 1) * ldx] = xf[((p - i + 1) - 1) + ((m - i + 1) - 1) * ldx] + one;
     }
     for (i = 1; i <= r; i = i + 1) {
-        xf[(p - (min(p, m - q) - r) + 1 - i - 1) + (m - (min(p, m - q) - r) + 1 - i - 1) * ldx] += sin(theta[(r - i + 1) - 1]);
+        xf[(p - (min(p, m - q) - r) + 1 - i - 1) + (m - (min(p, m - q) - r) + 1 - i - 1) * ldx] = xf[(p - (min(p, m - q) - r) + 1 - i - 1) + (m - (min(p, m - q) - r) + 1 - i - 1) * ldx] + sin(theta[(r - i + 1) - 1]);
     }
     //
     Rgemm("No transpose", "Conjugate transpose", m - p, q, q, one, &xf[((p + 1) - 1)], ldx, v1t, ldv1t, zero, work, ldx);
@@ -100,18 +100,18 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     Rgemm("Conjugate transpose", "No transpose", m - p, q, m - p, one, u2, ldu2, work, ldx, zero, &xf[((p + 1) - 1)], ldx);
     //
     for (i = 1; i <= min(m - p, q) - r; i = i + 1) {
-        xf[((m - i + 1) - 1) + ((q - i + 1) - 1) * ldxf] = xf[((m - i + 1) - 1) + ((q - i + 1) - 1) * ldxf] - one;
+        xf[((m - i + 1) - 1) + ((q - i + 1) - 1) * ldx] = xf[((m - i + 1) - 1) + ((q - i + 1) - 1) * ldx] - one;
     }
     for (i = 1; i <= r; i = i + 1) {
         xf[(m - (min(m - p, q) - r) + 1 - i - 1) + (q - (min(m - p, q) - r) + 1 - i - 1) * ldx] = xf[(m - (min(m - p, q) - r) + 1 - i - 1) + (q - (min(m - p, q) - r) + 1 - i - 1) * ldx] - sin(theta[(r - i + 1) - 1]);
     }
     //
-    Rgemm("No transpose", "Conjugate transpose", m - p, m - q, m - q, one, &xf[((p + 1) - 1) + ((q + 1) - 1) * ldxf], ldx, v2t, ldv2t, zero, work, ldx);
+    Rgemm("No transpose", "Conjugate transpose", m - p, m - q, m - q, one, &xf[((p + 1) - 1) + ((q + 1) - 1) * ldx], ldx, v2t, ldv2t, zero, work, ldx);
     //
-    Rgemm("Conjugate transpose", "No transpose", m - p, m - q, m - p, one, u2, ldu2, work, ldx, zero, &xf[((p + 1) - 1) + ((q + 1) - 1) * ldxf], ldx);
+    Rgemm("Conjugate transpose", "No transpose", m - p, m - q, m - p, one, u2, ldu2, work, ldx, zero, &xf[((p + 1) - 1) + ((q + 1) - 1) * ldx], ldx);
     //
     for (i = 1; i <= min(m - p, m - q) - r; i = i + 1) {
-        xf[((p + i) - 1) + ((q + i) - 1) * ldxf] = xf[((p + i) - 1) + ((q + i) - 1) * ldxf] - one;
+        xf[((p + i) - 1) + ((q + i) - 1) * ldx] = xf[((p + i) - 1) + ((q + i) - 1) * ldx] - one;
     }
     for (i = 1; i <= r; i = i + 1) {
         xf[(p + (min(m - p, m - q) - r) + i - 1) + (q + (min(m - p, m - q) - r) + i - 1) * ldx] = xf[(p + (min(m - p, m - q) - r) + i - 1) + (q + (min(m - p, m - q) - r) + i - 1) * ldx] - cos(theta[i - 1]);
@@ -124,7 +124,7 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     //
     //     Compute norm( U1'*X12*V2 - D12 ) / ( MAX(1,P,M-Q)*EPS2 ) .
     //
-    resid = Rlange("1", p, m - q, &xf[((q + 1) - 1) * ldxf], ldx, rwork);
+    resid = Rlange("1", p, m - q, &xf[((q + 1) - 1) * ldx], ldx, rwork);
     result[2 - 1] = (resid / castREAL(max({(INTEGER)1, p, m - q}))) / eps2;
     //
     //     Compute norm( U2'*X21*V1 - D21 ) / ( MAX(1,M-P,Q)*EPS2 ) .
@@ -134,7 +134,7 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     //
     //     Compute norm( U2'*X22*V2 - D22 ) / ( MAX(1,M-P,M-Q)*EPS2 ) .
     //
-    resid = Rlange("1", m - p, m - q, &xf[((p + 1) - 1) + ((q + 1) - 1) * ldxf], ldx, rwork);
+    resid = Rlange("1", m - p, m - q, &xf[((p + 1) - 1) + ((q + 1) - 1) * ldx], ldx, rwork);
     result[4 - 1] = (resid / castREAL(max({(INTEGER)1, m - p, m - q}))) / eps2;
     //
     //     Compute I - U1'*U1
@@ -181,7 +181,7 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     //
     const REAL realzero = 0.0;
     result[9 - 1] = realzero;
-    const REAL piover2 = 1.57079632679489661923132169163975144210e0;
+    const REAL piover2 = pi(dummy);
     for (i = 1; i <= r; i = i + 1) {
         if (theta[i - 1] < realzero || theta[i - 1] > piover2) {
             result[9 - 1] = ulpinv;

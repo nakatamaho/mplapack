@@ -163,7 +163,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     ntest = 0;
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
-    Rlabad( unfl, ovfl );
+    Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
     rtunfl = sqrt(unfl);
     ulpinv = one / ulp;
