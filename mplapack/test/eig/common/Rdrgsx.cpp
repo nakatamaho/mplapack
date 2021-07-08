@@ -330,10 +330,8 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     result[7 - 1] = zero;
                     if (linfo == mplusn + 3) {
                         result[7 - 1] = ulpinv;
-                        printf("Rdrgsx.cpp l333 \n");
                     } else if (mm != n) {
                         result[7 - 1] = ulpinv;
-                        printf("Rdrgsx.cpp l336 \n");
                     }
                     ntest++;
                     //
@@ -354,12 +352,10 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                         //
                         if (difest[2 - 1] == zero) {
                             if (diftru > abnrm * ulp) {
-                                printf("Rdrgsx.cpp l355 \n");
                                 result[8 - 1] = ulpinv;
                             }
                         } else if (diftru == zero) {
                             if (difest[2 - 1] > abnrm * ulp) {
-                                printf("Rdrgsx.cpp l360 \n");
                                 result[8 - 1] = ulpinv;
                             }
                         } else if ((diftru > thrsh2 * difest[2 - 1]) || (diftru * thrsh2 < difest[2 - 1])) {
@@ -598,12 +594,10 @@ statement_70:
         result[8 - 1] = zero;
         if (difest[2 - 1] == zero) {
             if (diftru > abnrm * ulp) {
-                printf("Rdrgsx.cpp l605\n");
                 result[8 - 1] = ulpinv;
             }
         } else if (diftru == zero) {
             if (difest[2 - 1] > abnrm * ulp) {
-                printf("Rdrgsx.cpp l610\n");
                 result[8 - 1] = ulpinv;
             }
         } else if ((diftru > thrsh2 * difest[2 - 1]) || (diftru * thrsh2 < difest[2 - 1])) {

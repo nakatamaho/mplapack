@@ -244,22 +244,18 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                         if (dif[1 - 1] == zero) {
                             if (diftru[1 - 1] > abnorm * ulp) {
                                 result[4 - 1] = ulpinv;
-                                printf("Rdrgvx l247\n");
                             }
                         } else if (diftru[1 - 1] == zero) {
                             if (dif[1 - 1] > abnorm * ulp) {
                                 result[4 - 1] = ulpinv;
-                                printf("Rdrgvx l252\n");
                             }
                         } else if (dif[5 - 1] == zero) {
                             if (diftru[5 - 1] > abnorm * ulp) {
                                 result[4 - 1] = ulpinv;
-                                printf("Rdrgvx l257\n");
                             }
                         } else if (diftru[5 - 1] == zero) {
                             if (dif[5 - 1] > abnorm * ulp) {
                                 result[4 - 1] = ulpinv;
-                                printf("Rdrgvx l262\n");
                             }
                         } else {
                             ratio1 = max(abs(diftru[1 - 1] / dif[1 - 1]), abs(dif[1 - 1] / diftru[1 - 1]));
@@ -432,29 +428,24 @@ statement_90:
         result[4 - 1] = zero;
         if (dif[1 - 1] == zero) {
             if (diftru[1 - 1] > abnorm * ulp) {
-                printf("Rdrgvx l438\n");
                 result[4 - 1] = ulpinv;
             }
         } else if (diftru[1 - 1] == zero) {
             if (dif[1 - 1] > abnorm * ulp) {
-                printf("Rdrgvx l443\n");
                 result[4 - 1] = ulpinv;
             }
         } else if (dif[5 - 1] == zero) {
             if (diftru[5 - 1] > abnorm * ulp) {
-                printf("Rdrgvx l449\n");
                 result[4 - 1] = ulpinv;
             }
         } else if (diftru[5 - 1] == zero) {
             if (dif[5 - 1] > abnorm * ulp) {
-                printf("Rdrgvx l453\n");
                 result[4 - 1] = ulpinv;
             }
         } else {
             ratio1 = max(abs(diftru[1 - 1] / dif[1 - 1]), abs(dif[1 - 1] / diftru[1 - 1]));
             ratio2 = max(abs(diftru[5 - 1] / dif[5 - 1]), abs(dif[5 - 1] / diftru[5 - 1]));
             result[4 - 1] = max(ratio1, ratio2);
-            printf("Rdrgvx l460\n");
         }
         //
         ntestt += 4;
