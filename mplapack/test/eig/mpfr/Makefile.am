@@ -266,11 +266,11 @@ Rbak.out:
 	./xeigtstR_mpfr < Rbak.in > $@ 2>&1
 
 Rgbal.out:
-	@echo RGGBAL: Testing the balancing of a pair of general matrices
+	@echo Rggbal: Testing the balancing of a pair of general matrices
 	./xeigtstR_mpfr < Rgbal.in > $@ 2>&1
 
 Rgbak.out:
-	@echo RGGBAK: Testing the back transformation of a pair of balanced matrices
+	@echo Rggbak: Testing the back transformation of a pair of balanced matrices
 	./xeigtstR_mpfr < Rgbak.in > $@ 2>&1
 
 Rbb.out:
