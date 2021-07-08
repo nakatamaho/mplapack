@@ -1,0 +1,1528 @@
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Driver Rgges
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         2     6    10    12    20
+    N:         2     6    10    12    20
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be+9.5302596195518043e-323228497
+ Relative machine overflow  is taken to be+2.0985787164673877e+323228496
+ Relative machine precision is taken to be+7.4583407312002067e-155
+
+ Routines pass computational tests if test ratio is less than+1.0000000000000000e+01
+
+ DGS routines passed the tests of the error exits (108 tests done)
+
+ All tests for DGS drivers  passed the threshold (   1560 tests run)
+
+ All tests for DGS drivers  passed the threshold (   1560 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Driver Rggev
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         2     6     8    10    15    20
+    N:         2     6     8    10    15    20
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be+9.5302596195518043e-323228497
+ Relative machine overflow  is taken to be+2.0985787164673877e+323228496
+ Relative machine precision is taken to be+7.4583407312002067e-155
+
+ Routines pass computational tests if test ratio is less than+1.0000000000000000e+01
+
+ DGV routines passed the tests of the error exits (108 tests done)
+
+ All tests for DGV drivers  passed the threshold (   1092 tests run)
+
+ All tests for DGV drivers  passed the threshold (   1092 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver Rggesx
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    N:         2
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be+9.5302596195518043e-323228497
+ Relative machine overflow  is taken to be+2.0985787164673877e+323228496
+ Relative machine precision is taken to be+7.4583407312002067e-155
+
+ Routines pass computational tests if test ratio is less than+1.0000000000000000e+01
+
+ DGX routines passed the tests of the error exits (108 tests done)
+Rdrgsx.cpp sdim mm 1 n 1 l.245
+Rdrgsx.cpp sdim mm 1 n 1 l.245
+Rdrgsx.cpp sdim mm 1 n 1 l.245
+Rdrgsx.cpp sdim mm 1 n 1 l.245
+Rdrgsx.cpp sdim mm 1 n 1 l.245
+Rdrgsx.cpp sdim mm 1 n 1 l.245
+Rdrgsx.cpp sdim mm 1 n 1 l.245
+Rdrgsx.cpp sdim mm 1 n 1 l.245
+Rdrgsx.cpp sdim mm 1 n 1 l.245
+Rdrgsx.cpp sdim mm 1 n 1 l.245
+Rdrgsx.cpp sdim mm 1 n 1 l.245
+
+ DGX -- Real Expert Generalized Schur form problem driver
+ Matrix types: 
+  1:  A is a block diagonal matrix of Jordan blocks and B is the identity 
+      matrix, 
+  2:  A and B are upper triangular matrices, 
+  3:  A and B are as type 2, but each second diagonal block in A_11 and 
+      each third diaongal block in A_22 are 2x2 blocks,
+  4:  A and B are block diagonal matrices, 
+  5:  (A,B) has potentially close or common eigenvalues.
+
+
+ Tests performed:  (S is Schur, T is triangular, Q and Z are orthogonal,
+                    a is alpha, b is beta, and ' means transpose.)
+  1 = | A - Q S Z' | / ( |A| n ulp )      2 = | B - Q T Z' | / ( |B| n ulp )
+  3 = | I - QQ' | / ( n ulp )             4 = | I - ZZ' | / ( n ulp )
+  5 = 1/ULP  if A is not in Schur form S
+  6 = difference between (alpha,beta) and diagonals of (S,T)
+  7 = 1/ULP  if SDIM is not the correct number of selected eigenvalues
+  8 = 1/ULP  if DIFEST/DIFTRU > 10*THRESH or DIFTRU/DIFEST > 10*THRESH
+  9 = 1/ULP  if DIFEST <> 0 or DIFTRU > ULP*norm(A,B) when reordering fails
+ 10 = 1/ULP  if PLEST/PLTRU > THRESH or PLTRU/PLEST > THRESH
+    ( Test 10 is only for input examples )
+
+ Matrix order= 2, type= 1, a=+8.1877371507464128e+76, order(A_11)= 1, result  8 is +6.7039039649712985e+153
+Rdrgsx.cpp sdim mm 2 n 1 l.245
+ Matrix order= 2, type= 2, a=+1.2213386697554620e-77, order(A_11)= 1, result  7 is +6.7039039649712985e+153
+ Matrix order= 2, type= 2, a=+1.2213386697554620e-77, order(A_11)= 1, result  8 is +6.7039039649712985e+153
+Rdrgsx.cpp sdim mm 2 n 1 l.245
+ Matrix order= 2, type= 3, a=+8.1877371507464128e+76, order(A_11)= 1, result  7 is +6.7039039649712985e+153
+ Matrix order= 2, type= 3, a=+8.1877371507464128e+76, order(A_11)= 1, result  8 is +6.7039039649712985e+153
+Rdrgsx.cpp sdim mm 2 n 1 l.245
+ Matrix order= 2, type= 4, a=+1.2213386697554620e-77, order(A_11)= 1, result  7 is +6.7039039649712985e+153
+ Matrix order= 2, type= 4, a=+1.2213386697554620e-77, order(A_11)= 1, result  8 is +6.7039039649712985e+153
+Rdrgsx.cpp sdim mm 2 n 1 l.245
+ Matrix order= 2, type= 5, a=+8.1877371507464128e+76, order(A_11)= 1, result  7 is +6.7039039649712985e+153
+ Matrix order= 2, type= 5, a=+8.1877371507464128e+76, order(A_11)= 1, result  8 is +6.7039039649712985e+153
+Rdrgsx.cpp sdim mm 2 n 1 l.245
+ Matrix order= 2, type= 1, a=+1.2213386697554620e-77, order(A_11)= 1, result  7 is +6.7039039649712985e+153
+ Matrix order= 2, type= 1, a=+1.2213386697554620e-77, order(A_11)= 1, result  8 is +6.7039039649712985e+153
+Rdrgsx.cpp sdim mm 2 n 1 l.245
+ Matrix order= 2, type= 2, a=+8.1877371507464128e+76, order(A_11)= 1, result  7 is +6.7039039649712985e+153
+ Matrix order= 2, type= 2, a=+8.1877371507464128e+76, order(A_11)= 1, result  8 is +6.7039039649712985e+153
+Rdrgsx.cpp sdim mm 2 n 1 l.245
+ Matrix order= 2, type= 3, a=+1.2213386697554620e-77, order(A_11)= 1, result  7 is +6.7039039649712985e+153
+ Matrix order= 2, type= 3, a=+1.2213386697554620e-77, order(A_11)= 1, result  8 is +6.7039039649712985e+153
+Rdrgsx.cpp sdim mm 2 n 1 l.245
+ Matrix order= 2, type= 4, a=+8.1877371507464128e+76, order(A_11)= 1, result  7 is +6.7039039649712985e+153
+ Matrix order= 2, type= 4, a=+8.1877371507464128e+76, order(A_11)= 1, result  8 is +6.7039039649712985e+153
+Rdrgsx.cpp sdim mm 2 n 1 l.245
+ Matrix order= 2, type= 5, a=+1.2213386697554620e-77, order(A_11)= 1, result  7 is +6.7039039649712985e+153
+ Matrix order= 2, type= 5, a=+1.2213386697554620e-77, order(A_11)= 1, result  8 is +6.7039039649712985e+153
+ DGX drivers:     19 out of    150 tests failed to pass the threshold
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver Rggesx
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    N:         0
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be+9.5302596195518043e-323228497
+ Relative machine overflow  is taken to be+2.0985787164673877e+323228496
+ Relative machine precision is taken to be+7.4583407312002067e-155
+
+ Routines pass computational tests if test ratio is less than+1.0000000000000000e+01
+
+ DGX routines passed the tests of the error exits (108 tests done)
+
+ All tests for DGX drivers  passed the threshold (     20 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver Rggevx
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    N:         5
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be+9.5302596195518043e-323228497
+ Relative machine overflow  is taken to be+2.0985787164673877e+323228496
+ Relative machine precision is taken to be+7.4583407312002067e-155
+
+ Routines pass computational tests if test ratio is less than+1.0000000000000000e+01
+
+ DXV routines passed the tests of the error exits (108 tests done)
+
+ DXV -- Real Expert Eigenvalue/vector problem driver
+ Matrix types: 
+
+ TYPE 1: Da is diagonal, Db is identity, 
+     A = Y^(-H) Da X^(-1), B = Y^(-H) Db X^(-1) 
+     YH and X are left and right eigenvectors. 
+
+ TYPE 2: Da is quasi-diagonal, Db is identity, 
+     A = Y^(-H) Da X^(-1), B = Y^(-H) Db X^(-1) 
+     YH and X are left and right eigenvectors. 
+
+
+ Tests performed:  
+     a is alpha, b is beta, l is a left eigenvector, 
+     r is a right eigenvector and ' means transpose.
+ 1 = max | ( b A - a B )' l | / const.
+ 2 = max | ( b A - a B ) r | / const.
+ 3 = max ( Sest/Stru, Stru/Sest )  over all eigenvalues
+ 4 = max( DIFest/DIFtru, DIFtru/DIFest )  over the 1st and 5th eigenvectors
+
+ Type= 1, IWA= 1, IWB= 1, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 1, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 2, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 3, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 4, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 1, IWB= 5, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 1, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 2, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 3, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 4, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 2, IWB= 5, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 1, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 2, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 3, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 4, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 3, IWB= 5, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 1, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 2, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 3, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 4, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 4, IWB= 5, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 1, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 2, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 3, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 4, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 1, IWA= 5, IWB= 5, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 1, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 2, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 3, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 4, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 1, IWB= 5, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 1, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 2, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 3, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 4, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 2, IWB= 5, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 1, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 2, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 3, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 4, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 3, IWB= 5, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 1, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 2, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 3, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 4, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 4, IWB= 5, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 1, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 2, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 3, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 4, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 1, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 1, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 1, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 1, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 1, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 2, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 2, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 2, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 2, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 2, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 3, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 3, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 3, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 3, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 3, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 4, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 4, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 4, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 4, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 4, IWY= 5, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 5, IWY= 1, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 5, IWY= 2, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 5, IWY= 3, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 5, IWY= 4, result  4 is+6.7039039649712985e+153
+ Type= 2, IWA= 5, IWB= 5, IWX= 5, IWY= 5, result  4 is+6.7039039649712985e+153
+ DXV drivers:   1250 out of   5000 tests failed to pass the threshold
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver Rggevx
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    N:         0
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be+9.5302596195518043e-323228497
+ Relative machine overflow  is taken to be+2.0985787164673877e+323228496
+ Relative machine precision is taken to be+7.4583407312002067e-155
+
+ Routines pass computational tests if test ratio is less than+1.0000000000000000e+01
+
+ DXV routines passed the tests of the error exits (108 tests done)
+3.1476
+2.5286
+4.2241
+3.416
+0.6734
+1.138
+3.5424
+0.95917
+alphar, alphai, beta=+8.0000000000000000e+00 +0.0000000000000000e+00 +9.0000000000000000e+00
+alphar, alphai, beta=+7.0000000000000000e+00 +0.0000000000000000e+00 +4.0000000000000000e+00
+alphar, alphai, beta=-3.0000000000000000e+00 +0.0000000000000000e+00 +1.1000000000000000e+01
+alphar, alphai, beta=+1.6000000000000000e+01 +0.0000000000000000e+00 +4.0000000000000000e+00
+dif=[ +0.0000000000000000e+00, +0.0000000000000000e+00, +0.0000000000000000e+00, +0.0000000000000000e+00]
+1 diftru+6.7340000000000000e-01
+
+ DXV -- Real Expert Eigenvalue/vector problem driver
+ Input Example
+
+ Tests performed:  
+     a is alpha, b is beta, l is a left eigenvector, 
+     r is a right eigenvector and ' means transpose.
+ 1 = max | ( b A - a B )' l | / const.
+ 2 = max | ( b A - a B ) r | / const.
+ 3 = max ( Sest/Stru, Stru/Sest )  over all eigenvalues
+ 4 = max( DIFest/DIFtru, DIFtru/DIFest )  over the 1st and 5th eigenvectors
+
+ Input example # 1, matrix order=   4, result  4 is+6.7039039649712985e+153
+1.3639
+4.0417
+0.64089
+0.6803
+0.76064
+0.84964
+0.11222
+0.11499
+alphar, alphai, beta=-1.0000000000000000e+00 +0.0000000000000000e+00 +1.0000000000000000e+00
+alphar, alphai, beta=-5.0000000000000000e+00 +0.0000000000000000e+00 +1.0000000000000000e+00
+alphar, alphai, beta=+8.0000000000000000e+00 +0.0000000000000000e+00 +1.0000000000000000e+00
+alphar, alphai, beta=+1.0000000000000000e+01 +0.0000000000000000e+00 +1.0000000000000000e+00
+dif=[ +0.0000000000000000e+00, +0.0000000000000000e+00, +0.0000000000000000e+00, +0.0000000000000000e+00]
+1 diftru+7.6063999999999998e-01
+ Input example # 2, matrix order=   4, result  4 is+6.7039039649712985e+153
+ DXV drivers:      2 out of      8 tests failed to pass the threshold
+
+ -----------------------------------------------------------------------
+
+
+ End of tests
+ Total time used =        43.00 seconds
+
