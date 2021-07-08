@@ -212,7 +212,7 @@ xeigtstC_mpfr_SOURCES  = ../common/Cchkee.cpp ../../../../mpblas/test/common/mpl
 xeigtstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_mpfr_CXXFLAGS = $(cxxflags)
 
-do-tests: Rbal.out Rbak.out Rnep.out Rsep.out Rse2.out Rsvd.out Red.out Rbb.out Rgg.out Rdgqr.out Rec.out
+do-tests: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.out Rsg.out Rbal.out Rbak.out Rgbal.out Rgbak.out Rbb.out Rglm.out Rgqr.out Rgsv.out
 
 clean-local:
 	rm -f *.out *~ \#*
@@ -277,15 +277,15 @@ Rbb.out: Rbb.in xeigtstR_mpfr
 	@echo DBB: Testing banded Singular Value Decomposition routines
 	./xeigtstR_mpfr < Rbb.in > $@ 2>&1
 
-Rglm.out: Rglm.in xeigtstR_mpfr
+Rglm.out: glm.in xeigtstR_mpfr
 	@echo GLM: Testing Generalized Linear Regression Model routines
 	./xeigtstR_mpfr < glm.in > $@ 2>&1
 
-Rgqr.out: Rgqr.in xeigtstR_mpfr
+Rgqr.out: gqr.in xeigtstR_mpfr
         @echo GQR: Testing Generalized QR and RQ factorization routines
 	./xeigtstR_mpfr < gqr.in > $@ 2>&1
 
-Rgsv.out: Rgsv.in xeigtstR_mpfr
+Rgsv.out: gsv.in xeigtstR_mpfr
 	@echo GSV: Testing Generalized Singular Value Decomposition routines
 	./xeigtstR_mpfr < gsv.in > $@ 2>&1
 
