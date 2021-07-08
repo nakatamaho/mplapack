@@ -726,7 +726,7 @@ void Rlarrv(mplapackint const n, _Float128 const vl, _Float128 const, _Float128 
 void Rlarscl2(mplapackint const m, mplapackint const n, _Float128 *d, _Float128 *x, mplapackint const ldx);
 void Rlartg(_Float128 const f, _Float128 const g, _Float128 &cs, _Float128 &sn, _Float128 &r);
 void Rlartgp(_Float128 const f, _Float128 const g, _Float128 &cs, _Float128 &sn, _Float128 &r);
-void Rlartgs(_Float128 const x, _Float128 const y, _Float128 const sigma, _Float128 cs, _Float128 sn);
+void Rlartgs(_Float128 const x, _Float128 const y, _Float128 const sigma, _Float128 &cs, _Float128 &sn);
 void Rlartv(mplapackint const n, _Float128 *x, mplapackint const incx, _Float128 *y, mplapackint const incy, _Float128 *c, _Float128 *s, mplapackint const incc);
 void Rlaruv(mplapackint *iseed, mplapackint const n, _Float128 *x);
 void Rlarz(const char *side, mplapackint const m, mplapackint const n, mplapackint const l, _Float128 *v, mplapackint const incv, _Float128 const tau, _Float128 *c, mplapackint const ldc, _Float128 *work);

@@ -724,7 +724,7 @@ void Rlarrv(mplapackint const n, dd_real const vl, dd_real const, dd_real *d, dd
 void Rlarscl2(mplapackint const m, mplapackint const n, dd_real *d, dd_real *x, mplapackint const ldx);
 void Rlartg(dd_real const f, dd_real const g, dd_real &cs, dd_real &sn, dd_real &r);
 void Rlartgp(dd_real const f, dd_real const g, dd_real &cs, dd_real &sn, dd_real &r);
-void Rlartgs(dd_real const x, dd_real const y, dd_real const sigma, dd_real cs, dd_real sn);
+void Rlartgs(dd_real const x, dd_real const y, dd_real const sigma, dd_real &cs, dd_real &sn);
 void Rlartv(mplapackint const n, dd_real *x, mplapackint const incx, dd_real *y, mplapackint const incy, dd_real *c, dd_real *s, mplapackint const incc);
 void Rlaruv(mplapackint *iseed, mplapackint const n, dd_real *x);
 void Rlarz(const char *side, mplapackint const m, mplapackint const n, mplapackint const l, dd_real *v, mplapackint const incv, dd_real const tau, dd_real *c, mplapackint const ldc, dd_real *work);
