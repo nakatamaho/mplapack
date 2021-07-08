@@ -405,3 +405,24 @@ xlintstrfR_mpfr_CXXFLAGS = $(cxxflags)
 xlintstrfC_mpfr_SOURCES  = ../common/Cchkrfp.cpp ../../../../mpblas/test/common/mplapack.test.cpp
 xlintstrfC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_mpfr_CXXFLAGS = $(cxxflags)
+
+do-tests: Rtest.out Ctest.out
+
+clean-local:
+	rm -f *.out *~ \#*
+
+Rtest.out: Rtest.in xlintstR_mpfr
+	@echo Testing Real MPLAPACK linear equation routines
+	./xlintstR_mpfr < Rtest.in > $@ 2>&1
+
+Ctest.out: Ctest.in xlintstC_mpfr
+	@echo Testing Complex MPLAPACK linear equation routines
+	./xlintstC_mpfr < Ctest.in > $@ 2>&1
+
+Rtest_rfp.out: Rtest_rfp.in 
+	@echo Testing Real MPLAPACK RFP prototype linear equation routines
+	./xlintstrfR_mpfr < Rtest_rfp.in > $@ 2>&1
+
+Ctest_rfp.out: Ctest_rfp.in
+	@echo Testing Complex MPLAPACK RFP prototype linear equation routines
+	./xlintstrfC_mpfr < Ctest_rfp.in > $@ 2>&1
