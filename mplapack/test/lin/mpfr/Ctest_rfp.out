@@ -1,1 +1,12 @@
-/bin/bash: ./xlintstrfC_mpfr: No such file or directory
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+        N  :     0     1     2     3     5     6    10    11    50
+     NRHS  :     1     2    15
+ !! Invalid input value:  NMA=     0; must be >=     1
+
+ Routines pass computational tests if test ratio is less than    0.00
+
+
+ Execution not attempted due to input errors
