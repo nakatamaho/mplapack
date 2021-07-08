@@ -29,25 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlartgs(REAL const x, REAL const y, REAL const sigma, REAL cs, REAL sn) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  ===================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     .. Executable Statements ..
+void Rlartgs(REAL const x, REAL const y, REAL const sigma, REAL &cs, REAL &sn) {
     //
     REAL thresh = Rlamch("E");
     //

@@ -64,7 +64,7 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
     INTEGER lworkmin = 0;
     if (info == 0 && q == 0) {
         lworkmin = 1;
-        work[1 - 1] = lworkmin;
+        work[1 - 1] = castREAL(lworkmin);
         return;
     }
     //
@@ -90,7 +90,7 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         iv2tsn = iv2tcs + q;
         lworkopt = iv2tsn + q - 1;
         lworkmin = lworkopt;
-        work[1 - 1] = lworkopt;
+        work[1 - 1] = castREAL(lworkopt);
         if (lwork < lworkmin && !lquery) {
             info = -28;
         }
@@ -113,14 +113,14 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
     REAL tolmul = max(ten, min(hundred, pow(eps, meighth)));
     REAL tol = tolmul * eps;
     const INTEGER maxitr = 6;
-    REAL thresh = max(tol, REAL(maxitr * q * q * unfl));
+    REAL thresh = max(tol, REAL(castREAL(maxitr * q * q) * unfl));
     REAL rtmp1, rtmp2;
     //
     //     Test for negligible sines or cosines
     //
     INTEGER i = 0;
     const REAL zero = 0.0;
-    const REAL piover2 = 1.57079632679489661923132169163975144210e0;
+    const REAL piover2 = pi(zero);
     for (i = 1; i <= q; i = i + 1) {
         if (theta[i - 1] < thresh) {
             theta[i - 1] = zero;
@@ -216,7 +216,7 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             return;
         }
         //
-        iter += imax - imin;
+        iter = iter + imax - imin;
         //
         //        Compute shifts
         //
@@ -263,7 +263,7 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
                 }
             } else {
                 nu = sigma21;
-                mu = sqrt(1.0 - pow2(nu));
+                mu = sqrt(one - pow2(nu));
                 if (nu < thresh) {
                     mu = one;
                     nu = zero;

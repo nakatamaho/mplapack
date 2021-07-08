@@ -172,7 +172,7 @@ void Rorcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         lbbcsdworkmin = lbbcsdworkopt;
         lworkopt = max({iorgqr + lorgqrworkopt, iorglq + lorglqworkopt, iorbdb + lorbdbworkopt, ibbcsd + lbbcsdworkopt}) - 1;
         lworkmin = max({iorgqr + lorgqrworkmin, iorglq + lorglqworkmin, iorbdb + lorbdbworkopt, ibbcsd + lbbcsdworkmin}) - 1;
-        work[1 - 1] = max(lworkopt, lworkmin);
+        work[1 - 1] = castREAL(max(lworkopt, lworkmin));
         //
         if (lwork < lworkmin && !lquery) {
             info = -22;
