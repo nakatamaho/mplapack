@@ -1,3 +1,7 @@
+2021/7/8    Nakata Maho <maho@riken.jp> 1.0.0
+            * Tests of the CS Decomposition routines (csd.in)
+              have passed for MPFR version.
+
 2021/7/7    Nakata Maho <maho@riken.jp> 1.0.0
             * Tests of Generalized Singular Value Decomposition routines (gsv.in)
               have passed for MPFR version.
