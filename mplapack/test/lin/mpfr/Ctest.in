@@ -12,7 +12,7 @@ Data file for testing MULTIPLE PRECISION COMPLEX MPLAPACK linear equation routin
 30 50 90               Values of rank (as a % of N)
 30.0                   Threshold value of test ratio
 T                      Put T to test the LAPACK routines
-F                      Put T to test the driver routines
+T                      Put T to test the driver routines
 T                      Put T to test the error exits
 ZGE   11               List types on next line if 0 < NTYPES < 11
 ZGB    8               List types on next line if 0 < NTYPES <  8
