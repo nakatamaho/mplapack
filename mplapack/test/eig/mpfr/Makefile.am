@@ -265,11 +265,11 @@ Rbak.out:
 	@echo Rgebak: Testing the back transformation of balanced matrix
 	./xeigtstR_mpfr < Rbak.in > $@ 2>&1
 
-Rgbal.out: #ng
+Rgbal.out:
 	@echo RGGBAL: Testing the balancing of a pair of general matrices
 	./xeigtstR_mpfr < Rgbal.in > $@ 2>&1
 
-Rgbak.out: #ng
+Rgbak.out:
 	@echo RGGBAK: Testing the back transformation of a pair of balanced matrices
 	./xeigtstR_mpfr < Rgbak.in > $@ 2>&1
 
@@ -277,7 +277,7 @@ Rbb.out:
 	@echo DBB: Testing banded Singular Value Decomposition routines
 	./xeigtstR_mpfr < Rbb.in > $@ 2>&1
 
-Rglm.out: #ng
+Rglm.out:
 	@echo GLM: Testing Generalized Linear Regression Model routines
 	./xeigtstR_mpfr < glm.in > $@ 2>&1
 
@@ -285,11 +285,11 @@ Rgqr.out:
         @echo GQR: Testing Generalized QR and RQ factorization routines
 	./xeigtstR_mpfr < gqr.in > $@ 2>&1
 
-Rgsv.out: #ng
+Rgsv.out:
 	@echo GSV: Testing Generalized Singular Value Decomposition routines
 	./xeigtstR_mpfr < gsv.in > $@ 2>&1
 
-Rcsd.out: #ng
+Rcsd.out:
 	@echo CSD: Testing CS Decomposition routines
 	./xeigtstR_mpfr < csd.in > $@ 2>&1
 
