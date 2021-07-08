@@ -5,6 +5,12 @@ char buf[1024];
 
 void printdummy_() { printf("\n"); }
 
+void printstr_(char *s, int *len) {
+    memset(buf, 0, sizeof(buf));
+    strncpy(buf, s, *len);
+    printf("%s\n", buf);
+}
+
 void printnumi_(char *s, int *len, int *A) {
     memset(buf, 0, sizeof(buf));
     strncpy(buf, s, *len);
