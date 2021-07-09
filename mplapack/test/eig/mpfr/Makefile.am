@@ -212,7 +212,7 @@ xeigtstC_mpfr_SOURCES  = ../common/Cchkee.cpp ../../../../mpblas/test/common/mpl
 xeigtstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_mpfr_CXXFLAGS = $(cxxflags)
 
-do-tests: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.out Rsg.out Rbal.out Rbak.out Rgbal.out Rgbak.out Rbb.out Rglm.out Rgqr.out Rgsv.out
+do-tests: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.out Rsg.out Rbal.out Rbak.out Rgbal.out Rgbak.out Rbb.out Rglm.out Rgqr.out Rgsv.out Rcsd.out Rlse.out
 
 clean-local:
 	rm -f *.out *~ \#*
@@ -289,10 +289,10 @@ Rgsv.out: gsv.in xeigtstR_mpfr
 	@echo GSV: Testing Generalized Singular Value Decomposition routines
 	./xeigtstR_mpfr < gsv.in > $@ 2>&1
 
-Rcsd.out: Rcsd.in xeigtstR_mpfr
+Rcsd.out: csd.in xeigtstR_mpfr
 	@echo CSD: Testing CS Decomposition routines
 	./xeigtstR_mpfr < csd.in > $@ 2>&1
 
-Rlse.out: Rlse.in xeigtstR_mpfr
+Rlse.out: lse.in xeigtstR_mpfr
 	@echo LSE: Testing Constrained Linear Least Squares routines
 	./xeigtstR_mpfr < lse.in > $@ 2>&1
