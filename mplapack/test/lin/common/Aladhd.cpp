@@ -129,7 +129,7 @@ void Aladhd(INTEGER const iounit, const char *path) {
         write(iounit, "(/,1x,a3,' drivers:  General band matrices')"), path;
         write(iounit, "(' Matrix types:')");
         write(iounit, "(4x,'1. Random, CNDNUM = 2',14x,'5. Random, CNDNUM = sqrt(0.1/EPS)',/,"
-                      "4x,'2. First column zero',15x,'6. Random, CNDNUM = 0.01/EPS',/,4x,"   //Parameter 6 has been changed for MPLAPACK
+                      "4x,'2. First column zero',15x,'6. Random, CNDNUM = 0.1/EPS',/,4x,"
                       "'3. Last column zero',16x,'7. Scaled near underflow',/,4x,"
                       "'4. Last n/2 columns zero',11x,'8. Scaled near overflow')");
         write(iounit, "(' Test ratios:')");

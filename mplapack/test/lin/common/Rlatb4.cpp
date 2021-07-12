@@ -163,7 +163,11 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         if (imat == 5) {
             cndnum = badc1;
         } else if (imat == 6) {
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+            cndnum = tenth * badc2 * 1e-8;  // this is for MPFR, 512bit
+#else
             cndnum = tenth * badc2;
+#endif
         } else {
             cndnum = two;
         }
