@@ -163,7 +163,7 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         if (imat == 5) {
             cndnum = badc1;
         } else if (imat == 6) {
-            cndnum = tenth * tenth * badc2;
+            cndnum = tenth * badc2;
         } else {
             cndnum = two;
         }

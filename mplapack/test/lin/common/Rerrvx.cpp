@@ -79,7 +79,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         r[j - 1] = 0.e+0;
         ip[j - 1] = j;
     }
-    char eq;
+    char eq=' ';
     ok = true;
     INTEGER info;
     //
