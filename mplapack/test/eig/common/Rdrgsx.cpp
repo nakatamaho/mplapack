@@ -161,7 +161,7 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
         //
         maxwrk = max(maxwrk, minwrk);
         //
-        work[1 - 1] = maxwrk;
+        work[1 - 1] = castREAL(maxwrk);
     }
     //
     if (lwork < minwrk) {
