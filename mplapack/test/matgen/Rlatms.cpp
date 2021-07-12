@@ -33,29 +33,6 @@
 
 void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, const char *sym, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, INTEGER const kl, INTEGER const ku, const char *pack, REAL *a, INTEGER const lda, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     1)      Decode and Test the input parameters.
     //             Initialize flags & seed.
     //
