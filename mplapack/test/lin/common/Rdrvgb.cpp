@@ -553,9 +553,6 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     //                             refinement.
                                     //
                                     Rgbt05(trans, n, kl, ku, nrhs, asav, lda, b, ldb, x, ldb, xact, ldb, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
-				    if (result[5-1]> 10.0) {
-				    			      printf("result[5-1]");printnum(result[5-1]);printf("\n");   
-				    }  
                                 } else {
                                     trfcon = true;
                                 }
