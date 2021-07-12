@@ -37,6 +37,7 @@ using fem::common;
 #include <mplapack_eig.h>
 
 #include <mplapack_debug.h>
+#include <mplapack_rlctsx.h>
 
 #include <iostream>
 #include <sstream>
@@ -47,12 +48,6 @@ using fem::common;
 using namespace std;
 using std::regex;
 using std::regex_replace;
-
-#define m _MPLAPACK_RLCTSX_m
-#define n _MPLAPACK_RLCTSX_n
-#define mplusn _MPLAPACK_RLCTSX_mplusn
-#define i _MPLAPACK_RLCTSX_i
-#define fs _MPLAPACK_RLCTSX_fs
 
 void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER const nin, INTEGER const nout, REAL *a, INTEGER const lda, REAL *b, REAL *ai, REAL *bi, REAL *z, REAL *q, REAL *alphar, REAL *alphai, REAL *beta, REAL *c, INTEGER const ldc, REAL *s, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, bool *bwork, INTEGER &info) {
     common cmn;

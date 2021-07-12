@@ -37,14 +37,9 @@ using fem::common;
 #include <mplapack_eig.h>
 
 #define __MPLAPACK_RLCTSX__
+#include <mplapack_rlctsx.h>
 
 #include <mplapack_debug.h>
-
-#define i _MPLAPACK_RLCTSX_i
-#define n _MPLAPACK_RLCTSX_n
-#define m _MPLAPACK_RLCTSX_m
-#define fs _MPLAPACK_RLCTSX_fs
-#define mplusn _MPLAPACK_RLCTSX_mplusn
 
 bool Rlctsx(REAL const /* ar */, REAL const /* ai */, REAL const /* beta */) {
     bool return_value = false;
