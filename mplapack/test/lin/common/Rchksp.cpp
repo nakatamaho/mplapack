@@ -228,7 +228,7 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 npp = n * (n + 1) / 2;
                 Rcopy(npp, a, 1, afac, 1);
-                strncpy(srnamt, "Rsptrf", srnamt_len); 
+                strncpy(srnamt, "Rsptrf", srnamt_len);
                 Rsptrf(uplo, n, afac, iwork, info);
                 //
                 //              Adjust the expected value of INFO to account for
@@ -270,7 +270,7 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 if (!trfcon) {
                     Rcopy(npp, afac, 1, ainv, 1);
-                    strncpy(srnamt, "Rsptri", srnamt_len); 
+                    strncpy(srnamt, "Rsptri", srnamt_len);
                     Rsptri(uplo, n, ainv, iwork, work, info);
                     //
                     //              Check error code from Rsptri.
@@ -311,11 +311,11 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //+    TEST 3
                     //              Solve and compute residual for  A * X = B.
                     //
-                    strncpy(srnamt, "Rlarhs", srnamt_len); 
+                    strncpy(srnamt, "Rlarhs", srnamt_len);
                     Rlarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                     Rlacpy("Full", n, nrhs, b, lda, x, lda);
                     //
-                    strncpy(srnamt, "Rsptrs", srnamt_len); 
+                    strncpy(srnamt, "Rsptrs", srnamt_len);
                     Rsptrs(uplo, n, nrhs, afac, iwork, x, lda, info);
                     //
                     //              Check error code from Rsptrs.
@@ -335,7 +335,7 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //+    TESTS 5, 6, and 7
                     //              Use iterative refinement to improve the solution.
                     //
-                    strncpy(srnamt, "Rsprfs", srnamt_len); 
+                    strncpy(srnamt, "Rsprfs", srnamt_len);
                     Rsprfs(uplo, n, nrhs, a, afac, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                     //
                     //              Check error code from RsprFS.
@@ -370,7 +370,7 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //
             statement_140:
                 anorm = Rlansp("1", uplo, n, a, rwork);
-                strncpy(srnamt, "Rspcon", srnamt_len); 
+                strncpy(srnamt, "Rspcon", srnamt_len);
                 Rspcon(uplo, n, afac, iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);
                 //
                 //              Check error code from Rspcon.

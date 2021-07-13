@@ -48,7 +48,7 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     char uplos[] = {'U', 'L'};
     char transs[] = {'N', 'T', 'C'};
     char fact_uplo[3];
-    char path[3];
+    char path[4];
     char matpath[3];
     char buf[1024];
     INTEGER nrun = 0;
@@ -105,6 +105,7 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     path[0] = 'R';
     path[1] = 'P';
     path[2] = 'O';
+    path[3] = '\0';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
