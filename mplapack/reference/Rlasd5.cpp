@@ -31,25 +31,6 @@
 
 void Rlasd5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL &dsigma, REAL *work) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     REAL del = d[2 - 1] - d[1 - 1];
     REAL delsq = del * (d[2 - 1] + d[1 - 1]);
     const REAL one = 1.0;

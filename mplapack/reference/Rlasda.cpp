@@ -30,25 +30,7 @@
 #include <mplapack.h>
 
 void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER const sqre, REAL *d, REAL *e, REAL *u, INTEGER const ldu, REAL *vt, INTEGER *k, REAL *difl, REAL *difr, REAL *z, REAL *poles, INTEGER *givptr, INTEGER *givcol, INTEGER const ldgcol, INTEGER *perm, REAL *givnum, REAL *c, REAL *s, REAL *work, INTEGER *iwork, INTEGER &info) {
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
+    INTEGER ldvt = ldu;
     //
     //     Test the input parameters.
     //
@@ -157,7 +139,7 @@ void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
             Rlaset("A", nlp1, nlp1, zero, one, &vt[(nlf - 1)], ldu);
             Rlasdq("U", sqrei, nl, nlp1, nl, ncc, &d[nlf - 1], &e[nlf - 1], &vt[(nlf - 1)], ldu, &u[(nlf - 1)], ldu, &u[(nlf - 1)], ldu, &work[nwork1 - 1], info);
             Rcopy(nlp1, &vt[(nlf - 1)], 1, &work[vfi - 1], 1);
-            Rcopy(nlp1, &vt[(nlf - 1) + (nlp1 - 1) * ldu], 1, &work[vli - 1], 1);
+            Rcopy(nlp1, &vt[(nlf - 1) + (nlp1 - 1) * ldvt], 1, &work[vli - 1], 1);
         }
         if (info != 0) {
             return;
@@ -185,7 +167,7 @@ void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
             Rlaset("A", nrp1, nrp1, zero, one, &vt[(nrf - 1)], ldu);
             Rlasdq("U", sqrei, nr, nrp1, nr, ncc, &d[nrf - 1], &e[nrf - 1], &vt[(nrf - 1)], ldu, &u[(nrf - 1)], ldu, &u[(nrf - 1)], ldu, &work[nwork1 - 1], info);
             Rcopy(nrp1, &vt[(nrf - 1)], 1, &work[vfi - 1], 1);
-            Rcopy(nrp1, &vt[(nrf - 1) + (nrp1 - 1) * ldu], 1, &work[vli - 1], 1);
+            Rcopy(nrp1, &vt[(nrf - 1) + (nrp1 - 1) * ldvt], 1, &work[vli - 1], 1);
         }
         if (info != 0) {
             return;
