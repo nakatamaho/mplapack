@@ -25,34 +25,7 @@ The following parameter values will be used:
  All tests for RGB routines passed the threshold (  28938 tests run)
  RGB drivers passed the tests of the error exits
 
- RGB drivers:  General band matrices
- Matrix types:
-    1. Random, CNDNUM = 2              5. Random, CNDNUM = sqrt(0.1/EPS)
-    2. First column zero               6. Random, CNDNUM = 0.1/EPS
-    3. Last column zero                7. Scaled near underflow
-    4. Last n/2 columns zero           8. Scaled near overflow
- Test ratios:
-    1: norm( L * U - A )  / ( N * norm(A) * EPS )
-    2: norm( B - A * X )  / ( norm(A) * norm(X) * EPS )
-    3: norm( X - XACT )   / ( norm(XACT) * CNDNUM * EPS )
-    4: norm( X - XACT )   / ( norm(XACT) * (error bound) )
-    5: (backward error)   / EPS
-    6: RCOND * CNDNUM - 1.0
-    7: abs( WORK(1) - RPVGRW ) / ( max( WORK(1), RPVGRW ) * EPS )
- Messages:
- Rgbsvx( 'E','T',   50,   12,   12,...), type 6, test(5)=+6.4195496664641218e+12
-Rdrvgv.cpp l.582
- Rgbsvx( 'E','C',   50,   12,   12,...), type 6, test(5)=+6.4195496664641218e+12
-Rdrvgv.cpp l.582
- Rgbsvx( 'F','T',   50,   12,   12,...), EQUED='R', type 6, test(5)=+3.0571949005812846e+13
-Rdrvgv.cpp l.577
- Rgbsvx( 'F','C',   50,   12,   12,...), EQUED='R', type 6, test(5)=+3.0571949005812846e+13
-Rdrvgv.cpp l.577
- Rgbsvx( 'F','T',   50,   12,   12,...), EQUED='B', type 6, test(5)=+6.4195496664641218e+12
-Rdrvgv.cpp l.577
- Rgbsvx( 'F','C',   50,   12,   12,...), EQUED='B', type 6, test(5)=+6.4195496664641218e+12
-Rdrvgv.cpp l.577
- RGB drivers:      6 out of  36567 tests failed to pass the threshold
+ All tests for RGB drivers  passed the threshold (  36567 tests run)
  RGT routines passed the tests of the error exits
 
  All tests for RGT routines passed the threshold (   2694 tests run)
@@ -64,196 +37,7 @@ Rdrvgv.cpp l.577
  All tests for RPO routines passed the threshold (   1628 tests run)
  RPO drivers passed the tests of the error exits
 
- RPO drivers:            positive definite matrices
- Matrix types:
-    1. Diagonal                        6. Random, CNDNUM = sqrt(0.1/EPS)
-    2. Random, CNDNUM = 2              7. Random, CNDNUM = 0.1/EPS
-   *3. First row and column zero       8. Scaled near underflow
-   *4. Last row and column zero        9. Scaled near overflow
-   *5. Middle row and column zero
-   (* - tests error exits from RPOTRF, no test ratios are computed)
- Test ratios:
-    1: norm( U' * U - A ) / ( N * norm(A) * EPS ), or
-       norm( L * L' - A ) / ( N * norm(A) * EPS )
-    2: norm( B - A * X )  / ( norm(A) * norm(X) * EPS )
-    3: norm( X - XACT )   / ( norm(XACT) * CNDNUM * EPS )
-    4: norm( X - XACT )   / ( norm(XACT) * (error bound) )
-    5: (backward error)   / EPS
-    6: RCOND * CNDNUM - 1.0
- Messages:
- *** Error code from Rposvx =   51
- ==> FACT='F', UPLO='U', N =   50, NRHS =   1, type  1
- *** Error code from Rposv  =   15
- ==> UPLO = 'U', N =   50, NRHS =   1, type  1
- *** Error code from Rposvx =   15
- ==> FACT='N', UPLO='U', N =   50, NRHS =   1, type  1
- *** Error code from Rposvx =   15
- ==> FACT='E', UPLO='U', N =   50, NRHS =   1, type  1
- *** On entry to Rposvx parameter number     10 had an illegal value ***
- *** Error code from Rposvx =  -10
- ==> FACT='F', UPLO='U', N =   50, NRHS =   1, type  1
- *** Error code from Rposvx =   51
- ==> FACT='F', UPLO='L', N =   50, NRHS =   1, type  1
- *** Error code from Rposv  =    7
- ==> UPLO = 'L', N =   50, NRHS =   1, type  1
- *** Error code from Rposvx =    7
- ==> FACT='N', UPLO='L', N =   50, NRHS =   1, type  1
- *** Error code from Rposvx =    7
- ==> FACT='E', UPLO='L', N =   50, NRHS =   1, type  1
- *** On entry to Rposvx parameter number     10 had an illegal value ***
- *** Error code from Rposvx =  -10
- ==> FACT='F', UPLO='L', N =   50, NRHS =   1, type  1
- Rposvx, FACT='F', UPLO='U', N=   50, EQUED='N', type 2, test(2) =+4.0244276577123432e+152
- Rposvx, FACT='F', UPLO='U', N=   50, EQUED='N', type 2, test(3) =+3.5406576211589500e+205
- Rposvx, FACT='F', UPLO='U', N=   50, EQUED='N', type 2, test(5) =+2.6258886252147639e+152
- Rposvx, FACT='F', UPLO='U', N=   50, EQUED='N', type 2, test(6) =+1.8408187074691668e+19
- *** Error code from Rposv  =   15
- ==> UPLO = 'U', N =   50, NRHS =   1, type  2
- *** Error code from Rposvx =   15
- ==> FACT='N', UPLO='U', N =   50, NRHS =   1, type  2
- *** Error code from Rposvx =   10
- ==> FACT='E', UPLO='U', N =   50, NRHS =   1, type  2
- *** On entry to Rposvx parameter number     10 had an illegal value ***
- *** Error code from Rposvx =  -10
- ==> FACT='F', UPLO='U', N =   50, NRHS =   1, type  2
- Rposvx, FACT='F', UPLO='L', N=   50, EQUED='N', type 2, test(2) =+4.0239137850116041e+151
- Rposvx, FACT='F', UPLO='L', N=   50, EQUED='N', type 2, test(3) =+1.4862392145392528e+170
- Rposvx, FACT='F', UPLO='L', N=   50, EQUED='N', type 2, test(5) =+2.6289819385516075e+152
- Rposvx, FACT='F', UPLO='L', N=   50, EQUED='N', type 2, test(6) =+3.1173136280935425e+07
- *** Error code from Rposv  =    1
- ==> UPLO = 'L', N =   50, NRHS =   1, type  2
- *** Error code from Rposvx =    1
- ==> FACT='N', UPLO='L', N =   50, NRHS =   1, type  2
- *** Error code from Rposvx =    2
- ==> FACT='E', UPLO='L', N =   50, NRHS =   1, type  2
- *** On entry to Rposvx parameter number     10 had an illegal value ***
- *** Error code from Rposvx =  -10
- ==> FACT='F', UPLO='L', N =   50, NRHS =   1, type  2
- *** Rposv  returned with INFO =   15 instead of 50
- ==> UPLO = 'U', N =   50, NRHS =   1, type  4
- *** Rposvx returned with INFO =   15 instead of 50
- ==> FACT='N', UPLO='U', N =   50, NRHS =   1, type  4
- *** Rposvx returned with INFO =   15 instead of 50
- ==> FACT='E', UPLO='U', N =   50, NRHS =   1, type  4
- *** Rposv  returned with INFO =    7 instead of 50
- ==> UPLO = 'L', N =   50, NRHS =   1, type  4
- *** Rposvx returned with INFO =    7 instead of 50
- ==> FACT='N', UPLO='L', N =   50, NRHS =   1, type  4
- *** Rposvx returned with INFO =    7 instead of 50
- ==> FACT='E', UPLO='L', N =   50, NRHS =   1, type  4
- *** Rposv  returned with INFO =   15 instead of 26
- ==> UPLO = 'U', N =   50, NRHS =   1, type  5
- *** Rposvx returned with INFO =   15 instead of 26
- ==> FACT='N', UPLO='U', N =   50, NRHS =   1, type  5
- *** Rposvx returned with INFO =   15 instead of 26
- ==> FACT='E', UPLO='U', N =   50, NRHS =   1, type  5
- *** Rposv  returned with INFO =    8 instead of 26
- ==> UPLO = 'L', N =   50, NRHS =   1, type  5
- *** Rposvx returned with INFO =    8 instead of 26
- ==> FACT='N', UPLO='L', N =   50, NRHS =   1, type  5
- *** Rposvx returned with INFO =    8 instead of 26
- ==> FACT='E', UPLO='L', N =   50, NRHS =   1, type  5
- Rposvx, FACT='F', UPLO='U', N=   50, EQUED='N', type 6, test(2) =+3.4287695749609187e+143
- Rposvx, FACT='F', UPLO='U', N=   50, EQUED='N', type 6, test(3) =+2.2883131460369230e+191
- Rposvx, FACT='F', UPLO='U', N=   50, EQUED='N', type 6, test(5) =+2.6289817504094826e+152
- Rposvx, FACT='F', UPLO='U', N=   50, EQUED='N', type 6, test(6) =+2.9871501780410934e+16
- *** Error code from Rposv  =   15
- ==> UPLO = 'U', N =   50, NRHS =   1, type  6
- *** Error code from Rposvx =   15
- ==> FACT='N', UPLO='U', N =   50, NRHS =   1, type  6
- *** Error code from Rposvx =   10
- ==> FACT='E', UPLO='U', N =   50, NRHS =   1, type  6
- *** On entry to Rposvx parameter number     10 had an illegal value ***
- *** Error code from Rposvx =  -10
- ==> FACT='F', UPLO='U', N =   50, NRHS =   1, type  6
- Rposvx, FACT='F', UPLO='L', N=   50, EQUED='N', type 6, test(2) =+2.1090347668145285e+153
- Rposvx, FACT='F', UPLO='L', N=   50, EQUED='N', type 6, test(3) =+1.2368389529670310e+220
- Rposvx, FACT='F', UPLO='L', N=   50, EQUED='N', type 6, test(5) =+2.6289819470475681e+152
- Rposvx, FACT='F', UPLO='L', N=   50, EQUED='N', type 6, test(6) =+1.3635955772366188e+21
- *** Error code from Rposv  =    1
- ==> UPLO = 'L', N =   50, NRHS =   1, type  6
- *** Error code from Rposvx =    1
- ==> FACT='N', UPLO='L', N =   50, NRHS =   1, type  6
- *** Error code from Rposvx =    1
- ==> FACT='E', UPLO='L', N =   50, NRHS =   1, type  6
- *** On entry to Rposvx parameter number     10 had an illegal value ***
- *** Error code from Rposvx =  -10
- ==> FACT='F', UPLO='L', N =   50, NRHS =   1, type  6
- Rposvx, FACT='F', UPLO='U', N=   50, EQUED='N', type 7, test(2) =+2.5983491285121448e+133
- Rposvx, FACT='F', UPLO='U', N=   50, EQUED='N', type 7, test(3) =+5.9394502539330543e+218
- Rposvx, FACT='F', UPLO='U', N=   50, EQUED='N', type 7, test(5) =+2.6289819275937723e+152
- Rposvx, FACT='F', UPLO='U', N=   50, EQUED='N', type 7, test(6) =+3.3440529944494323e+28
- *** Error code from Rposv  =   15
- ==> UPLO = 'U', N =   50, NRHS =   1, type  7
- *** Error code from Rposvx =   15
- ==> FACT='N', UPLO='U', N =   50, NRHS =   1, type  7
- *** Error code from Rposvx =   10
- ==> FACT='E', UPLO='U', N =   50, NRHS =   1, type  7
- *** On entry to Rposvx parameter number     10 had an illegal value ***
- *** Error code from Rposvx =  -10
- ==> FACT='F', UPLO='U', N =   50, NRHS =   1, type  7
- Rposvx, FACT='F', UPLO='L', N=   50, EQUED='N', type 7, test(2) =+1.2498404740519820e+153
- Rposvx, FACT='F', UPLO='L', N=   50, EQUED='N', type 7, test(3) =+3.8624613900927914e+230
- Rposvx, FACT='F', UPLO='L', N=   50, EQUED='N', type 7, test(5) =+2.6289819470475681e+152
- Rposvx, FACT='F', UPLO='L', N=   50, EQUED='N', type 7, test(6) =+8.6363352852985703e+23
- *** Error code from Rposv  =    1
- ==> UPLO = 'L', N =   50, NRHS =   1, type  7
- *** Error code from Rposvx =    1
- ==> FACT='N', UPLO='L', N =   50, NRHS =   1, type  7
- *** Error code from Rposvx =    1
- ==> FACT='E', UPLO='L', N =   50, NRHS =   1, type  7
- *** On entry to Rposvx parameter number     10 had an illegal value ***
- *** Error code from Rposvx =  -10
- ==> FACT='F', UPLO='L', N =   50, NRHS =   1, type  7
- *** Error code from Rposvx =   51
- ==> FACT='F', UPLO='U', N =   50, NRHS =   1, type  8
- *** Error code from Rposv  =   15
- ==> UPLO = 'U', N =   50, NRHS =   1, type  8
- *** Error code from Rposvx =   15
- ==> FACT='N', UPLO='U', N =   50, NRHS =   1, type  8
- *** Error code from Rposvx =   51
- ==> FACT='E', UPLO='U', N =   50, NRHS =   1, type  8
- *** On entry to Rposvx parameter number     10 had an illegal value ***
- *** Error code from Rposvx =  -10
- ==> FACT='F', UPLO='U', N =   50, NRHS =   1, type  8
- *** Error code from Rposvx =   51
- ==> FACT='F', UPLO='L', N =   50, NRHS =   1, type  8
- *** Error code from Rposv  =    2
- ==> UPLO = 'L', N =   50, NRHS =   1, type  8
- *** Error code from Rposvx =    2
- ==> FACT='N', UPLO='L', N =   50, NRHS =   1, type  8
- *** Error code from Rposvx =    3
- ==> FACT='E', UPLO='L', N =   50, NRHS =   1, type  8
- *** On entry to Rposvx parameter number     10 had an illegal value ***
- *** Error code from Rposvx =  -10
- ==> FACT='F', UPLO='L', N =   50, NRHS =   1, type  8
- Rposvx, FACT='F', UPLO='U', N=   50, EQUED='N', type 9, test(2) =+7.3160490674356892e+153
- Rposvx, FACT='F', UPLO='U', N=   50, EQUED='N', type 9, test(3) =+1.3815639456283158e+173
- Rposvx, FACT='F', UPLO='U', N=   50, EQUED='N', type 9, test(5) =+2.6289819470475681e+152
- *** Error code from Rposv  =   15
- ==> UPLO = 'U', N =   50, NRHS =   1, type  9
- *** Error code from Rposvx =   15
- ==> FACT='N', UPLO='U', N =   50, NRHS =   1, type  9
- *** Error code from Rposvx =   15
- ==> FACT='E', UPLO='U', N =   50, NRHS =   1, type  9
- *** On entry to Rposvx parameter number     10 had an illegal value ***
- *** Error code from Rposvx =  -10
- ==> FACT='F', UPLO='U', N =   50, NRHS =   1, type  9
- Rposvx, FACT='F', UPLO='L', N=   50, EQUED='N', type 9, test(2) =+5.1049707205411982e+152
- Rposvx, FACT='F', UPLO='L', N=   50, EQUED='N', type 9, test(3) =+1.0455215094018926e+152
- Rposvx, FACT='F', UPLO='L', N=   50, EQUED='N', type 9, test(4) =+1.3407807929942597e+154
- Rposvx, FACT='F', UPLO='L', N=   50, EQUED='N', type 9, test(5) =+2.6289819470475681e+152
- *** Error code from Rposv  =    1
- ==> UPLO = 'L', N =   50, NRHS =   1, type  9
- *** Error code from Rposvx =    1
- ==> FACT='N', UPLO='L', N =   50, NRHS =   1, type  9
- *** Error code from Rposvx =    3
- ==> FACT='E', UPLO='L', N =   50, NRHS =   1, type  9
- *** On entry to Rposvx parameter number     10 had an illegal value ***
- *** Error code from Rposvx =  -10
- ==> FACT='F', UPLO='L', N =   50, NRHS =   1, type  9
- RPO drivers:     31 out of   1642 tests failed to pass the threshold
-                  64 error messages recorded
+ All tests for RPO drivers  passed the threshold (   1910 tests run)
  RPS routines passed the tests of the error exits
 
  All tests for RPS routines passed the threshold (    150 tests run)
@@ -339,3 +123,183 @@ Rdrvgv.cpp l.577
 
  All tests for RTZ routines passed the threshold (    252 tests run)
  RLS routines passed the tests of the error exits
+
+ RLS:  Least squares driver routines
+ Matrix types (1-3: full rank, 4-6: rank deficient):
+    1 and 4. Normal scaling
+    2 and 5. Scaled near overflow
+    3 and 6. Scaled near underflow
+ Test ratios:
+    (1-2: RGELS, 3-6: RGELSY, 7-10: RGELSS, 11-14: RGELSD, 15-16: 
+    1: norm( B - A * X )   / ( max(M,N) * norm(A) * norm(X) * EPS )
+    2: norm( (A*X-B)' *A ) / ( max(M,N,NRHS) * norm(A) * norm(B) * EPS )
+       if TRANS='N' and M.GE.N or TRANS='T' and M.LT.N, otherwise
+       check if X is in the row space of A or A' (overdetermined case)
+    3: norm(svd(A)-svd(R)) / ( min(M,N) * norm(svd(R)) * EPS )
+    4: norm( B - A * X )   / ( max(M,N) * norm(A) * norm(X) * EPS )
+    5: norm( (A*X-B)' *A ) / ( max(M,N,NRHS) * norm(A) * norm(B) * EPS )
+    6: Check if X is in the row space of A or A'
+    7-10: same as 3-6    11-14: same as 3-6
+ Messages:
+ M=   50, N=   50, NRHS=   1, NB=   1, type 1, test(12)=+7.0704463644271058e+151
+ M=   50, N=   50, NRHS=   1, NB=   3, type 1, test(12)=+7.0704463644271058e+151
+ M=   50, N=   50, NRHS=   1, NB=   3, type 1, test(12)=+7.0704463644271058e+151
+ M=   50, N=   50, NRHS=   1, NB=   3, type 1, test(12)=+7.0704463644271058e+151
+ M=   50, N=   50, NRHS=   1, NB=  20, type 1, test(12)=+7.0704463644271058e+151
+ M=   50, N=   50, NRHS=   1, NB=   1, type 2, test(12)=+1.6387310484204530e+152
+ M=   50, N=   50, NRHS=   1, NB=   3, type 2, test(12)=+1.6387310484204530e+152
+ M=   50, N=   50, NRHS=   1, NB=   3, type 2, test(12)=+1.6387310484204530e+152
+ M=   50, N=   50, NRHS=   1, NB=   3, type 2, test(12)=+1.6387310484204530e+152
+ M=   50, N=   50, NRHS=   1, NB=  20, type 2, test(12)=+1.6387310484204530e+152
+ M=   50, N=   50, NRHS=   1, NB=   1, type 3, test(12)=+4.1943136022096398e+151
+ M=   50, N=   50, NRHS=   1, NB=   3, type 3, test(12)=+4.1943136022096398e+151
+ M=   50, N=   50, NRHS=   1, NB=   3, type 3, test(12)=+4.1943136022096398e+151
+ M=   50, N=   50, NRHS=   1, NB=   3, type 3, test(12)=+4.1943136022096398e+151
+ M=   50, N=   50, NRHS=   1, NB=  20, type 3, test(12)=+4.1943136022096398e+151
+ M=   50, N=   50, NRHS=   1, NB=   1, type 4, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   1, NB=   1, type 4, test(13)=+3.7195581459317451e+150
+ M=   50, N=   50, NRHS=   1, NB=   3, type 4, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   1, NB=   3, type 4, test(13)=+3.7195581459317451e+150
+ M=   50, N=   50, NRHS=   1, NB=   3, type 4, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   1, NB=   3, type 4, test(13)=+3.7195581459317451e+150
+ M=   50, N=   50, NRHS=   1, NB=   3, type 4, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   1, NB=   3, type 4, test(13)=+3.7195581459317451e+150
+ M=   50, N=   50, NRHS=   1, NB=  20, type 4, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   1, NB=  20, type 4, test(13)=+3.7195581459317451e+150
+ M=   50, N=   50, NRHS=   1, NB=   1, type 5, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   1, NB=   1, type 5, test(13)=+3.1178653478906600e+150
+ M=   50, N=   50, NRHS=   1, NB=   3, type 5, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   1, NB=   3, type 5, test(13)=+3.1178653478906600e+150
+ M=   50, N=   50, NRHS=   1, NB=   3, type 5, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   1, NB=   3, type 5, test(13)=+3.1178653478906600e+150
+ M=   50, N=   50, NRHS=   1, NB=   3, type 5, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   1, NB=   3, type 5, test(13)=+3.1178653478906600e+150
+ M=   50, N=   50, NRHS=   1, NB=  20, type 5, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   1, NB=  20, type 5, test(13)=+3.1178653478906600e+150
+ M=   50, N=   50, NRHS=   1, NB=   1, type 6, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   1, NB=   1, type 6, test(13)=+2.4874698731614297e+150
+ M=   50, N=   50, NRHS=   1, NB=   3, type 6, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   1, NB=   3, type 6, test(13)=+2.4874698731614297e+150
+ M=   50, N=   50, NRHS=   1, NB=   3, type 6, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   1, NB=   3, type 6, test(13)=+2.4874698731614297e+150
+ M=   50, N=   50, NRHS=   1, NB=   3, type 6, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   1, NB=   3, type 6, test(13)=+2.4874698731614297e+150
+ M=   50, N=   50, NRHS=   1, NB=  20, type 6, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   1, NB=  20, type 6, test(13)=+2.4874698731614297e+150
+ M=   50, N=   50, NRHS=   2, NB=   1, type 1, test(12)=+9.3872431899311773e+152
+ M=   50, N=   50, NRHS=   2, NB=   3, type 1, test(12)=+9.3872431899311773e+152
+ M=   50, N=   50, NRHS=   2, NB=   3, type 1, test(12)=+9.3872431899311773e+152
+ M=   50, N=   50, NRHS=   2, NB=   3, type 1, test(12)=+9.3872431899311773e+152
+ M=   50, N=   50, NRHS=   2, NB=  20, type 1, test(12)=+9.3872431899311773e+152
+ M=   50, N=   50, NRHS=   2, NB=   1, type 2, test(12)=+4.0678735358983594e+152
+ M=   50, N=   50, NRHS=   2, NB=   3, type 2, test(12)=+4.0678735358983594e+152
+ M=   50, N=   50, NRHS=   2, NB=   3, type 2, test(12)=+4.0678735358983594e+152
+ M=   50, N=   50, NRHS=   2, NB=   3, type 2, test(12)=+4.0678735358983594e+152
+ M=   50, N=   50, NRHS=   2, NB=  20, type 2, test(12)=+4.0678735358983594e+152
+ M=   50, N=   50, NRHS=   2, NB=   1, type 3, test(12)=+2.1649439373544583e+152
+ M=   50, N=   50, NRHS=   2, NB=   3, type 3, test(12)=+2.1649439373544583e+152
+ M=   50, N=   50, NRHS=   2, NB=   3, type 3, test(12)=+2.1649439373544583e+152
+ M=   50, N=   50, NRHS=   2, NB=   3, type 3, test(12)=+2.1649439373544583e+152
+ M=   50, N=   50, NRHS=   2, NB=  20, type 3, test(12)=+2.1649439373544583e+152
+ M=   50, N=   50, NRHS=   2, NB=   1, type 4, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   2, NB=   1, type 4, test(13)=+4.9037764698439251e+150
+ M=   50, N=   50, NRHS=   2, NB=   3, type 4, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   2, NB=   3, type 4, test(13)=+4.9037764698439251e+150
+ M=   50, N=   50, NRHS=   2, NB=   3, type 4, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   2, NB=   3, type 4, test(13)=+4.9037764698439251e+150
+ M=   50, N=   50, NRHS=   2, NB=   3, type 4, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   2, NB=   3, type 4, test(13)=+4.9037764698439251e+150
+ M=   50, N=   50, NRHS=   2, NB=  20, type 4, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   2, NB=  20, type 4, test(13)=+4.9037764698439251e+150
+ M=   50, N=   50, NRHS=   2, NB=   1, type 5, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   2, NB=   1, type 5, test(13)=+4.2234299385499259e+150
+ M=   50, N=   50, NRHS=   2, NB=   3, type 5, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   2, NB=   3, type 5, test(13)=+4.2234299385499259e+150
+ M=   50, N=   50, NRHS=   2, NB=   3, type 5, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   2, NB=   3, type 5, test(13)=+4.2234299385499259e+150
+ M=   50, N=   50, NRHS=   2, NB=   3, type 5, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   2, NB=   3, type 5, test(13)=+4.2234299385499259e+150
+ M=   50, N=   50, NRHS=   2, NB=  20, type 5, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   2, NB=  20, type 5, test(13)=+4.2234299385499259e+150
+ M=   50, N=   50, NRHS=   2, NB=   1, type 6, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   2, NB=   1, type 6, test(13)=+5.9534534418565705e+150
+ M=   50, N=   50, NRHS=   2, NB=   3, type 6, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   2, NB=   3, type 6, test(13)=+5.9534534418565705e+150
+ M=   50, N=   50, NRHS=   2, NB=   3, type 6, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   2, NB=   3, type 6, test(13)=+5.9534534418565705e+150
+ M=   50, N=   50, NRHS=   2, NB=   3, type 6, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   2, NB=   3, type 6, test(13)=+5.9534534418565705e+150
+ M=   50, N=   50, NRHS=   2, NB=  20, type 6, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=   2, NB=  20, type 6, test(13)=+5.9534534418565705e+150
+ M=   50, N=   50, NRHS=  15, NB=   1, type 1, test(12)=+6.9245056323006873e+153
+ M=   50, N=   50, NRHS=  15, NB=   3, type 1, test(12)=+6.9245056323006873e+153
+ M=   50, N=   50, NRHS=  15, NB=   3, type 1, test(12)=+6.9245056323006873e+153
+ M=   50, N=   50, NRHS=  15, NB=   3, type 1, test(12)=+6.9245056323006873e+153
+ M=   50, N=   50, NRHS=  15, NB=  20, type 1, test(12)=+6.9245056323006873e+153
+ M=   50, N=   50, NRHS=  15, NB=   1, type 2, test(12)=+7.3355139874917832e+152
+ M=   50, N=   50, NRHS=  15, NB=   3, type 2, test(12)=+7.3355139874917832e+152
+ M=   50, N=   50, NRHS=  15, NB=   3, type 2, test(12)=+7.3355139874917832e+152
+ M=   50, N=   50, NRHS=  15, NB=   3, type 2, test(12)=+7.3355139874917832e+152
+ M=   50, N=   50, NRHS=  15, NB=  20, type 2, test(12)=+7.3355139874917832e+152
+ M=   50, N=   50, NRHS=  15, NB=   1, type 3, test(12)=+3.8050937622578065e+153
+ M=   50, N=   50, NRHS=  15, NB=   3, type 3, test(12)=+3.8050937622578065e+153
+ M=   50, N=   50, NRHS=  15, NB=   3, type 3, test(12)=+3.8050937622578065e+153
+ M=   50, N=   50, NRHS=  15, NB=   3, type 3, test(12)=+3.8050937622578065e+153
+ M=   50, N=   50, NRHS=  15, NB=  20, type 3, test(12)=+3.8050937622578065e+153
+ M=   50, N=   50, NRHS=  15, NB=   1, type 4, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=  15, NB=   1, type 4, test(13)=+1.9621585757052428e+151
+ M=   50, N=   50, NRHS=  15, NB=   3, type 4, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=  15, NB=   3, type 4, test(13)=+1.9621585757052428e+151
+ M=   50, N=   50, NRHS=  15, NB=   3, type 4, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=  15, NB=   3, type 4, test(13)=+1.9621585757052428e+151
+ M=   50, N=   50, NRHS=  15, NB=   3, type 4, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=  15, NB=   3, type 4, test(13)=+1.9621585757052428e+151
+ M=   50, N=   50, NRHS=  15, NB=  20, type 4, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=  15, NB=  20, type 4, test(13)=+1.9621585757052428e+151
+ M=   50, N=   50, NRHS=  15, NB=   1, type 5, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=  15, NB=   1, type 5, test(13)=+2.8456533138599651e+151
+ M=   50, N=   50, NRHS=  15, NB=   3, type 5, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=  15, NB=   3, type 5, test(13)=+2.8456533138599651e+151
+ M=   50, N=   50, NRHS=  15, NB=   3, type 5, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=  15, NB=   3, type 5, test(13)=+2.8456533138599651e+151
+ M=   50, N=   50, NRHS=  15, NB=   3, type 5, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=  15, NB=   3, type 5, test(13)=+2.8456533138599651e+151
+ M=   50, N=   50, NRHS=  15, NB=  20, type 5, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=  15, NB=  20, type 5, test(13)=+2.8456533138599651e+151
+ M=   50, N=   50, NRHS=  15, NB=   1, type 6, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=  15, NB=   1, type 6, test(13)=+2.4266046628317221e+151
+ M=   50, N=   50, NRHS=  15, NB=   3, type 6, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=  15, NB=   3, type 6, test(13)=+2.4266046628317221e+151
+ M=   50, N=   50, NRHS=  15, NB=   3, type 6, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=  15, NB=   3, type 6, test(13)=+2.4266046628317221e+151
+ M=   50, N=   50, NRHS=  15, NB=   3, type 6, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=  15, NB=   3, type 6, test(13)=+2.4266046628317221e+151
+ M=   50, N=   50, NRHS=  15, NB=  20, type 6, test(12)=+1.3407807929942597e+154
+ M=   50, N=   50, NRHS=  15, NB=  20, type 6, test(13)=+2.4266046628317221e+151
+ RLS drivers:    135 out of 105840 tests failed to pass the threshold
+ All tests for REQ routines passed the threshold
+ RTQ routines passed the tests of the error exits
+
+ All tests for RTQ routines passed the threshold (    510 tests run)
+ 
+ RXQ routines passed the tests of the error exits
+
+ All tests for RXQ routines passed the threshold (   1482 tests run)
+ RXQ routines passed the tests of the error exits
+
+ All tests for RXQ routines passed the threshold (   1482 tests run)
+ RTQ routines passed the tests of the error exits
+
+ All tests for RTQ routines passed the threshold (    510 tests run)
+ 
+ RTS routines passed the tests of the error exits
+
+ All tests for RTS routines passed the threshold (  10800 tests run)
+ 
+ RHH routines passed the tests of the error exits
+
+ All tests for RHH routines passed the threshold (  15900 tests run)
+
+ End of tests
+ Total time used =  646 seconds
+
