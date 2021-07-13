@@ -1,28 +1,41 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 LABEL maintainer="maho.nakata@gmail.com"
 
-RUN apt -y update && apt -y upgrade && apt -y dist-upgrade
+RUN apt update
+RUN apt -y upgrade
+RUN apt install -y sudo 
 RUN apt install -y tzdata
+# set your timezone
 ENV TZ Asia/Tokyo
-RUN apt install -y python3 sudo expect
-RUN apt install -y build-essential gfortran
-RUN apt install -y autotools-dev automake libtool libtool-bin pkg-config f2c
-RUN apt install -y gdb git wget ccache time unifdef clang-format octave
+RUN echo "${TZ}" > /etc/timezone \
+  && rm /etc/localtime \
+  && ln -s /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
+  && dpkg-reconfigure -f noninteractive tzdata
+
+RUN apt install -y build-essential gfortran-9 python3
+RUN apt install -y autotools-dev automake libtool
+RUN apt install -y git wget ccache time pkg-config expect
 RUN apt install -y ng-common ng-cjk emacs-nox
+RUN sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
 ARG DOCKER_UID=1000
 ARG DOCKER_USER=docker
 ARG DOCKER_PASSWORD=docker
 RUN useradd -u $DOCKER_UID -m $DOCKER_USER --shell /bin/bash && echo "$DOCKER_USER:$DOCKER_PASSWORD" | chpasswd && echo "$DOCKER_USER ALL=(ALL) ALL" >> /etc/sudoers
-
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.6 1
 ARG WORK=/home/$DOCKER_USER
 
+#install ctag
 RUN cd ${WORK} && git clone https://github.com/universal-ctags/ctags.git
 RUN cd ${WORK} && cd ctags && ./autogen.sh && ./configure --prefix=/usr/local && make && make install
 
 USER docker     
+USER ${DOCKER_USER}
+RUN echo "\n\
+[user]\n\
+        email = ${GIT_EMAIL}\n\
+        name = ${GIT_NAME}\n\
+" > /home/$DOCKER_USER/.gitconfig
 RUN cd ${WORK} && who am i && wget https://raw.githubusercontent.com/cctbx/cctbx_project/master/libtbx/auto_build/bootstrap.py --no-check-certificate
 RUN cd ${WORK} && who am i && python bootstrap.py hot update --builder=cctbx
 RUN cd ${WORK} && who am i && wget https://repo.anaconda.com/miniconda/Miniconda2-4.5.11-Linux-x86_64.sh && chmod +x ./Miniconda2-4.5.11-Linux-x86_64.sh 
@@ -44,11 +57,11 @@ RUN cat ${WORK}/answerfile_miniconda
 RUN chown $DOCKER_USER ${WORK}/answerfile_miniconda
 RUN cd ${WORK} && chmod +x answerfile_miniconda && ./answerfile_miniconda
 
-RUN cd ${WORK} && source miniconda2/etc/profile.d/conda.sh && conda create -y --name fable36 python=3.6 && conda activate fable36 && conda install six future && mkdir build36 && cd ${WORK}/build36 && python ../modules/cctbx_project/libtbx/configure.py fable
-RUN source ${WORK}/build36/setpaths.sh && cd ${WORK}/build36 && make && cd ${WORK} && cd ${WORK}/build36 && make ; cd ${WORK}
+RUN cd ${WORK} && source miniconda2/etc/profile.d/conda.sh && conda create -y --name fable38 python=3.8 && conda activate fable38 && conda install six future && mkdir build38 && cd ${WORK}/build38 && python ../modules/cctbx_project/libtbx/configure.py fable
+RUN source ${WORK}/build38/setpaths.sh && cd ${WORK}/build38 && make && cd ${WORK} && cd ${WORK}/build38 && make ; cd ${WORK}
 RUN cd ${WORK} && echo "source /home/docker/miniconda2/etc/profile.d/conda.sh" >> .bashrc
-RUN cd ${WORK} && echo "conda activate fable36" >> .bashrc
-RUN cd ${WORK} && echo "source /home/docker/build36/setpaths.sh" >> .bashrc
+RUN cd ${WORK} && echo "conda activate fable38" >> .bashrc
+RUN cd ${WORK} && echo "source /home/docker/build38/setpaths.sh" >> .bashrc
 RUN echo -e "\n\
         PROGRAM HELLO\n\
         PRINT *, 'HELLO, WORLD!'\n\
@@ -63,10 +76,10 @@ RUN echo -e "\n\
         email = ${GIT_EMAIL}\n\
         name = ${GIT_NAME}\n\
 " >> /home/$DOCKER_USER/.gitconfig
-RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
-RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git
-RUN cd /home/$DOCKER_USER/mplapack && git checkout v1.0.0
-RUN cd /home/$DOCKER_USER/mplapack && git log -1
-RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.develop.sh
-RUN cd /home/$DOCKER_USER/mplapack && make -j4
+RUN cd ${WORK} && echo "cd /home/$DOCKER_USER" >> .bashrc
+RUN cd ${WORK} && git clone https://github.com/nakatamaho/mplapack.git
+RUN cd ${WORK}/mplapack && git checkout v1.0.0
+RUN cd ${WORK}/mplapack && git log -1
+RUN cd ${WORK}/mplapack && bash -x misc/reconfig.develop.sh
+RUN cd ${WORK}/mplapack && make -j4
 
