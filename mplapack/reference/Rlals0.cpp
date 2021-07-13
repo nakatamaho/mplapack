@@ -36,29 +36,6 @@ inline REAL Rlamc3(REAL a, REAL b) {
 
 void Rlals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER const nrhs, REAL *b, INTEGER const ldb, REAL *bx, INTEGER const ldbx, INTEGER *perm, INTEGER const givptr, INTEGER *givcol, INTEGER const ldgcol, REAL *givnum, INTEGER const ldgnum, REAL *poles, REAL *difl, REAL *difr, REAL *z, INTEGER const k, REAL const c, REAL const s, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     info = 0;

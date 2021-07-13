@@ -31,29 +31,6 @@
 
 void Rlasdq(const char *uplo, INTEGER const sqre, INTEGER const n, INTEGER const ncvt, INTEGER const nru, INTEGER const ncc, REAL *d, REAL *e, REAL *vt, INTEGER const ldvt, REAL *u, INTEGER const ldu, REAL *c, INTEGER const ldc, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     info = 0;
