@@ -77,7 +77,7 @@ RUN echo -e "\n\
         name = ${GIT_NAME}\n\
 " >> /home/$DOCKER_USER/.gitconfig
 RUN cd ${WORK} && echo "cd /home/$DOCKER_USER" >> .bashrc
-RUN cd ${WORK} && git clone https://github.com/nakatamaho/mplapack.git
+RUN cd ${WORK} && git clone git@github.com:nakatamaho/mplapack.git
 RUN cd ${WORK}/mplapack && git checkout v1.0.0
 RUN cd ${WORK}/mplapack && git log -1
 RUN cd ${WORK}/mplapack && bash -x misc/reconfig.develop.sh
