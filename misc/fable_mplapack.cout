@@ -52,26 +52,26 @@ LC_ALL=en_US.UTF-8
 export LC_ALL
 LIBTBX_BUILD="$(shellrealpath "$0" && cd "$(dirname "$RESULT")/.." && pwd)"
 export LIBTBX_BUILD
-LIBTBX_PYEXE_BASENAME="python3.6"
+LIBTBX_PYEXE_BASENAME="python3.8"
 export LIBTBX_PYEXE_BASENAME
 LIBTBX_DISPATCHER_NAME="fable.cout"
 export LIBTBX_DISPATCHER_NAME
-SSL_CERT_FILE="$LIBTBX_BUILD/../miniconda2/envs/fable36/lib/python3.6/site-packages/certifi/cacert.pem"
+SSL_CERT_FILE="$LIBTBX_BUILD/../miniconda2/envs/fable38/lib/python3.8/site-packages/certifi/cacert.pem"
 export SSL_CERT_FILE
 OPENBLAS_NUM_THREADS="1"
 export OPENBLAS_NUM_THREADS
 if [ -n "$PYTHONPATH" ]; then
-  PYTHONPATH="$LIBTBX_BUILD/../modules/cctbx_project:$LIBTBX_BUILD/../modules/cctbx_project/boost_adaptbx:$LIBTBX_BUILD/lib:$LIBTBX_BUILD/../miniconda2/envs/fable36/lib/python3.6/site-packages:$PYTHONPATH"
+  PYTHONPATH="$LIBTBX_BUILD/../modules/cctbx_project:$LIBTBX_BUILD/../modules/cctbx_project/boost_adaptbx:$LIBTBX_BUILD/lib:$LIBTBX_BUILD/../miniconda2/envs/fable38/lib/python3.8/site-packages:$PYTHONPATH"
   export PYTHONPATH
 else
-  PYTHONPATH="$LIBTBX_BUILD/../modules/cctbx_project:$LIBTBX_BUILD/../modules/cctbx_project/boost_adaptbx:$LIBTBX_BUILD/lib:$LIBTBX_BUILD/../miniconda2/envs/fable36/lib/python3.6/site-packages"
+  PYTHONPATH="$LIBTBX_BUILD/../modules/cctbx_project:$LIBTBX_BUILD/../modules/cctbx_project/boost_adaptbx:$LIBTBX_BUILD/lib:$LIBTBX_BUILD/../miniconda2/envs/fable38/lib/python3.8/site-packages"
   export PYTHONPATH
 fi
 if [ -n "$LD_LIBRARY_PATH" ]; then
-  LD_LIBRARY_PATH="$LIBTBX_BUILD/lib:$LIBTBX_BUILD/../miniconda2/envs/fable36/lib:$LD_LIBRARY_PATH"
+  LD_LIBRARY_PATH="$LIBTBX_BUILD/lib:$LIBTBX_BUILD/../miniconda2/envs/fable38/lib:$LD_LIBRARY_PATH"
   export LD_LIBRARY_PATH
 else
-  LD_LIBRARY_PATH="$LIBTBX_BUILD/lib:$LIBTBX_BUILD/../miniconda2/envs/fable36/lib"
+  LD_LIBRARY_PATH="$LIBTBX_BUILD/lib:$LIBTBX_BUILD/../miniconda2/envs/fable38/lib"
   export LD_LIBRARY_PATH
 fi
 if [ -n "$PATH" ]; then
@@ -87,7 +87,7 @@ fi
 # ----------------------------------------------
 # lines marked LIBTBX_POST_DISPATCHER_INCLUDE_SH
 # ----------------------------------------------
-LIBTBX_PYEXE="$LIBTBX_BUILD/../miniconda2/envs/fable36/bin/$LIBTBX_PYEXE_BASENAME"
+LIBTBX_PYEXE="$LIBTBX_BUILD/../miniconda2/envs/fable38/bin/$LIBTBX_PYEXE_BASENAME"
 export LIBTBX_PYEXE
 if [ -n "$LIBTBX__VALGRIND_FLAG__" ]; then
   exec $LIBTBX_VALGRIND "$LIBTBX_PYEXE" "$LIBTBX_BUILD/../modules/cctbx_project/fable/command_line/cout_mplapack.py" "$@"
