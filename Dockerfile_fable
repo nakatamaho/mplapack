@@ -2,6 +2,7 @@ FROM ubuntu:20.04
 
 LABEL maintainer="maho.nakata@gmail.com"
 
+ARG DEBIAN_FRONTEND=noninteractive 
 RUN apt update
 RUN apt -y upgrade
 RUN apt install -y sudo 
@@ -15,9 +16,10 @@ RUN echo "${TZ}" > /etc/timezone \
 
 RUN apt install -y build-essential gfortran-9 python3
 RUN apt install -y autotools-dev automake libtool
-RUN apt install -y git wget ccache time pkg-config expect clang-format unifdef
+RUN apt install -y gdb valgrind libtool-bin
+RUN apt install -y git wget ccache time pkg-config expect clangd clang-format unifdef octave
 RUN apt install -y ng-common ng-cjk emacs-nox
-RUN sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
 ARG DOCKER_UID=1000
 ARG DOCKER_USER=docker
@@ -71,17 +73,55 @@ RUN echo -e "\n\
 ARG GIT_EMAIL="maho.nakata@gmail.com"
 ARG GIT_NAME="NAKATA Maho"
 
+#setting lsp mode for C++ https://emacs-lsp.github.io/lsp-mode/tutorials/CPP-guide/
+RUN cd ${WORK} && mkdir -p .emacs.d
 RUN echo -e "\n\
 [user]\n\
         email = ${GIT_EMAIL}\n\
         name = ${GIT_NAME}\n\
 " >> /home/$DOCKER_USER/.gitconfig
-COPY ~/.ssh/id_ed25519 ${WORK}/.ssh
+
+RUN echo -e "(require 'package)\n\
+(add-to-list 'package-archives '(\"melpa\" . \"http://melpa.org/packages/\") t)\n\
+(package-initialize)\n\
+\n\
+(setq package-selected-packages '(lsp-mode yasnippet lsp-treemacs helm-lsp\n\
+    projectile hydra flycheck company avy which-key helm-xref dap-mode))\n\
+\n\
+(when (cl-find-if-not #'package-installed-p package-selected-packages)\n\
+  (package-refresh-contents)\n\
+  (mapc #'package-install package-selected-packages))\n\
+\n\
+;; sample 'helm' configuration use https://github.com/emacs-helm/helm/ for details\n\
+(helm-mode)\n\
+(require 'helm-xref)\n\
+(define-key global-map [remap find-file] #'helm-find-files)\n\
+(define-key global-map [remap execute-extended-command] #'helm-M-x)\n\
+(define-key global-map [remap switch-to-buffer] #'helm-mini)\n\
+\n\
+(which-key-mode)\n\
+(add-hook 'c-mode-hook 'lsp)\n\
+(add-hook 'c++-mode-hook 'lsp)\n\
+\n\
+(setq gc-cons-threshold (* 100 1024 1024)\n\
+      read-process-output-max (* 1024 1024)\n\
+      treemacs-space-between-root-nodes nil\n\
+      company-idle-delay 0.0\n\
+      company-minimum-prefix-length 1\n\
+      lsp-idle-delay 0.1)  ;; clangd is fast\n\
+\n\
+(with-eval-after-load 'lsp-mode\n\
+  (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)\n\
+  (require 'dap-cpptools)\n\
+  (yas-global-mode))\n\
+" >> ${WORK}/.emacs.d/init.el
+
 RUN cd ${WORK} && echo "cd /home/$DOCKER_USER" >> .bashrc
-RUN cd ${WORK} && echo 'eval "$(ssh-agent -s)' >> .bashrc
+RUN cd ${WORK} && echo 'eval "$(ssh-agent -s)"' >> .bashrc
 RUN cd ${WORK} && echo 'ssh-add ~/.ssh/id_ed25519' >> .bashrc
-RUN cd ${WORK} && git clone git@github.com:nakatamaho/mplapack.git
+RUN cd ${WORK} && git clone https://github.com/nakatamaho/mplapack.git
 RUN cd ${WORK}/mplapack && git checkout v1.0.0
+RUN cd ${WORK}/mplapack && git remote set-url origin git@github.com:nakatamaho/mplapack.git
 RUN cd ${WORK}/mplapack && git log -1
 RUN cd ${WORK}/mplapack && bash -x misc/reconfig.develop.sh
-RUN cd ${WORK}/mplapack && make -j4
+RUN cd ${WORK}/mplapack && make -j25
