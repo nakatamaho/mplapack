@@ -7,7 +7,7 @@
 #
 #   dispatcher_include*.sh
 #
-# files in "/home/docker/build36" and run
+# files in "/home/docker/build38" and run
 #
 #   libtbx.refresh
 #
@@ -15,7 +15,7 @@
 # of the functionality of the libtbx/configure.py command).
 #
 # See also:
-#   "/home/docker/build36/dispatcher_include_template.sh"
+#   "/home/docker/build38/dispatcher_include_template.sh"
 #
 
 # ----------------------------------------------------------------------------
