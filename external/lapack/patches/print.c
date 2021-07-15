@@ -3,29 +3,25 @@
 
 char buf[1024];
 
+//  please use as following: Do not forget adding //CHAR(0) at the end.
+//         CALL PRINTSTR('#dgelsd.f l.486'//CHAR(0))
+//         CALL PRINTVEC('s='//CHAR(0),s,n)
+
 void printdummy_() { printf("\n"); }
 
-void printstr_(char *s, int *len) {
-    memset(buf, 0, sizeof(buf));
-    strncpy(buf, s, *len);
+void printstr_(char *s) {
     printf("%s\n", buf);
 }
 
-void printnumi_(char *s, int *len, int *A) {
-    memset(buf, 0, sizeof(buf));
-    strncpy(buf, s, *len);
+void printnumi_(char *s, int *A) {
     printf("%s%d\n", buf, *A);
 }
 
-void printnum_(char *s, int *len, double *A) {
-    memset(buf, 0, sizeof(buf));
-    strncpy(buf, s, *len);
+void printnum_(char *s, double *A) {
     printf("%s%+21.16e\n", buf, *A);
 }
 
-void printmat_(char *s, int *len, int *N, int *M, double *A, int *LDA) {
-    memset(buf, 0, sizeof(buf));
-    strncpy(buf, s, *len);
+void printmat_(char *s, int *N, int *M, double *A, int *LDA) {
     double tmp;
     printf("%s[ ", buf);
     for (int i = 0; i < *N; i++) {
@@ -45,9 +41,7 @@ void printmat_(char *s, int *len, int *N, int *M, double *A, int *LDA) {
     printf("\n");
 }
 
-void printvec_(char *s, int *len, double *A, int *lenvec) {
-    memset(buf, 0, sizeof(buf));
-    strncpy(buf, s, *len);
+void printvec_(char *s, double *A, int *lenvec) {
     double tmp;
     printf("%s[ ", buf);
     for (int i = 0; i < *lenvec; i++) {
