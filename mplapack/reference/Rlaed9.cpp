@@ -34,27 +34,6 @@ void Rlaed9(INTEGER const k, INTEGER const kstart, INTEGER const kstop, INTEGER 
     INTEGER j = 0;
     REAL temp = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     info = 0;
@@ -101,7 +80,7 @@ void Rlaed9(INTEGER const k, INTEGER const kstart, INTEGER const kstop, INTEGER 
     //     this code.
     //
     for (i = 1; i <= n; i = i + 1) {
-        dlamda[i - 1] = Rlamc3(dlamda[i - 1], (dlamda[i - 1] - 1)) - dlamda[i - 1];
+        dlamda[i - 1] = Rlamc3(dlamda[i - 1], dlamda[i - 1]) - dlamda[i - 1];
     }
     //
     for (j = kstart; j <= kstop; j = j + 1) {
