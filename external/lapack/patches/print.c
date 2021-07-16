@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 
-char buf[1024];
-
 //  please use as following: Do not forget adding //CHAR(0) at the end.
 //         CALL PRINTSTR('#dgelsd.f l.486'//CHAR(0))
 //         CALL PRINTVEC('s='//CHAR(0),s,n)
@@ -10,20 +8,20 @@ char buf[1024];
 void printdummy_() { printf("\n"); }
 
 void printstr_(char *s) {
-    printf("%s\n", buf);
+    printf("%s\n", s);
 }
 
 void printnumi_(char *s, int *A) {
-    printf("%s%d\n", buf, *A);
+    printf("%s%d\n", s, *A);
 }
 
 void printnum_(char *s, double *A) {
-    printf("%s%+21.16e\n", buf, *A);
+    printf("%s%+21.16e\n", s, *A);
 }
 
 void printmat_(char *s, int *N, int *M, double *A, int *LDA) {
     double tmp;
-    printf("%s[ ", buf);
+    printf("%s[ ", s);
     for (int i = 0; i < *N; i++) {
         printf("[ ");
         for (int j = 0; j < *M; j++) {
@@ -43,7 +41,7 @@ void printmat_(char *s, int *N, int *M, double *A, int *LDA) {
 
 void printvec_(char *s, double *A, int *lenvec) {
     double tmp;
-    printf("%s[ ", buf);
+    printf("%s[ ", s);
     for (int i = 0; i < *lenvec; i++) {
         tmp = A[i];
         printf("%+21.16e", tmp);
