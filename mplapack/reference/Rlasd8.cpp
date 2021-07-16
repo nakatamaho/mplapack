@@ -152,7 +152,7 @@ void Rlasd8(INTEGER const icompq, INTEGER const k, REAL *d, REAL *z, REAL *vf, R
         }
         work[j - 1] = -z[j - 1] / diflj / (dsigma[j - 1] + dj);
         for (i = 1; i <= j - 1; i = i + 1) {
-            work[i - 1] = z[i - 1] / Rlamc3(dsigma[i - 1], dsigma[i - 1]);
+            work[i - 1] = z[i - 1] / (Rlamc3(dsigma[i - 1], dsigj) - diflj) / (dsigma[i - 1] + dj);
         }
         for (i = j + 1; i <= k; i = i + 1) {
             work[i - 1] = z[i - 1] / (Rlamc3(dsigma[i - 1], dsigjp) + difrj) / (dsigma[i - 1] + dj);
