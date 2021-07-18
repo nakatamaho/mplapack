@@ -1,3 +1,7 @@
+2021/7/19    Nakata Maho <maho@riken.jp> 1.0.0
+            * Tests of the Rtest.in have passed for MPFR version.
+              (includes driver and expert routines)
+
 2021/7/8    Nakata Maho <maho@riken.jp> 1.0.0
             * Tests of the CS Decomposition routines (csd.in)
               have passed for MPFR version.
