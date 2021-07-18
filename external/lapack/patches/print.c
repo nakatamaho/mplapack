@@ -39,12 +39,45 @@ void printmat_(char *s, int *N, int *M, double *A, int *LDA) {
     printf("\n");
 }
 
+void printmati_(char *s, int *N, int *M, int *A, int *LDA) {
+    int tmp;
+    printf("%s[ ", s);
+    for (int i = 0; i < *N; i++) {
+        printf("[ ");
+        for (int j = 0; j < *M; j++) {
+            tmp = A[i + j * (*LDA)];
+            printf("%d", tmp);
+            if (j < *M - 1)
+                printf(", ");
+        }
+        if (i < *N - 1)
+            printf("]; ");
+        else
+            printf("] ");
+    }
+    printf("]");
+    printf("\n");
+}
+
 void printvec_(char *s, double *A, int *lenvec) {
     double tmp;
     printf("%s[ ", s);
     for (int i = 0; i < *lenvec; i++) {
         tmp = A[i];
         printf("%+21.16e", tmp);
+        if (i < *lenvec - 1)
+            printf(", ");
+    }
+    printf("]");
+    printf("\n");
+}
+
+void printveci_(char *s, int *A, int *lenvec) {
+    int tmp;
+    printf("%s[ ", s);
+    for (int i = 0; i < *lenvec; i++) {
+        tmp = A[i];
+        printf("%d", tmp);
         if (i < *lenvec - 1)
             printf(", ");
     }
