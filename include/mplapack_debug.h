@@ -237,6 +237,10 @@ void printnum(long double rtmp);
 void printnum(complex<long double> ctmp);
 void printnum(__complex__ double ctmp);
 
+inline void printnum_short(INTEGER itmp) {
+  printf("%d ", (int)itmp);
+}
+
 void printnum_short(mpreal rtmp);
 void printnum_short(mpcomplex ctmp);
 void printnum_short(double rtmp);
