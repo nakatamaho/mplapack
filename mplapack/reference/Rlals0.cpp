@@ -176,7 +176,7 @@ void Rlals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
                     if (z[j - 1] == zero) {
                         work[i - 1] = zero;
                     } else {
-                        work[i - 1] = z[j - 1] / (Rlamc3(dsigj - 1, -poles[(i - 1) + (2 - 1) * ldgnum]) - difl[i - 1]) / (dsigj + poles[(i - 1)]) / difr[(i - 1) + (2 - 1) * ldgnum];
+                        work[i - 1] = z[j - 1] / (Rlamc3(dsigj, -poles[(i - 1) + (2 - 1) * ldgnum]) - difl[i - 1]) / (dsigj + poles[(i - 1)]) / difr[(i - 1) + (2 - 1) * ldgnum];
                     }
                 }
                 Rgemv("T", k, nrhs, one, b, ldb, work, 1, zero, &bx[(j - 1)], ldbx);
