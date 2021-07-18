@@ -1,3 +1,28 @@
+                            {
+                                double *a_d = new double[m * n];
+                                double *b_d = new double[m * nrhs];
+                                double *s_d = new double[min(m, n)];
+                                double rcond_d;
+                                int rank;
+                                for (int pp = 0; pp < m; pp++) {
+                                    for (int qq = 0; qq < n; qq++) {
+                                        a_d[pp + qq * m] = a[pp + qq * m];
+                                    }
+                                }
+                                for (int pp = 0; pp < m; pp++) {
+                                    for (int qq = 0; qq < nrhs; qq++) {
+                                        b_d[pp + qq * m] = b[pp + qq * m];
+                                    }
+                                }
+                                LAPACKE_dgelsd(LAPACK_COL_MAJOR, (int)m, (int)n, (int)nrhs, a_d, (int)m, b_d, (int)m, s_d, rcond_d, &rank);
+                                printf("b_d=");
+                                printmat(n, nrhs, b_d, ldb);
+                                printf("\n");
+                                delete[] s_d;
+                                delete[] b_d;
+                                delete[] a_d;
+                            }
+
     {
         double *xf_d = new double[max(m * m, (INTEGER)1)];
         double *u1_d = new double[max(p * p, (INTEGER)1)];
