@@ -82,33 +82,6 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     COMPLEX cb = 0.0;
     INTEGER iend = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Decode and Test the input parameters
     //
     if (Mlsame(howmny, "A")) {
@@ -207,7 +180,6 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     //
     safmin = Rlamch("Safe minimum");
     big = one / safmin;
-    Rlabad(safmin, big);
     ulp = Rlamch("Epsilon") * Rlamch("Base");
     small = safmin * n / ulp;
     big = one / small;

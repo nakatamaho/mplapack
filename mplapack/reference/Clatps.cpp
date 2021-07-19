@@ -63,33 +63,6 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
     COMPLEX uscal = 0.0;
     COMPLEX csumj = 0.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     info = 0;
     upper = Mlsame(uplo, "U");
     notran = Mlsame(trans, "N");
@@ -123,7 +96,6 @@ void Clatps(const char *uplo, const char *trans, const char *diag, const char *n
     //
     smlnum = Rlamch("Safe minimum");
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     smlnum = smlnum / Rlamch("Precision");
     bignum = one / smlnum;
     scale = one;

@@ -142,7 +142,6 @@ void Cgeev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //

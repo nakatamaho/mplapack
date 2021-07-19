@@ -123,7 +123,6 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
     //
     smlnum = Rlamch("Safe minimum");
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     smlnum = smlnum / Rlamch("Precision");
     bignum = one / smlnum;
     scale = one;

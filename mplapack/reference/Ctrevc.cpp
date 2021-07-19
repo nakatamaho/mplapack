@@ -139,7 +139,6 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
-    Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
     smlnum = unfl * (n / ulp);
     //

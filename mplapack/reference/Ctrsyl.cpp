@@ -31,31 +31,6 @@
 
 void Ctrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *c, INTEGER const ldc, REAL &scale, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Decode and Test input parameters
     //
     bool notrna = Mlsame(trana, "N");
@@ -97,7 +72,6 @@ void Ctrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
     REAL eps = Rlamch("P");
     REAL smlnum = Rlamch("S");
     REAL bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     smlnum = smlnum * castREAL(m * n) / eps;
     bignum = one / smlnum;
     REAL dum[1];

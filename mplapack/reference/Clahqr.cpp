@@ -163,7 +163,6 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     //
     safmin = Rlamch("SAFE MINIMUM");
     safmax = rone / safmin;
-    Rlabad(safmin, safmax);
     ulp = Rlamch("PRECISION");
     smlnum = safmin * (castREAL(nh) / ulp);
     //

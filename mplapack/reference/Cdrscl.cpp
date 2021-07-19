@@ -74,7 +74,6 @@ void CRrscl(INTEGER const n, REAL const sa, COMPLEX *sx, INTEGER const incx) {
     //
     smlnum = Rlamch("S");
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     //     Initialize the denominator to SA and the numerator to 1.
     //

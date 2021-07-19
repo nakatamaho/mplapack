@@ -159,7 +159,6 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //

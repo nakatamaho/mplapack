@@ -210,7 +210,6 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //

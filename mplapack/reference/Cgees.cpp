@@ -109,7 +109,6 @@ void Cgees(const char *jobvs, const char *sort, bool (*select)(COMPLEX), INTEGER
     REAL smlnum = Rlamch("S");
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
