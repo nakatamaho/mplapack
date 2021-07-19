@@ -73,35 +73,6 @@ void Rdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     REAL result[ntests];
     static const char *format_9999 = "(1x,' *** Error(s) or Failure(s) while testing Rlansf         ***')";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //     ..
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Initialize constants and the random number seed.
     //
     nrun = 0;
@@ -115,8 +86,8 @@ void Rdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     eps = Rlamch("Precision");
     small = Rlamch("Safe minimum");
     large = one / small;
-    small = small * lda * lda;
-    large = large / lda / lda;
+    small = small * castREAL(lda * lda);
+    large = large / castREAL(lda * lda);
     //
     for (iin = 1; iin <= nn; iin = iin + 1) {
         //

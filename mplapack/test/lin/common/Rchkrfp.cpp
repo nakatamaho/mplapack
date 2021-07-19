@@ -69,6 +69,7 @@ void Rchkrfp(void) {
     REAL eps = 0.0;
 
     std::string str;
+    stringstream ss;
     s1 = time(NULL);
     fatal = false;
     //
@@ -92,7 +93,6 @@ void Rchkrfp(void) {
     //
     //     Read the values of N
     //
-    stringstream ss(str);
     ss.str("");
     getline(cin, str);
     ss.str(str);
@@ -169,6 +169,8 @@ void Rchkrfp(void) {
     //     Read the matrix types
     //
     getline(cin, str);
+    ss.str("");
+    ss.str(str);
     ss >> nnt;
     if (nnt < 1) {
         write(nout, format_9996), " NMA", nnt, 1;
@@ -218,7 +220,7 @@ void Rchkrfp(void) {
     ss.str("");
     getline(cin, str);
     ss.str(str);
-    ss >> tsterr;
+    ss >> tsterr_str;
     if (Mlsame(tsterr_str, "T"))
         tsterr = true;
     else

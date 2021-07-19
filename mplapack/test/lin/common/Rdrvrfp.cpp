@@ -83,35 +83,6 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
     INTEGER nt = 0;
     INTEGER k = 0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Initialize constants and the random number seed.
     //
     nrun = 0;
@@ -163,14 +134,14 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         //                    Set up parameters with Rlatb4 and generate a test
                         //                    matrix with Rlatms.
                         //
-                        Rlatb4("DPO", imat, n, n, &ctype, kl, ku, anorm, mode, cndnum, &dist);
+                        Rlatb4("RPO", imat, n, n, &ctype, kl, ku, anorm, mode, cndnum, &dist);
                         //
                         Rlatms(n, n, &dist, iseed, &ctype, d_work_Rlatms, mode, cndnum, anorm, kl, ku, &uplo, a, lda, d_work_Rlatms, info);
                         //
                         //                    Check error code from Rlatms.
                         //
                         if (info != 0) {
-                            Alaerh("DPF", "Rlatms", info, 0, &uplo, n, n, -1, -1, -1, iit, nfail, nerrs, nout);
+                            Alaerh("RPF", "Rlatms", info, 0, &uplo, n, n, -1, -1, -1, iit, nfail, nerrs, nout);
                             goto statement_100;
                         }
                         //
@@ -252,7 +223,7 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         //
                         //                    Form an exact solution and set the right hand side.
                         //
-                        Rlarhs("DPO", "N", &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        Rlarhs("RPO", "N", &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Rlacpy("Full", n, nrhs, b, lda, bsav, lda);
                         //
                         //                    Compute the L*L' or U'*U factorization of the
@@ -272,7 +243,7 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             //                       always be INFO however if INFO is ZERO, Alaerh does not
                             //                       complain.
                             //
-                            Alaerh("DPF", "DPFSV ", info, izero, &uplo, n, n, -1, -1, nrhs, iit, nfail, nerrs, nout);
+                            Alaerh("RPF", "Rpfsv", info, izero, &uplo, n, n, -1, -1, nrhs, iit, nfail, nerrs, nout);
                             goto statement_100;
                         }
                         //
@@ -308,7 +279,7 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         //                    Check error code from Rpftri.
                         //
                         if (info != 0) {
-                            Alaerh("DPO", "Rpftri", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh("RPO", "Rpftri", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         Rpot03(&uplo, n, a, lda, ainv, lda, d_temp_Rpot03, lda, d_work_Rpot03, rcondc, result[2 - 1]);
@@ -334,7 +305,7 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                                 sprintnum_short(buf, result[k - 1]);
                                 write(nout, "(1x,a6,', UPLO=''',a1,''', N =',i5,', type ',i1,', test(',"
                                             "i1,')=',a)"),
-                                    "DPFSV ", uplo, n, iit, k, buf;
+                                    "Rpfsv", uplo, n, iit, k, buf;
                                 nfail++;
                             }
                         }
@@ -349,7 +320,7 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
     //
     //     Print a summary of the results.
     //
-    Alasvm("DPF", nout, nfail, nrun, nerrs);
+    Alasvm("RPF", nout, nfail, nrun, nerrs);
     //
     //     End of Rdrvrfp
     //

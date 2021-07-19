@@ -35,48 +35,25 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <mplapack_debug.h>
 
 void Rerrrfp(INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
+    INTEGER nout = nunit;
     //
     nout = nunit;
     ok = true;
     REAL alpha = 1.0;
     REAL beta = 1.0;
     //
-    infot = 1;
     REAL a[1 * 1];
     REAL b[1 * 1];
     a[0] = 1.0;
     b[0] = 1.0;
     INTEGER info = 0;
+    strncpy(srnamt, "Rpftrf", srnamt_len);
+    infot = 1;
     Rpftrf("/", "U", 0, a, info);
     chkxer("Rpftrf", infot, nout, lerr, ok);
     infot = 2;
@@ -86,6 +63,7 @@ void Rerrrfp(INTEGER const nunit) {
     Rpftrf("N", "U", -1, a, info);
     chkxer("Rpftrf", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Rpftrs", srnamt_len);
     infot = 1;
     Rpftrs("/", "U", 0, 0, a, b, 1, info);
     chkxer("Rpftrs", infot, nout, lerr, ok);
@@ -102,6 +80,7 @@ void Rerrrfp(INTEGER const nunit) {
     Rpftrs("N", "U", 0, 0, a, b, 0, info);
     chkxer("Rpftrs", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Rpftri", srnamt_len);
     infot = 1;
     Rpftri("/", "U", 0, a, info);
     chkxer("Rpftri", infot, nout, lerr, ok);
@@ -112,6 +91,7 @@ void Rerrrfp(INTEGER const nunit) {
     Rpftri("N", "U", -1, a, info);
     chkxer("Rpftri", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Rtfsm", srnamt_len);
     infot = 1;
     Rtfsm("/", "L", "U", "T", "U", 0, 0, alpha, a, b, 1);
     chkxer("Rtfsm ", infot, nout, lerr, ok);
@@ -137,6 +117,7 @@ void Rerrrfp(INTEGER const nunit) {
     Rtfsm("N", "L", "U", "T", "U", 0, 0, alpha, a, b, 0);
     chkxer("Rtfsm ", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Rtftri", srnamt_len);
     infot = 1;
     Rtftri("/", "L", "N", 0, a, info);
     chkxer("Rtftri", infot, nout, lerr, ok);
@@ -150,6 +131,7 @@ void Rerrrfp(INTEGER const nunit) {
     Rtftri("N", "L", "N", -1, a, info);
     chkxer("Rtftri", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Rtfttr", srnamt_len);
     infot = 1;
     Rtfttr("/", "U", 0, a, b, 1, info);
     chkxer("Rtfttr", infot, nout, lerr, ok);
@@ -163,6 +145,7 @@ void Rerrrfp(INTEGER const nunit) {
     Rtfttr("N", "U", 0, a, b, 0, info);
     chkxer("Rtfttr", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Rtrttf", srnamt_len);
     infot = 1;
     Rtrttf("/", "U", 0, a, 1, b, info);
     chkxer("Rtrttf", infot, nout, lerr, ok);
@@ -176,6 +159,7 @@ void Rerrrfp(INTEGER const nunit) {
     Rtrttf("N", "U", 0, a, 0, b, info);
     chkxer("Rtrttf", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Rtfttp", srnamt_len);
     infot = 1;
     Rtfttp("/", "U", 0, a, b, info);
     chkxer("Rtfttp", infot, nout, lerr, ok);
@@ -186,6 +170,7 @@ void Rerrrfp(INTEGER const nunit) {
     Rtfttp("N", "U", -1, a, b, info);
     chkxer("Rtfttp", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Rtpttf", srnamt_len);
     infot = 1;
     Rtpttf("/", "U", 0, a, b, info);
     chkxer("Rtpttf", infot, nout, lerr, ok);
@@ -196,6 +181,7 @@ void Rerrrfp(INTEGER const nunit) {
     Rtpttf("N", "U", -1, a, b, info);
     chkxer("Rtpttf", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Rtrttp", srnamt_len);
     infot = 1;
     Rtrttp("/", 0, a, 1, b, info);
     chkxer("Rtrttp", infot, nout, lerr, ok);
@@ -206,6 +192,7 @@ void Rerrrfp(INTEGER const nunit) {
     Rtrttp("U", 0, a, 0, b, info);
     chkxer("Rtrttp", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Rtpttr", srnamt_len);
     infot = 1;
     Rtpttr("/", 0, a, b, 1, info);
     chkxer("Rtpttr", infot, nout, lerr, ok);
@@ -216,29 +203,30 @@ void Rerrrfp(INTEGER const nunit) {
     Rtpttr("U", 0, a, b, 0, info);
     chkxer("Rtpttr", infot, nout, lerr, ok);
     //
+    strncpy(srnamt, "Rsfrk", srnamt_len);
     infot = 1;
     Rsfrk("/", "U", "N", 0, 0, alpha, a, 1, beta, b);
-    chkxer("Rsfrk ", infot, nout, lerr, ok);
+    chkxer("Rsfrk", infot, nout, lerr, ok);
     infot = 2;
     Rsfrk("N", "/", "N", 0, 0, alpha, a, 1, beta, b);
-    chkxer("Rsfrk ", infot, nout, lerr, ok);
+    chkxer("Rsfrk", infot, nout, lerr, ok);
     infot = 3;
     Rsfrk("N", "U", "/", 0, 0, alpha, a, 1, beta, b);
-    chkxer("Rsfrk ", infot, nout, lerr, ok);
+    chkxer("Rsfrk", infot, nout, lerr, ok);
     infot = 4;
     Rsfrk("N", "U", "N", -1, 0, alpha, a, 1, beta, b);
-    chkxer("Rsfrk ", infot, nout, lerr, ok);
+    chkxer("Rsfrk", infot, nout, lerr, ok);
     infot = 5;
     Rsfrk("N", "U", "N", 0, -1, alpha, a, 1, beta, b);
-    chkxer("Rsfrk ", infot, nout, lerr, ok);
+    chkxer("Rsfrk", infot, nout, lerr, ok);
     infot = 8;
     Rsfrk("N", "U", "N", 0, 0, alpha, a, 0, beta, b);
-    chkxer("Rsfrk ", infot, nout, lerr, ok);
+    chkxer("Rsfrk", infot, nout, lerr, ok);
     //
     //     Print a summary line.
     //
     if (ok) {
-        write(nout, "(1x,'DOUBLE PRECISION RFP routines passed the tests of ',"
+        write(nout, "(1x,'MULTIPLE PRECISION RFP routines passed the tests of ',"
                     "'the error exits')");
     } else {
         write(nout, "(' *** RFP routines failed the tests of the error ','exits ***')");
