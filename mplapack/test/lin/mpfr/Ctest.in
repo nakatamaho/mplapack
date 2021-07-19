@@ -14,40 +14,40 @@ Data file for testing MULTIPLE PRECISION COMPLEX MPLAPACK linear equation routin
 T                      Put T to test the LAPACK routines
 T                      Put T to test the driver routines
 T                      Put T to test the error exits
-ZGE   11               List types on next line if 0 < NTYPES < 11
-ZGB    8               List types on next line if 0 < NTYPES <  8
-ZGT   12               List types on next line if 0 < NTYPES < 12
-ZPO    9               List types on next line if 0 < NTYPES <  9
-ZPS    9               List types on next line if 0 < NTYPES <  9
-ZPP    9               List types on next line if 0 < NTYPES <  9
-ZPB    8               List types on next line if 0 < NTYPES <  8
-ZPT   12               List types on next line if 0 < NTYPES < 12
-ZHE   10               List types on next line if 0 < NTYPES < 10
-ZHR   10               List types on next line if 0 < NTYPES < 10
-ZHK   10               List types on next line if 0 < NTYPES < 10
-ZHA   10               List types on next line if 0 < NTYPES < 10
-ZH2   10               List types on next line if 0 < NTYPES < 10
-ZSA   11               List types on next line if 0 < NTYPES < 10
-ZS2   11               List types on next line if 0 < NTYPES < 10
-ZHP   10               List types on next line if 0 < NTYPES < 10
-ZSY   11               List types on next line if 0 < NTYPES < 11
-ZSR   11               List types on next line if 0 < NTYPES < 11
-ZSK   11               List types on next line if 0 < NTYPES < 11
-ZSP   11               List types on next line if 0 < NTYPES < 11
-ZTR   18               List types on next line if 0 < NTYPES < 18
-ZTP   18               List types on next line if 0 < NTYPES < 18
-ZTB   17               List types on next line if 0 < NTYPES < 17
-ZQR    8               List types on next line if 0 < NTYPES <  8
-ZRQ    8               List types on next line if 0 < NTYPES <  8
-ZLQ    8               List types on next line if 0 < NTYPES <  8
-ZQL    8               List types on next line if 0 < NTYPES <  8
-ZQP    6               List types on next line if 0 < NTYPES <  6
-ZTZ    3               List types on next line if 0 < NTYPES <  3
-ZLS    6               List types on next line if 0 < NTYPES <  6
-ZEQ
-ZQT
-ZQX
-ZXQ
-ZTQ
-ZTS
-ZHH
+CGE   11               List types on next line if 0 < NTYPES < 11
+CGB    8               List types on next line if 0 < NTYPES <  8
+CGT   12               List types on next line if 0 < NTYPES < 12
+CPO    9               List types on next line if 0 < NTYPES <  9
+CPS    9               List types on next line if 0 < NTYPES <  9
+CPP    9               List types on next line if 0 < NTYPES <  9
+CPB    8               List types on next line if 0 < NTYPES <  8
+CPT   12               List types on next line if 0 < NTYPES < 12
+CHE   10               List types on next line if 0 < NTYPES < 10
+CHR   10               List types on next line if 0 < NTYPES < 10
+CHK   10               List types on next line if 0 < NTYPES < 10
+CHA   10               List types on next line if 0 < NTYPES < 10
+CH2   10               List types on next line if 0 < NTYPES < 10
+CSA   11               List types on next line if 0 < NTYPES < 10
+CS2   11               List types on next line if 0 < NTYPES < 10
+CHP   10               List types on next line if 0 < NTYPES < 10
+CSY   11               List types on next line if 0 < NTYPES < 11
+CSR   11               List types on next line if 0 < NTYPES < 11
+CSK   11               List types on next line if 0 < NTYPES < 11
+CSP   11               List types on next line if 0 < NTYPES < 11
+CTR   18               List types on next line if 0 < NTYPES < 18
+CTP   18               List types on next line if 0 < NTYPES < 18
+CTB   17               List types on next line if 0 < NTYPES < 17
+CQR    8               List types on next line if 0 < NTYPES <  8
+CRQ    8               List types on next line if 0 < NTYPES <  8
+CLQ    8               List types on next line if 0 < NTYPES <  8
+CQL    8               List types on next line if 0 < NTYPES <  8
+CQP    6               List types on next line if 0 < NTYPES <  6
+CTZ    3               List types on next line if 0 < NTYPES <  3
+CLS    6               List types on next line if 0 < NTYPES <  6
+CEQ
+CQT
+CQX
+CXQ
+CTQ
+CTS
+CHH
