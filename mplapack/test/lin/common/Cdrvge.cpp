@@ -46,7 +46,7 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER ntran = 3;
     char equeds[] = {'N', 'R', 'C', 'B'};
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char path[3];
+    char path[4];
     char buf[1024];
     char fact_trans[3];
     INTEGER nrun = 0;
@@ -113,54 +113,22 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     static const char *format_9998 = "(1x,a,', FACT=''',a1,''', TRANS=''',a1,''', N=',i5,', type ',i2,"
                                      "', test(',i1,')=',a)";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Initialize constants and the random number seed.
     //
     path[0] = 'C';
     path[1] = 'G';
     path[2] = 'E';
+    path[3] = '\0';
     nrun = 0;
     nfail = 0;
     nerrs = 0;
-    for (i = 1; i <= 4; i = i + 1) {
-        iseed[i - 1] = iseedy[i - 1];
-    }
     //
     //     Test the error exits
     //
     if (tsterr) {
         Cerrvx(path, nout);
     }
+    infot = 0;
     //
     //     Set the block size and minimum block size for testing.
     //

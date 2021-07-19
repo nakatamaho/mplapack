@@ -38,15 +38,6 @@ using fem::common;
 
 void chkxer(const char *srnamt, INTEGER const &infot, INTEGER const &nout, bool &lerr, bool &ok) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     common cmn;
     common_write write(cmn);
     if (!lerr) {
