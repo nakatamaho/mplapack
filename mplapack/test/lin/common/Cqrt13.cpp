@@ -38,31 +38,6 @@ using fem::common;
 
 void Cqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL &norma, INTEGER *iseed) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     if (m <= 0 || n <= 0) {
         return;
     }
@@ -88,7 +63,6 @@ void Cqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, COMPLEX *a, I
         norma = Clange("Max", m, n, a, lda, dummy);
         smlnum = Rlamch("Safe minimum");
         bignum = one / smlnum;
-        Rlabad(smlnum, bignum);
         smlnum = smlnum / Rlamch("Epsilon");
         bignum = one / smlnum;
         //

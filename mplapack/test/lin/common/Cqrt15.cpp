@@ -52,31 +52,6 @@ void Cqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER c
     INTEGER info = 0;
     REAL dummy[1];
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     mn = min(m, n);
     if (lwork < max({m + mn, mn * nrhs, 2 * n + m})) {
         Mxerbla("Cqrt15", 16);
@@ -85,7 +60,6 @@ void Cqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER c
     //
     smlnum = Rlamch("Safe minimum");
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     eps = Rlamch("Epsilon");
     smlnum = (smlnum / eps) / eps;
     bignum = one / smlnum;

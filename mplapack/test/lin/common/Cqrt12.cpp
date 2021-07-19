@@ -39,31 +39,6 @@ using fem::common;
 REAL Cqrt12(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *s, COMPLEX *work, INTEGER const lwork, REAL *rwork) {
     REAL return_value = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     const REAL zero = 0.0;
     return_value = zero;
     //
@@ -99,7 +74,6 @@ REAL Cqrt12(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     REAL smlnum = Rlamch("S") / Rlamch("P");
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     //     Scale work if max entry outside range [SMLNUM,BIGNUM]
     //
