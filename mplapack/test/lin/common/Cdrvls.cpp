@@ -73,7 +73,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER iscale = 0;
     INTEGER itype = 0;
     INTEGER itran = 0;
-    char trans;
+    char trans[1];
     COMPLEX wq[1];
     INTEGER info = 0;
     INTEGER lwork_Cgels = 0;
@@ -129,6 +129,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Test the error exits
     //
+    xlaenv(9, smlsiz);
     if (tsterr) {
         Cerrls(path, nout);
     }
@@ -138,6 +139,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     if ((nm == 0 || nn == 0) && thresh == zero) {
         Alahd(nout, path);
     }
+    infot = 0;
     //
     //     Compute maximal workspace needed for all routines
     //
@@ -190,16 +192,16 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (irank == 1) {
                                 for (itran = 1; itran <= 2; itran = itran + 1) {
                                     if (itran == 1) {
-                                        trans = 'N';
+                                        trans[0] = 'N';
                                     } else {
-                                        trans = 'C';
+                                        trans[0] = 'C';
                                     }
                                     //
                                     //                             Compute workspace needed for Cgels
-                                    Cgels(&trans, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
+                                    Cgels(trans, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
                                     lwork_Cgels = castINTEGER(wq[1 - 1].real());
                                     //                             Compute workspace needed for Cgetsls
-                                    Cgetsls(&trans, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
+                                    Cgetsls(trans, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
                                     lwork_Cgetsls = castINTEGER(wq[1 - 1].real());
                                 }
                             }
@@ -262,11 +264,11 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 //
                                 for (itran = 1; itran <= 2; itran = itran + 1) {
                                     if (itran == 1) {
-                                        trans = 'N';
+                                        trans[0] = 'N';
                                         nrows = m;
                                         ncols = n;
                                     } else {
-                                        trans = 'C';
+                                        trans[0] = 'C';
                                         nrows = n;
                                         ncols = m;
                                     }
@@ -278,7 +280,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         Clarnv(2, iseed, ncols * nrhs, work);
                                         CRscal(ncols * nrhs, one / castREAL(ncols), work, 1);
                                     }
-                                    Cgemm(&trans, "No transpose", nrows, nrhs, ncols, cone, copya, lda, work, ldwork, czero, b, ldb);
+                                    Cgemm(trans, "No transpose", nrows, nrhs, ncols, cone, copya, lda, work, ldwork, czero, b, ldb);
                                     Clacpy("Full", nrows, nrhs, b, ldb, copyb, ldb);
                                     //
                                     //                             Solve LS or overdetermined system
@@ -287,10 +289,10 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         Clacpy("Full", m, n, copya, lda, a, lda);
                                         Clacpy("Full", nrows, nrhs, copyb, ldb, b, ldb);
                                     }
-                                    Cgels(&trans, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
+                                    Cgels(trans, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
                                     //
                                     if (info != 0) {
-                                        Alaerh(path, "Cgels ", info, 0, &trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
+                                        Alaerh(path, "Cgels ", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                                     }
                                     //
                                     //                             Check correctness of results
@@ -299,18 +301,18 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     if (nrows > 0 && nrhs > 0) {
                                         Clacpy("Full", nrows, nrhs, copyb, ldb, c, ldb);
                                     }
-                                    Cqrt16(&trans, m, n, nrhs, copya, lda, b, ldb, c, ldb, rwork, result[1 - 1]);
+                                    Cqrt16(trans, m, n, nrhs, copya, lda, b, ldb, c, ldb, rwork, result[1 - 1]);
                                     //
                                     if ((itran == 1 && m >= n) || (itran == 2 && m < n)) {
                                         //
                                         //                                Solving LS system
                                         //
-                                        result[2 - 1] = Cqrt17(&trans, 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
+                                        result[2 - 1] = Cqrt17(trans, 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
                                     } else {
                                         //
                                         //                                Solving overdetermined system
                                         //
-                                        result[2 - 1] = Cqrt14(&trans, m, n, nrhs, copya, lda, b, ldb, work, lwork);
+                                        result[2 - 1] = Cqrt14(trans, m, n, nrhs, copya, lda, b, ldb, work, lwork);
                                     }
                                     //
                                     //                             Print information about the tests that
@@ -344,11 +346,11 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     //
                                     for (itran = 1; itran <= 2; itran = itran + 1) {
                                         if (itran == 1) {
-                                            trans = 'N';
+                                            trans[0] = 'N';
                                             nrows = m;
                                             ncols = n;
                                         } else {
-                                            trans = 'C';
+                                            trans[0] = 'C';
                                             nrows = n;
                                             ncols = m;
                                         }
@@ -360,7 +362,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                             Clarnv(2, iseed, ncols * nrhs, work);
                                             Cscal(ncols * nrhs, cone / castREAL(ncols), work, 1);
                                         }
-                                        Cgemm(&trans, "No transpose", nrows, nrhs, ncols, cone, copya, lda, work, ldwork, czero, b, ldb);
+                                        Cgemm(trans, "No transpose", nrows, nrhs, ncols, cone, copya, lda, work, ldwork, czero, b, ldb);
                                         Clacpy("Full", nrows, nrhs, b, ldb, copyb, ldb);
                                         //
                                         //                             Solve LS or overdetermined system
@@ -369,9 +371,9 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                             Clacpy("Full", m, n, copya, lda, a, lda);
                                             Clacpy("Full", nrows, nrhs, copyb, ldb, b, ldb);
                                         }
-                                        Cgetsls(&trans, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
+                                        Cgetsls(trans, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
                                         if (info != 0) {
-                                            Alaerh(path, "Cgetsls ", info, 0, &trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
+                                            Alaerh(path, "Cgetsls ", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                                         }
                                         //
                                         //                             Check correctness of results
@@ -380,18 +382,18 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         if (nrows > 0 && nrhs > 0) {
                                             Clacpy("Full", nrows, nrhs, copyb, ldb, c, ldb);
                                         }
-                                        Cqrt16(&trans, m, n, nrhs, copya, lda, b, ldb, c, ldb, work2, result[15 - 1]);
+                                        Cqrt16(trans, m, n, nrhs, copya, lda, b, ldb, c, ldb, work2, result[15 - 1]);
                                         //
                                         if ((itran == 1 && m >= n) || (itran == 2 && m < n)) {
                                             //
                                             //                                Solving LS system
                                             //
-                                            result[16 - 1] = Cqrt17(&trans, 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
+                                            result[16 - 1] = Cqrt17(trans, 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
                                         } else {
                                             //
                                             //                                Solving overdetermined system
                                             //
-                                            result[16 - 1] = Cqrt14(&trans, m, n, nrhs, copya, lda, b, ldb, work, lwork);
+                                            result[16 - 1] = Cqrt14(trans, m, n, nrhs, copya, lda, b, ldb, work, lwork);
                                         }
                                         //
                                         //                             Print information about the tests that
