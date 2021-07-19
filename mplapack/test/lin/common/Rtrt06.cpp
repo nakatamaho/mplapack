@@ -38,29 +38,6 @@ using fem::common;
 
 void Rtrt06(REAL const rcond, REAL const rcondc, const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGER const lda, REAL *work, REAL &rat) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     REAL eps = Rlamch("Epsilon");
     REAL rmax = max(rcond, rcondc);
     REAL rmin = min(rcond, rcondc);
@@ -100,7 +77,6 @@ void Rtrt06(REAL const rcond, REAL const rcondc, const char *uplo, const char *d
         //
         smlnum = Rlamch("Safe minimum");
         bignum = one / smlnum;
-        Rlabad(smlnum, bignum);
         anorm = Rlantr("M", uplo, diag, n, n, a, lda, work);
         //
         rat = rmax * (min({bignum / max(one, anorm), one / eps}));

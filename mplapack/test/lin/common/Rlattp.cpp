@@ -37,28 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag, INTEGER *iseed, INTEGER const n, REAL *a, REAL *b, REAL *work, INTEGER &info) {
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     char path[3];
     path[0] = 'R';
@@ -69,7 +47,6 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL smlnum = unfl;
     const REAL one = 1.0;
     REAL bignum = (one - ulp) / smlnum;
-    Rlabad(smlnum, bignum);
     if ((imat >= 7 && imat <= 10) || imat == 18) {
         *diag = 'U';
     } else {

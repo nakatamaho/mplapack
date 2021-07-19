@@ -38,29 +38,6 @@ using fem::common;
 
 void Rtpt03(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, REAL *ap, REAL const scale, REAL *cnorm, REAL const tscal, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *work, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Quick exit if N = 0.
     //
     const REAL zero = 0.0;
@@ -72,7 +49,6 @@ void Rtpt03(const char *uplo, const char *trans, const char *diag, INTEGER const
     REAL smlnum = Rlamch("Safe minimum");
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     //     Compute the norm of the triangular matrix A using the column
     //     norms already computed by Rlatps.
