@@ -92,40 +92,9 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL rcond = 0.0;
     INTEGER k1 = 0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Initialize constants and the random number seed.
     //
-    path[0] = 'Z';
+    path[0] = 'C';
     path[1] = 'H';
     path[2] = 'P';
     nrun = 0;

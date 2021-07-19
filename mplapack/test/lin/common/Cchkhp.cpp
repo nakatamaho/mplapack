@@ -89,40 +89,9 @@ void Cchkhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     static const char *format_9999 = "(' UPLO = ''',a1,''', N =',i5,', type ',i2,', test ',i2,', ratio =',"
                                      "a)";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Initialize constants and the random number seed.
     //
-    path[0] = 'Z';
+    path[0] = 'C';
     path[1] = 'H';
     path[2] = 'P';
     nrun = 0;

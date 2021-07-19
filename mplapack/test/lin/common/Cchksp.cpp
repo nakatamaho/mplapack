@@ -93,7 +93,7 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     //
     //     Initialize constants and the random number seed.
     //
-    path[0] = 'Z';
+    path[0] = 'C';
     path[1] = 'S';
     path[2] = 'P';
     nrun = 0;

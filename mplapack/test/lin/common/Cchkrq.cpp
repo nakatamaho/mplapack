@@ -81,7 +81,7 @@ void Cchkrq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Initialize constants and the random number seed.
     //
-    path[0] = 'Z';
+    path[0] = 'C';
     path[1] = 'R';
     path[2] = 'Q';
     nrun = 0;

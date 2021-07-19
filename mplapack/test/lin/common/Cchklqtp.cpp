@@ -70,7 +70,7 @@ void Cchklqtp(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
     //     Initialize constants
     //
     char path[3];
-    path[0] = 'Z';
+    path[0] = 'C';
     path[1] = 'X';
     path[2] = 'Q';
     char buf[1024];

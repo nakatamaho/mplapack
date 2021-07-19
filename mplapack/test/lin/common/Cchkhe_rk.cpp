@@ -109,13 +109,13 @@ void Cchkhe_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     //
     //     Test path
     //
-    path[0] = 'Z';
+    path[0] = 'C';
     path[1] = 'H';
     path[2] = 'K';
     //
     //     Path to generate matrices
     //
-    matpath[0] = 'Z';
+    matpath[0] = 'C';
     matpath[1] = 'H';
     matpath[2] = 'E';
     //

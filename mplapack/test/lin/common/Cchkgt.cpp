@@ -88,7 +88,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     INTEGER ix = 0;
     INTEGER k = 0;
     //
-    path[0] = 'Z';
+    path[0] = 'C';
     path[1] = 'G';
     path[2] = 'T';
     nrun = 0;

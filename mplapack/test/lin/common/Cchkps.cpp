@@ -78,7 +78,7 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     REAL result = 0.0;
     INTEGER rankdiff = 0;
     //
-    path[0] = 'Z';
+    path[0] = 'C';
     path[1] = 'P';
     path[2] = 'S';
     nrun = 0;

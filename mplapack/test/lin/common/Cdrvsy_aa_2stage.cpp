@@ -123,13 +123,13 @@ void Cdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
     //
     //     Test path
     //
-    path[0] = 'Z';
+    path[0] = 'C';
     path[1] = 'H';
     path[2] = '2';
     //
     //     Path to generate matrices
     //
-    matpath[0] = 'Z';
+    matpath[0] = 'C';
     matpath[1] = 'S';
     matpath[2] = 'Y';
     //

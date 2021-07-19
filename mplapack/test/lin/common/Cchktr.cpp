@@ -93,7 +93,7 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     //
     //     Initialize constants and the random number seed.
     //
-    path[0] = 'Z';
+    path[0] = 'C';
     path[1] = 'T';
     path[2] = 'R';
     nrun = 0;

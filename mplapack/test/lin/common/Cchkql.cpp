@@ -79,7 +79,7 @@ void Cchkql(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     REAL result[ntests];
     INTEGER nt = 0;
     //
-    path[0] = 'Z';
+    path[0] = 'C';
     path[1] = 'Q';
     path[2] = 'L';
     nrun = 0;

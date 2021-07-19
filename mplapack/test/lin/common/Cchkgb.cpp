@@ -105,7 +105,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER k = 0;
     REAL rcond = 0.0;
     //
-    path[0] = 'Z';
+    path[0] = 'C';
     path[1] = 'G';
     path[2] = 'B';
     nrun = 0;

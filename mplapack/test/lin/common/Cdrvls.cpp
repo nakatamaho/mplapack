@@ -110,42 +110,9 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER j = 0;
     INTEGER iwork[liwork];
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Allocatable Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Initialize constants and the random number seed.
     //
-    path[0] = 'Z';
+    path[0] = 'C';
     path[1] = 'L';
     path[2] = 'S';
     nrun = 0;
