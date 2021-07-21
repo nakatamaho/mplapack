@@ -87,7 +87,7 @@ void Rsyt22(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         result[1 - 1] = (wnorm / anorm) / (castREAL(m) * ulp);
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(wnorm, m * anorm) / anorm) / (castREAL(m) * ulp);
+            result[1 - 1] = (min(wnorm, castREAL(m) * anorm) / anorm) / (castREAL(m) * ulp);
         } else {
             result[1 - 1] = min(wnorm / anorm, castREAL(m)) / (castREAL(m) * ulp);
         }

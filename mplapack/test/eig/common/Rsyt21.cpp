@@ -211,12 +211,12 @@ void Rsyt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     }
     //
     if (anorm > wnorm) {
-        result[1 - 1] = (wnorm / anorm) / (n * ulp);
+        result[1 - 1] = (wnorm / anorm) / (castREAL(n) * ulp);
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(wnorm, n * anorm) / anorm) / (n * ulp);
+            result[1 - 1] = (min(wnorm, castREAL(n) * anorm) / anorm) / (castREAL(n) * ulp);
         } else {
-            result[1 - 1] = min(wnorm / anorm, castREAL(n)) / (n * ulp);
+            result[1 - 1] = min(wnorm / anorm, castREAL(n)) / (castREAL(n) * ulp);
         }
     }
     //

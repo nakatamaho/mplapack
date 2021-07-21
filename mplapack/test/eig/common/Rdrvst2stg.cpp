@@ -201,14 +201,13 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         //
         for (jtype = 1; jtype <= mtypes; jtype = jtype + 1) {
             //
-            if (!dotype[jtype - 1]) {
-                goto statement_1730;
-            }
+            if (!dotype[jtype - 1])
+                continue;
             nmats++;
             ntest = 0;
             //
             for (j = 1; j <= 4; j = j + 1) {
-	        ioldsd[j - 1] = 0; // XXX this is dummy not used. iseed[j - 1];
+                ioldsd[j - 1] = 0; // XXX this is dummy not used. iseed[j - 1];
             }
             //
             //           2)      Compute "A"
@@ -2250,15 +2249,14 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             ntestt += ntest;
             //
-            Rlafts("DST", n, n, jtype, ntest, result, ioldsd, thresh, nounit, nerrs);
-        //
-        statement_1730:;
+            Rlafts("RST", n, n, jtype, ntest, result, ioldsd, thresh, nounit, nerrs);
+            //
         }
     }
     //
     //     Summary
     //
-    Alasvm("DST", nounit, nerrs, ntestt, 0);
+    Alasvm("RST", nounit, nerrs, ntestt, 0);
     //
     //     End of Rdrvst2stg
     //
