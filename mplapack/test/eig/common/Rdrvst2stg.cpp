@@ -983,7 +983,6 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsyt21(1, uplo, n, 0, a, ldu, d1, d2, z, ldu, v, ldu, tau, work, &result[ntest - 1]);
                 //
                 ntest += 2;
-                //		printf("a=");printmat(n,n,a,ldu);printf("\n");
                 Rsyevx_2stage("N", "A", uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(uplo, "U"))
@@ -2199,11 +2198,13 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         result[ntest - 1] = ulpinv;
                         result[(ntest + 1) - 1] = ulpinv;
                         result[(ntest + 2) - 1] = ulpinv;
-                        goto statement_700;
+                        goto statement_1750;
                     }
                 }
                 //
                 //              Do tests 76 and 77 (or +54)
+                //
+            statement_1750:
                 //
                 Rlacpy(" ", n, n, v, ldu, a, lda);
                 //
@@ -2222,13 +2223,13 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         return;
                     } else {
                         result[ntest - 1] = ulpinv;
-                        goto statement_700;
+                        continue;
                     }
                 }
                 //
                 if (m3 == 0 && n > 0) {
                     result[ntest - 1] = ulpinv;
-                    goto statement_700;
+                    continue;
                 }
                 //
                 //              Do test 78 (or +54)
