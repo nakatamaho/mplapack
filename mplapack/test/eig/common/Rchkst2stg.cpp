@@ -262,7 +262,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             goto statement_70;
         //
         statement_60:
-            anorm = rtunfl * n * ulpinv;
+            anorm = rtunfl * castREAL(n) * ulpinv;
             goto statement_70;
         //
         statement_70:

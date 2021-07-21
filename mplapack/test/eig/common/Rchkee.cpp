@@ -1067,7 +1067,7 @@ void Rchkee(void) {
             xlaenv(1, 1);
             xlaenv(9, 25);
             if (tsterr) {
-                Rerrst("DST", nout);
+                Rerrst("RST", nout);
             }
             for (i = 1; i <= nparms; i = i + 1) {
                 xlaenv(1, nbval[i - 1]);

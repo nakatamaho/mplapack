@@ -208,7 +208,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             ntest = 0;
             //
             for (j = 1; j <= 4; j = j + 1) {
-                ioldsd[j - 1] = iseed[j - 1];
+	        ioldsd[j - 1] = 0; // XXX this is dummy not used. iseed[j - 1];
             }
             //
             //           2)      Compute "A"
@@ -329,7 +329,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             }
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 return;
             }
@@ -362,7 +362,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 Rstev("V", n, d1, d2, z, ldu, work, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rstev(V)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstev(V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -390,7 +390,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 Rstev("N", n, d3, d4, z, ldu, work, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rstev(N)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstev(N)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -422,7 +422,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 Rstevx("V", "A", n, d1, d2, vl, vu, il, iu, abstol, m, wa1, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rstevx(V,A)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevx(V,A)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -455,7 +455,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 Rstevx("N", "A", n, d3, d4, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rstevx(N,A)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevx(N,A)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -486,7 +486,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 Rstevr("V", "A", n, d1, d2, vl, vu, il, iu, abstol, m, wa1, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rstevr(V,A)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevr(V,A)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -518,7 +518,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 Rstevr("N", "A", n, d3, d4, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rstevr(N,A)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevr(N,A)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -549,7 +549,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 Rstevx("V", "I", n, d1, d2, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rstevx(V,I)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevx(V,I)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -577,7 +577,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 Rstevx("N", "I", n, d3, d4, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rstevx(N,I)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevx(N,I)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -620,7 +620,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 Rstevx("V", "V", n, d1, d2, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rstevx(V,V)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevx(V,V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -655,7 +655,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 Rstevx("N", "V", n, d3, d4, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rstevx(N,V)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevx(N,V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -682,7 +682,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 Rstevd("V", n, d1, d2, z, ldu, work, lwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rstevd(V)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevd(V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -710,7 +710,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 Rstevd("N", n, d3, d4, z, ldu, work, lwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rstevd(N)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevd(N)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -741,7 +741,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 Rstevr("V", "I", n, d1, d2, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rstevr(V,I)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevr(V,I)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -769,7 +769,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 Rstevr("N", "I", n, d3, d4, vl, vu, il, iu, abstol, m3, wa3, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rstevr(N,I)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevr(N,I)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -812,7 +812,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 Rstevr("V", "V", n, d1, d2, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rstevr(V,V)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevr(V,V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -847,7 +847,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 Rstevr("N", "V", n, d3, d4, vl, vu, il, iu, abstol, m3, wa3, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rstevr(N,V)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevr(N,V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -891,9 +891,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsyev("V", &uplo, n, a, ldu, d1, work, lwork, iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsyev(V,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyev(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsyev(V,N)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyev(V,N)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -915,9 +915,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsyev_2stage("N", &uplo, n, a, ldu, d3, work, lwork, iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsyev_2stage(N,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyev_2stage(N,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsyev_2stage(N,N)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyev_2stage(N,N)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -963,9 +963,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsyevx("V", "A", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m, wa1, z, ldu, work, lwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsyevx(V,A,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevx(V,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsyevx(V,A,N)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevx(V,A,N)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -987,9 +987,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsyevx_2stage("N", "A", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsyevx_2stage(N,A,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevx_2stage(N,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsyevx_2stage(N,A,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevx_2stage(N,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1016,9 +1016,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsyevx("V", "I", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsyevx(V,I,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevx(V,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsyevx(V,I,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevx(V,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1041,9 +1041,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsyevx_2stage("N", "I", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsyevx_2stage(N,I,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevx_2stage(N,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsyevx_2stage(N,I,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevx_2stage(N,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1065,9 +1065,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsyevx("V", "V", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsyevx(V,V,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevx(V,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsyevx(V,V,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevx(V,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1090,9 +1090,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsyevx_2stage("N", "V", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsyevx_2stage(N,V,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevx_2stage(N,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsyevx_2stage(N,V,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevx_2stage(N,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1149,9 +1149,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rspev("V", &uplo, n, work, d1, z, ldu, v, iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rspev(V,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rspev(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rspev(V,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rspev(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1189,9 +1189,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rspev("N", &uplo, n, work, d3, z, ldu, v, iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rspev(N,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rspev(N,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rspev(N,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rspev(N,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1256,9 +1256,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rspevx("V", "A", &uplo, n, work, vl, vu, il, iu, abstol, m, wa1, z, ldu, v, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rspevx(V,A,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rspevx(V,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rspevx(V,A,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rspevx(V,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1297,9 +1297,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rspevx("N", "A", &uplo, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rspevx(N,A,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rspevx(N,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rspevx(N,A,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rspevx(N,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1343,9 +1343,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rspevx("V", "I", &uplo, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rspevx(V,I,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rspevx(V,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rspevx(V,I,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rspevx(V,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1384,9 +1384,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rspevx("N", "I", &uplo, n, work, vl, vu, il, iu, abstol, m3, wa3, z, ldu, v, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rspevx(N,I,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rspevx(N,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rspevx(N,I,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rspevx(N,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1436,9 +1436,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rspevx("V", "V", &uplo, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rspevx(V,V,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rspevx(V,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rspevx(V,V,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rspevx(V,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1477,9 +1477,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rspevx("N", "V", &uplo, n, work, vl, vu, il, iu, abstol, m3, wa3, z, ldu, v, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rspevx(N,V,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rspevx(N,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rspevx(N,V,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rspevx(N,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1538,9 +1538,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsbev("V", &uplo, n, kd, v, ldu, d1, z, ldu, work, iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsbev(V,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsbev(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsbev(V,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsbev(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1574,9 +1574,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsbev_2stage("N", &uplo, n, kd, v, ldu, d3, z, ldu, work, lwork, iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsbev_2stage(N,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsbev_2stage(N,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsbev_2stage(N,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsbev_2stage(N,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1618,9 +1618,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsbevx("V", "A", &uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m, wa2, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsbevx(V,A,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsbevx(V,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsbevx(V,A,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsbevx(V,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1655,9 +1655,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsbevx_2stage("N", "A", &uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsbevx_2stage(N,A,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsbevx_2stage(N,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsbevx_2stage(N,A,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsbevx_2stage(N,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1696,9 +1696,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsbevx("V", "I", &uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsbevx(V,I,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsbevx(V,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsbevx(V,I,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsbevx(V,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1733,9 +1733,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsbevx_2stage("N", "I", &uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsbevx_2stage(N,I,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsbevx_2stage(N,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsbevx_2stage(N,I,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsbevx_2stage(N,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1775,9 +1775,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsbevx("V", "V", &uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsbevx(V,V,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsbevx(V,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsbevx(V,V,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsbevx(V,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1812,9 +1812,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsbevx_2stage("N", "V", &uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsbevx_2stage(N,V,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsbevx_2stage(N,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsbevx_2stage(N,V,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsbevx_2stage(N,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1850,9 +1850,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsyevd("V", &uplo, n, a, ldu, d1, work, lwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsyevd(V,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevd(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsyevd(V,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevd(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1874,9 +1874,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsyevd_2stage("N", &uplo, n, a, ldu, d3, work, lwork, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsyevd_2stage(N,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevd_2stage(N,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsyevd_2stage(N,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevd_2stage(N,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1927,9 +1927,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rspevd("V", &uplo, n, work, d1, z, ldu, &work[indx - 1], lwedc - indx + 1, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rspevd(V,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rspevd(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rspevd(V,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rspevd(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1968,9 +1968,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rspevd("N", &uplo, n, work, d3, z, ldu, &work[indx - 1], lwedc - indx + 1, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rspevd(N,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rspevd(N,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rspevd(N,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rspevd(N,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -2022,9 +2022,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsbevd("V", &uplo, n, kd, v, ldu, d1, z, ldu, work, lwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsbevd(V,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsbevd(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsbevd(V,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsbevd(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -2058,9 +2058,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsbevd_2stage("N", &uplo, n, kd, v, ldu, d3, z, ldu, work, lwork, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsbevd_2stage(N,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsbevd_2stage(N,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsbevd_2stage(N,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsbevd_2stage(N,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -2087,9 +2087,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsyevr("V", "A", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m, wa1, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsyevr(V,A,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevr(V,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsyevr(V,A,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevr(V,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -2111,9 +2111,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsyevr_2stage("N", "A", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsyevr_2stage(N,A,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevr_2stage(N,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsyevr_2stage(N,A,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevr_2stage(N,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -2140,9 +2140,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsyevr("V", "I", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsyevr(V,I,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevr(V,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsyevr(V,I,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevr(V,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -2165,9 +2165,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsyevr_2stage("N", "I", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsyevr_2stage(N,I,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevr_2stage(N,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsyevr_2stage(N,I,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevr_2stage(N,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -2189,9 +2189,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsyevr("V", "V", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsyevr(V,V,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevr(V,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsyevr(V,V,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevr(V,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -2214,9 +2214,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Rsyevr_2stage("N", "V", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
                     if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Rsyevr_2stage(N,V,U)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevr_2stage(N,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9999), "Rsyevr_2stage(N,V,L)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rsyevr_2stage(N,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
