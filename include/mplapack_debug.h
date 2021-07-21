@@ -382,6 +382,28 @@ template <class X> void printmat(int N, int M, X *A, int LDA) {
     printf("]");
 }
 
+template <class X> void printmatU(int N, X *A, int LDA) {
+    X tmp;
+    printf("[ ");
+    for (int i = 0; i < N; i++) {
+        printf("[ ");
+        for (int j = 0; j < N; j++) {
+	  if (i<=j)
+            tmp = A[i + j * LDA];
+	  else
+            tmp = A[j + i * LDA];
+            printnum_short(tmp);
+            if (j < N - 1)
+                printf(", ");
+        }
+        if (i < N - 1)
+            printf("]; ");
+        else
+            printf("] ");
+    }
+    printf("]");
+}
+
 template <class X> void printvec(X *A, int len) {
     X tmp;
     printf("[ ");
