@@ -82,29 +82,6 @@ void Rsyevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     REAL tmp1 = 0.0;
     INTEGER jj = 0;
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     ieeeok = iMlaenv(10, "Rsyevr", "N", 1, 2, 3, 4);
