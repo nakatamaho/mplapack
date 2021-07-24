@@ -215,7 +215,7 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     Rsytrd(uplo, n, a, lda, &work[indd - 1], &work[inde - 1], &work[indtau - 1], &work[indwrk - 1], llwork, iinfo);
     //
     //     If all eigenvalues are desired and ABSTOL is less than or equal to
-    //     zero, then call Rsterf or Rorgtr and SSTEQR.  If this fails for
+    //     zero, then call Rsterf or Rorgtr and Rsteqr.  If this fails for
     //     some eigenvalue, then try Rstebz.
     //
     test = false;
