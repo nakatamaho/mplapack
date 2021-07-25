@@ -255,7 +255,7 @@ void Rsbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         info = 0;
     }
     //
-    //     Otherwise, call Rstebz and, if eigenvectors are desired, SSTEIN.
+    //     Otherwise, call Rstebz and, if eigenvectors are desired, Rstein.
     //
     if (wantz) {
         order = 'B';
