@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rtgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *c, INTEGER const ldc, REAL *d, INTEGER const ldd, REAL *e, INTEGER const lde, REAL *f, INTEGER const ldf, REAL &scale, REAL const rdsum, REAL const rdscal, INTEGER *iwork, INTEGER &pq, INTEGER &info) {
+void Rtgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *c, INTEGER const ldc, REAL *d, INTEGER const ldd, REAL *e, INTEGER const lde, REAL *f, INTEGER const ldf, REAL &scale, REAL &rdsum, REAL &rdscal, INTEGER *iwork, INTEGER &pq, INTEGER &info) {
     INTEGER ierr = 0;
     bool notran = false;
     INTEGER p = 0;
@@ -57,33 +57,6 @@ void Rtgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
     REAL alpha = 0.0;
     INTEGER ii = 0;
     INTEGER jj = 0;
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //  Replaced various illegal calls to Rcopy by calls to Rlaset.
-    //  Sven Hammarling, 27/5/02.
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Decode and test input parameters
     //
