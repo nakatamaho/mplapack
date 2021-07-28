@@ -32,18 +32,6 @@
 bool Risnan(REAL const din) {
     bool return_value = false;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //  .. External Functions ..
-    //  ..
-    //  .. Executable Statements ..
     return_value = Rlaisnan(din, din);
     return return_value;
 }
