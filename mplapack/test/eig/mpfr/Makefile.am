@@ -253,7 +253,7 @@ Rsb.out: Rsb.in xeigtstR_mpfr
 	@echo DSB: Testing Symmetric Eigenvalue Problem routines
 	./xeigtstR_mpfr < Rsb.in > $@ 2>&1
 
-Rsg.out: Rsg.in xeigtstR_mpfr #NG
+Rsg.out: Rsg.in xeigtstR_mpfr
 	@echo DSG: Testing Symmetric Generalized Eigenvalue Problem routines
 	./xeigtstR_mpfr < Rsg.in > $@ 2>&1
 

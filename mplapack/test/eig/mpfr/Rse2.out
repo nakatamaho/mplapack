@@ -15,297 +15,44 @@ The following parameter values will be used:
 
  Routines pass computational tests if test ratio is less than+5.0000000000000000e+01
 
- DST routines passed the tests of the error exits (209 tests done)
+ RST routines passed the tests of the error exits (209 tests done)
 
 
  SE2:  NB =   1, NBMIN =   2, NX =   1
- Rchkst2stg: Rstebz(A) returned INFO=     1.
-         N=     5, JTYPE=    10, ISEED=(T,
 
- DST -- Real Symmetric eigenvalue problem
- Matrix types (see Rchkst2stg for details): 
+ All tests for DST passed the threshold (  4440 tests run)
 
- Special Matrices:
-  1=Zero matrix.                          5=Diagonal: clustered entries.
-  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
-  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
-  4=Diagonal: geometr. spaced entries.
- Dense Symmetric Matrices:
-  8=Evenly spaced eigenvals.             12=Small, evenly spaced eigenvals.
-  9=Geometrically spaced eigenvals.      13=Matrix with random O(1) entries.
- 10=Clustered eigenvalues.               14=Matrix with large random entries.
- 11=Large, evenly spaced eigenvals.      15=Matrix with small random entries.
- 16=Positive definite, evenly spaced eigenvalues
- 17=Positive definite, geometrically spaced eigenvlaues
- 18=Positive definite, clustered eigenvalues
- 19=Positive definite, small evenly spaced eigenvalues
- 20=Positive definite, large evenly spaced eigenvalues
- 21=Diagonally dominant tridiagonal, geometrically spaced eigenvalues
+ All tests for RST drivers  passed the threshold (  13464 tests run)
 
-Test performed:  see Rchkst2stg for details.
 
- N=    5, seed=T,  10,  18,+6.7039039649712985e+153, type 
- DST:    1 out of  4421 tests failed to pass the threshold
- *** Error code from Rchkst =    1
- Rdrvst2stg: Rsyevx_2stage(N,A,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevx_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevx_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,I,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
- Rdrvst2stg: Rsyevr_2stage(N,V,L) returned INFO=     1.
-         N=    20, JTYPE=    18, ISEED=(T,
+ SE2:  NB =   3, NBMIN =   2, NX =   0
+
+ All tests for DST passed the threshold (  4440 tests run)
+
+ All tests for RST drivers  passed the threshold (  13464 tests run)
+
+
+ SE2:  NB =   3, NBMIN =   2, NX =   5
+
+ All tests for DST passed the threshold (  4440 tests run)
+
+ All tests for RST drivers  passed the threshold (  13464 tests run)
+
+
+ SE2:  NB =   3, NBMIN =   2, NX =   9
+
+ All tests for DST passed the threshold (  4440 tests run)
+
+ All tests for RST drivers  passed the threshold (  13464 tests run)
+
+
+ SE2:  NB =  10, NBMIN =   2, NX =   1
+
+ All tests for DST passed the threshold (  4440 tests run)
+
+ All tests for RST drivers  passed the threshold (  13464 tests run)
+
+
+ End of tests
+ Total time used =       278.00 seconds
+
