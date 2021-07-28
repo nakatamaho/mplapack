@@ -29,32 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlatdf(INTEGER const ijob, INTEGER const n, REAL *z, INTEGER const ldz, REAL *rhs, REAL rdsum, REAL rdscal, INTEGER *ipiv, INTEGER *jpiv) {
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
+void Rlatdf(INTEGER const ijob, INTEGER const n, REAL *z, INTEGER const ldz, REAL *rhs, REAL &rdsum, REAL &rdscal, INTEGER *ipiv, INTEGER *jpiv) {
     //
     const REAL one = 1.0;
     REAL pmone = 0.0;
