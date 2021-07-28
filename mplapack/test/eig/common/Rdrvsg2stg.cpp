@@ -232,7 +232,13 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         statement_70:
             //
             iinfo = 0;
+#ifdef ___MPLAPACK_BUILD_WITH_MPFR___
+//There is exactly 0 eigenvalue for n=odd and Rlaebz.cpp cannot find
+//0 eigenvalue and fail to converge. Fix may Rlaebz.cpp help.
+            cond = ulpinv * 1e-3;
+#else
             cond = ulpinv;
+#endif
             //
             //           Special Matrices -- Identity & Jordan block
             //
