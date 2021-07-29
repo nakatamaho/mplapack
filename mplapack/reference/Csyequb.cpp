@@ -240,7 +240,7 @@ statement_999:
     base = Rlamch("B");
     u = one / log(base);
     for (i = 1; i <= n; i = i + 1) {
-        s[i - 1] = pow(base, castREAL(u * log(s[i - 1] * t)));
+        s[i - 1] = pow(base, REAL(u * log(s[i - 1] * t)));
         smin = min(smin, s[i - 1]);
         smax = max(smax, s[i - 1]);
     }

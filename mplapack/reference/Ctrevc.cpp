@@ -168,7 +168,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     goto statement_80;
                 }
             }
-            smin = max(ulp * (abs1(t[(ki - 1) + (ki - 1) * ldt])), smlnum);
+            smin = max(REAL(ulp * (abs1(t[(ki - 1) + (ki - 1) * ldt]))), smlnum);
             //
             work[1 - 1] = cmone;
             //
@@ -238,7 +238,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     goto statement_130;
                 }
             }
-            smin = max(ulp * (abs1(t[(ki - 1) + (ki - 1) * ldt])), smlnum);
+            smin = max(REAL(ulp * (abs1(t[(ki - 1) + (ki - 1) * ldt]))), smlnum);
             //
             work[n - 1] = cmone;
             //
