@@ -223,7 +223,7 @@ void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COM
             zeta1 = absalp / absest;
             zeta2 = absgam / absest;
             //
-            norma = max(one + zeta1 * zeta1 + zeta1 * zeta2, zeta1 * zeta2 + zeta2 * zeta2);
+            norma = max(REAL(one + zeta1 * zeta1 + zeta1 * zeta2), REAL(zeta1 * zeta2 + zeta2 * zeta2));
             //
             //           See if root is closer to zero or to ONE
             //

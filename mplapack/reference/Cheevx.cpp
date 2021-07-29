@@ -191,7 +191,7 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
+    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
     //
     //     Scale matrix to allowable range, if necessary.
     //

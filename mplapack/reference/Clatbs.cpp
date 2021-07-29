@@ -196,7 +196,7 @@ void Clatbs(const char *uplo, const char *trans, const char *diag, const char *n
                     //
                     //                 M(j) = G(j-1) / abs(A(j,j))
                     //
-                    xbnd = min(xbnd, min(one, tjj) * grow);
+                    xbnd = min(xbnd, REAL(min(one, tjj) * grow));
                 } else {
                     //
                     //                 M(j) could overflow, set XBND to 0.
@@ -223,7 +223,7 @@ void Clatbs(const char *uplo, const char *trans, const char *diag, const char *n
             //
             //           Compute GROW = 1/G(j), where G(0) = max{x(i), i=1,...,n}.
             //
-            grow = min(one, half / max(xbnd, smlnum));
+            grow = min(one, REAL(half / max(xbnd, smlnum)));
             for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 //              Exit the loop if the growth factor is too small.
@@ -280,7 +280,7 @@ void Clatbs(const char *uplo, const char *trans, const char *diag, const char *n
                 //              G(j) = max( G(j-1), M(j-1)*( 1 + CNORM(j) ) )
                 //
                 xj = one + cnorm[j - 1];
-                grow = min(grow, xbnd / xj);
+                grow = min(grow, REAL(xbnd / xj));
                 //
                 tjjs = ab[(maind - 1) + (j - 1) * ldab];
                 tjj = abs1(tjjs);
@@ -306,7 +306,7 @@ void Clatbs(const char *uplo, const char *trans, const char *diag, const char *n
             //
             //           Compute GROW = 1/G(j), where G(0) = max{x(i), i=1,...,n}.
             //
-            grow = min(one, half / max(xbnd, smlnum));
+            grow = min(one, REAL(half / max(xbnd, smlnum)));
             for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 //              Exit the loop if the growth factor is too small.
@@ -494,7 +494,7 @@ void Clatbs(const char *uplo, const char *trans, const char *diag, const char *n
                         //
                         //                       Divide by A(j,j) when scaling x if A(j,j) > 1.
                         //
-                        rec = min(one, rec * tjj);
+                        rec = min(one, REAL(rec * tjj));
                         uscal = Cladiv(uscal, tjjs);
                     }
                     if (rec < one) {
@@ -635,7 +635,7 @@ void Clatbs(const char *uplo, const char *trans, const char *diag, const char *n
                         //
                         //                       Divide by A(j,j) when scaling x if A(j,j) > 1.
                         //
-                        rec = min(one, rec * tjj);
+                        rec = min(one, REAL(rec * tjj));
                         uscal = Cladiv(uscal, tjjs);
                     }
                     if (rec < one) {

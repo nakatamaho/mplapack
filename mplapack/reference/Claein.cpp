@@ -87,7 +87,7 @@ void Claein(bool const rightv, bool const noinit, INTEGER const n, COMPLEX *h, I
     //
     rootn = sqrt(castREAL(n));
     growto = tenth / rootn;
-    nrmsml = max(one, eps3 * rootn) * smlnum;
+    nrmsml = max(one, REAL(eps3 * rootn)) * smlnum;
     //
     //     Form B = H - W*I (except that the subdiagonal elements are not
     //     stored).

@@ -120,11 +120,11 @@ void Cstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
                 lgn++;
             }
             lwmin = n * n;
-            lrwmin = 1 + 3 * n + 2 * n * lgn + 4 * pow2(n);
+            lrwmin = 1 + 3 * n + 2 * n * lgn + 4 * n * n;
             liwmin = 6 + 6 * n + 5 * n * lgn;
         } else if (icompz == 2) {
             lwmin = 1;
-            lrwmin = 1 + 4 * n + 2 * pow2(n);
+            lrwmin = 1 + 4 * n + 2 * n * n;
             liwmin = 3 + 5 * n;
         }
         work[1 - 1] = lwmin;

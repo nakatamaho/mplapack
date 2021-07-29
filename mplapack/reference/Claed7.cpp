@@ -128,7 +128,7 @@ void Claed7(INTEGER const n, INTEGER const cutpnt, INTEGER const qsiz, INTEGER c
     if (k != 0) {
         Rlaed9(k, 1, k, n, d, &rwork[iq - 1], k, rho, &rwork[idlmda - 1], &rwork[iw - 1], &qstore[qptr[curr - 1] - 1], k, info);
         Clacrm(qsiz, k, work, qsiz, &qstore[qptr[curr - 1] - 1], k, q, ldq, &rwork[iq - 1]);
-        qptr[(curr + 1) - 1] = qptr[curr - 1] + pow2(k);
+        qptr[(curr + 1) - 1] = qptr[curr - 1] + k * k;
         if (info != 0) {
             return;
         }

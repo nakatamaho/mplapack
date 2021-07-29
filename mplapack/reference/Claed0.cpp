@@ -60,31 +60,6 @@ void Claed0(INTEGER const qsiz, INTEGER const n, REAL *d, REAL *e, COMPLEX *q, I
     INTEGER curprb = 0;
     INTEGER ldqstore = ldqs;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //  Warning:      N could be as big as QSIZ!
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     info = 0;
@@ -167,7 +142,7 @@ statement_10:
     //
     igivnm = 1;
     iq = igivnm + 2 * n * lgn;
-    iwrem = iq + pow2(n) + 1;
+    iwrem = iq + n * n + 1;
     //     Initialize pointers
     for (i = 0; i <= subpbs; i = i + 1) {
         iwork[(iprmpt + i) - 1] = 1;
@@ -190,7 +165,7 @@ statement_10:
         ll = iq - 1 + iwork[(iqptr + curr) - 1];
         Rsteqr("I", matsiz, &d[submat - 1], &e[submat - 1], &rwork[ll - 1], matsiz, rwork, info);
         Clacrm(qsiz, matsiz, &q[(submat - 1) * ldq], ldq, &rwork[ll - 1], matsiz, &qstore[(submat - 1) * ldqstore], ldqs, &rwork[iwrem - 1]);
-        iwork[(iqptr + curr + 1) - 1] = iwork[(iqptr + curr) - 1] + pow2(matsiz);
+        iwork[(iqptr + curr + 1) - 1] = iwork[(iqptr + curr) - 1] + matsiz * matsiz;
         curr++;
         if (info > 0) {
             info = submat * (n + 1) + submat + matsiz - 1;

@@ -179,9 +179,9 @@ void Cstein(INTEGER const n, REAL *d, REAL *e, INTEGER const m, REAL *w, INTEGER
         //        Compute reorthogonalization criterion and stopping criterion.
         //
         onenrm = abs(d[b1 - 1]) + abs(e[b1 - 1]);
-        onenrm = max(onenrm, abs(d[bn - 1]) + abs(e[(bn - 1) - 1]));
+        onenrm = max(onenrm, REAL(abs(d[bn - 1]) + abs(e[(bn - 1) - 1])));
         for (i = b1 + 1; i <= bn - 1; i = i + 1) {
-            onenrm = max(onenrm, abs(d[i - 1]) + abs(e[(i - 1) - 1]) + abs(e[i - 1]));
+            onenrm = max(onenrm, REAL(abs(d[i - 1]) + abs(e[(i - 1) - 1]) + abs(e[i - 1])));
         }
         ortol = odm3 * onenrm;
         //
@@ -247,7 +247,7 @@ void Cstein(INTEGER const n, REAL *d, REAL *e, INTEGER const m, REAL *w, INTEGER
             //           Normalize and scale the righthand side vector Pb.
             //
             jmax = iRamax(blksiz, &work[(indrv1 + 1) - 1], 1);
-            scl = blksiz * onenrm * max(eps, abs(work[(indrv4 + blksiz) - 1])) / abs(work[(indrv1 + jmax) - 1]);
+            scl = blksiz * onenrm * max(eps, REAL(abs(work[(indrv4 + blksiz) - 1])) / abs(work[(indrv1 + jmax) - 1]));
             Rscal(blksiz, scl, &work[(indrv1 + 1) - 1], 1);
             //
             //           Solve the system LU = Pb.

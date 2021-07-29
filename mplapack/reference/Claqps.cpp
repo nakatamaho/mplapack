@@ -159,7 +159,7 @@ statement_10:
                     //                 Lapack Working Note 176.
                     //
                     temp = abs(a[(rk - 1) + (j - 1) * lda]) / vn1[j - 1];
-                    temp = max(zero, (one + temp) * (one - temp));
+                    temp = max(zero, REAL((one + temp) * (one - temp)));
                     temp2 = temp * pow2((vn1[j - 1] / vn2[j - 1]));
                     if (temp2 <= tol3z) {
                         vn2[j - 1] = castREAL(lsticc);

@@ -82,7 +82,7 @@ void Chpgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         } else {
             if (wantz) {
                 lwmin = 2 * n;
-                lrwmin = 1 + 5 * n + 2 * pow2(n);
+                lrwmin = 1 + 5 * n + 2 * n * n;
                 liwmin = 3 + 5 * n;
             } else {
                 lwmin = n;
