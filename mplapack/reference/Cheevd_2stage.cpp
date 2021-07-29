@@ -91,7 +91,7 @@ void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX 
             lwtrd = iMlaenv2stage(4, "Chetrd_2stage", jobz, n, kd, ib, -1);
             if (wantz) {
                 lwmin = 2 * n + n * n;
-                lrwmin = 1 + 5 * n + 2 * pow2(n);
+                lrwmin = 1 + 5 * n + 2 * n * n;
                 liwmin = 3 + 5 * n;
             } else {
                 lwmin = n + 1 + lhtrd + lwtrd;

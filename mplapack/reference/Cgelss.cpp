@@ -359,9 +359,9 @@ void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         //
         //        Multiply B by reciprocals of singular values
         //
-        thr = max(rcond * s[1 - 1], sfmin);
+        thr = max(REAL(rcond * s[1 - 1]), sfmin);
         if (rcond < zero) {
-            thr = max(eps * s[1 - 1], sfmin);
+            thr = max(REAL(eps * s[1 - 1]), sfmin);
         }
         rank = 0;
         for (i = 1; i <= n; i = i + 1) {
@@ -540,9 +540,9 @@ void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         //
         //        Multiply B by reciprocals of singular values
         //
-        thr = max(rcond * s[1 - 1], sfmin);
+        thr = max(REAL(rcond * s[1 - 1]), sfmin);
         if (rcond < zero) {
-            thr = max(eps * s[1 - 1], sfmin);
+            thr = max(REAL(eps * s[1 - 1]), sfmin);
         }
         rank = 0;
         for (i = 1; i <= m; i = i + 1) {

@@ -169,8 +169,8 @@ inline double drand48() {
 #endif
 
 _MPLAPACK_RSLECT_EXTERN_ INTEGER seldim, selopt;
-_MPLAPACK_RSLECT_EXTERN_  bool selval[20];
-_MPLAPACK_RSLECT_EXTERN_  REAL selwi[20], selwr[20];
+_MPLAPACK_RSLECT_EXTERN_ bool selval[20];
+_MPLAPACK_RSLECT_EXTERN_ REAL selwi[20], selwr[20];
 
 #if defined __MPLAPACK_CLCTSX__
 #define _MPLAPACK_CLCTSX_EXTERN_
@@ -178,11 +178,11 @@ _MPLAPACK_RSLECT_EXTERN_  REAL selwi[20], selwr[20];
 #define _MPLAPACK_CLCTSX_EXTERN_ extern
 #endif
 
-_MPLAPACK_CLCTSX_EXTERN_  INTEGER _MPLAPACK_CLCTSX_mplusn;
-_MPLAPACK_CLCTSX_EXTERN_  INTEGER _MPLAPACK_CLCTSX_n;
-_MPLAPACK_CLCTSX_EXTERN_  INTEGER _MPLAPACK_CLCTSX_m;
-_MPLAPACK_CLCTSX_EXTERN_  INTEGER _MPLAPACK_CLCTSX_i;
-_MPLAPACK_CLCTSX_EXTERN_  bool _MPLAPACK_CLCTSX_fs;        
+_MPLAPACK_CLCTSX_EXTERN_ INTEGER _MPLAPACK_CLCTSX_mplusn;
+_MPLAPACK_CLCTSX_EXTERN_ INTEGER _MPLAPACK_CLCTSX_n;
+_MPLAPACK_CLCTSX_EXTERN_ INTEGER _MPLAPACK_CLCTSX_m;
+_MPLAPACK_CLCTSX_EXTERN_ INTEGER _MPLAPACK_CLCTSX_i;
+_MPLAPACK_CLCTSX_EXTERN_ bool _MPLAPACK_CLCTSX_fs;
 
 #if defined __MPLAPACK_XLAENV__
 #define _MPLAPACK_XLAENV_EXTERN_
@@ -237,9 +237,7 @@ void printnum(long double rtmp);
 void printnum(complex<long double> ctmp);
 void printnum(__complex__ double ctmp);
 
-inline void printnum_short(INTEGER itmp) {
-  printf("%d ", (int)itmp);
-}
+inline void printnum_short(INTEGER itmp) { printf("%d ", (int)itmp); }
 
 void printnum_short(mpreal rtmp);
 void printnum_short(mpcomplex ctmp);
@@ -388,10 +386,10 @@ template <class X> void printmatU(int N, X *A, int LDA) {
     for (int i = 0; i < N; i++) {
         printf("[ ");
         for (int j = 0; j < N; j++) {
-	  if (i<=j)
-            tmp = A[i + j * LDA];
-	  else
-            tmp = A[j + i * LDA];
+            if (i <= j)
+                tmp = A[i + j * LDA];
+            else
+                tmp = A[j + i * LDA];
             printnum_short(tmp);
             if (j < N - 1)
                 printf(", ");

@@ -657,6 +657,7 @@ void mp_rounding2integer() {
         exit(1);
     }
 
+#if !defined ___MPLAPACK_BUILD_WITH_GMP___ && !defined ___MPLAPACK_BUILD_WITH_QD___ && !defined ___MPLAPACK_BUILD_WITH_DD___
     rtmp1 = 1.3;
     b = rtmp1;
     printf("rtmp1: ");
@@ -696,7 +697,7 @@ void mp_rounding2integer() {
         printf("*** Rounding test failed ***\n");
         exit(1);
     }
-
+#endif
     printf("*** Rounding test successful ***\n");
 }
 
