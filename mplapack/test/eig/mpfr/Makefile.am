@@ -245,7 +245,7 @@ Rgg.out: Rgg.in xeigtstR_mpfr
 	@echo DGG: Testing Nonsymmetric Generalized Eigenvalue Problem routines
 	./xeigtstR_mpfr < Rgg.in > $@ 2>&1
 
-Rgd.out: Rgd.in xeigtstR_mpfr #NG
+Rgd.out: Rgd.in xeigtstR_mpfr
 	@echo DGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routines
 	./xeigtstR_mpfr < Rgd.in > $@ 2>&1
 
@@ -253,7 +253,7 @@ Rsb.out: Rsb.in xeigtstR_mpfr
 	@echo DSB: Testing Symmetric Eigenvalue Problem routines
 	./xeigtstR_mpfr < Rsb.in > $@ 2>&1
 
-Rsg.out: Rsg.in xeigtstR_mpfr #NG
+Rsg.out: Rsg.in xeigtstR_mpfr
 	@echo DSG: Testing Symmetric Generalized Eigenvalue Problem routines
 	./xeigtstR_mpfr < Rsg.in > $@ 2>&1
 

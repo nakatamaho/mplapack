@@ -155,9 +155,9 @@ void Rtgsyl(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
             Rtgsy2(trans, ifunc, m, n, a, lda, b, ldb, c, ldc, d, ldd, e, lde, f, ldf, scale, dsum, dscale, iwork, pq, info);
             if (dscale != zero) {
                 if (ijob == 1 || ijob == 3) {
-                    dif = sqrt(castREAL(2 * m * n) / (dscale * sqrt(dsum)));
+                    dif = sqrt(castREAL(2 * m * n)) / (dscale * sqrt(dsum));
                 } else {
-                    dif = sqrt(castREAL(pq) / (dscale * sqrt(dsum)));
+                    dif = sqrt(castREAL(pq)) / (dscale * sqrt(dsum));
                 }
             }
             //
@@ -293,9 +293,9 @@ statement_70:
             }
             if (dscale != zero) {
                 if (ijob == 1 || ijob == 3) {
-                    dif = sqrt(castREAL(2 * m * n) / (dscale * sqrt(dsum)));
+                    dif = sqrt(castREAL(2 * m * n)) / (dscale * sqrt(dsum));
                 } else {
-                    dif = sqrt(castREAL(pq) / (dscale * sqrt(dsum)));
+                    dif = sqrt(castREAL(pq)) / (dscale * sqrt(dsum));
                 }
             }
             if (isolve == 2 && iround == 1) {

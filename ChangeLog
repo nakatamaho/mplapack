@@ -1,3 +1,9 @@
+2021/7/28    Nakata Maho <maho@riken.jp> 1.0.0
+            * Tests of Nonsymmetric Generalized Eigenvalue Problem driver routines
+              (Rgd.in) have passed for MPFR version.
+            * Tests of Generalized Symmetric Eigenvalue Problem routines (Rsg.in)
+              have passed for MPFR version.
+
 2021/7/19    Nakata Maho <maho@riken.jp> 1.0.0
             * Tests of the Rtest.in have passed for MPFR version.
               (includes driver and expert routines)
