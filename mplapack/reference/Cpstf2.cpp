@@ -118,7 +118,7 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     //     Set first half of WORK to zero, holds dot products
     //
     for (i = 1; i <= n; i = i + 1) {
-        work[i - 1] = 0;
+        work[i - 1] = 0.0;
     }
     //
     if (upper) {

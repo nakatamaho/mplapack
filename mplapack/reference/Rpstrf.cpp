@@ -145,7 +145,7 @@ void Rpstrf(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
                 //              holds dot products
                 //
                 for (i = k; i <= n; i = i + 1) {
-                    work[i - 1] = 0;
+                    work[i - 1] = 0.0;
                 }
                 //
                 for (j = k; j <= k + jb - 1; j = j + 1) {
@@ -228,7 +228,7 @@ void Rpstrf(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
                 //              holds dot products
                 //
                 for (i = k; i <= n; i = i + 1) {
-                    work[i - 1] = 0;
+                    work[i - 1] = 0.0;
                 }
                 //
                 for (j = k; j <= k + jb - 1; j = j + 1) {

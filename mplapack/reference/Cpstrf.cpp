@@ -144,7 +144,7 @@ void Cpstrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 //              holds dot products
                 //
                 for (i = k; i <= n; i = i + 1) {
-                    work[i - 1] = 0;
+                    work[i - 1] = 0.0;
                 }
                 //
                 for (j = k; j <= k + jb - 1; j = j + 1) {
@@ -234,7 +234,7 @@ void Cpstrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 //              holds dot products
                 //
                 for (i = k; i <= n; i = i + 1) {
-                    work[i - 1] = 0;
+                    work[i - 1] = 0.0;
                 }
                 //
                 for (j = k; j <= k + jb - 1; j = j + 1) {
