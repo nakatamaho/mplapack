@@ -63,29 +63,6 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
     REAL w1 = 0.0;
     REAL y = 0.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     info = 0;
     //
     //     GROWTO is the threshold used in the acceptance test for an
@@ -93,7 +70,7 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
     //
     rootn = sqrt(castREAL(n));
     growto = tenth / rootn;
-    nrmsml = max(one, eps3 * rootn) * smlnum;
+    nrmsml = max(one, REAL(eps3 * rootn)) * smlnum;
     //
     //     Form B = H - (WR,WI)*I (except that the subdiagonal elements and
     //     the imaginary parts of the diagonal elements are not stored).
@@ -447,7 +424,7 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
                     //                 Divide by diagonal element of B.
                     //
                     Rladiv(xr, xi, b[(i - 1) + (i - 1) * ldb], b[((i + 1) - 1) + (i - 1) * ldb], vr[i - 1], vi[i - 1]);
-                    vmax = max(abs(vr[i - 1]) + abs(vi[i - 1]), vmax);
+                    vmax = max(REAL(abs(vr[i - 1]) + abs(vi[i - 1])), vmax);
                     vcrit = bignum / vmax;
                 } else {
                     for (j = 1; j <= n; j = j + 1) {
@@ -492,7 +469,7 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
         //
         vnorm = zero;
         for (i = 1; i <= n; i = i + 1) {
-            vnorm = max(vnorm, abs(vr[i - 1]) + abs(vi[i - 1]));
+            vnorm = max(vnorm, REAL(abs(vr[i - 1]) + abs(vi[i - 1])));
         }
         Rscal(n, one / vnorm, vr, 1);
         Rscal(n, one / vnorm, vi, 1);

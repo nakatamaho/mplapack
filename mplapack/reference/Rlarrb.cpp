@@ -230,7 +230,7 @@ statement_80:
     for (i = ifirst + 1; i <= ilast; i = i + 1) {
         k = 2 * i;
         ii = i - offset;
-        wgap[(ii - 1) - 1] = max(zero, w[ii - 1] - werr[ii - 1] - w[(ii - 1) - 1] - werr[(ii - 1) - 1]);
+        wgap[(ii - 1) - 1] = max(zero, REAL(w[ii - 1] - werr[ii - 1] - w[(ii - 1) - 1] - werr[(ii - 1) - 1]));
     }
     //
     //     End of Rlarrb

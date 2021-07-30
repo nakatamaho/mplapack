@@ -125,14 +125,14 @@ void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER c
                 iwork[ji - 1] = 0;
                 if (work[ji - 1] <= pivmin) {
                     iwork[ji - 1] = 1;
-                    work[ji - 1] = min(work[ji - 1], -pivmin);
+                    work[ji - 1] = min(work[ji - 1], REAL(-pivmin));
                 }
                 //
                 for (j = 2; j <= n; j = j + 1) {
                     work[ji - 1] = d[j - 1] - e2[(j - 1) - 1] / work[ji - 1] - c[ji - 1];
                     if (work[ji - 1] <= pivmin) {
                         iwork[ji - 1]++;
-                        work[ji - 1] = min(work[ji - 1], -pivmin);
+                        work[ji - 1] = min(work[ji - 1], REAL(-pivmin));
                     }
                 }
             }
@@ -219,14 +219,14 @@ void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER c
                 itmp1 = 0;
                 if (tmp2 <= pivmin) {
                     itmp1 = 1;
-                    tmp2 = min(tmp2, -pivmin);
+                    tmp2 = min(tmp2, REAL(-pivmin));
                 }
                 //
                 for (j = 2; j <= n; j = j + 1) {
                     tmp2 = d[j - 1] - e2[(j - 1) - 1] / tmp2 - tmp1;
                     if (tmp2 <= pivmin) {
                         itmp1++;
-                        tmp2 = min(tmp2, -pivmin);
+                        tmp2 = min(tmp2, REAL(-pivmin));
                     }
                 }
                 //
@@ -294,7 +294,7 @@ void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER c
         for (ji = kf; ji <= kl; ji = ji + 1) {
             tmp1 = abs(ab[(ji - 1) + (2 - 1) * ldab] - ab[(ji - 1)]);
             tmp2 = max(abs(ab[(ji - 1) + (2 - 1) * ldab]), abs(ab[(ji - 1)]));
-            if (tmp1 < max({abstol, pivmin, reltol * tmp2}) || nab[(ji - 1)] >= nab[(ji - 1) + (2 - 1) * ldnab]) {
+            if (tmp1 < max({abstol, pivmin, REAL(reltol * tmp2)}) || nab[(ji - 1)] >= nab[(ji - 1) + (2 - 1) * ldnab]) {
                 //
                 //              Converged -- Swap with position KFNEW,
                 //                           then increment KFNEW

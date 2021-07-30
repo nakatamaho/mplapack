@@ -31,29 +31,6 @@
 
 void Rsygvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *w, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -68,7 +45,7 @@ void Rsygvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         lwmin = 1;
     } else if (wantz) {
         liwmin = 3 + 5 * n;
-        lwmin = 1 + 6 * n + 2 * pow2(n);
+        lwmin = 1 + 6 * n + 2 * n * n;
     } else {
         liwmin = 1;
         lwmin = 2 * n + 1;
@@ -125,7 +102,7 @@ void Rsygvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     //
     Rsygst(itype, uplo, n, a, lda, b, ldb, info);
     Rsyevd(jobz, uplo, n, a, lda, w, work, lwork, iwork, liwork, info);
-    lopt = max(castREAL(lopt), work[1 - 1]);
+    lopt = castINTEGER(max(castREAL(lopt), work[1 - 1]));
     liopt = max(liopt, iwork[1 - 1]);
     //
     char trans;

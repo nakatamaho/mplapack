@@ -66,7 +66,7 @@ void Rsbgvd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
         lwmin = 1;
     } else if (wantz) {
         liwmin = 3 + 5 * n;
-        lwmin = 1 + 5 * n + 2 * pow2(n);
+        lwmin = 1 + 5 * n + 2 * n * n;
     } else {
         liwmin = 1;
         lwmin = 2 * n;

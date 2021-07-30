@@ -210,7 +210,7 @@ void Rtrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
             if (ip != 0) {
                 wi = sqrt(abs(t[(ki - 1) + ((ki - 1) - 1) * ldt])) * sqrt(abs(t[((ki - 1) - 1) + (ki - 1) * ldt]));
             }
-            smin = max(ulp * (abs(wr) + abs(wi)), smlnum);
+            smin = max(REAL(ulp * (abs(wr) + abs(wi))), smlnum);
             //
             if (ip == 0) {
                 //
@@ -449,7 +449,7 @@ void Rtrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     //
                     emax = zero;
                     for (k = 1; k <= ki; k = k + 1) {
-                        emax = max(emax, abs(vr[(k - 1) + ((is - 1) - 1) * ldvr]) + abs(vr[(k - 1) + (is - 1) * ldvr]));
+                        emax = max(emax, REAL(abs(vr[(k - 1) + ((is - 1) - 1) * ldvr]) + abs(vr[(k - 1) + (is - 1) * ldvr])));
                     }
                     //
                     remax = one / emax;
@@ -473,7 +473,7 @@ void Rtrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     //
                     emax = zero;
                     for (k = 1; k <= n; k = k + 1) {
-                        emax = max(emax, abs(vr[(k - 1) + ((ki - 1) - 1) * ldvr]) + abs(vr[(k - 1) + (ki - 1) * ldvr]));
+                        emax = max(emax, REAL(abs(vr[(k - 1) + ((ki - 1) - 1) * ldvr]) + abs(vr[(k - 1) + (ki - 1) * ldvr])));
                     }
                     remax = one / emax;
                     Rscal(n, remax, &vr[((ki - 1) - 1) * ldvr], 1);
@@ -528,7 +528,7 @@ void Rtrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
             if (ip != 0) {
                 wi = sqrt(abs(t[(ki - 1) + ((ki + 1) - 1) * ldt])) * sqrt(abs(t[((ki + 1) - 1) + (ki - 1) * ldt]));
             }
-            smin = max(ulp * (abs(wr) + abs(wi)), smlnum);
+            smin = max(REAL(ulp * (abs(wr) + abs(wi))), smlnum);
             //
             if (ip == 0) {
                 //
@@ -589,7 +589,7 @@ void Rtrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                             Rscal(n - ki + 1, scale, &work[(ki + n) - 1], 1);
                         }
                         work[(j + n) - 1] = x[(1 - 1)];
-                        vmax = max(abs(work[(j + n) - 1]), vmax);
+                        vmax = max(REAL(abs(work[(j + n) - 1])), vmax);
                         vcrit = bignum / vmax;
                         //
                     } else {
@@ -625,7 +625,7 @@ void Rtrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                         work[(j + n) - 1] = x[(1 - 1)];
                         work[(j + 1 + n) - 1] = x[(2 - 1)];
                         //
-                        vmax = max({abs(work[(j + n) - 1]), abs(work[(j + 1 + n) - 1]), vmax});
+                        vmax = max({REAL(abs(work[(j + n) - 1])), REAL(abs(work[(j + 1 + n) - 1])), vmax});
                         vcrit = bignum / vmax;
                         //
                     }
@@ -733,7 +733,7 @@ void Rtrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                         }
                         work[(j + n) - 1] = x[(1 - 1)];
                         work[(j + n2) - 1] = x[(2 - 1) * ldx];
-                        vmax = max({abs(work[(j + n) - 1]), abs(work[(j + n2) - 1]), vmax});
+                        vmax = max({REAL(abs(work[(j + n) - 1])), REAL(abs(work[(j + n2) - 1])), vmax});
                         vcrit = bignum / vmax;
                         //
                     } else {
@@ -776,7 +776,7 @@ void Rtrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                         work[(j + n2) - 1] = x[(2 - 1) * ldx];
                         work[(j + 1 + n) - 1] = x[(2 - 1)];
                         work[(j + 1 + n2) - 1] = x[(2 - 1) + (2 - 1) * ldx];
-                        vmax = max({abs(x[(1 - 1)]), abs(x[(2 - 1) * ldx]), abs(x[(2 - 1)]), abs(x[(2 - 1) + (2 - 1) * ldx]), vmax});
+                        vmax = max({REAL(abs(x[(1 - 1)])), REAL(abs(x[(2 - 1) * ldx])), REAL(abs(x[(2 - 1)])), REAL(abs(x[(2 - 1) + (2 - 1) * ldx])), vmax});
                         vcrit = bignum / vmax;
                         //
                     }
@@ -791,7 +791,7 @@ void Rtrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     //
                     emax = zero;
                     for (k = ki; k <= n; k = k + 1) {
-                        emax = max(emax, abs(vl[(k - 1) + (is - 1) * ldvl]) + abs(vl[(k - 1) + ((is + 1) - 1) * ldvl]));
+                        emax = max(emax, REAL(abs(vl[(k - 1) + (is - 1) * ldvl]) + abs(vl[(k - 1) + ((is + 1) - 1) * ldvl])));
                     }
                     remax = one / emax;
                     Rscal(n - ki + 1, remax, &vl[(ki - 1) + (is - 1) * ldvl], 1);
@@ -812,7 +812,7 @@ void Rtrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     //
                     emax = zero;
                     for (k = 1; k <= n; k = k + 1) {
-                        emax = max(emax, abs(vl[(k - 1) + (ki - 1) * ldvl]) + abs(vl[(k - 1) + ((ki + 1) - 1) * ldvl]));
+                        emax = max(emax, REAL(abs(vl[(k - 1) + (ki - 1) * ldvl]) + abs(vl[(k - 1) + ((ki + 1) - 1) * ldvl])));
                     }
                     remax = one / emax;
                     Rscal(n, remax, &vl[(ki - 1) * ldvl], 1);

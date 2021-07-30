@@ -177,7 +177,7 @@ void Rstevr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
+    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
     //
     //     Scale matrix to allowable range, if necessary.
     //

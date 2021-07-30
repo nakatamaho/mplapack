@@ -187,7 +187,7 @@ statement_5:
             //           in this case
             sawnan1 = true;
         }
-        max1 = max(max1, abs(dplus[(i + 1) - 1]));
+        max1 = max(max1, REAL(abs(dplus[(i + 1) - 1])));
     }
     sawnan1 = sawnan1 || Risnan(max1);
     //
@@ -217,7 +217,7 @@ statement_5:
             //           in this case
             sawnan2 = true;
         }
-        max2 = max(max2, abs(work[(i + 1) - 1]));
+        max2 = max(max2, REAL(abs(work[(i + 1) - 1])));
     }
     sawnan2 = sawnan2 || Risnan(max2);
     //
@@ -276,7 +276,7 @@ statement_5:
                 }
                 oldp = prod;
                 znm2 += pow2(prod);
-                tmp = max(tmp, abs(dplus[i - 1] * prod));
+                tmp = max(tmp, REAL(abs(dplus[i - 1] * prod)));
             }
             rrr1 = tmp / (spdiam * sqrt(znm2));
             if (rrr1 <= maxgrowth2) {
@@ -297,7 +297,7 @@ statement_5:
                 }
                 oldp = prod;
                 znm2 += pow2(prod);
-                tmp = max(tmp, abs(work[i - 1] * prod));
+                tmp = max(tmp, REAL(abs(work[i - 1] * prod)));
             }
             rrr2 = tmp / (spdiam * sqrt(znm2));
             if (rrr2 <= maxgrowth2) {

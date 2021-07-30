@@ -209,13 +209,13 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         //
         for (j = 1; j <= n - 1; j = j + 1) {
             tmp2 = sqrt(work[j - 1]);
-            gu = max(gu, d[j - 1] + tmp1 + tmp2);
-            gl = min(gl, d[j - 1] - tmp1 - tmp2);
+            gu = max(gu, REAL(d[j - 1] + tmp1 + tmp2));
+            gl = min(gl, REAL(d[j - 1] - tmp1 - tmp2));
             tmp1 = tmp2;
         }
         //
-        gu = max(gu, d[n - 1] + tmp1);
-        gl = min(gl, d[n - 1] - tmp1);
+        gu = max(gu, REAL(d[n - 1] + tmp1));
+        gl = min(gl, REAL(d[n - 1] - tmp1));
         tnorm = max(abs(gl), abs(gu));
         gl = gl - fudge * tnorm * ulp * n - fudge * two * pivmin;
         gu += fudge * tnorm * ulp * n + fudge * pivmin;
@@ -275,7 +275,7 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         tnorm = max(abs(d[1 - 1]) + abs(e[1 - 1]), abs(d[n - 1]) + abs(e[(n - 1) - 1]));
         //
         for (j = 2; j <= n - 1; j = j + 1) {
-            tnorm = max(tnorm, abs(d[j - 1]) + abs(e[(j - 1) - 1]) + abs(e[j - 1]));
+            tnorm = max(tnorm, REAL(abs(d[j - 1]) + abs(e[(j - 1) - 1]) + abs(e[j - 1])));
         }
         //
         if (abstol <= zero) {
@@ -337,13 +337,13 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
             //
             for (j = ibegin; j <= iend - 1; j = j + 1) {
                 tmp2 = abs(e[j - 1]);
-                gu = max(gu, d[j - 1] + tmp1 + tmp2);
-                gl = min(gl, d[j - 1] - tmp1 - tmp2);
+                gu = max(gu, REAL(d[j - 1] + tmp1 + tmp2));
+                gl = min(gl, REAL(d[j - 1] - tmp1 - tmp2));
                 tmp1 = tmp2;
             }
             //
-            gu = max(gu, d[iend - 1] + tmp1);
-            gl = min(gl, d[iend - 1] - tmp1);
+            gu = max(gu, REAL(d[iend - 1] + tmp1));
+            gl = min(gl, REAL(d[iend - 1] - tmp1));
             bnorm = max(abs(gl), abs(gu));
             gl = gl - fudge * bnorm * ulp * in - fudge * pivmin;
             gu += fudge * bnorm * ulp * in + fudge * pivmin;

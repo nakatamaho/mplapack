@@ -62,7 +62,7 @@ void Rlarrk(INTEGER const n, INTEGER const iw, REAL const gl, REAL const gu, REA
     rtoli = reltol;
     atoli = fudge * two * pivmin;
     //
-    itmax = castREAL((log(tnorm + pivmin) - log(pivmin)) / log(two)) + 2;
+    itmax = castINTEGER((log(tnorm + pivmin) - log(pivmin)) / log(two)) + 2;
     if (itmax > 1024)
         itmax = 1024; // XXX itmax can be too large for MPFR (=10^8)
     //
@@ -78,7 +78,7 @@ statement_10:
     //
     tmp1 = abs(right - left);
     tmp2 = max(abs(right), abs(left));
-    if (tmp1 < max({atoli, pivmin, rtoli * tmp2})) {
+    if (tmp1 < max({atoli, pivmin, REAL(rtoli * tmp2)})) {
         info = 0;
         goto statement_30;
     }

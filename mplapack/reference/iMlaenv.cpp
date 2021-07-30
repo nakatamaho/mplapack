@@ -30,7 +30,7 @@
 #include <mplapack.h>
 #include <string.h>
 
-#define subnamlen 16
+#define subnamlen 17
 
 INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
     INTEGER return_value = 0;
@@ -50,24 +50,6 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
     INTEGER nx = 0;
     INTEGER name_len;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-
     switch (ispec) {
     case 1:
         goto L10;
@@ -113,8 +95,9 @@ L10:
     //     Convert NAME to upper case if the first character is lower case.
     //
     return_value = 1;
-    name_len = min((int)strlen(name), subnamlen);
-    strncpy(subnam, name, name_len);
+    //
+    // name_len = min((INTEGER)strlen(name), (INTEGER)subnamlen);
+    strcpy(subnam, name);
     ic = *subnam;
 
     for (int i = 0; i < strlen(subnam); i++) {

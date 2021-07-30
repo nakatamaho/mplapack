@@ -87,10 +87,10 @@ void Rlagts(INTEGER const job, INTEGER const n, REAL *a, REAL *b, REAL *c, REAL 
         if (tol <= zero) {
             tol = abs(a[1 - 1]);
             if (n > 1) {
-                tol = max({tol, abs(a[2 - 1]), abs(b[1 - 1])});
+                tol = max({tol, REAL(abs(a[2 - 1])), REAL(abs(b[1 - 1]))});
             }
             for (k = 3; k <= n; k = k + 1) {
-                tol = max({tol, abs(a[k - 1]), abs(b[(k - 1) - 1]), abs(d[(k - 2) - 1])});
+                tol = max({tol, REAL(abs(a[k - 1])), REAL(abs(b[(k - 1) - 1])), REAL(abs(d[(k - 2) - 1]))});
             }
             tol = tol * eps;
             if (tol == zero) {

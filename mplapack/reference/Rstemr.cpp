@@ -183,7 +183,7 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
+    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
     //
     if (info == 0) {
         work[1 - 1] = lwmin;
@@ -374,7 +374,7 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             //           need less accurate initial bisection in Rlarre.
             //           Note: these settings do only affect the subset case and Rlarre
             rtol1 = sqrt(eps);
-            rtol2 = max(sqrt(eps) * 5.0e-3, four * eps);
+            rtol2 = max(REAL(sqrt(eps) * 5.0e-3), REAL(four * eps));
         }
         Rlarre(range, n, wl, wu, iil, iiu, d, e, &work[inde2 - 1], rtol1, rtol2, thresh, nsplit, &iwork[iinspl - 1], m, w, &work[inderr - 1], &work[indgp - 1], &iwork[iindbl - 1], &iwork[iindw - 1], &work[indgrs - 1], pivmin, &work[indwrk - 1], &iwork[iindwk - 1], iinfo);
         if (iinfo != 0) {

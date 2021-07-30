@@ -29,8 +29,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-#include <mplapack_debug.h>
-
 #define ci (equiv_0)
 #define cr (equiv_1)
 #define civ (equiv_0)

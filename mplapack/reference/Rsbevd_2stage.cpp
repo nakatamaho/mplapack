@@ -75,7 +75,7 @@ void Rsbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER 
         lwtrd = iMlaenv2stage(4, "Rsytrd_sb2st", jobz, n, kd, ib, -1);
         if (wantz) {
             liwmin = 3 + 5 * n;
-            lwmin = 1 + 5 * n + 2 * pow2(n);
+            lwmin = 1 + 5 * n + 2 * n * n;
         } else {
             liwmin = 1;
             lwmin = max((INTEGER)2 * n, n + lhtrd + lwtrd);

@@ -29,8 +29,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-#include <mplapack_debug.h>
-
 void Rggbal(const char *job, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, INTEGER &ilo, INTEGER &ihi, REAL *lscale, REAL *rscale, REAL *work, INTEGER &info) {
     const REAL one = 1.0;
     INTEGER i = 0;

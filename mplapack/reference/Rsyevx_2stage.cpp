@@ -172,7 +172,7 @@ void Rsyevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
+    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
     //
     //     Scale matrix to allowable range, if necessary.
     //
