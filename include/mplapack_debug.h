@@ -252,12 +252,18 @@ void printnum_short(complex<long double> ctmp);
 void printnum_short(__complex__ double ctmp);
 
 void sprintnum(char *buf, mpreal rtmp);
-void sprintnum_short(char *buf, mpreal rtmp);
 void sprintnum(char *buf, mpcomplex rtmp);
 void sprintnum(char *buf, double rtmp);
 void sprintnum(char *buf, long double rtmp);
 void sprintnum(char *buf, complex<double> rtmp);
 void sprintnum(char *buf, complex<long double> rtmp);
+
+void sprintnum_short(char *buf, mpreal rtmp);
+void sprintnum_short(char *buf, mpcomplex rtmp);
+void sprintnum_short(char *buf, double rtmp);
+void sprintnum_short(char *buf, long double rtmp);
+void sprintnum_short(char *buf, complex<double> rtmp);
+void sprintnum_short(char *buf, complex<long double> rtmp);
 
 // bootstrapping functions; double to mpreal.
 // usually we need only mpreal -> double or _Float128 etc.
