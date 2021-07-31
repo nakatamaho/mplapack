@@ -135,15 +135,19 @@ using namespace mpfr;
 //#define GMP_P_FORMAT  "%+36.32Fe"
 //#define MPFR_P_FORMAT "%+36.32Re"
 #define GMP_P_FORMAT "%+68.64Fe"
+#define GMP_SHORT_FORMAT "%+21.16Fe"
 #define MPFR_P_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+21.16Re"
 // double
 //#define GMP_P_FORMAT  "%+21.16Fe"
 //#define MPFR_P_FORMAT "%+21.16Re"
+#define P_64XFORMAT "%+23.20Le"
 #define P_FORMAT "%+21.16e"
 #define LP_FORMAT "%+5.50Le"
 #define QD_PRECISION 64
+#define QD_PRECISION_SHORT 16
 #define DD_PRECISION 32
+#define DD_PRECISION_SHORT 16
 #define BUFLEN 1024
 
 #if defined _WIN32
@@ -295,6 +299,8 @@ inline int matlen(int lda, int n) { return std::max(1, abs(lda) * abs(n)); }
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
 void printnum(mpf_class rtmp);
 void printnum(mpc_class ctmp);
+void printnum_short(mpf_class rtmp);
+void printnum_short(mpc_class ctmp);
 void sprintnum(char *buf, mpf_class rtmp);
 void sprintnum(char *buf, mpc_class rtmp);
 mpf_class mpf_randomnumber(mpf_class);
@@ -307,6 +313,8 @@ void set_random_number1to2(mpcomplex &a, mpc_class &b);
 #if defined ___MPLAPACK_BUILD_WITH_QD___
 void printnum(qd_real rtmp);
 void printnum(qd_complex rtmp);
+void printnum_short(qd_real rtmp);
+void printnum_short(qd_complex rtmp);
 void sprintnum(char *buf, qd_real rtmp);
 void sprintnum(char *buf, qd_complex rtmp);
 qd_real mpf_randomnumber(qd_real);
@@ -319,6 +327,8 @@ void set_random_number1to2(mpcomplex &a, qd_complex &b);
 #if defined ___MPLAPACK_BUILD_WITH_DD___
 void printnum(dd_real rtmp);
 void printnum(dd_complex rtmp);
+void printnum_short(dd_real rtmp);
+void printnum_short(dd_complex rtmp);
 void sprintnum(char *buf, dd_real rtmp);
 void sprintnum(char *buf, dd_complex rtmp);
 dd_real mpf_randomnumber(dd_real);
@@ -338,6 +348,8 @@ void set_random_number1to2(mpcomplex &a, complex<double> &b);
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
 void printnum(_Float64x rtmp);
 void printnum(complex<_Float64x> rtmp);
+void printnum_short(_Float64x rtmp);
+void printnum_short(complex<_Float64x> rtmp);
 void sprintnum(char *buf, _Float64x rtmp);
 void sprintnum(char *buf, complex<_Float64x> rtmp);
 _Float64x mpf_randomnumber(_Float64x dummy);
@@ -351,6 +363,8 @@ void set_random_number1to2(mpcomplex &a, complex<_Float64x> &b);
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
 void printnum(_Float128 rtmp);
 void printnum(complex<_Float128> rtmp);
+void printnum_short(_Float128 rtmp);
+void printnum_short(complex<_Float128> rtmp);
 void sprintnum(char *buf, _Float128 rtmp);
 void sprintnum(char *buf, complex<_Float128> rtmp);
 _Float128 mpf_randomnumber(_Float128 dummy);

@@ -89,7 +89,7 @@ void Cunmqr_test2(const char *side, const char *trans) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                             zunmqr_f77(side, trans, &m, &n, &k, A_ref, &lda, tau_ref, C_ref, &ldc, work_ref, &lwork_ref, &info_ref);
 #else
-                            Cunmqr(side, trans, m, n, k, A_ref, lda, tau_ref, C_ref, &ldc, work_ref, lwork, info_ref);
+                            Cunmqr(side, trans, m, n, k, A_ref, lda, tau_ref, C_ref, ldc, work_ref, lwork, info_ref);
 #endif
                             Cunmqr(side, trans, m, n, k, A, lda, tau, C, ldc, work, lwork, info);
 

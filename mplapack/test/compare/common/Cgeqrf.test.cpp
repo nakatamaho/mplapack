@@ -81,7 +81,7 @@ void Cgeqrf_test() {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                     zgeqrf_f77(&m, &n, A_ref, &lda, tau_ref, work_ref, &lwork_ref, &info_ref);
 #else
-                    Cgeqrf(m, n, A_ref, lda, tau_ref, work_ref, &lwork_ref info_ref);
+                    Cgeqrf(m, n, A_ref, lda, tau_ref, work_ref, lwork_ref, info_ref);
 #endif
                     Cgeqrf(m, n, A, lda, tau, work, lwork, info);
 

@@ -1,3 +1,5 @@
-2021/06/30   Nakata Maho <maho@riken.jp> 1.0.0
+TODOs for release
 
-           * Rhseqr.cpp: L.134 use Rlaqr0 for big matrices.
+* test
+* add some documents
+* build fix for GMP and others

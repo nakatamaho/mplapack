@@ -84,7 +84,7 @@ void Rgeqlf_test() {
 #endif
                 delete[] work;
                 delete[] work_ref;
-                lwork_ref = max(lwork_ref, 1);
+                lwork_ref = max(lwork_ref, (INTEGER_REF)1);
                 lwork = max(lwork, (INTEGER)1);
                 work_ref = new REAL_REF[lwork_ref];
                 work = new REAL[lwork];
