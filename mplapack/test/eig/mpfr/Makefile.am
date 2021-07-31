@@ -282,7 +282,7 @@ Rglm.out: glm.in xeigtstR_mpfr
 	./xeigtstR_mpfr < glm.in > $@ 2>&1
 
 Rgqr.out: gqr.in xeigtstR_mpfr
-        @echo GQR: Testing Generalized QR and RQ factorization routines
+	@echo GQR: Testing Generalized QR and RQ factorization routines
 	./xeigtstR_mpfr < gqr.in > $@ 2>&1
 
 Rgsv.out: gsv.in xeigtstR_mpfr
