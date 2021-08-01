@@ -37,8 +37,6 @@ using fem::common;
 #include <mplapack_lin.h>
 #include <mplapack_debug.h>
 
-#include <lapacke.h>
-
 void Clqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *q, COMPLEX *l, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
     INTEGER ldaf = lda;
