@@ -20,7 +20,7 @@ rm *hpp
 MPLIBS="gmp mpfr _Float128 dd qd double _Float64x"
 for mplib in $MPLIBS; do
     if [ x"$mplib" = x"gmp" ]; then
-        cp header_all mplapack_${mplib}.h 
+        cp header_all mplapack_matgen_${mplib}.h 
         sed -i -e 's/INTEGER/mplapackint/g' mplapack_matgen_${mplib}.h 
         sed -i -e 's/COMPLEX/mpc_class/g' mplapack_matgen_${mplib}.h 
         sed -i -e 's/REAL/mpf_class/g' mplapack_matgen_${mplib}.h 
