@@ -1,0 +1,75 @@
+--- mplapack_old/mplapack/reference/Ctgevc.cpp	2021-08-01 17:23:21.621787593 +0900
++++ mplapack/mplapack/reference/Ctgevc.cpp	2021-08-01 15:53:29.405284737 +0900
+@@ -200,8 +200,8 @@
+             rwork[j - 1] += abs1(s[(i - 1) + (j - 1) * lds]);
+             rwork[(n + j) - 1] += abs1(p[(i - 1) + (j - 1) * ldp]);
+         }
+-        anorm = max(anorm, rwork[j - 1] + abs1(s[(j - 1) + (j - 1) * lds]));
+-        bnorm = max(bnorm, rwork[(n + j) - 1] + abs1(p[(j - 1) + (j - 1) * ldp]));
++        anorm = max(anorm, REAL(rwork[j - 1] + abs1(s[(j - 1) + (j - 1) * lds])));
++        bnorm = max(bnorm, REAL(rwork[(n + j) - 1] + abs1(p[(j - 1) + (j - 1) * ldp])));
+     }
+     //
+     ascale = one / max(anorm, safmin);
+@@ -239,7 +239,7 @@
+                 //                   H
+                 //                 y  ( a A - b B ) = 0
+                 //
+-                temp = one / max({abs1(s[(je - 1) + (je - 1) * lds]) * ascale, abs(p[(je - 1) + (je - 1) * ldp].real()) * bscale, safmin});
++                temp = one / max({REAL(abs1(s[(je - 1) + (je - 1) * lds]) * ascale), REAL(abs(p[(je - 1) + (je - 1) * ldp].real()) * bscale), safmin});
+                 salpha = (temp * s[(je - 1) + (je - 1) * lds]) * ascale;
+                 sbeta = (temp * p[(je - 1) + (je - 1) * ldp].real()) * bscale;
+                 acoeff = sbeta * ascale;
+@@ -255,10 +255,10 @@
+                     scale = (small / abs(sbeta)) * min(anorm, big);
+                 }
+                 if (lsb) {
+-                    scale = max({scale, (small / abs1(salpha)) * min(bnorm, big)});
++                    scale = max(scale, REAL((small / abs1(salpha)) * min(bnorm, big)));
+                 }
+                 if (lsa || lsb) {
+-                    scale = min({scale, one / (safmin * max({one, abs(acoeff), abs1(bcoeff)}))});
++                    scale = min(scale, REAL(one / REAL(safmin * max({one, REAL(abs(acoeff)), REAL(abs1(bcoeff))}))));
+                     if (lsa) {
+                         acoeff = ascale * (scale * sbeta);
+                     } else {
+@@ -278,7 +278,7 @@
+                     work[jr - 1] = czero;
+                 }
+                 work[je - 1] = cone;
+-                dmin = max({ulp * acoefa * anorm, ulp * bcoefa * bnorm, safmin});
++                dmin = max({REAL(ulp * acoefa * anorm), REAL(ulp * bcoefa * bnorm), safmin});
+                 //
+                 //                                              H
+                 //              Triangular solve of  (a A - b B)  y = 0
+@@ -401,7 +401,7 @@
+                 //
+                 //              ( a A - b B ) x  = 0
+                 //
+-                temp = one / max({abs1(s[(je - 1) + (je - 1) * lds]) * ascale, abs(p[(je - 1) + (je - 1) * ldp].real()) * bscale, safmin});
++                temp = one / max({REAL(abs1(s[(je - 1) + (je - 1) * lds]) * ascale), REAL(abs(p[(je - 1) + (je - 1) * ldp].real()) * bscale), safmin});
+                 salpha = (temp * s[(je - 1) + (je - 1) * lds]) * ascale;
+                 sbeta = (temp * p[(je - 1) + (je - 1) * ldp].real()) * bscale;
+                 acoeff = sbeta * ascale;
+@@ -417,10 +417,10 @@
+                     scale = (small / abs(sbeta)) * min(anorm, big);
+                 }
+                 if (lsb) {
+-                    scale = max({scale, (small / abs1(salpha)) * min(bnorm, big)});
++                    scale = max(scale, REAL((small / abs1(salpha)) * min(bnorm, big)));
+                 }
+                 if (lsa || lsb) {
+-                    scale = min({scale, one / (safmin * max({one, abs(acoeff), abs1(bcoeff)}))});
++                    scale = min(scale, REAL(one / (safmin * max({one, REAL(abs(acoeff)), REAL(abs1(bcoeff))}))));
+                     if (lsa) {
+                         acoeff = ascale * (scale * sbeta);
+                     } else {
+@@ -440,7 +440,7 @@
+                     work[jr - 1] = czero;
+                 }
+                 work[je - 1] = cone;
+-                dmin = max({ulp * acoefa * anorm, ulp * bcoefa * bnorm, safmin});
++                dmin = max({REAL(ulp * acoefa * anorm), REAL(ulp * bcoefa * bnorm), safmin});
+                 //
+                 //              Triangular solve of  (a A - b B) x = 0  (columnwise)
+                 //

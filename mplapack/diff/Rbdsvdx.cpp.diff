@@ -1,0 +1,20 @@
+--- mplapack_old/mplapack/reference/Rbdsvdx.cpp	2021-08-01 17:23:21.621787593 +0900
++++ mplapack/mplapack/reference/Rbdsvdx.cpp	2021-08-01 15:53:29.409284789 +0900
+@@ -29,8 +29,6 @@
+ #include <mpblas.h>
+ #include <mplapack.h>
+ 
+-#include <mplapack_debug.h>
+-
+ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER const n, REAL *d, REAL *e, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, INTEGER &ns, REAL *s, REAL *z, INTEGER const ldz, REAL *work, INTEGER *iwork, INTEGER &info) {
+     //
+     //     Test the input parameters.
+@@ -124,7 +122,7 @@
+     INTEGER i = iRamax(n, d, 1);
+     REAL smax = abs(d[i - 1]);
+     i = iRamax(n - 1, e, 1);
+-    smax = max(smax, abs(e[i - 1]));
++    smax = max(smax, REAL(abs(e[i - 1])));
+     //
+     //     Compute threshold for neglecting D's and E's.
+     //

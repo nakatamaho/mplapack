@@ -1,0 +1,14 @@
+--- mplapack_old/mplapack/reference/Ctbrfs.cpp	2021-08-01 17:23:21.621787593 +0900
++++ mplapack/mplapack/reference/Ctbrfs.cpp	2021-08-01 15:53:29.405284737 +0900
+@@ -248,9 +248,9 @@
+         s = zero;
+         for (i = 1; i <= n; i = i + 1) {
+             if (rwork[i - 1] > safe2) {
+-                s = max(s, abs1(work[i - 1]) / rwork[i - 1]);
++                s = max(s, REAL(abs1(work[i - 1]) / rwork[i - 1]));
+             } else {
+-                s = max(s, (abs1(work[i - 1]) + safe1) / (rwork[i - 1] + safe1));
++                s = max(s, REAL((abs1(work[i - 1]) + safe1) / (rwork[i - 1] + safe1)));
+             }
+         }
+         berr[j - 1] = s;

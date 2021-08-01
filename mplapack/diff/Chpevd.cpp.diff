@@ -1,0 +1,11 @@
+--- mplapack_old/mplapack/reference/Chpevd.cpp	2021-08-01 17:23:21.617787538 +0900
++++ mplapack/mplapack/reference/Chpevd.cpp	2021-08-01 15:53:29.393284571 +0900
+@@ -81,7 +81,7 @@
+         } else {
+             if (wantz) {
+                 lwmin = 2 * n;
+-                lrwmin = 1 + 5 * n + 2 * pow2(n);
++                lrwmin = 1 + 5 * n + 2 * n * n;
+                 liwmin = 3 + 5 * n;
+             } else {
+                 lwmin = n;

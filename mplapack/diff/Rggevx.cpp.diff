@@ -1,0 +1,30 @@
+--- mplapack_old/mplapack/reference/Rggevx.cpp	2021-08-01 17:23:21.621787593 +0900
++++ mplapack/mplapack/reference/Rggevx.cpp	2021-08-01 15:53:29.413284843 +0900
+@@ -422,11 +422,11 @@
+             temp = zero;
+             if (alphai[jc - 1] == zero) {
+                 for (jr = 1; jr <= n; jr = jr + 1) {
+-                    temp = max(temp, abs(vl[(jr - 1) + (jc - 1) * ldvl]));
++                    temp = max(temp, REAL(abs(vl[(jr - 1) + (jc - 1) * ldvl])));
+                 }
+             } else {
+                 for (jr = 1; jr <= n; jr = jr + 1) {
+-                    temp = max(temp, abs(vl[(jr - 1) + (jc - 1) * ldvl]) + abs(vl[(jr - 1) + ((jc + 1) - 1) * ldvl]));
++                    temp = max(temp, REAL(abs(vl[(jr - 1) + (jc - 1) * ldvl]) + abs(vl[(jr - 1) + ((jc + 1) - 1) * ldvl])));
+                 }
+             }
+             if (temp < smlnum) {
+@@ -455,11 +455,11 @@
+             temp = zero;
+             if (alphai[jc - 1] == zero) {
+                 for (jr = 1; jr <= n; jr = jr + 1) {
+-                    temp = max(temp, abs(vr[(jr - 1) + (jc - 1) * ldvr]));
++                    temp = max(temp, REAL(abs(vr[(jr - 1) + (jc - 1) * ldvr])));
+                 }
+             } else {
+                 for (jr = 1; jr <= n; jr = jr + 1) {
+-                    temp = max(temp, abs(vr[(jr - 1) + (jc - 1) * ldvr]) + abs(vr[(jr - 1) + ((jc + 1) - 1) * ldvr]));
++                    temp = max(temp, REAL(abs(vr[(jr - 1) + (jc - 1) * ldvr]) + abs(vr[(jr - 1) + ((jc + 1) - 1) * ldvr])));
+                 }
+             }
+             if (temp < smlnum) {

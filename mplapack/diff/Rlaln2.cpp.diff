@@ -1,0 +1,11 @@
+--- mplapack_old/mplapack/reference/Rlaln2.cpp	2021-08-01 17:23:21.621787593 +0900
++++ mplapack/mplapack/reference/Rlaln2.cpp	2021-08-01 15:53:29.413284843 +0900
+@@ -29,8 +29,6 @@
+ #include <mpblas.h>
+ #include <mplapack.h>
+ 
+-#include <mplapack_debug.h>
+-
+ #define ci (equiv_0)
+ #define cr (equiv_1)
+ #define civ (equiv_0)

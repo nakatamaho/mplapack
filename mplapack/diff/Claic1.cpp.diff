@@ -1,0 +1,11 @@
+--- mplapack_old/mplapack/reference/Claic1.cpp	2021-08-01 17:23:21.617787538 +0900
++++ mplapack/mplapack/reference/Claic1.cpp	2021-08-01 15:53:29.397284626 +0900
+@@ -223,7 +223,7 @@
+             zeta1 = absalp / absest;
+             zeta2 = absgam / absest;
+             //
+-            norma = max(one + zeta1 * zeta1 + zeta1 * zeta2, zeta1 * zeta2 + zeta2 * zeta2);
++            norma = max(REAL(one + zeta1 * zeta1 + zeta1 * zeta2), REAL(zeta1 * zeta2 + zeta2 * zeta2));
+             //
+             //           See if root is closer to zero or to ONE
+             //

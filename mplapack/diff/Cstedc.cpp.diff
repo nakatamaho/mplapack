@@ -1,0 +1,16 @@
+--- mplapack_old/mplapack/reference/Cstedc.cpp	2021-08-01 17:23:21.621787593 +0900
++++ mplapack/mplapack/reference/Cstedc.cpp	2021-08-01 15:53:29.401284681 +0900
+@@ -120,11 +120,11 @@
+                 lgn++;
+             }
+             lwmin = n * n;
+-            lrwmin = 1 + 3 * n + 2 * n * lgn + 4 * pow2(n);
++            lrwmin = 1 + 3 * n + 2 * n * lgn + 4 * n * n;
+             liwmin = 6 + 6 * n + 5 * n * lgn;
+         } else if (icompz == 2) {
+             lwmin = 1;
+-            lrwmin = 1 + 4 * n + 2 * pow2(n);
++            lrwmin = 1 + 4 * n + 2 * n * n;
+             liwmin = 3 + 5 * n;
+         }
+         work[1 - 1] = lwmin;

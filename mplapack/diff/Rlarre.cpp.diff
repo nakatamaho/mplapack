@@ -1,0 +1,79 @@
+--- mplapack_old/mplapack/reference/Rlarre.cpp	2021-08-01 17:23:21.621787593 +0900
++++ mplapack/mplapack/reference/Rlarre.cpp	2021-08-01 15:53:29.417284898 +0900
+@@ -300,9 +300,9 @@
+                 //              eigenvalues are different, we use SIGMA = E( IEND ).
+                 sigma = zero;
+                 for (i = wbegin; i <= wend - 1; i = i + 1) {
+-                    wgap[i - 1] = max(zero, w[(i + 1) - 1] - werr[(i + 1) - 1] - (w[i - 1] + werr[i - 1]));
++                    wgap[i - 1] = max(zero, REAL(w[(i + 1) - 1] - werr[(i + 1) - 1] - (w[i - 1] + werr[i - 1])));
+                 }
+-                wgap[wend - 1] = max(zero, vu - sigma - (w[wend - 1] + werr[wend - 1]));
++                wgap[wend - 1] = max(zero, REAL(vu - sigma - (w[wend - 1] + werr[wend - 1])));
+                 //              Find local index of the first and last desired evalue.
+                 indl = indexw[wbegin - 1];
+                 indu = indexw[wend - 1];
+@@ -316,21 +316,21 @@
+                 info = -1;
+                 return;
+             }
+-            isleft = max(gl, tmp - tmp1 - hndrd * eps * abs(tmp - tmp1));
++            isleft = max(gl, REAL(tmp - tmp1 - hndrd * eps * abs(tmp - tmp1)));
+             //
+             Rlarrk(in, in, gl, gu, &d[ibegin - 1], &e2[ibegin - 1], pivmin, rtl, tmp, tmp1, iinfo);
+             if (iinfo != 0) {
+                 info = -1;
+                 return;
+             }
+-            isrght = min(gu, tmp + tmp1 + hndrd * eps * abs(tmp + tmp1));
++            isrght = min(gu, REAL(tmp + tmp1 + hndrd * eps * abs(tmp + tmp1)));
+             //           Improve the estimate of the spectral diameter
+             spdiam = isrght - isleft;
+         } else {
+             //           Case of bisection
+             //           Find approximations to the wanted extremal eigenvalues
+-            isleft = max(gl, w[wbegin - 1] - werr[wbegin - 1] - hndrd * eps * abs(w[wbegin - 1] - werr[wbegin - 1]));
+-            isrght = min(gu, w[wend - 1] + werr[wend - 1] + hndrd * eps * abs(w[wend - 1] + werr[wend - 1]));
++            isleft = max(gl, REAL(w[wbegin - 1] - werr[wbegin - 1] - hndrd * eps * abs(w[wbegin - 1] - werr[wbegin - 1])));
++            isrght = min(gu, REAL(w[wend - 1] + werr[wend - 1] + hndrd * eps * abs(w[wend - 1] + werr[wend - 1])));
+         }
+         //
+         //        Decide whether the base representation for the current block
+@@ -412,7 +412,7 @@
+             //           The initial SIGMA was to the outer end of the spectrum
+             //           the matrix is definite and we need not retreat.
+             tau = spdiam * eps * n + two * pivmin;
+-            tau = max(tau, two * eps * abs(sigma));
++            tau = max(tau, REAL(two * eps * abs(sigma)));
+         } else {
+             if (mb > 1) {
+                 clwdth = w[wend - 1] + werr[wend - 1] - w[wbegin - 1] - werr[wbegin - 1];
+@@ -443,7 +443,7 @@
+                 work[(in + i) - 1] = tmp;
+                 dpivot = (d[(j + 1) - 1] - sigma) - tmp * e[j - 1];
+                 work[(i + 1) - 1] = dpivot;
+-                dmax = max(dmax, abs(dpivot));
++                dmax = max(dmax, REAL(abs(dpivot)));
+                 j++;
+             }
+             //           check for element growth
+@@ -544,7 +544,7 @@
+             }
+             //           Rlarrb computes all gaps correctly except for the last one
+             //           Record distance to VU/GU
+-            wgap[wend - 1] = max(zero, (vu - sigma) - (w[wend - 1] + werr[wend - 1]));
++            wgap[wend - 1] = max(zero, REAL((vu - sigma) - (w[wend - 1] + werr[wend - 1])));
+             for (i = indl; i <= indu; i = i + 1) {
+                 m++;
+                 iblock[m - 1] = jblk;
+@@ -609,9 +609,9 @@
+             }
+             for (i = m - mb + 1; i <= m - 1; i = i + 1) {
+                 //              compute the right gap between the intervals
+-                wgap[i - 1] = max(zero, w[(i + 1) - 1] - werr[(i + 1) - 1] - (w[i - 1] + werr[i - 1]));
++                wgap[i - 1] = max(zero, REAL(w[(i + 1) - 1] - werr[(i + 1) - 1] - (w[i - 1] + werr[i - 1])));
+             }
+-            wgap[m - 1] = max(zero, (vu - sigma) - (w[m - 1] + werr[m - 1]));
++            wgap[m - 1] = max(zero, REAL((vu - sigma) - (w[m - 1] + werr[m - 1])));
+         }
+         //        proceed with next block
+         ibegin = iend + 1;

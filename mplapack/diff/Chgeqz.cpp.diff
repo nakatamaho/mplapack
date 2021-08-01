@@ -1,0 +1,81 @@
+--- mplapack_old/mplapack/reference/Chgeqz.cpp	2021-08-01 17:23:21.617787538 +0900
++++ mplapack/mplapack/reference/Chgeqz.cpp	2021-08-01 15:53:29.393284571 +0900
+@@ -89,33 +89,6 @@
+     INTEGER jc = 0;
+     INTEGER jr = 0;
+     //
+-    //  -- LAPACK computational routine --
+-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+-    //
+-    //     .. Scalar Arguments ..
+-    //     ..
+-    //     .. Array Arguments ..
+-    //     ..
+-    //
+-    //  =====================================================================
+-    //
+-    //     .. Parameters ..
+-    //     ..
+-    //     .. Local Scalars ..
+-    //     ..
+-    //     .. External Functions ..
+-    //     ..
+-    //     .. External Subroutines ..
+-    //     ..
+-    //     .. Intrinsic Functions ..
+-    //     ..
+-    //     .. Statement Functions ..
+-    //     ..
+-    //     .. Statement Function definitions ..
+-    //     ..
+-    //     .. Executable Statements ..
+-    //
+     //     Decode JOB, COMPQ, COMPZ
+     //
+     if (Mlsame(job, "E")) {
+@@ -216,8 +189,8 @@
+     ulp = Rlamch("E") * Rlamch("B");
+     anorm = Clanhs("F", in, &h[(ilo - 1) + (ilo - 1) * ldh], ldh, rwork);
+     bnorm = Clanhs("F", in, &t[(ilo - 1) + (ilo - 1) * ldt], ldt, rwork);
+-    atol = max(safmin, ulp * anorm);
+-    btol = max(safmin, ulp * bnorm);
++    atol = max(safmin, REAL(ulp * anorm));
++    btol = max(safmin, REAL(ulp * bnorm));
+     ascale = one / max(safmin, anorm);
+     bscale = one / max(safmin, bnorm);
+     //
+@@ -296,13 +269,13 @@
+         if (ilast == ilo) {
+             goto statement_60;
+         } else {
+-            if (abs1(h[(ilast - 1) + ((ilast - 1) - 1) * ldh]) <= max(safmin, ulp * (abs1(h[(ilast - 1) + (ilast - 1) * ldh]) + abs1(h[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldh])))) {
++            if (abs1(h[(ilast - 1) + ((ilast - 1) - 1) * ldh]) <= max(safmin, REAL(ulp * (abs1(h[(ilast - 1) + (ilast - 1) * ldh]) + abs1(h[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldh]))))) {
+                 h[(ilast - 1) + ((ilast - 1) - 1) * ldh] = czero;
+                 goto statement_60;
+             }
+         }
+         //
+-        if (abs(t[(ilast - 1) + (ilast - 1) * ldt]) <= max(safmin, ulp * (abs(t[((ilast - 1) - 1) + (ilast - 1) * ldt]) + abs(t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt])))) {
++        if (abs(t[(ilast - 1) + (ilast - 1) * ldt]) <= max(safmin, REAL(ulp * (abs(t[((ilast - 1) - 1) + (ilast - 1) * ldt]) + abs(t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt]))))) {
+             t[(ilast - 1) + (ilast - 1) * ldt] = czero;
+             goto statement_50;
+         }
+@@ -316,7 +289,7 @@
+             if (j == ilo) {
+                 ilazro = true;
+             } else {
+-                if (abs1(h[(j - 1) + ((j - 1) - 1) * ldh]) <= max(safmin, ulp * (abs1(h[(j - 1) + (j - 1) * ldh]) + abs1(h[((j - 1) - 1) + ((j - 1) - 1) * ldh])))) {
++                if (abs1(h[(j - 1) + ((j - 1) - 1) * ldh]) <= max(safmin, REAL(ulp * (abs1(h[(j - 1) + (j - 1) * ldh]) + abs1(h[((j - 1) - 1) + ((j - 1) - 1) * ldh]))))) {
+                     h[(j - 1) + ((j - 1) - 1) * ldh] = czero;
+                     ilazro = true;
+                 } else {
+@@ -330,7 +303,7 @@
+             if (j > ilo) {
+                 temp += abs(t[((j - 1) - 1) + (j - 1) * ldt]);
+             }
+-            if (abs(t[(j - 1) + (j - 1) * ldt]) < max(safmin, ulp * temp)) {
++            if (abs(t[(j - 1) + (j - 1) * ldt]) < max(safmin, REAL(ulp * temp))) {
+                 t[(j - 1) + (j - 1) * ldt] = czero;
+                 //
+                 //              Test 1a: Check for 2 consecutive small subdiagonals in A

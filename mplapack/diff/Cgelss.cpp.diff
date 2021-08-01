@@ -1,0 +1,26 @@
+--- mplapack_old/mplapack/reference/Cgelss.cpp	2021-08-01 17:23:21.617787538 +0900
++++ mplapack/mplapack/reference/Cgelss.cpp	2021-08-01 15:53:29.385284465 +0900
+@@ -359,9 +359,9 @@
+         //
+         //        Multiply B by reciprocals of singular values
+         //
+-        thr = max(rcond * s[1 - 1], sfmin);
++        thr = max(REAL(rcond * s[1 - 1]), sfmin);
+         if (rcond < zero) {
+-            thr = max(eps * s[1 - 1], sfmin);
++            thr = max(REAL(eps * s[1 - 1]), sfmin);
+         }
+         rank = 0;
+         for (i = 1; i <= n; i = i + 1) {
+@@ -540,9 +540,9 @@
+         //
+         //        Multiply B by reciprocals of singular values
+         //
+-        thr = max(rcond * s[1 - 1], sfmin);
++        thr = max(REAL(rcond * s[1 - 1]), sfmin);
+         if (rcond < zero) {
+-            thr = max(eps * s[1 - 1], sfmin);
++            thr = max(REAL(eps * s[1 - 1]), sfmin);
+         }
+         rank = 0;
+         for (i = 1; i <= m; i = i + 1) {

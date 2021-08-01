@@ -1,0 +1,11 @@
+--- mplapack_old/mplapack/reference/Ctgsyl.cpp	2021-08-01 17:23:21.621787593 +0900
++++ mplapack/mplapack/reference/Ctgsyl.cpp	2021-08-01 15:53:29.405284737 +0900
+@@ -145,7 +145,7 @@
+         scale = 1;
+         if (notran) {
+             if (ijob != 0) {
+-                dif = 0;
++                dif = 0.0;
+             }
+         }
+         return;

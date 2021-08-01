@@ -1,0 +1,11 @@
+--- mplapack_old/mplapack/reference/Rggbal.cpp	2021-08-01 17:23:21.621787593 +0900
++++ mplapack/mplapack/reference/Rggbal.cpp	2021-08-01 15:53:29.413284843 +0900
+@@ -29,8 +29,6 @@
+ #include <mpblas.h>
+ #include <mplapack.h>
+ 
+-#include <mplapack_debug.h>
+-
+ void Rggbal(const char *job, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, INTEGER &ilo, INTEGER &ihi, REAL *lscale, REAL *rscale, REAL *work, INTEGER &info) {
+     const REAL one = 1.0;
+     INTEGER i = 0;

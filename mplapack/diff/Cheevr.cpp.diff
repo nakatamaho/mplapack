@@ -1,0 +1,11 @@
+--- mplapack_old/mplapack/reference/Cheevr.cpp	2021-08-01 17:23:21.617787538 +0900
++++ mplapack/mplapack/reference/Cheevr.cpp	2021-08-01 15:53:29.389284517 +0900
+@@ -211,7 +211,7 @@
+     smlnum = safmin / eps;
+     bignum = one / smlnum;
+     rmin = sqrt(smlnum);
+-    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
++    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+     //
+     //     Scale matrix to allowable range, if necessary.
+     //

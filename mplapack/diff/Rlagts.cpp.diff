@@ -1,0 +1,15 @@
+--- mplapack_old/mplapack/reference/Rlagts.cpp	2021-08-01 17:23:21.621787593 +0900
++++ mplapack/mplapack/reference/Rlagts.cpp	2021-08-01 15:53:29.413284843 +0900
+@@ -87,10 +87,10 @@
+         if (tol <= zero) {
+             tol = abs(a[1 - 1]);
+             if (n > 1) {
+-                tol = max({tol, abs(a[2 - 1]), abs(b[1 - 1])});
++                tol = max({tol, REAL(abs(a[2 - 1])), REAL(abs(b[1 - 1]))});
+             }
+             for (k = 3; k <= n; k = k + 1) {
+-                tol = max({tol, abs(a[k - 1]), abs(b[(k - 1) - 1]), abs(d[(k - 2) - 1])});
++                tol = max({tol, REAL(abs(a[k - 1])), REAL(abs(b[(k - 1) - 1])), REAL(abs(d[(k - 2) - 1]))});
+             }
+             tol = tol * eps;
+             if (tol == zero) {

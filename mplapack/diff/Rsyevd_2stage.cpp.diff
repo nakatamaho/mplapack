@@ -1,0 +1,11 @@
+--- mplapack_old/mplapack/reference/Rsyevd_2stage.cpp	2021-08-01 17:23:21.621787593 +0900
++++ mplapack/mplapack/reference/Rsyevd_2stage.cpp	2021-08-01 15:53:29.425285008 +0900
+@@ -89,7 +89,7 @@
+             lwtrd = iMlaenv2stage(4, "Rsytrd_2stage", jobz, n, kd, ib, -1);
+             if (wantz) {
+                 liwmin = 3 + 5 * n;
+-                lwmin = 1 + 6 * n + 2 * pow2(n);
++                lwmin = 1 + 6 * n + 2 * n * n;
+             } else {
+                 liwmin = 1;
+                 lwmin = 2 * n + 1 + lhtrd + lwtrd;
