@@ -40,12 +40,13 @@ mpf_class log10(mpf_class x);
 mpf_class pow(mpf_class x, mpf_class y);
 mpf_class cos(mpf_class x);
 mpf_class sin(mpf_class x);
+mpc_class sin(mpc_class a);
 mpc_class exp(mpc_class x);
 mpf_class exp(mpf_class x);
+mpf_class atan2(mpf_class a, mpf_class b);
 mpf_class pi(mpf_class dummy);
 
 mpf_class sign(mpf_class a, mpf_class b);
-mpf_class atan2(mpf_class a, mpf_class b);
 mpc_class Real2Complex(mpf_class a, mpf_class b);
 
 inline mpf_class sign(mpf_class a, mpf_class b) {
@@ -60,7 +61,6 @@ inline mpf_class sign(mpf_class a, mpf_class b) {
 inline mpf_class atan2(mpf_class a, mpf_class b) {
     double dtemp1, dtemp2;
     mpf_class mtemp3;
-    ;
     dtemp1 = a.get_d();
     dtemp2 = b.get_d();
     mtemp3 = mpf_class(atan2(a, b));

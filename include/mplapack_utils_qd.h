@@ -36,6 +36,7 @@ qd_real pi(qd_real dummy);
 
 qd_real sign(qd_real a, qd_real b);
 qd_complex Real2Complex(qd_real a, qd_real b);
+qd_complex sin(qd_complex a);
 
 // implementation of sign transfer function.
 inline qd_real sign(qd_real a, qd_real b) {

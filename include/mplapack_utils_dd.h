@@ -36,6 +36,7 @@ dd_complex exp(dd_complex x);
 dd_real pi(dd_real dummy);
 
 dd_real sign(dd_real a, dd_real b);
+dd_complex sin(dd_complex a);
 dd_complex Real2Complex(dd_real a, dd_real b);
 
 // implementation of sign transfer function.
