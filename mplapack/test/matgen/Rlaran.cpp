@@ -63,10 +63,10 @@ REAL Rlaran(INTEGER *iseed) {
     std::random_device rd;
     std::mt19937_64 mt(rd());
     std::uniform_real_distribution<double> dist(0.0, 1.0);
-    x[i].x[0] = dist(mt);
-    x[i].x[1] = dist(mt) * 0x1p-53;
-    x[i].x[2] = dist(mt) * 0x1p-106;
-    x[i].x[3] = dist(mt) * 0x1p-159;
+    x.x[0] = dist(mt);
+    x.x[1] = dist(mt) * 0x1p-53;
+    x.x[2] = dist(mt) * 0x1p-106;
+    x.x[3] = dist(mt) * 0x1p-159;
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
@@ -90,8 +90,7 @@ REAL Rlaran(INTEGER *iseed) {
     std::random_device rd;
     std::mt19937_64 mt(rd());
     std::uniform_real_distribution<double> dist(0.0, 1.0);
-    for (int i = 0; i < n; i++)
-        x = dist(mt);
+    x = dist(mt);
 #endif
     return x;
 }

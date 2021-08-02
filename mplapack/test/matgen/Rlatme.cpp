@@ -212,7 +212,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
         //
         temp = abs(d[1 - 1]);
         for (i = 2; i <= n; i = i + 1) {
-            temp = max(temp, abs(d[i - 1]));
+            temp = max(temp, REAL(abs(d[i - 1])));
         }
         //
         if (temp > zero) {
