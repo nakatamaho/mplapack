@@ -68,7 +68,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <mpblas.h>
 #include <mplapack.h>
-#include <mplapack_debug.h>
+#include <mplapack_compare_debug.h>
 #include <fstream>
 
 #include <blas.h>

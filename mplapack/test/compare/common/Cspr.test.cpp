@@ -30,7 +30,7 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
-#include <mplapack_debug.h>
+#include <mplapack_compare_debug.h>
 
 #include <blas.h>
 #include <lapack.h>

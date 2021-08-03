@@ -69,7 +69,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <mpblas.h>
 #include <mplapack.h>
-#include <mplapack_debug.h>
+#include <mplapack_compare_debug.h>
 
 #include <blas.h>
 
@@ -482,6 +482,49 @@ void Mutils_test_exp() {
     }
 }
 
+// complex test
+void Mutils_test_csin() {
+    int errorflag = TRUE;
+    COMPLEX_REF a_ref, b_ref;
+    COMPLEX a, b;
+    COMPLEX_REF diff;
+
+    for (int i = 0; i < ITERATION; i++) {
+        set_random_number(a_ref, a);
+        b_ref = sin(a_ref);
+        b = sin(a);
+#if defined VERBOSE_TEST
+        cout << "a_ref=   ";
+        printnum(a_ref);
+        cout << endl;
+        cout << "cos_ref= ";
+        printnum(b_ref);
+        cout << endl;
+        cout << "a=       ";
+        printnum(a);
+        cout << endl;
+        cout << "cos=     ";
+        printnum(b);
+        cout << endl;
+#endif
+        diff = abs(b_ref - b);
+#if defined VERBOSE_TEST
+        printf("diff     ");
+        printnum(diff);
+        printf("\n\n");
+#endif
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+        if (abs(diff) > EPSILON100) {
+#else
+        if (abs(diff) > EPSILON) {
+#endif
+            errorflag = TRUE;
+            printf("*** Testing Mutils (complex sin) failed ***\n");
+            exit(1);
+        }
+    }
+}
+
 void Mutils_test_highcond() {
     for (int n = 2; n < MAXSIZE; n++) {
         REAL_REF *A_ref = new REAL_REF[n * n];
@@ -510,6 +553,7 @@ void Mutils_test() {
     Mutils_test_sin();
     Mutils_test_cos();
     Mutils_test_exp();
+    Mutils_test_csin();
     //  Mutils_test_highcond();
 }
 
