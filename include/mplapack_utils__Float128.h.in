@@ -34,7 +34,7 @@
 #if defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___
 
 #ifdef __cplusplus
-    extern "C" {
+extern "C" {
 #endif
 #include <complex.h>
 #include <complex>
@@ -180,12 +180,6 @@ inline std::complex<_Float128> log(const std::complex<_Float128> &a) {
 }
 #endif //___MPLAPACK__FLOAT128_ONLY___
 
-// other definitions
-
-_Float128 pi(_Float128 dummy);
-_Float128 sign(_Float128 a, _Float128 b);
-std::complex<_Float128> Real2Complex(_Float128 a, _Float128 b);
-
 // implementation of sign transfer function.
 inline _Float128 sign(_Float128 a, _Float128 b) {
     _Float128 mtmp;
@@ -240,10 +234,68 @@ inline _Float128 atan2(_Float128 &a, _Float128 &b) { return atan2f128(a, b); }
 inline _Float128 atan2(_Float128 a, _Float128 b) { return atan2f128(a, b); }
 #endif
 
+#if defined ___MPLAPACK_WANT_LIBQUADMATH___
+inline std::complex<_Float128> sin(const std::complex<_Float128> &a) {
+    _Float128 _Complex b, tmp;
+    std::complex<_Float128> c;
+    __real__(b) = (a.real());
+    __imag__(b) = (a.imag());
+    tmp = csinq(b);
+    c.real(__real__(tmp));
+    c.imag(__imag__(tmp));
+    return c;
+}
+#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+inline std::complex<_Float128> sin(const std::complex<_Float128> &a) {
+    _Float128 _Complex b, tmp;
+    std::complex<_Float128> c;
+    __real__(b) = (a.real());
+    __imag__(b) = (a.imag());
+    tmp = csinl(b);
+    c.real(__real__(tmp));
+    c.imag(__imag__(tmp));
+    return c;
+}
+#elif defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___
+inline std::complex<_Float128> sin(const std::complex<_Float128> &a) {
+    _Float128 _Complex b, tmp;
+    std::complex<_Float128> c;
+    __real__(b) = (a.real());
+    __imag__(b) = (a.imag());
+    tmp = csinf128(b);
+    c.real(__real__(tmp));
+    c.imag(__imag__(tmp));
+    return c;
+}
+#elif defined ___MPLAPACK__FLOAT128_ONLY___
+inline std::complex<_Float128> sin(const std::complex<_Float128> &a) {
+    _Float128 _Complex b, tmp;
+    std::complex<_Float128> c;
+    __real__(b) = (a.real());
+    __imag__(b) = (a.imag());
+    tmp = csinf128(b);
+    c.real(__real__(tmp));
+    c.imag(__imag__(tmp));
+    return c;
+}
+#endif
+
 #if defined ___MPLAPACK__FLOAT128_ONLY___
 inline _Float128 ceil(_Float128 a) { return ceilf128(a); }
 #endif
 
 inline double cast2double(_Float128 a) { return (double)a; }
 
-#endif //_MUTILS__FLOAT128_H_
+inline _Float128 pi(_Float128 dummy) {
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK_WANT_LIBQUADMATH___
+    return M_PIq;
+
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+    return M_PIl;
+
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && (defined ___MPLAPACK__FLOAT128_ONLY___ || defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___)
+    return M_PIf128;
+#endif
+}
+
+#endif

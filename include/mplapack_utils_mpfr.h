@@ -70,9 +70,10 @@ inline mpreal castREAL_mpfr(mplapackint a) {
     return i;
 }
 
-inline mpcomplex Real2Complex(mpreal a, mpreal b) {
-    mpcomplex ret(a, b);
-    return ret;
+inline mpreal pi(mpreal dummy) {
+    mpreal _PI;
+    _PI = const_pi(mpreal::get_default_prec());
+    return _PI;
 }
 
 #endif

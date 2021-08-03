@@ -37,10 +37,6 @@ inline double log2(double x) { return log(x) / log(2.0); }
 
 #include <complex>
 
-double pi(double dummy);
-double sign(double a, double b);
-std::complex<double> Real2Complex(double a, double b);
-
 // implementation of sign transfer function.
 inline double sign(double a, double b) {
     double mtmp;
@@ -61,13 +57,6 @@ inline mplapackint castINTEGER_double(double a) {
     return i;
 }
 
-inline std::complex<double> Real2Complex(double a, double b) {
-    std::complex<double> ret;
-    ret.real(a);
-    ret.imag(b);
-    return ret;
-}
-
 inline long nint(double a) {
     long i;
     double tmp;
@@ -78,5 +67,20 @@ inline long nint(double a) {
 }
 
 inline double cast2double(double a) { return a; }
+
+inline std::complex<double> exp(std::complex<double> x) {
+    double ex;
+    double c;
+    double s;
+    std::complex<double> ans;
+    ex = exp(x.real());
+    c = cos(x.imag());
+    s = sin(x.imag());
+    ans.real(ex * c);
+    ans.imag(ex * s);
+    return ans;
+}
+
+inline double pi(double dummy) { return M_PI; }
 
 #endif

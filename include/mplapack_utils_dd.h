@@ -77,4 +77,30 @@ inline long __dd_nint(dd_real a) {
 }
 
 inline double cast2double(dd_real a) { return a.x[0]; }
+
+inline dd_complex sin(dd_complex a) {
+    dd_real mtemp1, mtemp2;
+    mtemp1 = a.real();
+    mtemp2 = a.imag();
+    dd_complex b = dd_complex(sin(mtemp1) * cosh(mtemp2), cos(mtemp1) * sinh(mtemp2));
+    return b;
+}
+
+inline dd_real log2(dd_real x) { return log10(x) / (dd_real::_log2 / dd_real::_log10); }
+
+inline dd_complex exp(dd_complex x) {
+    dd_real ex;
+    dd_real c;
+    dd_real s;
+    dd_complex ans;
+    ex = exp(x.real());
+    c = cos(x.imag());
+    s = sin(x.imag());
+    ans.real(ex * c);
+    ans.imag(ex * s);
+    return ans;
+}
+
+inline dd_real pi(dd_real dummy) { return dd_real::_pi; }
+
 #endif

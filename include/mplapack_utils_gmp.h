@@ -32,22 +32,6 @@
 #define _MUTILS_GMP_H_
 
 #include "mpc_class.h"
-#include <gmpxx.h>
-
-mpf_class log(mpf_class x);
-mpf_class log2(mpf_class x);
-mpf_class log10(mpf_class x);
-mpf_class pow(mpf_class x, mpf_class y);
-mpf_class cos(mpf_class x);
-mpf_class sin(mpf_class x);
-mpc_class sin(mpc_class a);
-mpc_class exp(mpc_class x);
-mpf_class exp(mpf_class x);
-mpf_class atan2(mpf_class a, mpf_class b);
-mpf_class pi(mpf_class dummy);
-
-mpf_class sign(mpf_class a, mpf_class b);
-mpc_class Real2Complex(mpf_class a, mpf_class b);
 
 inline mpf_class sign(mpf_class a, mpf_class b) {
     mpf_class mtmp;
@@ -88,5 +72,92 @@ inline mplapackint nint(mpf_class a) {
 }
 
 inline double cast2double(mpf_class a) { return a.get_d(); }
+
+inline mpc_class sin(mpc_class a) {
+    double dtemp1, dtemp2;
+    mpf_class mtemp1, mtemp2;
+    mtemp1 = a.real();
+    mtemp2 = a.imag();
+    dtemp1 = mtemp1.get_d();
+    dtemp2 = mtemp2.get_d();
+    mtemp1 = sin(dtemp1) * cosh(dtemp2);
+    mtemp2 = cos(dtemp1) * sinh(dtemp2);
+    mpc_class b = mpc_class(mtemp1, mtemp2);
+    return b;
+}
+
+inline mpf_class log2(mpf_class x) {
+    double d;
+    double ln2_app;
+    signed long int exp;
+
+    d = mpf_get_d_2exp(&exp, x.get_mpf_t());
+    ln2_app = (double)exp + log10(d) / log10(2);
+    return ln2_app;
+}
+
+inline mpf_class log(mpf_class x) {
+    double d;
+    double ln_app;
+    signed long int exp;
+
+    d = mpf_get_d_2exp(&exp, x.get_mpf_t());
+    ln_app = (double)exp * log(2.0) + log(d);
+    return ln_app;
+}
+
+inline mpf_class log10(mpf_class x) {
+    double d;
+    double ln10_app;
+    signed long int exp;
+
+    d = mpf_get_d_2exp(&exp, x.get_mpf_t());
+    ln10_app = (double)exp * log10(2.0) + log10(d);
+    return ln10_app;
+}
+
+inline mpf_class pow(mpf_class x, mpf_class y) {
+    mpf_class mtemp1, mtemp2;
+    mtemp1 = y * log(x);
+    mtemp2 = exp(mtemp1.get_d());
+    return mtemp2;
+}
+
+inline mpf_class cos(mpf_class x) {
+    mpf_class mtemp1;
+    mtemp1 = cos(x.get_d());
+    return mtemp1;
+}
+
+inline mpf_class sin(mpf_class x) {
+    mpf_class mtemp1;
+    mtemp1 = sin(x.get_d());
+    return mtemp1;
+}
+
+inline mpf_class exp(mpf_class x) {
+    mpf_class mtemp1;
+    mtemp1 = exp(x.get_d());
+    return mtemp1;
+}
+
+inline mpf_class pi(mpf_class dummy) {
+    mpf_class mtemp1;
+    mtemp1 = M_PI; // returns pi in double(!)
+    return mtemp1;
+}
+
+inline mpc_class exp(mpc_class x) {
+    mpf_class ex;
+    mpf_class c;
+    mpf_class s;
+    mpc_class ans;
+    ex = exp(x.real());
+    c = cos(x.imag());
+    s = sin(x.imag());
+    ans.real(ex * c);
+    ans.imag(ex * s);
+    return ans;
+}
 
 #endif

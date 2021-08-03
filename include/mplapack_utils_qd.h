@@ -77,4 +77,28 @@ inline long __qd_nint(qd_real a) {
 
 inline double cast2double(qd_real a) { return a.x[0]; }
 
+inline qd_complex sin(qd_complex a) {
+    qd_real mtemp1, mtemp2;
+    mtemp1 = a.real();
+    mtemp2 = a.imag();
+    qd_complex b = qd_complex(sin(mtemp1) * cosh(mtemp2), cos(mtemp1) * sinh(mtemp2));
+    return b;
+}
+
+inline qd_real log2(qd_real x) { return log10(x) / (qd_real::_log2 / qd_real::_log10); }
+
+inline qd_complex exp(qd_complex x) {
+    qd_real ex;
+    qd_real c;
+    qd_real s;
+    qd_complex ans;
+    ex = exp(x.real());
+    c = cos(x.imag());
+    s = sin(x.imag());
+    ans.real(ex * c);
+    ans.imag(ex * s);
+    return ans;
+}
+
+inline qd_real pi(qd_real dummy) { return qd_real::_pi; }
 #endif
