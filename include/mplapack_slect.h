@@ -23,44 +23,14 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
  */
 
-#include <mpblas.h>
-#include <mplapack.h>
+#if defined __MPLAPACK_RSLECT__
+#define _MPLAPACK_RSLECT_EXTERN_
+#else
+#define _MPLAPACK_RSLECT_EXTERN_ extern
+#endif
 
-#include <fem.hpp> // Fortran EMulation library of fable module
-using namespace fem::major_types;
-using fem::common;
-
-#include <mplapack_matgen.h>
-#include <mplapack_eig.h>
-
-#include <mplapack_slect.h>
-#include <mplapack_debug.h>
-
-bool Cslect(COMPLEX const z) {
-    bool return_value = false;
-    //
-    const REAL zero = 0.0;
-    REAL rmin = 0.0;
-    INTEGER i = 0;
-    REAL x = 0.0;
-    if (selopt == 0) {
-        return_value = (z.real() < zero);
-    } else {
-        rmin = abs(z - COMPLEX(selwr[1 - 1], selwi[1 - 1]));
-        return_value = selval[1 - 1];
-        for (i = 2; i <= seldim; i = i + 1) {
-            x = abs(z - COMPLEX(selwr[i - 1], selwi[i - 1]));
-            if (x <= rmin) {
-                rmin = x;
-                return_value = selval[i - 1];
-            }
-        }
-    }
-    return return_value;
-    //
-    //     End of Cslect
-    //
-}
+_MPLAPACK_RSLECT_EXTERN_ INTEGER seldim, selopt;
+_MPLAPACK_RSLECT_EXTERN_  bool selval[20];
+_MPLAPACK_RSLECT_EXTERN_  REAL selwi[20], selwr[20];

@@ -37,7 +37,7 @@ using fem::common;
 #include <mplapack_eig.h>
 
 #define __MPLAPACK_RSLECT__
-
+#include <mplapack_slect.h>
 #include <mplapack_debug.h>
 
 bool Rslect(REAL const zr, REAL const zi) {
