@@ -36,8 +36,8 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#define __MPLAPACK_RLCTSX__
-#include <mplapack_rlctsx.h>
+#define __MPLAPACK_COMMON_MN__
+#include <mplapack_common_mn.h>
 
 #include <mplapack_debug.h>
 

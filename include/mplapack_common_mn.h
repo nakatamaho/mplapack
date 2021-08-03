@@ -23,55 +23,16 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
  */
 
-#include <mpblas.h>
-#include <mplapack.h>
+#if defined __MPLAPACK_COMMON_MN__
+#define _MPLAPACK_COMMON_MN__EXTERN_
+#else
+#define _MPLAPACK_COMMON_MN__EXTERN_ extern
+#endif
 
-#include <fem.hpp> // Fortran EMulation library of fable module
-
-#include <mplapack_matgen.h>
-#include <mplapack_eig.h>
-
-#include <mplapack_common_mn.h>
-#include <mplapack_debug.h>
-
-bool Clctsx(COMPLEX const /* alpha */, COMPLEX const /* beta */) {
-    bool return_value = false;
-    //
-    if (fs) {
-        i++;
-        if (i <= m) {
-            return_value = false;
-        } else {
-            return_value = true;
-        }
-        if (i == mplusn) {
-            fs = false;
-            i = 0;
-        }
-    } else {
-        i++;
-        if (i <= n) {
-            return_value = true;
-        } else {
-            return_value = false;
-        }
-        if (i == mplusn) {
-            fs = true;
-            i = 0;
-        }
-    }
-    //
-    //      IF( BETA.EQ.CZERO ) THEN
-    //         Clctsx = ( DBLE( ALPHA ).GT.ZERO )
-    //      ELSE
-    //         Clctsx = ( DBLE( ALPHA/BETA ).GT.ZERO )
-    //      END IF
-    //
-    return return_value;
-    //
-    //     End of Clctsx
-    //
-}
+_MPLAPACK_COMMON_MN__EXTERN_ INTEGER mplusn;
+_MPLAPACK_COMMON_MN__EXTERN_ INTEGER n;
+_MPLAPACK_COMMON_MN__EXTERN_ INTEGER m;
+_MPLAPACK_COMMON_MN__EXTERN_ INTEGER i;
+_MPLAPACK_COMMON_MN__EXTERN_ bool fs;
