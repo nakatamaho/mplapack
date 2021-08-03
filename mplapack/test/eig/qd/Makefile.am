@@ -9,11 +9,11 @@ libdepends = -L$(top_builqdir)/mplapack/test/eig -leig_qd -leig_override -L$(top
 mplibs = -L$(MPC_LIBDIR) -L$(QD_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lqd -lgmpxx -lgmp -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(QD_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/qdc++ -D___MPLAPACK_BUILD_WITH_QD___ -I$(top_srcdir)/mplapack/test/fable
 
-xeigtstR_qd_SOURCES  = ../common/Rchkee.cpp  ../../../../mpblas/test/common/mplapack.test.cpp
+xeigtstR_qd_SOURCES  = ../common/Rchkee.cpp
 xeigtstR_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR_qd_CXXFLAGS = $(cxxflags)
 
-xeigtstC_qd_SOURCES  = ../common/Cchkee.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xeigtstC_qd_SOURCES  = ../common/Cchkee.cpp
 xeigtstC_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_qd_CXXFLAGS = $(cxxflags)
 

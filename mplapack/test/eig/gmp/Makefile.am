@@ -9,11 +9,11 @@ libdepends = -L$(top_builgmpir)/mplapack/test/eig -leig_gmp -leig_override -L$(t
 mplibs = -L$(MPC_LIBDIR) -L$(GMP_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lgmp -lgmpxx -lgmp -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/gmpc++ -D___MPLAPACK_BUILD_WITH_GMP___ -I$(top_srcdir)/mplapack/test/fable
 
-xeigtstR_gmp_SOURCES  = ../common/Rchkee.cpp  ../../../../mpblas/test/common/mplapack.test.cpp
+xeigtstR_gmp_SOURCES  = ../common/Rchkee.cpp
 xeigtstR_gmp_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR_gmp_CXXFLAGS = $(cxxflags)
 
-xeigtstC_gmp_SOURCES  = ../common/Cchkee.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xeigtstC_gmp_SOURCES  = ../common/Cchkee.cpp
 xeigtstC_gmp_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_gmp_CXXFLAGS = $(cxxflags)
 

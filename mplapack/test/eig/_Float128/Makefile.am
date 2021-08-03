@@ -7,14 +7,14 @@ mplapack__Float128_eigtestdir = $(prefix)/share/mplapack/test/mplapack/eig/_Floa
 $(bin_PROGRAMS): ../libeig__Float128.la ../libeig_override.la
 
 libdepends = -L$(top_builddir)/mplapack/test/eig -leig__Float128 -leig_override -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float128 -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128 
-mplibs = -L$(MPC_LIBDIR) -L$(_FLOAT128_LIBDIR) -L$(GMP_LIBDIR) -lmpc -l_Float128 -lgmpxx -lgmp -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(_FLOAT128_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/_Float128c++ -D___MPLAPACK_BUILD_WITH__FLOAT128___ -I$(top_srcdir)/mplapack/test/fable
+mplibs = -L$(_FLOAT128_LIBDIR)
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(top_srcdir)/_Float128c++ -D___MPLAPACK_BUILD_WITH__FLOAT128___ -I$(top_srcdir)/mplapack/test/fable
 
-xeigtstR__Float128_SOURCES  = ../common/Rchkee.cpp  ../../../../mpblas/test/common/mplapack.test.cpp
+xeigtstR__Float128_SOURCES  = ../common/Rchkee.cpp
 xeigtstR__Float128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR__Float128_CXXFLAGS = $(cxxflags)
 
-xeigtstC__Float128_SOURCES  = ../common/Cchkee.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xeigtstC__Float128_SOURCES  = ../common/Cchkee.cpp
 xeigtstC__Float128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC__Float128_CXXFLAGS = $(cxxflags)
 

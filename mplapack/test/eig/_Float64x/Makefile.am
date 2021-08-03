@@ -10,11 +10,11 @@ libdepends = -L$(top_builddir)/mplapack/test/eig -leig__Float64x -leig_override 
 mplibs = -L$(MPC_LIBDIR) -L$(_FLOAT64X_LIBDIR) -L$(GMP_LIBDIR) -lmpc -l_Float64x -lgmpxx -lgmp -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(_FLOAT64X_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/_Float64xc++ -D___MPLAPACK_BUILD_WITH__FLOAT64X___ -I$(top_srcdir)/mplapack/test/fable
 
-xeigtstR__Float64x_SOURCES  = ../common/Rchkee.cpp  ../../../../mpblas/test/common/mplapack.test.cpp
+xeigtstR__Float64x_SOURCES  = ../common/Rchkee.cpp
 xeigtstR__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR__Float64x_CXXFLAGS = $(cxxflags)
 
-xeigtstC__Float64x_SOURCES  = ../common/Cchkee.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xeigtstC__Float64x_SOURCES  = ../common/Cchkee.cpp
 xeigtstC__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC__Float64x_CXXFLAGS = $(cxxflags)
 
