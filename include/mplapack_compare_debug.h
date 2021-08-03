@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef _MPLAPACK_DEBUG_H_
-#define _MPLAPACK_DEBUG_H_
+#ifndef _MPLAPACK_COMPARE_DEBUG_H_
+#define _MPLAPACK_COMPARE_DEBUG_H_
 
 #ifndef ___MPLAPACK_DEBUG_BUILD___
 #define ___MPLAPACK_DEBUG_BUILD___
@@ -165,48 +165,6 @@ inline double drand48() {
 #else
 #define _MPLAPACK_DEBUG_EXTERN_ extern
 #endif
-
-#if defined __MPLAPACK_RSLECT__
-#define _MPLAPACK_RSLECT_EXTERN_
-#else
-#define _MPLAPACK_RSLECT_EXTERN_ extern
-#endif
-
-_MPLAPACK_RSLECT_EXTERN_ INTEGER seldim, selopt;
-_MPLAPACK_RSLECT_EXTERN_ bool selval[20];
-_MPLAPACK_RSLECT_EXTERN_ REAL selwi[20], selwr[20];
-
-#if defined __MPLAPACK_CLCTSX__
-#define _MPLAPACK_CLCTSX_EXTERN_
-#else
-#define _MPLAPACK_CLCTSX_EXTERN_ extern
-#endif
-
-_MPLAPACK_CLCTSX_EXTERN_ INTEGER _MPLAPACK_CLCTSX_mplusn;
-_MPLAPACK_CLCTSX_EXTERN_ INTEGER _MPLAPACK_CLCTSX_n;
-_MPLAPACK_CLCTSX_EXTERN_ INTEGER _MPLAPACK_CLCTSX_m;
-_MPLAPACK_CLCTSX_EXTERN_ INTEGER _MPLAPACK_CLCTSX_i;
-_MPLAPACK_CLCTSX_EXTERN_ bool _MPLAPACK_CLCTSX_fs;
-
-#if defined __MPLAPACK_XLAENV__
-#define _MPLAPACK_XLAENV_EXTERN_
-#else
-#define _MPLAPACK_XLAENV_EXTERN_ extern
-#endif
-
-_MPLAPACK_XLAENV_EXTERN_ INTEGER iparms[100];
-
-#if defined __MPLAPACK_MXERBLA__
-#define _MPLAPACK_MXERBLA_EXTERN_
-#else
-#define _MPLAPACK_MXERBLA_EXTERN_ extern
-#endif
-#define srnamt_len 1024
-_MPLAPACK_MXERBLA_EXTERN_ int infot;
-_MPLAPACK_MXERBLA_EXTERN_ INTEGER nout;
-_MPLAPACK_MXERBLA_EXTERN_ bool ok;
-_MPLAPACK_MXERBLA_EXTERN_ bool lerr;
-_MPLAPACK_MXERBLA_EXTERN_ char srnamt[srnamt_len];
 
 #if defined(___MPLAPACK_BUILD_WITH_GMP___) || defined(___MPLAPACK_BUILD_WITH_QD___) || defined(___MPLAPACK_BUILD_WITH_DD___) || defined(___MPLAPACK_BUILD_WITH_DOUBLE___) || defined(___MPLAPACK_BUILD_WITH__FLOAT64X___) || defined(___MPLAPACK_BUILD_WITH__FLOAT128___)
 #include <mpblas_mpfr.h>
