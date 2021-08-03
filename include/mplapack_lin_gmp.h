@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef _MPLAPACK_MATGEN_GMP_H_
-#define _MPLAPACK_MATGEN_GMP_H_
+#ifndef _MPLAPACK_LIN_GMP_H_
+#define _MPLAPACK_LIN_GMP_H_
 
 #include "mplapack_config.h"
 #include "gmpxx.h"
