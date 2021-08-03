@@ -29,7 +29,7 @@
 #define __MPLAPACK_BUILD_DEBUG_CPP__
 
 #include <mpblas.h>
-#include <mplapack_debug.h>
+#include <mplapack_compare_debug.h>
 
 void __attribute__((constructor)) mplapack_debug_initialize(void);
 void mplapack_debug_initialize(void) { gmp_randinit_default(uniformrandomstate_mpfr); }

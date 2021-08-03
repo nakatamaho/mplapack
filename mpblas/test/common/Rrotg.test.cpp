@@ -28,7 +28,7 @@
 
 #include <mpblas.h>
 #include <blas.h>
-#include <mplapack_debug.h>
+#include <mplapack_compare_debug.h>
 
 #if defined VERBOSE_TEST
 #include <iostream>
