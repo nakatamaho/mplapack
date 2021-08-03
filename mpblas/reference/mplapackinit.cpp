@@ -63,7 +63,6 @@ void mplapack_initialize_mpfr(void) {
 
 void __attribute__((destructor)) mplapack_finalize_mpfr(void);
 void mplapack_finalize_mpfr(void) {
-    mpfr_free_cache ();
 }
 #endif
 
