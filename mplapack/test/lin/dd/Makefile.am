@@ -11,19 +11,19 @@ libdepends = -L$(top_builddir)/mplapack/test/lin -llin_dd -llin_override -L$(top
 mplibs = -L$(MPC_LIBDIR) -L$(DD_LIBDIR) -L$(DD_LIBDIR) -lmpc -ldd -lddxx -ldd -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(DD_INCLUDEDIR) -I$(DD_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/ddc++ -D___MPLAPACK_BUILD_WITH_DD___ -I$(top_srcdir)/mplapack/test/fable
 
-xlintstR_dd_SOURCES  = ../common/Rchkaa.cpp ../../../../mpblas/test/common/mplapack.test.cpp 
+xlintstR_dd_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_dd_CXXFLAGS = $(cxxflags) 
 
-xlintstC_dd_SOURCES  = ../common/Cchkaa.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xlintstC_dd_SOURCES  = ../common/Cchkaa.cpp
 xlintstC_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_dd_CXXFLAGS = $(cxxflags)
 
-xlintstrfR_dd_SOURCES  = ../common/Rchkrfp.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xlintstrfR_dd_SOURCES  = ../common/Rchkrfp.cpp
 xlintstrfR_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_dd_CXXFLAGS = $(cxxflags)
 
-xlintstrfC_dd_SOURCES  = ../common/Cchkrfp.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xlintstrfC_dd_SOURCES  = ../common/Cchkrfp.cpp
 xlintstrfC_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_dd_CXXFLAGS = $(cxxflags)
 

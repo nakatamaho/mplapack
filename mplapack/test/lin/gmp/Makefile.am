@@ -9,21 +9,21 @@ $(bin_PROGRAMS): ../liblin_gmp.la ../liblin_override.la
 
 libdepends = -L$(top_builddir)/mplapack/test/lin -llin_gmp -llin_override -L$(top_builddir)/mplapack/test/matgen -lmatgen_gmp -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(top_builddir)/mpblas/reference -lmpblas_gmp
 mplibs = -L$(MPC_LIBDIR) -L$(GMP_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lgmp -lgmpxx -lgmp -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/gmpc++ -D___MPLAPACK_BUILD_WITH_GMP___ -I$(top_srcdir)/mplapack/test/fable
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -I$(top_srcdir)/mplapack/test/fable
 
-xlintstR_gmp_SOURCES  = ../common/Rchkaa.cpp ../../../../mpblas/test/common/mplapack.test.cpp 
+xlintstR_gmp_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_gmp_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_gmp_CXXFLAGS = $(cxxflags) 
 
-xlintstC_gmp_SOURCES  = ../common/Cchkaa.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xlintstC_gmp_SOURCES  = ../common/Cchkaa.cpp
 xlintstC_gmp_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_gmp_CXXFLAGS = $(cxxflags)
 
-xlintstrfR_gmp_SOURCES  = ../common/Rchkrfp.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xlintstrfR_gmp_SOURCES  = ../common/Rchkrfp.cpp
 xlintstrfR_gmp_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_gmp_CXXFLAGS = $(cxxflags)
 
-xlintstrfC_gmp_SOURCES  = ../common/Cchkrfp.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xlintstrfC_gmp_SOURCES  = ../common/Cchkrfp.cpp
 xlintstrfC_gmp_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_gmp_CXXFLAGS = $(cxxflags)
 

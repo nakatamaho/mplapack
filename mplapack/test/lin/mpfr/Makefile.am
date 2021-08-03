@@ -11,19 +11,19 @@ libdepends = -L$(top_builddir)/mplapack/test/lin -llin_mpfr -llin_override -L$(t
 mplibs = -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mplapack/test/fable
 
-xlintstR_mpfr_SOURCES  = ../common/Rchkaa.cpp ../../../../mpblas/test/common/mplapack.test.cpp 
+xlintstR_mpfr_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_mpfr_CXXFLAGS = $(cxxflags) 
 
-xlintstC_mpfr_SOURCES  = ../common/Cchkaa.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xlintstC_mpfr_SOURCES  = ../common/Cchkaa.cpp
 xlintstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_mpfr_CXXFLAGS = $(cxxflags)
 
-xlintstrfR_mpfr_SOURCES  = ../common/Rchkrfp.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xlintstrfR_mpfr_SOURCES  = ../common/Rchkrfp.cpp
 xlintstrfR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_mpfr_CXXFLAGS = $(cxxflags)
 
-xlintstrfC_mpfr_SOURCES  = ../common/Cchkrfp.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xlintstrfC_mpfr_SOURCES  = ../common/Cchkrfp.cpp
 xlintstrfC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_mpfr_CXXFLAGS = $(cxxflags)
 

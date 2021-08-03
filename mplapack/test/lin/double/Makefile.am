@@ -11,19 +11,19 @@ libdepends = -L.. -llin_double -llin_override -L$(top_builddir)/mplapack/test/ma
 mplibs = -L$(MPC_LIBDIR) -L$(_double_LIBDIR) -L$(GMP_LIBDIR) -lmpc -l_double -lgmpxx -lgmp -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(_double_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/_doublec++ -D__MPLAPACK_BUILD_WITH_double__ -I$(top_srcdir)/mplapack/test/fable
 
-xlintstR_double_SOURCES  = ../common/Rchkaa.cpp ../../../../mpblas/test/common/mplapack.test.cpp 
+xlintstR_double_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_double_CXXFLAGS = $(cxxflags) 
 
-xlintstC_double_SOURCES  = ../common/Cchkaa.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xlintstC_double_SOURCES  = ../common/Cchkaa.cpp
 xlintstC_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_double_CXXFLAGS = $(cxxflags)
 
-xlintstrfR_double_SOURCES  = ../common/Rchkrfp.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xlintstrfR_double_SOURCES  = ../common/Rchkrfp.cpp
 xlintstrfR_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_double_CXXFLAGS = $(cxxflags)
 
-xlintstrfC_double_SOURCES  = ../common/Cchkrfp.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xlintstrfC_double_SOURCES  = ../common/Cchkrfp.cpp
 xlintstrfC_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_double_CXXFLAGS = $(cxxflags)
 

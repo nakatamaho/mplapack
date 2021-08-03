@@ -11,19 +11,19 @@ libdepends = -L.. -llin__Float64x -llin_override -L$(top_builddir)/mplapack/test
 mplibs = -L$(MPC_LIBDIR) -L$(__FLOAT64x_LIBDIR) -L$(GMP_LIBDIR) -lmpc -l__Float64x -lgmpxx -lgmp -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(__FLOAT64x_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/__Float64xc++ -D__MPLAPACK_BUILD_WITH__FLOAT64x__ -I$(top_srcdir)/mplapack/test/fable
 
-xlintstR__Float64x_SOURCES  = ../common/Rchkaa.cpp ../../../../mpblas/test/common/mplapack.test.cpp 
+xlintstR__Float64x_SOURCES  = ../common/Rchkaa.cpp
 xlintstR__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR__Float64x_CXXFLAGS = $(cxxflags) 
 
-xlintstC__Float64x_SOURCES  = ../common/Cchkaa.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xlintstC__Float64x_SOURCES  = ../common/Cchkaa.cpp
 xlintstC__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC__Float64x_CXXFLAGS = $(cxxflags)
 
-xlintstrfR__Float64x_SOURCES  = ../common/Rchkrfp.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xlintstrfR__Float64x_SOURCES  = ../common/Rchkrfp.cpp
 xlintstrfR__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR__Float64x_CXXFLAGS = $(cxxflags)
 
-xlintstrfC__Float64x_SOURCES  = ../common/Cchkrfp.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xlintstrfC__Float64x_SOURCES  = ../common/Cchkrfp.cpp
 xlintstrfC__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC__Float64x_CXXFLAGS = $(cxxflags)
 

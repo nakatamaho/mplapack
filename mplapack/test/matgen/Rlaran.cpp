@@ -31,12 +31,18 @@
 #include <random>
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-extern gmp_randstate_t random_mplapack_mpfr_state;
+gmp_randstate_t random_mplapack_mpfr_state;
+void __attribute__((constructor)) mplapack_Rlaran_mpfr_initialize(void);
+void mplapack_Rlaran_mpfr_initialize(void) { gmp_randinit_default(random_mplapack_mpfr_state); } // this is gmp_randinit_mt
+void __attribute__((destructor)) mplapack_Rlaran_mpfr_finalize(void);
+void mplapack_Rlaran_mpfr_finalize(void) { gmp_randclear(random_mplapack_mpfr_state); mpfr_free_cache(); } // this is gmp_randinit_mt
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-extern gmp_randstate_t random_mplapack_gmp_state;
-extern gmp_randclass random_mplapack_gmp(gmp_randinit_default);
+gmp_randstate_t random_mplapack_gmp_state;
+gmp_randclass random_mplapack_gmp(gmp_randinit_default);
+void __attribute__((constructor)) mplapack_Rlaran_gmp_initialize(void);
+void mplapack_Rlaran_gmp_initialize(void) { random_mplapack_gmp.seed((unsigned long int)time(NULL)); } // XXX better initializaition req'ed
 #endif
 
 REAL Rlaran(INTEGER *iseed) {

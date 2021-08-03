@@ -11,19 +11,19 @@ libdepends = -L$(top_builqdir)/mplapack/test/lin -llin_qd -llin_override -L$(top
 mplibs = -L$(MPC_LIBDIR) -L$(QD_LIBDIR) -L$(QD_LIBDIR) -lmpc -lqd -lqdxx -lqd -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -I$(QD_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/qdc++ -D___MPLAPACK_BUILD_WITH_QD___ -I$(top_srcdir)/mplapack/test/fable
 
-xlintstR_qd_SOURCES  = ../common/Rchkaa.cpp ../../../../mpblas/test/common/mplapack.test.cpp 
+xlintstR_qd_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_qd_CXXFLAGS = $(cxxflags) 
 
-xlintstC_qd_SOURCES  = ../common/Cchkaa.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xlintstC_qd_SOURCES  = ../common/Cchkaa.cpp
 xlintstC_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_qd_CXXFLAGS = $(cxxflags)
 
-xlintstrfR_qd_SOURCES  = ../common/Rchkrfp.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xlintstrfR_qd_SOURCES  = ../common/Rchkrfp.cpp
 xlintstrfR_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_qd_CXXFLAGS = $(cxxflags)
 
-xlintstrfC_qd_SOURCES  = ../common/Cchkrfp.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+xlintstrfC_qd_SOURCES  = ../common/Cchkrfp.cpp
 xlintstrfC_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_qd_CXXFLAGS = $(cxxflags)
 
