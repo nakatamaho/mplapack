@@ -411,16 +411,16 @@ if test x$enable__Float64x = x"yes"; then
          AC_MSG_RESULT([_Float64x is not long double])
     fi
     if test "$want___float80" = "yes" && test "$float64xislongdouble" = "yes" ; then
-        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80_%%/typedef __float80 _Float64x;\n#define ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
+        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80%%/typedef __float80 _Float64x;\n#define ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
     fi
     if test "$want___float80" = "yes" && test "$float64xislongdouble" = "no" ; then
-        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80_%%/typedef __float80 _Float64x;/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
+        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80%%/typedef __float80 _Float64x;/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
     fi
     if test "$want___float80" = "no" && test "$float64xislongdouble" = "yes" ; then
-        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80_%%/#define ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
+        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80%%/#define ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
     fi
     if test "$want___float80" = "no" && test "$float64xislongdouble" = "no" ; then
-        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80_%%//g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
+        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80%%//g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
     fi
 fi
 CXXFLAGS="$SAVE_CXXFLAGS"
