@@ -32,9 +32,11 @@
 
 %%MPLAPACK__FLOAT64X___FLOAT80_%%
 
-#include <complex>
-
 #if defined ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___
+//#if defined(__INTEL_COMPILER)
+typedef long double _Float64x;
+//#endif
+
 inline _Float64x pow(const _Float64x &a, const _Float64x &b) {
     return powl(a, b);
 }
@@ -51,16 +53,19 @@ inline _Float64x pow(const _Float64x &a, const long &b) {
     return powl(a, (_Float64x)b);
 }
 
-#if defined(__INTEL_COMPILER)
-typedef long double _Float64x;
+#if defined __MPLAPACK_MATGEN_HACK__
+inline _Float64x sqrt(_Float64x a) { return sqrtl(a); } //req'ed by matgen
 #endif
-#endif
+inline _Float64x sin(_Float64x &a) { return sinl(a); }
+inline _Float64x cos(_Float64x &a) { return cosl(a); }
 
-#include <complex>
-
-inline _Float64x sqrt(const _Float64x &a) { return sqrtl(a); }
-inline _Float64x log(const _Float64x &a) { return logl(a); }
+namespace std {
+inline _Float64x sin(const _Float64x &a) { return sinl(a); }
 inline _Float64x exp(const _Float64x &a) { return expl(a); }
+inline _Float64x cos(const _Float64x &a) { return cosl(a); }
+//inline _Float64x log(const _Float64x &a) { return logl(a); }
+//inline _Float64x sqrt(_Float64x &a) { return sqrtl(a); }
+}
 
 // implementation of sign transfer function.
 inline _Float64x sign(_Float64x a, _Float64x b) {
@@ -102,5 +107,7 @@ inline _Float64x pi(_Float64x dummy) {
     return M_PIl;
 #endif
 }
+
+#endif
 
 #endif
