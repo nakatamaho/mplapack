@@ -29,85 +29,27 @@
 #ifndef _MUTILS__FLOAT128_H_
 #define _MUTILS__FLOAT128_H_
 
-%%MPLAPACK_BINARY128%%
+#define ___MPLAPACK__FLOAT128_ONLY___
 
-#include <cstring>
-#define BUFLEN 1024
-
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK_WANT_LIBQUADMATH___
-inline void printnum(_Float128 rtmp) {
-    int width = 42;
-    char buf[BUFLEN];
-    int n = quadmath_snprintf(buf, sizeof buf, "%+-#*.35Qe", width, rtmp);
-    if ((size_t)n < sizeof buf)
-        printf("%s", buf);
-}
-inline void printnum_short(_Float128 rtmp) {
-    int width = 42;
-    char buf[BUFLEN];
-    int n = quadmath_snprintf(buf, sizeof buf, "%+-#*.16Qe", width, rtmp);
-    if ((size_t)n < sizeof buf)
-        printf("%s", buf);
-}
-inline void printnum(std::complex<_Float128> rtmp) {
-    int width = 42, n;
-    char buf[BUFLEN], buf2[BUFLEN];
-    n = quadmath_snprintf(buf, sizeof buf, "%+-#*.35Qe", width, rtmp.real());
-    if ((size_t)n < sizeof buf)
-        printf("%s", buf);
-    n = quadmath_snprintf(buf2, sizeof buf, "%+-#*.35Qe", width, rtmp.imag());
-    if ((size_t)n < sizeof buf2)
-        printf("%s", buf2);
-    printf("i");
-}
-inline void printnum_short(std::complex<_Float128> rtmp) {
-    int width = 42, n;
-    char buf[BUFLEN], buf2[BUFLEN];
-    n = quadmath_snprintf(buf, sizeof buf, "%+-#*.16Qe", width, rtmp.real());
-    if ((size_t)n < sizeof buf)
-        printf("%s", buf);
-    n = quadmath_snprintf(buf2, sizeof buf, "%+-#*.16Qe", width, rtmp.imag());
-    if ((size_t)n < sizeof buf2)
-        printf("%s", buf2);
-    printf("i");
-}
-inline void sprintnum(char *buf, _Float128 rtmp) {
-    int width = 42;
-    quadmath_snprintf(buf, BUFLEN, "%+-#*.35Qe", width, rtmp);
-}
-inline void sprintnum_short(char *buf, _Float128 rtmp) {
-    int width = 42;
-    quadmath_snprintf(buf, BUFLEN, "%+-#*.16Qe", width, rtmp);
-}
-inline void sprintnum(char *buf, std::complex<_Float128> rtmp) {
-    int width = 42;
-    quadmath_snprintf(buf, BUFLEN,
-                      "%+-#*.35Qe"
-                      "%+-#*.35Qe",
-                      width, rtmp.real(), rtmp.imag());
-}
-inline void sprintnum_short(char *buf, std::complex<_Float128> rtmp) {
-    int width = 42;
-    quadmath_snprintf(buf, BUFLEN,
-                      "%+-#*.16Qe"
-                      "%+-#*.16Qe",
-                      width, rtmp.real(), rtmp.imag());
-}
+#if !defined __MPLAPACK_BUFLEN__
+#define __MPLAPACK_BUFLEN__ 1024
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && (defined ___MPLAPACK__FLOAT128_ONLY___ || defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___)
+#include <string.h>
+
 inline void printnum(_Float128 rtmp) {
-    char buf[BUFLEN];
+    char buf[__MPLAPACK_BUFLEN__];
     strfromf128(buf, sizeof(buf), "%.36g", rtmp);
     printf("%s", buf);
 }
 inline void printnum_short(_Float128 rtmp) {
-    char buf[BUFLEN];
+    char buf[__MPLAPACK_BUFLEN__];
     strfromf128(buf, sizeof(buf), "%.16g", rtmp);
     printf("%s", buf);
 }
 inline void printnum(std::complex<_Float128> rtmp) {
-    char buf[BUFLEN];
+    char buf[__MPLAPACK_BUFLEN__];
     strfromf128(buf, sizeof(buf), "%.36g", rtmp.real());
     printf("%s", buf);
     strfromf128(buf, sizeof(buf), "%.36g", rtmp.imag());
@@ -115,7 +57,7 @@ inline void printnum(std::complex<_Float128> rtmp) {
     printf("i");
 }
 inline void printnum_short(std::complex<_Float128> rtmp) {
-    char buf[BUFLEN];
+    char buf[__MPLAPACK_BUFLEN__];
     strfromf128(buf, sizeof(buf), "%.16g", rtmp.real());
     printf("%s", buf);
     strfromf128(buf, sizeof(buf), "%.16g", rtmp.imag());
@@ -125,7 +67,7 @@ inline void printnum_short(std::complex<_Float128> rtmp) {
 inline void sprintnum(char *buf, _Float128 rtmp) { strfromf128(buf, sizeof(buf), "%.36g", rtmp); }
 inline void sprintnum_short(char *buf, _Float128 rtmp) { strfromf128(buf, sizeof(buf), "%.16g", rtmp); }
 inline void sprintnum(char *buf, std::complex<_Float128> rtmp) {
-    char buf1[BUFLEN], buf2[BUFLEN];
+    char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
     strfromf128(buf1, sizeof(buf2), "%.36g", rtmp.real());
     strcat(buf, buf1);
     strfromf128(buf2, sizeof(buf2), "%.36g", rtmp.imag());
@@ -133,106 +75,46 @@ inline void sprintnum(char *buf, std::complex<_Float128> rtmp) {
     strcat(buf, "i");
 }
 inline void sprintnum_short(char *buf, std::complex<_Float128> rtmp) {
-    char buf1[BUFLEN], buf2[BUFLEN];
+    char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
     strfromf128(buf1, sizeof(buf2), "%.16g", rtmp.real());
     strcat(buf, buf1);
     strfromf128(buf2, sizeof(buf2), "%.16g", rtmp.imag());
     strcat(buf, buf2);
     strcat(buf, "i");
 }
-#endif
-
-#if defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___
-#include <complex>
-#endif //___MPLAPACK__FLOAT128_IS_LONGDOUBLE___
-
-#if defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-#include <complex>
-typedef long double _Float128;
-#endif //___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
-#include <complex>
-typedef __float128 _Float128;
-
-namespace std {
-#ifndef _GLIBCXX_BITS_STD_ABS_H
-inline _Float128 abs(const _Float128 &a) { return fabsq(a); }
-#endif
-inline _Float128 sqrt(const _Float128 &a) { return sqrtq(a); }
-inline _Float128 log(const _Float128 &a) { return logq(a); }
-inline _Float128 log2(const _Float128 &a) { return log2q(a); }
-inline _Float128 pow(const _Float128 &a, const _Float128 &b) { return powq(a, b); }
-inline _Float128 exp(const _Float128 &a) { return expq(a); }
-inline _Float128 sin(const _Float128 &a) { return sinq(a); }
-inline _Float128 cos(const _Float128 &a) { return cosq(a); }
-inline _Float128 log10(const _Float128 &a) { return log10q(a); }
-} // namespace std
-
-#include <complex>
-namespace std {
-
-inline _Float128 abs(const std::complex<_Float128> &a) { return sqrtq(a.real() * a.real() + a.imag() * a.imag()); }
-inline std::complex<_Float128> sqrt(const std::complex<_Float128> &a) {
-    __complex128 b, tmp;
-    std::complex<_Float128> c;
-    __real__(b) = (a.real());
-    __imag__(b) = (a.imag());
-    tmp = csqrtq(b);
-    c.real(__real__(tmp));
-    c.imag(__imag__(tmp));
-    return c;
-}
-inline std::complex<_Float128> exp(const std::complex<_Float128> &a) {
-    __complex128 b, tmp;
-    std::complex<_Float128> c;
-    __real__(b) = (a.real());
-    __imag__(b) = (a.imag());
-    tmp = cexpq(b);
-    c.real(__real__(tmp));
-    c.imag(__imag__(tmp));
-    return c;
-}
-
-inline std::complex<_Float128> log(const std::complex<_Float128> &a) {
-    __complex128 b, tmp;
-    std::complex<_Float128> c;
-    __real__(b) = (a.real());
-    __imag__(b) = (a.imag());
-    tmp = log(b);
-    c.real(__real__(tmp));
-    c.imag(__imag__(tmp));
-    return c;
-}
-} // namespace std
-#endif //___MPLAPACK_WANT_LIBQUADMATH___
-
-#if defined ___MPLAPACK__FLOAT128_ONLY___
-#include <cmath>
-#include <complex>
-
-// Intel C/C++ compilers currently only supports __float128
-// and following workaround works
-#if defined(__INTEL_COMPILER)
-#define _Float128 __float128
-#endif
-
-namespace std {
-
-#include <ccomplex>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern _Float128 _Complex csqrtf128(_Float128 _Complex a);
-extern _Float128 _Complex cexpf128(_Float128 _Complex a);
-extern _Float128 _Complex csinf128(_Float128 _Complex a);
-extern _Float128 _Complex ccosf128(_Float128 _Complex a);
+#include <complex.h>
+#include <complex>
+#include <math.h>
 #ifdef __cplusplus
 }
 #endif
 
-inline std::complex<_Float128> sqrt(const std::complex<_Float128> &a) {
+inline _Float128 abs(const std::complex<_Float128> &a) { return sqrtf128(a.real() * a.real() + a.imag() * a.imag()); }
+inline _Float128 pow(const _Float128 &a, const _Float128 &b) { return powf128(a, b); }
+inline _Float128 pow(const long &a, const long &b) { return powf128((_Float128)a, (_Float128)b); }
+inline _Float128 pow(const int &a, const long &b) { return powf128((_Float128)a, (_Float128)b); }
+inline _Float128 pow(const _Float128 &a, const long &b) { return powf128(a, (_Float128)b); }
+inline _Float128 pow2(const _Float128 &a) { return a * a; }
+
+inline _Float128 sqrt(const _Float128 &a) { return sqrtf128(a); }
+inline _Float128 sin(_Float128 &a) { return sinf128(a); }
+inline _Float128 sin(const _Float128 &a) { return sinf128(a); }
+inline _Float128 cos(_Float128 &a) { return cosf128(a); }
+inline _Float128 cos(const _Float128 &a) { return cosf128(a); }
+// inline _Float128 atan2(const _Float128 a, const _Float128 b) { return atan2f128(a, b); }
+// inline _Float128 atan2(const _Float128 &a, const _Float128 &b) { return atan2f128(a, b); }
+inline _Float128 atan2(_Float128 a, _Float128 b) { return atan2f128(a, b); }
+// inline _Float128 atan2(_Float128 &a, _Float128 &b) { return atan2f128(a, b); }
+
+inline _Float128 exp(const _Float128 &a) { return expf128(a); }
+inline _Float128 log(const _Float128 &a) { return logf128(a); }
+inline _Float128 log10(const _Float128 &a) { return log10f128(a); }
+
+inline std::complex<_Float128> sqrt(const std::complex<_Float128> a) {
     _Float128 _Complex b, tmp;
     std::complex<_Float128> c;
     __real__(b) = (a.real());
@@ -243,27 +125,6 @@ inline std::complex<_Float128> sqrt(const std::complex<_Float128> &a) {
     return c;
 }
 
-inline std::complex<_Float128> sin(const std::complex<_Float128> &a) {
-    _Float128 _Complex b, tmp;
-    std::complex<_Float128> c;
-    __real__(b) = (a.real());
-    __imag__(b) = (a.imag());
-    tmp = csinf128(b);
-    c.real(__real__(tmp));
-    c.imag(__imag__(tmp));
-    return c;
-}
-
-inline std::complex<_Float128> cos(const std::complex<_Float128> &a) {
-    _Float128 _Complex b, tmp;
-    std::complex<_Float128> c;
-    __real__(b) = (a.real());
-    __imag__(b) = (a.imag());
-    tmp = ccosf128(b);
-    c.real(__real__(tmp));
-    c.imag(__imag__(tmp));
-    return c;
-}
 inline std::complex<_Float128> exp(const std::complex<_Float128> &a) {
     _Float128 _Complex b, tmp;
     std::complex<_Float128> c;
@@ -274,25 +135,17 @@ inline std::complex<_Float128> exp(const std::complex<_Float128> &a) {
     c.imag(__imag__(tmp));
     return c;
 }
-inline _Float128 sqrt(_Float128 a) { return sqrtf128(a);} 
-//inline _Float128 pow2(const _Float128 &a) { return (a*a); }
-inline _Float128 log(const _Float128 &a) { return logf128(a); }
-inline _Float128 log2(const _Float128 &a) { return log2f128(a); }
-inline _Float128 exp(const _Float128 &a) { return expf128(a); }
-inline _Float128 sin(_Float128 &a) { return sinf128(a); }
-inline _Float128 cos(_Float128 &a) { return cosf128(a); }
-inline _Float128 log10(const _Float128 &a) { return log10f128(a); }
-inline _Float128 abs(const std::complex<_Float128> &a) { return sqrtf128(a.real() * a.real() + a.imag() * a.imag()); }
-inline _Float128 atan2(_Float128 &a, _Float128 &b) { return atan2f128(a, b); }
-}
-inline _Float128 pow(_Float128 &a, const _Float128 &b) { return powf128(a, b); }
-#if defined __MPLAPACK_MATGEN_HACK__
-inline _Float128 sqrt(_Float128 a) { return sqrtf128(a);} 
-#endif
-inline _Float128 sin(_Float128 &a) { return sinf128(a); }
-inline _Float128 cos(_Float128 &a) { return cosf128(a); }
 
-#endif //___MPLAPACK__FLOAT128_ONLY___
+inline std::complex<_Float128> log(const std::complex<_Float128> &a) {
+    _Float128 _Complex b, tmp;
+    std::complex<_Float128> c;
+    __real__(b) = (a.real());
+    __imag__(b) = (a.imag());
+    tmp = clogf128(b);
+    c.real(__real__(tmp));
+    c.imag(__imag__(tmp));
+    return c;
+}
 
 // implementation of sign transfer function.
 inline _Float128 sign(_Float128 a, _Float128 b) {
@@ -318,78 +171,15 @@ inline long nint(_Float128 a) {
     long i;
     _Float128 tmp;
     a = a + 0.5;
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
-    tmp = floorq(a);
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-    tmp = floorl(a);
-#elif defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___
     tmp = floorf128(a);
-#elif defined ___MPLAPACK__FLOAT128_ONLY___
-    tmp = floorf128(a);
-#endif
     i = (long)tmp;
     return i;
 }
 
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
-inline _Float128 atan2(_Float128 &a, _Float128 &b) { return atan2q(a, b); }
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-inline _Float128 atan2(_Float128 &a, _Float128 &b) { return atan2l(a, b); }
-#elif defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___
-inline _Float128 atan2(_Float128 &a, _Float128 &b) { return atan2f128(a, b); }
-#endif
-
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
-inline std::complex<_Float128> sin(const std::complex<_Float128> &a) {
-    _Float128 _Complex b, tmp;
-    std::complex<_Float128> c;
-    __real__(b) = (a.real());
-    __imag__(b) = (a.imag());
-    tmp = csinq(b);
-    c.real(__real__(tmp));
-    c.imag(__imag__(tmp));
-    return c;
-}
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-inline std::complex<_Float128> sin(const std::complex<_Float128> &a) {
-    _Float128 _Complex b, tmp;
-    std::complex<_Float128> c;
-    __real__(b) = (a.real());
-    __imag__(b) = (a.imag());
-    tmp = csinl(b);
-    c.real(__real__(tmp));
-    c.imag(__imag__(tmp));
-    return c;
-}
-#elif defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___
-inline std::complex<_Float128> sin(const std::complex<_Float128> &a) {
-    _Float128 _Complex b, tmp;
-    std::complex<_Float128> c;
-    __real__(b) = (a.real());
-    __imag__(b) = (a.imag());
-    tmp = csinf128(b);
-    c.real(__real__(tmp));
-    c.imag(__imag__(tmp));
-    return c;
-}
-#endif
-
-#if defined ___MPLAPACK__FLOAT128_ONLY___
 inline _Float128 ceil(_Float128 a) { return ceilf128(a); }
-#endif
-
 inline double cast2double(_Float128 a) { return (double)a; }
 
-inline _Float128 pi(_Float128 dummy) {
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK_WANT_LIBQUADMATH___
-    return M_PIq;
-
-#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-    return M_PIl;
-
-#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && (defined ___MPLAPACK__FLOAT128_ONLY___ || defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___)
-    return M_PIf128;
-#endif
-}
+inline _Float128 pi(_Float128 dummy) { return M_PIf128; }
+#endif // defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && (defined ___MPLAPACK__FLOAT128_ONLY___ || defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___)
 
 #endif

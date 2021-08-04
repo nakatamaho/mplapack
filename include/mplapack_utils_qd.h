@@ -32,9 +32,12 @@
 
 #define QD_PRECISION 64
 #define QD_PRECISION_SHORT 16
-#define BUFLEN 1024
 
 #include <cstring>
+
+#if !defined __MPLAPACK_BUFLEN__
+#define __MPLAPACK_BUFLEN__ 1024
+#endif
 
 inline void printnum(qd_real rtmp) {
     std::cout.precision(QD_PRECISION);
@@ -55,7 +58,6 @@ inline void printnum_short(qd_real rtmp) {
     }
     return;
 }
-
 
 inline void printnum(qd_complex rtmp) {
     std::cout.precision(QD_PRECISION);
@@ -88,36 +90,34 @@ inline void printnum_short(qd_complex rtmp) {
 }
 
 inline void sprintnum(char *buf, qd_real rtmp) {
-    rtmp.write(buf, BUFLEN, QD_PRECISION);
+    rtmp.write(buf, __MPLAPACK_BUFLEN__, QD_PRECISION);
     return;
 }
 inline void sprintnum_short(char *buf, qd_real rtmp) {
-    rtmp.write(buf, BUFLEN, QD_PRECISION_SHORT);
+    rtmp.write(buf, __MPLAPACK_BUFLEN__, QD_PRECISION_SHORT);
     return;
 }
 inline void sprintnum(char *buf, qd_complex rtmp) {
-    char buf1[BUFLEN], buf2[BUFLEN];
-    rtmp.real().write(buf1, BUFLEN, QD_PRECISION);
-    rtmp.real().write(buf2, BUFLEN, QD_PRECISION);
+    char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
+    rtmp.real().write(buf1, __MPLAPACK_BUFLEN__, QD_PRECISION);
+    rtmp.real().write(buf2, __MPLAPACK_BUFLEN__, QD_PRECISION);
     strcat(buf, buf1);
     strcat(buf, buf2);
     strcat(buf, "i");
 }
 inline void sprintnum_short(char *buf, qd_complex rtmp) {
-    char buf1[BUFLEN], buf2[BUFLEN];
-    rtmp.real().write(buf1, BUFLEN, QD_PRECISION_SHORT);
-    rtmp.real().write(buf2, BUFLEN, QD_PRECISION_SHORT);
+    char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
+    rtmp.real().write(buf1, __MPLAPACK_BUFLEN__, QD_PRECISION_SHORT);
+    rtmp.real().write(buf2, __MPLAPACK_BUFLEN__, QD_PRECISION_SHORT);
     strcat(buf, buf1);
     strcat(buf, buf2);
     strcat(buf, "i");
 }
 
-qd_real log2(qd_real x);
-qd_complex exp(qd_complex x);
-qd_real pi(qd_real dummy);
-
-qd_real sign(qd_real a, qd_real b);
-qd_complex sin(qd_complex a);
+inline qd_real pow2(qd_real a) {
+    qd_real mtmp = a * a;
+    return mtmp;
+}
 
 // implementation of sign transfer function.
 inline qd_real sign(qd_real a, qd_real b) {

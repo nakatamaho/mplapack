@@ -114,6 +114,5 @@ using std::min;
 using std::complex;
 
 inline INTEGER mod(INTEGER a, INTEGER b) { return a % b; }
-inline REAL pow2(REAL a) { return a * a; }
 
 #endif

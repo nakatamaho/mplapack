@@ -30,31 +30,6 @@
 #ifndef _MPLAPACK_DEBUG_H_
 #define _MPLAPACK_DEBUG_H_
 
-#include <cmath>
-using namespace std;
-
-#define BUFLEN 1024
-
-#define DOUBLE_FORMAT "%+20.16e"
-#define DOUBLE_SHORT_FORMAT "%+20.16e"
-
-inline void printnum(double rtmp) { printf(DOUBLE_FORMAT, rtmp); }
-inline void printnum(complex<double> ctmp) { printf(DOUBLE_FORMAT DOUBLE_FORMAT "i", ctmp.real(), ctmp.imag()); }
-inline void printnum(__complex__ double ctmp) { printf(DOUBLE_FORMAT DOUBLE_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
-
-inline void printnum_short(double rtmp) { printf(DOUBLE_SHORT_FORMAT, rtmp); }
-inline void printnum_short(complex<double> ctmp) { printf(DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
-inline void printnum_short(__complex__ double ctmp) { printf(DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
-inline void printnum_short(INTEGER itmp) { printf("%d ", (int)itmp); }
-
-inline void sprintnum(char *buf, double rtmp) { snprintf(buf, BUFLEN, DOUBLE_FORMAT, rtmp); }
-inline void sprintnum(char *buf, complex<double> ctmp) { snprintf(buf, BUFLEN, DOUBLE_FORMAT DOUBLE_FORMAT "i", ctmp.real(), ctmp.imag()); }
-inline void sprintnum(char *buf, __complex__ double ctmp) { snprintf(buf, BUFLEN, DOUBLE_FORMAT DOUBLE_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
-
-inline void sprintnum_short(char *buf, double rtmp) { snprintf(buf, BUFLEN, DOUBLE_SHORT_FORMAT, rtmp); }
-inline void sprintnum_short(char *buf, complex<double> ctmp) { snprintf(buf, BUFLEN, DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
-inline void sprintnum_short(char *buf, __complex__ double ctmp) { snprintf(buf, BUFLEN, DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
-
 template <class X> void printmat(int N, int M, X *A, int LDA) {
     X tmp;
     printf("[ ");

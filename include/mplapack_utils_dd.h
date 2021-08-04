@@ -31,7 +31,10 @@
 
 #define DD_PRECISION 32
 #define DD_PRECISION_SHORT 16
-#define BUFLEN 1024
+
+#if !defined __MPLAPACK_BUFLEN__
+#define __MPLAPACK_BUFLEN__ 1024
+#endif
 
 #include <cstring>
 
@@ -83,36 +86,34 @@ inline void printnum_short(dd_complex rtmp) {
     return;
 }
 inline void sprintnum(char *buf, dd_real rtmp) {
-    rtmp.write(buf, BUFLEN, DD_PRECISION);
+    rtmp.write(buf, __MPLAPACK_BUFLEN__, DD_PRECISION);
     return;
 }
 inline void sprintnum_short(char *buf, dd_real rtmp) {
-    rtmp.write(buf, BUFLEN, DD_PRECISION_SHORT);
+    rtmp.write(buf, __MPLAPACK_BUFLEN__, DD_PRECISION_SHORT);
     return;
 }
 inline void sprintnum(char *buf, dd_complex rtmp) {
-    char buf1[BUFLEN], buf2[BUFLEN];
-    rtmp.real().write(buf1, BUFLEN, DD_PRECISION);
-    rtmp.real().write(buf2, BUFLEN, DD_PRECISION);
+    char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
+    rtmp.real().write(buf1, __MPLAPACK_BUFLEN__, DD_PRECISION);
+    rtmp.real().write(buf2, __MPLAPACK_BUFLEN__, DD_PRECISION);
     strcat(buf, buf1);
     strcat(buf, buf2);
     strcat(buf, "i");
 }
 inline void sprintnum_short(char *buf, dd_complex rtmp) {
-    char buf1[BUFLEN], buf2[BUFLEN];
-    rtmp.real().write(buf1, BUFLEN, DD_PRECISION_SHORT);
-    rtmp.real().write(buf2, BUFLEN, DD_PRECISION_SHORT);
+    char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
+    rtmp.real().write(buf1, __MPLAPACK_BUFLEN__, DD_PRECISION_SHORT);
+    rtmp.real().write(buf2, __MPLAPACK_BUFLEN__, DD_PRECISION_SHORT);
     strcat(buf, buf1);
     strcat(buf, buf2);
     strcat(buf, "i");
 }
 
-dd_real log2(dd_real x);
-dd_complex exp(dd_complex x);
-dd_real pi(dd_real dummy);
-
-dd_real sign(dd_real a, dd_real b);
-dd_complex sin(dd_complex a);
+inline dd_real pow2(dd_real a) {
+    dd_real mtmp = a * a;
+    return mtmp;
+}
 
 // implementation of sign transfer function.
 inline dd_real sign(dd_real a, dd_real b) {

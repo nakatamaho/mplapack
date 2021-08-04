@@ -30,45 +30,46 @@
 #ifndef _MPLAPACK_UTILS__FLOAT64X_H_
 #define _MPLAPACK_UTILS__FLOAT64X_H_
 
-%%MPLAPACK__FLOAT64X___FLOAT80%%
+#define ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___
 
 #if defined ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___
-//#if defined(__INTEL_COMPILER)
-typedef long double _Float64x;
-//#endif
+#define FLOAT64X_FORMAT "%+25.21Le"
+#define FLOAT64X_SHORT_FORMAT "%+20.16Le"
 
-inline _Float64x pow(const _Float64x &a, const _Float64x &b) {
-    return powl(a, b);
-}
-
-inline _Float64x pow(const long &a, const long &b) {
-    return powl((_Float64x)a, (_Float64x)b);
-}
-
-inline _Float64x pow(const int &a, const long &b) {
-    return powl((_Float64x)a, (_Float64x)b);
-}
-
-inline _Float64x pow(const _Float64x &a, const long &b) {
-    return powl(a, (_Float64x)b);
-}
-
-#if defined __MPLAPACK_MATGEN_HACK__
-inline _Float64x sqrt(_Float64x a) { return sqrtl(a); } //req'ed by matgen
+#if !defined __MPLAPACK_BUFLEN__
+#define __MPLAPACK_BUFLEN__ 1024
 #endif
-inline _Float64x sin(_Float64x &a) { return sinl(a); }
-inline _Float64x cos(_Float64x &a) { return cosl(a); }
 
-namespace std {
+inline void printnum(_Float64x rtmp) { printf(FLOAT64X_FORMAT, rtmp); }
+inline void printnum(std::complex<_Float64x> ctmp) { printf(FLOAT64X_FORMAT FLOAT64X_FORMAT "i", ctmp.real(), ctmp.imag()); }
+
+inline void printnum_short(_Float64x rtmp) { printf(FLOAT64X_SHORT_FORMAT, rtmp); }
+inline void printnum_short(std::complex<_Float64x> ctmp) { printf(FLOAT64X_SHORT_FORMAT FLOAT64X_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
+
+inline void sprintnum(char *buf, _Float64x rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT64X_FORMAT, rtmp); }
+inline void sprintnum(char *buf, std::complex<_Float64x> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT64X_FORMAT FLOAT64X_FORMAT "i", ctmp.real(), ctmp.imag()); }
+
+inline void sprintnum_short(char *buf, _Float64x rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT64X_SHORT_FORMAT, rtmp); }
+inline void sprintnum_short(char *buf, std::complex<_Float64x> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT64X_SHORT_FORMAT FLOAT64X_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
+
+inline _Float64x pow2(const _Float64x &a) { return a * a; }
+
+inline _Float64x pow(const _Float64x &a, const _Float64x &b) { return powl(a, b); }
+inline _Float64x pow(const long &a, const long &b) { return powl((_Float64x)a, (_Float64x)b); }
+inline _Float64x pow(const int &a, const long &b) { return powl((_Float64x)a, (_Float64x)b); }
+inline _Float64x pow(const _Float64x &a, const long &b) { return powl(a, (_Float64x)b); }
+
+inline _Float64x sqrt(_Float64x &a) { return sqrtl(a); }
+inline _Float64x sqrt(const _Float64x &a) { return sqrtl(a); }
+inline _Float64x sin(_Float64x &a) { return sinl(a); }
 inline _Float64x sin(const _Float64x &a) { return sinl(a); }
-inline _Float64x exp(const _Float64x &a) { return expl(a); }
+inline _Float64x cos(_Float64x &a) { return cosl(a); }
 inline _Float64x cos(const _Float64x &a) { return cosl(a); }
-//inline _Float64x log(const _Float64x &a) { return logl(a); }
-//inline _Float64x sqrt(_Float64x &a) { return sqrtl(a); }
-}
+inline _Float64x exp(const _Float64x &a) { return expl(a); }
+inline _Float64x log(const _Float64x &a) { return logl(a); }
 
 // implementation of sign transfer function.
-inline _Float64x sign(_Float64x a, _Float64x b) {
+inline _Float64x sign(const _Float64x &a, const _Float64x &b) {
     _Float64x mtmp;
     mtmp = std::abs(a);
     if (b < 0.0) {

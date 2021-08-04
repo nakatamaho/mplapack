@@ -31,6 +31,8 @@
 #ifndef _MPBLAS_MPFR_H_
 #define _MPBLAS_MPFR_H_
 
+#define ___MPLAPACK_MPFR_DEFAULT_PRECISION___ 512
+
 #include "mpcomplex.h"
 #include "mplapack_config.h"
 #include "mpreal.h"

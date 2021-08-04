@@ -35,7 +35,10 @@
 
 #define GMP_FORMAT "%+36.32Fe"
 #define GMP_SHORT_FORMAT "%+20.16Fe"
-#define BUFLEN 1024
+
+#if !defined __MPLAPACK_BUFLEN__
+#define __MPLAPACK_BUFLEN__ 1024
+#endif
 
 inline void printnum(mpf_class rtmp) {
     gmp_printf(GMP_FORMAT, rtmp.get_mpf_t());
@@ -58,23 +61,28 @@ inline void printnum_short(mpc_class ctmp) {
 }
 
 inline void sprintnum(char *buf, mpf_class rtmp) {
-    gmp_snprintf(buf, BUFLEN, GMP_FORMAT, rtmp.get_mpf_t());
+    gmp_snprintf(buf, __MPLAPACK_BUFLEN__, GMP_FORMAT, rtmp.get_mpf_t());
     return;
 }
 
 inline void sprintnum_short(char *buf, mpf_class rtmp) {
-    gmp_snprintf(buf, BUFLEN, GMP_SHORT_FORMAT, rtmp.get_mpf_t());
+    gmp_snprintf(buf, __MPLAPACK_BUFLEN__, GMP_SHORT_FORMAT, rtmp.get_mpf_t());
     return;
 }
 
 inline void sprintnum(char *buf, mpc_class ctmp) {
-    gmp_snprintf(buf, BUFLEN, GMP_FORMAT GMP_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
+    gmp_snprintf(buf, __MPLAPACK_BUFLEN__, GMP_FORMAT GMP_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
     return;
 }
 
 inline void sprintnum_short(char *buf, mpc_class ctmp) {
-    gmp_snprintf(buf, BUFLEN, GMP_SHORT_FORMAT GMP_SHORT_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
+    gmp_snprintf(buf, __MPLAPACK_BUFLEN__, GMP_SHORT_FORMAT GMP_SHORT_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
     return;
+}
+
+inline mpf_class pow2(mpf_class a) {
+    mpf_class mtmp = a * a;
+    return mtmp;
 }
 
 inline mpf_class sign(mpf_class a, mpf_class b) {
@@ -108,7 +116,7 @@ inline mplapackint nint(mpf_class a) {
 
 inline double cast2double(mpf_class a) { return a.get_d(); }
 
-//every transcendental function and constant for GMP is in double precision.
+// every transcendental function and constant for GMP is in double precision.
 inline mpf_class atan2(mpf_class a, mpf_class b) {
     double dtemp1, dtemp2;
     mpf_class mtemp3;

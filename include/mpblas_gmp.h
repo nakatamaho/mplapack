@@ -29,6 +29,8 @@
 #ifndef _MPBLAS_GMP_H_
 #define _MPBLAS_GMP_H_
 
+#define ___MPLAPACK_GMP_DEFAULT_PRECISION___ 512
+
 #include "gmpxx.h"
 #include "mpc_class.h"
 #include "mplapack_config.h"
