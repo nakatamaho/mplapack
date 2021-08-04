@@ -131,7 +131,7 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
-        lda = max(n, 1);
+        lda = max(n, (INTEGER)1);
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -157,7 +157,7 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     goto statement_130;
                 }
                 //
-                rank = ceil((n * castREAL(rankval[irank - 1])) / 100.0);
+                rank = castINTEGER(ceil((castREAL(n) * castREAL(rankval[irank - 1])) / 100.0));
                 //
                 //           Do first for UPLO = 'U', then for UPLO = 'L'
                 //

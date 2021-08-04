@@ -226,7 +226,7 @@ void Rdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                             //                       is supposed to be real -> Rlange
                             //
                             result[1 - 1] = Rlange("I", n, n, c1, ldc, d_work_Rlange);
-                            result[1 - 1] = result[1 - 1] / max(abs(alpha) * norma + abs(beta), one) / max(n, 1) / eps;
+                            result[1 - 1] = result[1 - 1] / max(REAL(abs(alpha) * norma + abs(beta)), one) / castREAL(max(n, (INTEGER)1)) / eps;
                             //
                             if (result[1 - 1] >= thresh) {
                                 if (nfail == 0) {

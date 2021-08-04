@@ -34,7 +34,7 @@ using namespace fem::major_types;
 using fem::common;
 
 #include <mplapack_matgen.h>
-#include <mplapack_eig.h>
+#include <mplapack_lin.h>
 
 #define __MPLAPACK_XLAENV__
 #include <mplapack_debug.h>

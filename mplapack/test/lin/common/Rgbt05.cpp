@@ -75,10 +75,10 @@ void Rgbt05(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
     errbnd = zero;
     for (j = 1; j <= nrhs; j = j + 1) {
         imax = iRamax(n, &x[(j - 1) * ldx], 1);
-        xnorm = max(abs(x[(imax - 1) + (j - 1) * ldx]), unfl);
+        xnorm = max(REAL(abs(x[(imax - 1) + (j - 1) * ldx])), unfl);
         diff = zero;
         for (i = 1; i <= n; i = i + 1) {
-            diff = max(diff, abs(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact]));
+            diff = max(diff, REAL(abs(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact])));
         }
         //
         if (xnorm > one) {
@@ -92,7 +92,7 @@ void Rgbt05(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
     //
     statement_20:
         if (diff / xnorm <= ferr[j - 1]) {
-            errbnd = max(errbnd, (diff / xnorm) / ferr[j - 1]);
+            errbnd = max(errbnd, REAL((diff / xnorm) / ferr[j - 1]));
         } else {
             errbnd = one / eps;
         }
@@ -107,11 +107,11 @@ void Rgbt05(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
         for (i = 1; i <= n; i = i + 1) {
             tmp = abs(b[(i - 1) + (k - 1) * ldb]);
             if (notran) {
-                for (j = max(i - kl, 1); j <= min(i + ku, n); j = j + 1) {
+                for (j = max(i - kl, (INTEGER)1); j <= min(i + ku, n); j = j + 1) {
                     tmp += abs(ab[((ku + 1 + i - j) - 1) + (j - 1) * ldab]) * abs(x[(j - 1) + (k - 1) * ldx]);
                 }
             } else {
-                for (j = max(i - ku, 1); j <= min(i + kl, n); j = j + 1) {
+                for (j = max(i - ku, (INTEGER)1); j <= min(i + kl, n); j = j + 1) {
                     tmp += abs(ab[((ku + 1 + j - i) - 1) + (i - 1) * ldab]) * abs(x[(j - 1) + (k - 1) * ldx]);
                 }
             }
@@ -121,7 +121,7 @@ void Rgbt05(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
                 axbi = min(axbi, tmp);
             }
         }
-        tmp = berr[k - 1] / (castREAL(nz) * eps + castREAL(nz) * unfl / max(axbi, castREAL(nz) * unfl));
+        tmp = berr[k - 1] / (castREAL(nz) * eps + castREAL(nz) * unfl / max(axbi, REAL(castREAL(nz) * unfl)));
         if (k == 1) {
             reslts[2 - 1] = tmp;
         } else {

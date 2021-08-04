@@ -33,147 +33,27 @@
 #include <cmath>
 using namespace std;
 
-#define GMP_FORMAT            "%+36.32Fe"
-#define GMP_SHORT_FORMAT      "%+20.16Fe"
-#define MPFR_FORMAT           "%+68.64Re"
-#define MPFR_SHORT_FORMAT     "%+20.16Re"
-#define DOUBLE_FORMAT         "%+20.16e"
-#define DOUBLE_SHORT_FORMAT   "%+20.16e"
-#define FLOAT64X_FORMAT       "%+24.20Le"
-#define FLOAT64X_SHORT_FORMAT "%+20.16Le"
-
-#define FLOAT128_FORMAT       "%+24.20Q"
-#define FLOAT128_SHORT_FORMAT "%+20.16Q"
-
-#define QD_PRECISION         64
-#define QD_PRECISION_SHORT   16
-#define DD_PRECISION         32
-#define DD_PRECISION_SHORT   16
 #define BUFLEN 1024
 
-void printnum(double rtmp);
-void printnum(complex<double> ctmp);
-void printnum(long double rtmp);
-void printnum(complex<long double> ctmp);
-void printnum(__complex__ double ctmp);
+#define DOUBLE_FORMAT "%+20.16e"
+#define DOUBLE_SHORT_FORMAT "%+20.16e"
 
-inline void printnum_short(INTEGER itmp) {
-    printf("%d ", (int)itmp);
-}
+inline void printnum(double rtmp) { printf(DOUBLE_FORMAT, rtmp); }
+inline void printnum(complex<double> ctmp) { printf(DOUBLE_FORMAT DOUBLE_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void printnum(__complex__ double ctmp) { printf(DOUBLE_FORMAT DOUBLE_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
 
-void printnum_short(double rtmp);
-void printnum_short(complex<double> ctmp);
-void printnum_short(__complex__ double ctmp);
+inline void printnum_short(double rtmp) { printf(DOUBLE_SHORT_FORMAT, rtmp); }
+inline void printnum_short(complex<double> ctmp) { printf(DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void printnum_short(__complex__ double ctmp) { printf(DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
+inline void printnum_short(INTEGER itmp) { printf("%d ", (int)itmp); }
 
-void sprintnum(char *buf, double rtmp);
-void sprintnum(char *buf, complex<double> rtmp);
-void sprintnum(char *buf, __complex__ double rtmp);
+inline void sprintnum(char *buf, double rtmp) { snprintf(buf, BUFLEN, DOUBLE_FORMAT, rtmp); }
+inline void sprintnum(char *buf, complex<double> ctmp) { snprintf(buf, BUFLEN, DOUBLE_FORMAT DOUBLE_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void sprintnum(char *buf, __complex__ double ctmp) { snprintf(buf, BUFLEN, DOUBLE_FORMAT DOUBLE_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
 
-void sprintnum_short(char *buf, double rtmp);
-void sprintnum_short(char *buf, complex<double> rtmp);
-void sprintnum_short(char *buf, __complex__ double rtmp);
-
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
-inline void printnum(mpreal rtmp) {
-    mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp));
-    return;
-}
-inline void printnum_short(mpreal rtmp) {
-    mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp));
-    return;
-}
-inline void printnum(mpcomplex ctmp) {
-    mpreal cre, cim;
-    cre = ctmp.real();
-    cim = ctmp.imag();
-    mpfr_printf(MPFR_FORMAT MPFR_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
-    return;
-}
-inline void printnum_short(mpcomplex ctmp) {
-    mpreal cre, cim;
-    cre = ctmp.real();
-    cim = ctmp.imag();
-    mpfr_printf(MPFR_SHORT_FORMAT MPFR_SHORT_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
-    return;
-}
-inline void sprintnum(char *buf, mpreal rtmp) {
-    mpfr_snprintf(buf, BUFLEN, MPFR_FORMAT, mpfr_ptr(rtmp));
-    return;
-}
-inline void sprintnum_short(char *buf, mpreal rtmp) {
-    mpfr_snprintf(buf, BUFLEN, MPFR_SHORT_FORMAT, mpfr_ptr(rtmp));
-    return;
-}
-inline void sprintnum(char *buf, mpcomplex ctmp) {
-    mpreal cre, cim;
-    cre = ctmp.real();
-    cim = ctmp.imag();
-    mpfr_snprintf(buf, BUFLEN, MPFR_FORMAT MPFR_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
-    return;
-}
-inline void sprintnum_short(char *buf, mpcomplex ctmp) {
-    mpreal cre, cim;
-    cre = ctmp.real();
-    cim = ctmp.imag();
-    mpfr_snprintf(buf, BUFLEN, MPFR_SHORT_FORMAT MPFR_SHORT_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
-    return;
-}
-#endif
-
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
-void printnum(mpf_class rtmp);
-void printnum(mpc_class ctmp);
-void printnum_short(mpf_class rtmp);
-void printnum_short(mpc_class ctmp);
-void sprintnum(char *buf, mpf_class rtmp);
-void sprintnum(char *buf, mpc_class rtmp);
-void sprintnum_short(char *buf, mpf_class rtmp);
-void sprintnum_short(char *buf, mpc_class rtmp);
-#endif
-
-#if defined ___MPLAPACK_BUILD_WITH_QD___
-void printnum(qd_real rtmp);
-void printnum(qd_complex rtmp);
-void printnum_short(qd_real rtmp);
-void printnum_short(qd_complex rtmp);
-void sprintnum(char *buf, qd_real rtmp);
-void sprintnum(char *buf, qd_complex rtmp);
-void sprintnum_short(char *buf, qd_real rtmp);
-void sprintnum_short(char *buf, qd_complex rtmp);
-#endif
-
-#if defined ___MPLAPACK_BUILD_WITH_DD___
-void printnum(dd_real rtmp);
-void printnum(dd_complex rtmp);
-void printnum_short(dd_real rtmp);
-void printnum_short(dd_complex rtmp);
-void sprintnum(char *buf, dd_real rtmp);
-void sprintnum(char *buf, dd_complex rtmp);
-void sprintnum_short(char *buf, dd_real rtmp);
-void sprintnum_short(char *buf, dd_complex rtmp);
-#endif
-
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-void printnum(_Float64x rtmp);
-void printnum(complex<_Float64x> rtmp);
-void printnum_short(_Float64x rtmp);
-void printnum_short(complex<_Float64x> rtmp);
-void sprintnum(char *buf, _Float64x rtmp);
-void sprintnum(char *buf, complex<_Float64x> rtmp);
-void sprintnum_short(char *buf, _Float64x rtmp);
-void sprintnum_short(char *buf, complex<_Float64x> rtmp);
-#endif
-
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-void printnum(_Float128 rtmp);
-void printnum(complex<_Float128> rtmp);
-void printnum_short(_Float128 rtmp);
-void printnum_short(complex<_Float128> rtmp);
-void sprintnum(char *buf, _Float128 rtmp);
-void sprintnum(char *buf, complex<_Float128> rtmp);
-void sprintnum_short(char *buf, _Float128 rtmp);
-void sprintnum_short(char *buf, complex<_Float128> rtmp);
-#endif
+inline void sprintnum_short(char *buf, double rtmp) { snprintf(buf, BUFLEN, DOUBLE_SHORT_FORMAT, rtmp); }
+inline void sprintnum_short(char *buf, complex<double> ctmp) { snprintf(buf, BUFLEN, DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void sprintnum_short(char *buf, __complex__ double ctmp) { snprintf(buf, BUFLEN, DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
 
 template <class X> void printmat(int N, int M, X *A, int LDA) {
     X tmp;
@@ -200,10 +80,10 @@ template <class X> void printmatU(int N, X *A, int LDA) {
     for (int i = 0; i < N; i++) {
         printf("[ ");
         for (int j = 0; j < N; j++) {
-	  if (i<=j)
-            tmp = A[i + j * LDA];
-	  else
-            tmp = A[j + i * LDA];
+            if (i <= j)
+                tmp = A[i + j * LDA];
+            else
+                tmp = A[j + i * LDA];
             printnum_short(tmp);
             if (j < N - 1)
                 printf(", ");

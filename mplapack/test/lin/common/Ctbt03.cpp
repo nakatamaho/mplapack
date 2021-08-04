@@ -79,16 +79,16 @@ void Ctbt03(const char *uplo, const char *trans, const char *diag, INTEGER const
     if (Mlsame(diag, "N")) {
         if (Mlsame(uplo, "U")) {
             for (j = 1; j <= n; j = j + 1) {
-                tnorm = max(tnorm, tscal * abs(ab[((kd + 1) - 1) + (j - 1) * ldab]) + cnorm[j - 1]);
+                tnorm = max(tnorm, REAL(tscal * abs(ab[((kd + 1) - 1) + (j - 1) * ldab]) + cnorm[j - 1]));
             }
         } else {
             for (j = 1; j <= n; j = j + 1) {
-                tnorm = max(tnorm, tscal * abs(ab[(j - 1) * ldab]) + cnorm[j - 1]);
+                tnorm = max(tnorm, REAL(tscal * abs(ab[(j - 1) * ldab]) + cnorm[j - 1]));
             }
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            tnorm = max(tnorm, tscal + cnorm[j - 1]);
+            tnorm = max(tnorm, REAL(tscal + cnorm[j - 1]));
         }
     }
     //

@@ -33,6 +33,50 @@
 
 #include "mpc_class.h"
 
+#define GMP_FORMAT "%+36.32Fe"
+#define GMP_SHORT_FORMAT "%+20.16Fe"
+#define BUFLEN 1024
+
+inline void printnum(mpf_class rtmp) {
+    gmp_printf(GMP_FORMAT, rtmp.get_mpf_t());
+    return;
+}
+
+inline void printnum_short(mpf_class rtmp) {
+    gmp_printf(GMP_SHORT_FORMAT, rtmp.get_mpf_t());
+    return;
+}
+
+inline void printnum(mpc_class ctmp) {
+    gmp_printf(GMP_FORMAT GMP_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
+    return;
+}
+
+inline void printnum_short(mpc_class ctmp) {
+    gmp_printf(GMP_SHORT_FORMAT GMP_SHORT_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
+    return;
+}
+
+inline void sprintnum(char *buf, mpf_class rtmp) {
+    gmp_snprintf(buf, BUFLEN, GMP_FORMAT, rtmp.get_mpf_t());
+    return;
+}
+
+inline void sprintnum_short(char *buf, mpf_class rtmp) {
+    gmp_snprintf(buf, BUFLEN, GMP_SHORT_FORMAT, rtmp.get_mpf_t());
+    return;
+}
+
+inline void sprintnum(char *buf, mpc_class ctmp) {
+    gmp_snprintf(buf, BUFLEN, GMP_FORMAT GMP_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
+    return;
+}
+
+inline void sprintnum_short(char *buf, mpc_class ctmp) {
+    gmp_snprintf(buf, BUFLEN, GMP_SHORT_FORMAT GMP_SHORT_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
+    return;
+}
+
 inline mpf_class sign(mpf_class a, mpf_class b) {
     mpf_class mtmp;
     mpf_abs(mtmp.get_mpf_t(), a.get_mpf_t());

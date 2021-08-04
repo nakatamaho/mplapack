@@ -96,10 +96,10 @@ void Rgtt05(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
     errbnd = zero;
     for (j = 1; j <= nrhs; j = j + 1) {
         imax = iRamax(n, &x[(j - 1) * ldx], 1);
-        xnorm = max(abs(x[(imax - 1) + (j - 1) * ldx]), unfl);
+        xnorm = max(REAL(abs(x[(imax - 1) + (j - 1) * ldx])), unfl);
         diff = zero;
         for (i = 1; i <= n; i = i + 1) {
-            diff = max(diff, abs(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact]));
+            diff = max(diff, REAL(abs(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact])));
         }
         //
         if (xnorm > one) {
@@ -113,7 +113,7 @@ void Rgtt05(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
     //
     statement_20:
         if (diff / xnorm <= ferr[j - 1]) {
-            errbnd = max(errbnd, (diff / xnorm) / ferr[j - 1]);
+            errbnd = max(errbnd, REAL((diff / xnorm) / ferr[j - 1]));
         } else {
             errbnd = one / eps;
         }
@@ -150,7 +150,7 @@ void Rgtt05(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
                 axbi = min(axbi, tmp);
             }
         }
-        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, nz * unfl));
+        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, REAL(nz * unfl)));
         if (k == 1) {
             reslts[2 - 1] = tmp;
         } else {

@@ -154,7 +154,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     m = mmax;
     n = nmax;
     nrhs = nsmax;
-    mnmin = max(min(m, n), 1);
+    mnmin = max(min(m, n), (INTEGER)1);
     //
     //     Compute workspace needed for routines
     //     Rqrt14, Rqrt17 (two side cases), Rqrt15 and Rqrt12
@@ -170,7 +170,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         lda = max((INTEGER)1, m);
         for (in = 1; in <= nn; in = in + 1) {
             n = nval[in - 1];
-            mnmin = max(min(m, n), 1);
+            mnmin = max(min(m, n), (INTEGER)1);
             ldb = max({(INTEGER)1, m, n});
             for (ins = 1; ins <= nns; ins = ins + 1) {
                 nrhs = nsval[ins - 1];
@@ -224,7 +224,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         //
         for (in = 1; in <= nn; in = in + 1) {
             n = nval[in - 1];
-            mnmin = max(min(m, n), 1);
+            mnmin = max(min(m, n), (INTEGER)1);
             ldb = max({(INTEGER)1, m, n});
             mb = (mnmin + 1);
             //
@@ -489,8 +489,8 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //                       Test 7:  Compute relative error in svd
                             //
                             if (rank > 0) {
-                                Raxpy(castREAL(mnmin), -one, copys, 1, s, 1);
-                                result[7 - 1] = Rasum(castREAL(mnmin), s, 1) / Rasum(castREAL(mnmin), copys, 1) / (eps * castREAL(mnmin));
+                                Raxpy(mnmin, -one, copys, 1, s, 1);
+                                result[7 - 1] = Rasum(mnmin, s, 1) / Rasum(mnmin, copys, 1) / (eps * castREAL(mnmin));
                             } else {
                                 result[7 - 1] = zero;
                             }
@@ -538,8 +538,8 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //                       Test 11:  Compute relative error in svd
                             //
                             if (rank > 0) {
-                                Raxpy(castREAL(mnmin), -one, copys, 1, s, 1);
-                                result[11 - 1] = Rasum(castREAL(mnmin), s, 1) / Rasum(castREAL(mnmin), copys, 1) / (eps * castREAL(mnmin));
+                                Raxpy(mnmin, -one, copys, 1, s, 1);
+                                result[11 - 1] = Rasum(mnmin, s, 1) / Rasum(mnmin, copys, 1) / (eps * castREAL(mnmin));
                             } else {
                                 result[11 - 1] = zero;
                             }

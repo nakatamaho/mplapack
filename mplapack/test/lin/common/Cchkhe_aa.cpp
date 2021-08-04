@@ -125,7 +125,7 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
             write(nout, "(' Invalid input value: ',a4,'=',i6,'; must be <=',i6)"), "M ", n, nmax;
             goto statement_180;
         }
-        lda = max(n, 1);
+        lda = max(n, (INTEGER)1);
         xtype = 'N';
         nimat = ntypes;
         if (n <= 0) {

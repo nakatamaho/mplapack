@@ -86,7 +86,7 @@ void Cget02(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
+            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
         }
     }
     //

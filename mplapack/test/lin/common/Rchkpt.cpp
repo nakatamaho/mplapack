@@ -321,7 +321,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 Rpttrs(n, 1, &d[(n + 1) - 1], &e[(n + 1) - 1], x, lda, info);
                 ainvnm = max({ainvnm, Rasum(n, x, 1)});
             }
-            rcondc = one / max(one, anorm * ainvnm);
+            rcondc = one / max(one, REAL(anorm * ainvnm));
             //
             for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                 nrhs = nsval[irhs - 1];

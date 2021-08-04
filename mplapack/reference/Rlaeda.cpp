@@ -81,7 +81,7 @@ void Rlaeda(INTEGER const n, INTEGER const tlvls, INTEGER const curlvl, INTEGER 
     //     Determine location of lowest level subproblem in the full storage
     //     scheme
     //
-    INTEGER curr = ptr + curpbm * pow(2, curlvl) + pow(2, (curlvl - 1)) - 1;
+    INTEGER curr = ptr + curpbm * (INTEGER)pow((double)2, (double)curlvl) + (INTEGER)pow((double)2, (double)(curlvl - 1)) - 1;
     //
     //     Determine size of these matrices.  We add HALF to the value of
     //     the SQRT in case the machine underestimates one of these square
@@ -105,14 +105,14 @@ void Rlaeda(INTEGER const n, INTEGER const tlvls, INTEGER const curlvl, INTEGER 
     //     rotations and permutation and then multiplying the center matrices
     //     against the current Z.
     //
-    ptr = pow(2, tlvls) + 1;
+    ptr = (INTEGER)pow((double)2, (double)tlvls) + 1;
     INTEGER psiz1 = 0;
     INTEGER psiz2 = 0;
     INTEGER zptr1 = 0;
     INTEGER i = 0;
     const REAL one = 1.0;
     for (k = 1; k <= curlvl - 1; k = k + 1) {
-        curr = ptr + curpbm * pow(2, (curlvl - k)) + pow(2, (curlvl - k - 1)) - 1;
+        curr = ptr + curpbm * (INTEGER)pow((double)2, (double)(curlvl - k)) + (INTEGER)pow((double)2, (double)(curlvl - k - 1)) - 1;
         psiz1 = prmptr[(curr + 1) - 1] - prmptr[curr - 1];
         psiz2 = prmptr[(curr + 2) - 1] - prmptr[(curr + 1) - 1];
         zptr1 = mid - psiz1;
@@ -151,7 +151,7 @@ void Rlaeda(INTEGER const n, INTEGER const tlvls, INTEGER const curlvl, INTEGER 
         }
         Rcopy(psiz2 - bsiz2, &ztemp[(psiz1 + bsiz2 + 1) - 1], 1, &z[(mid + bsiz2) - 1], 1);
         //
-        ptr += pow(2, (tlvls - k));
+        ptr += (INTEGER)pow((double)2, (double)(tlvls - k));
     }
     //
     //     End of Rlaeda

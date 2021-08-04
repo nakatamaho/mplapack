@@ -249,7 +249,7 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     //
                                     result[1 - 1] = Clange("I", m, n, b1, lda, d_work_Clange);
                                     //
-                                    result[1 - 1] = result[1 - 1] / sqrt(eps) / max(max(m, n), 1);
+                                    result[1 - 1] = result[1 - 1] / sqrt(eps) / castREAL(max(max(m, n), (INTEGER)1));
                                     //
                                     if (result[1 - 1] >= thresh) {
                                         if (nfail == 0) {

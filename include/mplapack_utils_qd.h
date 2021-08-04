@@ -30,12 +30,93 @@
 #ifndef _MUTILS_QD_H_
 #define _MUTILS_QD_H_
 
+#define QD_PRECISION 64
+#define QD_PRECISION_SHORT 16
+#define BUFLEN 1024
+
+#include <cstring>
+
+inline void printnum(qd_real rtmp) {
+    std::cout.precision(QD_PRECISION);
+    if (rtmp >= 0.0) {
+        std::cout << "+" << rtmp;
+    } else {
+        std::cout << rtmp;
+    }
+    return;
+}
+
+inline void printnum_short(qd_real rtmp) {
+    std::cout.precision(QD_PRECISION_SHORT);
+    if (rtmp >= 0.0) {
+        std::cout << "+" << rtmp;
+    } else {
+        std::cout << rtmp;
+    }
+    return;
+}
+
+
+inline void printnum(qd_complex rtmp) {
+    std::cout.precision(QD_PRECISION);
+    if (rtmp.real() >= 0.0) {
+        std::cout << "+" << rtmp.real();
+    } else {
+        std::cout << rtmp.real();
+    }
+    if (rtmp.imag() >= 0.0) {
+        std::cout << "+" << rtmp.imag() << "i";
+    } else {
+        std::cout << rtmp.imag() << "i";
+    }
+    return;
+}
+
+inline void printnum_short(qd_complex rtmp) {
+    std::cout.precision(QD_PRECISION_SHORT);
+    if (rtmp.real() >= 0.0) {
+        std::cout << "+" << rtmp.real();
+    } else {
+        std::cout << rtmp.real();
+    }
+    if (rtmp.imag() >= 0.0) {
+        std::cout << "+" << rtmp.imag() << "i";
+    } else {
+        std::cout << rtmp.imag() << "i";
+    }
+    return;
+}
+
+inline void sprintnum(char *buf, qd_real rtmp) {
+    rtmp.write(buf, BUFLEN, QD_PRECISION);
+    return;
+}
+inline void sprintnum_short(char *buf, qd_real rtmp) {
+    rtmp.write(buf, BUFLEN, QD_PRECISION_SHORT);
+    return;
+}
+inline void sprintnum(char *buf, qd_complex rtmp) {
+    char buf1[BUFLEN], buf2[BUFLEN];
+    rtmp.real().write(buf1, BUFLEN, QD_PRECISION);
+    rtmp.real().write(buf2, BUFLEN, QD_PRECISION);
+    strcat(buf, buf1);
+    strcat(buf, buf2);
+    strcat(buf, "i");
+}
+inline void sprintnum_short(char *buf, qd_complex rtmp) {
+    char buf1[BUFLEN], buf2[BUFLEN];
+    rtmp.real().write(buf1, BUFLEN, QD_PRECISION_SHORT);
+    rtmp.real().write(buf2, BUFLEN, QD_PRECISION_SHORT);
+    strcat(buf, buf1);
+    strcat(buf, buf2);
+    strcat(buf, "i");
+}
+
 qd_real log2(qd_real x);
 qd_complex exp(qd_complex x);
 qd_real pi(qd_real dummy);
 
 qd_real sign(qd_real a, qd_real b);
-qd_complex Real2Complex(qd_real a, qd_real b);
 qd_complex sin(qd_complex a);
 
 // implementation of sign transfer function.

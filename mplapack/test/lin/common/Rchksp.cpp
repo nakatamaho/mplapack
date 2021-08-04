@@ -109,7 +109,7 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
-        lda = max(n, 1);
+        lda = max(n, (INTEGER)1);
         xtype[0] = 'N';
         nimat = ntypes;
         if (n <= 0) {

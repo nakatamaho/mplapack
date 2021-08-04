@@ -129,7 +129,7 @@ REAL Rqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         err = zero;
         for (j = n + 1; j <= n + nrhs; j = j + 1) {
             for (i = n + 1; i <= min(m, j); i = i + 1) {
-                err = max(err, abs(work[(i + (j - 1) * m) - 1]));
+                err = max(err, REAL(abs(work[(i + (j - 1) * m) - 1])));
             }
         }
         //
@@ -158,7 +158,7 @@ REAL Rqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         err = zero;
         for (j = m + 1; j <= n; j = j + 1) {
             for (i = j; i <= ldwork; i = i + 1) {
-                err = max(err, abs(work[(i + (j - 1) * ldwork) - 1]));
+                err = max(err, REAL(abs(work[(i + (j - 1) * ldwork) - 1])));
             }
         }
         //

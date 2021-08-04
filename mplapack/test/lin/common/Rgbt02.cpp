@@ -78,7 +78,7 @@ void Rgbt02(const char *trans, INTEGER const m, INTEGER const n, INTEGER const k
     INTEGER i1 = 0;
     INTEGER i2 = 0;
     for (j = 1; j <= n; j = j + 1) {
-        i1 = max(kd + 1 - j, 1);
+        i1 = max(kd + 1 - j, (INTEGER)1);
         i2 = min(kd + m - j, kl + kd);
         anorm = max({anorm, Rasum(i2 - i1 + 1, &a[(i1 - 1) + (j - 1) * lda], 1)});
     }
@@ -113,7 +113,7 @@ void Rgbt02(const char *trans, INTEGER const m, INTEGER const n, INTEGER const k
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
+            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
         }
     }
     //

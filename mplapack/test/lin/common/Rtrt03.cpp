@@ -57,11 +57,11 @@ void Rtrt03(const char *uplo, const char *trans, const char *diag, INTEGER const
     INTEGER j = 0;
     if (Mlsame(diag, "N")) {
         for (j = 1; j <= n; j = j + 1) {
-            tnorm = max(tnorm, tscal * abs(a[(j - 1) + (j - 1) * lda]) + cnorm[j - 1]);
+            tnorm = max(tnorm, REAL(tscal * abs(a[(j - 1) + (j - 1) * lda]) + cnorm[j - 1]));
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            tnorm = max(tnorm, tscal + cnorm[j - 1]);
+            tnorm = max(tnorm, REAL(tscal + cnorm[j - 1]));
         }
     }
     //
@@ -76,7 +76,7 @@ void Rtrt03(const char *uplo, const char *trans, const char *diag, INTEGER const
     for (j = 1; j <= nrhs; j = j + 1) {
         Rcopy(n, &x[(j - 1) * ldx], 1, work, 1);
         ix = iRamax(n, work, 1);
-        xnorm = max(one, abs(x[(ix - 1) + (j - 1) * ldx]));
+        xnorm = max(one, REAL(abs(x[(ix - 1) + (j - 1) * ldx])));
         xscal = (one / xnorm) / castREAL(n);
         Rscal(n, xscal, work, 1);
         Rtrmv(uplo, trans, diag, n, a, lda, work, 1);

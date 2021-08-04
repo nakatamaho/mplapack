@@ -120,7 +120,7 @@ void Cgbt05(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
     //
     statement_20:
         if (diff / xnorm <= ferr[j - 1]) {
-            errbnd = max(errbnd, (diff / xnorm) / ferr[j - 1]);
+            errbnd = max(errbnd, REAL((diff / xnorm) / ferr[j - 1]));
         } else {
             errbnd = one / eps;
         }
@@ -135,11 +135,11 @@ void Cgbt05(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
         for (i = 1; i <= n; i = i + 1) {
             tmp = abs1(b[(i - 1) + (k - 1) * ldb]);
             if (notran) {
-                for (j = max(i - kl, 1); j <= min(i + ku, n); j = j + 1) {
+                for (j = max(i - kl, (INTEGER)1); j <= min(i + ku, n); j = j + 1) {
                     tmp += abs1(ab[((ku + 1 + i - j) - 1) + (j - 1) * ldab]) * abs1(x[(j - 1) + (k - 1) * ldx]);
                 }
             } else {
-                for (j = max(i - ku, 1); j <= min(i + kl, n); j = j + 1) {
+                for (j = max(i - ku, (INTEGER)1); j <= min(i + kl, n); j = j + 1) {
                     tmp += abs1(ab[((ku + 1 + j - i) - 1) + (i - 1) * ldab]) * abs1(x[(j - 1) + (k - 1) * ldx]);
                 }
             }
@@ -149,7 +149,7 @@ void Cgbt05(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
                 axbi = min(axbi, tmp);
             }
         }
-        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, nz * unfl));
+        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, REAL(nz * unfl)));
         if (k == 1) {
             reslts[2 - 1] = tmp;
         } else {

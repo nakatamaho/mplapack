@@ -38,7 +38,55 @@ using namespace mpfr;
 
 mpreal pi(mpreal dummy);
 mpreal sign(mpreal a, mpreal b);
-mpcomplex Real2Complex(mpreal a, mpreal b);
+
+#define MPFR_FORMAT "%+68.64Re"
+#define MPFR_SHORT_FORMAT "%+20.16Re"
+#define BUFLEN 1024
+
+inline void printnum(mpreal rtmp) {
+    mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp));
+    return;
+}
+inline void printnum_short(mpreal rtmp) {
+    mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp));
+    return;
+}
+inline void printnum(mpcomplex ctmp) {
+    mpreal cre, cim;
+    cre = ctmp.real();
+    cim = ctmp.imag();
+    mpfr_printf(MPFR_FORMAT MPFR_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
+    return;
+}
+inline void printnum_short(mpcomplex ctmp) {
+    mpreal cre, cim;
+    cre = ctmp.real();
+    cim = ctmp.imag();
+    mpfr_printf(MPFR_SHORT_FORMAT MPFR_SHORT_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
+    return;
+}
+inline void sprintnum(char *buf, mpreal rtmp) {
+    mpfr_snprintf(buf, BUFLEN, MPFR_FORMAT, mpfr_ptr(rtmp));
+    return;
+}
+inline void sprintnum_short(char *buf, mpreal rtmp) {
+    mpfr_snprintf(buf, BUFLEN, MPFR_SHORT_FORMAT, mpfr_ptr(rtmp));
+    return;
+}
+inline void sprintnum(char *buf, mpcomplex ctmp) {
+    mpreal cre, cim;
+    cre = ctmp.real();
+    cim = ctmp.imag();
+    mpfr_snprintf(buf, BUFLEN, MPFR_FORMAT MPFR_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
+    return;
+}
+inline void sprintnum_short(char *buf, mpcomplex ctmp) {
+    mpreal cre, cim;
+    cre = ctmp.real();
+    cim = ctmp.imag();
+    mpfr_snprintf(buf, BUFLEN, MPFR_SHORT_FORMAT MPFR_SHORT_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
+    return;
+}
 
 // implementation of sign transfer function.
 inline mpreal sign(mpreal a, mpreal b) {

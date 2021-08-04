@@ -123,7 +123,7 @@ void Ctrt05(const char *uplo, const char *trans, const char *diag, INTEGER const
     //
     statement_20:
         if (diff / xnorm <= ferr[j - 1]) {
-            errbnd = max(errbnd, (diff / xnorm) / ferr[j - 1]);
+            errbnd = max(errbnd, REAL((diff / xnorm) / ferr[j - 1]));
         } else {
             errbnd = one / eps;
         }
@@ -180,7 +180,7 @@ void Ctrt05(const char *uplo, const char *trans, const char *diag, INTEGER const
                 axbi = min(axbi, tmp);
             }
         }
-        tmp = berr[k - 1] / ((n + 1) * eps + (n + 1) * unfl / max(axbi, (n + 1) * unfl));
+        tmp = berr[k - 1] / (castREAL(n + 1) * eps + castREAL(n + 1) * unfl / max(axbi, REAL(castREAL(n + 1) * unfl)));
         if (k == 1) {
             reslts[2 - 1] = tmp;
         } else {

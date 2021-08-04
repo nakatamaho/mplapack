@@ -86,7 +86,7 @@ void Cchkeq(REAL const thresh, INTEGER const nout) {
     const REAL one = 1.0;
     REAL rpow[npow];
     for (i = 1; i <= npow; i = i + 1) {
-        mpow[i - 1] = pow(ten, (i - 1));
+        mpow[i - 1] = (REAL)pow(cast2double(ten), double(i - 1));
         rpow[i - 1] = one / mpow[i - 1];
     }
     //
@@ -123,14 +123,14 @@ void Cchkeq(REAL const thresh, INTEGER const nout) {
                 reslts[1 - 1] = one;
             } else {
                 if (n != 0 && m != 0) {
-                    reslts[1 - 1] = max(reslts[1 - 1], abs((rcond - rpow[m - 1]) / rpow[m - 1]));
-                    reslts[1 - 1] = max(reslts[1 - 1], abs((ccond - rpow[n - 1]) / rpow[n - 1]));
-                    reslts[1 - 1] = max(reslts[1 - 1], abs((norm - mpow[(n + m + 1) - 1]) / mpow[(n + m + 1) - 1]));
+                    reslts[1 - 1] = max(reslts[1 - 1], REAL(abs((rcond - rpow[m - 1]) / rpow[m - 1])));
+                    reslts[1 - 1] = max(reslts[1 - 1], REAL(abs((ccond - rpow[n - 1]) / rpow[n - 1])));
+                    reslts[1 - 1] = max(reslts[1 - 1], REAL(abs((norm - mpow[(n + m + 1) - 1]) / mpow[(n + m + 1) - 1])));
                     for (i = 1; i <= m; i = i + 1) {
-                        reslts[1 - 1] = max(reslts[1 - 1], abs((r[i - 1] - rpow[(i + n + 1) - 1]) / rpow[(i + n + 1) - 1]));
+                        reslts[1 - 1] = max(reslts[1 - 1], REAL(abs((r[i - 1] - rpow[(i + n + 1) - 1]) / rpow[(i + n + 1) - 1])));
                     }
                     for (j = 1; j <= n; j = j + 1) {
-                        reslts[1 - 1] = max(reslts[1 - 1], abs((c[j - 1] - mpow[(n - j + 1) - 1]) / mpow[(n - j + 1) - 1]));
+                        reslts[1 - 1] = max(reslts[1 - 1], REAL(abs((c[j - 1] - mpow[(n - j + 1) - 1]) / mpow[(n - j + 1) - 1])));
                     }
                 }
             }
@@ -141,22 +141,22 @@ void Cchkeq(REAL const thresh, INTEGER const nout) {
     //     Test with zero rows and columns
     //
     for (j = 1; j <= nsz; j = j + 1) {
-        a[(max(nsz - 1, 1) - 1) + (j - 1) * lda] = czero;
+        a[(max(nsz - 1, (INTEGER)1) - 1) + (j - 1) * lda] = czero;
     }
     Cgeequ(nsz, nsz, a, nsz, r, c, rcond, ccond, norm, info);
-    if (info != max(nsz - 1, 1)) {
+    if (info != max(nsz - 1, (INTEGER)1)) {
         reslts[1 - 1] = one;
     }
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     for (j = 1; j <= nsz; j = j + 1) {
-        a[(max(nsz - 1, 1) - 1) + (j - 1) * lda] = cone;
+        a[(max(nsz - 1, (INTEGER)1) - 1) + (j - 1) * lda] = cone;
     }
     for (i = 1; i <= nsz; i = i + 1) {
-        a[(i - 1) + (max(nsz - 1, 1) - 1) * lda] = czero;
+        a[(i - 1) + (max(nsz - 1, (INTEGER)1) - 1) * lda] = czero;
     }
     Cgeequ(nsz, nsz, a, nsz, r, c, rcond, ccond, norm, info);
-    if (info != nsz + max(nsz - 1, 1)) {
+    if (info != nsz + max(nsz - 1, (INTEGER)1)) {
         reslts[1 - 1] = one;
     }
     reslts[1 - 1] = reslts[1 - 1] / eps;
@@ -173,8 +173,8 @@ void Cchkeq(REAL const thresh, INTEGER const nout) {
     REAL ratio = 0.0;
     for (n = 0; n <= nsz; n = n + 1) {
         for (m = 0; m <= nsz; m = m + 1) {
-            for (kl = 0; kl <= max(m - 1, 0); kl = kl + 1) {
-                for (ku = 0; ku <= max(n - 1, 0); ku = ku + 1) {
+            for (kl = 0; kl <= max(m - 1, (INTEGER)0); kl = kl + 1) {
+                for (ku = 0; ku <= max(n - 1, (INTEGER)0); ku = ku + 1) {
                     //
                     for (j = 1; j <= nsz; j = j + 1) {
                         for (i = 1; i <= nszb; i = i + 1) {
@@ -205,7 +205,7 @@ void Cchkeq(REAL const thresh, INTEGER const nout) {
                                 rcmax = max(rcmax, r[i - 1]);
                             }
                             ratio = rcmin / rcmax;
-                            reslts[2 - 1] = max(reslts[2 - 1], abs((rcond - ratio) / ratio));
+                            reslts[2 - 1] = max(reslts[2 - 1], REAL(abs((rcond - ratio) / ratio)));
                             //
                             rcmin = c[1 - 1];
                             rcmax = c[1 - 1];
@@ -214,9 +214,9 @@ void Cchkeq(REAL const thresh, INTEGER const nout) {
                                 rcmax = max(rcmax, c[j - 1]);
                             }
                             ratio = rcmin / rcmax;
-                            reslts[2 - 1] = max(reslts[2 - 1], abs((ccond - ratio) / ratio));
+                            reslts[2 - 1] = max(reslts[2 - 1], REAL(abs((ccond - ratio) / ratio)));
                             //
-                            reslts[2 - 1] = max(reslts[2 - 1], abs((norm - mpow[(n + m + 1) - 1]) / mpow[(n + m + 1) - 1]));
+                            reslts[2 - 1] = max(reslts[2 - 1], REAL(abs((norm - mpow[(n + m + 1) - 1]) / mpow[(n + m + 1) - 1])));
                             for (i = 1; i <= m; i = i + 1) {
                                 rcmax = zero;
                                 for (j = 1; j <= n; j = j + 1) {
@@ -225,7 +225,7 @@ void Cchkeq(REAL const thresh, INTEGER const nout) {
                                         rcmax = max(rcmax, ratio);
                                     }
                                 }
-                                reslts[2 - 1] = max(reslts[2 - 1], abs(one - rcmax));
+                                reslts[2 - 1] = max(reslts[2 - 1], REAL(abs(one - rcmax)));
                             }
                             //
                             for (j = 1; j <= n; j = j + 1) {
@@ -236,7 +236,7 @@ void Cchkeq(REAL const thresh, INTEGER const nout) {
                                         rcmax = max(rcmax, ratio);
                                     }
                                 }
-                                reslts[2 - 1] = max(reslts[2 - 1], abs(one - rcmax));
+                                reslts[2 - 1] = max(reslts[2 - 1], REAL(abs(one - rcmax)));
                             }
                         }
                     }
@@ -267,17 +267,17 @@ void Cchkeq(REAL const thresh, INTEGER const nout) {
             reslts[3 - 1] = one;
         } else {
             if (n != 0) {
-                reslts[3 - 1] = max(reslts[3 - 1], abs((rcond - rpow[n - 1]) / rpow[n - 1]));
-                reslts[3 - 1] = max(reslts[3 - 1], abs((norm - mpow[(2 * n + 1) - 1]) / mpow[(2 * n + 1) - 1]));
+                reslts[3 - 1] = max(reslts[3 - 1], REAL(abs((rcond - rpow[n - 1]) / rpow[n - 1])));
+                reslts[3 - 1] = max(reslts[3 - 1], REAL(abs((norm - mpow[(2 * n + 1) - 1]) / mpow[(2 * n + 1) - 1])));
                 for (i = 1; i <= n; i = i + 1) {
-                    reslts[3 - 1] = max(reslts[3 - 1], abs((r[i - 1] - rpow[(i + 1) - 1]) / rpow[(i + 1) - 1]));
+                    reslts[3 - 1] = max(reslts[3 - 1], REAL(abs((r[i - 1] - rpow[(i + 1) - 1]) / rpow[(i + 1) - 1])));
                 }
             }
         }
     }
-    a[max(nsz - 1, 1) - 1 + (max(nsz - 1, 1) - 1) * lda] = -cone;
+    a[max(nsz - 1, (INTEGER)1) - 1 + (max(nsz - 1, (INTEGER)1) - 1) * lda] = -cone;
     Cpoequ(nsz, a, nsz, r, rcond, norm, info);
-    if (info != max(nsz - 1, 1)) {
+    if (info != max(nsz - 1, (INTEGER)1)) {
         reslts[3 - 1] = one;
     }
     reslts[3 - 1] = reslts[3 - 1] / eps;
@@ -303,10 +303,10 @@ void Cchkeq(REAL const thresh, INTEGER const nout) {
             reslts[4 - 1] = one;
         } else {
             if (n != 0) {
-                reslts[4 - 1] = max(reslts[4 - 1], abs((rcond - rpow[n - 1]) / rpow[n - 1]));
-                reslts[4 - 1] = max(reslts[4 - 1], abs((norm - mpow[(2 * n + 1) - 1]) / mpow[(2 * n + 1) - 1]));
+                reslts[4 - 1] = max(reslts[4 - 1], REAL(abs((rcond - rpow[n - 1]) / rpow[n - 1])));
+                reslts[4 - 1] = max(reslts[4 - 1], REAL(abs((norm - mpow[(2 * n + 1) - 1]) / mpow[(2 * n + 1) - 1])));
                 for (i = 1; i <= n; i = i + 1) {
-                    reslts[4 - 1] = max(reslts[4 - 1], abs((r[i - 1] - rpow[(i + 1) - 1]) / rpow[(i + 1) - 1]));
+                    reslts[4 - 1] = max(reslts[4 - 1], REAL(abs((r[i - 1] - rpow[(i + 1) - 1]) / rpow[(i + 1) - 1])));
                 }
             }
         }
@@ -328,10 +328,10 @@ void Cchkeq(REAL const thresh, INTEGER const nout) {
             reslts[4 - 1] = one;
         } else {
             if (n != 0) {
-                reslts[4 - 1] = max(reslts[4 - 1], abs((rcond - rpow[n - 1]) / rpow[n - 1]));
-                reslts[4 - 1] = max(reslts[4 - 1], abs((norm - mpow[(2 * n + 1) - 1]) / mpow[(2 * n + 1) - 1]));
+                reslts[4 - 1] = max(reslts[4 - 1], REAL(abs((rcond - rpow[n - 1]) / rpow[n - 1])));
+                reslts[4 - 1] = max(reslts[4 - 1], REAL(abs((norm - mpow[(2 * n + 1) - 1]) / mpow[(2 * n + 1) - 1])));
                 for (i = 1; i <= n; i = i + 1) {
-                    reslts[4 - 1] = max(reslts[4 - 1], abs((r[i - 1] - rpow[(i + 1) - 1]) / rpow[(i + 1) - 1]));
+                    reslts[4 - 1] = max(reslts[4 - 1], REAL(abs((r[i - 1] - rpow[(i + 1) - 1]) / rpow[(i + 1) - 1])));
                 }
             }
         }
@@ -340,7 +340,7 @@ void Cchkeq(REAL const thresh, INTEGER const nout) {
     i = (nsz * (nsz + 1)) / 2 - 2;
     ap[i - 1] = -cone;
     Cppequ("L", nsz, ap, r, rcond, norm, info);
-    if (info != max(nsz - 1, 1)) {
+    if (info != max(nsz - 1, (INTEGER)1)) {
         reslts[4 - 1] = one;
     }
     reslts[4 - 1] = reslts[4 - 1] / eps;
@@ -348,7 +348,7 @@ void Cchkeq(REAL const thresh, INTEGER const nout) {
     //     Test Cpbequ
     //
     for (n = 0; n <= nsz; n = n + 1) {
-        for (kl = 0; kl <= max(n - 1, 0); kl = kl + 1) {
+        for (kl = 0; kl <= max(n - 1, (INTEGER)0); kl = kl + 1) {
             //
             //           Test upper triangular storage
             //
@@ -367,17 +367,17 @@ void Cchkeq(REAL const thresh, INTEGER const nout) {
                 reslts[5 - 1] = one;
             } else {
                 if (n != 0) {
-                    reslts[5 - 1] = max(reslts[5 - 1], abs((rcond - rpow[n - 1]) / rpow[n - 1]));
-                    reslts[5 - 1] = max(reslts[5 - 1], abs((norm - mpow[(2 * n + 1) - 1]) / mpow[(2 * n + 1) - 1]));
+                    reslts[5 - 1] = max(reslts[5 - 1], REAL(abs((rcond - rpow[n - 1]) / rpow[n - 1])));
+                    reslts[5 - 1] = max(reslts[5 - 1], REAL(abs((norm - mpow[(2 * n + 1) - 1]) / mpow[(2 * n + 1) - 1])));
                     for (i = 1; i <= n; i = i + 1) {
-                        reslts[5 - 1] = max(reslts[5 - 1], abs((r[i - 1] - rpow[(i + 1) - 1]) / rpow[(i + 1) - 1]));
+                        reslts[5 - 1] = max(reslts[5 - 1], REAL(abs((r[i - 1] - rpow[(i + 1) - 1]) / rpow[(i + 1) - 1])));
                     }
                 }
             }
             if (n != 0) {
-                ab[((kl + 1) - 1) + (max(n - 1, 1) - 1) * ldab] = -cone;
+                ab[((kl + 1) - 1) + (max(n - 1, (INTEGER)1) - 1) * ldab] = -cone;
                 Cpbequ("U", n, kl, ab, nszb, r, rcond, norm, info);
-                if (info != max(n - 1, 1)) {
+                if (info != max(n - 1, (INTEGER)1)) {
                     reslts[5 - 1] = one;
                 }
             }
@@ -399,17 +399,17 @@ void Cchkeq(REAL const thresh, INTEGER const nout) {
                 reslts[5 - 1] = one;
             } else {
                 if (n != 0) {
-                    reslts[5 - 1] = max(reslts[5 - 1], abs((rcond - rpow[n - 1]) / rpow[n - 1]));
-                    reslts[5 - 1] = max(reslts[5 - 1], abs((norm - mpow[(2 * n + 1) - 1]) / mpow[(2 * n + 1) - 1]));
+                    reslts[5 - 1] = max(reslts[5 - 1], REAL(abs((rcond - rpow[n - 1]) / rpow[n - 1])));
+                    reslts[5 - 1] = max(reslts[5 - 1], REAL(abs((norm - mpow[(2 * n + 1) - 1]) / mpow[(2 * n + 1) - 1])));
                     for (i = 1; i <= n; i = i + 1) {
-                        reslts[5 - 1] = max(reslts[5 - 1], abs((r[i - 1] - rpow[(i + 1) - 1]) / rpow[(i + 1) - 1]));
+                        reslts[5 - 1] = max(reslts[5 - 1], REAL(abs((r[i - 1] - rpow[(i + 1) - 1]) / rpow[(i + 1) - 1])));
                     }
                 }
             }
             if (n != 0) {
-                ab[(max(n - 1, 1) - 1) * ldab] = -cone;
+                ab[(max(n - 1, (INTEGER)1) - 1) * ldab] = -cone;
                 Cpbequ("L", n, kl, ab, nszb, r, rcond, norm, info);
-                if (info != max(n - 1, 1)) {
+                if (info != max(n - 1, (INTEGER)1)) {
                     reslts[5 - 1] = one;
                 }
             }

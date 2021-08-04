@@ -160,8 +160,8 @@ void Rlatm5(INTEGER const prtype, INTEGER const m, INTEGER const n, REAL *a, INT
         //
         for (i = 1; i <= n; i = i + 1) {
             for (j = 1; j <= n; j = j + 1) {
-                b[(i - 1) + (j - 1) * ldb] = (half - castREAL(sin((i + j)))) * twenty;
-                e[(i - 1) + (j - 1) * lde] = (half - castREAL(sin((i * j)))) * two;
+                b[(i - 1) + (j - 1) * ldb] = (half - sin(castREAL(i + j))) * twenty;
+                e[(i - 1) + (j - 1) * lde] = (half - sin(castREAL(i * j))) * two;
             }
         }
         //

@@ -3,8 +3,6 @@
  *	Nakata, Maho
  * 	All rights reserved.
  *
- * $Id: mplapack_utils_dd.h,v 1.11 2010/08/07 03:15:46 nakatamaho Exp $
- *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -31,13 +29,90 @@
 #ifndef _MUTILS_DD_H_
 #define _MUTILS_DD_H_
 
+#define DD_PRECISION 32
+#define DD_PRECISION_SHORT 16
+#define BUFLEN 1024
+
+#include <cstring>
+
+inline void printnum(dd_real rtmp) {
+    std::cout.precision(DD_PRECISION);
+    if (rtmp >= 0.0) {
+        std::cout << "+" << rtmp;
+    } else {
+        std::cout << rtmp;
+    }
+    return;
+}
+
+inline void printnum_short(dd_real rtmp) {
+    std::cout.precision(DD_PRECISION_SHORT);
+    if (rtmp >= 0.0) {
+        std::cout << "+" << rtmp;
+    } else {
+        std::cout << rtmp;
+    }
+    return;
+}
+inline void printnum(dd_complex rtmp) {
+    std::cout.precision(DD_PRECISION);
+    if (rtmp.real() >= 0.0) {
+        std::cout << "+" << rtmp.real();
+    } else {
+        std::cout << rtmp.real();
+    }
+    if (rtmp.imag() >= 0.0) {
+        std::cout << "+" << rtmp.imag() << "i";
+    } else {
+        std::cout << rtmp.imag() << "i";
+    }
+    return;
+}
+inline void printnum_short(dd_complex rtmp) {
+    std::cout.precision(DD_PRECISION);
+    if (rtmp.real() >= 0.0) {
+        std::cout << "+" << rtmp.real();
+    } else {
+        std::cout << rtmp.real();
+    }
+    if (rtmp.imag() >= 0.0) {
+        std::cout << "+" << rtmp.imag() << "i";
+    } else {
+        std::cout << rtmp.imag() << "i";
+    }
+    return;
+}
+inline void sprintnum(char *buf, dd_real rtmp) {
+    rtmp.write(buf, BUFLEN, DD_PRECISION);
+    return;
+}
+inline void sprintnum_short(char *buf, dd_real rtmp) {
+    rtmp.write(buf, BUFLEN, DD_PRECISION_SHORT);
+    return;
+}
+inline void sprintnum(char *buf, dd_complex rtmp) {
+    char buf1[BUFLEN], buf2[BUFLEN];
+    rtmp.real().write(buf1, BUFLEN, DD_PRECISION);
+    rtmp.real().write(buf2, BUFLEN, DD_PRECISION);
+    strcat(buf, buf1);
+    strcat(buf, buf2);
+    strcat(buf, "i");
+}
+inline void sprintnum_short(char *buf, dd_complex rtmp) {
+    char buf1[BUFLEN], buf2[BUFLEN];
+    rtmp.real().write(buf1, BUFLEN, DD_PRECISION_SHORT);
+    rtmp.real().write(buf2, BUFLEN, DD_PRECISION_SHORT);
+    strcat(buf, buf1);
+    strcat(buf, buf2);
+    strcat(buf, "i");
+}
+
 dd_real log2(dd_real x);
 dd_complex exp(dd_complex x);
 dd_real pi(dd_real dummy);
 
 dd_real sign(dd_real a, dd_real b);
 dd_complex sin(dd_complex a);
-dd_complex Real2Complex(dd_real a, dd_real b);
 
 // implementation of sign transfer function.
 inline dd_real sign(dd_real a, dd_real b) {

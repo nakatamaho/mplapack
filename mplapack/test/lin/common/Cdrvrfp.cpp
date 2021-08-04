@@ -124,8 +124,8 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
     for (iin = 1; iin <= nn; iin = iin + 1) {
         //
         n = nval[iin - 1];
-        lda = max(n, 1);
-        ldb = max(n, 1);
+        lda = max(n, (INTEGER)1);
+        ldb = max(n, (INTEGER)1);
         //
         for (iis = 1; iis <= nns; iis = iis + 1) {
             //

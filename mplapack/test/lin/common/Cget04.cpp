@@ -79,7 +79,7 @@ void Cget04(INTEGER const n, INTEGER const nrhs, COMPLEX *x, INTEGER const ldx, 
                 resid = 1.0 / eps;
             }
         } else {
-            resid = max(resid, (diffnm / xnorm) * rcond);
+            resid = max(resid, REAL((diffnm / xnorm) * rcond));
         }
     }
     if (resid * eps < 1.0) {

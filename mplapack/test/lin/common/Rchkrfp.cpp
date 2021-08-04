@@ -213,7 +213,7 @@ void Rchkrfp(void) {
     ss >> thresh;
     write(nout, "(/,' Routines pass computational tests if test ratio is ','less than',"
                 "f8.2,/)"),
-        double(thresh);
+        cast2double(thresh);
     //
     //     Read the flag that indicates whether to test the error exits.
     //

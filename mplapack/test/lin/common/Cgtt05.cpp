@@ -119,7 +119,7 @@ void Cgtt05(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
     //
     statement_20:
         if (diff / xnorm <= ferr[j - 1]) {
-            errbnd = max(errbnd, (diff / xnorm) / ferr[j - 1]);
+            errbnd = max(errbnd, REAL((diff / xnorm) / ferr[j - 1]));
         } else {
             errbnd = one / eps;
         }
@@ -156,7 +156,7 @@ void Cgtt05(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
                 axbi = min(axbi, tmp);
             }
         }
-        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, nz * unfl));
+        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, REAL(nz * unfl)));
         if (k == 1) {
             reslts[2 - 1] = tmp;
         } else {

@@ -81,13 +81,13 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             ku = 0;
         } else if (imat == 2) {
             kl = 0;
-            ku = max(n - 1, 0);
+            ku = max(n - 1, (INTEGER)0);
         } else if (imat == 3) {
-            kl = max(m - 1, 0);
+            kl = max(m - 1, (INTEGER)0);
             ku = 0;
         } else {
-            kl = max(m - 1, 0);
-            ku = max(n - 1, 0);
+            kl = max(m - 1, (INTEGER)0);
+            ku = max(n - 1, (INTEGER)0);
         }
         //
         //        Set the condition number and norm.
@@ -123,13 +123,13 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             ku = 0;
         } else if (imat == 2) {
             kl = 0;
-            ku = max(n - 1, 0);
+            ku = max(n - 1, (INTEGER)0);
         } else if (imat == 3) {
-            kl = max(m - 1, 0);
+            kl = max(m - 1, (INTEGER)0);
             ku = 0;
         } else {
-            kl = max(m - 1, 0);
-            ku = max(n - 1, 0);
+            kl = max(m - 1, (INTEGER)0);
+            ku = max(n - 1, (INTEGER)0);
         }
         //
         //        Set the condition number and norm.
@@ -229,7 +229,7 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         if (imat == 1) {
             kl = 0;
         } else {
-            kl = max(n - 1, 0);
+            kl = max(n - 1, (INTEGER)0);
         }
         ku = kl;
         //
@@ -265,7 +265,7 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         if (imat == 1) {
             kl = 0;
         } else {
-            kl = max(n - 1, 0);
+            kl = max(n - 1, (INTEGER)0);
         }
         ku = kl;
         //
@@ -359,11 +359,11 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             kl = 0;
             ku = 0;
         } else if (imat < 0) {
-            kl = max(n - 1, 0);
+            kl = max(n - 1, (INTEGER)0);
             ku = 0;
         } else {
             kl = 0;
-            ku = max(n - 1, 0);
+            ku = max(n - 1, (INTEGER)0);
         }
         //
         //        Set the condition number and norm.

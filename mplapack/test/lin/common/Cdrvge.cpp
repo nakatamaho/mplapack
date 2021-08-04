@@ -141,7 +141,7 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
-        lda = max(n, 1);
+        lda = max(n, (INTEGER)1);
         xtype = 'N';
         nimat = ntypes;
         if (n <= 0) {
@@ -278,7 +278,7 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //                    Form the inverse of A.
                         //
                         Clacpy("Full", n, n, afac, lda, a, lda);
-                        lwork = nmax * max(3, nrhs);
+                        lwork = nmax * max((INTEGER)3, nrhs);
                         Cgetri(n, a, lda, iwork, work, lwork, info);
                         //
                         //                    Compute the 1-norm condition number of A.

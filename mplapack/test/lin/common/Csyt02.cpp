@@ -97,7 +97,7 @@ void Csyt02(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
+            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
         }
     }
     //

@@ -96,10 +96,10 @@ void Rpbt05(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
     errbnd = zero;
     for (j = 1; j <= nrhs; j = j + 1) {
         imax = iRamax(n, &x[(j - 1) * ldx], 1);
-        xnorm = max(abs(x[(imax - 1) + (j - 1) * ldx]), unfl);
+        xnorm = max(REAL(abs(x[(imax - 1) + (j - 1) * ldx])), unfl);
         diff = zero;
         for (i = 1; i <= n; i = i + 1) {
-            diff = max(diff, abs(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact]));
+            diff = max(diff, REAL(abs(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact])));
         }
         //
         if (xnorm > one) {
@@ -113,7 +113,7 @@ void Rpbt05(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
     //
     statement_20:
         if (diff / xnorm <= ferr[j - 1]) {
-            errbnd = max(errbnd, (diff / xnorm) / ferr[j - 1]);
+            errbnd = max(errbnd, REAL((diff / xnorm) / ferr[j - 1]));
         } else {
             errbnd = one / eps;
         }
@@ -128,14 +128,14 @@ void Rpbt05(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
         for (i = 1; i <= n; i = i + 1) {
             tmp = abs(b[(i - 1) + (k - 1) * ldb]);
             if (upper) {
-                for (j = max(i - kd, 1); j <= i; j = j + 1) {
+                for (j = max(i - kd, (INTEGER)1); j <= i; j = j + 1) {
                     tmp += abs(ab[((kd + 1 - i + j) - 1) + (i - 1) * ldab]) * abs(x[(j - 1) + (k - 1) * ldx]);
                 }
                 for (j = i + 1; j <= min(i + kd, n); j = j + 1) {
                     tmp += abs(ab[((kd + 1 + i - j) - 1) + (j - 1) * ldab]) * abs(x[(j - 1) + (k - 1) * ldx]);
                 }
             } else {
-                for (j = max(i - kd, 1); j <= i - 1; j = j + 1) {
+                for (j = max(i - kd, (INTEGER)1); j <= i - 1; j = j + 1) {
                     tmp += abs(ab[((1 + i - j) - 1) + (j - 1) * ldab]) * abs(x[(j - 1) + (k - 1) * ldx]);
                 }
                 for (j = i; j <= min(i + kd, n); j = j + 1) {
@@ -148,7 +148,7 @@ void Rpbt05(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
                 axbi = min(axbi, tmp);
             }
         }
-        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, nz * unfl));
+        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, REAL(nz * unfl)));
         if (k == 1) {
             reslts[2 - 1] = tmp;
         } else {

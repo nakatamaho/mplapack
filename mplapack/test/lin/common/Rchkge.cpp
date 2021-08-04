@@ -252,7 +252,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         Rlacpy("Full", n, n, afac, lda, ainv, lda);
                         strncpy(srnamt, "Rgetri", strlen(srnamt));
                         nrhs = nsval[1 - 1];
-                        lwork = nmax * max(3, nrhs);
+                        lwork = nmax * max((INTEGER)3, nrhs);
                         Rgetri(n, ainv, lda, iwork, work, lwork, info);
                         //
                         //                    Check error code from Rgetri.

@@ -78,7 +78,7 @@ void Cgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     INTEGER i1 = 0;
     INTEGER i2 = 0;
     for (j = 1; j <= n; j = j + 1) {
-        i1 = max(kd + 1 - j, 1);
+        i1 = max(kd + 1 - j, (INTEGER)1);
         i2 = min(kd + m - j, kl + kd);
         if (i2 >= i1) {
             anorm = max({anorm, RCasum(i2 - i1 + 1, &a[(i1 - 1) + (j - 1) * lda], 1)});

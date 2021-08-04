@@ -101,7 +101,7 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     //     Number of row blocks in Clatsqr
     //
-    INTEGER nrb = max((INTEGER)1, ceil(castREAL(m - n) / castREAL(mb1 - n)));
+    INTEGER nrb = max((INTEGER)1, castINTEGER(ceil(castREAL(m - n) / castREAL(mb1 - n))));
     //
     //     Begin determine LWORK for the array WORK and allocate memory.
     //
@@ -256,7 +256,7 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //     TEST 6
     //     Compute |DF - D*(Q**T)| / ( eps * m * |D| )
     //
-    Cgemm("N", "C", n, m, m, -cone.real(), d, n, q, m, cone.real(), df, n);
+    Cgemm("N", "C", n, m, m, -cone, d, n, q, m, cone, df, n);
     resid = Clange("1", n, m, df, n, rwork);
     if (dnorm > zero) {
         result[6 - 1] = resid / (eps * max((INTEGER)1, m) * dnorm);

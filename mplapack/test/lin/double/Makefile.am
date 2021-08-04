@@ -3,13 +3,13 @@ xlintstC_double \
 xlintstrfR_double \
 xlintstrfC_double
 
-mplapack_double_lintestdir = $(prefix)/share/mplapack/test/mplapack/lin/_double
+mplapack_double_lintestdir = $(prefix)/share/mplapack/test/mplapack/lin/double
 
-$(bin_PROGRAMS): ../liblin_double.la ../liblin_override.la
+$(bin_PROGRAMS): ../liblin_double.la ../liblin_override_double.la
 
-libdepends = -L.. -llin_double -llin_override -L$(top_builddir)/mplapack/test/matgen -lmatgen_double -L$(top_builddir)/mplapack/reference -lmplapack_double -L$(top_builddir)/mpblas/reference -lmpblas_double
-mplibs = -L$(MPC_LIBDIR) -L$(_double_LIBDIR) -L$(GMP_LIBDIR) -lmpc -l_double -lgmpxx -lgmp -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(_double_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/_doublec++ -D__MPLAPACK_BUILD_WITH_double__ -I$(top_srcdir)/mplapack/test/fable
+libdepends = -L.. -llin_double -llin_override_double -L$(top_builddir)/mplapack/test/matgen -lmatgen_double -L$(top_builddir)/mplapack/reference -lmplapack_double -L$(top_builddir)/mpblas/reference -lmpblas_double
+mplibs = -lm
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_DOUBLE___ -I$(top_srcdir)/mplapack/test/fable
 
 xlintstR_double_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran

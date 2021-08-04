@@ -125,7 +125,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //     Threshold for rank estimation
     //
-    rcond = sqrt(eps) - (sqrt(eps) - eps) / 2;
+    rcond = sqrt(eps) - (sqrt(eps) - eps) / 2.0;
     //
     //     Test the error exits
     //
@@ -164,7 +164,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     m = mmax;
     n = nmax;
     nrhs = nsmax;
-    mnmin = max(min(m, n), 1);
+    mnmin = max(min(m, n), (INTEGER)1);
     //
     //     Compute workspace needed for routines
     //     Cqrt14, Cqrt17 (two side cases), Cqrt15 and Cqrt12
@@ -181,7 +181,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         lda = max((INTEGER)1, m);
         for (in = 1; in <= nn; in = in + 1) {
             n = nval[in - 1];
-            mnmin = max(min(m, n), 1);
+            mnmin = max(min(m, n), (INTEGER)1);
             ldb = max({(INTEGER)1, m, n});
             for (ins = 1; ins <= nns; ins = ins + 1) {
                 nrhs = nsval[ins - 1];
@@ -238,7 +238,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         //
         for (in = 1; in <= nn; in = in + 1) {
             n = nval[in - 1];
-            mnmin = max(min(m, n), 1);
+            mnmin = max(min(m, n), (INTEGER)1);
             ldb = max({(INTEGER)1, m, n});
             mb = (mnmin + 1);
             //

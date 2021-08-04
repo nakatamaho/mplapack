@@ -118,7 +118,7 @@ void Cptt05(INTEGER const n, INTEGER const nrhs, REAL *d, COMPLEX *e, COMPLEX *b
     //
     statement_20:
         if (diff / xnorm <= ferr[j - 1]) {
-            errbnd = max(errbnd, (diff / xnorm) / ferr[j - 1]);
+            errbnd = max(errbnd, REAL((diff / xnorm) / ferr[j - 1]));
         } else {
             errbnd = one / eps;
         }
@@ -141,7 +141,7 @@ void Cptt05(INTEGER const n, INTEGER const nrhs, REAL *d, COMPLEX *e, COMPLEX *b
             tmp = abs1(b[(n - 1) + (k - 1) * ldb]) + abs1(e[(n - 1) - 1]) * abs1(x[((n - 1) - 1) + (k - 1) * ldx]) + abs1(d[n - 1] * x[(n - 1) + (k - 1) * ldx]);
             axbi = min(axbi, tmp);
         }
-        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, nz * unfl));
+        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, REAL(nz * unfl)));
         if (k == 1) {
             reslts[2 - 1] = tmp;
         } else {

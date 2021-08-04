@@ -5,11 +5,11 @@ xlintstrfC_qd
 
 mplapack_qd_lintestdir = $(prefix)/share/mplapack/test/mplapack/lin/qd
 
-$(bin_PROGRAMS): ../liblin_qd.la ../liblin_override.la
+$(bin_PROGRAMS): ../liblin_qd.la ../liblin_override_qd.la
 
-libdepends = -L$(top_builqdir)/mplapack/test/lin -llin_qd -llin_override -L$(top_builqdir)/mplapack/test/matgen -lmatgen_qd -L$(top_builqdir)/mplapack/reference -lmplapack_qd -L$(top_builqdir)/mpblas/reference -lmpblas_qd
-mplibs = -L$(MPC_LIBDIR) -L$(QD_LIBDIR) -L$(QD_LIBDIR) -lmpc -lqd -lqdxx -lqd -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -I$(QD_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/qdc++ -D___MPLAPACK_BUILD_WITH_QD___ -I$(top_srcdir)/mplapack/test/fable
+libdepends = -L$(top_builddir)/mplapack/test/lin -llin_qd -llin_override_qd -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd -L$(top_builddir)/mplapack/reference -lmplapack_qd -L$(top_builddir)/mpblas/reference -lmpblas_qd
+mplibs = -L$(QD_LIBDIR) -lqd -lm
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ -I$(top_srcdir)/mplapack/test/fable
 
 xlintstR_qd_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran

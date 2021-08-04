@@ -80,7 +80,7 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
     INTEGER k = min(m, n);
     INTEGER l = max({m, n, (INTEGER)1});
     INTEGER mnb = max(mb, nb);
-    INTEGER lwork = max(3, l) * mnb;
+    INTEGER lwork = max((INTEGER)3, l) * mnb;
     //
     //     Dynamically allocate local arrays
     //

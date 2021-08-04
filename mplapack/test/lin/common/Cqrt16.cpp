@@ -105,7 +105,7 @@ void Cqrt16(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         } else if (anorm <= zero || xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max({resid, ((bnorm / anorm) / xnorm) / (max(m, n) * eps)});
+            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / (castREAL(max(m, n)) * eps)));
         }
     }
     //

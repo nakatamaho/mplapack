@@ -120,9 +120,9 @@ void Rlaed7(INTEGER const icompq, INTEGER const n, INTEGER const qsiz, INTEGER c
     //     Form the z-vector which consists of the last row of Q_1 and the
     //     first row of Q_2.
     //
-    ptr = 1 + pow(2, tlvls);
+    ptr = 1 + (INTEGER)pow((double)2, (double)tlvls);
     for (i = 1; i <= curlvl - 1; i = i + 1) {
-        ptr += pow(2, (tlvls - i));
+        ptr += (INTEGER)pow((double)2, (double)(tlvls - i));
     }
     curr = ptr + curpbm;
     Rlaeda(n, tlvls, curlvl, curpbm, prmptr, perm, givptr, givcol, givnum, qstore, qptr, &work[iz - 1], &work[(iz + n) - 1], info);

@@ -81,19 +81,19 @@ void Ctpt03(const char *uplo, const char *trans, const char *diag, INTEGER const
         if (Mlsame(uplo, "U")) {
             jj = 1;
             for (j = 1; j <= n; j = j + 1) {
-                tnorm = max(tnorm, tscal * abs(ap[jj - 1]) + cnorm[j - 1]);
+                tnorm = max(tnorm, REAL(tscal * abs(ap[jj - 1]) + cnorm[j - 1]));
                 jj += j;
             }
         } else {
             jj = 1;
             for (j = 1; j <= n; j = j + 1) {
-                tnorm = max(tnorm, tscal * abs(ap[jj - 1]) + cnorm[j - 1]);
+                tnorm = max(tnorm, REAL(tscal * abs(ap[jj - 1]) + cnorm[j - 1]));
                 jj += n - j + 1;
             }
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            tnorm = max(tnorm, tscal + cnorm[j - 1]);
+            tnorm = max(tnorm, REAL(tscal + cnorm[j - 1]));
         }
     }
     //

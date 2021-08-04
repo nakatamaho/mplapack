@@ -125,7 +125,7 @@ void Ctbt05(const char *uplo, const char *trans, const char *diag, INTEGER const
     //
     statement_20:
         if (diff / xnorm <= ferr[j - 1]) {
-            errbnd = max(errbnd, (diff / xnorm) / ferr[j - 1]);
+            errbnd = max(errbnd, REAL((diff / xnorm) / ferr[j - 1]));
         } else {
             errbnd = one / eps;
         }
@@ -145,7 +145,7 @@ void Ctbt05(const char *uplo, const char *trans, const char *diag, INTEGER const
             tmp = abs1(b[(i - 1) + (k - 1) * ldb]);
             if (upper) {
                 if (!notran) {
-                    for (j = max(i - kd, 1); j <= i - ifu; j = j + 1) {
+                    for (j = max(i - kd, (INTEGER)1); j <= i - ifu; j = j + 1) {
                         tmp += abs1(ab[((kd + 1 - i + j) - 1) + (i - 1) * ldab]) * abs1(x[(j - 1) + (k - 1) * ldx]);
                     }
                     if (unit) {
@@ -161,7 +161,7 @@ void Ctbt05(const char *uplo, const char *trans, const char *diag, INTEGER const
                 }
             } else {
                 if (notran) {
-                    for (j = max(i - kd, 1); j <= i - ifu; j = j + 1) {
+                    for (j = max(i - kd, (INTEGER)1); j <= i - ifu; j = j + 1) {
                         tmp += abs1(ab[((1 + i - j) - 1) + (j - 1) * ldab]) * abs1(x[(j - 1) + (k - 1) * ldx]);
                     }
                     if (unit) {
@@ -182,7 +182,7 @@ void Ctbt05(const char *uplo, const char *trans, const char *diag, INTEGER const
                 axbi = min(axbi, tmp);
             }
         }
-        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, nz * unfl));
+        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, REAL(nz * unfl)));
         if (k == 1) {
             reslts[2 - 1] = tmp;
         } else {

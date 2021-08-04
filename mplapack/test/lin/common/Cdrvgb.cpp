@@ -154,12 +154,12 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
-        ldb = max(n, 1);
+        ldb = max(n, (INTEGER)1);
         xtype[0] = 'N';
         //
         //        Set limits on the number of loop iterations.
         //
-        nkl = max((INTEGER)1, min(n, 4));
+        nkl = max((INTEGER)1, min(n, (INTEGER)4));
         if (n == 0) {
             nkl = 1;
         }
@@ -177,7 +177,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             if (ikl == 1) {
                 kl = 0;
             } else if (ikl == 2) {
-                kl = max(n - 1, 0);
+                kl = max(n - 1, (INTEGER)0);
             } else if (ikl == 3) {
                 kl = (3 * n - 1) / 4;
             } else if (ikl == 4) {
@@ -192,7 +192,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 if (iku == 1) {
                     ku = 0;
                 } else if (iku == 2) {
-                    ku = max(n - 1, 0);
+                    ku = max(n - 1, (INTEGER)0);
                 } else if (iku == 3) {
                     ku = (3 * n - 1) / 4;
                 } else if (iku == 4) {
@@ -492,11 +492,11 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 if (info != 0 && info <= n) {
                                     anrmpv = zero;
                                     for (j = 1; j <= info; j = j + 1) {
-                                        for (i = max(ku + 2 - j, 1); i <= min(n + ku + 1 - j, kl + ku + 1); i = i + 1) {
+                                        for (i = max(ku + 2 - j, (INTEGER)1); i <= min(n + ku + 1 - j, kl + ku + 1); i = i + 1) {
                                             anrmpv = max(anrmpv, abs(a[(i + (j - 1) * lda) - 1]));
                                         }
                                     }
-                                    rpvgrw = Clantb("M", "U", "N", info, min(info - 1, kl + ku), &afb[(max(1, (kl + ku + 2 - info)) - 1) * ldafb], ldafb, rdum);
+                                    rpvgrw = Clantb("M", "U", "N", info, min(info - 1, kl + ku), &afb[(max((INTEGER)1, (kl + ku + 2 - info)) - 1) * ldafb], ldafb, rdum);
                                     if (rpvgrw == zero) {
                                         rpvgrw = one;
                                     } else {

@@ -94,10 +94,10 @@ void Claed7(INTEGER const n, INTEGER const cutpnt, INTEGER const qsiz, INTEGER c
     //     Form the z-vector which consists of the last row of Q_1 and the
     //     first row of Q_2.
     //
-    INTEGER ptr = 1 + pow(2, tlvls);
+    INTEGER ptr = 1 + pow((double)2, (double)tlvls);
     INTEGER i = 0;
     for (i = 1; i <= curlvl - 1; i = i + 1) {
-        ptr += pow(2, (tlvls - i));
+        ptr += pow((double)2, (double)(tlvls - i));
     }
     INTEGER curr = ptr + curpbm;
     INTEGER ldgivcol = 2;

@@ -226,7 +226,7 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                             //                       is supposed to be real -> Clange
                             //
                             result[1 - 1] = Clange("I", n, n, c1, ldc, d_work_Clange);
-                            result[1 - 1] = result[1 - 1] / max(abs(alpha) * norma * norma + abs(beta) * normc, one) / max(n, 1) / eps;
+                            result[1 - 1] = result[1 - 1] / max(REAL(abs(alpha) * norma * norma + abs(beta) * normc), one) / castREAL(max(n, (INTEGER)1)) / eps;
                             //
                             if (result[1 - 1] >= thresh) {
                                 if (nfail == 0) {

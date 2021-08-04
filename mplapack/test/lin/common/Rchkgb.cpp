@@ -190,11 +190,11 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
             //
             //           Set limits on the number of loop iterations.
             //
-            nkl = min(m + 1, 4);
+            nkl = min(m + 1, (INTEGER)4);
             if (n == 0) {
                 nkl = 2;
             }
-            nku = min(n + 1, 4);
+            nku = min(n + 1, (INTEGER)4);
             if (m == 0) {
                 nku = 2;
             }

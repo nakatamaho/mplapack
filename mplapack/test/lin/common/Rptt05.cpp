@@ -94,10 +94,10 @@ void Rptt05(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *b, INTE
     errbnd = zero;
     for (j = 1; j <= nrhs; j = j + 1) {
         imax = iRamax(n, &x[(j - 1) * ldx], 1);
-        xnorm = max(abs(x[(imax - 1) + (j - 1) * ldx]), unfl);
+        xnorm = max(REAL(abs(x[(imax - 1) + (j - 1) * ldx])), unfl);
         diff = zero;
         for (i = 1; i <= n; i = i + 1) {
-            diff = max(diff, abs(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact]));
+            diff = max(diff, REAL(abs(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact])));
         }
         //
         if (xnorm > one) {
@@ -111,7 +111,7 @@ void Rptt05(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *b, INTE
     //
     statement_20:
         if (diff / xnorm <= ferr[j - 1]) {
-            errbnd = max(errbnd, (diff / xnorm) / ferr[j - 1]);
+            errbnd = max(errbnd, REAL((diff / xnorm) / ferr[j - 1]));
         } else {
             errbnd = one / eps;
         }
@@ -134,7 +134,7 @@ void Rptt05(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *b, INTE
             tmp = abs(b[(n - 1) + (k - 1) * ldb]) + abs(e[(n - 1) - 1] * x[((n - 1) - 1) + (k - 1) * ldx]) + abs(d[n - 1] * x[(n - 1) + (k - 1) * ldx]);
             axbi = min(axbi, tmp);
         }
-        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, nz * unfl));
+        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, REAL(nz * unfl)));
         if (k == 1) {
             reslts[2 - 1] = tmp;
         } else {

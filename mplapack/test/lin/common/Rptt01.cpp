@@ -90,8 +90,8 @@ void Rptt01(INTEGER const n, REAL *d, REAL *e, REAL *df, REAL *ef, REAL *work, R
         anorm = max(d[1 - 1] + abs(e[1 - 1]), d[n - 1] + abs(e[(n - 1) - 1]));
         resid = max(abs(work[1 - 1]) + abs(work[(n + 1) - 1]), abs(work[n - 1]) + abs(work[(2 * n - 1) - 1]));
         for (i = 2; i <= n - 1; i = i + 1) {
-            anorm = max(anorm, d[i - 1] + abs(e[i - 1]) + abs(e[(i - 1) - 1]));
-            resid = max(resid, abs(work[i - 1]) + abs(work[(n + i - 1) - 1]) + abs(work[(n + i) - 1]));
+            anorm = max(anorm, REAL(d[i - 1] + abs(e[i - 1]) + abs(e[(i - 1) - 1])));
+            resid = max(resid, REAL(abs(work[i - 1]) + abs(work[(n + i - 1) - 1]) + abs(work[(n + i) - 1])));
         }
     }
     //

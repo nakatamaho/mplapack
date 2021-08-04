@@ -467,7 +467,7 @@ void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                         }
                         texp = texp * two;
                     }
-                    b[max(1, j - kd + 1) - 1] = (castREAL(kd + 2) / castREAL(kd + 3)) * tscal;
+                    b[max((INTEGER)1, j - kd + 1) - 1] = (castREAL(kd + 2) / castREAL(kd + 3)) * tscal;
                 }
             } else {
                 for (j = 1; j <= n; j = j + kd) {

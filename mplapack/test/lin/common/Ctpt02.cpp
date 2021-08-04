@@ -103,7 +103,7 @@ void Ctpt02(const char *uplo, const char *trans, const char *diag, INTEGER const
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
+            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
         }
     }
     //

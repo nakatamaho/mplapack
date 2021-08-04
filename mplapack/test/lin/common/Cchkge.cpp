@@ -219,7 +219,7 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     if (m == n && info == 0) {
                         Clacpy("Full", n, n, afac, lda, ainv, lda);
                         nrhs = nsval[1 - 1];
-                        lwork = nmax * max(3, nrhs);
+                        lwork = nmax * max((INTEGER)3, nrhs);
                         strncpy(srnamt, "Cgetri", srnamt_len);
                         Cgetri(n, ainv, lda, iwork, work, lwork, info);
                         //

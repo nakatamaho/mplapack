@@ -148,12 +148,12 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
-        lda = max(n, 1);
+        lda = max(n, (INTEGER)1);
         xtype = 'N';
         //
         //        Set limits on the number of loop iterations.
         //
-        nkd = max((INTEGER)1, min(n, 4));
+        nkd = max((INTEGER)1, min(n, (INTEGER)4));
         nimat = ntypes;
         if (n == 0) {
             nimat = 1;
@@ -225,10 +225,10 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             ioff = (izero - 1) * ldab + kd + 1;
                             Ccopy(izero - i1, &work[iw - 1], 1, &a[(ioff - izero + i1) - 1], 1);
                             iw += izero - i1;
-                            Ccopy(i2 - izero + 1, &work[iw - 1], 1, &a[ioff - 1], max(ldab - 1, 1));
+                            Ccopy(i2 - izero + 1, &work[iw - 1], 1, &a[ioff - 1], max(ldab - 1, (INTEGER)1));
                         } else {
                             ioff = (i1 - 1) * ldab + 1;
-                            Ccopy(izero - i1, &work[iw - 1], 1, &a[(ioff + izero - i1) - 1], max(ldab - 1, 1));
+                            Ccopy(izero - i1, &work[iw - 1], 1, &a[(ioff + izero - i1) - 1], max(ldab - 1, (INTEGER)1));
                             ioff = (izero - 1) * ldab + 1;
                             iw += izero - i1;
                             Ccopy(i2 - izero + 1, &work[iw - 1], 1, &a[ioff - 1], 1);
@@ -255,17 +255,17 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             work[(iw + i) - 1] = zero;
                         }
                         iw++;
-                        i1 = max(izero - kd, 1);
+                        i1 = max(izero - kd, (INTEGER)1);
                         i2 = min(izero + kd, n);
                         //
                         if (iuplo == 1) {
                             ioff = (izero - 1) * ldab + kd + 1;
                             Cswap(izero - i1, &a[(ioff - izero + i1) - 1], 1, &work[iw - 1], 1);
                             iw += izero - i1;
-                            Cswap(i2 - izero + 1, &a[ioff - 1], max(ldab - 1, 1), &work[iw - 1], 1);
+                            Cswap(i2 - izero + 1, &a[ioff - 1], max(ldab - 1, (INTEGER)1), &work[iw - 1], 1);
                         } else {
                             ioff = (i1 - 1) * ldab + 1;
-                            Cswap(izero - i1, &a[(ioff + izero - i1) - 1], max(ldab - 1, 1), &work[iw - 1], 1);
+                            Cswap(izero - i1, &a[(ioff + izero - i1) - 1], max(ldab - 1, (INTEGER)1), &work[iw - 1], 1);
                             ioff = (izero - 1) * ldab + 1;
                             iw += izero - i1;
                             Cswap(i2 - izero + 1, &a[ioff - 1], 1, &work[iw - 1], 1);

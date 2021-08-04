@@ -58,16 +58,16 @@ void Rtbt03(const char *uplo, const char *trans, const char *diag, INTEGER const
     if (Mlsame(diag, "N")) {
         if (Mlsame(uplo, "U")) {
             for (j = 1; j <= n; j = j + 1) {
-                tnorm = max(tnorm, tscal * abs(ab[((kd + 1) - 1) + (j - 1) * ldab]) + cnorm[j - 1]);
+                tnorm = max(tnorm, REAL(tscal * abs(ab[((kd + 1) - 1) + (j - 1) * ldab]) + cnorm[j - 1]));
             }
         } else {
             for (j = 1; j <= n; j = j + 1) {
-                tnorm = max(tnorm, tscal * abs(ab[(j - 1) * ldab]) + cnorm[j - 1]);
+                tnorm = max(tnorm, REAL(tscal * abs(ab[(j - 1) * ldab]) + cnorm[j - 1]));
             }
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            tnorm = max(tnorm, tscal + cnorm[j - 1]);
+            tnorm = max(tnorm, REAL(tscal + cnorm[j - 1]));
         }
     }
     //
@@ -82,7 +82,7 @@ void Rtbt03(const char *uplo, const char *trans, const char *diag, INTEGER const
     for (j = 1; j <= nrhs; j = j + 1) {
         Rcopy(n, &x[(j - 1) * ldx], 1, work, 1);
         ix = iRamax(n, work, 1);
-        xnorm = max(one, abs(x[(ix - 1) + (j - 1) * ldx]));
+        xnorm = max(one, REAL(abs(x[(ix - 1) + (j - 1) * ldx])));
         xscal = (one / xnorm) / castREAL(kd + 1);
         Rscal(n, xscal, work, 1);
         Rtbmv(uplo, trans, diag, n, kd, ab, ldab, work, 1);

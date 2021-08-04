@@ -89,7 +89,7 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char * /* opts */, 
         //
         //        Compute SVD crossover point.
         //
-        return_value = castINTEGER(castREAL(min(n1, n2 * 1.6e0f)));
+        return_value = castINTEGER(castREAL(min(n1, castINTEGER(castREAL(n2) * 1.6))));
         //
     } else if (ispec >= 7 && ispec <= 9) {
         //

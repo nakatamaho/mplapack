@@ -109,7 +109,7 @@ void Rchklqtp(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
             //           Do for each value of L
             //
             minmn = min(m, n);
-            for (l = 0; l <= minmn; l = l + max(minmn, 1)) {
+            for (l = 0; l <= minmn; l = l + max(minmn, (INTEGER)1)) {
                 //
                 //              Do for each possible value of NB
                 //

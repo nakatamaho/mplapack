@@ -83,7 +83,7 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
     INTEGER k = min(m, n);
     l = max({m, n, (INTEGER)1});
     INTEGER mnb = max(mb, nb);
-    lwork = max(3, l) * mnb;
+    lwork = max((INTEGER)3, l) * mnb;
     //
     //     Dynamically allocate local arrays
     //

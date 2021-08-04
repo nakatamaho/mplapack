@@ -101,7 +101,7 @@ void Cgtt02(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
+            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
         }
     }
     //

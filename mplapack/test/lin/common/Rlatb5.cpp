@@ -73,7 +73,7 @@ void Rlatb5(const char *path, INTEGER const imat, INTEGER const n, char *type, I
     if (imat == 1) {
         kl = 0;
     } else {
-        kl = max(n - 1, 0);
+        kl = max(n - 1, (INTEGER)0);
     }
     ku = kl;
     //

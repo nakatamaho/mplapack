@@ -158,8 +158,8 @@ void Cdrvsy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lwork = max(3 * n - 2, n * (1 + nb));
-        lwork = max(lwork, 1);
-        lda = max(n, 1);
+        lwork = max(lwork, (INTEGER)1);
+        lda = max(n, (INTEGER)1);
         xtype = 'N';
         nimat = ntypes;
         if (n <= 0) {

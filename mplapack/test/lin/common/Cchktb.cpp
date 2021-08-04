@@ -127,7 +127,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             nimat2 = ntype1 + 1;
         }
         //
-        nk = min(n + 1, 4);
+        nk = min(n + 1, (INTEGER)4);
         for (ik = 1; ik <= nk; ik = ik + 1) {
             //
             //           Do for KD = 0, N, (3N-1)/4, and (N+1)/4. This order makes
@@ -136,7 +136,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             if (ik == 1) {
                 kd = 0;
             } else if (ik == 2) {
-                kd = max(n, 0);
+                kd = max(n, (INTEGER)0);
             } else if (ik == 3) {
                 kd = (3 * n - 1) / 4;
             } else if (ik == 4) {

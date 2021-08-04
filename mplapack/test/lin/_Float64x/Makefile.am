@@ -5,9 +5,9 @@ xlintstrfC__Float64x
 
 mplapack__Float64x_lintestdir = $(prefix)/share/mplapack/test/mplapack/lin/__Float64x
 
-$(bin_PROGRAMS): ../liblin__Float64x.la ../liblin_override.la
+$(bin_PROGRAMS): ../liblin__Float64x.la ../liblin_override__Float64x.la
 
-libdepends = -L.. -llin__Float64x -llin_override -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float64x -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -L$(top_builddir)/mpblas/reference -lmpblas__Float64x
+libdepends = -L.. -llin__Float64x -llin_override__Float64x -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float64x -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -L$(top_builddir)/mpblas/reference -lmpblas__Float64x
 mplibs = -L$(MPC_LIBDIR) -L$(__FLOAT64x_LIBDIR) -L$(GMP_LIBDIR) -lmpc -l__Float64x -lgmpxx -lgmp -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(__FLOAT64x_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/__Float64xc++ -D__MPLAPACK_BUILD_WITH__FLOAT64x__ -I$(top_srcdir)/mplapack/test/fable
 

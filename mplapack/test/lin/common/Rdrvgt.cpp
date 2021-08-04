@@ -118,7 +118,7 @@ void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         //        Do for each value of N in NVAL.
         //
         n = nval[in - 1];
-        m = max(n - 1, 0);
+        m = max(n - 1, (INTEGER)0);
         lda = max((INTEGER)1, n);
         nimat = ntypes;
         if (n <= 0) {

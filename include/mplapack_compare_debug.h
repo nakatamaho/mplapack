@@ -132,23 +132,6 @@ using namespace mpfr;
 
 #define TRUE 1
 #define FALSE 0
-//#define GMP_P_FORMAT  "%+36.32Fe"
-//#define MPFR_P_FORMAT "%+36.32Re"
-#define GMP_P_FORMAT "%+68.64Fe"
-#define GMP_SHORT_FORMAT "%+21.16Fe"
-#define MPFR_P_FORMAT "%+68.64Re"
-#define MPFR_SHORT_FORMAT "%+21.16Re"
-// double
-//#define GMP_P_FORMAT  "%+21.16Fe"
-//#define MPFR_P_FORMAT "%+21.16Re"
-#define P_64XFORMAT "%+23.20Le"
-#define P_FORMAT "%+21.16e"
-#define LP_FORMAT "%+5.50Le"
-#define QD_PRECISION 64
-#define QD_PRECISION_SHORT 16
-#define DD_PRECISION 32
-#define DD_PRECISION_SHORT 16
-#define BUFLEN 1024
 
 #if defined _WIN32
 // no drand48 on mingw
@@ -159,6 +142,28 @@ inline double drand48() {
     return d;
 }
 #endif
+
+#define DOUBLE_FORMAT "%+20.16e"
+#define DOUBLE_SHORT_FORMAT "%+20.16e"
+
+#define BUFLEN 1024
+
+inline void printnum(double rtmp) { printf(DOUBLE_FORMAT, rtmp); }
+inline void printnum(complex<double> ctmp) { printf(DOUBLE_FORMAT DOUBLE_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void printnum(__complex__ double ctmp) { printf(DOUBLE_FORMAT DOUBLE_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
+
+inline void printnum_short(double rtmp) { printf(DOUBLE_SHORT_FORMAT, rtmp); }
+inline void printnum_short(complex<double> ctmp) { printf(DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void printnum_short(__complex__ double ctmp) { printf(DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
+inline void printnum_short(INTEGER itmp) { printf("%d ", (int)itmp); }
+
+inline void sprintnum(char *buf, double rtmp) { snprintf(buf, BUFLEN, DOUBLE_FORMAT, rtmp); }
+inline void sprintnum(char *buf, complex<double> ctmp) { snprintf(buf, BUFLEN, DOUBLE_FORMAT DOUBLE_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void sprintnum(char *buf, __complex__ double ctmp) { snprintf(buf, BUFLEN, DOUBLE_FORMAT DOUBLE_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
+
+inline void sprintnum_short(char *buf, double rtmp) { snprintf(buf, BUFLEN, DOUBLE_SHORT_FORMAT, rtmp); }
+inline void sprintnum_short(char *buf, complex<double> ctmp) { snprintf(buf, BUFLEN, DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void sprintnum_short(char *buf, __complex__ double ctmp) { snprintf(buf, BUFLEN, DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
 
 #if defined __MPLAPACK_BUILD_DEBUG_CPP__
 #define _MPLAPACK_DEBUG_EXTERN_
@@ -190,38 +195,6 @@ mpreal mpf_randomnumber(mpreal);
 mpcomplex mpc_randomnumber(mpcomplex);
 double mpf_randomnumber(double);
 complex<double> mpc_randomnumber(complex<double>);
-
-void printnum(mpreal rtmp);
-void printnum(mpcomplex ctmp);
-void printnum(double rtmp);
-void printnum(complex<double> ctmp);
-void printnum(long double rtmp);
-void printnum(complex<long double> ctmp);
-void printnum(__complex__ double ctmp);
-
-inline void printnum_short(INTEGER itmp) { printf("%d ", (int)itmp); }
-
-void printnum_short(mpreal rtmp);
-void printnum_short(mpcomplex ctmp);
-void printnum_short(double rtmp);
-void printnum_short(complex<double> ctmp);
-void printnum_short(long double rtmp);
-void printnum_short(complex<long double> ctmp);
-void printnum_short(__complex__ double ctmp);
-
-void sprintnum(char *buf, mpreal rtmp);
-void sprintnum(char *buf, mpcomplex rtmp);
-void sprintnum(char *buf, double rtmp);
-void sprintnum(char *buf, long double rtmp);
-void sprintnum(char *buf, complex<double> rtmp);
-void sprintnum(char *buf, complex<long double> rtmp);
-
-void sprintnum_short(char *buf, mpreal rtmp);
-void sprintnum_short(char *buf, mpcomplex rtmp);
-void sprintnum_short(char *buf, double rtmp);
-void sprintnum_short(char *buf, long double rtmp);
-void sprintnum_short(char *buf, complex<double> rtmp);
-void sprintnum_short(char *buf, complex<long double> rtmp);
 
 // bootstrapping functions; double to mpreal.
 // usually we need only mpreal -> double or _Float128 etc.
@@ -261,12 +234,6 @@ inline int vecplen(int n) {
 inline int matlen(int lda, int n) { return std::max(1, abs(lda) * abs(n)); }
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-void printnum(mpf_class rtmp);
-void printnum(mpc_class ctmp);
-void printnum_short(mpf_class rtmp);
-void printnum_short(mpc_class ctmp);
-void sprintnum(char *buf, mpf_class rtmp);
-void sprintnum(char *buf, mpc_class rtmp);
 mpf_class mpf_randomnumber(mpf_class);
 mpc_class mpc_randomnumber(mpc_class);
 void set_random_number(mpreal &a, mpf_class &b);
@@ -275,12 +242,6 @@ void set_random_number1to2(mpreal &a, mpf_class &b);
 void set_random_number1to2(mpcomplex &a, mpc_class &b);
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_QD___
-void printnum(qd_real rtmp);
-void printnum(qd_complex rtmp);
-void printnum_short(qd_real rtmp);
-void printnum_short(qd_complex rtmp);
-void sprintnum(char *buf, qd_real rtmp);
-void sprintnum(char *buf, qd_complex rtmp);
 qd_real mpf_randomnumber(qd_real);
 qd_complex mpc_randomnumber(qd_complex);
 void set_random_number(mpreal &a, qd_real &b);
@@ -289,12 +250,6 @@ void set_random_number1to2(mpreal &a, qd_real &b);
 void set_random_number1to2(mpcomplex &a, qd_complex &b);
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_DD___
-void printnum(dd_real rtmp);
-void printnum(dd_complex rtmp);
-void printnum_short(dd_real rtmp);
-void printnum_short(dd_complex rtmp);
-void sprintnum(char *buf, dd_real rtmp);
-void sprintnum(char *buf, dd_complex rtmp);
 dd_real mpf_randomnumber(dd_real);
 dd_complex mpc_randomnumber(dd_complex);
 void set_random_number(mpreal &a, dd_real &b);
@@ -310,12 +265,6 @@ void set_random_number1to2(mpcomplex &a, complex<double> &b);
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-void printnum(_Float64x rtmp);
-void printnum(complex<_Float64x> rtmp);
-void printnum_short(_Float64x rtmp);
-void printnum_short(complex<_Float64x> rtmp);
-void sprintnum(char *buf, _Float64x rtmp);
-void sprintnum(char *buf, complex<_Float64x> rtmp);
 _Float64x mpf_randomnumber(_Float64x dummy);
 complex<_Float64x> mpc_randomnumber(complex<_Float64x> dummy);
 void set_random_number(mpreal &a, _Float64x &b);
@@ -325,12 +274,6 @@ void set_random_number1to2(mpcomplex &a, complex<_Float64x> &b);
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-void printnum(_Float128 rtmp);
-void printnum(complex<_Float128> rtmp);
-void printnum_short(_Float128 rtmp);
-void printnum_short(complex<_Float128> rtmp);
-void sprintnum(char *buf, _Float128 rtmp);
-void sprintnum(char *buf, complex<_Float128> rtmp);
 _Float128 mpf_randomnumber(_Float128 dummy);
 complex<_Float128> mpc_randomnumber(complex<_Float128> dummy);
 void set_random_number(mpreal &a, _Float128 &b);
@@ -338,59 +281,6 @@ void set_random_number(mpcomplex &a, complex<_Float128> &b);
 void set_random_number1to2(mpreal &a, _Float128 &b);
 void set_random_number1to2(mpcomplex &a, complex<_Float128> &b);
 #endif
-
-template <class X> void printmat(int N, int M, X *A, int LDA) {
-    X tmp;
-    printf("[ ");
-    for (int i = 0; i < N; i++) {
-        printf("[ ");
-        for (int j = 0; j < M; j++) {
-            tmp = A[i + j * LDA];
-            printnum_short(tmp);
-            if (j < M - 1)
-                printf(", ");
-        }
-        if (i < N - 1)
-            printf("]; ");
-        else
-            printf("] ");
-    }
-    printf("]");
-}
-
-template <class X> void printmatU(int N, X *A, int LDA) {
-    X tmp;
-    printf("[ ");
-    for (int i = 0; i < N; i++) {
-        printf("[ ");
-        for (int j = 0; j < N; j++) {
-            if (i <= j)
-                tmp = A[i + j * LDA];
-            else
-                tmp = A[j + i * LDA];
-            printnum_short(tmp);
-            if (j < N - 1)
-                printf(", ");
-        }
-        if (i < N - 1)
-            printf("]; ");
-        else
-            printf("] ");
-    }
-    printf("]");
-}
-
-template <class X> void printvec(X *A, int len) {
-    X tmp;
-    printf("[ ");
-    for (int i = 0; i < len; i++) {
-        tmp = A[i];
-        printnum_short(tmp);
-        if (i < len - 1)
-            printf(", ");
-    }
-    printf("]");
-}
 
 template <class X_REF, class X> void set_random_vector(X_REF *vec_ref, X *vec, int len) {
     if (len <= 0)
@@ -480,7 +370,6 @@ template <class X_REF, class X> void set_random_symmmat_cond(X_REF *p_ref, X *p,
             p_ref[i + j * ldp] = tmpmat3_mpreal[i + j * ldp];
         }
     }
-
     delete[] tmpmat1_mpreal;
     delete[] tmpmat2_mpreal;
     delete[] tmpmat3_mpreal;

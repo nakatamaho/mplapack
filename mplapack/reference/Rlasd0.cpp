@@ -149,7 +149,7 @@ void Rlasd0(INTEGER const n, INTEGER const sqre, REAL *d, REAL *e, REAL *u, INTE
             lf = 1;
             ll = 1;
         } else {
-            lf = pow(2, (lvl - 1));
+            lf = (INTEGER)pow((double)2, (double)(lvl - 1));
             ll = 2 * lf - 1;
         }
         for (i = lf; i <= ll; i = i + 1) {

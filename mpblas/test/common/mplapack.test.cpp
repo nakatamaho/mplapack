@@ -59,50 +59,6 @@ mpcomplex mpc_randomnumber(mpcomplex dummy) {
     return ctmp;
 }
 
-void printnum(mpreal rtmp) {
-    mpfr_printf(MPFR_P_FORMAT, mpfr_ptr(rtmp));
-    return;
-}
-
-void printnum_short(mpreal rtmp) {
-    mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp));
-    return;
-}
-
-void printnum(mpcomplex ctmp) {
-    mpreal cre, cim;
-    cre = ctmp.real();
-    cim = ctmp.imag();
-    mpfr_printf(MPFR_P_FORMAT MPFR_P_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
-    return;
-}
-
-void printnum_short(mpcomplex ctmp) {
-    mpreal cre, cim;
-    cre = ctmp.real();
-    cim = ctmp.imag();
-    mpfr_printf(MPFR_SHORT_FORMAT MPFR_SHORT_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
-    return;
-}
-
-void sprintnum(char *buf, mpreal rtmp) {
-    mpfr_snprintf(buf, BUFLEN, MPFR_P_FORMAT, mpfr_ptr(rtmp));
-    return;
-}
-
-void sprintnum_short(char *buf, mpreal rtmp) {
-    mpfr_snprintf(buf, BUFLEN, MPFR_SHORT_FORMAT, mpfr_ptr(rtmp));
-    return;
-}
-
-void sprintnum(char *buf, mpcomplex ctmp) {
-    mpreal cre, cim;
-    cre = ctmp.real();
-    cim = ctmp.imag();
-    mpfr_snprintf(buf, BUFLEN, MPFR_P_FORMAT MPFR_P_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
-    return;
-}
-
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 double mpf_randomnumber(double dummy) {
     double mtmp = drand48();
@@ -156,36 +112,6 @@ void set_random_number1to2(complex<double> &a, mpcomplex &b) {
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-void printnum(mpf_class rtmp) {
-    gmp_printf(GMP_P_FORMAT, rtmp.get_mpf_t());
-    return;
-}
-
-void printnum_short(mpf_class rtmp) {
-    gmp_printf(GMP_SHORT_FORMAT, rtmp.get_mpf_t());
-    return;
-}
-
-void printnum(mpc_class ctmp) {
-    gmp_printf(GMP_P_FORMAT GMP_P_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
-    return;
-}
-
-void printnum_short(mpc_class ctmp) {
-    gmp_printf(GMP_SHORT_FORMAT GMP_SHORT_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
-    return;
-}
-
-void sprintnum(char *buf, mpf_class rtmp) {
-    gmp_snprintf(buf, BUFLEN, GMP_P_FORMAT, rtmp.get_mpf_t());
-    return;
-}
-
-void sprintnum(char *buf, mpc_class ctmp) {
-    gmp_snprintf(buf, BUFLEN, GMP_P_FORMAT GMP_P_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
-    return;
-}
-
 mpf_class mpf_randomnumber(mpf_class dummy) {
     mpf_class mtmp;
 
@@ -251,76 +177,6 @@ void set_random_number1to2(mpcomplex &a, mpc_class &b) {
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_QD___
-void printnum(qd_real rtmp) {
-    cout.precision(QD_PRECISION);
-    if (rtmp >= 0.0) {
-        cout << "+" << rtmp;
-    } else {
-        cout << rtmp;
-    }
-    return;
-}
-
-void printnum_short(qd_real rtmp) {
-    cout.precision(QD_PRECISION_SHORT);
-    if (rtmp >= 0.0) {
-        cout << "+" << rtmp;
-    } else {
-        cout << rtmp;
-    }
-    return;
-}
-
-void printnum(qd_complex rtmp) {
-    cout.precision(QD_PRECISION);
-    if (rtmp.real() >= 0.0) {
-        cout << "+" << rtmp.real();
-    } else {
-        cout << rtmp.real();
-    }
-    if (rtmp.imag() >= 0.0) {
-        cout << "+" << rtmp.imag() << "i";
-    } else {
-        cout << rtmp.imag() << "i";
-    }
-    return;
-}
-
-void printnum_short(qd_complex rtmp) {
-    cout.precision(QD_PRECISION_SHORT);
-    if (rtmp.real() >= 0.0) {
-        cout << "+" << rtmp.real();
-    } else {
-        cout << rtmp.real();
-    }
-    if (rtmp.imag() >= 0.0) {
-        cout << "+" << rtmp.imag() << "i";
-    } else {
-        cout << rtmp.imag() << "i";
-    }
-    return;
-}
-
-void sprintnum(char *buf, qd_real rtmp) {
-    rtmp.write(buf, BUFLEN, 64);
-    return;
-}
-
-void sprintnum(char *buf, qd_complex rtmp) {
-    printf("XXX");
-    if (rtmp.real() >= 0.0) {
-        rtmp.real().write(buf, BUFLEN, QD_PRECISION);
-    } else {
-        rtmp.real().write(buf, BUFLEN, QD_PRECISION);
-    }
-    if (rtmp.imag() >= 0.0) {
-        rtmp.imag().write(buf, BUFLEN, QD_PRECISION);
-    } else {
-        rtmp.imag().write(buf, BUFLEN, QD_PRECISION);
-    }
-    return;
-}
-
 qd_real mpf_randomnumber(qd_real dummy) {
     qd_real mtmp;
 
@@ -386,76 +242,6 @@ void set_random_number1to2(mpcomplex &a, qd_complex &b) {
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DD___
-void printnum(dd_real rtmp) {
-    cout.precision(DD_PRECISION);
-    if (rtmp >= 0.0) {
-        cout << "+" << rtmp;
-    } else {
-        cout << rtmp;
-    }
-    return;
-}
-
-void printnum_short(dd_real rtmp) {
-    cout.precision(DD_PRECISION_SHORT);
-    if (rtmp >= 0.0) {
-        cout << "+" << rtmp;
-    } else {
-        cout << rtmp;
-    }
-    return;
-}
-
-void printnum(dd_complex rtmp) {
-    cout.precision(DD_PRECISION);
-    if (rtmp.real() >= 0.0) {
-        cout << "+" << rtmp.real();
-    } else {
-        cout << rtmp.real();
-    }
-    if (rtmp.imag() >= 0.0) {
-        cout << "+" << rtmp.imag() << "i";
-    } else {
-        cout << rtmp.imag() << "i";
-    }
-    return;
-}
-
-void printnum_short(dd_complex rtmp) {
-    cout.precision(DD_PRECISION_SHORT);
-    if (rtmp.real() >= 0.0) {
-        cout << "+" << rtmp.real();
-    } else {
-        cout << rtmp.real();
-    }
-    if (rtmp.imag() >= 0.0) {
-        cout << "+" << rtmp.imag() << "i";
-    } else {
-        cout << rtmp.imag() << "i";
-    }
-    return;
-}
-
-void sprintnum(char *buf, dd_real rtmp) {
-    rtmp.write(buf, BUFLEN, DD_PRECISION);
-    return;
-}
-
-void sprintnum(char *buf, dd_complex rtmp) {
-    printf("XXX");
-    if (rtmp.real() >= 0.0) {
-        rtmp.real().write(buf, BUFLEN, DD_PRECISION);
-    } else {
-        rtmp.real().write(buf, BUFLEN, DD_PRECISION);
-    }
-    if (rtmp.imag() >= 0.0) {
-        rtmp.imag().write(buf, BUFLEN, DD_PRECISION);
-    } else {
-        rtmp.imag().write(buf, BUFLEN, DD_PRECISION);
-    }
-    return;
-}
-
 dd_real mpf_randomnumber(dd_real dummy) {
     dd_real mtmp;
 
@@ -573,37 +359,6 @@ void set_random_number1to2(mpcomplex &a, complex<double> &b) {
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-
-void printnum(_Float64x rtmp) {
-    printf(P_64XFORMAT, rtmp);
-    return;
-}
-
-void printnum_short(_Float64x rtmp) {
-    printf(P_FORMAT, (double)rtmp);
-    return;
-}
-
-void printnum(complex<_Float64x> ctmp) {
-    printf(P_64XFORMAT P_64XFORMAT "i", ctmp.real(), ctmp.imag());
-    return;
-}
-
-void printnum_short(complex<_Float64x> ctmp) {
-    printf(P_FORMAT P_FORMAT "i", (double)ctmp.real(), (double)ctmp.imag());
-    return;
-}
-
-void sprintnum(char *buf, _Float64x rtmp) {
-    snprintf(buf, BUFLEN, P_64XFORMAT, rtmp);
-    return;
-}
-
-void sprintnum(char *buf, complex<_Float64x> ctmp) {
-    snprintf(buf, BUFLEN, P_64XFORMAT P_64XFORMAT "i", ctmp.real(), ctmp.imag());
-    return;
-}
-
 _Float64x mpf_randomnumber(_Float64x dummy) {
     _Float64x mtmp = drand48();
     return mtmp;
@@ -657,42 +412,6 @@ void set_random_number1to2(mpcomplex &a, complex<_Float64x> &b) {
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK_WANT_LIBQUADMATH___
-void printnum(_Float128 rtmp) {
-    int width = 42;
-    char buf[BUFLEN];
-    int n = quadmath_snprintf(buf, sizeof buf, "%+-#*.35Qe", width, rtmp);
-    if ((size_t)n < sizeof buf)
-        printf("%s", buf);
-    return;
-}
-
-void printnum(std::complex<_Float128> rtmp) {
-    int width = 42, n;
-    char buf[BUFLEN], buf2[BUFLEN];
-    n = quadmath_snprintf(buf, sizeof buf, "%+-#*.35Qe", width, rtmp.real());
-    if ((size_t)n < sizeof buf)
-        printf("%s", buf);
-    n = quadmath_snprintf(buf2, sizeof buf, "%+-#*.35Qe", width, rtmp.imag());
-    if ((size_t)n < sizeof buf2)
-        printf("%s", buf2);
-    printf("i");
-    return;
-}
-
-void sprintnum(char *buf, _Float128 rtmp) {
-    int width = 42;
-    quadmath_snprintf(buf, BUFLEN, "%+-#*.35Qe", width, rtmp);
-    return;
-}
-
-void sprintnum(char *buf, std::complex<_Float128> rtmp) {
-    int width = 42;
-    quadmath_snprintf(buf, BUFLEN,
-                      "%+-#*.35Qe"
-                      "%+-#*.35Qe",
-                      width, rtmp.real(), rtmp.imag());
-    return;
-}
 _Float128 mpf_randomnumber(_Float128 dummy) {
     _Float128 mtmp;
     mtmp = drand48();          // uniform random between [0,1] via drand48
@@ -764,60 +483,6 @@ void set_random_number1to2(mpcomplex &a, std::complex<_Float128> &b) {
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK__FLOAT128_ONLY___
-void printnum(_Float128 rtmp) {
-    int width = 42;
-    char buf[BUFLEN];
-    strfromf128(buf, BUFLEN, "%.40e", rtmp);
-    printf("%s", buf);
-    return;
-}
-
-void printnum(std::complex<_Float128> rtmp) {
-    int width = 42, n;
-    char buf[BUFLEN], buf2[BUFLEN];
-    strfromf128(buf, BUFLEN, "%.40e", rtmp.real());
-    printf("%s", buf);
-    strfromf128(buf2, BUFLEN, "%.40e", rtmp.imag());
-    printf("%s", buf2);
-    printf("i");
-    return;
-}
-
-void printnum_short(_Float128 rtmp) {
-    int width = 42;
-    char buf[BUFLEN];
-    strfromf128(buf, BUFLEN, "%.16e", rtmp);
-    printf("%s", buf);
-    return;
-}
-
-void printnum_short(std::complex<_Float128> rtmp) {
-    int width = 42, n;
-    char buf[BUFLEN], buf2[BUFLEN];
-    strfromf128(buf, BUFLEN, "%.16e", rtmp.real());
-    printf("%s", buf);
-    strfromf128(buf2, BUFLEN, "%.16e", rtmp.imag());
-    printf("%s", buf2);
-    printf("i");
-    return;
-}
-
-
-void sprintnum(char *buf, _Float128 rtmp) {
-    strfromf128(buf, BUFLEN, "%.40e", rtmp);
-    return;
-}
-
-void sprintnum(char *buf, std::complex<_Float128> rtmp) {
-    int width = 42, n;
-    char buf2[BUFLEN];
-    strfromf128(buf, BUFLEN, "%.40e", rtmp.real());
-    strfromf128(buf2, BUFLEN, "%.40e", rtmp.imag());
-    n = strlen(buf);
-    strncat(buf, buf2, n);
-    return;
-}
-
 _Float128 mpf_randomnumber(_Float128 dummy) {
     _Float128 mtmp;
     mtmp = lrand48();          // uniform random between [0,1] via lrand48
@@ -958,47 +623,6 @@ void set_random_number1to2(mpcomplex &a, complex<long double> &b) {
 }
 
 #endif
-
-// not depend on any mp libs.
-void printnum(double rtmp) {
-    printf(P_FORMAT, rtmp);
-    return;
-}
-
-void printnum_short(double rtmp) {
-    printf(P_FORMAT, rtmp);
-    return;
-}
-
-void printnum(complex<double> ctmp) {
-    printf(P_FORMAT P_FORMAT "i", ctmp.real(), ctmp.imag());
-    return;
-}
-
-void printnum(__complex__ double ctmp) {
-    printf(P_FORMAT P_FORMAT "i", __real__ ctmp, __imag__ ctmp);
-    return;
-}
-
-void printnum_short(complex<double> ctmp) {
-    printf(P_FORMAT P_FORMAT "i", ctmp.real(), ctmp.imag());
-    return;
-}
-
-void printnum_short(__complex__ double ctmp) {
-    printf(P_FORMAT P_FORMAT "i", __real__ ctmp, __imag__ ctmp);
-    return;
-}
-
-void sprintnum(char *buf, double rtmp) {
-    snprintf(buf, BUFLEN, P_FORMAT, rtmp);
-    return;
-}
-
-void sprintnum(char *buf, complex<double> ctmp) {
-    snprintf(buf, BUFLEN, P_FORMAT P_FORMAT "i", ctmp.real(), ctmp.imag());
-    return;
-}
 
 REAL_REF infnorm(COMPLEX_REF *vec_ref, COMPLEX *vec, int len, int inc) {
     COMPLEX_REF ctemp;

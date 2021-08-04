@@ -100,7 +100,7 @@ void Rpot06(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
+            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
         }
     }
     //
