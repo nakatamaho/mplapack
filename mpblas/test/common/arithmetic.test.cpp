@@ -36,8 +36,12 @@
 
 #define MAX_ITER 10
 
+#if !defined __MPLAPACK_BUFLEN__
+#define __MPLAPACK_BUFLEN__ 1024
+#endif
+
 void subst_test1() {
-    char buf1[BUFLEN], buf2[BUFLEN], buf3[BUFLEN];
+    char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__], buf3[__MPLAPACK_BUFLEN__];
     REAL tmp1;
     REAL_REF tmp2;
 
@@ -79,7 +83,7 @@ void subst_test1() {
         exit(1);
     }
 #elif defined ___MPLAPACK_BUILD_WITH_GMP___
-    if (strncmp(buf1, buf2, 65) == 0 && strncmp(buf2, buf3, BUFLEN) == 0)
+    if (strncmp(buf1, buf2, 65) == 0 && strncmp(buf2, buf3, __MPLAPACK_BUFLEN__) == 0)
         printf("ok!\n");
     else {
         printf("failed!\n");
@@ -125,7 +129,7 @@ void subst_test1() {
 }
 
 void subst_test2() {
-    char buf1[BUFLEN], buf2[BUFLEN], buf3[BUFLEN];
+    char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__], buf3[__MPLAPACK_BUFLEN__];
     REAL tmp1;
     REAL_REF tmp2;
     printf("*** Substitution test 2 ***\n");
@@ -171,7 +175,7 @@ void subst_test2() {
         exit(1);
     }
 #elif defined ___MPLAPACK_BUILD_WITH_GMP___
-    if (strncmp(buf1, buf2, 65) == 0 && strncmp(buf2, buf3, BUFLEN) == 0)
+    if (strncmp(buf1, buf2, 65) == 0 && strncmp(buf2, buf3, __MPLAPACK_BUFLEN__) == 0)
         printf("ok!\n");
     else {
         printf("failed!\n");
@@ -754,12 +758,12 @@ int main(int argc, char *argv[]) {
     printf("*** Testing arithmetic start ***\n");
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-    mpf_set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
+    mpf_set_default_prec(___MPLAPACK_GMP_DEFAULT_PRECISION___);
 #endif
 
     // we need to specify explicitly.
-    mpreal::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
-    mpcomplex::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
+    mpreal::set_default_prec(___MPLAPACK_MPFR_DEFAULT_PRECISION___);
+    mpcomplex::set_default_prec(___MPLAPACK_MPFR_DEFAULT_PRECISION___);
 
     mp_rounding2integer();
     mp_nint();

@@ -36,10 +36,8 @@ void mplapack_initialize_gmp(void) {
     char *p = getenv("MPLAPACK_GMP_PRECISION");
     if (p) {
         mpf_set_default_prec(atoi(p));
-    } else
-        mpf_set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
+    }
 }
-
 void mplapack_finalize_gmp(void) {
     // no finalization needed
 }
@@ -48,32 +46,23 @@ void mplapack_finalize_gmp(void) {
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 void __attribute__((constructor)) mplapack_initialize_mpfr(void);
-/*
 void mplapack_initialize_mpfr(void) {
     char *p = getenv("MPLAPACK_MPFR_PRECISION");
     if (p) {
         mpreal::set_default_prec(atoi(p));
         mpcomplex::set_default_prec(atoi(p));
-    } else {
-        mpreal::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
-        mpcomplex::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
     }
 }
-*/
-
 void __attribute__((destructor)) mplapack_finalize_mpfr(void);
-void mplapack_finalize_mpfr(void) {
-}
+void mplapack_finalize_mpfr(void) {}
 #endif
 
 
 #if defined ___MPLAPACK_BUILD_WITH_QD___ || defined ___MPLAPACK_BUILD_WITH_DD___
 void __attribute__((constructor)) mplapack_initialize_qd(void);
 void __attribute__((destructor)) mplapack_finalize_qd(void);
-
 static unsigned int oldcw;
 void mplapack_initialize_qd(void) { fpu_fix_start(&oldcw); }
-
 void mplapack_finalize_qd(void) { fpu_fix_end(&oldcw); }
 #endif
 

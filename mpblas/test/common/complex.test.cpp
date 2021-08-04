@@ -710,12 +710,12 @@ int main(int argc, char *argv[]) {
     printf("*** Testing complex start ***\n");
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-    mpf_set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
+    mpf_set_default_prec(___MPLAPACK_GMP_DEFAULT_PRECISION___);
 #endif
 
     // we need to specify explicitly.
-    mpreal::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
-    mpcomplex::set_default_prec(___MPLAPACK_DEFAULT_PRECISION___);
+    mpreal::set_default_prec(___MPLAPACK_MPFR_DEFAULT_PRECISION___);
+    mpcomplex::set_default_prec(___MPLAPACK_MPFR_DEFAULT_PRECISION___);
 
     mpc_subst_test1();
     mpc_abs_test();
