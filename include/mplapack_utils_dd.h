@@ -135,13 +135,6 @@ inline mplapackint castINTEGER_dd(dd_real a) {
     return i;
 }
 
-inline dd_complex Real2Complex(dd_real a, dd_real b) {
-    dd_complex ret;
-    ret.real(a);
-    ret.imag(b);
-    return ret;
-}
-
 inline long __dd_nint(dd_real a) {
     long i;
     dd_real tmp;

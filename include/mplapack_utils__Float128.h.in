@@ -314,13 +314,6 @@ inline mplapackint castINTEGER__Float128(_Float128 a) {
     return i;
 }
 
-inline std::complex<_Float128> Real2Complex(_Float128 a, _Float128 b) {
-    std::complex<_Float128> ret;
-    ret.real(a);
-    ret.imag(b);
-    return ret;
-}
-
 inline long nint(_Float128 a) {
     long i;
     _Float128 tmp;

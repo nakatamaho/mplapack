@@ -86,15 +86,6 @@ inline mpf_class sign(mpf_class a, mpf_class b) {
     return mtmp;
 }
 
-inline mpf_class atan2(mpf_class a, mpf_class b) {
-    double dtemp1, dtemp2;
-    mpf_class mtemp3;
-    dtemp1 = a.get_d();
-    dtemp2 = b.get_d();
-    mtemp3 = mpf_class(atan2(a, b));
-    return mtemp3;
-}
-
 inline mpf_class castREAL_gmp(mplapackint n) {
     mpf_class a(n);
     return a;
@@ -116,6 +107,16 @@ inline mplapackint nint(mpf_class a) {
 }
 
 inline double cast2double(mpf_class a) { return a.get_d(); }
+
+//every transcendental function and constant for GMP is in double precision.
+inline mpf_class atan2(mpf_class a, mpf_class b) {
+    double dtemp1, dtemp2;
+    mpf_class mtemp3;
+    dtemp1 = a.get_d();
+    dtemp2 = b.get_d();
+    mtemp3 = mpf_class(atan2(a, b));
+    return mtemp3;
+}
 
 inline mpc_class sin(mpc_class a) {
     double dtemp1, dtemp2;

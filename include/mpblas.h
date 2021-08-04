@@ -29,8 +29,6 @@
 #ifndef _MPBLAS_H_
 #define _MPBLAS_H_
 
-#define ___MPLAPACK_DEFAULT_PRECISION___ 512
-
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 #include <mpblas_mpfr.h>
 typedef mplapackint INTEGER;
@@ -62,9 +60,7 @@ typedef qd_complex COMPLEX;
 #define Mxerbla Mxerbla_qd
 #define castINTEGER castINTEGER_qd
 #define castREAL castREAL_qd
-#if !defined __MUTILS_CPP__
 #define nint __qd_nint
-#endif
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DD___
@@ -76,9 +72,7 @@ typedef dd_complex COMPLEX;
 #define Mxerbla Mxerbla_dd
 #define castINTEGER castINTEGER_dd
 #define castREAL castREAL_dd
-#if !defined __MUTILS_CPP__
 #define nint __dd_nint
-#endif
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
@@ -114,12 +108,12 @@ typedef std::complex<_Float128> COMPLEX;
 #define castREAL castREAL__Float128
 #endif
 
-#include <algorithm> // std::max
-#include <cstdlib>
+#include <algorithm>
 using std::max;
 using std::min;
+using std::complex;
 
 inline INTEGER mod(INTEGER a, INTEGER b) { return a % b; }
-
 inline REAL pow2(REAL a) { return a * a; }
+
 #endif

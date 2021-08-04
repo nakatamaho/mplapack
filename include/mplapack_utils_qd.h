@@ -140,13 +140,6 @@ inline mplapackint castINTEGER_qd(qd_real a) {
     return i;
 }
 
-inline qd_complex Real2Complex(qd_real a, qd_real b) {
-    qd_complex ret;
-    ret.real(a);
-    ret.imag(b);
-    return ret;
-}
-
 inline long __qd_nint(qd_real a) {
     long i;
     qd_real tmp;
