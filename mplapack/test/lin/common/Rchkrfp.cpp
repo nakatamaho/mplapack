@@ -67,7 +67,8 @@ void Rchkrfp(void) {
     char tsterr_str[1];
     bool tsterr = false;
     REAL eps = 0.0;
-
+    char buf[1024];
+    
     std::string str;
     stringstream ss;
     s1 = time(NULL);
@@ -210,7 +211,9 @@ void Rchkrfp(void) {
     ss.str("");
     getline(cin, str);
     ss.str(str);
-    ss >> thresh;
+    double dtmp;
+    ss >> dtmp;
+    thresh = dtmp;
     write(nout, "(/,' Routines pass computational tests if test ratio is ','less than',"
                 "f8.2,/)"),
         cast2double(thresh);
@@ -234,11 +237,12 @@ void Rchkrfp(void) {
     //     Calculate and print the machine dependent constants.
     //
     eps = Rlamch("Underflow threshold");
-    cout << " Relative machine underflow is taken to be : " << eps << endl;
+    sprintnum_short(buf, eps);
+    cout << " Relative machine underflow is taken to be : " << buf << endl;
     eps = Rlamch("Overflow threshold");
-    cout << " Relative machine overflow  is taken to be : " << eps << endl;
+    cout << " Relative machine overflow  is taken to be : " << buf << endl;
     eps = Rlamch("Epsilon");
-    cout << " Relative machine precision is taken to be : " << eps << endl;
+    cout << " Relative machine precision is taken to be : " << buf << endl;
     //
     //     Test the error exit of:
     //

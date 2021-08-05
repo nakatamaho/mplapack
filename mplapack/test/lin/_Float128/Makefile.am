@@ -8,8 +8,8 @@ mplapack__Float128_lintestdir = $(prefix)/share/mplapack/test/mplapack/lin/__Flo
 $(bin_PROGRAMS): ../liblin__Float128.la ../liblin_override__Float128.la
 
 libdepends = -L.. -llin__Float128 -llin_override__Float128 -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float128 -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128
-mplibs = -L$(MPC_LIBDIR) -L$(__FLOAT128_LIBDIR) -L$(GMP_LIBDIR) -lmpc -l__Float128 -lgmpxx -lgmp -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(__FLOAT128_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/__Float128c++ -D__MPLAPACK_BUILD_WITH__FLOAT128__ -I$(top_srcdir)/mplapack/test/fable
+mplibs = -lm
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT128___ -I$(top_srcdir)/mplapack/test/fable
 
 xlintstR__Float128_SOURCES  = ../common/Rchkaa.cpp
 xlintstR__Float128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran

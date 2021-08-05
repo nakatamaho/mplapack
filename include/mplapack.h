@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2021
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -137,6 +137,7 @@ typedef std::complex<_Float64x> COMPLEX;
 #define Mlsamen Mlsamen__Float64x
 #define Mxerbla Mxerbla__Float64x
 #define Rlamch Rlamch__Float64x
+#define iMlaver iMlaver__Float64x
 #define iMlaenv iMlaenv__Float64x
 #define iMlaenv2stage iMlaenv2stage__Float64x
 #define iMieeeck iMieeeck__Float64x
@@ -154,6 +155,7 @@ typedef std::complex<_Float128> COMPLEX;
 #define Mlsamen Mlsamen__Float128
 #define Mxerbla Mxerbla__Float128
 #define Rlamch Rlamch__Float128
+#define iMlaver iMlaver__Float128
 #define iMlaenv iMlaenv__Float128
 #define iMlaenv2stage iMlaenv2stage__Float128
 #define iMieeeck iMieeeck__Float128

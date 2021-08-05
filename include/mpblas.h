@@ -111,7 +111,6 @@ typedef std::complex<_Float128> COMPLEX;
 #include <algorithm>
 using std::max;
 using std::min;
-using std::complex;
 
 inline INTEGER mod(INTEGER a, INTEGER b) { return a % b; }
 

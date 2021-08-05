@@ -91,6 +91,7 @@ void Cchkaa(void) {
     INTEGER nrhs = 0;
     char aline[72];
     char path[4];
+    char buf[1024];
     const INTEGER matmax = 30;
     INTEGER nmats = 0;
     char c1[1];
@@ -362,7 +363,9 @@ void Cchkaa(void) {
     ss.str("");
     getline(cin, str);
     ss.str(str);
-    ss >> thresh;
+    double dtmp;
+    ss >> dtmp;
+    thresh = dtmp;
     write(nout, "(/,' Routines pass computational tests if test ratio is ','less than',"
                 "f8.2,/)"),
         cast2double(thresh);
@@ -408,11 +411,12 @@ void Cchkaa(void) {
     //     Calculate and print the machine dependent constants.
     //
     eps = Rlamch("Underflow threshold");
-    cout << " Relative machine underflow is taken to be : " << eps << endl;
+    sprintnum_short(buf, eps);
+    cout << " Relative machine underflow is taken to be : " << buf << endl;
     eps = Rlamch("Overflow threshold");
-    cout << " Relative machine overflow  is taken to be : " << eps << endl;
+    cout << " Relative machine overflow  is taken to be : " << buf << endl;
     eps = Rlamch("Epsilon");
-    cout << " Relative machine precision is taken to be : " << eps << endl;
+    cout << " Relative machine precision is taken to be : " << buf << endl;
     //
     //     Read a test path and the number of matrix types to use.
     //

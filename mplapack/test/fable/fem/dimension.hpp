@@ -175,35 +175,35 @@ namespace fem {
       this->set_dims(source);
     }
 
-    template <unsigned I>
+    template <unsigned II>
     void
     set_origin_all_star()
     {
-      actual_number_of_dimensions = (I+1);
-      all[I] = size_t_max;
-      origin[I] = 1;
+      actual_number_of_dimensions = (II+1);
+      all[II] = size_t_max;
+      origin[II] = 1;
     }
 
-    template <unsigned I>
+    template <unsigned II>
     void
     set_origin_all(
       ssize_t first,
       star_type const&)
     {
-      actual_number_of_dimensions = (I+1);
-      all[I] = size_t_max - 1;
-      origin[I] = first;
+      actual_number_of_dimensions = (II+1);
+      all[II] = size_t_max - 1;
+      origin[II] = first;
     }
 
-    template <unsigned I>
+    template <unsigned II>
     void
     set_origin_all(
       ssize_t first,
       ssize_t last)
     {
-      actual_number_of_dimensions = (I+1);
-      all[I] = last - first + 1;
-      origin[I] = first;
+      actual_number_of_dimensions = (II+1);
+      all[II] = last - first + 1;
+      origin[II] = first;
     }
 
     size_t

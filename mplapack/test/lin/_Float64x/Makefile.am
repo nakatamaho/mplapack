@@ -8,8 +8,8 @@ mplapack__Float64x_lintestdir = $(prefix)/share/mplapack/test/mplapack/lin/__Flo
 $(bin_PROGRAMS): ../liblin__Float64x.la ../liblin_override__Float64x.la
 
 libdepends = -L.. -llin__Float64x -llin_override__Float64x -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float64x -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -L$(top_builddir)/mpblas/reference -lmpblas__Float64x
-mplibs = -L$(MPC_LIBDIR) -L$(__FLOAT64x_LIBDIR) -L$(GMP_LIBDIR) -lmpc -l__Float64x -lgmpxx -lgmp -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(__FLOAT64x_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/__Float64xc++ -D__MPLAPACK_BUILD_WITH__FLOAT64x__ -I$(top_srcdir)/mplapack/test/fable
+mplibs = -lm
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___ -I$(top_srcdir)/mplapack/test/fable
 
 xlintstR__Float64x_SOURCES  = ../common/Rchkaa.cpp
 xlintstR__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
