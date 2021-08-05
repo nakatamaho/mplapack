@@ -48,7 +48,7 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
     INTEGER ldvl = lda;
     INTEGER ldvr = lda;
     double dtmp;
-    complex<double> ctmp;
+    std::complex<double> ctmp;
     char buf[1024];
     INTEGER nmax = 0;
     const REAL zero = 0.0;

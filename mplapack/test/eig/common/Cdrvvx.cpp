@@ -53,8 +53,8 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     char buf[1024];
     double dtmp;
     double dtmp1, dtmp2, dtmp3, dtmp4;
-    complex<double> ctmp;
-    complex<double> ctmp1, ctmp2, ctmp3, ctmp4;
+    std::complex<double> ctmp;
+    std::complex<double> ctmp1, ctmp2, ctmp3, ctmp4;
     char path[3];
     INTEGER ntestt = 0;
     INTEGER ntestf = 0;

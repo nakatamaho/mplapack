@@ -51,7 +51,7 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
     common_write write(cmn);
     char buf0[1024];
     char buf1[1024];
-    complex<double> ctmp;
+    std::complex<double> ctmp;
     double dtmp;
     double dtmp1, dtmp2;
     INTEGER m;

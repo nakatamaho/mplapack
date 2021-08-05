@@ -43,7 +43,7 @@ void Cget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     common_read read(cmn);
     common_write write(cmn);
     double dtmp;
-    complex<double> ctmp;
+    std::complex<double> ctmp;
     char buf[1024];
     REAL eps = 0.0;
     REAL smlnum = 0.0;

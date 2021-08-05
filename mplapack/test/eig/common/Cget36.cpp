@@ -96,7 +96,7 @@ void Cget36(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER con
     lmax = 0;
     knt = 0;
     ninfo = 0;
-    complex<double> ctmp;
+    std::complex<double> ctmp;
 //
 //     Read input data until N=0
 //

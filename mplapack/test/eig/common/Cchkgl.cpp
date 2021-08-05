@@ -105,7 +105,7 @@ void Cchkgl(INTEGER const nin, INTEGER const nout) {
     knt = 0;
     rmax = zero;
     double dtmp;
-    complex<double> ctmp;
+    std::complex<double> ctmp;
     //
     eps = Rlamch("Precision");
 //

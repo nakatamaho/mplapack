@@ -45,7 +45,7 @@ void Cchkgk(INTEGER const nin, INTEGER const nout) {
     common_read read(cmn);
     common_write write(cmn);
     double dtmp;
-    complex<double> ctmp;
+    std::complex<double> ctmp;
     char buf[1024];
     COMPLEX cdum = 0.0;
     INTEGER lmax[4];

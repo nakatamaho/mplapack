@@ -54,7 +54,7 @@ void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     char buf[1024];
     double dtmp;
     double dtmp1, dtmp2;
-    complex<double> ctmp;
+    std::complex<double> ctmp;
     char path[3];
     INTEGER ntestt = 0;
     INTEGER ntestf = 0;
