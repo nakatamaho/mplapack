@@ -30,6 +30,7 @@
 #include <mplapack_compare_debug.h>
 #include <complex>
 
+#define VERBOSE_TEST
 #if defined VERBOSE_TEST
 #include <iostream>
 #endif
