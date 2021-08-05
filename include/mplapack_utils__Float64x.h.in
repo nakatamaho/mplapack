@@ -67,7 +67,7 @@ extern "C" {
 //inline _Float64x pow(const long &a, const long &b) { return powl((_Float64x)a, (_Float64x)b); }
 //inline _Float64x pow(const int &a, const long &b) { return powl((_Float64x)a, (_Float64x)b); }
 //inline _Float64x pow(const _Float64x &a, const long &b) { return powl(a, (_Float64x)b); }
-//inline _Float64x pow2(const _Float64x &a) { return a * a; }
+inline _Float64x pow2(const _Float64x &a) { return a * a; }
 
 //inline _Float64x sqrt(const _Float64x &a) { return sqrtl(a); }
 
