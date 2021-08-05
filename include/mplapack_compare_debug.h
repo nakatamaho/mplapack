@@ -289,6 +289,59 @@ void set_random_number1to2(mpreal &a, _Float128 &b);
 void set_random_number1to2(mpcomplex &a, complex<_Float128> &b);
 #endif
 
+template <class X> void printmat(int N, int M, X *A, int LDA) {
+    X tmp;
+    printf("[ ");
+    for (int i = 0; i < N; i++) {
+        printf("[ ");
+        for (int j = 0; j < M; j++) {
+            tmp = A[i + j * LDA];
+            printnum_short(tmp);
+            if (j < M - 1)
+                printf(", ");
+        }
+        if (i < N - 1)
+            printf("]; ");
+        else
+            printf("] ");
+    }
+    printf("]");
+}
+
+template <class X> void printmatU(int N, X *A, int LDA) {
+    X tmp;
+    printf("[ ");
+    for (int i = 0; i < N; i++) {
+        printf("[ ");
+        for (int j = 0; j < N; j++) {
+            if (i <= j)
+                tmp = A[i + j * LDA];
+            else
+                tmp = A[j + i * LDA];
+            printnum_short(tmp);
+            if (j < N - 1)
+                printf(", ");
+        }
+        if (i < N - 1)
+            printf("]; ");
+        else
+            printf("] ");
+    }
+    printf("]");
+}
+
+template <class X> void printvec(X *A, int len) {
+    X tmp;
+    printf("[ ");
+    for (int i = 0; i < len; i++) {
+        tmp = A[i];
+        printnum_short(tmp);
+        if (i < len - 1)
+            printf(", ");
+    }
+    printf("]");
+}
+
 template <class X_REF, class X> void set_random_vector(X_REF *vec_ref, X *vec, int len) {
     if (len <= 0)
         return;
