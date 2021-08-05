@@ -50,6 +50,32 @@ using std::endl;
 #include <mpreal.h>
 using namespace mpfr;
 
+#if !defined __MPLAPACK_BUFLEN__
+#define __MPLAPACK_BUFLEN__ 1024
+#endif
+
+#if !defined _MUTILS_DOUBLE_H_
+#define DOUBLE_FORMAT "%+20.16e"
+#define DOUBLE_SHORT_FORMAT "%+20.16e"
+
+inline void printnum(double rtmp) { printf(DOUBLE_FORMAT, rtmp); }
+inline void printnum(std::complex<double> ctmp) { printf(DOUBLE_FORMAT DOUBLE_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void printnum(__complex__ double ctmp) { printf(DOUBLE_FORMAT DOUBLE_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
+
+inline void printnum_short(double rtmp) { printf(DOUBLE_SHORT_FORMAT, rtmp); }
+inline void printnum_short(std::complex<double> ctmp) { printf(DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void printnum_short(__complex__ double ctmp) { printf(DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
+inline void printnum_short(mplapackint itmp) { printf("%d ", (int)itmp); }
+
+inline void sprintnum(char *buf, double rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_FORMAT, rtmp); }
+inline void sprintnum(char *buf, std::complex<double> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_FORMAT DOUBLE_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void sprintnum(char *buf, __complex__ double ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_FORMAT DOUBLE_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
+
+inline void sprintnum_short(char *buf, double rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_SHORT_FORMAT, rtmp); }
+inline void sprintnum_short(char *buf, std::complex<double> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void sprintnum_short(char *buf, __complex__ double ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
+#endif
+
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
 #define EPSILON 1e-31
 #define EPSILON2 1e-27

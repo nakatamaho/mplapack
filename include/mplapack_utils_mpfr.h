@@ -47,6 +47,7 @@ inline void printnum(mpreal rtmp) {
     mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp));
     return;
 }
+
 inline void printnum_short(mpreal rtmp) {
     mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp));
     return;
@@ -58,6 +59,7 @@ inline void printnum(mpcomplex ctmp) {
     mpfr_printf(MPFR_FORMAT MPFR_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
     return;
 }
+
 inline void printnum_short(mpcomplex ctmp) {
     mpreal cre, cim;
     cre = ctmp.real();
@@ -65,6 +67,7 @@ inline void printnum_short(mpcomplex ctmp) {
     mpfr_printf(MPFR_SHORT_FORMAT MPFR_SHORT_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
     return;
 }
+
 inline void sprintnum(char *buf, mpreal rtmp) {
     mpfr_snprintf(buf, __MPLAPACK_BUFLEN__, MPFR_FORMAT, mpfr_ptr(rtmp));
     return;
@@ -79,7 +82,7 @@ inline void sprintnum(char *buf, mpcomplex ctmp) {
     cim = ctmp.imag();
     mpfr_snprintf(buf, __MPLAPACK_BUFLEN__, MPFR_FORMAT MPFR_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
     return;
-}
+    }
 inline void sprintnum_short(char *buf, mpcomplex ctmp) {
     mpreal cre, cim;
     cre = ctmp.real();
