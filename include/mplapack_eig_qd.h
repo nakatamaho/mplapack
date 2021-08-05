@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef _MPLAPACK_MATGEN_QD_H_
-#define _MPLAPACK_MATGEN_QD_H_
+#ifndef _MPLAPACK_EIG_QD_H_
+#define _MPLAPACK_EIG_QD_H_
 
 #include "mplapack_config.h"
 #include <qd/qd_real.h>

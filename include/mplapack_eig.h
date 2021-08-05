@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2021
  *	Nakata, Maho
  * 	All rights reserved.
- *
- * $Id: mplapack.h,v 1.28 2010/08/07 03:15:46 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -60,7 +58,7 @@ typedef mpcomplex COMPLEX;
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_QD___
-#include <mplapack_eig_qd.h>
+#include "mplapack_eig_qd.h"
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
 typedef qd_real REAL;

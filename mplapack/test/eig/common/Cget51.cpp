@@ -101,9 +101,9 @@ void Cget51(INTEGER const itype, INTEGER const n, COMPLEX *a, INTEGER const lda,
             //           ITYPE=1: Compute W = A - U B V**H
             //
             Clacpy(" ", n, n, a, lda, work, n);
-            Cgemm("N", "N", n, n, n, cone, u, ldu, b, ldb, czero, &work[(pow2(n) + 1) - 1], n);
+            Cgemm("N", "N", n, n, n, cone, u, ldu, b, ldb, czero, &work[(n * n + 1) - 1], n);
             //
-            Cgemm("N", "C", n, n, n, -cone, &work[(pow2(n) + 1) - 1], n, v, ldv, cone, work, n);
+            Cgemm("N", "C", n, n, n, -cone, &work[(n * n + 1) - 1], n, v, ldv, cone, work, n);
             //
         } else {
             //
@@ -126,9 +126,9 @@ void Cget51(INTEGER const itype, INTEGER const n, COMPLEX *a, INTEGER const lda,
             result = (wnorm / anorm) / (n * ulp);
         } else {
             if (anorm < one) {
-                result = (min(wnorm, n * anorm) / anorm) / (n * ulp);
+                result = (min(wnorm, REAL(castREAL(n) * anorm)) / anorm) / (castREAL(n) * ulp);
             } else {
-                result = min(wnorm / anorm, castREAL(n)) / (n * ulp);
+                result = min(REAL(wnorm / anorm), castREAL(n)) / (castREAL(n) * ulp);
             }
         }
         //

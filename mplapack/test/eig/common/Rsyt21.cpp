@@ -130,7 +130,7 @@ void Rsyt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
                 Rsyr2(&cuplo, n, -e[j - 1], &u[(j - 1) * ldu], 1, &u[((j + 1) - 1) * ldu], 1, work, n);
             }
         }
-        wnorm = Rlansy("1", &cuplo, n, work, n, &work[(pow2(n) + 1) - 1]);
+        wnorm = Rlansy("1", &cuplo, n, work, n, &work[(n * n + 1) - 1]);
         //
     } else if (itype == 2) {
         //
@@ -139,7 +139,7 @@ void Rsyt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         Rlaset("Full", n, n, zero, zero, work, n);
         //
         if (lower) {
-            work[pow2(n) - 1] = d[n - 1];
+            work[n * n - 1] = d[n - 1];
             for (j = n - 1; j >= 1; j = j - 1) {
                 if (kband == 1) {
                     work[((n + 1) * (j - 1) + 2) - 1] = (one - tau[j - 1]) * e[j - 1];
@@ -150,7 +150,7 @@ void Rsyt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
                 //
                 vsave = v[((j + 1) - 1) + (j - 1) * ldv];
                 v[((j + 1) - 1) + (j - 1) * ldv] = one;
-                Rlarfy("L", n - j, &v[((j + 1) - 1) + (j - 1) * ldv], 1, tau[j - 1], &work[((n + 1) * j + 1) - 1], n, &work[(pow2(n) + 1) - 1]);
+                Rlarfy("L", n - j, &v[((j + 1) - 1) + (j - 1) * ldv], 1, tau[j - 1], &work[((n + 1) * j + 1) - 1], n, &work[(n * n + 1) - 1]);
                 v[((j + 1) - 1) + (j - 1) * ldv] = vsave;
                 work[((n + 1) * (j - 1) + 1) - 1] = d[j - 1];
             }
@@ -166,7 +166,7 @@ void Rsyt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
                 //
                 vsave = v[(j - 1) + ((j + 1) - 1) * ldv];
                 v[(j - 1) + ((j + 1) - 1) * ldv] = one;
-                Rlarfy("U", j, &v[((j + 1) - 1) * ldv], 1, tau[j - 1], work, n, &work[(pow2(n) + 1) - 1]);
+                Rlarfy("U", j, &v[((j + 1) - 1) * ldv], 1, tau[j - 1], work, n, &work[(n * n + 1) - 1]);
                 v[(j - 1) + ((j + 1) - 1) * ldv] = vsave;
                 work[((n + 1) * j + 1) - 1] = d[(j + 1) - 1];
             }
@@ -183,7 +183,7 @@ void Rsyt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
                 }
             }
         }
-        wnorm = Rlansy("1", &cuplo, n, work, n, &work[(pow2(n) + 1) - 1]);
+        wnorm = Rlansy("1", &cuplo, n, work, n, &work[(n * n + 1) - 1]);
         //
     } else if (itype == 3) {
         //
@@ -194,9 +194,9 @@ void Rsyt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         }
         Rlacpy(" ", n, n, u, ldu, work, n);
         if (lower) {
-            Rorm2r("R", "T", n, n - 1, n - 1, &v[(2 - 1)], ldv, tau, &work[(n + 1) - 1], n, &work[(pow2(n) + 1) - 1], iinfo);
+            Rorm2r("R", "T", n, n - 1, n - 1, &v[(2 - 1)], ldv, tau, &work[(n + 1) - 1], n, &work[(n * n + 1) - 1], iinfo);
         } else {
-            Rorm2l("R", "T", n, n - 1, n - 1, &v[(2 - 1) * ldv], ldv, tau, work, n, &work[(pow2(n) + 1) - 1], iinfo);
+            Rorm2l("R", "T", n, n - 1, n - 1, &v[(2 - 1) * ldv], ldv, tau, work, n, &work[(n * n + 1) - 1], iinfo);
         }
         if (iinfo != 0) {
             result[1 - 1] = ten / ulp;
@@ -207,16 +207,16 @@ void Rsyt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
             work[((n + 1) * (j - 1) + 1) - 1] = work[((n + 1) * (j - 1) + 1) - 1] - one;
         }
         //
-        wnorm = Rlange("1", n, n, work, n, &work[(pow2(n) + 1) - 1]);
+        wnorm = Rlange("1", n, n, work, n, &work[(n * n + 1) - 1]);
     }
     //
     if (anorm > wnorm) {
         result[1 - 1] = (wnorm / anorm) / (castREAL(n) * ulp);
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(wnorm, castREAL(n) * anorm) / anorm) / (castREAL(n) * ulp);
+            result[1 - 1] = (min(wnorm, REAL(castREAL(n) * anorm)) / anorm) / (castREAL(n) * ulp);
         } else {
-            result[1 - 1] = min(wnorm / anorm, castREAL(n)) / (castREAL(n) * ulp);
+            result[1 - 1] = min(REAL(wnorm / anorm), castREAL(n)) / (castREAL(n) * ulp);
         }
     }
     //
@@ -231,7 +231,7 @@ void Rsyt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
             work[((n + 1) * (j - 1) + 1) - 1] = work[((n + 1) * (j - 1) + 1) - 1] - one;
         }
         //
-        result[2 - 1] = min({Rlange("1", n, n, work, n, &work[(pow2(n) + 1) - 1]), castREAL(n)}) / (castREAL(n) * ulp);
+        result[2 - 1] = min({Rlange("1", n, n, work, n, &work[(n * n + 1) - 1]), castREAL(n)}) / (castREAL(n) * ulp);
     }
     //
     //     End of Rsyt21

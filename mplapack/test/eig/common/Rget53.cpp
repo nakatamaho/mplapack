@@ -75,8 +75,8 @@ void Rget53(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const s
     REAL safmin = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     REAL absw = abs(wrs) + abs(wis);
-    REAL anorm = max({abs(a[(1 - 1) + (1 - 1) * lda]) + abs(a[(2 - 1)]), abs(a[(1 - 1) + (2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda]), safmin});
-    REAL bnorm = max({abs(b[(1 - 1) + (1 - 1) * ldb]), abs(b[(1 - 1) + (2 - 1) * ldb]) + abs(b[(2 - 1) + (2 - 1) * ldb]), safmin});
+    REAL anorm = max({REAL(abs(a[(1 - 1) + (1 - 1) * lda]) + abs(a[(2 - 1)])), REAL(abs(a[(1 - 1) + (2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda])), safmin});
+    REAL bnorm = max({REAL(abs(b[(1 - 1) + (1 - 1) * ldb])), REAL(abs(b[(1 - 1) + (2 - 1) * ldb]) + abs(b[(2 - 1) + (2 - 1) * ldb])), safmin});
     //
     //     Check for possible overflow.
     //
@@ -93,7 +93,7 @@ void Rget53(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const s
         wis = wis * temp;
         absw = abs(wrs) + abs(wis);
     }
-    REAL s1 = max({ulp * max(scales * anorm, absw * bnorm), safmin * max(scales, absw)});
+    REAL s1 = max(REAL(ulp * max(scales * anorm, absw * bnorm)), REAL(safmin * max(scales, absw)));
     //
     //     Check for W and SCALE essentially zero.
     //
@@ -107,12 +107,12 @@ void Rget53(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const s
         //
         //        Scale up to avoid underflow
         //
-        temp = one / max(scales * anorm + absw * bnorm, safmin);
+        temp = one / max(REAL(scales * anorm + absw * bnorm), safmin);
         scales = scales * temp;
         wrs = wrs * temp;
         wis = wis * temp;
         absw = abs(wrs) + abs(wis);
-        s1 = max({ulp * max(scales * anorm, absw * bnorm), safmin * max(scales, absw)});
+        s1 = max(REAL(ulp * max(scales * anorm, absw * bnorm)), REAL(safmin * max(scales, absw)));
         if (s1 < safmin) {
             info = 3;
             result = one / ulp;
@@ -136,7 +136,7 @@ void Rget53(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const s
     //     sigma_min = ------------------
     //                 norm( s A - w B )
     //
-    REAL cnorm = max({abs(cr11) + abs(ci11) + abs(cr21), abs(cr12) + abs(ci12) + abs(cr22) + abs(ci22), safmin});
+    REAL cnorm = max({REAL(abs(cr11) + abs(ci11) + abs(cr21)), REAL(abs(cr12) + abs(ci12) + abs(cr22) + abs(ci22)), safmin});
     REAL cscale = one / sqrt(cnorm);
     REAL detr = (cscale * cr11) * (cscale * cr22) - (cscale * ci11) * (cscale * ci22) - (cscale * cr12) * (cscale * cr21);
     REAL deti = (cscale * cr11) * (cscale * ci22) + (cscale * ci11) * (cscale * cr22) - (cscale * ci12) * (cscale * cr21);

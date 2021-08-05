@@ -514,14 +514,14 @@ void Cchkhb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 temp4 = zero;
                 //
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, abs(d1[j - 1]), abs(d2[j - 1])});
-                    temp2 = max(temp2, abs(d1[j - 1] - d2[j - 1]));
-                    temp3 = max({temp3, abs(d1[j - 1]), abs(d3[j - 1])});
-                    temp4 = max(temp4, abs(d1[j - 1] - d3[j - 1]));
+                    temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d2[j - 1]))});
+                    temp2 = max(temp2, REAL(abs(d1[j - 1] - d2[j - 1])));
+                    temp3 = max({temp3, REAL(abs(d1[j - 1])), REAL(abs(d3[j - 1]))});
+                    temp4 = max(temp4, REAL(abs(d1[j - 1] - d3[j - 1])));
                 }
                 //
-                result[5 - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
-                result[6 - 1] = temp4 / max({unfl, ulp * max(temp3, temp4)});
+                result[5 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+                result[6 - 1] = temp4 / max(unfl, REAL(ulp * max(temp3, temp4)));
             //
             //              End of Loop -- Check for RESULT(j) > THRESH
             //

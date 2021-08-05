@@ -509,7 +509,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             temp2 = zero;
             //
             for (j = 1; j <= mnmin; j = j + 1) {
-                temp1 = abs(s1[j - 1] - s2[j - 1]) / max({sqrt(unfl) * max(s1[1 - 1], one), ulp * max(abs(s1[j - 1]), abs(s2[j - 1]))});
+                temp1 = abs(s1[j - 1] - s2[j - 1]) / max(REAL(sqrt(unfl) * max(s1[1 - 1], one)), REAL(ulp * max(abs(s1[j - 1]), abs(s2[j - 1]))));
                 temp2 = max(temp1, temp2);
             }
             //
@@ -632,7 +632,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             temp2 = zero;
             //
             for (j = 1; j <= mnmin; j = j + 1) {
-                temp1 = abs(s1[j - 1] - s2[j - 1]) / max({sqrt(unfl) * max(s1[1 - 1], one), ulp * max(abs(s1[1 - 1]), abs(s2[1 - 1]))});
+                temp1 = abs(s1[j - 1] - s2[j - 1]) / max(REAL(sqrt(unfl) * max(s1[1 - 1], one)), REAL(ulp * max(abs(s1[1 - 1]), abs(s2[1 - 1]))));
                 temp2 = max(temp1, temp2);
             }
             //
@@ -748,7 +748,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             temp2 = zero;
             for (j = 1; j <= mnmin; j = j + 1) {
-                temp1 = abs(s1[j - 1] - s2[j - 1]) / max({sqrt(unfl) * max(s1[1 - 1], one), ulp * max(abs(s1[1 - 1]), abs(s2[1 - 1]))});
+                temp1 = abs(s1[j - 1] - s2[j - 1]) / max(REAL(sqrt(unfl) * max(s1[1 - 1], one)), REAL(ulp * max(abs(s1[1 - 1]), abs(s2[1 - 1]))));
                 temp2 = max(temp1, temp2);
             }
             result[24 - 1] = temp2;
@@ -853,7 +853,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             temp2 = zero;
             for (j = 1; j <= ns1; j = j + 1) {
-                temp1 = abs(s1[j - 1] - s2[j - 1]) / max({sqrt(unfl) * max(s1[1 - 1], one), ulp * max(abs(s1[1 - 1]), abs(s2[1 - 1]))});
+                temp1 = abs(s1[j - 1] - s2[j - 1]) / max(REAL(sqrt(unfl) * max(s1[1 - 1], one)), REAL(ulp * max(abs(s1[1 - 1]), abs(s2[1 - 1]))));
                 temp2 = max(temp1, temp2);
             }
             result[29 - 1] = temp2;
@@ -866,19 +866,19 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             if (mnmin > 0) {
                 if (il != 1) {
-                    vu = s1[il - 1] + max({half * abs(s1[il - 1] - s1[(il - 1) - 1]), ulp * anorm, two * rtunfl});
+                    vu = s1[il - 1] + max({REAL(half * abs(s1[il - 1] - s1[(il - 1) - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
                 } else {
-                    vu = s1[1 - 1] + max({half * abs(s1[mnmin - 1] - s1[1 - 1]), ulp * anorm, two * rtunfl});
+                    vu = s1[1 - 1] + max({REAL(half * abs(s1[mnmin - 1] - s1[1 - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
                 }
                 if (iu != ns1) {
-                    vl = s1[iu - 1] - max({ulp * anorm, two * rtunfl, half * abs(s1[(iu + 1) - 1] - s1[iu - 1])});
+                    vl = s1[iu - 1] - max({REAL(ulp * anorm), REAL(two * rtunfl), REAL(half * abs(s1[(iu + 1) - 1] - s1[iu - 1]))});
                 } else {
-                    vl = s1[ns1 - 1] - max({ulp * anorm, two * rtunfl, half * abs(s1[mnmin - 1] - s1[1 - 1])});
+                    vl = s1[ns1 - 1] - max({REAL(ulp * anorm), REAL(two * rtunfl), REAL(half * abs(s1[mnmin - 1] - s1[1 - 1]))});
                 }
                 vl = max(vl, zero);
                 vu = max(vu, zero);
                 if (vl >= vu) {
-                    vu = max(vu * 2, vu + vl + half);
+                    vu = max(REAL(vu * 2), REAL(vu + vl + half));
                 }
             } else {
                 vl = zero;
@@ -964,7 +964,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             temp2 = zero;
             for (j = 1; j <= ns1; j = j + 1) {
-                temp1 = abs(s1[j - 1] - s2[j - 1]) / max({sqrt(unfl) * max(s1[1 - 1], one), ulp * max(abs(s1[1 - 1]), abs(s2[1 - 1]))});
+                temp1 = abs(s1[j - 1] - s2[j - 1]) / max(REAL(sqrt(unfl) * max(s1[1 - 1], one)), REAL(ulp * max(abs(s1[1 - 1]), abs(s2[1 - 1]))));
                 temp2 = max(temp1, temp2);
             }
             result[34 - 1] = temp2;

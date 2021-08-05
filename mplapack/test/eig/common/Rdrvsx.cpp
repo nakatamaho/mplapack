@@ -192,7 +192,7 @@ void Rdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         info = -10;
     } else if (ldvs < 1 || ldvs < nmax) {
         info = -20;
-    } else if (max(3 * nmax, 2 * pow2(nmax)) > lwork) {
+    } else if (max(3 * nmax, 2 * nmax * nmax) > lwork) {
         info = -24;
     }
     //
@@ -399,7 +399,7 @@ void Rdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 } else {
                     nnwork = max(3 * n, 2 * n * n);
                 }
-                nnwork = max(nnwork, 1);
+                nnwork = max(nnwork, (INTEGER)1);
                 //
                 Rget24(false, jtype, thresh, ioldsd, nounit, n, a, lda, h, ht, wr, wi, wrt, wit, wrtmp, witmp, vs, ldvs, vs1, rcdein, rcdvin, nslct, islct, result, work, nnwork, iwork, bwork, info);
                 //
@@ -492,9 +492,9 @@ statement_150:
         iss.clear();
         iss.str(str);
         iss >> dtmp;
-        dtmp = rcdein;
+        rcdein = dtmp;
         iss >> dtmp;
-        dtmp = rcdvin;
+        rcdvin = dtmp;
         //
         Rget24(true, 22, thresh, iseed, nounit, n, a, lda, h, ht, wr, wi, wrt, wit, wrtmp, witmp, vs, ldvs, vs1, rcdein, rcdvin, nslct, islct, result, work, lwork, iwork, bwork, info);
         //

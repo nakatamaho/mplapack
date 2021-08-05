@@ -1,3 +1,6 @@
+2021/08/05    Nakata Maho <maho@riken.jp> 1.0.0
+            * all test programs are built successfully on Ubuntu20.04 (amd64)
+
 2021/7/28    Nakata Maho <maho@riken.jp> 1.0.0
             * Tests of Nonsymmetric Generalized Eigenvalue Problem driver routines
               (Rgd.in) have passed for MPFR version.

@@ -229,7 +229,7 @@ statement_10:
                                 Cgemm(&trana, "N", m, n, m, rmul, a, ldt, c, ldt, -scale * rmul, csav, ldt);
                                 Cgemm("N", &tranb, m, n, n, castREAL(isgn) * rmul, c, ldt, b, ldt, cone, csav, ldt);
                                 res1 = Clange("M", m, n, csav, ldt, dum);
-                                res = res1 / max({smlnum, smlnum * xnrm, ((abs(rmul) * tnrm) * eps) * xnrm});
+                                res = res1 / max({smlnum, REAL(smlnum * xnrm), REAL(((abs(rmul) * tnrm) * eps) * xnrm)});
                                 if (res > rmax) {
                                     lmax = knt;
                                     rmax = res;

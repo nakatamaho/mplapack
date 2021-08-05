@@ -445,11 +445,11 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             temp1 = zero;
             temp2 = zero;
             for (j = 1; j <= n; j = j + 1) {
-                temp1 = max({temp1, abs(wr1[j - 1]) + abs(wi1[j - 1]), abs(wr2[j - 1]) + abs(wi2[j - 1])});
-                temp2 = max(temp2, abs(wr1[j - 1] - wr2[j - 1]) + abs(wi1[j - 1] - wi2[j - 1]));
+                temp1 = max({temp1, REAL(abs(wr1[j - 1]) + abs(wi1[j - 1])), REAL(abs(wr2[j - 1]) + abs(wi2[j - 1]))});
+                temp2 = max(temp2, REAL(abs(wr1[j - 1] - wr2[j - 1]) + abs(wi1[j - 1] - wi2[j - 1])));
             }
             //
-            result[8 - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
+            result[8 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
             //           Compute the Left and Right Eigenvectors of T
             //
@@ -465,7 +465,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             j = n;
         statement_140:
             if (wi1[j - 1] == zero) {
-                if (nselr < max(n / 4, 1)) {
+                if (nselr < max(n / 4, (INTEGER)1)) {
                     nselr++;
                     select[j - 1] = true;
                 } else {
@@ -473,7 +473,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
                 j = j - 1;
             } else {
-                if (nselc < max(n / 4, 1)) {
+                if (nselc < max(n / 4, (INTEGER)1)) {
                     nselc++;
                     select[j - 1] = true;
                     select[(j - 1) - 1] = false;

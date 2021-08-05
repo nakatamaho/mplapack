@@ -3,11 +3,11 @@ xeigtstC_gmp
 
 mplapack_gmp_eigtestdir = $(prefix)/share/mplapack/test/mplapack/eig/gmp
 
-$(bin_PROGRAMS): ../libeig_gmp.la ../libeig_override.la
+$(bin_PROGRAMS): ../libeig_gmp.la ../libeig_override_gmp.la
 
-libdepends = -L$(top_builgmpir)/mplapack/test/eig -leig_gmp -leig_override -L$(top_builgmpir)/mplapack/test/matgen -lmatgen_gmp -L$(top_builgmpir)/mplapack/reference -lmplapack_gmp -L$(top_builgmpir)/mpblas/reference -lmpblas_gmp 
-mplibs = -L$(MPC_LIBDIR) -L$(GMP_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lgmp -lgmpxx -lgmp -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/gmpc++ -D___MPLAPACK_BUILD_WITH_GMP___ -I$(top_srcdir)/mplapack/test/fable
+libdepends = -L$(top_builddir)/mplapack/test/eig -leig_gmp -leig_override_gmp -L$(top_builddir)/mplapack/test/matgen -lmatgen_gmp -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(top_builddir)/mpblas/reference -lmpblas_gmp 
+mplibs = -L$(GMP_LIBDIR) -lgmpxx -lgmp -lm
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -I$(top_srcdir)/mplapack/test/fable
 
 xeigtstR_gmp_SOURCES  = ../common/Rchkee.cpp
 xeigtstR_gmp_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran

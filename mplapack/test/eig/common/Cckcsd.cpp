@@ -167,7 +167,7 @@ void Cckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
             } else {
                 Claset("F", m, m, zero, one, x, ldx);
                 for (i = 1; i <= m; i = i + 1) {
-                    j = castREAL(Rlaran(iseed) * m) + 1;
+                    j = castINTEGER(Rlaran(iseed) * castREAL(m)) + 1;
                     if (j != i) {
                         CRrot(m, &x[(1 + (i - 1) * ldx) - 1], 1, &x[(1 + (j - 1) * ldx) - 1], 1, realzero, realone);
                     }

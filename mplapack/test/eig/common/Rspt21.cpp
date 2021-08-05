@@ -136,7 +136,7 @@ void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
                 Rspr2(&cuplo, n, -e[j - 1], &u[(j - 1) * ldu], 1, &u[((j + 1) - 1) * ldu], 1, work);
             }
         }
-        wnorm = Rlansp("1", &cuplo, n, work, &work[(pow2(n) + 1) - 1]);
+        wnorm = Rlansp("1", &cuplo, n, work, &work[(n * n + 1) - 1]);
         //
     } else if (itype == 2) {
         //
@@ -205,7 +205,7 @@ void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
             return;
         }
         Rlacpy(" ", n, n, u, ldu, work, n);
-        Ropmtr("R", &cuplo, "T", n, n, vp, tau, work, n, &work[(pow2(n) + 1) - 1], iinfo);
+        Ropmtr("R", &cuplo, "T", n, n, vp, tau, work, n, &work[(n * n + 1) - 1], iinfo);
         if (iinfo != 0) {
             result[1 - 1] = ten / ulp;
             return;
@@ -215,16 +215,16 @@ void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
             work[((n + 1) * (j - 1) + 1) - 1] = work[((n + 1) * (j - 1) + 1) - 1] - one;
         }
         //
-        wnorm = Rlange("1", n, n, work, n, &work[(pow2(n) + 1) - 1]);
+        wnorm = Rlange("1", n, n, work, n, &work[(n * n + 1) - 1]);
     }
     //
     if (anorm > wnorm) {
         result[1 - 1] = (wnorm / anorm) / (n * ulp);
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(wnorm, n * anorm) / anorm) / (n * ulp);
+            result[1 - 1] = (min(wnorm, REAL(n * anorm)) / anorm) / (n * ulp);
         } else {
-            result[1 - 1] = min(wnorm / anorm, castREAL(n)) / (n * ulp);
+            result[1 - 1] = min(REAL(wnorm / anorm), castREAL(n)) / (n * ulp);
         }
     }
     //
@@ -239,7 +239,7 @@ void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
             work[((n + 1) * (j - 1) + 1) - 1] = work[((n + 1) * (j - 1) + 1) - 1] - one;
         }
         //
-        result[2 - 1] = min({Rlange("1", n, n, work, n, &work[(pow2(n) + 1) - 1]), castREAL(n)}) / (n * ulp);
+        result[2 - 1] = min({Rlange("1", n, n, work, n, &work[(n * n + 1) - 1]), castREAL(n)}) / (n * ulp);
     }
     //
     //     End of Rspt21

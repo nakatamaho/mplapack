@@ -171,7 +171,7 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                             Rgemv("No transpose", n, n, one, t, ldt, x, 1, -scale, y, 1);
                             xnorm = Rasum(n, x, 1);
                             resid = Rasum(n, y, 1);
-                            domin = max({smlnum, (smlnum / eps) * norm, (norm * eps) * xnorm});
+                            domin = max({smlnum, REAL((smlnum / eps) * norm), REAL((norm * eps) * xnorm)});
                             resid = resid / domin;
                             if (resid > rmax) {
                                 rmax = resid;
@@ -192,7 +192,7 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                             Rgemv("Transpose", n, n, one, t, ldt, x, 1, -scale, y, 1);
                             xnorm = Rasum(n, x, 1);
                             resid = Rasum(n, y, 1);
-                            domin = max({smlnum, (smlnum / eps) * norm, (norm * eps) * xnorm});
+                            domin = max({smlnum, REAL((smlnum / eps) * norm), REAL((norm * eps) * xnorm)});
                             resid = resid / domin;
                             if (resid > rmax) {
                                 rmax = resid;
@@ -224,7 +224,7 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                             Rgemv("No transpose", n, n, one, t, ldt, &x[(1 + n) - 1], 1, one, &y[(1 + n) - 1], 1);
                             //
                             resid = Rasum(2 * n, y, 1);
-                            domin = max({smlnum, (smlnum / eps) * normtb, eps * (normtb * Rasum(2 * n, x, 1))});
+                            domin = max({smlnum, REAL((smlnum / eps) * normtb), REAL(eps * (normtb * Rasum(2 * n, x, 1)))});
                             resid = resid / domin;
                             if (resid > rmax) {
                                 rmax = resid;
@@ -256,7 +256,7 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                             Rgemv("Transpose", n, n, one, t, ldt, &x[(1 + n) - 1], 1, -one, &y[(1 + n) - 1], 1);
                             //
                             resid = Rasum(2 * n, y, 1);
-                            domin = max({smlnum, (smlnum / eps) * normtb, eps * (normtb * Rasum(2 * n, x, 1))});
+                            domin = max({smlnum, REAL((smlnum / eps) * normtb), REAL(eps * (normtb * Rasum(2 * n, x, 1)))});
                             resid = resid / domin;
                             if (resid > rmax) {
                                 rmax = resid;

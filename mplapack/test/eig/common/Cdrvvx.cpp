@@ -199,7 +199,7 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         info = -17;
     } else if (ldlre < 1 || ldlre < nmax) {
         info = -19;
-    } else if (6 * nmax + 2 * pow2(nmax) > nwork) {
+    } else if (6 * nmax + 2 * nmax * nmax > nwork) {
         info = -30;
     }
     //
@@ -404,11 +404,11 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 if (iwk == 1) {
                     nnwork = 2 * n;
                 } else if (iwk == 2) {
-                    nnwork = 2 * n + pow2(n);
+                    nnwork = 2 * n + n * n;
                 } else {
-                    nnwork = 6 * n + 2 * pow2(n);
+                    nnwork = 6 * n + 2 * n * n;
                 }
-                nnwork = max(nnwork, 1);
+                nnwork = max(nnwork, (INTEGER)1);
                 //
                 //              Test for all balancing options
                 //
@@ -495,7 +495,7 @@ statement_160:
             rcdein[i - 1] = dtmp1;
             rcdvin[i - 1] = dtmp2;
         }
-        Cget23(true, isrt, "N", 22, thresh, iseed, nounit, n, a, lda, h, w, w1, vl, ldvl, vr, ldvr, lre, ldlre, rcondv, rcndv1, rcdvin, rconde, rcnde1, rcdein, scale, scale1, result, work, 6 * n + 2 * pow2(n), rwork, info);
+        Cget23(true, isrt, "N", 22, thresh, iseed, nounit, n, a, lda, h, w, w1, vl, ldvl, vr, ldvr, lre, ldlre, rcondv, rcndv1, rcdvin, rconde, rcnde1, rcdein, scale, scale1, result, work, 6 * n + 2 * n * n, rwork, info);
         //
         //     Check for RESULT(j) > THRESH
         //

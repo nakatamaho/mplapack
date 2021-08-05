@@ -178,7 +178,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         info = -9;
     } else if (ldu < nmax) {
         info = -23;
-    } else if (2 * pow2(max((INTEGER)2, nmax)) > lwork) {
+    } else if (2 * max((INTEGER)2, nmax) * max((INTEGER)2, nmax) > lwork) {
         info = -29;
     }
     //
@@ -222,8 +222,8 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             if (pow(2, lgn) < n) {
                 lgn++;
             }
-            lwedc = 1 + 4 * n + 2 * n * lgn + 4 * pow2(n);
-            lrwedc = 1 + 3 * n + 2 * n * lgn + 4 * pow2(n);
+            lwedc = 1 + 4 * n + 2 * n * lgn + 4 * n * n;
+            lrwedc = 1 + 3 * n + 2 * n * lgn + 4 * n * n;
             liwedc = 6 + 6 * n + 5 * n * lgn;
         } else {
             lwedc = 8;
@@ -621,14 +621,14 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             temp4 = zero;
             //
             for (j = 1; j <= n; j = j + 1) {
-                temp1 = max({temp1, abs(d1[j - 1]), abs(d2[j - 1])});
-                temp2 = max(temp2, abs(d1[j - 1] - d2[j - 1]));
-                temp3 = max({temp3, abs(d1[j - 1]), abs(d3[j - 1])});
-                temp4 = max(temp4, abs(d1[j - 1] - d3[j - 1]));
+                temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d2[j - 1]))});
+                temp2 = max(temp2, REAL(abs(d1[j - 1] - d2[j - 1])));
+                temp3 = max({temp3, REAL(abs(d1[j - 1])), REAL(abs(d3[j - 1]))});
+                temp4 = max(temp4, REAL(abs(d1[j - 1] - d3[j - 1])));
             }
             //
-            result[11 - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
-            result[12 - 1] = temp4 / max({unfl, ulp * max(temp3, temp4)});
+            result[11 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+            result[12 - 1] = temp4 / max(unfl, REAL(ulp * max(temp3, temp4)));
             //
             //           Do Test 13 -- Sturm Sequence Test of Eigenvalues
             //                         Go up by factors of two until it succeeds
@@ -702,11 +702,11 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, abs(d4[j - 1]), abs(d5[j - 1])});
-                    temp2 = max(temp2, abs(d4[j - 1] - d5[j - 1]));
+                    temp1 = max({temp1, REAL(abs(d4[j - 1])), REAL(abs(d5[j - 1]))});
+                    temp2 = max(temp2, REAL(abs(d4[j - 1] - d5[j - 1])));
                 }
                 //
-                result[16 - 1] = temp2 / max({unfl, hun * ulp * max(temp1, temp2)});
+                result[16 - 1] = temp2 / max(unfl, REAL(hun * ulp * max(temp1, temp2)));
             } else {
                 result[14 - 1] = zero;
                 result[15 - 1] = zero;
@@ -739,11 +739,11 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 //              Do test 17
                 //
-                temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / ((one - half) * (one - half) * (one - half) * (one - half));
+                temp2 = two * (two * n - one) * ulp * (one + eight * half * half) / ((one - half) * (one - half) * (one - half) * (one - half));
                 //
                 temp1 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max(temp1, abs(d4[j - 1] - wr[(n - j + 1) - 1]) / (abstol + abs(d4[j - 1])));
+                    temp1 = max(temp1, REAL(abs(d4[j - 1] - wr[(n - j + 1) - 1]) / (abstol + abs(d4[j - 1]))));
                 }
                 //
                 result[17 - 1] = temp1 / temp2;
@@ -772,11 +772,11 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             temp1 = zero;
             temp2 = zero;
             for (j = 1; j <= n; j = j + 1) {
-                temp1 = max({temp1, abs(d3[j - 1]), abs(wa1[j - 1])});
-                temp2 = max(temp2, abs(d3[j - 1] - wa1[j - 1]));
+                temp1 = max({temp1, REAL(abs(d3[j - 1])), REAL(abs(wa1[j - 1]))});
+                temp2 = max(temp2, REAL(abs(d3[j - 1] - wa1[j - 1])));
             }
             //
-            result[18 - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
+            result[18 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
             //           Choose random values for IL and IU, and ask for the
             //           IL-th through IU-th eigenvalues.
@@ -786,8 +786,8 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 il = 1;
                 iu = n;
             } else {
-                il = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
-                iu = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
+                il = 1 + castINTEGER(castREAL(n - 1) * Rlarnd(1, iseed2));
+                iu = 1 + castINTEGER(castREAL(n - 1) * Rlarnd(1, iseed2));
                 if (iu < il) {
                     itemp = iu;
                     iu = il;
@@ -812,14 +812,14 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             if (n > 0) {
                 if (il != 1) {
-                    vl = wa1[il - 1] - max({half * (wa1[il - 1] - wa1[(il - 1) - 1]), ulp * anorm, two * rtunfl});
+                    vl = wa1[il - 1] - max({REAL(half * (wa1[il - 1] - wa1[(il - 1) - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
                 } else {
-                    vl = wa1[1 - 1] - max({half * (wa1[n - 1] - wa1[1 - 1]), ulp * anorm, two * rtunfl});
+                    vl = wa1[1 - 1] - max({REAL(half * (wa1[n - 1] - wa1[1 - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
                 }
                 if (iu != n) {
-                    vu = wa1[iu - 1] + max({half * (wa1[(iu + 1) - 1] - wa1[iu - 1]), ulp * anorm, two * rtunfl});
+                    vu = wa1[iu - 1] + max({REAL(half * (wa1[(iu + 1) - 1] - wa1[iu - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
                 } else {
-                    vu = wa1[n - 1] + max({half * (wa1[n - 1] - wa1[1 - 1]), ulp * anorm, two * rtunfl});
+                    vu = wa1[n - 1] + max({REAL(half * (wa1[n - 1] - wa1[1 - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
                 }
             } else {
                 vl = zero;
@@ -853,7 +853,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 temp3 = zero;
             }
             //
-            result[19 - 1] = (temp1 + temp2) / max(unfl, temp3 * ulp);
+            result[19 - 1] = (temp1 + temp2) / max(unfl, REAL(temp3 * ulp));
             //
             //           Call Cstein to compute eigenvectors corresponding to
             //           eigenvalues in WA1.  (First call Rstebz again, to make sure
@@ -975,11 +975,11 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             temp2 = zero;
             //
             for (j = 1; j <= n; j = j + 1) {
-                temp1 = max({temp1, abs(d1[j - 1]), abs(d2[j - 1])});
-                temp2 = max(temp2, abs(d1[j - 1] - d2[j - 1]));
+                temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d2[j - 1]))});
+                temp2 = max(temp2, REAL(abs(d1[j - 1] - d2[j - 1])));
             }
             //
-            result[26 - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
+            result[26 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
             //           Only test Cstemr if IEEE compliant
             //
@@ -1011,18 +1011,18 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     //              Do test 27
                     //
-                    temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / ((one - half) * (one - half) * (one - half) * (one - half));
+                    temp2 = two * (two * n - one) * ulp * (one + eight * half * half) / ((one - half) * (one - half) * (one - half) * (one - half));
 
                     //
                     temp1 = zero;
                     for (j = 1; j <= n; j = j + 1) {
-                        temp1 = max(temp1, abs(d4[j - 1] - wr[(n - j + 1) - 1]) / (abstol + abs(d4[j - 1])));
+                        temp1 = max(temp1, REAL(abs(d4[j - 1] - wr[(n - j + 1) - 1]) / (abstol + abs(d4[j - 1]))));
                     }
                     //
                     result[27 - 1] = temp1 / temp2;
                     //
-                    il = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
-                    iu = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
+                    il = 1 + castINTEGER(castREAL(n - 1) * Rlarnd(1, iseed2));
+                    iu = 1 + castINTEGER(castREAL(n - 1) * Rlarnd(1, iseed2));
                     if (iu < il) {
                         itemp = iu;
                         iu = il;
@@ -1047,11 +1047,11 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         //
                         //                 Do test 28
                         //
-                        temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / ((one - half) * (one - half) * (one - half) * (one - half));
+                        temp2 = two * (two * n - one) * ulp * (one + eight * half * half) / ((one - half) * (one - half) * (one - half) * (one - half));
                         //
                         temp1 = zero;
                         for (j = il; j <= iu; j = j + 1) {
-                            temp1 = max(temp1, abs(wr[(j - il + 1) - 1] - d4[(n - j + 1) - 1]) / (abstol + abs(wr[(j - il + 1) - 1])));
+                            temp1 = max(temp1, REAL(abs(wr[(j - il + 1) - 1] - d4[(n - j + 1) - 1]) / (abstol + abs(wr[(j - il + 1) - 1]))));
                         }
                         //
                         result[28 - 1] = temp1 / temp2;
@@ -1075,8 +1075,8 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 if (crange) {
                     ntest = 29;
-                    il = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
-                    iu = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
+                    il = 1 + castINTEGER(castREAL(n - 1) * Rlarnd(1, iseed2));
+                    iu = 1 + castINTEGER(castREAL(n - 1) * Rlarnd(1, iseed2));
                     if (iu < il) {
                         itemp = iu;
                         iu = il;
@@ -1124,11 +1124,11 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     temp2 = zero;
                     //
                     for (j = 1; j <= iu - il + 1; j = j + 1) {
-                        temp1 = max({temp1, abs(d1[j - 1]), abs(d2[j - 1])});
-                        temp2 = max(temp2, abs(d1[j - 1] - d2[j - 1]));
+                        temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d2[j - 1]))});
+                        temp2 = max(temp2, REAL(abs(d1[j - 1] - d2[j - 1])));
                     }
                     //
-                    result[31 - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
+                    result[31 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
                     //
                     //           Call Cstemr(V,V) to compute D1 and Z, do tests.
                     //
@@ -1144,14 +1144,14 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     if (n > 0) {
                         if (il != 1) {
-                            vl = d2[il - 1] - max({half * (d2[il - 1] - d2[(il - 1) - 1]), ulp * anorm, two * rtunfl});
+                            vl = d2[il - 1] - max({REAL(half * (d2[il - 1] - d2[(il - 1) - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
                         } else {
-                            vl = d2[1 - 1] - max({half * (d2[n - 1] - d2[1 - 1]), ulp * anorm, two * rtunfl});
+                            vl = d2[1 - 1] - max({REAL(half * (d2[n - 1] - d2[1 - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
                         }
                         if (iu != n) {
-                            vu = d2[iu - 1] + max({half * (d2[(iu + 1) - 1] - d2[iu - 1]), ulp * anorm, two * rtunfl});
+                            vu = d2[iu - 1] + max({REAL(half * (d2[(iu + 1) - 1] - d2[iu - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
                         } else {
-                            vu = d2[n - 1] + max({half * (d2[n - 1] - d2[1 - 1]), ulp * anorm, two * rtunfl});
+                            vu = d2[n - 1] + max({REAL(half * (d2[n - 1] - d2[1 - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
                         }
                     } else {
                         vl = zero;
@@ -1202,11 +1202,11 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     temp2 = zero;
                     //
                     for (j = 1; j <= iu - il + 1; j = j + 1) {
-                        temp1 = max({temp1, abs(d1[j - 1]), abs(d2[j - 1])});
-                        temp2 = max(temp2, abs(d1[j - 1] - d2[j - 1]));
+                        temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d2[j - 1]))});
+                        temp2 = max(temp2, REAL(abs(d1[j - 1] - d2[j - 1])));
                     }
                     //
-                    result[34 - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
+                    result[34 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
                 } else {
                     result[29 - 1] = zero;
                     result[30 - 1] = zero;
@@ -1271,11 +1271,11 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 temp2 = zero;
                 //
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, abs(d1[j - 1]), abs(d2[j - 1])});
-                    temp2 = max(temp2, abs(d1[j - 1] - d2[j - 1]));
+                    temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d2[j - 1]))});
+                    temp2 = max(temp2, REAL(abs(d1[j - 1] - d2[j - 1])));
                 }
                 //
-                result[37 - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
+                result[37 - 1] = temp2 / max({unfl, REAL(ulp * max(temp1, temp2))});
             }
         statement_270:
         statement_280:

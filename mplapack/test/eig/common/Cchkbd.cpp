@@ -524,7 +524,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             temp2 = zero;
             //
             for (j = 1; j <= mnmin; j = j + 1) {
-                temp1 = abs(s1[j - 1] - s2[j - 1]) / max({sqrt(unfl) * max(s1[1 - 1], one), ulp * max(abs(s1[j - 1]), abs(s2[j - 1]))});
+                temp1 = abs(s1[j - 1] - s2[j - 1]) / max({REAL(sqrt(unfl) * max(s1[1 - 1], one)), REAL(ulp * max(abs(s1[j - 1]), abs(s2[j - 1])))});
                 temp2 = max(temp1, temp2);
             }
             //

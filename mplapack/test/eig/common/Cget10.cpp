@@ -89,9 +89,9 @@ void Cget10(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         result = (wnorm / anorm) / (m * eps);
     } else {
         if (anorm < one) {
-            result = (min(wnorm, m * anorm) / anorm) / (m * eps);
+            result = (min(wnorm, REAL(m * anorm)) / anorm) / (castREAL(m) * eps);
         } else {
-            result = min(wnorm / anorm, castREAL(m)) / (m * eps);
+            result = min(REAL(wnorm / anorm), castREAL(m)) / (castREAL(m) * eps);
         }
     }
     //

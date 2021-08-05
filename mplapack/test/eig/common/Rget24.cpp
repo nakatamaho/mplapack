@@ -195,12 +195,12 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
         wnorm = Rlange("1", n, n, vs1, ldvs, work);
         //
         if (anorm > wnorm) {
-            result[(2 + rsub) - 1] = (wnorm / anorm) / (n * ulp);
+            result[(2 + rsub) - 1] = (wnorm / anorm) / (castREAL(n) * ulp);
         } else {
             if (anorm < one) {
-                result[(2 + rsub) - 1] = (min(wnorm, n * anorm) / anorm) / (n * ulp);
+                result[(2 + rsub) - 1] = (min(wnorm, REAL(castREAL(n) * anorm)) / anorm) / (castREAL(n) * ulp);
             } else {
-                result[(2 + rsub) - 1] = min(wnorm / anorm, castREAL(n)) / (n * ulp);
+                result[(2 + rsub) - 1] = min(REAL(wnorm / anorm), castREAL(n)) / (castREAL(n) * ulp);
             }
         }
         //
@@ -227,8 +227,8 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
         for (i = 1; i <= n - 1; i = i + 1) {
             if (h[((i + 1) - 1) + (i - 1) * ldh] != zero) {
                 tmp = sqrt(abs(h[((i + 1) - 1) + (i - 1) * ldh])) * sqrt(abs(h[(i - 1) + ((i + 1) - 1) * ldh]));
-                result[(4 + rsub) - 1] = max({result[(4 + rsub) - 1], abs(wi[i - 1] - tmp) / max(ulp * tmp, smlnum)});
-                result[(4 + rsub) - 1] = max({result[(4 + rsub) - 1], abs(wi[(i + 1) - 1] + tmp) / max(ulp * tmp, smlnum)});
+                result[(4 + rsub) - 1] = max(result[(4 + rsub) - 1], REAL(abs(wi[i - 1] - tmp) / max(REAL(ulp * tmp), smlnum)));
+                result[(4 + rsub) - 1] = max(result[(4 + rsub) - 1], REAL(abs(wi[(i + 1) - 1] + tmp) / max(REAL(ulp * tmp), smlnum)));
             } else if (i > 1) {
                 if (h[((i + 1) - 1) + (i - 1) * ldh] == zero && h[(i - 1) + ((i - 1) - 1) * ldh] == zero && wi[i - 1] != zero) {
                     result[(4 + rsub) - 1] = ulpinv;
@@ -599,7 +599,7 @@ statement_250:
         //        taking its condition number into account
         //
         anorm = Rlange("1", n, n, a, lda, work);
-        v = max(castREAL(n) * eps * anorm, smlnum);
+        v = max(REAL(castREAL(n) * eps * anorm), smlnum);
         if (anorm == zero) {
             v = one;
         }
@@ -613,8 +613,8 @@ statement_250:
         } else {
             tolin = v / rcdvin;
         }
-        tol = max(tol, smlnum / eps);
-        tolin = max(tolin, smlnum / eps);
+        tol = max(tol, REAL(smlnum / eps));
+        tolin = max(tolin, REAL(smlnum / eps));
         if (eps * (rcdein - tolin) > rconde + tol) {
             result[16 - 1] = ulpinv;
         } else if (rcdein - tolin > rconde + tol) {
@@ -640,8 +640,8 @@ statement_250:
         } else {
             tolin = v / rcdein;
         }
-        tol = max(tol, smlnum / eps);
-        tolin = max(tolin, smlnum / eps);
+        tol = max(tol, REAL(smlnum / eps));
+        tolin = max(tolin, REAL(smlnum / eps));
         if (eps * (rcdvin - tolin) > rcondv + tol) {
             result[17 - 1] = ulpinv;
         } else if (rcdvin - tolin > rcondv + tol) {

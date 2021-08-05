@@ -126,7 +126,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
             badnn = true;
         }
         mnmax = max({mnmax, min(mm[j - 1], nn[j - 1])});
-        minwrk = max(minwrk, max({3 * min(mm[j - 1], nn[j - 1]) + max(mm[j - 1], nn[j - 1]), 5 * min(mm[j - 1], nn[j - 1] - 4)}) + 2 * pow2(min(mm[j - 1], nn[j - 1])));
+        minwrk = max(minwrk, max({3 * min(mm[j - 1], nn[j - 1]) + max(mm[j - 1], nn[j - 1]), 5 * min(mm[j - 1], nn[j - 1] - 4)}) + 2 * min(mm[j - 1], nn[j - 1]) * min(mm[j - 1], nn[j - 1]));
     }
     //
     //     Check for errors
@@ -248,7 +248,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 iwtmp = max({3 * min(m, n) + max(m, n), 5 * min(m, n)});
                 lswork = iwtmp + (iws - 1) * (lwork - iwtmp) / 3;
                 lswork = min(lswork, lwork);
-                lswork = max(lswork, 1);
+                lswork = max(lswork, (INTEGER)1);
                 if (iws == 4) {
                     lswork = lwork;
                 }
@@ -333,7 +333,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         //                    Compare S
                         //
                         dif = zero;
-                        div = max(mnmin * ulp * s[1 - 1], unfl);
+                        div = max(REAL(mnmin * ulp * s[1 - 1]), unfl);
                         for (i = 1; i <= mnmin - 1; i = i + 1) {
                             if (ssav[i - 1] < ssav[(i + 1) - 1]) {
                                 dif = ulpinv;
@@ -341,7 +341,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                             if (ssav[i - 1] < zero) {
                                 dif = ulpinv;
                             }
-                            dif = max(dif, abs(ssav[i - 1] - s[i - 1]) / div);
+                            dif = max(dif, REAL(abs(ssav[i - 1] - s[i - 1]) / div));
                         }
                         result[7 - 1] = max(result[7 - 1], dif);
                     statement_70:;
@@ -353,7 +353,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 iwtmp = 5 * mnmin * mnmin + 9 * mnmin + max(m, n);
                 lswork = iwtmp + (iws - 1) * (lwork - iwtmp) / 3;
                 lswork = min(lswork, lwork);
-                lswork = max(lswork, 1);
+                lswork = max(lswork, (INTEGER)1);
                 if (iws == 4) {
                     lswork = lwork;
                 }
@@ -435,7 +435,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     //                 Compare S
                     //
                     dif = zero;
-                    div = max(mnmin * ulp * s[1 - 1], unfl);
+                    div = max(REAL(mnmin * ulp * s[1 - 1]), unfl);
                     for (i = 1; i <= mnmin - 1; i = i + 1) {
                         if (ssav[i - 1] < ssav[(i + 1) - 1]) {
                             dif = ulpinv;
@@ -443,7 +443,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         if (ssav[i - 1] < zero) {
                             dif = ulpinv;
                         }
-                        dif = max(dif, abs(ssav[i - 1] - s[i - 1]) / div);
+                        dif = max(dif, REAL(abs(ssav[i - 1] - s[i - 1]) / div));
                     }
                     result[14 - 1] = max(result[14 - 1], dif);
                 }
@@ -460,7 +460,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     iwtmp = 5 * mnmin * mnmin + 9 * mnmin + max(m, n);
                     lswork = iwtmp + (iws - 1) * (lwork - iwtmp) / 3;
                     lswork = min(lswork, lwork);
-                    lswork = max(lswork, 1);
+                    lswork = max(lswork, (INTEGER)1);
                     if (iws == 4) {
                         lswork = lwork;
                     }
@@ -468,7 +468,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     Rlacpy("F", m, n, asav, lda, a, lda);
                     //
                     lrwork = 2;
-                    liwork = max(n, 1);
+                    liwork = max(n, (INTEGER)1);
                     strncpy(srnamt, "Rgesvdq", srnamt_len);
                     Rgesvdq("H", "N", "N", "A", "A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, numrank, iwork, liwork, work, lwork, rwork, lrwork, iinfo);
                     //
@@ -513,7 +513,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     iwtmp = 5 * mnmin * mnmin + 9 * mnmin + max(m, n);
                     lswork = iwtmp + (iws - 1) * (lwork - iwtmp) / 3;
                     lswork = min(lswork, lwork);
-                    lswork = max(lswork, 1);
+                    lswork = max(lswork, (INTEGER)1);
                     if (iws == 4) {
                         lswork = lwork;
                     }
@@ -570,7 +570,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     iwtmp = 5 * mnmin * mnmin + 9 * mnmin + max(m, n);
                     lswork = iwtmp + (iws - 1) * (lwork - iwtmp) / 3;
                     lswork = min(lswork, lwork);
-                    lswork = max(lswork, 1);
+                    lswork = max(lswork, (INTEGER)1);
                     if (iws == 4) {
                         lswork = lwork;
                     }
@@ -689,7 +689,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         //                    Compare S
                         //
                         dif = zero;
-                        div = max(mnmin * ulp * s[1 - 1], unfl);
+                        div = max(REAL(mnmin * ulp * s[1 - 1]), unfl);
                         for (i = 1; i <= mnmin - 1; i = i + 1) {
                             if (ssav[i - 1] < ssav[(i + 1) - 1]) {
                                 dif = ulpinv;
@@ -697,7 +697,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                             if (ssav[i - 1] < zero) {
                                 dif = ulpinv;
                             }
-                            dif = max(dif, abs(ssav[i - 1] - s[i - 1]) / div);
+                            dif = max(dif, REAL(abs(ssav[i - 1] - s[i - 1]) / div));
                         }
                         result[29 - 1] = max(result[29 - 1], dif);
                     statement_170:;
@@ -713,8 +713,8 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     il = 1;
                     iu = max((INTEGER)1, mnmin);
                 } else {
-                    il = 1 + castREAL((mnmin - 1) * Rlarnd(1, iseed2));
-                    iu = 1 + castREAL((mnmin - 1) * Rlarnd(1, iseed2));
+                    il = 1 + castINTEGER(castREAL(mnmin - 1) * Rlarnd(1, iseed2));
+                    iu = 1 + castINTEGER(castREAL(mnmin - 1) * Rlarnd(1, iseed2));
                     if (iu < il) {
                         itemp = iu;
                         iu = il;
@@ -740,19 +740,19 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 //
                 if (mnmin > 0 && nsi > 1) {
                     if (il != 1) {
-                        vu = ssav[il - 1] + max({half * abs(ssav[il - 1] - ssav[(il - 1) - 1]), ulp * anorm, two * rtunfl});
+                        vu = ssav[il - 1] + max({REAL(half * abs(ssav[il - 1] - ssav[(il - 1) - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
                     } else {
-                        vu = ssav[1 - 1] + max({half * abs(ssav[ns - 1] - ssav[1 - 1]), ulp * anorm, two * rtunfl});
+                        vu = ssav[1 - 1] + max({REAL(half * abs(ssav[ns - 1] - ssav[1 - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
                     }
                     if (iu != ns) {
-                        vl = ssav[iu - 1] - max({ulp * anorm, two * rtunfl, half * abs(ssav[(iu + 1) - 1] - ssav[iu - 1])});
+                        vl = ssav[iu - 1] - max({REAL(ulp * anorm), REAL(two * rtunfl), REAL(half * abs(ssav[(iu + 1) - 1] - ssav[iu - 1]))});
                     } else {
-                        vl = ssav[ns - 1] - max({ulp * anorm, two * rtunfl, half * abs(ssav[ns - 1] - ssav[1 - 1])});
+                        vl = ssav[ns - 1] - max({REAL(ulp * anorm), REAL(two * rtunfl), REAL(half * abs(ssav[ns - 1] - ssav[1 - 1]))});
                     }
                     vl = max(vl, zero);
                     vu = max(vu, zero);
                     if (vl >= vu) {
-                        vu = max(vu * 2, vu + vl + half);
+                        vu = max(REAL(vu * 2), REAL(vu + vl + half));
                     }
                 } else {
                     vl = zero;

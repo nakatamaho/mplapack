@@ -123,9 +123,9 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         info = -9;
     } else if (ldz <= 1 || ldz < nmax) {
         info = -16;
-    } else if (2 * pow2(max(nmax, 3)) > nwork) {
+    } else if (2 * max(nmax, (INTEGER)3) * max(nmax, (INTEGER)3) > nwork) {
         info = -21;
-    } else if (2 * pow2(max(nmax, 3)) > liwork) {
+    } else if (2 * max(nmax, (INTEGER)3) * max(nmax, (INTEGER)3) > liwork) {
         info = -23;
     }
     //
@@ -326,8 +326,8 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 il = 1;
                 iu = n;
             } else {
-                il = 1 + (n - 1) * Rlarnd(1, iseed2);
-                iu = 1 + (n - 1) * Rlarnd(1, iseed2);
+                il = 1 + castINTEGER(castREAL(n - 1) * Rlarnd(1, iseed2));
+                iu = 1 + castINTEGER(castREAL(n - 1) * Rlarnd(1, iseed2));
                 if (il > iu) {
                     itemp = il;
                     il = iu;

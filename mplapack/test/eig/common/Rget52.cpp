@@ -127,7 +127,7 @@ void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *
                     salfr = scale * salfr;
                     sbeta = scale * sbeta;
                 }
-                scale = one / max({abs(salfr) * bnorm, abs(sbeta) * anorm, safmin});
+                scale = one / max({REAL(abs(salfr) * bnorm), REAL(abs(sbeta) * anorm), safmin});
                 acoef = scale * sbeta;
                 bcoefr = scale * salfr;
                 Rgemv(&trans, n, n, acoef, a, lda, &e[(jvec - 1) * lde], 1, zero, &work[(n * (jvec - 1) + 1) - 1], 1);
@@ -141,14 +141,14 @@ void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *
                     result[1 - 1] = ten / ulp;
                     return;
                 }
-                abmax = max(abs(salfr) + abs(salfi), abs(sbeta));
+                abmax = max(REAL(abs(salfr) + abs(salfi)), REAL(abs(sbeta)));
                 if (abs(salfr) + abs(salfi) > alfmax || abs(sbeta) > betmax || abmax < one) {
                     scale = one / max(abmax, safmin);
                     salfr = scale * salfr;
                     salfi = scale * salfi;
                     sbeta = scale * sbeta;
                 }
-                scale = one / max({(abs(salfr) + abs(salfi)) * bnorm, abs(sbeta) * anorm, safmin});
+                scale = one / max({REAL((abs(salfr) + abs(salfi)) * bnorm), REAL(abs(sbeta) * anorm), safmin});
                 acoef = scale * sbeta;
                 bcoefr = scale * salfr;
                 bcoefi = scale * salfi;
@@ -167,7 +167,7 @@ void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         }
     }
     //
-    REAL errnrm = Rlange("One", n, n, work, n, &work[(pow2(n) + 1) - 1]) / enorm;
+    REAL errnrm = Rlange("One", n, n, work, n, &work[(n * n + 1) - 1]) / enorm;
     //
     //     Compute RESULT(1)
     //
@@ -186,15 +186,15 @@ void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *
             temp1 = zero;
             if (alphai[jvec - 1] == zero) {
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max(temp1, abs(e[(j - 1) + (jvec - 1) * lde]));
+                    temp1 = max(temp1, REAL(abs(e[(j - 1) + (jvec - 1) * lde])));
                 }
-                enrmer = max(enrmer, temp1 - one);
+                enrmer = max(enrmer, REAL(temp1 - one));
             } else {
                 ilcplx = true;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max(temp1, abs(e[(j - 1) + (jvec - 1) * lde]) + abs(e[(j - 1) + ((jvec + 1) - 1) * lde]));
+                    temp1 = max(temp1, REAL(abs(e[(j - 1) + (jvec - 1) * lde]) + abs(e[(j - 1) + ((jvec + 1) - 1) * lde])));
                 }
-                enrmer = max(enrmer, temp1 - one);
+                enrmer = max(enrmer, REAL(temp1 - one));
             }
         }
     }

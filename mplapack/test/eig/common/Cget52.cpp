@@ -121,7 +121,7 @@ void Cget52(bool const left, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
             alphai = scale * alphai;
             betai = scale * betai;
         }
-        scale = one / max({abs1(alphai) * bnorm, abs1(betai) * anorm, safmin});
+        scale = one / max({REAL(abs1(alphai) * bnorm), REAL(abs1(betai) * anorm), safmin});
         acoeff = scale * betai;
         bcoeff = scale * alphai;
         if (left) {
@@ -148,7 +148,7 @@ void Cget52(bool const left, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         for (j = 1; j <= n; j = j + 1) {
             temp1 = max(temp1, abs1(e[(j - 1) + (jvec - 1) * lde]));
         }
-        enrmer = max(enrmer, temp1 - one);
+        enrmer = max(enrmer, REAL(temp1 - one));
     }
     //
     //     Compute RESULT(2) : the normalization error in E.

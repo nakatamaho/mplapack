@@ -108,7 +108,7 @@ void Cget22(const char *transa, const char *transe, const char *transw, INTEGER 
         for (jvec = 1; jvec <= n; jvec = jvec + 1) {
             temp1 = zero;
             for (j = 1; j <= n; j = j + 1) {
-                temp1 = max(temp1, abs(e[(j - 1) + (jvec - 1) * lde].real()) + abs(e[(j - 1) + (jvec - 1) * lde].imag()));
+                temp1 = max(temp1, REAL(abs(e[(j - 1) + (jvec - 1) * lde].real()) + abs(e[(j - 1) + (jvec - 1) * lde].imag())));
             }
             enrmin = min(enrmin, temp1);
             enrmax = max(enrmax, temp1);
@@ -120,7 +120,7 @@ void Cget22(const char *transa, const char *transe, const char *transw, INTEGER 
         //
         for (j = 1; j <= n; j = j + 1) {
             for (jvec = 1; jvec <= n; jvec = jvec + 1) {
-                rwork[jvec - 1] = max(rwork[jvec - 1], abs(e[(jvec - 1) + (j - 1) * lde].real()) + abs(e[(jvec - 1) + (j - 1) * lde].imag()));
+                rwork[jvec - 1] = max(rwork[jvec - 1], REAL(abs(e[(jvec - 1) + (j - 1) * lde].real()) + abs(e[(jvec - 1) + (j - 1) * lde].imag())));
             }
         }
         //
@@ -185,7 +185,7 @@ void Cget22(const char *transa, const char *transe, const char *transw, INTEGER 
         if (anorm < one) {
             result[1 - 1] = (min(errnrm, anorm) / anorm) / ulp;
         } else {
-            result[1 - 1] = min(errnrm / anorm, one) / ulp;
+            result[1 - 1] = min(REAL(errnrm / anorm), one) / ulp;
         }
     }
     //

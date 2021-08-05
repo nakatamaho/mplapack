@@ -216,9 +216,9 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             result[(2 + rsub) - 1] = (wnorm / anorm) / (n * ulp);
         } else {
             if (anorm < one) {
-                result[(2 + rsub) - 1] = (min(wnorm, n * anorm) / anorm) / (n * ulp);
+                result[(2 + rsub) - 1] = (min(wnorm, REAL(n * anorm)) / anorm) / (n * ulp);
             } else {
-                result[(2 + rsub) - 1] = min(wnorm / anorm, castREAL(n)) / (n * ulp);
+                result[(2 + rsub) - 1] = min(REAL(wnorm / anorm), castREAL(n)) / (n * ulp);
             }
         }
         //
@@ -604,7 +604,7 @@ statement_220:
         //        taking its condition number into account
         //
         anorm = Clange("1", n, n, a, lda, rwork);
-        v = max(castREAL(n) * eps * anorm, smlnum);
+        v = max(REAL(castREAL(n) * eps * anorm), smlnum);
         if (anorm == zero) {
             v = one;
         }
@@ -618,8 +618,8 @@ statement_220:
         } else {
             tolin = v / rcdvin;
         }
-        tol = max(tol, smlnum / eps);
-        tolin = max(tolin, smlnum / eps);
+        tol = max(tol, REAL(smlnum / eps));
+        tolin = max(tolin, REAL(smlnum / eps));
         if (eps * (rcdein - tolin) > rconde + tol) {
             result[16 - 1] = ulpinv;
         } else if (rcdein - tolin > rconde + tol) {
@@ -645,8 +645,8 @@ statement_220:
         } else {
             tolin = v / rcdein;
         }
-        tol = max(tol, smlnum / eps);
-        tolin = max(tolin, smlnum / eps);
+        tol = max(tol, REAL(smlnum / eps));
+        tolin = max(tolin, REAL(smlnum / eps));
         if (eps * (rcdvin - tolin) > rcondv + tol) {
             result[17 - 1] = ulpinv;
         } else if (rcdvin - tolin > rcondv + tol) {

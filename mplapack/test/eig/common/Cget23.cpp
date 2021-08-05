@@ -196,7 +196,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
     //
     for (j = 1; j <= n; j = j + 1) {
         tnrm = RCnrm2(n, &vr[(j - 1) * ldvr], 1);
-        result[3 - 1] = max({result[3 - 1], min(ulpinv, abs(tnrm - one) / ulp)});
+        result[3 - 1] = max({result[3 - 1], min(ulpinv, REAL(abs(tnrm - one) / ulp))});
         vmx = zero;
         vrmx = zero;
         for (jj = 1; jj <= n; jj = jj + 1) {
@@ -217,7 +217,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
     //
     for (j = 1; j <= n; j = j + 1) {
         tnrm = RCnrm2(n, &vl[(j - 1) * ldvl], 1);
-        result[4 - 1] = max({result[4 - 1], min(ulpinv, abs(tnrm - one) / ulp)});
+        result[4 - 1] = max(result[4 - 1], min(ulpinv, REAL(abs(tnrm - one) / ulp)));
         vmx = zero;
         vrmx = zero;
         for (jj = 1; jj <= n; jj = jj + 1) {
@@ -469,7 +469,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
         //
         result[10 - 1] = zero;
         eps = max(epsin, ulp);
-        v = max(castREAL(n) * eps * abnrm, smlnum);
+        v = max(REAL(castREAL(n) * eps * abnrm), smlnum);
         if (abnrm == zero) {
             v = one;
         }
@@ -484,8 +484,8 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
             } else {
                 tolin = v / rcdein[i - 1];
             }
-            tol = max(tol, smlnum / eps);
-            tolin = max(tolin, smlnum / eps);
+            tol = max(tol, REAL(smlnum / eps));
+            tolin = max(tolin, REAL(smlnum / eps));
             if (eps * (rcdvin[i - 1] - tolin) > rcondv[i - 1] + tol) {
                 vmax = one / eps;
             } else if (rcdvin[i - 1] - tolin > rcondv[i - 1] + tol) {
@@ -515,8 +515,8 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
             } else {
                 tolin = v / rcdvin[i - 1];
             }
-            tol = max(tol, smlnum / eps);
-            tolin = max(tolin, smlnum / eps);
+            tol = max(tol, REAL(smlnum / eps));
+            tolin = max(tolin, REAL(smlnum / eps));
             if (eps * (rcdein[i - 1] - tolin) > rconde[i - 1] + tol) {
                 vmax = one / eps;
             } else if (rcdein[i - 1] - tolin > rconde[i - 1] + tol) {

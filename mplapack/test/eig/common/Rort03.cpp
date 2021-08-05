@@ -122,7 +122,7 @@ void Rort03(const char *rc, INTEGER const mu, INTEGER const mv, INTEGER const n,
             lmx = iRamax(n, &u[(i - 1)], ldu);
             s = sign(one, u[(i - 1) + (lmx - 1) * ldu]) * sign(one, v[(i - 1) + (lmx - 1) * ldv]);
             for (j = 1; j <= n; j = j + 1) {
-                res1 = max(res1, abs(u[(i - 1) + (j - 1) * ldu] - s * v[(i - 1) + (j - 1) * ldv]));
+                res1 = max(res1, REAL(abs(u[(i - 1) + (j - 1) * ldu] - s * v[(i - 1) + (j - 1) * ldv])));
             }
         }
         res1 = res1 / (castREAL(n) * ulp);
@@ -140,7 +140,7 @@ void Rort03(const char *rc, INTEGER const mu, INTEGER const mv, INTEGER const n,
             lmx = iRamax(n, &u[(i - 1) * ldu], 1);
             s = sign(one, u[(lmx - 1) + (i - 1) * ldu]) * sign(one, v[(lmx - 1) + (i - 1) * ldv]);
             for (j = 1; j <= n; j = j + 1) {
-                res1 = max(res1, abs(u[(j - 1) + (i - 1) * ldu] - s * v[(j - 1) + (i - 1) * ldv]));
+                res1 = max(res1, REAL(abs(u[(j - 1) + (i - 1) * ldu] - s * v[(j - 1) + (i - 1) * ldv])));
             }
         }
         res1 = res1 / (castREAL(n) * ulp);
@@ -150,7 +150,7 @@ void Rort03(const char *rc, INTEGER const mu, INTEGER const mv, INTEGER const n,
         Rort01("Columns", n, mv, v, ldv, work, lwork, res2);
     }
     //
-    result = min({max(res1, res2), one / ulp});
+    result = min(REAL(max(res1, res2)), REAL(one / ulp));
     //
     //     End of Rort03
     //

@@ -289,7 +289,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
                     //
                     cl = two * Rlaran(iseed) - one;
                     sl = two * Rlaran(iseed) - one;
-                    temp = one / max(safmin, sqrt(pow2(cl) + pow2(sl)));
+                    temp = one / max(safmin, REAL(sqrt(cl * cl + sl * sl)));
                     cl = cl * temp;
                     sl = sl * temp;
                     //
@@ -297,7 +297,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
                     //
                     cr = two * Rlaran(iseed) - one;
                     sr = two * Rlaran(iseed) - one;
-                    temp = one / max(safmin, sqrt(pow2(cr) + pow2(sr)));
+                    temp = one / max(safmin, REAL(sqrt(cr * cr + sr * sr)));
                     cr = cr * temp;
                     sr = sr * temp;
                     //

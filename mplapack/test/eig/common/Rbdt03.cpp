@@ -93,9 +93,9 @@ void Rbdt03(const char *uplo, INTEGER const n, INTEGER const kd, REAL *d, REAL *
                 work[j - 1] += d[j - 1];
                 if (j > 1) {
                     work[(j - 1) - 1] += e[(j - 1) - 1];
-                    bnorm = max(bnorm, abs(d[j - 1]) + abs(e[(j - 1) - 1]));
+                    bnorm = max(bnorm, REAL(abs(d[j - 1]) + abs(e[(j - 1) - 1])));
                 } else {
-                    bnorm = max(bnorm, abs(d[j - 1]));
+                    bnorm = max(bnorm, REAL(abs(d[j - 1])));
                 }
                 resid = max({resid, Rasum(n, work, 1)});
             }
@@ -111,9 +111,9 @@ void Rbdt03(const char *uplo, INTEGER const n, INTEGER const kd, REAL *d, REAL *
                 work[j - 1] += d[j - 1];
                 if (j < n) {
                     work[(j + 1) - 1] += e[j - 1];
-                    bnorm = max(bnorm, abs(d[j - 1]) + abs(e[j - 1]));
+                    bnorm = max(bnorm, REAL(abs(d[j - 1]) + abs(e[j - 1])));
                 } else {
-                    bnorm = max(bnorm, abs(d[j - 1]));
+                    bnorm = max(bnorm, REAL(abs(d[j - 1])));
                 }
                 resid = max({resid, Rasum(n, work, 1)});
             }
@@ -147,9 +147,9 @@ void Rbdt03(const char *uplo, INTEGER const n, INTEGER const kd, REAL *d, REAL *
             resid = (resid / bnorm) / (castREAL(n) * eps);
         } else {
             if (bnorm < one) {
-                resid = (min(resid, castREAL(n) * bnorm) / bnorm) / (castREAL(n) * eps);
+                resid = (min(resid, REAL(castREAL(n) * bnorm)) / bnorm) / (castREAL(n) * eps);
             } else {
-                resid = min(resid / bnorm, castREAL(n)) / (castREAL(n) * eps);
+                resid = min(REAL(resid / bnorm), castREAL(n)) / (castREAL(n) * eps);
             }
         }
     }

@@ -68,7 +68,7 @@ void Rchkrfp(void) {
     bool tsterr = false;
     REAL eps = 0.0;
     char buf[1024];
-    
+
     std::string str;
     stringstream ss;
     s1 = time(NULL);

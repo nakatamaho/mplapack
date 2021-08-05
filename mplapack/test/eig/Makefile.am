@@ -1,47 +1,46 @@
 SUBDIRS = .
-lib_LTLIBRARIES = libeig_override.la
+lib_LTLIBRARIES = 
 
 if ENABLE_MPFR
-lib_LTLIBRARIES += libeig_mpfr.la
+lib_LTLIBRARIES += libeig_mpfr.la libeig_override_mpfr.la
 SUBDIRS += mpfr
 endif
 
 if ENABLE_GMP
-lib_LTLIBRARIES += libeig_gmp.la
+lib_LTLIBRARIES += libeig_gmp.la libeig_override_gmp.la
 SUBDIRS += gmp
 endif
 
 if ENABLE_DD
-lib_LTLIBRARIES += libeig_dd.la
+lib_LTLIBRARIES += libeig_dd.la libeig_override_dd.la
 SUBDIRS += dd
 endif
 
 if ENABLE_QD
-lib_LTLIBRARIES += libeig_qd.la
+lib_LTLIBRARIES += libeig_qd.la libeig_override_qd.la
 SUBDIRS += qd
 endif
 
 if ENABLE_DOUBLE
-lib_LTLIBRARIES += libeig_double.la
+lib_LTLIBRARIES += libeig_double.la libeig_override_double.la
 SUBDIRS += double
 endif
 
 if ENABLE__FLOAT64X
-lib_LTLIBRARIES += libeig__Float64x.la
+lib_LTLIBRARIES += libeig__Float64x.la libeig_override__Float64x.la
 SUBDIRS += _Float64x
 endif
 
 if ENABLE__FLOAT128
-lib_LTLIBRARIES += libeig__Float128.la
+lib_LTLIBRARIES += libeig__Float128.la libeig_override__Float128.la
 SUBDIRS += _Float128
 endif
-
-libeig_override_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mplapack/test/fable
-libeig_override_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
 
 if ENABLE_MPFR
 libeig_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___
 libeig_mpfr_la_SOURCES = $(EIG_SOURCES)
+libeig_override_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mplapack/test/fable
+libeig_override_mpfr_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
 if IS_MACOSX
 libeig_mpfr_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
@@ -50,6 +49,8 @@ endif
 if ENABLE_GMP
 libeig_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___
 libeig_gmp_la_SOURCES = $(EIG_SOURCES)
+libeig_override_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(top_srcdir)/mplapack/test/fable -D___MPLAPACK_BUILD_WITH_GMP___
+libeig_override_gmp_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
 if IS_MACOSX
 libeig_gmp_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
@@ -58,6 +59,8 @@ endif
 if ENABLE_QD
 libeig_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___
 libeig_qd_la_SOURCES = $(EIG_SOURCES)
+libeig_override_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___
+libeig_override_qd_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
 if IS_MACOSX
 libeig_qd_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
@@ -66,6 +69,8 @@ endif
 if ENABLE_DD
 libeig_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___
 libeig_dd_la_SOURCES = $(EIG_SOURCES)
+libeig_override_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___
+libeig_override_dd_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
 if IS_MACOSX
 libeig_dd_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
@@ -74,6 +79,8 @@ endif
 if ENABLE_DOUBLE
 libeig_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -D___MPLAPACK_BUILD_WITH_DOUBLE___
 libeig_double_la_SOURCES = $(EIG_SOURCES)
+libeig_override_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -D___MPLAPACK_BUILD_WITH_DOUBLE___
+libeig_override_double_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
 if IS_MACOSX
 libeig_double_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
@@ -82,6 +89,8 @@ endif
 if ENABLE__FLOAT64X
 libeig__Float64x_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -D___MPLAPACK_BUILD_WITH__FLOAT64X___
 libeig__Float64x_la_SOURCES = $(EIG_SOURCES)
+libeig_override__Float64x_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -D___MPLAPACK_BUILD_WITH__FLOAT64X___
+libeig_override__Float64x_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
 if IS_MACOSX
 libeig__Float64x_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
@@ -90,6 +99,8 @@ endif
 if ENABLE__FLOAT128
 libeig__Float128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -D___MPLAPACK_BUILD_WITH__FLOAT128___
 libeig__Float128_la_SOURCES = $(EIG_SOURCES)
+libeig_override__Float128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -D___MPLAPACK_BUILD_WITH__FLOAT128___
+libeig_override__Float128_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
 if IS_MACOSX
 libeig__Float128_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif

@@ -91,12 +91,12 @@ void Cstt21(INTEGER const n, INTEGER const kband, REAL *ad, REAL *ae, REAL *sd, 
         work[((n + 1) * (j - 1) + 1) - 1] = ad[j - 1];
         work[((n + 1) * (j - 1) + 2) - 1] = ae[j - 1];
         temp2 = abs(ae[j - 1]);
-        anorm = max(anorm, abs(ad[j - 1]) + temp1 + temp2);
+        anorm = max(anorm, REAL(abs(ad[j - 1]) + temp1 + temp2));
         temp1 = temp2;
     }
     //
-    work[pow2(n) - 1] = ad[n - 1];
-    anorm = max({anorm, abs(ad[n - 1]) + temp1, unfl});
+    work[n * n - 1] = ad[n - 1];
+    anorm = max({anorm, REAL(abs(ad[n - 1]) + temp1), unfl});
     //
     //     Norm of A - USU*
     //
@@ -114,12 +114,12 @@ void Cstt21(INTEGER const n, INTEGER const kband, REAL *ad, REAL *ae, REAL *sd, 
     //
     const REAL one = 1.0;
     if (anorm > wnorm) {
-        result[1 - 1] = (wnorm / anorm) / (n * ulp);
+        result[1 - 1] = (wnorm / anorm) / (castREAL(n) * ulp);
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(wnorm, n * anorm) / anorm) / (n * ulp);
+            result[1 - 1] = (min(wnorm, REAL(castREAL(n) * anorm)) / anorm) / (castREAL(n) * ulp);
         } else {
-            result[1 - 1] = min(wnorm / anorm, castREAL(n)) / (n * ulp);
+            result[1 - 1] = min(REAL(wnorm / anorm), castREAL(n)) / (castREAL(n) * ulp);
         }
     }
     //

@@ -172,7 +172,7 @@ void Cunt03(const char *rc, INTEGER const mu, INTEGER const mv, INTEGER const n,
         Cunt01("Columns", n, mv, v, ldv, work, lwork, rwork, res2);
     }
     //
-    result = min({max(res1, res2), one / ulp});
+    result = min(REAL(max(res1, res2)), REAL(one / ulp));
     //
     //     End of Cunt03
     //

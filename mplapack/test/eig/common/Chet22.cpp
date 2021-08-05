@@ -112,9 +112,9 @@ void Chet22(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         result[1 - 1] = (wnorm / anorm) / (m * ulp);
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(wnorm, m * anorm) / anorm) / (m * ulp);
+            result[1 - 1] = (min(wnorm, REAL(castREAL(m) * anorm)) / anorm) / (castREAL(m) * ulp);
         } else {
-            result[1 - 1] = min(wnorm / anorm, castREAL(m)) / (m * ulp);
+            result[1 - 1] = min(REAL(wnorm / anorm), castREAL(m)) / (castREAL(m) * ulp);
         }
     }
     //

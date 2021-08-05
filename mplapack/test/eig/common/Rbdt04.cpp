@@ -95,7 +95,7 @@ void Rbdt04(const char *uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGE
         }
         bnorm = abs(d[1 - 1]);
         for (i = 2; i <= n; i = i + 1) {
-            bnorm = max(bnorm, abs(d[i - 1]) + abs(e[(i - 1) - 1]));
+            bnorm = max(bnorm, REAL(abs(d[i - 1]) + abs(e[(i - 1) - 1])));
         }
     } else {
         //
@@ -112,7 +112,7 @@ void Rbdt04(const char *uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGE
         }
         bnorm = abs(d[n - 1]);
         for (i = 1; i <= n - 1; i = i + 1) {
-            bnorm = max(bnorm, abs(d[i - 1]) + abs(e[i - 1]));
+            bnorm = max(bnorm, REAL(abs(d[i - 1]) + abs(e[i - 1])));
         }
     }
     //
@@ -137,9 +137,9 @@ void Rbdt04(const char *uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGE
             resid = (resid / bnorm) / (castREAL(n) * eps);
         } else {
             if (bnorm < one) {
-                resid = (min(resid, castREAL(n) * bnorm) / bnorm) / (castREAL(n) * eps);
+                resid = (min(resid, REAL(castREAL(n) * bnorm)) / bnorm) / (castREAL(n) * eps);
             } else {
-                resid = min(resid / bnorm, castREAL(n)) / (castREAL(n) * eps);
+                resid = min(REAL(resid / bnorm), castREAL(n)) / (castREAL(n) * eps);
             }
         }
     }

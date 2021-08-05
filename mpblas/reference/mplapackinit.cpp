@@ -43,7 +43,6 @@ void mplapack_finalize_gmp(void) {
 }
 #endif
 
-
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 void __attribute__((constructor)) mplapack_initialize_mpfr(void);
 void mplapack_initialize_mpfr(void) {
@@ -56,7 +55,6 @@ void mplapack_initialize_mpfr(void) {
 void __attribute__((destructor)) mplapack_finalize_mpfr(void);
 void mplapack_finalize_mpfr(void) {}
 #endif
-
 
 #if defined ___MPLAPACK_BUILD_WITH_QD___ || defined ___MPLAPACK_BUILD_WITH_DD___
 void __attribute__((constructor)) mplapack_initialize_qd(void);

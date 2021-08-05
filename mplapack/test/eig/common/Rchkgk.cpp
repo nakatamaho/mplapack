@@ -216,7 +216,7 @@ void Rchkgk(INTEGER const nin, INTEGER const nout) {
         vmax = zero;
         for (j = 1; j <= m; j = j + 1) {
             for (i = 1; i <= m; i = i + 1) {
-                vmax = max(vmax, abs(e[(i - 1) + (j - 1) * lde] - f[(i - 1) + (j - 1) * ldf]));
+                vmax = max(vmax, REAL(abs(e[(i - 1) + (j - 1) * lde] - f[(i - 1) + (j - 1) * ldf])));
             }
         }
         vmax = vmax / (eps * max(anorm, bnorm));
@@ -236,7 +236,7 @@ void Rchkgk(INTEGER const nin, INTEGER const nout) {
         vmax = zero;
         for (j = 1; j <= m; j = j + 1) {
             for (i = 1; i <= m; i = i + 1) {
-                vmax = max(vmax, abs(e[(i - 1) + (j - 1) * lde] - f[(i - 1) + (j - 1) * ldf]));
+                vmax = max(vmax, REAL(abs(e[(i - 1) + (j - 1) * lde] - f[(i - 1) + (j - 1) * ldf])));
             }
         }
         vmax = vmax / (eps * max(anorm, bnorm));

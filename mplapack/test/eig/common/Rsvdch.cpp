@@ -95,7 +95,7 @@ void Rsvdch(INTEGER const n, REAL *s, REAL *e, REAL *svd, REAL const tol, INTEGE
     //
     //     The value of EPS works best when TOL .GE. 10.
     //
-    eps = tol * max(n / 10, 1) * eps;
+    eps = tol * max(REAL(castREAL(n) / 10.0), REAL(1.0)) * eps;
     //
     //     TPNT points to singular value at right endpoint of interval
     //     BPNT points to singular value at left  endpoint of interval

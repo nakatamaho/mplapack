@@ -182,9 +182,9 @@ statement_10:
     iss.clear();
     iss.str(str);
     iss >> dtmp;
-    dtmp = sin;
+    sin = dtmp;
     iss >> dtmp;
-    dtmp = sepin;
+    sepin = dtmp;
     //
     tnrm = Rlange("M", n, n, tmp, ldt, work);
     for (iscl = 1; iscl <= 3; iscl = iscl + 1) {
@@ -283,7 +283,7 @@ statement_10:
         //        Compare condition number for eigenvalue cluster
         //        taking its condition number into account
         //
-        v = max(two * castREAL(n) * eps * tnrm, smlnum);
+        v = max(REAL(two * castREAL(n) * eps * tnrm), smlnum);
         if (tnrm == zero) {
             v = one;
         }
@@ -297,8 +297,8 @@ statement_10:
         } else {
             tolin = v / sepin;
         }
-        tol = max(tol, smlnum / eps);
-        tolin = max(tolin, smlnum / eps);
+        tol = max(tol, REAL(smlnum / eps));
+        tolin = max(tolin, REAL(smlnum / eps));
         if (eps * (sin - tolin) > stmp + tol) {
             vmax = one / eps;
         } else if (sin - tolin > stmp + tol) {
@@ -330,8 +330,8 @@ statement_10:
         } else {
             tolin = v / sin;
         }
-        tol = max(tol, smlnum / eps);
-        tolin = max(tolin, smlnum / eps);
+        tol = max(tol, REAL(smlnum / eps));
+        tolin = max(tolin, REAL(smlnum / eps));
         if (eps * (sepin - tolin) > septmp + tol) {
             vmax = one / eps;
         } else if (sepin - tolin > septmp + tol) {

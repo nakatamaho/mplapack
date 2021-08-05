@@ -167,7 +167,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         info = -9;
     } else if (ldvs < 1 || ldvs < nmax) {
         info = -17;
-    } else if (5 * nmax + 2 * pow2(nmax) > nwork) {
+    } else if (5 * nmax + 2 * nmax * nmax > nwork) {
         info = -20;
     }
     //
@@ -369,9 +369,9 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 if (iwk == 1) {
                     nnwork = 3 * n;
                 } else {
-                    nnwork = 5 * n + 2 * pow2(n);
+                    nnwork = 5 * n + 2 * n * n;
                 }
-                nnwork = max(nnwork, 1);
+                nnwork = max(nnwork, (INTEGER)1);
                 //
                 //              Initialize RESULT
                 //
@@ -450,8 +450,8 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     for (i = 1; i <= n - 1; i = i + 1) {
                         if (h[((i + 1) - 1) + (i - 1) * ldh] != zero) {
                             tmp = sqrt(abs(h[((i + 1) - 1) + (i - 1) * ldh])) * sqrt(abs(h[(i - 1) + ((i + 1) - 1) * ldh]));
-                            result[(4 + rsub) - 1] = max({result[(4 + rsub) - 1], abs(wi[i - 1] - tmp) / max(ulp * tmp, unfl)});
-                            result[(4 + rsub) - 1] = max({result[(4 + rsub) - 1], abs(wi[(i + 1) - 1] + tmp) / max(ulp * tmp, unfl)});
+                            result[(4 + rsub) - 1] = max(result[(4 + rsub) - 1], REAL(abs(wi[i - 1] - tmp) / max(REAL(ulp * tmp), unfl)));
+                            result[(4 + rsub) - 1] = max(result[(4 + rsub) - 1], REAL(abs(wi[(i + 1) - 1] + tmp) / max(REAL(ulp * tmp), unfl)));
                         } else if (i > 1) {
                             if (h[((i + 1) - 1) + (i - 1) * ldh] == zero && h[(i - 1) + ((i - 1) - 1) * ldh] == zero && wi[i - 1] != zero) {
                                 result[(4 + rsub) - 1] = ulpinv;

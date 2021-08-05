@@ -104,9 +104,9 @@ void Cbdt05(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
             resid = (resid / anorm) / (castREAL(n) * eps);
         } else {
             if (anorm < one) {
-                resid = (min(resid, castREAL(n) * anorm) / anorm) / (castREAL(n) * eps);
+                resid = (min(resid, REAL((castREAL(n) * anorm) / anorm))) / (castREAL(n) * eps);
             } else {
-                resid = min(resid / anorm, castREAL(n)) / (castREAL(n) * eps);
+                resid = min(REAL(resid / anorm), castREAL(n)) / (castREAL(n) * eps);
             }
         }
     }

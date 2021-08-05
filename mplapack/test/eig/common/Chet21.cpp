@@ -141,7 +141,7 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         Claset("Full", n, n, czero, czero, work, n);
         //
         if (lower) {
-            work[pow2(n) - 1] = d[n - 1];
+            work[n * n - 1] = d[n - 1];
             for (j = n - 1; j >= 1; j = j - 1) {
                 if (kband == 1) {
                     work[((n + 1) * (j - 1) + 2) - 1] = (cone - tau[j - 1]) * e[j - 1];
@@ -152,7 +152,7 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
                 //
                 vsave = v[((j + 1) - 1) + (j - 1) * ldv];
                 v[((j + 1) - 1) + (j - 1) * ldv] = one;
-                Clarfy("L", n - j, &v[((j + 1) - 1) + (j - 1) * ldv], 1, tau[j - 1], &work[((n + 1) * j + 1) - 1], n, &work[(pow2(n) + 1) - 1]);
+                Clarfy("L", n - j, &v[((j + 1) - 1) + (j - 1) * ldv], 1, tau[j - 1], &work[((n + 1) * j + 1) - 1], n, &work[(n * n + 1) - 1]);
                 v[((j + 1) - 1) + (j - 1) * ldv] = vsave;
                 work[((n + 1) * (j - 1) + 1) - 1] = d[j - 1];
             }
@@ -168,7 +168,7 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
                 //
                 vsave = v[(j - 1) + ((j + 1) - 1) * ldv];
                 v[(j - 1) + ((j + 1) - 1) * ldv] = one;
-                Clarfy("U", j, &v[((j + 1) - 1) * ldv], 1, tau[j - 1], work, n, &work[(pow2(n) + 1) - 1]);
+                Clarfy("U", j, &v[((j + 1) - 1) * ldv], 1, tau[j - 1], work, n, &work[(n * n + 1) - 1]);
                 v[(j - 1) + ((j + 1) - 1) * ldv] = vsave;
                 work[((n + 1) * j + 1) - 1] = d[(j + 1) - 1];
             }
@@ -196,9 +196,9 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         }
         Clacpy(" ", n, n, u, ldu, work, n);
         if (lower) {
-            Cunm2r("R", "C", n, n - 1, n - 1, &v[(2 - 1)], ldv, tau, &work[(n + 1) - 1], n, &work[(pow2(n) + 1) - 1], iinfo);
+            Cunm2r("R", "C", n, n - 1, n - 1, &v[(2 - 1)], ldv, tau, &work[(n + 1) - 1], n, &work[(n * n + 1) - 1], iinfo);
         } else {
-            Cunm2l("R", "C", n, n - 1, n - 1, &v[(2 - 1) * ldv], ldv, tau, work, n, &work[(pow2(n) + 1) - 1], iinfo);
+            Cunm2l("R", "C", n, n - 1, n - 1, &v[(2 - 1) * ldv], ldv, tau, work, n, &work[(n * n + 1) - 1], iinfo);
         }
         if (iinfo != 0) {
             result[1 - 1] = ten / ulp;
@@ -213,12 +213,12 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     }
     //
     if (anorm > wnorm) {
-        result[1 - 1] = (wnorm / anorm) / (n * ulp);
+        result[1 - 1] = (wnorm / anorm) / (castREAL(n) * ulp);
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(wnorm, n * anorm) / anorm) / (n * ulp);
+            result[1 - 1] = (min(wnorm, REAL(castREAL(n) * anorm)) / anorm) / (castREAL(n) * ulp);
         } else {
-            result[1 - 1] = min(wnorm / anorm, castREAL(n)) / (n * ulp);
+            result[1 - 1] = min(REAL(wnorm / anorm), castREAL(n)) / (castREAL(n) * ulp);
         }
     }
     //

@@ -470,11 +470,11 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             temp1 = zero;
             temp2 = zero;
             for (j = 1; j <= n; j = j + 1) {
-                temp1 = max({temp1, abs(w1[j - 1]), abs(w3[j - 1])});
-                temp2 = max(temp2, abs(w1[j - 1] - w3[j - 1]));
+                temp1 = max({temp1, REAL(abs(w1[j - 1])), REAL(abs(w3[j - 1]))});
+                temp2 = max(temp2, REAL(abs(w1[j - 1] - w3[j - 1])));
             }
             //
-            result[8 - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
+            result[8 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
             //           Compute the Left and Right Eigenvectors of T
             //

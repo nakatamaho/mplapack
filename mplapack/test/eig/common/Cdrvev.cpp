@@ -161,7 +161,7 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         info = -16;
     } else if (ldlre < 1 || ldlre < nmax) {
         info = -28;
-    } else if (5 * nmax + 2 * pow2(nmax) > nwork) {
+    } else if (5 * nmax + 2 * nmax * nmax > nwork) {
         info = -21;
     }
     //
@@ -364,9 +364,9 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 if (iwk == 1) {
                     nnwork = 2 * n;
                 } else {
-                    nnwork = 5 * n + 2 * pow2(n);
+                    nnwork = 5 * n + 2 * n * n;
                 }
-                nnwork = max(nnwork, 1);
+                nnwork = max(nnwork, (INTEGER)1);
                 //
                 //              Initialize RESULT
                 //
@@ -399,7 +399,7 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 for (j = 1; j <= n; j = j + 1) {
                     tnrm = RCnrm2(n, &vr[(j - 1) * ldvr], 1);
-                    result[3 - 1] = max({result[3 - 1], min(ulpinv, abs(tnrm - one) / ulp)});
+                    result[3 - 1] = max(result[3 - 1], min(ulpinv, REAL(abs(tnrm - one) / ulp)));
                     vmx = zero;
                     vrmx = zero;
                     for (jj = 1; jj <= n; jj = jj + 1) {
@@ -420,7 +420,7 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 for (j = 1; j <= n; j = j + 1) {
                     tnrm = RCnrm2(n, &vl[(j - 1) * ldvl], 1);
-                    result[4 - 1] = max({result[4 - 1], min(ulpinv, abs(tnrm - one) / ulp)});
+                    result[4 - 1] = max({result[4 - 1], min(ulpinv, REAL(abs(tnrm - one) / ulp))});
                     vmx = zero;
                     vrmx = zero;
                     for (jj = 1; jj <= n; jj = jj + 1) {

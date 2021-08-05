@@ -136,7 +136,7 @@ void Rget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                                 } else {
                                                     a[(i - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda] * vm1[imloff - 1];
                                                 }
-                                                tnrm = max(tnrm, abs(a[(i - 1) + (j - 1) * lda]));
+                                                tnrm = max(tnrm, REAL(abs(a[(i - 1) + (j - 1) * lda])));
                                             }
                                         }
                                         for (i = 1; i <= n; i = i + 1) {
@@ -147,7 +147,7 @@ void Rget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                                 } else {
                                                     b[(i - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb] * vm1[imloff - 1];
                                                 }
-                                                tnrm = max(tnrm, abs(b[(i - 1) + (j - 1) * ldb]));
+                                                tnrm = max(tnrm, REAL(abs(b[(i - 1) + (j - 1) * ldb])));
                                             }
                                         }
                                         cnrm = zero;
@@ -173,7 +173,7 @@ void Rget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                         Rgemm(&trana, "N", m, n, m, rmul, a, 6, c, 6, -scale * rmul, cc, 6);
                                         Rgemm("N", &tranb, m, n, n, castREAL(isgn) * rmul, c, 6, b, 6, one, cc, 6);
                                         res1 = Rlange("M", m, n, cc, 6, dum);
-                                        res = res1 / max({smlnum, smlnum * xnrm, ((rmul * tnrm) * eps) * xnrm});
+                                        res = res1 / max({smlnum, REAL(smlnum * xnrm), REAL(((rmul * tnrm) * eps) * xnrm)});
                                         if (res > rmax) {
                                             lmax = knt;
                                             rmax = res;

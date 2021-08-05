@@ -141,9 +141,9 @@ void Rsbt21(const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const k
         result[1 - 1] = (wnorm / anorm) / (n * ulp);
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(wnorm, n * anorm) / anorm) / (n * ulp);
+            result[1 - 1] = (min(wnorm, REAL(castREAL(n) * anorm)) / anorm) / (castREAL(n) * ulp);
         } else {
-            result[1 - 1] = min(wnorm / anorm, castREAL(n)) / (n * ulp);
+            result[1 - 1] = min(REAL(wnorm / anorm), castREAL(n)) / (castREAL(n) * ulp);
         }
     }
     //
@@ -157,7 +157,7 @@ void Rsbt21(const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const k
         work[((n + 1) * (j - 1) + 1) - 1] = work[((n + 1) * (j - 1) + 1) - 1] - one;
     }
     //
-    result[2 - 1] = min(Rlange("1", n, n, work, n, &work[(pow2(n) + 1) - 1]), castREAL(n)) / (n * ulp);
+    result[2 - 1] = min(Rlange("1", n, n, work, n, &work[(n * n + 1) - 1]), castREAL(n)) / (n * ulp);
     //
     //     End of Rsbt21
     //

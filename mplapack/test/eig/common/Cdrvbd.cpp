@@ -295,7 +295,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 iwtmp = 2 * min(m, n) + max(m, n);
                 lswork = iwtmp + (iwspc - 1) * (lwork - iwtmp) / 3;
                 lswork = min(lswork, lwork);
-                lswork = max(lswork, 1);
+                lswork = max(lswork, (INTEGER)1);
                 if (iwspc == 4) {
                     lswork = lwork;
                 }
@@ -323,7 +323,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     Cunt01("Columns", mnmin, m, usav, ldu, work, lwork, rwork, result[2 - 1]);
                     Cunt01("Rows", mnmin, n, vtsav, ldvt, work, lwork, rwork, result[3 - 1]);
                 }
-                result[4 - 1] = 0;
+                result[4 - 1] = 0.0;
                 for (i = 1; i <= mnmin - 1; i = i + 1) {
                     if (ssav[i - 1] < ssav[(i + 1) - 1]) {
                         result[4 - 1] = ulpinv;
@@ -384,7 +384,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         //                    Compare S
                         //
                         dif = zero;
-                        div = max(castREAL(mnmin) * ulp * s[1 - 1], Rlamch("Safe minimum"));
+                        div = max(REAL(castREAL(mnmin) * ulp * s[1 - 1]), Rlamch("Safe minimum"));
                         for (i = 1; i <= mnmin - 1; i = i + 1) {
                             if (ssav[i - 1] < ssav[(i + 1) - 1]) {
                                 dif = ulpinv;
@@ -392,7 +392,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                             if (ssav[i - 1] < zero) {
                                 dif = ulpinv;
                             }
-                            dif = max(dif, abs(ssav[i - 1] - s[i - 1]) / div);
+                            dif = max(dif, REAL(abs(ssav[i - 1] - s[i - 1]) / div));
                         }
                         result[7 - 1] = max(result[7 - 1], dif);
                     statement_90:;
@@ -404,7 +404,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 iwtmp = 2 * mnmin * mnmin + 2 * mnmin + max(m, n);
                 lswork = iwtmp + (iwspc - 1) * (lwork - iwtmp) / 3;
                 lswork = min(lswork, lwork);
-                lswork = max(lswork, 1);
+                lswork = max(lswork, (INTEGER)1);
                 if (iwspc == 4) {
                     lswork = lwork;
                 }
@@ -426,7 +426,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     Cunt01("Columns", mnmin, m, usav, ldu, work, lwork, rwork, result[9 - 1]);
                     Cunt01("Rows", mnmin, n, vtsav, ldvt, work, lwork, rwork, result[10 - 1]);
                 }
-                result[11 - 1] = 0;
+                result[11 - 1] = 0.0;
                 for (i = 1; i <= mnmin - 1; i = i + 1) {
                     if (ssav[i - 1] < ssav[(i + 1) - 1]) {
                         result[11 - 1] = ulpinv;
@@ -486,7 +486,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     //                 Compare S
                     //
                     dif = zero;
-                    div = max(castREAL(mnmin) * ulp * s[1 - 1], Rlamch("Safe minimum"));
+                    div = max(REAL(castREAL(mnmin) * ulp * s[1 - 1]), Rlamch("Safe minimum"));
                     for (i = 1; i <= mnmin - 1; i = i + 1) {
                         if (ssav[i - 1] < ssav[(i + 1) - 1]) {
                             dif = ulpinv;
@@ -494,7 +494,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         if (ssav[i - 1] < zero) {
                             dif = ulpinv;
                         }
-                        dif = max(dif, abs(ssav[i - 1] - s[i - 1]) / div);
+                        dif = max(dif, REAL(abs(ssav[i - 1] - s[i - 1]) / div));
                     }
                     result[14 - 1] = max(result[14 - 1], dif);
                 }
@@ -511,7 +511,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     iwtmp = 2 * mnmin * mnmin + 2 * mnmin + max(m, n);
                     lswork = iwtmp + (iwspc - 1) * (lwork - iwtmp) / 3;
                     lswork = min(lswork, lwork);
-                    lswork = max(lswork, 1);
+                    lswork = max(lswork, (INTEGER)1);
                     if (iwspc == 4) {
                         lswork = lwork;
                     }
@@ -519,7 +519,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     Clacpy("F", m, n, asav, lda, a, lda);
                     //
                     lrwork = max({(INTEGER)2, m, 5 * n});
-                    liwork = max(n, 1);
+                    liwork = max(n, (INTEGER)1);
                     Cgesvdq("H", "N", "N", "A", "A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, numrank, iwork, liwork, work, lwork, rwork, lrwork, iinfo);
                     //
                     if (iinfo != 0) {
@@ -563,8 +563,8 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     iwtmp = 2 * mnmin * mnmin + 2 * mnmin + max(m, n);
                     lswork = iwtmp + (iwspc - 1) * (lwork - iwtmp) / 3;
                     lswork = min(lswork, lwork);
-                    lswork = max(lswork, 1);
-                    lrwork = max(6, n);
+                    lswork = max(lswork, (INTEGER)1);
+                    lrwork = max((INTEGER)6, n);
                     if (iwspc == 4) {
                         lswork = lwork;
                     }
@@ -620,7 +620,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     iwtmp = 2 * mnmin * mnmin + 2 * mnmin + max(m, n);
                     lswork = iwtmp + (iwspc - 1) * (lwork - iwtmp) / 3;
                     lswork = min(lswork, lwork);
-                    lswork = max(lswork, 1);
+                    lswork = max(lswork, (INTEGER)1);
                     if (iwspc == 4) {
                         lswork = lwork;
                     }
@@ -742,7 +742,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         //                    Compare S
                         //
                         dif = zero;
-                        div = max(castREAL(mnmin) * ulp * s[1 - 1], Rlamch("Safe minimum"));
+                        div = max(REAL(castREAL(mnmin) * ulp * s[1 - 1]), Rlamch("Safe minimum"));
                         for (i = 1; i <= mnmin - 1; i = i + 1) {
                             if (ssav[i - 1] < ssav[(i + 1) - 1]) {
                                 dif = ulpinv;
@@ -750,7 +750,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                             if (ssav[i - 1] < zero) {
                                 dif = ulpinv;
                             }
-                            dif = max(dif, abs(ssav[i - 1] - s[i - 1]) / div);
+                            dif = max(dif, REAL(abs(ssav[i - 1] - s[i - 1]) / div));
                         }
                         result[29 - 1] = max(result[29 - 1], dif);
                     statement_160:;
@@ -795,19 +795,19 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 //
                 if (mnmin > 0 && nsi > 1) {
                     if (il != 1) {
-                        vu = ssav[il - 1] + max({half * abs(ssav[il - 1] - ssav[(il - 1) - 1]), ulp * anorm, two * rtunfl});
+                        vu = ssav[il - 1] + max({REAL(half * abs(ssav[il - 1] - ssav[(il - 1) - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
                     } else {
-                        vu = ssav[1 - 1] + max({half * abs(ssav[ns - 1] - ssav[1 - 1]), ulp * anorm, two * rtunfl});
+                        vu = ssav[1 - 1] + max({REAL(half * abs(ssav[ns - 1] - ssav[1 - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
                     }
                     if (iu != ns) {
-                        vl = ssav[iu - 1] - max({ulp * anorm, two * rtunfl, half * abs(ssav[(iu + 1) - 1] - ssav[iu - 1])});
+                        vl = ssav[iu - 1] - max({REAL(ulp * anorm), REAL(two * rtunfl), REAL(half * abs(ssav[(iu + 1) - 1] - ssav[iu - 1]))});
                     } else {
-                        vl = ssav[ns - 1] - max({ulp * anorm, two * rtunfl, half * abs(ssav[ns - 1] - ssav[1 - 1])});
+                        vl = ssav[ns - 1] - max({REAL(ulp * anorm), REAL(two * rtunfl), REAL(half * abs(ssav[ns - 1] - ssav[1 - 1]))});
                     }
                     vl = max(vl, zero);
                     vu = max(vu, zero);
                     if (vl >= vu) {
-                        vu = max(vu * 2, vu + vl + half);
+                        vu = max(REAL(vu * 2), REAL(vu + vl + half));
                     }
                 } else {
                     vl = zero;

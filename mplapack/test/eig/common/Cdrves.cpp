@@ -166,7 +166,7 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         info = -9;
     } else if (ldvs < 1 || ldvs < nmax) {
         info = -15;
-    } else if (5 * nmax + 2 * pow2(nmax) > nwork) {
+    } else if (5 * nmax + 2 * nmax * nmax > nwork) {
         info = -18;
     }
     //
@@ -370,9 +370,9 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 if (iwk == 1) {
                     nnwork = 3 * n;
                 } else {
-                    nnwork = 5 * n + 2 * pow2(n);
+                    nnwork = 5 * n + 2 * n * n;
                 }
-                nnwork = max(nnwork, 1);
+                nnwork = max(nnwork, (INTEGER)1);
                 //
                 //              Initialize RESULT
                 //

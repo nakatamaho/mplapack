@@ -190,14 +190,14 @@ statement_10:
     vmax = zero;
     for (i = 1; i <= n; i = i + 1) {
         for (j = 1; j <= n; j = j + 1) {
-            vmax = max(vmax, abs(a[(i - 1) + (j - 1) * lda] - ain[(i - 1) + (j - 1) * ldain]));
-            vmax = max(vmax, abs(b[(i - 1) + (j - 1) * ldb] - bin[(i - 1) + (j - 1) * ldbin]));
+            vmax = max(vmax, REAL(abs(a[(i - 1) + (j - 1) * lda] - ain[(i - 1) + (j - 1) * ldain])));
+            vmax = max(vmax, REAL(abs(b[(i - 1) + (j - 1) * ldb] - bin[(i - 1) + (j - 1) * ldbin])));
         }
     }
     //
     for (i = 1; i <= n; i = i + 1) {
-        vmax = max(vmax, abs(lscale[i - 1] - lsclin[i - 1]));
-        vmax = max(vmax, abs(rscale[i - 1] - rsclin[i - 1]));
+        vmax = max(vmax, REAL(abs(lscale[i - 1] - lsclin[i - 1])));
+        vmax = max(vmax, REAL(abs(rscale[i - 1] - rsclin[i - 1])));
     }
     //
     vmax = vmax / (eps * max(anorm, bnorm));

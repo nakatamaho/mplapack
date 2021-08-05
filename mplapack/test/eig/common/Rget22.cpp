@@ -92,7 +92,7 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
                 //              Complex eigenvector
                 //
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max(temp1, abs(e[(j - 1) + (jvec - 1) * lde]) + abs(e[(j - 1) + ((jvec + 1) - 1) * lde]));
+                    temp1 = max(temp1, REAL(abs(e[(j - 1) + (jvec - 1) * lde]) + abs(e[(j - 1) + ((jvec + 1) - 1) * lde])));
                 }
                 enrmin = min(enrmin, temp1);
                 enrmax = max(enrmax, temp1);
@@ -104,7 +104,7 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
                 //              Real eigenvector
                 //
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max(temp1, abs(e[(j - 1) + (jvec - 1) * lde]));
+                    temp1 = max(temp1, REAL(abs(e[(j - 1) + (jvec - 1) * lde])));
                 }
                 enrmin = min(enrmin, temp1);
                 enrmax = max(enrmax, temp1);
@@ -127,12 +127,12 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
                     ipair = 1;
                 }
                 if (ipair == 1) {
-                    work[jvec - 1] = max(work[jvec - 1], abs(e[(j - 1) + (jvec - 1) * lde]) + abs(e[(j - 1) + ((jvec + 1) - 1) * lde]));
+                    work[jvec - 1] = max(work[jvec - 1], REAL(abs(e[(j - 1) + (jvec - 1) * lde]) + abs(e[(j - 1) + ((jvec + 1) - 1) * lde])));
                     work[(jvec + 1) - 1] = work[jvec - 1];
                 } else if (ipair == 2) {
                     ipair = 0;
                 } else {
-                    work[jvec - 1] = max(work[jvec - 1], abs(e[(j - 1) + (jvec - 1) * lde]));
+                    work[jvec - 1] = max(work[jvec - 1], REAL(abs(e[(j - 1) + (jvec - 1) * lde])));
                     ipair = 0;
                 }
             }
@@ -206,7 +206,7 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
         if (anorm < one) {
             result[1 - 1] = (min(errnrm, anorm) / anorm) / ulp;
         } else {
-            result[1 - 1] = min(errnrm / anorm, one) / ulp;
+            result[1 - 1] = min(REAL(errnrm / anorm), one) / ulp;
         }
     }
     //

@@ -581,12 +581,12 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max(temp1, abs(alphr1[j - 1] - alphr3[j - 1]) + abs(alphi1[j - 1] - alphi3[j - 1]));
-                    temp2 = max(temp2, abs(beta1[j - 1] - beta3[j - 1]));
+                    temp1 = max(temp1, REAL(abs(alphr1[j - 1] - alphr3[j - 1]) + abs(alphi1[j - 1] - alphi3[j - 1])));
+                    temp2 = max(temp2, REAL(abs(beta1[j - 1] - beta3[j - 1])));
                 }
                 //
-                temp1 = temp1 / max({safmin, ulp * max(temp1, anorm)});
-                temp2 = temp2 / max({safmin, ulp * max(temp2, bnorm)});
+                temp1 = temp1 / max(safmin, REAL(ulp * max(temp1, anorm)));
+                temp2 = temp2 / max(safmin, REAL(ulp * max(temp2, bnorm)));
                 result[15 - 1] = max(temp1, temp2);
                 ntest = 15;
             } else {

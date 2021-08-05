@@ -106,9 +106,9 @@ void Rget54(INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const 
         result = (wnorm / abnorm) / (2 * n * ulp);
     } else {
         if (abnorm < one) {
-            result = (min(wnorm, 2 * n * abnorm) / abnorm) / (2 * n * ulp);
+            result = (min(wnorm, REAL((castREAL(2 * n) * abnorm) / abnorm))) / (castREAL(2 * n) * ulp);
         } else {
-            result = min(wnorm / abnorm, castREAL(2 * n)) / (2 * n * ulp);
+            result = min(REAL(wnorm / abnorm), castREAL(2 * n)) / (castREAL(2 * n) * ulp);
         }
     }
     //

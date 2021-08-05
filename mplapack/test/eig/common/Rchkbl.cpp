@@ -166,14 +166,14 @@ void Rchkbl(INTEGER const nin, INTEGER const nout) {
             for (j = 1; j <= n; j = j + 1) {
                 temp = max(a[(i - 1) + (j - 1) * lda], ain[(i - 1) + (j - 1) * ldain]);
                 temp = max(temp, sfmin);
-                vmax = max(vmax, abs(a[(i - 1) + (j - 1) * lda] - ain[(i - 1) + (j - 1) * ldain]) / temp);
+                vmax = max(vmax, REAL(abs(a[(i - 1) + (j - 1) * lda] - ain[(i - 1) + (j - 1) * ldain]) / temp));
             }
         }
         //
         for (i = 1; i <= n; i = i + 1) {
             temp = max(scale[i - 1], scalin[i - 1]);
             temp = max(temp, sfmin);
-            vmax = max(vmax, abs(scale[i - 1] - scalin[i - 1]) / temp);
+            vmax = max(vmax, REAL(abs(scale[i - 1] - scalin[i - 1]) / temp));
         }
         //
         if (vmax > rmax) {

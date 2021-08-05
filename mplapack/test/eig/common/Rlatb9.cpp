@@ -111,34 +111,34 @@ void Rlatb9(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             kla = 0;
             kua = 0;
             klb = 0;
-            kub = max(n - 1, 0);
+            kub = max(n - 1, (INTEGER)0);
             //
         } else if (imat == 2) {
             //
             //           A: upper triangular, B: upper triangular
             //
             kla = 0;
-            kua = max(n - 1, 0);
+            kua = max(n - 1, (INTEGER)0);
             klb = 0;
-            kub = max(n - 1, 0);
+            kub = max(n - 1, (INTEGER)0);
             //
         } else if (imat == 3) {
             //
             //           A: lower triangular, B: upper triangular
             //
-            kla = max(m - 1, 0);
+            kla = max(m - 1, (INTEGER)0);
             kua = 0;
             klb = 0;
-            kub = max(n - 1, 0);
+            kub = max(n - 1, (INTEGER)0);
             //
         } else {
             //
             //           A: general dense, B: general dense
             //
-            kla = max(m - 1, 0);
-            kua = max(n - 1, 0);
-            klb = max(p - 1, 0);
-            kub = max(n - 1, 0);
+            kla = max(m - 1, (INTEGER)0);
+            kua = max(n - 1, (INTEGER)0);
+            klb = max(p - 1, (INTEGER)0);
+            kub = max(n - 1, (INTEGER)0);
             //
         }
         //
@@ -152,13 +152,13 @@ void Rlatb9(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             //
             kla = 0;
             kua = 0;
-            klb = max(n - 1, 0);
+            klb = max(n - 1, (INTEGER)0);
             kub = 0;
         } else if (imat == 2) {
             //
             //           A: lower triangular, B: diagonal
             //
-            kla = max(n - 1, 0);
+            kla = max(n - 1, (INTEGER)0);
             kua = 0;
             klb = 0;
             kub = 0;
@@ -167,19 +167,19 @@ void Rlatb9(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             //
             //           A: lower triangular, B: upper triangular
             //
-            kla = max(n - 1, 0);
+            kla = max(n - 1, (INTEGER)0);
             kua = 0;
             klb = 0;
-            kub = max(p - 1, 0);
+            kub = max(p - 1, (INTEGER)0);
             //
         } else {
             //
             //           A: general dense, B: general dense
             //
-            kla = max(n - 1, 0);
-            kua = max(m - 1, 0);
-            klb = max(n - 1, 0);
-            kub = max(p - 1, 0);
+            kla = max(n - 1, (INTEGER)0);
+            kua = max(m - 1, (INTEGER)0);
+            klb = max(n - 1, (INTEGER)0);
+            kub = max(p - 1, (INTEGER)0);
         }
         //
     }

@@ -238,7 +238,7 @@ void Cchkrfp(void) {
     //     Calculate and print the machine dependent constants.
     //
     eps = Rlamch("Underflow threshold");
-    sprintnum_short(buf, eps);    
+    sprintnum_short(buf, eps);
     cout << " Relative machine underflow is taken to be : " << buf << endl;
     eps = Rlamch("Overflow threshold");
     cout << " Relative machine overflow  is taken to be : " << buf << endl;

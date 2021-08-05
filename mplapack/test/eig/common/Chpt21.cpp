@@ -208,7 +208,7 @@ void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
             return;
         }
         Clacpy(" ", n, n, u, ldu, work, n);
-        Cupmtr("R", &cuplo, "C", n, n, vp, tau, work, n, &work[(pow2(n) + 1) - 1], iinfo);
+        Cupmtr("R", &cuplo, "C", n, n, vp, tau, work, n, &work[(n * n + 1) - 1], iinfo);
         if (iinfo != 0) {
             result[1 - 1] = ten / ulp;
             return;
@@ -225,9 +225,9 @@ void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         result[1 - 1] = (wnorm / anorm) / (n * ulp);
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(wnorm, n * anorm) / anorm) / (n * ulp);
+            result[1 - 1] = (min(wnorm, REAL(n * anorm)) / anorm) / (n * ulp);
         } else {
-            result[1 - 1] = min(wnorm / anorm, castREAL(n)) / (n * ulp);
+            result[1 - 1] = min(REAL(wnorm / anorm), castREAL(n)) / (n * ulp);
         }
     }
     //

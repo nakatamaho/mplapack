@@ -76,7 +76,7 @@ void Ccsdts(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x, COMPL
     Cherk("Upper", "Conjugate transpose", m, m, -realone, x, ldx, realone, work, ldx);
     REAL eps2 = 0.0;
     if (m > 0) {
-        eps2 = max({ulp, Clange("1", m, m, work, ldx, rwork) / castREAL(m)});
+        eps2 = max(ulp, REAL(Clange("1", m, m, work, ldx, rwork) / castREAL(m)));
     } else {
         eps2 = ulp;
     }
@@ -168,7 +168,7 @@ void Ccsdts(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x, COMPL
     //     Compute norm( I - U'*U ) / ( MAX(1,P) * ULP ) .
     //
     resid = Clanhe("1", "Upper", p, work, ldu1, rwork);
-    result[5 - 1] = (resid / castREAL(max(1, p))) / ulp;
+    result[5 - 1] = (resid / castREAL(max((INTEGER)1, p))) / ulp;
     //
     //     Compute I - U2'*U2
     //
@@ -178,7 +178,7 @@ void Ccsdts(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x, COMPL
     //     Compute norm( I - U2'*U2 ) / ( MAX(1,M-P) * ULP ) .
     //
     resid = Clanhe("1", "Upper", m - p, work, ldu2, rwork);
-    result[6 - 1] = (resid / castREAL(max(1, (m - p)))) / ulp;
+    result[6 - 1] = (resid / castREAL(max((INTEGER)1, (m - p)))) / ulp;
     //
     //     Compute I - V1T*V1T'
     //
@@ -188,7 +188,7 @@ void Ccsdts(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x, COMPL
     //     Compute norm( I - V1T*V1T' ) / ( MAX(1,Q) * ULP ) .
     //
     resid = Clanhe("1", "Upper", q, work, ldv1t, rwork);
-    result[7 - 1] = (resid / castREAL(max(1, q))) / ulp;
+    result[7 - 1] = (resid / castREAL(max((INTEGER)1, q))) / ulp;
     //
     //     Compute I - V2T*V2T'
     //
@@ -198,13 +198,14 @@ void Ccsdts(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x, COMPL
     //     Compute norm( I - V2T*V2T' ) / ( MAX(1,M-Q) * ULP ) .
     //
     resid = Clanhe("1", "Upper", m - q, work, ldv2t, rwork);
-    result[8 - 1] = (resid / castREAL(max(1, m - q))) / ulp;
+    result[8 - 1] = (resid / castREAL(max((INTEGER)1, m - q))) / ulp;
     //
     //     Check sorting
     //
     const REAL realzero = 0.0;
     result[9 - 1] = realzero;
-    const REAL piover2 = 1.57079632679489661923132169163975144210e0;
+    REAL dummy;
+    const REAL piover2 = pi(dummy) / 2.0;
     for (i = 1; i <= r; i = i + 1) {
         if (theta[i - 1] < realzero || theta[i - 1] > piover2) {
             result[9 - 1] = ulpinv;
@@ -221,7 +222,7 @@ void Ccsdts(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x, COMPL
     Claset("Full", q, q, zero, one, work, ldx);
     Cherk("Upper", "Conjugate transpose", q, m, -realone, x, ldx, realone, work, ldx);
     if (m > 0) {
-        eps2 = max({ulp, Clange("1", q, q, work, ldx, rwork) / castREAL(m)});
+        eps2 = max(ulp, REAL(Clange("1", q, q, work, ldx, rwork) / castREAL(m)));
     } else {
         eps2 = ulp;
     }
@@ -277,7 +278,7 @@ void Ccsdts(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x, COMPL
     //     Compute norm( I - U'*U ) / ( MAX(1,P) * ULP ) .
     //
     resid = Clanhe("1", "Upper", p, work, ldu1, rwork);
-    result[12 - 1] = (resid / castREAL(max(1, p))) / ulp;
+    result[12 - 1] = (resid / castREAL(max((INTEGER)1, p))) / ulp;
     //
     //     Compute I - U2'*U2
     //
@@ -287,7 +288,7 @@ void Ccsdts(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x, COMPL
     //     Compute norm( I - U2'*U2 ) / ( MAX(1,M-P) * ULP ) .
     //
     resid = Clanhe("1", "Upper", m - p, work, ldu2, rwork);
-    result[13 - 1] = (resid / castREAL(max(1, (m - p)))) / ulp;
+    result[13 - 1] = (resid / castREAL(max((INTEGER)1, (m - p)))) / ulp;
     //
     //     Compute I - V1T*V1T'
     //
@@ -297,7 +298,7 @@ void Ccsdts(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x, COMPL
     //     Compute norm( I - V1T*V1T' ) / ( MAX(1,Q) * ULP ) .
     //
     resid = Clanhe("1", "Upper", q, work, ldv1t, rwork);
-    result[14 - 1] = (resid / castREAL(max(1, q))) / ulp;
+    result[14 - 1] = (resid / castREAL(max((INTEGER)1, q))) / ulp;
     //
     //     Check sorting
     //

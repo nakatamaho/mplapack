@@ -133,7 +133,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         info = -18;
     } else if (ldlre < 1 || ldlre < nmax) {
         info = -20;
-    } else if (5 * nmax + 2 * pow2(nmax) > nwork) {
+    } else if (5 * nmax + 2 * nmax * nmax > nwork) {
         info = -23;
     }
     //
@@ -336,9 +336,9 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 if (iwk == 1) {
                     nnwork = 4 * n;
                 } else {
-                    nnwork = 5 * n + 2 * pow2(n);
+                    nnwork = 5 * n + 2 * n * n;
                 }
-                nnwork = max(nnwork, 1);
+                nnwork = max(nnwork, (INTEGER)1);
                 //
                 //              Initialize RESULT
                 //
@@ -376,7 +376,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     } else if (wi[j - 1] > zero) {
                         tnrm = Rlapy2(Rnrm2(n, &vr[(j - 1) * ldvr], 1), Rnrm2(n, &vr[((j + 1) - 1) * ldvr], 1));
                     }
-                    result[3 - 1] = max({result[3 - 1], min(ulpinv, abs(tnrm - one) / ulp)});
+                    result[3 - 1] = max(result[3 - 1], min(ulpinv, REAL(abs(tnrm - one) / ulp)));
                     if (wi[j - 1] > zero) {
                         vmx = zero;
                         vrmx = zero;
@@ -404,7 +404,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     } else if (wi[j - 1] > zero) {
                         tnrm = Rlapy2(Rnrm2(n, &vl[(j - 1) * ldvl], 1), Rnrm2(n, &vl[((j + 1) - 1) * ldvl], 1));
                     }
-                    result[4 - 1] = max({result[4 - 1], min(ulpinv, abs(tnrm - one) / ulp)});
+                    result[4 - 1] = max(result[4 - 1], min(ulpinv, REAL(abs(tnrm - one) / ulp)));
                     if (wi[j - 1] > zero) {
                         vmx = zero;
                         vrmx = zero;

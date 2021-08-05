@@ -270,7 +270,7 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     for (j = 1; j <= mplusn; j = j + 1) {
                         ilabad = false;
                         if (alphai[j - 1] == zero) {
-                            temp2 = (abs(alphar[j - 1] - ai[(j - 1) + (j - 1) * ldai]) / max({smlnum, abs(alphar[j - 1]), abs(ai[(j - 1) + (j - 1) * ldai])}) + abs(beta[j - 1] - bi[(j - 1) + (j - 1) * ldbi]) / max({smlnum, abs(beta[j - 1]), abs(bi[(j - 1) + (j - 1) * ldbi])})) / ulp;
+                            temp2 = (abs(alphar[j - 1] - ai[(j - 1) + (j - 1) * ldai]) / max({smlnum, REAL(abs(alphar[j - 1])), REAL(abs(ai[(j - 1) + (j - 1) * ldai]))}) + abs(beta[j - 1] - bi[(j - 1) + (j - 1) * ldbi]) / max({smlnum, REAL(abs(beta[j - 1])), REAL(abs(bi[(j - 1) + (j - 1) * ldbi]))})) / ulp;
                             if (j < mplusn) {
                                 if (ai[((j + 1) - 1) + (j - 1) * ldai] != zero) {
                                     ilabad = true;
@@ -526,7 +526,7 @@ statement_70:
         for (j = 1; j <= mplusn; j = j + 1) {
             ilabad = false;
             if (alphai[j - 1] == zero) {
-                temp2 = (abs(alphar[j - 1] - ai[(j - 1) + (j - 1) * ldai]) / max({smlnum, abs(alphar[j - 1]), abs(ai[(j - 1) + (j - 1) * ldai])}) + abs(beta[j - 1] - bi[(j - 1) + (j - 1) * ldbi]) / max({smlnum, abs(beta[j - 1]), abs(bi[(j - 1) + (j - 1) * ldbi])})) / ulp;
+                temp2 = (abs(alphar[j - 1] - ai[(j - 1) + (j - 1) * ldai]) / max({smlnum, REAL(abs(alphar[j - 1])), REAL(abs(ai[(j - 1) + (j - 1) * ldai]))}) + abs(beta[j - 1] - bi[(j - 1) + (j - 1) * ldbi]) / max({smlnum, REAL(abs(beta[j - 1])), REAL(abs(bi[(j - 1) + (j - 1) * ldbi]))})) / ulp;
                 if (j < mplusn) {
                     if (ai[((j + 1) - 1) + (j - 1) * ldai] != zero) {
                         ilabad = true;

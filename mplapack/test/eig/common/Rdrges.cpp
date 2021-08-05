@@ -395,7 +395,7 @@ void Rdrges(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 for (j = 1; j <= n; j = j + 1) {
                     ilabad = false;
                     if (alphai[j - 1] == zero) {
-                        temp2 = (abs(alphar[j - 1] - s[(j - 1) + (j - 1) * lds]) / max({safmin, abs(alphar[j - 1]), abs(s[(j - 1) + (j - 1) * lds])}) + abs(beta[j - 1] - t[(j - 1) + (j - 1) * ldt]) / max({safmin, abs(beta[j - 1]), abs(t[(j - 1) + (j - 1) * ldt])})) / ulp;
+                        temp2 = (abs(alphar[j - 1] - s[(j - 1) + (j - 1) * lds]) / max({safmin, REAL(abs(alphar[j - 1])), REAL(abs(s[(j - 1) + (j - 1) * lds]))}) + abs(beta[j - 1] - t[(j - 1) + (j - 1) * ldt]) / max({safmin, REAL(abs(beta[j - 1])), REAL(abs(t[(j - 1) + (j - 1) * ldt]))})) / ulp;
                         //
                         if (j < n) {
                             if (s[((j + 1) - 1) + (j - 1) * lds] != zero) {

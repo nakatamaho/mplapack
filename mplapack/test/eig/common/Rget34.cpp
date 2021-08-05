@@ -304,7 +304,7 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                                             tnrm = zero;
                                             for (i = 1; i <= 4; i = i + 1) {
                                                 for (j = 1; j <= 4; j = j + 1) {
-                                                    tnrm = max(tnrm, abs(t[(i - 1) + (j - 1) * ldt]));
+                                                    tnrm = max(tnrm, REAL(abs(t[(i - 1) + (j - 1) * ldt])));
                                                 }
                                             }
                                             Rcopy(16, t, 1, t1, 1);

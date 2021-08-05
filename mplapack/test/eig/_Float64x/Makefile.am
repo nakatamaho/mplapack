@@ -4,11 +4,11 @@ xeigtstC__Float64x
 
 mplapack__Float64x_eigtestdir = $(prefix)/share/mplapack/test/mplapack/eig/_Float64x
 
-$(bin_PROGRAMS): ../libeig__Float64x.la ../libeig_override.la
+$(bin_PROGRAMS): ../libeig__Float64x.la ../libeig_override__Float64x.la
 
-libdepends = -L$(top_builddir)/mplapack/test/eig -leig__Float64x -leig_override -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float64x -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -L$(top_builddir)/mpblas/reference -lmpblas__Float64x 
-mplibs = -L$(MPC_LIBDIR) -L$(_FLOAT64X_LIBDIR) -L$(GMP_LIBDIR) -lmpc -l_Float64x -lgmpxx -lgmp -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(_FLOAT64X_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/_Float64xc++ -D___MPLAPACK_BUILD_WITH__FLOAT64X___ -I$(top_srcdir)/mplapack/test/fable
+libdepends = -L$(top_builddir)/mplapack/test/eig -leig__Float64x -leig_override__Float64x -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float64x -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -L$(top_builddir)/mpblas/reference -lmpblas__Float64x 
+mplibs = -lm
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH__FLOAT64X___ -I$(top_srcdir)/mplapack/test/fable
 
 xeigtstR__Float64x_SOURCES  = ../common/Rchkee.cpp
 xeigtstR__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran

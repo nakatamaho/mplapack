@@ -124,9 +124,9 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         info = -9;
     } else if (ldz <= 1 || ldz < nmax) {
         info = -16;
-    } else if (2 * pow2(max(nmax, 3)) > nwork) {
+    } else if (2 * (max(nmax, (INTEGER)3) * max(nmax, (INTEGER)3)) > nwork) {
         info = -21;
-    } else if (2 * pow2(max(nmax, 3)) > liwork) {
+    } else if (2 * (max(nmax, (INTEGER)3) * max(nmax, (INTEGER)3)) > liwork) {
         info = -23;
     }
     //
@@ -233,8 +233,8 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             iinfo = 0;
 #ifdef ___MPLAPACK_BUILD_WITH_MPFR___
-//There is exactly 0 eigenvalue for n=odd and Rlaebz.cpp cannot find
-//0 eigenvalue and fail to converge. Fix may Rlaebz.cpp help.
+            // There is exactly 0 eigenvalue for n=odd and Rlaebz.cpp cannot find
+            // 0 eigenvalue and fail to converge. Fix may Rlaebz.cpp help.
             cond = ulpinv * 1e-3;
 #else
             cond = ulpinv;
@@ -427,11 +427,11 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     temp1 = zero;
                     temp2 = zero;
                     for (j = 1; j <= n; j = j + 1) {
-                        temp1 = max({temp1, abs(d[j - 1]), abs(d2[j - 1])});
-                        temp2 = max(temp2, abs(d[j - 1] - d2[j - 1]));
+                        temp1 = max({temp1, REAL(abs(d[j - 1])), REAL(abs(d2[j - 1]))});
+                        temp2 = max(temp2, REAL(abs(d[j - 1] - d2[j - 1])));
                     }
                     //
-                    result[ntest - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
+                    result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
                     //
                     //                 Test Rsygvd
                     //

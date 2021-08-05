@@ -53,7 +53,7 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     Rsyrk("Upper", "Conjugate transpose", m, m, -one, x, ldx, one, work, ldx);
     REAL eps2 = 0.0;
     if (m > 0) {
-        eps2 = max(ulp, Rlange("1", m, m, work, ldx, rwork) / castREAL(m));
+        eps2 = max(ulp, REAL(Rlange("1", m, m, work, ldx, rwork) / castREAL(m)));
     } else {
         eps2 = ulp;
     }
@@ -198,7 +198,7 @@ void Rcsdts(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x, REAL *xf
     Rlaset("Full", q, q, zero, one, work, ldx);
     Rsyrk("Upper", "Conjugate transpose", q, m, -one, x, ldx, one, work, ldx);
     if (m > 0) {
-        eps2 = max({ulp, Rlange("1", q, q, work, ldx, rwork) / castREAL(m)});
+        eps2 = max(ulp, REAL(Rlange("1", q, q, work, ldx, rwork) / castREAL(m)));
     } else {
         eps2 = ulp;
     }

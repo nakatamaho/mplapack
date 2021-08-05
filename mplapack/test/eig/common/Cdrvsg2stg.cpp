@@ -153,11 +153,11 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         info = -9;
     } else if (ldz <= 1 || ldz < nmax) {
         info = -16;
-    } else if (2 * pow2(max(nmax, 2)) > nwork) {
+    } else if (2 * (max(nmax, (INTEGER)2) * max(nmax, (INTEGER)2)) > nwork) {
         info = -21;
-    } else if (2 * pow2(max(nmax, 2)) > lrwork) {
+    } else if (2 * (max(nmax, (INTEGER)2) * max(nmax, (INTEGER)2)) > lrwork) {
         info = -23;
-    } else if (2 * pow2(max(nmax, 2)) > liwork) {
+    } else if (2 * (max(nmax, (INTEGER)2) * max(nmax, (INTEGER)2)) > liwork) {
         info = -25;
     }
     //
@@ -453,11 +453,11 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     temp1 = zero;
                     temp2 = zero;
                     for (j = 1; j <= n; j = j + 1) {
-                        temp1 = max({temp1, abs(d[j - 1]), abs(d2[j - 1])});
-                        temp2 = max(temp2, abs(d[j - 1] - d2[j - 1]));
+                        temp1 = max({temp1, REAL(abs(d[j - 1])), REAL(abs(d2[j - 1]))});
+                        temp2 = max(temp2, REAL(abs(d[j - 1] - d2[j - 1])));
                     }
                     //
-                    result[ntest - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
+                    result[ntest - 1] = temp2 / max({unfl, REAL(ulp * max(temp1, temp2))});
                     //
                     //                 Test Chegvd
                     //

@@ -171,9 +171,9 @@ void Rcklse(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
             //
             //           Generate the right-hand sides C and D for the LSE.
             //
-            Rlarhs("DGE", "New solution", "Upper", "N", m, n, max(m - 1, 0), max(n - 1, 0), 1, a, lda, &x[(4 * nmax + 1) - 1], max(n, 1), x, max(m, 1), iseed, iinfo);
+            Rlarhs("DGE", "New solution", "Upper", "N", m, n, max(m - 1, (INTEGER)0), max(n - 1, (INTEGER)0), 1, a, lda, &x[(4 * nmax + 1) - 1], max(n, (INTEGER)1), x, max(m, (INTEGER)1), iseed, iinfo);
             //
-            Rlarhs("DGE", "Computed", "Upper", "N", p, n, max(p - 1, 0), max(n - 1, 0), 1, b, ldb, &x[(4 * nmax + 1) - 1], max(n, 1), &x[(2 * nmax + 1) - 1], max(p, 1), iseed, iinfo);
+            Rlarhs("DGE", "Computed", "Upper", "N", p, n, max(p - 1, (INTEGER)0), max(n - 1, (INTEGER)0), 1, b, ldb, &x[(4 * nmax + 1) - 1], max(n, (INTEGER)1), &x[(2 * nmax + 1) - 1], max(p, (INTEGER)1), iseed, iinfo);
             //
             nt = 2;
             //
@@ -204,7 +204,7 @@ void Rcklse(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     //
     //     Print a summary of the results.
     //
-    Alasum(path, nout, nfail, nrun, 0);
+    Alasum(path, nout, nfail, nrun, (INTEGER)0);
     //
     //     End of Rcklse
     //

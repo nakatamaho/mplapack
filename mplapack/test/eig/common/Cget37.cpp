@@ -266,7 +266,7 @@ statement_10:
         //        Compare condition numbers for eigenvalues
         //        taking their condition numbers into account
         //
-        v = max(two * castREAL(n) * eps * tnrm, smlnum);
+        v = max(REAL(two * castREAL(n) * eps * tnrm), smlnum);
         if (tnrm == zero) {
             v = one;
         }
@@ -281,8 +281,8 @@ statement_10:
             } else {
                 tolin = v / sepin[i - 1];
             }
-            tol = max(tol, smlnum / eps);
-            tolin = max(tolin, smlnum / eps);
+            tol = max(tol, REAL(smlnum / eps));
+            tolin = max(tolin, REAL(smlnum / eps));
             if (eps * (sin[i - 1] - tolin) > stmp[i - 1] + tol) {
                 vmax = one / eps;
             } else if (sin[i - 1] - tolin > stmp[i - 1] + tol) {
@@ -316,8 +316,8 @@ statement_10:
             } else {
                 tolin = v / sin[i - 1];
             }
-            tol = max(tol, smlnum / eps);
-            tolin = max(tolin, smlnum / eps);
+            tol = max(tol, REAL(smlnum / eps));
+            tolin = max(tolin, REAL(smlnum / eps));
             if (eps * (sepin[i - 1] - tolin) > septmp[i - 1] + tol) {
                 vmax = one / eps;
             } else if (sepin[i - 1] - tolin > septmp[i - 1] + tol) {

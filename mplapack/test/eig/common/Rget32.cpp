@@ -121,9 +121,9 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                             }
                             res = abs((tl[(1 - 1)] + sgn * tr[(1 - 1)]) * x[(1 - 1)] - scale * b[(1 - 1) + (1 - 1) * ldb]);
                             if (info == 0) {
-                                den = max(eps * ((abs(tr[(1 - 1)]) + abs(tl[(1 - 1)])) * abs(x[(1 - 1)])), smlnum);
+                                den = max(REAL(eps * ((abs(tr[(1 - 1)]) + abs(tl[(1 - 1)])) * abs(x[(1 - 1)]))), smlnum);
                             } else {
-                                den = smlnum * max(abs(x[(1 - 1)]), one);
+                                den = smlnum * max(REAL(abs(x[(1 - 1)])), one);
                             }
                             res = res / den;
                             if (scale > one) {
@@ -169,7 +169,7 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                     res += abs((tl[(2 - 1) + (2 - 1) * ldtl] + sgn * tr[(1 - 1)]) * x[(2 - 1)] + tl[(2 - 1)] * x[(1 - 1)] - scale * b[(2 - 1)]);
                                     tnrm = abs(tr[(1 - 1)]) + abs(tl[(1 - 1)]) + abs(tl[(2 - 1) * ldtl]) + abs(tl[(2 - 1)]) + abs(tl[(2 - 1) + (2 - 1) * ldtl]);
                                     xnrm = max(abs(x[(1 - 1)]), abs(x[(2 - 1)]));
-                                    den = max({smlnum, smlnum * xnrm, (tnrm * eps) * xnrm});
+                                    den = max({smlnum, REAL(smlnum * xnrm), REAL((tnrm * eps) * xnrm)});
                                     res = res / den;
                                     if (scale > one) {
                                         res += one / eps;
@@ -213,7 +213,7 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                     xnrm = abs(x[(1 - 1)]) + abs(x[(2 - 1) * ldx]);
                                     res = abs(((tl[(1 - 1)] + sgn * tr[(1 - 1)])) * (x[(1 - 1)]) + (sgn * tr[(2 - 1)]) * (x[(2 - 1) * ldx]) - (scale * b[(1 - 1) + (1 - 1) * ldb]));
                                     res += abs(((tl[(1 - 1)] + sgn * tr[(2 - 1) + (2 - 1) * ldtr])) * (x[(2 - 1) * ldx]) + (sgn * tr[(2 - 1) * ldtr]) * (x[(1 - 1)]) - (scale * b[(1 - 1) + (2 - 1) * ldb]));
-                                    den = max({smlnum, smlnum * xnrm, (tnrm * eps) * xnrm});
+                                    den = max({smlnum, REAL(smlnum * xnrm), REAL((tnrm * eps) * xnrm)});
                                     res = res / den;
                                     if (scale > one) {
                                         res += one / eps;
@@ -271,7 +271,7 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                             res += abs((tl[(1 - 1)]) * (x[(2 - 1) * ldx]) + (sgn * tr[(2 - 1) * ldtr]) * (x[(1 - 1)]) + (sgn * tr[(2 - 1) + (2 - 1) * ldtr]) * (x[(2 - 1) * ldx]) + (tl[(2 - 1) * ldtl]) * (x[(2 - 1) + (2 - 1) * ldx]) - (scale * b[(1 - 1) + (2 - 1) * ldb]));
                                             res += abs((tl[(2 - 1)]) * (x[(1 - 1)]) + (sgn * tr[(1 - 1)]) * (x[(2 - 1)]) + (sgn * tr[(2 - 1)]) * (x[(2 - 1) + (2 - 1) * ldx]) + (tl[(2 - 1) + (2 - 1) * ldtl]) * (x[(2 - 1)]) - (scale * b[(2 - 1)]));
                                             res += abs(((tl[(2 - 1) + (2 - 1) * ldtl] + sgn * tr[(2 - 1) + (2 - 1) * ldtr])) * (x[(2 - 1) + (2 - 1) * ldx]) + (sgn * tr[(2 - 1) * ldtr]) * (x[(2 - 1)]) + (tl[(2 - 1)]) * (x[(2 - 1) * ldx]) - (scale * b[(2 - 1) + (2 - 1) * ldb]));
-                                            den = max({smlnum, smlnum * xnrm, (tnrm * eps) * xnrm});
+                                            den = max({smlnum, REAL(smlnum * xnrm), REAL((tnrm * eps) * xnrm)});
                                             res = res / den;
                                             if (scale > one) {
                                                 res += one / eps;

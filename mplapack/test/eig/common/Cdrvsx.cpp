@@ -215,7 +215,7 @@ void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         info = -10;
     } else if (ldvs < 1 || ldvs < nmax) {
         info = -20;
-    } else if (max(3 * nmax, 2 * pow2(nmax)) > lwork) {
+    } else if (max(3 * nmax, 2 * nmax * nmax) > lwork) {
         info = -24;
     }
     //
@@ -423,7 +423,7 @@ void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 } else {
                     nnwork = max((INTEGER)2 * n, n * (n + 1) / 2);
                 }
-                nnwork = max(nnwork, 1);
+                nnwork = max(nnwork, (INTEGER)1);
                 //
                 Cget24(false, jtype, thresh, ioldsd, nounit, n, a, lda, h, ht, w, wt, wtmp, vs, ldvs, vs1, rcdein, rcdvin, nslct, islct, 0, result, work, nnwork, rwork, bwork, info);
                 //

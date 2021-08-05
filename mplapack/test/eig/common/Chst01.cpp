@@ -99,7 +99,7 @@ void Chst01(INTEGER const n, INTEGER const /* ilo */, INTEGER const /* ihi */, C
     //
     //     Note that RESULT(1) cannot overflow and is bounded by 1/(N*EPS)
     //
-    result[1 - 1] = min(wnorm, anorm) / max(smlnum, anorm * eps) / n;
+    result[1 - 1] = min(wnorm, anorm) / max(smlnum, REAL(anorm * eps)) / n;
     //
     //     Test 2:  Compute norm( I - Q'*Q ) / ( N * EPS )
     //

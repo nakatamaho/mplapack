@@ -94,7 +94,7 @@ void Rort01(const char *rowcol, INTEGER const m, INTEGER const n, REAL *u, INTEG
                     tmp = one;
                 }
                 tmp = tmp - Rdot(m, &u[(i - 1) * ldu], 1, &u[(j - 1) * ldu], 1);
-                resid = max(resid, abs(tmp));
+                resid = max(resid, REAL(abs(tmp)));
             }
         }
         resid = (resid / castREAL(m)) / eps;
@@ -110,7 +110,7 @@ void Rort01(const char *rowcol, INTEGER const m, INTEGER const n, REAL *u, INTEG
                     tmp = one;
                 }
                 tmp = tmp - Rdot(n, &u[(j - 1)], ldu, &u[(i - 1)], ldu);
-                resid = max(resid, abs(tmp));
+                resid = max(resid, REAL(abs(tmp)));
             }
         }
         resid = (resid / castREAL(n)) / eps;

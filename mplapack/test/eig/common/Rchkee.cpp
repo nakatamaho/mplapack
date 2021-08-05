@@ -307,7 +307,9 @@ void Rchkee(void) {
             //
             getline(cin, str);
             ss.str(str);
-            ss >> thresh;
+            double dtmp;
+            ss >> dtmp;
+            thresh = dtmp;
             xlaenv(1, 1);
             xlaenv(12, 11);
             xlaenv(13, 2);

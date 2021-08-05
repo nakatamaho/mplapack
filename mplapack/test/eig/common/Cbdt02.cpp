@@ -96,9 +96,9 @@ void Cbdt02(INTEGER const m, INTEGER const n, COMPLEX *b, INTEGER const ldb, COM
             resid = (resid / bnorm) / (realmn * eps);
         } else {
             if (bnorm < one) {
-                resid = (min(resid, realmn * bnorm) / bnorm) / (realmn * eps);
+                resid = (min(resid, REAL(realmn * bnorm)) / bnorm) / (realmn * eps);
             } else {
-                resid = min(resid / bnorm, realmn) / (realmn * eps);
+                resid = min(REAL(resid / bnorm), realmn) / (realmn * eps);
             }
         }
     }

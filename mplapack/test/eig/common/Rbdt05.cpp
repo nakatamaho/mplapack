@@ -99,9 +99,9 @@ void Rbdt05(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
             resid = (resid / anorm) / (castREAL(n) * eps);
         } else {
             if (anorm < one) {
-                resid = (min(resid, castREAL(n) * anorm) / anorm) / (castREAL(n) * eps);
+                resid = (min(resid, REAL(castREAL(n) * anorm)) / anorm) / (castREAL(n) * eps);
             } else {
-                resid = min(resid / anorm, castREAL(n)) / (castREAL(n) * eps);
+                resid = min(REAL(resid / anorm), castREAL(n)) / (castREAL(n) * eps);
             }
         }
     }

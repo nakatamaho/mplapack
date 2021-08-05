@@ -167,7 +167,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         info = -9;
     } else if (ldu < nmax) {
         info = -16;
-    } else if (2 * pow2(max((INTEGER)2, nmax)) > lwork) {
+    } else if (2 * max((INTEGER)2, nmax) * max((INTEGER)2, nmax) > lwork) {
         info = -22;
     }
     //
@@ -206,14 +206,14 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         n = nn[jsize - 1];
         if (n > 0) {
             lgn = castINTEGER(log(castREAL(n)) / log(two));
-            if (pow(2, lgn) < n) {
+            if ((INTEGER)pow((double)2, (double)lgn) < n) {
                 lgn++;
             }
-            if (pow(2, lgn) < n) {
+            if ((INTEGER)pow((double)2, (double)lgn) < n) {
                 lgn++;
             }
             lwedc = max((INTEGER)2 * n + n * n, 2 * n * n);
-            lrwedc = 1 + 4 * n + 2 * n * lgn + 3 * pow2(n);
+            lrwedc = 1 + 4 * n + 2 * n * lgn + 3 * n * n;
             liwedc = 3 + 5 * n;
         } else {
             lwedc = 2;
@@ -435,10 +435,10 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, abs(d1[j - 1]), abs(d3[j - 1])});
-                    temp2 = max(temp2, abs(d1[j - 1] - d3[j - 1]));
+                    temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d3[j - 1]))});
+                    temp2 = max(temp2, REAL(abs(d1[j - 1] - d3[j - 1])));
                 }
-                result[ntest - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
+                result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
             statement_130:
                 Clacpy(" ", n, n, v, ldu, a, lda);
@@ -448,14 +448,14 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 if (n > 0) {
                     temp3 = max(abs(d1[1 - 1]), abs(d1[n - 1]));
                     if (il != 1) {
-                        vl = d1[il - 1] - max({half * (d1[il - 1] - d1[(il - 1) - 1]), ten * ulp * temp3, ten * rtunfl});
+                        vl = d1[il - 1] - max({REAL(half * (d1[il - 1] - d1[(il - 1) - 1])), REAL(ten * ulp * temp3), REAL(ten * rtunfl)});
                     } else if (n > 0) {
-                        vl = d1[1 - 1] - max({half * (d1[n - 1] - d1[1 - 1]), ten * ulp * temp3, ten * rtunfl});
+                        vl = d1[1 - 1] - max({REAL(half * (d1[n - 1] - d1[1 - 1])), REAL(ten * ulp * temp3), REAL(ten * rtunfl)});
                     }
                     if (iu != n) {
-                        vu = d1[iu - 1] + max({half * (d1[(iu + 1) - 1] - d1[iu - 1]), ten * ulp * temp3, ten * rtunfl});
+                        vu = d1[iu - 1] + max({REAL(half * (d1[(iu + 1) - 1] - d1[iu - 1])), REAL(ten * ulp * temp3), REAL(ten * rtunfl)});
                     } else if (n > 0) {
-                        vu = d1[n - 1] + max({half * (d1[n - 1] - d1[1 - 1]), ten * ulp * temp3, ten * rtunfl});
+                        vu = d1[n - 1] + max({REAL(half * (d1[n - 1] - d1[1 - 1])), REAL(ten * ulp * temp3), REAL(ten * rtunfl)});
                     }
                 } else {
                     temp3 = zero;
@@ -507,10 +507,10 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, abs(wa1[j - 1]), abs(wa2[j - 1])});
-                    temp2 = max(temp2, abs(wa1[j - 1] - wa2[j - 1]));
+                    temp1 = max({temp1, REAL(abs(wa1[j - 1])), REAL(abs(wa2[j - 1]))});
+                    temp2 = max(temp2, REAL(abs(wa1[j - 1] - wa2[j - 1])));
                 }
-                result[ntest - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
+                result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
             statement_150:
                 Clacpy(" ", n, n, v, ldu, a, lda);
@@ -564,7 +564,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 } else {
                     temp3 = zero;
                 }
-                result[ntest - 1] = (temp1 + temp2) / max(unfl, temp3 * ulp);
+                result[ntest - 1] = (temp1 + temp2) / max(unfl, REAL(temp3 * ulp));
             //
             statement_160:
                 Clacpy(" ", n, n, v, ldu, a, lda);
@@ -623,7 +623,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 } else {
                     temp3 = zero;
                 }
-                result[ntest - 1] = (temp1 + temp2) / max(unfl, temp3 * ulp);
+                result[ntest - 1] = (temp1 + temp2) / max(unfl, REAL(temp3 * ulp));
             //
             statement_170:
                 //
@@ -715,10 +715,10 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, abs(d1[j - 1]), abs(d3[j - 1])});
-                    temp2 = max(temp2, abs(d1[j - 1] - d3[j - 1]));
+                    temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d3[j - 1]))});
+                    temp2 = max(temp2, REAL(abs(d1[j - 1] - d3[j - 1])));
                 }
-                result[ntest - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
+                result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
             //              Load array WORK with the upper or lower triangular part
             //              of the matrix in packed form.
@@ -747,14 +747,14 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 if (n > 0) {
                     temp3 = max(abs(d1[1 - 1]), abs(d1[n - 1]));
                     if (il != 1) {
-                        vl = d1[il - 1] - max({half * (d1[il - 1] - d1[(il - 1) - 1]), ten * ulp * temp3, ten * rtunfl});
+                        vl = d1[il - 1] - max({REAL(half * (d1[il - 1] - d1[(il - 1) - 1])), REAL(ten * ulp * temp3), REAL(ten * rtunfl)});
                     } else if (n > 0) {
-                        vl = d1[1 - 1] - max({half * (d1[n - 1] - d1[1 - 1]), ten * ulp * temp3, ten * rtunfl});
+                        vl = d1[1 - 1] - max({REAL(half * (d1[n - 1] - d1[1 - 1])), REAL(ten * ulp * temp3), REAL(ten * rtunfl)});
                     }
                     if (iu != n) {
-                        vu = d1[iu - 1] + max({half * (d1[(iu + 1) - 1] - d1[iu - 1]), ten * ulp * temp3, ten * rtunfl});
+                        vu = d1[iu - 1] + max({REAL(half * (d1[(iu + 1) - 1] - d1[iu - 1])), REAL(ten * ulp * temp3), REAL(ten * rtunfl)});
                     } else if (n > 0) {
-                        vu = d1[n - 1] + max({half * (d1[n - 1] - d1[1 - 1]), ten * ulp * temp3, ten * rtunfl});
+                        vu = d1[n - 1] + max({REAL(half * (d1[n - 1] - d1[1 - 1])), REAL(ten * ulp * temp3), REAL(ten * rtunfl)});
                     }
                 } else {
                     temp3 = zero;
@@ -823,10 +823,10 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, abs(wa1[j - 1]), abs(wa2[j - 1])});
-                    temp2 = max(temp2, abs(wa1[j - 1] - wa2[j - 1]));
+                    temp1 = max({temp1, REAL(abs(wa1[j - 1])), REAL(abs(wa2[j - 1]))});
+                    temp2 = max(temp2, REAL(abs(wa1[j - 1] - wa2[j - 1])));
                 }
-                result[ntest - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
+                result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
             statement_370:
                 ntest++;
@@ -913,7 +913,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 } else {
                     temp3 = zero;
                 }
-                result[ntest - 1] = (temp1 + temp2) / max(unfl, temp3 * ulp);
+                result[ntest - 1] = (temp1 + temp2) / max(unfl, REAL(temp3 * ulp));
             //
             statement_460:
                 ntest++;
@@ -1005,7 +1005,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 } else {
                     temp3 = zero;
                 }
-                result[ntest - 1] = (temp1 + temp2) / max(unfl, temp3 * ulp);
+                result[ntest - 1] = (temp1 + temp2) / max(unfl, REAL(temp3 * ulp));
             //
             statement_550:
                 //
@@ -1014,7 +1014,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 if (jtype <= 7) {
                     kd = 0;
                 } else if (jtype >= 8 && jtype <= 15) {
-                    kd = max(n - 1, 0);
+                    kd = max(n - 1, (INTEGER)0);
                 } else {
                     kd = ihbw;
                 }
@@ -1093,10 +1093,10 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, abs(d1[j - 1]), abs(d3[j - 1])});
-                    temp2 = max(temp2, abs(d1[j - 1] - d3[j - 1]));
+                    temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d3[j - 1]))});
+                    temp2 = max(temp2, REAL(abs(d1[j - 1] - d3[j - 1])));
                 }
-                result[ntest - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
+                result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
             //              Load array V with the upper or lower triangular part
             //              of the matrix in band form.
@@ -1174,10 +1174,10 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, abs(wa1[j - 1]), abs(wa2[j - 1])});
-                    temp2 = max(temp2, abs(wa1[j - 1] - wa2[j - 1]));
+                    temp1 = max({temp1, REAL(abs(wa1[j - 1])), REAL(abs(wa2[j - 1]))});
+                    temp2 = max(temp2, REAL(abs(wa1[j - 1] - wa2[j - 1])));
                 }
-                result[ntest - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
+                result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
             //              Load array V with the upper or lower triangular part
             //              of the matrix in band form.
@@ -1258,7 +1258,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 } else {
                     temp3 = zero;
                 }
-                result[ntest - 1] = (temp1 + temp2) / max(unfl, temp3 * ulp);
+                result[ntest - 1] = (temp1 + temp2) / max(unfl, REAL(temp3 * ulp));
             //
             //              Load array V with the upper or lower triangular part
             //              of the matrix in band form.
@@ -1343,7 +1343,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 } else {
                     temp3 = zero;
                 }
-                result[ntest - 1] = (temp1 + temp2) / max(unfl, temp3 * ulp);
+                result[ntest - 1] = (temp1 + temp2) / max(unfl, REAL(temp3 * ulp));
             //
             statement_930:
                 //
@@ -1396,10 +1396,10 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, abs(d1[j - 1]), abs(d3[j - 1])});
-                    temp2 = max(temp2, abs(d1[j - 1] - d3[j - 1]));
+                    temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d3[j - 1]))});
+                    temp2 = max(temp2, REAL(abs(d1[j - 1] - d3[j - 1])));
                 }
-                result[ntest - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
+                result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
             statement_950:
                 //
@@ -1491,10 +1491,10 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, abs(d1[j - 1]), abs(d3[j - 1])});
-                    temp2 = max(temp2, abs(d1[j - 1] - d3[j - 1]));
+                    temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d3[j - 1]))});
+                    temp2 = max(temp2, REAL(abs(d1[j - 1] - d3[j - 1])));
                 }
-                result[ntest - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
+                result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
             statement_1050:
                 //
@@ -1503,7 +1503,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 if (jtype <= 7) {
                     kd = 0;
                 } else if (jtype >= 8 && jtype <= 15) {
-                    kd = max(n - 1, 0);
+                    kd = max(n - 1, (INTEGER)0);
                 } else {
                     kd = ihbw;
                 }
@@ -1584,10 +1584,10 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, abs(d1[j - 1]), abs(d3[j - 1])});
-                    temp2 = max(temp2, abs(d1[j - 1] - d3[j - 1]));
+                    temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d3[j - 1]))});
+                    temp2 = max(temp2, REAL(abs(d1[j - 1] - d3[j - 1])));
                 }
-                result[ntest - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
+                result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
                 //
                 Clacpy(" ", n, n, a, lda, v, ldu);
                 ntest++;
@@ -1635,10 +1635,10 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, abs(wa1[j - 1]), abs(wa2[j - 1])});
-                    temp2 = max(temp2, abs(wa1[j - 1] - wa2[j - 1]));
+                    temp1 = max({temp1, REAL(abs(wa1[j - 1])), REAL(abs(wa2[j - 1]))});
+                    temp2 = max(temp2, REAL(abs(wa1[j - 1] - wa2[j - 1])));
                 }
-                result[ntest - 1] = temp2 / max({unfl, ulp * max(temp1, temp2)});
+                result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
             statement_1170:
                 //
@@ -1688,7 +1688,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
-                result[ntest - 1] = (temp1 + temp2) / max(unfl, ulp * temp3);
+                result[ntest - 1] = (temp1 + temp2) / max(unfl, REAL(ulp * temp3));
             statement_1180:
                 //
                 ntest++;
@@ -1747,7 +1747,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 } else {
                     temp3 = zero;
                 }
-                result[ntest - 1] = (temp1 + temp2) / max(unfl, temp3 * ulp);
+                result[ntest - 1] = (temp1 + temp2) / max(unfl, REAL(temp3 * ulp));
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
             //
