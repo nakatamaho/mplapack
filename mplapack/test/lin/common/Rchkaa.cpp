@@ -414,8 +414,10 @@ void Rchkaa(void) {
     sprintnum_short(buf, eps);
     cout << " Relative machine underflow is taken to be : " << buf << endl;
     eps = Rlamch("Overflow threshold");
+    sprintnum_short(buf, eps);
     cout << " Relative machine overflow  is taken to be : " << buf << endl;
     eps = Rlamch("Epsilon");
+    sprintnum_short(buf, eps);
     cout << " Relative machine precision is taken to be : " << buf << endl;
     //
     //     Read a test path and the number of matrix types to use.
