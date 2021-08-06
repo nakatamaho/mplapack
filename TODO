@@ -1,5 +1,7 @@
 TODOs for release
 
-* test
-* add some documents
-* build fix for GMP and others
+* test mpblas
+* test mplapack
+* test on other platforms
+* add documents
+* add examples
