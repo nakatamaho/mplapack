@@ -1,5 +1,7 @@
 TODOs for release
 
+* getting rid of some features of c++17
+* variables for random number generations
 * test mpblas
 * complex and rfp support
 * test mplapack
