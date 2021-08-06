@@ -69,11 +69,9 @@ void subst_test1() {
     sprintnum(buf2, tmp1);
     sprintnum(buf3, tmp2);
 
-#if defined VERBOSE_TEST
     printf("original  :%s\n", buf1);
     printf("mplib     :%s\n", buf2);
     printf("subst2refm:%s\n", buf3);
-#endif
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
     if (strncmp(buf1, buf2, 19) == 0 && strncmp(buf2, buf3, 19) == 0)

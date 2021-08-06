@@ -33,7 +33,7 @@
 
 #include "mpc_class.h"
 
-#define GMP_FORMAT "%+36.32Fe"
+#define GMP_FORMAT "%+68.64Fe"
 #define GMP_SHORT_FORMAT "%+20.16Fe"
 
 #if !defined __MPLAPACK_BUFLEN__
