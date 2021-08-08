@@ -26,6 +26,8 @@
  *
  */
 
+#define ___MPLAPACK_MPLAPACK_INIT___
+
 #include <mpblas.h>
 #include <stdio.h>
 
@@ -46,10 +48,20 @@ void mplapack_finalize_gmp(void) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 void __attribute__((constructor)) mplapack_initialize_mpfr(void);
 void mplapack_initialize_mpfr(void) {
+    mpreal::default_rnd  = mpfr_get_default_rounding_mode();
+    mpreal::default_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
+    mpreal::default_base = 10;
+    mpreal::double_bits = -1;
+    mpcomplex::default_rnd = MPC_RND(mpfr_get_default_rounding_mode(), mpfr_get_default_rounding_mode());
+    mpcomplex::default_real_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
+    mpcomplex::default_imag_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
+    mpcomplex::default_base = 10;
+    mpcomplex::double_bits = -1;
     char *p = getenv("MPLAPACK_MPFR_PRECISION");
     if (p) {
-        mpreal::set_default_prec(atoi(p));
-        mpcomplex::set_default_prec(atoi(p));
+        mpreal::default_prec = atoi(p);
+        mpcomplex::default_real_prec = atoi(p);
+        mpcomplex::default_imag_prec = atoi(p);
     }
 }
 void __attribute__((destructor)) mplapack_finalize_mpfr(void);

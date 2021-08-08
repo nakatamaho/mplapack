@@ -99,22 +99,10 @@ class mpreal {
     mpreal(const mpfr_t u);
     mpreal(const mpf_t u);
 
-    inline static mp_rnd_t default_rnd = mpfr_get_default_rounding_mode();
-    inline static mp_rnd_t get_default_rnd() { return default_rnd; }
-    inline static void set_default_rnd(mpfr_rnd_t rnd_mode) { default_rnd = rnd_mode; }
-    inline static mp_prec_t _default_prec() {
-        char *p = getenv("MPLAPACK_MPFR_PRECISION");
-        if (p) {
-            return (mp_prec_t)atoi(p);
-        } else {
-            return (mp_prec_t)___MPREAL_DEFAULT_PRECISION___;
-        }
-    }
-    inline static mp_prec_t default_prec = _default_prec();
-    inline static mp_prec_t get_default_prec() { return default_prec; }
-    inline static void set_default_prec(mp_prec_t prec) { default_prec = prec; }
-
-    inline static int default_base = 10;
+    static mp_rnd_t default_rnd;
+    static mp_prec_t default_prec;
+    static int default_base;
+    static int double_bits;
 
     mpreal(const mpz_t u, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
     mpreal(const mpq_t u, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
@@ -436,6 +424,13 @@ class mpreal {
 //    mpreal &operator=(const _Float64x &a);
 #endif
 };
+
+#if defined ___MPLAPACK_MPLAPACK_INIT___
+mp_rnd_t mpfr::mpreal::default_rnd = MPFR_RNDN; //must be initialized at mpblas/reference/mplapackinit.cpp
+mp_prec_t mpfr::mpreal::default_prec = ___MPREAL_DEFAULT_PRECISION___;
+int mpfr::mpreal::default_base = 2;
+int mpfr::mpreal::double_bits = -1;
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 // Exceptions

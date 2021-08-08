@@ -54,8 +54,6 @@ dnl OpenMP Compiler flags.
 AC_LANG([C++])
 AC_OPENMP
 
-AX_CXX_COMPILE_STDCXX_17([ext], [mandatory])
-
 dnl Checking host name
 AC_CANONICAL_HOST
 IS_MINGW=0
@@ -948,6 +946,8 @@ AC_CONFIG_FILES([
 examples/Makefile
 examples/mpblas/Makefile
 examples/mplapack/Makefile
+examples/mplapack/04_NonsymmetricEigenproblems/Makefile
+examples/mplapack/99_Miscellaneous/Makefile
 ])
 fi
 if test x$enable_reference != xno; then

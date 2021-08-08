@@ -53,41 +53,12 @@ class mpcomplex {
     mpc_t mpc;
 
   public:
-    inline static mpc_rnd_t default_rnd = MPC_RND(mpfr_get_default_rounding_mode(), mpfr_get_default_rounding_mode());
+    static mpc_rnd_t default_rnd;
+    static mp_prec_t default_real_prec;
+    static mp_prec_t default_imag_prec;
+    static int default_base;
+    static int double_bits;
 
-    inline static mpc_rnd_t default_real_rnd = mpfr_get_default_rounding_mode();
-    inline static mpc_rnd_t get_default_real_rnd() { return default_real_rnd; }
-    inline static void set_default_real_rnd(mpfr_rnd_t rnd_mode) { default_real_rnd = rnd_mode; }
-
-    inline static mp_rnd_t default_imag_rnd = mpfr_get_default_rounding_mode();
-    inline static mp_rnd_t get_default_imag_rnd() { return default_imag_rnd; }
-    inline static void set_default_imag_rnd(mpfr_rnd_t rnd_mode) { default_imag_rnd = rnd_mode; }
-
-    inline static mp_prec_t _default_real_prec() {
-        char *p = getenv("MPLAPACK_MPFR_PRECISION");
-        if (p) {
-            return (mp_prec_t)atoi(p);
-        } else {
-            return (mp_prec_t)___MPREAL_DEFAULT_PRECISION___;
-        }
-    }
-    inline static mp_prec_t default_real_prec = _default_real_prec();
-    inline static mp_prec_t get_default_real_prec() { return default_real_prec; }
-    inline static void set_default_real_prec(mp_prec_t prec) { default_real_prec = prec; }
-
-    inline static mp_prec_t _default_imag_prec() {
-        char *p = getenv("MPLAPACK_MPFR_PRECISION");
-        if (p) {
-            return (mp_prec_t)atoi(p);
-        } else {
-            return (mp_prec_t)___MPREAL_DEFAULT_PRECISION___;
-        }
-    }
-    inline static mp_prec_t default_imag_prec = _default_imag_prec();
-    inline static mp_prec_t get_default_imag_prec() { return default_imag_prec; }
-    inline static void set_default_imag_prec(mp_prec_t prec) { default_imag_prec = prec; }
-
-    inline static int default_base = 10;
     // constructor & deconstructor
     mpcomplex();
     mpcomplex(const mpc_t a);
@@ -268,6 +239,15 @@ class mpcomplex {
 //    mpcomplex &operator=(const std::complex<_Float64x> &a);
 #endif
 };
+
+#if defined ___MPLAPACK_MPLAPACK_INIT___
+mpc_rnd_t mpfr::mpcomplex::default_rnd = MPFR_RNDN; //must be initialized at mpblas/reference/mplapackinit.cpp
+mp_prec_t mpfr::mpcomplex::default_real_prec = ___MPREAL_DEFAULT_PRECISION___;
+mp_prec_t mpfr::mpcomplex::default_imag_prec = ___MPREAL_DEFAULT_PRECISION___;
+int mpfr::mpcomplex::default_base = 2;
+int mpfr::mpcomplex::double_bits = -1;
+#endif
+
 
 //+ addition
 const mpcomplex operator+(const mpcomplex &a, const mpcomplex &b);

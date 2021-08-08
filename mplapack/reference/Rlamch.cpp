@@ -104,7 +104,7 @@ REAL RlamchP_mpfr(void) {
 // cf.http://www.netlib.org/blas/dlamch.f
 REAL RlamchN_mpfr(void) {
     REAL r;
-    mp_prec_t p = r.get_default_prec();
+    mp_prec_t p = mpfr::mpreal::default_prec;
     return REAL(p);
 }
 
