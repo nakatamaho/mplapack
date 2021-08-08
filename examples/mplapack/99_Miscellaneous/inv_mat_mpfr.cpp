@@ -2,8 +2,8 @@
 // This file is freely usable.
 // written by Nakata Maho, 2009/9/23.
 
-#include <mblas_mpfr.h>
-#include <mlapack_mpfr.h>
+#include <mpblas_mpfr.h>
+#include <mplapack_mpfr.h>
 
 //Matlab/Octave format
 void printmat(int N, int M, mpreal * A, int LDA)
@@ -29,14 +29,14 @@ void printmat(int N, int M, mpreal * A, int LDA)
 
 int main()
 {
-    mpackint n = 3;
-    mpackint lwork, info;
+    mplapackint n = 3;
+    mplapackint lwork, info;
 //initialization of MPFR
     int default_prec = 256;
     mpfr_set_default_prec(default_prec);
 
     mpreal *A = new mpreal[n * n];
-    mpackint *ipiv = new mpackint[n];
+    mplapackint *ipiv = new mplapackint[n];
 
 //setting A matrix
     A[0 + 0 * n] = 1;    A[0 + 1 * n] = 4;    A[0 + 2 * n] = 6;
@@ -50,13 +50,13 @@ int main()
     lwork = -1;
     mpreal *work = new mpreal[1];
 
-    Rgetri(n, A, n, ipiv, work, lwork, &info);
+    Rgetri(n, A, n, ipiv, work, lwork, info);
     lwork = (int) double (work[0]);
     delete[]work;
     work = new mpreal[std::max(1, (int) lwork)];
 //inverse matrix
-    Rgetrf(n, n, A, n, ipiv, &info);
-    Rgetri(n, A, n, ipiv, work, lwork, &info);
+    Rgetrf(n, n, A, n, ipiv, info);
+    Rgetri(n, A, n, ipiv, work, lwork, info);
 
     printf("invA =");
     printmat(n, n, A, n);

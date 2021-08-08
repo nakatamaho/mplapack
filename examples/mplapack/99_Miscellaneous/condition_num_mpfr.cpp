@@ -1,8 +1,8 @@
 // Get condition number of Hibert matrix via Rgecon
 // written by Nakata Maho, 2010/8/19.
 
-#include <mblas_mpfr.h>
-#include <mlapack_mpfr.h>
+#include <mpblas_mpfr.h>
+#include <mplapack_mpfr.h>
 
 //Matlab/Octave format
 void printmat(int N, int M, mpreal * A, int LDA)
@@ -26,22 +26,22 @@ void printmat(int N, int M, mpreal * A, int LDA)
     printf("]");
 }
 
-void getAinv(mpackint n, mpackint lda, mpreal * A)
+void getAinv(mplapackint n, mplapackint lda, mpreal * A)
 {
-    mpackint info;
-    mpackint lwork;
+    mplapackint info;
+    mplapackint lwork;
     /* pivot vector allocation */
-    mpackint *ipiv = new mpackint[n];
+    mplapackint *ipiv = new mplapackint[n];
     lwork = -1;
     mpreal *work = new mpreal[1];
     /* query work space */
-    Rgetri(n, A, lda, ipiv, work, lwork, &info);
+    Rgetri(n, A, lda, ipiv, work, lwork, info);
     lwork = (int) cast2double(work[0]);
     delete[]work;
-    work = new mpreal[std::max((mpackint) 1, lwork)];
+    work = new mpreal[std::max((mplapackint) 1, lwork)];
     /* do inversion */
-    Rgetrf(n, n, A, lda, ipiv, &info);
-    Rgetri(n, A, lda, ipiv, work, lwork, &info);
+    Rgetrf(n, n, A, lda, ipiv, info);
+    Rgetri(n, A, lda, ipiv, work, lwork, info);
     delete[]ipiv;
 
     if (info == 0)
@@ -54,19 +54,19 @@ void getAinv(mpackint n, mpackint lda, mpreal * A)
     exit(1);
 }
 
-mpreal get_estimated_condition_num(const char *norm, mpackint n, mpackint lda, mpreal * A)
+mpreal get_estimated_condition_num(const char *norm, mplapackint n, mplapackint lda, mpreal * A)
 {
     mpreal anorm, cond, rcond;
-    mpreal *work = new mpreal[std::max((mpackint) 1, n * 4)];
-    mpackint *iwork = new mpackint[std::max((mpackint) 1, n)];
-    mpackint info;
+    mpreal *work = new mpreal[std::max((mplapackint) 1, n * 4)];
+    mplapackint *iwork = new mplapackint[std::max((mplapackint) 1, n)];
+    mplapackint info;
 
     /* First, calculate norm */
     anorm = Rlange(norm, n, n, A, lda, work);
     /* Second, do LU factorization */
-    Rgetrf(n, n, A, lda, iwork, &info);
+    Rgetrf(n, n, A, lda, iwork, info);
     /* Third, calculate estimated condition number */
-    Rgecon(norm, n, A, lda, anorm, &rcond, work, iwork, &info);
+    Rgecon(norm, n, A, lda, anorm, rcond, work, iwork, info);
 
     cond = 1.0 / rcond;
 
@@ -75,10 +75,10 @@ mpreal get_estimated_condition_num(const char *norm, mpackint n, mpackint lda, m
     return cond;
 }
 
-mpreal get_exact_condition_num(const char *norm, mpackint n, mpackint lda, mpreal * A)
+mpreal get_exact_condition_num(const char *norm, mplapackint n, mplapackint lda, mpreal * A)
 {
     mpreal *Ainv = new mpreal[n * n];
-    mpreal *work = new mpreal[std::max((mpackint) 1, n)];
+    mpreal *work = new mpreal[std::max((mplapackint) 1, n)];
     mpreal anorm, ainvnorm, cond;
 //save A matrix
     for (int i = 0; i < n; i++) {
@@ -99,9 +99,9 @@ mpreal get_exact_condition_num(const char *norm, mpackint n, mpackint lda, mprea
     return cond;
 }
 
-void condition_number_demo(mpackint n)
+void condition_number_demo(mplapackint n)
 {
-    mpackint lwork, info;
+    mplapackint lwork, info;
     mpreal *A = new mpreal[n * n];
     mpreal mtmp;
     mpreal cond_est, cond;

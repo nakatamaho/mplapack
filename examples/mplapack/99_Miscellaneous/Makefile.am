@@ -2,9 +2,9 @@ mplapackexamples_PROGRAMS =
 
 if ENABLE_MPFR
 mplapackexamples_PROGRAMS += eigenvalue_mpfr inv_mat_mpfr \
-			hilbert_mpfr condition_num_mpfr
-mpfrcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(top_srcdir)/$(GMP_INCLUDEDIR) -I$(top_srcdir)/$(MPFR_INCLUDEDIR) -I$(top_srcdir)/$(MPC_INCLUDEDIR)
-mpfr_libdepends =  -L$(top_builddir)/mplapack/imized/mpfr -lmlapack_mpfr -L$(top_builddir)/mblas/optimized/mpfr -lmblas_mpfr -L$(top_builddir)/mpfrc++ -lmpfrcxx -L$(top_srcdir)/$(MPC_LIBDIR) -L$(top_srcdir)/$(MPFR_LIBDIR) -L$(top_srcdir)/$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
+                        hilbert_mpfr condition_num_mpfr
+mpfrcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
+mpfr_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 
 eigenvalue_mpfr_SOURCES= eigenvalue_mpfr.cpp
 eigenvalue_mpfr_CXXFLAGS= $(mpfrcxxflags)
@@ -25,4 +25,3 @@ condition_num_mpfr_LDFLAGS= $(mpfr_libdepends)
 endif
 
 mplapackexamplesdir=$(prefix)/share/mplapack/examples/99_Miscellaneous
-

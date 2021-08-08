@@ -6,8 +6,8 @@
 // written by Nakata Maho, 2009/9/23.
 
 
-#include <mblas_mpfr.h>
-#include <mlapack_mpfr.h>
+#include <mpblas_mpfr.h>
+#include <mplapack_mpfr.h>
 
 //Matlab/Octave format
 void printmat(int N, int M, mpreal * A, int LDA)
@@ -33,11 +33,11 @@ void printmat(int N, int M, mpreal * A, int LDA)
 
 void inv_hilbert_matrix(int n)
 {
-    mpackint lwork, info;
+    mplapackint lwork, info;
     mpreal *A = new mpreal[n * n];	//A is overwritten
     mpreal *Aorg = new mpreal[n * n];
     mpreal *C = new mpreal[n * n];
-    mpackint *ipiv = new mpackint[n];
+    mplapackint *ipiv = new mplapackint[n];
     mpreal One = 1.0, Zero = 0.0, mtmp;
 
 //setting A matrix
@@ -56,23 +56,19 @@ void inv_hilbert_matrix(int n)
     lwork = -1;
     mpreal *work = new mpreal[1];
 
-    Rgetri(n, A, n, ipiv, work, lwork, &info);
+    Rgetri(n, A, n, ipiv, work, lwork, info);
     lwork = int (double (work[0]));
     delete[]work;
     work = new mpreal[std::max(1, (int) lwork)];
 //inverse matrix
-    Rgetrf(n, n, A, n, ipiv, &info);
-    Rgetri(n, A, n, ipiv, work, lwork, &info);
+    Rgetrf(n, n, A, n, ipiv, info);
+    Rgetri(n, A, n, ipiv, work, lwork, info);
 
-    printf("invA = ");
-    printmat(n, n, A, n);
-    printf("\n");
+    printf("invA = "); printmat(n, n, A, n); printf("\n");
 
     One = 1.0, Zero = 0.0;
     Rgemm("N", "N", n, n, n, One, Aorg, n, A, n, Zero, C, n);
-    printf("A * invA =");
-    printmat(n, n, C, n);
-    printf("\n");
+    printf("A * invA ="); printmat(n, n, C, n); printf("\n");
 
     printf("Infnorm(A*invA)=");
     mtmp = 0.0;
