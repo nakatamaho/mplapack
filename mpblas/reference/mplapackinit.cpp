@@ -35,6 +35,7 @@
 void __attribute__((constructor)) mplapack_initialize_gmp(void);
 void __attribute__((destructor)) mplapack_finalize_gmp(void);
 void mplapack_initialize_gmp(void) {
+    mpf_set_default_prec(___MPLAPACK_GMP_DEFAULT_PRECISION___);
     char *p = getenv("MPLAPACK_GMP_PRECISION");
     if (p) {
         mpf_set_default_prec(atoi(p));
