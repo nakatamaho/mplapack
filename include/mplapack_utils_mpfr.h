@@ -128,7 +128,7 @@ inline mpreal castREAL_mpfr(mplapackint a) {
 
 inline mpreal pi(mpreal dummy) {
     mpreal _PI;
-    _PI = const_pi(mpreal::get_default_prec());
+    _PI = const_pi(mpfr::mpreal::default_prec);
     return _PI;
 }
 

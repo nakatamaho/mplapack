@@ -715,8 +715,9 @@ int main(int argc, char *argv[]) {
 #endif
 
     // we need to specify explicitly.
-    mpreal::set_default_prec(___MPLAPACK_MPFR_DEFAULT_PRECISION___);
-    mpcomplex::set_default_prec(___MPLAPACK_MPFR_DEFAULT_PRECISION___);
+    mpreal::default_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
+    mpcomplex::default_real_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
+    mpcomplex::default_imag_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
 
     mpc_subst_test1();
     mpc_abs_test();
