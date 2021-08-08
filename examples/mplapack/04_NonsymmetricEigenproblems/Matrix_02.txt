@@ -1,4 +1,4 @@
-# test matrix
+# Example 4.6 "Collection of Matrices for Testing Computational Algorithms", Robert T. Gregory, David L. Karney
 5
 5 4 3 2 1
 4 6 0 4 3

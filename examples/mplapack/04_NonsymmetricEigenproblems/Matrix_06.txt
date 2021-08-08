@@ -1,0 +1,7 @@
+# Example 5.5 "Collection of Matrices for Testing Computational Algorithms", Robert T. Gregory, David L. Karney
+4
+-2  2  2  2
+-3  3  2  2
+-2  0  4  2
+-1  0  0  5
+
