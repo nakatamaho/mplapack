@@ -1,11 +1,15 @@
 if ENABLE_MPFR
-mplapackexamples_PROGRAMS = Rgees_test_mpfr
+mplapackexamples_PROGRAMS = Rgees_test_mpfr Rgees_readfromfile_mpfr
 mpfrcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
 mpfr_libdepends =  -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 
 Rgees_test_mpfr_SOURCES= Rgees_test_mpfr.cpp
 Rgees_test_mpfr_CXXFLAGS= $(mpfrcxxflags)
 Rgees_test_mpfr_LDFLAGS= $(mpfr_libdepends)
+
+Rgees_readfromfile_mpfr_SOURCES= Rgees_readfromfile_mpfr.cpp
+Rgees_readfromfile_mpfr_CXXFLAGS= $(mpfrcxxflags)
+Rgees_readfromfile_mpfr_LDFLAGS= $(mpfr_libdepends)
 
 endif
 
