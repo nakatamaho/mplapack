@@ -73,6 +73,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <blas.h>
 
+#define VERBOSE_TEST
+
 #if defined VERBOSE_TEST
 #include <iostream>
 #endif
@@ -497,13 +499,13 @@ void Mutils_test_csin() {
         cout << "a_ref=   ";
         printnum(a_ref);
         cout << endl;
-        cout << "cos_ref= ";
+        cout << "csin_ref= ";
         printnum(b_ref);
         cout << endl;
         cout << "a=       ";
         printnum(a);
         cout << endl;
-        cout << "cos=     ";
+        cout << "csin=     ";
         printnum(b);
         cout << endl;
 #endif
@@ -524,6 +526,135 @@ void Mutils_test_csin() {
         }
     }
 }
+// complex test
+void Mutils_test_ccos() {
+    int errorflag = TRUE;
+    COMPLEX_REF a_ref, b_ref;
+    COMPLEX a, b;
+    COMPLEX_REF diff;
+
+    for (int i = 0; i < ITERATION; i++) {
+        set_random_number(a_ref, a);
+        b_ref = cos(a_ref);
+        b = cos(a);
+#if defined VERBOSE_TEST
+        cout << "a_ref=   ";
+        printnum(a_ref);
+        cout << endl;
+        cout << "ccos_ref= ";
+        printnum(b_ref);
+        cout << endl;
+        cout << "a=       ";
+        printnum(a);
+        cout << endl;
+        cout << "ccos=     ";
+        printnum(b);
+        cout << endl;
+#endif
+        diff = abs(b_ref - b);
+#if defined VERBOSE_TEST
+        printf("diff     ");
+        printnum(diff);
+        printf("\n\n");
+#endif
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+        if (abs(diff) > EPSILON100) {
+#else
+        if (abs(diff) > EPSILON) {
+#endif
+            errorflag = TRUE;
+            printf("*** Testing Mutils (complex cos) failed ***\n");
+            exit(1);
+        }
+    }
+}
+
+// complex test
+void Mutils_test_cexp() {
+    int errorflag = TRUE;
+    COMPLEX_REF a_ref, b_ref;
+    COMPLEX a, b;
+    COMPLEX_REF diff;
+
+    for (int i = 0; i < ITERATION; i++) {
+        set_random_number(a_ref, a);
+        b_ref = exp(a_ref);
+        b = exp(a);
+#if defined VERBOSE_TEST
+        cout << "a_ref=   ";
+        printnum(a_ref);
+        cout << endl;
+        cout << "cexp_ref= ";
+        printnum(b_ref);
+        cout << endl;
+        cout << "a=       ";
+        printnum(a);
+        cout << endl;
+        cout << "cexp=     ";
+        printnum(b);
+        cout << endl;
+#endif
+        diff = abs(b_ref - b);
+#if defined VERBOSE_TEST
+        printf("diff     ");
+        printnum(diff);
+        printf("\n\n");
+#endif
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+        if (abs(diff) > EPSILON100) {
+#else
+        if (abs(diff) > EPSILON) {
+#endif
+            errorflag = TRUE;
+            printf("*** Testing Mutils (complex exp) failed ***\n");
+            exit(1);
+        }
+    }
+}
+
+// complex test
+void Mutils_test_csqrt() {
+    int errorflag = TRUE;
+    COMPLEX_REF a_ref, b_ref;
+    COMPLEX a, b;
+    COMPLEX_REF diff;
+
+    for (int i = 0; i < ITERATION; i++) {
+        set_random_number(a_ref, a);
+        b_ref = sqrt(a_ref);
+        b = sqrt(a);
+#if defined VERBOSE_TEST
+        cout << "a_ref=   ";
+        printnum(a_ref);
+        cout << endl;
+        cout << "csqrt_ref= ";
+        printnum(b_ref);
+        cout << endl;
+        cout << "a=       ";
+        printnum(a);
+        cout << endl;
+        cout << "csqrt=     ";
+        printnum(b);
+        cout << endl;
+#endif
+        diff = abs(b_ref - b);
+#if defined VERBOSE_TEST
+        printf("diff     ");
+        printnum(diff);
+        printf("\n\n");
+#endif
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+        if (abs(diff) > EPSILON100) {
+#else
+        if (abs(diff) > EPSILON) {
+#endif
+            errorflag = TRUE;
+            printf("*** Testing Mutils (complex sqrt) failed ***\n");
+            exit(1);
+        }
+    }
+}
+
 
 void Mutils_test_highcond() {
     for (int n = 2; n < MAXSIZE; n++) {
@@ -554,6 +685,9 @@ void Mutils_test() {
     Mutils_test_cos();
     Mutils_test_exp();
     Mutils_test_csin();
+    Mutils_test_ccos();
+    Mutils_test_cexp();
+    Mutils_test_csqrt();
     //  Mutils_test_highcond();
 }
 
