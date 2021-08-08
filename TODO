@@ -1,6 +1,5 @@
 TODOs for release
 
-* variables for random number generations
 * test mpblas
 * complex and rfp support
 * test mplapack
