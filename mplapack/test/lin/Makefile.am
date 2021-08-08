@@ -39,7 +39,7 @@ endif
 if ENABLE_MPFR
 liblin_override_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mplapack/test/fable
 liblin_override_mpfr_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
-liblin_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ 
+liblin_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
 liblin_mpfr_la_SOURCES = $(LIN_SOURCES)
 if IS_MACOSX
 liblin_mpfr_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -49,7 +49,7 @@ endif
 if ENABLE_GMP
 liblin_override_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -I$(top_srcdir)/mplapack/test/fable
 liblin_override_gmp_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
-liblin_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___
+liblin_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___
 liblin_gmp_la_SOURCES = $(LIN_SOURCES)
 if IS_MACOSX
 liblin_gmp_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -59,7 +59,7 @@ endif
 if ENABLE_QD
 liblin_override_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ -I$(top_srcdir)/mplapack/test/fable
 liblin_override_qd_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
-liblin_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___
+liblin_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ -D___MPLAPACK_INTERNAL___
 liblin_qd_la_SOURCES = $(LIN_SOURCES)
 if IS_MACOSX
 liblin_qd_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -69,7 +69,7 @@ endif
 if ENABLE_DD
 liblin_override_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ -I$(top_srcdir)/mplapack/test/fable
 liblin_override_dd_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
-liblin_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___
+liblin_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ -D___MPLAPACK_INTERNAL___
 liblin_dd_la_SOURCES = $(LIN_SOURCES)
 if IS_MACOSX
 liblin_dd_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -79,7 +79,7 @@ endif
 if ENABLE_DOUBLE
 liblin_override_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DOUBLE___ -I$(top_srcdir)/mplapack/test/fable
 liblin_override_double_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
-liblin_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -D___MPLAPACK_BUILD_WITH_DOUBLE___
+liblin_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -D___MPLAPACK_BUILD_WITH_DOUBLE___ -D___MPLAPACK_INTERNAL___
 liblin_double_la_SOURCES = $(LIN_SOURCES)
 if IS_MACOSX
 liblin_double_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -89,7 +89,7 @@ endif
 if ENABLE__FLOAT64X
 liblin_override__Float64x_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___ -I$(top_srcdir)/mplapack/test/fable
 liblin_override__Float64x_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
-liblin__Float64x_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -D___MPLAPACK_BUILD_WITH__FLOAT64X___
+liblin__Float64x_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -D___MPLAPACK_BUILD_WITH__FLOAT64X___ -D___MPLAPACK_INTERNAL___
 liblin__Float64x_la_SOURCES = $(LIN_SOURCES)
 if IS_MACOSX
 liblin__Float64x_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -99,7 +99,7 @@ endif
 if ENABLE__FLOAT128
 liblin_override__Float128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT128___ -I$(top_srcdir)/mplapack/test/fable
 liblin_override__Float128_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
-liblin__Float128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -D___MPLAPACK_BUILD_WITH__FLOAT128___
+liblin__Float128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -D___MPLAPACK_BUILD_WITH__FLOAT128___ -D___MPLAPACK_INTERNAL___
 liblin__Float128_la_SOURCES = $(LIN_SOURCES)
 if IS_MACOSX
 liblin__Float128_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup

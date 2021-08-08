@@ -35,6 +35,8 @@
 #include <math.h>
 
 #if defined ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___
+
+#if defined ___MPLAPACK_INTERNAL___
 #define FLOAT64X_FORMAT "%+25.21Le"
 #define FLOAT64X_SHORT_FORMAT "%+20.16Le"
 
@@ -53,6 +55,7 @@ inline void sprintnum(char *buf, std::complex<_Float64x> ctmp) { snprintf(buf, _
 
 inline void sprintnum_short(char *buf, _Float64x rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT64X_SHORT_FORMAT, rtmp); }
 inline void sprintnum_short(char *buf, std::complex<_Float64x> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT64X_SHORT_FORMAT FLOAT64X_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
+#endif
 
 inline _Float64x pow2(const _Float64x &a) { return a * a; }
 

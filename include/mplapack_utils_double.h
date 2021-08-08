@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2021
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -35,7 +35,9 @@
 inline double log2(double x) { return log(x) / log(2.0); }
 #endif
 
+#if defined ___MPLAPACK_INTERNAL___
 #include <mplapack_print_double.h>
+#endif
 
 inline double pow2(double a) {
     double mtmp;

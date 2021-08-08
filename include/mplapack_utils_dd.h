@@ -29,6 +29,7 @@
 #ifndef _MUTILS_DD_H_
 #define _MUTILS_DD_H_
 
+#if defined ___MPLAPACK_INTERNAL___
 #define DD_PRECISION 32
 #define DD_PRECISION_SHORT 16
 
@@ -109,6 +110,7 @@ inline void sprintnum_short(char *buf, dd_complex rtmp) {
     strcat(buf, buf2);
     strcat(buf, "i");
 }
+#endif
 
 inline dd_real pow2(dd_real a) {
     dd_real mtmp = a * a;

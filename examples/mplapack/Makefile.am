@@ -8,5 +8,6 @@
 #07_GeneralizedNonSymmetricEigenproblems \
 #08_GeneralizedSingularValueDecomposition
 
-SUBDIRS = 04_NonsymmetricEigenproblems\
+SUBDIRS = 04_NonsymmetricEigenproblems \
+05_SingularValueDecomposition \
 99_Miscellaneous

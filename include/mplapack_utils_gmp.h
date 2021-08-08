@@ -33,6 +33,7 @@
 
 #include "mpc_class.h"
 
+#if defined ___MPLAPACK_INTERNAL___
 #define GMP_FORMAT "%+68.64Fe"
 #define GMP_SHORT_FORMAT "%+20.16Fe"
 
@@ -79,6 +80,7 @@ inline void sprintnum_short(char *buf, mpc_class ctmp) {
     gmp_snprintf(buf, __MPLAPACK_BUFLEN__, GMP_SHORT_FORMAT GMP_SHORT_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
     return;
 }
+#endif
 
 inline mpf_class pow2(mpf_class a) {
     mpf_class mtmp = a * a;

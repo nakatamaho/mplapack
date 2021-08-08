@@ -36,6 +36,7 @@
 
 using namespace mpfr;
 
+#if defined ___MPLAPACK_INTERNAL___
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
 
@@ -90,6 +91,7 @@ inline void sprintnum_short(char *buf, mpcomplex ctmp) {
     mpfr_snprintf(buf, __MPLAPACK_BUFLEN__, MPFR_SHORT_FORMAT MPFR_SHORT_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
     return;
 }
+#endif
 
 inline mpreal pow2(mpreal a) {
     mpreal mtmp = a * a;

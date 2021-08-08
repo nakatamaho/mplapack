@@ -30,6 +30,7 @@
 #ifndef _MUTILS_QD_H_
 #define _MUTILS_QD_H_
 
+#if defined ___MPLAPACK_INTERNAL___
 #define QD_PRECISION 64
 #define QD_PRECISION_SHORT 16
 
@@ -113,6 +114,7 @@ inline void sprintnum_short(char *buf, qd_complex rtmp) {
     strcat(buf, buf2);
     strcat(buf, "i");
 }
+#endif
 
 inline qd_real pow2(qd_real a) {
     qd_real mtmp = a * a;

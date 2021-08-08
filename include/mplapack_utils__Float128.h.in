@@ -31,11 +31,12 @@
 
 #define ___MPLAPACK__FLOAT128_ONLY___
 
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && (defined ___MPLAPACK__FLOAT128_ONLY___ || defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___)
+
+#if defined ___MPLAPACK_INTERNAL___
 #if !defined __MPLAPACK_BUFLEN__
 #define __MPLAPACK_BUFLEN__ 1024
 #endif
-
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && (defined ___MPLAPACK__FLOAT128_ONLY___ || defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___)
 #include <string.h>
 
 #define FLOAT128_FORMAT "%.40e"
@@ -85,6 +86,7 @@ inline void sprintnum_short(char *buf, std::complex<_Float128> rtmp) {
     strcat(buf, buf2);
     strcat(buf, "i");
 }
+#endif
 
 inline _Float128 pow(const _Float128 &a, const _Float128 &b) { return powf128(a, b); }
 inline _Float128 pow(const long &a, const long &b) { return powf128((_Float128)a, (_Float128)b); }
