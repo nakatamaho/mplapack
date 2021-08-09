@@ -102,6 +102,39 @@ $ docker run -it mplapack:fable
 $ cd ; fable.cout sample.f
 ```
 
+## MPLAPACK 1.0.0 Release Process 
+This is the release schedule for MPLAPACK 1.0.0
+
+| Action | Date |  Description |
+| --- | --- | --- |
+| QA of lin (mpfr, real) |  |  | 
+| QA of lin (gmp, real) |  |  | 
+| QA of lin (_Float128, real) |  |  | 
+| QA of lin (_Float64x, real) |  |  | 
+| QA of lin (double, real) |  |  | 
+| QA of lin (dd, real) |  |  | 
+| QA of lin (qd, real) |  |  | 
+| QA of eig (mpfr, real) |  |  | 
+| QA of eig (gmp, real) |  |  | 
+| QA of eig (_Float128, real) |  |  | 
+| QA of eig (_Float64x, real) |  |  | 
+| QA of eig (double, real) |  |  | 
+| QA of eig (dd, real) |  |  | 
+| QA of eig (qd, real) |  |  | 
+| Build on Ubuntu 20.04 amd64   |  |  | 
+| Build on Ubuntu 18.04 amd64   |  |  | 
+| Build on Ubuntu 20.04 Intel oneAPI  |  |  | 
+| Build on Ubuntu 20.04 mingw64 |  |  | 
+| Build on Ubuntu 20.04 AArch64 |  |  | 
+| Build on CentOS7 amd64 |  |  | 
+| Build on CentOS7 AArch64 |  |  | 
+| Build on CentOS8 amd64 |  |  | 
+| Build on CentOS8 AArch64 |  |  | 
+| Build on MacOS Big Sur amd64 |  |  | 
+| Add documents |  |  | 
+| Add examples |  |  | 
+
+
 # History
 * 2021/4/11 0.9.3 release. CentOS7 AArch64 support
 * 2021/4/6  0.9.1 release. CentOS support
