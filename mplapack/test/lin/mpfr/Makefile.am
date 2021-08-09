@@ -32,18 +32,18 @@ test: Rtest.out Ctest.out Rtest_rfp.out Ctest_rfp.out
 clean-local:
 	rm -f *.out *~ \#*
 
-Rtest.out: Rtest.in xlintstR_mpfr
+Rtest.out: ../Rtest.in xlintstR_mpfr
 	@echo Testing Real MPLAPACK linear equation routines
 	./xlintstR_mpfr < ../Rtest.in > $@ 2>&1
 
-Ctest.out: Ctest.in xlintstC_mpfr
+Ctest.out: ../Ctest.in xlintstC_mpfr
 	@echo Testing Complex MPLAPACK linear equation routines
 	./xlintstC_mpfr < ../Ctest.in > $@ 2>&1
 
-Rtest_rfp.out: Rtest_rfp.in 
+Rtest_rfp.out: ../Rtest_rfp.in xlintstrfR_mpfr
 	@echo Testing Real MPLAPACK RFP prototype linear equation routines
 	./xlintstrfR_mpfr < ../Rtest_rfp.in > $@ 2>&1
 
-Ctest_rfp.out: Ctest_rfp.in
+Ctest_rfp.out: ../Ctest_rfp.in xlintstrfC_mpfr
 	@echo Testing Complex MPLAPACK RFP prototype linear equation routines
 	./xlintstrfC_mpfr < ../Ctest_rfp.in > $@ 2>&1
