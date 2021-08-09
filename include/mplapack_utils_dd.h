@@ -157,6 +157,14 @@ inline dd_complex sin(dd_complex a) {
     return b;
 }
 
+inline dd_complex cos(dd_complex a) {
+    dd_real mtemp1, mtemp2;
+    mtemp1 = a.real();
+    mtemp2 = a.imag();
+    dd_complex b = dd_complex(cos(mtemp1) * cosh(mtemp2), - sin(mtemp1) * sinh(mtemp2));
+    return b;
+}
+
 inline dd_real log2(dd_real x) { return log10(x) / (dd_real::_log2 / dd_real::_log10); }
 
 inline dd_complex exp(dd_complex x) {

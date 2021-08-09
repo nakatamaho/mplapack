@@ -161,6 +161,14 @@ inline qd_complex sin(qd_complex a) {
     return b;
 }
 
+inline qd_complex cos(qd_complex a) {
+    qd_real mtemp1, mtemp2;
+    mtemp1 = a.real();
+    mtemp2 = a.imag();
+    qd_complex b = qd_complex(cos(mtemp1) * cosh(mtemp2), - sin(mtemp1) * sinh(mtemp2));
+    return b;
+}
+
 inline qd_real log2(qd_real x) { return log10(x) / (qd_real::_log2 / qd_real::_log10); }
 
 inline qd_complex exp(qd_complex x) {
