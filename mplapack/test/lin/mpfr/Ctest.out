@@ -11,9 +11,9 @@ The following parameter values will be used:
 
  Routines pass computational tests if test ratio is less than   30.00
 
- Relative machine underflow is taken to be : 9.53026e-323228497
- Relative machine overflow  is taken to be : 2.09858e+323228496
- Relative machine precision is taken to be : 7.45834e-155
+ Relative machine underflow is taken to be : +9.5302596195518043e-323228497
+ Relative machine overflow  is taken to be : +9.5302596195518043e-323228497
+ Relative machine precision is taken to be : +9.5302596195518043e-323228497
  CGE routines passed the tests of the error exits
 
  All tests for CGE routines passed the threshold (   3653 tests run)
@@ -22,7 +22,7 @@ The following parameter values will be used:
  All tests for CGE drivers  passed the threshold (   5748 tests run)
 
  End of tests
- Total time used =  40 seconds
+ Total time used =  36 seconds
 
  CGB routines passed the tests of the error exits
 
@@ -527,7 +527,7 @@ The following parameter values will be used:
  CGB drivers:    480 out of  37035 tests failed to pass the threshold
 
  End of tests
- Total time used =  331 seconds
+ Total time used =  341 seconds
 
  CGT routines passed the tests of the error exits
 
@@ -537,7 +537,7 @@ The following parameter values will be used:
  All tests for CGT drivers  passed the threshold (   2033 tests run)
 
  End of tests
- Total time used =  336 seconds
+ Total time used =  345 seconds
 
  CPO routines passed the tests of the error exits
 
@@ -547,14 +547,14 @@ The following parameter values will be used:
  All tests for CPO drivers  passed the threshold (   1910 tests run)
 
  End of tests
- Total time used =  355 seconds
+ Total time used =  365 seconds
 
  CPS routines passed the tests of the error exits
 
  All tests for CPS routines passed the threshold (    150 tests run)
 
  End of tests
- Total time used =  358 seconds
+ Total time used =  369 seconds
 
  CPP routines passed the tests of the error exits
 
@@ -564,7 +564,7 @@ The following parameter values will be used:
  All tests for CPP drivers  passed the threshold (   1910 tests run)
 
  End of tests
- Total time used =  374 seconds
+ Total time used =  385 seconds
 
  CPB routines passed the tests of the error exits
 
@@ -574,7 +574,7 @@ The following parameter values will be used:
  All tests for CPB drivers  passed the threshold (   4750 tests run)
 
  End of tests
- Total time used =  427 seconds
+ Total time used =  440 seconds
 
  CPT routines passed the tests of the error exits
 
@@ -584,7 +584,7 @@ The following parameter values will be used:
  All tests for CPT drivers  passed the threshold (    788 tests run)
 
  End of tests
- Total time used =  428 seconds
+ Total time used =  441 seconds
 
  CHE routines passed the tests of the error exits
 
@@ -594,7 +594,7 @@ The following parameter values will be used:
  All tests for CHE drivers  passed the threshold (   1072 tests run)
 
  End of tests
- Total time used =  446 seconds
+ Total time used =  460 seconds
 
  CHR routines passed the tests of the error exits
 
@@ -632,7 +632,7 @@ The following parameter values will be used:
  All tests for CHR drivers  passed the threshold (    222 tests run)
 
  End of tests
- Total time used =  457 seconds
+ Total time used =  472 seconds
 
  CHK routines passed the tests of the error exits
 
@@ -649,7 +649,7 @@ The following parameter values will be used:
  All tests for CHK drivers  passed the threshold (    222 tests run)
 
  End of tests
- Total time used =  469 seconds
+ Total time used =  484 seconds
 
  CHA routines passed the tests of the error exits
 
@@ -659,7 +659,7 @@ The following parameter values will be used:
  All tests for CHA drivers  passed the threshold (    148 tests run)
 
  End of tests
- Total time used =  482 seconds
+ Total time used =  498 seconds
 
  CH2 routines passed the tests of the error exits
 
@@ -669,7 +669,7 @@ The following parameter values will be used:
  All tests for CH2 drivers  passed the threshold (     74 tests run)
 
  End of tests
- Total time used =  492 seconds
+ Total time used =  508 seconds
 
  CSA routines passed the tests of the error exits
 
@@ -679,7 +679,7 @@ The following parameter values will be used:
  All tests for CSA drivers  passed the threshold (    148 tests run)
 
  End of tests
- Total time used =  505 seconds
+ Total time used =  522 seconds
 
  CS2 routines passed the tests of the error exits
 
@@ -689,7 +689,7 @@ The following parameter values will be used:
  All tests for CH2 drivers  passed the threshold (     74 tests run)
 
  End of tests
- Total time used =  514 seconds
+ Total time used =  531 seconds
 
  CHP routines passed the tests of the error exits
 
@@ -699,7 +699,7 @@ The following parameter values will be used:
  All tests for CHP drivers  passed the threshold (   1072 tests run)
 
  End of tests
- Total time used =  529 seconds
+ Total time used =  547 seconds
 
  CSY routines passed the tests of the error exits
 
@@ -709,7 +709,7 @@ The following parameter values will be used:
  All tests for CSY drivers  passed the threshold (   1240 tests run)
 
  End of tests
- Total time used =  547 seconds
+ Total time used =  566 seconds
 
  CSR routines passed the tests of the error exits
 
@@ -747,7 +747,7 @@ The following parameter values will be used:
  All tests for CSR drivers  passed the threshold (    258 tests run)
 
  End of tests
- Total time used =  559 seconds
+ Total time used =  578 seconds
 
  CSK routines passed the tests of the error exits
 
@@ -794,7 +794,7 @@ The following parameter values will be used:
  All tests for CSK drivers  passed the threshold (    258 tests run)
 
  End of tests
- Total time used =  570 seconds
+ Total time used =  590 seconds
 
  CSP routines passed the tests of the error exits
 
@@ -804,42 +804,42 @@ The following parameter values will be used:
  All tests for CSP drivers  passed the threshold (   1240 tests run)
 
  End of tests
- Total time used =  585 seconds
+ Total time used =  606 seconds
 
  CTR routines passed the tests of the error exits
 
  All tests for CTR routines passed the threshold (   7672 tests run)
 
  End of tests
- Total time used =  604 seconds
+ Total time used =  625 seconds
 
  CTP routines passed the tests of the error exits
 
  All tests for CTP routines passed the threshold (   7392 tests run)
 
  End of tests
- Total time used =  621 seconds
+ Total time used =  643 seconds
 
  CTB routines passed the tests of the error exits
 
  All tests for CTB routines passed the threshold (  19888 tests run)
 
  End of tests
- Total time used =  666 seconds
+ Total time used =  690 seconds
 
  CQR routines passed the tests of the error exits
 
  All tests for CQR routines passed the threshold (  42840 tests run)
 
  End of tests
- Total time used =  812 seconds
+ Total time used =  844 seconds
 
  CRQ routines passed the tests of the error exits
 
  All tests for CRQ routines passed the threshold (  28784 tests run)
 
  End of tests
- Total time used =  936 seconds
+ Total time used =  973 seconds
 
  
  CLQ routines passed the tests of the error exits
@@ -847,7 +847,7 @@ The following parameter values will be used:
  All tests for CLQ routines passed the threshold (  28784 tests run)
 
  End of tests
- Total time used =  1060 seconds
+ Total time used =  1102 seconds
 
  
  CQL routines passed the tests of the error exits
@@ -855,7 +855,7 @@ The following parameter values will be used:
  All tests for CQL routines passed the threshold (  28784 tests run)
 
  End of tests
- Total time used =  1185 seconds
+ Total time used =  1232 seconds
 
 
  CQ3:  No header available
@@ -962,7 +962,7 @@ The following parameter values will be used:
  CQ3:    100 out of   4410 tests failed to pass the threshold
 
  End of tests
- Total time used =  1202 seconds
+ Total time used =  1250 seconds
 
  CTZ routines passed the tests of the error exits
 
@@ -1000,6 +1000,6 @@ The following parameter values will be used:
  CTZ:     20 out of    252 tests failed to pass the threshold
 
  End of tests
- Total time used =  1203 seconds
+ Total time used =  1251 seconds
 
  CLS routines passed the tests of the error exits

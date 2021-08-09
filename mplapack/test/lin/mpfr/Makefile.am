@@ -27,7 +27,7 @@ xlintstrfC_mpfr_SOURCES  = ../common/Cchkrfp.cpp
 xlintstrfC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_mpfr_CXXFLAGS = $(cxxflags)
 
-test: Rtest.out Ctest.out Rtest_rfp.out Ctest_rfp.out
+check: Rtest.out Ctest.out Rtest_rfp.out Ctest_rfp.out
 
 clean-local:
 	rm -f *.out *~ \#*
