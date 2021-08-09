@@ -111,11 +111,66 @@ The following parameter values will be used:
 
  Rgeesx passed the tests of the error exits (  7 tests done)
 
- All tests for RSX passed the threshold (  3508 tests run)
+ RSX -- Real Schur Form Decomposition Expert Driver
+ Matrix types (see Rdrvsx for details):
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
+  2=Identity matrix.                      6=Diagonal: clustered entries.
+  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
+  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
+ Dense, Non-Symmetric Matrices:
+  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
+ 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
+ 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex 
+ 12=Well-cond., random complex           17=Ill-cond., large rand. complx 
+ 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx 
+ 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
+ 20=Matrix with large random entries.   
+
+ Tests performed with test threshold =+2.0000000000000000e+01
+ ( A denotes A on input and T denotes A on output)
+
+ 1 = 0 if T in Schur form (no sort),   1/ulp otherwise
+ 2 = | A - VS T transpose(VS) | / ( n |A| ulp ) (no sort)
+ 3 = | I - VS transpose(VS) | / ( n ulp ) (no sort) 
+ 4 = 0 if WR+sqrt(-1)*WI are eigenvalues of T (no sort),  1/ulp otherwise
+ 5 = 0 if T same no matter if VS computed (no sort),  1/ulp otherwise
+ 6 = 0 if WR, WI same no matter if VS computed (no sort),  1/ulp otherwise
+ 7 = 0 if T in Schur form (sort),   1/ulp otherwise
+ 8 = | A - VS T transpose(VS) | / ( n |A| ulp ) (sort)
+ 9 = | I - VS transpose(VS) | / ( n ulp ) (sort) 
+ 10 = 0 if WR+sqrt(-1)*WI are eigenvalues of T (sort),  1/ulp otherwise
+ 11 = 0 if T same no matter what else computed (sort),  1/ulp otherwise
+ 12 = 0 if WR, WI same no matter what else computed (sort), 1/ulp otherwise
+ 13 = 0 if sorting successful, 1/ulp otherwise
+ 14 = 0 if RCONDE same no matter what else computed, 1/ulp otherwise
+ 15 = 0 if RCONDv same no matter what else computed, 1/ulp otherwise
+ 16 = | RCONDE - RCONDE(precomputed) | / cond(RCONDE),
+ 17 = | RCONDV - RCONDV(precomputed) | / cond(RCONDV),
+ N=    1, input example =  2,  test(16)=+1.6777115013757236e+07
+ N=    6, input example =  4,  test(16)=+2.7961850022928727e+06
+ N=    6, input example =  5,  test(16)=+2.7961850022928727e+06
+ N=    6, input example =  6,  test(16)=+2.7961850022928727e+06
+ N=    6, input example =  7,  test(16)=+4.6603000038214545e+05
+ N=    2, input example =  8,  test(16)=+2.3726422346279677e+06
+ N=    4, input example =  9,  test(16)=+3.2314120336558641e+05
+ N=    7, input example = 10,  test(17)=+6.7039039649712985e+153
+ N=    4, input example = 11,  test(16)=+2.2437904046821250e+05
+ N=    7, input example = 12,  test(17)=+6.7039039649712985e+153
+ N=    3, input example = 19,  test(17)=+8.8888850915116514e+05
+ N=    6, input example = 21,  test(17)=+6.7039039649712985e+153
+ N=    6, input example = 22,  test(17)=+6.7039039649712985e+153
+ N=    6, input example = 23,  test(16)=+3.3045492464000418e+01
+ N=    6, input example = 23,  test(17)=+1.5684253827265763e+02
+ N=    5, input example = 24,  test(17)=+6.7039039649712985e+153
+ N=    6, input example = 25,  test(17)=+6.7039039649712985e+153
+ N=   10, input example = 26,  test(17)=+6.7039039649712985e+153
+ RSX:   18 out of  3508 tests failed to pass the threshold
 
  -----------------------------------------------------------------------
 
 
  End of tests
- Total time used =       171.00 seconds
+ Total time used =       167.00 seconds
 
