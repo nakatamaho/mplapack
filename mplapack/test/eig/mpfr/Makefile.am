@@ -22,82 +22,82 @@ test: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.ou
 clean-local:
 	rm -f *.out *~ \#*
 
-Rnep.out: nep.in xeigtstR_mpfr
+Rnep.out: ../nep.in xeigtstR_mpfr
 	@echo NEP: Testing Nonsymmetric Eigenvalue Problem routines
-	./xeigtstR_mpfr < nep.in > $@ 2>&1
+	./xeigtstR_mpfr < ../nep.in > $@ 2>&1
 
-Rsep.out: sep.in xeigtstR_mpfr
+Rsep.out: ../sep.in xeigtstR_mpfr
 	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstR_mpfr < sep.in > $@ 2>&1
+	./xeigtstR_mpfr < ../sep.in > $@ 2>&1
 
-Rse2.out: se2.in xeigtstR_mpfr
+Rse2.out: ../se2.in xeigtstR_mpfr
 	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstR_mpfr < se2.in > $@ 2>&1
+	./xeigtstR_mpfr < ../se2.in > $@ 2>&1
 
-Rsvd.out: svd.in xeigtstR_mpfr
+Rsvd.out: ../svd.in xeigtstR_mpfr
 	@echo SVD: Testing Singular Value Decomposition routines
-	./xeigtstR_mpfr < svd.in > $@ 2>&1
+	./xeigtstR_mpfr < ../svd.in > $@ 2>&1
 
-Rec.out: Rec.in xeigtstR_mpfr
+Rec.out: ../Rec.in xeigtstR_mpfr
 	@echo DEC: Testing Eigen Condition Routines
-	./xeigtstR_mpfr < Rec.in > $@ 2>&1
+	./xeigtstR_mpfr < ../Rec.in > $@ 2>&1
 
-Red.out: Red.in xeigtstR_mpfr
+Red.out: ../Red.in xeigtstR_mpfr
 	@echo DEV: Testing Nonsymmetric Eigenvalue Driver
-	./xeigtstR_mpfr < Red.in > $@ 2>&1
+	./xeigtstR_mpfr < ../Red.in > $@ 2>&1
 
-Rgg.out: Rgg.in xeigtstR_mpfr
+Rgg.out: ../Rgg.in xeigtstR_mpfr
 	@echo DGG: Testing Nonsymmetric Generalized Eigenvalue Problem routines
-	./xeigtstR_mpfr < Rgg.in > $@ 2>&1
+	./xeigtstR_mpfr < ../Rgg.in > $@ 2>&1
 
-Rgd.out: Rgd.in xeigtstR_mpfr
+Rgd.out: ../Rgd.in xeigtstR_mpfr
 	@echo DGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routines
-	./xeigtstR_mpfr < Rgd.in > $@ 2>&1
+	./xeigtstR_mpfr < ../Rgd.in > $@ 2>&1
 
-Rsb.out: Rsb.in xeigtstR_mpfr
+Rsb.out: ../Rsb.in xeigtstR_mpfr
 	@echo DSB: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstR_mpfr < Rsb.in > $@ 2>&1
+	./xeigtstR_mpfr < ../Rsb.in > $@ 2>&1
 
-Rsg.out: Rsg.in xeigtstR_mpfr
+Rsg.out: ../Rsg.in xeigtstR_mpfr
 	@echo DSG: Testing Symmetric Generalized Eigenvalue Problem routines
-	./xeigtstR_mpfr < Rsg.in > $@ 2>&1
+	./xeigtstR_mpfr < ../Rsg.in > $@ 2>&1
 
-Rbal.out: Rbal.in xeigtstR_mpfr
+Rbal.out: ../Rbal.in xeigtstR_mpfr
 	@echo Rgebal: Testing the balancing of a general matrix
-	./xeigtstR_mpfr < Rbal.in > $@ 2>&1
+	./xeigtstR_mpfr < ../Rbal.in > $@ 2>&1
 
-Rbak.out: Rbak.in xeigtstR_mpfr
+Rbak.out: ../Rbak.in xeigtstR_mpfr
 	@echo Rgebak: Testing the back transformation of balanced matrix
-	./xeigtstR_mpfr < Rbak.in > $@ 2>&1
+	./xeigtstR_mpfr < ../Rbak.in > $@ 2>&1
 
-Rgbal.out: Rgbal.in xeigtstR_mpfr
+Rgbal.out: ../Rgbal.in xeigtstR_mpfr
 	@echo Rggbal: Testing the balancing of a pair of general matrices
-	./xeigtstR_mpfr < Rgbal.in > $@ 2>&1
+	./xeigtstR_mpfr < ../Rgbal.in > $@ 2>&1
 
-Rgbak.out: Rgbak.in xeigtstR_mpfr
+Rgbak.out: ../Rgbak.in xeigtstR_mpfr
 	@echo Rggbak: Testing the back transformation of a pair of balanced matrices
-	./xeigtstR_mpfr < Rgbak.in > $@ 2>&1
+	./xeigtstR_mpfr < ../Rgbak.in > $@ 2>&1
 
-Rbb.out: Rbb.in xeigtstR_mpfr
+Rbb.out: ../Rbb.in xeigtstR_mpfr
 	@echo DBB: Testing banded Singular Value Decomposition routines
-	./xeigtstR_mpfr < Rbb.in > $@ 2>&1
+	./xeigtstR_mpfr < ../Rbb.in > $@ 2>&1
 
-Rglm.out: glm.in xeigtstR_mpfr
+Rglm.out: ../glm.in xeigtstR_mpfr
 	@echo GLM: Testing Generalized Linear Regression Model routines
-	./xeigtstR_mpfr < glm.in > $@ 2>&1
+	./xeigtstR_mpfr < ../glm.in > $@ 2>&1
 
-Rgqr.out: gqr.in xeigtstR_mpfr
+Rgqr.out: ../gqr.in xeigtstR_mpfr
 	@echo GQR: Testing Generalized QR and RQ factorization routines
-	./xeigtstR_mpfr < gqr.in > $@ 2>&1
+	./xeigtstR_mpfr < ../gqr.in > $@ 2>&1
 
-Rgsv.out: gsv.in xeigtstR_mpfr
+Rgsv.out: ../gsv.in xeigtstR_mpfr
 	@echo GSV: Testing Generalized Singular Value Decomposition routines
-	./xeigtstR_mpfr < gsv.in > $@ 2>&1
+	./xeigtstR_mpfr < ../gsv.in > $@ 2>&1
 
-Rcsd.out: csd.in xeigtstR_mpfr
+Rcsd.out: ../csd.in xeigtstR_mpfr
 	@echo CSD: Testing CS Decomposition routines
-	./xeigtstR_mpfr < csd.in > $@ 2>&1
+	./xeigtstR_mpfr < ../csd.in > $@ 2>&1
 
-Rlse.out: lse.in xeigtstR_mpfr
+Rlse.out: ../lse.in xeigtstR_mpfr
 	@echo LSE: Testing Constrained Linear Least Squares routines
-	./xeigtstR_mpfr < lse.in > $@ 2>&1
+	./xeigtstR_mpfr < ../lse.in > $@ 2>&1
