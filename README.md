@@ -135,11 +135,11 @@ This is the release schedule for MPLAPACK 1.0.0
 | QA of eig (double, real)             |            |     |                          | 
 | QA of eig (dd, real)                 |            |     |                          | 
 | QA of eig (qd, real)                 |            |     |                          | 
-| Build on Ubuntu 20.04 amd64          | 2021-08-09 |100% | _Float128: supp. by libc only binary128, _Float64x is long double |
-| Build on Ubuntu 18.04 amd64          |            |     | _Float128: supp. by libc only binary128, _Float64x is long double |
+| Build on Ubuntu 20.04 amd64          | 2021-08-09 |100% | _Float128: supp. by libc only binary128, _Float64x: long double |
+| Build on Ubuntu 18.04 amd64          |            |     | _Float128: supp. by libc only binary128, _Float64x: long double |
 | Build on Ubuntu 20.04 Intel oneAPI   |            |     |                          | 
 | Build on Ubuntu 20.04 mingw64        |            |     |                          | 
-| Build on Ubuntu 20.04 AArch64        |            |     |                          | 
+| Build on Ubuntu 20.04 AArch64        |            |     | _Float128: supp. by libc and _Float128 == long double |
 | Build on CentOS7 amd64               |            |     |                          | 
 | Build on CentOS7 AArch64             |            |     |                          | 
 | Build on CentOS8 amd64               |            |     |                          | 
