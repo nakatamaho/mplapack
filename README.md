@@ -107,32 +107,47 @@ This is the release schedule for MPLAPACK 1.0.0
 
 | Action | Date |  Description |
 | --- | --- | --- |
-| QA of lin (mpfr, real) |  |  | 
-| QA of lin (gmp, real) |  |  | 
-| QA of lin (_Float128, real) |  |  | 
-| QA of lin (_Float64x, real) |  |  | 
-| QA of lin (double, real) |  |  | 
-| QA of lin (dd, real) |  |  | 
-| QA of lin (qd, real) |  |  | 
-| QA of eig (mpfr, real) |  |  | 
-| QA of eig (gmp, real) |  |  | 
-| QA of eig (_Float128, real) |  |  | 
-| QA of eig (_Float64x, real) |  |  | 
-| QA of eig (double, real) |  |  | 
-| QA of eig (dd, real) |  |  | 
-| QA of eig (qd, real) |  |  | 
-| Build on Ubuntu 20.04 amd64   |  |  | 
-| Build on Ubuntu 18.04 amd64   |  |  | 
-| Build on Ubuntu 20.04 Intel oneAPI  |  |  | 
-| Build on Ubuntu 20.04 mingw64 |  |  | 
-| Build on Ubuntu 20.04 AArch64 |  |  | 
-| Build on CentOS7 amd64 |  |  | 
-| Build on CentOS7 AArch64 |  |  | 
-| Build on CentOS8 amd64 |  |  | 
-| Build on CentOS8 AArch64 |  |  | 
-| Build on MacOS Big Sur amd64 |  |  | 
-| Add documents |  |  | 
-| Add examples |  |  | 
+| QA of blas (mpfr)                    |  | compare with original BLAS | 
+| QA of blas (gmp)                     |  | compare with MPFR MPBLAS | 
+| QA of blas (_Float128)               |  | compare with MPFR MPBLAS | 
+| QA of blas (_Float64x)               |  | compare with MPFR MPBLAS | 
+| QA of blas (double)                  |  | compare with MPFR MPBLAS | 
+| QA of blas (dd)                      |  | compare with MPFR MPBLAS | 
+| QA of blas (qd)                      |  | compare with MPFR MPBLAS | 
+| QA of lapack (mpfr)                  |  | compare with original LAPACK | 
+| QA of lapack (gmp)                   |  | compare with MPFR LAPACK |  
+| QA of lapack (_Float128)             |  | compare with MPFR LAPACK |  
+| QA of lapack (_Float64x)             |  | compare with MPFR LAPACK |  
+| QA of lapack (double)                |  | compare with MPFR LAPACK |  
+| QA of lapack (dd)                    |  | compare with MPFR LAPACK |  
+| QA of lapack (qd)                    |  | compare with MPFR LAPACK |  
+| QA of lin (mpfr, real)               |  |  | 
+| QA of lin (gmp, real)                |  |  | 
+| QA of lin (_Float128, real)          |  |  | 
+| QA of lin (_Float64x, real)          |  |  | 
+| QA of lin (double, real)             |  |  | 
+| QA of lin (dd, real)                 |  |  | 
+| QA of lin (qd, real)                 |  |  | 
+| QA of eig (mpfr, real)               |  |  | 
+| QA of eig (gmp, real)                |  |  | 
+| QA of eig (_Float128, real)          |  |  | 
+| QA of eig (_Float64x, real)          |  |  | 
+| QA of eig (double, real)             |  |  | 
+| QA of eig (dd, real)                 |  |  | 
+| QA of eig (qd, real)                 |  |  | 
+| Build on Ubuntu 20.04 amd64          |  |  | 
+| Build on Ubuntu 18.04 amd64          |  |  | 
+| Build on Ubuntu 20.04 Intel oneAPI   |  |  | 
+| Build on Ubuntu 20.04 mingw64        |  |  | 
+| Build on Ubuntu 20.04 AArch64        |  |  | 
+| Build on CentOS7 amd64               |  |  | 
+| Build on CentOS7 AArch64             |  |  | 
+| Build on CentOS8 amd64               |  |  | 
+| Build on CentOS8 AArch64             |  |  | 
+| Build on MacOS Big Sur amd64         |  |  | 
+| Add documents                        |  |  | 
+| Add examples for SVD                 |  |  | 
+| Add examples for NEP                 |  |  | 
 
 
 # History
