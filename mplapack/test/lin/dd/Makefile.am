@@ -27,23 +27,23 @@ xlintstrfC_dd_SOURCES  = ../common/Cchkrfp.cpp
 xlintstrfC_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_dd_CXXFLAGS = $(cxxflags)
 
-test: Rtest.out Ctest.out Rtest_rfp.out Ctest_rfp.out
+check: Rtest.out Ctest.out Rtest_rfp.out Ctest_rfp.out
 
 clean-local:
 	rm -f *.out *~ \#*
 
-Rtest.out: Rtest.in xlintstR_dd
+Rtest.out: ../Rtest.in xlintstR_dd
 	@echo Testing Real MPLAPACK linear equation routines
-	./xlintstR_dd < Rtest.in > $@ 2>&1
+	./xlintstR_dd < ../Rtest.in > $@ 2>&1
 
-Ctest.out: Ctest.in xlintstC_dd
+Ctest.out: ../Ctest.in xlintstC_dd
 	@echo Testing Complex MPLAPACK linear equation routines
-	./xlintstC_dd < Ctest.in > $@ 2>&1
+	./xlintstC_dd < ../Ctest.in > $@ 2>&1
 
-Rtest_rfp.out: Rtest_rfp.in 
+Rtest_rfp.out: ../Rtest_rfp.in ./xlintstrfR_dd
 	@echo Testing Real MPLAPACK RFP prototype linear equation routines
-	./xlintstrfR_dd < Rtest_rfp.in > $@ 2>&1
+	./xlintstrfR_dd < ../Rtest_rfp.in > $@ 2>&1
 
-Ctest_rfp.out: Ctest_rfp.in
+Ctest_rfp.out: ../Ctest_rfp.in ./xlintstrfC_dd
 	@echo Testing Complex MPLAPACK RFP prototype linear equation routines
-	./xlintstrfC_dd < Ctest_rfp.in > $@ 2>&1
+	./xlintstrfC_dd < ../Ctest_rfp.in > $@ 2>&1
