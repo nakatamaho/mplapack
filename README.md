@@ -110,7 +110,7 @@ This is the release schedule for MPLAPACK 1.0.0
 | QA of blas (mpfr)                    | 2021-08-09 |100% | compare with original BLAS | 
 | QA of blas (gmp)                     |            |     | compare with MPFR MPBLAS   | 
 | QA of blas (_Float128)               | 2021-08-09 |100% | compare with MPFR MPBLAS   | 
-| QA of blas (_Float64x)               |            |     | compare with MPFR MPBLAS   | 
+| QA of blas (_Float64x)               | 2021-08-09 |100% | compare with MPFR MPBLAS   | 
 | QA of blas (double)                  |            |     | compare with MPFR MPBLAS   | 
 | QA of blas (dd)                      |            |     | compare with MPFR MPBLAS   | 
 | QA of blas (qd)                      |            |     | compare with MPFR MPBLAS   | 
@@ -135,8 +135,8 @@ This is the release schedule for MPLAPACK 1.0.0
 | QA of eig (double, real)             |            |     |                          | 
 | QA of eig (dd, real)                 |            |     |                          | 
 | QA of eig (qd, real)                 |            |     |                          | 
-| Build on Ubuntu 20.04 amd64          | 2021-08-09 |100% | _Float128: supp. by libc only binary128 |
-| Build on Ubuntu 18.04 amd64          |            |     | _Float128: supp. by libc only binary128 |
+| Build on Ubuntu 20.04 amd64          | 2021-08-09 |100% | _Float128: supp. by libc only binary128, _Float64x is long double |
+| Build on Ubuntu 18.04 amd64          |            |     | _Float128: supp. by libc only binary128, _Float64x is long double |
 | Build on Ubuntu 20.04 Intel oneAPI   |            |     |                          | 
 | Build on Ubuntu 20.04 mingw64        |            |     |                          | 
 | Build on Ubuntu 20.04 AArch64        |            |     |                          | 
@@ -156,6 +156,7 @@ This is the release schedule for MPLAPACK 2.0.0
 | Impliment RFP version                |            |     |                          | 
 | Impliment complex lin                |            |     |                          | 
 | Impliment complex eig                |            |     |                          | 
+| Get rid of compiler warnings         |            |     |                          | 
 
 # History
 * 2021/4/11 0.9.3 release. CentOS7 AArch64 support
