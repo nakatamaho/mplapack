@@ -144,7 +144,7 @@ This is the release schedule for MPLAPACK 1.0.0
 | Build on CentOS7 AArch64             |            |     |                          | 
 | Build on CentOS8 amd64               |            |     |                          | 
 | Build on CentOS8 AArch64             |            |     |                          | 
-| Build on MacOS Big Sur amd64         |            |     |                          | 
+| Build on MacOS Big Sur amd64         |            |     | _Float128: supp. by libquadmath, _Float64x == __float80 == long double | 
 | Add documents                        |            |     |                          | 
 | Add examples for SVD                 | 2021-08-09 | 20% | MPFR ver.                |
 | Add examples for NEP                 | 2021-08-09 | 20% | MPFR ver.                |
