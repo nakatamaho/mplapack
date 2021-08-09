@@ -1,0 +1,360 @@
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.0
+ Based on the original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+        M  :     0     1     2     3     5    10    50
+        N  :     0     1     2     3     5    10    50
+     NRHS  :     1     2    15
+       NB  :     1     3     3     3    20
+       NX  :     1     0     5     9     1
+     RANK  :    30    50    90
+
+ Routines pass computational tests if test ratio is less than   30.00
+
+ Relative machine underflow is taken to be : 3.3621031431120935e-4932
+ Relative machine overflow  is taken to be : 3.3621031431120935e-4932
+ Relative machine precision is taken to be : 3.3621031431120935e-4932
+ CGE routines passed the tests of the error exits
+
+ CGE:  General dense matrices
+ Matrix types:
+    1. Diagonal                        7. Last n/2 columns zero
+    2. Upper triangular                8. Random, CNDNUM = sqrt(0.1/EPS)
+    3. Lower triangular                9. Random, CNDNUM = 0.1/EPS
+    4. Random, CNDNUM = 2             10. Scaled near underflow
+    5. First column zero              11. Scaled near overflow
+    6. Last column zero
+ Test ratios:
+    1: norm( L * U - A )  / ( N * norm(A) * EPS )
+    2: norm( I - A*AINV ) / ( N * norm(A) * norm(AINV) * EPS )
+    3: norm( B - A * X )  / ( norm(A) * norm(X) * EPS )
+    4: norm( X - XACT )   / ( norm(XACT) * CNDNUM * EPS )
+    5: norm( X - XACT )   / ( norm(XACT) * CNDNUM * EPS ), refined
+    6: norm( X - XACT )   / ( norm(XACT) * (error bound) )
+    7: (backward error)   / EPS
+    8: RCOND * CNDNUM - 1.0
+ Messages:
+ M =     1, N =    1, NB =   1, type 10, test( 2) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS=  1, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS=  1, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS=  1, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS=  1, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS=  1, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS=  1, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS=  2, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS=  2, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS=  2, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS=  2, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS=  2, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS=  2, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS= 15, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS= 15, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS= 15, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS= 15, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS= 15, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS= 15, type 10, test( 6) =5.1922968585348276e+33
+ NORM ='I', N =    1,           type 10, test( 8) =5.1922968585348276e+33
+ M =     1, N =    1, NB =   3, type 10, test( 2) =5.1922968585348276e+33
+ M =     1, N =    1, NB =  20, type 10, test( 2) =5.1922968585348276e+33
+ M =     1, N =    1, NB =   1, type 11, test( 2) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS=  1, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS=  1, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS=  1, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS=  2, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS=  2, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS=  2, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS= 15, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS= 15, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    1, NRHS= 15, type 11, test( 6) =5.1922968585348276e+33
+ NORM ='I', N =    1,           type 11, test( 8) =5.1922968585348276e+33
+ M =     1, N =    1, NB =   3, type 11, test( 2) =5.1922968585348276e+33
+ M =     1, N =    1, NB =  20, type 11, test( 2) =5.1922968585348276e+33
+ M =     2, N =    1, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =     2, N =    1, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =     2, N =    1, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =     2, N =    2, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =     2, N =    2, NB =   1, type 10, test( 2) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS=  1, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS=  1, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS=  1, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS=  1, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS=  1, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS=  1, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS=  2, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS=  2, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS=  2, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS=  2, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS=  2, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS=  2, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS= 15, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS= 15, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS= 15, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS= 15, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS= 15, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS= 15, type 10, test( 6) =5.1922968585348276e+33
+ NORM ='I', N =    2,           type 10, test( 8) =5.1922968585348276e+33
+ M =     2, N =    2, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =     2, N =    2, NB =   3, type 10, test( 2) =5.1922968585348276e+33
+ M =     2, N =    2, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =     2, N =    2, NB =  20, type 10, test( 2) =5.1922968585348276e+33
+ M =     2, N =    2, NB =   1, type 11, test( 2) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS=  1, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS=  1, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS=  1, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS=  2, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS=  2, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS=  2, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS= 15, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS= 15, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    2, NRHS= 15, type 11, test( 6) =5.1922968585348276e+33
+ NORM ='I', N =    2,           type 11, test( 8) =5.1922968585348276e+33
+ M =     2, N =    2, NB =   3, type 11, test( 2) =5.1922968585348276e+33
+ M =     2, N =    2, NB =  20, type 11, test( 2) =5.1922968585348276e+33
+ M =     2, N =    3, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =     2, N =    3, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =     2, N =    3, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =     2, N =    5, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =     2, N =    5, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =     2, N =    5, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =     2, N =   10, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =     2, N =   10, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =     2, N =   10, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =     2, N =   50, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =     2, N =   50, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =     2, N =   50, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =     3, N =    1, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =     3, N =    1, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =     3, N =    1, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =     3, N =    2, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =     3, N =    2, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =     3, N =    2, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =     3, N =    3, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =     3, N =    3, NB =   1, type 10, test( 2) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS=  1, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS=  1, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS=  1, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS=  1, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS=  1, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS=  1, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS=  2, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS=  2, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS=  2, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS=  2, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS=  2, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS=  2, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS= 15, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS= 15, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS= 15, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS= 15, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS= 15, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS= 15, type 10, test( 6) =5.1922968585348276e+33
+ NORM ='I', N =    3,           type 10, test( 8) =5.1922968585348276e+33
+ M =     3, N =    3, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =     3, N =    3, NB =   3, type 10, test( 2) =5.1922968585348276e+33
+ M =     3, N =    3, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =     3, N =    3, NB =  20, type 10, test( 2) =5.1922968585348276e+33
+ M =     3, N =    3, NB =   1, type 11, test( 2) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS=  1, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS=  1, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS=  1, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS=  2, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS=  2, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS=  2, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS= 15, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS= 15, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    3, NRHS= 15, type 11, test( 6) =5.1922968585348276e+33
+ NORM ='I', N =    3,           type 11, test( 8) =5.1922968585348276e+33
+ M =     3, N =    3, NB =   3, type 11, test( 2) =5.1922968585348276e+33
+ M =     3, N =    3, NB =  20, type 11, test( 2) =5.1922968585348276e+33
+ M =     3, N =    5, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =     3, N =    5, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =     3, N =    5, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =     3, N =   10, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =     3, N =   10, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =     3, N =   10, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =     3, N =   50, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =     3, N =   50, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =     3, N =   50, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =     5, N =    1, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =     5, N =    1, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =     5, N =    1, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =     5, N =    2, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =     5, N =    2, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =     5, N =    2, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =     5, N =    3, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =     5, N =    3, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =     5, N =    3, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =     5, N =    5, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =     5, N =    5, NB =   1, type 10, test( 2) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS=  1, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS=  1, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS=  1, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS=  1, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS=  1, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS=  1, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS=  2, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS=  2, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS=  2, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS=  2, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS=  2, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS=  2, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS= 15, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS= 15, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS= 15, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS= 15, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS= 15, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS= 15, type 10, test( 6) =5.1922968585348276e+33
+ NORM ='I', N =    5,           type 10, test( 8) =5.1922968585348276e+33
+ M =     5, N =    5, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =     5, N =    5, NB =   3, type 10, test( 2) =5.1922968585348276e+33
+ M =     5, N =    5, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =     5, N =    5, NB =  20, type 10, test( 2) =5.1922968585348276e+33
+ M =     5, N =    5, NB =   1, type 11, test( 2) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS=  1, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS=  1, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS=  1, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS=  2, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS=  2, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS=  2, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS= 15, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS= 15, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =    5, NRHS= 15, type 11, test( 6) =5.1922968585348276e+33
+ NORM ='I', N =    5,           type 11, test( 8) =5.1922968585348276e+33
+ M =     5, N =    5, NB =   3, type 11, test( 2) =5.1922968585348276e+33
+ M =     5, N =    5, NB =  20, type 11, test( 2) =5.1922968585348276e+33
+ M =     5, N =   10, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =     5, N =   10, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =     5, N =   10, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =     5, N =   50, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =     5, N =   50, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =     5, N =   50, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =    10, N =    1, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =    10, N =    1, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =    10, N =    1, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =    10, N =    2, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =    10, N =    2, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =    10, N =    2, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =    10, N =    3, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =    10, N =    3, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =    10, N =    3, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =    10, N =    5, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =    10, N =    5, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =    10, N =    5, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =    10, N =   10, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =    10, N =   10, NB =   1, type 10, test( 2) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS=  1, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS=  1, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS=  1, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS=  1, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS=  1, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS=  1, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS=  2, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS=  2, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS=  2, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS=  2, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS=  2, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS=  2, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS= 15, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS= 15, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS= 15, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS= 15, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS= 15, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS= 15, type 10, test( 6) =5.1922968585348276e+33
+ NORM ='I', N =   10,           type 10, test( 8) =5.1922968585348276e+33
+ M =    10, N =   10, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =    10, N =   10, NB =   3, type 10, test( 2) =5.1922968585348276e+33
+ M =    10, N =   10, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =    10, N =   10, NB =  20, type 10, test( 2) =5.1922968585348276e+33
+ M =    10, N =   10, NB =   1, type 11, test( 2) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS=  1, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS=  1, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS=  1, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS=  2, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS=  2, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS=  2, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS= 15, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS= 15, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   10, NRHS= 15, type 11, test( 6) =5.1922968585348276e+33
+ NORM ='I', N =   10,           type 11, test( 8) =5.1922968585348276e+33
+ M =    10, N =   10, NB =   3, type 11, test( 2) =5.1922968585348276e+33
+ M =    10, N =   10, NB =  20, type 11, test( 2) =5.1922968585348276e+33
+ M =    10, N =   50, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =    10, N =   50, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =    10, N =   50, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =    50, N =    1, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =    50, N =    1, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =    50, N =    1, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =    50, N =    2, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =    50, N =    2, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =    50, N =    2, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =    50, N =    3, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =    50, N =    3, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =    50, N =    3, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =    50, N =    5, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =    50, N =    5, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =    50, N =    5, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =    50, N =   10, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =    50, N =   10, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =    50, N =   10, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =    50, N =   50, NB =   1, type 10, test( 1) =5.1922968585348276e+33
+ M =    50, N =   50, NB =   1, type 10, test( 2) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS=  1, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS=  1, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS=  1, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS=  1, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS=  1, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS=  1, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS=  2, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS=  2, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS=  2, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS=  2, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS=  2, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS=  2, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS= 15, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS= 15, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS= 15, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS= 15, type 10, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS= 15, type 10, test( 3) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS= 15, type 10, test( 6) =5.1922968585348276e+33
+ NORM ='I', N =   50,           type 10, test( 8) =5.1922968585348276e+33
+ M =    50, N =   50, NB =   3, type 10, test( 1) =5.1922968585348276e+33
+ M =    50, N =   50, NB =   3, type 10, test( 2) =5.1922968585348276e+33
+ M =    50, N =   50, NB =  20, type 10, test( 1) =5.1922968585348276e+33
+ M =    50, N =   50, NB =  20, type 10, test( 2) =5.1922968585348276e+33
+ M =    50, N =   50, NB =   1, type 11, test( 2) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS=  1, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS=  1, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS=  1, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS=  2, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS=  2, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS=  2, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS= 15, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS= 15, type 11, test( 6) =5.1922968585348276e+33
+ TRANS=' ', N =   50, NRHS= 15, type 11, test( 6) =5.1922968585348276e+33
+ NORM ='I', N =   50,           type 11, test( 8) =5.1922968585348276e+33
+ M =    50, N =   50, NB =   3, type 11, test( 2) =5.1922968585348276e+33
+ M =    50, N =   50, NB =  20, type 11, test( 2) =5.1922968585348276e+33
+ CGE:    300 out of   3653 tests failed to pass the threshold
+ CGE drivers passed the tests of the error exits
+
+ CGE drivers:  General dense matrices
+ Matrix types:
+    1. Diagonal                        7. Last n/2 columns zero
+    2. Upper triangular                8. Random, CNDNUM = sqrt(0.1/EPS)
+    3. Lower triangular                9. Random, CNDNUM = 0.1/EPS
+    4. Random, CNDNUM = 2             10. Scaled near underflow
+    5. First column zero              11. Scaled near overflow
+    6. Last column zero
+ Test ratios:
+    1: norm( L * U - A )  / ( N * norm(A) * EPS )
+    2: norm( B - A * X )  / ( norm(A) * norm(X) * EPS )
+    3: norm( X - XACT )   / ( norm(XACT) * CNDNUM * EPS )
+    4: norm( X - XACT )   / ( norm(XACT) * (error bound) )
+    5: (backward error)   / EPS
+    6: RCOND * CNDNUM - 1.0
+    7: abs( WORK(1) - RPVGRW ) / ( max( WORK(1), RPVGRW ) * EPS )
+ Messages:
+ *** Error code from Cgesvx =    2
+ ==> FACT='F', TRANS='N', N =    1, NRHS =   1, type 10
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  Not implemented: ../../../mplapack/test/fable/fem/write.hpp(237)

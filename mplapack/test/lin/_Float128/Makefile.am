@@ -27,23 +27,23 @@ xlintstrfC__Float128_SOURCES  = ../common/Cchkrfp.cpp
 xlintstrfC__Float128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC__Float128_CXXFLAGS = $(cxxflags)
 
-do-tests: Rtest.out Ctest.out Rtest_rfp.out Ctest_rfp.out
+check: Rtest.out Ctest.out Rtest_rfp.out Ctest_rfp.out
 
 clean-local:
 	rm -f *.out *~ \#*
 
-Rtest.out: Rtest.in xlintstR__Float128
+Rtest.out: ../Rtest.in xlintstR__Float128
 	@echo Testing Real MPLAPACK linear equation routines
-	./xlintstR__Float128 < Rtest.in > $@ 2>&1
+	./xlintstR__Float128 < ../Rtest.in > $@ 2>&1
 
-Ctest.out: Ctest.in xlintstC__Float128
+Ctest.out: ../Ctest.in xlintstC__Float128
 	@echo Testing Complex MPLAPACK linear equation routines
-	./xlintstC__Float128 < Ctest.in > $@ 2>&1
+	./xlintstC__Float128 < ../Ctest.in > $@ 2>&1
 
-Rtest_rfp.out: Rtest_rfp.in 
+Rtest_rfp.out: ../Rtest_rfp.in xlintstrfR__Float128
 	@echo Testing Real MPLAPACK RFP prototype linear equation routines
-	./xlintstrfR__Float128 < Rtest_rfp.in > $@ 2>&1
+	./xlintstrfR__Float128 < ../Rtest_rfp.in > $@ 2>&1
 
-Ctest_rfp.out: Ctest_rfp.in
+Ctest_rfp.out: ../Ctest_rfp.in xlintstrfC__Float128
 	@echo Testing Complex MPLAPACK RFP prototype linear equation routines
-	./xlintstrfC__Float128 < Ctest_rfp.in > $@ 2>&1
+	./xlintstrfC__Float128 < ../Ctest_rfp.in > $@ 2>&1
