@@ -221,42 +221,42 @@ inline _Float128 pi(_Float128 dummy) { return M_PIf128; }
 #define FLOAT128_FORMAT "%.40Le"
 #define FLOAT128_SHORT_FORMAT "%.16Le"
 
-void printnum(long double rtmp)
+inline void printnum(long double rtmp)
 {
     printf(FLOAT128_FORMAT, rtmp);
     return;
 }
-void printnum(std::complex <long double> ctmp)
+inline void printnum(std::complex <long double> ctmp)
 {
     printf(FLOAT128_FORMAT FLOAT128_FORMAT "i", ctmp.real(), ctmp.imag());
     return;
 }
-void sprintnum(char *buf, long double rtmp)
+inline void sprintnum(char *buf, long double rtmp)
 {
     snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp);
     return;
 }
-void sprintnum(char *buf, std::complex <long double> ctmp)
+inline void sprintnum(char *buf, std::complex <long double> ctmp)
 {
     snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT FLOAT128_FORMAT "i", ctmp.real(), ctmp.imag());
     return;
 }
-void printnum_short(long double rtmp)
+inline void printnum_short(long double rtmp)
 {
     printf(FLOAT128_SHORT_FORMAT, rtmp);
     return;
 }
-void printnum_short(std::complex <long double> ctmp)
+inline void printnum_short(std::complex <long double> ctmp)
 {
     printf(FLOAT128_SHORT_FORMAT FLOAT128_SHORT_FORMAT "i", ctmp.real(), ctmp.imag());
     return;
 }
-void sprintnum_short(char *buf, long double rtmp)
+inline void sprintnum_short(char *buf, long double rtmp)
 {
     snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp);
     return;
 }
-void sprintnum_short(char *buf, std::complex <long double> ctmp)
+inline void sprintnum_short(char *buf, std::complex <long double> ctmp)
 {
     snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT FLOAT128_SHORT_FORMAT "i", ctmp.real(), ctmp.imag());
     return;
