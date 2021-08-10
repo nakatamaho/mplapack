@@ -29,7 +29,7 @@
 #ifndef _MUTILS__FLOAT128_H_
 #define _MUTILS__FLOAT128_H_
 
-#define ___MPLAPACK__FLOAT128_ONLY___
+%%MPLAPACK_BINARY128%%
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && (defined ___MPLAPACK__FLOAT128_ONLY___ || defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___)
 
@@ -209,5 +209,105 @@ inline double cast2double(_Float128 a) { return (double)a; }
 
 inline _Float128 pi(_Float128 dummy) { return M_PIf128; }
 #endif // defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && (defined ___MPLAPACK__FLOAT128_ONLY___ || defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___)
+
+#if defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+
+#if defined ___MPLAPACK_INTERNAL___
+#if !defined __MPLAPACK_BUFLEN__
+#define __MPLAPACK_BUFLEN__ 1024
+#endif
+#include <string.h>
+
+#define FLOAT128_FORMAT "%.40Le"
+#define FLOAT128_SHORT_FORMAT "%.16Le"
+
+void printnum(long double rtmp)
+{
+    printf(FLOAT128_FORMAT, rtmp);
+    return;
+}
+void printnum(std::complex <long double> ctmp)
+{
+    printf(FLOAT128_FORMAT FLOAT128_FORMAT "i", ctmp.real(), ctmp.imag());
+    return;
+}
+void sprintnum(char *buf, long double rtmp)
+{
+    snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp);
+    return;
+}
+void sprintnum(char *buf, std::complex <long double> ctmp)
+{
+    snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT FLOAT128_FORMAT "i", ctmp.real(), ctmp.imag());
+    return;
+}
+void printnum_short(long double rtmp)
+{
+    printf(FLOAT128_SHORT_FORMAT, rtmp);
+    return;
+}
+void printnum_short(std::complex <long double> ctmp)
+{
+    printf(FLOAT128_SHORT_FORMAT FLOAT128_SHORT_FORMAT "i", ctmp.real(), ctmp.imag());
+    return;
+}
+void sprintnum_short(char *buf, long double rtmp)
+{
+    snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp);
+    return;
+}
+void sprintnum_short(char *buf, std::complex <long double> ctmp)
+{
+    snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT FLOAT128_SHORT_FORMAT "i", ctmp.real(), ctmp.imag());
+    return;
+}
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <math.h>
+#include <complex.h>
+#include <complex>
+#ifdef __cplusplus
+}
+#endif
+typedef long double _Float128;
+
+inline long double pow2(const long double &a) { return a * a; }
+
+// implementation of sign transfer function.
+inline long double sign(long double a, long double b) {
+    long double mtmp;
+    mtmp = std::abs(a);
+    if (b < 0.0) {
+        mtmp = -mtmp;
+    }
+    return mtmp;
+}
+
+inline long double castREAL__Float128(mplapackint n) {
+    long double ret = n;
+    return ret;
+}
+
+inline mplapackint castINTEGER__Float128(long double a) {
+    mplapackint i = a;
+    return i;
+}
+
+inline long nint(long double a) {
+    long i;
+    long double tmp;
+    a = a + 0.5;
+    tmp = floorl(a);
+    i = (long)tmp;
+    return i;
+}
+
+inline double cast2double(long double a) { return (double)a; }
+inline long double pi(long double dummy) { return M_PIl; }
+
+#endif //___MPLAPACK_LONGDOUBLE_IS_BINARY128___
 
 #endif
