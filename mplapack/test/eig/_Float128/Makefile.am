@@ -7,7 +7,11 @@ mplapack__Float128_eigtestdir = $(prefix)/share/mplapack/test/mplapack/eig/_Floa
 $(bin_PROGRAMS): ../libeig__Float128.la ../libeig_override__Float128.la
 
 libdepends = -L$(top_builddir)/mplapack/test/eig -leig__Float128 -leig_override__Float128 -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float128 -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128 
+if WANT_QUADMATH
+mplibs = -lm -lquadmath
+else
 mplibs = -lm
+endif
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH__FLOAT128___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/mplapack/test/fable
 
 xeigtstR__Float128_SOURCES  = ../common/Rchkee.cpp

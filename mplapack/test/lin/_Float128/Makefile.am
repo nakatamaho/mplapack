@@ -8,7 +8,11 @@ mplapack__Float128_lintestdir = $(prefix)/share/mplapack/test/mplapack/lin/__Flo
 $(bin_PROGRAMS): ../liblin__Float128.la ../liblin_override__Float128.la
 
 libdepends = -L.. -llin__Float128 -llin_override__Float128 -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float128 -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128
+if WANT_QUADMATH
+mplibs = -lm -lquadmath
+else
 mplibs = -lm
+endif
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT128___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/mplapack/test/fable
 
 xlintstR__Float128_SOURCES  = ../common/Rchkaa.cpp

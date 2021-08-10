@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
+inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
 
 void Claunhr_col_getrfnp2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *d, INTEGER &info) {
     //

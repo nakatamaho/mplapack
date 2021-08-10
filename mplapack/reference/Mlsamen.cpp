@@ -73,6 +73,7 @@ Mlsame returns 1 if CA is the same letter as CB regardless of case.
 */
 
 #include <ctype.h>
+#include <mpblas.h>
 #include <mplapack.h>
 
 bool Mlsamen(INTEGER n, const char *a, const char *b) {

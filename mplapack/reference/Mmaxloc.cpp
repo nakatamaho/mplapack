@@ -26,6 +26,7 @@
  *
  */
 
+#include <mpblas.h>
 #include <mplapack.h>
 
 INTEGER Mmaxloc(REAL *dx, INTEGER const start, INTEGER const end, INTEGER const incx) {

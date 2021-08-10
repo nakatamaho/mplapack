@@ -26,6 +26,7 @@
  *
  */
 
+#include <mpblas.h>
 #include <mplapack.h>
 
 REAL Mmaxval(REAL *dx, INTEGER const start, INTEGER const end, INTEGER incx) {

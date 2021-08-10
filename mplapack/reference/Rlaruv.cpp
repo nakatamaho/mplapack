@@ -29,6 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 #include <random>
+#include <time.h>
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 gmp_randstate_t ___random_mplapack_mpfr_state;
