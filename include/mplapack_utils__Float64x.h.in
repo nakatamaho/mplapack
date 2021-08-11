@@ -36,6 +36,12 @@
 
 #if defined ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___
 
+//Intel C/C++ compilers currently only supports long double as extended doule (aka FP80)
+//and following workaround works
+#if defined(__INTEL_COMPILER)
+typedef long double _Float64x;
+#endif
+
 #if defined ___MPLAPACK_INTERNAL___
 #define FLOAT64X_FORMAT "%+25.21Le"
 #define FLOAT64X_SHORT_FORMAT "%+20.16Le"
@@ -68,6 +74,50 @@ extern "C" {
 }
 #endif
 
+// implementation of sign transfer function.
+inline _Float64x sign(const _Float64x &a, const _Float64x &b) {
+    _Float64x mtmp;
+    mtmp = std::abs(a);
+    if (b < 0.0) {
+        mtmp = -mtmp;
+    }
+    return mtmp;
+}
+
+inline double cast2double(_Float64x a) { return (double)a; }
+
+inline long nint(_Float64x a) {
+    long i;
+    _Float64x tmp;
+    a = a + 0.5;
+    tmp = floor(a);
+    i = (long)tmp;
+    return i;
+}
+
+inline _Float64x castREAL__Float64x(mplapackint n) {
+    _Float64x ret = n;
+    return ret;
+}
+
+inline mplapackint castINTEGER__Float64x(_Float64x a) {
+    mplapackint i = a;
+    return i;
+}
+
+inline _Float64x pi(_Float64x dummy) {
+#if defined __APPLE__ // __MATH_LONG_DOUBLE_CONSTANTS looks broken
+    return 0xc.90fdaa22168c235p-2L;
+#elif defined __MINGW32__
+    return 0xc.90fdaa22168c235p-2L;
+#else
+    return M_PIl;
+#endif
+}
+
+#endif
+
+#if defined ___MPLAPACK__FLOAT64X_BROKEN___
 inline _Float64x abs(const std::complex<_Float64x> &a) { return sqrtl(a.real() * a.real() + a.imag() * a.imag()); }
 
 inline std::complex<_Float64x> sqrt(const std::complex<_Float64x> a) {
@@ -124,48 +174,6 @@ inline std::complex<_Float64x> log(const std::complex<_Float64x> &a) {
     c.imag(__imag__(tmp));
     return c;
 }
-
-// implementation of sign transfer function.
-inline _Float64x sign(const _Float64x &a, const _Float64x &b) {
-    _Float64x mtmp;
-    mtmp = std::abs(a);
-    if (b < 0.0) {
-        mtmp = -mtmp;
-    }
-    return mtmp;
-}
-
-inline double cast2double(_Float64x a) { return (double)a; }
-
-inline long nint(_Float64x a) {
-    long i;
-    _Float64x tmp;
-    a = a + 0.5;
-    tmp = floor(a);
-    i = (long)tmp;
-    return i;
-}
-
-inline _Float64x castREAL__Float64x(mplapackint n) {
-    _Float64x ret = n;
-    return ret;
-}
-
-inline mplapackint castINTEGER__Float64x(_Float64x a) {
-    mplapackint i = a;
-    return i;
-}
-
-inline _Float64x pi(_Float64x dummy) {
-#if defined __APPLE__ // __MATH_LONG_DOUBLE_CONSTANTS looks broken
-    return 0xc.90fdaa22168c235p-2L;
-#elif defined __MINGW32__
-    return 0xc.90fdaa22168c235p-2L;
-#else
-    return M_PIl;
-#endif
-}
-
-#endif
+#endif //___MPLAPACK__FLOAT64X_BROKEN___
 
 #endif

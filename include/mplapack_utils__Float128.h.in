@@ -31,7 +31,13 @@
 
 %%MPLAPACK_BINARY128%%
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && (defined ___MPLAPACK__FLOAT128_ONLY___ || defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___)
+#if (defined ___MPLAPACK__FLOAT128_ONLY___ || defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___)
+
+//Intel C/C++ compilers currently only supports __float128
+//and following workaround works
+#if defined(__INTEL_COMPILER)
+#define _Float128 __float128
+#endif
 
 #if defined ___MPLAPACK_INTERNAL___
 #if !defined __MPLAPACK_BUFLEN__
@@ -91,7 +97,9 @@ inline void sprintnum_short(char *buf, std::complex<_Float128> rtmp) {
 inline _Float128 pow2(const _Float128 &a) { return a * a; }
 
 //when _Float128 == long double, followings are already defined.
+
 #if !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___
+
 inline _Float128 pow(const _Float128 &a, const _Float128 &b) { return powf128(a, b); }
 inline _Float128 pow(const long &a, const long &b) { return powf128((_Float128)a, (_Float128)b); }
 inline _Float128 pow(const int &a, const long &b) { return powf128((_Float128)a, (_Float128)b); }
@@ -210,7 +218,7 @@ inline long nint(_Float128 a) {
 inline double cast2double(_Float128 a) { return (double)a; }
 
 inline _Float128 pi(_Float128 dummy) { return M_PIf128; }
-#endif // defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && (defined ___MPLAPACK__FLOAT128_ONLY___ || defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___)
+#endif // (defined ___MPLAPACK__FLOAT128_ONLY___ || defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___)
 
 #if defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
 

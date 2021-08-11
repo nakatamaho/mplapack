@@ -48,7 +48,7 @@ class mpc_class {
     mpc_class(const mpf_class &a, const mpf_class &b);
     mpc_class(const mpf_class &a);
     mpc_class(const mpf_t a, const mpf_t b);
-    mpc_class(const std::complex<double> &a);
+    mpc_class(const std::complex<double> a);
     mpc_class(const double &a, const double &b);
     mpc_class(const double &a);
     ~mpc_class();
@@ -101,26 +101,26 @@ class mpc_class {
 const mpc_class operator+(const mpc_class &a, const mpc_class &b);
 const mpc_class operator+(const mpc_class &a, const mpf_class &b);
 const mpc_class operator+(const mpf_class &a, const mpc_class &b);
-const mpc_class operator+(const mpc_class &a, std::complex<double> &b);
-const mpc_class operator+(std::complex<double> &a, const mpc_class &b);
+const mpc_class operator+(const mpc_class &a, std::complex<double> b);
+const mpc_class operator+(std::complex<double> a, const mpc_class &b);
 
 const mpc_class operator-(const mpc_class &a, const mpc_class &b);
 const mpc_class operator-(const mpc_class &a, const mpf_class &b);
 const mpc_class operator-(const mpf_class &a, const mpc_class &b);
-const mpc_class operator-(const mpc_class &a, std::complex<double> &b);
-const mpc_class operator-(std::complex<double> &a, const mpc_class &b);
+const mpc_class operator-(const mpc_class &a, std::complex<double> b);
+const mpc_class operator-(std::complex<double> a, const mpc_class &b);
 
 const mpc_class operator*(const mpc_class &a, const mpc_class &b);
 const mpc_class operator*(const mpc_class &a, const mpf_class &b);
 const mpc_class operator*(const mpf_class &a, const mpc_class &b);
-const mpc_class operator*(const mpc_class &a, std::complex<double> &b);
-const mpc_class operator*(std::complex<double> &a, const mpc_class &b);
+const mpc_class operator*(const mpc_class &a, std::complex<double> b);
+const mpc_class operator*(std::complex<double> a, const mpc_class &b);
 
 const mpc_class operator/(const mpc_class &a, const mpc_class &b);
 const mpc_class operator/(const mpc_class &a, const mpf_class &b);
 const mpc_class operator/(const mpf_class &a, const mpc_class &b);
-const mpc_class operator/(const mpc_class &a, std::complex<double> &b);
-const mpc_class operator/(std::complex<double> &a, const mpc_class &b);
+const mpc_class operator/(const mpc_class &a, std::complex<double> b);
+const mpc_class operator/(std::complex<double> a, const mpc_class &b);
 
 // constructor
 inline mpc_class::mpc_class() {
@@ -149,7 +149,7 @@ inline mpc_class::mpc_class(const mpf_t a, const mpf_t b) {
     im = tmpi;
 }
 
-inline mpc_class::mpc_class(const std::complex<double> &a) {
+inline mpc_class::mpc_class(const std::complex<double> a) {
     mpf_class tmpr(a.real()), tmpi(a.imag());
     re = tmpr;
     im = tmpi;
