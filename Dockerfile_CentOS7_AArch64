@@ -26,7 +26,7 @@ RUN echo "[user]" >> /home/$DOCKER_USER/.gitconfig && \
 
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
 RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git
-RUN cd /home/$DOCKER_USER && git log -1
+RUN cd /home/$DOCKER_USER/mplapack && git log -1
 RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.centos7.sh
 RUN cd /home/$DOCKER_USER/mplapack && make -j`getconf _NPROCESSORS_ONLN`
 RUN cd /home/$DOCKER_USER/mplapack && make install
