@@ -135,7 +135,7 @@ This is the release schedule for MPLAPACK 1.0.0
 | QA of eig (double, real)             |            |     |                          | 
 | QA of eig (dd, real)                 |            |     |                          | 
 | QA of eig (qd, real)                 |            |     |                          | 
-| Build on Ubuntu 20.04 amd64          | 2021-08-09 |100% | _Float128: supp. by libc only binary128, _Float64x == long double |
+| Build on Ubuntu 20.04 amd64          | 2021-08-09 |     | _Float128: supp. by libc only binary128, _Float64x == long double |
 | Build on Ubuntu 18.04 amd64          | 2021-08-10 |100% | _Float128: supp. by libc only binary128, _Float64x == long double |
 | Build on Ubuntu 20.04 Intel oneAPI   |            |     | _Float128: supp. by libc only binary128, _Float64x == long double | 
 | Build on Ubuntu 20.04 mingw64        |            |     | _Float128: supp. by libquadmath, _Float64x == __float80 == long double |

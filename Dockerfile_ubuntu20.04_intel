@@ -40,7 +40,7 @@ RUN echo "\n\
 
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
 RUN cd /home/$DOCKER_USER && echo "source /opt/intel/oneapi/setvars.sh" >> /home/$DOCKER_USER/.bashrc
-RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git -b v0.9.3 --depth 1
+RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git
 SHELL ["/bin/bash", "-c"]
 RUN cd /home/$DOCKER_USER/mplapack && source /opt/intel/oneapi/setvars.sh && bash -x misc/reconfig.ubuntu20.04.intel.sh
 RUN cd /home/$DOCKER_USER/mplapack && source /opt/intel/oneapi/setvars.sh && make -j4
