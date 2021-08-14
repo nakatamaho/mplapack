@@ -120,7 +120,6 @@ RUN cd ${WORK} && echo "cd /home/$DOCKER_USER" >> .bashrc
 RUN cd ${WORK} && echo 'eval "$(ssh-agent -s)"' >> .bashrc
 RUN cd ${WORK} && echo 'ssh-add ~/.ssh/id_ed25519' >> .bashrc
 RUN cd ${WORK} && git clone https://github.com/nakatamaho/mplapack.git
-RUN cd ${WORK}/mplapack && git checkout v1.0.0
 RUN cd ${WORK}/mplapack && git remote set-url origin git@github.com:nakatamaho/mplapack.git
 RUN cd ${WORK}/mplapack && git log -1
 RUN cd ${WORK}/mplapack && bash -x misc/reconfig.develop.sh
