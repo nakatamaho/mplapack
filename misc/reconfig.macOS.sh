@@ -7,7 +7,7 @@ CXX="ccache g++-mp-10" ; export CXX
 CC="ccache gcc-mp-10" ; export CC
 FC="gfortran-mp-10"; export FC
 F77="gfortran-mp-10"; export F77
-ccache -M 20G
+ccache -M 60G
 else
 CXX="g++-mp-10" ; export CXX
 CC="gcc-mp-10" ; export CC

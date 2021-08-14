@@ -7,7 +7,7 @@ CXX="ccache /opt/rh/devtoolset-9/root/usr/bin/g++" ; export CXX
 CC="ccache /opt/rh/devtoolset-9/root/usr/bin/gcc" ; export CC
 FC="/opt/rh/devtoolset-9/root/usr/bin/gfortran"; export FC
 F77="/opt/rh/devtoolset-9/root/usr/bin/gfortran"; export F77
-ccache -M 20G
+ccache -M 60G
 else
 CXX="/opt/rh/devtoolset-9/root/usr/bin/g++" ; export CXX
 CC="/opt/rh/devtoolset-9/root/usr/bin/gcc" ; export CC

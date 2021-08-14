@@ -10,7 +10,7 @@ F77="x86_64-w64-mingw32-gfortran"; export F77
 NM="x86_64-w64-mingw32-nm" ; export NM
 RANLIB="x86_64-w64-mingw32-ranlib" ; export NM
 AR="x86_64-w64-mingw32-ar" ; export NM
-ccache -M 20G
+ccache -M 60G
 else
 CXX="x86_64-w64-mingw32-g++" ; export CXX
 CC="x86_64-w64-mingw32-gcc" ; export CC
