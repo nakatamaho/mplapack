@@ -120,7 +120,7 @@ This is the release schedule for MPLAPACK 1.0.0
 | QA of lapack (_Float64x)             |            |     | compare with MPFR LAPACK |  
 | QA of lapack (double)                | 2021-08-16 |100% | compare with MPFR LAPACK |  
 | QA of lapack (dd)                    | 2021-08-16 |Rlassq | compare with MPFR LAPACK |  
-| QA of lapack (qd)                    |            |     | compare with MPFR LAPACK |  
+| QA of lapack (qd)                    | 2021-08-16 |100% | compare with MPFR LAPACK |  
 | QA of lin (mpfr, real)               | 2021-08-15 |100% |                          | 
 | QA of lin (gmp, real)                |            |     |                          | 
 | QA of lin (_Float128, real)          | 2021-08-15 |100% |                          | 
