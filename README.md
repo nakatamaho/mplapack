@@ -114,20 +114,20 @@ This is the release schedule for MPLAPACK 1.0.0
 | QA of blas (double)                  | 2021-08-09 |100% | compare with MPFR MPBLAS   | 
 | QA of blas (dd)                      | 2021-08-09 |100% | compare with MPFR MPBLAS   | 
 | QA of blas (qd)                      | 2021-08-09 |100% | compare with MPFR MPBLAS   | 
-| QA of lapack (mpfr)                  |            |     | compare with original LAPACK | 
+| QA of lapack (mpfr)                  | 2021-08-15 |100% | compare with original LAPACK | 
 | QA of lapack (gmp)                   |            |     | compare with MPFR LAPACK |  
-| QA of lapack (_Float128)             |            |     | compare with MPFR LAPACK |  
+| QA of lapack (_Float128)             | 2021-08-15 |100% | compare with MPFR LAPACK |  
 | QA of lapack (_Float64x)             |            |     | compare with MPFR LAPACK |  
-| QA of lapack (double)                |            |     | compare with MPFR LAPACK |  
-| QA of lapack (dd)                    |            |     | compare with MPFR LAPACK |  
+| QA of lapack (double)                | 2021-08-16 |100% | compare with MPFR LAPACK |  
+| QA of lapack (dd)                    | 2021-08-16 |Rlassq | compare with MPFR LAPACK |  
 | QA of lapack (qd)                    |            |     | compare with MPFR LAPACK |  
-| QA of lin (mpfr, real)               |            |     |                          | 
+| QA of lin (mpfr, real)               | 2021-08-15 |100% |                          | 
 | QA of lin (gmp, real)                |            |     |                          | 
-| QA of lin (_Float128, real)          |            |     |                          | 
-| QA of lin (_Float64x, real)          |            |     |                          | 
-| QA of lin (double, real)             |            |     |                          | 
-| QA of lin (dd, real)                 |            |     |                          | 
-| QA of lin (qd, real)                 |            |     |                          | 
+| QA of lin (_Float128, real)          | 2021-08-15 |100% |                          | 
+| QA of lin (_Float64x, real)          | 2021-08-15 |100% |                          | 
+| QA of lin (double, real)             | 2021-08-15 |100% |                          | 
+| QA of lin (dd, real)                 | 2021-08-15 |100% |                          | 
+| QA of lin (qd, real)                 | 2021-08-15 |100% |                          | 
 | QA of eig (mpfr, real)               |            |     |                          | 
 | QA of eig (gmp, real)                |            |     |                          | 
 | QA of eig (_Float128, real)          |            |     |                          | 
@@ -142,7 +142,7 @@ This is the release schedule for MPLAPACK 1.0.0
 | Build on CentOS7 amd64               | 2021-08-13 |3e51d57| _Float128: supp. by libquadmath, _Float64x == __float80 == long double |
 | Build on CentOS8 amd64               | 2021-08-13 |3e51d57| _Float128: supp. by libc only binary128, _Float64x == long double | 
 | Build on MacOS Big Sur amd64         | 2021-08-13 |3e51d57| _Float128: supp. by libquadmath, _Float64x == __float80 == long double | 
-| Build on Ubuntu 20.04 AArch64        |            |3e51d57| _Float128: supp. by libc and _Float128 == long double |
+| Build on Ubuntu 20.04 AArch64        | 2021-08-13 |3e51d57| _Float128: supp. by libc and _Float128 == long double |
 | Build on CentOS7 AArch64             | 2021-08-13 |3e51d57| long double == binary128, _Float128 nor __float128 are supported |
 | Build on CentOS8 AArch64             | 2021-08-13 |3e51d57| _Float128: supp. by libc and _Float128 == long double |
 | Build on Ubuntu 20.04 PPC64LE        | 2021-08-13 |3e51d57| _Float128: supp. by libc and _Float128 != long double | 
@@ -224,3 +224,4 @@ Please refer userman.pdf for details. Please enjoy!
 
 # contact
 NAKATA Maho <maho@riken.jp>
+
