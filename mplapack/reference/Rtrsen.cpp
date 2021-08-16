@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -90,7 +90,7 @@ void Rtrsen(const char *job, const char *compq, bool *select, INTEGER const n, R
                         }
                     } else {
                         pair = true;
-                        if (select[k - 1] || select[k]) {
+                        if (select[k - 1] || select[(k + 1) - 1]) {
                             m += 2;
                         }
                     }
@@ -156,11 +156,11 @@ void Rtrsen(const char *job, const char *compq, bool *select, INTEGER const n, R
         if (pair) {
             pair = false;
         } else {
-            swap = select[k];
+            swap = select[k - 1];
             if (k < n) {
                 if (t[((k + 1) - 1) + (k - 1) * ldt] != zero) {
                     pair = true;
-                    swap = swap || select[k + 1];
+                    swap = swap || select[(k + 1) - 1];
                 }
             }
             if (swap) {
