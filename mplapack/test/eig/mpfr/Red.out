@@ -148,29 +148,20 @@ The following parameter values will be used:
  15 = 0 if RCONDv same no matter what else computed, 1/ulp otherwise
  16 = | RCONDE - RCONDE(precomputed) | / cond(RCONDE),
  17 = | RCONDV - RCONDV(precomputed) | / cond(RCONDV),
- N=    1, input example =  2,  test(16)=+1.6777115013757236e+07
- N=    6, input example =  4,  test(16)=+2.7961850022928727e+06
- N=    6, input example =  5,  test(16)=+2.7961850022928727e+06
- N=    6, input example =  6,  test(16)=+2.7961850022928727e+06
- N=    6, input example =  7,  test(16)=+4.6603000038214545e+05
- N=    2, input example =  8,  test(16)=+2.3726422346279677e+06
- N=    4, input example =  9,  test(16)=+3.2314120336558641e+05
  N=    7, input example = 10,  test(17)=+6.7039039649712985e+153
- N=    4, input example = 11,  test(16)=+2.2437904046821250e+05
  N=    7, input example = 12,  test(17)=+6.7039039649712985e+153
- N=    3, input example = 19,  test(17)=+8.8888850915116514e+05
+ N=    3, input example = 19,  test(17)=+9.5313141565934014e+05
  N=    6, input example = 21,  test(17)=+6.7039039649712985e+153
  N=    6, input example = 22,  test(17)=+6.7039039649712985e+153
- N=    6, input example = 23,  test(16)=+3.3045492464000418e+01
- N=    6, input example = 23,  test(17)=+1.5684253827265763e+02
+ N=    6, input example = 23,  test(17)=+2.9865716852376462e+02
  N=    5, input example = 24,  test(17)=+6.7039039649712985e+153
  N=    6, input example = 25,  test(17)=+6.7039039649712985e+153
  N=   10, input example = 26,  test(17)=+6.7039039649712985e+153
- RSX:   18 out of  3508 tests failed to pass the threshold
+ RSX:    9 out of  3508 tests failed to pass the threshold
 
  -----------------------------------------------------------------------
 
 
  End of tests
- Total time used =       167.00 seconds
+ Total time used =       175.00 seconds
 
