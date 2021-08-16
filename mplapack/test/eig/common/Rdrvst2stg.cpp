@@ -539,7 +539,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
                     temp1 = max({temp1, REAL(abs(wa2[j - 1])), REAL(abs(eveigs[j - 1]))});
-                    temp2 = max(temp2, REAL(abs(wa2[j - 1]) - eveigs[j - 1]));
+                    temp2 = max(temp2, REAL(abs(wa2[j - 1] - eveigs[j - 1])));
                 }
                 result[9 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
