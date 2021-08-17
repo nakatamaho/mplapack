@@ -122,19 +122,19 @@ This is the release schedule for MPLAPACK 1.0.0
 | QA of lapack (dd)                    | 2021-08-16 |Rlassq | compare with MPFR LAPACK |  
 | QA of lapack (qd)                    | 2021-08-16 |100% | compare with MPFR LAPACK |  
 | QA of lin (mpfr, real)               | 2021-08-15 |100% |                          | 
-| QA of lin (gmp, real)                |            |     |                          | 
+| QA of lin (gmp, real)                |            |     | Floating point exception | 
 | QA of lin (_Float128, real)          | 2021-08-15 |100% |                          | 
 | QA of lin (_Float64x, real)          | 2021-08-15 |100% |                          | 
 | QA of lin (double, real)             | 2021-08-15 |100% |                          | 
 | QA of lin (dd, real)                 | 2021-08-15 |100% |                          | 
-| QA of lin (qd, real)                 | 2021-08-15 |100% |                          | 
-| QA of eig (mpfr, real)               |            |     |                          | 
-| QA of eig (gmp, real)                |            |     |                          | 
+| QA of lin (qd, real)                 | 2021-08-17 |100% |                          | 
+| QA of eig (mpfr, real)               | 2021-08-15 |90%  | somehow Red.in fail      | 
+| QA of eig (gmp, real)                |            |     | Floating point exception | 
 | QA of eig (_Float128, real)          | 2021-08-17 |100% |                          | 
 | QA of eig (_Float64x, real)          | 2021-08-17 |100% |                          | 
 | QA of eig (double, real)             | 2021-08-17 |100% |                          | 
-| QA of eig (dd, real)                 |            |     |                          | 
-| QA of eig (qd, real)                 |            |     |                          | 
+| QA of eig (dd, real)                 | 2021-08-17 |60%  |nep.in, svd.in, etc   fail| 
+| QA of eig (qd, real)                 | 2021-08-17 |60%  |sep.in, svd.in etc fail   | 
 | Build on Ubuntu 20.04 amd64          | 2021-08-13 |3e51d57| _Float128: supp. by libc only binary128, _Float64x == long double |
 | Build on Ubuntu 18.04 amd64          | 2021-08-13 |3e51d57| _Float128: supp. by libc only binary128, _Float64x == long double |
 | Build on Ubuntu 20.04 Intel oneAPI   | 2021-08-13 |3e51d57| _Float128: supp. by libc only binary128, _Float64x == long double | 
