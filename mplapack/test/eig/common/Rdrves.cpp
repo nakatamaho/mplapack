@@ -365,13 +365,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         result[(1 + rsub) - 1] = ulpinv;
                         write(nounit, format_9992), "Rgees1", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
-		    printf("itype %d\n", (int)itype);
-		    printf("a="); printmat(n,n,a,lda);printf("\n");
-    		    printf("h="); printmat(n,n,h,lda);printf("\n");
-		    for (int ii = 1; ii <= n; ii = ii + 1) {
-		      printf("w_%d = ", (int)ii); printnum_short(wr[ii - 1]); printf(" "); printnum_short(wi[ii - 1]); printf("i\n");
-		    }
-                        //goto statement_220;
+                        goto statement_220;
                     }
                     //
                     //                 Do Test (1) or Test (7)
@@ -440,7 +434,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         result[(5 + rsub) - 1] = ulpinv;
                         write(nounit, format_9992), "Rgees2", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
-//                        goto statement_220;
+                        goto statement_220;
                     }
                     //
                     result[(5 + rsub) - 1] = zero;
