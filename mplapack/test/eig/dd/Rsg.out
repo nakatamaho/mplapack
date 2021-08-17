@@ -1,0 +1,610 @@
+ Tests of the Symmetric Eigenvalue Problem routines
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     1     2     3     5
+    N:         0     1     2     3     5
+    NB:        1     3    20
+    NBMIN:     2     2     2
+    NX:        1     1     1
+ 
+ Relative machine underflow is taken to be2.0041683600089728e-292
+ Relative machine overflow  is taken to be1.7976931348623158e+308
+ Relative machine precision is taken to be4.9303806576313200e-32
+
+ Routines pass computational tests if test ratio is less than2.0000000000000000e+01
+
+
+
+ DSG:  NB =   1, NBMIN =   2, NX =   1
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+
+ DSG -- Real Symmetric Generalized eigenvalue problem
+ Matrix types (see xDRVSG for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: clustered entries.
+  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
+  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
+  4=Diagonal: geometr. spaced entries.
+ Dense or Banded Symmetric Matrices: 
+  8=Evenly spaced eigenvals.          15=Matrix with small random entries.
+  9=Geometrically spaced eigenvals.   16=Evenly spaced eigenvals, KA=1, KB=1.
+ 10=Clustered eigenvalues.            17=Evenly spaced eigenvals, KA=2, KB=1.
+ 11=Large, evenly spaced eigenvals.   18=Evenly spaced eigenvals, KA=2, KB=2.
+ 12=Small, evenly spaced eigenvals.   19=Evenly spaced eigenvals, KA=3, KB=1.
+ 13=Matrix with random O(1) entries.  20=Evenly spaced eigenvals, KA=3, KB=2.
+ 14=Matrix with large random entries. 21=Evenly spaced eigenvals, KA=3, KB=3.
+
+ Tests performed:   
+( For each pair (A,B), where A is of the given type 
+ and B is a random well-conditioned matrix. D is 
+ diagonal, and Z is orthogonal. )
+ 1 = Rsygv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 2 = Rspgv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 3 = Rsbgv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 4 = Rsygv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 5 = Rspgv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 6 = Rsbgv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 7 = Rsygv, with ITYPE=2 and UPLO='U':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+ 8 = Rspgv, with ITYPE=2 and UPLO='U':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+ 9 = Rspgv, with ITYPE=2 and UPLO='L':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+10 = Rspgv, with ITYPE=2 and UPLO='L':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+11 = Rsygv, with ITYPE=3 and UPLO='U':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+12 = Rspgv, with ITYPE=3 and UPLO='U':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+13 = Rsygv, with ITYPE=3 and UPLO='L':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+14 = Rspgv, with ITYPE=3 and UPLO='L':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result   1 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result   2 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result   8 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result   9 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  15 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  16 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  17 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  18 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  19 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  20 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  21 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  22 is 1.0141204801825843e+31
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsbgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsbgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   1 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   2 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   3 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   4 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   5 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   6 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   7 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   8 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   9 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result  10 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result  12 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result  13 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result  14 is 1.0141204801825843e+31
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result   1 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result   2 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result   8 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result   9 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  15 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  16 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  17 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  18 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  19 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  20 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  21 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  22 is 1.0141204801825843e+31
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsbgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsbgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   1 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   2 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   3 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   4 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   5 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   6 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   7 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   8 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   9 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result  10 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result  12 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result  13 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result  14 is 1.0141204801825843e+31
+ DSG:   52 out of  7748 tests failed to pass the threshold
+
+
+ DSG:  NB =   3, NBMIN =   2, NX =   1
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+
+ DSG -- Real Symmetric Generalized eigenvalue problem
+ Matrix types (see xDRVSG for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: clustered entries.
+  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
+  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
+  4=Diagonal: geometr. spaced entries.
+ Dense or Banded Symmetric Matrices: 
+  8=Evenly spaced eigenvals.          15=Matrix with small random entries.
+  9=Geometrically spaced eigenvals.   16=Evenly spaced eigenvals, KA=1, KB=1.
+ 10=Clustered eigenvalues.            17=Evenly spaced eigenvals, KA=2, KB=1.
+ 11=Large, evenly spaced eigenvals.   18=Evenly spaced eigenvals, KA=2, KB=2.
+ 12=Small, evenly spaced eigenvals.   19=Evenly spaced eigenvals, KA=3, KB=1.
+ 13=Matrix with random O(1) entries.  20=Evenly spaced eigenvals, KA=3, KB=2.
+ 14=Matrix with large random entries. 21=Evenly spaced eigenvals, KA=3, KB=3.
+
+ Tests performed:   
+( For each pair (A,B), where A is of the given type 
+ and B is a random well-conditioned matrix. D is 
+ diagonal, and Z is orthogonal. )
+ 1 = Rsygv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 2 = Rspgv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 3 = Rsbgv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 4 = Rsygv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 5 = Rspgv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 6 = Rsbgv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 7 = Rsygv, with ITYPE=2 and UPLO='U':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+ 8 = Rspgv, with ITYPE=2 and UPLO='U':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+ 9 = Rspgv, with ITYPE=2 and UPLO='L':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+10 = Rspgv, with ITYPE=2 and UPLO='L':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+11 = Rsygv, with ITYPE=3 and UPLO='U':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+12 = Rspgv, with ITYPE=3 and UPLO='U':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+13 = Rsygv, with ITYPE=3 and UPLO='L':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+14 = Rspgv, with ITYPE=3 and UPLO='L':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result   1 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result   2 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result   8 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result   9 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  15 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  16 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  17 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  18 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  19 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  20 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  21 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  22 is 1.0141204801825843e+31
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsbgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsbgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   1 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   2 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   3 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   4 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   5 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   6 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   7 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   8 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   9 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result  10 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result  12 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result  13 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result  14 is 1.0141204801825843e+31
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result   1 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result   2 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result   8 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result   9 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  15 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  16 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  17 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  18 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  19 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  20 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  21 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  22 is 1.0141204801825843e+31
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsbgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsbgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   1 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   2 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   3 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   4 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   5 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   6 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   7 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   8 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   9 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result  10 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result  12 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result  13 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result  14 is 1.0141204801825843e+31
+ DSG:   52 out of  7748 tests failed to pass the threshold
+
+
+ DSG:  NB =  20, NBMIN =   2, NX =   1
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+
+ DSG -- Real Symmetric Generalized eigenvalue problem
+ Matrix types (see xDRVSG for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: clustered entries.
+  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
+  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
+  4=Diagonal: geometr. spaced entries.
+ Dense or Banded Symmetric Matrices: 
+  8=Evenly spaced eigenvals.          15=Matrix with small random entries.
+  9=Geometrically spaced eigenvals.   16=Evenly spaced eigenvals, KA=1, KB=1.
+ 10=Clustered eigenvalues.            17=Evenly spaced eigenvals, KA=2, KB=1.
+ 11=Large, evenly spaced eigenvals.   18=Evenly spaced eigenvals, KA=2, KB=2.
+ 12=Small, evenly spaced eigenvals.   19=Evenly spaced eigenvals, KA=3, KB=1.
+ 13=Matrix with random O(1) entries.  20=Evenly spaced eigenvals, KA=3, KB=2.
+ 14=Matrix with large random entries. 21=Evenly spaced eigenvals, KA=3, KB=3.
+
+ Tests performed:   
+( For each pair (A,B), where A is of the given type 
+ and B is a random well-conditioned matrix. D is 
+ diagonal, and Z is orthogonal. )
+ 1 = Rsygv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 2 = Rspgv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 3 = Rsbgv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 4 = Rsygv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 5 = Rspgv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 6 = Rsbgv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 7 = Rsygv, with ITYPE=2 and UPLO='U':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+ 8 = Rspgv, with ITYPE=2 and UPLO='U':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+ 9 = Rspgv, with ITYPE=2 and UPLO='L':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+10 = Rspgv, with ITYPE=2 and UPLO='L':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+11 = Rsygv, with ITYPE=3 and UPLO='U':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+12 = Rspgv, with ITYPE=3 and UPLO='U':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+13 = Rsygv, with ITYPE=3 and UPLO='L':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+14 = Rspgv, with ITYPE=3 and UPLO='L':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result   1 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result   2 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result   8 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result   9 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  15 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  16 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  17 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  18 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  19 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  20 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  21 is 1.0141204801825843e+31
+ Matrix order=    3, type= 6, seed=   0,   0,   0,   1, result  22 is 1.0141204801825843e+31
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsbgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsbgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     2.
+         N=     3, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   1 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   2 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   3 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   4 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   5 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   6 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   7 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   8 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result   9 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result  10 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result  12 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result  13 is 1.0141204801825843e+31
+ Matrix order=    3, type=11, seed=   0,   0,   0,   1, result  14 is 1.0141204801825843e+31
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=     6, ISEED=(    0,    0,    0,    1)
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result   1 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result   2 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result   8 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result   9 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  15 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  16 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  17 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  18 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  19 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  20 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  21 is 1.0141204801825843e+31
+ Matrix order=    5, type= 6, seed=   0,   0,   0,   1, result  22 is 1.0141204801825843e+31
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsbgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsbgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,U) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rsygv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Rdrvsg2stg: Rspgv(V,L) returned INFO=     4.
+         N=     5, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   1 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   2 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   3 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   4 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   5 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   6 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   7 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   8 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   9 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result  10 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result  12 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result  13 is 1.0141204801825843e+31
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result  14 is 1.0141204801825843e+31
+ DSG:   52 out of  7748 tests failed to pass the threshold
+
+
+ End of tests
+ Total time used =         0.00 seconds
+
