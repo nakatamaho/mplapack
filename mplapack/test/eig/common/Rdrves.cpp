@@ -39,6 +39,11 @@ using fem::common;
 #include <mplapack_common_sslct.h>
 #include <mplapack_debug.h>
 
+
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+extern gmp_randstate_t ___random_mplapack_mpfr_state;
+#endif
+
 void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *h, REAL *ht, REAL *wr, REAL *wi, REAL *wrt, REAL *wit, REAL *vs, INTEGER const ldvs, REAL *result, REAL *work, INTEGER const nwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
 
     INTEGER ldh = lda;
@@ -117,6 +122,10 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             badnn = true;
         }
     }
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+//not a good hack but sometimes generates too narrow pair of eigenvalues.
+    gmp_randseed_ui(___random_mplapack_mpfr_state, (long int)iseed[2]);
+#endif
     //
     //     Check for errors
     //
@@ -232,12 +241,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rlaset("Full", lda, n, zero, zero, a, lda);
             iinfo = 0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
-            //only 6,3,5,2 case fails by cond = ulpinv; 
-            cond = sqrt(ulpinv) * 1e+27; // approx 1e+103
-#else
             cond = ulpinv;
-#endif
             //
             //           Special Matrices -- Identity & Jordan block
             //
