@@ -30,61 +30,6 @@
 #ifndef _MPLAPACK_DEBUG_H_
 #define _MPLAPACK_DEBUG_H_
 
-#include <mplapack_print_double.h>
-
-template <class X> void printmat(int N, int M, X *A, int LDA) {
-    X tmp;
-    printf("[ ");
-    for (int i = 0; i < N; i++) {
-        printf("[ ");
-        for (int j = 0; j < M; j++) {
-            tmp = A[i + j * LDA];
-            printnum_short(tmp);
-            if (j < M - 1)
-                printf(", ");
-        }
-        if (i < N - 1)
-            printf("]; ");
-        else
-            printf("] ");
-    }
-    printf("]");
-}
-
-template <class X> void printmatU(int N, X *A, int LDA) {
-    X tmp;
-    printf("[ ");
-    for (int i = 0; i < N; i++) {
-        printf("[ ");
-        for (int j = 0; j < N; j++) {
-            if (i <= j)
-                tmp = A[i + j * LDA];
-            else
-                tmp = A[j + i * LDA];
-            printnum_short(tmp);
-            if (j < N - 1)
-                printf(", ");
-        }
-        if (i < N - 1)
-            printf("]; ");
-        else
-            printf("] ");
-    }
-    printf("]");
-}
-
-template <class X> void printvec(X *A, int len) {
-    X tmp;
-    printf("[ ");
-    for (int i = 0; i < len; i++) {
-        tmp = A[i];
-        printnum_short(tmp);
-        if (i < len - 1)
-            printf(", ");
-    }
-    printf("]");
-}
-
 #if defined __MPLAPACK_XLAENV__
 #define _MPLAPACK_XLAENV_EXTERN_
 #else
@@ -104,5 +49,8 @@ _MPLAPACK_MXERBLA_EXTERN_ INTEGER nout;
 _MPLAPACK_MXERBLA_EXTERN_ bool ok;
 _MPLAPACK_MXERBLA_EXTERN_ bool lerr;
 _MPLAPACK_MXERBLA_EXTERN_ char srnamt[srnamt_len];
+
+#include <mplapack_print_double.h>
+#include <mplapack_print.h>
 
 #endif

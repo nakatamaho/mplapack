@@ -36,6 +36,8 @@
 
 using namespace mpfr;
 
+#include <mplapack_print_double.h>
+
 #if defined ___MPLAPACK_INTERNAL___
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
