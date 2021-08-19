@@ -129,13 +129,12 @@ This is the release schedule for MPLAPACK 1.0.0
 | QA of lin (dd, real)                 | 2021-08-15 |100% |                          | 
 | QA of lin (qd, real)                 | 2021-08-17 |100% |                          | 
 | QA of eig (mpfr, real)               | 2021-08-18 |100% |                          | 
-| QA of eig (gmp, real)                |            |     | floating point exception | 
+| QA of eig (gmp, real)                | 2021-08-20 |     | floating point exception | 
 | QA of eig (_Float128, real)          | 2021-08-17 |100% |                          | 
 | QA of eig (_Float64x, real)          | 2021-08-17 |100% |                          | 
 | QA of eig (double, real)             | 2021-08-17 |100% |                          | 
 | QA of eig (dd, real)                 | 2021-08-17 |60%  |nep.in, svd.in, etc   fail| 
 | QA of eig (qd, real)                 | 2021-08-17 |60%  |sep.in, svd.in etc fail   | 
-| cleanup pow  (REAL, long int)        |            |     |                          | 
 | Build on Ubuntu 20.04 amd64          | 2021-08-13 |3e51d57| _Float128: supp. by libc only binary128, _Float64x == long double |
 | Build on Ubuntu 18.04 amd64          | 2021-08-13 |3e51d57| _Float128: supp. by libc only binary128, _Float64x == long double |
 | Build on Ubuntu 20.04 Intel oneAPI   | 2021-08-13 |3e51d57| _Float128: supp. by libc only binary128, _Float64x == long double | 
@@ -158,7 +157,8 @@ This is the release schedule for MPLAPACK 2.0.0
 | Impliment RFP version                |            |     |                          | 
 | Impliment complex lin                |            |     |                          | 
 | Impliment complex eig                |            |     |                          | 
-| Fix safmin etc. for  GMP             |            |     |                          | 
+| Fix Rlamch for  GMP                  |            |     |                          | 
+| cleanup pow  (REAL, long int)        |            |     |                          | 
 | Get rid of compiler warnings         |            |     |                          | 
 
 # History
