@@ -69,8 +69,7 @@ void Rlassq_test() {
                 Rlassq(n, x_ref, incx, scale_ref, sumsq_ref);
 #endif
                 Rlassq(n, x, incx, scale, sumsq);
-
-                diff = abs(scale_ref - scale);
+                diff = abs(scale_ref - scale) / abs(scale_ref);
                 if (diff > EPSILON2) {
                     printf("error: ");
                     printnum(diff);
@@ -84,7 +83,7 @@ void Rlassq_test() {
                 printnum(maxdiff);
                 printf("\n");
 #endif
-                diff = abs(sumsq_ref - sumsq);
+                diff = abs(sumsq_ref - sumsq) / abs(sumsq_ref);
                 if (diff > EPSILON2) {
                     printf("error: ");
                     printnum(diff);
