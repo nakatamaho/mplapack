@@ -129,7 +129,7 @@ This is the release schedule for MPLAPACK 1.0.0
 | QA of lin (dd, real)                 | 2021-08-15 |100% |                          | 
 | QA of lin (qd, real)                 | 2021-08-17 |100% |                          | 
 | QA of eig (mpfr, real)               | 2021-08-18 |100% |                          | 
-| QA of eig (gmp, real)                | 2021-08-20 |     | floating point exception | 
+| QA of eig (gmp, real)                | 2021-08-20 |100% | errors of some tests are bit large. see logs | 
 | QA of eig (_Float128, real)          | 2021-08-17 |100% |                          | 
 | QA of eig (_Float64x, real)          | 2021-08-17 |100% |                          | 
 | QA of eig (double, real)             | 2021-08-17 |100% |                          | 
@@ -158,6 +158,7 @@ This is the release schedule for MPLAPACK 2.0.0
 | Impliment complex lin                |            |     |                          | 
 | Impliment complex eig                |            |     |                          | 
 | Fix Rlamch for  GMP                  |            |     |                          | 
+| Fix criteria or accuracy by GMP calc |            |     |                          | 
 | cleanup pow  (REAL, long int)        |            |     |                          | 
 | Get rid of compiler warnings         |            |     |                          | 
 
