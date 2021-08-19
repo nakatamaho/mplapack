@@ -88,10 +88,10 @@ The following parameter values will be used:
   8 = | W(e.vects.) - W(no e.vects.) | / ( |W| ulp )
   9 = | TR - RW | / ( |T| |R| ulp )      10 = | LT - WL | / ( |T| |L| ulp )
  11= |HX - XW| / (|H| |X| ulp)  (inv.it) 12= |YH - WY| / (|H| |Y| ulp)  (inv.it)
- Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   3 is +2.9219351262513698e+01
- Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   4 is +3.4069341511671593e+01
- Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   5 is +3.3375143935391273e+01
- Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   6 is +3.3855159287505037e+01
+ Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   3 is +2.8881008998707797e+01
+ Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   4 is +3.6985192988183636e+01
+ Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   5 is +3.2098210601516626e+01
+ Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   6 is +3.6882138561899771e+01
  DHS:    4 out of  1764 tests failed to pass the threshold
 
 
@@ -129,7 +129,7 @@ The following parameter values will be used:
   8 = | W(e.vects.) - W(no e.vects.) | / ( |W| ulp )
   9 = | TR - RW | / ( |T| |R| ulp )      10 = | LT - WL | / ( |T| |L| ulp )
  11= |HX - XW| / (|H| |X| ulp)  (inv.it) 12= |YH - WY| / (|H| |Y| ulp)  (inv.it)
- Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   3 is +2.7955683947557874e+01
+ Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   3 is +2.8921736583014551e+01
  DHS:    1 out of  1764 tests failed to pass the threshold
 
 
@@ -162,8 +162,8 @@ The following parameter values will be used:
   8 = | W(e.vects.) - W(no e.vects.) | / ( |W| ulp )
   9 = | TR - RW | / ( |T| |R| ulp )      10 = | LT - WL | / ( |T| |L| ulp )
  11= |HX - XW| / (|H| |X| ulp)  (inv.it) 12= |YH - WY| / (|H| |Y| ulp)  (inv.it)
- Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   3 is +2.9541105620760315e+01
- Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   5 is +2.2966191585185954e+01
+ Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   3 is +2.9468159223700417e+01
+ Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   5 is +2.3204325934951800e+01
  Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   3 is +2.1839297710840062e+01
  Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   5 is +2.2707971143859746e+01
  DHS:    4 out of  1764 tests failed to pass the threshold
