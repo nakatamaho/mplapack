@@ -173,11 +173,11 @@ inline mpf_class log10(mpf_class x) {
 
 inline mpf_class pow(mpf_class x, mplapackint y) {
     mpf_class mtemp1, mtemp2;
-    if ( y >= 0 ) {
+    if (y >= 0) {
         mpf_pow_ui(mtemp1.get_mpf_t(), x.get_mpf_t(), y);
     } else {
         mpf_pow_ui(mtemp2.get_mpf_t(), x.get_mpf_t(), -y);
-	mtemp1 = 1.0 / mtemp2;
+        mtemp1 = 1.0 / mtemp2;
     }
     return mtemp1;
 }

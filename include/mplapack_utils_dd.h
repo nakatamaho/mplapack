@@ -161,7 +161,7 @@ inline dd_complex cos(dd_complex a) {
     dd_real mtemp1, mtemp2;
     mtemp1 = a.real();
     mtemp2 = a.imag();
-    dd_complex b = dd_complex(cos(mtemp1) * cosh(mtemp2), - sin(mtemp1) * sinh(mtemp2));
+    dd_complex b = dd_complex(cos(mtemp1) * cosh(mtemp2), -sin(mtemp1) * sinh(mtemp2));
     return b;
 }
 
