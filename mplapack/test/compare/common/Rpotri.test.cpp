@@ -87,6 +87,8 @@ void Rpotri_test2(const char *uplo) {
                     A[p] = cast2dd_real(A_ref[p]);
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
                     A[p] = cast2double(A_ref[p]);
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
+                    A[p] = cast2_Float64x(A_ref[p]);
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
                     A[p] = cast2_Float128(A_ref[p]);
 #endif
