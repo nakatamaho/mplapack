@@ -36,6 +36,15 @@ INTEGER iMieeeck(INTEGER const &ispec, REAL const &zero, REAL const &one) {
     //GMP is not a natural extention to IEEE 754. 
     return 0;
 #endif
+#if defined ___MPLAPACK_BUILD_WITH_DD___
+    //DD does not comply IEEE 754.
+    return 0;
+#endif
+#if defined ___MPLAPACK_BUILD_WITH_QD___
+    //DD does not comply IEEE 754.
+    return 0;
+#endif
+
     return_value = 1;
     //
     REAL posinf = one / zero;
