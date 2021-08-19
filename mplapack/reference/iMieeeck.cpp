@@ -32,18 +32,10 @@
 INTEGER iMieeeck(INTEGER const &ispec, REAL const &zero, REAL const &one) {
     INTEGER return_value = 0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Executable Statements ..
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+    //GMP is not a natural extention to IEEE 754. 
+    return 0;
+#endif
     return_value = 1;
     //
     REAL posinf = one / zero;
