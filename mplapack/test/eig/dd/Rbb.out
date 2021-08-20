@@ -12,7 +12,7 @@ The following parameter values will be used:
     NS:        1     2
  
  Relative machine underflow is taken to be2.0041683600089728e-292
- Relative machine overflow  is taken to be1.7976931348623158e+308
+ Relative machine overflow  is taken to be1.9958403095347197e+292
  Relative machine precision is taken to be4.9303806576313200e-32
 
  Routines pass computational tests if test ratio is less than2.0000000000000000e+01
@@ -30,5 +30,5 @@ The following parameter values will be used:
 
 
  End of tests
- Total time used =         1.00 seconds
+ Total time used =         0.00 seconds
 

@@ -15,7 +15,7 @@ The following parameter values will be used:
     IACC22:      0     1     2     0     1
  
  Relative machine underflow is taken to be2.0041683600089728e-292
- Relative machine overflow  is taken to be1.7976931348623158e+308
+ Relative machine overflow  is taken to be1.9958403095347197e+292
  Relative machine precision is taken to be4.9303806576313200e-32
 
  Routines pass computational tests if test ratio is less than2.0000000000000000e+01
@@ -24,318 +24,30 @@ The following parameter values will be used:
 
 
  NEP:  NB =   1, NBMIN =   2, NX =   1, INMIN=  11, INWIN =   2, INIBL =   0, ISHFTS =   1, IACC22 =   0
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=     1, JTYPE=     7, ISEED=(T,
 
- DHS -- Real Non-symmetric eigenvalue problem
- Matrix types (see xCHKHS for details): 
-
- Special Matrices:
-  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
-  2=Identity matrix.                      6=Diagonal: clustered entries.
-  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
-  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
- Dense, Non-Symmetric Matrices:
-  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
- 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
- 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex pairs 
- 12=Well-cond., random complex pairs     17=Ill-cond., large rand. complx prs.
- 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx prs.
- 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
- 20=Matrix with large random entries.   
-
- Tests performed:   (H is Hessenberg, T is Schur, U and Z are orthogonal,
-                    '=transpose, W is a diagonal matrix of eigenvalues,
-                    L and R are the left and right eigenvector matrices)
-  1 = | A - U H U' | / ( |A| n ulp )           2 = | I - U U' | / ( n ulp )
-  3 = | H - Z T Z' | / ( |H| n ulp )           4 = | I - Z Z' | / ( n ulp )
-  5 = | A - UZ T (UZ)' | / ( |A| n ulp )       6 = | I - UZ (UZ)' | / ( n ulp )
-  7 = | T(e.vects.) - T(no e.vects.) | / ( |T| ulp )
-  8 = | W(e.vects.) - W(no e.vects.) | / ( |W| ulp )
-  9 = | TR - RW | / ( |T| |R| ulp )      10 = | LT - WL | / ( |T| |L| ulp )
- 11= |HX - XW| / (|H| |X| ulp)  (inv.it) 12= |YH - WY| / (|H| |Y| ulp)  (inv.it)
- Matrix order=    1, type= 7, seed=   0,   0,   0,   0, result  11 is 1.0141204801825843e+31
- Rchkhs: Right Eigenvectors from Rtrevc incorrectly normalized.
- Bits of error=5.0706024009129215e+30,         N=     2, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Right Eigenvectors from Rtrevc do not match other eigenvectors          N=     2, JTYPE=     7, ISEED=(T,
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=     2, JTYPE=     7, ISEED=(T,
- Matrix order=    2, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Right Eigenvectors from Rtrevc incorrectly normalized.
- Bits of error=3.3804016006086144e+30,         N=     3, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Right Eigenvectors from Rtrevc do not match other eigenvectors          N=     3, JTYPE=     7, ISEED=(T,
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=     3, JTYPE=     7, ISEED=(T,
- Matrix order=    3, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Right Eigenvectors from Rtrevc incorrectly normalized.
- Bits of error=2.0282409603651686e+30,         N=     5, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Right Eigenvectors from Rtrevc do not match other eigenvectors          N=     5, JTYPE=     7, ISEED=(T,
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=     5, JTYPE=     7, ISEED=(T,
- Matrix order=    5, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Right Eigenvectors from Rtrevc incorrectly normalized.
- Bits of error=1.0141204801825843e+30,         N=    10, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Right Eigenvectors from Rtrevc do not match other eigenvectors          N=    10, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Left Eigenvectors from Rtrevc do not match other eigenvectors          N=    10, JTYPE=     7, ISEED=(T,
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=    10, JTYPE=     7, ISEED=(T,
- Matrix order=   10, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Right Eigenvectors from Rtrevc incorrectly normalized.
- Bits of error=3.3804016006086144e+29,         N=    30, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Right Eigenvectors from Rtrevc do not match other eigenvectors          N=    30, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Left Eigenvectors from Rtrevc do not match other eigenvectors          N=    30, JTYPE=     7, ISEED=(T,
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=    30, JTYPE=     7, ISEED=(T,
- Matrix order=   30, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- DHS:    6 out of  1746 tests failed to pass the threshold
- *** Error code from Rchkhs =    6
+ All tests for DHS passed the threshold (  1764 tests run)
 
 
  NEP:  NB =   3, NBMIN =   2, NX =   0, INMIN=  12, INWIN =   3, INIBL =   5, ISHFTS =   2, IACC22 =   1
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=     1, JTYPE=     7, ISEED=(T,
 
- DHS -- Real Non-symmetric eigenvalue problem
- Matrix types (see xCHKHS for details): 
-
- Special Matrices:
-  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
-  2=Identity matrix.                      6=Diagonal: clustered entries.
-  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
-  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
- Dense, Non-Symmetric Matrices:
-  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
- 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
- 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex pairs 
- 12=Well-cond., random complex pairs     17=Ill-cond., large rand. complx prs.
- 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx prs.
- 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
- 20=Matrix with large random entries.   
-
- Tests performed:   (H is Hessenberg, T is Schur, U and Z are orthogonal,
-                    '=transpose, W is a diagonal matrix of eigenvalues,
-                    L and R are the left and right eigenvector matrices)
-  1 = | A - U H U' | / ( |A| n ulp )           2 = | I - U U' | / ( n ulp )
-  3 = | H - Z T Z' | / ( |H| n ulp )           4 = | I - Z Z' | / ( n ulp )
-  5 = | A - UZ T (UZ)' | / ( |A| n ulp )       6 = | I - UZ (UZ)' | / ( n ulp )
-  7 = | T(e.vects.) - T(no e.vects.) | / ( |T| ulp )
-  8 = | W(e.vects.) - W(no e.vects.) | / ( |W| ulp )
-  9 = | TR - RW | / ( |T| |R| ulp )      10 = | LT - WL | / ( |T| |L| ulp )
- 11= |HX - XW| / (|H| |X| ulp)  (inv.it) 12= |YH - WY| / (|H| |Y| ulp)  (inv.it)
- Matrix order=    1, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Right Eigenvectors from Rtrevc incorrectly normalized.
- Bits of error=5.0706024009129215e+30,         N=     2, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Right Eigenvectors from Rtrevc do not match other eigenvectors          N=     2, JTYPE=     7, ISEED=(T,
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=     2, JTYPE=     7, ISEED=(T,
- Matrix order=    2, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Right Eigenvectors from Rtrevc incorrectly normalized.
- Bits of error=3.3804016006086144e+30,         N=     3, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Right Eigenvectors from Rtrevc do not match other eigenvectors          N=     3, JTYPE=     7, ISEED=(T,
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=     3, JTYPE=     7, ISEED=(T,
- Matrix order=    3, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Rhseqr(E) returned INFO=     5.
-         N=     5, JTYPE=     7, ISEED=(T,
- Matrix order=    5, type= 7, seed=   0,   0,   0,   1, result   3 is 1.0141204801825843e+31
- Rchkhs: Rhseqr(E) returned INFO=    10.
-         N=    10, JTYPE=     7, ISEED=(T,
- Matrix order=   10, type= 7, seed=   0,   0,   0,   1, result   3 is 1.0141204801825843e+31
- Rchkhs: Rhseqr(E) returned INFO=    30.
-         N=    30, JTYPE=     7, ISEED=(T,
- Matrix order=   30, type= 7, seed=   0,   0,   0,   1, result   3 is 1.0141204801825843e+31
- DHS:    6 out of  1722 tests failed to pass the threshold
- *** Error code from Rchkhs =   30
+ All tests for DHS passed the threshold (  1764 tests run)
 
 
  NEP:  NB =   3, NBMIN =   2, NX =   5, INMIN=  11, INWIN =   5, INIBL =   7, ISHFTS =   4, IACC22 =   2
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=     1, JTYPE=     7, ISEED=(T,
 
- DHS -- Real Non-symmetric eigenvalue problem
- Matrix types (see xCHKHS for details): 
-
- Special Matrices:
-  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
-  2=Identity matrix.                      6=Diagonal: clustered entries.
-  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
-  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
- Dense, Non-Symmetric Matrices:
-  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
- 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
- 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex pairs 
- 12=Well-cond., random complex pairs     17=Ill-cond., large rand. complx prs.
- 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx prs.
- 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
- 20=Matrix with large random entries.   
-
- Tests performed:   (H is Hessenberg, T is Schur, U and Z are orthogonal,
-                    '=transpose, W is a diagonal matrix of eigenvalues,
-                    L and R are the left and right eigenvector matrices)
-  1 = | A - U H U' | / ( |A| n ulp )           2 = | I - U U' | / ( n ulp )
-  3 = | H - Z T Z' | / ( |H| n ulp )           4 = | I - Z Z' | / ( n ulp )
-  5 = | A - UZ T (UZ)' | / ( |A| n ulp )       6 = | I - UZ (UZ)' | / ( n ulp )
-  7 = | T(e.vects.) - T(no e.vects.) | / ( |T| ulp )
-  8 = | W(e.vects.) - W(no e.vects.) | / ( |W| ulp )
-  9 = | TR - RW | / ( |T| |R| ulp )      10 = | LT - WL | / ( |T| |L| ulp )
- 11= |HX - XW| / (|H| |X| ulp)  (inv.it) 12= |YH - WY| / (|H| |Y| ulp)  (inv.it)
- Matrix order=    1, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Right Eigenvectors from Rtrevc incorrectly normalized.
- Bits of error=5.0706024009129215e+30,         N=     2, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Right Eigenvectors from Rtrevc do not match other eigenvectors          N=     2, JTYPE=     7, ISEED=(T,
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=     2, JTYPE=     7, ISEED=(T,
- Matrix order=    2, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Right Eigenvectors from Rtrevc incorrectly normalized.
- Bits of error=3.3804016006086144e+30,         N=     3, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Right Eigenvectors from Rtrevc do not match other eigenvectors          N=     3, JTYPE=     7, ISEED=(T,
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=     3, JTYPE=     7, ISEED=(T,
- Matrix order=    3, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Right Eigenvectors from Rtrevc incorrectly normalized.
- Bits of error=2.0282409603651686e+30,         N=     5, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Right Eigenvectors from Rtrevc do not match other eigenvectors          N=     5, JTYPE=     7, ISEED=(T,
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=     5, JTYPE=     7, ISEED=(T,
- Matrix order=    5, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Rhseqr(E) returned INFO=    10.
-         N=    10, JTYPE=     7, ISEED=(T,
- Matrix order=   10, type= 7, seed=   0,   0,   0,   1, result   3 is 1.0141204801825843e+31
- Rchkhs: Rhseqr(E) returned INFO=    30.
-         N=    30, JTYPE=     7, ISEED=(T,
- Matrix order=   30, type= 7, seed=   0,   0,   0,   1, result   3 is 1.0141204801825843e+31
- DHS:    6 out of  1730 tests failed to pass the threshold
- *** Error code from Rchkhs =   30
+ All tests for DHS passed the threshold (  1764 tests run)
 
 
  NEP:  NB =   3, NBMIN =   2, NX =   9, INMIN=  15, INWIN =   3, INIBL =   3, ISHFTS =   2, IACC22 =   0
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=     1, JTYPE=     7, ISEED=(T,
 
- DHS -- Real Non-symmetric eigenvalue problem
- Matrix types (see xCHKHS for details): 
-
- Special Matrices:
-  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
-  2=Identity matrix.                      6=Diagonal: clustered entries.
-  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
-  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
- Dense, Non-Symmetric Matrices:
-  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
- 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
- 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex pairs 
- 12=Well-cond., random complex pairs     17=Ill-cond., large rand. complx prs.
- 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx prs.
- 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
- 20=Matrix with large random entries.   
-
- Tests performed:   (H is Hessenberg, T is Schur, U and Z are orthogonal,
-                    '=transpose, W is a diagonal matrix of eigenvalues,
-                    L and R are the left and right eigenvector matrices)
-  1 = | A - U H U' | / ( |A| n ulp )           2 = | I - U U' | / ( n ulp )
-  3 = | H - Z T Z' | / ( |H| n ulp )           4 = | I - Z Z' | / ( n ulp )
-  5 = | A - UZ T (UZ)' | / ( |A| n ulp )       6 = | I - UZ (UZ)' | / ( n ulp )
-  7 = | T(e.vects.) - T(no e.vects.) | / ( |T| ulp )
-  8 = | W(e.vects.) - W(no e.vects.) | / ( |W| ulp )
-  9 = | TR - RW | / ( |T| |R| ulp )      10 = | LT - WL | / ( |T| |L| ulp )
- 11= |HX - XW| / (|H| |X| ulp)  (inv.it) 12= |YH - WY| / (|H| |Y| ulp)  (inv.it)
- Matrix order=    1, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Right Eigenvectors from Rtrevc incorrectly normalized.
- Bits of error=5.0706024009129215e+30,         N=     2, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Right Eigenvectors from Rtrevc do not match other eigenvectors          N=     2, JTYPE=     7, ISEED=(T,
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=     2, JTYPE=     7, ISEED=(T,
- Matrix order=    2, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Right Eigenvectors from Rtrevc incorrectly normalized.
- Bits of error=3.3804016006086144e+30,         N=     3, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Right Eigenvectors from Rtrevc do not match other eigenvectors          N=     3, JTYPE=     7, ISEED=(T,
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=     3, JTYPE=     7, ISEED=(T,
- Matrix order=    3, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Right Eigenvectors from Rtrevc incorrectly normalized.
- Bits of error=2.0282409603651686e+30,         N=     5, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Right Eigenvectors from Rtrevc do not match other eigenvectors          N=     5, JTYPE=     7, ISEED=(T,
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=     5, JTYPE=     7, ISEED=(T,
- Matrix order=    5, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Right Eigenvectors from Rtrevc incorrectly normalized.
- Bits of error=1.0141204801825843e+30,         N=    10, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Right Eigenvectors from Rtrevc do not match other eigenvectors          N=    10, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Left Eigenvectors from Rtrevc do not match other eigenvectors          N=    10, JTYPE=     7, ISEED=(T,
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=    10, JTYPE=     7, ISEED=(T,
- Matrix order=   10, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Rhseqr(E) returned INFO=    30.
-         N=    30, JTYPE=     7, ISEED=(T,
- Matrix order=   30, type= 7, seed=   0,   0,   0,   1, result   3 is 1.0141204801825843e+31
- DHS:    6 out of  1738 tests failed to pass the threshold
- *** Error code from Rchkhs =   30
+ All tests for DHS passed the threshold (  1764 tests run)
 
 
  NEP:  NB =  20, NBMIN =   2, NX =   1, INMIN=  11, INWIN =   2, INIBL = 200, ISHFTS =   1, IACC22 =   1
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=     1, JTYPE=     7, ISEED=(T,
 
- DHS -- Real Non-symmetric eigenvalue problem
- Matrix types (see xCHKHS for details): 
-
- Special Matrices:
-  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
-  2=Identity matrix.                      6=Diagonal: clustered entries.
-  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
-  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
- Dense, Non-Symmetric Matrices:
-  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
- 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
- 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex pairs 
- 12=Well-cond., random complex pairs     17=Ill-cond., large rand. complx prs.
- 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx prs.
- 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
- 20=Matrix with large random entries.   
-
- Tests performed:   (H is Hessenberg, T is Schur, U and Z are orthogonal,
-                    '=transpose, W is a diagonal matrix of eigenvalues,
-                    L and R are the left and right eigenvector matrices)
-  1 = | A - U H U' | / ( |A| n ulp )           2 = | I - U U' | / ( n ulp )
-  3 = | H - Z T Z' | / ( |H| n ulp )           4 = | I - Z Z' | / ( n ulp )
-  5 = | A - UZ T (UZ)' | / ( |A| n ulp )       6 = | I - UZ (UZ)' | / ( n ulp )
-  7 = | T(e.vects.) - T(no e.vects.) | / ( |T| ulp )
-  8 = | W(e.vects.) - W(no e.vects.) | / ( |W| ulp )
-  9 = | TR - RW | / ( |T| |R| ulp )      10 = | LT - WL | / ( |T| |L| ulp )
- 11= |HX - XW| / (|H| |X| ulp)  (inv.it) 12= |YH - WY| / (|H| |Y| ulp)  (inv.it)
- Matrix order=    1, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Right Eigenvectors from Rtrevc incorrectly normalized.
- Bits of error=5.0706024009129215e+30,         N=     2, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Right Eigenvectors from Rtrevc do not match other eigenvectors          N=     2, JTYPE=     7, ISEED=(T,
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=     2, JTYPE=     7, ISEED=(T,
- Matrix order=    2, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Right Eigenvectors from Rtrevc incorrectly normalized.
- Bits of error=3.3804016006086144e+30,         N=     3, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Right Eigenvectors from Rtrevc do not match other eigenvectors          N=     3, JTYPE=     7, ISEED=(T,
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=     3, JTYPE=     7, ISEED=(T,
- Matrix order=    3, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Right Eigenvectors from Rtrevc incorrectly normalized.
- Bits of error=2.0282409603651686e+30,         N=     5, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Right Eigenvectors from Rtrevc do not match other eigenvectors          N=     5, JTYPE=     7, ISEED=(T,
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=     5, JTYPE=     7, ISEED=(T,
- Matrix order=    5, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Right Eigenvectors from Rtrevc incorrectly normalized.
- Bits of error=1.0141204801825843e+30,         N=    10, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Right Eigenvectors from Rtrevc do not match other eigenvectors          N=    10, JTYPE=     7, ISEED=(T,
- Rchkhs: Selected Left Eigenvectors from Rtrevc do not match other eigenvectors          N=    10, JTYPE=     7, ISEED=(T,
- Rchkhs: Rhsein(R) returned INFO=    -6.
-         N=    10, JTYPE=     7, ISEED=(T,
- Matrix order=   10, type= 7, seed=   0,   0,   0,   1, result  11 is 1.0141204801825843e+31
- Rchkhs: Rhseqr(E) returned INFO=    30.
-         N=    30, JTYPE=     7, ISEED=(T,
- Matrix order=   30, type= 7, seed=   0,   0,   0,   1, result   3 is 1.0141204801825843e+31
- DHS:    6 out of  1738 tests failed to pass the threshold
- *** Error code from Rchkhs =   30
+ All tests for DHS passed the threshold (  1764 tests run)
 
 
  End of tests
- Total time used =         7.00 seconds
+ Total time used =         1.00 seconds
 
