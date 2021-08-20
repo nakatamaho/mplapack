@@ -30,39 +30,8 @@ The following parameter values will be used:
 
 
  DGG:  NB =   1, NBMIN =  40, NS =   4, MAXB =  40, IACC22 =   2, NBCOL =  40
- Rchkgg: Rhgeqz(E) returned INFO=    15.
-         N=    15, JTYPE=    23, ISEED=(    0,    0,    0,    0)
 
- DGG -- Real Generalized eigenvalue problem
- Matrix types (see Rchkgg for details): 
- Special Matrices:                       (J'=transposed Jordan block)
-   1=(0,0)  2=(I,0)  3=(0,I)  4=(I,I)  5=(J',J')  6=(diag(J',I), diag(I,J'))
- Diagonal Matrices:  ( D=diag(0,1,2,...) )
-   7=(D,I)   9=(large*D, small*I)  11=(large*I, small*D)  13=(large*D, large*I)
-   8=(I,D)  10=(small*D, large*I)  12=(small*I, large*D)  14=(small*D, small*I)
-  15=(D, reversed D)
- Matrices Rotated by Random Orthogonal Matrices U, V:
-  16=Transposed Jordan Blocks             19=geometric alpha, beta=0,1
-  17=arithm. alpha&beta                   20=arithmetic alpha, beta=0,1
-  18=clustered alpha, beta=0,1            21=random alpha, beta=0,1
- Large & Small Matrices:
-  22=(large, small)   23=(small,large)    24=(small,small)    25=(large,large)
-  26=random O(1) matrices.
-
- Tests performed:   (H is Hessenberg, S is Schur, B, T, P are triangular,
-                    U, V, Q, and Z are orthogonal, l and r are the
-                    appropriate left and right eigenvectors, resp., a is
-                    alpha, b is beta, and ' means transpose.)
- 1 = | A - U H V' | / ( |A| n ulp )      2 = | B - U T V' | / ( |B| n ulp )
- 3 = | I - UU' | / ( n ulp )             4 = | I - VV' | / ( n ulp )
- 5 = | H - Q S Z' | / ( |H| n ulp )      6 = | T - Q P Z' | / ( |T| n ulp )
- 7 = | I - QQ' | / ( n ulp )             8 = | I - ZZ' | / ( n ulp )
- 9 = max | ( b S - a P )' l | / const.  10 = max | ( b H - a T )' l | / const.
- 11= max | ( b S - a P ) r | / const.   12 = max | ( b H - a T ) r | / const.
-
- Matrix order=   15, type=23, seed=T,   5,1.0141204801825843e+31,
- DGG:    1 out of  3113 tests failed to pass the threshold
- *** Error code from Rchkgg =   15
+ All tests for DGG passed the threshold (  3120 tests run)
 
 
  DGG:  NB =   2, NBMIN =   2, NS =   2, MAXB =   2, IACC22 =   1, NBCOL =   2
@@ -76,5 +45,5 @@ The following parameter values will be used:
 
 
  End of tests
- Total time used =         4.00 seconds
+ Total time used =         5.00 seconds
 
