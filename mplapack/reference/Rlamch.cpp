@@ -468,7 +468,14 @@ qd_real RlamchL_qd(void) { return (qd_real)1024.0; }
 //"O"
 // cf.http://www.netlib.org/blas/dlamch.f
 qd_real RlamchO_qd(void) {
-    return qd_real::_max; // approx 1.7976931348623157E+308 in float.h
+//due to bug of qd_real, we cannot take some arithmetic for qd_real::_max; e.g. sqrt.
+//thus we use smaller values
+    qd_real a = dd_real::_max;
+    a.x[0] = a.x[0] * 0x1p-53;
+    a.x[1] = a.x[1] * 0x1p-53;
+    a.x[2] = a.x[2] * 0x1p-53;
+    a.x[3] = a.x[3] * 0x1p-53;
+    return a; // approx 1.7976931348623157E+308/1e-16 in float.h
 }
 
 //"Z" :dummy
@@ -568,7 +575,12 @@ dd_real RlamchL_dd(void) { return (dd_real)1024.0; }
 //"O"
 // cf.http://www.netlib.org/blas/dlamch.f
 dd_real RlamchO_dd(void) {
-    return dd_real::_max; // approx 1.7976931348623157E+308 in float.h
+//due to bug of dd_real, we cannot take some arithmetic for dd_real::_max; e.g. sqrt.
+//thus we use smaller values
+    dd_real a = dd_real::_max;
+    a.x[0] = a.x[0] * 0x1p-53;
+    a.x[1] = a.x[1] * 0x1p-53;
+    return a; // approx 1.7976931348623157E+308/1e-16 in float.h
 }
 
 //"Z" :dummy
