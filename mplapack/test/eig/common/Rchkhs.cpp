@@ -341,7 +341,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 return;
             }
@@ -361,7 +361,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             if (iinfo != 0) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "Rgehrd", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rgehrd", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_250;
             }
@@ -390,7 +390,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rhseqr("E", "N", n, ilo, ihi, t2, lda, wr3, wi3, uz, ldu, work, nwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rhseqr(E)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rhseqr(E)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 if (iinfo <= n + 2) {
                     info = abs(iinfo);
                     goto statement_250;
@@ -403,7 +403,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rhseqr("S", "N", n, ilo, ihi, t2, lda, wr2, wi2, uz, ldu, work, nwork, iinfo);
             if (iinfo != 0 && iinfo <= n + 2) {
-                write(nounit, format_9999), "Rhseqr(S)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rhseqr(S)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_250;
             }
@@ -416,7 +416,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rhseqr("S", "V", n, ilo, ihi, t1, lda, wr1, wi1, uz, ldu, work, nwork, iinfo);
             if (iinfo != 0 && iinfo <= n + 2) {
-                write(nounit, format_9999), "Rhseqr(V)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rhseqr(V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_250;
             }
@@ -489,7 +489,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rtrevc("Right", "All", select, n, t1, lda, dumma, ldu, evectr, ldu, n, in, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rtrevc(R,A)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rtrevc(R,A)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_250;
             }
@@ -500,7 +500,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             result[9 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thresh) {
                 sprintnum_short(buf, dumma[2 - 1]);
-                write(nounit, format_9998), "Right", "Rtrevc", buf, n, jtype, ioldsd;
+                write(nounit, format_9998), "Right", "Rtrevc", buf, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
             }
             //
             //           Compute selected right eigenvectors and confirm that
@@ -508,7 +508,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rtrevc("Right", "Some", select, n, t1, lda, dumma, ldu, evectl, ldu, n, in, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rtrevc(R,S)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rtrevc(R,S)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_250;
             }
@@ -536,7 +536,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
         statement_180:
             if (!match) {
-                write(nounit, format_9997), "Right", "Rtrevc", n, jtype, ioldsd;
+                write(nounit, format_9997), "Right", "Rtrevc", n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
             }
             //
             //           Compute the Left eigenvector Matrix:
@@ -545,7 +545,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             result[10 - 1] = ulpinv;
             Rtrevc("Left", "All", select, n, t1, lda, evectl, ldu, dumma, ldu, n, in, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rtrevc(L,A)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rtrevc(L,A)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_250;
             }
@@ -556,7 +556,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             result[10 - 1] = dumma[3 - 1];
             if (dumma[4 - 1] > thresh) {
                 sprintnum_short(buf, dumma[4 - 1]);
-                write(nounit, format_9998), "Left", "Rtrevc", buf, n, jtype, ioldsd;
+                write(nounit, format_9998), "Left", "Rtrevc", buf, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
             }
             //
             //           Compute selected left eigenvectors and confirm that
@@ -564,7 +564,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rtrevc("Left", "Some", select, n, t1, lda, evectr, ldu, dumma, ldu, n, in, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rtrevc(L,S)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rtrevc(L,S)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_250;
             }
@@ -592,7 +592,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
         statement_220:
             if (!match) {
-                write(nounit, format_9997), "Left", "Rtrevc", n, jtype, ioldsd;
+                write(nounit, format_9997), "Left", "Rtrevc", n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
             }
             //
             //           Call Rhsein for Right eigenvectors of H, do test 11
@@ -605,7 +605,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rhsein("Right", "Qr", "Ninitv", select, n, h, lda, wr3, wi3, dumma, ldu, evectx, ldu, n1, in, work, iwork, iwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rhsein(R)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rhsein(R)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     goto statement_250;
@@ -622,7 +622,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
                 if (dumma[2 - 1] > thresh) {
                     sprintnum_short(buf, dumma[2 - 1]);
-                    write(nounit, format_9998), "Right", "Rhsein", buf, n, jtype, ioldsd;
+                    write(nounit, format_9998), "Right", "Rhsein", buf, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 }
             }
             //
@@ -636,7 +636,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rhsein("Left", "Qr", "Ninitv", select, n, h, lda, wr3, wi3, evecty, ldu, dumma, ldu, n1, in, work, iwork, iwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rhsein(L)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rhsein(L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     goto statement_250;
@@ -653,7 +653,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
                 if (dumma[4 - 1] > thresh) {
                     sprintnum_short(buf, dumma[4 - 1]);
-                    write(nounit, format_9998), "Left", "Rhsein", buf, n, jtype, ioldsd;
+                    write(nounit, format_9998), "Left", "Rhsein", buf, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 }
             }
             //
@@ -664,7 +664,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rormhr("Left", "No transpose", n, n, ilo, ihi, uu, ldu, tau, evectx, ldu, work, nwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rormhr(R)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rormhr(R)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     goto statement_250;
@@ -688,7 +688,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rormhr("Left", "No transpose", n, n, ilo, ihi, uu, ldu, tau, evecty, ldu, work, nwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rormhr(L)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rormhr(L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     goto statement_250;

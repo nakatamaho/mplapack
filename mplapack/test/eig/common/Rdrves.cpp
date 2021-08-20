@@ -39,7 +39,6 @@ using fem::common;
 #include <mplapack_common_sslct.h>
 #include <mplapack_debug.h>
 
-
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 extern gmp_randstate_t ___random_mplapack_mpfr_state;
 #endif
@@ -123,7 +122,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         }
     }
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-//not a good hack but sometimes generates too narrow pair of eigenvalues.
+    // not a good hack but sometimes generates too narrow pair of eigenvalues.
     gmp_randseed_ui(___random_mplapack_mpfr_state, (long int)iseed[2]);
 #endif
     //
