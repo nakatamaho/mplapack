@@ -133,8 +133,8 @@ This is the release schedule for MPLAPACK 1.0.0
 | QA of eig (_Float128, real)          | 2021-08-17 |100% |                          | 
 | QA of eig (_Float64x, real)          | 2021-08-17 |100% |                          | 
 | QA of eig (double, real)             | 2021-08-17 |100% |                          | 
-| QA of eig (dd, real)                 | 2021-08-17 |60%  |nep.in, svd.in, etc   fail| 
-| QA of eig (qd, real)                 | 2021-08-17 |60%  |sep.in, svd.in etc fail   | 
+| QA of eig (dd, real)                 | 2021-08-21 |100% |                          |
+| QA of eig (qd, real)                 | 2021-08-21 |90%  |only svd.in fail          | 
 | Build on Ubuntu 20.04 amd64          | 2021-08-13 |3e51d57| _Float128: supp. by libc only binary128, _Float64x == long double |
 | Build on Ubuntu 18.04 amd64          | 2021-08-13 |3e51d57| _Float128: supp. by libc only binary128, _Float64x == long double |
 | Build on Ubuntu 20.04 Intel oneAPI   | 2021-08-13 |3e51d57| _Float128: supp. by libc only binary128, _Float64x == long double | 
@@ -158,7 +158,7 @@ This is the release schedule for MPLAPACK 2.0.0
 | Impliment complex lin                |            |     |                          | 
 | Impliment complex eig                |            |     |                          | 
 | Fix Rlamch for  GMP                  |            |     |                          | 
-| Fix criteria or accuracy by GMP calc |            |     |                          | 
+| Fix criteria or accuracy by GMP calc |            |     | cs decomp.               | 
 | cleanup pow  (REAL, long int)        |            |     |                          | 
 | Get rid of compiler warnings         |            |     |                          | 
 
