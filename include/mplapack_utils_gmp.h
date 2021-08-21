@@ -122,9 +122,21 @@ inline double cast2double(mpf_class a) { return a.get_d(); }
 inline mpf_class atan2(mpf_class a, mpf_class b) {
     double dtemp1, dtemp2;
     mpf_class mtemp3;
-    dtemp1 = a.get_d();
-    dtemp2 = b.get_d();
-    mtemp3 = mpf_class(atan2(a, b));
+    if (abs(a) > abs(b)) {
+       mtemp3 = b / a;
+       dtemp1 = 1.0;
+       dtemp2 = mtemp3.get_d();
+    }
+    if (abs(a) < abs(b)) {
+       mtemp3 = a / b;
+       dtemp1 = mtemp3.get_d();
+       dtemp2 = 1.0;
+    }
+    if (abs(a) == abs(b)) {
+       dtemp1 = 1.0;
+       dtemp2 = 1.0;
+    }
+    mtemp3 = mpf_class(atan2(dtemp1, dtemp2));
     return mtemp3;
 }
 

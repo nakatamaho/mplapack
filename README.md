@@ -129,12 +129,12 @@ This is the release schedule for MPLAPACK 1.0.0
 | QA of lin (dd, real)                 | 2021-08-15 |100% |                          | 
 | QA of lin (qd, real)                 | 2021-08-17 |100% |                          | 
 | QA of eig (mpfr, real)               | 2021-08-18 |100% |                          | 
-| QA of eig (gmp, real)                | 2021-08-20 |100% | errors of some tests are bit large. see logs | 
+| QA of eig (gmp, real)                | 2021-08-20 |100% |                          |
 | QA of eig (_Float128, real)          | 2021-08-17 |100% |                          | 
 | QA of eig (_Float64x, real)          | 2021-08-17 |100% |                          | 
 | QA of eig (double, real)             | 2021-08-17 |100% |                          | 
 | QA of eig (dd, real)                 | 2021-08-21 |100% |                          |
-| QA of eig (qd, real)                 | 2021-08-21 |90%  |only svd.in fail          | 
+| QA of eig (qd, real)                 | 2021-08-21 |90%  |svd.in Underflow occurs   | 
 | Build on Ubuntu 20.04 amd64          | 2021-08-13 |3e51d57| _Float128: supp. by libc only binary128, _Float64x == long double |
 | Build on Ubuntu 18.04 amd64          | 2021-08-13 |3e51d57| _Float128: supp. by libc only binary128, _Float64x == long double |
 | Build on Ubuntu 20.04 Intel oneAPI   | 2021-08-13 |3e51d57| _Float128: supp. by libc only binary128, _Float64x == long double | 
@@ -157,10 +157,11 @@ This is the release schedule for MPLAPACK 2.0.0
 | Impliment RFP version                |            |     |                          | 
 | Impliment complex lin                |            |     |                          | 
 | Impliment complex eig                |            |     |                          | 
-| Fix Rlamch for  GMP                  |            |     |                          | 
-| Fix criteria or accuracy by GMP calc |            |     | cs decomp.               | 
+| Fix Rlamch for GMP                   |            |     |                          | 
+| Fix Rlamch for QD                    |            |     | svd.in fail              | 
 | cleanup pow  (REAL, long int)        |            |     |                          | 
 | Get rid of compiler warnings         |            |     |                          | 
+
 
 # History
 * 2021/4/11 0.9.3 release. CentOS7 AArch64 support
