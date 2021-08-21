@@ -83,34 +83,34 @@ The following parameter values will be used:
 39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
 
 
- M=    3, N=    3, type 4, IWS=1, seed=T,  15,1.2676506002282338e+30,
- M=    3, N=    3, type 4, IWS=2, seed=T,  15,1.2676506002282338e+30,
- M=    3, N=    3, type 4, IWS=3, seed=T,  15,1.2676506002282338e+30,
- M=    3, N=    3, type 4, IWS=4, seed=T,  15,1.2676506002282338e+30,
- M=   10, N=   10, type 4, IWS=1, seed=T,  15,3.8029518006847014e+29,
- M=   10, N=   10, type 4, IWS=2, seed=T,  15,3.8029518006847014e+29,
- M=   10, N=   10, type 4, IWS=3, seed=T,  15,3.8029518006847014e+29,
- M=   10, N=   10, type 4, IWS=4, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   10, type 4, IWS=1, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   10, type 4, IWS=2, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   10, type 4, IWS=3, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   10, type 4, IWS=4, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   16, type 4, IWS=1, seed=T,  15,2.3768448754279384e+29,
- M=   16, N=   16, type 4, IWS=2, seed=T,  15,2.3768448754279384e+29,
- M=   16, N=   16, type 4, IWS=3, seed=T,  15,2.3768448754279384e+29,
- M=   16, N=   16, type 4, IWS=4, seed=T,  15,2.3768448754279384e+29,
- M=   30, N=   30, type 4, IWS=1, seed=T,  15,1.2676506002282338e+29,
- M=   30, N=   30, type 4, IWS=2, seed=T,  15,1.2676506002282338e+29,
- M=   30, N=   30, type 4, IWS=3, seed=T,  15,1.2676506002282338e+29,
- M=   30, N=   30, type 4, IWS=4, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   30, type 4, IWS=1, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   30, type 4, IWS=2, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   30, type 4, IWS=3, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   30, type 4, IWS=4, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   40, type 4, IWS=1, seed=T,  15,9.5073795017117536e+28,
- M=   40, N=   40, type 4, IWS=2, seed=T,  15,9.5073795017117536e+28,
- M=   40, N=   40, type 4, IWS=3, seed=T,  15,9.5073795017117536e+28,
- M=   40, N=   40, type 4, IWS=4, seed=T,  15,9.5073795017117536e+28,
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+30
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+30
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+30
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+30
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.3768448754279384e+29
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.3768448754279384e+29
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.3768448754279384e+29
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.3768448754279384e+29
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=9.5073795017117536e+28
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=9.5073795017117536e+28
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=9.5073795017117536e+28
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=9.5073795017117536e+28
  DBD drivers:     28 out of  14820 tests failed to pass the threshold
 
 
@@ -171,34 +171,34 @@ The following parameter values will be used:
 39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
 
 
- M=    3, N=    3, type 4, IWS=1, seed=T,  15,1.2676506002282338e+30,
- M=    3, N=    3, type 4, IWS=2, seed=T,  15,1.2676506002282338e+30,
- M=    3, N=    3, type 4, IWS=3, seed=T,  15,1.2676506002282338e+30,
- M=    3, N=    3, type 4, IWS=4, seed=T,  15,1.2676506002282338e+30,
- M=   10, N=   10, type 4, IWS=1, seed=T,  15,3.8029518006847014e+29,
- M=   10, N=   10, type 4, IWS=2, seed=T,  15,3.8029518006847014e+29,
- M=   10, N=   10, type 4, IWS=3, seed=T,  15,3.8029518006847014e+29,
- M=   10, N=   10, type 4, IWS=4, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   10, type 4, IWS=1, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   10, type 4, IWS=2, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   10, type 4, IWS=3, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   10, type 4, IWS=4, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   16, type 4, IWS=1, seed=T,  15,2.3768448754279384e+29,
- M=   16, N=   16, type 4, IWS=2, seed=T,  15,2.3768448754279384e+29,
- M=   16, N=   16, type 4, IWS=3, seed=T,  15,2.3768448754279384e+29,
- M=   16, N=   16, type 4, IWS=4, seed=T,  15,2.3768448754279384e+29,
- M=   30, N=   30, type 4, IWS=1, seed=T,  15,1.2676506002282338e+29,
- M=   30, N=   30, type 4, IWS=2, seed=T,  15,1.2676506002282338e+29,
- M=   30, N=   30, type 4, IWS=3, seed=T,  15,1.2676506002282338e+29,
- M=   30, N=   30, type 4, IWS=4, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   30, type 4, IWS=1, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   30, type 4, IWS=2, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   30, type 4, IWS=3, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   30, type 4, IWS=4, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   40, type 4, IWS=1, seed=T,  15,9.5073795017117536e+28,
- M=   40, N=   40, type 4, IWS=2, seed=T,  15,9.5073795017117536e+28,
- M=   40, N=   40, type 4, IWS=3, seed=T,  15,9.5073795017117536e+28,
- M=   40, N=   40, type 4, IWS=4, seed=T,  15,9.5073795017117536e+28,
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+30
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+30
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+30
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+30
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.3768448754279384e+29
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.3768448754279384e+29
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.3768448754279384e+29
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.3768448754279384e+29
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=9.5073795017117536e+28
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=9.5073795017117536e+28
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=9.5073795017117536e+28
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=9.5073795017117536e+28
  DBD drivers:     28 out of  14820 tests failed to pass the threshold
 
 
@@ -258,9 +258,8 @@ The following parameter values will be used:
   33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
   34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
                                              without computing U and V'
- M=   30, N=   30, type 16, seed=   0,   0,   0,   1, test( 9)=5.0325666834290571e+43
- M=   40, N=   30, type 16, seed=   0,   0,   0,   1, test( 9)=1.2969756694984408e+03
- DBD:      2 out of  10260 tests failed to pass the threshold
+ M=   40, N=   40, type 16, seed=   0,   0,   0,   1, test( 9)=3.0128447282855785e+03
+ DBD:      1 out of  10260 tests failed to pass the threshold
  SVD -- Real Singular Value Decomposition Driver 
  Matrix types (see Rdrvbd for details):
 
@@ -315,34 +314,34 @@ The following parameter values will be used:
 39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
 
 
- M=    3, N=    3, type 4, IWS=1, seed=T,  15,1.2676506002282338e+30,
- M=    3, N=    3, type 4, IWS=2, seed=T,  15,1.2676506002282338e+30,
- M=    3, N=    3, type 4, IWS=3, seed=T,  15,1.2676506002282338e+30,
- M=    3, N=    3, type 4, IWS=4, seed=T,  15,1.2676506002282338e+30,
- M=   10, N=   10, type 4, IWS=1, seed=T,  15,3.8029518006847014e+29,
- M=   10, N=   10, type 4, IWS=2, seed=T,  15,3.8029518006847014e+29,
- M=   10, N=   10, type 4, IWS=3, seed=T,  15,3.8029518006847014e+29,
- M=   10, N=   10, type 4, IWS=4, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   10, type 4, IWS=1, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   10, type 4, IWS=2, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   10, type 4, IWS=3, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   10, type 4, IWS=4, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   16, type 4, IWS=1, seed=T,  15,2.3768448754279384e+29,
- M=   16, N=   16, type 4, IWS=2, seed=T,  15,2.3768448754279384e+29,
- M=   16, N=   16, type 4, IWS=3, seed=T,  15,2.3768448754279384e+29,
- M=   16, N=   16, type 4, IWS=4, seed=T,  15,2.3768448754279384e+29,
- M=   30, N=   30, type 4, IWS=1, seed=T,  15,1.2676506002282338e+29,
- M=   30, N=   30, type 4, IWS=2, seed=T,  15,1.2676506002282338e+29,
- M=   30, N=   30, type 4, IWS=3, seed=T,  15,1.2676506002282338e+29,
- M=   30, N=   30, type 4, IWS=4, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   30, type 4, IWS=1, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   30, type 4, IWS=2, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   30, type 4, IWS=3, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   30, type 4, IWS=4, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   40, type 4, IWS=1, seed=T,  15,9.5073795017117536e+28,
- M=   40, N=   40, type 4, IWS=2, seed=T,  15,9.5073795017117536e+28,
- M=   40, N=   40, type 4, IWS=3, seed=T,  15,9.5073795017117536e+28,
- M=   40, N=   40, type 4, IWS=4, seed=T,  15,9.5073795017117536e+28,
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+30
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+30
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+30
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+30
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.3768448754279384e+29
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.3768448754279384e+29
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.3768448754279384e+29
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.3768448754279384e+29
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=9.5073795017117536e+28
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=9.5073795017117536e+28
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=9.5073795017117536e+28
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=9.5073795017117536e+28
  DBD drivers:     28 out of  14820 tests failed to pass the threshold
 
 
@@ -403,34 +402,34 @@ The following parameter values will be used:
 39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
 
 
- M=    3, N=    3, type 4, IWS=1, seed=T,  15,1.2676506002282338e+30,
- M=    3, N=    3, type 4, IWS=2, seed=T,  15,1.2676506002282338e+30,
- M=    3, N=    3, type 4, IWS=3, seed=T,  15,1.2676506002282338e+30,
- M=    3, N=    3, type 4, IWS=4, seed=T,  15,1.2676506002282338e+30,
- M=   10, N=   10, type 4, IWS=1, seed=T,  15,3.8029518006847014e+29,
- M=   10, N=   10, type 4, IWS=2, seed=T,  15,3.8029518006847014e+29,
- M=   10, N=   10, type 4, IWS=3, seed=T,  15,3.8029518006847014e+29,
- M=   10, N=   10, type 4, IWS=4, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   10, type 4, IWS=1, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   10, type 4, IWS=2, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   10, type 4, IWS=3, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   10, type 4, IWS=4, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   16, type 4, IWS=1, seed=T,  15,2.3768448754279384e+29,
- M=   16, N=   16, type 4, IWS=2, seed=T,  15,2.3768448754279384e+29,
- M=   16, N=   16, type 4, IWS=3, seed=T,  15,2.3768448754279384e+29,
- M=   16, N=   16, type 4, IWS=4, seed=T,  15,2.3768448754279384e+29,
- M=   30, N=   30, type 4, IWS=1, seed=T,  15,1.2676506002282338e+29,
- M=   30, N=   30, type 4, IWS=2, seed=T,  15,1.2676506002282338e+29,
- M=   30, N=   30, type 4, IWS=3, seed=T,  15,1.2676506002282338e+29,
- M=   30, N=   30, type 4, IWS=4, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   30, type 4, IWS=1, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   30, type 4, IWS=2, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   30, type 4, IWS=3, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   30, type 4, IWS=4, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   40, type 4, IWS=1, seed=T,  15,9.5073795017117536e+28,
- M=   40, N=   40, type 4, IWS=2, seed=T,  15,9.5073795017117536e+28,
- M=   40, N=   40, type 4, IWS=3, seed=T,  15,9.5073795017117536e+28,
- M=   40, N=   40, type 4, IWS=4, seed=T,  15,9.5073795017117536e+28,
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+30
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+30
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+30
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+30
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.3768448754279384e+29
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.3768448754279384e+29
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.3768448754279384e+29
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.3768448754279384e+29
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=9.5073795017117536e+28
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=9.5073795017117536e+28
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=9.5073795017117536e+28
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=9.5073795017117536e+28
  DBD drivers:     28 out of  14820 tests failed to pass the threshold
 
 
@@ -491,37 +490,37 @@ The following parameter values will be used:
 39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
 
 
- M=    3, N=    3, type 4, IWS=1, seed=T,  15,1.2676506002282338e+30,
- M=    3, N=    3, type 4, IWS=2, seed=T,  15,1.2676506002282338e+30,
- M=    3, N=    3, type 4, IWS=3, seed=T,  15,1.2676506002282338e+30,
- M=    3, N=    3, type 4, IWS=4, seed=T,  15,1.2676506002282338e+30,
- M=   10, N=   10, type 4, IWS=1, seed=T,  15,3.8029518006847014e+29,
- M=   10, N=   10, type 4, IWS=2, seed=T,  15,3.8029518006847014e+29,
- M=   10, N=   10, type 4, IWS=3, seed=T,  15,3.8029518006847014e+29,
- M=   10, N=   10, type 4, IWS=4, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   10, type 4, IWS=1, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   10, type 4, IWS=2, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   10, type 4, IWS=3, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   10, type 4, IWS=4, seed=T,  15,3.8029518006847014e+29,
- M=   16, N=   16, type 4, IWS=1, seed=T,  15,2.3768448754279384e+29,
- M=   16, N=   16, type 4, IWS=2, seed=T,  15,2.3768448754279384e+29,
- M=   16, N=   16, type 4, IWS=3, seed=T,  15,2.3768448754279384e+29,
- M=   16, N=   16, type 4, IWS=4, seed=T,  15,2.3768448754279384e+29,
- M=   30, N=   30, type 4, IWS=1, seed=T,  15,1.2676506002282338e+29,
- M=   30, N=   30, type 4, IWS=2, seed=T,  15,1.2676506002282338e+29,
- M=   30, N=   30, type 4, IWS=3, seed=T,  15,1.2676506002282338e+29,
- M=   30, N=   30, type 4, IWS=4, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   30, type 4, IWS=1, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   30, type 4, IWS=2, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   30, type 4, IWS=3, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   30, type 4, IWS=4, seed=T,  15,1.2676506002282338e+29,
- M=   40, N=   40, type 4, IWS=1, seed=T,  15,9.5073795017117536e+28,
- M=   40, N=   40, type 4, IWS=2, seed=T,  15,9.5073795017117536e+28,
- M=   40, N=   40, type 4, IWS=3, seed=T,  15,9.5073795017117536e+28,
- M=   40, N=   40, type 4, IWS=4, seed=T,  15,9.5073795017117536e+28,
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+30
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+30
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+30
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+30
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.8029518006847014e+29
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.3768448754279384e+29
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.3768448754279384e+29
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.3768448754279384e+29
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.3768448754279384e+29
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2676506002282338e+29
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=9.5073795017117536e+28
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=9.5073795017117536e+28
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=9.5073795017117536e+28
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=9.5073795017117536e+28
  DBD drivers:     28 out of  14820 tests failed to pass the threshold
 
 
  End of tests
- Total time used =       628.00 seconds
+ Total time used =       641.00 seconds
 
