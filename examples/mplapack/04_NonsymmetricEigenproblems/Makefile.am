@@ -20,7 +20,6 @@ Rgeev_test_mpfr_LDFLAGS= $(mpfr_libdepends)
 Rgeev_readfromfile_mpfr_SOURCES= Rgeev_readfromfile_mpfr.cpp
 Rgeev_readfromfile_mpfr_CXXFLAGS= $(mpfrcxxflags)
 Rgeev_readfromfile_mpfr_LDFLAGS= $(mpfr_libdepends)
-
 endif
 
 mplapackexamplesdir=$(prefix)/share/mplapack/examples/04_NonsymmetricEigenproblems
