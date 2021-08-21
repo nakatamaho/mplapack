@@ -26,24 +26,94 @@ endif
 if ENABLE_GMP
 mplapackexamples_PROGRAMS += eigenvalue_gmp inv_mat_gmp \
                         hilbert_gmp condition_num_gmp
-mpfrcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
+gmpcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
 gmp_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(top_builddir)/mpblas/reference -lmpblas_gmp -L$(GMP_LIBDIR) -lgmp
 
 eigenvalue_gmp_SOURCES= eigenvalue_gmp.cpp
-eigenvalue_gmp_CXXFLAGS= $(mpfrcxxflags)
+eigenvalue_gmp_CXXFLAGS= $(gmpcxxflags)
 eigenvalue_gmp_LDFLAGS= $(gmp_libdepends)
 
 inv_mat_gmp_SOURCES= inv_mat_gmp.cpp
-inv_mat_gmp_CXXFLAGS= $(mpfrcxxflags)
+inv_mat_gmp_CXXFLAGS= $(gmpcxxflags)
 inv_mat_gmp_LDFLAGS= $(gmp_libdepends)
 
 hilbert_gmp_SOURCES= hilbert_gmp.cpp
-hilbert_gmp_CXXFLAGS= $(mpfrcxxflags)
+hilbert_gmp_CXXFLAGS= $(gmpcxxflags)
 hilbert_gmp_LDFLAGS= $(gmp_libdepends)
 
 condition_num_gmp_SOURCES= condition_num_gmp.cpp
-condition_num_gmp_CXXFLAGS= $(mpfrcxxflags)
+condition_num_gmp_CXXFLAGS= $(gmpcxxflags)
 condition_num_gmp_LDFLAGS= $(gmp_libdepends)
+endif
+
+if ENABLE_DD
+mplapackexamples_PROGRAMS += eigenvalue_dd inv_mat_dd \
+                        hilbert_dd condition_num_dd
+ddcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
+dd_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_dd -L$(top_builddir)/mpblas/reference -lmpblas_dd -L$(QD_LIBDIR) -lqd
+
+eigenvalue_dd_SOURCES= eigenvalue_dd.cpp
+eigenvalue_dd_CXXFLAGS= $(ddcxxflags)
+eigenvalue_dd_LDFLAGS= $(dd_libdepends)
+
+inv_mat_dd_SOURCES= inv_mat_dd.cpp
+inv_mat_dd_CXXFLAGS= $(ddcxxflags)
+inv_mat_dd_LDFLAGS= $(dd_libdepends)
+
+hilbert_dd_SOURCES= hilbert_dd.cpp
+hilbert_dd_CXXFLAGS= $(ddcxxflags)
+hilbert_dd_LDFLAGS= $(dd_libdepends)
+
+condition_num_dd_SOURCES= condition_num_dd.cpp
+condition_num_dd_CXXFLAGS= $(ddcxxflags)
+condition_num_dd_LDFLAGS= $(dd_libdepends)
+endif
+
+if ENABLE_QD
+mplapackexamples_PROGRAMS += eigenvalue_qd inv_mat_qd \
+                        hilbert_qd condition_num_qd
+qdcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
+qd_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_qd -L$(top_builddir)/mpblas/reference -lmpblas_qd -L$(QD_LIBDIR) -lqd
+
+eigenvalue_qd_SOURCES= eigenvalue_qd.cpp
+eigenvalue_qd_CXXFLAGS= $(qdcxxflags)
+eigenvalue_qd_LDFLAGS= $(qd_libdepends)
+
+inv_mat_qd_SOURCES= inv_mat_qd.cpp
+inv_mat_qd_CXXFLAGS= $(qdcxxflags)
+inv_mat_qd_LDFLAGS= $(qd_libdepends)
+
+hilbert_qd_SOURCES= hilbert_qd.cpp
+hilbert_qd_CXXFLAGS= $(qdcxxflags)
+hilbert_qd_LDFLAGS= $(qd_libdepends)
+
+condition_num_qd_SOURCES= condition_num_qd.cpp
+condition_num_qd_CXXFLAGS= $(qdcxxflags)
+condition_num_qd_LDFLAGS= $(qd_libdepends)
+endif
+
+if ENABLE_DOUBLE
+mplapackexamples_PROGRAMS += eigenvalue_double inv_mat_double \
+                        hilbert_double condition_num_double
+doublecxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
+double_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_double -L$(top_builddir)/mpblas/reference -lmpblas_double
+
+eigenvalue_double_SOURCES= eigenvalue_double.cpp
+eigenvalue_double_CXXFLAGS= $(doublecxxflags)
+eigenvalue_double_LDFLAGS= $(double_libdepends)
+
+inv_mat_double_SOURCES= inv_mat_double.cpp
+inv_mat_double_CXXFLAGS= $(doublecxxflags)
+inv_mat_double_LDFLAGS= $(double_libdepends)
+
+hilbert_double_SOURCES= hilbert_double.cpp
+hilbert_double_CXXFLAGS= $(doublecxxflags)
+hilbert_double_LDFLAGS= $(double_libdepends)
+
+condition_num_double_SOURCES= condition_num_double.cpp
+condition_num_double_CXXFLAGS= $(doublecxxflags)
+condition_num_double_LDFLAGS= $(double_libdepends)
+
 endif
 
 if ENABLE__FLOAT128
