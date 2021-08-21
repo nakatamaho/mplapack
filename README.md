@@ -129,7 +129,7 @@ This is the release schedule for MPLAPACK 1.0.0
 | QA of lin (dd, real)                 | 2021-08-15 |100% |                          | 
 | QA of lin (qd, real)                 | 2021-08-17 |100% |                          | 
 | QA of eig (mpfr, real)               | 2021-08-18 |100% |                          | 
-| QA of eig (gmp, real)                | 2021-08-20 |100% |                          |
+| QA of eig (gmp, real)                | 2021-08-20 |100% | errors of eig/Red.in are bit large but ignorable |
 | QA of eig (_Float128, real)          | 2021-08-17 |100% |                          | 
 | QA of eig (_Float64x, real)          | 2021-08-17 |100% |                          | 
 | QA of eig (double, real)             | 2021-08-17 |100% |                          | 
