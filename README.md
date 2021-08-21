@@ -158,10 +158,9 @@ This is the release schedule for MPLAPACK 2.0.0
 | Impliment complex lin                |            |     |                          | 
 | Impliment complex eig                |            |     |                          | 
 | Fix Rlamch for GMP                   |            |     |                          | 
-| Fix Rlamch for QD                    |            |     | svd.in fail              | 
+| Fix Rlamch for QD                    |            |     | svd.in fails.used with caution | 
 | cleanup pow  (REAL, long int)        |            |     |                          | 
 | Get rid of compiler warnings         |            |     |                          | 
-
 
 # History
 * 2021/4/11 0.9.3 release. CentOS7 AArch64 support
