@@ -182,7 +182,7 @@ This is the release schedule for MPLAPACK 3.0.0
 | Action | Date | Status | Description |
 | --- | --- | --- | --- |
 | Impliment faster MPFR C++ wrapper like gmpxx.h |            |     |                          | 
-| Drop GMP support (using MPFR only)             |            |     |                          | 
+| Drop GMP version                               |            |     | Since trigonometric functions req'ed | 
 | optimized implimentations                      |            |     |                          | 
 
 # History
