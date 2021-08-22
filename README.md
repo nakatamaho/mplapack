@@ -162,8 +162,6 @@ This is the release schedule for MPLAPACK 1.0.0
 | Build on CentOS8 AArch64             | 2021-08-13 |3e51d57| _Float128: supp. by libc and _Float128 == long double |
 | Build on Ubuntu 20.04 PPC64LE        | 2021-08-13 |3e51d57| _Float128: supp. by libc and _Float128 != long double | 
 | Add documents                        |            |     |                          | 
-| Add examples for SVD                 | 2021-08-09 | 20% | MPFR ver.                |
-| Add examples for NEP                 | 2021-08-09 | 20% | MPFR ver.                |
 
 ## MPLAPACK 2.0.0 Release Process 
 This is the release schedule for MPLAPACK 2.0.0
@@ -177,6 +175,7 @@ This is the release schedule for MPLAPACK 2.0.0
 | Fix Rlamch for QD                    |            |     | svd.in fails.used with caution | 
 | cleanup pow (REAL, long int)         |            |     |                          | 
 | Get rid of compiler warnings         |            |     |                          | 
+| Add more examples                    |            |     |                          | 
 
 ## MPLAPACK 3.0.0 Release Process 
 This is the release schedule for MPLAPACK 3.0.0
