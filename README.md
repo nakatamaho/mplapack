@@ -4,13 +4,20 @@ libraries like GMP, MPFR and QD etc so that users can choose for user's
 convenience. The MPLAPACK is a free software (2-clause BSD style license with
 original license by LAPACK).
 
-# Supported platforms
-
-* Ubuntu 20.04, 18.04 (amd64, AArch64)
-* CentOS 7,8 (amd64, AArch64)
-* Ubuntu 20.04 (amd64) + Intel oneAPI
-* macOS (Intel) + macports (you may use homebrew instead, small modification of build script req'ed)
-* Windows (64bit; mingw64 on Ubuntu with wine64)
+# Capabilities
+* MPBLAS: All BLAS routines can be done in multiple precision arithmetic.
+* MPLAPACK: in ver 1.0.0 all Real version of following solvers
+**    Linear Equations
+**    Linear Least Squares (LLS) Problems
+**    Generalized Linear Least Squares (LSE and GLM) Problems
+**    Standard Eigenvalue and Singular Value Problems
+***        Symmetric Eigenproblems (SEP)
+***        Nonsymmetric Eigenproblems (NEP)
+***        Singular Value Decomposition (SVD) 
+**    Generalized Eigenvalue and Singular Value Problems
+***        Generalized Symmetric Definite Eigenproblems (GSEP)
+***        Generalized Nonsymmetric Eigenproblems (GNEP)
+***        Generalized Singular Value Decomposition (GSVD) 
 
 # Supported multiple precision libraries and floating point formats
 
@@ -22,6 +29,14 @@ original license by LAPACK).
 * _Float64x (extended precision of double; binary80 Intel CPU only)
 
 We use MPFR + MPC as the primary arithmetic class.
+
+# Supported platforms
+
+* Ubuntu 20.04, 18.04 (amd64, AArch64)
+* CentOS 7,8 (amd64, AArch64)
+* Ubuntu 20.04 (amd64) + Intel oneAPI
+* macOS (Intel) + macports (you may use homebrew instead, small modification of build script req'ed)
+* Windows (64bit; mingw64 on Ubuntu with wine64)
 
 # How to build on Linux and Win (using Docker; recommended)
 
