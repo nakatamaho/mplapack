@@ -7,17 +7,17 @@ original license by LAPACK).
 # Capabilities
 * MPBLAS: All BLAS routines can be done in multiple precision arithmetic.
 * MPLAPACK: in ver 1.0.0 all Real version of following solvers (complex version will be added in 2.0)
-*    Linear Equations
-*    Linear Least Squares (LLS) Problems
-*    Generalized Linear Least Squares (LSE and GLM) Problems
-*    Standard Eigenvalue and Singular Value Problems
-*        Symmetric Eigenproblems (SEP)
-*        Nonsymmetric Eigenproblems (NEP)
-*        Singular Value Decomposition (SVD) 
-*   Generalized Eigenvalue and Singular Value Problems
-*        Generalized Symmetric Definite Eigenproblems (GSEP)
-*        Generalized Nonsymmetric Eigenproblems (GNEP)
-*        Generalized Singular Value Decomposition (GSVD) 
+* Linear Equations
+* Linear Least Squares (LLS) Problems
+* Generalized Linear Least Squares (LSE and GLM) Problems
+* Standard Eigenvalue and Singular Value Problems
+* Symmetric Eigenproblems (SEP)
+* Nonsymmetric Eigenproblems (NEP)
+* Singular Value Decomposition (SVD) 
+* Generalized Eigenvalue and Singular Value Problems
+* Generalized Symmetric Definite Eigenproblems (GSEP)
+* Generalized Nonsymmetric Eigenproblems (GNEP)
+* Generalized Singular Value Decomposition (GSVD) 
 
 # Supported multiple precision libraries and floating point formats
 
@@ -172,9 +172,10 @@ This is the release schedule for MPLAPACK 2.0.0
 | Impliment RFP version                |            |     |                          | 
 | Impliment complex lin                |            |     |                          | 
 | Impliment complex eig                |            |     |                          | 
+| Impliment mixed precision version    |            |     |                          | 
 | Fix Rlamch for GMP                   |            |     |                          | 
 | Fix Rlamch for QD                    |            |     | svd.in fails.used with caution | 
-| cleanup pow  (REAL, long int)        |            |     |                          | 
+| cleanup pow (REAL, long int)         |            |     |                          | 
 | Get rid of compiler warnings         |            |     |                          | 
 
 # History
