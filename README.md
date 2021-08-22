@@ -6,18 +6,18 @@ original license by LAPACK).
 
 # Capabilities
 * MPBLAS: All BLAS routines can be done in multiple precision arithmetic.
-* MPLAPACK: in ver 1.0.0 all Real version of following solvers
-**    Linear Equations
-**    Linear Least Squares (LLS) Problems
-**    Generalized Linear Least Squares (LSE and GLM) Problems
-**    Standard Eigenvalue and Singular Value Problems
-***        Symmetric Eigenproblems (SEP)
-***        Nonsymmetric Eigenproblems (NEP)
-***        Singular Value Decomposition (SVD) 
-**    Generalized Eigenvalue and Singular Value Problems
-***        Generalized Symmetric Definite Eigenproblems (GSEP)
-***        Generalized Nonsymmetric Eigenproblems (GNEP)
-***        Generalized Singular Value Decomposition (GSVD) 
+* MPLAPACK: in ver 1.0.0 all Real version of following solvers (complex version will be added in 2.0)
+*    Linear Equations
+*    Linear Least Squares (LLS) Problems
+*    Generalized Linear Least Squares (LSE and GLM) Problems
+*    Standard Eigenvalue and Singular Value Problems
+*        Symmetric Eigenproblems (SEP)
+*        Nonsymmetric Eigenproblems (NEP)
+*        Singular Value Decomposition (SVD) 
+*   Generalized Eigenvalue and Singular Value Problems
+*        Generalized Symmetric Definite Eigenproblems (GSEP)
+*        Generalized Nonsymmetric Eigenproblems (GNEP)
+*        Generalized Singular Value Decomposition (GSVD) 
 
 # Supported multiple precision libraries and floating point formats
 
