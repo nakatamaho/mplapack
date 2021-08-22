@@ -182,7 +182,8 @@ This is the release schedule for MPLAPACK 3.0.0
 | Action | Date | Status | Description |
 | --- | --- | --- | --- |
 | Impliment faster MPFR C++ wrapper like gmpxx.h |            |     |                          | 
-| optimized implimentations |            |     |                          | 
+| Drop GMP support (using MPFR only)             |            |     |                          | 
+| optimized implimentations                      |            |     |                          | 
 
 # History
 * 2021/4/11 0.9.3 release. CentOS7 AArch64 support
