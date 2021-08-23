@@ -4,4 +4,5 @@ for _tag in $TAGS; do
     docker run --cidfile="a" -u docker -it mplapack:${_tag} bash -x /home/docker/a.sh 2>&1 | tee log.${_tag}
     container_id=`cat a`
     docker commit $container_id mplapack:${_tag}
+    rm -f a
 done
