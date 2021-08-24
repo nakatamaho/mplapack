@@ -1,0 +1,67 @@
+\documentclass[12pt]{article}
+\bibliographystyle{unsrt}
+
+\usepackage{a4wide}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{color}
+\definecolor{comment}{rgb}{0,0.3,0}
+\definecolor{identifier}{rgb}{0.0,0,0.3}
+\usepackage{listings}
+\lstset{language=C++}
+\lstset{
+  columns=flexible,
+  basicstyle=\tt\small,
+  keywordstyle=,
+  identifierstyle=\color{black},
+  commentstyle=\tt\color{comment},
+  mathescape=true,
+  escapebegin=\color{comment},
+  showstringspaces=false,
+  keepspaces=true
+}
+\usepackage{hyperref}
+
+\addtolength{\textwidth}{2cm}
+\addtolength{\oddsidemargin}{-1cm}
+\addtolength{\textheight}{2cm}
+\addtolength{\topmargin}{-2cm}
+
+\parskip 3pt
+
+\begin{document}
+  
+  \title{\sf MPLAPACK version 1.0.0 user manual}
+  \author{NAKATA Maho$^1$\\
+  \normalsize
+  $^1$RIKEN Cluster for Pioneering Research, 2-1 Hirosawa, Wako-City, Saitama 351-0198, JAPAN}
+
+\date{}
+
+\maketitle
+
+\begin{abstract}
+The MPLAPACK is a multiple precision version of LAPACK (\url{https://www.netlib.org/lapack/}).
+MPLAPACK version 1.0.0 is based on LAPACK version 3.9.1 and translated from Fortran 90 to C++ using FABLE Fortran to C++ source-to-source conversion tool (https://github.com/cctbx/cctbx\_project/tree/master/fable). 
+MPLAPACK version 1.0.0 provides a multiple precision version of for solving systems of simultaneous linear equations, least-squares solutions of linear systems of equations, eigenvalue problems, and singular value problems and related matrix factorizations; supports all LAPACK features except for rectangular full packed matrix form and complex. The API is similar to the LAPACK, therefore it is easy to port legacy C++ numerical codes using MPLAPACK.
+MPLAPACK supports binary64, binary128, 80 bit extended double, MPFR, GMP, and QD libraries (double-double and quad-double). 
+Users can choose MPFR and GMP versions for arbitrary accurate calculations or double-double for fast 32 deciamal digits.
+MPLAPACK is available at GitHub (\url{https://github.com/nakatamaho/mplapack}) under 2-clause BSD license.
+\end{abstract}
+
+
+\section{Introduction}
+Multiple precision arithmetics is 
+
+\section{Installation}
+For the impatient, the MPLAPACK package can be set up and run using Docker\cite{merkel2014docker}.
+
+\section{acknowledgement}
+This work was supported by the Japan Society for the Promotion of Science (JSPS KAKENHI Grant no. 18H03206). The authors would like to thank Dr. Imamura Toshiyuki and Dr. Nakasato Naohito for warm encouragement.
+
+\bibliography{manual}
+
+\end{document}
