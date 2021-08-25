@@ -117,3 +117,37 @@ The following parameter values will be used:
  RQL routines passed the tests of the error exits
 
  All tests for RQL routines passed the threshold (  28784 tests run)
+
+ All tests for RQ3 routines passed the threshold (   4410 tests run)
+ RTZ routines passed the tests of the error exits
+
+ All tests for RTZ routines passed the threshold (    252 tests run)
+ RLS routines passed the tests of the error exits
+
+ All tests for RLS drivers  passed the threshold ( 105840 tests run)
+ All tests for REQ routines passed the threshold
+ RTQ routines passed the tests of the error exits
+
+ All tests for RTQ routines passed the threshold (    510 tests run)
+ 
+ RXQ routines passed the tests of the error exits
+
+ All tests for RXQ routines passed the threshold (   1482 tests run)
+ RXQ routines passed the tests of the error exits
+
+ All tests for RXQ routines passed the threshold (   1482 tests run)
+ RTQ routines passed the tests of the error exits
+
+ All tests for RTQ routines passed the threshold (    510 tests run)
+ 
+ RTS routines passed the tests of the error exits
+
+ All tests for RTS routines passed the threshold (  10800 tests run)
+ 
+ RHH routines passed the tests of the error exits
+
+ All tests for RHH routines passed the threshold (  15900 tests run)
+
+ End of tests
+ Total time used =  285 seconds
+
