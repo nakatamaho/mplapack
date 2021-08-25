@@ -94,6 +94,7 @@ inline void printnum_short(std::complex<_Float128> rtmp) {
 }
 inline void sprintnum(char *buf, _Float128 rtmp) {
     char buf1[__MPLAPACK_BUFLEN__];
+    buf[0]='\0';
     if (rtmp >= 0.0)
         strcat(buf, "+");
     strfromf128(buf1, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp);
@@ -101,6 +102,7 @@ inline void sprintnum(char *buf, _Float128 rtmp) {
 }
 inline void sprintnum_short(char *buf, _Float128 rtmp) {
     char buf1[__MPLAPACK_BUFLEN__];
+    buf[0]='\0';
     if (rtmp >= 0.0)
         strcat(buf, "+");
     strfromf128(buf1, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp);
@@ -108,6 +110,7 @@ inline void sprintnum_short(char *buf, _Float128 rtmp) {
 }
 inline void sprintnum(char *buf, std::complex<_Float128> rtmp) {
     char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
+    buf[0]='\0';
     if (rtmp.real() >= 0.0)
         strcat(buf, "+");
     strfromf128(buf1, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp.real());
@@ -120,6 +123,7 @@ inline void sprintnum(char *buf, std::complex<_Float128> rtmp) {
 }
 inline void sprintnum_short(char *buf, std::complex<_Float128> rtmp) {
     char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
+    buf[0]='\0';
     if (rtmp.real() >= 0.0)
         strcat(buf, "+");
     strfromf128(buf1, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp.real());
