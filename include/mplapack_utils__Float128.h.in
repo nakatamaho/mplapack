@@ -48,46 +48,88 @@
 #define FLOAT128_FORMAT "%.40e"
 #define FLOAT128_SHORT_FORMAT "%.16e"
 
-    inline void printnum(_Float128 rtmp) {
+inline void printnum(_Float128 rtmp) {
     char buf[__MPLAPACK_BUFLEN__];
     strfromf128(buf, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp);
-    printf("%s", buf);
+    if (rtmp >= 0.0)
+        printf("+%s", buf);
+    else
+        printf("%s", buf);
 }
 inline void printnum_short(_Float128 rtmp) {
     char buf[__MPLAPACK_BUFLEN__];
     strfromf128(buf, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp);
-    printf("%s", buf);
+    if (rtmp >= 0.0)
+        printf("+%s", buf);
+    else
+        printf("%s", buf);
 }
 inline void printnum(std::complex<_Float128> rtmp) {
     char buf[__MPLAPACK_BUFLEN__];
     strfromf128(buf, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp.real());
-    printf("%s", buf);
+    if (rtmp.real() >= 0.0)
+        printf("+%s", buf);
+    else
+        printf("%s", buf);
     strfromf128(buf, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp.imag());
-    printf("%s", buf);
+    if (rtmp.imag() >= 0.0)
+        printf("+%s", buf);
+    else
+        printf("%s", buf);
     printf("i");
 }
 inline void printnum_short(std::complex<_Float128> rtmp) {
     char buf[__MPLAPACK_BUFLEN__];
     strfromf128(buf, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp.real());
-    printf("%s", buf);
+    if (rtmp.real() >= 0.0)
+        printf("+%s", buf);
+    else
+        printf("%s", buf);
     strfromf128(buf, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp.imag());
-    printf("%s", buf);
+    if (rtmp.imag() >= 0.0)
+        printf("+%s", buf);
+    else
+        printf("%s", buf);
     printf("i");
 }
-inline void sprintnum(char *buf, _Float128 rtmp) { strfromf128(buf, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp); }
-inline void sprintnum_short(char *buf, _Float128 rtmp) { strfromf128(buf, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp); }
+inline void sprintnum(char *buf, _Float128 rtmp) {
+    char buf1[__MPLAPACK_BUFLEN__];
+    buf[0]='\0';
+    if (rtmp >= 0.0)
+        strcat(buf, "+");
+    strfromf128(buf1, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp);
+    strcat(buf, buf1);
+}
+inline void sprintnum_short(char *buf, _Float128 rtmp) {
+    char buf1[__MPLAPACK_BUFLEN__];
+    buf[0]='\0';
+    if (rtmp >= 0.0)
+        strcat(buf, "+");
+    strfromf128(buf1, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp);
+    strcat(buf, buf1);
+}
 inline void sprintnum(char *buf, std::complex<_Float128> rtmp) {
     char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
+    buf[0]='\0';
+    if (rtmp.real() >= 0.0)
+        strcat(buf, "+");
     strfromf128(buf1, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp.real());
     strcat(buf, buf1);
+    if (rtmp.imag() >= 0.0)
+        strcat(buf, "+");
     strfromf128(buf2, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp.imag());
     strcat(buf, buf2);
     strcat(buf, "i");
 }
 inline void sprintnum_short(char *buf, std::complex<_Float128> rtmp) {
     char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
+    buf[0]='\0';
+    if (rtmp.real() >= 0.0)
+        strcat(buf, "+");
     strfromf128(buf1, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp.real());
     strcat(buf, buf1);
+    if (rtmp.imag() >= 0.0)
+        strcat(buf, "+");
     strfromf128(buf2, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp.imag());
     strcat(buf, buf2);
     strcat(buf, "i");
@@ -228,8 +270,8 @@ inline _Float128 pi(_Float128 dummy) { return M_PIf128; }
 #endif
 #include <string.h>
 
-#define FLOAT128_FORMAT "%.40Le"
-#define FLOAT128_SHORT_FORMAT "%.16Le"
+#define FLOAT128_FORMAT "%+.40Le"
+#define FLOAT128_SHORT_FORMAT "%+.16Le"
 
 inline void printnum(long double rtmp) {
     printf(FLOAT128_FORMAT, rtmp);

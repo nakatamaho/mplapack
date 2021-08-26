@@ -42,6 +42,9 @@
 
 void subst_test1() {
     char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__], buf3[__MPLAPACK_BUFLEN__];
+    memset(buf1, 0, __MPLAPACK_BUFLEN__);
+    memset(buf2, 0, __MPLAPACK_BUFLEN__);
+    memset(buf3, 0, __MPLAPACK_BUFLEN__);
     REAL tmp1;
     REAL_REF tmp2;
 
@@ -750,6 +753,39 @@ void mp_nint() {
     }
 
     printf("*** Nint test successful ***\n");
+}
+
+void printnum_test(void) {
+    REAL p = 2.7182818;
+    REAL q = pi(p);
+    printnum(q);
+    printf("\n");
+    printnum_short(q);
+    printf("\n");
+    COMPLEX pp;
+    COMPLEX qq;
+    pp = COMPLEX(p, q);
+    printnum(pp);
+    printf("\n");
+    printnum_short(pp);
+    printf("\n");
+
+    char buf1[__MPLAPACK_BUFLEN__];
+    memset(buf1, 0, __MPLAPACK_BUFLEN__);
+    sprintnum(buf1, q);
+    cout << buf1 << endl;
+
+    memset(buf1, 0, __MPLAPACK_BUFLEN__);
+    sprintnum_short(buf1, q);
+    cout << buf1 << endl;
+
+    memset(buf1, 0, __MPLAPACK_BUFLEN__);
+    sprintnum(buf1, pp);
+    cout << buf1 << endl;
+
+    memset(buf1, 0, __MPLAPACK_BUFLEN__);
+    sprintnum_short(buf1, pp);
+    cout << buf1 << endl;
 }
 
 int main(int argc, char *argv[]) {
