@@ -237,7 +237,6 @@ SAVE_CXXFLAGS="$CXXFLAGS"
 AM_CONDITIONAL(WANT_QUADMATH, test x$enable__Float128 = xno)
 if test x$enable__Float128 = x"yes"; then
 # For unknown reason, the f128 suffix doesn't work in g++-9, but it does in gcc-9.
-for gcc works.
     AC_MSG_CHECKING([whether _Float128 is supported])
     AC_LINK_IFELSE([
        AC_LANG_SOURCE([[
