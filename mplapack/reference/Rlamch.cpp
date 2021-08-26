@@ -901,7 +901,9 @@ _Float64x Rlamch__Float64x(const char *cmach) {
 _Float128 RlamchE__Float128(void) {
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
     return FLT128_EPSILON;
-#else // XXX
+#if defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+    return 1.92592994438723585305597794258492732e-34L;
+#else
     return 1.92592994438723585305597794258492732e-34Q;
 #endif
 }
@@ -913,7 +915,9 @@ _Float128 RlamchS__Float128(void) {
 // 2^{-16382} = 3.36210314311209350626267781732175260e-4932Q
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
     return FLT128_MIN;
-#else // XXX
+#if defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+    return 3.36210314311209350626267781732175260e-4932L;
+#else
     return 3.36210314311209350626267781732175260e-4932Q;
 #endif
 
@@ -924,7 +928,7 @@ _Float128 RlamchS__Float128(void) {
     eps = 1.0;
     // We all know double is the IEEE 754 2008 binary128 format has 113bit significant digits
     for (int i = 0; i < 16383; i++) {
-        eps = eps / 2.0Q;
+        eps = eps / 2.0;
     }
     called = 1;
 }
@@ -973,6 +977,8 @@ _Float128 RlamchM__Float128(void) {
     // then -16382 + 1 = -16381
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
     return FLT128_MIN_EXP;
+#if defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+    return (-16381);
 #else
     return (-16381);
 #endif
@@ -983,6 +989,8 @@ _Float128 RlamchM__Float128(void) {
 _Float128 RlamchU__Float128(void) {
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
     return FLT128_MIN;
+#if defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+    return 3.36210314311209350626267781732175260e-4932L;
 #else
     return 3.36210314311209350626267781732175260e-4932Q;
 #endif
