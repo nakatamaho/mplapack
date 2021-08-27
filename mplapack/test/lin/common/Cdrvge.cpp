@@ -81,7 +81,7 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     char equed;
     INTEGER nfact = 0;
     INTEGER ifact = 0;
-    char fact;
+    char fact[1];
     bool prefac = false;
     bool nofact = false;
     bool equil = false;
@@ -97,7 +97,7 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER lwork = 0;
     REAL ainvnm = 0.0;
     INTEGER itran = 0;
-    char trans;
+    char trans[1];
     const INTEGER ntests = 7;
     REAL result[ntests];
     INTEGER nt = 0;
@@ -214,10 +214,10 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 }
                 //
                 for (ifact = 1; ifact <= nfact; ifact = ifact + 1) {
-                    fact = facts[ifact - 1];
-                    prefac = Mlsame(&fact, "F");
-                    nofact = Mlsame(&fact, "N");
-                    equil = Mlsame(&fact, "E");
+                    fact[0] = facts[ifact - 1];
+                    prefac = Mlsame(fact, "F");
+                    nofact = Mlsame(fact, "N");
+                    equil = Mlsame(fact, "E");
                     //
                     if (zerot) {
                         if (prefac) {
@@ -304,7 +304,7 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         //                    Do for each value of TRANS.
                         //
-                        trans = transs[itran - 1];
+                        trans[0] = transs[itran - 1];
                         if (itran == 1) {
                             rcondc = rcondo;
                         } else {
@@ -317,7 +317,7 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         //                    Form an exact solution and set the right hand side.
                         //
-                        Clarhs(path, &xtype, "Full", &trans, n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        Clarhs(path, &xtype, "Full", trans, n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         xtype = 'C';
                         Clacpy("Full", n, nrhs, b, lda, bsav, lda);
                         //
@@ -390,13 +390,13 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //                    Solve the system and compute the condition number
                         //                    and error bounds using Cgesvx.
                         //
-                        Cgesvx(&fact, &trans, n, nrhs, a, lda, afac, lda, iwork, &equed, s, &s[(n + 1) - 1], b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                        Cgesvx(fact, trans, n, nrhs, a, lda, afac, lda, iwork, &equed, s, &s[(n + 1) - 1], b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                         //
                         //                    Check the error code from Cgesvx.
                         //
                         if (info != izero) {
-                            fact_trans[0] = fact;
-                            fact_trans[1] = trans;
+                            fact_trans[0] = fact[0];
+                            fact_trans[1] = trans[0];
                             fact_trans[2] = '\0';
                             Alaerh(path, "Cgesvx", info, izero, fact_trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
@@ -438,7 +438,7 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       Compute residual of the computed solution.
                             //
                             Clacpy("Full", n, nrhs, bsav, lda, work, lda);
-                            Cget02(&trans, n, n, nrhs, asav, lda, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
+                            Cget02(trans, n, n, nrhs, asav, lda, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
                             //
                             //                       Check solution from generated exact solution.
                             //
@@ -456,7 +456,7 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       Check the error bounds from iterative
                             //                       refinement.
                             //
-                            Cget07(&trans, n, nrhs, asav, lda, b, lda, x, lda, xact, lda, rwork, true, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
+                            Cget07(trans, n, nrhs, asav, lda, b, lda, x, lda, xact, lda, rwork, true, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                         } else {
                             trfcon = true;
                         }
