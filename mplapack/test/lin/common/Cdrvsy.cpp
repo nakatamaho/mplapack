@@ -60,20 +60,20 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype;
+    char xtype[1];
     const INTEGER ntypes = 11;
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo;
-    char type;
+    char uplo[1];
+    char type[1];
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    char dist[1];
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
@@ -82,7 +82,7 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER i2 = 0;
     INTEGER i1 = 0;
     INTEGER ifact = 0;
-    char fact;
+    char fact[1];
     REAL rcondc = 0.0;
     REAL ainvnm = 0.0;
     const REAL one = 1.0;
@@ -92,37 +92,6 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER nt = 0;
     REAL rcond = 0.0;
     INTEGER k1 = 0;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Initialize constants and the random number seed.
     //
@@ -142,6 +111,7 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     if (tsterr) {
         Cerrvx(path, nout);
     }
+    infot = 0;
     //
     //     Set the block size and minimum block size for testing.
     //
@@ -155,7 +125,7 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype = 'N';
+        xtype[0] = 'N';
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -179,21 +149,21 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             //           Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
-                uplo = uplos[iuplo - 1];
+                uplo[0] = uplos[iuplo - 1];
                 //
                 if (imat != ntypes) {
                     //
                     //                 Set up parameters with Clatb4 and generate a test
                     //                 matrix with Clatms.
                     //
-                    Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+                    Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                     //
-                    Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
+                    Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                     //
                     //                 Check error code from Clatms.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Clatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         goto statement_160;
                     }
                     //
@@ -269,14 +239,14 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //                 IMAT = NTYPES:  Use a special block diagonal matrix to
                     //                 test alternate code for the 2-by-2 blocks.
                     //
-                    Clatsy(&uplo, n, a, lda, iseed);
+                    Clatsy(uplo, n, a, lda, iseed);
                 }
                 //
                 for (ifact = 1; ifact <= nfact; ifact = ifact + 1) {
                     //
                     //                 Do first for FACT = 'F', then for other values.
                     //
-                    fact = facts[ifact - 1];
+                    fact[0] = facts[ifact - 1];
                     //
                     //                 Compute the condition number for comparison with
                     //                 the value returned by Csysvx.
@@ -291,19 +261,19 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         //                    Compute the 1-norm of A.
                         //
-                        anorm = Clansy("1", &uplo, n, a, lda, rwork);
+                        anorm = Clansy("1", uplo, n, a, lda, rwork);
                         //
                         //                    Factor the matrix A.
                         //
-                        Clacpy(&uplo, n, n, a, lda, afac, lda);
-                        Csytrf(&uplo, n, afac, lda, iwork, work, lwork, info);
+                        Clacpy(uplo, n, n, a, lda, afac, lda);
+                        Csytrf(uplo, n, afac, lda, iwork, work, lwork, info);
                         //
                         //                    Compute inv(A) and take its norm.
                         //
-                        Clacpy(&uplo, n, n, afac, lda, ainv, lda);
+                        Clacpy(uplo, n, n, afac, lda, ainv, lda);
                         lwork = (n + nb + 1) * (nb + 3);
-                        Csytri2(&uplo, n, ainv, lda, iwork, work, lwork, info);
-                        ainvnm = Clansy("1", &uplo, n, ainv, lda, rwork);
+                        Csytri2(uplo, n, ainv, lda, iwork, work, lwork, info);
+                        ainvnm = Clansy("1", uplo, n, ainv, lda, rwork);
                         //
                         //                    Compute the 1-norm condition number of A.
                         //
@@ -316,18 +286,18 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     //                 Form an exact solution and set the right hand side.
                     //
-                    Clarhs(path, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                    xtype = 'C';
+                    Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                    xtype[0] = 'C';
                     //
                     //                 --- Test Csysv  ---
                     //
                     if (ifact == 2) {
-                        Clacpy(&uplo, n, n, a, lda, afac, lda);
+                        Clacpy(uplo, n, n, a, lda, afac, lda);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
                         //                    Factor the matrix and solve the system using Csysv.
                         //
-                        Csysv(&uplo, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
+                        Csysv(uplo, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
                         //
                         //                    Adjust the expected value of INFO to account for
                         //                    pivoting.
@@ -349,7 +319,7 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //                    Check error code from Csysv .
                         //
                         if (info != k) {
-                            Alaerh(path, "Csysv ", info, k, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Csysv ", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_120;
                         } else if (info != 0) {
                             goto statement_120;
@@ -358,12 +328,12 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //                    Reconstruct matrix from factors and compute
                         //                    residual.
                         //
-                        Csyt01(&uplo, n, a, lda, afac, lda, iwork, ainv, lda, rwork, result[1 - 1]);
+                        Csyt01(uplo, n, a, lda, afac, lda, iwork, ainv, lda, rwork, result[1 - 1]);
                         //
                         //                    Compute residual of the computed solution.
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
-                        Csyt02(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
+                        Csyt02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
                         //
                         //                    Check solution from generated exact solution.
                         //
@@ -392,14 +362,14 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //                 --- Test Csysvx ---
                     //
                     if (ifact == 2) {
-                        Claset(&uplo, n, n, COMPLEX(zero), COMPLEX(zero), afac, lda);
+                        Claset(uplo, n, n, COMPLEX(zero), COMPLEX(zero), afac, lda);
                     }
                     Claset("Full", n, nrhs, COMPLEX(zero), COMPLEX(zero), x, lda);
                     //
                     //                 Solve the system and compute the condition number and
                     //                 error bounds using Csysvx.
                     //
-                    Csysvx(&fact, &uplo, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, lwork, &rwork[(2 * nrhs + 1) - 1], info);
+                    Csysvx(fact, uplo, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, lwork, &rwork[(2 * nrhs + 1) - 1], info);
                     //
                     //                 Adjust the expected value of INFO to account for
                     //                 pivoting.
@@ -421,8 +391,8 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //                 Check the error code from Csysvx.
                     //
                     if (info != k) {
-                        fact_uplo[0] = fact;
-                        fact_uplo[1] = uplo;
+                        fact_uplo[0] = fact[0];
+                        fact_uplo[1] = uplo[0];
                         fact_uplo[2] = '\0';
                         Alaerh(path, "Csysvx", info, k, fact_uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         goto statement_150;
@@ -434,7 +404,7 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       Reconstruct matrix from factors and compute
                             //                       residual.
                             //
-                            Csyt01(&uplo, n, a, lda, afac, lda, iwork, ainv, lda, &rwork[(2 * nrhs + 1) - 1], result[1 - 1]);
+                            Csyt01(uplo, n, a, lda, afac, lda, iwork, ainv, lda, &rwork[(2 * nrhs + 1) - 1], result[1 - 1]);
                             k1 = 1;
                         } else {
                             k1 = 2;
@@ -443,7 +413,7 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //                    Compute residual of the computed solution.
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
-                        Csyt02(&uplo, n, nrhs, a, lda, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
+                        Csyt02(uplo, n, nrhs, a, lda, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
                         //
                         //                    Check solution from generated exact solution.
                         //
@@ -451,7 +421,7 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         //                    Check the error bounds from iterative refinement.
                         //
-                        Cpot05(&uplo, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
+                        Cpot05(uplo, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                     } else {
                         k1 = 6;
                     }

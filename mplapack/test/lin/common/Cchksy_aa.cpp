@@ -54,21 +54,21 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype;
+    char xtype[1];
     const INTEGER ntypes = 10;
     INTEGER nimat = 0;
     INTEGER izero = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo;
-    char type;
+    char uplo[1];
+    char type[1];
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    char dist[1];
     INTEGER info = 0;
     INTEGER ioff = 0;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
@@ -84,37 +84,6 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     INTEGER nt = 0;
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize constants and the random number seed.
     //
     //     Test path
     //
@@ -139,6 +108,7 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     if (tsterr) {
         Cerrsy(path, nout);
     }
+    infot = 0;
     //
     //     Set the minimum block size for which the block routine should
     //     be used, which will be later returned by iMlaenv
@@ -155,7 +125,7 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
             goto statement_180;
         }
         lda = max(n, (INTEGER)1);
-        xtype = 'N';
+        xtype[0] = 'N';
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -183,23 +153,23 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
             //           Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
-                uplo = uplos[iuplo - 1];
+                uplo[0] = uplos[iuplo - 1];
                 //
                 //              Begin generate the test matrix A.
                 //
                 //              Set up parameters with Clatb4 for the matrix generator
                 //              based on the type of matrix to be generated.
                 //
-                Clatb4(matpath, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+                Clatb4(matpath, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
                 //              Generate a matrix with Clatms.
                 //
-                Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
+                Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
                 //              Check error code from Clatms and handle error.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Clatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     //
                     //                    Skip all tests for this generated matrix
                     //
@@ -292,7 +262,7 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     //                 will be factorized in place. This is needed to
                     //                 preserve the test matrix A for subsequent tests.
                     //
-                    Clacpy(&uplo, n, n, a, lda, afac, lda);
+                    Clacpy(uplo, n, n, a, lda, afac, lda);
                     //
                     //                 Compute the L*D*L**T or U*D*U**T factorization of the
                     //                 matrix. IWORK stores details of the interchanges and
@@ -300,7 +270,7 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     //                 block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)1, n * nb + n);
-                    Csytrf_aa(&uplo, n, afac, lda, iwork, ainv, lwork, info);
+                    Csytrf_aa(uplo, n, afac, lda, iwork, ainv, lwork, info);
                     //
                     //                 Adjust the expected value of INFO to account for
                     //                 pivoting.
@@ -325,13 +295,13 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     //                 Check error code from Csytrf and handle error.
                     //
                     if (info != k) {
-                        Alaerh(path, "Csytrf_aa", info, k, &uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Csytrf_aa", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
                     //+    TEST 1
                     //                 Reconstruct matrix from factors and compute residual.
                     //
-                    Csyt01_aa(&uplo, n, a, lda, afac, lda, iwork, ainv, lda, rwork, result[1 - 1]);
+                    Csyt01_aa(uplo, n, a, lda, afac, lda, iwork, ainv, lda, rwork, result[1 - 1]);
                     nt = 1;
                     //
                     //                 Print information about the tests that did not pass
@@ -368,24 +338,24 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         //                    Choose a set of NRHS random solution vectors
                         //                    stored in XACT and set up the right hand side B
                         //
-                        Clarhs(matpath, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        Clarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
                         lwork = max((INTEGER)1, 3 * n - 2);
-                        Csytrs_aa(&uplo, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
+                        Csytrs_aa(uplo, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
                         //
                         //                    Check error code from Csytrs and handle error.
                         //
                         if (info != 0) {
                             if (izero == 0) {
-                                Alaerh(path, "Csytrs_aa", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Csytrs_aa", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                         } else {
                             Clacpy("Full", n, nrhs, b, lda, work, lda);
                             //
                             //                       Compute the residual for the solution
                             //
-                            Csyt02(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
+                            Csyt02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
                             //
                             //                       Print information about the tests that did not pass
                             //                       the threshold.
