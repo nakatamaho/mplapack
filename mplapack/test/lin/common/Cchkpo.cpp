@@ -54,21 +54,21 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype;
+    char xtype[1];
     const INTEGER ntypes = 9;
     INTEGER nimat = 0;
     INTEGER izero = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo;
-    char type;
+    char uplo[1];
+    char type[1];
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    char dist[1];
     INTEGER info = 0;
     INTEGER ioff = 0;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
@@ -81,37 +81,6 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     REAL rcond = 0.0;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Initialize constants and the random number seed.
     //
@@ -130,13 +99,14 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     if (tsterr) {
         Cerrpo(path, nout);
     }
+    infot = 0;
     //
     //     Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype = 'N';
+        xtype[0] = 'N';
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -161,19 +131,19 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
             //           Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
-                uplo = uplos[iuplo - 1];
+                uplo[0] = uplos[iuplo - 1];
                 //
                 //              Set up parameters with Clatb4 and generate a test matrix
                 //              with Clatms.
                 //
-                Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+                Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
+                Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
                 //              Check error code from Clatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Clatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_100;
                 }
                 //
@@ -228,13 +198,13 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     //                 Compute the L*L' or U'*U factorization of the matrix.
                     //
-                    Clacpy(&uplo, n, n, a, lda, afac, lda);
-                    Cpotrf(&uplo, n, afac, lda, info);
+                    Clacpy(uplo, n, n, a, lda, afac, lda);
+                    Cpotrf(uplo, n, afac, lda, info);
                     //
                     //                 Check error code from Cpotrf.
                     //
                     if (info != izero) {
-                        Alaerh(path, "Cpotrf", info, izero, &uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Cpotrf", info, izero, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                         goto statement_90;
                     }
                     //
@@ -247,22 +217,22 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //+    TEST 1
                     //                 Reconstruct matrix from factors and compute residual.
                     //
-                    Clacpy(&uplo, n, n, afac, lda, ainv, lda);
-                    Cpot01(&uplo, n, a, lda, ainv, lda, rwork, result[1 - 1]);
+                    Clacpy(uplo, n, n, afac, lda, ainv, lda);
+                    Cpot01(uplo, n, a, lda, ainv, lda, rwork, result[1 - 1]);
                     //
                     //+    TEST 2
                     //                 Form the inverse and compute the residual.
                     //
-                    Clacpy(&uplo, n, n, afac, lda, ainv, lda);
-                    Cpotri(&uplo, n, ainv, lda, info);
+                    Clacpy(uplo, n, n, afac, lda, ainv, lda);
+                    Cpotri(uplo, n, ainv, lda, info);
                     //
                     //                 Check error code from Cpotri.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Cpotri", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Cpotri", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
-                    Cpot03(&uplo, n, a, lda, ainv, lda, work, lda, rwork, rcondc, result[2 - 1]);
+                    Cpot03(uplo, n, a, lda, ainv, lda, work, lda, rwork, rcondc, result[2 - 1]);
                     //
                     //                 Print information about the tests that did not pass
                     //                 the threshold.
@@ -294,19 +264,19 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //+    TEST 3
                         //                 Solve and compute residual for A * X = B .
                         //
-                        Clarhs(path, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        Cpotrs(&uplo, n, nrhs, afac, lda, x, lda, info);
+                        Cpotrs(uplo, n, nrhs, afac, lda, x, lda, info);
                         //
                         //                 Check error code from Cpotrs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Cpotrs", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cpotrs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
-                        Cpot02(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[3 - 1]);
+                        Cpot02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[3 - 1]);
                         //
                         //+    TEST 4
                         //                 Check solution from generated exact solution.
@@ -316,16 +286,16 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //+    TESTS 5, 6, and 7
                         //                 Use iterative refinement to improve the solution.
                         //
-                        Cporfs(&uplo, n, nrhs, a, lda, afac, lda, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                        Cporfs(uplo, n, nrhs, a, lda, afac, lda, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                         //
                         //                 Check error code from Cporfs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Cporfs", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cporfs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
-                        Cpot05(&uplo, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[6 - 1]);
+                        Cpot05(uplo, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[6 - 1]);
                         //
                         //                    Print information about the tests that did not pass
                         //                    the threshold.
@@ -348,13 +318,13 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //+    TEST 8
                     //                 Get an estimate of RCOND = 1/CNDNUM.
                     //
-                    anorm = Clanhe("1", &uplo, n, a, lda, rwork);
-                    Cpocon(&uplo, n, afac, lda, anorm, rcond, work, rwork, info);
+                    anorm = Clanhe("1", uplo, n, a, lda, rwork);
+                    Cpocon(uplo, n, afac, lda, anorm, rcond, work, rwork, info);
                     //
                     //                 Check error code from Cpocon.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Cpocon", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Cpocon", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     result[8 - 1] = Rget06(rcond, rcondc);

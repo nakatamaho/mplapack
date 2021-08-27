@@ -59,13 +59,13 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     const INTEGER ntypes = 12;
     INTEGER nimat = 0;
     INTEGER imat = 0;
-    char type;
+    char type[1];
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cond = 0.0;
-    char dist;
+    char dist[1];
     bool zerot = false;
     INTEGER koff = 0;
     INTEGER info = 0;
@@ -74,7 +74,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL z[3];
     const REAL zero = 0.0;
     INTEGER ifact = 0;
-    char fact;
+    char fact[1];
     REAL rcondo = 0.0;
     REAL rcondi = 0.0;
     REAL anormo = 0.0;
@@ -82,7 +82,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL ainvnm = 0.0;
     INTEGER j = 0;
     INTEGER itran = 0;
-    char trans;
+    char trans[1];
     REAL rcondc = 0.0;
     INTEGER ix = 0;
     INTEGER nt = 0;
@@ -94,37 +94,6 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     bool trfcon = false;
     static const char *format_9998 = "(1x,a,', FACT=''',a1,''', TRANS=''',a1,''', N =',i5,', type ',i2,"
                                      "', test ',i2,', ratio = ',a)";
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
     //
     path[0] = 'C';
     path[1] = 'G';
@@ -141,6 +110,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     if (tsterr) {
         Cerrvx(path, nout);
     }
+    infot = 0;
     //
     for (in = 1; in <= nn; in = in + 1) {
         //
@@ -164,7 +134,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             //
             //           Set up parameters with Clatb4.
             //
-            Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cond, &dist);
+            Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cond, dist);
             //
             zerot = imat >= 8 && imat <= 10;
             if (imat <= 6) {
@@ -172,7 +142,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 //              Types 1-6:  generate matrices of known condition number.
                 //
                 koff = max({(INTEGER)2 - ku, 3 - max((INTEGER)1, n)});
-                Clatms(n, n, &dist, iseed, &type, rwork, mode, cond, anorm, kl, ku, "Z", &af[koff - 1], 3, work, info);
+                Clatms(n, n, dist, iseed, type, rwork, mode, cond, anorm, kl, ku, "Z", &af[koff - 1], 3, work, info);
                 //
                 //              Check the error code from Clatms.
                 //
@@ -252,9 +222,9 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             //
             for (ifact = 1; ifact <= 2; ifact = ifact + 1) {
                 if (ifact == 1) {
-                    fact = 'F';
+                    fact[0] = 'F';
                 } else {
-                    fact = 'N';
+                    fact[0] = 'N';
                 }
                 //
                 //              Compute the condition number for comparison with
@@ -323,7 +293,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 }
                 //
                 for (itran = 1; itran <= 3; itran = itran + 1) {
-                    trans = transs[itran - 1];
+                    trans[0] = transs[itran - 1];
                     if (itran == 1) {
                         rcondc = rcondo;
                     } else {
@@ -340,7 +310,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     //                 Set the right hand side.
                     //
-                    Clagtm(&trans, n, nrhs, one, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], xact, lda, zero, b, lda);
+                    Clagtm(trans, n, nrhs, one, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], xact, lda, zero, b, lda);
                     //
                     if (ifact == 2 && itran == 1) {
                         //
@@ -365,7 +335,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       Check residual of computed solution.
                             //
                             Clacpy("Full", n, nrhs, b, lda, work, lda);
-                            Cgtt02(&trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], x, lda, work, lda, result[2 - 1]);
+                            Cgtt02(trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], x, lda, work, lda, result[2 - 1]);
                             //
                             //                       Check solution from generated exact solution.
                             //
@@ -406,13 +376,13 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //                 Solve the system and compute the condition number and
                     //                 error bounds using Cgtsvx.
                     //
-                    Cgtsvx(&fact, &trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                    Cgtsvx(fact, trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                     //
                     //                 Check the error code from Cgtsvx.
                     //
                     if (info != izero) {
-                        fact_trans[0] = fact;
-                        fact_trans[1] = trans;
+                        fact_trans[0] = fact[0];
+                        fact_trans[1] = trans[1];
                         fact_trans[2] = '\0';
                         Alaerh(path, "Cgtsvx", info, izero, fact_trans, n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
                     }
@@ -434,7 +404,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //                    Check residual of computed solution.
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
-                        Cgtt02(&trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], x, lda, work, lda, result[2 - 1]);
+                        Cgtt02(trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], x, lda, work, lda, result[2 - 1]);
                         //
                         //                    Check solution from generated exact solution.
                         //
@@ -442,7 +412,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         //                    Check the error bounds from iterative refinement.
                         //
-                        Cgtt05(&trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
+                        Cgtt05(trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                         nt = 5;
                     }
                     //

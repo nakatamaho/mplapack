@@ -78,7 +78,7 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER ioff = 0;
     const REAL zero = 0.0;
     INTEGER iequed = 0;
-    char equed;
+    char equed[1];
     INTEGER nfact = 0;
     INTEGER ifact = 0;
     char fact[1];
@@ -206,7 +206,7 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             Clacpy("Full", n, n, a, lda, asav, lda);
             //
             for (iequed = 1; iequed <= 4; iequed = iequed + 1) {
-                equed = equeds[iequed - 1];
+                equed[0] = equeds[iequed - 1];
                 if (iequed == 1) {
                     nfact = 3;
                 } else {
@@ -241,20 +241,20 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //
                             Cgeequ(n, n, afac, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, info);
                             if (info == 0 && n > 0) {
-                                if (Mlsame(&equed, "R")) {
+                                if (Mlsame(equed, "R")) {
                                     rowcnd = zero;
                                     colcnd = one;
-                                } else if (Mlsame(&equed, "C")) {
+                                } else if (Mlsame(equed, "C")) {
                                     rowcnd = one;
                                     colcnd = zero;
-                                } else if (Mlsame(&equed, "B")) {
+                                } else if (Mlsame(equed, "B")) {
                                     rowcnd = zero;
                                     colcnd = zero;
                                 }
                                 //
                                 //                          Equilibrate the matrix.
                                 //
-                                Claqge(n, n, afac, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, &equed);
+                                Claqge(n, n, afac, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, equed);
                             }
                         }
                         //
@@ -384,13 +384,13 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       Equilibrate the matrix if FACT = 'F' and
                             //                       EQUED = 'R', 'C', or 'B'.
                             //
-                            Claqge(n, n, a, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, &equed);
+                            Claqge(n, n, a, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, equed);
                         }
                         //
                         //                    Solve the system and compute the condition number
                         //                    and error bounds using Cgesvx.
                         //
-                        Cgesvx(fact, trans, n, nrhs, a, lda, afac, lda, iwork, &equed, s, &s[(n + 1) - 1], b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                        Cgesvx(fact, trans, n, nrhs, a, lda, afac, lda, iwork, equed, s, &s[(n + 1) - 1], b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                         //
                         //                    Check the error code from Cgesvx.
                         //
@@ -442,7 +442,7 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //
                             //                       Check solution from generated exact solution.
                             //
-                            if (nofact || (prefac && Mlsame(&equed, "N"))) {
+                            if (nofact || (prefac && Mlsame(equed, "N"))) {
                                 Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                             } else {
                                 if (itran == 1) {
