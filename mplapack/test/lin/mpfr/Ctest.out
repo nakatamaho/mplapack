@@ -20,10 +20,6 @@ The following parameter values will be used:
  CGE drivers passed the tests of the error exits
 
  All tests for CGE drivers  passed the threshold (   5748 tests run)
-
- End of tests
- Total time used =  41 seconds
-
  CGB routines passed the tests of the error exits
 
  All tests for CGB routines passed the threshold (  28938 tests run)
@@ -525,77 +521,45 @@ The following parameter values will be used:
  Cgbsvx( 'F','T',   50,   12,   12,...), EQUED='B', type 6, test(5)=+4.1626145642315511e+07
  Cgbsvx( 'F','C',   50,   12,   12,...), EQUED='B', type 6, test(5)=+3.1899075469108842e+06
  CGB drivers:    480 out of  37035 tests failed to pass the threshold
-
- End of tests
- Total time used =  375 seconds
-
  CGT routines passed the tests of the error exits
 
  All tests for CGT routines passed the threshold (   2694 tests run)
  CGT drivers passed the tests of the error exits
 
  All tests for CGT drivers  passed the threshold (   2033 tests run)
-
- End of tests
- Total time used =  381 seconds
-
  CPO routines passed the tests of the error exits
 
  All tests for CPO routines passed the threshold (   1628 tests run)
  CPO drivers passed the tests of the error exits
 
  All tests for CPO drivers  passed the threshold (   1910 tests run)
-
- End of tests
- Total time used =  404 seconds
-
  CPS routines passed the tests of the error exits
 
  All tests for CPS routines passed the threshold (    150 tests run)
-
- End of tests
- Total time used =  408 seconds
-
  CPP routines passed the tests of the error exits
 
  All tests for CPP routines passed the threshold (   1332 tests run)
  CPP drivers passed the tests of the error exits
 
  All tests for CPP drivers  passed the threshold (   1910 tests run)
-
- End of tests
- Total time used =  426 seconds
-
  CPB routines passed the tests of the error exits
 
  All tests for CPB routines passed the threshold (   3458 tests run)
  CPB drivers passed the tests of the error exits
 
  All tests for CPB drivers  passed the threshold (   4750 tests run)
-
- End of tests
- Total time used =  487 seconds
-
  CPT routines passed the tests of the error exits
 
  All tests for CPT routines passed the threshold (   1778 tests run)
  CPT drivers passed the tests of the error exits
 
  All tests for CPT drivers  passed the threshold (    788 tests run)
-
- End of tests
- Total time used =  489 seconds
-
  CHE routines passed the tests of the error exits
 
  All tests for CHE routines passed the threshold (   1846 tests run)
  CHE drivers passed the tests of the error exits
 
  All tests for CHE drivers  passed the threshold (   1072 tests run)
-
- End of tests
- Total time used =  511 seconds
-
  CHR routines passed the tests of the error exits
 
  CHR:  Hermitian indefinite matrices, "rook" (bounded Bunch-Kaufman) pivoting
@@ -630,10 +594,6 @@ The following parameter values will be used:
  CHR drivers passed the tests of the error exits
 
  All tests for CHR drivers  passed the threshold (    222 tests run)
-
- End of tests
- Total time used =  525 seconds
-
  CHK routines passed the tests of the error exits
 
  CHK:  No header available
@@ -647,70 +607,42 @@ The following parameter values will be used:
  CHK drivers passed the tests of the error exits
 
  All tests for CHK drivers  passed the threshold (    222 tests run)
-
- End of tests
- Total time used =  538 seconds
-
  CHA routines passed the tests of the error exits
 
  All tests for CHA routines passed the threshold (   1320 tests run)
  CHA drivers passed the tests of the error exits
 
  All tests for CHA drivers  passed the threshold (    148 tests run)
-
- End of tests
- Total time used =  553 seconds
-
  CH2 routines passed the tests of the error exits
 
  All tests for CH2 routines passed the threshold (    666 tests run)
  CH2 drivers passed the tests of the error exits
 
  All tests for CH2 drivers  passed the threshold (     74 tests run)
-
- End of tests
- Total time used =  564 seconds
-
  CSA routines passed the tests of the error exits
 
  All tests for CSA routines passed the threshold (   1320 tests run)
  CSA drivers passed the tests of the error exits
 
  All tests for CSA drivers  passed the threshold (    148 tests run)
-
- End of tests
- Total time used =  580 seconds
-
  CS2 routines passed the tests of the error exits
 
  All tests for CS2 routines passed the threshold (    666 tests run)
  CH2 drivers passed the tests of the error exits
 
  All tests for CH2 drivers  passed the threshold (     74 tests run)
-
- End of tests
- Total time used =  591 seconds
-
  CHP routines passed the tests of the error exits
 
  All tests for CHP routines passed the threshold (   1404 tests run)
  CHP drivers passed the tests of the error exits
 
  All tests for CHP drivers  passed the threshold (   1072 tests run)
-
- End of tests
- Total time used =  608 seconds
-
  CSY routines passed the tests of the error exits
 
  All tests for CSY routines passed the threshold (   2122 tests run)
  CSY drivers passed the tests of the error exits
 
  All tests for CSY drivers  passed the threshold (   1240 tests run)
-
- End of tests
- Total time used =  630 seconds
-
  CSR routines passed the tests of the error exits
 
  CSR:  Symmetric indefinite matrices, "rook" (bounded Bunch-Kaufman) pivoting
@@ -745,10 +677,6 @@ The following parameter values will be used:
  CSR drivers passed the tests of the error exits
 
  All tests for CSR drivers  passed the threshold (    258 tests run)
-
- End of tests
- Total time used =  643 seconds
-
  CSK routines passed the tests of the error exits
 
  CSK:  Symmetric indefinite matrices, "rook" (bounded Bunch-Kaufman) pivoting
@@ -792,71 +720,35 @@ The following parameter values will be used:
  CSK drivers passed the tests of the error exits
 
  All tests for CSK drivers  passed the threshold (    258 tests run)
-
- End of tests
- Total time used =  657 seconds
-
  CSP routines passed the tests of the error exits
 
  All tests for CSP routines passed the threshold (   1620 tests run)
  CSP drivers passed the tests of the error exits
 
  All tests for CSP drivers  passed the threshold (   1240 tests run)
-
- End of tests
- Total time used =  675 seconds
-
  CTR routines passed the tests of the error exits
 
  All tests for CTR routines passed the threshold (   7672 tests run)
-
- End of tests
- Total time used =  697 seconds
-
  CTP routines passed the tests of the error exits
 
  All tests for CTP routines passed the threshold (   7392 tests run)
-
- End of tests
- Total time used =  717 seconds
-
  CTB routines passed the tests of the error exits
 
  All tests for CTB routines passed the threshold (  19888 tests run)
-
- End of tests
- Total time used =  772 seconds
-
  CQR routines passed the tests of the error exits
 
  All tests for CQR routines passed the threshold (  42840 tests run)
-
- End of tests
- Total time used =  939 seconds
-
  CRQ routines passed the tests of the error exits
 
  All tests for CRQ routines passed the threshold (  28784 tests run)
-
- End of tests
- Total time used =  1081 seconds
-
  
  CLQ routines passed the tests of the error exits
 
  All tests for CLQ routines passed the threshold (  28784 tests run)
-
- End of tests
- Total time used =  1221 seconds
-
  
  CQL routines passed the tests of the error exits
 
  All tests for CQL routines passed the threshold (  28784 tests run)
-
- End of tests
- Total time used =  1364 seconds
-
 
  CQ3:  No header available
  M =    3, N =    3, NB =   1, type  2, test  1, ratio =+1.7333194572531322e+151
@@ -960,10 +852,6 @@ The following parameter values will be used:
  M =   50, N =   50, NB =   3, type  3, test  1, ratio =+1.6889235799831876e+147
  M =   50, N =   50, NB =  20, type  3, test  1, ratio =+1.6889235799831876e+147
  CQ3:    100 out of   4410 tests failed to pass the threshold
-
- End of tests
- Total time used =  1384 seconds
-
  CTZ routines passed the tests of the error exits
 
  CTZ:  RQ factorization of trapezoidal matrix
@@ -998,10 +886,6 @@ The following parameter values will be used:
  M =   50, N =   50, type  2, test  1, ratio =+1.5670052502311121e+153
  M =   50, N =   50, type  3, test  1, ratio =+2.5979718572828929e+146
  CTZ:     20 out of    252 tests failed to pass the threshold
-
- End of tests
- Total time used =  1385 seconds
-
  CLS routines passed the tests of the error exits
 
  CLS:  Least squares driver routines
@@ -13708,56 +13592,28 @@ The following parameter values will be used:
  M=   50, N=   50, NRHS=  15, NB=  20, type 6, test(13)=+2.3332780979672691e+150
  CLS drivers:  12595 out of 105840 tests failed to pass the threshold
                   30 error messages recorded
-
- End of tests
- Total time used =  1814 seconds
-
  
  All tests for CEQ routines passed the threshold
-
- End of tests
- Total time used =  1814 seconds
-
  CQT routines passed the tests of the error exits
 
  All tests for CQT routines passed the threshold (    510 tests run)
-
- End of tests
- Total time used =  1822 seconds
-
  CQX routines passed the tests of the error exits
 
  All tests for CQX routines passed the threshold (   1482 tests run)
-
- End of tests
- Total time used =  1892 seconds
-
  CXQ routines passed the tests of the error exits
 
  All tests for CXQ routines passed the threshold (   1482 tests run)
-
- End of tests
- Total time used =  1966 seconds
-
  CTQ routines passed the tests of the error exits
 
  All tests for CTQ routines passed the threshold (    510 tests run)
-
- End of tests
- Total time used =  1974 seconds
-
  *** XERBLA was called from Cgeqr with INFO =      6 instead of  8 ***
  *** CTS routines failed the tests of the error exits ***
 
  All tests for CTS routines passed the threshold (  10800 tests run)
-
- End of tests
- Total time used =  1996 seconds
-
  CHH routines passed the tests of the error exits
 
  All tests for CHH routines passed the threshold (  15900 tests run)
 
  End of tests
- Total time used =  2054 seconds
+ Total time used =  2003 seconds
 
