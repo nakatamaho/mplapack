@@ -367,7 +367,7 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                                     }
                                     sprintnum_short(buf, result[k - 1]);
                                     write(nout, "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                                "', test(',i2,') =',buf)"),
+                                                "', test(',i2,') =',a)"),
                                         uplo, n, nrhs, imat, k, buf;
                                     nfail++;
                                 }
