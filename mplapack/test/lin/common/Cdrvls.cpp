@@ -95,20 +95,16 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER nrows = 0;
     INTEGER ncols = 0;
     INTEGER ldwork = 0;
-    COMPLEX work[lwork];
     const REAL one = 1.0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const COMPLEX czero = COMPLEX(0.0, 0.0);
-    REAL rwork[lrwork];
     const INTEGER ntests = 16;
     REAL result[ntests];
     INTEGER k = 0;
     INTEGER imb = 0;
-    REAL work2[2 * lwork];
     INTEGER rank = 0;
     REAL normb = 0.0;
     INTEGER j = 0;
-    INTEGER iwork[liwork];
     //
     //     Initialize constants and the random number seed.
     //
@@ -231,6 +227,11 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     }
     //
     lwlsy = lwork;
+    //
+    COMPLEX *work = new COMPLEX[lwork];
+    REAL *work2 = new REAL[2 * lwork];
+    INTEGER *iwork = new INTEGER[liwork];
+    REAL *rwork = new REAL[lrwork];
     //
     for (im = 1; im <= nm; im = im + 1) {
         m = mval[im - 1];
@@ -600,9 +601,10 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     Alasvm(path, nout, nfail, nrun, nerrs);
     //
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(work)");
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(iwork)");
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(rwork)");
+    delete[] work;
+    delete[] work2;
+    delete[] iwork;
+    delete[] rwork;
     //
     //     End of Cdrvls
     //
