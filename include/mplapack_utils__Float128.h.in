@@ -482,12 +482,12 @@ extern "C" {
 #endif
 
 inline _Float128 abs(const std::complex<_Float128> &a) { 
-    _Float128 _Complex b, tmp;
-    std::complex<_Float128> c;
+    _Float128 _Complex b;
+    _Float128 c;
     __real__(b) = (a.real());
     __imag__(b) = (a.imag());
-    tmp = cabsq(b);
-    return tmp;
+    c = cabsq(b);
+    return c;
 }
 
 inline std::complex<_Float128> sqrt(const std::complex<_Float128> a) {
