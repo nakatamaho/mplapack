@@ -10,3 +10,4 @@ docker buildx build --platform linux/arm64   -f Dockerfile_CentOS7_AArch64 . -t 
 docker buildx build --platform linux/arm64   -f Dockerfile_CentOS8         . -t mplapack:centos8aarch64    --load 2>&1 | tee log.centos8aarch64   
 docker buildx build --platform linux/ppc64le -f Dockerfile_ubuntu20.04     . -t mplapack:ubuntu2004ppc64le --load 2>&1 | tee log.ubuntu2004ppc64le
 docker buildx build --platform linux/riscv64 -f Dockerfile_ubuntu20.04     . -t mplapack:ubuntu2004riscv64 --load 2>&1 | tee log.ubuntu2004riscv64
+docker buildx build --platform linux/s390x   -f Dockerfile_ubuntu20.04     . -t mplapack:ubuntu2004s390x   --load 2>&1 | tee log.ubuntu2004s390x
