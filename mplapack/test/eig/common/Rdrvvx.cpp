@@ -95,7 +95,7 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER iwk = 0;
     INTEGER nnwork = 0;
     INTEGER ibal = 0;
-    char balanc;
+    char balanc[1];
     INTEGER ntest = 0;
     INTEGER nfail = 0;
     INTEGER i = 0;
@@ -392,11 +392,11 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //              Test for all balancing options
                 //
                 for (ibal = 1; ibal <= 4; ibal = ibal + 1) {
-                    balanc = bal[ibal - 1];
+                    balanc[0] = bal[ibal - 1];
                     //
                     //                 Perform tests
                     //
-                    Rget23(false, &balanc, jtype, thresh, ioldsd, nounit, n, a, lda, h, wr, wi, wr1, wi1, vl, ldvl, vr, ldvr, lre, ldlre, rcondv, rcndv1, rcdvin, rconde, rcnde1, rcdein, scale, scale1, result, work, nnwork, iwork, info);
+                    Rget23(false, balanc, jtype, thresh, ioldsd, nounit, n, a, lda, h, wr, wi, wr1, wi1, vl, ldvl, vr, ldvr, lre, ldlre, rcondv, rcndv1, rcdvin, rconde, rcnde1, rcdein, scale, scale1, result, work, nnwork, iwork, info);
                     //
                     //                 Check for RESULT(j) > THRESH
                     //

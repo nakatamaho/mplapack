@@ -54,21 +54,21 @@ void Cchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype;
+    char xtype[1];
     const INTEGER ntypes = 11;
     INTEGER nimat = 0;
     INTEGER izero = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo;
-    char type;
+    char uplo[1];
+    char type[1];
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    char dist[1];
     INTEGER info = 0;
     INTEGER ioff = 0;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
@@ -89,37 +89,6 @@ void Cchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER nrhs = 0;
     REAL rcond = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Initialize constants and the random number seed.
     //
     path[0] = 'C';
@@ -137,6 +106,7 @@ void Cchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     if (tsterr) {
         Cerrsy(path, nout);
     }
+    infot = 0;
     //
     //     Set the minimum block size for which the block routine should
     //     be used, which will be later returned by iMlaenv
@@ -148,7 +118,7 @@ void Cchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype = 'N';
+        xtype[0] = 'N';
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -176,7 +146,7 @@ void Cchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
             //           Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
-                uplo = uplos[iuplo - 1];
+                uplo[0] = uplos[iuplo - 1];
                 //
                 //              Begin generate test matrix A.
                 //
@@ -185,16 +155,16 @@ void Cchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //                 Set up parameters with Clatb4 for the matrix generator
                     //                 based on the type of matrix to be generated.
                     //
-                    Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+                    Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                     //
                     //                 Generate a matrix with Clatms.
                     //
-                    Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "N", a, lda, work, info);
+                    Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "N", a, lda, work, info);
                     //
                     //                 Check error code from Clatms and handle error.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Clatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         //
                         //                    Skip all tests for this generated matrix
                         //
@@ -276,7 +246,7 @@ void Cchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //                 diagonal matrix to test alternate code
                     //                 for the 2 x 2 blocks.
                     //
-                    Clatsy(&uplo, n, a, lda, iseed);
+                    Clatsy(uplo, n, a, lda, iseed);
                     //
                 }
                 //
@@ -296,7 +266,7 @@ void Cchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //                 will be factorized in place. This is needed to
                     //                 preserve the test matrix A for subsequent tests.
                     //
-                    Clacpy(&uplo, n, n, a, lda, afac, lda);
+                    Clacpy(uplo, n, n, a, lda, afac, lda);
                     //
                     //                 Compute the L*D*L**T or U*D*U**T factorization of the
                     //                 matrix. IWORK stores details of the interchanges and
@@ -304,7 +274,7 @@ void Cchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //                 block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)2, nb) * lda;
-                    Csytrf(&uplo, n, afac, lda, iwork, ainv, lwork, info);
+                    Csytrf(uplo, n, afac, lda, iwork, ainv, lwork, info);
                     //
                     //                 Adjust the expected value of INFO to account for
                     //                 pivoting.
@@ -326,7 +296,7 @@ void Cchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //                 Check error code from Csytrf and handle error.
                     //
                     if (info != k) {
-                        Alaerh(path, "Csytrf", info, k, &uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Csytrf", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
                     //                 Set the condition estimate flag if the INFO is not 0.
@@ -340,7 +310,7 @@ void Cchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //+    TEST 1
                     //                 Reconstruct matrix from factors and compute residual.
                     //
-                    Csyt01(&uplo, n, a, lda, afac, lda, iwork, ainv, lda, rwork, result[1 - 1]);
+                    Csyt01(uplo, n, a, lda, afac, lda, iwork, ainv, lda, rwork, result[1 - 1]);
                     nt = 1;
                     //
                     //+    TEST 2
@@ -350,20 +320,20 @@ void Cchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //                 Do it only for the first block size.
                     //
                     if (inb == 1 && !trfcon) {
-                        Clacpy(&uplo, n, n, afac, lda, ainv, lda);
+                        Clacpy(uplo, n, n, afac, lda, ainv, lda);
                         lwork = (n + nb + 1) * (nb + 3);
-                        Csytri2(&uplo, n, ainv, lda, iwork, work, lwork, info);
+                        Csytri2(uplo, n, ainv, lda, iwork, work, lwork, info);
                         //
                         //                    Check error code from Csytri2 and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Csytri2", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Csytri2", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         //                    Compute the residual for a symmetric matrix times
                         //                    its inverse.
                         //
-                        Csyt03(&uplo, n, a, lda, ainv, lda, work, lda, rwork, rcondc, result[2 - 1]);
+                        Csyt03(uplo, n, a, lda, ainv, lda, work, lda, rwork, rcondc, result[2 - 1]);
                         nt = 2;
                     }
                     //
@@ -409,22 +379,22 @@ void Cchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                    Choose a set of NRHS random solution vectors
                         //                    stored in XACT and set up the right hand side B
                         //
-                        Clarhs(path, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        Csytrs(&uplo, n, nrhs, afac, lda, iwork, x, lda, info);
+                        Csytrs(uplo, n, nrhs, afac, lda, iwork, x, lda, info);
                         //
                         //                    Check error code from Csytrs and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Csytrs", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Csytrs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
                         //
                         //                    Compute the residual for the solution
                         //
-                        Csyt02(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[3 - 1]);
+                        Csyt02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[3 - 1]);
                         //
                         //+    TEST 4 (Using TRS2)
                         //                 Solve and compute residual for  A * X = B.
@@ -432,22 +402,22 @@ void Cchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //                    Choose a set of NRHS random solution vectors
                         //                    stored in XACT and set up the right hand side B
                         //
-                        Clarhs(path, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        Csytrs2(&uplo, n, nrhs, afac, lda, iwork, x, lda, work, info);
+                        Csytrs2(uplo, n, nrhs, afac, lda, iwork, x, lda, work, info);
                         //
                         //                    Check error code from Csytrs2 and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Csytrs", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Csytrs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
                         //
                         //                    Compute the residual for the solution
                         //
-                        Csyt02(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[4 - 1]);
+                        Csyt02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[4 - 1]);
                         //
                         //+    TEST 5
                         //                 Check solution from generated exact solution.
@@ -457,16 +427,16 @@ void Cchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //+    TESTS 6, 7, and 8
                         //                 Use iterative refinement to improve the solution.
                         //
-                        Csyrfs(&uplo, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                        Csyrfs(uplo, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                         //
                         //                    Check error code from Csyrfs and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Csyrfs", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Csyrfs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[6 - 1]);
-                        Cpot05(&uplo, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[7 - 1]);
+                        Cpot05(uplo, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[7 - 1]);
                         //
                         //                    Print information about the tests that did not pass
                         //                    the threshold.
@@ -493,13 +463,13 @@ void Cchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //                 Get an estimate of RCOND = 1/CNDNUM.
                 //
                 statement_140:
-                    anorm = Clansy("1", &uplo, n, a, lda, rwork);
-                    Csycon(&uplo, n, afac, lda, iwork, anorm, rcond, work, info);
+                    anorm = Clansy("1", uplo, n, a, lda, rwork);
+                    Csycon(uplo, n, afac, lda, iwork, anorm, rcond, work, info);
                     //
                     //                 Check error code from Csycon and handle error.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Csycon", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Csycon", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     //                 Compute the test ratio to compare values of RCOND

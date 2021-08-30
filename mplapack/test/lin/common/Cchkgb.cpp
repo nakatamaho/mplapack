@@ -58,7 +58,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER m = 0;
     INTEGER in = 0;
     INTEGER n = 0;
-    char xtype;
+    char xtype[1];
     INTEGER nkl = 0;
     INTEGER nku = 0;
     const INTEGER ntypes = 8;
@@ -71,11 +71,11 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER ldafac = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char type;
+    char type[1];
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    char dist[1];
     INTEGER koff = 0;
     const REAL zero = 0.0;
     INTEGER info = 0;
@@ -99,9 +99,9 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     INTEGER itran = 0;
-    char trans;
+    char trans[1];
     REAL rcondc = 0.0;
-    char norm;
+    char norm[1];
     INTEGER k = 0;
     REAL rcond = 0.0;
     //
@@ -141,7 +141,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         //
         for (in = 1; in <= nn; in = in + 1) {
             n = nval[in - 1];
-            xtype = 'N';
+            xtype[0] = 'N';
             //
             //           Set values to use for the upper bandwidth.
             //
@@ -229,13 +229,13 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //                       Set up parameters with Clatb4 and generate a
                             //                       test matrix with Clatms.
                             //
-                            Clatb4(path, imat, m, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+                            Clatb4(path, imat, m, n, type, kl, ku, anorm, mode, cndnum, dist);
                             //
                             koff = max((INTEGER)1, ku + 2 - n);
                             for (i = 1; i <= koff - 1; i = i + 1) {
                                 a[i - 1] = zero;
                             }
-                            Clatms(m, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "Z", &a[koff - 1], lda, work, info);
+                            Clatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "Z", &a[koff - 1], lda, work, info);
                             //
                             //                       Check the error code from Clatms.
                             //
@@ -387,35 +387,35 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //
                             for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                                 nrhs = nsval[irhs - 1];
-                                xtype = 'N';
+                                xtype[0] = 'N';
                                 //
                                 for (itran = 1; itran <= ntran; itran = itran + 1) {
-                                    trans = transs[itran - 1];
+                                    trans[0] = transs[itran - 1];
                                     if (itran == 1) {
                                         rcondc = rcondo;
-                                        norm = 'O';
+                                        norm[0] = 'O';
                                     } else {
                                         rcondc = rcondi;
-                                        norm = 'I';
+                                        norm[0] = 'I';
                                     }
                                     //
                                     //+    TEST 2:
                                     //                             Solve and compute residual for A * X = B.
                                     //
-                                    Clarhs(path, &xtype, " ", &trans, n, n, kl, ku, nrhs, a, lda, xact, ldb, b, ldb, iseed, info);
-                                    xtype = 'C';
+                                    Clarhs(path, xtype, " ", trans, n, n, kl, ku, nrhs, a, lda, xact, ldb, b, ldb, iseed, info);
+                                    xtype[0] = 'C';
                                     Clacpy("Full", n, nrhs, b, ldb, x, ldb);
                                     //
-                                    Cgbtrs(&trans, n, kl, ku, nrhs, afac, ldafac, iwork, x, ldb, info);
+                                    Cgbtrs(trans, n, kl, ku, nrhs, afac, ldafac, iwork, x, ldb, info);
                                     //
                                     //                             Check error code from Cgbtrs.
                                     //
                                     if (info != 0) {
-                                        Alaerh(path, "Cgbtrs", info, 0, &trans, n, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                                        Alaerh(path, "Cgbtrs", info, 0, trans, n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                                     }
                                     //
                                     Clacpy("Full", n, nrhs, b, ldb, work, ldb);
-                                    Cgbt02(&trans, m, n, kl, ku, nrhs, a, lda, x, ldb, work, ldb, result[2 - 1]);
+                                    Cgbt02(trans, m, n, kl, ku, nrhs, a, lda, x, ldb, work, ldb, result[2 - 1]);
                                     //
                                     //+    TEST 3:
                                     //                             Check solution from generated exact
@@ -427,16 +427,16 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     //                             Use iterative refinement to improve the
                                     //                             solution.
                                     //
-                                    Cgbrfs(&trans, n, kl, ku, nrhs, a, lda, afac, ldafac, iwork, b, ldb, x, ldb, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                                    Cgbrfs(trans, n, kl, ku, nrhs, a, lda, afac, ldafac, iwork, b, ldb, x, ldb, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                                     //
                                     //                             Check error code from Cgbrfs.
                                     //
                                     if (info != 0) {
-                                        Alaerh(path, "Cgbrfs", info, 0, &trans, n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
+                                        Alaerh(path, "Cgbrfs", info, 0, trans, n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
                                     }
                                     //
                                     Cget04(n, nrhs, x, ldb, xact, ldb, rcondc, result[4 - 1]);
-                                    Cgbt05(&trans, n, kl, ku, nrhs, a, lda, b, ldb, x, ldb, xact, ldb, rwork, &rwork[(nrhs + 1) - 1], &result[5 - 1]);
+                                    Cgbt05(trans, n, kl, ku, nrhs, a, lda, b, ldb, x, ldb, xact, ldb, rwork, &rwork[(nrhs + 1) - 1], &result[5 - 1]);
                                     //
                                     //                             Print information about the tests that did
                                     //                             not pass the threshold.
@@ -465,18 +465,18 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 if (itran == 1) {
                                     anorm = anormo;
                                     rcondc = rcondo;
-                                    norm = 'O';
+                                    norm[0] = 'O';
                                 } else {
                                     anorm = anormi;
                                     rcondc = rcondi;
-                                    norm = 'I';
+                                    norm[0] = 'I';
                                 }
-                                Cgbcon(&norm, n, kl, ku, afac, ldafac, iwork, anorm, rcond, work, rwork, info);
+                                Cgbcon(norm, n, kl, ku, afac, ldafac, iwork, anorm, rcond, work, rwork, info);
                                 //
                                 //                             Check error code from Cgbcon.
                                 //
                                 if (info != 0) {
-                                    Alaerh(path, "Cgbcon", info, 0, &norm, n, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                                    Alaerh(path, "Cgbcon", info, 0, norm, n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                                 }
                                 //
                                 result[7 - 1] = Rget06(rcond, rcondc);

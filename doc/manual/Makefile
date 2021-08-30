@@ -1,18 +1,20 @@
-LATEX=platex
-DVI2PDF=dvipdfmx
-DVI2PS=dvips
-TEXFILE=userman
+MANUAL=manual
+DATE=`date "+%m%d"`
+.PHONY: all clean
 
-.SUFFIXES:	.tex .dvi .ps .pdf
-.tex.dvi:	
-	${LATEX} $< $@
-.dvi.ps:	
-	${DVI2PS} $< > $@
-
-.dvi.pdf:	
-	${DVI2PDF} $<
-
-all: ${TEXFILE}.pdf #${TEXFILE}.ps 
+all: $(MANUAL).pdf
 
 clean:
-	rm -f ${TEXFILE}.dvi ${TEXFILE}.pdf ${TEXFILE}.log ${TEXFILE}.out ${TEXFILE}.aux texput.log *~
+	rm -f $(MANUAL).pdf $(MANUAL).dvi $(MANUAL).aux $(MANUAL).log $(MANUAL).rtf *bbl *aux *log *~
+
+$(MANUAL).pdf: $(MANUAL).dvi
+	dvipdfmx $(MANUAL).dvi -o $(MANUAL).pdf
+	mkdir -p PDF
+	cp $(MANUAL).pdf PDF/$(MANUAL)_$(DATE).pdf
+
+$(MANUAL).dvi: $(MANUAL).tex
+	latex $(MANUAL).tex
+	latex $(MANUAL).tex
+	bibtex $(MANUAL)
+	latex $(MANUAL).tex
+	latex $(MANUAL).tex

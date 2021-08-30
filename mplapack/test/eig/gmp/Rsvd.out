@@ -1,0 +1,658 @@
+ Tests of the Singular Value Decomposition routines
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     0     0     1     1     1     2     2     3     3
+               3    10    10    16    16    30    30    40    40
+    N:         0     1     3     0     1     2     0     1     0     1
+               3    10    16    10    16    30    40    30    40
+    NB:        1     3     3     3    20
+    NBMIN:     2     2     2     2     2
+    NX:        1     0     5     9     1
+    NS:        2     0     2     2     2
+ 
+ Relative machine underflow is taken to be+6.4447927660133239e-1292913987
+ Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
+ Relative machine precision is taken to be+7.4583407312002067e-155
+
+ Routines pass computational tests if test ratio is less than+5.0000000000000000e+01
+
+ DBD routines passed the tests of the error exits ( 55 tests done)
+ Rgesvd passed the tests of the error exits (  8 tests done)
+ Rgesdd passed the tests of the error exits (  6 tests done)
+ Rgejsv passed the tests of the error exits ( 11 tests done)
+ Rgesvdx passed the tests of the error exits ( 12 tests done)
+ Rgesvdq passed the tests of the error exits ( 11 tests done)
+
+
+ SVD:  NB =   1, NBMIN =   2, NX =   1, NRHS =   2
+
+ DBD -- Real Singular Value Decomposition
+ Matrix types (see xCHKBD for details):
+ Diagonal matrices:
+   1: Zero                             5: Clustered entries
+   2: Identity                         6: Large, evenly spaced entries
+   3: Evenly spaced entries            7: Small, evenly spaced entries
+   4: Geometrically spaced entries
+ General matrices:
+   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
+   9: Geometrically spaced sing vals  13: Random, O(1) entries
+  10: Clustered sing. vals.           14: Random, scaled near overflow
+  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
+
+ Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: orthogonal
+                X: m x nrhs, Y = Q' X, and Z = U' Y)
+   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
+   2: norm( I - Q' Q )   / ( m ulp )
+   3: norm( I - P' P )   / ( n ulp )
+   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
+   6: norm( I - U' U )   / ( min(m,n) ulp )
+   7: norm( I - V' V )   / ( min(m,n) ulp )
+   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
+  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
+  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
+  13: norm( I - (QU)'(QU) )      / ( M ulp )
+  14: norm( I - (V' P') (P V) )  / ( N ulp )
+  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+  16: norm( I - U' U )   / ( min(m,n) ulp )
+  17: norm( I - V' V )   / ( min(m,n) ulp )
+  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
+  21: norm( I - U' U )    / ( min(m,n) ulp )
+  22: norm( I - V' V )    / ( min(m,n) ulp )
+  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
+  26: norm( I - U' U )    / ( min(m,n) ulp )
+  27: norm( I - V' V )    / ( min(m,n) ulp )
+  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
+  31: norm( I - U' U )    / ( min(m,n) ulp )
+  32: norm( I - V' V )    / ( min(m,n) ulp )
+  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+ M=   10, N=   10, type 13, seed=   0,   0,   0,   1, test( 9)=+6.4835712246748777e+01
+ M=   10, N=   10, type 13, seed=   0,   0,   0,   1, test(19)=+5.6314749435241592e+01
+ M=   10, N=   16, type 14, seed=   0,   0,   0,   1, test( 9)=+5.6967256866951007e+01
+ M=   10, N=   16, type 14, seed=   0,   0,   0,   1, test(19)=+5.1754451079782038e+01
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test( 9)=+6.2276684117471035e+01
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test(19)=+6.2276684117471035e+01
+ M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test( 9)=+5.5077912280619820e+01
+ M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test(19)=+5.5077912280619820e+01
+ M=   16, N=   16, type 12, seed=   0,   0,   0,   1, test( 9)=+7.0374969714164509e+01
+ M=   16, N=   16, type 12, seed=   0,   0,   0,   1, test(19)=+7.0374969714164509e+01
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test( 9)=+7.3034135734085145e+01
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test(19)=+6.0312134995550011e+01
+ M=   16, N=   16, type 14, seed=   0,   0,   0,   1, test( 9)=+7.6240521211554079e+01
+ M=   16, N=   16, type 14, seed=   0,   0,   0,   1, test(19)=+7.6240521211554079e+01
+ M=   16, N=   16, type 15, seed=   0,   0,   0,   1, test( 9)=+6.7813935897918349e+01
+ M=   16, N=   16, type 15, seed=   0,   0,   0,   1, test(19)=+6.7813935897918349e+01
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+1.1997922244299616e+02
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+1.0042296500738230e+02
+ M=   30, N=   30, type 10, seed=   0,   0,   0,   1, test( 9)=+5.4277457255198140e+01
+ M=   30, N=   30, type 11, seed=   0,   0,   0,   1, test( 9)=+1.1219501991585328e+02
+ M=   30, N=   30, type 11, seed=   0,   0,   0,   1, test(19)=+8.9637190203284328e+01
+ M=   30, N=   30, type 12, seed=   0,   0,   0,   1, test( 9)=+1.2933886082040878e+02
+ M=   30, N=   30, type 12, seed=   0,   0,   0,   1, test(19)=+1.0253124216770271e+02
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test( 9)=+1.3003503210781313e+02
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+1.1410840116368449e+02
+ M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.3277907850932976e+02
+ M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+1.1582602053775389e+02
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.1637601062458569e+02
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+1.0309180011048053e+02
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.1762727634075211e+02
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.1168671931508775e+02
+ M=   30, N=   40, type 11, seed=   0,   0,   0,   1, test( 9)=+1.1771812211349453e+02
+ M=   30, N=   40, type 11, seed=   0,   0,   0,   1, test(19)=+1.0874956639806269e+02
+ M=   30, N=   40, type 12, seed=   0,   0,   0,   1, test( 9)=+1.1822580302610903e+02
+ M=   30, N=   40, type 12, seed=   0,   0,   0,   1, test(19)=+1.1333577393964852e+02
+ M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test( 9)=+1.3805871807919104e+02
+ M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+1.1239274017747791e+02
+ M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+1.3651429786867715e+02
+ M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+1.2022856031785236e+02
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.1372757158697432e+02
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.3741589722010883e+02
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+1.1332739497526279e+02
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+1.0187054057454844e+02
+ M=   40, N=   30, type 11, seed=   0,   0,   0,   1, test( 9)=+1.1282359669645463e+02
+ M=   40, N=   30, type 11, seed=   0,   0,   0,   1, test(19)=+9.7138417293206877e+01
+ M=   40, N=   30, type 12, seed=   0,   0,   0,   1, test( 9)=+1.1314967577503272e+02
+ M=   40, N=   30, type 12, seed=   0,   0,   0,   1, test(19)=+9.7941268030376592e+01
+ M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test( 9)=+1.2247379710010427e+02
+ M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+1.0271681595374063e+02
+ M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.2578800706593554e+02
+ M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+1.1591299059003242e+02
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.3517036408002459e+02
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+1.2005718148371640e+02
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.4331479462953845e+02
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.1595821943446713e+02
+ M=   40, N=   40, type 10, seed=   0,   0,   0,   1, test( 9)=+7.9673090769751625e+01
+ M=   40, N=   40, type 11, seed=   0,   0,   0,   1, test( 9)=+1.5482727915536818e+02
+ M=   40, N=   40, type 11, seed=   0,   0,   0,   1, test(19)=+1.2695066178323628e+02
+ M=   40, N=   40, type 12, seed=   0,   0,   0,   1, test( 9)=+1.3843831879494202e+02
+ M=   40, N=   40, type 12, seed=   0,   0,   0,   1, test(19)=+1.1094322845998689e+02
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test( 9)=+1.5562093070110597e+02
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+1.3546609460283906e+02
+ M=   40, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+1.4048754728567120e+02
+ M=   40, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+1.2689450891460850e+02
+ M=   40, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.5560801391878422e+02
+ M=   40, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.3955567867891400e+02
+ DBD:     66 out of  10260 tests failed to pass the threshold
+
+ All tests for DBD drivers  passed the threshold (  14820 tests run)
+
+
+ SVD:  NB =   3, NBMIN =   2, NX =   0, NRHS =   0
+
+ DBD -- Real Singular Value Decomposition
+ Matrix types (see xCHKBD for details):
+ Diagonal matrices:
+   1: Zero                             5: Clustered entries
+   2: Identity                         6: Large, evenly spaced entries
+   3: Evenly spaced entries            7: Small, evenly spaced entries
+   4: Geometrically spaced entries
+ General matrices:
+   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
+   9: Geometrically spaced sing vals  13: Random, O(1) entries
+  10: Clustered sing. vals.           14: Random, scaled near overflow
+  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
+
+ Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: orthogonal
+                X: m x nrhs, Y = Q' X, and Z = U' Y)
+   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
+   2: norm( I - Q' Q )   / ( m ulp )
+   3: norm( I - P' P )   / ( n ulp )
+   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
+   6: norm( I - U' U )   / ( min(m,n) ulp )
+   7: norm( I - V' V )   / ( min(m,n) ulp )
+   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
+  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
+  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
+  13: norm( I - (QU)'(QU) )      / ( M ulp )
+  14: norm( I - (V' P') (P V) )  / ( N ulp )
+  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+  16: norm( I - U' U )   / ( min(m,n) ulp )
+  17: norm( I - V' V )   / ( min(m,n) ulp )
+  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
+  21: norm( I - U' U )    / ( min(m,n) ulp )
+  22: norm( I - V' V )    / ( min(m,n) ulp )
+  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
+  26: norm( I - U' U )    / ( min(m,n) ulp )
+  27: norm( I - V' V )    / ( min(m,n) ulp )
+  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
+  31: norm( I - U' U )    / ( min(m,n) ulp )
+  32: norm( I - V' V )    / ( min(m,n) ulp )
+  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test( 9)=+6.6438059679759258e+01
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test(19)=+6.6438059679759258e+01
+ M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test( 9)=+6.8573869381887129e+01
+ M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test(19)=+6.8573869381887129e+01
+ M=   16, N=   16, type 12, seed=   0,   0,   0,   1, test( 9)=+6.5527392946837809e+01
+ M=   16, N=   16, type 12, seed=   0,   0,   0,   1, test(19)=+6.5527392946837809e+01
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test( 9)=+6.1789169954369733e+01
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test(19)=+6.1789169954369733e+01
+ M=   16, N=   16, type 14, seed=   0,   0,   0,   1, test( 9)=+6.3897844302980636e+01
+ M=   16, N=   16, type 14, seed=   0,   0,   0,   1, test(19)=+6.3897844302980636e+01
+ M=   16, N=   16, type 15, seed=   0,   0,   0,   1, test( 9)=+8.0340042194137519e+01
+ M=   16, N=   16, type 15, seed=   0,   0,   0,   1, test(19)=+8.0340042194137519e+01
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+1.2232639610334258e+02
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+1.0857063618381683e+02
+ M=   30, N=   30, type 11, seed=   0,   0,   0,   1, test( 9)=+1.0406074941077490e+02
+ M=   30, N=   30, type 11, seed=   0,   0,   0,   1, test(19)=+8.8743985316689275e+01
+ M=   30, N=   30, type 12, seed=   0,   0,   0,   1, test( 9)=+1.0597749080458609e+02
+ M=   30, N=   30, type 12, seed=   0,   0,   0,   1, test(19)=+9.1904761511973150e+01
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test( 9)=+1.2266932469876521e+02
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+1.1393019647723993e+02
+ M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.2554239232811492e+02
+ M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+1.1359837981176557e+02
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.2247637475335619e+02
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+1.0440791899612572e+02
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.1803053189069573e+02
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.1173555856874367e+02
+ M=   30, N=   40, type 11, seed=   0,   0,   0,   1, test( 9)=+1.0772279547956630e+02
+ M=   30, N=   40, type 11, seed=   0,   0,   0,   1, test(19)=+1.0840282161109891e+02
+ M=   30, N=   40, type 12, seed=   0,   0,   0,   1, test( 9)=+1.1122369927125866e+02
+ M=   30, N=   40, type 12, seed=   0,   0,   0,   1, test(19)=+1.0873947474305150e+02
+ M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test( 9)=+1.1701169983765210e+02
+ M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+1.4232745475784614e+02
+ M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+8.0740957727553293e+01
+ M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+9.4772057819718767e+01
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.3078813693422211e+02
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.3260334689843722e+02
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+1.1656761365410684e+02
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+9.8361375363003299e+01
+ M=   40, N=   30, type 11, seed=   0,   0,   0,   1, test( 9)=+1.1071813963012293e+02
+ M=   40, N=   30, type 11, seed=   0,   0,   0,   1, test(19)=+9.3898952476752164e+01
+ M=   40, N=   30, type 12, seed=   0,   0,   0,   1, test( 9)=+1.1153025985339557e+02
+ M=   40, N=   30, type 12, seed=   0,   0,   0,   1, test(19)=+9.4868223344645220e+01
+ M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test( 9)=+1.1634291783322200e+02
+ M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+1.0282971281122764e+02
+ M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.3156906392100141e+02
+ M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+1.1509918994588888e+02
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.3046876062943164e+02
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+1.0821270129281859e+02
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.4910834221053118e+02
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.2692897608898867e+02
+ M=   40, N=   40, type 10, seed=   0,   0,   0,   1, test( 9)=+6.4003227572122338e+01
+ M=   40, N=   40, type 11, seed=   0,   0,   0,   1, test( 9)=+1.3483363791313988e+02
+ M=   40, N=   40, type 11, seed=   0,   0,   0,   1, test(19)=+1.1817316921729601e+02
+ M=   40, N=   40, type 12, seed=   0,   0,   0,   1, test( 9)=+1.5602127762830540e+02
+ M=   40, N=   40, type 12, seed=   0,   0,   0,   1, test(19)=+1.2550354138464309e+02
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test( 9)=+1.3561458862834460e+02
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+1.2155929978131233e+02
+ M=   40, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+1.8507217291694235e+02
+ M=   40, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+1.5790780841161963e+02
+ M=   40, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.3510727267712560e+02
+ M=   40, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.2286031062319368e+02
+ DBD:     61 out of  10260 tests failed to pass the threshold
+
+ All tests for DBD drivers  passed the threshold (  14820 tests run)
+
+
+ SVD:  NB =   3, NBMIN =   2, NX =   5, NRHS =   2
+
+ DBD -- Real Singular Value Decomposition
+ Matrix types (see xCHKBD for details):
+ Diagonal matrices:
+   1: Zero                             5: Clustered entries
+   2: Identity                         6: Large, evenly spaced entries
+   3: Evenly spaced entries            7: Small, evenly spaced entries
+   4: Geometrically spaced entries
+ General matrices:
+   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
+   9: Geometrically spaced sing vals  13: Random, O(1) entries
+  10: Clustered sing. vals.           14: Random, scaled near overflow
+  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
+
+ Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: orthogonal
+                X: m x nrhs, Y = Q' X, and Z = U' Y)
+   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
+   2: norm( I - Q' Q )   / ( m ulp )
+   3: norm( I - P' P )   / ( n ulp )
+   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
+   6: norm( I - U' U )   / ( min(m,n) ulp )
+   7: norm( I - V' V )   / ( min(m,n) ulp )
+   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
+  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
+  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
+  13: norm( I - (QU)'(QU) )      / ( M ulp )
+  14: norm( I - (V' P') (P V) )  / ( N ulp )
+  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+  16: norm( I - U' U )   / ( min(m,n) ulp )
+  17: norm( I - V' V )   / ( min(m,n) ulp )
+  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
+  21: norm( I - U' U )    / ( min(m,n) ulp )
+  22: norm( I - V' V )    / ( min(m,n) ulp )
+  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
+  26: norm( I - U' U )    / ( min(m,n) ulp )
+  27: norm( I - V' V )    / ( min(m,n) ulp )
+  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
+  31: norm( I - U' U )    / ( min(m,n) ulp )
+  32: norm( I - V' V )    / ( min(m,n) ulp )
+  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test( 9)=+5.6659128587952988e+01
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test(19)=+5.6659128587952988e+01
+ M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test( 9)=+5.2984181436093384e+01
+ M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test(19)=+5.2984181436093384e+01
+ M=   16, N=   16, type 12, seed=   0,   0,   0,   1, test( 9)=+6.6768978316379183e+01
+ M=   16, N=   16, type 12, seed=   0,   0,   0,   1, test(19)=+6.6768978316379183e+01
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test( 9)=+6.2791378239255069e+01
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test(19)=+5.7790353083666013e+01
+ M=   16, N=   16, type 14, seed=   0,   0,   0,   1, test( 9)=+6.6165166694551942e+01
+ M=   16, N=   16, type 14, seed=   0,   0,   0,   1, test(19)=+6.6165166694551942e+01
+ M=   16, N=   16, type 15, seed=   0,   0,   0,   1, test( 9)=+7.3797636000611502e+01
+ M=   16, N=   16, type 15, seed=   0,   0,   0,   1, test(19)=+7.3797636000611502e+01
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+9.9835071784817226e+01
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+8.4937069438200719e+01
+ M=   30, N=   30, type 11, seed=   0,   0,   0,   1, test( 9)=+1.1179421744444106e+02
+ M=   30, N=   30, type 11, seed=   0,   0,   0,   1, test(19)=+9.0493973419279150e+01
+ M=   30, N=   30, type 12, seed=   0,   0,   0,   1, test( 9)=+1.1183545009512615e+02
+ M=   30, N=   30, type 12, seed=   0,   0,   0,   1, test(19)=+8.9586129831415604e+01
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test( 9)=+1.1157195498433917e+02
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+1.0264873727075101e+02
+ M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.2987346180095445e+02
+ M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+1.0592877444040354e+02
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.2597375539638387e+02
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+1.0602608170592844e+02
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.0841912251887387e+02
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.1845284735539180e+02
+ M=   30, N=   40, type 10, seed=   0,   0,   0,   1, test( 9)=+5.1595036146075663e+01
+ M=   30, N=   40, type 11, seed=   0,   0,   0,   1, test( 9)=+1.1314281193426600e+02
+ M=   30, N=   40, type 11, seed=   0,   0,   0,   1, test(19)=+1.0873477615709145e+02
+ M=   30, N=   40, type 12, seed=   0,   0,   0,   1, test( 9)=+1.1709109944596926e+02
+ M=   30, N=   40, type 12, seed=   0,   0,   0,   1, test(19)=+1.1305924766840254e+02
+ M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test( 9)=+1.3067159548660466e+02
+ M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+1.1293426056213250e+02
+ M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+1.1883417279094891e+02
+ M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+1.2298704651796063e+02
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.2781674886788218e+02
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.3861912885941009e+02
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+1.1979113563404698e+02
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+1.0038405059448081e+02
+ M=   40, N=   30, type 11, seed=   0,   0,   0,   1, test( 9)=+1.1038493981817348e+02
+ M=   40, N=   30, type 11, seed=   0,   0,   0,   1, test(19)=+8.9373921179743791e+01
+ M=   40, N=   30, type 12, seed=   0,   0,   0,   1, test( 9)=+1.1103515324260335e+02
+ M=   40, N=   30, type 12, seed=   0,   0,   0,   1, test(19)=+9.3812766244774378e+01
+ M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test( 9)=+1.3912822748880477e+02
+ M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+1.2670920076041930e+02
+ M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.3474525982279844e+02
+ M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+1.2065462828210078e+02
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.2252302599310938e+02
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+1.0833084768908216e+02
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.3286988105406879e+02
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.1116598602090843e+02
+ M=   40, N=   40, type 10, seed=   0,   0,   0,   1, test( 9)=+6.4169208094553239e+01
+ M=   40, N=   40, type 11, seed=   0,   0,   0,   1, test( 9)=+1.4927531394323423e+02
+ M=   40, N=   40, type 11, seed=   0,   0,   0,   1, test(19)=+1.2330839642839452e+02
+ M=   40, N=   40, type 12, seed=   0,   0,   0,   1, test( 9)=+1.6196626861746941e+02
+ M=   40, N=   40, type 12, seed=   0,   0,   0,   1, test(19)=+1.3702095211492479e+02
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test( 9)=+1.5583433586329492e+02
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+1.3428307538021774e+02
+ M=   40, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+1.4799876849721677e+02
+ M=   40, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+1.3530039427010639e+02
+ M=   40, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.4005565394660316e+02
+ M=   40, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.2203958281721459e+02
+ DBD:     62 out of  10260 tests failed to pass the threshold
+
+ All tests for DBD drivers  passed the threshold (  14820 tests run)
+
+
+ SVD:  NB =   3, NBMIN =   2, NX =   9, NRHS =   2
+
+ DBD -- Real Singular Value Decomposition
+ Matrix types (see xCHKBD for details):
+ Diagonal matrices:
+   1: Zero                             5: Clustered entries
+   2: Identity                         6: Large, evenly spaced entries
+   3: Evenly spaced entries            7: Small, evenly spaced entries
+   4: Geometrically spaced entries
+ General matrices:
+   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
+   9: Geometrically spaced sing vals  13: Random, O(1) entries
+  10: Clustered sing. vals.           14: Random, scaled near overflow
+  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
+
+ Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: orthogonal
+                X: m x nrhs, Y = Q' X, and Z = U' Y)
+   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
+   2: norm( I - Q' Q )   / ( m ulp )
+   3: norm( I - P' P )   / ( n ulp )
+   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
+   6: norm( I - U' U )   / ( min(m,n) ulp )
+   7: norm( I - V' V )   / ( min(m,n) ulp )
+   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
+  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
+  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
+  13: norm( I - (QU)'(QU) )      / ( M ulp )
+  14: norm( I - (V' P') (P V) )  / ( N ulp )
+  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+  16: norm( I - U' U )   / ( min(m,n) ulp )
+  17: norm( I - V' V )   / ( min(m,n) ulp )
+  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
+  21: norm( I - U' U )    / ( min(m,n) ulp )
+  22: norm( I - V' V )    / ( min(m,n) ulp )
+  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
+  26: norm( I - U' U )    / ( min(m,n) ulp )
+  27: norm( I - V' V )    / ( min(m,n) ulp )
+  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
+  31: norm( I - U' U )    / ( min(m,n) ulp )
+  32: norm( I - V' V )    / ( min(m,n) ulp )
+  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+ M=   10, N=   10, type 13, seed=   0,   0,   0,   1, test( 9)=+5.4551511174145334e+01
+ M=   10, N=   10, type 14, seed=   0,   0,   0,   1, test( 9)=+5.0638875337394660e+01
+ M=   10, N=   10, type 14, seed=   0,   0,   0,   1, test(19)=+5.0638875337394660e+01
+ M=   10, N=   16, type 14, seed=   0,   0,   0,   1, test(19)=+5.4686341610764573e+01
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test( 9)=+5.5772512506217867e+01
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test(19)=+5.5772512506217867e+01
+ M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test( 9)=+5.6719829330046701e+01
+ M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test(19)=+5.6719829330046701e+01
+ M=   16, N=   16, type 12, seed=   0,   0,   0,   1, test( 9)=+6.0069555229415929e+01
+ M=   16, N=   16, type 12, seed=   0,   0,   0,   1, test(19)=+6.0069555229415929e+01
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test( 9)=+6.3305855356800508e+01
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test(19)=+6.3305855356800508e+01
+ M=   16, N=   16, type 14, seed=   0,   0,   0,   1, test( 9)=+7.8225103416625710e+01
+ M=   16, N=   16, type 14, seed=   0,   0,   0,   1, test(19)=+7.8225103416625710e+01
+ M=   16, N=   16, type 15, seed=   0,   0,   0,   1, test( 9)=+6.8974262819821041e+01
+ M=   16, N=   16, type 15, seed=   0,   0,   0,   1, test(19)=+6.7540994135304724e+01
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+1.0714737537787489e+02
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+9.6560609816798176e+01
+ M=   30, N=   30, type 11, seed=   0,   0,   0,   1, test( 9)=+1.0641166230061162e+02
+ M=   30, N=   30, type 11, seed=   0,   0,   0,   1, test(19)=+9.2738125794462182e+01
+ M=   30, N=   30, type 12, seed=   0,   0,   0,   1, test( 9)=+1.2170629880575543e+02
+ M=   30, N=   30, type 12, seed=   0,   0,   0,   1, test(19)=+9.9870566117800972e+01
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test( 9)=+1.3876206841204201e+02
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+1.1858845245662793e+02
+ M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.0962934701709483e+02
+ M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+9.3048071125899221e+01
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.1716238889383149e+02
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+1.0724588164954272e+02
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.0578798668885425e+02
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.1717193099736036e+02
+ M=   30, N=   40, type 11, seed=   0,   0,   0,   1, test( 9)=+1.3703233471390007e+02
+ M=   30, N=   40, type 11, seed=   0,   0,   0,   1, test(19)=+9.8941206960885087e+01
+ M=   30, N=   40, type 12, seed=   0,   0,   0,   1, test( 9)=+1.2064883498172671e+02
+ M=   30, N=   40, type 12, seed=   0,   0,   0,   1, test(19)=+1.1820397811524523e+02
+ M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test( 9)=+1.2196294008722257e+02
+ M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+1.3049404451453133e+02
+ M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+1.0513234095783849e+02
+ M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+1.2622372080350169e+02
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.2101243739759205e+02
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.3046087306887885e+02
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+1.2802667796929510e+02
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+1.0812150425265410e+02
+ M=   40, N=   30, type 11, seed=   0,   0,   0,   1, test( 9)=+1.0756637866345006e+02
+ M=   40, N=   30, type 11, seed=   0,   0,   0,   1, test(19)=+7.9603512093207541e+01
+ M=   40, N=   30, type 12, seed=   0,   0,   0,   1, test( 9)=+1.1216692771081911e+02
+ M=   40, N=   30, type 12, seed=   0,   0,   0,   1, test(19)=+8.5914490111514539e+01
+ M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test( 9)=+1.4536221949049257e+02
+ M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+1.2376271323045634e+02
+ M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.2197117229879382e+02
+ M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+1.0149504481365837e+02
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.1824599113761030e+02
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+9.7912659963579052e+01
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.3211949769601842e+02
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.1064148426863179e+02
+ M=   40, N=   40, type 10, seed=   0,   0,   0,   1, test( 9)=+7.0917799903727361e+01
+ M=   40, N=   40, type 11, seed=   0,   0,   0,   1, test( 9)=+1.5330505966539124e+02
+ M=   40, N=   40, type 11, seed=   0,   0,   0,   1, test(19)=+1.2519892085615668e+02
+ M=   40, N=   40, type 12, seed=   0,   0,   0,   1, test( 9)=+1.3690673962780224e+02
+ M=   40, N=   40, type 12, seed=   0,   0,   0,   1, test(19)=+1.1574044138716053e+02
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test( 9)=+1.6655573931137670e+02
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+1.4886533365604552e+02
+ M=   40, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+1.6476668466034838e+02
+ M=   40, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+1.4689668544175956e+02
+ M=   40, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.7811267290725783e+02
+ M=   40, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.6166621167796113e+02
+ DBD:     65 out of  10260 tests failed to pass the threshold
+
+ All tests for DBD drivers  passed the threshold (  14820 tests run)
+
+
+ SVD:  NB =  20, NBMIN =   2, NX =   1, NRHS =   2
+
+ DBD -- Real Singular Value Decomposition
+ Matrix types (see xCHKBD for details):
+ Diagonal matrices:
+   1: Zero                             5: Clustered entries
+   2: Identity                         6: Large, evenly spaced entries
+   3: Evenly spaced entries            7: Small, evenly spaced entries
+   4: Geometrically spaced entries
+ General matrices:
+   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
+   9: Geometrically spaced sing vals  13: Random, O(1) entries
+  10: Clustered sing. vals.           14: Random, scaled near overflow
+  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
+
+ Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: orthogonal
+                X: m x nrhs, Y = Q' X, and Z = U' Y)
+   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
+   2: norm( I - Q' Q )   / ( m ulp )
+   3: norm( I - P' P )   / ( n ulp )
+   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
+   6: norm( I - U' U )   / ( min(m,n) ulp )
+   7: norm( I - V' V )   / ( min(m,n) ulp )
+   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
+  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
+  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
+  13: norm( I - (QU)'(QU) )      / ( M ulp )
+  14: norm( I - (V' P') (P V) )  / ( N ulp )
+  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+  16: norm( I - U' U )   / ( min(m,n) ulp )
+  17: norm( I - V' V )   / ( min(m,n) ulp )
+  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
+  21: norm( I - U' U )    / ( min(m,n) ulp )
+  22: norm( I - V' V )    / ( min(m,n) ulp )
+  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
+  26: norm( I - U' U )    / ( min(m,n) ulp )
+  27: norm( I - V' V )    / ( min(m,n) ulp )
+  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
+  31: norm( I - U' U )    / ( min(m,n) ulp )
+  32: norm( I - V' V )    / ( min(m,n) ulp )
+  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+ M=   10, N=   10, type 13, seed=   0,   0,   0,   1, test( 9)=+5.9334329091033201e+01
+ M=   10, N=   16, type 13, seed=   0,   0,   0,   1, test(19)=+5.1915840907708403e+01
+ M=   10, N=   16, type 14, seed=   0,   0,   0,   1, test( 9)=+5.2246598975990718e+01
+ M=   10, N=   16, type 15, seed=   0,   0,   0,   1, test( 9)=+5.7205482608079435e+01
+ M=   16, N=   10, type 15, seed=   0,   0,   0,   1, test( 9)=+5.5327057366153819e+01
+ M=   16, N=   10, type 15, seed=   0,   0,   0,   1, test(19)=+5.5327057366153819e+01
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test( 9)=+6.3293187589880513e+01
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test(19)=+6.3293187589880513e+01
+ M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test( 9)=+5.7502338179838460e+01
+ M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test(19)=+5.7502338179838460e+01
+ M=   16, N=   16, type 12, seed=   0,   0,   0,   1, test( 9)=+5.6293873626160958e+01
+ M=   16, N=   16, type 12, seed=   0,   0,   0,   1, test(19)=+5.6293873626160958e+01
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test( 9)=+6.9334029493639676e+01
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test(19)=+6.9334029493639676e+01
+ M=   16, N=   16, type 14, seed=   0,   0,   0,   1, test( 9)=+5.9827907868276514e+01
+ M=   16, N=   16, type 14, seed=   0,   0,   0,   1, test(19)=+5.9827907868276514e+01
+ M=   16, N=   16, type 15, seed=   0,   0,   0,   1, test( 9)=+8.3517551633866821e+01
+ M=   16, N=   16, type 15, seed=   0,   0,   0,   1, test(19)=+8.3517551633866821e+01
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+1.0562960683832222e+02
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+7.3235183852706997e+01
+ M=   30, N=   30, type 11, seed=   0,   0,   0,   1, test( 9)=+1.1938153714158420e+02
+ M=   30, N=   30, type 11, seed=   0,   0,   0,   1, test(19)=+1.0007293274394543e+02
+ M=   30, N=   30, type 12, seed=   0,   0,   0,   1, test( 9)=+1.3346034974029778e+02
+ M=   30, N=   30, type 12, seed=   0,   0,   0,   1, test(19)=+1.0307565946735458e+02
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test( 9)=+1.1406132016923805e+02
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+9.7769923836700538e+01
+ M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.0879483935242546e+02
+ M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+9.8033532832292549e+01
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.2961621335667879e+02
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+9.2283480780112044e+01
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.3874550215688778e+02
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.0472054170582214e+02
+ M=   30, N=   40, type 10, seed=   0,   0,   0,   1, test( 9)=+5.0233615801938462e+01
+ M=   30, N=   40, type 11, seed=   0,   0,   0,   1, test( 9)=+1.0924955423205250e+02
+ M=   30, N=   40, type 11, seed=   0,   0,   0,   1, test(19)=+1.1342450612281701e+02
+ M=   30, N=   40, type 12, seed=   0,   0,   0,   1, test( 9)=+1.2957544043138757e+02
+ M=   30, N=   40, type 12, seed=   0,   0,   0,   1, test(19)=+1.1387780997337550e+02
+ M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test( 9)=+7.1714535359762839e+01
+ M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+5.6777646089601892e+01
+ M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+1.4239303000129589e+02
+ M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+1.2265035622126677e+02
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.3184333887490483e+02
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.4792567197533883e+02
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+1.0361371305280805e+02
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+8.9688169797298842e+01
+ M=   40, N=   30, type 11, seed=   0,   0,   0,   1, test( 9)=+1.1809876231428719e+02
+ M=   40, N=   30, type 11, seed=   0,   0,   0,   1, test(19)=+9.8020123352198542e+01
+ M=   40, N=   30, type 12, seed=   0,   0,   0,   1, test( 9)=+1.0611950627814048e+02
+ M=   40, N=   30, type 12, seed=   0,   0,   0,   1, test(19)=+8.7959426096663476e+01
+ M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test( 9)=+1.4041822265149785e+02
+ M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+1.2076760096155689e+02
+ M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.1216197267531904e+02
+ M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+1.0128524783334766e+02
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.1991489217226627e+02
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+1.0675378828205204e+02
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.5473607225937021e+02
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.1892738724739727e+02
+ M=   40, N=   40, type 10, seed=   0,   0,   0,   1, test( 9)=+6.4852120110062987e+01
+ M=   40, N=   40, type 11, seed=   0,   0,   0,   1, test( 9)=+1.3178787110876446e+02
+ M=   40, N=   40, type 11, seed=   0,   0,   0,   1, test(19)=+1.1322057009858042e+02
+ M=   40, N=   40, type 12, seed=   0,   0,   0,   1, test( 9)=+1.4163857327583952e+02
+ M=   40, N=   40, type 12, seed=   0,   0,   0,   1, test(19)=+1.1676838459739008e+02
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test( 9)=+1.6127122071725202e+02
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+1.4160132459839506e+02
+ M=   40, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+1.3254981602403007e+02
+ M=   40, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+1.1741281281805389e+02
+ M=   40, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.5686945827109792e+02
+ M=   40, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.3815136681396972e+02
+ DBD:     68 out of  10260 tests failed to pass the threshold
+
+ All tests for DBD drivers  passed the threshold (  14820 tests run)
+
+
+ End of tests
+ Total time used =       851.00 seconds
+

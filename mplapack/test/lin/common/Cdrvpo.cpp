@@ -60,29 +60,29 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype;
+    char xtype[1];
     const INTEGER ntypes = 9;
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo;
-    char type;
+    char uplo[1];
+    char type[1];
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    char dist[1];
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
     const REAL zero = 0.0;
     INTEGER iequed = 0;
-    char equed;
+    char equed[1];
     INTEGER nfact = 0;
     INTEGER ifact = 0;
-    char fact;
+    char fact[1];
     bool prefac = false;
     bool nofact = false;
     bool equil = false;
@@ -98,37 +98,6 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER k = 0;
     REAL rcond = 0.0;
     INTEGER k1 = 0;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Initialize constants and the random number seed.
     //
@@ -160,7 +129,7 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype = 'N';
+        xtype[0] = 'N';
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -184,19 +153,19 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             //           Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
-                uplo = uplos[iuplo - 1];
+                uplo[0] = uplos[iuplo - 1];
                 //
                 //              Set up parameters with Clatb4 and generate a test matrix
                 //              with Clatms.
                 //
-                Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+                Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
+                Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
                 //              Check error code from Clatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Clatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_110;
                 }
                 //
@@ -245,10 +214,10 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 //
                 //              Save a copy of the matrix A in ASAV.
                 //
-                Clacpy(&uplo, n, n, a, lda, asav, lda);
+                Clacpy(uplo, n, n, a, lda, asav, lda);
                 //
                 for (iequed = 1; iequed <= 2; iequed = iequed + 1) {
-                    equed = equeds[iequed - 1];
+                    equed[0] = equeds[iequed - 1];
                     if (iequed == 1) {
                         nfact = 3;
                     } else {
@@ -256,10 +225,10 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     }
                     //
                     for (ifact = 1; ifact <= nfact; ifact = ifact + 1) {
-                        fact = facts[ifact - 1];
-                        prefac = Mlsame(&fact, "F");
-                        nofact = Mlsame(&fact, "N");
-                        equil = Mlsame(&fact, "E");
+                        fact[0] = facts[ifact - 1];
+                        prefac = Mlsame(fact, "F");
+                        nofact = Mlsame(fact, "N");
+                        equil = Mlsame(fact, "E");
                         //
                         if (zerot) {
                             if (prefac) {
@@ -267,14 +236,14 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             }
                             rcondc = zero;
                             //
-                        } else if (!Mlsame(&fact, "N")) {
+                        } else if (!Mlsame(fact, "N")) {
                             //
                             //                       Compute the condition number for comparison with
                             //                       the value returned by Cposvx (FACT = 'N' reuses
                             //                       the condition number from the previous iteration
                             //                       with FACT = 'F').
                             //
-                            Clacpy(&uplo, n, n, asav, lda, afac, lda);
+                            Clacpy(uplo, n, n, asav, lda, afac, lda);
                             if (equil || iequed > 1) {
                                 //
                                 //                          Compute row and column scale factors to
@@ -288,7 +257,7 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     //
                                     //                             Equilibrate the matrix.
                                     //
-                                    Claqhe(&uplo, n, afac, lda, s, scond, amax, &equed);
+                                    Claqhe(uplo, n, afac, lda, s, scond, amax, equed);
                                 }
                             }
                             //
@@ -301,20 +270,20 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //
                             //                       Compute the 1-norm of A.
                             //
-                            anorm = Clanhe("1", &uplo, n, afac, lda, rwork);
+                            anorm = Clanhe("1", uplo, n, afac, lda, rwork);
                             //
                             //                       Factor the matrix A.
                             //
-                            Cpotrf(&uplo, n, afac, lda, info);
+                            Cpotrf(uplo, n, afac, lda, info);
                             //
                             //                       Form the inverse of A.
                             //
-                            Clacpy(&uplo, n, n, afac, lda, a, lda);
-                            Cpotri(&uplo, n, a, lda, info);
+                            Clacpy(uplo, n, n, afac, lda, a, lda);
+                            Cpotri(uplo, n, a, lda, info);
                             //
                             //                       Compute the 1-norm condition number of A.
                             //
-                            ainvnm = Clanhe("1", &uplo, n, a, lda, rwork);
+                            ainvnm = Clanhe("1", uplo, n, a, lda, rwork);
                             if (anorm <= zero || ainvnm <= zero) {
                                 rcondc = one;
                             } else {
@@ -324,12 +293,12 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         //                    Restore the matrix A.
                         //
-                        Clacpy(&uplo, n, n, asav, lda, a, lda);
+                        Clacpy(uplo, n, n, asav, lda, a, lda);
                         //
                         //                    Form an exact solution and set the right hand side.
                         //
-                        Clarhs(path, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                        xtype = 'C';
+                        Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        xtype[0] = 'C';
                         Clacpy("Full", n, nrhs, b, lda, bsav, lda);
                         //
                         if (nofact) {
@@ -339,15 +308,15 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       Compute the L*L' or U'*U factorization of the
                             //                       matrix and solve the system.
                             //
-                            Clacpy(&uplo, n, n, a, lda, afac, lda);
+                            Clacpy(uplo, n, n, a, lda, afac, lda);
                             Clacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            Cposv(&uplo, n, nrhs, afac, lda, x, lda, info);
+                            Cposv(uplo, n, nrhs, afac, lda, x, lda, info);
                             //
                             //                       Check error code from Cposv .
                             //
                             if (info != izero) {
-                                Alaerh(path, "Cposv ", info, izero, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Cposv ", info, izero, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                                 goto statement_70;
                             } else if (info != 0) {
                                 goto statement_70;
@@ -356,12 +325,12 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       Reconstruct matrix from factors and compute
                             //                       residual.
                             //
-                            Cpot01(&uplo, n, a, lda, afac, lda, rwork, result[1 - 1]);
+                            Cpot01(uplo, n, a, lda, afac, lda, rwork, result[1 - 1]);
                             //
                             //                       Compute residual of the computed solution.
                             //
                             Clacpy("Full", n, nrhs, b, lda, work, lda);
-                            Cpot02(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
+                            Cpot02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
                             //
                             //                       Check solution from generated exact solution.
                             //
@@ -390,7 +359,7 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //                    --- Test Cposvx ---
                         //
                         if (!prefac) {
-                            Claset(&uplo, n, n, COMPLEX(zero), COMPLEX(zero), afac, lda);
+                            Claset(uplo, n, n, COMPLEX(zero), COMPLEX(zero), afac, lda);
                         }
                         Claset("Full", n, nrhs, COMPLEX(zero), COMPLEX(zero), x, lda);
                         if (iequed > 1 && n > 0) {
@@ -398,19 +367,19 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       Equilibrate the matrix if FACT='F' and
                             //                       EQUED='Y'.
                             //
-                            Claqhe(&uplo, n, a, lda, s, scond, amax, &equed);
+                            Claqhe(uplo, n, a, lda, s, scond, amax, equed);
                         }
                         //
                         //                    Solve the system and compute the condition number
                         //                    and error bounds using Cposvx.
                         //
-                        Cposvx(&fact, &uplo, n, nrhs, a, lda, afac, lda, &equed, s, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                        Cposvx(fact, uplo, n, nrhs, a, lda, afac, lda, equed, s, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                         //
                         //                    Check the error code from Cposvx.
                         //
                         if (info != izero) {
-                            fact_uplo[0] = fact;
-                            fact_uplo[1] = uplo;
+                            fact_uplo[0] = fact[0];
+                            fact_uplo[1] = uplo[0];
                             fact_uplo[2] = '\0';
                             Alaerh(path, "Cposvx", info, izero, fact_uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_90;
@@ -422,7 +391,7 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 //                          Reconstruct matrix from factors and compute
                                 //                          residual.
                                 //
-                                Cpot01(&uplo, n, a, lda, afac, lda, &rwork[(2 * nrhs + 1) - 1], result[1 - 1]);
+                                Cpot01(uplo, n, a, lda, afac, lda, &rwork[(2 * nrhs + 1) - 1], result[1 - 1]);
                                 k1 = 1;
                             } else {
                                 k1 = 2;
@@ -431,11 +400,11 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       Compute residual of the computed solution.
                             //
                             Clacpy("Full", n, nrhs, bsav, lda, work, lda);
-                            Cpot02(&uplo, n, nrhs, asav, lda, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
+                            Cpot02(uplo, n, nrhs, asav, lda, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
                             //
                             //                       Check solution from generated exact solution.
                             //
-                            if (nofact || (prefac && Mlsame(&equed, "N"))) {
+                            if (nofact || (prefac && Mlsame(equed, "N"))) {
                                 Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                             } else {
                                 Cget04(n, nrhs, x, lda, xact, lda, roldc, result[3 - 1]);
@@ -444,7 +413,7 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //                       Check the error bounds from iterative
                             //                       refinement.
                             //
-                            Cpot05(&uplo, n, nrhs, asav, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
+                            Cpot05(uplo, n, nrhs, asav, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                         } else {
                             k1 = 6;
                         }

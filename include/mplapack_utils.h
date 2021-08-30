@@ -58,4 +58,8 @@
 #include <mplapack_utils__Float128.h>
 #endif
 
+#if defined ___MPLAPACK_INTERNAL___
+#include <mplapack_print.h>
+#endif
+
 #endif

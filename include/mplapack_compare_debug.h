@@ -50,31 +50,7 @@ using std::endl;
 #include <mpreal.h>
 using namespace mpfr;
 
-#if !defined __MPLAPACK_BUFLEN__
-#define __MPLAPACK_BUFLEN__ 1024
-#endif
-
-#if !defined _MUTILS_DOUBLE_H_
-#define DOUBLE_FORMAT "%+20.16e"
-#define DOUBLE_SHORT_FORMAT "%+20.16e"
-
-inline void printnum(double rtmp) { printf(DOUBLE_FORMAT, rtmp); }
-inline void printnum(std::complex<double> ctmp) { printf(DOUBLE_FORMAT DOUBLE_FORMAT "i", ctmp.real(), ctmp.imag()); }
-inline void printnum(__complex__ double ctmp) { printf(DOUBLE_FORMAT DOUBLE_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
-
-inline void printnum_short(double rtmp) { printf(DOUBLE_SHORT_FORMAT, rtmp); }
-inline void printnum_short(std::complex<double> ctmp) { printf(DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
-inline void printnum_short(__complex__ double ctmp) { printf(DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
-inline void printnum_short(mplapackint itmp) { printf("%d ", (int)itmp); }
-
-inline void sprintnum(char *buf, double rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_FORMAT, rtmp); }
-inline void sprintnum(char *buf, std::complex<double> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_FORMAT DOUBLE_FORMAT "i", ctmp.real(), ctmp.imag()); }
-inline void sprintnum(char *buf, __complex__ double ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_FORMAT DOUBLE_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
-
-inline void sprintnum_short(char *buf, double rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_SHORT_FORMAT, rtmp); }
-inline void sprintnum_short(char *buf, std::complex<double> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
-inline void sprintnum_short(char *buf, __complex__ double ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
-#endif
+#include <mplapack_print_double.h>
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
 #define EPSILON 1e-31
@@ -168,9 +144,6 @@ inline double drand48() {
     return d;
 }
 #endif
-
-#define DOUBLE_FORMAT "%+20.16e"
-#define DOUBLE_SHORT_FORMAT "%+20.16e"
 
 #if defined __MPLAPACK_BUILD_DEBUG_CPP__
 #define _MPLAPACK_DEBUG_EXTERN_
@@ -289,59 +262,6 @@ void set_random_number1to2(mpreal &a, _Float128 &b);
 void set_random_number1to2(mpcomplex &a, complex<_Float128> &b);
 #endif
 
-template <class X> void printmat(int N, int M, X *A, int LDA) {
-    X tmp;
-    printf("[ ");
-    for (int i = 0; i < N; i++) {
-        printf("[ ");
-        for (int j = 0; j < M; j++) {
-            tmp = A[i + j * LDA];
-            printnum_short(tmp);
-            if (j < M - 1)
-                printf(", ");
-        }
-        if (i < N - 1)
-            printf("]; ");
-        else
-            printf("] ");
-    }
-    printf("]");
-}
-
-template <class X> void printmatU(int N, X *A, int LDA) {
-    X tmp;
-    printf("[ ");
-    for (int i = 0; i < N; i++) {
-        printf("[ ");
-        for (int j = 0; j < N; j++) {
-            if (i <= j)
-                tmp = A[i + j * LDA];
-            else
-                tmp = A[j + i * LDA];
-            printnum_short(tmp);
-            if (j < N - 1)
-                printf(", ");
-        }
-        if (i < N - 1)
-            printf("]; ");
-        else
-            printf("] ");
-    }
-    printf("]");
-}
-
-template <class X> void printvec(X *A, int len) {
-    X tmp;
-    printf("[ ");
-    for (int i = 0; i < len; i++) {
-        tmp = A[i];
-        printnum_short(tmp);
-        if (i < len - 1)
-            printf(", ");
-    }
-    printf("]");
-}
-
 template <class X_REF, class X> void set_random_vector(X_REF *vec_ref, X *vec, int len) {
     if (len <= 0)
         return;
@@ -450,5 +370,7 @@ template <class X_REF, class X> void set_hilbertmat(X_REF *p_ref, X *p, int ldp,
         }
     }
 }
+
+#include <mplapack_utils.h>
 
 #endif

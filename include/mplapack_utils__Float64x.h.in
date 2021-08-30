@@ -36,10 +36,10 @@
 
 #if defined ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___
 
-//Intel C/C++ compilers currently only supports long double as extended doule (aka FP80)
-//and following workaround works
+// Intel C/C++ compilers currently only supports long double as extended doule (aka FP80)
+// and following workaround works
 #if defined(__INTEL_COMPILER)
-typedef long double _Float64x;
+    typedef long double _Float64x;
 #endif
 
 #if defined ___MPLAPACK_INTERNAL___

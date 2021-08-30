@@ -4,13 +4,20 @@ libraries like GMP, MPFR and QD etc so that users can choose for user's
 convenience. The MPLAPACK is a free software (2-clause BSD style license with
 original license by LAPACK).
 
-# Supported platforms
-
-* Ubuntu 20.04, 18.04 (amd64, AArch64)
-* CentOS 7,8 (amd64, AArch64)
-* Ubuntu 20.04 (amd64) + Intel oneAPI
-* macOS (Intel) + macports (you may use homebrew instead, small modification of build script req'ed)
-* Windows (64bit; mingw64 on Ubuntu with wine64)
+# Capabilities
+* MPBLAS: All BLAS routines can be done in multiple precision arithmetic.
+* MPLAPACK: in ver 1.0.0 all Real version of following solvers (complex version will be added in 2.0)
+* Linear Equations
+* Linear Least Squares (LLS) Problems
+* Generalized Linear Least Squares (LSE and GLM) Problems
+* Standard Eigenvalue and Singular Value Problems
+* Symmetric Eigenproblems (SEP)
+* Nonsymmetric Eigenproblems (NEP)
+* Singular Value Decomposition (SVD) 
+* Generalized Eigenvalue and Singular Value Problems
+* Generalized Symmetric Definite Eigenproblems (GSEP)
+* Generalized Nonsymmetric Eigenproblems (GNEP)
+* Generalized Singular Value Decomposition (GSVD) 
 
 # Supported multiple precision libraries and floating point formats
 
@@ -22,6 +29,14 @@ original license by LAPACK).
 * _Float64x (extended precision of double; binary80 Intel CPU only)
 
 We use MPFR + MPC as the primary arithmetic class.
+
+# Supported platforms
+
+* Ubuntu 20.04, 18.04 (amd64, AArch64)
+* CentOS 7,8 (amd64, AArch64)
+* Ubuntu 20.04 (amd64) + Intel oneAPI
+* macOS (Intel) + macports (you may use homebrew instead, small modification of build script req'ed)
+* Windows (64bit; mingw64 on Ubuntu with wine64)
 
 # How to build on Linux and Win (using Docker; recommended)
 
@@ -71,7 +86,7 @@ $ /usr/bin/time docker build -t mplapack:mingw -f  Dockerfile_ubuntu20.04_mingw6
 
 ```
 $ sudo port install gcc9 coreutils git ccache
-$ git clone https://github.com/nakatamaho/mplapack.git -b v0.9.3 --depth 1
+$ git clone https://github.com/nakatamaho/mplapack.git --depth 1
 $ cd mplapack
 $ pushd mplapack/debug ; bash gen.Makefile.am.sh ; popd
 $ autoreconf --force --install ; aclocal ; autoconf ; automake; autoreconf --force --install
@@ -115,26 +130,26 @@ This is the release schedule for MPLAPACK 1.0.0
 | QA of blas (dd)                      | 2021-08-09 |100% | compare with MPFR MPBLAS   | 
 | QA of blas (qd)                      | 2021-08-09 |100% | compare with MPFR MPBLAS   | 
 | QA of lapack (mpfr)                  | 2021-08-15 |100% | compare with original LAPACK | 
-| QA of lapack (gmp)                   |            |     | compare with MPFR LAPACK |  
+| QA of lapack (gmp)                   | 2021-08-20 |100% | compare with MPFR LAPACK |  
 | QA of lapack (_Float128)             | 2021-08-15 |100% | compare with MPFR LAPACK |  
-| QA of lapack (_Float64x)             |            |     | compare with MPFR LAPACK |  
+| QA of lapack (_Float64x)             | 2021-08-19 |100% | compare with MPFR LAPACK |  
 | QA of lapack (double)                | 2021-08-16 |100% | compare with MPFR LAPACK |  
-| QA of lapack (dd)                    | 2021-08-16 |Rlassq | compare with MPFR LAPACK |  
+| QA of lapack (dd)                    | 2021-08-19 |100% | compare with MPFR LAPACK |  
 | QA of lapack (qd)                    | 2021-08-16 |100% | compare with MPFR LAPACK |  
 | QA of lin (mpfr, real)               | 2021-08-15 |100% |                          | 
-| QA of lin (gmp, real)                |            |     |                          | 
+| QA of lin (gmp, real)                | 2021-08-20 |100% |                          | 
 | QA of lin (_Float128, real)          | 2021-08-15 |100% |                          | 
 | QA of lin (_Float64x, real)          | 2021-08-15 |100% |                          | 
 | QA of lin (double, real)             | 2021-08-15 |100% |                          | 
 | QA of lin (dd, real)                 | 2021-08-15 |100% |                          | 
-| QA of lin (qd, real)                 | 2021-08-15 |100% |                          | 
-| QA of eig (mpfr, real)               |            |     |                          | 
-| QA of eig (gmp, real)                |            |     |                          | 
-| QA of eig (_Float128, real)          |            |     |                          | 
-| QA of eig (_Float64x, real)          |            |     |                          | 
-| QA of eig (double, real)             |            |     |                          | 
-| QA of eig (dd, real)                 |            |     |                          | 
-| QA of eig (qd, real)                 |            |     |                          | 
+| QA of lin (qd, real)                 | 2021-08-17 |100% |                          | 
+| QA of eig (mpfr, real)               | 2021-08-18 |100% |                          | 
+| QA of eig (gmp, real)                | 2021-08-20 |100% | errors of eig/Red.in are bit large but ignorable |
+| QA of eig (_Float128, real)          | 2021-08-17 |100% |                          | 
+| QA of eig (_Float64x, real)          | 2021-08-17 |100% |                          | 
+| QA of eig (double, real)             | 2021-08-17 |100% |                          | 
+| QA of eig (dd, real)                 | 2021-08-21 |100% |                          |
+| QA of eig (qd, real)                 | 2021-08-21 |90%  |svd.in Underflow occurs   | 
 | Build on Ubuntu 20.04 amd64          | 2021-08-13 |3e51d57| _Float128: supp. by libc only binary128, _Float64x == long double |
 | Build on Ubuntu 18.04 amd64          | 2021-08-13 |3e51d57| _Float128: supp. by libc only binary128, _Float64x == long double |
 | Build on Ubuntu 20.04 Intel oneAPI   | 2021-08-13 |3e51d57| _Float128: supp. by libc only binary128, _Float64x == long double | 
@@ -147,8 +162,6 @@ This is the release schedule for MPLAPACK 1.0.0
 | Build on CentOS8 AArch64             | 2021-08-13 |3e51d57| _Float128: supp. by libc and _Float128 == long double |
 | Build on Ubuntu 20.04 PPC64LE        | 2021-08-13 |3e51d57| _Float128: supp. by libc and _Float128 != long double | 
 | Add documents                        |            |     |                          | 
-| Add examples for SVD                 | 2021-08-09 | 20% | MPFR ver.                |
-| Add examples for NEP                 | 2021-08-09 | 20% | MPFR ver.                |
 
 ## MPLAPACK 2.0.0 Release Process 
 This is the release schedule for MPLAPACK 2.0.0
@@ -157,7 +170,20 @@ This is the release schedule for MPLAPACK 2.0.0
 | Impliment RFP version                |            |     |                          | 
 | Impliment complex lin                |            |     |                          | 
 | Impliment complex eig                |            |     |                          | 
+| Impliment mixed precision version    |            |     |                          | 
+| Fix Rlamch for GMP                   |            |     |                          | 
+| Fix Rlamch for QD                    |            |     | svd.in fails.used with caution | 
+| cleanup pow (REAL, long int)         |            |     |                          | 
 | Get rid of compiler warnings         |            |     |                          | 
+| Add more examples                    |            |     |                          | 
+
+## MPLAPACK 3.0.0 Release Process 
+This is the release schedule for MPLAPACK 3.0.0
+| Action | Date | Status | Description |
+| --- | --- | --- | --- |
+| Impliment faster MPFR C++ wrapper like gmpxx.h |            |     |                          | 
+| Drop GMP version                               |            |     | Since trigonometric functions req'ed | 
+| optimized implimentations                      |            |     |                          | 
 
 # History
 * 2021/4/11 0.9.3 release. CentOS7 AArch64 support

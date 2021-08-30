@@ -1,0 +1,17 @@
+ Tests of the Nonsymmetric eigenproblem condition estimation routines
+ Rlaln2, Rlasy2, Rlanv2, Rlaexc, Rtrsyl, Rtrexc, Rtrsna, Rtrsen, Rlaqtr, Rtgexc
+
+ Relative machine precision (EPS) = +1.4916681462400413e-154
+ Safe minimum (SFMIN)             = +6.4447927660133239e-1292913987
+
+ Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
+
+
+ REC routines passed the tests of the error exits ( 35 tests done)
+ Error in Rtrsen: RMAX =+3.9295426714051919e+01+1.5244789072508100e+00+1.5246776751732141e+00
+ LMAX =       70      68      68 NINFO=       0       0       0 KNT=      78
+
+
+ End of tests
+ Total time used =         9.00 seconds
+

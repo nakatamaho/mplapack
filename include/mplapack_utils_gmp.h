@@ -122,9 +122,21 @@ inline double cast2double(mpf_class a) { return a.get_d(); }
 inline mpf_class atan2(mpf_class a, mpf_class b) {
     double dtemp1, dtemp2;
     mpf_class mtemp3;
-    dtemp1 = a.get_d();
-    dtemp2 = b.get_d();
-    mtemp3 = mpf_class(atan2(a, b));
+    if (abs(a) > abs(b)) {
+       mtemp3 = b / a;
+       dtemp1 = 1.0;
+       dtemp2 = mtemp3.get_d();
+    }
+    if (abs(a) < abs(b)) {
+       mtemp3 = a / b;
+       dtemp1 = mtemp3.get_d();
+       dtemp2 = 1.0;
+    }
+    if (abs(a) == abs(b)) {
+       dtemp1 = 1.0;
+       dtemp2 = 1.0;
+    }
+    mtemp3 = mpf_class(atan2(dtemp1, dtemp2));
     return mtemp3;
 }
 
@@ -169,6 +181,17 @@ inline mpf_class log10(mpf_class x) {
     d = mpf_get_d_2exp(&exp, x.get_mpf_t());
     ln10_app = (double)exp * log10(2.0) + log10(d);
     return ln10_app;
+}
+
+inline mpf_class pow(mpf_class x, mplapackint y) {
+    mpf_class mtemp1, mtemp2;
+    if (y >= 0) {
+        mpf_pow_ui(mtemp1.get_mpf_t(), x.get_mpf_t(), y);
+    } else {
+        mpf_pow_ui(mtemp2.get_mpf_t(), x.get_mpf_t(), -y);
+        mtemp1 = 1.0 / mtemp2;
+    }
+    return mtemp1;
 }
 
 inline mpf_class pow(mpf_class x, mpf_class y) {

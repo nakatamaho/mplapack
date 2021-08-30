@@ -232,8 +232,8 @@ REAL RlamchS_gmp(void) {
     REAL sfmin;
     REAL one = 1.0;
     unsigned long exp2;
-
-    exp2 = (1UL << (mp_bits_per_limb - 8)) - 1; // 6 seems to be the smallest on amd64 but for safty
+//XXX
+    exp2 = 0xffffffff;
     mpf_div_2exp(sfmin.get_mpf_t(), one.get_mpf_t(), exp2);
     return sfmin;
 
@@ -309,7 +309,8 @@ REAL RlamchM_gmp(void) {
     unsigned long exp2;
     REAL tmp;
     REAL uflowmin, one = 1.0;
-    exp2 = (1UL << (mp_bits_per_limb - 8)) - 1; // 6 seems to be the smallest on amd64 but for safty
+//XXX
+    exp2 = 0xffffffff;
     tmp = exp2;
     return -tmp;
 
@@ -340,7 +341,8 @@ REAL RlamchU_gmp(void) {
     REAL underflowmin;
     REAL one = 1.0;
     unsigned long exp2;
-    exp2 = (1UL << (mp_bits_per_limb - 8)) - 1; // 6 seems to be the smallest on amd64 but for safty
+//XXX    exp2 = (1UL << (mp_bits_per_limb - 8)) - 1; // 6 seems to be the smallest on amd64 but for safty
+    exp2 = 0xffffffff;
     mpf_div_2exp(underflowmin.get_mpf_t(), one.get_mpf_t(), exp2);
     return underflowmin;
 }
@@ -351,7 +353,8 @@ REAL RlamchL_gmp(void) {
     REAL maxexp;
     unsigned long exp2;
     exp2 = (1UL << (mp_bits_per_limb - 8)) - 1; // 6 seems to be the smallest on amd64 but for safty
-    maxexp = exp2;
+//XXX   
+    maxexp = 0xffffffff;
     return maxexp;
 }
 
@@ -361,8 +364,8 @@ REAL RlamchO_gmp(void) {
     REAL overflowmax;
     REAL one = 1.0;
     unsigned long exp2;
-
-    exp2 = (1UL << (mp_bits_per_limb - 8)) - 1; // 6 seems to be the smallest on amd64 but for safty
+//XXX    exp2 = (1UL << (mp_bits_per_limb - 8)) - 1; // 6 seems to be the smallest on amd64 but for safty
+    exp2 = 0xffffffff;
     mpf_mul_2exp(overflowmax.get_mpf_t(), one.get_mpf_t(), exp2);
 
     return overflowmax;
@@ -465,7 +468,14 @@ qd_real RlamchL_qd(void) { return (qd_real)1024.0; }
 //"O"
 // cf.http://www.netlib.org/blas/dlamch.f
 qd_real RlamchO_qd(void) {
-    return qd_real::_max; // approx 1.7976931348623157E+308 in float.h
+//due to bug of qd_real, we cannot take some arithmetic for qd_real::_max; e.g. sqrt.
+//thus we use smaller values
+    qd_real a = dd_real::_max;
+    a.x[0] = a.x[0] * 0x1p-53;
+    a.x[1] = a.x[1] * 0x1p-53;
+    a.x[2] = a.x[2] * 0x1p-53;
+    a.x[3] = a.x[3] * 0x1p-53;
+    return a; // approx 1.7976931348623157E+308/1e-16 in float.h
 }
 
 //"Z" :dummy
@@ -565,7 +575,12 @@ dd_real RlamchL_dd(void) { return (dd_real)1024.0; }
 //"O"
 // cf.http://www.netlib.org/blas/dlamch.f
 dd_real RlamchO_dd(void) {
-    return dd_real::_max; // approx 1.7976931348623157E+308 in float.h
+//due to bug of dd_real, we cannot take some arithmetic for dd_real::_max; e.g. sqrt.
+//thus we use smaller values
+    dd_real a = dd_real::_max;
+    a.x[0] = a.x[0] * 0x1p-53;
+    a.x[1] = a.x[1] * 0x1p-53;
+    return a; // approx 1.7976931348623157E+308/1e-16 in float.h
 }
 
 //"Z" :dummy
@@ -886,7 +901,9 @@ _Float64x Rlamch__Float64x(const char *cmach) {
 _Float128 RlamchE__Float128(void) {
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
     return FLT128_EPSILON;
-#else // XXX
+#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+    return 1.92592994438723585305597794258492732e-34L;
+#else
     return 1.92592994438723585305597794258492732e-34Q;
 #endif
 }
@@ -898,7 +915,9 @@ _Float128 RlamchS__Float128(void) {
 // 2^{-16382} = 3.36210314311209350626267781732175260e-4932Q
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
     return FLT128_MIN;
-#else // XXX
+#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+    return 3.36210314311209350626267781732175260e-4932L;
+#else
     return 3.36210314311209350626267781732175260e-4932Q;
 #endif
 
@@ -909,7 +928,7 @@ _Float128 RlamchS__Float128(void) {
     eps = 1.0;
     // We all know double is the IEEE 754 2008 binary128 format has 113bit significant digits
     for (int i = 0; i < 16383; i++) {
-        eps = eps / 2.0Q;
+        eps = eps / 2.0;
     }
     called = 1;
 }
@@ -958,6 +977,8 @@ _Float128 RlamchM__Float128(void) {
     // then -16382 + 1 = -16381
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
     return FLT128_MIN_EXP;
+#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+    return (-16381);
 #else
     return (-16381);
 #endif
@@ -968,6 +989,8 @@ _Float128 RlamchM__Float128(void) {
 _Float128 RlamchU__Float128(void) {
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
     return FLT128_MIN;
+#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+    return 3.36210314311209350626267781732175260e-4932L;
 #else
     return 3.36210314311209350626267781732175260e-4932Q;
 #endif
@@ -1004,6 +1027,8 @@ _Float128 RlamchO__Float128(void) {
     // 1.18973149535723176508575932662800702e4932Q in IEEE 754 2008 binary128.
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
     return FLT128_MAX;
+#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+    return 1.18973149535723176508575932662800702e4932L;
 #else
     return 1.18973149535723176508575932662800702e4932Q;
 #endif

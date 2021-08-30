@@ -414,8 +414,10 @@ void Cchkaa(void) {
     sprintnum_short(buf, eps);
     cout << " Relative machine underflow is taken to be : " << buf << endl;
     eps = Rlamch("Overflow threshold");
+    sprintnum_short(buf, eps);
     cout << " Relative machine overflow  is taken to be : " << buf << endl;
     eps = Rlamch("Epsilon");
+    sprintnum_short(buf, eps);
     cout << " Relative machine precision is taken to be : " << buf << endl;
     //
     //     Read a test path and the number of matrix types to use.
@@ -1086,13 +1088,6 @@ void Cchkaa(void) {
         //
         //     Go back to get another input line.
         //
-    //
-    //     Branch to this line when the last record is read.
-    //
-    statement_140:
-        s2 = time(NULL);
-        write(nout, "(/,' End of tests')");
-        write(nout, "(' Total time used = ',f12.2,' seconds',/)"), int(s2 - s1);
     }
     delete[] s;
     delete[] e;
@@ -1100,6 +1095,9 @@ void Cchkaa(void) {
     delete[] a;
     delete[] rwork;
     delete[] work;
+    s2 = time(NULL);
+    write(nout, "(/,' End of tests')");
+    write(nout, "(' Total time used = ',f12.2,' seconds',/)"), int(s2 - s1);
     //
     //     End of Cchkaa
     //

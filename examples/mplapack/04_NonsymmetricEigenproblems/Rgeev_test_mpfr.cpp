@@ -59,7 +59,7 @@ int main() {
     printf("vr ="); printmat(n, n, vr, n); printf("\n");
     printf("[vl, d, w] = eig(a)\n");
     for (int i = 1; i <= n; i = i + 1) {
-        printf("w_%d = ", (int)i); printnum_short(wr[i - 1]); printf(" "); printnum_short(wi[i - 1]); printf("i\n");
+        printf("w_%d = ", (int)i); printnum(wr[i - 1]); printf(" "); printnum(wi[i - 1]); printf("i\n");
     }
     delete[] work;
     delete[] wr;

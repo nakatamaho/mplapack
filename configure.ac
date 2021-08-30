@@ -236,6 +236,7 @@ AS_HELP_STRING([--enable-_Float128], [Enable _Float128 version (TS 18661-3 like 
 SAVE_CXXFLAGS="$CXXFLAGS"
 AM_CONDITIONAL(WANT_QUADMATH, test x$enable__Float128 = xno)
 if test x$enable__Float128 = x"yes"; then
+# For unknown reason, the f128 suffix doesn't work in g++-9, but it does in gcc-9.
     AC_MSG_CHECKING([whether _Float128 is supported])
     AC_LINK_IFELSE([
        AC_LANG_SOURCE([[

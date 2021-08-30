@@ -36,6 +36,8 @@
 
 using namespace mpfr;
 
+#include <mplapack_print_double.h>
+
 #if defined ___MPLAPACK_INTERNAL___
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
@@ -83,7 +85,7 @@ inline void sprintnum(char *buf, mpcomplex ctmp) {
     cim = ctmp.imag();
     mpfr_snprintf(buf, __MPLAPACK_BUFLEN__, MPFR_FORMAT MPFR_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
     return;
-    }
+}
 inline void sprintnum_short(char *buf, mpcomplex ctmp) {
     mpreal cre, cim;
     cre = ctmp.real();

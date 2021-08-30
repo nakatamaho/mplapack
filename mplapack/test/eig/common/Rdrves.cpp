@@ -39,6 +39,10 @@ using fem::common;
 #include <mplapack_common_sslct.h>
 #include <mplapack_debug.h>
 
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+extern gmp_randstate_t ___random_mplapack_mpfr_state;
+#endif
+
 void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *h, REAL *ht, REAL *wr, REAL *wi, REAL *wrt, REAL *wit, REAL *vs, INTEGER const ldvs, REAL *result, REAL *work, INTEGER const nwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
 
     INTEGER ldh = lda;
@@ -96,39 +100,6 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     static const char *format_9992 = "(' Rdrves: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Arrays in Common ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     path[0] = 'R';
     path[1] = 'E';
     path[2] = 'S';
@@ -150,6 +121,10 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             badnn = true;
         }
     }
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+    // not a good hack but sometimes generates too narrow pair of eigenvalues.
+    gmp_randseed_ui(___random_mplapack_mpfr_state, (long int)iseed[2]);
+#endif
     //
     //     Check for errors
     //
@@ -356,7 +331,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
             //
             if (iinfo != 0) {
-                write(nounit, format_9992), "Generator", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9992), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[3], ioldsd[3];
                 info = abs(iinfo);
                 return;
             }
@@ -396,7 +371,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     Rgees("V", &sort, Rslect, n, h, lda, sdim, wr, wi, vs, ldvs, work, nnwork, bwork, iinfo);
                     if (iinfo != 0 && iinfo != n + 2) {
                         result[(1 + rsub) - 1] = ulpinv;
-                        write(nounit, format_9992), "Rgees1", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9992), "Rgees1", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         goto statement_220;
                     }
@@ -465,7 +440,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     Rgees("N", &sort, Rslect, n, ht, lda, sdim, wrt, wit, vs, ldvs, work, nnwork, bwork, iinfo);
                     if (iinfo != 0 && iinfo != n + 2) {
                         result[(5 + rsub) - 1] = ulpinv;
-                        write(nounit, format_9992), "Rgees2", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9992), "Rgees2", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         goto statement_220;
                     }
@@ -582,7 +557,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         sprintnum_short(buf, result[j - 1]);
                         write(nounit, "(' N=',i5,', IWK=',i2,', seed=',4(i4,','),' type ',i2,"
                                       "', test(',i2,')=',a)"),
-                            n, iwk, ioldsd, jtype, j, buf;
+                            n, iwk, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jtype, j, buf;
                     }
                 }
                 //

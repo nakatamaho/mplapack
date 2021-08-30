@@ -60,20 +60,20 @@ void Cdrvhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
     INTEGER n = 0;
     INTEGER lwork = 0;
     INTEGER lda = 0;
-    char xtype;
+    char xtype[1];
     const INTEGER ntypes = 10;
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo;
-    char type;
+    char uplo[1];
+    char type[1];
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    char dist[1];
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
@@ -82,44 +82,11 @@ void Cdrvhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
     INTEGER i2 = 0;
     INTEGER i1 = 0;
     INTEGER ifact = 0;
-    char fact;
+    char fact[1];
     INTEGER k = 0;
     const INTEGER ntests = 3;
     REAL result[ntests];
     INTEGER nt = 0;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize constants and the random number seed.
     //
     //     Test path
     //
@@ -145,6 +112,7 @@ void Cdrvhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
     if (tsterr) {
         Cerrvx(path, nout);
     }
+    infot = 0;
     //
     //     Set the block size and minimum block size for testing.
     //
@@ -160,7 +128,7 @@ void Cdrvhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
         lwork = max(3 * n - 2, n * (1 + nb));
         lwork = max(lwork, (INTEGER)1);
         lda = max(n, (INTEGER)1);
-        xtype = 'N';
+        xtype[0] = 'N';
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -184,21 +152,21 @@ void Cdrvhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
             //           Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
-                uplo = uplos[iuplo - 1];
+                uplo[0] = uplos[iuplo - 1];
                 //
                 //              Begin generate the test matrix A.
                 //
                 //              Set up parameters with Clatb4 and generate a test matrix
                 //              with Clatms.
                 //
-                Clatb4(matpath, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+                Clatb4(matpath, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
+                Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
                 //              Check error code from Clatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Clatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_160;
                 }
                 //
@@ -278,22 +246,22 @@ void Cdrvhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                     //
                     //                 Do first for FACT = 'F', then for other values.
                     //
-                    fact = facts[ifact - 1];
+                    fact[0] = facts[ifact - 1];
                     //
                     //                 Form an exact solution and set the right hand side.
                     //
-                    Clarhs(matpath, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                    xtype = 'C';
+                    Clarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                    xtype[0] = 'C';
                     //
                     //                 --- Test Chesv_aa  ---
                     //
                     if (ifact == 2) {
-                        Clacpy(&uplo, n, n, a, lda, afac, lda);
+                        Clacpy(uplo, n, n, a, lda, afac, lda);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
                         //                    Factor the matrix and solve the system using Chesv.
                         //
-                        Chesv_aa(&uplo, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
+                        Chesv_aa(uplo, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
                         //
                         //                    Adjust the expected value of INFO to account for
                         //                    pivoting.
@@ -318,7 +286,7 @@ void Cdrvhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                         //                    Check error code from Chesv .
                         //
                         if (info != k) {
-                            Alaerh(path, "Chesv_aa", info, k, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Chesv_aa", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_120;
                         } else if (info != 0) {
                             goto statement_120;
@@ -327,12 +295,12 @@ void Cdrvhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                         //                    Reconstruct matrix from factors and compute
                         //                    residual.
                         //
-                        Chet01_aa(&uplo, n, a, lda, afac, lda, iwork, ainv, lda, rwork, result[1 - 1]);
+                        Chet01_aa(uplo, n, a, lda, afac, lda, iwork, ainv, lda, rwork, result[1 - 1]);
                         //
                         //                    Compute residual of the computed solution.
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
-                        Cpot02(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
+                        Cpot02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
                         nt = 2;
                         //
                         //                    Print information about the tests that did not pass
