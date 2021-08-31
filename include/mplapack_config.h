@@ -55,9 +55,9 @@
 
 /* XXX this is a very dirty part */
 #ifdef USE64BITINT
-typedef long mplapackint;
+typedef int64_t mplapackint;
 #else
-typedef int mplapackint;
+typedef int32_t mplapackint;
 #endif
 
 typedef mplapackint mplapacklogical;
