@@ -1,7 +1,7 @@
 # Sample Makefile
 # by Nakata Maho
 CXX=c++
-MPLAPACKDIR=/home/maho/mplapack-work/MPLAPACK
+MPLAPACKDIR=/home/docker/MPLAPACK
 CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
 OPTFLAGS= -O2
 LIBFLAGS=-L$(MPLAPACKDIR)/lib
