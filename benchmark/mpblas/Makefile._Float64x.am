@@ -1,0 +1,59 @@
+bench_PROGRAMS += \
+Raxpy._Float64x Raxpy._Float64x_opt \
+Rcopy._Float64x Rcopy._Float64x_opt \
+Rdot._Float64x  Rdot._Float64x_opt \
+Rgemm._Float64x Rgemm._Float64x_opt \
+Rgemv._Float64x Rgemv._Float64x_opt
+
+#lapack is needed for Rlange
+_Float64xcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___
+_Float64xlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float64x
+if WANT_QUADMATH
+_Float64x_libdepends = $(_Float64xlapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas__Float64x -lquadmath $(DYLD)
+_Float64xopt_libdepends = $(_Float64xlapack_libdepends) -L$(top_builddir)/mpblas/optimized/_Float64x -lmpblas__Float64x_opt -lquadmath $(DYLD)
+else
+_Float64x_libdepends = $(_Float64xlapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas__Float64x $(DYLD)
+_Float64xopt_libdepends = $(_Float64xlapack_libdepends) -L$(top_builddir)/mpblas/optimized/_Float64x -lmpblas__Float64x_opt $(DYLD)
+endif
+
+Raxpy__Float64x_opt_SOURCES= Raxpy.cpp
+Raxpy__Float64x_opt_CXXFLAGS= $(_Float64xcxxflags)
+Raxpy__Float64x_opt_LDFLAGS= $(_Float64xopt_libdepends)
+
+Raxpy__Float64x_SOURCES= Raxpy.cpp
+Raxpy__Float64x_CXXFLAGS= $(_Float64xcxxflags)
+Raxpy__Float64x_LDFLAGS= $(_Float64x_libdepends)
+
+Rcopy__Float64x_opt_SOURCES= Rcopy.cpp
+Rcopy__Float64x_opt_CXXFLAGS= $(_Float64xcxxflags)
+Rcopy__Float64x_opt_LDFLAGS= $(_Float64xopt_libdepends)
+
+Rcopy__Float64x_SOURCES= Rcopy.cpp
+Rcopy__Float64x_CXXFLAGS= $(_Float64xcxxflags)
+Rcopy__Float64x_LDFLAGS= $(_Float64x_libdepends)
+
+Rdot__Float64x_opt_SOURCES= Rdot.cpp
+Rdot__Float64x_opt_CXXFLAGS= $(_Float64xcxxflags)
+Rdot__Float64x_opt_LDFLAGS= $(_Float64xopt_libdepends)
+
+Rdot__Float64x_SOURCES= Rdot.cpp
+Rdot__Float64x_CXXFLAGS= $(_Float64xcxxflags)
+Rdot__Float64x_LDFLAGS= $(_Float64x_libdepends)
+
+Rgemm__Float64x_opt_SOURCES= Rgemm.cpp
+Rgemm__Float64x_opt_CXXFLAGS= $(_Float64xcxxflags)
+Rgemm__Float64x_opt_LDFLAGS= $(_Float64xopt_libdepends)
+
+Rgemm__Float64x_SOURCES= Rgemm.cpp
+Rgemm__Float64x_CXXFLAGS= $(_Float64xcxxflags)
+Rgemm__Float64x_LDFLAGS= $(_Float64x_libdepends)
+
+Rgemv__Float64x_opt_SOURCES= Rgemv.cpp
+Rgemv__Float64x_opt_CXXFLAGS= $(_Float64xcxxflags)
+Rgemv__Float64x_opt_LDFLAGS= $(_Float64xopt_libdepends)
+
+Rgemv__Float64x_SOURCES= Rgemv.cpp
+Rgemv__Float64x_CXXFLAGS= $(_Float64xcxxflags)
+Rgemv__Float64x_LDFLAGS= $(_Float64x_libdepends)
+
+
