@@ -46,32 +46,97 @@
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-#include "mplapack_benchmark_mpfr.h"
+gmp_randstate_t uniformrandomstate_mpfr;
+mpreal randomnumber(mpreal dummy) {
+    mpreal mtmp;
+
+    mtmp = urandomb(uniformrandomstate_mpfr);
+    mtmp = 2.0 * mtmp - 1.0;
+
+    return mtmp;
+}
+#define MPLAPACK_REF_LIB "libmplapack_mpfr"
+#define MPBLAS_REF_LIB "libmpblas_mpfr"
 #define ___MPLAPACK_INITIALIZE___ gmp_randinit_default(uniformrandomstate_mpfr);
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-#include "mplapack_benchmark_gmp.h"
+gmp_randclass *uniformrandomstate_gmp;
+mpf_class randomnumber(mpf_class dummy) {
+    mpf_class mtmp;
+
+    mtmp = uniformrandomstate_gmp->get_f();
+    mtmp = 2.0 * mtmp - 1.0;
+    return mtmp;
+}
+#define MPLAPACK_REF_LIB "libmplapack_gmp"
+#define MPBLAS_REF_LIB "libmpblas_gmp"
 #define ___MPLAPACK_INITIALIZE___ uniformrandomstate_gmp = new gmp_randclass(gmp_randinit_default);
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DD___
-#include "mplapack_benchmark_dd.h"
+#define MPLAPACK_REF_LIB "libmplapack_dd"
+#define MPBLAS_REF_LIB "libmpblas_dd"
+dd_real randomnumber(dd_real dummy) {
+    dd_real mtmp;
+    mtmp = ddrand(); // uniform random between [0,1] via lrand48
+    mtmp = 2.0 * mtmp - 1.0;
+    return mtmp;
+}
 #define ___MPLAPACK_INITIALIZE___
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_QD___
-#include "mplapack_benchmark_qd.h"
+qd_real randomnumber(qd_real dummy) {
+    qd_real mtmp;
+    mtmp = qdrand(); // uniform random between [0,1] via lrand48
+    mtmp = 2.0 * mtmp - 1.0;
+    return mtmp;
+}
+#define MPLAPACK_REF_LIB "libmplapack_qd"
+#define MPBLAS_REF_LIB "libmpblas_qd"
 #define ___MPLAPACK_INITIALIZE___
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
-#include "mplapack_benchmark_double.h"
+double randomnumber(double dummy) {
+#if defined _WIN32 // XXX
+    double mtmp = (double)rand();
+#else
+    double mtmp = drand48();
+#endif
+    return mtmp;
+}
+#define MPLAPACK_REF_LIB "libmplapack_double"
+#define MPBLAS_REF_LIB "libmpblas_double"
+#define ___MPLAPACK_INITIALIZE___
+#endif
+
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
+_Float64x randomnumber(_Float64x dummy) {
+    _Float64x mtmp;
+    mtmp = lrand48();          // uniform random between [0,1] via lrand48
+    mtmp += lrand48() * 1e-16; // uniform random between [0,1] via lrand48
+    mtmp += lrand48() * 1e-32; // uniform random between [0,1] via lrand48
+    mtmp = 2.0 * mtmp - 1.0;
+    return mtmp;
+}
+#define MPLAPACK_REF_LIB "libmplapack__Float64x"
+#define MPBLAS_REF_LIB "libmpblas__Float64x"
 #define ___MPLAPACK_INITIALIZE___
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-#include "mplapack_benchmark__Float128.h"
+_Float128 randomnumber(_Float128 dummy) {
+    _Float128 mtmp;
+    mtmp = lrand48();          // uniform random between [0,1] via lrand48
+    mtmp += lrand48() * 1e-16; // uniform random between [0,1] via lrand48
+    mtmp += lrand48() * 1e-32; // uniform random between [0,1] via lrand48
+    mtmp = 2.0 * mtmp - 1.0;
+    return mtmp;
+}
+#define MPLAPACK_REF_LIB "libmplapack__Float128"
+#define MPBLAS_REF_LIB "libmpblas__Float128"
 #define ___MPLAPACK_INITIALIZE___
 #endif
 
