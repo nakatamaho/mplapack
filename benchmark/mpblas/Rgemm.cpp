@@ -37,176 +37,158 @@
 
 #define TOTALSTEPS 1000
 
-double flops_gemm(mplapackint k_i, mplapackint m_i, mplapackint n_i)
-{
-  double adds, muls, flops;
-  double k, m, n;
-  m = (double)m_i; n = (double)n_i; k = (double)k_i; 
-  muls = m * k * n;
-  adds = m * k * n;
-  flops = muls + adds;
-  return flops;
+double flops_gemm(mplapackint k_i, mplapackint m_i, mplapackint n_i) {
+    double adds, muls, flops;
+    double k, m, n;
+    m = (double)m_i;
+    n = (double)n_i;
+    k = (double)k_i;
+    muls = m * k * n;
+    adds = m * k * n;
+    flops = muls + adds;
+    return flops;
 }
 
-int main (int argc, char *argv[])
-{
-  REAL alpha, beta, dummy;
-  REAL *dummywork;
-  double elapsedtime, t1, t2;
-  char transa, transb, normtype;
-  int N0, M0, K0, STEPN, STEPM, STEPK;
-  int lda, ldb, ldc;
-  int i, j, m, n, k, ka, kb, p, q;
-  int check_flag = 1;
+int main(int argc, char *argv[]) {
+    REAL alpha, beta, dummy;
+    REAL *dummywork;
+    double elapsedtime, t1, t2;
+    char transa, transb, normtype;
+    int N0, M0, K0, STEPN, STEPM, STEPK;
+    int lda, ldb, ldc;
+    int i, j, m, n, k, ka, kb, p, q;
+    int check_flag = 1;
 
-  ___MPLAPACK_INITIALIZE___
+    ___MPLAPACK_INITIALIZE___
 
-  const char mpblas_sym[] = SYMBOL_GCC_RGEMM;
-  const char raxpy_sym[] = SYMBOL_GCC_RAXPY;
-  void *handle;
-  void (*mpblas_ref) (const char *, const char *, mplapackint, mplapackint, mplapackint,
-		     REAL, REAL *, mplapackint, REAL *, mplapackint, REAL, REAL *, mplapackint);
-  void (*raxpy_ref) (mplapackint, REAL, REAL *, mplapackint, REAL *, mplapackint);
-  char *error;
-  REAL diff;
-  double diffr;
+    const char mpblas_sym[] = SYMBOL_GCC_RGEMM;
+    const char raxpy_sym[] = SYMBOL_GCC_RAXPY;
+    void *handle;
+    void (*mpblas_ref)(const char *, const char *, mplapackint, mplapackint, mplapackint, REAL, REAL *, mplapackint, REAL *, mplapackint, REAL, REAL *, mplapackint);
+    void (*raxpy_ref)(mplapackint, REAL, REAL *, mplapackint, REAL *, mplapackint);
+    char *error;
+    REAL diff;
+    double diffr;
 
-  // initialization
-  N0 = M0 = K0 = 1;
-  STEPM = STEPN = STEPK = 1;
-  transa = transb = 'n';
-  normtype = 'm';
-  if (argc != 1) {
-    for (i = 1; i < argc; i++) {
-      if (strcmp ("-N", argv[i]) == 0) {
-	N0 = atoi (argv[++i]);
-      }
-      else if (strcmp ("-M", argv[i]) == 0) {
-	M0 = atoi (argv[++i]);
-      }
-      else if (strcmp ("-K", argv[i]) == 0) {
-	K0 = atoi (argv[++i]);
-      }
-      else if (strcmp ("-STEPN", argv[i]) == 0) {
-	STEPN = atoi (argv[++i]);
-      }
-      else if (strcmp ("-STEPM", argv[i]) == 0) {
-	STEPM = atoi (argv[++i]);
-      }
-      else if (strcmp ("-STEPK", argv[i]) == 0) {
-	STEPK = atoi (argv[++i]);
-      }
-      else if (strcmp ("-NN", argv[i]) == 0) {
-	transa = transb = 'n';
-      }
-      else if (strcmp ("-TT", argv[i]) == 0) {
-	transa = transb = 't';
-      }
-      else if (strcmp ("-NT", argv[i]) == 0) {
-	transa = 'n';
-	transb = 't';
-      }
-      else if (strcmp ("-TN", argv[i]) == 0) {
-	transa = 't';
-	transb = 'n';
-      }
-      else if (strcmp ("-NOCHECK", argv[i]) == 0) {
-	check_flag = 0;
-      }
-    }
-  }
-
-  if (check_flag) {
-    handle = dlopen (MPBLAS_REF_LIB DYLIB_SUFFIX, RTLD_LAZY);
-    if (!handle) {
-      printf ("dlopen: %s\n", dlerror ());
-      return 1;
-    }
-    mpblas_ref = (void (*)
-		 (const char *, const char *, mplapackint, mplapackint, mplapackint, REAL,
-		  REAL *, mplapackint, REAL *, mplapackint, REAL, REAL *, mplapackint)) dlsym (handle, mpblas_sym);
-    if ((error = dlerror ()) != NULL) {
-      fprintf (stderr, "%s\n", error);
-      return 1;
+    // initialization
+    N0 = M0 = K0 = 1;
+    STEPM = STEPN = STEPK = 1;
+    transa = transb = 'n';
+    normtype = 'm';
+    if (argc != 1) {
+        for (i = 1; i < argc; i++) {
+            if (strcmp("-N", argv[i]) == 0) {
+                N0 = atoi(argv[++i]);
+            } else if (strcmp("-M", argv[i]) == 0) {
+                M0 = atoi(argv[++i]);
+            } else if (strcmp("-K", argv[i]) == 0) {
+                K0 = atoi(argv[++i]);
+            } else if (strcmp("-STEPN", argv[i]) == 0) {
+                STEPN = atoi(argv[++i]);
+            } else if (strcmp("-STEPM", argv[i]) == 0) {
+                STEPM = atoi(argv[++i]);
+            } else if (strcmp("-STEPK", argv[i]) == 0) {
+                STEPK = atoi(argv[++i]);
+            } else if (strcmp("-NN", argv[i]) == 0) {
+                transa = transb = 'n';
+            } else if (strcmp("-TT", argv[i]) == 0) {
+                transa = transb = 't';
+            } else if (strcmp("-NT", argv[i]) == 0) {
+                transa = 'n';
+                transb = 't';
+            } else if (strcmp("-TN", argv[i]) == 0) {
+                transa = 't';
+                transb = 'n';
+            } else if (strcmp("-NOCHECK", argv[i]) == 0) {
+                check_flag = 0;
+            }
+        }
     }
 
-    raxpy_ref = (void (*)(mplapackint, REAL, REAL *, mplapackint, REAL *, mplapackint)) dlsym (handle, raxpy_sym);
-    if ((error = dlerror ()) != NULL) {
-      fprintf (stderr, "%s\n", error);
-      return 1;
-    }
-  }
-
-  m = M0;
-  n = N0;
-  k = K0;
-  for (p = 0; p < TOTALSTEPS; p++) {
-    if (Mlsame (&transa, "n")) {
-      ka = k;
-      lda = m;
-    }
-    else {
-      ka = m;
-      lda = k;
-    }
-    if (Mlsame (&transb, "n")) {
-      kb = n;
-      ldb = k;
-    }
-    else {
-      kb = k;
-      ldb = n;
-    }
-    ldc = m;
-
-    REAL *A = new REAL[lda * ka];
-    REAL *B = new REAL[ldb * kb];
-    REAL *C = new REAL[ldc * n];
-    REAL *Cd = new REAL[ldc * n];
-    REAL mOne = -1;
-    alpha = randomnumber (dummy);
-    beta = randomnumber (dummy);
-    for (i = 0; i < lda * ka; i++) {
-      A[i] = randomnumber (dummy);
-    }
-    for (i = 0; i < ldb * kb; i++) {
-      B[i] = randomnumber (dummy);
-    }
-    for (i = 0; i < ldc * n; i++) {
-      C[i] = Cd[i] = randomnumber (dummy);
-    }
     if (check_flag) {
-      t1 = gettime ();
-      Rgemm (&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
-      t2 = gettime ();
-      elapsedtime = (t2 - t1);
-      (*mpblas_ref) (&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, Cd, ldc);
-      (*raxpy_ref) ((mplapackint) (ldc * n), mOne, C, (mplapackint) 1, Cd, (mplapackint) 1);
-      diff = Rlange (&normtype, (mplapackint) ldc, (mplapackint) n, Cd, ldc, dummywork);
-      diffr = cast2double (diff);
-      printf ("    m     n     k     MFLOPS   error   transa   transb\n");
-      //2mnk+2mn flops are needed
-      printf ("%5d %5d %5d %10.3f %5.2e       %c        %c\n", (int) m, (int) n, (int) k,
-	      flops_gemm(k, m, n) / elapsedtime * MFLOPS, diffr, transa, transb);
+        handle = dlopen(MPBLAS_REF_LIB DYLIB_SUFFIX, RTLD_LAZY);
+        if (!handle) {
+            printf("dlopen: %s\n", dlerror());
+            return 1;
+        }
+        mpblas_ref = (void (*)(const char *, const char *, mplapackint, mplapackint, mplapackint, REAL, REAL *, mplapackint, REAL *, mplapackint, REAL, REAL *, mplapackint))dlsym(handle, mpblas_sym);
+        if ((error = dlerror()) != NULL) {
+            fprintf(stderr, "%s\n", error);
+            return 1;
+        }
+
+        raxpy_ref = (void (*)(mplapackint, REAL, REAL *, mplapackint, REAL *, mplapackint))dlsym(handle, raxpy_sym);
+        if ((error = dlerror()) != NULL) {
+            fprintf(stderr, "%s\n", error);
+            return 1;
+        }
     }
-    else {
-      t1 = gettime ();
-      Rgemm (&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
-      t2 = gettime ();
-      elapsedtime = (t2 - t1);
-      printf ("    m     n     k     MFLOPS    transa   transb\n");
-      //2mnk+2mn flops are needed
-      printf ("%5d %5d %5d %10.3f         %c        %c\n", (int) m, (int) n, (int) k,
-	      flops_gemm(k, m, n) / elapsedtime * MFLOPS, diffr, transa, transb);
+
+    m = M0;
+    n = N0;
+    k = K0;
+    for (p = 0; p < TOTALSTEPS; p++) {
+        if (Mlsame(&transa, "n")) {
+            ka = k;
+            lda = m;
+        } else {
+            ka = m;
+            lda = k;
+        }
+        if (Mlsame(&transb, "n")) {
+            kb = n;
+            ldb = k;
+        } else {
+            kb = k;
+            ldb = n;
+        }
+        ldc = m;
+
+        REAL *A = new REAL[lda * ka];
+        REAL *B = new REAL[ldb * kb];
+        REAL *C = new REAL[ldc * n];
+        REAL *Cd = new REAL[ldc * n];
+        REAL mOne = -1;
+        alpha = randomnumber(dummy);
+        beta = randomnumber(dummy);
+        for (i = 0; i < lda * ka; i++) {
+            A[i] = randomnumber(dummy);
+        }
+        for (i = 0; i < ldb * kb; i++) {
+            B[i] = randomnumber(dummy);
+        }
+        for (i = 0; i < ldc * n; i++) {
+            C[i] = Cd[i] = randomnumber(dummy);
+        }
+        if (check_flag) {
+            t1 = gettime();
+            Rgemm(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+            t2 = gettime();
+            elapsedtime = (t2 - t1);
+            (*mpblas_ref)(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, Cd, ldc);
+            (*raxpy_ref)((mplapackint)(ldc * n), mOne, C, (mplapackint)1, Cd, (mplapackint)1);
+            diff = Rlange(&normtype, (mplapackint)ldc, (mplapackint)n, Cd, ldc, dummywork);
+            diffr = cast2double(diff);
+            printf("    m     n     k     MFLOPS   error   transa   transb\n");
+            // 2mnk+2mn flops are needed
+            printf("%5d %5d %5d %10.3f %5.2e       %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, diffr, transa, transb);
+        } else {
+            t1 = gettime();
+            Rgemm(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+            t2 = gettime();
+            elapsedtime = (t2 - t1);
+            printf("    m     n     k     MFLOPS    transa   transb\n");
+            // 2mnk+2mn flops are needed
+            printf("%5d %5d %5d %10.3f         %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, diffr, transa, transb);
+        }
+        delete[] Cd;
+        delete[] C;
+        delete[] B;
+        delete[] A;
+        m = m + STEPM;
+        n = n + STEPN;
+        k = k + STEPK;
     }
-    delete[]Cd;
-    delete[]C;
-    delete[]B;
-    delete[]A;
-    m = m + STEPM;
-    n = n + STEPN;
-    k = k + STEPK;
-  }
-  if (check_flag)
-    dlclose (handle);
+    if (check_flag)
+        dlclose(handle);
 }

@@ -8,7 +8,6 @@
 void printmat(int N, int M, mpreal * A, int LDA)
 {
     mpreal mtmp;
-
     printf("[ ");
     for (int i = 0; i < N; i++) {
 	printf("[ ");
@@ -51,28 +50,18 @@ int main()
     C[1 + 0 * n] = 8;    C[1 + 1 * n] = 4;    C[1 + 2 * n] = 8;
     C[2 + 0 * n] = 6;    C[2 + 1 * n] = 1;    C[2 + 2 * n] = -2;
 
-    printf("Rgemm demo...\n");
+    printf("# Rgemm demo...\n");
 
-    printf("A =");
-    printmat(n, n, A, n);
-    printf("\n");
-
-    printf("B =");
-    printmat(n, n, B, n);
-    printf("\n");
-
-    printf("C =");
-    printmat(n, n, C, n);
-    printf("\n");
+    printf("A ="); printmat(n, n, A, n); printf("\n");
+    printf("B ="); printmat(n, n, B, n); printf("\n");
+    printf("C ="); printmat(n, n, C, n); printf("\n");
     alpha = 3.0;
     beta = -2.0;
     Rgemm("n", "n", n, n, n, alpha, A, n, B, n, beta, C, n);
 
     mpfr_printf("alpha = %5.3Re\n", mpfr_ptr(alpha));
     mpfr_printf("beta  = %5.3Re\n", mpfr_ptr(beta));
-    printf("ans =");
-    printmat(n, n, C, n);
-    printf("\n");
+    printf("ans ="); printmat(n, n, C, n); printf("\n");
     printf("#please check by Matlab or Octave following and ans above\n");
     printf("alpha * A * B + beta * C =\n");
     delete[]C;

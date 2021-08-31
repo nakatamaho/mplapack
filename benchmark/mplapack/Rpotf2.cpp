@@ -37,130 +37,122 @@
 
 #define TOTALSTEPS 1000
 
-int main (int argc, char *argv[])
-{
-  REAL alpha, beta, mtemp, dummy;
-  REAL *dummywork;
-  double elapsedtime, t1, t2;
-  char uplo, normtype;
-  mplapackint N0, STEP, info;
-  mplapackint lda;
-  int i, j, m, n, k, ka, kb, p, q;
-  int check_flag = 1;
+int main(int argc, char *argv[]) {
+    REAL alpha, beta, mtemp, dummy;
+    REAL *dummywork;
+    double elapsedtime, t1, t2;
+    char uplo, normtype;
+    mplapackint N0, STEP, info;
+    mplapackint lda;
+    int i, j, m, n, k, ka, kb, p, q;
+    int check_flag = 1;
 
-  ___MPLAPACK_INITIALIZE___
+    ___MPLAPACK_INITIALIZE___
 
-  const char mplapack_sym[] = SYMBOL_GCC_RPOTF2;
-  const char raxpy_sym[] = SYMBOL_GCC_RAXPY;
-  void *handle;
-  void (*mplapack_ref) (const char *, mplapackint, REAL *, mplapackint, mplapackint *);
-  void (*raxpy_ref) (mplapackint, REAL, REAL *, mplapackint, REAL *, mplapackint);
-  char *error;
-  REAL diff;
-  double diffr;
+    const char mplapack_sym[] = SYMBOL_GCC_RPOTF2;
+    const char raxpy_sym[] = SYMBOL_GCC_RAXPY;
+    void *handle;
+    void (*mplapack_ref)(const char *, mplapackint, REAL *, mplapackint, mplapackint *);
+    void (*raxpy_ref)(mplapackint, REAL, REAL *, mplapackint, REAL *, mplapackint);
+    char *error;
+    REAL diff;
+    double diffr;
 
-  // initialization
-  N0 = 1;
-  STEP = 1;
-  uplo = 'u';
-  normtype = 'm';
-  if (argc != 1) {
-    for (i = 1; i < argc; i++) {
-      if (strcmp ("-N", argv[i]) == 0) {
-	N0 = atoi (argv[++i]);
-      }
-      else if (strcmp ("-STEP", argv[i]) == 0) {
-	STEP = atoi (argv[++i]);
-      }
-      else if (strcmp ("-U", argv[i]) == 0) {
-	uplo = 'u';
-      }
-      else if (strcmp ("-N0", argv[i]) == 0) {
-	N0 = atoi (argv[++i]);
-      }
-      else if (strcmp ("-STEP", argv[i]) == 0) {
-	STEP = atoi (argv[++i]);
-      }
-      else if (strcmp ("-L", argv[i]) == 0) {
-	uplo = 'l';
-      }
-      else if (strcmp ("-NOCHECK", argv[i]) == 0) {
-	check_flag = 0;
-      }
-    }
-  }
-
-  if (check_flag) {
-    handle = dlopen (MPLAPACK_REF_LIB DYLIB_SUFFIX, RTLD_LAZY);
-    if (!handle) {
-      printf ("dlopen: %s\n", dlerror ());
-      return 1;
-    }
-    mplapack_ref = (void (*)(const char *, mplapackint, REAL *, mplapackint, mplapackint *)) dlsym (handle, mplapack_sym);
-    if ((error = dlerror ()) != NULL) {
-      fprintf (stderr, "%s\n", error);
-      return 1;
-    }
-
-    handle = dlopen (MPBLAS_REF_LIB DYLIB_SUFFIX, RTLD_LAZY);
-    if (!handle) {
-      printf ("dlopen: %s\n", dlerror ());
-      return 1;
-    }
-    raxpy_ref = (void (*)(mplapackint, REAL, REAL *, mplapackint, REAL *, mplapackint)) dlsym (handle, raxpy_sym);
-    if ((error = dlerror ()) != NULL) {
-      fprintf (stderr, "%s\n", error);
-      return 1;
-    }
-  }
-
-  n = N0; 
-  for (p = 0; p < TOTALSTEPS; p++) {
-    lda = n;
-    REAL *A = new REAL[lda * n];
-    REAL *Ad = new REAL[lda * n];
-    REAL mOne = -1;
-    for (i = 0; i < lda * n; i++) {
-      A[i] = randomnumber (dummy);
-    }
-//Positive semidefinite matrix
-    for (i = 0; i < n; i++) {
-      for (j = 0; j < n; j++) {
-	mtemp = 0.0;
-	for (k = 0; k < n; k++) {
-	  mtemp = mtemp + A[i + k * lda] *  A[j + k * lda];
-	}
-	Ad [i +  j * lda] = mtemp;
-      }
-    }
-    for (i = 0; i < lda * n; i++) {
-      A[i] = Ad[i];
+    // initialization
+    N0 = 1;
+    STEP = 1;
+    uplo = 'u';
+    normtype = 'm';
+    if (argc != 1) {
+        for (i = 1; i < argc; i++) {
+            if (strcmp("-N", argv[i]) == 0) {
+                N0 = atoi(argv[++i]);
+            } else if (strcmp("-STEP", argv[i]) == 0) {
+                STEP = atoi(argv[++i]);
+            } else if (strcmp("-U", argv[i]) == 0) {
+                uplo = 'u';
+            } else if (strcmp("-N0", argv[i]) == 0) {
+                N0 = atoi(argv[++i]);
+            } else if (strcmp("-STEP", argv[i]) == 0) {
+                STEP = atoi(argv[++i]);
+            } else if (strcmp("-L", argv[i]) == 0) {
+                uplo = 'l';
+            } else if (strcmp("-NOCHECK", argv[i]) == 0) {
+                check_flag = 0;
+            }
+        }
     }
 
     if (check_flag) {
-      t1 = gettime ();
-      Rpotf2 (&uplo, n, A, lda, info);
-      t2 = gettime ();
-      elapsedtime = (t2 - t1);
-      (*mplapack_ref) (&uplo, n, Ad, lda, &info);
-      (*raxpy_ref) ((mplapackint) (lda * n), mOne, A, (mplapackint) 1, Ad, (mplapackint) 1);
-      diff = Rlange (&normtype, (mplapackint) lda, (mplapackint) n, Ad, lda, dummywork);
-      diffr = cast2double (diff);
-      printf ("    n     MFLOPS     error   uplo\n");
-      printf ("%5d %10.3f %5.2e      %c\n", (int) n, ((double) n * (double) n * (double) n / 3.0 ) / elapsedtime * MFLOPS, diffr, uplo);
+        handle = dlopen(MPLAPACK_REF_LIB DYLIB_SUFFIX, RTLD_LAZY);
+        if (!handle) {
+            printf("dlopen: %s\n", dlerror());
+            return 1;
+        }
+        mplapack_ref = (void (*)(const char *, mplapackint, REAL *, mplapackint, mplapackint *))dlsym(handle, mplapack_sym);
+        if ((error = dlerror()) != NULL) {
+            fprintf(stderr, "%s\n", error);
+            return 1;
+        }
+
+        handle = dlopen(MPBLAS_REF_LIB DYLIB_SUFFIX, RTLD_LAZY);
+        if (!handle) {
+            printf("dlopen: %s\n", dlerror());
+            return 1;
+        }
+        raxpy_ref = (void (*)(mplapackint, REAL, REAL *, mplapackint, REAL *, mplapackint))dlsym(handle, raxpy_sym);
+        if ((error = dlerror()) != NULL) {
+            fprintf(stderr, "%s\n", error);
+            return 1;
+        }
     }
-    else {
-      t1 = gettime ();
-      Rpotf2 (&uplo, n, A, lda, info);
-      t2 = gettime ();
-      elapsedtime = (t2 - t1);
-      printf ("    n     MFLOPS   uplo\n");
-      printf ("%5d %10.3f      %c\n", (int) n, ((double) n * (double) n * (double) n / 3.0 ) / elapsedtime * MFLOPS, uplo);
+
+    n = N0;
+    for (p = 0; p < TOTALSTEPS; p++) {
+        lda = n;
+        REAL *A = new REAL[lda * n];
+        REAL *Ad = new REAL[lda * n];
+        REAL mOne = -1;
+        for (i = 0; i < lda * n; i++) {
+            A[i] = randomnumber(dummy);
+        }
+        // Positive semidefinite matrix
+        for (i = 0; i < n; i++) {
+            for (j = 0; j < n; j++) {
+                mtemp = 0.0;
+                for (k = 0; k < n; k++) {
+                    mtemp = mtemp + A[i + k * lda] * A[j + k * lda];
+                }
+                Ad[i + j * lda] = mtemp;
+            }
+        }
+        for (i = 0; i < lda * n; i++) {
+            A[i] = Ad[i];
+        }
+
+        if (check_flag) {
+            t1 = gettime();
+            Rpotf2(&uplo, n, A, lda, info);
+            t2 = gettime();
+            elapsedtime = (t2 - t1);
+            (*mplapack_ref)(&uplo, n, Ad, lda, &info);
+            (*raxpy_ref)((mplapackint)(lda * n), mOne, A, (mplapackint)1, Ad, (mplapackint)1);
+            diff = Rlange(&normtype, (mplapackint)lda, (mplapackint)n, Ad, lda, dummywork);
+            diffr = cast2double(diff);
+            printf("    n     MFLOPS     error   uplo\n");
+            printf("%5d %10.3f %5.2e      %c\n", (int)n, ((double)n * (double)n * (double)n / 3.0) / elapsedtime * MFLOPS, diffr, uplo);
+        } else {
+            t1 = gettime();
+            Rpotf2(&uplo, n, A, lda, info);
+            t2 = gettime();
+            elapsedtime = (t2 - t1);
+            printf("    n     MFLOPS   uplo\n");
+            printf("%5d %10.3f      %c\n", (int)n, ((double)n * (double)n * (double)n / 3.0) / elapsedtime * MFLOPS, uplo);
+        }
+        delete[] Ad;
+        delete[] A;
+        n = n + STEP;
     }
-    delete[]Ad;
-    delete[]A;
-    n = n + STEP;
-  }
-  if (check_flag)
-    dlclose (handle);
+    if (check_flag)
+        dlclose(handle);
 }

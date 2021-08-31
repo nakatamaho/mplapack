@@ -37,90 +37,86 @@
 
 #define TOTALSTEPS 1000
 
-int main (int argc, char *argv[])
-{
-  mplapackint n;
-  mplapackint incx = 1, incy = 1, STEP, N0;
-  REAL dummy, ans, ans_ref;
-  REAL mOne = -1;
-  double elapsedtime, t1, t2;
-  int i, p; 
-  int check_flag = 1;
-  char normtype;
-  ___MPLAPACK_INITIALIZE___
+int main(int argc, char *argv[]) {
+    mplapackint n;
+    mplapackint incx = 1, incy = 1, STEP, N0;
+    REAL dummy, ans, ans_ref;
+    REAL mOne = -1;
+    double elapsedtime, t1, t2;
+    int i, p;
+    int check_flag = 1;
+    char normtype;
+    ___MPLAPACK_INITIALIZE___
 
-  const char mpblas_sym[] = SYMBOL_GCC_RDOT;
-  void *handle;
-  REAL (*mpblas_ref) (mplapackint, REAL *, mplapackint, REAL *, mplapackint);
-  char *error;
-  REAL diff;
-  double diffr;
+    const char mpblas_sym[] = SYMBOL_GCC_RDOT;
+    void *handle;
+    REAL (*mpblas_ref)(mplapackint, REAL *, mplapackint, REAL *, mplapackint);
+    char *error;
+    REAL diff;
+    double diffr;
 
-  // initialization
-  N0 = 1;
-  STEP = 1;
-  normtype = 'm';
-  if (argc != 1) {
-    for (i = 1; i < argc; i++) {
-      if (strcmp ("-N", argv[i]) == 0) {
-	N0 = atoi (argv[++i]);
-      }
-      else if (strcmp ("-STEP", argv[i]) == 0) {
-	STEP = atoi (argv[++i]);
-      }
-      else if (strcmp ("-NOCHECK", argv[i]) == 0) {
-	check_flag = 0;
-      }
+    // initialization
+    N0 = 1;
+    STEP = 1;
+    normtype = 'm';
+    if (argc != 1) {
+        for (i = 1; i < argc; i++) {
+            if (strcmp("-N", argv[i]) == 0) {
+                N0 = atoi(argv[++i]);
+            } else if (strcmp("-STEP", argv[i]) == 0) {
+                STEP = atoi(argv[++i]);
+            } else if (strcmp("-NOCHECK", argv[i]) == 0) {
+                check_flag = 0;
+            }
+        }
     }
-  }
-  if (check_flag) {
-    handle = dlopen (MPBLAS_REF_LIB DYLIB_SUFFIX, RTLD_LAZY);
-    if (!handle) {
-      printf ("dlopen: %s\n", dlerror ());
-      return 1;
-    }
-    mpblas_ref = (REAL (*)(mplapackint, REAL *, mplapackint, REAL *, mplapackint)) dlsym (handle, mpblas_sym);
-    if ((error = dlerror ()) != NULL) {
-      fprintf (stderr, "%s\n", error);
-      return 1;
-    }
-  }
-
-  n = N0;
-  for (p = 0; p < TOTALSTEPS; p++) {
-    REAL *x = new REAL[n];
-    REAL *y = new REAL[n];
     if (check_flag) {
-      for (i = 0; i < n; i++) {
-	x[i] = randomnumber (dummy);
-	y[i] = randomnumber (dummy);
-      }
-      t1 = gettime ();
-      ans = Rdot (n, x, incx, y, incy);
-      t2 = gettime ();
-      elapsedtime = (t2 - t1);
-      ans_ref = (*mpblas_ref) (n, x, incx, y, incy);
-      diff = ans - ans_ref;
-      diffr = cast2double (diff);
-      printf ("         n       MFLOPS      error\n");
-      printf ("%10d   %10.3f   %5.2e\n", (int) n, (2.0 * (double) n ) / elapsedtime * MFLOPS, diffr);
+        handle = dlopen(MPBLAS_REF_LIB DYLIB_SUFFIX, RTLD_LAZY);
+        if (!handle) {
+            printf("dlopen: %s\n", dlerror());
+            return 1;
+        }
+        mpblas_ref = (REAL(*)(mplapackint, REAL *, mplapackint, REAL *, mplapackint))dlsym(handle, mpblas_sym);
+        if ((error = dlerror()) != NULL) {
+            fprintf(stderr, "%s\n", error);
+            return 1;
+        }
     }
-    else {
-      for (i = 0; i < n; i++) {
-        x[i] = randomnumber (dummy);
-        y[i] = randomnumber (dummy);
-      }
-      t1 = gettime ();
-      ans = Rdot (n, x, incx, y, incy);
-      t2 = gettime ();
-      elapsedtime = (t2 - t1);
-      printf ("         n       MFLOPS\n");
-      printf ("%10d   %10.3f\n", (int) n, (2.0 * (double) n ) / elapsedtime * MFLOPS);
+
+    n = N0;
+    for (p = 0; p < TOTALSTEPS; p++) {
+        REAL *x = new REAL[n];
+        REAL *y = new REAL[n];
+        if (check_flag) {
+            for (i = 0; i < n; i++) {
+                x[i] = randomnumber(dummy);
+                y[i] = randomnumber(dummy);
+            }
+            t1 = gettime();
+            ans = Rdot(n, x, incx, y, incy);
+            t2 = gettime();
+            elapsedtime = (t2 - t1);
+            ans_ref = (*mpblas_ref)(n, x, incx, y, incy);
+            diff = ans - ans_ref;
+            diffr = cast2double(diff);
+            printf("         n       MFLOPS      error\n");
+            printf("%10d   %10.3f   %5.2e\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS, diffr);
+        } else {
+            for (i = 0; i < n; i++) {
+                x[i] = randomnumber(dummy);
+                y[i] = randomnumber(dummy);
+            }
+            t1 = gettime();
+            ans = Rdot(n, x, incx, y, incy);
+            t2 = gettime();
+            elapsedtime = (t2 - t1);
+            printf("         n       MFLOPS\n");
+            printf("%10d   %10.3f\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS);
+        }
+        delete[] y;
+        delete[] x;
+        n = n + STEP;
     }
-    delete[]y;
-    delete[]x;
-    n = n + STEP;
-  }
-  if (check_flag)
-    dlclose (handle);
+    if (check_flag)
+        dlclose(handle);
 }
