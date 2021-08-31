@@ -6,8 +6,9 @@ docker build -f  Dockerfile_ubuntu20.04  .        -t mplapack:ubuntu2004        
 docker build -f  Dockerfile_ubuntu20.04_intel .   -t mplapack:ubuntu2004intel       2>&1 | tee log.ubuntu2004intel
 docker build -f  Dockerfile_ubuntu20.04_mingw64 . -t mplapack:ubuntu2004mingw64     2>&1 | tee log.ubuntu2004mingw64 
 
-docker buildx build --platform linux/arm64   -f Dockerfile_CentOS7_AArch64 . -t mplapack:centos7aarch64    --load 2>&1 | tee log.centos7aarch64   
-docker buildx build --platform linux/arm64   -f Dockerfile_CentOS8         . -t mplapack:centos8aarch64    --load 2>&1 | tee log.centos8aarch64   
-docker buildx build --platform linux/ppc64le -f Dockerfile_ubuntu20.04     . -t mplapack:ubuntu2004ppc64le --load 2>&1 | tee log.ubuntu2004ppc64le
-docker buildx build --platform linux/riscv64 -f Dockerfile_ubuntu20.04     . -t mplapack:ubuntu2004riscv64 --load 2>&1 | tee log.ubuntu2004riscv64
-docker buildx build --platform linux/s390x   -f Dockerfile_ubuntu20.04     . -t mplapack:ubuntu2004s390x   --load 2>&1 | tee log.ubuntu2004s390x
+docker buildx build --platform linux/arm64    -f Dockerfile_CentOS7_AArch64 . -t mplapack:centos7aarch64    --load 2>&1 | tee log.centos7aarch64   
+docker buildx build --platform linux/arm64    -f Dockerfile_CentOS8         . -t mplapack:centos8aarch64    --load 2>&1 | tee log.centos8aarch64   
+docker buildx build --platform linux/ppc64le  -f Dockerfile_ubuntu20.04     . -t mplapack:ubuntu2004ppc64le --load 2>&1 | tee log.ubuntu2004ppc64le
+docker buildx build --platform linux/riscv64  -f Dockerfile_ubuntu20.04     . -t mplapack:ubuntu2004riscv64 --load 2>&1 | tee log.ubuntu2004riscv64
+docker buildx build --platform linux/s390x    -f Dockerfile_ubuntu20.04     . -t mplapack:ubuntu2004s390x   --load 2>&1 | tee log.ubuntu2004s390x
+docker buildx build --platform linux/mips64le -f Dockerfile_debian_bullseye . -t mplapack:debianmips64le    --load 2>&1 | tee log.debianmips64le
