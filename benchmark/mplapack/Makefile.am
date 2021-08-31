@@ -27,6 +27,10 @@ if ENABLE__FLOAT128
 include Makefile._Float128.am
 endif
 
+if ENABLE__FLOAT64X
+include Makefile._Float64x.am
+endif
+
 if DO_LAPACKBENCH
 include Makefile.lapack.am
 endif
