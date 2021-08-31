@@ -32,7 +32,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define F77_FUNC(name, NAME) name##_
 #include <blas.h>
 #define ___DOUBLE_BENCH___
 #include <mplapack_benchmark.h>
