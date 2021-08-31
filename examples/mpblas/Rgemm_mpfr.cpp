@@ -63,7 +63,7 @@ int main()
     mpfr_printf("beta  = %5.3Re\n", mpfr_ptr(beta));
     printf("ans ="); printmat(n, n, C, n); printf("\n");
     printf("#please check by Matlab or Octave following and ans above\n");
-    printf("alpha * A * B + beta * C =\n");
+    printf("alpha * A * B + beta * C \n");
     delete[]C;
     delete[]B;
     delete[]A;
