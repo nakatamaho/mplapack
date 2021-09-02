@@ -6,25 +6,25 @@ for _file in $FILES; do
         resultfilename=`echo $_file | sed "s/generic/${_mplib}/g"`
         cat ../../generic/header_${_mplib} ${_file} > ../$resultfilename
         if [ x"$_mplib" = x"gmp" ]; then
-            sed -i -e "s/REAL/mpf_class/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" ../$resultfilename
+            sed -i -e "s/REAL/mpf_class/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" ../$resultfilename
         fi
         if [ x"$_mplib" = x"mpfr" ]; then
-            sed -i -e "s/REAL/mpreal/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" ../$resultfilename
+            sed -i -e "s/REAL/mpreal/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" ../$resultfilename
         fi
         if [ x"$_mplib" = x"double" ]; then
-            sed -i -e "s/REAL/double/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" ../$resultfilename
+            sed -i -e "s/REAL/double/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" ../$resultfilename
         fi 
         if [ x"$_mplib" = x"dd" ]; then
-            sed -i -e "s/REAL/dd_real/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" ../$resultfilename
+            sed -i -e "s/REAL/dd_real/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" ../$resultfilename
         fi 
         if [ x"$_mplib" = x"qd" ]; then
-            sed -i -e "s/REAL/qd_real/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" ../$resultfilename
+            sed -i -e "s/REAL/qd_real/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" ../$resultfilename
         fi
         if [ x"$_mplib" = x"_Float128" ]; then
-            sed -i -e "s/REAL/_Float128/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" ../$resultfilename
+            sed -i -e "s/REAL/_Float128/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" ../$resultfilename
         fi
         if [ x"$_mplib" = x"_Float64x" ]; then
-            sed -i -e "s/REAL/_Float64x/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" ../$resultfilename
+            sed -i -e "s/REAL/_Float64x/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" ../$resultfilename
         fi
     done
 done
