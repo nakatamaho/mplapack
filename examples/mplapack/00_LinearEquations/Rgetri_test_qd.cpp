@@ -56,7 +56,7 @@ int main()
     mplapackint n = 4;
     mplapackint lwork, info;
 
-    mpreal *a = new mpreal[n * n];
+    qd_real *a = new qd_real[n * n];
     mplapackint *ipiv = new mplapackint[n];
 
 //setting a matrix
@@ -74,18 +74,18 @@ int main()
 
 //work space query
     lwork = -1;
-    mpreal *work = new mpreal[1];
+    qd_real *work = new qd_real[1];
 
     Rgetri(n, a, n, ipiv, work, lwork, info);
-    lwork = castmplapackint_mpfr (work[0]);
+    lwork = castINTEGER_qd (work[0]);
     delete[]work;
-    work = new mpreal[std::max(1, (int) lwork)];
+    work = new qd_real[std::max(1, (int) lwork)];
 
 //inverse matrix
     Rgetrf(n, n, a, n, ipiv, info);
     Rgetri(n, a, n, ipiv, work, lwork, info);
 
-    printf("inv_a ="); printmat(n, n, a, n); printf("\n");
+    printf("ainv ="); printmat(n, n, a, n); printf("\n");
     delete[]work;
     delete[]ipiv;
     delete[]a;
