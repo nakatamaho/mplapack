@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <algorithm>
 
 #include <mpblas_mpfr.h>
 #include <mplapack_mpfr.h>
@@ -13,6 +14,18 @@ inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
 inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
 
 // Matlab/Octave format
+void printvec(mpreal *a, int len) {
+    mpreal tmp;
+    printf("[ ");
+    for (int i = 0; i < len; i++) {
+        tmp = a[i];
+        printnum(tmp);
+        if (i < len - 1)
+            printf(", ");
+    }
+    printf("]");
+}
+
 void printmat(int n, int m, mpreal *a, int lda) {
     mpreal mtmp;
     printf("[ ");

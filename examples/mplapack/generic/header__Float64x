@@ -3,6 +3,7 @@
 #include <mplapack__Float64x.h>
 #include <iostream>
 #include <stdio.h>
+#include <algorithm>
 
 #define FLOAT64X_FORMAT "%+25.21Le"
 #define FLOAT64X_SHORT_FORMAT "%+20.16Le"
@@ -14,6 +15,18 @@ void printnum(_Float64x rtmp)
 }
 
 //Matlab/Octave format
+void printvec(_Float64x *a, int len) {
+    _Float64x tmp;
+    printf("[ ");
+    for (int i = 0; i < len; i++) {
+        tmp = a[i];
+        printnum(tmp);
+        if (i < len - 1)
+            printf(", ");
+    }
+    printf("]");
+}
+
 void printmat(int n, int m, _Float64x *a, int lda)
 {
     _Float64x mtmp;
