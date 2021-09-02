@@ -1,20 +1,19 @@
 //public domain
+#include <mpblas_gmp.h>
+#include <mplapack_gmp.h>
 #include <iostream>
-#include <string>
-#include <sstream>
 
-#include <mpblas_mpfr.h>
-#include <mplapack_mpfr.h>
+#define GMP_FORMAT "%+68.64Fe"
+#define GMP_SHORT_FORMAT "%+20.16Fe"
 
-#define MPFR_FORMAT "%+68.64Re"
-#define MPFR_SHORT_FORMAT "%+20.16Re"
+inline void printnum(mpf_class rtmp) { gmp_printf(GMP_FORMAT, rtmp.get_mpf_t()); }
+inline void printnum_short(mpf_class rtmp) { gmp_printf(GMP_SHORT_FORMAT, rtmp.get_mpf_t()); }
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+//Matlab/Octave format
+void printmat(int n, int m, mpf_class * a, int lda)
+{
+    mpf_class mtmp;
 
-// Matlab/Octave format
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
@@ -31,21 +30,20 @@ void printmat(int n, int m, mpreal *a, int lda) {
     }
     printf("]");
 }
-
-bool rselect(mpreal ar, mpreal ai) {
+bool rselect(mpf_class ar, mpf_class ai) {
     // sorting rule for eigenvalues.
     return false;
 }
 
 int main() {
     mplapackint n = 4;
-    mpreal *a = new mpreal[n * n];
-    mpreal *vl = new mpreal[n * n];
-    mpreal *vr = new mpreal[n * n];
+    mpf_class *a = new mpf_class[n * n];
+    mpf_class *vl = new mpf_class[n * n];
+    mpf_class *vr = new mpf_class[n * n];
     mplapackint lwork = 4 * n;
-    mpreal *wr = new mpreal[n];
-    mpreal *wi = new mpreal[n];
-    mpreal *work = new mpreal[lwork];
+    mpf_class *wr = new mpf_class[n];
+    mpf_class *wi = new mpf_class[n];
+    mpf_class *work = new mpf_class[lwork];
     mplapackint info;
     // setting A matrix
     a[0 + 0 * n] = 0.35;     a[0 + 1 * n] = -0.1160;   a[0 + 2 * n] = -0.3886;    a[0 + 3 * n] = -0.2942;

@@ -1,20 +1,19 @@
 //public domain
+#include <mpblas_double.h>
+#include <mplapack_double.h>
 #include <iostream>
-#include <string>
-#include <sstream>
+#include <stdio.h>
 
-#include <mpblas_mpfr.h>
-#include <mplapack_mpfr.h>
+#define DOUBLE_FORMAT "%+20.16e"
+#define DOUBLE_SHORT_FORMAT "%+20.16e"
 
-#define MPFR_FORMAT "%+68.64Re"
-#define MPFR_SHORT_FORMAT "%+20.16Re"
+inline void printnum(double rtmp) { printf(DOUBLE_FORMAT, rtmp); }
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+//Matlab/Octave format
+void printmat(int n, int m, double *a, int lda)
+{
+    double mtmp;
 
-// Matlab/Octave format
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
@@ -31,21 +30,20 @@ void printmat(int n, int m, mpreal *a, int lda) {
     }
     printf("]");
 }
-
-bool rselect(mpreal ar, mpreal ai) {
+bool rselect(double ar, double ai) {
     // sorting rule for eigenvalues.
     return false;
 }
 
 int main() {
     mplapackint n = 4;
-    mpreal *a = new mpreal[n * n];
-    mpreal *vl = new mpreal[n * n];
-    mpreal *vr = new mpreal[n * n];
+    double *a = new double[n * n];
+    double *vl = new double[n * n];
+    double *vr = new double[n * n];
     mplapackint lwork = 4 * n;
-    mpreal *wr = new mpreal[n];
-    mpreal *wi = new mpreal[n];
-    mpreal *work = new mpreal[lwork];
+    double *wr = new double[n];
+    double *wi = new double[n];
+    double *work = new double[lwork];
     mplapackint info;
     // setting A matrix
     a[0 + 0 * n] = 0.35;     a[0 + 1 * n] = -0.1160;   a[0 + 2 * n] = -0.3886;    a[0 + 3 * n] = -0.2942;

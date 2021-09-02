@@ -1,20 +1,31 @@
 //public domain
+#include <mpblas__Float128.h>
+#include <mplapack__Float128.h>
 #include <iostream>
-#include <string>
-#include <sstream>
+#include <stdio.h>
 
-#include <mpblas_mpfr.h>
-#include <mplapack_mpfr.h>
+#define BUFLEN 1024
 
-#define MPFR_FORMAT "%+68.64Re"
-#define MPFR_SHORT_FORMAT "%+20.16Re"
+void printnum(_Float128 rtmp)
+{
+    int width = 42;
+    char buf[BUFLEN];
+#if defined ___MPLAPACK_WANT_LIBQUADMATH___
+    int n = quadmath_snprintf (buf, sizeof buf, "%+-#*.35Qe", width, rtmp);
+#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+    snprintf (buf, sizeof buf, "%.35Le", rtmp);
+#else
+    strfromf128(buf, sizeof(buf), "%.35e", rtmp);
+#endif
+    printf ("%s", buf);
+    return;
+}
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+//Matlab/Octave format
+void printmat(int n, int m, _Float128 *a, int lda)
+{
+    _Float128 mtmp;
 
-// Matlab/Octave format
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
@@ -31,21 +42,20 @@ void printmat(int n, int m, mpreal *a, int lda) {
     }
     printf("]");
 }
-
-bool rselect(mpreal ar, mpreal ai) {
+bool rselect(_Float128 ar, _Float128 ai) {
     // sorting rule for eigenvalues.
     return false;
 }
 
 int main() {
     mplapackint n = 4;
-    mpreal *a = new mpreal[n * n];
-    mpreal *vl = new mpreal[n * n];
-    mpreal *vr = new mpreal[n * n];
+    _Float128 *a = new _Float128[n * n];
+    _Float128 *vl = new _Float128[n * n];
+    _Float128 *vr = new _Float128[n * n];
     mplapackint lwork = 4 * n;
-    mpreal *wr = new mpreal[n];
-    mpreal *wi = new mpreal[n];
-    mpreal *work = new mpreal[lwork];
+    _Float128 *wr = new _Float128[n];
+    _Float128 *wi = new _Float128[n];
+    _Float128 *work = new _Float128[lwork];
     mplapackint info;
     // setting A matrix
     a[0 + 0 * n] = 0.35;     a[0 + 1 * n] = -0.1160;   a[0 + 2 * n] = -0.3886;    a[0 + 3 * n] = -0.2942;

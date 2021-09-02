@@ -3,24 +3,31 @@
 #include <string>
 #include <sstream>
 
-#include <mpblas_mpfr.h>
-#include <mplapack_mpfr.h>
+#include <mpblas_dd.h>
+#include <mplapack_dd.h>
 
-#define MPFR_FORMAT "%+68.64Re"
-#define MPFR_SHORT_FORMAT "%+20.16Re"
+#define DD_PRECISION_SHORT 16
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum(dd_real rtmp) {
+    std::cout.precision(DD_PRECISION_SHORT);
+    if (rtmp >= 0.0) {
+        std::cout << "+" << rtmp;
+    } else {
+        std::cout << rtmp;
+    }
+    return;
+}
 
-// Matlab/Octave format
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
+//Matlab/Octave format
+void printmat(int n, int m, dd_real * a, int lda)
+{
+    dd_real mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
         for (int j = 0; j < m; j++) {
             mtmp = a[i + j * lda];
-            printnum(mtmp);
+            printnum(mtmp);     
             if (j < m - 1)
                 printf(", ");
         }
@@ -31,21 +38,20 @@ void printmat(int n, int m, mpreal *a, int lda) {
     }
     printf("]");
 }
-
-bool rselect(mpreal ar, mpreal ai) {
+bool rselect(dd_real ar, dd_real ai) {
     // sorting rule for eigenvalues.
     return false;
 }
 
 int main() {
     mplapackint n = 4;
-    mpreal *a = new mpreal[n * n];
-    mpreal *vl = new mpreal[n * n];
-    mpreal *vr = new mpreal[n * n];
+    dd_real *a = new dd_real[n * n];
+    dd_real *vl = new dd_real[n * n];
+    dd_real *vr = new dd_real[n * n];
     mplapackint lwork = 4 * n;
-    mpreal *wr = new mpreal[n];
-    mpreal *wi = new mpreal[n];
-    mpreal *work = new mpreal[lwork];
+    dd_real *wr = new dd_real[n];
+    dd_real *wi = new dd_real[n];
+    dd_real *work = new dd_real[lwork];
     mplapackint info;
     // setting A matrix
     a[0 + 0 * n] = 0.35;     a[0 + 1 * n] = -0.1160;   a[0 + 2 * n] = -0.3886;    a[0 + 3 * n] = -0.2942;

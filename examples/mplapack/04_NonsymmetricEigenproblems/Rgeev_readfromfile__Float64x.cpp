@@ -1,20 +1,23 @@
 //public domain
+#include <mpblas__Float64x.h>
+#include <mplapack__Float64x.h>
 #include <iostream>
-#include <string>
-#include <sstream>
+#include <stdio.h>
 
-#include <mpblas_mpfr.h>
-#include <mplapack_mpfr.h>
+#define FLOAT64X_FORMAT "%+25.21Le"
+#define FLOAT64X_SHORT_FORMAT "%+20.16Le"
 
-#define MPFR_FORMAT "%+68.64Re"
-#define MPFR_SHORT_FORMAT "%+20.16Re"
+void printnum(_Float64x rtmp)
+{
+    printf(FLOAT64X_FORMAT, rtmp);
+    return;
+}
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+//Matlab/Octave format
+void printmat(int n, int m, _Float64x *a, int lda)
+{
+    _Float64x mtmp;
 
-// Matlab/Octave format
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
@@ -31,28 +34,42 @@ void printmat(int n, int m, mpreal *a, int lda) {
     }
     printf("]");
 }
-
-bool rselect(mpreal ar, mpreal ai) {
+bool rselect(_Float64x ar, _Float64x ai) {
     // sorting rule for eigenvalues.
     return false;
 }
 
-int main() {
-    mplapackint n = 4;
-    mpreal *a = new mpreal[n * n];
-    mpreal *vl = new mpreal[n * n];
-    mpreal *vr = new mpreal[n * n];
-    mplapackint lwork = 4 * n;
-    mpreal *wr = new mpreal[n];
-    mpreal *wi = new mpreal[n];
-    mpreal *work = new mpreal[lwork];
-    mplapackint info;
-    // setting A matrix
-    a[0 + 0 * n] = 0.35;     a[0 + 1 * n] = -0.1160;   a[0 + 2 * n] = -0.3886;    a[0 + 3 * n] = -0.2942;
-    a[1 + 0 * n] = -0.5140;  a[1 + 1 * n] = 0.1225;    a[1 + 2 * n] = 0.1004;     a[1 + 3 * n] = 0.1126;
-    a[2 + 0 * n] = 0.0;      a[2 + 1 * n] = 0.6443;    a[2 + 2 * n] = -0.1357;    a[2 + 3 * n] = -0.0977;
-    a[3 + 0 * n] = -3.0;     a[3 + 1 * n] = 0.0;       a[3 + 2 * n] = 0.4262;     a[3 + 3 * n] = 0.1632;
+using namespace std;
 
+int main() {
+    mplapackint n;
+
+    string str;
+    getline(cin, str);
+    cout << str << endl;
+    getline(cin, str);
+    stringstream ss(str);
+    ss >> n;
+    printf("# n %d\n", (int)n);
+
+    _Float64x *a = new _Float64x[n * n];
+    _Float64x *vl = new _Float64x[n * n];
+    _Float64x *vr = new _Float64x[n * n];
+    mplapackint sdim = 0;
+    mplapackint lwork = 4 * n;
+    _Float64x *wr = new _Float64x[n];
+    _Float64x *wi = new _Float64x[n];
+    _Float64x *work = new _Float64x[lwork];
+    mplapackint info;
+    double dtmp;
+    for (int i = 0; i < n; i++) {
+        getline(cin, str);
+        stringstream ss(str);
+        for (int j = 0; j < n; j++) {
+            ss >> dtmp;
+            a[i + j * n] = dtmp;
+        }
+    }
     printf("# octave check\n");
     printf("split_long_rows(0)\n");
     printf("a ="); printmat(n, n, a, n); printf("\n");

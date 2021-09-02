@@ -1,52 +1,18 @@
-//public domain
-#include <iostream>
-#include <string>
-#include <sstream>
-
-#include <mpblas_mpfr.h>
-#include <mplapack_mpfr.h>
-
-#define MPFR_FORMAT "%+68.64Re"
-#define MPFR_SHORT_FORMAT "%+20.16Re"
-
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
-
-// Matlab/Octave format
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
-    printf("[ ");
-    for (int i = 0; i < n; i++) {
-        printf("[ ");
-        for (int j = 0; j < m; j++) {
-            mtmp = a[i + j * lda];
-            printnum(mtmp);
-            if (j < m - 1)
-                printf(", ");
-        }
-        if (i < n - 1)
-            printf("]; ");
-        else
-            printf("] ");
-    }
-    printf("]");
-}
-
-bool rselect(mpreal ar, mpreal ai) {
+bool rselect(REAL ar, REAL ai) {
     // sorting rule for eigenvalues.
     return false;
 }
 
 int main() {
-    mplapackint n = 4;
-    mpreal *a = new mpreal[n * n];
-    mpreal *vl = new mpreal[n * n];
-    mpreal *vr = new mpreal[n * n];
-    mplapackint lwork = 4 * n;
-    mpreal *wr = new mpreal[n];
-    mpreal *wi = new mpreal[n];
-    mpreal *work = new mpreal[lwork];
-    mplapackint info;
+    INTEGER n = 4;
+    REAL *a = new REAL[n * n];
+    REAL *vl = new REAL[n * n];
+    REAL *vr = new REAL[n * n];
+    INTEGER lwork = 4 * n;
+    REAL *wr = new REAL[n];
+    REAL *wi = new REAL[n];
+    REAL *work = new REAL[lwork];
+    INTEGER info;
     // setting A matrix
     a[0 + 0 * n] = 0.35;     a[0 + 1 * n] = -0.1160;   a[0 + 2 * n] = -0.3886;    a[0 + 3 * n] = -0.2942;
     a[1 + 0 * n] = -0.5140;  a[1 + 1 * n] = 0.1225;    a[1 + 2 * n] = 0.1004;     a[1 + 3 * n] = 0.1126;

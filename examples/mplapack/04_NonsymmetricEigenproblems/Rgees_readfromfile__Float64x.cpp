@@ -1,20 +1,23 @@
 //public domain
+#include <mpblas__Float64x.h>
+#include <mplapack__Float64x.h>
 #include <iostream>
-#include <string>
-#include <sstream>
+#include <stdio.h>
 
-#include <mpblas_mpfr.h>
-#include <mplapack_mpfr.h>
+#define FLOAT64X_FORMAT "%+25.21Le"
+#define FLOAT64X_SHORT_FORMAT "%+20.16Le"
 
-#define MPFR_FORMAT "%+68.64Re"
-#define MPFR_SHORT_FORMAT "%+20.16Re"
+void printnum(_Float64x rtmp)
+{
+    printf(FLOAT64X_FORMAT, rtmp);
+    return;
+}
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+//Matlab/Octave format
+void printmat(int n, int m, _Float64x *a, int lda)
+{
+    _Float64x mtmp;
 
-// Matlab/Octave format
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
@@ -31,8 +34,7 @@ void printmat(int n, int m, mpreal *a, int lda) {
     }
     printf("]");
 }
-
-bool rselect(mpreal ar, mpreal ai) {
+bool rselect(_Float64x ar, _Float64x ai) {
     // sorting rule for eigenvalues.
     return false;
 }
@@ -50,13 +52,13 @@ int main() {
     ss >> n;
     printf("# n %d\n", (int)n);
 
-    mpreal *a = new mpreal[n * n];
-    mpreal *vs = new mpreal[n * n];
+    _Float64x *a = new _Float64x[n * n];
+    _Float64x *vs = new _Float64x[n * n];
     mplapackint sdim = 0;
     mplapackint lwork = 3 * n;
-    mpreal *wr = new mpreal[n];
-    mpreal *wi = new mpreal[n];
-    mpreal *work = new mpreal[lwork];
+    _Float64x *wr = new _Float64x[n];
+    _Float64x *wi = new _Float64x[n];
+    _Float64x *work = new _Float64x[lwork];
     bool bwork[n];
     mplapackint info;
     double dtmp;

@@ -1,4 +1,8 @@
-// Public domain
+//public domain
+#include <iostream>
+#include <string>
+#include <sstream>
+
 #include <mpblas_mpfr.h>
 #include <mplapack_mpfr.h>
 
@@ -9,18 +13,18 @@ inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
 inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
 
 // Matlab/Octave format
-void printmat(int N, int M, mpreal *A, int LDA) {
+void printmat(int n, int m, mpreal *a, int lda) {
     mpreal mtmp;
     printf("[ ");
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < n; i++) {
         printf("[ ");
-        for (int j = 0; j < M; j++) {
-            mtmp = A[i + j * LDA];
-            printnum_short(mtmp);
-            if (j < M - 1)
+        for (int j = 0; j < m; j++) {
+            mtmp = a[i + j * lda];
+            printnum(mtmp);
+            if (j < m - 1)
                 printf(", ");
         }
-        if (i < N - 1)
+        if (i < n - 1)
             printf("]; ");
         else
             printf("] ");
