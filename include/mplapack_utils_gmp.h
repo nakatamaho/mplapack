@@ -97,14 +97,7 @@ inline mpf_class sign(mpf_class a, mpf_class b) {
 }
 
 inline mpf_class castREAL_gmp(mplapackint n) {
-// this uses mpf_set_si. 
-// si = long int = int64_t on Linux.
-// si = long int = int32_t and long long int = int64_t on Windows. 
-#ifdef _WIN32 
-    mpf_class a((long int)n);
-#else
     mpf_class a(n);
-#endif
     return a;
 }
 
