@@ -947,6 +947,7 @@ AC_CONFIG_FILES([
 examples/Makefile
 examples/mpblas/Makefile
 examples/mplapack/Makefile
+examples/mplapack/03_SymmetricEigenproblems/Makefile
 examples/mplapack/04_NonsymmetricEigenproblems/Makefile
 examples/mplapack/05_SingularValueDecomposition/Makefile
 examples/mplapack/99_Miscellaneous/Makefile
