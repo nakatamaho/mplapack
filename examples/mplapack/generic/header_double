@@ -1,0 +1,32 @@
+//public domain
+#include <mpblas_double.h>
+#include <mplapack_double.h>
+#include <iostream>
+#include <stdio.h>
+
+#define DOUBLE_FORMAT "%+20.16e"
+#define DOUBLE_SHORT_FORMAT "%+20.16e"
+
+inline void printnum(double rtmp) { printf(DOUBLE_FORMAT, rtmp); }
+
+//Matlab/Octave format
+void printmat(int n, int m, double *a, int lda)
+{
+    double mtmp;
+
+    printf("[ ");
+    for (int i = 0; i < n; i++) {
+        printf("[ ");
+        for (int j = 0; j < m; j++) {
+            mtmp = a[i + j * lda];
+            printnum(mtmp);
+            if (j < m - 1)
+                printf(", ");
+        }
+        if (i < n - 1)
+            printf("]; ");
+        else
+            printf("] ");
+    }
+    printf("]");
+}

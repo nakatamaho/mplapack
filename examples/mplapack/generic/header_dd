@@ -1,0 +1,40 @@
+//public domain
+#include <iostream>
+#include <string>
+#include <sstream>
+
+#include <mpblas_dd.h>
+#include <mplapack_dd.h>
+
+#define DD_PRECISION_SHORT 16
+
+inline void printnum(dd_real rtmp) {
+    std::cout.precision(DD_PRECISION_SHORT);
+    if (rtmp >= 0.0) {
+        std::cout << "+" << rtmp;
+    } else {
+        std::cout << rtmp;
+    }
+    return;
+}
+
+//Matlab/Octave format
+void printmat(int n, int m, dd_real * a, int lda)
+{
+    dd_real mtmp;
+    printf("[ ");
+    for (int i = 0; i < n; i++) {
+        printf("[ ");
+        for (int j = 0; j < m; j++) {
+            mtmp = a[i + j * lda];
+            printnum(mtmp);     
+            if (j < m - 1)
+                printf(", ");
+        }
+        if (i < n - 1)
+            printf("]; ");
+        else
+            printf("] ");
+    }
+    printf("]");
+}
