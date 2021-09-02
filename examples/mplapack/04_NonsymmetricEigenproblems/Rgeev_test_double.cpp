@@ -9,7 +9,19 @@
 
 inline void printnum(double rtmp) { printf(DOUBLE_FORMAT, rtmp); }
 
-//Matlab/Octave format
+// Matlab/Octave format
+void printvec(double *a, int len) {
+    double tmp;
+    printf("[ ");
+    for (int i = 0; i < len; i++) {
+        tmp = a[i];
+        printnum(tmp);
+        if (i < len - 1)
+            printf(", ");
+    }
+    printf("]");
+}
+
 void printmat(int n, int m, double *a, int lda)
 {
     double mtmp;

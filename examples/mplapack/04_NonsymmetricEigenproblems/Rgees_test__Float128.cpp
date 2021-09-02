@@ -22,6 +22,18 @@ void printnum(_Float128 rtmp)
 }
 
 //Matlab/Octave format
+void printvec(_Float128 *a, int len) {
+    _Float128 tmp;
+    printf("[ ");
+    for (int i = 0; i < len; i++) {
+        tmp = a[i];
+        printnum(tmp);
+        if (i < len - 1)
+            printf(", ");
+    }
+    printf("]");
+}
+
 void printmat(int n, int m, _Float128 *a, int lda)
 {
     _Float128 mtmp;

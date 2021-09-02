@@ -14,6 +14,18 @@ void printnum(_Float64x rtmp)
 }
 
 //Matlab/Octave format
+void printvec(_Float64x *a, int len) {
+    _Float64x tmp;
+    printf("[ ");
+    for (int i = 0; i < len; i++) {
+        tmp = a[i];
+        printnum(tmp);
+        if (i < len - 1)
+            printf(", ");
+    }
+    printf("]");
+}
+
 void printmat(int n, int m, _Float64x *a, int lda)
 {
     _Float64x mtmp;

@@ -19,6 +19,18 @@ inline void printnum(qd_real rtmp) {
 }
 
 //Matlab/Octave format
+void printvec(qd_real *a, int len) {
+    qd_real tmp;
+    printf("[ ");
+    for (int i = 0; i < len; i++) {
+        tmp = a[i];
+        printnum(tmp);
+        if (i < len - 1)
+            printf(", ");
+    }
+    printf("]");
+}
+
 void printmat(int n, int m, qd_real * a, int lda)
 {
     qd_real mtmp;
