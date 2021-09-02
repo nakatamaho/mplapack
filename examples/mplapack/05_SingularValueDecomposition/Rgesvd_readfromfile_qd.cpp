@@ -4,18 +4,24 @@
 #include <sstream>
 #include <algorithm>
 
-#include <mpblas_mpfr.h>
-#include <mplapack_mpfr.h>
+#include <mpblas_qd.h>
+#include <mplapack_qd.h>
 
-#define MPFR_FORMAT "%+68.64Re"
-#define MPFR_SHORT_FORMAT "%+20.16Re"
+#define QD_PRECISION_SHORT 16
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum(qd_real rtmp) {
+    std::cout.precision(QD_PRECISION_SHORT);
+    if (rtmp >= 0.0) {
+        std::cout << "+" << rtmp;
+    } else {
+        std::cout << rtmp;
+    }
+    return;
+}
 
-// Matlab/Octave format
-void printvec(mpreal *a, int len) {
-    mpreal tmp;
+//Matlab/Octave format
+void printvec(qd_real *a, int len) {
+    qd_real tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -26,14 +32,15 @@ void printvec(mpreal *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
+void printmat(int n, int m, qd_real * a, int lda)
+{
+    qd_real mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
         for (int j = 0; j < m; j++) {
             mtmp = a[i + j * lda];
-            printnum(mtmp);
+            printnum(mtmp);     
             if (j < m - 1)
                 printf(", ");
         }
@@ -44,7 +51,6 @@ void printmat(int n, int m, mpreal *a, int lda) {
     }
     printf("]");
 }
-
 using namespace std;
 
 int main() {
@@ -59,12 +65,12 @@ int main() {
     ss >> n;
     printf("# m n %d %d \n", (int)m, (int)m);
 
-    mpreal *a = new mpreal[m * n];
-    mpreal *s = new mpreal[std::min(m, n)];
-    mpreal *u = new mpreal[m * m];
-    mpreal *vt = new mpreal[n * n];
+    qd_real *a = new qd_real[m * n];
+    qd_real *s = new qd_real[std::min(m, n)];
+    qd_real *u = new qd_real[m * m];
+    qd_real *vt = new qd_real[n * n];
     mplapackint lwork = std::max({(mplapackint)1, 3 * std::min(m, n) + std::max(m, n), 5 * std::min(m, n)});
-    mpreal *work = new mpreal[lwork];
+    qd_real *work = new qd_real[lwork];
     mplapackint info;
     double dtmp;
     for (int i = 0; i < m; i++) {

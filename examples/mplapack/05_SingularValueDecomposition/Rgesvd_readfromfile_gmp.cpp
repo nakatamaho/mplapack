@@ -1,21 +1,18 @@
 //public domain
+#include <mpblas_gmp.h>
+#include <mplapack_gmp.h>
 #include <iostream>
-#include <string>
-#include <sstream>
 #include <algorithm>
 
-#include <mpblas_mpfr.h>
-#include <mplapack_mpfr.h>
+#define GMP_FORMAT "%+68.64Fe"
+#define GMP_SHORT_FORMAT "%+20.16Fe"
 
-#define MPFR_FORMAT "%+68.64Re"
-#define MPFR_SHORT_FORMAT "%+20.16Re"
+inline void printnum(mpf_class rtmp) { gmp_printf(GMP_FORMAT, rtmp.get_mpf_t()); }
+inline void printnum_short(mpf_class rtmp) { gmp_printf(GMP_SHORT_FORMAT, rtmp.get_mpf_t()); }
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
-
-// Matlab/Octave format
-void printvec(mpreal *a, int len) {
-    mpreal tmp;
+//Matlab/Octave format
+void printvec(mpf_class *a, int len) {
+    mpf_class tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -26,8 +23,10 @@ void printvec(mpreal *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
+void printmat(int n, int m, mpf_class * a, int lda)
+{
+    mpf_class mtmp;
+
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
@@ -44,7 +43,6 @@ void printmat(int n, int m, mpreal *a, int lda) {
     }
     printf("]");
 }
-
 using namespace std;
 
 int main() {
@@ -59,12 +57,12 @@ int main() {
     ss >> n;
     printf("# m n %d %d \n", (int)m, (int)m);
 
-    mpreal *a = new mpreal[m * n];
-    mpreal *s = new mpreal[std::min(m, n)];
-    mpreal *u = new mpreal[m * m];
-    mpreal *vt = new mpreal[n * n];
+    mpf_class *a = new mpf_class[m * n];
+    mpf_class *s = new mpf_class[std::min(m, n)];
+    mpf_class *u = new mpf_class[m * m];
+    mpf_class *vt = new mpf_class[n * n];
     mplapackint lwork = std::max({(mplapackint)1, 3 * std::min(m, n) + std::max(m, n), 5 * std::min(m, n)});
-    mpreal *work = new mpreal[lwork];
+    mpf_class *work = new mpf_class[lwork];
     mplapackint info;
     double dtmp;
     for (int i = 0; i < m; i++) {

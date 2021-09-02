@@ -1,21 +1,30 @@
 //public domain
+#include <mpblas__Float128.h>
+#include <mplapack__Float128.h>
 #include <iostream>
-#include <string>
-#include <sstream>
+#include <stdio.h>
 #include <algorithm>
 
-#include <mpblas_mpfr.h>
-#include <mplapack_mpfr.h>
+#define BUFLEN 1024
 
-#define MPFR_FORMAT "%+68.64Re"
-#define MPFR_SHORT_FORMAT "%+20.16Re"
+void printnum(_Float128 rtmp)
+{
+    int width = 42;
+    char buf[BUFLEN];
+#if defined ___MPLAPACK_WANT_LIBQUADMATH___
+    int n = quadmath_snprintf (buf, sizeof buf, "%+-#*.35Qe", width, rtmp);
+#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+    snprintf (buf, sizeof buf, "%.35Le", rtmp);
+#else
+    strfromf128(buf, sizeof(buf), "%.35e", rtmp);
+#endif
+    printf ("%s", buf);
+    return;
+}
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
-
-// Matlab/Octave format
-void printvec(mpreal *a, int len) {
-    mpreal tmp;
+//Matlab/Octave format
+void printvec(_Float128 *a, int len) {
+    _Float128 tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -26,8 +35,10 @@ void printvec(mpreal *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
+void printmat(int n, int m, _Float128 *a, int lda)
+{
+    _Float128 mtmp;
+
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
@@ -44,7 +55,6 @@ void printmat(int n, int m, mpreal *a, int lda) {
     }
     printf("]");
 }
-
 using namespace std;
 
 int main() {
@@ -59,12 +69,12 @@ int main() {
     ss >> n;
     printf("# m n %d %d \n", (int)m, (int)m);
 
-    mpreal *a = new mpreal[m * n];
-    mpreal *s = new mpreal[std::min(m, n)];
-    mpreal *u = new mpreal[m * m];
-    mpreal *vt = new mpreal[n * n];
+    _Float128 *a = new _Float128[m * n];
+    _Float128 *s = new _Float128[std::min(m, n)];
+    _Float128 *u = new _Float128[m * m];
+    _Float128 *vt = new _Float128[n * n];
     mplapackint lwork = std::max({(mplapackint)1, 3 * std::min(m, n) + std::max(m, n), 5 * std::min(m, n)});
-    mpreal *work = new mpreal[lwork];
+    _Float128 *work = new _Float128[lwork];
     mplapackint info;
     double dtmp;
     for (int i = 0; i < m; i++) {

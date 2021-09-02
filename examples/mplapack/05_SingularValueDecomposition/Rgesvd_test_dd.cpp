@@ -4,18 +4,24 @@
 #include <sstream>
 #include <algorithm>
 
-#include <mpblas_mpfr.h>
-#include <mplapack_mpfr.h>
+#include <mpblas_dd.h>
+#include <mplapack_dd.h>
 
-#define MPFR_FORMAT "%+68.64Re"
-#define MPFR_SHORT_FORMAT "%+20.16Re"
+#define DD_PRECISION_SHORT 16
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum(dd_real rtmp) {
+    std::cout.precision(DD_PRECISION_SHORT);
+    if (rtmp >= 0.0) {
+        std::cout << "+" << rtmp;
+    } else {
+        std::cout << rtmp;
+    }
+    return;
+}
 
-// Matlab/Octave format
-void printvec(mpreal *a, int len) {
-    mpreal tmp;
+//Matlab/Octave format
+void printvec(dd_real *a, int len) {
+    dd_real tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -26,14 +32,15 @@ void printvec(mpreal *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
+void printmat(int n, int m, dd_real * a, int lda)
+{
+    dd_real mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
         for (int j = 0; j < m; j++) {
             mtmp = a[i + j * lda];
-            printnum(mtmp);
+            printnum(mtmp);     
             if (j < m - 1)
                 printf(", ");
         }
@@ -44,17 +51,16 @@ void printmat(int n, int m, mpreal *a, int lda) {
     }
     printf("]");
 }
-
 int main() {
     mplapackint n = 5;
     mplapackint m = 4;
 
-    mpreal *a = new mpreal[m * n];
-    mpreal *s = new mpreal[std::min(m, n)];
-    mpreal *u = new mpreal[m * m];
-    mpreal *vt = new mpreal[n * n];
+    dd_real *a = new dd_real[m * n];
+    dd_real *s = new dd_real[std::min(m, n)];
+    dd_real *u = new dd_real[m * m];
+    dd_real *vt = new dd_real[n * n];
     mplapackint lwork = std::max({(mplapackint)1, 3 * std::min(m, n) + std::max(m, n), 5 * std::min(m, n)});
-    mpreal *work = new mpreal[lwork];
+    dd_real *work = new dd_real[lwork];
     mplapackint info;
 
     // setting A matrix
