@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <algorithm>
 
 #include <mpblas_mpfr.h>
 #include <mplapack_mpfr.h>

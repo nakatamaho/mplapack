@@ -3,6 +3,7 @@
 #include <mplapack_double.h>
 #include <iostream>
 #include <stdio.h>
+#include <algorithm>
 
 #define DOUBLE_FORMAT "%+20.16e"
 #define DOUBLE_SHORT_FORMAT "%+20.16e"

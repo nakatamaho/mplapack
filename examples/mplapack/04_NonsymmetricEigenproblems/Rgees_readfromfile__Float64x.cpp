@@ -3,6 +3,7 @@
 #include <mplapack__Float64x.h>
 #include <iostream>
 #include <stdio.h>
+#include <algorithm>
 
 #define FLOAT64X_FORMAT "%+25.21Le"
 #define FLOAT64X_SHORT_FORMAT "%+20.16Le"

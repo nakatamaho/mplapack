@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <algorithm>
 
 #include <mpblas_qd.h>
 #include <mplapack_qd.h>
