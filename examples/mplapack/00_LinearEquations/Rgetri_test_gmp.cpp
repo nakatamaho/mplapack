@@ -48,7 +48,7 @@ int main()
     mplapackint n = 4;
     mplapackint lwork, info;
 
-    mpf_class *a = new mpf_class[n * n];
+    mpreal *a = new mpreal[n * n];
     mplapackint *ipiv = new mplapackint[n];
 
 //setting a matrix
@@ -66,12 +66,12 @@ int main()
 
 //work space query
     lwork = -1;
-    mpf_class *work = new mpf_class[1];
+    mpreal *work = new mpreal[1];
 
     Rgetri(n, a, n, ipiv, work, lwork, info);
-    lwork = castINTEGER_gmp (work[0]);
+    lwork = castmplapackint_mpfr (work[0]);
     delete[]work;
-    work = new mpf_class[std::max(1, (int) lwork)];
+    work = new mpreal[std::max(1, (int) lwork)];
 
 //inverse matrix
     Rgetrf(n, n, a, n, ipiv, info);

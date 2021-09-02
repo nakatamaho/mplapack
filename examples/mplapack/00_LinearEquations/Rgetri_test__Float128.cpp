@@ -60,7 +60,7 @@ int main()
     mplapackint n = 4;
     mplapackint lwork, info;
 
-    _Float128 *a = new _Float128[n * n];
+    mpreal *a = new mpreal[n * n];
     mplapackint *ipiv = new mplapackint[n];
 
 //setting a matrix
@@ -78,12 +78,12 @@ int main()
 
 //work space query
     lwork = -1;
-    _Float128 *work = new _Float128[1];
+    mpreal *work = new mpreal[1];
 
     Rgetri(n, a, n, ipiv, work, lwork, info);
-    lwork = castINTEGER__Float128 (work[0]);
+    lwork = castmplapackint_mpfr (work[0]);
     delete[]work;
-    work = new _Float128[std::max(1, (int) lwork)];
+    work = new mpreal[std::max(1, (int) lwork)];
 
 //inverse matrix
     Rgetrf(n, n, a, n, ipiv, info);

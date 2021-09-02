@@ -71,7 +71,7 @@ int main()
     mpreal *work = new mpreal[1];
 
     Rgetri(n, a, n, ipiv, work, lwork, info);
-    lwork = castINTEGER_mpfr (work[0]);
+    lwork = castmplapackint_mpfr (work[0]);
     delete[]work;
     work = new mpreal[std::max(1, (int) lwork)];
 

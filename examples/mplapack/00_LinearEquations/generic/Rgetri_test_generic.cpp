@@ -32,7 +32,7 @@ int main()
     Rgetrf(n, n, a, n, ipiv, info);
     Rgetri(n, a, n, ipiv, work, lwork, info);
 
-    printf("inv_a ="); printmat(n, n, a, n); printf("\n");
+    printf("ainv ="); printmat(n, n, a, n); printf("\n");
     delete[]work;
     delete[]ipiv;
     delete[]a;
