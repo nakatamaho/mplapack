@@ -2,6 +2,7 @@
 #include <mpblas_gmp.h>
 #include <mplapack_gmp.h>
 #include <iostream>
+#include <cstring>
 #include <algorithm>
 
 #define GMP_FORMAT "%+68.64Fe"

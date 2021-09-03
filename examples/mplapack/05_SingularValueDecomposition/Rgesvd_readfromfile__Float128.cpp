@@ -3,6 +3,7 @@
 #include <mplapack__Float128.h>
 #include <iostream>
 #include <stdio.h>
+#include <cstring>
 #include <algorithm>
 
 #define BUFLEN 1024
@@ -18,7 +19,10 @@ void printnum(_Float128 rtmp)
 #else
     strfromf128(buf, sizeof(buf), "%.35e", rtmp);
 #endif
-    printf ("%s", buf);
+    if (rtmp > 0.0)
+        printf ("+%s", buf);
+    else
+        printf ("+%s", buf);
     return;
 }
 
