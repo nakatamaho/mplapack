@@ -59,7 +59,7 @@ void Frank(mplapackint n) {
     // setting A matrix
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= n; j++) {
-            a[(i - 1) + (j - 1) * n] = 0;
+            a[(i - 1) + (j - 1) * n] = 0.0;
 	}
     }
     for (int i = 1; i <= n; i++) {
@@ -106,7 +106,7 @@ bool rselect(_Float64x ar, _Float64x ai) {
 
 int main(int argc, char *argv[]) {
     int STARTN = 5;
-    int ENDN = 10;
+    int ENDN = 25;
     int STEPN = 1;
     if (argc != 1) {
         for (int i = 1; i < argc; i++) {
