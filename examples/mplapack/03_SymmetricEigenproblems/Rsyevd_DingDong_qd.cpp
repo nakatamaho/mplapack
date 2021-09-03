@@ -1,19 +1,28 @@
 //public domain
-#include <mpblas_double.h>
-#include <mplapack_double.h>
 #include <iostream>
-#include <stdio.h>
+#include <string>
+#include <sstream>
 #include <cstring>
 #include <algorithm>
 
-#define DOUBLE_FORMAT "%+20.16e"
-#define DOUBLE_SHORT_FORMAT "%+20.16e"
+#include <mpblas_qd.h>
+#include <mplapack_qd.h>
 
-inline void printnum(double rtmp) { printf(DOUBLE_FORMAT, rtmp); }
+#define QD_PRECISION_SHORT 16
 
-// Matlab/Octave format
-void printvec(double *a, int len) {
-    double tmp;
+inline void printnum(qd_real rtmp) {
+    std::cout.precision(QD_PRECISION_SHORT);
+    if (rtmp >= 0.0) {
+        std::cout << "+" << rtmp;
+    } else {
+        std::cout << rtmp;
+    }
+    return;
+}
+
+//Matlab/Octave format
+void printvec(qd_real *a, int len) {
+    qd_real tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -24,16 +33,15 @@ void printvec(double *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, double *a, int lda)
+void printmat(int n, int m, qd_real * a, int lda)
 {
-    double mtmp;
-
+    qd_real mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
         for (int j = 0; j < m; j++) {
             mtmp = a[i + j * lda];
-            printnum(mtmp);
+            printnum(mtmp);     
             if (j < m - 1)
                 printf(", ");
         }
@@ -44,33 +52,34 @@ void printmat(int n, int m, double *a, int lda)
     }
     printf("]");
 }
-void Frank(mplapackint n) {
+//https://math.nist.gov/MatrixMarket/deli/DingDong/
+//J.C. Nash, Compact Numerical Methods for Computers: Linear Algebra and Function Minimisation, second edition, Adam Hilger, Bristol, 1990 (Appendix 1). 
+
+void DingDong(mplapackint n) {
     mplapackint lwork, liwork, info, m;
-    double *a = new double[n * n];
-    double *w = new double[n];
-    double *lambda = new double[n];
-    double *reldiff = new double[n];
-    double PI;
+    qd_real *a = new qd_real[n * n];
+    qd_real *w = new qd_real[n];
+    qd_real PI;
     PI = pi(PI);
 
     // setting A matrix
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= n; j++) {
-            a[(i - 1) + (j - 1) * n] = n - std::max(i, j) + 1;
+            a[(i - 1) + (j - 1) * n] = 1.0 / qd_real( 2.0 * ( n - i - j + 3.0 / 2.0 ));
         }
     }
     printf("a ="); printmat(n, n, a, n); printf("\n");
 
     // work space query
     lwork = -1;
-    double *work = new double[1];
+    qd_real *work = new qd_real[1];
     liwork = -1;
     mplapackint *iwork = new mplapackint[1];
 
     Rsyevd("N", "U", n, a, n, w, work, lwork, iwork, liwork, info);
     lwork = (int)cast2double(work[0]);
     delete[] work;
-    work = new double[std::max((mplapackint)1, lwork)];
+    work = new qd_real[std::max((mplapackint)1, lwork)];
     liwork = iwork[0];
     delete[] iwork;
     iwork = new mplapackint[std::max((mplapackint)1, liwork)];
@@ -81,38 +90,21 @@ void Frank(mplapackint n) {
     // print out
     printf("#eigenvalues \n");
     printf("w ="); printvec(w, n); printf("\n");
+    printf("w_smallest ="); printnum(w[0]); printf("\n");
+    printf("w_largest  ="); printnum(w[n-1]); printf("\n");
 
-    // print out
-    printf("# analytic eigenvalues\n");
-    for (int i = 1; i <= n; i++) {
-        lambda[(n - i)] = 0.5 * 1.0 / (1.0 - cos((2.0 * i - 1.0) * PI / castREAL_double(2 * n + 1)));
-    }
-    printf("lambda ="); printvec(lambda, n); printf("\n");
-
-    for (int i = 1; i <= n; i++) {
-        reldiff[i - 1] = abs((lambda[i - 1] - w[i - 1]) / lambda[i - 1]);
-    }
-    printf("reldiff ="); printvec(reldiff, n); printf("\n");
-
-    double maxreldiff = 0.0;
-    maxreldiff = reldiff[0]; 
-    for (int i = 2; i <= n; i++) {
-        maxreldiff = std::max(reldiff[i - 1], maxreldiff);
-    }
-    printf("maxreldiff_%d =", (int)n); printnum(maxreldiff); printf("\n");
+    printf("w_relerror_to_halfPI ="); printnum( (w[n-1] - PI / 2.0) /  (PI / 2.0) ); printf("\n");
 
     delete[] iwork;
     delete[] work;
-    delete[] reldiff;
-    delete[] lambda;
     delete[] w;
     delete[] a;
 }
 
 int main(int argc, char *argv[]) {
-    int STARTN = 100;
+    int STARTN = 5;
     int ENDN = 1000;
-    int STEPN = 100;
+    int STEPN = 1;
     if (argc != 1) {
         for (int i = 1; i < argc; i++) {
             if (strcmp("-STEPN", argv[i]) == 0) {
@@ -125,7 +117,7 @@ int main(int argc, char *argv[]) {
         }
     }
     for (int n = STARTN; n <= ENDN; n = n + STEPN) {
-        printf("# Eigenvalues of Frank matrix of order n=%d\n", n);
-        Frank((mplapackint)n);
+        printf("# Eigenvalues of DingDong matrix of order n=%d\n", n);
+        DingDong((mplapackint)n);
     }
 }

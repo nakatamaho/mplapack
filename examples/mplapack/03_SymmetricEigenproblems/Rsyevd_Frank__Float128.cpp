@@ -65,7 +65,6 @@ void Frank(mplapackint n) {
     _Float128 *w = new _Float128[n];
     _Float128 *lambda = new _Float128[n];
     _Float128 *reldiff = new _Float128[n];
-    _Float128 abstol = Rlamch__Float128("U");
     _Float128 PI;
     PI = pi(PI);
 

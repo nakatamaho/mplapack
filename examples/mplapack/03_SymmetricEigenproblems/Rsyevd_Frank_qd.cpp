@@ -58,7 +58,6 @@ void Frank(mplapackint n) {
     qd_real *w = new qd_real[n];
     qd_real *lambda = new qd_real[n];
     qd_real *reldiff = new qd_real[n];
-    qd_real abstol = Rlamch_qd("U");
     qd_real PI;
     PI = pi(PI);
 

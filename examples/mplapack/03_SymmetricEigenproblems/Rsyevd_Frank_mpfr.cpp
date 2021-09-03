@@ -52,7 +52,6 @@ void Frank(mplapackint n) {
     mpreal *w = new mpreal[n];
     mpreal *lambda = new mpreal[n];
     mpreal *reldiff = new mpreal[n];
-    mpreal abstol = Rlamch_mpfr("U");
     mpreal PI;
     PI = pi(PI);
 

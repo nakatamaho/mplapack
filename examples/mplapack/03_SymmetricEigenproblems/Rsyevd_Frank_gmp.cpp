@@ -50,7 +50,6 @@ void Frank(mplapackint n) {
     mpf_class *w = new mpf_class[n];
     mpf_class *lambda = new mpf_class[n];
     mpf_class *reldiff = new mpf_class[n];
-    mpf_class abstol = Rlamch_gmp("U");
     mpf_class PI;
     PI = pi(PI);
 

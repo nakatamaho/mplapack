@@ -58,7 +58,6 @@ void Frank(mplapackint n) {
     dd_real *w = new dd_real[n];
     dd_real *lambda = new dd_real[n];
     dd_real *reldiff = new dd_real[n];
-    dd_real abstol = Rlamch_dd("U");
     dd_real PI;
     PI = pi(PI);
 

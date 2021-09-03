@@ -54,7 +54,6 @@ void Frank(mplapackint n) {
     _Float64x *w = new _Float64x[n];
     _Float64x *lambda = new _Float64x[n];
     _Float64x *reldiff = new _Float64x[n];
-    _Float64x abstol = Rlamch__Float64x("U");
     _Float64x PI;
     PI = pi(PI);
 
