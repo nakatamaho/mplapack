@@ -22,7 +22,7 @@ void printnum(_Float128 rtmp)
     if (rtmp > 0.0)
         printf ("+%s", buf);
     else
-        printf ("+%s", buf);
+        printf ("%s", buf);
     return;
 }
 
