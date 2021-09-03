@@ -1,9 +1,10 @@
 void Frank(INTEGER n) {
-    INTEGER lwork, info;
+    INTEGER lwork, liwork, info, m;
     REAL *a = new REAL[n * n];
     REAL *w = new REAL[n];
     REAL *lambda = new REAL[n];
     REAL *reldiff = new REAL[n];
+    REAL abstol = Rlamch("U");
     REAL PI;
     PI = pi(PI);
 
@@ -18,14 +19,19 @@ void Frank(INTEGER n) {
     // work space query
     lwork = -1;
     REAL *work = new REAL[1];
+    liwork = -1;
+    INTEGER *iwork = new INTEGER[1];
 
-    Rsyev("N", "U", n, a, n, w, work, lwork, info);
+    Rsyevd("N", "U", n, a, n, w, work, lwork, iwork, liwork, info);
     lwork = (int)cast2double(work[0]);
     delete[] work;
     work = new REAL[std::max((INTEGER)1, lwork)];
+    liwork = iwork[0];
+    delete[] iwork;
+    iwork = new INTEGER[std::max((INTEGER)1, liwork)];
 
     // diagonalize matrix
-    Rsyev("N", "U", n, a, n, w, work, lwork, info);
+    Rsyevd("N", "U", n, a, n, w, work, lwork, iwork, liwork, info);
 
     // print out
     printf("#eigenvalues \n");
@@ -44,15 +50,16 @@ void Frank(INTEGER n) {
     printf("reldiff ="); printvec(reldiff, n); printf("\n");
 
     REAL maxreldiff = 0.0;
-    maxreldiff = reldiff[0];
+    maxreldiff = reldiff[0]; 
     for (int i = 2; i <= n; i++) {
         maxreldiff = std::max(reldiff[i - 1], maxreldiff);
     }
     printf("maxreldiff_%d =", (int)n); printnum(maxreldiff); printf("\n");
 
+    delete[] iwork;
+    delete[] work;
     delete[] reldiff;
     delete[] lambda;
-    delete[] work;
     delete[] w;
     delete[] a;
 }

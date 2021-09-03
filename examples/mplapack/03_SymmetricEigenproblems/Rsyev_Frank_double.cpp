@@ -3,6 +3,7 @@
 #include <mplapack_double.h>
 #include <iostream>
 #include <stdio.h>
+#include <cstring>
 #include <algorithm>
 
 #define DOUBLE_FORMAT "%+20.16e"
@@ -58,15 +59,13 @@ void Frank(mplapackint n) {
             a[(i - 1) + (j - 1) * n] = n - std::max(i, j) + 1;
         }
     }
-    printf("a =");
-    printmat(n, n, a, n);
-    printf("\n");
+    printf("a ="); printmat(n, n, a, n); printf("\n");
 
     // work space query
     lwork = -1;
     double *work = new double[1];
 
-    Rsyev("V", "U", n, a, n, w, work, lwork, info);
+    Rsyev("N", "U", n, a, n, w, work, lwork, info);
     lwork = (int)cast2double(work[0]);
     delete[] work;
     work = new double[std::max((mplapackint)1, lwork)];
@@ -91,7 +90,7 @@ void Frank(mplapackint n) {
     printf("reldiff ="); printvec(reldiff, n); printf("\n");
 
     double maxreldiff = 0.0;
-    maxreldiff = reldiff[0]; 
+    maxreldiff = reldiff[0];
     for (int i = 2; i <= n; i++) {
         maxreldiff = std::max(reldiff[i - 1], maxreldiff);
     }
@@ -104,13 +103,22 @@ void Frank(mplapackint n) {
     delete[] a;
 }
 
-int main() {
-    printf("split_long_rows(0)\n");
-    for (int n = 1; n < 100; n++) {
-        printf("# Eigenvalues of Frank matrix of order n=%d\n", n);
-        Frank((mplapackint)n);
+int main(int argc, char *argv[]) {
+    int STARTN = 100;
+    int ENDN = 1000;
+    int STEPN = 100;
+    if (argc != 1) {
+        for (int i = 1; i < argc; i++) {
+            if (strcmp("-STEPN", argv[i]) == 0) {
+                STEPN = atoi(argv[++i]);
+            } else if (strcmp("-STARTN", argv[i]) == 0) {
+                STARTN = atoi(argv[++i]);
+            } else if (strcmp("-ENDN", argv[i]) == 0) {
+                ENDN = atoi(argv[++i]);
+            }
+        }
     }
-    for (int n = 100; n < 10000; n = n + 100) {
+    for (int n = STARTN; n <= ENDN; n = n + STEPN) {
         printf("# Eigenvalues of Frank matrix of order n=%d\n", n);
         Frank((mplapackint)n);
     }

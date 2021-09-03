@@ -1,31 +1,28 @@
 //public domain
-#include <mpblas__Float128.h>
-#include <mplapack__Float128.h>
 #include <iostream>
-#include <stdio.h>
+#include <string>
+#include <sstream>
 #include <cstring>
 #include <algorithm>
 
-#define BUFLEN 1024
+#include <mpblas_dd.h>
+#include <mplapack_dd.h>
 
-void printnum(_Float128 rtmp)
-{
-    int width = 42;
-    char buf[BUFLEN];
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
-    int n = quadmath_snprintf (buf, sizeof buf, "%+-#*.35Qe", width, rtmp);
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-    snprintf (buf, sizeof buf, "%.35Le", rtmp);
-#else
-    strfromf128(buf, sizeof(buf), "%.35e", rtmp);
-#endif
-    printf ("%s", buf);
+#define DD_PRECISION_SHORT 16
+
+inline void printnum(dd_real rtmp) {
+    std::cout.precision(DD_PRECISION_SHORT);
+    if (rtmp >= 0.0) {
+        std::cout << "+" << rtmp;
+    } else {
+        std::cout << rtmp;
+    }
     return;
 }
 
 //Matlab/Octave format
-void printvec(_Float128 *a, int len) {
-    _Float128 tmp;
+void printvec(dd_real *a, int len) {
+    dd_real tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -36,16 +33,15 @@ void printvec(_Float128 *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, _Float128 *a, int lda)
+void printmat(int n, int m, dd_real * a, int lda)
 {
-    _Float128 mtmp;
-
+    dd_real mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
         for (int j = 0; j < m; j++) {
             mtmp = a[i + j * lda];
-            printnum(mtmp);
+            printnum(mtmp);     
             if (j < m - 1)
                 printf(", ");
         }
@@ -57,12 +53,19 @@ void printmat(int n, int m, _Float128 *a, int lda)
     printf("]");
 }
 void Frank(mplapackint n) {
-    mplapackint lwork, info;
-    _Float128 *a = new _Float128[n * n];
-    _Float128 *w = new _Float128[n];
-    _Float128 *lambda = new _Float128[n];
-    _Float128 *reldiff = new _Float128[n];
-    _Float128 PI;
+    mplapackint lwork, liwork, info, m;
+    dd_real *a = new dd_real[n * n];
+    dd_real *z = new dd_real[n * n]; //not used
+    mplapackint *isuppz = new mplapackint[2 * n]; //not used
+    dd_real *w = new dd_real[n];
+    dd_real *lambda = new dd_real[n];
+    dd_real *reldiff = new dd_real[n];
+    dd_real vldummy;
+    dd_real vudummy;
+    mplapackint ildummy;
+    mplapackint iudummy;
+    dd_real abstol = Rlamch_dd("U");
+    dd_real PI;
     PI = pi(PI);
 
     // setting A matrix
@@ -75,15 +78,20 @@ void Frank(mplapackint n) {
 
     // work space query
     lwork = -1;
-    _Float128 *work = new _Float128[1];
+    dd_real *work = new dd_real[1];
+    liwork = -1;
+    mplapackint *iwork = new mplapackint[1];
 
-    Rsyev("N", "U", n, a, n, w, work, lwork, info);
+    Rsyevr("N", "A", "U", n, a, n, vldummy, vudummy, ildummy, iudummy, abstol, m, w, z, n, isuppz, work, lwork, iwork, liwork, info);
     lwork = (int)cast2double(work[0]);
     delete[] work;
-    work = new _Float128[std::max((mplapackint)1, lwork)];
+    work = new dd_real[std::max((mplapackint)1, lwork)];
+    liwork = iwork[0];
+    delete[] iwork;
+    iwork = new mplapackint[std::max((mplapackint)1, liwork)];
 
     // diagonalize matrix
-    Rsyev("N", "U", n, a, n, w, work, lwork, info);
+    Rsyevr("N", "A", "U", n, a, n, vldummy, vudummy, ildummy, iudummy, abstol, m, w, z, n, isuppz, work, lwork, iwork, liwork, info);
 
     // print out
     printf("#eigenvalues \n");
@@ -92,7 +100,7 @@ void Frank(mplapackint n) {
     // print out
     printf("# analytic eigenvalues\n");
     for (int i = 1; i <= n; i++) {
-        lambda[(n - i)] = 0.5 * 1.0 / (1.0 - cos((2.0 * i - 1.0) * PI / castREAL__Float128(2 * n + 1)));
+        lambda[(n - i)] = 0.5 * 1.0 / (1.0 - cos((2.0 * i - 1.0) * PI / castREAL_dd(2 * n + 1)));
     }
     printf("lambda ="); printvec(lambda, n); printf("\n");
 
@@ -101,17 +109,20 @@ void Frank(mplapackint n) {
     }
     printf("reldiff ="); printvec(reldiff, n); printf("\n");
 
-    _Float128 maxreldiff = 0.0;
-    maxreldiff = reldiff[0];
+    dd_real maxreldiff = 0.0;
+    maxreldiff = reldiff[0]; 
     for (int i = 2; i <= n; i++) {
         maxreldiff = std::max(reldiff[i - 1], maxreldiff);
     }
     printf("maxreldiff_%d =", (int)n); printnum(maxreldiff); printf("\n");
 
+    delete[] iwork;
+    delete[] work;
     delete[] reldiff;
     delete[] lambda;
-    delete[] work;
     delete[] w;
+    delete[] isuppz;
+    delete[] z;
     delete[] a;
 }
 

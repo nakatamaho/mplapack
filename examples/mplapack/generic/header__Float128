@@ -3,6 +3,7 @@
 #include <mplapack__Float128.h>
 #include <iostream>
 #include <stdio.h>
+#include <cstring>
 #include <algorithm>
 
 #define BUFLEN 1024

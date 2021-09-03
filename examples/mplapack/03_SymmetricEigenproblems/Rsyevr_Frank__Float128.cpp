@@ -57,11 +57,18 @@ void printmat(int n, int m, _Float128 *a, int lda)
     printf("]");
 }
 void Frank(mplapackint n) {
-    mplapackint lwork, info;
+    mplapackint lwork, liwork, info, m;
     _Float128 *a = new _Float128[n * n];
+    _Float128 *z = new _Float128[n * n]; //not used
+    mplapackint *isuppz = new mplapackint[2 * n]; //not used
     _Float128 *w = new _Float128[n];
     _Float128 *lambda = new _Float128[n];
     _Float128 *reldiff = new _Float128[n];
+    _Float128 vldummy;
+    _Float128 vudummy;
+    mplapackint ildummy;
+    mplapackint iudummy;
+    _Float128 abstol = Rlamch__Float128("U");
     _Float128 PI;
     PI = pi(PI);
 
@@ -76,14 +83,19 @@ void Frank(mplapackint n) {
     // work space query
     lwork = -1;
     _Float128 *work = new _Float128[1];
+    liwork = -1;
+    mplapackint *iwork = new mplapackint[1];
 
-    Rsyev("N", "U", n, a, n, w, work, lwork, info);
+    Rsyevr("N", "A", "U", n, a, n, vldummy, vudummy, ildummy, iudummy, abstol, m, w, z, n, isuppz, work, lwork, iwork, liwork, info);
     lwork = (int)cast2double(work[0]);
     delete[] work;
     work = new _Float128[std::max((mplapackint)1, lwork)];
+    liwork = iwork[0];
+    delete[] iwork;
+    iwork = new mplapackint[std::max((mplapackint)1, liwork)];
 
     // diagonalize matrix
-    Rsyev("N", "U", n, a, n, w, work, lwork, info);
+    Rsyevr("N", "A", "U", n, a, n, vldummy, vudummy, ildummy, iudummy, abstol, m, w, z, n, isuppz, work, lwork, iwork, liwork, info);
 
     // print out
     printf("#eigenvalues \n");
@@ -102,16 +114,19 @@ void Frank(mplapackint n) {
     printf("reldiff ="); printvec(reldiff, n); printf("\n");
 
     _Float128 maxreldiff = 0.0;
-    maxreldiff = reldiff[0];
+    maxreldiff = reldiff[0]; 
     for (int i = 2; i <= n; i++) {
         maxreldiff = std::max(reldiff[i - 1], maxreldiff);
     }
     printf("maxreldiff_%d =", (int)n); printnum(maxreldiff); printf("\n");
 
+    delete[] iwork;
+    delete[] work;
     delete[] reldiff;
     delete[] lambda;
-    delete[] work;
     delete[] w;
+    delete[] isuppz;
+    delete[] z;
     delete[] a;
 }
 
