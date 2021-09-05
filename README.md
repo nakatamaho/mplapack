@@ -171,18 +171,20 @@ This is the release schedule for MPLAPACK 2.0.0
 | Impliment complex lin                |            |     |                          | 
 | Impliment complex eig                |            |     |                          | 
 | Impliment mixed precision version    |            |     |                          | 
-| Fix Rlamch for GMP                   |            |     |                          | 
-| Fix Rlamch for QD                    |            |     | svd.in fails.used with caution | 
-| cleanup pow (REAL, long int)         |            |     |                          | 
-| Get rid of compiler warnings         |            |     |                          | 
 | Add more examples                    |            |     |                          | 
 
 ## MPLAPACK 3.0.0 Release Process 
 This is the release schedule for MPLAPACK 3.0.0
 | Action | Date | Status | Description |
 | --- | --- | --- | --- |
-| Impliment faster MPFR C++ wrapper like gmpxx.h |            |     |                          | 
+| Bug fix for QD, DD                             |            |     | overflow, underflow | 
+| Fix Rlamch for QD, DD                          |            |     | svd.in fails.used with caution | 
+| cleanup pow (REAL, long int)                   |            |     |                          | 
+| Get rid of compiler warnings                   |            |     |                          | 
+| lp64 ilp64 llp64 ilp32 lp32 cleanup            |            |     |                          | 
+| FMA for QD, DD                                 |            |     |                     |
 | Drop GMP version                               |            |     | Since trigonometric functions req'ed | 
+| add gmpfrxx                                    |            |     | https://math.berkeley.edu/~wilken/code/gmpfrxx/ | 
 | optimized implimentations                      |            |     |                          | 
 
 # History
