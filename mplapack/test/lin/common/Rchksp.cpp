@@ -68,7 +68,7 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist[0];
+    char dist[1];
     INTEGER info = 0;
     INTEGER ioff = 0;
     const REAL zero = 0.0;
