@@ -98,9 +98,9 @@ int main(int argc, char *argv[]) {
             s[i + j * n] = 0.0;
         }
     }
-    s[0] = 1.0;
     //4. genrarate a random geometric series. This part depends on the size of INTEGER = int64_t.
     for (int i = 1; i < n; i++) s[i + i * n] = abs((INTEGER)(pow(10.0, (double)(i)) * dist2(engine)));
+    s[0] = 1.0;
     printf("s = ["); for (int i = 1; i < n; i++) {printnum(s[ i + i * n]); printf (" "); } printf("]\n");
 
     //5. inverse matrix. All the elements are integers.
