@@ -1,4 +1,4 @@
-//taken from https://math.stackexchange.com/questions/2038752/how-many-3-times-3-integer-matrices-are-orthogonal
+//taken from https://math.stackexchange.com/questions/1275358/how-to-generate-3-times-3-integer-matrices-with-integer-eigenvalues
 #include <random>
 
 int main(int argc, char *argv[]) {
