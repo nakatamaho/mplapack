@@ -1,6 +1,11 @@
 //taken from https://math.stackexchange.com/questions/1275358/how-to-generate-3-times-3-integer-matrices-with-integer-eigenvalues
 #include <random>
 
+int compare_real(const void *a, const void *b)
+{
+    return *(REAL*)a > *(REAL*)b;
+}
+
 int main(int argc, char *argv[]) {
     INTEGER n = 15;
     INTEGER dispersion = 3;
@@ -99,9 +104,9 @@ int main(int argc, char *argv[]) {
         }
     }
     //4. genrarate a random geometric series. This part depends on the size of INTEGER = int64_t.
-    for (int i = 1; i < n; i++) s[i + i * n] = abs((INTEGER)(pow(10.0, (double)(i)) * dist2(engine)));
+    for (int i = 0; i < n; i++) s[i + i * n] = abs((INTEGER)(pow(10.0, (double)(i)) * dist2(engine)));
     s[0] = 1.0;
-    printf("s = ["); for (int i = 1; i < n; i++) {printnum(s[ i + i * n]); printf (" "); } printf("]\n");
+    printf("s = ["); for (int i = 0; i < n; i++) {printnum(s[ i + i * n]); printf (" "); } printf("]\n");
 
     //5. inverse matrix. All the elements are integers.
     Rgetrf(n, n, ainv, n, ipiv, info);
@@ -123,9 +128,12 @@ int main(int argc, char *argv[]) {
     printf("a ="); printmat(n, n, a, n); printf("\n");
     //6. Check eigenvalues. These must be the same as the obtained series in 4.
     Rgeev("V", "V", n, a, n, wr, wi, vl, n, vr, n, work, lwork, info);
-    for (int i = 1; i <= n; i = i + 1) {
-        printf("w_%d = ", (int)i); printnum(wr[i - 1]); printf(" "); printnum(wi[i - 1]); printf("i\n");
+
+    qsort(wr, n, sizeof(REAL), compare_real);
+    for (int i = 0; i < n; i = i + 1) {
+        printf("w_%d = ", (int)i); printnum(wr[i]); printf("\n");
     }
+
     printf("exactw = ["); for (int i = 0; i < n; i++) {printnum(s[ i + i * n]); printf (" "); } printf("]\n");
 
     delete[] ipiv;
