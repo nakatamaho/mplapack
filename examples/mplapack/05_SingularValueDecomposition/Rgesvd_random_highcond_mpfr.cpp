@@ -50,7 +50,7 @@ void printmat(int n, int m, mpreal *a, int lda) {
 
 int compare_real(const void *a, const void *b)
 {
-    return *(mpreal*)a < *(mpreal*)b;
+    return *(mpreal*)a > *(mpreal*)b;
 }
 
 int main(int argc, char *argv[]) {
@@ -77,13 +77,10 @@ int main(int argc, char *argv[]) {
     mpreal *sorg = new mpreal[n];
     mpreal *u = new mpreal[n * n];
     mpreal *vt = new mpreal[n * n];
-
-    mpreal *vl = new mpreal[n * n];
-    mpreal *vr = new mpreal[n * n];
-    mpreal *wr = new mpreal[n];
-    mpreal *wi = new mpreal[n];
+    mpreal *w = new mpreal[n * n];
 
     mplapackint lwork = std::max({(mplapackint)1, 3 * n + n, 5 * n});
+    mplapackint liwork;
     mplapackint *ipiv = new mplapackint[n];
     mplapackint info;
 
@@ -233,33 +230,44 @@ int main(int argc, char *argv[]) {
 	}
     }
     printf("abs_min_at_a="); printnum(rtmp); printf("\n");
+    delete[] work;
 
-    Rgeev("V", "V", n, at_a, n, wr, wi, vl, n, vr, n, work, lwork, info);
+    // work space query
+    lwork = -1;
+    work = new mpreal[1];
+    liwork = -1;
+    mplapackint *iwork = new mplapackint[1];
 
+    Rsyevd("N", "U", n, at_a, n, w, work, lwork, iwork, liwork, info);
+    lwork = (int)cast2double(work[0]);
+    delete[] work;
+    work = new mpreal[std::max((mplapackint)1, lwork)];
+    liwork = iwork[0];
+    delete[] iwork;
+    iwork = new mplapackint[std::max((mplapackint)1, liwork)];
+
+    // diagonalize matrix
+    Rsyevd("N", "U", n, at_a, n, w, work, lwork, iwork, liwork, info);
+
+    qsort(s, n, sizeof(mpreal), compare_real);
     printf("s=[");
     for (int i = 0; i < n; i++) { printnum(s[i]); printf(" "); } printf(" ] \n");
     printf("s_squared=["); for (int i = 0; i < n; i++) { printnum(s[i] * s[i]); printf(" "); } printf(" ] \n");
-    qsort(wr, n, sizeof(mpreal), compare_real);
-    for (int i = 0; i < n; i = i + 1) {
-        printf("w_%d = ", (int)i); printnum(wr[i]); printf(" "); printnum(wi[i]); printf("i\n");
-    }
+    printf("w = ["); for (int i = 0; i < n; i++) { printnum(w[i]); printf(" "); } printf(" ] \n");
+
     // 8. There is a relation \lambda_i of eig(A^t A) and \sigma_i svd(A)
     // \lambda_i = \sigma_i^2
     // 9. Relative error
 
     mpreal relerror;
     for (int i = 0; i < n; i = i + 1) {
-        relerror = abs ( (wr[i] - s[i] * s[i]) / (s[i] * s[i]) ) ;
+        relerror = abs ( (w[i] - s[i] * s[i]) / (s[i] * s[i]) ) ;
         printf("Relative_error_%d = ", (int)i); printnum(relerror); printf("\n");
     }
 
     delete[] work;
     delete[] ipiv;
-    delete[] wi;
-    delete[] wr;
-    delete[] vl;
-    delete[] vr;
-    delete[] vt;
+    delete[] w;
     delete[] u;
     delete[] sorg;
     delete[] s;
