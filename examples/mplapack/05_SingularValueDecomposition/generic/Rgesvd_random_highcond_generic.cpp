@@ -206,7 +206,7 @@ int main(int argc, char *argv[]) {
     printf("s=[");
     for (int i = 0; i < n; i++) { printnum(s[i]); printf(" "); } printf(" ] \n");
     printf("s_squared=["); for (int i = 0; i < n; i++) { printnum(s[i] * s[i]); printf(" "); } printf(" ] \n");
-    printf("w = ["); for (int i = 0; i < n; i++) { printnum(w[i]); printf(" "); } printf(" ] \n");
+    printf("      w = ["); for (int i = 0; i < n; i++) { printnum(w[i]); printf(" "); } printf(" ] \n");
 
     // 8. There is a relation \lambda_i of eig(A^t A) and \sigma_i svd(A)
     // \lambda_i = \sigma_i^2
