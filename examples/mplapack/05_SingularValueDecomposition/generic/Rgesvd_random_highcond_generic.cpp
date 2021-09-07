@@ -1,5 +1,10 @@
 #include <random>
 
+int compare_real(const void *a, const void *b)
+{
+    return *(REAL*)a < *(REAL*)b;
+}
+
 int main(int argc, char *argv[]) {
     INTEGER n = 3;
     INTEGER dispersion = 3;
@@ -163,12 +168,20 @@ int main(int argc, char *argv[]) {
     }
     // 7. eig(A^t A).
     Rgeev("V", "V", n, at_a, n, wr, wi, vl, n, vr, n, work, lwork, info);
+
+    qsort(wr, n, sizeof(REAL), compare_real);
     for (int i = 0; i < n; i = i + 1) {
         printf("w_%d = ", (int)i); printnum(wr[i]); printf(" "); printnum(wi[i]); printf("i\n");
     }
     // 8. There is a relation \lambda_i of eig(A^t A) and \sigma_i svd(A)
     // \lambda_i = \sigma_i^2
-    // 9. Make sure s_squared and w are the same
+    // 9. Relative error
+
+    REAL relerror;
+    for (int i = 0; i < n; i = i + 1) {
+        relerror = abs ( (wr[i] - s[i] * s[i]) / s[i] * s[i] ) ;
+        printf("Relative_error_%d = ", (int)i); printnum(relerror); printf("\n");
+    }
 
     delete[] work;
     delete[] ipiv;
