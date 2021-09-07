@@ -98,6 +98,7 @@ int main(int argc, char *argv[]) {
     std::random_device seed_gen;
     std::mt19937 engine(seed_gen());
     std::normal_distribution<> dist(0, (double)dispersion);
+    std::uniform_int_distribution<> dist1(-n*n, n*n);
 
     // Generation of high condition integer matrix.
     // Strategy. Generate a matrix whose elements are integer with determinant = 1.
@@ -159,13 +160,12 @@ int main(int argc, char *argv[]) {
     }
     // 4. genrarate eigenvalues
     for (int i = 0; i < n; i++) {
-         int r = dist(engine);
-         s[i + i * n] = dd_real(r * r);
+         int r = dist1(engine);
+         s[i + i * n] =  r;
          while ( r == 0 ) {
-             r = (int)dist(engine);
-             s[i + i * n] = (dd_real)(r * r);
+             r = dist1(engine);
+             s[i + i * n] = r;
 	 }
-         printf("rand=%d, %d\n", (int)i, (int)r);
     }
     s[0] = 1.0;
     for (int i = 0; i < n; i++)
@@ -208,9 +208,6 @@ int main(int argc, char *argv[]) {
     }
     // 7. svd(A)
     Rgesvd("A", "A", n, n, a, n, s, u, n, vt, n, work, lwork, info);
-    printf("s=[");
-    for (int i = 0; i < n; i++) { printnum(s[i]); printf(" "); } printf(" ] \n");
-    printf("s_squared=["); for (int i = 0; i < n; i++) { printnum(s[i] * s[i]); printf(" "); } printf(" ] \n");
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             a[i + j * n] = aorg[i + j * n];
@@ -226,8 +223,28 @@ int main(int argc, char *argv[]) {
         }
     }
     // 7. eig(A^t A).
+    printf("at_a ="); printmat(n, n, at_a, n); printf("\n");
+    dd_real rtmp = 0.0;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if ( abs(at_a[i + j * n]) > abs(rtmp) )
+                rtmp = at_a[i + j * n];
+	}
+    }
+    printf("abs_of_max_at_a="); printnum(rtmp); printf("\n");
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if ( abs(at_a[i + j * n]) < abs(rtmp) )
+                rtmp = at_a[i + j * n];
+	}
+    }
+    printf("abs_min_at_a="); printnum(rtmp); printf("\n");
+
     Rgeev("V", "V", n, at_a, n, wr, wi, vl, n, vr, n, work, lwork, info);
 
+    printf("s=[");
+    for (int i = 0; i < n; i++) { printnum(s[i]); printf(" "); } printf(" ] \n");
+    printf("s_squared=["); for (int i = 0; i < n; i++) { printnum(s[i] * s[i]); printf(" "); } printf(" ] \n");
     qsort(wr, n, sizeof(dd_real), compare_real);
     for (int i = 0; i < n; i = i + 1) {
         printf("w_%d = ", (int)i); printnum(wr[i]); printf(" "); printnum(wi[i]); printf("i\n");
