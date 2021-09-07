@@ -98,7 +98,6 @@ int main(int argc, char *argv[]) {
     std::random_device seed_gen;
     std::mt19937 engine(seed_gen());
     std::normal_distribution<> dist(0, (double)dispersion);
-    std::normal_distribution<> dist2(0.0, (double)dispersion);
 
     // Generation of high condition integer matrix.
     // Strategy. Generate a matrix whose elements are integer with determinant = 1.
@@ -158,10 +157,16 @@ int main(int argc, char *argv[]) {
             s[i + j * n] = 0.0;
         }
     }
-    // 4. genrarate a random geometric series. This part depends on the size of mplapackint = int64_t.
-    //    for (int i = 1; i < n; i++) s[i + i * n] = abs((mplapackint)(pow(10.0, (double)(i)) * dist2(engine)));
-    for (int i = 0; i < n; i++)
-        s[i + i * n] = (dd_real)(i + 1);
+    // 4. genrarate eigenvalues
+    for (int i = 0; i < n; i++) {
+         int r = dist(engine);
+         s[i + i * n] = dd_real(r * r);
+         while ( r == 0 ) {
+             r = (int)dist(engine);
+             s[i + i * n] = (dd_real)(r * r);
+	 }
+         printf("rand=%d, %d\n", (int)i, (int)r);
+    }
     s[0] = 1.0;
     for (int i = 0; i < n; i++)
         sorg[i] = s[i + i * n];
@@ -233,7 +238,7 @@ int main(int argc, char *argv[]) {
 
     dd_real relerror;
     for (int i = 0; i < n; i = i + 1) {
-        relerror = abs ( (wr[i] - s[i] * s[i]) / s[i] * s[i] ) ;
+        relerror = abs ( (wr[i] - s[i] * s[i]) / (s[i] * s[i]) ) ;
         printf("Relative_error_%d = ", (int)i); printnum(relerror); printf("\n");
     }
 
