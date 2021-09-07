@@ -171,19 +171,22 @@ This is the release schedule for MPLAPACK 2.0.0
 | Impliment complex lin                |            |     |                          | 
 | Impliment complex eig                |            |     |                          | 
 | Impliment mixed precision version    |            |     |                          | 
+| make tar ball for distribution       |            |     |                          |
 | Add more examples                    |            |     |                          | 
 
 ## MPLAPACK 3.0.0 Release Process 
 This is the release schedule for MPLAPACK 3.0.0
 | Action | Date | Status | Description |
 | --- | --- | --- | --- |
-| Bug fix for QD, DD                             |            |     | overflow, underflow | 
+| Bug fixes for QD, DD                           |            |     | overflow, underflow | 
+| Performance tuning using FAM on amd64          |            |     |                     |
 | Fix Rlamch for QD, DD                          |            |     | svd.in fails.used with caution | 
 | cleanup pow (REAL, long int)                   |            |     |                          | 
 | Get rid of compiler warnings                   |            |     |                          | 
 | lp64 ilp64 llp64 ilp32 lp32 cleanup            |            |     |                          | 
 | FMA for QD, DD                                 |            |     |                     |
 | Drop GMP version                               |            |     | Since trigonometric functions req'ed | 
+| more benchmarks                                |            |     |                          | 
 | add gmpfrxx                                    |            |     | https://math.berkeley.edu/~wilken/code/gmpfrxx/ | 
 | optimized implimentations                      |            |     |                          | 
 
