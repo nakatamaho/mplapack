@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
     REAL *aorg = new REAL[n * n];
     REAL *ainv = new REAL[n * n];
     REAL *at_a = new REAL[n * n];
-    REAL *I_ = new REAL[n * n];
+    REAL *I_ = new REAL[n * n]; //I is reserved for imaginary number 
     REAL *s = new REAL[n * n];
     REAL *sorg = new REAL[n];
     REAL *u = new REAL[n * n];
