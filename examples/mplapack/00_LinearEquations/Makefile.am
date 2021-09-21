@@ -1,10 +1,14 @@
 mplapackexamples_PROGRAMS =
 
 if ENABLE_MPFR
-mplapackexamples_PROGRAMS += Rgesv_test_mpfr Rgetri_Hilbert_mpfr Rgetri_test2_mpfr Rgetri_test3_mpfr Rgetri_test_mpfr
+mplapackexamples_PROGRAMS += Cgetri_test_mpfr Rgesv_test_mpfr Rgetri_Hilbert_mpfr Rgetri_test2_mpfr Rgetri_test3_mpfr Rgetri_test_mpfr
 
 mpfr_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
 mpfr_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
+
+Cgetri_test_mpfr_SOURCES = Cgetri_test_mpfr.cpp
+Cgetri_test_mpfr_CXXFLAGS = $(mpfr_cxxflags)
+Cgetri_test_mpfr_LDFLAGS = $(mpfr_libdepends)
 
 Rgesv_test_mpfr_SOURCES = Rgesv_test_mpfr.cpp
 Rgesv_test_mpfr_CXXFLAGS = $(mpfr_cxxflags)
@@ -29,10 +33,14 @@ Rgetri_test_mpfr_LDFLAGS = $(mpfr_libdepends)
 endif
 
 if ENABLE_GMP
-mplapackexamples_PROGRAMS += Rgesv_test_gmp Rgetri_Hilbert_gmp Rgetri_test2_gmp Rgetri_test3_gmp Rgetri_test_gmp
+mplapackexamples_PROGRAMS += Cgetri_test_gmp Rgesv_test_gmp Rgetri_Hilbert_gmp Rgetri_test2_gmp Rgetri_test3_gmp Rgetri_test_gmp
 
 gmp_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
 gmp_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(top_builddir)/mpblas/reference -lmpblas_gmp -L$(GMP_LIBDIR) -lgmp
+
+Cgetri_test_gmp_SOURCES = Cgetri_test_gmp.cpp
+Cgetri_test_gmp_CXXFLAGS = $(gmp_cxxflags)
+Cgetri_test_gmp_LDFLAGS = $(gmp_libdepends)
 
 Rgesv_test_gmp_SOURCES = Rgesv_test_gmp.cpp
 Rgesv_test_gmp_CXXFLAGS = $(gmp_cxxflags)
@@ -57,7 +65,7 @@ Rgetri_test_gmp_LDFLAGS = $(gmp_libdepends)
 endif
 
 if ENABLE__FLOAT128
-mplapackexamples_PROGRAMS += Rgesv_test__Float128 Rgetri_Hilbert__Float128 Rgetri_test2__Float128 Rgetri_test3__Float128 Rgetri_test__Float128
+mplapackexamples_PROGRAMS += Cgetri_test__Float128 Rgesv_test__Float128 Rgetri_Hilbert__Float128 Rgetri_test2__Float128 Rgetri_test3__Float128 Rgetri_test__Float128
 
 _Float128_cxxflags = $(OPENMP_CXXFLAGS)
 if WANT_QUADMATH
@@ -65,6 +73,10 @@ _Float128_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float128
 else
 _Float128_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128
 endif
+
+Cgetri_test__Float128_SOURCES = Cgetri_test__Float128.cpp
+Cgetri_test__Float128_CXXFLAGS = $(_Float128_cxxflags)
+Cgetri_test__Float128_LDFLAGS = $(_Float128_libdepends)
 
 Rgesv_test__Float128_SOURCES = Rgesv_test__Float128.cpp
 Rgesv_test__Float128_CXXFLAGS = $(_Float128_cxxflags)
@@ -89,10 +101,14 @@ Rgetri_test__Float128_LDFLAGS = $(_Float128_libdepends)
 endif
 
 if ENABLE__FLOAT64X
-mplapackexamples_PROGRAMS += Rgesv_test__Float64x Rgetri_Hilbert__Float64x Rgetri_test2__Float64x Rgetri_test3__Float64x Rgetri_test__Float64x
+mplapackexamples_PROGRAMS += Cgetri_test__Float64x Rgesv_test__Float64x Rgetri_Hilbert__Float64x Rgetri_test2__Float64x Rgetri_test3__Float64x Rgetri_test__Float64x
 
 _Float64x_cxxflags = $(OPENMP_CXXFLAGS)
 _Float64x_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -L$(top_builddir)/mpblas/reference -lmpblas__Float64x
+
+Cgetri_test__Float64x_SOURCES = Cgetri_test__Float64x.cpp
+Cgetri_test__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
+Cgetri_test__Float64x_LDFLAGS = $(_Float64x_libdepends)
 
 Rgesv_test__Float64x_SOURCES = Rgesv_test__Float64x.cpp
 Rgesv_test__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
@@ -117,10 +133,14 @@ Rgetri_test__Float64x_LDFLAGS = $(_Float64x_libdepends)
 endif
 
 if ENABLE_DOUBLE
-mplapackexamples_PROGRAMS += Rgesv_test_double Rgetri_Hilbert_double Rgetri_test2_double Rgetri_test3_double Rgetri_test_double
+mplapackexamples_PROGRAMS += Cgetri_test_double Rgesv_test_double Rgetri_Hilbert_double Rgetri_test2_double Rgetri_test3_double Rgetri_test_double
 
 double_cxxflags = $(OPENMP_CXXFLAGS)
 double_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_double -L$(top_builddir)/mpblas/reference -lmpblas_double
+
+Cgetri_test_double_SOURCES = Cgetri_test_double.cpp
+Cgetri_test_double_CXXFLAGS = $(double_cxxflags)
+Cgetri_test_double_LDFLAGS = $(double_libdepends)
 
 Rgesv_test_double_SOURCES = Rgesv_test_double.cpp
 Rgesv_test_double_CXXFLAGS = $(double_cxxflags)
@@ -145,10 +165,14 @@ Rgetri_test_double_LDFLAGS = $(double_libdepends)
 endif
 
 if ENABLE_DD
-mplapackexamples_PROGRAMS += Rgesv_test_dd Rgetri_Hilbert_dd Rgetri_test2_dd Rgetri_test3_dd Rgetri_test_dd
+mplapackexamples_PROGRAMS += Cgetri_test_dd Rgesv_test_dd Rgetri_Hilbert_dd Rgetri_test2_dd Rgetri_test3_dd Rgetri_test_dd
 
 dd_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
 dd_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_dd -L$(top_builddir)/mpblas/reference -lmpblas_dd -L$(QD_LIBDIR) -lqd
+
+Cgetri_test_dd_SOURCES = Cgetri_test_dd.cpp
+Cgetri_test_dd_CXXFLAGS = $(dd_cxxflags)
+Cgetri_test_dd_LDFLAGS = $(dd_libdepends)
 
 Rgesv_test_dd_SOURCES = Rgesv_test_dd.cpp
 Rgesv_test_dd_CXXFLAGS = $(dd_cxxflags)
@@ -173,10 +197,14 @@ Rgetri_test_dd_LDFLAGS = $(dd_libdepends)
 endif
 
 if ENABLE_QD
-mplapackexamples_PROGRAMS += Rgesv_test_qd Rgetri_Hilbert_qd Rgetri_test2_qd Rgetri_test3_qd Rgetri_test_qd
+mplapackexamples_PROGRAMS += Cgetri_test_qd Rgesv_test_qd Rgetri_Hilbert_qd Rgetri_test2_qd Rgetri_test3_qd Rgetri_test_qd
 
 qd_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
 qd_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_qd -L$(top_builddir)/mpblas/reference -lmpblas_qd -L$(QD_LIBDIR) -lqd
+
+Cgetri_test_qd_SOURCES = Cgetri_test_qd.cpp
+Cgetri_test_qd_CXXFLAGS = $(qd_cxxflags)
+Cgetri_test_qd_LDFLAGS = $(qd_libdepends)
 
 Rgesv_test_qd_SOURCES = Rgesv_test_qd.cpp
 Rgesv_test_qd_CXXFLAGS = $(qd_cxxflags)
