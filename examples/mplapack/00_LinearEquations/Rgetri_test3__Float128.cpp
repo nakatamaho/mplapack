@@ -19,7 +19,7 @@ void printnum(_Float128 rtmp)
 #else
     strfromf128(buf, sizeof(buf), "%.35e", rtmp);
 #endif
-    if (rtmp > 0.0)
+    if (rtmp >= 0.0)
         printf ("+%s", buf);
     else
         printf ("%s", buf);
