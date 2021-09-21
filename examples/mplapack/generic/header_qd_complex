@@ -1,0 +1,70 @@
+//public domain
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <cstring>
+#include <algorithm>
+
+#include <mpblas_qd.h>
+#include <mplapack_qd.h>
+
+#define QD_PRECISION_SHORT 16
+
+inline void printnum(qd_real rtmp) {
+    std::cout.precision(QD_PRECISION_SHORT);
+    if (rtmp >= 0.0) {
+        std::cout << "+" << rtmp;
+    } else {
+        std::cout << rtmp;
+    }
+    return;
+}
+
+inline void printnum(qd_complex rtmp) {
+    std::cout.precision(QD_PRECISION_SHORT);
+    if (rtmp.real() >= 0.0) {
+        std::cout << "+" << rtmp.real();
+    } else {
+        std::cout << rtmp.real();
+    }
+    if (rtmp.imag() >= 0.0) {
+        std::cout << "+" << rtmp.imag() << "i";
+    } else {
+        std::cout << rtmp.imag() << "i";
+    }
+    return;
+}
+
+//Matlab/Octave format
+template <class X> void printvec(X *a, int len) {
+    X tmp;
+    printf("[ ");
+    for (int i = 0; i < len; i++) {
+        tmp = a[i];
+        printnum(tmp);
+        if (i < len - 1)
+            printf(", ");
+    }
+    printf("]");
+}
+
+template <class X> void printmat(int n, int m, X *a, int lda)
+{
+    X mtmp;
+
+    printf("[ ");
+    for (int i = 0; i < n; i++) {
+        printf("[ ");
+        for (int j = 0; j < m; j++) {
+            mtmp = a[i + j * lda];
+            printnum(mtmp);
+            if (j < m - 1)
+                printf(", ");
+        }
+        if (i < n - 1)
+            printf("]; ");
+        else
+            printf("] ");
+    }
+    printf("]");
+}

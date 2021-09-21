@@ -1,30 +1,30 @@
-FILES=`ls R*generic.cpp`
+FILES=`ls C*generic.cpp`
 MPLIBS="mpfr gmp _Float128 _Float64x double dd qd"
 
 for _file in $FILES; do
     for _mplib in $MPLIBS; do
         resultfilename=`echo $_file | sed "s/generic/${_mplib}/g"`
-        cat ../../generic/header_${_mplib} ${_file} > ../$resultfilename
+        cat ../../generic/header_${_mplib}_complex ${_file} > ../$resultfilename
         if [ x"$_mplib" = x"gmp" ]; then
-            sed -i -e "s/REAL/mpf_class/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g"  ../$resultfilename
+            sed -i -e "s/REAL/mpf_class/g" -e "s/COMPLEX/mpc_class/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g"  ../$resultfilename
         fi
         if [ x"$_mplib" = x"mpfr" ]; then
-            sed -i -e "s/REAL/mpreal/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" ../$resultfilename
+            sed -i -e "s/REAL/mpreal/g" -e "s/COMPLEX/mpcomplex/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" ../$resultfilename
         fi
         if [ x"$_mplib" = x"double" ]; then
-            sed -i -e "s/REAL/double/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" ../$resultfilename
+            sed -i -e "s/REAL/double/g" -e "s/COMPLEX/std::complex<double>/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" ../$resultfilename
         fi 
         if [ x"$_mplib" = x"dd" ]; then
-            sed -i -e "s/REAL/dd_real/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" ../$resultfilename
+            sed -i -e "s/REAL/dd_real/g" -e "s/COMPLEX/dd_complex/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" ../$resultfilename
         fi 
         if [ x"$_mplib" = x"qd" ]; then
-            sed -i -e "s/REAL/qd_real/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" ../$resultfilename
+            sed -i -e "s/REAL/qd_real/g" -e "s/COMPLEX/qd_complex/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" ../$resultfilename
         fi
         if [ x"$_mplib" = x"_Float128" ]; then
-            sed -i -e "s/REAL/_Float128/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" ../$resultfilename
+            sed -i -e "s/REAL/_Float128/g" -e "s/COMPLEX/std::complex<_Float128>/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" ../$resultfilename
         fi
         if [ x"$_mplib" = x"_Float64x" ]; then
-            sed -i -e "s/REAL/_Float64x/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" ../$resultfilename
+            sed -i -e "s/REAL/_Float64x/g" -e "s/COMPLEX/std::complex<_Float64x>/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" ../$resultfilename
         fi
     done
 done

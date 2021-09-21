@@ -1,0 +1,47 @@
+//public domain
+#include <mpblas__Float64x.h>
+#include <mplapack__Float64x.h>
+#include <iostream>
+#include <stdio.h>
+#include <cstring>
+#include <algorithm>
+
+#define FLOAT64X_FORMAT "%+25.21Le"
+#define FLOAT64X_SHORT_FORMAT "%+20.16Le"
+
+void printnum(_Float64x rtmp) { printf(FLOAT64X_FORMAT, rtmp); return;}
+void printnum(std::complex<_Float64x> ctmp) { printf(FLOAT64X_FORMAT FLOAT64X_FORMAT "i", ctmp.real(), ctmp.imag()); }
+
+//Matlab/Octave format
+template <class X> void printvec(X *a, int len) {
+    X tmp;
+    printf("[ ");
+    for (int i = 0; i < len; i++) {
+        tmp = a[i];
+        printnum(tmp);
+        if (i < len - 1)
+            printf(", ");
+    }
+    printf("]");
+}
+
+template <class X> void printmat(int n, int m, X *a, int lda)
+{
+    X mtmp;
+
+    printf("[ ");
+    for (int i = 0; i < n; i++) {
+        printf("[ ");
+        for (int j = 0; j < m; j++) {
+            mtmp = a[i + j * lda];
+            printnum(mtmp);
+            if (j < m - 1)
+                printf(", ");
+        }
+        if (i < n - 1)
+            printf("]; ");
+        else
+            printf("] ");
+    }
+    printf("]");
+}
