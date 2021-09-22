@@ -54,16 +54,17 @@ void printmat(int n, int m, dd_real * a, int lda)
 }
 int main()
 {
-    mplapackint n = 3;
+    mplapackint n = 4;
     mplapackint lwork, info;
 
     dd_real *A = new dd_real[n * n];
     dd_real *w = new dd_real[n];
 
 //setting A matrix
-    A[0 + 0 * n] = 1;    A[0 + 1 * n] = 2;    A[0 + 2 * n] = 3;
-    A[1 + 0 * n] = 2;    A[1 + 1 * n] = 5;    A[1 + 2 * n] = 4;
-    A[2 + 0 * n] = 3;    A[2 + 1 * n] = 4;    A[2 + 2 * n] = 6;
+    A[0 + 0 * n] = 6;    A[0 + 1 * n] = 4;    A[0 + 2 * n] = 4;    A[0 + 3 * n] = 1;
+    A[1 + 0 * n] = 4;    A[1 + 1 * n] = 6;    A[1 + 2 * n] = 1;    A[1 + 3 * n] = 4;
+    A[2 + 0 * n] = 4;    A[2 + 1 * n] = 1;    A[2 + 2 * n] = 6;    A[2 + 3 * n] = 4;
+    A[3 + 0 * n] = 1;    A[3 + 1 * n] = 4;    A[3 + 2 * n] = 4;    A[3 + 3 * n] = 6;
 
     printf("A ="); printmat(n, n, A, n); printf("\n");
 //work space query
