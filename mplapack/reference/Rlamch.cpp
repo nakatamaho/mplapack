@@ -59,7 +59,7 @@ REAL RlamchE_mpfr(void) {
     REAL one = 1.0, rtmp;
     mp_prec_t prec;
     prec = one.get_prec();
-    rtmp = exp2(prec);
+    rtmp = exp2(REAL(prec));
     eps = one / rtmp;
     called = 1;
     return eps;
@@ -169,7 +169,7 @@ REAL RlamchO_mpfr(void) {
     REAL rtmp;
     mp_prec_t prec = one.get_prec();
     mp_exp_t emax = one.get_emax();
-    rtmp = exp2(-(long)prec);
+    rtmp = exp2(-REAL(prec));
     overflow = mul_2si(one, emax - 1);
     overflow = overflow * (one - rtmp) * 2.0;
     return overflow;
