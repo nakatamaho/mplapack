@@ -9,5 +9,5 @@
 
 SUBDIRS = 03_SymmetricEigenproblems \
 04_NonsymmetricEigenproblems \
-05_SingularValueDecomposition \
-99_Miscellaneous
+05_SingularValueDecomposition
+
