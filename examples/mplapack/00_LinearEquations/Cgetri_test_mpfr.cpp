@@ -54,6 +54,7 @@ template <class X> void printmat(int n, int m, X *a, int lda)
     }
     printf("]");
 }
+//taking from Collection of Matrices for Testing Computational Algorithms 1969 Robert T. Gregory, David L. Karney pp.30
 int main()
 {
     mplapackint n = 3;
