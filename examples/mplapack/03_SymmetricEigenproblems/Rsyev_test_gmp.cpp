@@ -1,14 +1,11 @@
 //public domain
 #include <mpblas_gmp.h>
 #include <mplapack_gmp.h>
-#include <iostream>
-#include <cstring>
-#include <algorithm>
 
 #define GMP_FORMAT "%+68.64Fe"
 #define GMP_SHORT_FORMAT "%+20.16Fe"
 
-inline void printnum(mpf_class rtmp) { gmp_printf(GMP_FORMAT, rtmp.get_mpf_t()); }
+inline void printnum(mpf_class rtmp) { gmp_printf(GMP_SHORT_FORMAT, rtmp.get_mpf_t()); }
 inline void printnum_short(mpf_class rtmp) { gmp_printf(GMP_SHORT_FORMAT, rtmp.get_mpf_t()); }
 
 //Matlab/Octave format
