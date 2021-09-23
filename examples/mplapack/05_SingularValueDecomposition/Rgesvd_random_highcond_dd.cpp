@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
     dd_real *aorg = new dd_real[n * n];
     dd_real *ainv = new dd_real[n * n];
     dd_real *at_a = new dd_real[n * n];
-    dd_real *I_ = new dd_real[n * n];
+    dd_real *I_ = new dd_real[n * n]; //I is reserved for imaginary number 
     dd_real *s = new dd_real[n * n];
     dd_real *sorg = new dd_real[n];
     dd_real *u = new dd_real[n * n];

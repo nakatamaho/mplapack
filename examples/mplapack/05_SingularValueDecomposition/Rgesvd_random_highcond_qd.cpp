@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
     qd_real *aorg = new qd_real[n * n];
     qd_real *ainv = new qd_real[n * n];
     qd_real *at_a = new qd_real[n * n];
-    qd_real *I_ = new qd_real[n * n];
+    qd_real *I_ = new qd_real[n * n]; //I is reserved for imaginary number 
     qd_real *s = new qd_real[n * n];
     qd_real *sorg = new qd_real[n];
     qd_real *u = new qd_real[n * n];

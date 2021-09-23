@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     _Float64x *aorg = new _Float64x[n * n];
     _Float64x *ainv = new _Float64x[n * n];
     _Float64x *at_a = new _Float64x[n * n];
-    _Float64x *I_ = new _Float64x[n * n];
+    _Float64x *I_ = new _Float64x[n * n]; //I is reserved for imaginary number 
     _Float64x *s = new _Float64x[n * n];
     _Float64x *sorg = new _Float64x[n];
     _Float64x *u = new _Float64x[n * n];

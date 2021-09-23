@@ -11,7 +11,7 @@
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
 inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
 
 // Matlab/Octave format
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
     mpreal *aorg = new mpreal[n * n];
     mpreal *ainv = new mpreal[n * n];
     mpreal *at_a = new mpreal[n * n];
-    mpreal *I_ = new mpreal[n * n];
+    mpreal *I_ = new mpreal[n * n]; //I is reserved for imaginary number 
     mpreal *s = new mpreal[n * n];
     mpreal *sorg = new mpreal[n];
     mpreal *u = new mpreal[n * n];

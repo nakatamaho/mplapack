@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
     double *aorg = new double[n * n];
     double *ainv = new double[n * n];
     double *at_a = new double[n * n];
-    double *I_ = new double[n * n];
+    double *I_ = new double[n * n]; //I is reserved for imaginary number 
     double *s = new double[n * n];
     double *sorg = new double[n];
     double *u = new double[n * n];

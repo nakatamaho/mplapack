@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
     _Float128 *aorg = new _Float128[n * n];
     _Float128 *ainv = new _Float128[n * n];
     _Float128 *at_a = new _Float128[n * n];
-    _Float128 *I_ = new _Float128[n * n];
+    _Float128 *I_ = new _Float128[n * n]; //I is reserved for imaginary number 
     _Float128 *s = new _Float128[n * n];
     _Float128 *sorg = new _Float128[n];
     _Float128 *u = new _Float128[n * n];

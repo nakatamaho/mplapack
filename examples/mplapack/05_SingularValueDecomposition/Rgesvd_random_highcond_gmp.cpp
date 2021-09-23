@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
     mpf_class *aorg = new mpf_class[n * n];
     mpf_class *ainv = new mpf_class[n * n];
     mpf_class *at_a = new mpf_class[n * n];
-    mpf_class *I_ = new mpf_class[n * n];
+    mpf_class *I_ = new mpf_class[n * n]; //I is reserved for imaginary number 
     mpf_class *s = new mpf_class[n * n];
     mpf_class *sorg = new mpf_class[n];
     mpf_class *u = new mpf_class[n * n];

@@ -46,19 +46,9 @@ void printmat(int n, int m, mpreal *a, int lda) {
     printf("]");
 }
 
-using namespace std;
-
 int main() {
-    mplapackint m, n;
-
-    string str;
-    getline(cin, str);
-    cout << str << endl;
-    getline(cin, str);
-    stringstream ss(str);
-    ss >> m;
-    ss >> n;
-    printf("# m n %d %d \n", (int)m, (int)m);
+    mplapackint n = 5;
+    mplapackint m = 4;
 
     mpreal *a = new mpreal[m * n];
     mpreal *s = new mpreal[std::min(m, n)];
@@ -67,15 +57,29 @@ int main() {
     mplapackint lwork = std::max({(mplapackint)1, 3 * std::min(m, n) + std::max(m, n), 5 * std::min(m, n)});
     mpreal *work = new mpreal[lwork];
     mplapackint info;
-    double dtmp;
-    for (int i = 0; i < m; i++) {
-        getline(cin, str);
-        stringstream ss(str);
-        for (int j = 0; j < n; j++) {
-            ss >> dtmp;
-            a[i + j * m] = dtmp;
-        }
+
+    // setting A matrix
+    if (n > m) {
+        a[0 + 0 * m] = 0.35;        a[0 + 1 * m] = -0.1160;       a[0 + 2 * m] = -0.3886;       a[0 + 3 * m] = -0.2942;       a[0 + 4 * m] = -0.2942;
+        a[1 + 0 * m] = -0.5140;     a[1 + 1 * m] = 0.1225;        a[1 + 2 * m] = 0.1004;        a[1 + 3 * m] = 0.1126;        a[1 + 4 * m] = 1.1133;
+        a[2 + 0 * m] = 0.4881;      a[2 + 1 * m] = -1.6443;       a[2 + 2 * m] = -0.1357;       a[2 + 3 * m] = -0.0977;       a[2 + 4 * m] = -9.343;
+        a[3 + 0 * m] = -3.0;        a[3 + 1 * m] = 9.811;         a[3 + 2 * m] = 0.4262;        a[3 + 3 * m] = 0.1632;        a[3 + 4 * m] = 0.33;
     }
+    if (m > n) {
+        a[0 + 0 * m] = 0.35;        a[0 + 1 * m] = -0.1160;       a[0 + 2 * m] = -0.3886;       a[0 + 3 * m] = -0.2942;
+        a[1 + 0 * m] = -0.5140;     a[1 + 1 * m] = 0.1225;        a[1 + 2 * m] = 0.1004;        a[1 + 3 * m] = 0.1126;
+        a[2 + 0 * m] = 0.4881;      a[2 + 1 * m] = -1.6443;       a[2 + 2 * m] = -0.1357;       a[2 + 3 * m] = -0.0977;
+        a[3 + 0 * m] = -3.0;        a[3 + 1 * m] = 9.811;         a[3 + 2 * m] = 0.4262;        a[3 + 3 * m] = 0.1632;
+        a[4 + 0 * m] = 1.49333;     a[4 + 1 * m] = 0.55131;       a[4 + 2 * m] = 0.6831;        a[4 + 3 * m] = 0.33333;
+    }
+
+    if (m == n) {
+        a[0 + 0 * m] = 0.35;        a[0 + 1 * m] = -0.1160;       a[0 + 2 * m] = -0.3886;       a[0 + 3 * m] = -0.2942;
+        a[1 + 0 * m] = -0.5140;     a[1 + 1 * m] = 0.1225;        a[1 + 2 * m] = 0.1004;        a[1 + 3 * m] = 0.1126;
+        a[2 + 0 * m] = 0.4881;      a[2 + 1 * m] = -1.6443;       a[2 + 2 * m] = -0.1357;       a[2 + 3 * m] = -0.0977;
+        a[3 + 0 * m] = -3.0;        a[3 + 1 * m] = 9.811;         a[3 + 2 * m] = 0.4262;        a[3 + 3 * m] = 0.1632;
+    }
+
     printf("# octave check\n");
     printf("a ="); printmat(m, n, a, m); printf("\n");
     Rgesvd("A", "A", m, n, a, m, s, u, m, vt, n, work, lwork, info);
