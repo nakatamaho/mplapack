@@ -35,11 +35,9 @@
 #include <mplapack.h>
 #include <mplapack_benchmark.h>
 
-#define TOTALSTEPS 1000
-
 int main(int argc, char *argv[]) {
     mplapackint n;
-    mplapackint incx = 1, incy = 1, STEP, N0, LOOP;
+    mplapackint incx = 1, incy = 1, STEP, N0, LOOP = 3, TOTALSTEPS = 100;
     REAL alpha, dummy, *dummywork;
     REAL mOne = -1;
     double elapsedtime, t1, t2;
@@ -72,6 +70,8 @@ int main(int argc, char *argv[]) {
                 check_flag = 0;
             } else if (strcmp("-LOOP", argv[i]) == 0) {
                 LOOP = atoi(argv[++i]);
+            } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
+                TOTALSTEPS = atoi(argv[++i]);
             }
         }
     }
