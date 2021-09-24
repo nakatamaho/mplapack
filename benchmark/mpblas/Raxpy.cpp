@@ -39,7 +39,7 @@
 
 int main(int argc, char *argv[]) {
     mplapackint n;
-    mplapackint incx = 1, incy = 1, STEP, N0;
+    mplapackint incx = 1, incy = 1, STEP, N0, LOOP;
     REAL alpha, dummy, *dummywork;
     REAL mOne = -1;
     double elapsedtime, t1, t2;
@@ -70,6 +70,8 @@ int main(int argc, char *argv[]) {
                 STEP = atoi(argv[++i]);
             } else if (strcmp("-NOCHECK", argv[i]) == 0) {
                 check_flag = 0;
+            } else if (strcmp("-LOOP", argv[i]) == 0) {
+                LOOP = atoi(argv[++i]);
             }
         }
     }
@@ -118,10 +120,14 @@ int main(int argc, char *argv[]) {
                 y[i] = yd[i] = randomnumber(dummy);
             }
             alpha = randomnumber(dummy);
-            t1 = gettime();
-            Raxpy(n, alpha, x, incx, y, incy);
-            t2 = gettime();
-            elapsedtime = (t2 - t1);
+            elapsedtime = 0.0;
+	    for (int j = 0; j < LOOP; j++) {
+                t1 = gettime();
+                Raxpy(n, alpha, x, incx, y, incy);
+                t2 = gettime();
+                elapsedtime = elapsedtime + (t2 - t1);
+	    } 
+            elapsedtime = elapsedtime / (double)LOOP;
             printf("         n       MFLOPS\n");
             printf("%10d   %10.3f\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS);
         }
