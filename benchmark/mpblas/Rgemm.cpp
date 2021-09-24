@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2012
+ * Copyright (c) 2008-2021
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -35,8 +35,6 @@
 #include <mplapack.h>
 #include <mplapack_benchmark.h>
 
-#define TOTALSTEPS 1000
-
 double flops_gemm(mplapackint k_i, mplapackint m_i, mplapackint n_i) {
     double adds, muls, flops;
     double k, m, n;
@@ -54,7 +52,7 @@ int main(int argc, char *argv[]) {
     REAL *dummywork;
     double elapsedtime, t1, t2;
     char transa, transb, normtype;
-    int N0, M0, K0, STEPN, STEPM, STEPK;
+    int N0, M0, K0, STEPN, STEPM, STEPK, LOOP = 3, TOTALSTEPS = 100;
     int lda, ldb, ldc;
     int i, j, m, n, k, ka, kb, p, q;
     int check_flag = 1;
@@ -101,6 +99,10 @@ int main(int argc, char *argv[]) {
                 transb = 'n';
             } else if (strcmp("-NOCHECK", argv[i]) == 0) {
                 check_flag = 0;
+            } else if (strcmp("-LOOP", argv[i]) == 0) {
+                LOOP = atoi(argv[++i]);
+            } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
+                TOTALSTEPS = atoi(argv[++i]);
             }
         }
     }
@@ -173,10 +175,14 @@ int main(int argc, char *argv[]) {
             // 2mnk+2mn flops are needed
             printf("%5d %5d %5d %10.3f %5.2e       %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, diffr, transa, transb);
         } else {
-            t1 = gettime();
-            Rgemm(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
-            t2 = gettime();
-            elapsedtime = (t2 - t1);
+            elapsedtime = 0.0;
+	    for (int j = 0; j < LOOP; j++) {
+                t1 = gettime();
+                Rgemm(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+                t2 = gettime();
+                elapsedtime = elapsedtime + (t2 - t1);
+	    } 
+            elapsedtime = elapsedtime / (double)LOOP;
             printf("    m     n     k     MFLOPS    transa   transb\n");
             // 2mnk+2mn flops are needed
             printf("%5d %5d %5d %10.3f         %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, diffr, transa, transb);
