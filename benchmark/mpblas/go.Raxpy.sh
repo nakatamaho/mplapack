@@ -15,3 +15,5 @@ for _mplib in $MPLIBS; do
 ./Raxpy.${_mplib} -NOCHECK -TOTALSTEPS 100 -STEP 3000 -LOOP 3       >& log.Raxpy.${_mplib}
 done
 
+gnuplot Raxpy1.plt > Raxpy1.eps
+gnuplot Raxpy2.plt > Raxpy2.eps
