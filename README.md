@@ -246,15 +246,6 @@ The Special Postdoctoral Researchers' Program of RIKEN (2008, 2009)
 Grant-in-Aid for Scientific Research (B) 21300017 from the Japan Society for the Promotion of Science (2009, 2010, 2011).
 Microsoft Research CORE6 (2010). 
 
-# Special thanks to:
-
-Fujisawa, Katsuki
-Goto, Kazushige
-Himeno, Ryutaro
-.
-
-Please refer userman.pdf for details. Please enjoy!
-
 # contact
 NAKATA Maho <maho@riken.jp>
 
