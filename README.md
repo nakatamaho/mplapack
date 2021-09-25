@@ -247,5 +247,5 @@ Grant-in-Aid for Scientific Research (B) 21300017 from the Japan Society for the
 Microsoft Research CORE6 (2010). 
 
 # contact
-NAKATA Maho <maho@riken.jp>
+NAKATA Maho <maho.nakata@gmail.com> <maho@riken.jp>
 
