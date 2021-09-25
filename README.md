@@ -161,7 +161,7 @@ This is the release schedule for MPLAPACK 1.0.0
 | Build on CentOS7 AArch64             | 2021-08-13 |3e51d57| long double == binary128, _Float128 nor __float128 are supported |
 | Build on CentOS8 AArch64             | 2021-08-13 |3e51d57| _Float128: supp. by libc and _Float128 == long double |
 | Build on Ubuntu 20.04 PPC64LE        | 2021-08-13 |3e51d57| _Float128: supp. by libc and _Float128 != long double | 
-| Add documents                        |            |     |                          | 
+| Add documents                        | 2021-09-25 |       |                          | 
 
 ## MPLAPACK 2.0.0 Release Process 
 This is the release schedule for MPLAPACK 2.0.0
@@ -191,6 +191,7 @@ This is the release schedule for MPLAPACK 3.0.0
 | optimized implimentations                      |            |     |                          | 
 
 # History
+* 2021/10/1 1.0.0 release. Huge improvement; all real LAPACK routines are available; SVD, eigenproblem solver for non symmetric matrices are added. manual is available:  https://raw.githubusercontent.com/nakatamaho/mplapack/master/doc/manual/manual.pdf 
 * 2021/4/11 0.9.3 release. CentOS7 AArch64 support
 * 2021/4/6  0.9.1 release. CentOS support
 * 2021/4/1  0.9.0 release. Rename to mplapack. You must rename include files, etc. Rewrite and recompilation required.
