@@ -162,6 +162,8 @@ This is the release schedule for MPLAPACK 1.0.0
 | Build on CentOS8 AArch64             | 2021-08-13 |3e51d57| _Float128: supp. by libc and _Float128 == long double |
 | Build on Ubuntu 20.04 PPC64LE        | 2021-08-13 |3e51d57| _Float128: supp. by libc and _Float128 != long double | 
 | Add documents                        | 2021-09-25 |       |                          | 
+| Upload to arXiv                      |            |       |                          | 
+| Add bibtex citation                  |            |       |                          | 
 | Release                              | 2021-10-01 |       |                          | 
 
 ## MPLAPACK 2.0.0 Release Process 
