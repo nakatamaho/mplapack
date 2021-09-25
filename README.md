@@ -164,6 +164,7 @@ This is the release schedule for MPLAPACK 1.0.0
 | Add documents                        | 2021-09-25 |       |                          | 
 | Upload to arXiv                      |            |       |                          | 
 | Add bibtex citation                  |            |       |                          | 
+| add tag                              |            |       |                          | 
 | Release                              | 2021-10-01 |       |                          | 
 
 ## MPLAPACK 2.0.0 Release Process 
