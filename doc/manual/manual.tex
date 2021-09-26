@@ -78,8 +78,9 @@
 \maketitle
 
 \begin{abstract}
-The MPLAPACK (formerly MPACK) is a multiple-precision version of LAPACK (\url{https://www.netlib.org/lapack/}).
-MPLAPACK version 1.0.0 is based on LAPACK version 3.9.1 and translated from Fortran 90 to C++ using FABLE, a Fortran to C++ source-to-source conversion tool (\url{https://github.com/cctbx/cctbx\_project/tree/master/fable}). 
+The MPLAPACK (formerly MPACK) is a multiple-precision version of LAPACK \\
+(\url{https://www.netlib.org/lapack/}).
+MPLAPACK version 1.0.0 is based on LAPACK version 3.9.1 and translated from Fortran 90 to C++ using FABLE, a Fortran to C++ source-to-source conversion tool (\url{https://github.com/cctbx/cctbx\_project/tree/master/fable/}). 
 MPLAPACK version 1.0.0 provides the real and complex version of MPBLAS, and the real version of MPLAPACK supports all LAPACK features: solvers for systems of simultaneous linear equations, least-squares solutions of linear systems of equations, eigenvalue problems, and singular value problems, and related matrix factorizations except for rectangular complete packed matrix form and mixed-precision routines. Besides, MPLAPACK supports a part of the complex routines of LAPACK, such as diagonalization of Hermite matrices, Cholesky factorization, and matrix inversion. The MPLAPACK defines an API for numerical linear algebra, similar to LAPACK. It is easy to port legacy C/C++ numerical codes using MPLAPACK. MPLAPACK supports binary64, binary128, FP80 (extended double), MPFR, GMP, and QD libraries (double-double and quad-double). Users can choose MPFR or GMP for arbitrary accurate calculations, double-double or quad-double for fast 32 or 64 decimal calculations. We can consider the binary64 version as the C++ version of LAPACK. MPLAPACK is available at GitHub (\url{https://github.com/nakatamaho/mplapack/}) under 2-clause BSD license.
 \end{abstract}
 
@@ -133,7 +134,7 @@ We support the following compilers:
 \item GCC (GNU Compiler Collection) 9 and 10
 \item Intel OneAPI.
 \end{itemize}
-Note that we use GCC by MacPorts on macOS, which is NOT a default compiler. We use the mingw64 and Wine64 environments on Linux to build and test the Windows version. On different configurations, MPLAPACK may build and work without problems. We welcome patches from the community.
+Note that we use GCC by MacPorts on macOS, which is NOT the default compiler. We use the mingw64 and Wine64 environments on Linux to build and test the Windows version. On different configurations, MPLAPACK may build and work without problems. We welcome patches from the community.
 
 \section{Installation}
 \label{sec:howtoinstall}
@@ -413,6 +414,7 @@ integer         & mplapackint & (32bit on Win, 64bit on Linux and macOS) \\ \hli
 \end{table}
 Also, we define {\tt mplapackint} as a 64 bit signed integer to MPLAPACK that can access all the memory spaces regardless
 of which data type models the environment employs (LLP64 or LP64). On Windows, {\tt mplapackint} is still a 32 bit signed integer.
+
 
 \subsection{MPBLAS}
 The API of MPBLAS is very similar to the original BLAS and CBLAS. However, we always use a one-dimensional array as a column-major type matrix in MPBLAS, and unlike CBLAS, we cannot specify row- or column-major order. 
@@ -1451,7 +1453,7 @@ w_4 = +2.0000000000000000e+00 +0.0000000000000000e+00i
 ...
 \end{verbatim}
 }
-You can check this by passing the standard output to octave, as shown below.
+This can be confirmed by passing the output of the terminal to Octave, as shown below.
 {\footnotesize
 \begin{verbatim}
 $ LD_LIBRARY_PATH=/home/docker/MPLAPACK/lib ./a.out | octave
@@ -1794,6 +1796,7 @@ There are more examples in {\tt /home/docker/mplapack/examples/mplapack/} as fol
 \item {\tt 05\_SingularValueDecomposition/Rgesvd\_test\_*.cpp} ... samples of simple singular value decomposition problems
 \end{itemize}
 
+
 \subsection{Rlamch values and specifying precision at runtime}
 For MPLAPACK, {\tt Rlamch} routines are vital since they return precision-specific constants. Exceedingly, these values control convergence behaviors for such as eigenvalue problems and singular value problems. Thus, for example, we cannot say binary128 version of MPLAPACK routines run output if we use the same {\tt Rlamch} values for binary64 and vice versa.
 In table \ref{rlamchmpfr}, we show {\tt Rlamch} values for {\tt MPFR}. The default accuracy for {\tt MPFR} is approximately 154 decimal digits ($154.127 =512 \log_{10}2$).
@@ -2020,12 +2023,25 @@ Rlamch -: Reciprocal of safe minimum   +6.1501577861568104e+259
 \end{center}
 \end{table}
 
+\subsection{Summary: a basic strategy to use MPBLAS and MPLAPACK}
+
+Unfortunately, We do not provide concise manuals for MPBLAS and MPLAPACK since LAPACK is very well documented. If you want to use some specific routines,
+first consult LAPACK users' guide~\cite{laug}, or alternatively, \url{https://www.netlib.org/lapack/lug/}.
+
+Following is the basic strategy to use MPLAPACK routines.
+\begin{enumerate}
+\item See \url{https://www.netlib.org/lapack/lug/node25.html} to find the name of driver routine.
+\item For example, If you want to compute the generalized singular values and vectors of a matrix $A$, you will find the routine name as {\tt DGGSVD} in \url{https://www.netlib.org/lapack/lug/node36.html}.
+\item Find the definition part of {\tt DGGSVD} by download LAPACK and extract to find {\tt dggsvd.f} or you can find on the internet {\tt https://www.netlib.org/lapack/explore-html/dd/db4/dggsvd\_8f.html}.
+\item Look for {\tt Rggsvd} prototype definition of MPLAPACK and change the variables appropriately to fit to MPLAPACK.
+\end{enumerate}
+
 \section{Quality assurance of MPBLAS and MPLAPACK}
 \label{sec:howtotest}
 \subsection{Testing MPBLAS routines}
 We performed quality assurance of MPBLAS as follows. 
 \begin{enumerate}
-    \item We believe no bugs in reference BLAS~\cite{10.1145/567806.567807}.
+    \item We believe no bugs in the reference BLAS~\cite{10.1145/567806.567807}.
     \item We input random values of binary64 for matrices, vectors, and scalars to BLAS and MPFR version of MPBLAS for various sizes of matrices, vector, and leading dimensions (It means MPBLAS and BLAS may fail with error codes) to a routine.
     \item If the difference between the two results is within tolerance, we regard the quality as assured for the MPFR version of MPBLAS the routine.
     \item We also check the error codes by {\tt xerbla} and {\tt Mxerbla} and always these error codes are the same for the routine.
@@ -2146,7 +2162,7 @@ The following parameter values will be used:
 \end{verbatim}
 The file {\tt Rtest.in} is same as {\tt dtest.in} of LAPACK, except for the first comment line. 
 For other precisions, we similarly performed tests. We verified that all tests passed for all precisions.
-Currently, complex versions do not pass for driver routines. Nevertheless, users can test MPLAPACK complex linear routine using {\tt Ctest. in}  by modifying the 15-th line to F so that not to test driver routines, many tests pass. Thus, users can use complex routines with caution.
+Currently, complex versions do not pass for driver routines. Nevertheless, users can test MPLAPACK complex linear routine using {\tt Ctest.in}  by modifying the 15-th line from ``T" to ``F" so that not to test driver routines, many tests pass. Thus, users can use complex routines with caution.
 
 Next, we review how to test LAPACK EIG as follows:
 \begin{verbatim}
@@ -2288,10 +2304,9 @@ for {\tt MPFR} do unnecessary copies whereas {\tt GMP} does not, because {\tt GM
 In any case, enabling OpenMP will significantly increase the performance of {\tt Raxpy}. However, the performances are not stable; as we can see from the figures, there is some considerable performance degradation especially using {\tt quad-double}, {\tt GMP} and {\tt MPFR}.
 
 \begin{figure}
-\caption{Raxpy performance on AMD Ryzen 3970X for {\tt \_Float128}, {\tt \_Float64x}, {\tt double-double}, {\tt double} and (simple) OpenMP accelrated results. }
-\label{raxpy1}
+\caption{Raxpy performance on AMD Ryzen 3970X for {\tt \_Float128}, {\tt \_Float64x}, {\tt double-double}, {\tt double} and (simple) OpenMP accelrated results. } \label{raxpy1}
 \begin{center}
- \includegraphics{Raxpy1.eps}
+\vspace*{-2.0cm}\includegraphics{Raxpy1.eps}
  \end{center}
 \end{figure}
 
@@ -2299,7 +2314,7 @@ In any case, enabling OpenMP will significantly increase the performance of {\tt
 \caption{Raxpy performance on AMD Ryzen 3970X for {\tt quad-double}, {\tt GMP} and {\tt MPFR}, and (simple) OpenMP accelrated results. }
 \label{raxpy2}
 \begin{center}
- \includegraphics{Raxpy2.eps}
+\vspace*{-2.0cm}\includegraphics{Raxpy2.eps}
  \end{center}
 \end{figure}
 
@@ -2309,7 +2324,8 @@ $ cd /home/docker/mplapack/benchmark/mpblas
 $ bash -x go.Raxpy.sh
 \end{verbatim}
 and resultant files are {\tt Raxpy1.eps}  and {\tt Raxpy2.eps}. They correspond to Figure~\ref{raxpy1} and Figure~\ref{raxpy2}. 
-
+\\
+\\
 In Figure~\ref{rgemm1}, we show the result of {\tt Rgemm} performance for {\tt \_Float128}, {\tt \_Float64x}, {\tt double} and  {\tt double-double}, and Figure~\ref{rgemm2} shows the {\tt Rgemm} performance for {\tt GMP}, {\tt MPFR}, and {\tt quad-double}, with and without optimization. We used CPU for AMD Ryzen 3970X, 256GB of DDR4 3200MHz memory (ECC is not enabled), and took benchmark inside Docker environment. GCC version was 9.3.0.
 
 For these benchmarks, We performed {\tt Rgemm} calculations for each precision five times and took the average for OpenMP implementations and three times for the reference implementations. We used square matrices for the benchmarks.
@@ -2330,16 +2346,17 @@ In any case, enabling OpenMP will significantly increase the performance of {\tt
 \caption{Rgemm performance on AMD Ryzen 3970X for {\tt \_Float128}, {\tt \_Float64x}, {\tt double-double}, {\tt double} and (simple) OpenMP accelrated results. }
 \label{rgemm1}
 \begin{center}
- \includegraphics{Rgemm1.eps}
- \end{center}
+\vspace*{-2.0cm}\includegraphics{Rgemm1.eps}
+\end{center}
 \end{figure}
 
 \begin{figure}
 \caption{Rgemm performance on AMD Ryzen 3970X for {\tt quad-double}, {\tt GMP} and {\tt MPFR}, and (simple) OpenMP accelrated results. }
 \label{rgemm2}
 \begin{center}
- \includegraphics{Rgemm2.eps}
- \end{center}
+\vspace*{-2.0cm}\includegraphics{Rgemm2.eps}
+\end{center}
+\vspace*{2.0cm}
 \end{figure}
 
 Users can take performance benchmark on your machine:
@@ -2351,19 +2368,19 @@ and resultant files are {\tt Rgemm1.eps}  and {\tt Rgemm2.eps}. They correspond 
 
 \section{History}
 \label{sec:history}
-M.N started developing MPLAPACK as a by-product of an arbitrary accurate semidefinite programming solver, SDPA-GMP, around 2006~\cite{JCP2008}. The first MPLAPACK (formerly MPACK) version, 0.0.1, was released in 2008-7-15. In 2009-2-5, we released SDPA-GMP 7.1.2, and MPLAPACK supports SDPA-GMP, SDPA-QD, and SDPA-DD~\cite{SDPA-GMP,sdpa-gmpgithub,sdpa-qdgithub,sdpa-ddgithub}. In 2010-01-13, we supported Windows via mingw32. In 2010-5-21, we supported MPFR. In 2012-10-13, we released a fast implementation of a double-double version of Rgemm for NVIDIA C2050~\cite{6424545,6495966}. In 2017-3-29, we moved the web site from \url{http://mplapack.sourceforge.net/} to \url{https://github.com/nakatamaho/mplapack} In 2021-4-1, we renamed our project to MPLAPACK. In 2021-4-11, we supported AArch64 and released 0.9.4. In 2021-10-1, we released 1.0.0.
+M.N started developing MPLAPACK as a by-product of an arbitrary accurate semidefinite programming solver, SDPA-GMP, around 2006~\cite{JCP2008}. The first MPLAPACK (formerly MPACK) version, 0.0.1, was released in 2008-7-15. In 2009-2-5, we released SDPA-GMP 7.1.2, and MPLAPACK supports SDPA-GMP, SDPA-QD, and SDPA-DD~\cite{SDPA-GMP,sdpa-gmpgithub,sdpa-qdgithub,sdpa-ddgithub}. In 2010-01-13, we supported Windows via mingw32. In 2010-5-21, we supported MPFR. In 2012-10-13, we released a fast implementation of a double-double version of Rgemm for NVIDIA C2050~\cite{6424545,6495966}. In 2017-3-29, we moved the web site from \url{http://mplapack.sourceforge.net/} to \url{https://github.com/nakatamaho/mplapack/}. In 2021-4-1, we renamed our project to MPLAPACK. In 2021-4-11, we supported AArch64 and released 0.9.4. In 2021-10-1, we released 1.0.0.
 
 \section{Related works}
 \label{sec:relatedworks}
 We can relate our work in two main directions. (i) acceleration of multiple-precision extension to BLAS (especially on GPU) and (ii) development of a multiple-precision version of linear algebra packages.
 
-For (i), In 2009, Mukunoki\etal{}~\cite{HPC-137_1} implemented double-double version of {\tt Rgemm} for NVIDIA Tesla C1060 and evaluated the performance. In 2010, Mukunoki \etal{}~\cite{10.1007/978-3-642-28151-8_25} the quadruple precision Basic Linear Algebra Subprograms (BLAS) functions, AXPY, GEMV, and GEMM, on graphics processing units (GPUs), and evaluated their performance. On an NVIDIA Tesla C1060, their BLAS functions are approximately 30 times faster than the existing quadruple precision BLAS on an Intel Core i7 920.
+For (i), In 2009, Mukunoki\etal{}~\cite{HPC-137_1} implemented double-double version of matrix-matrix multiplication kernels for NVIDIA Tesla C1060 and evaluated the performance. In 2010, Mukunoki \etal{}~\cite{10.1007/978-3-642-28151-8_25} the quadruple precision Basic Linear Algebra Subprograms (BLAS) functions, AXPY, GEMV, and GEMM, on graphics processing units (GPUs), and evaluated their performance. On an NVIDIA Tesla C1060, their BLAS functions are approximately 30 times faster than the existing quadruple precision BLAS on an Intel Core i7 920.
 
-In 2011, Nakasato~\cite{Nakasato2011AFG} implemented optimized dense matrix multiplication kernels for AMD Cypress GPU. Their result includes double-double precision, and attained peak performance of 30 GFlops.
+In 2011, Nakasato~\cite{Nakasato2011AFG} implemented optimized dense matrix multiplication kernels for AMD Cypress GPU for various precisions. Their result includes double-double precision, and attained peak performance of 30 GFlops.
 
-In 2012, Nakata \etal{}~\cite{6495966} implemented double-double version of {\tt Rgemm} on NVIDIA C2050. In their implementation is complete {\tt Rgemm} implementation; thus, their implementation can be used for real applications; it can handle all the sizes in matrices, and can do transpose of each matrix. They attained 16.1GFlops with CPU-GPU transfer included, and 26.4GFlops (25.7GFlops with CPU-GPU transfer included. Moreover, they applied to semidefinite programming solver and attained ten times acceleration compared to CPU-only implementation.
+In 2012, Nakata~\etal{}~\cite{6495966} implemented double-double version of {\tt Rgemm} on NVIDIA C2050. In their implementation is complete {\tt Rgemm} implementation; thus, their implementation can be used for real applications; it can handle all the sizes in matrices, and supports transpose of each matrix. They attained 16.1GFlops with CPU-GPU transfer included, and 26.4GFlops (25.7GFlops with CPU-GPU transfer included. Moreover, they applied to semidefinite programming solver and attained ten times acceleration compared to CPU-only implementation.
 
-In 2012, Yamada \etal{} developed QPBLAS packages for CPUs~\cite{7965202}, as well as in the QPBLAS-GPU package for GPUs in 2013~\cite{qpblas-gpu}. These correspond to the complete set of double-double version parts of MPBLAS, accelerating CPU and GPUs. Note that memory alignment is different from MPBLAS and written in Fortran 90.
+In 2012, Yamada~\etal{} developed QPBLAS packages for CPUs~\cite{7965202}, as well as in the QPBLAS-GPU package for GPUs in 2013~\cite{qpblas-gpu}. These correspond to the complete set of double-double version parts of MPBLAS, accelerating CPU and GPUs. Note that memory alignment is different from MPBLAS and written in Fortran 90.
 
 In 2014 and 2015, Kouya~\cite{Tomonori_Kouya2014,Tomonori_Kouya2016} implemented optimized  matrix-matrix multiplications using Strassen and Winograd algorithms using MPFR, double-double, and quad-double precisions and applied them to LU factorizations. Strassen and Winograd versions are twice as fast as double-double and quad-double precisions running one core using a simple blocking algorithm. Furthermore, there is no significant performance difference between the Strassen version and Winograd. However, when we used MPFR, the Winograd version was always faster. He also found a significant loss of accuracy when performing LU factorization using Strassen and Winograd versions. 
 
@@ -2398,8 +2415,10 @@ Mathematica~\cite{mathematica} has multiple-precision versions of the eigenvalue
 In version 2.0.0, we finish RFP, complex version, and mixed-precision version, and in version 3.0.0, we plan to implement optimized MPFR C++ wrapper and drop GMP version.
 
 \section*{Acknowledgement}
+
+First, We are grateful to the LAPACK team for making an excellent library.
 This work was supported by the Special Postdoctoral Researchers' Program of RIKEN (2008, 2009), Grant-in-Aid for Scientific Research (B) 21300017 from the Japan Society for the Promotion of Science (2009, 2010, 2011), Microsoft Research CORE6 (2010) and the Japan Society for the Promotion of Science (JSPS KAKENHI Grant no. 18H03206). 
-The author would like to thank Dr. Imamura Toshiyuki. Dr. Nakasato Naohito, Dr. Takahashi Daisuke, Dr. Fujisawa Katsuki, Dr. Goto Kazushige, Dr. Kouya Tomonori, Dr. Himeno Ryutaro, Dr. Hishimuna Toshiaki, Dr. Katagiri Takahiro, Dr. Ogita Takeshi, Dr. KASHIWAGI Masahide, Dr. Yuasa Fukuko, Dr. Ishikawa Tadashi, Dr. Geshi Masaaki and Mr. Minato Yuichiro for for warm encouragement.
+The author would like to thank Dr. Imamura Toshiyuki. Dr. Nakasato Naohito, Dr. Fujisawa Katsuki, Dr. Kouya Tomonori, Dr. Takahashi Daisuke, Dr. Goto Kazushige, Dr. Himeno Ryutaro, Dr. Hishimuna Toshiaki, Dr. Katagiri Takahiro, Dr. Ogita Takeshi, Dr. Kashiwagi Masahide, Dr. Yuasa Fukuko, Dr. Ishikawa Tadashi, Dr. Geshi Masaaki and Mr. Minato Yuichiro for  warm encouragement.
 
 \bibliography{manual}
 
