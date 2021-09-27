@@ -951,7 +951,6 @@ examples/mplapack/00_LinearEquations/Makefile
 examples/mplapack/03_SymmetricEigenproblems/Makefile
 examples/mplapack/04_NonsymmetricEigenproblems/Makefile
 examples/mplapack/05_SingularValueDecomposition/Makefile
-examples/mplapack/99_Miscellaneous/Makefile
 ])
 fi
 if test x$enable_reference != xno; then

@@ -143,7 +143,7 @@ The easiest way to install MPLAPACK is to build inside Docker~\cite{merkel2014do
 For example, the following command will build inside docker on Ubuntu amd64 (also known as x86\_64) or aarch64 (also known as arm64); the following command will build inside docker.
 
 \begin{verbatim}
-$ git clone https://github.com/nakatamaho/mplapack/
+$ git clone -b v1.0.0 https://github.com/nakatamaho/mplapack/
 $ cd mplapack
 $ /usr/bin/time docker build -t mplapack:ubuntu2004 -f Dockerfile_ubuntu20.04 . \
    2>&1 | tee log.ubuntu2004
@@ -188,7 +188,7 @@ We list prerequisites for compiling from the source in Table~\ref{prerequisites}
 
 \begin{verbatim}
 $ sudo port install gcc9 coreutils git ccache
-$ git clone https://github.com/nakatamaho/mplapack.git --depth 1
+$ git clone -b v1.0.0 https://github.com/nakatamaho/mplapack.git --depth 1
 $ cd mplapack
 $ pushd mplapack/debug ; bash gen.Makefile.am.sh ; popd
 $ autoreconf --force --install ; aclocal ; autoconf ; automake
@@ -2292,7 +2292,7 @@ More important part is translation of {\tt TESTING/LIN} and {\tt TESTING/EIG} fr
 \label{sec:benchmarks}
 We have provided reference implementation as well as a simple OpenMP accelerated version for MPBLAS. It is shown in Table~\ref{mpblasroutinesopt}.
 In Figure~\ref{raxpy1}, we show the result of {\tt Raxpy} performance for {\tt \_Float128}, {\tt \_Float64x}, {\tt double} and  {\tt double-double},
- and Figure~\ref{raxpy2} shows the {\tt Raxpy} performance for {\tt GMP}, {\tt MPFR}, and {\tt quad-double}, with and without optimization. We used CPU for AMD Ryzen 3970X, 256GB of DDR4 3200MHz memory (ECC is not enabled), and took benchmark inside Docker environment. GCC version was 9.3.0.
+ and Figure~\ref{raxpy2} shows the {\tt Raxpy} performance for {\tt GMP}, {\tt MPFR}, and {\tt quad-double}, with and without optimization. We used CPU for AMD Ryzen 3970X, 256GB of DDR4 3200MHz memory (ECC Unbuffered), and took benchmark inside Docker environment. GCC version was 9.3.0.
  
 For these benchmarks, We performed {\tt Raxpy} calculations for each precision ten times and took the average for OpenMP implementations, and three times for the reference implementations. The peak performance of the reference {\tt \_Float128} version was approximately 60 MFlops, and 2.2 GFlops for the OpenMP version. The peak performance of the reference {\tt \_Float64x} version was approximately 660 MFlops, and 7.0 GFlops for the OpenMP version. The peak performance of the reference {\tt double-double} version was approximately 365 MFlops, and 6.0 GFlops for the OpenMP version. The double version is the fastest, and the peak was 8 GFlops for reference , and 17 GFlops for the OpenMP version. These results are not competitive to OpenBLAS or Intel MKL. 
 The peak performance of the reference {\tt GMP} version was 20 MFlops (512bit accuracy; default), and 750 MFlops OpenMP enabled.
