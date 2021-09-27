@@ -255,7 +255,10 @@ http://mplapack.sourceforge.net/
 This work has been supported by:
 The Special Postdoctoral Researchers' Program of RIKEN (2008, 2009)
 Grant-in-Aid for Scientific Research (B) 21300017 from the Japan Society for the Promotion of Science (2009, 2010, 2011).
-Microsoft Research CORE6 (2010). 
+Microsoft Research CORE6 (2010), and the Japan Society for the Promotion of Science (JSPS KAKENHI Grant no. 18H03206).
+
+Also the M.N would like to thank Dr. Imamura Toshiyuki. Dr. Nakasato Naohito, Dr. Fujisawa Katsuki, Dr. Kouya Tomonori, Dr. Takahashi Daisuke, Dr. Goto Kazushige, Dr. Himeno Ryutaro, Dr. Hishimuna Toshiaki, Dr. Katagiri Takahiro, Dr. Ogita Takeshi, Dr. Kashiwagi Masahide, Dr. Yuasa Fukuko, Dr. Ishikawa Tadashi, Dr. Geshi Masaaki and Mr. Minato Yuichiro for warm encouragement, and M.N would like to thank TIS inc. for financial support.
+
 
 # contact
 NAKATA Maho <maho.nakata@gmail.com> <maho@riken.jp>
