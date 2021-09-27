@@ -143,7 +143,7 @@ The easiest way to install MPLAPACK is to build inside Docker~\cite{merkel2014do
 For example, the following command will build inside docker on Ubuntu amd64 (also known as x86\_64) or aarch64 (also known as arm64); the following command will build inside docker.
 
 \begin{verbatim}
-$ git clone https://github.com/nakatamaho/mplapack/
+$ git clone -b v1.0.0 https://github.com/nakatamaho/mplapack/
 $ cd mplapack
 $ /usr/bin/time docker build -t mplapack:ubuntu2004 -f Dockerfile_ubuntu20.04 . \
    2>&1 | tee log.ubuntu2004
@@ -188,7 +188,7 @@ We list prerequisites for compiling from the source in Table~\ref{prerequisites}
 
 \begin{verbatim}
 $ sudo port install gcc9 coreutils git ccache
-$ git clone https://github.com/nakatamaho/mplapack.git --depth 1
+$ git clone -b v1.0.0 https://github.com/nakatamaho/mplapack.git --depth 1
 $ cd mplapack
 $ pushd mplapack/debug ; bash gen.Makefile.am.sh ; popd
 $ autoreconf --force --install ; aclocal ; autoconf ; automake
