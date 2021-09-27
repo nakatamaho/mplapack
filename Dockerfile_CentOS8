@@ -23,8 +23,8 @@ RUN echo "[user]" >> /home/$DOCKER_USER/.gitconfig && \
     echo "name = ${GIT_NAME}" >> /home/$DOCKER_USER/.gitconfig
 
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
-RUN cd /home/$DOCKER_USER && git clone -b v1.0.0 https://github.com/nakatamaho/mplapack.git
-RUN cd /home/$DOCKER_USER/mplapack && git log -1
+RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git
+RUN cd /home/$DOCKER_USER/mplapack && git checkout v1.0.0 && git log -1
 RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.centos8.sh
 RUN cd /home/$DOCKER_USER/mplapack && make -j`getconf _NPROCESSORS_ONLN`
 RUN cd /home/$DOCKER_USER/mplapack && make install
