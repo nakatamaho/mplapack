@@ -143,8 +143,9 @@ The easiest way to install MPLAPACK is to build inside Docker~\cite{merkel2014do
 For example, the following command will build inside docker on Ubuntu amd64 (also known as x86\_64) or aarch64 (also known as arm64); the following command will build inside docker.
 
 \begin{verbatim}
-$ git clone -b v1.0.0 https://github.com/nakatamaho/mplapack/
+$ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
+$ git checkout v1.0.0
 $ /usr/bin/time docker build -t mplapack:ubuntu2004 -f Dockerfile_ubuntu20.04 . \
    2>&1 | tee log.ubuntu2004
 \end{verbatim}
@@ -188,8 +189,9 @@ We list prerequisites for compiling from the source in Table~\ref{prerequisites}
 
 \begin{verbatim}
 $ sudo port install gcc9 coreutils git ccache
-$ git clone -b v1.0.0 https://github.com/nakatamaho/mplapack.git --depth 1
+$ git clone https://github.com/nakatamaho/mplapack.git --depth 1
 $ cd mplapack
+$ git checkout v1.0.0
 $ pushd mplapack/debug ; bash gen.Makefile.am.sh ; popd
 $ autoreconf --force --install ; aclocal ; autoconf ; automake
 $ autoreconf --force --install
@@ -2421,7 +2423,7 @@ In version 2.0.0, we finish RFP, complex version, and mixed-precision version, a
 
 First, We are grateful to the LAPACK team for making an excellent library.
 This work was supported by the Special Postdoctoral Researchers' Program of RIKEN (2008, 2009), Grant-in-Aid for Scientific Research (B) 21300017 from the Japan Society for the Promotion of Science (2009, 2010, 2011), Microsoft Research CORE6 (2010) and the Japan Society for the Promotion of Science (JSPS KAKENHI Grant no. 18H03206). 
-The author would like to thank Dr. Imamura Toshiyuki. Dr. Nakasato Naohito, Dr. Fujisawa Katsuki, Dr. Kouya Tomonori, Dr. Takahashi Daisuke, Dr. Goto Kazushige, Dr. Himeno Ryutaro, Dr. Hishimuna Toshiaki, Dr. Katagiri Takahiro, Dr. Ogita Takeshi, Dr. Kashiwagi Masahide, Dr. Yuasa Fukuko, Dr. Ishikawa Tadashi, Dr. Geshi Masaaki and Mr. Minato Yuichiro for warm encouragement.
+The author would like to thank Dr. Imamura Toshiyuki. Dr. Nakasato Naohito, Dr. Fujisawa Katsuki, Dr. Kouya Tomonori, Dr. Takahashi Daisuke, Dr. Goto Kazushige, Dr. Himeno Ryutaro, Dr. Hishimuna Toshiaki, Dr. Katagiri Takahiro, Dr. Ogita Takeshi, Dr. Kashiwagi Masahide, Dr. Yuasa Fukuko, Dr. Ishikawa Tadashi, Dr. Geshi Masaaki and Mr. Minato Yuichiro for warm encouragement, and the author would like to TIS inc. for financial support.
 
 \bibliography{manual}
 
