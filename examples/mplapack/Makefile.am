@@ -1,5 +1,4 @@
-#SUBDIRS = 00_LinearEquations \
-#01_LinearLeastSquaresProblems \
+#SUBDIRS =01_LinearLeastSquaresProblems \
 #02_GeneralizedLinearLeastSquaresProblems \
 #04_NonsymmetricEigenproblems \
 #05_SingularValueDecomposition \
@@ -7,7 +6,8 @@
 #07_GeneralizedNonSymmetricEigenproblems \
 #08_GeneralizedSingularValueDecomposition
 
-SUBDIRS = 03_SymmetricEigenproblems \
+SUBDIRS = 00_LinearEquations \
+03_SymmetricEigenproblems \
 04_NonsymmetricEigenproblems \
 05_SingularValueDecomposition
 
