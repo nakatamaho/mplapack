@@ -44,6 +44,7 @@ Ubuntu 20.04 (amd64, AArch64)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
+$ git checokut v1.0.0
 $ /usr/bin/time docker build -t mplapack:ubuntu2004 -f Dockerfile_ubuntu20.04 . 2>&1 | tee log.ubuntu2004
 ```
 
@@ -51,6 +52,7 @@ CentOS 7 (amd64, AArch64)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
+$ git checokut v1.0.0
 $ /usr/bin/time docker build -t mplapack:centos7 -f Dockerfile_CentOS7 . 2>&1 | tee log.CentOS7
 ```
 
@@ -58,6 +60,7 @@ CentOS 8 (amd64, AArch64)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
+$ git checokut v1.0.0
 $ /usr/bin/time docker build -t mplapack:centos8 -f Dockerfile_CentOS8 . 2>&1 | tee log.CentOS8
 ```
 
@@ -65,6 +68,7 @@ Ubuntu 18.04 (amd64, AArch64)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
+$ git checokut v1.0.0
 $ /usr/bin/time docker build -t mplapack:ubuntu1804 -f Dockerfile_ubuntu18.04 . 2>&1 | tee log.ubuntu1804
 ```
 
@@ -72,6 +76,7 @@ Ubuntu 20.04 (using Intel oneAPI)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
+$ git checokut v1.0.0
 $ /usr/bin/time docker build -t mplapack:ubuntu2004intel -f Dockerfile_ubuntu20.04_intel . 2>&1 | tee log.ubuntu2004.intel
 ```
 
@@ -79,6 +84,7 @@ Windows 64bit (using cross compiler on Ubuntu)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
+$ git checokut v1.0.0
 $ /usr/bin/time docker build -t mplapack:mingw -f  Dockerfile_ubuntu20.04_mingw64 . 2>&1 | tee log.mingw
 ```
 
@@ -88,6 +94,7 @@ $ /usr/bin/time docker build -t mplapack:mingw -f  Dockerfile_ubuntu20.04_mingw6
 $ sudo port install gcc9 coreutils git ccache
 $ git clone https://github.com/nakatamaho/mplapack.git --depth 1
 $ cd mplapack
+$ git checokut v1.0.0
 $ pushd mplapack/debug ; bash gen.Makefile.am.sh ; popd
 $ autoreconf --force --install ; aclocal ; autoconf ; automake; autoreconf --force --install
 $ CXX="g++-mp-9" ; export CXX
