@@ -5,7 +5,7 @@ DATE=`date "+%m%d"`
 all: $(MANUAL).pdf
 
 clean:
-	rm -f $(MANUAL).pdf $(MANUAL).dvi $(MANUAL).aux $(MANUAL).log $(MANUAL).rtf *bbl *aux *log *~
+	rm -f $(MANUAL).pdf $(MANUAL).dvi $(MANUAL).aux $(MANUAL).log $(MANUAL).rtf *bbl *aux *log *out *blg *~
 
 $(MANUAL).pdf: $(MANUAL).dvi
 	dvipdfmx $(MANUAL).dvi -o $(MANUAL).pdf
