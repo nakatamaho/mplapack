@@ -20,6 +20,7 @@ int main()
 
 //answer is [1, 1, 1, 1]
     printf("a ="); printmat(n, n, a, n); printf("\n");
+    printf("b ="); printvec(b, n); printf("\n");
 
 //Solve linear equation
     Rgesv(n, (INTEGER)1, a, n, ipiv, b, n, info);
