@@ -87,6 +87,7 @@ int main()
     Rgetri(n, a, n, ipiv, work, lwork, info);
 
     printf("ainv ="); printmat(n, n, a, n); printf("\n");
+    printf("a * ainv - eye(%d)\n", (int)n);
     delete[]work;
     delete[]ipiv;
     delete[]a;
