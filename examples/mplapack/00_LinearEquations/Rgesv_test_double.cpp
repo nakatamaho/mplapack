@@ -72,6 +72,7 @@ int main()
     Rgesv(n, (mplapackint)1, a, n, ipiv, b, n, info);
 
     printf("x ="); printvec(b, n); printf("\n");
+    printf("a*x'\n");
     delete[]ipiv;
     delete[]b;
     delete[]a;
