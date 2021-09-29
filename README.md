@@ -172,7 +172,7 @@ This is the release schedule for MPLAPACK 1.0.0
 | Upload to arXiv                      | 2021-09-27 |       | https://arxiv.org/abs/2109.13406 | 
 | Add bibtex citation                  | 2021-09-29 |       |                          | 
 | add tag                              | 2021-09-27 |       |                          | 
-| move tag after appearing at arXiv    |            |       |                          | 
+| move tag after appearing at arXiv    | 2021-09-29 |       |                          | 
 | Release                              | 2021-10-01 |       |                          | 
 
 ## MPLAPACK 2.0.0 Release Process 
