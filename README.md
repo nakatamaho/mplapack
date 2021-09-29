@@ -169,8 +169,8 @@ This is the release schedule for MPLAPACK 1.0.0
 | Build on CentOS8 AArch64             | 2021-09-27 |1e88da2| _Float128: supp. by libc and _Float128 == long double |
 | Build on Ubuntu 20.04 PPC64LE        | 2021-09-27 |1e88da2| _Float128: supp. by libc and _Float128 != long double |
 | Add documents                        | 2021-09-25 |       |                          | 
-| Upload to arXiv                      | 2021-09-27 |       |                          | 
-| Add bibtex citation                  |            |       |                          | 
+| Upload to arXiv                      | 2021-09-27 |       | https://arxiv.org/abs/2109.13406 | 
+| Add bibtex citation                  | 2021-09-29 |       |                          | 
 | add tag                              | 2021-09-27 |       |                          | 
 | move tag after appearing at arXiv    |            |       |                          | 
 | Release                              | 2021-10-01 |       |                          | 
@@ -255,10 +255,19 @@ http://mplapack.sourceforge.net/
 This work has been supported by:
 The Special Postdoctoral Researchers' Program of RIKEN (2008, 2009)
 Grant-in-Aid for Scientific Research (B) 21300017 from the Japan Society for the Promotion of Science (2009, 2010, 2011).
-Microsoft Research CORE6 (2010), and the Japan Society for the Promotion of Science (JSPS KAKENHI Grant no. 18H03206).
+Microsoft Research CORE6 (2010), and the Japan Society for the Promotion of Science (JSPS KAKENHI Grant no. 18H03206) and TIS inc.
 
-Also the M.N would like to thank Dr. Imamura Toshiyuki. Dr. Nakasato Naohito, Dr. Fujisawa Katsuki, Dr. Kouya Tomonori, Dr. Takahashi Daisuke, Dr. Goto Kazushige, Dr. Himeno Ryutaro, Dr. Hishimuna Toshiaki, Dr. Katagiri Takahiro, Dr. Ogita Takeshi, Dr. Kashiwagi Masahide, Dr. Yuasa Fukuko, Dr. Ishikawa Tadashi, Dr. Geshi Masaaki and Mr. Minato Yuichiro for warm encouragement, and M.N would like to thank TIS inc. for financial support.
+Also the M.N would like to thank Dr. Imamura Toshiyuki. Dr. Nakasato Naohito, Dr. Fujisawa Katsuki, Dr. Kouya Tomonori, Dr. Takahashi Daisuke, Dr. Goto Kazushige, Dr. Himeno Ryutaro, Dr. Hishimuna Toshiaki, Dr. Katagiri Takahiro, Dr. Ogita Takeshi, Dr. Kashiwagi Masahide, Dr. Yuasa Fukuko, Dr. Ishikawa Tadashi, Dr. Geshi Masaaki and Mr. Minato Yuichiro for warm encouragement.
 
+# Citation
+```
+@misc{2109.13406,
+Author = {Maho Nakata},
+Title = {MPLAPACK version 1.0.0 user manual},
+Year = {2021},
+Eprint = {arXiv:2109.13406},
+}
+```
 
 # contact
 NAKATA Maho <maho.nakata@gmail.com> <maho@riken.jp>

@@ -1,7 +1,7 @@
 TAGS="fable centos8 centos7 ubuntu2004 ubuntu2004intel ubuntu2004mingw64 ubuntu1804 centos8aarch64 centos7aarch64 ubuntu2004aarch64 ubuntu2004ppc64le ubuntu2004riscv64 ubuntu2004s390x debianmips64le"
 
 GITCOMMAND="git checkout v1.0.0"
-HEAD="TRUE"
+HEAD="FALSE"
 
 for _tag in $TAGS; do
 if [ $HEAD != "TRUE" ]; then
