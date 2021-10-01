@@ -166,6 +166,7 @@ This is the release schedule for MPLAPACK 3.0.0
 | optimized implimentations                      |            |     |                          | 
 
 ## old schedules
+* version 1.0.0 https://github.com/nakatamaho/mplapack/blob/master/doc/Release1.0.0.md
 
 # History
 * 2021/10/1 1.0.0 release. Huge improvement; all real LAPACK routines are available; SVD, eigenproblem solver for non symmetric matrices are added. manual is available:  https://raw.githubusercontent.com/nakatamaho/mplapack/master/doc/manual/manual.pdf 
