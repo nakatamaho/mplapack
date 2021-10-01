@@ -38,6 +38,18 @@ We use MPFR + MPC as the primary arithmetic class.
 * macOS (Intel) + macports (you may use homebrew instead, small modification of build script req'ed)
 * Windows (64bit; mingw64 on Ubuntu with wine64)
 
+# Manual
+* https://arxiv.org/abs/2109.13406
+* https://raw.githubusercontent.com/nakatamaho/mplapack/master/doc/manual/manual.pdf (updated frequently)
+```
+@misc{2109.13406,
+Author = {Maho Nakata},
+Title = {MPLAPACK version 1.0.0 user manual},
+Year = {2021},
+Eprint = {arXiv:2109.13406},
+}
+```
+
 # How to build on Linux and Win (using Docker; recommended)
 
 Ubuntu 20.04 (amd64, AArch64)
