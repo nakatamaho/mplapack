@@ -30,20 +30,22 @@
 
 #include <mpblas_double.h>
 
-void Raxpy_omp(mplapackint n, double da, double * dx, mplapackint incx, double * dy, mplapackint incy);
-void Raxpy_ref(mplapackint n, double da, double * dx, mplapackint incx, double * dy, mplapackint incy);
+void Raxpy_omp(mplapackint n, double da, double *dx, mplapackint incx, double *dy, mplapackint incy);
+void Raxpy_ref(mplapackint n, double da, double *dx, mplapackint incx, double *dy, mplapackint incy);
 
 #define SINGLEOROMP 1000
 
-void Raxpy(mplapackint const n, double const da, double *dx, mplapackint const incx, double *dy, mplapackint const incy)
-{
+void Raxpy(mplapackint const n, double const da, double *dx, mplapackint const incx, double *dy, mplapackint const incy) {
     double Zero = 0.0;
     mplapackint i;
 
-    if (n <= 0)	return;
+    if (n <= 0) return;
     if (da == Zero) return;
 
-    if (0) { Raxpy_ref(n, da, dx, incx, dy, incy); }
-    else { Raxpy_omp(n, da, dx, incx, dy, incy); }
+    if (0) {
+        Raxpy_ref(n, da, dx, incx, dy, incy);
+    } else {
+        Raxpy_omp(n, da, dx, incx, dy, incy);
+    }
     return;
 }

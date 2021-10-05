@@ -30,17 +30,19 @@
 
 #include <mpblas_double.h>
 
-double Rdot_ref(mplapackint n, double * dx, mplapackint incx, double * dy, mplapackint incy);
-double Rdot_omp(mplapackint n, double * dx, mplapackint incx, double * dy, mplapackint incy);
+double Rdot_ref(mplapackint n, double *dx, mplapackint incx, double *dy, mplapackint incy);
+double Rdot_omp(mplapackint n, double *dx, mplapackint incx, double *dy, mplapackint incy);
 
 #define SINGLEOROMP 1000
 
-double Rdot(mplapackint const n, double *dx, mplapackint const incx, double *dy, mplapackint const incy)
-{
+double Rdot(mplapackint const n, double *dx, mplapackint const incx, double *dy, mplapackint const incy) {
     mplapackint ix = 0;
     mplapackint iy = 0;
     mplapackint i;
 
-    if (0) { return Rdot_ref(n, dx, incx, dy, incy); }
-    else { return Rdot_omp(n, dx, incx, dy, incy); }
+    if (0) {
+        return Rdot_ref(n, dx, incx, dy, incy);
+    } else {
+        return Rdot_omp(n, dx, incx, dy, incy);
+    }
 }
