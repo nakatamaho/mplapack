@@ -41,8 +41,8 @@ double flops_gemm(mplapackint k_i, mplapackint m_i, mplapackint n_i) {
     m = (double)m_i;
     n = (double)n_i;
     k = (double)k_i;
-    muls = m * k * n;
-    adds = m * k * n;
+    muls = m * n * (k+2);
+    adds = m * n * k + m * n;
     flops = muls + adds;
     return flops;
 }
@@ -171,9 +171,9 @@ int main(int argc, char *argv[]) {
             (*raxpy_ref)((mplapackint)(ldc * n), mOne, C, (mplapackint)1, Cd, (mplapackint)1);
             diff = Rlange(&normtype, (mplapackint)ldc, (mplapackint)n, Cd, ldc, dummywork);
             diffr = cast2double(diff);
-            printf("    m     n     k     MFLOPS   error   transa   transb\n");
+            printf("#     m     n     k     MFLOPS   error   transa   transb\n");
             // 2mnk+2mn flops are needed
-            printf("%5d %5d %5d %10.3f %5.2e       %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, diffr, transa, transb);
+            printf("# %5d %5d %5d %10.3f %5.2e       %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, diffr, transa, transb);
         } else {
             elapsedtime = 0.0;
 	    for (int j = 0; j < LOOP; j++) {
@@ -183,9 +183,9 @@ int main(int argc, char *argv[]) {
                 elapsedtime = elapsedtime + (t2 - t1);
 	    } 
             elapsedtime = elapsedtime / (double)LOOP;
-            printf("    m     n     k     MFLOPS    transa   transb\n");
+            printf("#     m     n     k     MFLOPS    transa   transb\n");
             // 2mnk+2mn flops are needed
-            printf("%5d %5d %5d %10.3f         %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, diffr, transa, transb);
+            printf("# %5d %5d %5d %10.3f         %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, transa, transb);
         }
         delete[] Cd;
         delete[] C;
