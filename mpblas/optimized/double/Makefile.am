@@ -1,6 +1,6 @@
 lib_LTLIBRARIES = libmpblas_double_opt.la
 
-libmpblas_double_opt_la_CPPFLAGS = -g -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPLAPACK_BUILD_WITH_DOUBLE___ -finline-functions 
+libmpblas_double_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include $(OPENMP_CXXFLAGS) -D___MPLAPACK_BUILD_WITH_DOUBLE___
 libmpblas_double_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \

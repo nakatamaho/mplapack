@@ -3,7 +3,6 @@
  *	Nakata, Maho
  * 	All rights reserved.
  *
- *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -28,10 +27,7 @@
  */
 
 #include <mpblas_double.h>
-#ifdef _OPENMP
 #include <omp.h>
-#endif
-#include <iostream>
 
 void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, double alpha, double *A, mplapackint lda, double *B, mplapackint ldb, double beta, double *C, mplapackint ldc) {
     mplapackint i, j, l;
@@ -53,19 +49,16 @@ void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, double alpha, dou
     mplapackint p, q, r;
     mplapackint qq, rr;
     mplapackint Bq = 16, Br = 16;
-#pragma omp parallel
-    {
-#pragma omp for private(p, q, r, qq, rr, temp)
-        for (qq = 0; qq < n; qq = qq + Bq) {
-            for (rr = 0; rr < k; rr = rr + Br) {
-                for (p = 0; p < m; p++) {
-                    for (q = qq; q < std::min(qq + Bq, n); q++) {
-                        temp = 0.0;
-                        for (r = rr; r < std::min(rr + Br, k); r++) {
-                            temp = temp + A[p + r * lda] * B[r + q * ldb];
-                        }
-                        C[p + q * ldc] += alpha * temp;
+
+    for (qq = 0; qq < n; qq = qq + Bq) {
+        for (rr = 0; rr < k; rr = rr + Br) {
+            for (p = 0; p < m; p++) {
+                for (q = qq; q < std::min(qq + Bq, n); q++) {
+                    temp = 0.0;
+                    for (r = rr; r < std::min(rr + Br, k); r++) {
+                        temp = temp + A[p + r * lda] * B[r + q * ldb];
                     }
+                    C[p + q * ldc] += alpha * temp;
                 }
             }
         }

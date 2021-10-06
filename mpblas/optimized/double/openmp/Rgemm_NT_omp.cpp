@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2021
  *	Nakata, Maho
  * 	All rights reserved.
- *
- * $Id: Rgemm_NT.cpp,v 1.1 2010/12/28 06:13:53 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,12 +25,15 @@
  * SUCH DAMAGE.
  *
  */
+
 #include <mpblas_double.h>
+#include <omp.h>
 
 void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, double alpha, double *A, mplapackint lda, double *B, mplapackint ldb, double beta, double *C, mplapackint ldc) {
-    // Form  C := alpha*A*B' + beta*C.
     mplapackint i, j, l;
     double temp;
+    // Form  C := alpha*A*B' + beta*C.
+
     for (j = 0; j < n; j++) {
         if (beta == 0.0) {
             for (i = 0; i < m; i++) {
@@ -44,17 +45,22 @@ void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, double alpha, dou
             }
         }
     }
-// main loop
-#ifdef _OPENMP
-#pragma omp parallel for private(i, j, l, temp)
-#endif
-    for (j = 0; j < n; j++) {
-        for (l = 0; l < k; l++) {
-            temp = alpha * B[j + l * ldb];
-            for (i = 0; i < m; i++) {
-                C[i + j * ldc] += temp * A[i + l * lda];
+    // main loop
+    mplapackint p, q, r;
+    mplapackint qq, rr;
+    mplapackint Bq = 16, Br = 16;
+
+    for (qq = 0; qq < n; qq = qq + Bq) {
+        for (rr = 0; rr < k; rr = rr + Br) {
+            for (p = 0; p < m; p++) {
+                for (q = qq; q < std::min(qq + Bq, n); q++) {
+                    temp = 0.0;
+                    for (r = rr; r < std::min(rr + Br, k); r++) {
+                        temp = temp + A[p + r * lda] * B[q + r * ldb];
+                    }
+                    C[p + q * ldc] += alpha * temp;
+                }
             }
         }
     }
-    return;
 }
