@@ -34,6 +34,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 #include <mplapack_benchmark.h>
+#include <time.h>
 
 double flops_gemm(mplapackint k_i, mplapackint m_i, mplapackint n_i) {
     double adds, muls, flops;
@@ -41,10 +42,17 @@ double flops_gemm(mplapackint k_i, mplapackint m_i, mplapackint n_i) {
     m = (double)m_i;
     n = (double)n_i;
     k = (double)k_i;
-    muls = m * n * (k+2);
+    muls = m * n * k + 2 * m * n;
     adds = m * n * k + m * n;
     flops = muls + adds;
     return flops;
+}
+
+double _current_time()
+{
+    struct timespec t;
+    clock_gettime (CLOCK_MONOTONIC, &t);
+    return 1.*t.tv_sec + 1.e-9*t.tv_nsec;
 }
 
 int main(int argc, char *argv[]) {
@@ -163,9 +171,9 @@ int main(int argc, char *argv[]) {
             C[i] = Cd[i] = randomnumber(dummy);
         }
         if (check_flag) {
-            t1 = gettime();
+            t1 = _current_time();
             Rgemm(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
-            t2 = gettime();
+            t2 = _current_time();
             elapsedtime = (t2 - t1);
             (*mpblas_ref)(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, Cd, ldc);
             (*raxpy_ref)((mplapackint)(ldc * n), mOne, C, (mplapackint)1, Cd, (mplapackint)1);
@@ -177,9 +185,9 @@ int main(int argc, char *argv[]) {
         } else {
             elapsedtime = 0.0;
 	    for (int j = 0; j < LOOP; j++) {
-                t1 = gettime();
+                t1 = _current_time();
                 Rgemm(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
-                t2 = gettime();
+                t2 = _current_time();
                 elapsedtime = elapsedtime + (t2 - t1);
 	    } 
             elapsedtime = elapsedtime / (double)LOOP;
