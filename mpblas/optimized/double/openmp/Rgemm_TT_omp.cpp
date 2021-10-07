@@ -32,8 +32,8 @@
 void Rgemm_TT_omp(mplapackint m, mplapackint n, mplapackint k, double alpha, double *A, mplapackint lda, double *B, mplapackint ldb, double beta, double *C, mplapackint ldc) {
     mplapackint i, j, l;
     double temp;
-    // Form  C := alpha*A'*B' + beta*C.
 
+    // Form  C := alpha*A'*B' + beta*C.
     for (j = 0; j < n; j++) {
         if (beta == 0.0) {
             for (i = 0; i < m; i++) {

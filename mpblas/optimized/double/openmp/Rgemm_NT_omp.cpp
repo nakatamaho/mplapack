@@ -32,8 +32,8 @@
 void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, double alpha, double *A, mplapackint lda, double *B, mplapackint ldb, double beta, double *C, mplapackint ldc) {
     mplapackint i, j, l;
     double temp;
-    // Form  C := alpha*A*B' + beta*C.
 
+    // Form C := alpha*A*B' + beta*C.
     for (j = 0; j < n; j++) {
         if (beta == 0.0) {
             for (i = 0; i < m; i++) {
@@ -48,7 +48,7 @@ void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, double alpha, dou
     // main loop
     mplapackint p, q, r;
     mplapackint qq, rr;
-    mplapackint Bq = 16, Br = 16;
+    mplapackint Bq = 19, Br = 19;
 
     for (qq = 0; qq < n; qq = qq + Bq) {
         for (rr = 0; rr < k; rr = rr + Br) {
