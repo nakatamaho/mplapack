@@ -29,38 +29,48 @@
 #include <mpblas_double.h>
 #include <omp.h>
 
-void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, double alpha, double *A, mplapackint lda, double *B, mplapackint ldb, double beta, double *C, mplapackint ldc) {
+void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, double alpha, double *a, mplapackint lda, double *b, mplapackint ldb, double beta, double *c, mplapackint ldc) {
     mplapackint i, j, l;
     double temp;
+    double zero = 0.0;
+    double one = 0.0;
 
-    // Form C := alpha*A*B + beta*C.
-    for (j = 0; j < n; j++) {
-        if (beta == 0.0) {
-            for (i = 0; i < m; i++) {
-                C[i + j * ldc] = 0.0;
+    for (j = 1; j <= n; j = j + 1) {
+        if (beta == zero) {
+            for (i = 1; i <= m; i = i + 1) {
+                c[(i - 1) + (j - 1) * ldc] = zero;
             }
-        } else if (beta != 1.0) {
-            for (i = 0; i < m; i++) {
-                C[i + j * ldc] = beta * C[i + j * ldc];
+        } else if (beta != one) {
+            for (i = 1; i <= m; i = i + 1) {
+                c[(i - 1) + (j - 1) * ldc] = beta * c[(i - 1) + (j - 1) * ldc];
+            }
+        }
+        for (l = 1; l <= k; l = l + 1) {
+            temp = alpha * b[(l - 1) + (j - 1) * ldb];
+            for (i = 1; i <= m; i = i + 1) {
+                c[(i - 1) + (j - 1) * ldc] += temp * a[(i - 1) + (l - 1) * lda];
             }
         }
     }
-    // main loop
-    mplapackint p, q, r;
-    mplapackint qq, rr;
-    mplapackint Bq = 16, Br = 16;
 
-    for (qq = 0; qq < n; qq = qq + Bq) {
-        for (rr = 0; rr < k; rr = rr + Br) {
-            for (p = 0; p < m; p++) {
-                for (q = qq; q < std::min(qq + Bq, n); q++) {
-                    temp = 0.0;
-                    for (r = rr; r < std::min(rr + Br, k); r++) {
-                        temp = temp + A[p + r * lda] * B[r + q * ldb];
+    /*
+        // main loop
+        mplapackint p, q, r;
+        mplapackint qq, rr;
+        mplapackint Bq = 16, Br = 16;
+
+        for (qq = 0; qq < n; qq = qq + Bq) {
+            for (rr = 0; rr < k; rr = rr + Br) {
+                for (p = 0; p < m; p++) {
+                    for (q = qq; q < std::min(qq + Bq, n); q++) {
+                        temp = 0.0;
+                        for (r = rr; r < std::min(rr + Br, k); r++) {
+                            temp = temp + A[p + r * lda] * B[r + q * ldb];
+                        }
+                        C[p + q * ldc] += alpha * temp;
                     }
-                    C[p + q * ldc] += alpha * temp;
                 }
             }
         }
-    }
+    */
 }
