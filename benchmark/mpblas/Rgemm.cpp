@@ -181,7 +181,7 @@ int main(int argc, char *argv[]) {
             diffr = cast2double(diff);
             printf("#     m     n     k     MFLOPS   error   transa   transb\n");
             // 2mnk+2mn flops are needed
-            printf("# %5d %5d %5d %10.3f %5.2e       %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, diffr, transa, transb);
+            printf("# %5d %5d %5d %10.3f %5.2e       %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) * MFLOPS / elapsedtime, diffr, transa, transb);
         } else {
             elapsedtime = 0.0;
             int loop = 0;
