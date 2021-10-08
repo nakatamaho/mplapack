@@ -52,7 +52,7 @@ double _current_time()
 {
     struct timespec t;
     clock_gettime (CLOCK_MONOTONIC, &t);
-    return 1.*t.tv_sec + 1.e-9*t.tv_nsec;
+    return 1.0*t.tv_sec + 1.0e-9*t.tv_nsec;
 }
 
 int main(int argc, char *argv[]) {
@@ -184,16 +184,17 @@ int main(int argc, char *argv[]) {
             printf("# %5d %5d %5d %10.3f %5.2e       %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, diffr, transa, transb);
         } else {
             elapsedtime = 0.0;
-	    for (int j = 0; j < LOOP; j++) {
+            int loop = 0;
+	    while (elapsedtime < 1.0 || loop < LOOP) {
                 t1 = _current_time();
                 Rgemm(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
                 t2 = _current_time();
                 elapsedtime = elapsedtime + (t2 - t1);
-	    } 
-            elapsedtime = elapsedtime / (double)LOOP;
-            printf("#     m     n     k     MFLOPS    transa   transb\n");
+                loop++;   
+	    }
+            printf("#     m     n     k     MFLOPS    transa   transb    #loop     elapsed(s)\n");
             // 2mnk+2mn flops are needed
-            printf("# %5d %5d %5d %10.3f         %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, transa, transb);
+            printf("# %5d %5d %5d %10.3f         %c        %c    %5d %10.3f\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) * MFLOPS * loop / elapsedtime, transa, transb, loop, elapsedtime);
         }
         delete[] Cd;
         delete[] C;
