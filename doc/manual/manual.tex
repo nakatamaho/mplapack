@@ -68,7 +68,7 @@
 
 \begin{document}
   
-  \title{\sf MPLAPACK version 1.0.0 user manual}
+  \title{\sf MPLAPACK version 1.0.1 user manual}
   \author{NAKATA Maho$^1$\\
   \normalsize
   $^1$RIKEN Cluster for Pioneering Research, 2-1 Hirosawa, Wako-City, Saitama 351-0198, JAPAN}
@@ -80,8 +80,8 @@
 \begin{abstract}
 The MPLAPACK (formerly MPACK) is a multiple-precision version of LAPACK \\
 (\url{https://www.netlib.org/lapack/}).
-MPLAPACK version 1.0.0 is based on LAPACK version 3.9.1 and translated from Fortran 90 to C++ using FABLE, a Fortran to C++ source-to-source conversion tool (\url{https://github.com/cctbx/cctbx\_project/tree/master/fable/}). 
-MPLAPACK version 1.0.0 provides the real and complex version of MPBLAS, and the real version of MPLAPACK supports all LAPACK features: solvers for systems of simultaneous linear equations, least-squares solutions of linear systems of equations, eigenvalue problems, and singular value problems, and related matrix factorizations except for rectangular complete packed matrix form and mixed-precision routines. Besides, MPLAPACK supports a part of the complex routines of LAPACK, such as diagonalization of Hermite matrices, Cholesky factorization, and matrix inversion. The MPLAPACK defines an API for numerical linear algebra, similar to LAPACK. It is easy to port legacy C/C++ numerical codes using MPLAPACK. MPLAPACK supports binary64, binary128, FP80 (extended double), MPFR, GMP, and QD libraries (double-double and quad-double). Users can choose MPFR or GMP for arbitrary accurate calculations, double-double or quad-double for fast 32 or 64 decimal calculations. We can consider the binary64 version as the C++ version of LAPACK. MPLAPACK is available at GitHub (\url{https://github.com/nakatamaho/mplapack/}) under the 2-clause BSD license.
+MPLAPACK version 1.0.1 is based on LAPACK version 3.9.1 and translated from Fortran 90 to C++ using FABLE, a Fortran to C++ source-to-source conversion tool (\url{https://github.com/cctbx/cctbx\_project/tree/master/fable/}). 
+MPLAPACK version 1.0.1 provides the real and complex version of MPBLAS, and the real version of MPLAPACK supports all LAPACK features: solvers for systems of simultaneous linear equations, least-squares solutions of linear systems of equations, eigenvalue problems, and singular value problems, and related matrix factorizations except for rectangular complete packed matrix form and mixed-precision routines. Besides, MPLAPACK supports a part of the complex routines of LAPACK, such as diagonalization of Hermite matrices, Cholesky factorization, and matrix inversion. The MPLAPACK defines an API for numerical linear algebra, similar to LAPACK. It is easy to port legacy C/C++ numerical codes using MPLAPACK. MPLAPACK supports binary64, binary128, FP80 (extended double), MPFR, GMP, and QD libraries (double-double and quad-double). Users can choose MPFR or GMP for arbitrary accurate calculations, double-double or quad-double for fast 32 or 64 decimal calculations. We can consider the binary64 version as the C++ version of LAPACK. MPLAPACK is available at GitHub (\url{https://github.com/nakatamaho/mplapack/}) under the 2-clause BSD license.
 \end{abstract}
 
 \section{Introduction}
@@ -104,8 +104,8 @@ The features of MPLAPACK are:
 \item Completely rewrote LAPACK and BLAS in C++ using FABLE and f2c.
 \item C style programming. We do not introduce new matrix and vector classes. 
 \item Supports seven floating-point formats by precision independent programming; binary64 (16 decimal digits), binary128 (32 decimal digits), FP80 (extended double; 19 decimal digits), double-double (32 decimal digits), quad-double (64 decimal digits), GMP, and MPFR (arbitrary precision, and the default is 153 decimal digits).
-\item MPLAPACK 1.0.0 is based on LAPACK 3.9.1.
-\item Version 1.0.0 supports all real and complex versions of BLAS and real version LAPACK functions; simultaneous linear equations, least-squares solutions of linear systems of equations, eigenvalue problems, and singular value problems and related matrix factorization except for mixed-precision version, and full packed matrix form version and complex version will be supported in version 2.0.
+\item MPLAPACK 1.0.1 is based on LAPACK 3.9.1.
+\item Version 1.0.1 supports all real and complex versions of BLAS and real version LAPACK functions; simultaneous linear equations, least-squares solutions of linear systems of equations, eigenvalue problems, and singular value problems and related matrix factorization except for mixed-precision version, and full packed matrix form version and complex version will be supported in version 2.0.
 \item Reliability: We extended the original test programs to handle multiple-precision numbers, and most of the MPLAPCK routines have passed the test.
 \item Runs on Linux/Windows/Mac.
 \item Released at \url{https://github.com/nakatamaho/mplapack/} under 2-BSD clause license. 
@@ -145,7 +145,7 @@ For example, the following command will build inside docker on Ubuntu amd64 (als
 \begin{verbatim}
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ git checkout v1.0.0
+$ git checkout v1.0.1
 $ /usr/bin/time docker build -t mplapack:ubuntu2004 -f Dockerfile_ubuntu20.04 . \
    2>&1 | tee log.ubuntu2004
 \end{verbatim}
@@ -191,7 +191,7 @@ We list prerequisites for compiling from the source in Table~\ref{prerequisites}
 $ sudo port install gcc9 coreutils git ccache
 $ git clone https://github.com/nakatamaho/mplapack.git --depth 1
 $ cd mplapack
-$ git checkout v1.0.0
+$ git checkout v1.0.1
 $ pushd mplapack/debug ; bash gen.Makefile.am.sh ; popd
 $ autoreconf --force --install ; aclocal ; autoconf ; automake
 $ autoreconf --force --install
@@ -241,7 +241,7 @@ GMP~\cite{Granlund12} is a C library for arbitrary precision arithmetic, operati
 
 MPFR~\cite{10.1145/1236463.1236468} is a C library for multiple-precision floating-point computations with correct rounding based on GMP. We support complex numbers using MPC, which is a library for multiple-precision complex arithmetic with correct rounding~\cite{MPC} via ${\tt mpcomplex}$ class. Both libraries provide almost the same functionalities, but MPFR and MPC further support trigonometric functions necessary for cosine-sine decomposition, elementary and special functions. Therefore, we will drop GMP support in the future.
 
-{\tt long double} is no longer supported in MPLAPACK since v1.0.0 since the situation regarding {\tt long double} is very different and confusing in different environments. E.g., on Intel CPUs, {\tt long double} may be equivalent to {\tt \_Float64x}; however, it also depends on OSes. On Windows, {\tt long double} is equivalent to {\tt double}. Similar confusion happens in the AArch64 environment. ARM defines {\tt long double} should be binary64, but on the OS side, Apple overwrites {\tt long double} should be double. On IBM PowerPC or Power Macs, {\tt long double} have been double-double.
+{\tt long double} is no longer supported in MPLAPACK since v1.0.1 since the situation regarding {\tt long double} is very different and confusing in different environments. E.g., on Intel CPUs, {\tt long double} may be equivalent to {\tt \_Float64x}; however, it also depends on OSes. On Windows, {\tt long double} is equivalent to {\tt double}. Similar confusion happens in the AArch64 environment. ARM defines {\tt long double} should be binary64, but on the OS side, Apple overwrites {\tt long double} should be double. On IBM PowerPC or Power Macs, {\tt long double} have been double-double.
 
 \section{LAPACK and BLAS Routine Naming Conventions and available routines}
 \label{sec:nameconventions}
@@ -327,7 +327,7 @@ Raxpy & Rcopy & Rdot & Rgemm \\ \hline
 
 
 \begin{table}
-\caption{Available MPLAPACK Driver routines (1.0.0)}\label{mplapackdriver}
+\caption{Available MPLAPACK Driver routines (1.0.1)}\label{mplapackdriver}
 \begin{center}
 {\tt 
 \begin{tabular}{cccccccccc} \hline
@@ -343,7 +343,7 @@ Rsbgv & Rsbgv & Rsbgvx & Rgges  & Rggesx & Rggev & Rggevx & Rggsvd \\ \hline
 \end{table}
 
 \begin{table}
-\caption{Available MPLAPACK Computational Real routines (1.0.0)}\label{mplapackcomp}
+\caption{Available MPLAPACK Computational Real routines (1.0.1)}\label{mplapackcomp}
 \begin{center}
 {\tt
 \begin{tabular}{cccccccccccc} \hline
@@ -370,7 +370,7 @@ Rggsvp & Rtgsja \\
 \end{table}
 
 \begin{table}
-\caption{Available MPLAPACK Computational Complex routines (1.0.0)}\label{mplapackcomp_complex}
+\caption{Available MPLAPACK Computational Complex routines (1.0.1)}\label{mplapackcomp_complex}
 \begin{center}
 {\tt
 \begin{tabular}{cccccccccccc} \hline
@@ -2054,7 +2054,7 @@ We performed quality assurance of MPBLAS as follows.
 Since MPBLAS routines only consist of algebraic operations, this method ensures that all routines are correctly implemented. 
 
 \subsection{Testing MPLAPACK routines}
-Until version 0.9.4, we did the same method for quality assurance of MPLAPACK. From version 1.0.0, we ported {\tt lapack-3.9.1/TESTING/LIN} and {\tt lapack-3.9.1/TESTING/EIG} for all precisions using FABLE. The original test programs
+Until version 0.9.4, we did the same method for quality assurance of MPLAPACK. From version 1.0.1, we ported {\tt lapack-3.9.1/TESTING/LIN} and {\tt lapack-3.9.1/TESTING/EIG} for all precisions using FABLE. The original test programs
 use the {\tt FORMAT} statement extensively. Interestingly, FABLE and FABLE's Fortran EMulator library translate these {\tt FORMAT} statements almost perfectly except for printing out multiple-precision floating-point numbers. Thus our modifications to the testing routines were minimal. Furthermore, it took several months to pass all the tests for the {\tt MPFR} version.
 
 First, we review how to test LAPACK linear routines:
@@ -2116,7 +2116,7 @@ We test MPLAPACK routines for MPFR as follows:
 \begin{verbatim}
 $ cd /home/docker/mplapack/mplapack/test/lin/mpfr
 $ ./xlintstR_mpfr < ../Rtest.in
- Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.0
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.1
  Based on the original LAPACK VERSION 3.9.1
 
 The following parameter values will be used:
@@ -2232,7 +2232,7 @@ We test MPLAPACK routines for MPFR as follows:
 $ cd /home/docker/mplapack/mplapack/test/eig/mpfr
 $ ./xeigtstR_mpfr < ../svd.in
  Tests of the Singular Value Decomposition routines
- Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.0
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.1
  Based on original LAPACK VERSION 3.9.1
 
 The following parameter values will be used:
@@ -2285,7 +2285,7 @@ We simply use REAL, COMPLEX, INTEGER, LOGICAL, and BOOL to support all floating-
 
 The main differences between Fortran and C++ are: (i) array index starts from one, (ii) loop index may be incremented or decremented depending on its context, (iii) treatment of two-dimension arrays, (iv) when calling subroutines, the values are always referenced by FORTRAN, but we can choose call by value or call by reference in C++.  For (i), we use the same array index and decrements the index when accessing the array. (ii) we judge the direction of loop by hand, (iii) we expand two-dimension array using the leading dimension; we translate {\tt a(i,j)} to {\tt a[(i-1)  + (j-1) * lda]}, and (iv) we changed call by value when possible.
 
-In MPLAPACK 1.0.0, we used FABLE~\cite{fable} to convert all BLAS and LAPACK routines. In the original paper, they could translate {\tt dsyev.f} without modifications. However, the resultant source code also depends on Fortran Emulation Module (FEM), which is unnecessary for the MPBLAS and MPLAPACK parts, and the treatment of the array is a bit unnatural.  To make the resultant C++ code more natural and readable, we further patched {\tt cout.py} and passed through sed. Then, we modified the source codes by hand. For MPBLAS, conversion is almost automatic. For MPLAPACK, there are many hand-corrected minor syntax errors, interpretation of numbers, casts, and other corrections, but we can compile many of them without modifications. 
+In MPLAPACK 1.0.1, we used FABLE~\cite{fable} to convert all BLAS and LAPACK routines. In the original paper, they could translate {\tt dsyev.f} without modifications. However, the resultant source code also depends on Fortran Emulation Module (FEM), which is unnecessary for the MPBLAS and MPLAPACK parts, and the treatment of the array is a bit unnatural.  To make the resultant C++ code more natural and readable, we further patched {\tt cout.py} and passed through sed. Then, we modified the source codes by hand. For MPBLAS, conversion is almost automatic. For MPLAPACK, there are many hand-corrected minor syntax errors, interpretation of numbers, casts, and other corrections, but we can compile many of them without modifications. 
 
 More important part is translation of {\tt TESTING/LIN} and {\tt TESTING/EIG} from Fortran90 to C++. Thanks to FEM, the written statement of Fortran can be used  directly without modifications. According to ChangeLog, it took approximately three weeks to just compile programs in \\
 {\tt TESTING/LIN/xlint\{C,R\}\_mpfr} and {\tt TESTING/EIG/xeigtst\{C,R\}\_mpfr} for MPFR, although through check the results are required, and it took four months for real version and still ongoing for complex version.

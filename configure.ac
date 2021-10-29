@@ -4,7 +4,7 @@ dnl
 
 m4_define([MPLAPACK_VER_MAJOR], [1])
 m4_define([MPLAPACK_VER_MINOR], [0])
-m4_define([MPLAPACK_VER_PATCH], [0])
+m4_define([MPLAPACK_VER_PATCH], [1])
 m4_define([MPLAPACK_VERSION], [MPLAPACK_VER_MAJOR.MPLAPACK_VER_MINOR.MPLAPACK_VER_PATCH])
 AC_INIT(mplapack, [MPLAPACK_VERSION])
 
@@ -31,7 +31,6 @@ AC_CONFIG_FILES([packaging/PKGBUILD packaging/mplapack.spec])
 AC_CANONICAL_TARGET
 
 AC_PROG_CC
-AC_PROG_CXX
 IS_INTELCC=0
 AC_COMPILE_IFELSE([
     AC_LANG_SOURCE([[
@@ -45,6 +44,27 @@ AC_COMPILE_IFELSE([
    ]]) 
 ], [is_intelcc=1])
 AM_CONDITIONAL(IS_INTELCC, test x$is_intelcc = x1)
+if test x"$is_intelcc" = x"1"; then
+    AC_MSG_RESULT([Intel One API (icc) detected])
+fi
+
+AC_PROG_CXX
+IS_INTELCXX=0
+AC_COMPILE_IFELSE([
+    AC_LANG_SOURCE([[
+    #if !defined __INTEL_COMPILER
+    #error
+    #endif
+    #include <stdio.h>
+    int main() {
+        return 0;    
+    }
+   ]]) 
+], [is_intelcxx=1])
+AM_CONDITIONAL(IS_INTELCXX, test x$is_intelcxx = x1)
+if test x"$is_intelcxx" = x"1"; then
+    AC_MSG_RESULT([Intel One API (icpc) detected])
+fi
 
 AC_PROG_LIBTOOL
 AM_INIT_AUTOMAKE([subdir-objects])
@@ -817,11 +837,20 @@ if test x"$enable_optimization" = x"yes" && test x"$enable_debug" = x"no" ; then
            FCFLAGS="$FCFLAGS -march=native -g -O2 -finline-functions -funroll-all-loops"
        ;;
     esac
-    if test x"is_intelcc" = x"1"; then
+    if test x"$is_intelcxx" = x"1"; then
         CXXFLAGS="$CXXFLAGS -xHost -O3"
-        CFLAGS="$CFLAGS -xHost -O3"
-        FCFLAGS="$FCFLAGS -xHost -O3"
     fi
+    if test x"$is_intelcc" = x"1"; then
+        CFLAGS="$CFLAGS -xHost -O3"
+    fi
+fi
+
+if test x"$is_intelcc" = x"1"; then
+    CFLAGS="$CFLAGS -fp-model precise"
+fi
+
+if test x"$is_intelcxx" = x"1"; then
+    CXXFLAGS="$CXXFLAGS -fp-model precise"
 fi
 
 AC_SUBST(CFLAGS)
