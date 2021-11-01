@@ -132,7 +132,7 @@ Only 64 bit CPU is supported. Following OSes are supported:
 We support the following compilers:
 \begin{itemize}
 \item GCC (GNU Compiler Collection) 9 and 10
-\item Intel OneAPI.
+\item Intel One API. (you need {\tt -fp-model precise} for dd and qd)
 \end{itemize}
 Note that we use GCC by MacPorts on macOS, which is NOT the default compiler. We use the mingw64 and Wine64 environments on Linux to build and test the Windows version. On different configurations, MPLAPACK may build and work without problems. We welcome patches from the community.
 
