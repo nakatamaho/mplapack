@@ -1,3 +1,6 @@
+2021/10/29    Nakata Maho <maho@riken.jp> 1.0.1
+            * Add -fp-model precise to fix qd and dd arithmetic for Intel one API.
+
 2021/10/01    Nakata Maho <maho@riken.jp> 1.0.0
             * Release 1.0.0
 

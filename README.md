@@ -6,7 +6,7 @@ original license by LAPACK).
 
 # Capabilities
 * MPBLAS: All BLAS routines can be done in multiple precision arithmetic.
-* MPLAPACK: in ver 1.0.0 all Real version of following solvers (complex version will be added in 2.0)
+* MPLAPACK: in ver 1.0.1 all Real version of following solvers (complex version will be added in 2.0)
 * Linear Equations
 * Linear Least Squares (LLS) Problems
 * Generalized Linear Least Squares (LSE and GLM) Problems
@@ -56,7 +56,7 @@ Ubuntu 20.04 (amd64, AArch64)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ git checokut v1.0.0
+$ git checokut v1.0.1
 $ /usr/bin/time docker build -t mplapack:ubuntu2004 -f Dockerfile_ubuntu20.04 . 2>&1 | tee log.ubuntu2004
 ```
 
@@ -64,7 +64,7 @@ CentOS 7 (amd64, AArch64)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ git checokut v1.0.0
+$ git checokut v1.0.1
 $ /usr/bin/time docker build -t mplapack:centos7 -f Dockerfile_CentOS7 . 2>&1 | tee log.CentOS7
 ```
 
@@ -72,7 +72,7 @@ CentOS 8 (amd64, AArch64)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ git checokut v1.0.0
+$ git checokut v1.0.1
 $ /usr/bin/time docker build -t mplapack:centos8 -f Dockerfile_CentOS8 . 2>&1 | tee log.CentOS8
 ```
 
@@ -80,7 +80,7 @@ Ubuntu 18.04 (amd64, AArch64)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ git checokut v1.0.0
+$ git checokut v1.0.1
 $ /usr/bin/time docker build -t mplapack:ubuntu1804 -f Dockerfile_ubuntu18.04 . 2>&1 | tee log.ubuntu1804
 ```
 
@@ -88,7 +88,7 @@ Ubuntu 20.04 (using Intel oneAPI)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ git checokut v1.0.0
+$ git checokut v1.0.1
 $ /usr/bin/time docker build -t mplapack:ubuntu2004intel -f Dockerfile_ubuntu20.04_intel . 2>&1 | tee log.ubuntu2004.intel
 ```
 
@@ -96,7 +96,7 @@ Windows 64bit (using cross compiler on Ubuntu)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ git checokut v1.0.0
+$ git checokut v1.0.1
 $ /usr/bin/time docker build -t mplapack:mingw -f  Dockerfile_ubuntu20.04_mingw64 . 2>&1 | tee log.mingw
 ```
 
@@ -106,7 +106,7 @@ $ /usr/bin/time docker build -t mplapack:mingw -f  Dockerfile_ubuntu20.04_mingw6
 $ sudo port install gcc9 coreutils git ccache
 $ git clone https://github.com/nakatamaho/mplapack.git --depth 1
 $ cd mplapack
-$ git checokut v1.0.0
+$ git checokut v1.0.1
 $ pushd mplapack/debug ; bash gen.Makefile.am.sh ; popd
 $ autoreconf --force --install ; aclocal ; autoconf ; automake; autoreconf --force --install
 $ CXX="g++-mp-9" ; export CXX
@@ -169,6 +169,7 @@ This is the release schedule for MPLAPACK 3.0.0
 * version 1.0.0 https://github.com/nakatamaho/mplapack/blob/master/doc/Release1.0.0.md
 
 # History
+* 2021/11/1 1.0.1 release. Fixing dd and qd aritmetic by Inte One API.
 * 2021/10/1 1.0.0 release. Huge improvement; all real LAPACK routines are available; SVD, eigenproblem solver for non symmetric matrices are added. manual is available:  https://raw.githubusercontent.com/nakatamaho/mplapack/master/doc/manual/manual.pdf 
 * 2021/4/11 0.9.3 release. CentOS7 AArch64 support
 * 2021/4/6  0.9.1 release. CentOS support
