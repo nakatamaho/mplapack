@@ -50,6 +50,9 @@ Eprint = {arXiv:2109.13406},
 }
 ```
 
+# Slides
+* https://github.com/nakatamaho/mplapack/blob/v2.0/doc/presentation/20211128_%E7%B2%BE%E5%BA%A6%E4%BF%9D%E8%A8%BCmeeting.pdf
+
 # How to build on Linux and Win (using Docker; recommended)
 
 Ubuntu 20.04 (amd64, AArch64)
