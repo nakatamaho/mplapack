@@ -150,7 +150,7 @@ This is the release schedule for MPLAPACK 2.0.0
 | complex lin (driver routine; dd)        |            |    |                          | 
 | complex lin (lapack routine; qd)        |            |    |                          | 
 | complex lin (driver routine; qd)        |            |    |                          | 
-| complex lin (lapack routine; _Float128) | 2021/11/29 | ng |                          | 
+| complex lin (lapack routine; _Float128) | 2021/11/29 | ng |Failed: CGE CGB CGT CPO CPP CPB CHE CHR CHK CHA CSA CHP CSY CSR CSK CSP CTR CTP CTB CQ3 CTZ|
 | complex lin (driver routine; _Float128) | 2021/11/29 | ng |Failed:CGE CGB CGT CPO CPP CPB CHE CHA CSA CHP CSY CSR CSK CSP CLS|
 | complex lin (lapack routine; _Float64x) |            |    |                          | 
 | complex lin (driver routine; _Float64x) |            |    |                          | 
