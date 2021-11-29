@@ -50,6 +50,9 @@ Eprint = {arXiv:2109.13406},
 }
 ```
 
+# Slides
+* https://github.com/nakatamaho/mplapack/blob/v2.0/doc/presentation/20211128_%E7%B2%BE%E5%BA%A6%E4%BF%9D%E8%A8%BCmeeting.pdf
+
 # How to build on Linux and Win (using Docker; recommended)
 
 Ubuntu 20.04 (amd64, AArch64)
@@ -142,9 +145,22 @@ $ cd ; fable.cout sample.f
 This is the release schedule for MPLAPACK 2.0.0
 | Action | Date | Status | Description |
 | --- | --- | --- | --- |
-| Impliment RFP version                |            |     |                          | 
-| Impliment complex lin                |            |     |                          | 
+| complex lin (lapack routine; mpfr)      | 2021/11/29 | ng |Failed: CHR, CHK, CSR, CSK, CQ3, CTZ, CTS| 
+| complex lin (driver routine; mpfr)      | 2021/11/29 | ng |Failed: CGB, CLS          | 
+| complex lin (lapack routine; gmp)       | 2021/11/29 | ng |Failed: CSR, CSK, CQ3, CTZ|
+| complex lin (driver routine; gmp)       | 2021/11/29 | ng |Falied: CGB               | 
+| complex lin (lapack routine; dd)        |            |    |                          | 
+| complex lin (driver routine; dd)        |            |    |                          | 
+| complex lin (lapack routine; qd)        |            |    |                          | 
+| complex lin (driver routine; qd)        |            |    |                          | 
+| complex lin (lapack routine; _Float128) | 2021/11/29 | ng |Failed: CGE CGB CGT CPO CPP CPB CHE CHR CHK CHA CSA CHP CSY CSR CSK CSP CTR CTP CTB CQ3 CTZ|
+| complex lin (driver routine; _Float128) | 2021/11/29 | ng |Failed:CGE CGB CGT CPO CPP CPB CHE CHA CSA CHP CSY CSR CSK CSP CLS|
+| complex lin (lapack routine; _Float64x) |            |    |                          | 
+| complex lin (driver routine; _Float64x) |            |    |                          | 
+| complex lin (lapack routine; double)    | 2021/11/29 | ng |Failed: CHR CHK CSR CSK CQ3 CTZ CTQ |
+| complex lin (driver routine; double)    | 2021/11/29 | ng |Failed: CGB CLS         |
 | Impliment complex eig                |            |     |                          | 
+| Impliment RFP version                |            |     |                          | 
 | Impliment mixed precision version    |            |     |                          | 
 | make tar ball for distribution       |            |     |                          |
 | Add more examples                    |            |     |                          | 
