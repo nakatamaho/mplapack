@@ -142,8 +142,8 @@ $ cd ; fable.cout sample.f
 This is the release schedule for MPLAPACK 2.0.0
 | Action | Date | Status | Description |
 | --- | --- | --- | --- |
-| complex lin (lapack routine; mpfr)      |            |     |                          | 
-| complex lin (driver routine; mpfr)      |            |     |                          | 
+| complex lin (lapack routine; mpfr)      | 2021/11/29 | ng  |Failed: CHR, CHK, CSR, CSK, CQ3, CTZ, CTS| 
+| complex lin (driver routine; mpfr)      | 2021/11/29 | ng  |Failed: CGB, CLS          | 
 | complex lin (lapack routine; gmp)       |            |     |                          | 
 | complex lin (driver routine; gmp)       |            |     |                          | 
 | complex lin (lapack routine; dd)        |            |     |                          | 
