@@ -142,9 +142,22 @@ $ cd ; fable.cout sample.f
 This is the release schedule for MPLAPACK 2.0.0
 | Action | Date | Status | Description |
 | --- | --- | --- | --- |
-| Impliment RFP version                |            |     |                          | 
-| Impliment complex lin                |            |     |                          | 
+| complex lin (lapack routine; mpfr)      |            |     |                          | 
+| complex lin (driver routine; mpfr)      |            |     |                          | 
+| complex lin (lapack routine; gmp)       |            |     |                          | 
+| complex lin (driver routine; gmp)       |            |     |                          | 
+| complex lin (lapack routine; dd)        |            |     |                          | 
+| complex lin (driver routine; dd)        |            |     |                          | 
+| complex lin (lapack routine; qd)        |            |     |                          | 
+| complex lin (driver routine; qd)        |            |     |                          | 
+| complex lin (lapack routine; _Float128) |            |     |                          | 
+| complex lin (driver routine; _Float128) |            |     |                          | 
+| complex lin (lapack routine; _Float64x) |            |     |                          | 
+| complex lin (driver routine; _Float64x) |            |     |                          | 
+| complex lin (lapack routine; double)    |            |     |                          | 
+| complex lin (driver routine; double)    |            |     |                          | 
 | Impliment complex eig                |            |     |                          | 
+| Impliment RFP version                |            |     |                          | 
 | Impliment mixed precision version    |            |     |                          | 
 | make tar ball for distribution       |            |     |                          |
 | Add more examples                    |            |     |                          | 
