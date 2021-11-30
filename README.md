@@ -149,15 +149,15 @@ This is the release schedule for MPLAPACK 2.0.0
 | complex lin (driver routine; mpfr)      | 2021/11/29 | ng |Failed: CGB, CLS          | 
 | complex lin (lapack routine; gmp)       | 2021/11/29 | ng |Failed: CSR, CSK, CQ3, CTZ|
 | complex lin (driver routine; gmp)       | 2021/11/29 | ng |Falied: CGB               | 
-| complex lin (lapack routine; dd)        |            |    |                          | 
-| complex lin (driver routine; dd)        |            |    |                          | 
-| complex lin (lapack routine; qd)        |            |    |                          | 
-| complex lin (driver routine; qd)        |            |    |                          | 
+| complex lin (lapack routine; dd)        | 2021/11/30 | ng |Failed: CGE CGB CGT CPO CPP CPB CPT CHE CHR CHK CH2 CSA CS2 CHP CSY CSR CSK CSP CTR CTP CTB CQR CRQ CLQ CQL CQ3 CTZ |
+| complex lin (driver routine; dd)        | 2021/11/30 | ng |Failed: CGE CGB CGT CPO CPP CPB CHE CSA CH2 CHP CSY CSR CSK CSP CLS |
+| complex lin (lapack routine; qd)        | 2021/11/30 | ng |Failed: CGE CGB CGT CPO CPP CPB CHE CHR CHK CSA CS2 CHP CSY CSR CSK CSP CTR CTP CTB CQR CRQ CLQ CQL CQ3 CTZ|
+| complex lin (driver routine; qd)        | 2021/11/30 | ng |Failed: CGE CGB CGT CPO CPP  CPB  CHE  CSA CH2 CHP CSY CSR CSK CSP CLS |
 | complex lin (lapack routine; _Float128) | 2021/11/29 | ng |Failed: CGE CGB CGT CPO CPP CPB CHE CHR CHK CHA CSA CHP CSY CSR CSK CSP CTR CTP CTB CQ3 CTZ|
 | complex lin (driver routine; _Float128) | 2021/11/29 | ng |Failed:CGE CGB CGT CPO CPP CPB CHE CHA CSA CHP CSY CSR CSK CSP CLS|
-| complex lin (lapack routine; _Float64x) |            |    |                          | 
-| complex lin (driver routine; _Float64x) |            |    |                          | 
-| complex lin (lapack routine; double)    | 2021/11/29 | ng |Failed: CHR CHK CSR CSK CQ3 CTZ CTQ |
+| complex lin (lapack routine; _Float64x) | 2021/11/30 | ng |Failed: CHR CHK CSR CSK CQ3 CTZ CTS |
+| complex lin (driver routine; _Float64x) | 2021/11/30 | ng |Failed: CGB CLS |
+| complex lin (lapack routine; double)    | 2021/11/29 | ng |Failed: CHR CHK CSR CSK CQ3 CTZ CTQ CTS |
 | complex lin (driver routine; double)    | 2021/11/29 | ng |Failed: CGB CLS         |
 | Impliment complex eig                |            |     |                          | 
 | Impliment RFP version                |            |     |                          | 
