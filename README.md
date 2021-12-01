@@ -59,7 +59,7 @@ Ubuntu 20.04 (amd64, AArch64)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ git checokut v1.0.1
+$ git checkout v1.0.1
 $ /usr/bin/time docker build -t mplapack:ubuntu2004 -f Dockerfile_ubuntu20.04 . 2>&1 | tee log.ubuntu2004
 ```
 
@@ -67,7 +67,7 @@ CentOS 7 (amd64, AArch64)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ git checokut v1.0.1
+$ git checkout v1.0.1
 $ /usr/bin/time docker build -t mplapack:centos7 -f Dockerfile_CentOS7 . 2>&1 | tee log.CentOS7
 ```
 
@@ -75,7 +75,7 @@ CentOS 8 (amd64, AArch64)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ git checokut v1.0.1
+$ git checkout v1.0.1
 $ /usr/bin/time docker build -t mplapack:centos8 -f Dockerfile_CentOS8 . 2>&1 | tee log.CentOS8
 ```
 
@@ -83,7 +83,7 @@ Ubuntu 18.04 (amd64, AArch64)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ git checokut v1.0.1
+$ git checkout v1.0.1
 $ /usr/bin/time docker build -t mplapack:ubuntu1804 -f Dockerfile_ubuntu18.04 . 2>&1 | tee log.ubuntu1804
 ```
 
@@ -91,7 +91,7 @@ Ubuntu 20.04 (using Intel oneAPI)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ git checokut v1.0.1
+$ git checkout v1.0.1
 $ /usr/bin/time docker build -t mplapack:ubuntu2004intel -f Dockerfile_ubuntu20.04_intel . 2>&1 | tee log.ubuntu2004.intel
 ```
 
@@ -99,7 +99,7 @@ Windows 64bit (using cross compiler on Ubuntu)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ git checokut v1.0.1
+$ git checkout v1.0.1
 $ /usr/bin/time docker build -t mplapack:mingw -f  Dockerfile_ubuntu20.04_mingw64 . 2>&1 | tee log.mingw
 ```
 
@@ -109,7 +109,7 @@ $ /usr/bin/time docker build -t mplapack:mingw -f  Dockerfile_ubuntu20.04_mingw6
 $ sudo port install gcc9 coreutils git ccache
 $ git clone https://github.com/nakatamaho/mplapack.git --depth 1
 $ cd mplapack
-$ git checokut v1.0.1
+$ git checkout v1.0.1
 $ pushd mplapack/debug ; bash gen.Makefile.am.sh ; popd
 $ autoreconf --force --install ; aclocal ; autoconf ; automake; autoreconf --force --install
 $ CXX="g++-mp-9" ; export CXX
@@ -159,9 +159,9 @@ This is the release schedule for MPLAPACK 2.0.0
 | complex lin (driver routine; _Float64x) | 2021/11/30 | ng |Failed: CGB CLS |
 | complex lin (lapack routine; double)    | 2021/11/29 | ng |Failed: CHR CHK CSR CSK CQ3 CTZ CTQ CTS |
 | complex lin (driver routine; double)    | 2021/11/29 | ng |Failed: CGB CLS         |
-| Impliment complex eig                |            |     |                          | 
-| Impliment RFP version                |            |     |                          | 
-| Impliment mixed precision version    |            |     |                          | 
+| Implement complex eig                |            |     |                          | 
+| Implement RFP version                |            |     |                          | 
+| Implement mixed precision version    |            |     |                          | 
 | make tar ball for distribution       |            |     |                          |
 | Add more examples                    |            |     |                          | 
 
@@ -179,13 +179,13 @@ This is the release schedule for MPLAPACK 3.0.0
 | Drop GMP version                               |            |     | Since trigonometric functions req'ed | 
 | more benchmarks                                |            |     |                          | 
 | add gmpfrxx                                    |            |     | https://math.berkeley.edu/~wilken/code/gmpfrxx/ | 
-| optimized implimentations                      |            |     |                          | 
+| optimized implementations                      |            |     |                          | 
 
 ## old schedules
 * version 1.0.0 https://github.com/nakatamaho/mplapack/blob/master/doc/Release1.0.0.md
 
 # History
-* 2021/11/1 1.0.1 release. Fixing dd and qd aritmetic by Inte One API.
+* 2021/11/1 1.0.1 release. Fixing dd and qd arithmetic by Inte One API.
 * 2021/10/1 1.0.0 release. Huge improvement; all real LAPACK routines are available; SVD, eigenproblem solver for non symmetric matrices are added. manual is available:  https://raw.githubusercontent.com/nakatamaho/mplapack/master/doc/manual/manual.pdf 
 * 2021/4/11 0.9.3 release. CentOS7 AArch64 support
 * 2021/4/6  0.9.1 release. CentOS support
@@ -194,16 +194,16 @@ This is the release schedule for MPLAPACK 3.0.0
 * 2012/12/20: MPACK 0.8.0-RC2 Build fixes on various platforms.
 * 2012/12/05: Our Rgemm dd paper "A Fast implementation of matrix-matrix product in double-double precision on NVIDIA C2050 and application to semidefinite programming" is selected as the Best Papers of The Third International Conference on Networking and Computing. Slide is here.
 * 2012/11/29: MPACK 0.8.0-RC1 CUDA version of Rgemm in double-double precision is integrated.
-* 2012/10/13: CUDA 4.2 or later version of accelarated Rgemm in double-double precision on NVIDIA C2050 GPU is now available. Note it does not work on CUDA 4.1. Origial release announce is here., and preprint is available from here, and it will be presented at The Third International Conference on Networking and Computing Okinawa, Japan, December 5-7, 2012 .
+* 2012/10/13: CUDA 4.2 or later version of accelerated Rgemm in double-double precision on NVIDIA C2050 GPU is now available. Note it does not work on CUDA 4.1. Original release announce is here., and preprint is available from here, and it will be presented at The Third International Conference on Networking and Computing Okinawa, Japan, December 5-7, 2012 .
 * 2012/06/16: MPACK 0.7.0! Announcement
 * 2012/06/16: Development has been migrated to SVN repository.
-* 2011/10/28: Rgemm accleration in double-double precision on NVIDIA C2050 GPU is now available. Even though papers are not published, you can just try by "make". Note that only CUDA 3.2 is supported. Origial release announce is here.
-* 2011/08/24: Rgemm accleration on NVIDIA C2050 GPU is coming. Unforutnately paper are rejected, so please wait... Here is a pdf slide.
-* 2010/08/20: MPACK 0.6.7! Includes condition number estimators; Rgecon and Rpocon. Now 100 MLAPACK routines, and license has been changed to 2-caluse BSD style license. No longer use LGPLv3.
+* 2011/10/28: Rgemm acceleration in double-double precision on NVIDIA C2050 GPU is now available. Even though papers are not published, you can just try by "make". Note that only CUDA 3.2 is supported. Origial release announce is here.
+* 2011/08/24: Rgemm acceleration on NVIDIA C2050 GPU is coming. Unfortunately paper are rejected, so please wait... Here is a pdf slide.
+* 2010/08/20: MPACK 0.6.7! Includes condition number estimators; Rgecon and Rpocon. Now 100 MLAPACK routines, and license has been changed to 2-clause BSD style license. No longer use LGPLv3.
 * 2010/08/6: MPACK 0.6.6! Build fix release. Tested on various Linux distributions.
 * 2010/05/31: A paper for MPACK (0.6.4) in Japanese has been uploaded.
 * 2010/05/21: MPACK 0.6.5! MPFR support, and MBLAS license has been changed to BSD style. Still MLAPACK part is LGPLv3. I'll replace hopefully soon.
-* 2010/01/13: MPACK 0.6.4! BUILD FIX RELEASE! PLEASE CHECK ON YOUR ENVIRONMET! THANKS! ALSO WINDOWS IS SUPPORTED!
+* 2010/01/13: MPACK 0.6.4! BUILD FIX RELEASE! PLEASE CHECK ON YOUR ENVIRONMENT! THANKS! ALSO WINDOWS IS SUPPORTED!
 * 2009/12/18: POSTER and SLIDE ARE UPLOADED; MPACK (MBLAS/MLAPACK) poster at HPCS2010 in English, and slide in Japanese, and I did two seminars about MPACK (MBLAS/MLAPACK) @NII and @Tokyo Univ; here is the slide.
 * 2009/11/24: MPACK 0.6.0!
 * 2009/11/7: Add example page.
@@ -233,7 +233,7 @@ This is the release schedule for MPLAPACK 3.0.0
 # Oldpage
 http://mplapack.sourceforge.net/
 
-# Acknowledgement:
+# Acknowledgment:
 
 This work has been supported by:
 The Special Postdoctoral Researchers' Program of RIKEN (2008, 2009)
