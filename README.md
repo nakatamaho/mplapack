@@ -159,6 +159,7 @@ This is the release schedule for MPLAPACK 2.0.0
 | complex lin (driver routine; _Float64x) | 2021/11/30 | ng |Failed: CGB CLS |
 | complex lin (lapack routine; double)    | 2021/11/29 | ng |Failed: CHR CHK CSR CSK CQ3 CTZ CTQ CTS |
 | complex lin (driver routine; double)    | 2021/11/29 | ng |Failed: CGB CLS         |
+| sqrt fixes for QD, DD                | 2021/12/12 |     | near overflow |
 | Impliment complex eig                |            |     |                          | 
 | Impliment RFP version                |            |     |                          | 
 | Impliment mixed precision version    |            |     |                          | 
@@ -169,7 +170,6 @@ This is the release schedule for MPLAPACK 2.0.0
 This is the release schedule for MPLAPACK 3.0.0
 | Action | Date | Status | Description |
 | --- | --- | --- | --- |
-| Bug fixes for QD, DD                           |            |     | overflow, underflow | 
 | Performance tuning using FAM on amd64          |            |     |                     |
 | Fix Rlamch for QD, DD                          |            |     | svd.in fails.used with caution | 
 | cleanup pow (REAL, long int)                   |            |     |                          | 
