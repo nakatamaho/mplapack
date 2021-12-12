@@ -442,7 +442,7 @@ qd_real RlamchP_qd(void) {
 //"N" t = number of digits in mantissa
 // cf.http://www.netlib.org/blas/dlamch.f
 qd_real RlamchN_qd(void) {
-    return (qd_real)208.0; // 52*4
+    return (qd_real)212.0; // 53*4
 }
 
 //"R" rnd   = 1.0 when rounding occurs in addition, 0.0 otherwise
@@ -455,7 +455,7 @@ qd_real RlamchR_qd(void) {
 
 //"M"
 // cf.http://www.netlib.org/blas/dlamch.f
-qd_real RlamchM_qd(void) { return qd_real(-1022.0 + 3.0 * 53.0); }
+qd_real RlamchM_qd(void) { return qd_real(-1021.0 + 3.0 * 53.0); }
 
 //"U"
 // cf.http://www.netlib.org/blas/dlamch.f
@@ -470,7 +470,7 @@ qd_real RlamchL_qd(void) { return (qd_real)1024.0; }
 qd_real RlamchO_qd(void) {
 //thus we use smaller values
     qd_real a = qd_real::_max;
-    return a; // approx 1.7976931348623157E+308/1e-16 in float.h
+    return a;
 }
 
 //"Z" :dummy
@@ -544,7 +544,7 @@ dd_real RlamchP_dd(void) {
 //"N" t = number of digits in mantissa
 // cf.http://www.netlib.org/blas/dlamch.f
 dd_real RlamchN_dd(void) {
-    return (dd_real)104.0; // 52*2
+    return (dd_real)106.0; // 53*2
 }
 
 //"R" rnd   = 1.0 when rounding occurs in addition, 0.0 otherwise
@@ -557,7 +557,7 @@ dd_real RlamchR_dd(void) {
 
 //"M"
 // cf.http://www.netlib.org/blas/dlamch.f
-dd_real RlamchM_dd(void) { return dd_real(-1022.0 + 53.0); }
+dd_real RlamchM_dd(void) { return dd_real(-1021.0 + 53.0); }
 
 //"U"
 // cf.http://www.netlib.org/blas/dlamch.f
@@ -573,7 +573,7 @@ dd_real RlamchO_dd(void) {
 //due to bug of dd_real, we cannot take some arithmetic for dd_real::_max; e.g. sqrt.
 //thus we use smaller values
     dd_real a = dd_real::_max;
-    return a; // approx 1.7976931348623157E+308/1e-16 in float.h
+    return a;
 }
 
 //"Z" :dummy
