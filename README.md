@@ -111,7 +111,7 @@ $ git clone https://github.com/nakatamaho/mplapack.git
 $ cd mplapack
 $ git fetch origin v1.0.0
 $ git checkout v1.0.1
-$ pushd mplapack/debug ; bash gen.Makefile.am.sh ; popd
+$ pushd debug ; bash gen.Makefile.am.sh ; popd
 $ autoreconf --force --install ; aclocal ; autoconf ; automake; autoreconf --force --install
 $ CXX="g++-mp-9" ; export CXX
 $ CC="gcc-mp-9" ; export CC
