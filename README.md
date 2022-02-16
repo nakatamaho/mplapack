@@ -107,8 +107,9 @@ $ /usr/bin/time docker build -t mplapack:mingw -f  Dockerfile_ubuntu20.04_mingw6
 
 ```
 $ sudo port install gcc9 coreutils git ccache
-$ git clone https://github.com/nakatamaho/mplapack.git --depth 1
+$ git clone https://github.com/nakatamaho/mplapack.git
 $ cd mplapack
+$ git fetch origin v1.0.0
 $ git checkout v1.0.1
 $ pushd mplapack/debug ; bash gen.Makefile.am.sh ; popd
 $ autoreconf --force --install ; aclocal ; autoconf ; automake; autoreconf --force --install
