@@ -49,71 +49,79 @@ using namespace std;
 void Cchkaa(void) {
     common cmn;
     common_write write(cmn);
+    const INTEGER nmax = 132;
+    const INTEGER maxin = 12;
+    const INTEGER matmax = 30;
+    const INTEGER maxrhs = 16;
+    const INTEGER nin = 5;
+    const INTEGER nout = 6;
+    const INTEGER kdmax = nmax + (nmax + 1) / 4;
+
+    char c1[2];
+    char c2[3];
+    char path[4];
+    char aline[72];
+    char buf[1024];
+
+    REAL eps = 0.0;
     time_t s1;
     time_t s2;
     REAL threq = 2.0;
-    const INTEGER nmax = 132;
-    bool fatal = false;
-    const INTEGER nin = 5;
+    REAL thresh = 0.0;
+
+    INTEGER i = 0;
+    INTEGER ic = 0;
+    INTEGER j = 0;
+    INTEGER k = 0;
+    INTEGER la = 0;
+    INTEGER lafac = 0;
+    INTEGER lda;
+    INTEGER ldaorg = (kdmax + 1) * nmax;
+    INTEGER nb = 0;
+    INTEGER nm = 0;
+    INTEGER nmats = 0;
+    INTEGER nn = 0;
+    INTEGER nnb = 0;
+    INTEGER nnb2 = 0;
+    INTEGER nns = 0;
+    INTEGER nrhs = 0;
+    INTEGER ntypes = 0;
+    INTEGER nrank = 0;
     INTEGER mplapack_vers_major = 0;
     INTEGER mplapack_vers_minor = 0;
     INTEGER mplapack_vers_patch = 0;
     INTEGER lapack_vers_major = 0;
     INTEGER lapack_vers_minor = 0;
     INTEGER lapack_vers_patch = 0;
-    const INTEGER nout = 6;
-    INTEGER nm = 0;
-    const INTEGER maxin = 12;
+
+    bool dotype[matmax];
     INTEGER mval[maxin];
-    INTEGER i = 0;
-    INTEGER nn = 0;
-    INTEGER nval[maxin];
-    INTEGER nns = 0;
-    INTEGER nsval[maxin];
-    const INTEGER maxrhs = 16;
-    INTEGER nnb = 0;
     INTEGER nbval[maxin];
-    INTEGER nnb2 = 0;
-    INTEGER nb = 0;
-    INTEGER j = 0;
+    INTEGER nval[maxin];
     INTEGER nbval2[maxin];
+    INTEGER nsval[maxin];
     INTEGER nxval[maxin];
-    INTEGER nrank = 0;
     INTEGER rankval[maxin];
-    REAL thresh = 0.0;
-    bool tstchk = false;
-    bool tstdrv = false;
-    bool tsterr = false;
+    INTEGER piv[nmax];
+    REAL s[2 * nmax];
+    COMPLEX e[nmax];
+
+    INTEGER iwork[25 * nmax];
+    INTEGER ldb = (nmax * maxrhs);
+
+    REAL *rwork = new REAL[150 * nmax + 2 * maxrhs];
+    COMPLEX *a = new COMPLEX[((kdmax + 1) * nmax) * 7];
+    COMPLEX *b = new COMPLEX[(nmax * maxrhs) * 4];
+    COMPLEX *work = new COMPLEX[nmax * (nmax + maxrhs + 10)];
+
     char tstchk_str[1];
     char tstdrv_str[1];
     char tsterr_str[1];
-    REAL eps = 0.0;
-    INTEGER nrhs = 0;
-    char aline[72];
-    char path[4];
-    char buf[1024];
-    const INTEGER matmax = 30;
-    INTEGER nmats = 0;
-    char c1[1];
-    INTEGER k = 0;
-    INTEGER ic = 0;
-    char c2[2];
-    INTEGER ntypes = 0;
-    bool dotype[matmax];
-    COMPLEX *work = new COMPLEX[nmax * nmax + maxrhs + 10];
-    REAL *rwork = new REAL[150 * nmax + 2 * maxrhs];
-    INTEGER iwork[25 * nmax];
-    REAL *s = new REAL[2 * nmax];
-    const INTEGER kdmax = nmax + (nmax + 1) / 4;
-    INTEGER la = 0;
-    INTEGER lafac = 0;
-    INTEGER piv[nmax];
-    COMPLEX *a = new COMPLEX[((kdmax + 1) * nmax) * 7];
-    INTEGER ldaorg = (kdmax + 1) * nmax;
-    INTEGER lda;
-    COMPLEX *b = new COMPLEX[(nmax * maxrhs) * 4];
-    INTEGER ldb = (nmax * maxrhs);
-    COMPLEX *e = new COMPLEX[nmax];
+    bool fatal = false;
+    bool tstchk = false;
+    bool tstdrv = false;
+    bool tsterr = false;
+
     static const char *format_9988 = "(/,1x,a3,' driver routines were not tested')";
     static const char *format_9989 = "(/,1x,a3,' routines were not tested')";
     static const char *format_9990 = "(/,1x,a3,':  Unrecognized path name')";
@@ -1089,8 +1097,6 @@ void Cchkaa(void) {
         //     Go back to get another input line.
         //
     }
-    delete[] s;
-    delete[] e;
     delete[] b;
     delete[] a;
     delete[] rwork;
