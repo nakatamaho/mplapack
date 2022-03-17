@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021, 2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -47,7 +47,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     char transs[] = {'N', 'T', 'C'};
     char facts[] = {'F', 'N', 'E'};
     char equeds[] = {'N', 'R', 'C', 'B'};
-    char path[3];
+    char path[4];
     char matpath[3];
     char buf[1024];
     char fact_trans[3];
@@ -496,7 +496,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                             anrmpv = max(anrmpv, abs(a[(i + (j - 1) * lda) - 1]));
                                         }
                                     }
-                                    rpvgrw = Clantb("M", "U", "N", info, min(info - 1, kl + ku), &afb[(max((INTEGER)1, (kl + ku + 2 - info)) - 1) * ldafb], ldafb, rdum);
+                                    rpvgrw = Clantb("M", "U", "N", info, min(info - 1, kl + ku), &afb[(max((INTEGER)1, (kl + ku + 2 - info)) - 1) ], ldafb, rdum);
                                     if (rpvgrw == zero) {
                                         rpvgrw = one;
                                     } else {
