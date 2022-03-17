@@ -90,7 +90,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
     INTEGER nt = 0;
     REAL rcondc = 0.0;
     REAL dtemp = 0.0;
-    REAL identifier_const = 0.0;
+    REAL _const = 0.0;
     REAL block[2 * 2];
     INTEGER ldblock = 2;
     REAL ddummy[1];
@@ -402,7 +402,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                     result[3 - 1] = zero;
                     dtemp = zero;
                     //
-                    identifier_const = one / (one - alpha);
+                    _const = one / (one - alpha);
                     //
                     if (iuplo == 1) {
                         //
@@ -432,7 +432,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                         //
                         //                    DTEMP should be bounded by CONST
                         //
-                        dtemp = dtemp - identifier_const + thresh;
+                        dtemp = dtemp - _const + thresh;
                         if (dtemp > result[3 - 1]) {
                             result[3 - 1] = dtemp;
                         }
@@ -470,7 +470,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                         //
                         //                    DTEMP should be bounded by CONST
                         //
-                        dtemp = dtemp - identifier_const + thresh;
+                        dtemp = dtemp - _const + thresh;
                         if (dtemp > result[3 - 1]) {
                             result[3 - 1] = dtemp;
                         }
@@ -488,7 +488,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                     result[4 - 1] = zero;
                     dtemp = zero;
                     //
-                    identifier_const = (one + alpha) / (one - alpha);
+                    _const = (one + alpha) / (one - alpha);
                     Rlacpy(&uplo, n, n, afac, lda, ainv, lda);
                     //
                     if (iuplo == 1) {
@@ -521,7 +521,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                             //
                             //                       DTEMP should be bounded by CONST
                             //
-                            dtemp = dtemp - identifier_const + thresh;
+                            dtemp = dtemp - _const + thresh;
                             if (dtemp > result[4 - 1]) {
                                 result[4 - 1] = dtemp;
                             }
@@ -564,7 +564,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                             //
                             //                       DTEMP should be bounded by CONST
                             //
-                            dtemp = dtemp - identifier_const + thresh;
+                            dtemp = dtemp - _const + thresh;
                             if (dtemp > result[4 - 1]) {
                                 result[4 - 1] = dtemp;
                             }
