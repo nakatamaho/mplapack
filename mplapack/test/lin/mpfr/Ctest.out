@@ -13122,8 +13122,7 @@ The following parameter values will be used:
  CTQ routines passed the tests of the error exits
 
  All tests for CTQ routines passed the threshold (    510 tests run)
- *** XERBLA was called from Cgeqr with INFO =      6 instead of  8 ***
- *** CTS routines failed the tests of the error exits ***
+ CTS routines passed the tests of the error exits
 
  All tests for CTS routines passed the threshold (  10800 tests run)
  CHH routines passed the tests of the error exits
@@ -13131,5 +13130,5 @@ The following parameter values will be used:
  All tests for CHH routines passed the threshold (  15900 tests run)
 
  End of tests
- Total time used =  2028 seconds
+ Total time used =  2016 seconds
 
