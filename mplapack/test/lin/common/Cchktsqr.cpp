@@ -55,6 +55,8 @@ void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
     //
     //     Test the error exits
     //
+    xlaenv(1, 0);
+    xlaenv(2, 0);
     if (tsterr) {
         Cerrtsqr(path, nout);
     }
