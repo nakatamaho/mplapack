@@ -374,8 +374,9 @@ void Cchkaa(void) {
     double dtmp;
     ss >> dtmp;
     thresh = dtmp;
-    write(nout, "(/,' Routines pass computational tests if test ratio is ','less than'," "f8.2,/)"),
-    cast2double(thresh);
+    write(nout, "(/,' Routines pass computational tests if test ratio is ','less than',"
+                "f8.2,/)"),
+        cast2double(thresh);
     //
     //     Read the flag that indicates whether to test the LAPACK routines.
     //

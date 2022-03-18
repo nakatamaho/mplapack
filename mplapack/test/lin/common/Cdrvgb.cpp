@@ -496,7 +496,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                             anrmpv = max(anrmpv, abs(a[(i + (j - 1) * lda) - 1]));
                                         }
                                     }
-                                    rpvgrw = Clantb("M", "U", "N", info, min(info - 1, kl + ku), &afb[(max((INTEGER)1, (kl + ku + 2 - info)) - 1) ], ldafb, rdum);
+                                    rpvgrw = Clantb("M", "U", "N", info, min(info - 1, kl + ku), &afb[(max((INTEGER)1, (kl + ku + 2 - info)) - 1)], ldafb, rdum);
                                     if (rpvgrw == zero) {
                                         rpvgrw = one;
                                     } else {
