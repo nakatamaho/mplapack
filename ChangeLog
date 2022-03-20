@@ -1,3 +1,8 @@
+2022/03/21    Nakata Maho <maho@riken.jp> 2.0 branch
+            * Ctest.in test have passed for all precisions, except for linear fitting.
+              Some tests using SVDs still fails, however, they will be fixed when eig tests
+              will be done.
+
 2021/10/29    Nakata Maho <maho@riken.jp> 1.0.1
             * Add -fp-model precise to fix qd and dd arithmetic for Intel one API.
 

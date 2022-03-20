@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2022
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -27,6 +27,28 @@
  * SUCH DAMAGE.
  *
  */
+/****************************************************************
+Copyright 1990 - 1997 by AT&T, Lucent Technologies and Bellcore.
+
+Permission to use, copy, modify, and distribute this software
+and its documentation for any purpose and without fee is hereby
+granted, provided that the above copyright notice appear in all
+copies and that both that the copyright notice and this
+permission notice and warranty disclaimer appear in supporting
+documentation, and that the names of AT&T, Bell Laboratories,
+Lucent or Bellcore or any of their entities not be used in
+advertising or publicity pertaining to distribution of the
+software without specific, written prior permission.
+
+AT&T, Lucent and Bellcore disclaim all warranties with regard to
+this software, including all implied warranties of
+merchantability and fitness.  In no event shall AT&T, Lucent or
+Bellcore be liable for any special, indirect or consequential
+damages or any damages whatsoever resulting from loss of use,
+data or profits, whether in an action of contract, negligence or
+other tortious action, arising out of or in connection with the
+use or performance of this software.
+****************************************************************/
 /*
 Complex class declare for the GMP.
 */
@@ -344,11 +366,31 @@ inline const mpc_class operator*(const mpc_class &a, const mpf_class &b) {
     return tmp;
 }
 
-// not so bad as overflow might not occur with GMP; exponet range is extraordinarly large.
 inline mpc_class &mpc_class::operator/=(const mpc_class &b) {
     mpc_class tmp(*this);
-    re = (tmp.re * b.re + tmp.im * b.im) / (b.re * b.re + b.im * b.im);
-    im = (tmp.im * b.re - tmp.re * b.im) / (b.re * b.re + b.im * b.im);
+    mpf_class abr, abi, ratio, den;
+
+    if ((abr = b.re) < 0.)
+        abr = -abr;
+    if ((abi = b.im) < 0.)
+        abi = -abi;
+    if (abr <= abi) {
+        if (abi == 0) {
+            if (tmp.im != 0 || tmp.re != 0)
+                abi = 1.;
+            tmp.im = tmp.re = abi / abr;
+            return (*this);
+        }
+        ratio = b.re / b.im;
+        den = b.im * (1.0 + ratio * ratio);
+        re = (tmp.re * ratio + tmp.im) / den;
+        im = (tmp.im * ratio - tmp.re) / den;
+    } else {
+        ratio = b.im / b.re;
+        den = b.re * (1.0 + ratio * ratio);
+        re = (tmp.re + tmp.im * ratio) / den;
+        im = (tmp.im - tmp.re * ratio) / den;
+    }
     return (*this);
 }
 
@@ -380,8 +422,25 @@ inline const mpc_class operator/(const mpf_class &a, const mpc_class &b) {
     return tmp;
 }
 
-// not so bad as overflow might not occur with GMP; exponet range is extraordinarly large.
-inline mpf_class abs(mpc_class ctmp) { return sqrt(ctmp.real() * ctmp.real() + ctmp.imag() * ctmp.imag()); }
+inline mpf_class abs(mpc_class ctemp) {
+    mpf_class temp;
+    if (ctemp.real() < 0)
+        ctemp.real() = -ctemp.real();
+    if (ctemp.imag() < 0)
+        ctemp.imag() = -ctemp.imag();
+    if (ctemp.imag() > ctemp.real()) {
+        temp = ctemp.real();
+        ctemp.real() = ctemp.imag();
+        ctemp.imag() = temp;
+    }
+    if ((ctemp.real() + ctemp.imag()) == ctemp.real())
+        return (ctemp.real());
+
+    temp = ctemp.imag() / ctemp.real();
+    temp = ctemp.real() * sqrt(1.0 + temp * temp); /*overflow!!*/
+
+    return temp;
+}
 
 inline mpc_class sqrt(mpc_class z) {
     mpf_class mag;

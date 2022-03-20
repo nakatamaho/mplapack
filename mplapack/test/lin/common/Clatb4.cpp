@@ -165,6 +165,12 @@ void Clatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         } else if (imat == 6) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
             cndnum = tenth * badc2 * 1e-9;
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+            cndnum = tenth * badc2 * 1e-4;
+#elif defined ___MPLAPACK_BUILD_WITH_DD___
+            cndnum = tenth * badc2 * 1e-3;
+#elif defined ___MPLAPACK_BUILD_WITH_QD___
+            cndnum = tenth * badc2 * 1e-5;
 #else
             cndnum = tenth * badc2;
 #endif

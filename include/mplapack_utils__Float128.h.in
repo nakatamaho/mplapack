@@ -581,4 +581,29 @@ inline _Float128 pi(_Float128 dummy) { return M_PIq; }
 
 #endif //___MPLAPACK_WANT_LIBQUADMATH___
 
+//glibc _Float128 implimentation does not consider near overflow or near underflow.
+template <> template <> inline std::complex<_Float128> &std::complex<_Float128>::operator/=(const std::complex<_Float128> &b) {
+    _Float128 abr, abi, ratio, den;
+    if ((abr = b.real()) < 0.)
+        abr = -abr;
+    if ((abi = b.imag()) < 0.)
+        abi = -abi;
+    if (abr <= abi) {
+        if (abi == 0) {
+            if (this->imag() != 0 || this->real() != 0)
+                abi = 1.;
+            *this = std::complex<_Float128>(abi / abr, abi / abr);
+            return (*this);
+        }
+        ratio = b.real() / b.imag();
+        den = b.imag() * (1.0 + ratio * ratio);
+        (*this) = std::complex<_Float128>((this->real() * ratio + this->imag()) / den, (this->imag() * ratio - this->real()) / den);
+    } else {
+        ratio = b.imag() / b.real();
+        den = b.real() * (1.0 + ratio * ratio);
+        (*this) = std::complex<_Float128>((this->real() + this->imag() * ratio) / den, (this->imag() - this->real() * ratio) / den);
+    }
+    return *this;
+}
+
 #endif

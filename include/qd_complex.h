@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2022
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -415,8 +415,25 @@ inline const qd_complex operator-(const qd_real &a, const qd_complex &b) {
     return p;
 }
 
-// XXX can overflow
-inline qd_real abs(qd_complex ctmp) { return sqrt(ctmp.real() * ctmp.real() + ctmp.imag() * ctmp.imag()); }
+inline qd_real abs(qd_complex ctemp) {
+    qd_real temp;
+    if (ctemp.real() < 0)
+        ctemp.real() = -ctemp.real();
+    if (ctemp.imag() < 0)
+        ctemp.imag() = -ctemp.imag();
+    if (ctemp.imag() > ctemp.real()) {
+        temp = ctemp.real();
+        ctemp.real() = ctemp.imag();
+        ctemp.imag() = temp;
+    }
+    if ((ctemp.real() + ctemp.imag()) == ctemp.real())
+        return (ctemp.real());
+
+    temp = ctemp.imag() / ctemp.real();
+    temp = ctemp.real() * sqrt(1.0 + temp * temp); /*overflow!!*/
+
+    return temp;
+}
 
 inline qd_complex sqrt(qd_complex z) {
     qd_real mag;
