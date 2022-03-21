@@ -1573,14 +1573,14 @@ void Rchkee(void) {
             continue;
         }
     }
-    write(nout, "(/,/,' End of tests')");
-    s2 = time(NULL);
-    write(nout, "(' Total time used = ',f12.2,' seconds',/)"), double(s2 - s1);
-    //
     delete[] a;
     delete[] b;
     delete[] c;
     delete[] work;
+    //
+    write(nout, "(/,/,' End of tests')");
+    s2 = time(NULL);
+    write(nout, "(' Total time used = ',f12.2,' seconds',/)"), double(s2 - s1);
     //
     //     End of Rchkee
     //
