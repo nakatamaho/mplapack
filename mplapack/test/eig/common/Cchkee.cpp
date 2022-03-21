@@ -984,612 +984,617 @@ void Cchkee(void) {
         //     of test matrix types must be the first nonblank item in columns
         //     4-80.
         //
-        while (1) {
-            if (!(zgx || zxv)) {
-                //
-                string _str;
-                getline(cin, str);
-                if (cin.bad() || cin.eof()) {
-                    break;
-                }
-                c3[0] = str[0];
-                c3[1] = str[1];
-                c3[2] = str[2];
-                iss.clear();
-                iss.str(str);
-                iss >> _str; // dummy read
-                iss >> ntypes;
-                //
-                //     Skip the tests if NTYPES is <= 0.
-                //
-                if (!(zev || zes || zvx || zsx || zgv || zgs) && ntypes <= 0) {
-                    write(nout, format_9990), c3;
-                    continue;
-                }
-                //
-            } else {
-                if (zgx) {
-                    strncpy(c3, "ZGX", 3);
-                }
-                if (zxv) {
-                    strncpy(c3, "ZXV", 3);
-                }
+        if (!(zgx || zxv)) {
+            //
+            string _str;
+            getline(cin, str);
+            if (cin.bad() || cin.eof()) {
+                break;
+            }
+            c3[0] = str[0];
+            c3[1] = str[1];
+            c3[2] = str[2];
+            iss.clear();
+            iss.str(str);
+            iss >> _str; // dummy read
+            iss >> ntypes;
+            //
+            //     Skip the tests if NTYPES is <= 0.
+            //
+            if (!(zev || zes || zvx || zsx || zgv || zgs) && ntypes <= 0) {
+                write(nout, format_9990), c3;
+                continue;
             }
             //
-            //     Reset the random number seed.
-            //
-            if (newsd == 0) {
-                for (k = 1; k <= 4; k = k + 1) {
-                    iseed[k - 1] = ioldsd[k - 1];
-                }
+        } else {
+            if (zgx) {
+                strncpy(c3, "ZGX", 3);
             }
-            //
-            if (Mlsamen(3, c3, "ZHS") || Mlsamen(3, c3, "NEP")) {
-                //
-                //        -------------------------------------
-                //        NEP:  Nonsymmetric Eigenvalue Problem
-                //        -------------------------------------
-                //        Vary the parameters
-                //           NB    = block size
-                //           NBMIN = minimum block size
-                //           NX    = crossover point
-                //           NS    = number of shifts
-                //           MAXB  = minimum submatrix size
-                //
-                maxtyp = 21;
-                ntypes = min(maxtyp, ntypes);
-                Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                xlaenv(1, 1);
-                if (tsterr) {
-                    Cerrhs("Chseqr", nout);
-                }
-                for (i = 1; i <= nparms; i = i + 1) {
-                    xlaenv(1, nbval[i - 1]);
-                    xlaenv(2, nbmin[i - 1]);
-                    xlaenv(3, nxval[i - 1]);
-                    xlaenv(12, max((INTEGER)11, inmin[i - 1]));
-                    xlaenv(13, inwin[i - 1]);
-                    xlaenv(14, inibl[i - 1]);
-                    xlaenv(15, ishfts[i - 1]);
-                    xlaenv(16, iacc22[i - 1]);
-                    //
-                    if (newsd == 0) {
-                        for (k = 1; k <= 4; k = k + 1) {
-                            iseed[k - 1] = ioldsd[k - 1];
-                        }
-                    }
-                    write(nout, "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4,', INMIN=',i4,"
-                                "', INWIN =',i4,', INIBL =',i4,', ISHFTS =',i4,', IACC22 =',i4)"),
-                        c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], max((INTEGER)11, inmin[i - 1]), inwin[i - 1], inibl[i - 1], ishfts[i - 1], iacc22[i - 1];
-                    Cchkhs(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], nmax, &a[nmax * nmax * 5], &a[nmax * nmax * 6], &dc[0], &dc[nmax], &a[nmax * nmax * 7], &a[nmax * nmax * 8], &a[nmax * nmax * 9], &a[nmax * nmax * 10], &a[nmax * nmax * 11], &dc[nmax * 2], work, lwork, rwork, iwork, logwrk, &result[0], info);
-                    if (info != 0) {
-                        write(nout, format_9980), "Cchkhs", info;
-                    }
-                }
-                //
-            } else if (Mlsamen(3, c3, "ZST") || Mlsamen(3, c3, "SEP") || Mlsamen(3, c3, "SE2")) {
-                //
-                //        ----------------------------------
-                //        SEP:  Symmetric Eigenvalue Problem
-                //        ----------------------------------
-                //        Vary the parameters
-                //           NB    = block size
-                //           NBMIN = minimum block size
-                //           NX    = crossover point
-                //
-                maxtyp = 21;
-                ntypes = min(maxtyp, ntypes);
-                Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                xlaenv(1, 1);
-                xlaenv(9, 25);
-                if (tsterr) {
-                    Cerrst("ZST", nout);
-                }
-                for (i = 1; i <= nparms; i = i + 1) {
-                    xlaenv(1, nbval[i - 1]);
-                    xlaenv(2, nbmin[i - 1]);
-                    xlaenv(3, nxval[i - 1]);
-                    //
-                    if (newsd == 0) {
-                        for (k = 1; k <= 4; k = k + 1) {
-                            iseed[k - 1] = ioldsd[k - 1];
-                        }
-                    }
-                    write(nout, format_9997), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1];
-                    if (tstchk) {
-                        if (Mlsamen(3, c3, "SE2")) {
-                            Cchkst2stg(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &dr[0], &dr[nmax], &dr[nmax * 2], &dr[nmax * 3], &dr[nmax * 4], &dr[nmax * 5], &dr[nmax * 6], &dr[nmax * 7], &dr[nmax * 8], &dr[nmax * 9], &dr[nmax * 10], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], &a[nmax * nmax * 5], &dc[0], &a[nmax * nmax * 5], work, lwork, rwork, lwork, iwork, liwork, result, info);
-                        } else {
-                            Cchkst(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &dr[0], &dr[nmax], &dr[nmax * 2], &dr[nmax * 3], &dr[nmax * 4], &dr[nmax * 5], &dr[nmax * 6], &dr[nmax * 7], &dr[nmax * 8], &dr[nmax * 9], &dr[nmax * 10], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], &a[nmax * nmax * 4], &dc[0], &a[nmax * nmax * 5], work, lwork, rwork, lwork, iwork, liwork, result, info);
-                        }
-                        if (info != 0) {
-                            write(nout, format_9980), "Cchkst", info;
-                        }
-                    }
-                    if (tstdrv) {
-                        if (Mlsamen(3, c3, "SE2")) {
-                            Cdrvst2stg(nn, nval, 18, dotype, iseed, thresh, nout, &a[0], nmax, &dr[nmax * 2], &dr[nmax * 3], &dr[nmax * 4], &dr[nmax * 7], &dr[nmax * 8], &dr[nmax * 9], &a[nmax * nmax], nmax, &a[nmax * nmax * 2], &dc[0], &a[nmax * nmax * 3], work, lwork, rwork, lwork, iwork, liwork, result, info);
-                        } else {
-                            Cdrvst(nn, nval, 18, dotype, iseed, thresh, nout, &a[0], nmax, &dr[nmax * 2], &dr[nmax * 3], &dr[nmax * 4], &dr[nmax * 7], &dr[nmax * 8], &dr[nmax * 9], &a[nmax * nmax], nmax, &a[nmax * nmax * 2], &dc[0], &a[nmax * nmax * 3], work, lwork, rwork, lwork, iwork, liwork, result, info);
-                        }
-                        if (info != 0) {
-                            write(nout, format_9980), "Cdrvst", info;
-                        }
-                    }
-                }
-                //
-            } else if (Mlsamen(3, c3, "ZSG")) {
-                //
-                //        ----------------------------------------------
-                //        ZSG:  Hermitian Generalized Eigenvalue Problem
-                //        ----------------------------------------------
-                //        Vary the parameters
-                //           NB    = block size
-                //           NBMIN = minimum block size
-                //           NX    = crossover point
-                //
-                maxtyp = 21;
-                ntypes = min(maxtyp, ntypes);
-                Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                xlaenv(9, 25);
-                for (i = 1; i <= nparms; i = i + 1) {
-                    xlaenv(1, nbval[i - 1]);
-                    xlaenv(2, nbmin[i - 1]);
-                    xlaenv(3, nxval[i - 1]);
-                    //
-                    if (newsd == 0) {
-                        for (k = 1; k <= 4; k = k + 1) {
-                            iseed[k - 1] = ioldsd[k - 1];
-                        }
-                    }
-                    write(nout, format_9997), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1];
-                    if (tstchk) {
-                        //               CALL Cdrvsg( NN, NVAL, MAXTYP, DOTYPE, ISEED, THRESH,
-                        //     $                      NOUT, &a[(1-1)+(1-1)*lda], NMAX, &a[(1-1)+(2-1)*lda], NMAX,
-                        //     $                      DR( 1, 3 ), &a[(1-1)+(3-1)*lda], NMAX, &a[(1-1)+(4-1)*lda],
-                        //     $                      &a[(1-1)+(5-1)*lda], &a[(1-1)+(6-1)*lda], &a[(1-1)+(7-1)*lda], WORK,
-                        //     $                      LWORK, RWORK, LWORK, IWORK, LIWORK, RESULT,
-                        //     $                      INFO )
-                        Cdrvsg2stg(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], nmax, &dr[nmax], &dr[nmax * 2], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], &a[nmax * nmax * 4], &a[nmax * nmax * 5], &a[nmax * nmax * 6], work, lwork, rwork, lwork, iwork, liwork, result, info);
-                        if (info != 0) {
-                            write(nout, format_9980), "Cdrvsg", info;
-                        }
-                    }
-                }
-                //
-            } else if (Mlsamen(3, c3, "ZBD") || Mlsamen(3, c3, "SVD")) {
-                //
-                //        ----------------------------------
-                //        SVD:  Singular Value Decomposition
-                //        ----------------------------------
-                //        Vary the parameters
-                //           NB    = block size
-                //           NBMIN = minimum block size
-                //           NX    = crossover point
-                //           NRHS  = number of right hand sides
-                //
-                maxtyp = 16;
-                ntypes = min(maxtyp, ntypes);
-                Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                xlaenv(9, 25);
-                //
-                //        Test the error exits
-                //
-                xlaenv(1, 1);
-                if (tsterr && tstchk) {
-                    Cerrbd("ZBD", nout);
-                }
-                if (tsterr && tstdrv) {
-                    Cerred("ZBD", nout);
-                }
-                //
-                for (i = 1; i <= nparms; i = i + 1) {
-                    nrhs = nsval[i - 1];
-                    xlaenv(1, nbval[i - 1]);
-                    xlaenv(2, nbmin[i - 1]);
-                    xlaenv(3, nxval[i - 1]);
-                    if (newsd == 0) {
-                        for (k = 1; k <= 4; k = k + 1) {
-                            iseed[k - 1] = ioldsd[k - 1];
-                        }
-                    }
-                    write(nout, "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4,', NRHS =',i4)"), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], nrhs;
-                    if (tstchk) {
-                        Cchkbd(nn, mval, nval, maxtyp, dotype, nrhs, iseed, thresh, &a[0], nmax, &dr[0], &dr[nmax], &dr[nmax * 2], &dr[nmax * 3], &a[nmax * nmax], nmax, &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], nmax, &a[nmax * nmax * 5], nmax, &a[nmax * nmax * 6], &a[nmax * nmax * 7], work, lwork, rwork, nout, info);
-                        if (info != 0) {
-                            write(nout, format_9980), "Cchkbd", info;
-                        }
-                    }
-                    if (tstdrv) {
-                        Cdrvbd(nn, mval, nval, maxtyp, dotype, iseed, thresh, &a[0], nmax, &a[nmax * nmax], nmax, &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], &a[nmax * nmax * 4], &a[nmax * nmax * 5], &dr[0], &dr[nmax], &dr[2 * nmax], work, lwork, rwork, iwork, nout, info);
-                    }
-                }
-                //
-            } else if (Mlsamen(3, c3, "ZEV")) {
-                //
-                //        --------------------------------------------
-                //        ZEV:  Nonsymmetric Eigenvalue Problem Driver
-                //              Cgeev (eigenvalues and eigenvectors)
-                //        --------------------------------------------
-                //
-                maxtyp = 21;
-                ntypes = min(maxtyp, ntypes);
-                if (ntypes <= 0) {
-                    write(nout, format_9990), c3;
-                } else {
-                    if (tsterr) {
-                        Cerred(c3, nout);
-                    }
-                    Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                    Cdrvev(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &dc[0], &dc[nmax], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], nmax, result, work, lwork, rwork, iwork, info);
-                    if (info != 0) {
-                        write(nout, format_9980), "Cgeev", info;
-                    }
-                }
-                write(nout, format_9973);
-                continue;
-                //
-            } else if (Mlsamen(3, c3, "ZES")) {
-                //
-                //        --------------------------------------------
-                //        ZES:  Nonsymmetric Eigenvalue Problem Driver
-                //              Cgees (Schur form)
-                //        --------------------------------------------
-                //
-                maxtyp = 21;
-                ntypes = min(maxtyp, ntypes);
-                if (ntypes <= 0) {
-                    write(nout, format_9990), c3;
-                } else {
-                    if (tsterr) {
-                        Cerred(c3, nout);
-                    }
-                    Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                    Cdrves(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &dc[0], &dc[nmax], &a[nmax * nmax * 3], nmax, result, work, lwork, rwork, iwork, logwrk, info);
-                    if (info != 0) {
-                        write(nout, format_9980), "Cgees", info;
-                    }
-                }
-                write(nout, format_9973);
-                continue;
-                //
-            } else if (Mlsamen(3, c3, "ZVX")) {
-                //
-                //        --------------------------------------------------------------
-                //        ZVX:  Nonsymmetric Eigenvalue Problem Expert Driver
-                //              Cgeevx (eigenvalues, eigenvectors and condition numbers)
-                //        --------------------------------------------------------------
-                //
-                maxtyp = 21;
-                ntypes = min(maxtyp, ntypes);
-                if (ntypes < 0) {
-                    write(nout, format_9990), c3;
-                } else {
-                    if (tsterr) {
-                        Cerred(c3, nout);
-                    }
-                    Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                    Cdrvvx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[0], nmax, &a[nmax * nmax], &dc[0], &dc[nmax], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], nmax, &dr[0], &dr[nmax], &dr[2 * nmax], &dr[nmax * 3], &dr[nmax * 4], &dr[nmax * 5], &dr[nmax * 6], &dr[nmax * 7], result, work, lwork, rwork, info);
-                    if (info != 0) {
-                        write(nout, format_9980), "Cgeevx", info;
-                    }
-                }
-                write(nout, format_9973);
-                continue;
-                //
-            } else if (Mlsamen(3, c3, "ZSX")) {
-                //
-                //        ---------------------------------------------------
-                //        ZSX:  Nonsymmetric Eigenvalue Problem Expert Driver
-                //              Cgeesx (Schur form and condition numbers)
-                //        ---------------------------------------------------
-                //
-                maxtyp = 21;
-                ntypes = min(maxtyp, ntypes);
-                if (ntypes < 0) {
-                    write(nout, format_9990), c3;
-                } else {
-                    if (tsterr) {
-                        Cerred(c3, nout);
-                    }
-                    Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                    Cdrvsx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &dc[0], &dc[nmax], &dc[nmax * 2], &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], result, work, lwork, rwork, logwrk, info);
-                    if (info != 0) {
-                        write(nout, format_9980), "Cgeesx", info;
-                    }
-                }
-                write(nout, format_9973);
-                continue;
-                //
-            } else if (Mlsamen(3, c3, "ZGG")) {
-                //
-                //        -------------------------------------------------
-                //        ZGG:  Generalized Nonsymmetric Eigenvalue Problem
-                //        -------------------------------------------------
-                //        Vary the parameters
-                //           NB    = block size
-                //           NBMIN = minimum block size
-                //           NS    = number of shifts
-                //           MAXB  = minimum submatrix size
-                //           IACC22: structured matrix multiply
-                //
-                maxtyp = 26;
-                ntypes = min(maxtyp, ntypes);
-                Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                xlaenv(1, 1);
-                if (tstchk && tsterr) {
-                    Cerrgg(c3, nout);
-                }
-                for (i = 1; i <= nparms; i = i + 1) {
-                    xlaenv(1, nbval[i - 1]);
-                    xlaenv(2, nbmin[i - 1]);
-                    xlaenv(4, nsval[i - 1]);
-                    xlaenv(8, mxbval[i - 1]);
-                    xlaenv(16, iacc22[i - 1]);
-                    xlaenv(5, nbcol[i - 1]);
-                    //
-                    if (newsd == 0) {
-                        for (k = 1; k <= 4; k = k + 1) {
-                            iseed[k - 1] = ioldsd[k - 1];
-                        }
-                    }
-                    write(nout, "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NS =',i4,', MAXB =',i4,"
-                                "', IACC22 =',i4,', NBCOL =',i4)"),
-                        c3, nbval[i - 1], nbmin[i - 1], nsval[i - 1], mxbval[i - 1], iacc22[i - 1], nbcol[i - 1];
-                    tstdif = false;
-                    thrshn = 10.0;
-                    if (tstchk) {
-                        Cchkgg(nn, nval, maxtyp, dotype, iseed, thresh, tstdif, thrshn, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], &a[nmax * nmax * 5], &a[nmax * nmax * 6], &a[nmax * nmax * 7], &a[nmax * nmax * 8], nmax, &a[(1 - 1) + (10 - 1) * lda], &a[(1 - 1) + (11 - 1) * lda], &a[(1 - 1) + (12 - 1) * lda], &dc[0], &dc[nmax], &dc[nmax * 2], &dc[nmax * 3], &a[(1 - 1) + (13 - 1) * lda], &a[(1 - 1) + (14 - 1) * lda], work, lwork, rwork, logwrk, result, info);
-                        if (info != 0) {
-                            write(nout, format_9980), "Cchkgg", info;
-                        }
-                    }
-                }
-                //
-            } else if (Mlsamen(3, c3, "ZGS")) {
-                //
-                //        -------------------------------------------------
-                //        ZGS:  Generalized Nonsymmetric Eigenvalue Problem
-                //              Cgges (Schur form)
-                //        -------------------------------------------------
-                //
-                maxtyp = 26;
-                ntypes = min(maxtyp, ntypes);
-                if (ntypes <= 0) {
-                    write(nout, format_9990), c3;
-                } else {
-                    if (tsterr) {
-                        Cerrgg(c3, nout);
-                    }
-                    Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                    Cdrges(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 6], nmax, &a[nmax * nmax * 7], &dc[0], &dc[nmax], work, lwork, rwork, result, logwrk, info);
-                    //
-                    if (info != 0) {
-                        write(nout, format_9980), "Cdrges", info;
-                    }
-                    //
-                    // Blocked version
-                    //
-                    Cdrges3(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 6], nmax, &a[nmax * nmax * 7], &dc[0], &dc[nmax], work, lwork, rwork, result, logwrk, info);
-                    //
-                    if (info != 0) {
-                        write(nout, format_9980), "Cdrges3", info;
-                    }
-                }
-                write(nout, format_9973);
-                continue;
-                //
-            } else if (zgx) {
-                //
-                //        -------------------------------------------------
-                //        ZGX  Generalized Nonsymmetric Eigenvalue Problem
-                //              Cggesx (Schur form and condition numbers)
-                //        -------------------------------------------------
-                //
-                maxtyp = 5;
-                ntypes = maxtyp;
-                if (nn < 0) {
-                    write(nout, format_9990), c3;
-                } else {
-                    if (tsterr) {
-                        Cerrgg(c3, nout);
-                    }
-                    Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                    xlaenv(5, 2);
-                    Cdrgsx(nn, ncmax, thresh, nin, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], &a[nmax * nmax * 5], &dc[0], &dc[nmax], c, ncmax * ncmax, s, work, lwork, rwork, iwork, liwork, logwrk, info);
-                    if (info != 0) {
-                        write(nout, format_9980), "Cdrgsx", info;
-                    }
-                }
-                write(nout, format_9973);
-                continue;
-                //
-            } else if (Mlsamen(3, c3, "ZGV")) {
-                //
-                //        -------------------------------------------------
-                //        ZGV:  Generalized Nonsymmetric Eigenvalue Problem
-                //              Cggev (Eigenvalue/vector form)
-                //        -------------------------------------------------
-                //
-                maxtyp = 26;
-                ntypes = min(maxtyp, ntypes);
-                if (ntypes <= 0) {
-                    write(nout, format_9990), c3;
-                } else {
-                    if (tsterr) {
-                        Cerrgg(c3, nout);
-                    }
-                    Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                    Cdrgev(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 6], nmax, &a[nmax * nmax * 7], &a[nmax * nmax * 8], nmax, &dc[0], &dc[nmax], &dc[nmax * 2], &dc[nmax * 3], work, lwork, rwork, result, info);
-                    if (info != 0) {
-                        write(nout, format_9980), "Cdrgev", info;
-                    }
-                    //
-                    // Blocked version
-                    //
-                    xlaenv(16, 2);
-                    Cdrgev3(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 6], nmax, &a[nmax * nmax * 7], &a[nmax * nmax * 8], nmax, &dc[0], &dc[nmax], &dc[nmax * 2], &dc[nmax * 3], work, lwork, rwork, result, info);
-                    if (info != 0) {
-                        write(nout, format_9980), "Cdrgev3", info;
-                    }
-                }
-                write(nout, format_9973);
-                continue;
-                //
-            } else if (zxv) {
-                //
-                //        -------------------------------------------------
-                //        ZXV:  Generalized Nonsymmetric Eigenvalue Problem
-                //              Cggevx (eigenvalue/vector with condition numbers)
-                //        -------------------------------------------------
-                //
-                maxtyp = 2;
-                ntypes = maxtyp;
-                if (nn < 0) {
-                    write(nout, format_9990), c3;
-                } else {
-                    if (tsterr) {
-                        Cerrgg(c3, nout);
-                    }
-                    Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                    Cdrgvx(nn, thresh, nin, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &dc[0], &dc[nmax], &a[nmax * nmax * 4], &a[nmax * nmax * 5], iwork[0], iwork[1], &dr[0], &dr[nmax], &dr[nmax * 2], &dr[nmax * 3], &dr[nmax * 4], &dr[nmax * 5], work, lwork, rwork, &iwork[2], liwork - 2, result, logwrk, info);
-                    //
-                    if (info != 0) {
-                        write(nout, format_9980), "Cdrgvx", info;
-                    }
-                }
-                write(nout, format_9973);
-                continue;
-                //
-            } else if (Mlsamen(3, c3, "ZHB")) {
-                //
-                //        ------------------------------
-                //        ZHB:  Hermitian Band Reduction
-                //        ------------------------------
-                //
-                maxtyp = 15;
-                ntypes = min(maxtyp, ntypes);
-                Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                if (tsterr) {
-                    Cerrst("ZHB", nout);
-                }
-                //         CALL Cchkhb( NN, NVAL, NK, KVAL, MAXTYP, DOTYPE, ISEED, THRESH,
-                //     $                NOUT, &a[(1-1)+(1-1)*lda], NMAX, DR( 1, 1 ), DR( 1, 2 ),
-                //     $                &a[(1-1)+(2-1)*lda], NMAX, WORK, LWORK, RWORK, RESULT,
-                //     $                INFO )
-                Cchkhb2stg(nn, nval, nk, kval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &dr[0], &dr[nmax], &dr[2 * nmax], &dr[nmax * 3], &dr[nmax * 4], &a[nmax * nmax], nmax, work, lwork, rwork, result, info);
-                if (info != 0) {
-                    write(nout, format_9980), "Cchkhb", info;
-                }
-                //
-            } else if (Mlsamen(3, c3, "ZBB")) {
-                //
-                //        ------------------------------
-                //        ZBB:  General Band Reduction
-                //        ------------------------------
-                //
-                maxtyp = 15;
-                ntypes = min(maxtyp, ntypes);
-                Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-                for (i = 1; i <= nparms; i = i + 1) {
-                    nrhs = nsval[i - 1];
-                    //
-                    if (newsd == 0) {
-                        for (k = 1; k <= 4; k = k + 1) {
-                            iseed[k - 1] = ioldsd[k - 1];
-                        }
-                    }
-                    write(nout, "(/,/,1x,a3,':  NRHS =',i4)"), c3, nrhs;
-                    Cchkbb(nn, mval, nval, nk, kval, maxtyp, dotype, nrhs, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], 2 * nmax, &dr[0], &dr[nmax], &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], nmax, &a[nmax * nmax * 5], nmax, &a[nmax * nmax * 6], work, lwork, rwork, result, info);
-                    if (info != 0) {
-                        write(nout, format_9980), "Cchkbb", info;
-                    }
-                }
-                //
-            } else if (Mlsamen(3, c3, "GLM")) {
-                //
-                //        -----------------------------------------
-                //        GLM:  Generalized Linear Regression Model
-                //        -----------------------------------------
-                //
-                xlaenv(1, 1);
-                if (tsterr) {
-                    Cerrgg("GLM", nout);
-                }
-                Cckglm(nn, nval, mval, pval, ntypes, iseed, thresh, nmax, &a[0], &a[nmax * nmax], &b[0], &b[nmax * nmax], x, work, &dr[0], nin, nout, info);
-                if (info != 0) {
-                    write(nout, format_9980), "Cckglm", info;
-                }
-                //
-            } else if (Mlsamen(3, c3, "GQR")) {
-                //
-                //        ------------------------------------------
-                //        GQR:  Generalized QR and RQ factorizations
-                //        ------------------------------------------
-                //
-                xlaenv(1, 1);
-                if (tsterr) {
-                    Cerrgg("GQR", nout);
-                }
-                Cckgqr(nn, mval, nn, pval, nn, nval, ntypes, iseed, thresh, nmax, &a[0], &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], taua, &b[0], &b[nmax * nmax], &b[nmax * nmax * 2], &b[nmax * nmax * 3], &b[nmax * nmax * 4], taub, work, &dr[0], nin, nout, info);
-                if (info != 0) {
-                    write(nout, format_9980), "Cckgqr", info;
-                }
-                //
-            } else if (Mlsamen(3, c3, "GSV")) {
-                //
-                //        ----------------------------------------------
-                //        GSV:  Generalized Singular Value Decomposition
-                //        ----------------------------------------------
-                //
-                xlaenv(1, 1);
-                if (tsterr) {
-                    Cerrgg("GSV", nout);
-                }
-                Cckgsv(nn, mval, pval, nval, ntypes, iseed, thresh, nmax, &a[0], &a[nmax * nmax], &b[0], &b[nmax * nmax], &a[nmax * nmax * 2], &b[nmax * nmax * 2], &a[nmax * nmax * 3], alpha, beta, &b[nmax * nmax * 3], iwork, work, &dr[0], nin, nout, info);
-                if (info != 0) {
-                    write(nout, format_9980), "Cckgsv", info;
-                }
-                //
-            } else if (Mlsamen(3, c3, "CSD")) {
-                //
-                //        ----------------------------------------------
-                //        CSD:  CS Decomposition
-                //        ----------------------------------------------
-                //
-                xlaenv(1, 1);
-                if (tsterr) {
-                    Cerrgg("CSD", nout);
-                }
-                Cckcsd(nn, mval, pval, nval, ntypes, iseed, thresh, nmax, &a[0], &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], &a[nmax * nmax * 5], rwork, iwork, work, &dr[0], nin, nout, info);
-                if (info != 0) {
-                    write(nout, format_9980), "Cckcsd", info;
-                }
-                //
-            } else if (Mlsamen(3, c3, "LSE")) {
-                //
-                //        --------------------------------------
-                //        LSE:  Constrained Linear Least Squares
-                //        --------------------------------------
-                //
-                xlaenv(1, 1);
-                if (tsterr) {
-                    Cerrgg("LSE", nout);
-                }
-                Ccklse(nn, mval, pval, nval, ntypes, iseed, thresh, nmax, &a[0], &a[nmax * nmax], &b[0], &b[nmax * nmax], x, work, &dr[0], nin, nout, info);
-                if (info != 0) {
-                    write(nout, format_9980), "Ccklse", info;
-                }
-            } else {
-                write(nout, star);
-                write(nout, star);
-                write(nout, format_9992), c3;
-            }
-            if (!(zgx || zxv)) {
-                continue;
+            if (zxv) {
+                strncpy(c3, "ZXV", 3);
             }
         }
+        //
+        //     Reset the random number seed.
+        //
+        if (newsd == 0) {
+            for (k = 1; k <= 4; k = k + 1) {
+                iseed[k - 1] = ioldsd[k - 1];
+            }
+        }
+        //
+        if (Mlsamen(3, c3, "ZHS") || Mlsamen(3, c3, "NEP")) {
+            //
+            //        -------------------------------------
+            //        NEP:  Nonsymmetric Eigenvalue Problem
+            //        -------------------------------------
+            //        Vary the parameters
+            //           NB    = block size
+            //           NBMIN = minimum block size
+            //           NX    = crossover point
+            //           NS    = number of shifts
+            //           MAXB  = minimum submatrix size
+            //
+            maxtyp = 21;
+            ntypes = min(maxtyp, ntypes);
+            Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+            xlaenv(1, 1);
+            if (tsterr) {
+                Cerrhs("Chseqr", nout);
+            }
+            for (i = 1; i <= nparms; i = i + 1) {
+                xlaenv(1, nbval[i - 1]);
+                xlaenv(2, nbmin[i - 1]);
+                xlaenv(3, nxval[i - 1]);
+                xlaenv(12, max((INTEGER)11, inmin[i - 1]));
+                xlaenv(13, inwin[i - 1]);
+                xlaenv(14, inibl[i - 1]);
+                xlaenv(15, ishfts[i - 1]);
+                xlaenv(16, iacc22[i - 1]);
+                //
+                if (newsd == 0) {
+                    for (k = 1; k <= 4; k = k + 1) {
+                        iseed[k - 1] = ioldsd[k - 1];
+                    }
+                }
+                write(nout, "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4,', INMIN=',i4,"
+                            "', INWIN =',i4,', INIBL =',i4,', ISHFTS =',i4,', IACC22 =',i4)"),
+                    c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], max((INTEGER)11, inmin[i - 1]), inwin[i - 1], inibl[i - 1], ishfts[i - 1], iacc22[i - 1];
+                Cchkhs(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], nmax, &a[nmax * nmax * 5], &a[nmax * nmax * 6], &dc[0], &dc[nmax], &a[nmax * nmax * 7], &a[nmax * nmax * 8], &a[nmax * nmax * 9], &a[nmax * nmax * 10], &a[nmax * nmax * 11], &dc[nmax * 2], work, lwork, rwork, iwork, logwrk, &result[0], info);
+                if (info != 0) {
+                    write(nout, format_9980), "Cchkhs", info;
+                }
+            }
+            //
+        } else if (Mlsamen(3, c3, "ZST") || Mlsamen(3, c3, "SEP") || Mlsamen(3, c3, "SE2")) {
+            //
+            //        ----------------------------------
+            //        SEP:  Symmetric Eigenvalue Problem
+            //        ----------------------------------
+            //        Vary the parameters
+            //           NB    = block size
+            //           NBMIN = minimum block size
+            //           NX    = crossover point
+            //
+            maxtyp = 21;
+            ntypes = min(maxtyp, ntypes);
+            Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+            xlaenv(1, 1);
+            xlaenv(9, 25);
+            if (tsterr) {
+                Cerrst("ZST", nout);
+            }
+            for (i = 1; i <= nparms; i = i + 1) {
+                xlaenv(1, nbval[i - 1]);
+                xlaenv(2, nbmin[i - 1]);
+                xlaenv(3, nxval[i - 1]);
+                //
+                if (newsd == 0) {
+                    for (k = 1; k <= 4; k = k + 1) {
+                        iseed[k - 1] = ioldsd[k - 1];
+                    }
+                }
+                write(nout, format_9997), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1];
+                if (tstchk) {
+                    if (Mlsamen(3, c3, "SE2")) {
+                        Cchkst2stg(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &dr[0], &dr[nmax], &dr[nmax * 2], &dr[nmax * 3], &dr[nmax * 4], &dr[nmax * 5], &dr[nmax * 6], &dr[nmax * 7], &dr[nmax * 8], &dr[nmax * 9], &dr[nmax * 10], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], &a[nmax * nmax * 5], &dc[0], &a[nmax * nmax * 5], work, lwork, rwork, lwork, iwork, liwork, result, info);
+                    } else {
+                        Cchkst(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &dr[0], &dr[nmax], &dr[nmax * 2], &dr[nmax * 3], &dr[nmax * 4], &dr[nmax * 5], &dr[nmax * 6], &dr[nmax * 7], &dr[nmax * 8], &dr[nmax * 9], &dr[nmax * 10], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], &a[nmax * nmax * 4], &dc[0], &a[nmax * nmax * 5], work, lwork, rwork, lwork, iwork, liwork, result, info);
+                    }
+                    if (info != 0) {
+                        write(nout, format_9980), "Cchkst", info;
+                    }
+                }
+                if (tstdrv) {
+                    if (Mlsamen(3, c3, "SE2")) {
+                        Cdrvst2stg(nn, nval, 18, dotype, iseed, thresh, nout, &a[0], nmax, &dr[nmax * 2], &dr[nmax * 3], &dr[nmax * 4], &dr[nmax * 7], &dr[nmax * 8], &dr[nmax * 9], &a[nmax * nmax], nmax, &a[nmax * nmax * 2], &dc[0], &a[nmax * nmax * 3], work, lwork, rwork, lwork, iwork, liwork, result, info);
+                    } else {
+                        Cdrvst(nn, nval, 18, dotype, iseed, thresh, nout, &a[0], nmax, &dr[nmax * 2], &dr[nmax * 3], &dr[nmax * 4], &dr[nmax * 7], &dr[nmax * 8], &dr[nmax * 9], &a[nmax * nmax], nmax, &a[nmax * nmax * 2], &dc[0], &a[nmax * nmax * 3], work, lwork, rwork, lwork, iwork, liwork, result, info);
+                    }
+                    if (info != 0) {
+                        write(nout, format_9980), "Cdrvst", info;
+                    }
+                }
+            }
+            //
+        } else if (Mlsamen(3, c3, "ZSG")) {
+            //
+            //        ----------------------------------------------
+            //        ZSG:  Hermitian Generalized Eigenvalue Problem
+            //        ----------------------------------------------
+            //        Vary the parameters
+            //           NB    = block size
+            //           NBMIN = minimum block size
+            //           NX    = crossover point
+            //
+            maxtyp = 21;
+            ntypes = min(maxtyp, ntypes);
+            Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+            xlaenv(9, 25);
+            for (i = 1; i <= nparms; i = i + 1) {
+                xlaenv(1, nbval[i - 1]);
+                xlaenv(2, nbmin[i - 1]);
+                xlaenv(3, nxval[i - 1]);
+                //
+                if (newsd == 0) {
+                    for (k = 1; k <= 4; k = k + 1) {
+                        iseed[k - 1] = ioldsd[k - 1];
+                    }
+                }
+                write(nout, format_9997), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1];
+                if (tstchk) {
+                    //               CALL Cdrvsg( NN, NVAL, MAXTYP, DOTYPE, ISEED, THRESH,
+                    //     $                      NOUT, &a[(1-1)+(1-1)*lda], NMAX, &a[(1-1)+(2-1)*lda], NMAX,
+                    //     $                      DR( 1, 3 ), &a[(1-1)+(3-1)*lda], NMAX, &a[(1-1)+(4-1)*lda],
+                    //     $                      &a[(1-1)+(5-1)*lda], &a[(1-1)+(6-1)*lda], &a[(1-1)+(7-1)*lda], WORK,
+                    //     $                      LWORK, RWORK, LWORK, IWORK, LIWORK, RESULT,
+                    //     $                      INFO )
+                    Cdrvsg2stg(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], nmax, &dr[nmax], &dr[nmax * 2], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], &a[nmax * nmax * 4], &a[nmax * nmax * 5], &a[nmax * nmax * 6], work, lwork, rwork, lwork, iwork, liwork, result, info);
+                    if (info != 0) {
+                        write(nout, format_9980), "Cdrvsg", info;
+                    }
+                }
+            }
+            //
+        } else if (Mlsamen(3, c3, "ZBD") || Mlsamen(3, c3, "SVD")) {
+            //
+            //        ----------------------------------
+            //        SVD:  Singular Value Decomposition
+            //        ----------------------------------
+            //        Vary the parameters
+            //           NB    = block size
+            //           NBMIN = minimum block size
+            //           NX    = crossover point
+            //           NRHS  = number of right hand sides
+            //
+            maxtyp = 16;
+            ntypes = min(maxtyp, ntypes);
+            Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+            xlaenv(9, 25);
+            //
+            //        Test the error exits
+            //
+            xlaenv(1, 1);
+            if (tsterr && tstchk) {
+                Cerrbd("ZBD", nout);
+            }
+            if (tsterr && tstdrv) {
+                Cerred("ZBD", nout);
+            }
+            //
+            for (i = 1; i <= nparms; i = i + 1) {
+                nrhs = nsval[i - 1];
+                xlaenv(1, nbval[i - 1]);
+                xlaenv(2, nbmin[i - 1]);
+                xlaenv(3, nxval[i - 1]);
+                if (newsd == 0) {
+                    for (k = 1; k <= 4; k = k + 1) {
+                        iseed[k - 1] = ioldsd[k - 1];
+                    }
+                }
+                write(nout, "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4,', NRHS =',i4)"), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], nrhs;
+                if (tstchk) {
+                    Cchkbd(nn, mval, nval, maxtyp, dotype, nrhs, iseed, thresh, &a[0], nmax, &dr[0], &dr[nmax], &dr[nmax * 2], &dr[nmax * 3], &a[nmax * nmax], nmax, &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], nmax, &a[nmax * nmax * 5], nmax, &a[nmax * nmax * 6], &a[nmax * nmax * 7], work, lwork, rwork, nout, info);
+                    if (info != 0) {
+                        write(nout, format_9980), "Cchkbd", info;
+                    }
+                }
+                if (tstdrv) {
+                    Cdrvbd(nn, mval, nval, maxtyp, dotype, iseed, thresh, &a[0], nmax, &a[nmax * nmax], nmax, &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], &a[nmax * nmax * 4], &a[nmax * nmax * 5], &dr[0], &dr[nmax], &dr[2 * nmax], work, lwork, rwork, iwork, nout, info);
+                }
+            }
+            //
+        } else if (Mlsamen(3, c3, "ZEV")) {
+            //
+            //        --------------------------------------------
+            //        ZEV:  Nonsymmetric Eigenvalue Problem Driver
+            //              Cgeev (eigenvalues and eigenvectors)
+            //        --------------------------------------------
+            //
+            maxtyp = 21;
+            ntypes = min(maxtyp, ntypes);
+            if (ntypes <= 0) {
+                write(nout, format_9990), c3;
+            } else {
+                if (tsterr) {
+                    Cerred(c3, nout);
+                }
+                Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+                Cdrvev(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &dc[0], &dc[nmax], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], nmax, result, work, lwork, rwork, iwork, info);
+                if (info != 0) {
+                    write(nout, format_9980), "Cgeev", info;
+                }
+            }
+            write(nout, format_9973);
+            continue;
+            //
+        } else if (Mlsamen(3, c3, "ZES")) {
+            //
+            //        --------------------------------------------
+            //        ZES:  Nonsymmetric Eigenvalue Problem Driver
+            //              Cgees (Schur form)
+            //        --------------------------------------------
+            //
+            maxtyp = 21;
+            ntypes = min(maxtyp, ntypes);
+            if (ntypes <= 0) {
+                write(nout, format_9990), c3;
+            } else {
+                if (tsterr) {
+                    Cerred(c3, nout);
+                }
+                Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+                Cdrves(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &dc[0], &dc[nmax], &a[nmax * nmax * 3], nmax, result, work, lwork, rwork, iwork, logwrk, info);
+                if (info != 0) {
+                    write(nout, format_9980), "Cgees", info;
+                }
+            }
+            write(nout, format_9973);
+            continue;
+            //
+        } else if (Mlsamen(3, c3, "ZVX")) {
+            //
+            //        --------------------------------------------------------------
+            //        ZVX:  Nonsymmetric Eigenvalue Problem Expert Driver
+            //              Cgeevx (eigenvalues, eigenvectors and condition numbers)
+            //        --------------------------------------------------------------
+            //
+            maxtyp = 21;
+            ntypes = min(maxtyp, ntypes);
+            if (ntypes < 0) {
+                write(nout, format_9990), c3;
+            } else {
+                if (tsterr) {
+                    Cerred(c3, nout);
+                }
+                Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+                Cdrvvx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[0], nmax, &a[nmax * nmax], &dc[0], &dc[nmax], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], nmax, &dr[0], &dr[nmax], &dr[2 * nmax], &dr[nmax * 3], &dr[nmax * 4], &dr[nmax * 5], &dr[nmax * 6], &dr[nmax * 7], result, work, lwork, rwork, info);
+                if (info != 0) {
+                    write(nout, format_9980), "Cgeevx", info;
+                }
+            }
+            write(nout, format_9973);
+            continue;
+            //
+        } else if (Mlsamen(3, c3, "ZSX")) {
+            //
+            //        ---------------------------------------------------
+            //        ZSX:  Nonsymmetric Eigenvalue Problem Expert Driver
+            //              Cgeesx (Schur form and condition numbers)
+            //        ---------------------------------------------------
+            //
+            maxtyp = 21;
+            ntypes = min(maxtyp, ntypes);
+            if (ntypes < 0) {
+                write(nout, format_9990), c3;
+            } else {
+                if (tsterr) {
+                    Cerred(c3, nout);
+                }
+                Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+                Cdrvsx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &dc[0], &dc[nmax], &dc[nmax * 2], &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], result, work, lwork, rwork, logwrk, info);
+                if (info != 0) {
+                    write(nout, format_9980), "Cgeesx", info;
+                }
+            }
+            write(nout, format_9973);
+            continue;
+            //
+        } else if (Mlsamen(3, c3, "ZGG")) {
+            //
+            //        -------------------------------------------------
+            //        ZGG:  Generalized Nonsymmetric Eigenvalue Problem
+            //        -------------------------------------------------
+            //        Vary the parameters
+            //           NB    = block size
+            //           NBMIN = minimum block size
+            //           NS    = number of shifts
+            //           MAXB  = minimum submatrix size
+            //           IACC22: structured matrix multiply
+            //
+            maxtyp = 26;
+            ntypes = min(maxtyp, ntypes);
+            Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+            xlaenv(1, 1);
+            if (tstchk && tsterr) {
+                Cerrgg(c3, nout);
+            }
+            for (i = 1; i <= nparms; i = i + 1) {
+                xlaenv(1, nbval[i - 1]);
+                xlaenv(2, nbmin[i - 1]);
+                xlaenv(4, nsval[i - 1]);
+                xlaenv(8, mxbval[i - 1]);
+                xlaenv(16, iacc22[i - 1]);
+                xlaenv(5, nbcol[i - 1]);
+                //
+                if (newsd == 0) {
+                    for (k = 1; k <= 4; k = k + 1) {
+                        iseed[k - 1] = ioldsd[k - 1];
+                    }
+                }
+                write(nout, "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NS =',i4,', MAXB =',i4,"
+                            "', IACC22 =',i4,', NBCOL =',i4)"),
+                    c3, nbval[i - 1], nbmin[i - 1], nsval[i - 1], mxbval[i - 1], iacc22[i - 1], nbcol[i - 1];
+                tstdif = false;
+                thrshn = 10.0;
+                if (tstchk) {
+                    Cchkgg(nn, nval, maxtyp, dotype, iseed, thresh, tstdif, thrshn, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], &a[nmax * nmax * 5], &a[nmax * nmax * 6], &a[nmax * nmax * 7], &a[nmax * nmax * 8], nmax, &a[(1 - 1) + (10 - 1) * lda], &a[(1 - 1) + (11 - 1) * lda], &a[(1 - 1) + (12 - 1) * lda], &dc[0], &dc[nmax], &dc[nmax * 2], &dc[nmax * 3], &a[(1 - 1) + (13 - 1) * lda], &a[(1 - 1) + (14 - 1) * lda], work, lwork, rwork, logwrk, result, info);
+                    if (info != 0) {
+                        write(nout, format_9980), "Cchkgg", info;
+                    }
+                }
+            }
+            //
+        } else if (Mlsamen(3, c3, "ZGS")) {
+            //
+            //        -------------------------------------------------
+            //        ZGS:  Generalized Nonsymmetric Eigenvalue Problem
+            //              Cgges (Schur form)
+            //        -------------------------------------------------
+            //
+            maxtyp = 26;
+            ntypes = min(maxtyp, ntypes);
+            if (ntypes <= 0) {
+                write(nout, format_9990), c3;
+            } else {
+                if (tsterr) {
+                    Cerrgg(c3, nout);
+                }
+                Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+                Cdrges(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 6], nmax, &a[nmax * nmax * 7], &dc[0], &dc[nmax], work, lwork, rwork, result, logwrk, info);
+                //
+                if (info != 0) {
+                    write(nout, format_9980), "Cdrges", info;
+                }
+                //
+                // Blocked version
+                //
+                Cdrges3(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 6], nmax, &a[nmax * nmax * 7], &dc[0], &dc[nmax], work, lwork, rwork, result, logwrk, info);
+                //
+                if (info != 0) {
+                    write(nout, format_9980), "Cdrges3", info;
+                }
+            }
+            write(nout, format_9973);
+            continue;
+            //
+        } else if (zgx) {
+            //
+            //        -------------------------------------------------
+            //        ZGX  Generalized Nonsymmetric Eigenvalue Problem
+            //              Cggesx (Schur form and condition numbers)
+            //        -------------------------------------------------
+            //
+            maxtyp = 5;
+            ntypes = maxtyp;
+            if (nn < 0) {
+                write(nout, format_9990), c3;
+            } else {
+                if (tsterr) {
+                    Cerrgg(c3, nout);
+                }
+                Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+                xlaenv(5, 2);
+                Cdrgsx(nn, ncmax, thresh, nin, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], &a[nmax * nmax * 5], &dc[0], &dc[nmax], c, ncmax * ncmax, s, work, lwork, rwork, iwork, liwork, logwrk, info);
+                if (info != 0) {
+                    write(nout, format_9980), "Cdrgsx", info;
+                }
+            }
+            write(nout, format_9973);
+            continue;
+            //
+        } else if (Mlsamen(3, c3, "ZGV")) {
+            //
+            //        -------------------------------------------------
+            //        ZGV:  Generalized Nonsymmetric Eigenvalue Problem
+            //              Cggev (Eigenvalue/vector form)
+            //        -------------------------------------------------
+            //
+            maxtyp = 26;
+            ntypes = min(maxtyp, ntypes);
+            if (ntypes <= 0) {
+                write(nout, format_9990), c3;
+            } else {
+                if (tsterr) {
+                    Cerrgg(c3, nout);
+                }
+                Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+                Cdrgev(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 6], nmax, &a[nmax * nmax * 7], &a[nmax * nmax * 8], nmax, &dc[0], &dc[nmax], &dc[nmax * 2], &dc[nmax * 3], work, lwork, rwork, result, info);
+                if (info != 0) {
+                    write(nout, format_9980), "Cdrgev", info;
+                }
+                //
+                // Blocked version
+                //
+                xlaenv(16, 2);
+                Cdrgev3(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 6], nmax, &a[nmax * nmax * 7], &a[nmax * nmax * 8], nmax, &dc[0], &dc[nmax], &dc[nmax * 2], &dc[nmax * 3], work, lwork, rwork, result, info);
+                if (info != 0) {
+                    write(nout, format_9980), "Cdrgev3", info;
+                }
+            }
+            write(nout, format_9973);
+            continue;
+            //
+        } else if (zxv) {
+            //
+            //        -------------------------------------------------
+            //        ZXV:  Generalized Nonsymmetric Eigenvalue Problem
+            //              Cggevx (eigenvalue/vector with condition numbers)
+            //        -------------------------------------------------
+            //
+            maxtyp = 2;
+            ntypes = maxtyp;
+            if (nn < 0) {
+                write(nout, format_9990), c3;
+            } else {
+                if (tsterr) {
+                    Cerrgg(c3, nout);
+                }
+                Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+                Cdrgvx(nn, thresh, nin, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &dc[0], &dc[nmax], &a[nmax * nmax * 4], &a[nmax * nmax * 5], iwork[0], iwork[1], &dr[0], &dr[nmax], &dr[nmax * 2], &dr[nmax * 3], &dr[nmax * 4], &dr[nmax * 5], work, lwork, rwork, &iwork[2], liwork - 2, result, logwrk, info);
+                //
+                if (info != 0) {
+                    write(nout, format_9980), "Cdrgvx", info;
+                }
+            }
+            write(nout, format_9973);
+            continue;
+            //
+        } else if (Mlsamen(3, c3, "ZHB")) {
+            //
+            //        ------------------------------
+            //        ZHB:  Hermitian Band Reduction
+            //        ------------------------------
+            //
+            maxtyp = 15;
+            ntypes = min(maxtyp, ntypes);
+            Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+            if (tsterr) {
+                Cerrst("ZHB", nout);
+            }
+            //         CALL Cchkhb( NN, NVAL, NK, KVAL, MAXTYP, DOTYPE, ISEED, THRESH,
+            //     $                NOUT, &a[(1-1)+(1-1)*lda], NMAX, DR( 1, 1 ), DR( 1, 2 ),
+            //     $                &a[(1-1)+(2-1)*lda], NMAX, WORK, LWORK, RWORK, RESULT,
+            //     $                INFO )
+            Cchkhb2stg(nn, nval, nk, kval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &dr[0], &dr[nmax], &dr[2 * nmax], &dr[nmax * 3], &dr[nmax * 4], &a[nmax * nmax], nmax, work, lwork, rwork, result, info);
+            if (info != 0) {
+                write(nout, format_9980), "Cchkhb", info;
+            }
+            //
+        } else if (Mlsamen(3, c3, "ZBB")) {
+            //
+            //        ------------------------------
+            //        ZBB:  General Band Reduction
+            //        ------------------------------
+            //
+            maxtyp = 15;
+            ntypes = min(maxtyp, ntypes);
+            Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+            for (i = 1; i <= nparms; i = i + 1) {
+                nrhs = nsval[i - 1];
+                //
+                if (newsd == 0) {
+                    for (k = 1; k <= 4; k = k + 1) {
+                        iseed[k - 1] = ioldsd[k - 1];
+                    }
+                }
+                write(nout, "(/,/,1x,a3,':  NRHS =',i4)"), c3, nrhs;
+                Cchkbb(nn, mval, nval, nk, kval, maxtyp, dotype, nrhs, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], 2 * nmax, &dr[0], &dr[nmax], &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], nmax, &a[nmax * nmax * 5], nmax, &a[nmax * nmax * 6], work, lwork, rwork, result, info);
+                if (info != 0) {
+                    write(nout, format_9980), "Cchkbb", info;
+                }
+            }
+            //
+        } else if (Mlsamen(3, c3, "GLM")) {
+            //
+            //        -----------------------------------------
+            //        GLM:  Generalized Linear Regression Model
+            //        -----------------------------------------
+            //
+            xlaenv(1, 1);
+            if (tsterr) {
+                Cerrgg("GLM", nout);
+            }
+            Cckglm(nn, nval, mval, pval, ntypes, iseed, thresh, nmax, &a[0], &a[nmax * nmax], &b[0], &b[nmax * nmax], x, work, &dr[0], nin, nout, info);
+            if (info != 0) {
+                write(nout, format_9980), "Cckglm", info;
+            }
+            //
+        } else if (Mlsamen(3, c3, "GQR")) {
+            //
+            //        ------------------------------------------
+            //        GQR:  Generalized QR and RQ factorizations
+            //        ------------------------------------------
+            //
+            xlaenv(1, 1);
+            if (tsterr) {
+                Cerrgg("GQR", nout);
+            }
+            Cckgqr(nn, mval, nn, pval, nn, nval, ntypes, iseed, thresh, nmax, &a[0], &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], taua, &b[0], &b[nmax * nmax], &b[nmax * nmax * 2], &b[nmax * nmax * 3], &b[nmax * nmax * 4], taub, work, &dr[0], nin, nout, info);
+            if (info != 0) {
+                write(nout, format_9980), "Cckgqr", info;
+            }
+            //
+        } else if (Mlsamen(3, c3, "GSV")) {
+            //
+            //        ----------------------------------------------
+            //        GSV:  Generalized Singular Value Decomposition
+            //        ----------------------------------------------
+            //
+            xlaenv(1, 1);
+            if (tsterr) {
+                Cerrgg("GSV", nout);
+            }
+            Cckgsv(nn, mval, pval, nval, ntypes, iseed, thresh, nmax, &a[0], &a[nmax * nmax], &b[0], &b[nmax * nmax], &a[nmax * nmax * 2], &b[nmax * nmax * 2], &a[nmax * nmax * 3], alpha, beta, &b[nmax * nmax * 3], iwork, work, &dr[0], nin, nout, info);
+            if (info != 0) {
+                write(nout, format_9980), "Cckgsv", info;
+            }
+            //
+        } else if (Mlsamen(3, c3, "CSD")) {
+            //
+            //        ----------------------------------------------
+            //        CSD:  CS Decomposition
+            //        ----------------------------------------------
+            //
+            xlaenv(1, 1);
+            if (tsterr) {
+                Cerrgg("CSD", nout);
+            }
+            Cckcsd(nn, mval, pval, nval, ntypes, iseed, thresh, nmax, &a[0], &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], &a[nmax * nmax * 5], rwork, iwork, work, &dr[0], nin, nout, info);
+            if (info != 0) {
+                write(nout, format_9980), "Cckcsd", info;
+            }
+            //
+        } else if (Mlsamen(3, c3, "LSE")) {
+            //
+            //        --------------------------------------
+            //        LSE:  Constrained Linear Least Squares
+            //        --------------------------------------
+            //
+            xlaenv(1, 1);
+            if (tsterr) {
+                Cerrgg("LSE", nout);
+            }
+            Ccklse(nn, mval, pval, nval, ntypes, iseed, thresh, nmax, &a[0], &a[nmax * nmax], &b[0], &b[nmax * nmax], x, work, &dr[0], nin, nout, info);
+            if (info != 0) {
+                write(nout, format_9980), "Ccklse", info;
+            }
+        } else {
+            write(nout, star);
+            write(nout, star);
+            write(nout, format_9992), c3;
+        }
+        if (!(zgx || zxv)) {
+            continue;
+        }
     }
+    delete[] rwork;
+    delete[] s;
+    delete[] work;
+    delete[] a;
+    delete[] b;
+    delete[] c;
+    //
     write(nout, "(/,/,' End of tests')");
     s2 = time(NULL);
     write(nout, "(' Total time used = ',f12.2,' seconds',/)"), double(s2 - s1);
