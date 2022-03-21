@@ -147,20 +147,20 @@ $ cd ; fable.cout sample.f
 This is the release schedule for MPLAPACK 2.0.0
 | Action | Date | Status | Description |
 | --- | --- | --- | --- |
-| complex lin (lapack routine; mpfr)      | 2021/11/29 | ng |Failed: CHR, CHK, CSR, CSK, CQ3, CTZ, CTS| 
-| complex lin (driver routine; mpfr)      | 2021/11/29 | ng |Failed: CGB, CLS          | 
-| complex lin (lapack routine; gmp)       | 2021/11/29 | ng |Failed: CSR, CSK, CQ3, CTZ|
-| complex lin (driver routine; gmp)       | 2021/11/29 | ng |Falied: CGB               | 
-| complex lin (lapack routine; dd)        | 2021/11/30 | ng |Failed: CGE CGB CGT CPO CPP CPB CPT CHE CHR CHK CH2 CSA CS2 CHP CSY CSR CSK CSP CTR CTP CTB CQR CRQ CLQ CQL CQ3 CTZ |
-| complex lin (driver routine; dd)        | 2021/11/30 | ng |Failed: CGE CGB CGT CPO CPP CPB CHE CSA CH2 CHP CSY CSR CSK CSP CLS |
-| complex lin (lapack routine; qd)        | 2021/11/30 | ng |Failed: CGE CGB CGT CPO CPP CPB CHE CHR CHK CSA CS2 CHP CSY CSR CSK CSP CTR CTP CTB CQR CRQ CLQ CQL CQ3 CTZ|
-| complex lin (driver routine; qd)        | 2021/11/30 | ng |Failed: CGE CGB CGT CPO CPP  CPB  CHE  CSA CH2 CHP CSY CSR CSK CSP CLS |
-| complex lin (lapack routine; _Float128) | 2021/11/29 | ng |Failed: CGE CGB CGT CPO CPP CPB CHE CHR CHK CHA CSA CHP CSY CSR CSK CSP CTR CTP CTB CQ3 CTZ|
-| complex lin (driver routine; _Float128) | 2021/11/29 | ng |Failed:CGE CGB CGT CPO CPP CPB CHE CHA CSA CHP CSY CSR CSK CSP CLS|
-| complex lin (lapack routine; _Float64x) | 2021/11/30 | ng |Failed: CHR CHK CSR CSK CQ3 CTZ CTS |
-| complex lin (driver routine; _Float64x) | 2021/11/30 | ng |Failed: CGB CLS |
-| complex lin (lapack routine; double)    | 2021/11/29 | ng |Failed: CHR CHK CSR CSK CQ3 CTZ CTQ CTS |
-| complex lin (driver routine; double)    | 2021/11/29 | ng |Failed: CGB CLS         |
+| complex lin (lapack routine; mpfr)      | 2022/03/21 | ng |Failed: CHR, CHK, CSR, CSK, CQ3, CTZ, CTS| 
+| complex lin (driver routine; mpfr)      | 2022/03/21 | ng |Failed: CLS               | 
+| complex lin (lapack routine; gmp)       | 2022/03/21 | ng |Failed: CSR, CSK, CQ3, CTZ|
+| complex lin (driver routine; gmp)       | 2022/03/21 | ng |Falied: CLS (segfaults)   | 
+| complex lin (lapack routine; dd)        | 2022/03/21 | ng |Failed: CHR, CHK, CSR, CSK, CQ3, CTZ, CTS| 
+| complex lin (driver routine; dd)        | 2022/03/21 | ng |Failed: CLS |
+| complex lin (lapack routine; qd)        | 2022/03/21 | ng |Failed: CHR, CHK, CSR, CSK, CQ3, CTZ, CTS| 
+| complex lin (driver routine; qd)        | 2022/03/21 | ng |Failed: CLS |
+| complex lin (lapack routine; _Float128) | 2022/03/21 | ng |Failed: CHR CHK CSR CSK CQ3 CTZ CTS |
+| complex lin (driver routine; _Float128) | 2022/03/21 | ng |Failed: CLS|
+| complex lin (lapack routine; _Float64x) | 2022/03/21 | ng |Failed: CHR CHK CSR CSK CQ3 CTZ CTS |
+| complex lin (driver routine; _Float64x) | 2022/03/21 | ng |Failed: CGB CLS |
+| complex lin (lapack routine; double)    | 2022/03/21 | ng |Failed: CHR CHK CSR CSK CQ3 CTZ CTQ CTS |
+| complex lin (driver routine; double)    | 2022/03/21 | ng |Failed: CGB CLS         |
 | sqrt fixes for QD and DD                | 2021/12/12 |     | near overflow |
 | Impliment complex eig                |            |     |                          | 
 | Impliment RFP version                |            |     |                          | 
@@ -187,6 +187,7 @@ This is the release schedule for MPLAPACK 3.0.0
 * version 1.0.0 https://github.com/nakatamaho/mplapack/blob/master/doc/Release1.0.0.md
 
 # History
+* 2022/03/21 2.0 (develoment ongoing). Now complex lin tests have passed for all precisions.
 * 2021/11/1 1.0.1 release. Fixing dd and qd arithmetic by Inte One API.
 * 2021/10/1 1.0.0 release. Huge improvement; all real LAPACK routines are available; SVD, eigenproblem solver for non symmetric matrices are added. manual is available:  https://raw.githubusercontent.com/nakatamaho/mplapack/master/doc/manual/manual.pdf 
 * 2021/4/11 0.9.3 release. CentOS7 AArch64 support
