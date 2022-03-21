@@ -1,5 +1,5 @@
  .. test output of Rggbak .. 
- value of largest test error                  =9.0949470177292824e-23
+ value of largest test error                  =+9.0949470177292824e-23
  example number where Rggbal info is not 0    =   0
  example number where Rggbak(L) info is not 0 =   0
  example number where Rggbak(R) info is not 0 =   0
