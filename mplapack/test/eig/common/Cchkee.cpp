@@ -185,18 +185,25 @@ void Cchkee(void) {
     static const char *format_9997 = "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4)";
 
     std::string str;
+    istringstream iss;
+    char buf0[1024];
+    double dtmp;
+
     stringstream ss(str);
     s1 = time(NULL);
     fatal = false;
 //
 //     Return to here to read multiple sets of data
 //
-statement_10:
+while (1) {
+    getline(cin, str);
+    if (cin.bad() || cin.eof()) {
+        break;
+    }
     //
     //     Read the first line and set the 3-character test path
     //
-    getline(cin, str);
-    char line[1024];
+    stringstream ss(str);
     ss >> line;
     path[0] = line[0];
     path[1] = line[1];
@@ -538,7 +545,6 @@ statement_10:
         write(nout, format_9983), "NS:   ", nsval[1 - 1];
         write(nout, format_9983), "MAXB: ", mxbval[1 - 1];
     }
-#ifdef NOTYET
     else if (!zhb && !glm && !gqr && !gsv && !csd && !lse) {
         //
         //        For the other paths, the number of parameters can be varied
@@ -1579,8 +1585,7 @@ statement_190:
     if (!(zgx || zxv)) {
         goto statement_190;
     }
-#endif
-statement_380:
+ }
     write(nout, "(/,/,' End of tests')");
     s2 = time(NULL);
     write(nout, "(' Total time used = ',f12.2,' seconds',/)"), double(s2 - s1);
