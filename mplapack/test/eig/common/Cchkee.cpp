@@ -48,16 +48,17 @@ void Cchkee(void) {
     common cmn;
     common_read read(cmn);
     common_write write(cmn);
-    INTEGER allocatestatus = 0;
-    INTEGER need = 14;
+
     const INTEGER nmax = 132;
-    REAL d[nmax * 12];
-    time_t s1;
-    bool fatal = false;
+    const INTEGER ncmax = 20;
+    const INTEGER need = 14;
+    const INTEGER lwork = nmax * (5 * nmax + 20);
+    const INTEGER liwork = nmax * (nmax + 20);
+    const INTEGER maxin = 20;
+    const INTEGER maxt = 30;
     const INTEGER nout = 6;
     const INTEGER nin = 5;
-    char path[3];
-    COMPLEX dc[nmax * 6];
+
     bool nep = false;
     bool sep = false;
     bool svd = false;
@@ -81,73 +82,98 @@ void Cchkee(void) {
     bool zbk = false;
     bool zgl = false;
     bool zgk = false;
-    REAL thresh = 0.0;
-    bool tsterr = false;
-    INTEGER vers_major = 0;
-    INTEGER vers_minor = 0;
-    INTEGER vers_patch = 0;
-    INTEGER nn = 0;
-    const INTEGER maxin = 20;
-    INTEGER mval[maxin];
-    INTEGER i = 0;
-    char vname[32];
-    INTEGER pval[maxin];
-    INTEGER nval[maxin];
-    INTEGER nk = 0;
-    INTEGER kval[maxin];
-    INTEGER nbval[maxin];
-    INTEGER nbmin[maxin];
-    INTEGER nxval[maxin];
-    INTEGER inmin[maxin];
-    INTEGER inwin[maxin];
-    INTEGER inibl[maxin];
-    INTEGER ishfts[maxin];
-    INTEGER iacc22[maxin];
-    INTEGER nsval[maxin];
-    INTEGER mxbval[maxin];
-    INTEGER nparms = 0;
-    INTEGER nbcol[maxin];
-    REAL eps = 0.0;
+    bool fatal = false;
     bool tstchk = false;
-    bool tstdrv = false;
-    INTEGER newsd = 0;
-    INTEGER iseed[4];
-    char c3[3];
-    INTEGER lenp = 0;
-    INTEGER itmp = 0;
-    INTEGER i1 = 0;
-    const INTEGER maxt = 30;
-    INTEGER ntypes = 0;
-    char c1;
-    INTEGER k = 0;
-    INTEGER ic = 0;
-    INTEGER maxtyp = 0;
-    bool dotype[maxt];
-    const INTEGER lwork = nmax * (5 * nmax + 20);
-    REAL rwork = 0.0;
-    const INTEGER liwork = nmax * (nmax + 20);
-    INTEGER iwork[liwork];
-    bool logwrk[nmax];
-    REAL result[500];
-    INTEGER info = 0;
-    REAL dr[nmax * 12];
-    INTEGER nrhs = 0;
     bool tstdif = false;
-    REAL thrshn = 0.0;
-    const INTEGER ncmax = 20;
-    REAL s = 0.0;
-    COMPLEX x[5 * nmax];
-    COMPLEX taua[nmax];
-    COMPLEX taub[nmax];
-    REAL alpha[nmax];
-    REAL beta[nmax];
-    time_t s2 = 0.0;
+    bool tstdrv = false;
+    bool tsterr = false;
+
+    char c1[2];
+    char c3[4];
+    char path[4];
+    char vname[32];
+    char line[1024];
+
+    INTEGER i = 0;
+    INTEGER i1 = 0;
+    INTEGER ic = 0;
+    INTEGER info = 0;
+    INTEGER itmp = 0;
+    INTEGER k = 0;
+    INTEGER lenp = 0;
+    INTEGER maxtyp = 0;
+    INTEGER newsd = 0;
+    INTEGER nk = 0;
+    INTEGER nn = 0;
+    INTEGER nparms = 0;
+    INTEGER nrhs = 0;
+    INTEGER ntypes = 0;
+
     INTEGER mplapack_vers_major = 0;
     INTEGER mplapack_vers_minor = 0;
     INTEGER mplapack_vers_patch = 0;
     INTEGER lapack_vers_major = 0;
     INTEGER lapack_vers_minor = 0;
     INTEGER lapack_vers_patch = 0;
+    INTEGER n_threads = 0;
+
+    REAL eps = 0.0;
+    time_t s1 = 0.0;
+    time_t s2 = 0.0;
+    REAL thresh = 0.0;
+    REAL thrshn = 0.0;
+
+    bool dotype[maxt];
+    bool logwrk[nmax];
+
+    INTEGER ioldsd[4];
+    INTEGER iseed[4];
+    INTEGER iwork[liwork];
+    INTEGER kval[maxin];
+    INTEGER mval[maxin];
+    INTEGER mxbval[maxin];
+    INTEGER nbcol[maxin];
+    INTEGER nbmin[maxin];
+    INTEGER nbval[maxin];
+    INTEGER nsval[maxin];
+    INTEGER nval[maxin];
+    INTEGER nxval[maxin];
+    INTEGER pval[maxin];
+    INTEGER inmin[maxin];
+    INTEGER inwin[maxin];
+    INTEGER inibl[maxin];
+    INTEGER ishfts[maxin];
+    INTEGER iacc22[maxin];
+
+    REAL alpha[nmax];
+    REAL beta[nmax];
+    REAL dr[nmax * 12];
+    REAL result[500];
+
+    COMPLEX dc[nmax * 6];
+    COMPLEX taua[nmax];
+    COMPLEX taub[nmax];
+    COMPLEX x[5 * nmax];
+
+    COMPLEX *s = new COMPLEX[nmax * nmax];
+    COMPLEX *a = new COMPLEX[nmax * nmax * need];
+    COMPLEX *b = new COMPLEX[nmax * nmax * 5];
+    COMPLEX *c = new COMPLEX[ncmax * ncmax * ncmax * ncmax];
+    REAL *rwork = new REAL[lwork];
+    COMPLEX *work = new COMPLEX[lwork];
+
+    for (int ppp = 0; ppp < nmax * nmax; ppp++)
+        s[ppp] = 0.0;
+    for (int ppp = 0; ppp < nmax * nmax * need; ppp++)
+        a[ppp] = 0.0;
+    for (int ppp = 0; ppp < nmax * nmax * 5; ppp++)
+        b[ppp] = 0.0;
+    for (int ppp = 0; ppp < ncmax * ncmax * ncmax * ncmax; ppp++)
+        c[ppp] = 0.0;
+    for (int ppp = 0; ppp < lwork; ppp++)
+        rwork[ppp] = 0.0;
+    for (int ppp = 0; ppp < lwork; ppp++)
+        work[ppp] = 0.0;
     static const char *format_9973 = "(/,1x,71('-'))";
     static const char *format_9980 = "(' *** Error code from ',a,' = ',i4)";
     static const char *format_9981 = "(' Relative machine ',a,' is taken to be',d16.6)";
@@ -157,51 +183,7 @@ void Cchkee(void) {
     static const char *format_9990 = "(/,/,1x,a3,' routines were not tested')";
     static const char *format_9992 = "(1x,a3,':  Unrecognized path name')";
     static const char *format_9997 = "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4)";
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Allocatable Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Arrays in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Allocate memory dynamically ..
-    //
 
-    COMPLEX *a = new COMPLEX[nmax * nmax * need];
-    COMPLEX *b = new COMPLEX[nmax * nmax * 5];
-    COMPLEX *c = new COMPLEX[ncmax * ncmax * ncmax * ncmax];
-    COMPLEX *work = new COMPLEX[lwork];
-
-    for (int ppp = 0; ppp < nmax * nmax * need; ppp++)
-        a[ppp] = 0.0;
-    for (int ppp = 0; ppp < nmax * nmax * 5; ppp++)
-        b[ppp] = 0.0;
-    for (int ppp = 0; ppp < ncmax * ncmax * ncmax * ncmax; ppp++)
-        c[ppp] = 0.0;
-    for (int ppp = 0; ppp < lwork; ppp++)
-        work[ppp] = 0.0;
     std::string str;
     stringstream ss(str);
     s1 = time(NULL);
