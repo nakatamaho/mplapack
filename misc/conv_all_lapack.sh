@@ -35,6 +35,7 @@ newfilename=`basename $_file | sed -e 's/^dzsum1/RCsum1/g' -e 's/^zdscal/CRscal/
 if [ ! -e $newfilename ]; then
 cat ${oldfilename}.cpp | bash BLAS_LIST | bash LAPACK_LIST | sed 's/dlamch/Rlamch/g' > ${newfilename}.cpp_
 mv ${newfilename}.cpp_  ${newfilename}.cpp
+grep -v star]\) ${newfilename}.cpp > ${newfilename}.cpp_ ; mv ${newfilename}.cpp_ ${newfilename}.cpp
 sed -i -e 's/vect = "N";/vect = \'\'N\'';/g' ${newfilename}.cpp
 sed -i -e 's/vect = "U";/vect = \'\'U\'';/g' ${newfilename}.cpp
 sed -i -e 's/trans = "N";/trans = \'\'N\'';/g' ${newfilename}.cpp
