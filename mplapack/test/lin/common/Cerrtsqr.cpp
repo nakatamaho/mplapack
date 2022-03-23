@@ -70,9 +70,9 @@ void Cerrtsqr(const char *path, INTEGER const nunit) {
     //     Cgeqr
     //
     strncpy(srnamt, "Cgeqr", srnamt_len);
-    infot = 1;
     COMPLEX tau[nmax];
     INTEGER info = 0;
+    infot = 1;
     Cgeqr(-1, 0, a, 1, tau, 1, w, 1, info);
     chkxer("Cgeqr", infot, nout, lerr, ok);
     infot = 2;

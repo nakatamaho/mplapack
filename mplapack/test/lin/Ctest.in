@@ -10,7 +10,7 @@ Data file for testing MULTIPLE PRECISION COMPLEX MPLAPACK linear equation routin
 1 0 5 9 1              Values of NX (crossover point)
 3                      Number of values of RANK
 30 50 90               Values of rank (as a % of N)
-30.0                   Threshold value of test ratio
+60.0                   Threshold value of test ratio
 T                      Put T to test the LAPACK routines
 T                      Put T to test the driver routines
 T                      Put T to test the error exits

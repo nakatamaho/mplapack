@@ -92,7 +92,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     const REAL zero = 0.0;
     REAL dtemp = 0.0;
     const REAL onehalf = 0.5e+0;
-    REAL identifier_const = 0.0;
+    REAL _const = 0.0;
     COMPLEX block[2 * 2];
     INTEGER ldblock = 2;
     COMPLEX zdummy[1];
@@ -392,7 +392,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     result[3 - 1] = zero;
                     dtemp = zero;
                     //
-                    identifier_const = ((pow2(alpha) - one) / (pow2(alpha) - onehalf)) / (one - alpha);
+                    _const = ((pow2(alpha) - one) / (pow2(alpha) - onehalf)) / (one - alpha);
                     //
                     if (iuplo == 1) {
                         //
@@ -422,7 +422,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         //
                         //                    DTEMP should be bounded by CONST
                         //
-                        dtemp = dtemp - identifier_const + thresh;
+                        dtemp = dtemp - _const + thresh;
                         if (dtemp > result[3 - 1]) {
                             result[3 - 1] = dtemp;
                         }
@@ -460,7 +460,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         //
                         //                    DTEMP should be bounded by CONST
                         //
-                        dtemp = dtemp - identifier_const + thresh;
+                        dtemp = dtemp - _const + thresh;
                         if (dtemp > result[3 - 1]) {
                             result[3 - 1] = dtemp;
                         }
@@ -478,7 +478,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     result[4 - 1] = zero;
                     dtemp = zero;
                     //
-                    identifier_const = ((pow2(alpha) - one) / (pow2(alpha) - onehalf)) * ((one + alpha) / (one - alpha));
+                    _const = ((pow2(alpha) - one) / (pow2(alpha) - onehalf)) * ((one + alpha) / (one - alpha));
                     //
                     if (iuplo == 1) {
                         //
@@ -510,7 +510,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                             //
                             //                       DTEMP should be bounded by CONST
                             //
-                            dtemp = dtemp - identifier_const + thresh;
+                            dtemp = dtemp - _const + thresh;
                             if (dtemp > result[4 - 1]) {
                                 result[4 - 1] = dtemp;
                             }
@@ -553,7 +553,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                             //
                             //                       DTEMP should be bounded by CONST
                             //
-                            dtemp = dtemp - identifier_const + thresh;
+                            dtemp = dtemp - _const + thresh;
                             if (dtemp > result[4 - 1]) {
                                 result[4 - 1] = dtemp;
                             }

@@ -25,6 +25,7 @@ newfilename=`basename $_file | sed -e 's/^zdscal/CRscal/g' -e 's/^zdrot/CRrot/g'
 cat ${oldfilename}.cpp | bash BLAS_LIST > ${newfilename}.cpp_
 mv ${newfilename}.cpp_  ${newfilename}.cpp
 sed -i -e 's/const &/const /g' ${newfilename}.cpp
+grep -v star]\) ${newfilename}.cpp > ${newfilename}.cpp_ ; mv ${newfilename}.cpp_ ${newfilename}.cpp
 rm ${oldfilename}.cpp
 done
 mv BLAS_LIST ~/mplapack/misc/
