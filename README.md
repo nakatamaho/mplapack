@@ -162,7 +162,7 @@ This is the release schedule for MPLAPACK 2.0.0
 | complex lin (lapack routine; double)    | 2022/03/21 | ng |Failed: CHR CHK CSR CSK CQ3 CTZ CTQ CTS |
 | complex lin (driver routine; double)    | 2022/03/21 | ng |Failed: CGB CLS         |
 | sqrt fixes for QD and DD                | 2021/12/12 |     | near overflow |
-| Impliment complex eig                |            |     |                          | 
+| complex eig cbal.in                     | 2022/03/25  | ok  | Testing the balancing of a general matrix  | 
 | Impliment RFP version                |            |     |                          | 
 | Impliment mixed precision version    |            |     |                          | 
 | make tar ball for distribution       |            |     |                          |
