@@ -91,61 +91,61 @@ void Cchkbk(INTEGER const nin, INTEGER const nout) {
     double dtmp_i;
     //
     while (getline(cin, str)) {
-    read(nin, star), n, ilo, ihi;
-    if (n == 0)
-        break;
-    //
-    {
-        read_loop rloop(cmn, nin, star);
+        read(nin, star), n, ilo, ihi;
+        if (n == 0)
+            break;
+        //
+        {
+            read_loop rloop(cmn, nin, star);
+            for (i = 1; i <= n; i = i + 1) {
+                rloop, dtmp;
+                scale[i - 1] = dtmp;
+            }
+        }
         for (i = 1; i <= n; i = i + 1) {
-            rloop, dtmp;
-            scale[i - 1] = dtmp;
+            {
+                read_loop rloop(cmn, nin, star);
+                for (j = 1; j <= n; j = j + 1) {
+                    rloop, dtmp;
+                    e[(i - 1) + (j - 1) * lde] = dtmp;
+                }
+            }
         }
-    }
-    for (i = 1; i <= n; i = i + 1) {
-        {
-            read_loop rloop(cmn, nin, star);
+        //
+        for (i = 1; i <= n; i = i + 1) {
+            {
+                read_loop rloop(cmn, nin, star);
+                for (j = 1; j <= n; j = j + 1) {
+                    rloop, dtmp;
+                    ein[(i - 1) + (j - 1) * ldein] = dtmp;
+                }
+            }
+        }
+        //
+        knt++;
+        Cgebak("B", "R", n, ilo, ihi, scale, n, e, lde, info);
+        //
+        if (info != 0) {
+            ninfo++;
+            lmax[1 - 1] = knt;
+        }
+        //
+        vmax = zero;
+        for (i = 1; i <= n; i = i + 1) {
             for (j = 1; j <= n; j = j + 1) {
-                rloop, dtmp;
-                e[(i - 1) + (j - 1) * lde] = dtmp;
+                x = abs1(e[(i - 1) + (j - 1) * lde] - ein[(i - 1) + (j - 1) * ldein]) / eps;
+                if (abs1(e[(i - 1) + (j - 1) * lde]) > safmin) {
+                    x = x / abs1(e[(i - 1) + (j - 1) * lde]);
+                }
+                vmax = max(vmax, x);
             }
         }
-    }
-    //
-    for (i = 1; i <= n; i = i + 1) {
-        {
-            read_loop rloop(cmn, nin, star);
-            for (j = 1; j <= n; j = j + 1) {
-                rloop, dtmp;
-                ein[(i - 1) + (j - 1) * ldein] = dtmp;
-            }
+        //
+        if (vmax > rmax) {
+            lmax[2 - 1] = knt;
+            rmax = vmax;
         }
-    }
-    //
-    knt++;
-    Cgebak("B", "R", n, ilo, ihi, scale, n, e, lde, info);
-    //
-    if (info != 0) {
-        ninfo++;
-        lmax[1 - 1] = knt;
-    }
-    //
-    vmax = zero;
-    for (i = 1; i <= n; i = i + 1) {
-        for (j = 1; j <= n; j = j + 1) {
-            x = abs1(e[(i - 1) + (j - 1) * lde] - ein[(i - 1) + (j - 1) * ldein]) / eps;
-            if (abs1(e[(i - 1) + (j - 1) * lde]) > safmin) {
-                x = x / abs1(e[(i - 1) + (j - 1) * lde]);
-            }
-            vmax = max(vmax, x);
-        }
-    }
-    //
-    if (vmax > rmax) {
-        lmax[2 - 1] = knt;
-        rmax = vmax;
-    }
-    //
+        //
     }
 //
 statement_60:
