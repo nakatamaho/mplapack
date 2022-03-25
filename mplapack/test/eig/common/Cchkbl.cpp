@@ -38,6 +38,16 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <regex>
+
+using namespace std;
+using std::regex;
+using std::regex_replace;
+
 inline REAL abs1(COMPLEX cdum) { return abs(cdum.real()) + abs(cdum.imag()); }
 
 void Cchkbl(INTEGER const nin, INTEGER const nout) {
@@ -74,33 +84,6 @@ void Cchkbl(INTEGER const nin, INTEGER const nout) {
     INTEGER info = 0;
     REAL temp = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    // ======================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     lmax[1 - 1] = 0;
     lmax[2 - 1] = 0;
     lmax[3 - 1] = 0;
@@ -108,76 +91,114 @@ void Cchkbl(INTEGER const nin, INTEGER const nout) {
     knt = 0;
     rmax = zero;
     vmax = zero;
+//    sfmin = 2.2250738585072014E-308; // Rlamch("S");
     sfmin = Rlamch("S");
-    meps = Rlamch("E");
-//
-statement_10:
+    string str;
+    istringstream iss;
+    double dtmp_r;
+    double dtmp_i;
     //
-    read(nin, star), n;
-    if (n == 0) {
-        goto statement_70;
-    }
-    for (i = 1; i <= n; i = i + 1) {
-        {
-            read_loop rloop(cmn, nin, star);
-            for (j = 1; j <= n; j = j + 1) {
-                rloop, ctmp;
-                a[(i - 1) + (j - 1) * lda] = ctmp;
-            }
-        }
-    }
-    //
-    read(nin, star), iloin, ihiin;
-    for (i = 1; i <= n; i = i + 1) {
-        {
-            read_loop rloop(cmn, nin, star);
-            for (j = 1; j <= n; j = j + 1) {
-                rloop, ctmp;
-                ain[(i - 1) + (j - 1) * ldain] = ctmp;
-            }
-        }
-    }
-    {
-        read_loop rloop(cmn, nin, star);
+    while (getline(cin, str)) {
+        stringstream ss(str);
+        ss >> n;
+        if (n == 0)
+            break;
         for (i = 1; i <= n; i = i + 1) {
-            rloop, scalin[i - 1];
+            getline(cin, str);
+            string ____r = regex_replace(str, regex(","), " ");
+            string ___r = regex_replace(____r, regex("\\)"), " ");
+            string __r = regex_replace(___r, regex("\\("), " ");
+            string _r = regex_replace(__r, regex("D\\+"), "e+");
+            str = regex_replace(_r, regex("D\\-"), "e-");
+            iss.clear();
+            iss.str(str);
+            for (j = 1; j <= n; j = j + 1) {
+                iss >> dtmp_r;
+                iss >> dtmp_i;
+                a[(i - 1) + (j - 1) * lda] = COMPLEX(dtmp_r, dtmp_i);
+            }
         }
-    }
-    //
-    anorm = Clange("M", n, n, a, lda, dummy);
-    knt++;
-    Cgebal("B", n, a, lda, ilo, ihi, scale, info);
-    //
-    if (info != 0) {
-        ninfo++;
-        lmax[1 - 1] = knt;
-    }
-    //
-    if (ilo != iloin || ihi != ihiin) {
-        ninfo++;
-        lmax[2 - 1] = knt;
-    }
-    //
-    for (i = 1; i <= n; i = i + 1) {
-        for (j = 1; j <= n; j = j + 1) {
-            temp = max(abs1(a[(i - 1) + (j - 1) * lda]), abs1(ain[(i - 1) + (j - 1) * ldain]));
+        getline(cin, str);
+        getline(cin, str);
+        istringstream iss(str);
+        iss >> iloin;
+        iss >> ihiin;
+        for (i = 1; i <= n; i = i + 1) {
+            getline(cin, str);
+            string ____r = regex_replace(str, regex(","), " ");
+            string ___r = regex_replace(____r, regex("\\)"), " ");
+            string __r = regex_replace(___r, regex("\\("), " ");
+            string _r = regex_replace(__r, regex("D\\+"), "e+");
+            str = regex_replace(_r, regex("D\\-"), "e-");
+            iss.clear();
+            iss.str(str);
+            for (j = 1; j <= n; j = j + 1) {
+                iss >> dtmp_r;
+                iss >> dtmp_i;
+                ain[(i - 1) + (j - 1) * lda] = COMPLEX(dtmp_r, dtmp_i);
+            }
+        }
+        getline(cin, str);
+        getline(cin, str);
+
+        string _r = regex_replace(str, regex("D\\+"), "e+");
+        str = regex_replace(_r, regex("D\\-"), "e-");
+        iss.clear();
+        iss.str(str);
+        for (i = 1; i <= n; i = i + 1) {
+            iss >> dtmp;
+            scalin[i - 1] = dtmp;
+        }
+
+        getline(cin, str);
+        //
+        anorm = Clange("M", n, n, a, lda, dummy);
+        knt++;
+
+        printf("split_long_rows(0)\n");
+        printf("a=");printmat(n,n,ain,lda);printf("\n");
+        Cgebal("B", n, a, lda, ilo, ihi, scale, info);
+        printf("a_in=");printmat(n,n,ain,lda);printf("\n");
+        printf("aout=");printmat(n,n,a,lda);printf("\n");
+        printf("scale=");printvec(scale,n);printf("\n");
+        printf("scale_in=");printvec(scalin,n);printf("\n");
+        printf("iloin=%d\n", (int)iloin);
+        printf("ilo=%d\n", (int)ilo);
+        printf("ihiin=%d\n", (int)ihiin);
+        printf("ihi=%d\n", (int)ihi);
+        // printf("\n");
+
+        //
+        if (info != 0) {
+            ninfo++;
+            lmax[1 - 1] = knt;
+        }
+        //
+        if (ilo != iloin || ihi != ihiin) {
+            ninfo++;
+            lmax[2 - 1] = knt;
+        }
+        //
+        for (i = 1; i <= n; i = i + 1) {
+            for (j = 1; j <= n; j = j + 1) {
+                temp = max(abs1(a[(i - 1) + (j - 1) * lda]), abs1(ain[(i - 1) + (j - 1) * ldain]));
+                temp = max(temp, sfmin);
+                vmax = max(vmax, REAL(abs1(a[(i - 1) + (j - 1) * lda] - ain[(i - 1) + (j - 1) * ldain]) / temp));
+            }
+        }
+        //
+        for (i = 1; i <= n; i = i + 1) {
+            temp = max(scale[i - 1], scalin[i - 1]);
             temp = max(temp, sfmin);
-            vmax = max(vmax, REAL(abs1(a[(i - 1) + (j - 1) * lda] - ain[(i - 1) + (j - 1) * ldain]) / temp));
+            vmax = max(vmax, REAL(abs(scale[i - 1] - scalin[i - 1]) / temp));
         }
+        //
+        if (vmax > rmax) {
+            lmax[3 - 1] = knt;
+            rmax = vmax;
+        }
+        //
     }
-    //
-    for (i = 1; i <= n; i = i + 1) {
-        temp = max(scale[i - 1], scalin[i - 1]);
-        temp = max(temp, sfmin);
-        vmax = max(vmax, REAL(abs(scale[i - 1] - scalin[i - 1]) / temp));
-    }
-    //
-    if (vmax > rmax) {
-        lmax[3 - 1] = knt;
-        rmax = vmax;
-    }
-    //
-    goto statement_10;
 //
 statement_70:
     //
