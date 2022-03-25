@@ -1,6 +1,6 @@
 
  Tests of the CS Decomposition routines
- Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.0
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.1
  Based on original LAPACK VERSION 3.9.1
 
 The following parameter values will be used:
