@@ -29,8 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-//#include <blas.h>
-//#include <lapack.h>
+#include <blas.h>
+#include <lapack.h>
 
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
@@ -156,7 +156,7 @@ void Cchkbl(INTEGER const nin, INTEGER const nout) {
         //
         anorm = Clange("M", n, n, a, lda, dummy);
         knt++;
-/*
+
         printf("split_long_rows(0)\n");
         printf("a=");
         printmat(n, n, ain, lda);
@@ -182,9 +182,9 @@ void Cchkbl(INTEGER const nin, INTEGER const nout) {
             delete[] a_d;
             delete[] scale_d;
         }
-*/
+
         Cgebal("B", n, a, lda, ilo, ihi, scale, info);
-/*
+
         printf("a_in=");
         printmat(n, n, ain, lda);
         printf("\n");
@@ -201,7 +201,7 @@ void Cchkbl(INTEGER const nin, INTEGER const nout) {
         printf("ilo=%d\n", (int)ilo);
         printf("ihiin=%d\n", (int)ihiin);
         printf("ihi=%d\n", (int)ihi);
-*/
+
         //
         if (info != 0) {
             ninfo++;
