@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -38,6 +38,16 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <regex>
+
+using namespace std;
+using std::regex;
+using std::regex_replace;
+
 inline REAL abs1(COMPLEX cdum) { return abs(cdum.real()) + abs(cdum.imag()); }
 
 void Cchkbk(INTEGER const nin, INTEGER const nout) {
@@ -68,33 +78,6 @@ void Cchkbk(INTEGER const nin, INTEGER const nout) {
     REAL x = 0.0;
     double dtmp;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    // ======================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     lmax[1 - 1] = 0;
     lmax[2 - 1] = 0;
     ninfo = 0;
@@ -102,13 +85,15 @@ void Cchkbk(INTEGER const nin, INTEGER const nout) {
     rmax = zero;
     eps = Rlamch("E");
     safmin = Rlamch("S");
-//
-statement_10:
+    string str;
+    istringstream iss;
+    double dtmp_r;
+    double dtmp_i;
     //
+    while (getline(cin, str)) {
     read(nin, star), n, ilo, ihi;
-    if (n == 0) {
-        goto statement_60;
-    }
+    if (n == 0)
+        break;
     //
     {
         read_loop rloop(cmn, nin, star);
@@ -161,7 +146,7 @@ statement_10:
         rmax = vmax;
     }
     //
-    goto statement_10;
+    }
 //
 statement_60:
     //
