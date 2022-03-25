@@ -29,6 +29,9 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+//#include <blas.h>
+//#include <lapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
@@ -153,7 +156,52 @@ void Cchkbl(INTEGER const nin, INTEGER const nout) {
         //
         anorm = Clange("M", n, n, a, lda, dummy);
         knt++;
+/*
+        printf("split_long_rows(0)\n");
+        printf("a=");
+        printmat(n, n, ain, lda);
+        printf("\n");
+        {
+            doublecomplex *a_d = new doublecomplex[lda * lda];
+            double *scale_d = new double[lda];
+            int n_d, lda_d, ilo_d, ihi_d, info_d;
+            n_d = (int)n;
+            lda_d = (int)lda;
+            for (int p = 1; p <= n; p++) {
+                for (int q = 1; q <= n; q++) {
+                    a_d[(p - 1) + (q - 1) * lda] = doublecomplex(cast2double(a[(p - 1) + (q - 1) * lda].real()), cast2double(a[(p - 1) + (q - 1) * lda].imag()));
+                }
+            }
+            zgebal_f77("B", &n_d, a_d, &lda_d, &ilo_d, &ihi_d, scale_d, &info_d);
+            printf("aout_d=");
+            printmat(n, n, a_d, lda);
+            printf("\n");
+            printf("scale_d=");
+            printvec(scale_d, n);
+            printf("\n");
+            delete[] a_d;
+            delete[] scale_d;
+        }
+*/
         Cgebal("B", n, a, lda, ilo, ihi, scale, info);
+/*
+        printf("a_in=");
+        printmat(n, n, ain, lda);
+        printf("\n");
+        printf("aout=");
+        printmat(n, n, a, lda);
+        printf("\n");
+        printf("scale=");
+        printvec(scale, n);
+        printf("\n");
+        printf("scale_in=");
+        printvec(scalin, n);
+        printf("\n");
+        printf("iloin=%d\n", (int)iloin);
+        printf("ilo=%d\n", (int)ilo);
+        printf("ihiin=%d\n", (int)ihiin);
+        printf("ihi=%d\n", (int)ihi);
+*/
         //
         if (info != 0) {
             ninfo++;
