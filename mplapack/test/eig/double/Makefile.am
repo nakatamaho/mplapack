@@ -62,9 +62,9 @@ Rsg.out: ../Rsg.in xeigtstR_double
 	@echo DSG: Testing Symmetric Generalized Eigenvalue Problem routines
 	./xeigtstR_double < ../Rsg.in > $@ 2>&1
 
-Rbal.out: ../Rbal.in xeigtstR_double
+Rbal.out: ../Rbal_double.in xeigtstR_double
 	@echo Rgebal: Testing the balancing of a general matrix
-	./xeigtstR_double < ../Rbal.in > $@ 2>&1
+	./xeigtstR_double < ../Rbal_double.in > $@ 2>&1
 
 Rbak.out: ../Rbak.in xeigtstR_double
 	@echo Rgebak: Testing the back transformation of balanced matrix
