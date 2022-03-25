@@ -17,7 +17,7 @@ xeigtstC_double_SOURCES  = ../common/Cchkee.cpp
 xeigtstC_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_double_CXXFLAGS = $(cxxflags)
 
-check: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.out Rsg.out Rbal.out Rbak.out Rgbal.out Rgbak.out Rbb.out Rglm.out Rgqr.out Rgsv.out Rcsd.out Rlse.out
+check: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.out Rsg.out Rbal.out Rbak.out Rgbal.out Rgbak.out Rbb.out Rglm.out Rgqr.out Rgsv.out Rcsd.out Rlse.out Cbal.out
 
 clean-local:
 	rm -f *.out *~ \#*
@@ -101,3 +101,7 @@ Rcsd.out: ../csd.in xeigtstR_double
 Rlse.out: ../lse.in xeigtstR_double
 	@echo LSE: Testing Constrained Linear Least Squares routines
 	./xeigtstR_double < ../lse.in > $@ 2>&1
+
+Cbal.out: ../Cbal_double.in xeigtstC_double
+	@echo Cgebal: Testing the balancing of a general matrix
+	./xeigtstC_double < ../Cbal_double.in > $@ 2>&1

@@ -17,7 +17,7 @@ xeigtstC_mpfr_SOURCES  = ../common/Cchkee.cpp
 xeigtstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_mpfr_CXXFLAGS = $(cxxflags)
 
-check: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.out Rsg.out Rbal.out Rbak.out Rgbal.out Rgbak.out Rbb.out Rglm.out Rgqr.out Rgsv.out Rcsd.out Rlse.out
+check: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.out Rsg.out Rbal.out Rbak.out Rgbal.out Rgbak.out Rbb.out Rglm.out Rgqr.out Rgsv.out Rcsd.out Rlse.out Cbal.out
 
 clean-local:
 	rm -f *.out *~ \#*
@@ -101,3 +101,7 @@ Rcsd.out: ../csd.in xeigtstR_mpfr
 Rlse.out: ../lse.in xeigtstR_mpfr
 	@echo LSE: Testing Constrained Linear Least Squares routines
 	./xeigtstR_mpfr < ../lse.in > $@ 2>&1
+
+Cbal.out: ../Cbal.in xeigtstC_mpfr
+	@echo Cgebal: Testing the balancing of a general matrix
+	./xeigtstC_mpfr < ../Cbal.in > $@ 2>&1
