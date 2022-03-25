@@ -91,7 +91,6 @@ void Cchkbl(INTEGER const nin, INTEGER const nout) {
     knt = 0;
     rmax = zero;
     vmax = zero;
-//    sfmin = 2.2250738585072014E-308; // Rlamch("S");
     sfmin = Rlamch("S");
     string str;
     istringstream iss;
@@ -192,6 +191,7 @@ void Cchkbl(INTEGER const nin, INTEGER const nout) {
             temp = max(temp, sfmin);
             vmax = max(vmax, REAL(abs(scale[i - 1] - scalin[i - 1]) / temp));
         }
+        printf("error=");printnum(vmax);printf("\n");
         //
         if (vmax > rmax) {
             lmax[3 - 1] = knt;
