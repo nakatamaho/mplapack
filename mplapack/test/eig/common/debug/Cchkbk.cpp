@@ -95,8 +95,10 @@ void Cchkbk(INTEGER const nin, INTEGER const nout) {
         ss >> n;
         ss >> ilo;
         ss >> ihi;
+        // printf("n is %d, iss is %d, ihi is %d\n", (int)n, (int)ilo, (int)ihi);
         if (n == 0)
             break;
+        //
         getline(cin, str);
         string _r = regex_replace(str, regex("D\\+"), "e+");
         str = regex_replace(_r, regex("D\\-"), "e-");
@@ -106,6 +108,7 @@ void Cchkbk(INTEGER const nin, INTEGER const nout) {
             iss >> dtmp;
             scale[i - 1] = dtmp;
         }
+        printf("scale=");printvec(scale,n);printf("\n");
         getline(cin, str); // ignore blank line
         for (i = 1; i <= n; i = i + 1) {
             getline(cin, str);
@@ -122,6 +125,7 @@ void Cchkbk(INTEGER const nin, INTEGER const nout) {
                 e[(i - 1) + (j - 1) * lde] = COMPLEX(dtmp_r, dtmp_i);
             }
         }
+        printf("e=");printmat(n,n,e,lde);printf("\n");
         getline(cin, str); // ignore blank line
         for (i = 1; i <= n; i = i + 1) {
             getline(cin, str);
@@ -138,9 +142,14 @@ void Cchkbk(INTEGER const nin, INTEGER const nout) {
                 ein[(i - 1) + (j - 1) * lde] = COMPLEX(dtmp_r, dtmp_i);
             }
         }
+        printf("ein=");printmat(n,n,ein,lde);printf("\n");
         //
         knt++;
         Cgebak("B", "R", n, ilo, ihi, scale, n, e, lde, info);
+
+        printf("eout=");printmat(n,n,e,lde);printf("\n");
+        printf("info=%d\n",(int)info);
+        // printf("ein-eout\n");
         //
         if (info != 0) {
             ninfo++;
@@ -158,12 +167,14 @@ void Cchkbk(INTEGER const nin, INTEGER const nout) {
                 vmax = max(vmax, x);
             }
         }
+	printf("vmax=");printnum(vmax);printf("\n");
         //
         if (vmax > rmax) {
             lmax[2 - 1] = knt;
             rmax = vmax;
         }
         //
+	printf("\n");
     }
 //
 statement_60:
