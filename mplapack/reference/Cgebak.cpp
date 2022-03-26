@@ -38,29 +38,6 @@ void Cgebak(const char *job, const char *side, INTEGER const n, INTEGER const il
     INTEGER ii = 0;
     INTEGER k = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Decode and Test the input parameters
     //
     rightv = Mlsame(side, "R");
@@ -133,36 +110,30 @@ statement_30:
         if (rightv) {
             for (ii = 1; ii <= n; ii = ii + 1) {
                 i = ii;
-                if (i >= ilo && i <= ihi) {
-                    goto statement_40;
-                }
+                if (i >= ilo && i <= ihi)
+                    continue;
                 if (i < ilo) {
                     i = ilo - ii;
                 }
                 k = castINTEGER(scale[i - 1]);
-                if (k == i) {
-                    goto statement_40;
-                }
+                if (k == i)
+                    continue;
                 Cswap(m, &v[(i - 1)], ldv, &v[(k - 1)], ldv);
-            statement_40:;
             }
         }
         //
         if (leftv) {
             for (ii = 1; ii <= n; ii = ii + 1) {
                 i = ii;
-                if (i >= ilo && i <= ihi) {
-                    goto statement_50;
-                }
+                if (i >= ilo && i <= ihi)
+                    continue;
                 if (i < ilo) {
                     i = ilo - ii;
                 }
                 k = castINTEGER(scale[i - 1]);
-                if (k == i) {
-                    goto statement_50;
-                }
+                if (k == i)
+                    continue;
                 Cswap(m, &v[(i - 1)], ldv, &v[(k - 1)], ldv);
-            statement_50:;
             }
         }
     }
