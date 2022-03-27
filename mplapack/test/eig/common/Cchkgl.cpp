@@ -75,29 +75,6 @@ void Cchkgl(INTEGER const nin, INTEGER const nout) {
     INTEGER info = 0;
     REAL vmax = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     lmax[1 - 1] = 0;
     lmax[2 - 1] = 0;
     lmax[3 - 1] = 0;
@@ -109,9 +86,8 @@ void Cchkgl(INTEGER const nin, INTEGER const nout) {
     //
     eps = Rlamch("Precision");
 //
-statement_10:
     //
-    read(nin, star), n;
+    while (getline(cin, str)) {
     if (n == 0) {
         goto statement_90;
     }
@@ -207,7 +183,7 @@ statement_10:
         rmax = vmax;
     }
     //
-    goto statement_10;
+    }
 //
 statement_90:
     //
