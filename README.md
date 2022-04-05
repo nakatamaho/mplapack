@@ -147,20 +147,20 @@ $ cd ; fable.cout sample.f
 This is the release schedule for MPLAPACK 2.0.0
 | Action | Date | Status | Description |
 | --- | --- | --- | --- |
-| complex lin (lapack routine; mpfr)      | 2022/03/21 | ng |Failed: CHR, CHK, CSR, CSK, CQ3, CTZ, CTS| 
-| complex lin (driver routine; mpfr)      | 2022/03/21 | ng |Failed: CLS               | 
-| complex lin (lapack routine; gmp)       | 2022/03/21 | ng |Failed: CSR, CSK, CQ3, CTZ|
-| complex lin (driver routine; gmp)       | 2022/03/21 | ng |Falied: CLS (segfaults)   | 
-| complex lin (lapack routine; dd)        | 2022/03/21 | ng |Failed: CHR, CHK, CSR, CSK, CQ3, CTZ, CTS| 
-| complex lin (driver routine; dd)        | 2022/03/21 | ng |Failed: CLS |
-| complex lin (lapack routine; qd)        | 2022/03/21 | ng |Failed: CHR, CHK, CSR, CSK, CQ3, CTZ, CTS| 
-| complex lin (driver routine; qd)        | 2022/03/21 | ng |Failed: CLS |
-| complex lin (lapack routine; _Float128) | 2022/03/21 | ng |Failed: CHR CHK CSR CSK CQ3 CTZ CTS |
-| complex lin (driver routine; _Float128) | 2022/03/21 | ng |Failed: CLS|
-| complex lin (lapack routine; _Float64x) | 2022/03/21 | ng |Failed: CHR CHK CSR CSK CQ3 CTZ CTS |
-| complex lin (driver routine; _Float64x) | 2022/03/21 | ng |Failed: CGB CLS |
-| complex lin (lapack routine; double)    | 2022/03/21 | ng |Failed: CHR CHK CSR CSK CQ3 CTZ CTQ CTS |
-| complex lin (driver routine; double)    | 2022/03/21 | ng |Failed: CGB CLS         |
+| complex lin (lapack routine; mpfr)      | 2022/03/21 | almost ok |Failed: CHR, CHK, CSR, CSK, CQ3, CTZ, CTS| 
+| complex lin (driver routine; mpfr)      | 2022/03/21 | almost ok |Failed: CLS               | 
+| complex lin (lapack routine; gmp)       | 2022/03/21 | almost ok |Failed: CSR, CSK, CQ3, CTZ|
+| complex lin (driver routine; gmp)       | 2022/03/21 | almost ok |Falied: CLS (segfaults)   | 
+| complex lin (lapack routine; dd)        | 2022/03/21 | almost ok |Failed: CHR, CHK, CSR, CSK, CQ3, CTZ, CTS| 
+| complex lin (driver routine; dd)        | 2022/03/21 | almost ok |Failed: CLS |
+| complex lin (lapack routine; qd)        | 2022/03/21 | almost ok |Failed: CHR, CHK, CSR, CSK, CQ3, CTZ, CTS| 
+| complex lin (driver routine; qd)        | 2022/03/21 | almost ok |Failed: CLS |
+| complex lin (lapack routine; _Float128) | 2022/03/21 | almost ok |Failed: CHR CHK CSR CSK CQ3 CTZ CTS |
+| complex lin (driver routine; _Float128) | 2022/03/21 | almost ok |Failed: CLS|
+| complex lin (lapack routine; _Float64x) | 2022/03/21 | almost ok |Failed: CHR CHK CSR CSK CQ3 CTZ CTS |
+| complex lin (driver routine; _Float64x) | 2022/03/21 | almost ok |Failed: CGB CLS |
+| complex lin (lapack routine; double)    | 2022/03/21 | almost ok |Failed: CHR CHK CSR CSK CQ3 CTZ CTQ CTS |
+| complex lin (driver routine; double)    | 2022/03/21 | almost ok |Failed: CGB CLS         |
 | sqrt fixes for QD and DD                | 2021/12/12 |     | near overflow |
 | complex eig cbal.in                     | 2022/03/25  | ok  | Testing the balancing of a general matrix  | 
 | complex eig cbak.in                     | 2022/03/26  | ok  | Testing backward transformation | 
