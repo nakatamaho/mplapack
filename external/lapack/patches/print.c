@@ -20,6 +20,38 @@ void printnum_(char *s, double *A) {
     printf("%s%+21.16e\n", s, *A);
 }
 
+void printnumc(double _Complex rtmp) {
+    if (__real__ rtmp >= 0.0)
+        printf("%+21.16e", __real__ rtmp);
+    else
+        printf("%+21.16e",  __real__ rtmp);
+    if (__imag__ rtmp >= 0.0)
+        printf("%+21.16e", __imag__ rtmp);
+    else
+        printf("%+21.16e", __imag__ rtmp);
+    printf("i");
+}
+
+void printmatc_(char *s, int *N, int *M, double _Complex *A, int *LDA) {
+    double _Complex tmp;
+    printf("%s[ ", s);
+    for (int i = 0; i < *N; i++) {
+        printf("[ ");
+        for (int j = 0; j < *M; j++) {
+            tmp = A[i + j * (*LDA)];
+            printnumc(tmp);
+            if (j < *M - 1)
+                printf(", ");
+        }
+        if (i < *N - 1)
+            printf("]; ");
+        else
+            printf("] ");
+    }
+    printf("]");
+    printf("\n");
+}
+
 void printmat_(char *s, int *N, int *M, double *A, int *LDA) {
     double tmp;
     printf("%s[ ", s);
