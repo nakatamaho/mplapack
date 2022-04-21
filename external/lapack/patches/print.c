@@ -4,6 +4,7 @@
 //  please use as following: Do not forget adding //CHAR(0) at the end.
 //         CALL PRINTSTR('#dgelsd.f l.486'//CHAR(0))
 //         CALL PRINTVEC('s='//CHAR(0),s,n)
+//         CALL PRINTMAT('e='//CHAR(0),m,m,e,lde)
 
 void printdummy_() { printf("\n"); }
 
