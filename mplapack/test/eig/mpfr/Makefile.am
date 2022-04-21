@@ -103,5 +103,17 @@ Rlse.out: ../lse.in xeigtstR_mpfr
 	./xeigtstR_mpfr < ../lse.in > $@ 2>&1
 
 Cbal.out: ../Cbal.in xeigtstC_mpfr
-	@echo Cgebal: Testing the balancing of a general matrix
+	@echo Cgebal: Testing the balancing of a COMPLEX general matrix
 	./xeigtstC_mpfr < ../Cbal.in > $@ 2>&1
+
+Cbak.out: ../Cbak.in xeigtstC_mpfr
+	@echo Cgebak: Testing the back transformation of a COMPLEX balanced matrix
+	./xeigtstC_mpfr < ../Cbak.in > $@ 2>&1
+
+Cgbal.out: ../Cgbal.in xeigtstC_mpfr
+	@echo Cggbal: Testing the balancing of a pair of COMPLEX general matrices
+	./xeigtstC_mpfr < ../Cgbal.in > $@ 2>&1
+
+Cgbak.out: ../Cgbak.in xeigtstC_mpfr
+	@echo Cggbak: Testing the back transformation of a pair of COMPLEX balanced matrices
+	./xeigtstC_mpfr < ../Cgbak.in > $@ 2>&1
