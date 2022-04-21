@@ -165,6 +165,7 @@ This is the release schedule for MPLAPACK 2.0.0
 | complex eig cbal.in                     | 2022/03/25  | ok  | Testing the balancing of a general matrix  | 
 | complex eig cbak.in                     | 2022/03/26  | ok  | Testing backward transformation | 
 | complex eig cgbal.in                     | 2022/03/27 | ok  | Testing the balancing of a general matrix  | 
+| complex eig cgbak.in                     | 2022/04/21 | ok  | Testing the back transformation of a pair of COMPLEX balanced matrices | 
 | Impliment RFP version                |            |     |                          | 
 | Impliment mixed precision version    |            |     |                          | 
 | make tar ball for distribution       |            |     |                          |
