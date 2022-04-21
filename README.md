@@ -162,10 +162,11 @@ This is the release schedule for MPLAPACK 2.0.0
 | complex lin (lapack routine; double)    | 2022/03/21 | almost ok |Failed: CHR CHK CSR CSK CQ3 CTZ CTQ CTS |
 | complex lin (driver routine; double)    | 2022/03/21 | almost ok |Failed: CGB CLS         |
 | sqrt fixes for QD and DD                | 2021/12/12 |     | near overflow |
-| complex eig cbal.in                     | 2022/03/25  | ok  | Testing the balancing of a general matrix  | 
-| complex eig cbak.in                     | 2022/03/26  | ok  | Testing backward transformation | 
-| complex eig cgbal.in                     | 2022/03/27 | ok  | Testing the balancing of a general matrix  | 
-| complex eig cgbak.in                     | 2022/04/21 | ok  | Testing the back transformation of a pair of COMPLEX balanced matrices | 
+| complex eig Cbal.in                     | 2022/03/25  | ok  | Testing the balancing of a general matrix  | 
+| complex eig Cbak.in                     | 2022/03/26  | ok  | Testing backward transformation | 
+| complex eig Cgbal.in                     | 2022/03/27 | ok  | Testing the balancing of a general matrix  | 
+| complex eig Cgbak.in                     | 2022/04/21 | ok  | Testing the back transformation of a pair of COMPLEX balanced matrices | 
+| complex eig Cec.in                     |  | WIP  |  | Testing COMPLEX16 Eigen Condition Routines |
 | Impliment RFP version                |            |     |                          | 
 | Impliment mixed precision version    |            |     |                          | 
 | make tar ball for distribution       |            |     |                          |
