@@ -5,6 +5,8 @@
 //         CALL PRINTSTR('#dgelsd.f l.486'//CHAR(0))
 //         CALL PRINTVEC('s='//CHAR(0),s,n)
 //         CALL PRINTMAT('e='//CHAR(0),m,m,e,lde)
+//         for complex matrix
+//         CALL PRINTMATC('e='//CHAR(0),m,m,e,lde)
 
 void printdummy_() { printf("\n"); }
 
@@ -21,15 +23,7 @@ void printnum_(char *s, double *A) {
 }
 
 void printnumc(double _Complex rtmp) {
-    if (__real__ rtmp >= 0.0)
-        printf("%+21.16e", __real__ rtmp);
-    else
-        printf("%+21.16e",  __real__ rtmp);
-    if (__imag__ rtmp >= 0.0)
-        printf("%+21.16e", __imag__ rtmp);
-    else
-        printf("%+21.16e", __imag__ rtmp);
-    printf("i");
+    printf("%+21.16e%+21.16ei", __real__ rtmp, __imag__ rtmp);
 }
 
 void printmatc_(char *s, int *N, int *M, double _Complex *A, int *LDA) {
