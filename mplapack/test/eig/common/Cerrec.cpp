@@ -42,34 +42,7 @@ using fem::common;
 void Cerrec(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
     //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     ok = true;
@@ -104,6 +77,7 @@ void Cerrec(const char *path, INTEGER const nunit) {
     COMPLEX c[nmax * nmax];
     REAL scale = 0.0;
     INTEGER info = 0;
+    strncpy(srnamt, "Ctrsyl", srnamt_len);
     Ctrsyl("X", "N", 1, 0, 0, a, 1, b, 1, c, 1, scale, info);
     chkxer("Ctrsyl", infot, nout, lerr, ok);
     infot = 2;
@@ -134,6 +108,7 @@ void Cerrec(const char *path, INTEGER const nunit) {
     INTEGER ifst = 1;
     INTEGER ilst = 1;
     infot = 1;
+    strncpy(srnamt, "Ctrexc", srnamt_len);
     Ctrexc("X", 1, a, 1, b, 1, ifst, ilst, info);
     chkxer("Ctrexc", infot, nout, lerr, ok);
     infot = 2;
@@ -175,6 +150,7 @@ void Cerrec(const char *path, INTEGER const nunit) {
     const INTEGER lw = nmax * (nmax + 2);
     COMPLEX work[lw];
     REAL rw[lw];
+    strncpy(srnamt, "Ctrsna", srnamt_len);
     Ctrsna("X", "A", sel, 0, a, 1, b, 1, c, 1, s, sep, 1, m, work, 1, rw, info);
     chkxer("Ctrsna", infot, nout, lerr, ok);
     infot = 2;
@@ -208,6 +184,7 @@ void Cerrec(const char *path, INTEGER const nunit) {
     sel[1 - 1] = false;
     infot = 1;
     COMPLEX x[nmax];
+    strncpy(srnamt, "Ctrsen", srnamt_len);
     Ctrsen("X", "N", sel, 0, a, 1, b, 1, x, m, s[1 - 1], sep[1 - 1], work, 1, info);
     chkxer("Ctrsen", infot, nout, lerr, ok);
     infot = 2;
