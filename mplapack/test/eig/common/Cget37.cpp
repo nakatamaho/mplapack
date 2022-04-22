@@ -160,7 +160,7 @@ statement_10:
             tmp[(i - 1) + (j - 1) * ldtmp] = COMPLEX(dtmp_r, dtmp_i);
         }
     }
-    printf("tmp =");printmat(n,n,tmp,ldtmp);printf("\n");
+    // printf("tmp =");printmat(n,n,tmp,ldtmp);printf("\n");
     for (i = 1; i <= n; i = i + 1) {
         getline(cin, str);
         string ___r = regex_replace(str, regex(","), " ");
@@ -181,7 +181,6 @@ statement_10:
     //    printf("wiin ="); printvec(wrin, n); printf("\n");
     //    printf("sin ="); printvec(sin, n); printf("\n");
     //    printf("sepin ="); printvec(sepin, n); printf("\n");
-
     tnrm = Clange("M", n, n, tmp, ldt, rwork);
     for (iscl = 1; iscl <= 3; iscl = iscl + 1) {
         //
