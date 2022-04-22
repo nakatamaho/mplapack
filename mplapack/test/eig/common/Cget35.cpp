@@ -144,7 +144,6 @@ void Cget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER con
             string __r = regex_replace(___r, regex("\\("), " ");
             string _r = regex_replace(__r, regex("D\\+"), "e+");
             str = regex_replace(_r, regex("D\\-"), "e-");
-            cout << "homa " << str << "\n";
             iss.clear();
             iss.str(str);
             for (j = 1; j <= m; j = j + 1) {
