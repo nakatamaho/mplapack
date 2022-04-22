@@ -89,20 +89,15 @@ void Cget36(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER con
     istringstream iss;
     double dtmp_r;
     double dtmp_i;
-    
 //
 //     Read input data until N=0
 //
 statement_10:
-    printf("\n");
     getline(cin, str);
     stringstream ss(str);
     ss >> n;
     ss >> ifst;
     ss >> ilst;
-    printf(" N     %d\n", (int)n);
-    printf(" ifst  %d\n", (int)ifst);
-    printf(" ilst  %d\n", (int)ilst);
     if (n == 0) {
         return;
     }
@@ -121,7 +116,6 @@ statement_10:
             tmp[(i - 1) + (j - 1) * ldtmp] = COMPLEX(dtmp_r, dtmp_i);
         }
     }
-    printf("TMP=");printmat(n, n, tmp, ldtmp);printf("\n");    
     Clacpy("F", n, n, tmp, ldt, t1, ldt);
     Clacpy("F", n, n, tmp, ldt, t2, ldt);
     res = zero;
