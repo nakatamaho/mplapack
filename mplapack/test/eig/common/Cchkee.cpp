@@ -315,7 +315,11 @@ void Cchkee(void) {
             //
             //        ZEC:  Eigencondition estimation
             //
-            read(nin, star), thresh;
+            getline(cin, str);
+            ss.str(str);
+            double dtmp;
+            ss >> dtmp;
+            thresh = dtmp;
             xlaenv(1, 1);
             xlaenv(12, 1);
             tsterr = true;

@@ -133,8 +133,8 @@ void Cget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER con
         stringstream ss(str);
         ss >> m;
         ss >> n;
-        printf(" M     %d\n", (int)m);
-        printf(" N     %d\n", (int)n);	
+	//        printf(" M     %d\n", (int)m);
+	//        printf(" N     %d\n", (int)n);	
         if (n == 0) {
             return;
         }
@@ -152,7 +152,7 @@ void Cget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER con
                 atmp[(i - 1) + (j - 1) * ldatmp] = COMPLEX(dtmp_r, dtmp_i);
             }
         }
-        printf("ATMP=");printmat(m, m, atmp, ldatmp);printf("\n");
+	//        printf("ATMP=");printmat(m, m, atmp, ldatmp);printf("\n");
         for (i = 1; i <= n; i = i + 1) {
             getline(cin, str);
             string ___r = regex_replace(str, regex(","), " ");
@@ -167,7 +167,7 @@ void Cget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER con
                 btmp[(i - 1) + (j - 1) * ldbtmp] = COMPLEX(dtmp_r, dtmp_i);
             }
         }
-        printf("BTMP="); printmat(n, n, btmp, ldbtmp); printf("\n");
+	//        printf("BTMP="); printmat(n, n, btmp, ldbtmp); printf("\n");
         for (i = 1; i <= m; i = i + 1) {
             getline(cin, str);
             string ___r = regex_replace(str, regex(","), " ");
@@ -182,8 +182,8 @@ void Cget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER con
                 ctmp[(i - 1) + (j - 1) * ldctmp] = COMPLEX(dtmp_r, dtmp_i);
             }
         }
-        printf("CTMP="); printmat(m, n, ctmp, ldctmp); printf("\n");
-	printf("\n"); 
+	//        printf("CTMP="); printmat(m, n, ctmp, ldctmp); printf("\n");
+	//	printf("\n"); 
         for (imla = 1; imla <= 3; imla = imla + 1) {
             for (imlad = 1; imlad <= 3; imlad = imlad + 1) {
                 for (imlb = 1; imlb <= 3; imlb = imlb + 1) {
