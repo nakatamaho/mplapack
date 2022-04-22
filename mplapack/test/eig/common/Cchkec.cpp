@@ -42,38 +42,22 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     common cmn;
     common_write write(cmn);
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     char path[3];
+    char buf0[1024];
+    char buf1[1024];
+    char buf2[1024];
     path[0] = 'C';
     path[1] = 'E';
     path[2] = 'C';
     REAL eps = Rlamch("P");
     REAL sfmin = Rlamch("S");
-    char buf0[1024];
-    char buf1[1024];
-    char buf2[1024];
-    write(nout, "(' Tests of the Nonsymmetric eigenproblem condition',"
-                "' estimation routines',/,' Ctrsyl, Ctrexc, Ctrsna, Ctrsen',/)");
+    //
+    //     Print header information
+    //
     sprintnum_short(buf1, eps);
     sprintnum_short(buf2, sfmin);
+    write(nout, "(' Tests of the Nonsymmetric eigenproblem condition',"
+                "' estimation routines',/,' Ctrsyl, Ctrexc, Ctrsna, Ctrsen',/)");
     write(nout, "(' Relative machine precision (EPS) = ',a,/,"
                 "' Safe minimum (SFMIN)             = ',a,/)"),
         buf1, buf2;
@@ -88,7 +72,7 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
         Cerrec(path, nout);
     }
     //
-    bool ok = true;
+    ok = true;
     REAL rtrsyl = 0.0;
     INTEGER ltrsyl = 0;
     INTEGER ntrsyl = 0;
