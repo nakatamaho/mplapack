@@ -38,6 +38,16 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <regex>
+
+using namespace std;
+using std::regex;
+using std::regex_replace;
+
 void Cget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
     common cmn;
     common_read read(cmn);
@@ -97,35 +107,9 @@ void Cget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     INTEGER icmp = 0;
     INTEGER lcmp[3];
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     //     EPSIN = 2**(-24) = precision to which input data computed
     //
@@ -143,28 +127,61 @@ void Cget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     val[1 - 1] = sqrt(smlnum);
     val[2 - 1] = one;
     val[3 - 1] = sqrt(bignum);
+    string str;
+    istringstream iss;
+    double dtmp_r;
+    double dtmp_i;
 //
 //     Read input data until N=0.  Assume input eigenvalues are sorted
 //     lexicographically (increasing by real part if ISRT = 0,
 //     increasing by imaginary part if ISRT = 1)
 //
 statement_10:
-    read(nin, star), n, isrt;
+    getline(cin, str);
+    stringstream ss(str);
+    ss >> n;
+    ss >> isrt;
+    //    printf("n = %d\n", (int)n);
+    //    printf("isrt = %d\n", (int)isrt);
     if (n == 0) {
         return;
     }
     for (i = 1; i <= n; i = i + 1) {
-        {
-            read_loop rloop(cmn, nin, star);
-            for (j = 1; j <= n; j = j + 1) {
-                rloop, ctmp;
-                tmp[(i - 1) + (j - 1) * ldtmp] = ctmp;
-            }
+        getline(cin, str);
+        string ___r = regex_replace(str, regex(","), " ");
+        string __r = regex_replace(___r, regex("\\)"), " ");
+        string _r = regex_replace(__r, regex("\\("), " ");
+        str = regex_replace(_r, regex("D"), "e");
+        iss.clear();
+        iss.str(str);
+        for (j = 1; j <= n; j = j + 1) {
+            iss >> dtmp_r;
+            iss >> dtmp_i;
+            tmp[(i - 1) + (j - 1) * ldtmp] = COMPLEX(dtmp_r, dtmp_i);
         }
     }
+    printf("tmp =");printmat(n,n,tmp,ldtmp);printf("\n");
     for (i = 1; i <= n; i = i + 1) {
-        read(nin, star), wrin[i - 1], wiin[i - 1], sin[i - 1], sepin[i - 1];
+        getline(cin, str);
+        string ___r = regex_replace(str, regex(","), " ");
+        string __r = regex_replace(___r, regex("\\)"), " ");
+        string _r = regex_replace(__r, regex("\\("), " ");
+        str = regex_replace(_r, regex("D"), "e");
+        istringstream iss(str);
+        iss >> dtmp;
+        wrin[i - 1] = dtmp;
+        iss >> dtmp;
+        wiin[i - 1] = dtmp;
+        iss >> dtmp;
+        sin[i - 1] = dtmp;
+        iss >> dtmp;
+        sepin[i - 1] = dtmp;
     }
+    //    printf("wrin ="); printvec(wrin, n); printf("\n");
+    //    printf("wiin ="); printvec(wrin, n); printf("\n");
+    //    printf("sin ="); printvec(sin, n); printf("\n");
+    //    printf("sepin ="); printvec(sepin, n); printf("\n");
+
     tnrm = Clange("M", n, n, tmp, ldt, rwork);
     for (iscl = 1; iscl <= 3; iscl = iscl + 1) {
         //
