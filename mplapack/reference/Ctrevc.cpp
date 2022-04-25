@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX cdum) { return abs(cdum.real()) + abs(cdum.imag()); }
+inline REAL cabs1(COMPLEX cdum) { return abs(cdum.real()) + abs(cdum.imag()); }
 
 void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n, COMPLEX *t, INTEGER const ldt, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, INTEGER const mm, INTEGER &m, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX cdum = 0.0;
@@ -56,33 +56,6 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     INTEGER ii = 0;
     REAL remax = 0.0;
     const COMPLEX cmzero = COMPLEX(0.0, 0.0);
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Decode and test the input parameters
     //
@@ -168,7 +141,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     goto statement_80;
                 }
             }
-            smin = max(REAL(ulp * (abs1(t[(ki - 1) + (ki - 1) * ldt]))), smlnum);
+            smin = max(REAL(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt]))), smlnum);
             //
             work[1 - 1] = cmone;
             //
@@ -183,7 +156,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
             //
             for (k = 1; k <= ki - 1; k = k + 1) {
                 t[(k - 1) + (k - 1) * ldt] = t[(k - 1) + (k - 1) * ldt] - t[(ki - 1) + (ki - 1) * ldt];
-                if (abs1(t[(k - 1) + (k - 1) * ldt]) < smin) {
+                if (cabs1(t[(k - 1) + (k - 1) * ldt]) < smin) {
                     t[(k - 1) + (k - 1) * ldt] = smin;
                 }
             }
