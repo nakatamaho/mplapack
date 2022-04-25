@@ -40,29 +40,6 @@ using fem::common;
 
 void Cget10(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *work, REAL *rwork, REAL &result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Quick return if possible
     //
     const REAL zero = 0.0;
@@ -80,10 +57,10 @@ void Cget10(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     for (j = 1; j <= n; j = j + 1) {
         Ccopy(m, &a[(j - 1) * lda], 1, work, 1);
         Caxpy(m, COMPLEX(-one), &b[(j - 1) * ldb], 1, work, 1);
-        wnorm = max({wnorm, RCasum(n, work, 1)});
+        wnorm = max(wnorm, RCasum(n, work, 1));
     }
     //
-    REAL anorm = max({Clange("1", m, n, a, lda, rwork), unfl});
+    REAL anorm = max(Clange("1", m, n, a, lda, rwork), unfl);
     //
     if (anorm > wnorm) {
         result = (wnorm / anorm) / (m * eps);
