@@ -336,7 +336,10 @@ void Cchkee(void) {
         //
         //     Read the number of values of M, P, and N.
         //
-        read(nin, star), nn;
+        getline(cin, str);
+        iss.clear();
+        iss.str(str);
+        iss >> nn;
         if (nn < 0) {
             write(nout, format_9989), "   NN ", nn, 1;
             nn = 0;
@@ -350,11 +353,11 @@ void Cchkee(void) {
         //     Read the values of M
         //
         if (!(zgx || zxv)) {
-            {
-                read_loop rloop(cmn, nin, star);
-                for (i = 1; i <= nn; i = i + 1) {
-                    rloop, mval[i - 1];
-                }
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            for (i = 1; i <= nn; i = i + 1) {
+                iss >> mval[i - 1];
             }
             if (svd) {
                 strncmp(vname, "    M ", 8);
@@ -382,11 +385,12 @@ void Cchkee(void) {
         //     Read the values of P
         //
         if (glm || gqr || gsv || csd || lse) {
-            {
-                read_loop rloop(cmn, nin, star);
-                for (i = 1; i <= nn; i = i + 1) {
-                    rloop, pval[i - 1];
-                }
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            for (i = 1; i <= nn; i = i + 1) {
+                iss >> itmp;
+                pval[i - 1] = itmp;
             }
             for (i = 1; i <= nn; i = i + 1) {
                 if (pval[i - 1] < 0) {
