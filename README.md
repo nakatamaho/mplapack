@@ -170,6 +170,17 @@ This is the release schedule for MPLAPACK 2.0.0
 | complex eig nep.in                      | 2022/04/26 | ok  | Testing Nonsymmetric Eigenvalue Problem routines for COMPLEX |
 | complex eig csd.in                      | 2022/04/26 | ok  | Testing CS decomposition routines for COMPLEX |
 | complex eig lse.in                      | 2022/04/26 | ok  | testing Constrained Linear Least Squares routines for COMPLEX |
+| complex eig Cse2.in                     |            |     |                                                               |
+| complex eig Csvd.in                     |            |     |                                                               |
+| complex eig Ced.in                      |            |     |                                                               |
+| complex eig Cgg.in                      |            |     |                                                               |
+| complex eig Cgd.in                      |            |     |                                                               |
+| complex eig Csb.in                      |            |     |                                                               |
+| complex eig Csg.in                      |            |     |                                                               |
+| complex eig Cbb.in                      |            |     |                                                               |
+| complex eig Cglm.in                     |            |     |                                                               |
+| complex eig Cgqr.in                     |            |     |                                                               |
+| complex eig Cgsv.in                     |            |     |                                                               |
 | Impliment RFP version                |            |     |                          | 
 | Impliment mixed precision version    |            |     |                          | 
 | make tar ball for distribution       |            |     |                          |
