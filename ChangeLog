@@ -1,8 +1,6 @@
 2022/04/26    Nakata Maho <maho@riken.jp> 2.0 branch
             * nep.in: Testing Nonsymmetric Eigenvalue Problem routines for complex have passed
               for all precisions.
-            * csd.in: Testing testing CS decomposition routines for complex have passed
-              for all precisions except for GMP.
             * lse.in: Testing Constrained Linear Least Squares routines for complex have passed
               for all precisions except for GMP.
 
