@@ -172,7 +172,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 Ccopy(ki, &work[1 - 1], 1, &vr[(is - 1) * ldvr], 1);
                 //
                 ii = iCamax(ki, &vr[(is - 1) * ldvr], 1);
-                remax = one / abs1(vr[(ii - 1) + (is - 1) * ldvr]);
+                remax = one / cabs1(vr[(ii - 1) + (is - 1) * ldvr]);
                 CRscal(ki, remax, &vr[(is - 1) * ldvr], 1);
                 //
                 for (k = ki + 1; k <= n; k = k + 1) {
@@ -184,7 +184,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 }
                 //
                 ii = iCamax(n, &vr[(ki - 1) * ldvr], 1);
-                remax = one / abs1(vr[(ii - 1) + (ki - 1) * ldvr]);
+                remax = one / cabs1(vr[(ii - 1) + (ki - 1) * ldvr]);
                 CRscal(n, remax, &vr[(ki - 1) * ldvr], 1);
             }
             //
@@ -211,7 +211,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     goto statement_130;
                 }
             }
-            smin = max(REAL(ulp * (abs1(t[(ki - 1) + (ki - 1) * ldt]))), smlnum);
+            smin = max(REAL(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt]))), smlnum);
             //
             work[n - 1] = cmone;
             //
@@ -226,7 +226,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
             //
             for (k = ki + 1; k <= n; k = k + 1) {
                 t[(k - 1) + (k - 1) * ldt] = t[(k - 1) + (k - 1) * ldt] - t[(ki - 1) + (ki - 1) * ldt];
-                if (abs1(t[(k - 1) + (k - 1) * ldt]) < smin) {
+                if (cabs1(t[(k - 1) + (k - 1) * ldt]) < smin) {
                     t[(k - 1) + (k - 1) * ldt] = smin;
                 }
             }
@@ -242,7 +242,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 Ccopy(n - ki + 1, &work[ki - 1], 1, &vl[(ki - 1) + (is - 1) * ldvl], 1);
                 //
                 ii = iCamax(n - ki + 1, &vl[(ki - 1) + (is - 1) * ldvl], 1) + ki - 1;
-                remax = one / abs1(vl[(ii - 1) + (is - 1) * ldvl]);
+                remax = one / cabs1(vl[(ii - 1) + (is - 1) * ldvl]);
                 CRscal(n - ki + 1, remax, &vl[(ki - 1) + (is - 1) * ldvl], 1);
                 //
                 for (k = 1; k <= ki - 1; k = k + 1) {
@@ -254,7 +254,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 }
                 //
                 ii = iCamax(n, &vl[(ki - 1) * ldvl], 1);
-                remax = one / abs1(vl[(ii - 1) + (ki - 1) * ldvl]);
+                remax = one / cabs1(vl[(ii - 1) + (ki - 1) * ldvl]);
                 CRscal(n, remax, &vl[(ki - 1) * ldvl], 1);
             }
             //
