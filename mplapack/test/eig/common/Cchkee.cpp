@@ -1065,6 +1065,10 @@ void Cchkee(void) {
                         iseed[k - 1] = ioldsd[k - 1];
                     }
                 }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+		thresh = thresh * 10.0;
+		printf("Warning! Threshold has been lifted 10 times for GMP\n");
+#endif		
                 write(nout, "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4,', INMIN=',i4,"
                             "', INWIN =',i4,', INIBL =',i4,', ISHFTS =',i4,', IACC22 =',i4)"),
                     c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], max((INTEGER)11, inmin[i - 1]), inwin[i - 1], inibl[i - 1], ishfts[i - 1], iacc22[i - 1];
