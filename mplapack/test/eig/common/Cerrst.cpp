@@ -42,41 +42,8 @@ using fem::common;
 void Cerrst(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
-    write(nout, star);
     char c2[2];
     c2[0] = path[1];
     c2[1] = path[2];
@@ -129,6 +96,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //        Chetrd
         //
         infot = 1;
+        strncpy(srnamt, "Chetrd", srnamt_len);
         Chetrd("/", 0, a, 1, d, e, tau, w, 1, info);
         chkxer("Chetrd", infot, nout, lerr, ok);
         infot = 2;
@@ -144,6 +112,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chetrd_2stage
         //
+        strncpy(srnamt, "Chetrd_2stage", srnamt_len);
         infot = 1;
         Chetrd_2stage("/", "U", 0, a, 1, d, e, tau, c, 1, w, 1, info);
         chkxer("Chetrd_2stage", infot, nout, lerr, ok);
@@ -169,6 +138,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chetrd_he2hb
         //
+        strncpy(srnamt, "Chetrd_he2hb", srnamt_len);
         infot = 1;
         Chetrd_he2hb("/", 0, 0, a, 1, c, 1, tau, w, 1, info);
         chkxer("Chetrd_he2hb", infot, nout, lerr, ok);
@@ -191,37 +161,39 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chetrd_HB2ST
         //
+        strncpy(srnamt, "Chetrd_hb2st", srnamt_len);
         infot = 1;
         Chetrd_hb2st("/", "N", "U", 0, 0, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Chetrd_HB2ST", infot, nout, lerr, ok);
+        chkxer("Chetrd_hb2st", infot, nout, lerr, ok);
         infot = 2;
         Chetrd_hb2st("Y", "/", "U", 0, 0, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Chetrd_HB2ST", infot, nout, lerr, ok);
+        chkxer("Chetrd_hb2st", infot, nout, lerr, ok);
         infot = 2;
         Chetrd_hb2st("Y", "H", "U", 0, 0, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Chetrd_HB2ST", infot, nout, lerr, ok);
+        chkxer("Chetrd_hb2st", infot, nout, lerr, ok);
         infot = 3;
         Chetrd_hb2st("Y", "N", "/", 0, 0, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Chetrd_HB2ST", infot, nout, lerr, ok);
+        chkxer("Chetrd_hb2st", infot, nout, lerr, ok);
         infot = 4;
         Chetrd_hb2st("Y", "N", "U", -1, 0, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Chetrd_HB2ST", infot, nout, lerr, ok);
+        chkxer("Chetrd_hb2st", infot, nout, lerr, ok);
         infot = 5;
         Chetrd_hb2st("Y", "N", "U", 0, -1, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Chetrd_HB2ST", infot, nout, lerr, ok);
+        chkxer("Chetrd_hb2st", infot, nout, lerr, ok);
         infot = 7;
         Chetrd_hb2st("Y", "N", "U", 0, 1, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Chetrd_HB2ST", infot, nout, lerr, ok);
+        chkxer("Chetrd_hb2st", infot, nout, lerr, ok);
         infot = 11;
         Chetrd_hb2st("Y", "N", "U", 0, 0, a, 1, d, e, c, 0, w, 1, info);
-        chkxer("Chetrd_HB2ST", infot, nout, lerr, ok);
+        chkxer("Chetrd_hb2st", infot, nout, lerr, ok);
         infot = 13;
         Chetrd_hb2st("Y", "N", "U", 0, 0, a, 1, d, e, c, 1, w, 0, info);
-        chkxer("Chetrd_HB2ST", infot, nout, lerr, ok);
+        chkxer("Chetrd_hb2st", infot, nout, lerr, ok);
         nt += 9;
         //
         //        Cungtr
         //
+        strncpy(srnamt, "Cungtr", srnamt_len);
         infot = 1;
         Cungtr("/", 0, a, 1, tau, w, 1, info);
         chkxer("Cungtr", infot, nout, lerr, ok);
@@ -238,6 +210,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cunmtr
         //
+        strncpy(srnamt, "Cunmtr", srnamt_len);
         infot = 1;
         Cunmtr("/", "U", "N", 0, 0, a, 1, tau, c, 1, w, 1, info);
         chkxer("Cunmtr", infot, nout, lerr, ok);
@@ -272,6 +245,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chptrd
         //
+        strncpy(srnamt, "Chptrd", srnamt_len);
         infot = 1;
         Chptrd("/", 0, a, d, e, tau, info);
         chkxer("Chptrd", infot, nout, lerr, ok);
@@ -282,6 +256,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cupgtr
         //
+        strncpy(srnamt, "Cupgtr", srnamt_len);
         infot = 1;
         Cupgtr("/", 0, a, tau, z, 1, w, info);
         chkxer("Cupgtr", infot, nout, lerr, ok);
@@ -295,6 +270,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cupmtr
         //
+        strncpy(srnamt, "Cupmtr", srnamt_len);
         infot = 1;
         Cupmtr("/", "U", "N", 0, 0, a, tau, c, 1, w, info);
         chkxer("Cupmtr", infot, nout, lerr, ok);
@@ -317,6 +293,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cpteqr
         //
+        strncpy(srnamt, "Cpteqr", srnamt_len);
         infot = 1;
         Cpteqr("/", 0, d, e, z, 1, rw, info);
         chkxer("Cpteqr", infot, nout, lerr, ok);
@@ -330,6 +307,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cstein
         //
+        strncpy(srnamt, "Cstein", srnamt_len);
         infot = 1;
         Cstein(-1, d, e, 0, x, i1, i2, z, 1, rw, iw, i3, info);
         chkxer("Cstein", infot, nout, lerr, ok);
@@ -346,6 +324,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Csteqr
         //
+        strncpy(srnamt, "Csteqr", srnamt_len);
         infot = 1;
         Csteqr("/", 0, d, e, z, 1, rw, info);
         chkxer("Csteqr", infot, nout, lerr, ok);
@@ -359,6 +338,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cstedc
         //
+        strncpy(srnamt, "Cstedc", srnamt_len);
         infot = 1;
         Cstedc("/", 0, d, e, z, 1, w, 1, rw, 1, iw, 1, info);
         chkxer("Cstedc", infot, nout, lerr, ok);
@@ -396,6 +376,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cheevd
         //
+        strncpy(srnamt, "Cheevd", srnamt_len);
         infot = 1;
         Cheevd("/", "U", 0, a, 1, x, w, 1, rw, 1, iw, 1, info);
         chkxer("Cheevd", infot, nout, lerr, ok);
@@ -436,6 +417,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cheevd_2stage
         //
+        strncpy(srnamt, "Cheevd_2stage", srnamt_len);
         infot = 1;
         Cheevd_2stage("/", "U", 0, a, 1, x, w, 1, rw, 1, iw, 1, info);
         chkxer("Cheevd_2stage", infot, nout, lerr, ok);
@@ -482,6 +464,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cheev
         //
+        strncpy(srnamt, "Cheev", srnamt_len);
         infot = 1;
         Cheev("/", "U", 0, a, 1, x, w, 1, rw, info);
         chkxer("Cheev ", infot, nout, lerr, ok);
@@ -501,6 +484,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cheev_2stage
         //
+        strncpy(srnamt, "Cheev_2stage", srnamt_len);
         infot = 1;
         Cheev_2stage("/", "U", 0, a, 1, x, w, 1, rw, info);
         chkxer("Cheev_2stage ", infot, nout, lerr, ok);
@@ -523,6 +507,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cheevx
         //
+        strncpy(srnamt, "Cheevx", srnamt_len);
         infot = 1;
         Cheevx("/", "A", "U", 0, a, 1, 0.0, 0.0, 0, 0, 0.0, m, x, z, 1, w, 1, rw, iw, i3, info);
         chkxer("Cheevx", infot, nout, lerr, ok);
@@ -556,6 +541,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cheevx_2stage
         //
+        strncpy(srnamt, "Cheevx_2stage", srnamt_len);
         infot = 1;
         Cheevx_2stage("/", "A", "U", 0, a, 1, 0.0, 0.0, 0, 0, 0.0, m, x, z, 1, w, 1, rw, iw, i3, info);
         chkxer("Cheevx_2stage", infot, nout, lerr, ok);
@@ -592,6 +578,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cheevr
         //
+        strncpy(srnamt, "Cheevr", srnamt_len);
         n = 1;
         infot = 1;
         Cheevr("/", "A", "U", 0, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
@@ -634,6 +621,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Cheevr_2stage
         //
+        strncpy(srnamt, "Cheevr_2stage", srnamt_len);
         n = 1;
         infot = 1;
         Cheevr_2stage("/", "A", "U", 0, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
@@ -678,6 +666,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chpevd
         //
+        strncpy(srnamt, "Chpevd", srnamt_len);
         infot = 1;
         Chpevd("/", "U", 0, a, x, z, 1, w, 1, rw, 1, iw, 1, info);
         chkxer("Chpevd", infot, nout, lerr, ok);
@@ -721,6 +710,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chpev
         //
+        strncpy(srnamt, "Chpev", srnamt_len);
         infot = 1;
         Chpev("/", "U", 0, a, x, z, 1, w, rw, info);
         chkxer("Chpev ", infot, nout, lerr, ok);
@@ -737,6 +727,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chpevx
         //
+        strncpy(srnamt, "Chpevx", srnamt_len);
         infot = 1;
         Chpevx("/", "A", "U", 0, a, 0.0, 0.0, 0, 0, 0.0, m, x, z, 1, w, rw, iw, i3, info);
         chkxer("Chpevx", infot, nout, lerr, ok);
@@ -769,6 +760,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chbtrd
         //
+        strncpy(srnamt, "Chbtrd", srnamt_len);
         infot = 1;
         Chbtrd("/", "U", 0, 0, a, 1, d, e, z, 1, w, info);
         chkxer("Chbtrd", infot, nout, lerr, ok);
@@ -789,39 +781,41 @@ void Cerrst(const char *path, INTEGER const nunit) {
         chkxer("Chbtrd", infot, nout, lerr, ok);
         nt += 6;
         //
-        //        Chetrd_HB2ST
+        //        Chetrd_hb2st
         //
+        strncpy(srnamt, "Chetrd_hb2st", srnamt_len);
         infot = 1;
         Chetrd_hb2st("/", "N", "U", 0, 0, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Chetrd_HB2ST", infot, nout, lerr, ok);
+        chkxer("Chetrd_hb2st", infot, nout, lerr, ok);
         infot = 2;
         Chetrd_hb2st("N", "/", "U", 0, 0, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Chetrd_HB2ST", infot, nout, lerr, ok);
+        chkxer("Chetrd_hb2st", infot, nout, lerr, ok);
         infot = 2;
         Chetrd_hb2st("N", "H", "U", 0, 0, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Chetrd_HB2ST", infot, nout, lerr, ok);
+        chkxer("Chetrd_hb2st", infot, nout, lerr, ok);
         infot = 3;
         Chetrd_hb2st("N", "N", "/", 0, 0, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Chetrd_HB2ST", infot, nout, lerr, ok);
+        chkxer("Chetrd_hb2st", infot, nout, lerr, ok);
         infot = 4;
         Chetrd_hb2st("N", "N", "U", -1, 0, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Chetrd_HB2ST", infot, nout, lerr, ok);
+        chkxer("Chetrd_hb2st", infot, nout, lerr, ok);
         infot = 5;
         Chetrd_hb2st("N", "N", "U", 0, -1, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Chetrd_HB2ST", infot, nout, lerr, ok);
+        chkxer("Chetrd_hb2st", infot, nout, lerr, ok);
         infot = 7;
         Chetrd_hb2st("N", "N", "U", 0, 1, a, 1, d, e, c, 1, w, 1, info);
-        chkxer("Chetrd_HB2ST", infot, nout, lerr, ok);
+        chkxer("Chetrd_hb2st", infot, nout, lerr, ok);
         infot = 11;
         Chetrd_hb2st("N", "N", "U", 0, 0, a, 1, d, e, c, 0, w, 1, info);
-        chkxer("Chetrd_HB2ST", infot, nout, lerr, ok);
+        chkxer("Chetrd_hb2st", infot, nout, lerr, ok);
         infot = 13;
         Chetrd_hb2st("N", "N", "U", 0, 0, a, 1, d, e, c, 1, w, 0, info);
-        chkxer("Chetrd_HB2ST", infot, nout, lerr, ok);
+        chkxer("Chetrd_hb2st", infot, nout, lerr, ok);
         nt += 9;
         //
         //        Chbevd
         //
+        strncpy(srnamt, "Chbevd", srnamt_len);
         infot = 1;
         Chbevd("/", "U", 0, 0, a, 1, x, z, 1, w, 1, rw, 1, iw, 1, info);
         chkxer("Chbevd", infot, nout, lerr, ok);
@@ -871,6 +865,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chbevd_2stage
         //
+        strncpy(srnamt, "Chbevd_2stage", srnamt_len);
         infot = 1;
         Chbevd_2stage("/", "U", 0, 0, a, 1, x, z, 1, w, 1, rw, 1, iw, 1, info);
         chkxer("Chbevd_2stage", infot, nout, lerr, ok);
@@ -926,6 +921,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chbev
         //
+        strncpy(srnamt, "Chbev", srnamt_len);
         infot = 1;
         Chbev("/", "U", 0, 0, a, 1, x, z, 1, w, rw, info);
         chkxer("Chbev ", infot, nout, lerr, ok);
@@ -948,6 +944,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chbev_2stage
         //
+        strncpy(srnamt, "Chbev_2stage", srnamt_len);
         infot = 1;
         Chbev_2stage("/", "U", 0, 0, a, 1, x, z, 1, w, 0, rw, info);
         chkxer("Chbev_2stage ", infot, nout, lerr, ok);
@@ -976,6 +973,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chbevx
         //
+        strncpy(srnamt, "Chbevx", srnamt_len);
         infot = 1;
         Chbevx("/", "A", "U", 0, 0, a, 1, q, 1, 0.0, 0.0, 0, 0, 0.0, m, x, z, 1, w, rw, iw, i3, info);
         chkxer("Chbevx", infot, nout, lerr, ok);
@@ -1012,6 +1010,7 @@ void Cerrst(const char *path, INTEGER const nunit) {
         //
         //        Chbevx_2stage
         //
+        strncpy(srnamt, "Chbevx_2stage", srnamt_len);
         infot = 1;
         Chbevx_2stage("/", "A", "U", 0, 0, a, 1, q, 1, 0.0, 0.0, 0, 0, 0.0, m, x, z, 1, w, 0, rw, iw, i3, info);
         infot = 1;
