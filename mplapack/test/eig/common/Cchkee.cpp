@@ -413,11 +413,12 @@ void Cchkee(void) {
         //     Read the values of N
         //
         if (svd || zbb || glm || gqr || gsv || csd || lse) {
-            {
-                read_loop rloop(cmn, nin, star);
-                for (i = 1; i <= nn; i = i + 1) {
-                    rloop, nval[i - 1];
-                }
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            for (i = 1; i <= nn; i = i + 1) {
+                iss >> itmp;
+                nval[i - 1] = itmp;
             }
             for (i = 1; i <= nn; i = i + 1) {
                 if (nval[i - 1] < 0) {
@@ -434,12 +435,10 @@ void Cchkee(void) {
             }
         }
         if (!(zgx || zxv)) {
-            {
-                write_loop wloop(cmn, nout, format_9983);
-                wloop, "N:    ";
-                for (i = 1; i <= nn; i = i + 1) {
-                    wloop, nval[i - 1];
-                }
+            write_loop wloop(cmn, nout, format_9983);
+            wloop, "N:    ";
+            for (i = 1; i <= nn; i = i + 1) {
+                wloop, nval[i - 1];
             }
         } else {
             write(nout, format_9983), "N:    ", nn;
@@ -448,12 +447,16 @@ void Cchkee(void) {
         //     Read the number of values of K, followed by the values of K
         //
         if (zhb || zbb) {
-            read(nin, star), nk;
-            {
-                read_loop rloop(cmn, nin, star);
-                for (i = 1; i <= nk; i = i + 1) {
-                    rloop, kval[i - 1];
-                }
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            iss >> nk;
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            for (i = 1; i <= nk; i = i + 1) {
+                iss >> itmp;
+                kval[i - 1] = itmp;
             }
             for (i = 1; i <= nk; i = i + 1) {
                 if (kval[i - 1] < 0) {
@@ -1066,9 +1069,9 @@ void Cchkee(void) {
                     }
                 }
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-		thresh = thresh * 10.0;
-		printf("Warning! Threshold has been lifted 10 times for GMP\n");
-#endif		
+                thresh = thresh * 10.0;
+                printf("Warning! Threshold has been lifted 10 times for GMP\n");
+#endif
                 write(nout, "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4,', INMIN=',i4,"
                             "', INWIN =',i4,', INIBL =',i4,', ISHFTS =',i4,', IACC22 =',i4)"),
                     c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], max((INTEGER)11, inmin[i - 1]), inwin[i - 1], inibl[i - 1], ishfts[i - 1], iacc22[i - 1];
