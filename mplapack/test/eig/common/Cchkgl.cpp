@@ -147,7 +147,7 @@ void Cchkgl(INTEGER const nin, INTEGER const nout) {
         istringstream iss(str);
         iss >> iloin;
         iss >> ihiin;
-        // printf("iloin is %d ihiin is %d\n", (int)iloin, (int)ihiin);  
+        // printf("iloin is %d ihiin is %d\n", (int)iloin, (int)ihiin);
         getline(cin, str);
         for (i = 1; i <= n; i = i + 1) {
             getline(cin, str);
