@@ -175,13 +175,13 @@ This is the release schedule for MPLAPACK 2.0.0
 | complex eig Cbb.in                      | 2022/04/26 | ok  |  reduction of a general band matrix to real bidiagonal form |
 | complex eig sep.in                      | 2022/04/26 | ng driver  | testing Hermitian Eigenvalue Problem routines for complex |
 | complex eig se2.in                      | 2022/04/26 | ng driver  | testing Hermitian Eigenvalue Problem routines for complex |
+| complex eig svd.in                      |            |     |                                                               |
 | complex eig csd.in                      |            |     |                                                               |
 | complex eig Ced.in                      |            |     |                                                               |
 | complex eig Cgg.in                      |            |     |                                                               |
 | complex eig Cgd.in                      |            |     |                                                               |
 | complex eig Csg.in                      |            |     |                                                               |
-| complex eig Csvd.in                     |            |     |                                                               |
-| complex eig Cgsv.in                     |            |     |                                                               |
+| complex eig gsv.in                      |            |     |                                                               |
 | Impliment RFP version                |            |     |                          | 
 | Impliment mixed precision version    |            |     |                          | 
 | make tar ball for distribution       |            |     |                          |
