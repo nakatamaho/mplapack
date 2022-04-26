@@ -167,10 +167,10 @@ This is the release schedule for MPLAPACK 2.0.0
 | complex eig Cgbal.in                    | 2022/03/27 | ok  | Testing the balancing of a general matrix  | 
 | complex eig Cgbak.in                    | 2022/04/21 | ok  | Testing the back transformation of a pair of COMPLEX balanced matrices | 
 | complex eig Cec.in                      | 2022/04/24 | ok  | Testing COMPLEX Eigen Condition Routines |
-| complex eig nep.in                      | 2022/04/26 | ok  | Testing Nonsymmetric Eigenvalue Problem routines for COMPLEX |
 | complex eig lse.in                      | 2022/04/26 | ok  | testing Constrained Linear Least Squares routines for COMPLEX |
+| complex eig sep.in                      |            |     |                                                               |
+| complex eig se2.in                      |            |     |                                                               |
 | complex eig csd.in                      |            |     |                                                               |
-| complex eig Cse2.in                     |            |     |                                                               |
 | complex eig Csvd.in                     |            |     |                                                               |
 | complex eig Ced.in                      |            |     |                                                               |
 | complex eig Cgg.in                      |            |     |                                                               |
