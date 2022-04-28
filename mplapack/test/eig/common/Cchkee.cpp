@@ -88,8 +88,8 @@ void Cchkee(void) {
     bool tstdrv = false;
     bool tsterr = false;
 
-    char c1[2];
-    char c3[4];
+    char c1;
+    char c3[3];
     char path[4];
     char vname[32];
     char line[1024];
@@ -654,6 +654,9 @@ void Cchkee(void) {
                 getline(cin, str);
                 iss.clear();
                 iss.str(str);
+                for (i = 1; i <= nparms; i = i + 1) {
+                    iss >> nxval[i - 1];
+                }
                 for (i = 1; i <= nparms; i = i + 1) {
                     if (nxval[i - 1] < 0) {
                         write(nout, format_9989), "   NX ", nxval[i - 1], 0;
