@@ -351,7 +351,7 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
             //
             if (iinfo != 0) {
-                write(nounit, format_9993), "Generator", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9993), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 return;
             }
@@ -380,7 +380,7 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Cgeev("V", "V", n, h, lda, w, vl, ldvl, vr, ldvr, work, nnwork, rwork, iinfo);
                 if (iinfo != 0) {
                     result[1 - 1] = ulpinv;
-                    write(nounit, format_9993), "Cgeev1", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9993), "Cgeev1", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     goto statement_220;
                 }
@@ -443,7 +443,7 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Cgeev("N", "N", n, h, lda, w1, dum, 1, dum, 1, work, nnwork, rwork, iinfo);
                 if (iinfo != 0) {
                     result[1 - 1] = ulpinv;
-                    write(nounit, format_9993), "Cgeev2", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9993), "Cgeev2", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     goto statement_220;
                 }
@@ -462,7 +462,7 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Cgeev("N", "V", n, h, lda, w1, dum, 1, lre, ldlre, work, nnwork, rwork, iinfo);
                 if (iinfo != 0) {
                     result[1 - 1] = ulpinv;
-                    write(nounit, format_9993), "Cgeev3", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9993), "Cgeev3", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     goto statement_220;
                 }
@@ -491,7 +491,7 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Cgeev("V", "N", n, h, lda, w1, lre, ldlre, dum, 1, work, nnwork, rwork, iinfo);
                 if (iinfo != 0) {
                     result[1 - 1] = ulpinv;
-                    write(nounit, format_9993), "Cgeev4", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9993), "Cgeev4", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     goto statement_220;
                 }

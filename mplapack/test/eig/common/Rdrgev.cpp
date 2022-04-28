@@ -347,7 +347,7 @@ void Rdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         statement_90:
             //
             if (ierr != 0) {
-                write(nounit, format_9999), "Generator", ierr, n, jtype, ioldsd;
+                write(nounit, format_9999), "Generator", ierr, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(ierr);
                 return;
             }
@@ -365,7 +365,7 @@ void Rdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rggev("V", "V", n, s, lda, t, lda, alphar, alphai, beta, q, ldq, z, ldq, work, lwork, ierr);
             if (ierr != 0 && ierr != n + 1) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "Rggev1", ierr, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rggev1", ierr, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(ierr);
                 goto statement_190;
             }
@@ -375,7 +375,7 @@ void Rdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rget52(true, n, a, lda, b, lda, q, ldq, alphar, alphai, beta, work, &result[1 - 1]);
             if (result[2 - 1] > thresh) {
                 sprintnum_short(buf, result[2 - 1]);
-                write(nounit, format_9998), "Left", "Rggev1", buf, n, jtype, ioldsd;
+                write(nounit, format_9998), "Left", "Rggev1", buf, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
             }
             //
             //           Do the tests (3) and (4)
@@ -383,7 +383,7 @@ void Rdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rget52(false, n, a, lda, b, lda, z, ldq, alphar, alphai, beta, work, &result[3 - 1]);
             if (result[4 - 1] > thresh) {
                 sprintnum_short(buf, result[2 - 1]);
-                write(nounit, format_9998), "Right", "Rggev1", buf, n, jtype, ioldsd;
+                write(nounit, format_9998), "Right", "Rggev1", buf, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
             }
             //
             //           Do the test (5)
@@ -393,7 +393,7 @@ void Rdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rggev("N", "N", n, s, lda, t, lda, alphr1, alphi1, beta1, q, ldq, z, ldq, work, lwork, ierr);
             if (ierr != 0 && ierr != n + 1) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "Rggev2", ierr, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rggev2", ierr, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(ierr);
                 goto statement_190;
             }
@@ -412,7 +412,7 @@ void Rdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rggev("V", "N", n, s, lda, t, lda, alphr1, alphi1, beta1, qe, ldqe, z, ldq, work, lwork, ierr);
             if (ierr != 0 && ierr != n + 1) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "Rggev3", ierr, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rggev3", ierr, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(ierr);
                 goto statement_190;
             }
@@ -439,7 +439,7 @@ void Rdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rggev("N", "V", n, s, lda, t, lda, alphr1, alphi1, beta1, q, ldq, qe, ldqe, work, lwork, ierr);
             if (ierr != 0 && ierr != n + 1) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "Rggev4", ierr, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rggev4", ierr, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(ierr);
                 goto statement_190;
             }

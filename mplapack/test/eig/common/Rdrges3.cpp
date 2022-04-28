@@ -336,7 +336,7 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
         statement_100:
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 return;
             }
@@ -367,7 +367,7 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 Rgges3("V", "V", &sort, Rlctes, n, s, lda, t, lda, sdim, alphar, alphai, beta, q, ldq, z, ldq, work, lwork, bwork, iinfo);
                 if (iinfo != 0 && iinfo != n + 2) {
                     result[(1 + rsub + isort) - 1] = ulpinv;
-                    write(nounit, format_9999), "Rgges3", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rgges3", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     goto statement_160;
                 }
@@ -435,7 +435,7 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                                 write(nounit, "(' Rdrges3: Rget53 returned INFO=',i1,' for eigenvalue ',"
                                               "i6,'.',/,9x,'N=',i6,', JTYPE=',i6,', ISEED=(',4(i4,','),i5,"
                                               "')')"),
-                                    ierr, j, n, jtype, ioldsd;
+                                    ierr, j, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                                 info = abs(ierr);
                             }
                         } else {
@@ -447,7 +447,7 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     if (ilabad) {
                         write(nounit, "(' Rdrges3: S not in Schur form at eigenvalue ',i6,'.',/,9x,"
                                       "'N=',i6,', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')"),
-                            j, n, jtype, ioldsd;
+                            j, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     }
                 }
                 result[(6 + rsub) - 1] = temp1;

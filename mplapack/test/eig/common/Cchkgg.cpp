@@ -362,7 +362,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         statement_100:
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 return;
             }
@@ -378,14 +378,14 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Cgeqr2(n, n, t, lda, work, &work[(n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Cgeqr2", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cgeqr2", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
             //
             Cunm2r("L", "C", n, n, n, t, lda, work, h, lda, &work[(n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Cunm2r", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cunm2r", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -393,14 +393,14 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Claset("Full", n, n, czero, cone, u, ldu);
             Cunm2r("R", "N", n, n, n, t, lda, work, u, ldu, &work[(n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Cunm2r", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cunm2r", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
             //
             Cgghrd("V", "I", n, 1, n, h, lda, t, lda, u, ldu, v, ldu, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Cgghrd", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cgghrd", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -426,7 +426,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Chgeqz("E", "N", "N", n, 1, n, s2, lda, p2, lda, alpha3, beta3, q, ldu, z, ldu, work, lwork, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Chgeqz(E)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Chgeqz(E)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -438,7 +438,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Chgeqz("S", "N", "N", n, 1, n, s2, lda, p2, lda, alpha1, beta1, q, ldu, z, ldu, work, lwork, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Chgeqz(S)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Chgeqz(S)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -450,7 +450,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Chgeqz("S", "I", "I", n, 1, n, s1, lda, p1, lda, alpha1, beta1, q, ldu, z, ldu, work, lwork, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Chgeqz(V)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Chgeqz(V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -485,7 +485,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Ctgevc("L", "S", llwork, n, s1, lda, p1, lda, evectl, ldu, cdumma, ldu, n, in, work, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Ctgevc(L,S1)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Ctgevc(L,S1)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -500,7 +500,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Ctgevc("L", "S", llwork, n, s1, lda, p1, lda, &evectl[((i1 + 1) - 1) * ldevectl], ldu, cdumma, ldu, n, in, work, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Ctgevc(L,S2)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Ctgevc(L,S2)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -509,7 +509,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             result[9 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thrshn) {
                 sprintnum_short(buf, dumma[2 - 1]);
-                write(nounit, format_9998), "Left", "Ctgevc(HOWMNY=S)", buf, n, jtype, ioldsd;
+                write(nounit, format_9998), "Left", "Ctgevc(HOWMNY=S)", buf, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
             }
             //
             //           10: Compute the left eigenvector Matrix with
@@ -520,7 +520,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Clacpy("F", n, n, q, ldu, evectl, ldu);
             Ctgevc("L", "B", llwork, n, s1, lda, p1, lda, evectl, ldu, cdumma, ldu, n, in, work, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Ctgevc(L,B)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Ctgevc(L,B)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -529,7 +529,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             result[10 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thrshn) {
                 sprintnum_short(buf, dumma[2 - 1]);
-                write(nounit, format_9998), "Left", "Ctgevc(HOWMNY=B)", buf, n, jtype, ioldsd;
+                write(nounit, format_9998), "Left", "Ctgevc(HOWMNY=B)", buf, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
             }
             //
             //           11: Compute the right eigenvector Matrix without
@@ -551,7 +551,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Ctgevc("R", "S", llwork, n, s1, lda, p1, lda, cdumma, ldu, evectr, ldu, n, in, work, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Ctgevc(R,S1)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Ctgevc(R,S1)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -566,7 +566,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Ctgevc("R", "S", llwork, n, s1, lda, p1, lda, cdumma, ldu, &evectr[((i1 + 1) - 1) * ldevectr], ldu, n, in, work, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Ctgevc(R,S2)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Ctgevc(R,S2)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -575,7 +575,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             result[11 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thresh) {
                 sprintnum_short(buf, dumma[2 - 1]);
-                write(nounit, format_9998), "Right", "Ctgevc(HOWMNY=S)", buf, n, jtype, ioldsd;
+                write(nounit, format_9998), "Right", "Ctgevc(HOWMNY=S)", buf, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
             }
             //
             //           12: Compute the right eigenvector Matrix with
@@ -586,7 +586,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Clacpy("F", n, n, z, ldu, evectr, ldu);
             Ctgevc("R", "B", llwork, n, s1, lda, p1, lda, cdumma, ldu, evectr, ldu, n, in, work, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Ctgevc(R,B)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Ctgevc(R,B)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -595,7 +595,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             result[12 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thresh) {
                 sprintnum_short(buf, dumma[2 - 1]);
-                write(nounit, format_9998), "Right", "Ctgevc(HOWMNY=B)", buf, n, jtype, ioldsd;
+                write(nounit, format_9998), "Right", "Ctgevc(HOWMNY=B)", buf, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
             }
             //
             //           Tests 13--15 are done only on request

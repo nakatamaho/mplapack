@@ -357,7 +357,7 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
             //
             if (iinfo != 0) {
-                write(nounit, format_9992), "Generator", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9992), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 return;
             }
@@ -397,7 +397,7 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     Cgees("V", &sort, Cslect, n, h, lda, sdim, w, vs, ldvs, work, nnwork, rwork, bwork, iinfo);
                     if (iinfo != 0) {
                         result[(1 + rsub) - 1] = ulpinv;
-                        write(nounit, format_9992), "Cgees1", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9992), "Cgees1", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         goto statement_190;
                     }
@@ -435,7 +435,7 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     Cgees("N", &sort, Cslect, n, ht, lda, sdim, wt, vs, ldvs, work, nnwork, rwork, bwork, iinfo);
                     if (iinfo != 0) {
                         result[(5 + rsub) - 1] = ulpinv;
-                        write(nounit, format_9992), "Cgees2", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9992), "Cgees2", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         goto statement_190;
                     }

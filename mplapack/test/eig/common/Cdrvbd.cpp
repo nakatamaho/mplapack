@@ -277,7 +277,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 if (iinfo != 0) {
                     write(nounit, "(' Cdrvbd: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
                                   "', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')"),
-                        "Generator", iinfo, m, n, jtype, ioldsd;
+                        "Generator", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     return;
                 }
@@ -311,7 +311,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 }
                 Cgesvd("A", "A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, work, lswork, rwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9995), "GESVD", iinfo, m, n, jtype, lswork, ioldsd;
+                    write(nounit, format_9995), "GESVD", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     return;
                 }
@@ -414,7 +414,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 Clacpy("F", m, n, asav, lda, a, lda);
                 Cgesdd("A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, work, lswork, rwork, iwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9995), "GESDD", iinfo, m, n, jtype, lswork, ioldsd;
+                    write(nounit, format_9995), "GESDD", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     return;
                 }
@@ -523,7 +523,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     Cgesvdq("H", "N", "N", "A", "A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, numrank, iwork, liwork, work, lwork, rwork, lrwork, iinfo);
                     //
                     if (iinfo != 0) {
-                        write(nounit, format_9995), "Cgesvdq", iinfo, m, n, jtype, lswork, ioldsd;
+                        write(nounit, format_9995), "Cgesvdq", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         return;
                     }
@@ -581,7 +581,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     //
                     if (iinfo != 0) {
-                        write(nounit, format_9995), "GESVJ", iinfo, m, n, jtype, lswork, ioldsd;
+                        write(nounit, format_9995), "GESVJ", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         return;
                     }
@@ -638,7 +638,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     //
                     if (iinfo != 0) {
-                        write(nounit, format_9995), "GEJSV", iinfo, m, n, jtype, lswork, ioldsd;
+                        write(nounit, format_9995), "GEJSV", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         return;
                     }
@@ -673,7 +673,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 Clacpy("F", m, n, asav, lda, a, lda);
                 Cgesvdx("V", "V", "A", m, n, a, lda, vl, vu, il, iu, ns, ssav, usav, ldu, vtsav, ldvt, work, lwork, rwork, iwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd;
+                    write(nounit, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     return;
                 }
@@ -777,7 +777,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 Clacpy("F", m, n, asav, lda, a, lda);
                 Cgesvdx("V", "V", "I", m, n, a, lda, vl, vu, il, iu, nsi, s, u, ldu, vt, ldvt, work, lwork, rwork, iwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd;
+                    write(nounit, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     return;
                 }
@@ -816,7 +816,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 Clacpy("F", m, n, asav, lda, a, lda);
                 Cgesvdx("V", "V", "V", m, n, a, lda, vl, vu, il, iu, nsv, s, u, ldu, vt, ldvt, work, lwork, rwork, iwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd;
+                    write(nounit, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     return;
                 }

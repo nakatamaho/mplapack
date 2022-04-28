@@ -372,7 +372,7 @@ void Cdrges(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         statement_100:
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 return;
             }
@@ -403,7 +403,7 @@ void Cdrges(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Cgges("V", "V", &sort, Clctes, n, s, lda, t, lda, sdim, alpha, beta, q, ldq, z, ldq, work, lwork, rwork, bwork, iinfo);
                 if (iinfo != 0 && iinfo != n + 2) {
                     result[(1 + rsub + isort) - 1] = ulpinv;
-                    write(nounit, format_9999), "Cgges", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Cgges", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     goto statement_160;
                 }
@@ -449,7 +449,7 @@ void Cdrges(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     if (ilabad) {
                         write(nounit, "(' Cdrges: S not in Schur form at eigenvalue ',i6,'.',/,9x,"
                                       "'N=',i6,', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')"),
-                            j, n, jtype, ioldsd;
+                            j, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     }
                 }
                 result[(6 + rsub) - 1] = temp1;
