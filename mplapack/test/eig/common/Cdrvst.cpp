@@ -1017,7 +1017,7 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     if (Mlsame(&uplo, "U"))
                         write(nounit, format_9998), "Chbevd(V,U)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     else
-                        write(nounit, format_9998), "Chbevd(V,l)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9998), "Chbevd(V,L)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
