@@ -190,7 +190,7 @@ void Cchkee(void) {
     char buf0[1024];
     double dtmp;
 
-    stringstream ss(str);
+    stringstream ss;
     s1 = time(NULL);
     fatal = false;
     //
@@ -209,6 +209,7 @@ void Cchkee(void) {
         path[0] = line[0];
         path[1] = line[1];
         path[2] = line[2];
+        path[3] = '\0';
         nep = Mlsamen(3, path, "NEP") || Mlsamen(3, path, "ZHS");
         sep = Mlsamen(3, path, "SEP") || Mlsamen(3, path, "ZST") || Mlsamen(3, path, "ZSG") || Mlsamen(3, path, "SE2");
         svd = Mlsamen(3, path, "SVD") || Mlsamen(3, path, "ZBD");
@@ -805,6 +806,9 @@ void Cchkee(void) {
                 iss.clear();
                 iss.str(str);
                 for (i = 1; i <= nparms; i = i + 1) {
+                    iss >> inibl[i - 1];
+                }
+                for (i = 1; i <= nparms; i = i + 1) {
                     if (inibl[i - 1] < 0) {
                         write(nout, format_9989), " INIBL ", inibl[i - 1], 0;
                         fatal = true;
@@ -829,6 +833,9 @@ void Cchkee(void) {
                 getline(cin, str);
                 iss.clear();
                 iss.str(str);
+                for (i = 1; i <= nparms; i = i + 1) {
+                    iss >> ishfts[i - 1];
+                }
                 for (i = 1; i <= nparms; i = i + 1) {
                     if (ishfts[i - 1] < 0) {
                         write(nout, format_9989), " ISHFTS ", ishfts[i - 1], 0;
