@@ -173,8 +173,8 @@ This is the release schedule for MPLAPACK 2.0.0
 | complex eig Cglm.in                     | 2022/04/26 | ok  | Tests of the Generalized Linear Regression Model routines     |
 | complex eig Cgqr.in                     | 2022/04/26 | ok  | testing Generalized QR and RQ routines |
 | complex eig Cbb.in                      | 2022/04/26 | ok  |  reduction of a general band matrix to real bidiagonal form |
-| complex eig sep.in                      | 2022/04/26 | ng driver  | testing Hermitian Eigenvalue Problem routines for complex |
-| complex eig se2.in                      | 2022/04/26 | ng driver  | testing Hermitian Eigenvalue Problem routines for complex |
+| complex eig sep.in                      | 2022/04/30 | ok  | testing Hermitian Eigenvalue Problem routines for complex |
+| complex eig se2.in                      | 2022/05/01 | ok  | testing Hermitian Eigenvalue Problem routines for complex |
 | complex eig svd.in                      |            |     |                                                               |
 | complex eig csd.in                      |            |     |                                                               |
 | complex eig Ced.in                      |            |     |                                                               |
