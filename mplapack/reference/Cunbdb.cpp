@@ -31,32 +31,12 @@
 
 void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, INTEGER const ldx11, COMPLEX *x12, INTEGER const ldx12, COMPLEX *x21, INTEGER const ldx21, COMPLEX *x22, INTEGER const ldx22, REAL *theta, REAL *phi, COMPLEX *taup1, COMPLEX *taup2, COMPLEX *tauq1, COMPLEX *tauq2, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  ====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test input arguments
     //
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+    printf("MPLAPACK ERROR Cunbdb.cpp is not supported for GMP\n");
+    exit(1);
+#endif
     info = 0;
     bool colmajor = !Mlsame(trans, "T");
     const REAL realone = 1.0;
