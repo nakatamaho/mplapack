@@ -634,7 +634,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //              Load array WORK with the upper or lower triangular
                 //              part of the matrix in packed form.
                 //
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -675,7 +675,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Chet21(1, &uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -724,7 +724,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //              of the matrix in packed form.
             //
             statement_270:
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -785,7 +785,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 ntest += 2;
                 //
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -830,7 +830,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             statement_370:
                 ntest++;
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -871,7 +871,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 ntest += 2;
                 //
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -917,7 +917,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             statement_460:
                 ntest++;
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -958,7 +958,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 ntest += 2;
                 //
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -1022,7 +1022,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //              Load array V with the upper or lower triangular part
                 //              of the matrix in band form.
                 //
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
@@ -1058,7 +1058,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Chet21(1, &uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
@@ -1102,7 +1102,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //              of the matrix in band form.
             //
             statement_650:
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
@@ -1140,7 +1140,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 ntest += 2;
                 //
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
@@ -1184,7 +1184,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             statement_750:
                 ntest++;
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
@@ -1221,7 +1221,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 ntest += 2;
                 //
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
@@ -1265,7 +1265,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             statement_840:
                 ntest++;
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
@@ -1301,7 +1301,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 ntest += 2;
                 //
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
@@ -1410,7 +1410,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //              Load array WORK with the upper or lower triangular
                 //              part of the matrix in packed form.
                 //
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -1451,7 +1451,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Chet21(1, &uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -1511,7 +1511,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //              Load array V with the upper or lower triangular part
                 //              of the matrix in band form.
                 //
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
@@ -1547,7 +1547,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Chet21(1, &uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];

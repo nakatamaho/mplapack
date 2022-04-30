@@ -805,7 +805,7 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             statement_370:
                 ntest++;
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -846,7 +846,7 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 ntest += 2;
                 //
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -892,7 +892,7 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             statement_460:
                 ntest++;
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     indx = 1;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
@@ -1486,7 +1486,7 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //              Load array V with the upper or lower triangular part
                 //              of the matrix in band form.
                 //
-                if (i & uplo == 1) {
+                if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
                             v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
