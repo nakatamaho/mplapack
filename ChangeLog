@@ -1,3 +1,7 @@
+2022/05/01    Nakata Maho <maho@riken.jp> 2.0 branch
+            * se2.in: Tests for Hermitian Eigenvalue Problem routines for complex numbers have passed
+              for all precisions.
+
 2022/04/30    Nakata Maho <maho@riken.jp> 2.0 branch
             * sep.in: Tests for Hermitian Eigenvalue Problem routines for complex numbers have passed
               for all precisions.
