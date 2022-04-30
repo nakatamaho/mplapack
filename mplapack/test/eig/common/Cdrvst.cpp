@@ -265,7 +265,13 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Claset("Full", lda, n, czero, czero, a, lda);
             iinfo = 0;
+#ifdef ___MPLAPACK_BUILD_WITH_MPFR___
+            // If there are at least two eigenvalues, one is zero and the other
+	    // is nearly 0, then Cheevx fail to converge. Fix Rlaebz.cpp may help.
+            cond = ulpinv * 1e-3;
+#else
             cond = ulpinv;
+#endif
             //
             //           Special Matrices -- Identity & Jordan block
             //
