@@ -488,8 +488,12 @@ void Cchkee(void) {
             iss >> nbval[1 - 1];
             iss >> nbmin[1 - 1];
             iss >> nxval[1 - 1];
+            iss >> inmin[1 - 1];
+            iss >> inwin[1 - 1];
+            iss >> inibl[1 - 1];
+            iss >> ishfts[1 - 1];
             iss >> nsval[1 - 1];
-            iss >> mxbval[1 - 1];
+            iss >> iacc22[1 - 1];
             if (nbval[1 - 1] < 1) {
                 write(nout, format_9989), "   NB ", nbval[1 - 1], 1;
                 fatal = true;

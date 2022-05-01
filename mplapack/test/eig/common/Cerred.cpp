@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -41,49 +41,18 @@ using fem::common;
 void Cerred(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
+    //
+    nout = nunit;
+    ok = true;
+    nout = nunit;
     //
     static const char *format_9998 = "(' *** ',a,' failed the tests of the error exits ***')";
     static const char *format_9999 = "(1x,a,' passed the tests of the error exits (',i3,' tests done)')";
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Arrays in Common ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     char c2[2];
     c2[0] = path[1];
     c2[1] = path[2];
-    char srnamt[32];
-    memset(srnamt, 0, sizeof(srnamt));
     //
     //     Initialize A
     //
@@ -128,55 +97,53 @@ void Cerred(const char *path, INTEGER const nunit) {
         //
         //        Test Cgeev
         //
-        memset(srnamt, 0, sizeof(srnamt));
-        strncpy(srnamt, "Cgeev ", 16);
+        strncpy(srnamt, "Cgeev", srnamt_len);
         infot = 1;
         Cgeev("X", "N", 0, a, 1, x, vl, 1, vr, 1, w, 1, rw, info);
-        chkxer("Cgeev ", infot, nout, lerr, ok);
+        chkxer("Cgeev", infot, nout, lerr, ok);
         infot = 2;
         Cgeev("N", "X", 0, a, 1, x, vl, 1, vr, 1, w, 1, rw, info);
-        chkxer("Cgeev ", infot, nout, lerr, ok);
+        chkxer("Cgeev", infot, nout, lerr, ok);
         infot = 3;
         Cgeev("N", "N", -1, a, 1, x, vl, 1, vr, 1, w, 1, rw, info);
-        chkxer("Cgeev ", infot, nout, lerr, ok);
+        chkxer("Cgeev", infot, nout, lerr, ok);
         infot = 5;
         Cgeev("N", "N", 2, a, 1, x, vl, 1, vr, 1, w, 4, rw, info);
-        chkxer("Cgeev ", infot, nout, lerr, ok);
+        chkxer("Cgeev", infot, nout, lerr, ok);
         infot = 8;
         Cgeev("V", "N", 2, a, 2, x, vl, 1, vr, 1, w, 4, rw, info);
-        chkxer("Cgeev ", infot, nout, lerr, ok);
+        chkxer("Cgeev", infot, nout, lerr, ok);
         infot = 10;
         Cgeev("N", "V", 2, a, 2, x, vl, 1, vr, 1, w, 4, rw, info);
-        chkxer("Cgeev ", infot, nout, lerr, ok);
+        chkxer("Cgeev", infot, nout, lerr, ok);
         infot = 12;
         Cgeev("V", "V", 1, a, 1, x, vl, 1, vr, 1, w, 1, rw, info);
-        chkxer("Cgeev ", infot, nout, lerr, ok);
+        chkxer("Cgeev", infot, nout, lerr, ok);
         nt += 7;
         //
     } else if (Mlsamen(2, c2, "ES")) {
         //
         //        Test Cgees
         //
-        memset(srnamt, 0, sizeof(srnamt));
-        strncpy(srnamt, "Cgees ", 16);
+        strncpy(srnamt, "Cgees", srnamt_len);
         infot = 1;
         Cgees("X", "N", Cslect, 0, a, 1, sdim, x, vl, 1, w, 1, rw, b, info);
-        chkxer("Cgees ", infot, nout, lerr, ok);
+        chkxer("Cgees", infot, nout, lerr, ok);
         infot = 2;
         Cgees("N", "X", Cslect, 0, a, 1, sdim, x, vl, 1, w, 1, rw, b, info);
-        chkxer("Cgees ", infot, nout, lerr, ok);
+        chkxer("Cgees", infot, nout, lerr, ok);
         infot = 4;
         Cgees("N", "S", Cslect, -1, a, 1, sdim, x, vl, 1, w, 1, rw, b, info);
-        chkxer("Cgees ", infot, nout, lerr, ok);
+        chkxer("Cgees", infot, nout, lerr, ok);
         infot = 6;
         Cgees("N", "S", Cslect, 2, a, 1, sdim, x, vl, 1, w, 4, rw, b, info);
-        chkxer("Cgees ", infot, nout, lerr, ok);
+        chkxer("Cgees", infot, nout, lerr, ok);
         infot = 10;
         Cgees("V", "S", Cslect, 2, a, 2, sdim, x, vl, 1, w, 4, rw, b, info);
-        chkxer("Cgees ", infot, nout, lerr, ok);
+        chkxer("Cgees", infot, nout, lerr, ok);
         infot = 12;
         Cgees("N", "S", Cslect, 1, a, 1, sdim, x, vl, 1, w, 1, rw, b, info);
-        chkxer("Cgees ", infot, nout, lerr, ok);
+        chkxer("Cgees", infot, nout, lerr, ok);
         nt += 6;
         //
     } else if (Mlsamen(2, c2, "VX")) {
@@ -184,7 +151,7 @@ void Cerred(const char *path, INTEGER const nunit) {
         //        Test Cgeevx
         //
         memset(srnamt, 0, sizeof(srnamt));
-        strncpy(srnamt, "Cgeevx", 16);
+        strncpy(srnamt, "Cgeevx", srnamt_len);
         infot = 1;
         Cgeevx("X", "N", "N", "N", 0, a, 1, x, vl, 1, vr, 1, ilo, ihi, s, abnrm, r1, r2, w, 1, rw, info);
         chkxer("Cgeevx", infot, nout, lerr, ok);
@@ -221,8 +188,7 @@ void Cerred(const char *path, INTEGER const nunit) {
         //
         //        Test Cgeesx
         //
-        memset(srnamt, 0, sizeof(srnamt));
-        strncpy(srnamt, "Cgeesx", 16);
+        strncpy(srnamt, "Cgeesx", srnamt_len);
         infot = 1;
         Cgeesx("X", "N", Cslect, "N", 0, a, 1, sdim, x, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, rw, b, info);
         chkxer("Cgeesx", infot, nout, lerr, ok);
@@ -250,8 +216,7 @@ void Cerred(const char *path, INTEGER const nunit) {
         //
         //        Test Cgesvd
         //
-        memset(srnamt, 0, sizeof(srnamt));
-        strncpy(srnamt, "Cgesvd", 16);
+        strncpy(srnamt, "Cgeesd", srnamt_len);
         infot = 1;
         Cgesvd("X", "N", 0, 0, a, 1, s, u, 1, vt, 1, w, 1, rw, info);
         chkxer("Cgesvd", infot, nout, lerr, ok);
@@ -285,8 +250,7 @@ void Cerred(const char *path, INTEGER const nunit) {
         //
         //        Test Cgesdd
         //
-        memset(srnamt, 0, sizeof(srnamt));
-        strncpy(srnamt, "Cgesdd", 16);
+        strncpy(srnamt, "Cgeedd", srnamt_len);
         infot = 1;
         Cgesdd("X", 0, 0, a, 1, s, u, 1, vt, 1, w, 1, rw, iw, info);
         chkxer("Cgesdd", infot, nout, lerr, ok);
@@ -314,8 +278,7 @@ void Cerred(const char *path, INTEGER const nunit) {
         //
         //        Test Cgejsv
         //
-        memset(srnamt, 0, sizeof(srnamt));
-        strncpy(srnamt, "Cgejsv", 16);
+        strncpy(srnamt, "Cgejsv", srnamt_len);
         infot = 1;
         Cgejsv("X", "U", "V", "R", "N", "N", 0, 0, a, 1, s, u, 1, vt, 1, w, 1, rw, 1, iw, info);
         chkxer("Cgejsv", infot, nout, lerr, ok);
@@ -358,8 +321,7 @@ void Cerred(const char *path, INTEGER const nunit) {
         //
         //        Test Cgesvdx
         //
-        memset(srnamt, 0, sizeof(srnamt));
-        strncpy(srnamt, "Cgesvdx", 16);
+        strncpy(srnamt, "Cgesvdx", srnamt_len);
         infot = 1;
         Cgesvdx("X", "N", "A", 0, 0, a, 1, zero, zero, 0, 0, ns, s, u, 1, vt, 1, w, 1, rw, iw, info);
         chkxer("Cgesvdx", infot, nout, lerr, ok);
@@ -405,8 +367,7 @@ void Cerred(const char *path, INTEGER const nunit) {
         //
         //        Test Cgesvdq
         //
-        memset(srnamt, 0, sizeof(srnamt));
-        strncpy(srnamt, "Cgesvdq", 16);
+        strncpy(srnamt, "Cgesvdq", srnamt_len);
         infot = 1;
         Cgesvdq("X", "P", "T", "A", "A", 0, 0, a, 1, s, u, 0, vt, 0, ns, iw, 1, w, 1, rw, 1, info);
         chkxer("Cgesvdq", infot, nout, lerr, ok);
