@@ -913,7 +913,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         sprintnum_short(buf, result[j - 1]);
                         write(nounit, "(' M=',i5,', N=',i5,', type ',i1,', IWS=',i1,', seed=',4(i4,"
                                       "','),' test(',i2,')=',a)"),
-                            m, n, jtype, iwspc, ioldsd, j, buf;
+                            m, n, jtype, iwspc, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], j, buf;
                     }
                 }
                 //

@@ -579,7 +579,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                     sprintnum_short(buf, result[j - 1]);
                     write(nout, "(' M=',i5,', N=',i5,', type ',i2,', seed=',4(i4,','),' test(',i2,"
                                 "')=',a)"),
-                        m, n, jtype, ioldsd, j, buf;
+                        m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], j, buf;
                     nfail++;
                 }
             }

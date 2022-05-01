@@ -368,7 +368,7 @@ void Rchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                         sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' M =',i4,' N=',i4,', K=',i3,', seed=',4(i4,','),' type ',i2,"
                                       "', test(',i2,')=',a)"),
-                            m, n, k, ioldsd, jtype, jr, buf;
+                            m, n, k, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jtype, jr, buf;
                     }
                 }
             //

@@ -518,7 +518,7 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         sprintnum_short(buf, result[j - 1]);
                         write(nounit, "(' N=',i5,', IWK=',i2,', seed=',4(i4,','),' type ',i2,"
                                       "', test(',i2,')=',a)"),
-                            n, iwk, ioldsd, jtype, j, buf;
+                            n, iwk, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jtype, j, buf;
                     }
                 }
                 //

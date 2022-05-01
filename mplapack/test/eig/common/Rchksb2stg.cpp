@@ -549,7 +549,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                         sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' N=',i5,', K=',i4,', seed=',4(i4,','),' type ',i2,', test(',"
                                       "i2,')=',a)"),
-                            n, k, ioldsd, jtype, jr, buf;
+                            n, k, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jtype, jr, buf;
                     }
                 }
             //

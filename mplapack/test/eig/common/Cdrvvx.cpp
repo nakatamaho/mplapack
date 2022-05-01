@@ -450,7 +450,7 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                             sprintnum_short(buf, thresh);
                             write(nounit, "(' BALANC=''',a1,''',N=',i4,',IWK=',i1,', seed=',4(i4,','),"
                                           "' type ',i2,', test(',i2,')=',a)"),
-                                balanc, n, iwk, ioldsd, jtype, j, buf;
+                                balanc, n, iwk, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jtype, j, buf;
                         }
                     }
                     //
