@@ -454,11 +454,12 @@ statement_160:
     string str;
     istringstream iss;
     while (1) {
+        getline(cin, str);
         iss.clear();
         iss.str(str);
         iss >> n;
         iss >> isrt;
-        // printf("# n = %d, isrt = %d\n", (int)n, int(isrt));
+        //printf("# n = %d, isrt = %d\n", (int)n, int(isrt));
         //
         //     Read input data until N=0
         //
@@ -480,7 +481,7 @@ statement_160:
                 a[(i - 1) + (j - 1) * lda] = COMPLEX(dtmp_r, dtmp_i);
             }
         }
-        // printf("a="); printmat(n, n, a, lda); printf("\n");
+        //printf("a="); printmat(n, n, a, lda); printf("\n");
         for (i = 1; i <= n; i = i + 1) {
             getline(cin, str);
             string __r = regex_replace(str, regex(","), " ");
@@ -489,11 +490,11 @@ statement_160:
             str = regex_replace(r, regex("D"), "e");
             iss.clear();
             iss.str(str);
-            iss >> wr;
-            iss >> wi;
+            iss >> dtmp_r;
+            iss >> dtmp_i;
             iss >> dtmp1;
             iss >> dtmp2;
-            w1[i - 1] = COMPLEX(wr, wi);
+            w1[i - 1] = COMPLEX(dtmp_r, dtmp_i);
             rcdein[i - 1] = dtmp1;
             rcdvin[i - 1] = dtmp2;
         }
