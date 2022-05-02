@@ -459,7 +459,7 @@ statement_160:
         iss.str(str);
         iss >> n;
         iss >> isrt;
-        //printf("# n = %d, isrt = %d\n", (int)n, int(isrt));
+        // printf("# n = %d, isrt = %d\n", (int)n, int(isrt));
         //
         //     Read input data until N=0
         //
@@ -481,7 +481,7 @@ statement_160:
                 a[(i - 1) + (j - 1) * lda] = COMPLEX(dtmp_r, dtmp_i);
             }
         }
-        //printf("a="); printmat(n, n, a, lda); printf("\n");
+        // printf("a="); printmat(n, n, a, lda); printf("\n");
         for (i = 1; i <= n; i = i + 1) {
             getline(cin, str);
             string __r = regex_replace(str, regex(","), " ");
