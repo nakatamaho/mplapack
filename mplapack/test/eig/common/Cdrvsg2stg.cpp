@@ -149,7 +149,6 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     //
     unfl = Rlamch("Safe minimum");
     ovfl = Rlamch("Overflow");
-    Rlabad(unfl, ovfl);
     ulp = Rlamch("Epsilon") * Rlamch("Base");
     ulpinv = one / ulp;
     rtunfl = sqrt(unfl);
