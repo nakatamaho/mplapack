@@ -175,9 +175,9 @@ This is the release schedule for MPLAPACK 2.0.0
 | complex eig Cbb.in                      | 2022/04/26 | ok  |  reduction of a general band matrix to real bidiagonal form |
 | complex eig sep.in                      | 2022/04/30 | ok  | testing Hermitian Eigenvalue Problem routines for complex |
 | complex eig se2.in                      | 2022/05/01 | ok  | testing Hermitian Eigenvalue Problem routines for complex |
+| complex eig Ced.in                      | 2022/05/01 | ok  | testing Hermitian Eigenvalue Problem Expert drivers and drivers for complex |
 | complex eig svd.in                      |            |     |                                                               |
 | complex eig csd.in                      |            |     |                                                               |
-| complex eig Ced.in                      |            |     |                                                               |
 | complex eig Cgg.in                      |            |     |                                                               |
 | complex eig Cgd.in                      |            |     |                                                               |
 | complex eig Csg.in                      |            |     |                                                               |
