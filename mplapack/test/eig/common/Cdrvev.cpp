@@ -349,7 +349,11 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //              Compute eigenvalues and eigenvectors, and test them
                 //
                 Clacpy("F", n, n, a, lda, h, lda);
+                //		printf("a=");printmat(n,n,a,lda);printf("\n");
                 Cgeev("V", "V", n, h, lda, w, vl, ldvl, vr, ldvr, work, nnwork, rwork, iinfo);
+                //                printf("w="); printvec(w, n); printf("\n");
+                //                printf("vl=");printmat(n,n,vl,ldvl);printf("\n");
+                //		printf("vr=");printmat(n,n,vr,ldvr);printf("\n");
                 if (iinfo != 0) {
                     result[1 - 1] = ulpinv;
                     write(nounit, format_9993), "Cgeev1", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
@@ -383,7 +387,7 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                             vrmx = abs(vr[(jj - 1) + (j - 1) * ldvr].real());
                         }
                     }
-                    if (vrmx / vmx < one - two * ulp) {
+                    if ((vrmx / vmx) < (one - two * ulp)) {
                         result[3 - 1] = ulpinv;
                     }
                 }
