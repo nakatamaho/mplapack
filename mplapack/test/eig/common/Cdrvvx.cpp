@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -38,6 +38,16 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <regex>
+
+using namespace std;
+using std::regex;
+using std::regex_replace;
+
 void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const niunit, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *w, COMPLEX *w1, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, COMPLEX *lre, INTEGER const ldlre, REAL *rcondv, REAL *rcndv1, REAL *rcdvin, REAL *rconde, REAL *rcnde1, REAL *rcdein, REAL *scale, REAL *scale1, REAL *result, COMPLEX *work, INTEGER const nwork, REAL *rwork, INTEGER &info) {
 
     INTEGER ldh = lda;
@@ -53,8 +63,7 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     char buf[1024];
     double dtmp;
     double dtmp1, dtmp2, dtmp3, dtmp4;
-    std::complex<double> ctmp;
-    std::complex<double> ctmp1, ctmp2, ctmp3, ctmp4;
+    std::complex<double> ctmp_r, ctmp_i;
     char path[3];
     INTEGER ntestt = 0;
     INTEGER ntestf = 0;
@@ -130,33 +139,6 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                                      "'Decomposition Expert Driver',/,"
                                      "' Matrix types (see Cdrvvx for details): ')";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     path[0] = 'C';
     path[1] = 'V';
     path[2] = 'X';
@@ -218,7 +200,6 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
-    Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
     ulpinv = one / ulp;
     rtulp = sqrt(ulp);
@@ -470,9 +451,14 @@ statement_160:
     //     by real part, then decreasing by imaginary part)
     //
     jtype = 0;
-
+    string str;
+    istringstream iss;
     while (1) {
-        read(niunit, star), n, isrt;
+        iss.clear();
+        iss.str(str);
+        iss >> n;
+        iss >> isrt;
+        // printf("# n = %d, isrt = %d\n", (int)n, int(isrt));
         //
         //     Read input data until N=0
         //
@@ -481,16 +467,32 @@ statement_160:
         jtype++;
         iseed[1 - 1] = jtype;
         for (i = 1; i <= n; i = i + 1) {
-            {
-                read_loop rloop(cmn, niunit, star);
-                for (j = 1; j <= n; j = j + 1) {
-                    rloop, ctmp;
-                    a[(i - 1) + (j - 1) * lda] = ctmp;
-                }
+            for (j = 1; j <= n; j = j + 1) {
+                getline(cin, str);
+                string __r = regex_replace(str, regex(","), " ");
+                string _r = regex_replace(__r, regex("\\)"), " ");
+                string r = regex_replace(_r, regex("\\("), " ");
+                str = regex_replace(r, regex("D"), "e");
+                iss.clear();
+                iss.str(str);
+                iss >> dtmp_r;
+                iss >> dtmp_i;
+                a[(i - 1) + (j - 1) * lda] = COMPLEX(dtmp_r, dtmp_i);
             }
         }
+        // printf("a="); printmat(n, n, a, lda); printf("\n");
         for (i = 1; i <= n; i = i + 1) {
-            read(niunit, star), wr, wi, dtmp1, dtmp2;
+            getline(cin, str);
+            string __r = regex_replace(str, regex(","), " ");
+            string _r = regex_replace(__r, regex("\\)"), " ");
+            string r = regex_replace(_r, regex("\\("), " ");
+            str = regex_replace(r, regex("D"), "e");
+            iss.clear();
+            iss.str(str);
+            iss >> wr;
+            iss >> wi;
+            iss >> dtmp1;
+            iss >> dtmp2;
             w1[i - 1] = COMPLEX(wr, wi);
             rcdein[i - 1] = dtmp1;
             rcdvin[i - 1] = dtmp2;
