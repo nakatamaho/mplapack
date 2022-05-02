@@ -1384,7 +1384,7 @@ void Cchkee(void) {
                 tstdif = false;
                 thrshn = 10.0;
                 if (tstchk) {
-                    Cchkgg(nn, nval, maxtyp, dotype, iseed, thresh, tstdif, thrshn, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], &a[nmax * nmax * 5], &a[nmax * nmax * 6], &a[nmax * nmax * 7], &a[nmax * nmax * 8], nmax, &a[(1 - 1) + (10 - 1) * lda], &a[(1 - 1) + (11 - 1) * lda], &a[(1 - 1) + (12 - 1) * lda], &dc[0], &dc[nmax], &dc[nmax * 2], &dc[nmax * 3], &a[(1 - 1) + (13 - 1) * lda], &a[(1 - 1) + (14 - 1) * lda], work, lwork, rwork, logwrk, result, info);
+                    Cchkgg(nn, nval, maxtyp, dotype, iseed, thresh, tstdif, thrshn, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], &a[nmax * nmax * 5], &a[nmax * nmax * 6], &a[nmax * nmax * 7], &a[nmax * nmax * 8], nmax, &a[nmax * nmax * 9], &a[nmax * nmax * 10], &a[nmax * nmax * 11], &dc[0], &dc[nmax], &dc[nmax * 2], &dc[nmax * 3], &a[nmax * nmax * 12], &a[nmax * nmax * 13], work, lwork, rwork, logwrk, result, info);
                     if (info != 0) {
                         write(nout, format_9980), "Cchkgg", info;
                     }
