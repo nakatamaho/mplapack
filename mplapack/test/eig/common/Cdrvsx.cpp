@@ -456,6 +456,7 @@ statement_150:
     //
     jtype = 0;
     string str;
+    string _str;
     istringstream iss;
     while (1) {
         getline(cin, str);
@@ -464,7 +465,7 @@ statement_150:
         iss >> n;
         iss >> nslct;
         iss >> isrt;
-//        printf("# n = %d, nslct = %d, isrt = %d\n", (int)n, int(nslct), int(isrt));
+        //        printf("# n = %d, nslct = %d, isrt = %d\n", (int)n, int(nslct), int(isrt));
         if (n == 0)
             break;
         jtype++;
@@ -479,11 +480,9 @@ statement_150:
         for (i = 1; i <= nslct; i = i + 1) {
             iss >> islct[i - 1];
         }
-
-//        for (i = 1; i <= nslct; i = i + 1) {
-//            cout << "islct: " << islct[i - 1] << "\n";
-//        }
-
+        //        for (i = 1; i <= nslct; i = i + 1) {
+        //            cout << "islct: " << islct[i - 1] << "\n";
+        //        }
         for (i = 1; i <= n; i = i + 1) {
             for (j = 1; j <= n; j = j + 1) {
                 getline(cin, str);
@@ -500,8 +499,9 @@ statement_150:
         }
         // printf("a="); printmat(n, n, a, lda); printf("\n");
         getline(cin, str);
+        _str = regex_replace(str, regex("D"), "e");
         iss.clear();
-        iss.str(str);
+        iss.str(_str);
         iss >> dtmp1;
         iss >> dtmp2;
         rcdein = dtmp1;

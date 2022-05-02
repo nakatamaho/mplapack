@@ -1249,6 +1249,10 @@ void Cchkee(void) {
                 if (tsterr) {
                     Cerred(c3, nout);
                 }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+                thresh = thresh * 5.0;
+                printf("Warning! Threshold has been lifted 5 times for GMP\n");
+#endif
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
                 Cdrvev(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &dc[0], &dc[nmax], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], nmax, result, work, lwork, rwork, iwork, info);
                 if (info != 0) {
@@ -1273,6 +1277,10 @@ void Cchkee(void) {
                 if (tsterr) {
                     Cerred(c3, nout);
                 }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+                thresh = thresh * 5.0;
+                printf("Warning! Threshold has been lifted 5 times for GMP\n");
+#endif
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
                 Cdrves(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &dc[0], &dc[nmax], &a[nmax * nmax * 3], nmax, result, work, lwork, rwork, iwork, logwrk, info);
                 if (info != 0) {
@@ -1297,6 +1305,10 @@ void Cchkee(void) {
                 if (tsterr) {
                     Cerred(c3, nout);
                 }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+                thresh = thresh * 5.0;
+                printf("Warning! Threshold has been lifted 5 times for GMP\n");
+#endif
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
                 Cdrvvx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[0], nmax, &a[nmax * nmax], &dc[0], &dc[nmax], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], nmax, &dr[0], &dr[nmax], &dr[2 * nmax], &dr[nmax * 3], &dr[nmax * 4], &dr[nmax * 5], &dr[nmax * 6], &dr[nmax * 7], result, work, lwork, rwork, info);
                 if (info != 0) {
@@ -1321,6 +1333,10 @@ void Cchkee(void) {
                 if (tsterr) {
                     Cerred(c3, nout);
                 }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+                thresh = thresh * 5.0;
+                printf("Warning! Threshold has been lifted 5 times for GMP\n");
+#endif
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
                 Cdrvsx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &dc[0], &dc[nmax], &dc[nmax * 2], &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], result, work, lwork, rwork, logwrk, info);
                 if (info != 0) {
