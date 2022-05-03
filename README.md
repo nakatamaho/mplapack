@@ -177,7 +177,7 @@ This is the release process for MPLAPACK 2.0.0
 | complex eig se2.in                      | 2022/05/01 | ok  | testing Hermitian Eigenvalue Problem routines for complex |
 | complex eig Ced.in                      | 2022/05/02 | ok  | testing Hermitian Eigenvalue Problem Expert drivers and drivers for complex |
 | complex eig csd.in                      | 2022/05/03 | NG for case 2: R=P | testing complex CS decomposition routines       |
-| complex eig Cgg.in                      | 2022/05/03 | NG for _Float128 and 64x | testing Nonsymmetric Eigenvalue Problem routines  |
+| complex eig Cgg.in                      | 2022/05/04 | ok | testing Nonsymmetric Eigenvalue Problem routines  |
 | complex eig Cgd.in                      |            |  |                                                               |
 | complex eig Csg.in                      | 2022/05/03 | NG for MPFR | Tests of the Generalized Nonsymmetric Eigenvalue Problem routines |
 | complex eig svd.in                      |            |     |                                                               |
