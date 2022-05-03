@@ -172,15 +172,15 @@ This is the release process for MPLAPACK 2.0.0
 | complex eig Csb.in                      | 2022/04/26 | ok  | testing Hermitian Eigenvalue Problem routines                 |
 | complex eig Cglm.in                     | 2022/04/26 | ok  | Tests of the Generalized Linear Regression Model routines     |
 | complex eig Cgqr.in                     | 2022/04/26 | ok  | testing Generalized QR and RQ routines |
-| complex eig Cbb.in                      | 2022/04/26 | ok  |  reduction of a general band matrix to real bidiagonal form |
+| complex eig Cbb.in                      | 2022/04/26 | ok  | reduction of a general band matrix to real bidiagonal form |
 | complex eig sep.in                      | 2022/04/30 | ok  | testing Hermitian Eigenvalue Problem routines for complex |
 | complex eig se2.in                      | 2022/05/01 | ok  | testing Hermitian Eigenvalue Problem routines for complex |
 | complex eig Ced.in                      | 2022/05/02 | ok  | testing Hermitian Eigenvalue Problem Expert drivers and drivers for complex |
+| complex eig csd.in                      | 2022/05/03 | NG for case 2 R=P | testing complex CS decomposition routines       |
+| complex eig Cgg.in                      | 2022/05/03 | NG for _Float128 and 64x | testing Nonsymmetric Eigenvalue Problem routines  |
+| complex eig Cgd.in                      |            |  |                                                               |
+| complex eig Csg.in                      | 2022/05/03 | NG for MPFR | Tests of the Generalized Nonsymmetric Eigenvalue Problem routines |
 | complex eig svd.in                      |            |     |                                                               |
-| complex eig csd.in                      |            |     |                                                               |
-| complex eig Cgg.in                      |            |     |                                                               |
-| complex eig Cgd.in                      |            |     |                                                               |
-| complex eig Csg.in                      |            |     |                                                               |
 | complex eig gsv.in                      |            |     |                                                               |
 | Impliment RFP version                |            |     |                          | 
 | Impliment mixed precision version    |            |     |                          | 
