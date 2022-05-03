@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -72,7 +72,7 @@ void Cdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     const REAL one = 1.0;
     REAL safmax = 0.0;
     REAL ulpinv = 0.0;
-    REAL rmagn[3];
+    REAL rmagn[4];
     INTEGER ntestt = 0;
     INTEGER nerrs = 0;
     INTEGER nmats = 0;
@@ -96,33 +96,6 @@ void Cdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                                      "','),i5,')')";
     static const char *format_9999 = "(' Cdrgev3: ',a,' returned INFO=',i6,'.',/,3x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Check for errors
     //
@@ -187,13 +160,12 @@ void Cdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     safmin = Rlamch("Safe minimum");
     safmin = safmin / ulp;
     safmax = one / safmin;
-    Rlabad(safmin, safmax);
     ulpinv = one / ulp;
     //
     //     The values RMAGN(2:3) depend on N, see below.
     //
-    rmagn[0 - 1] = zero;
-    rmagn[1 - 1] = one;
+    rmagn[0] = zero;
+    rmagn[1] = one;
     //
     //     Loop over sizes, types
     //
@@ -204,8 +176,8 @@ void Cdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     for (jsize = 1; jsize <= nsizes; jsize = jsize + 1) {
         n = nn[jsize - 1];
         n1 = max((INTEGER)1, n);
-        rmagn[2 - 1] = safmax * ulp / castREAL(n1);
-        rmagn[3 - 1] = safmin * ulpinv * n1;
+        rmagn[2] = safmax * ulp / castREAL(n1);
+        rmagn[3] = safmin * ulpinv * castREAL(n1);
         //
         if (nsizes != 1) {
             mtypes = min(maxtyp, ntypes);
@@ -262,10 +234,10 @@ void Cdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 } else {
                     in = n;
                 }
-                Clatm4(katype[jtype - 1], in, kz1[kazero[jtype - 1] - 1], kz2[kazero[jtype - 1] - 1], lasign[jtype - 1], rmagn[kamagn[jtype - 1] - 1], ulp, rmagn[(ktrian[jtype - 1] * kamagn[jtype - 1]) - 1], 2, iseed, a, lda);
+                Clatm4(katype[jtype - 1], in, kz1[kazero[jtype - 1] - 1], kz2[kazero[jtype - 1] - 1], lasign[jtype - 1], rmagn[kamagn[jtype - 1]], ulp, rmagn[ktrian[jtype - 1] * kamagn[jtype - 1]], 2, iseed, a, lda);
                 iadd = kadd[kazero[jtype - 1] - 1];
                 if (iadd > 0 && iadd <= n) {
-                    a[(iadd - 1) + (iadd - 1) * lda] = rmagn[kamagn[jtype - 1] - 1];
+                    a[(iadd - 1) + (iadd - 1 * lda)] = rmagn[kamagn[jtype - 1]];
                 }
                 //
                 //              Generate B (w/o rotation)
@@ -278,10 +250,10 @@ void Cdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 } else {
                     in = n;
                 }
-                Clatm4(kbtype[jtype - 1], in, kz1[kbzero[jtype - 1] - 1], kz2[kbzero[jtype - 1] - 1], lbsign[jtype - 1], rmagn[kbmagn[jtype - 1] - 1], one, rmagn[(ktrian[jtype - 1] * kbmagn[jtype - 1]) - 1], 2, iseed, b, lda);
+                Clatm4(kbtype[jtype - 1], in, kz1[kbzero[jtype - 1] - 1], kz2[kbzero[jtype - 1] - 1], lbsign[jtype - 1], rmagn[kbmagn[jtype - 1]], one, rmagn[ktrian[jtype - 1] * kbmagn[jtype - 1]], 2, iseed, b, lda);
                 iadd = kadd[kbzero[jtype - 1] - 1];
                 if (iadd != 0 && iadd <= n) {
-                    b[(iadd - 1) + (iadd - 1) * ldb] = rmagn[kbmagn[jtype - 1] - 1];
+                    b[(iadd - 1) + (iadd - 1) * ldb] = rmagn[kbmagn[jtype - 1]];
                 }
                 //
                 if (kclass[jtype - 1] == 2 && n > 0) {
@@ -343,8 +315,8 @@ void Cdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 //
                 for (jc = 1; jc <= n; jc = jc + 1) {
                     for (jr = 1; jr <= n; jr = jr + 1) {
-                        a[(jr - 1) + (jc - 1) * lda] = rmagn[kamagn[jtype - 1] - 1] * Clarnd(4, iseed);
-                        b[(jr - 1) + (jc - 1) * ldb] = rmagn[kbmagn[jtype - 1] - 1] * Clarnd(4, iseed);
+                        a[(jr - 1) + (jc - 1) * lda] = rmagn[kamagn[jtype - 1]] * Clarnd(4, iseed);
+                        b[(jr - 1) + (jc - 1) * ldb] = rmagn[kbmagn[jtype - 1]] * Clarnd(4, iseed);
                     }
                 }
             }
