@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -38,6 +38,16 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <regex>
+
+using namespace std;
+using std::regex;
+using std::regex_replace;
+
 void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER const nout, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *ai, COMPLEX *bi, COMPLEX *alpha, COMPLEX *beta, COMPLEX *vl, COMPLEX *vr, INTEGER const ilo, INTEGER const ihi, REAL *lscale, REAL *rscale, REAL *s, REAL *dtru, REAL *dif, REAL *diftru, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER const liwork, REAL *result, bool *bwork, INTEGER &info) {
     common cmn;
     common_read read(cmn);
@@ -48,6 +58,13 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
     INTEGER ldvl = lda;
     INTEGER ldvr = lda;
     double dtmp;
+    string str;
+    string _str;
+    string __str;
+    string ___str;
+    istringstream iss;
+    double dtmp_r;
+    double dtmp_i;
     std::complex<double> ctmp;
     char buf[1024];
     INTEGER nmax = 0;
@@ -93,31 +110,6 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
     static const char *format_9998 = "(' Cdrgvx: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
                                      "' Bits of error=',0p,a,',',9x,'N=',i6,', JTYPE=',i6,', IWA=',i5,"
                                      "', IWB=',i5,', IWX=',i5,', IWY=',i5)";
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Check for errors
     //
@@ -334,42 +326,62 @@ statement_90:
     //     Read input data until N=0
     //
     while (1) {
-        read(nin, star), n;
+        getline(cin, str);
+        iss.clear();
+        iss.str(str);
+        iss >> n;
+        printf("n is %d\n", (int)n);
         if (n == 0) {
             break;
         }
         for (i = 1; i <= n; i = i + 1) {
-            {
-                read_loop rloop(cmn, nin, star);
-                for (j = 1; j <= n; j = j + 1) {
-                    rloop, ctmp;
-                    a[(i - 1) + (j - 1) * lda] = ctmp;
-                }
+            for (j = 1; j <= n; j = j + 1) {
+                getline(cin, str);
+                ___str = regex_replace(str, regex(","), " ");
+                __str = regex_replace(___str, regex("\\)"), " ");
+                _str = regex_replace(__str, regex("\\("), " ");
+                str = regex_replace(_str, regex("D"), "e");
+                iss.clear();
+                iss.str(str);
+                iss >> dtmp_r;
+                iss >> dtmp_i;
+                a[(i - 1) + (j - 1) * lda] = COMPLEX(dtmp_r, dtmp_i);
             }
         }
+        printf("a="); printmat(n, n, a, lda); printf("\n");
         for (i = 1; i <= n; i = i + 1) {
-            {
-                read_loop rloop(cmn, nin, star);
-                for (j = 1; j <= n; j = j + 1) {
-                    rloop, ctmp;
-                    b[(i - 1) + (j - 1) * ldb] = ctmp;
-                }
+            for (j = 1; j <= n; j = j + 1) {
+                getline(cin, str);
+                ___str = regex_replace(str, regex(","), " ");
+                __str = regex_replace(___str, regex("\\)"), " ");
+                _str = regex_replace(__str, regex("\\("), " ");
+                str = regex_replace(_str, regex("D"), "e");
+                iss.clear();
+                iss.str(str);
+                iss >> dtmp_r;
+                iss >> dtmp_i;
+                b[(i - 1) + (j - 1) * ldb] = COMPLEX(dtmp_r, dtmp_i);
             }
         }
-        {
-            read_loop rloop(cmn, nin, star);
-            for (i = 1; i <= n; i = i + 1) {
-                rloop, dtmp;
-                dtru[i - 1] = dtmp;
-            }
+        printf("b="); printmat(n, n, a, ldb); printf("\n");
+        getline(cin, _str);
+        str = regex_replace(_str, regex("D"), "e");
+        iss.clear();
+        iss.str(str);
+        for (i = 1; i <= n; i = i + 1) {
+            iss >> dtmp;
+            dtru[i - 1] = dtmp;
         }
-        {
-            read_loop rloop(cmn, nin, star);
-            for (i = 1; i <= n; i = i + 1) {
-                rloop, dtmp;
-                diftru[i - 1] = dtmp;
-            }
+        printf("dtru="); printvec(dtru, n); printf("\n");
+        getline(cin, _str);
+        str = regex_replace(_str, regex("D"), "e");
+        iss.clear();
+        iss.str(str);
+        for (i = 1; i <= n; i = i + 1) {
+            iss >> dtmp;
+            diftru[i - 1] = dtmp;
         }
+        printf("diftru="); printvec(diftru, n); printf("\n");
         //
         nptknt++;
         //
@@ -386,7 +398,7 @@ statement_90:
             write(nout, "(' Cdrgvx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
                         "', Input example #',i2,')')"),
                 "Cggevx", linfo, n, nptknt;
-            goto statement_140;
+            continue;
         }
         //
         //     Compute the norm(A, B)
@@ -492,10 +504,7 @@ statement_90:
                 }
             }
         }
-    //
-    statement_140:
         //
-        goto statement_90;
     }
 statement_150:
 
