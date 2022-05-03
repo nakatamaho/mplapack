@@ -97,33 +97,6 @@ void Cdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     static const char *format_9999 = "(' Cdrgev: ',a,' returned INFO=',i6,'.',/,3x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Check for errors
     //
     info = 0;
@@ -187,7 +160,6 @@ void Cdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     safmin = Rlamch("Safe minimum");
     safmin = safmin / ulp;
     safmax = one / safmin;
-    Rlabad(safmin, safmax);
     ulpinv = one / ulp;
     //
     //     The values RMAGN(2:3) depend on N, see below.
@@ -205,7 +177,7 @@ void Cdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         n = nn[jsize - 1];
         n1 = max((INTEGER)1, n);
         rmagn[2 - 1] = safmax * ulp / castREAL(n1);
-        rmagn[3 - 1] = safmin * ulpinv * n1;
+        rmagn[3 - 1] = safmin * ulpinv * castREAL(n1);
         //
         if (nsizes != 1) {
             mtypes = min(maxtyp, ntypes);
