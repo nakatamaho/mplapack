@@ -494,12 +494,12 @@ statement_90:
                 if (result[j - 1] < 10000.0) {
                     sprintnum_short(buf, result[j - 1]);
                     write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
-                                "' is',0p,a)"),
+                                "' is ',a)"),
                         nptknt, n, j, buf;
                 } else {
                     sprintnum_short(buf, result[j - 1]);
                     write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
-                                "' is',1p,a)"),
+                                "' is ',a)"),
                         nptknt, n, j, buf;
                 }
             }

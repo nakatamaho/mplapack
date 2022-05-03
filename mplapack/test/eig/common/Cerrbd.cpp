@@ -42,41 +42,9 @@ using fem::common;
 void Cerrbd(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
     //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
+    ok = true;
     nout = nunit;
-    write(nout, star);
     char c2[2];
     c2[0] = path[1];
     c2[1] = path[2];
@@ -112,6 +80,7 @@ void Cerrbd(const char *path, INTEGER const nunit) {
         //
         //        Cgebrd
         //
+        strncpy(srnamt, "Cgebrd", srnamt_len);
         infot = 1;
         Cgebrd(-1, 0, a, 1, d, e, tq, tp, w, 1, info);
         chkxer("Cgebrd", infot, nout, lerr, ok);
@@ -128,6 +97,7 @@ void Cerrbd(const char *path, INTEGER const nunit) {
         //
         //        Cungbr
         //
+        strncpy(srnamt, "Cungbr", srnamt_len);
         infot = 1;
         Cungbr("/", 0, 0, 0, a, 1, tq, w, 1, info);
         chkxer("Cungbr", infot, nout, lerr, ok);
@@ -162,6 +132,7 @@ void Cerrbd(const char *path, INTEGER const nunit) {
         //
         //        Cunmbr
         //
+        strncpy(srnamt, "Cunmbr", srnamt_len);
         infot = 1;
         Cunmbr("/", "L", "T", 0, 0, 0, a, 1, tq, u, 1, w, 1, info);
         chkxer("Cunmbr", infot, nout, lerr, ok);
@@ -205,6 +176,7 @@ void Cerrbd(const char *path, INTEGER const nunit) {
         //
         //        Cbdsqr
         //
+        strncpy(srnamt, "Cbdsqr", srnamt_len);
         infot = 1;
         Cbdsqr("/", 0, 0, 0, 0, d, e, v, 1, u, 1, a, 1, rw, info);
         chkxer("Cbdsqr", infot, nout, lerr, ok);

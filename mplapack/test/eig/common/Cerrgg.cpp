@@ -43,7 +43,6 @@ void Cerrgg(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
     //
-    nout = nunit;
     ok = true;
     nout = nunit;
     char c2[2];
