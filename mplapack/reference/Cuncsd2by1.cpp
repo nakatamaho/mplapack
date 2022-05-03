@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -30,31 +30,6 @@
 #include <mplapack.h>
 
 void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, INTEGER const ldx11, COMPLEX *x21, INTEGER const ldx21, REAL *theta, COMPLEX *u1, INTEGER const ldu1, COMPLEX *u2, INTEGER const ldu2, COMPLEX *v1t, INTEGER const ldv1t, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER &info) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Function ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Test input arguments
     //
