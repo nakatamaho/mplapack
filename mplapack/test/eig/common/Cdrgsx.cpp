@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -38,6 +38,16 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <regex>
+
+using namespace std;
+using std::regex;
+using std::regex_replace;
+
 inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
 
 void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER const nin, INTEGER const nout, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *ai, COMPLEX *bi, COMPLEX *z, COMPLEX *q, COMPLEX *alpha, COMPLEX *beta, COMPLEX *c, INTEGER const ldc, REAL *s, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER const liwork, bool *bwork, INTEGER &info) {
@@ -54,6 +64,14 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
     std::complex<double> ctmp;
     double dtmp;
     double dtmp1, dtmp2;
+    string str;
+    string _str;
+    string __str;
+    string ___str;
+    istringstream iss;
+    double dtmp_r;
+    double dtmp_i;
+
     INTEGER m;
     INTEGER n;
     INTEGER mplusn;
@@ -113,39 +131,6 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
     static const char *format_9996 = "(/,1x,a3,' -- Complex Expert Generalized Schur form',' problem driver')";
     static const char *format_9997 = "(' Cdrgsx: S not in Schur form at eigenvalue ',i6,'.',/,9x,'N=',i6,"
                                      "', JTYPE=',i6,')')";
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Check for errors
     //
@@ -208,7 +193,6 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
     ulpinv = one / ulp;
     smlnum = Rlamch("S") / ulp;
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     thrsh2 = ten * thresh;
     ntestt = 0;
     nerrs = 0;
@@ -445,35 +429,62 @@ statement_70:
     //
     nptknt = 0;
     //
-    read(nin, star), mplusn;
-    if (mplusn == 0)
-        goto statement_150;
-
     while (1) {
-
-        read(nin, star), n;
-
+        getline(cin, str);
+        iss.clear();
+        iss.str(str);
+        iss >> mplusn;
+        printf("mplusn is %d\n", (int)mplusn);
+        if (mplusn == 0)
+            break;
+        getline(cin, str);
+        iss.clear();
+        iss.str(str);
+        iss >> n;
+        printf("n is %d\n", (int)n);
         for (i = 1; i <= mplusn; i = i + 1) {
-            {
-                read_loop rloop(cmn, nin, star);
-                for (j = 1; j <= mplusn; j = j + 1) {
-                    rloop, ctmp;
-                    ai[(i - 1) + (j - 1) * ldai] = ctmp;
-                }
+            for (j = 1; j <= mplusn; j = j + 1) {
+                getline(cin, str);
+                ___str = regex_replace(str, regex(","), " ");
+                __str = regex_replace(___str, regex("\\)"), " ");
+                _str = regex_replace(__str, regex("\\("), " ");
+                str = regex_replace(_str, regex("D"), "e");
+                iss.clear();
+                iss.str(str);
+                iss >> dtmp_r;
+                iss >> dtmp_i;
+                ai[(i - 1) + (j - 1) * ldai] = COMPLEX(dtmp_r, dtmp_i);
             }
         }
+        printf("ai="); printmat(mplusn, mplusn, ai, ldai); printf("\n");
         for (i = 1; i <= mplusn; i = i + 1) {
-            {
-                read_loop rloop(cmn, nin, star);
-                for (j = 1; j <= mplusn; j = j + 1) {
-                    rloop, ctmp;
-                    bi[(i - 1) + (j - 1) * ldai] = ctmp;
-                }
+            for (j = 1; j <= mplusn; j = j + 1) {
+                getline(cin, str);
+                ___str = regex_replace(str, regex(","), " ");
+                __str = regex_replace(___str, regex("\\)"), " ");
+                _str = regex_replace(__str, regex("\\("), " ");
+                str = regex_replace(_str, regex("D"), "e");
+                iss.clear();
+                iss.str(str);
+                iss >> dtmp_r;
+                iss >> dtmp_i;
+                bi[(i - 1) + (j - 1) * ldai] = COMPLEX(dtmp_r, dtmp_i);
             }
         }
-        read(nin, star), dtmp1, dtmp2;
+        printf("bi="); printmat(mplusn, mplusn, bi, ldbi); printf("\n");
+        getline(cin, str);
+        ___str = regex_replace(str, regex(","), " ");
+        __str = regex_replace(___str, regex("\\)"), " ");
+        _str = regex_replace(__str, regex("\\("), " ");
+        str = regex_replace(_str, regex("D"), "e");
+        iss.clear();
+        iss.str(str);
+        iss >> dtmp1;
+        iss >> dtmp2;
         pltru = dtmp1;
         diftru = dtmp2;
+        printf("pltru="); printnum(pltru); printf("\n");
+        printf("diftru="); printnum(diftru); printf("\n");
         //
         nptknt++;
         fs = true;
