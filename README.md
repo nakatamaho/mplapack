@@ -141,10 +141,10 @@ $ docker run -it mplapack:fable
 $ cd ; fable.cout sample.f
 ```
 
-# MPLAPACK Release schedule
+# MPLAPACK Release process
 
-## MPLAPACK 2.0.0 Release schedule
-This is the release schedule for MPLAPACK 2.0.0
+## MPLAPACK 2.0.0 Release process
+This is the release process for MPLAPACK 2.0.0
 | Action | Date | Status | Description |
 | --- | --- | --- | --- |
 | complex lin (lapack routine; mpfr)      | 2022/03/21 | almost ok |Failed: CHR, CHK, CSR, CSK, CQ3, CTZ, CTS| 
@@ -187,8 +187,8 @@ This is the release schedule for MPLAPACK 2.0.0
 | make tar ball for distribution       |            |     |                          |
 | Add more examples                    |            |     |                          | 
 
-## MPLAPACK 3.0.0 Release schedule
-This is the release schedule for MPLAPACK 3.0.0
+## MPLAPACK 3.0.0 Release process
+This is the release process for MPLAPACK 3.0.0
 | Action | Date | Status | Description |
 | --- | --- | --- | --- |
 | Performance tuning using FAM on amd64          |            |     |                     |
