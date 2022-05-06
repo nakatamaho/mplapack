@@ -38,6 +38,10 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+#if defined ___MPLAPACK_DEBUG_COMPARE_WITH_DOUBLE___
+#include <lapacke.h>
+#endif
+
 void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const ntypes, bool *dotype, INTEGER const nrhs, INTEGER *iseed, REAL const thresh, COMPLEX *a, INTEGER const lda, REAL *bd, REAL *be, REAL *s1, REAL *s2, COMPLEX *x, INTEGER const ldx, COMPLEX *y, COMPLEX *z, COMPLEX *q, INTEGER const ldq, COMPLEX *pt, INTEGER const ldpt, COMPLEX *u, COMPLEX *vt, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const nout, INTEGER &info) {
     common cmn;
     common_write write(cmn);
@@ -160,7 +164,6 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     ntest = 0;
     unfl = Rlamch("Safe minimum");
     ovfl = Rlamch("Overflow");
-    Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
     ulpinv = one / ulp;
     log2ui = castINTEGER(log(ulpinv) / log(two));
@@ -241,7 +244,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             goto statement_70;
         //
         statement_60:
-            anorm = rtunfl * max(m, n) * ulpinv;
+            anorm = rtunfl * castREAL(max(m, n)) * ulpinv;
             goto statement_70;
         //
         statement_70:
@@ -353,7 +356,34 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //              B := Q' * A * P.
                 //
                 Clacpy(" ", m, n, a, lda, q, ldq);
+		//                printf("a="); printmat(m, n, a, lda); printf("\n");
                 Cgebrd(m, n, q, ldq, bd, be, work, &work[(mnmin + 1) - 1], &work[(2 * mnmin + 1) - 1], lwork - 2 * mnmin, iinfo);
+		//                printf("bd="); printvec(bd, mnmin); printf("\n");
+		//                printf("be="); printvec(be, mnmin - 1); printf("\n");
+#ifdef ___MPLAPACK_DEBUG_COMPARE_WITH_DOUBLE___
+                {
+                    __complex__ double *a_d = new __complex__ double[m * n];
+                    double *bd_d = new double[mnmin];
+                    double *be_d = new double[mnmin];
+                    __complex__ double *tauq_d = new __complex__ double[mnmin];
+                    __complex__ double *taup_d = new __complex__ double[mnmin];
+                    int lda_d = m;
+                    for (int pp = 0; pp < m; pp++) {
+                        for (int qq = 0; qq < n; qq++) {
+                            __real__ a_d[pp + qq * lda_d] = cast2double(a[pp + qq * lda].real());
+                            __imag__ a_d[pp + qq * lda_d] = cast2double(a[pp + qq * lda].imag());
+                        }
+                    }
+                    LAPACKE_zgebrd(LAPACK_COL_MAJOR, (int)m, (int)n, a_d, lda_d, bd_d, be_d, tauq_d, taup_d);
+                    printf("bd_d="); printvec(bd_d, mnmin); printf("\n");
+                    printf("be_d="); printvec(be_d, mnmin - 1); printf("\n");
+                    delete[] taup_d;
+                    delete[] tauq_d;
+                    delete[] bd_d;
+                    delete[] be_d;
+                    delete[] a_d;
+                }
+#endif
                 //
                 //              Check error code from Cgebrd.
                 //
