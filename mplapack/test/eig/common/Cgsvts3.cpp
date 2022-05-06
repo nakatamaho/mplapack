@@ -40,29 +40,6 @@ using fem::common;
 
 void Cgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMPLEX *af, INTEGER const lda, COMPLEX *b, COMPLEX *bf, INTEGER const ldb, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *q, INTEGER const ldq, REAL *alpha, REAL *beta, COMPLEX *r, INTEGER const ldr, INTEGER *iwork, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     INTEGER ldaf = lda;
     INTEGER ldbf = ldb;
     REAL ulp = Rlamch("Precision");
