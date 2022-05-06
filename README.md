@@ -147,23 +147,23 @@ $ cd ; fable.cout sample.f
 This is the release process for MPLAPACK 2.0.0
 | Action | Date | Status | Description |
 | --- | --- | --- | --- |
-| complex lin (lapack routine; mpfr)      | 2022/03/21 | almost ok |Failed: CHR, CHK, CSR, CSK, CQ3, CTZ, CTS| 
-| complex lin (driver routine; mpfr)      | 2022/03/21 | almost ok |Failed: CLS               | 
-| complex lin (lapack routine; gmp)       | 2022/03/21 | almost ok |Failed: CSR, CSK, CQ3, CTZ|
-| complex lin (driver routine; gmp)       | 2022/03/21 | almost ok |Falied: CLS (segfaults)   | 
-| complex lin (lapack routine; dd)        | 2022/03/21 | almost ok |Failed: CHR, CHK, CSR, CSK, CQ3, CTZ, CTS| 
-| complex lin (driver routine; dd)        | 2022/03/21 | almost ok |Failed: CLS |
+| complex lin (lapack routine; mpfr)      | 2022/5/6, 2022/03/21 | ok |               | 
+| complex lin (driver routine; mpfr)      | 2022/5/6, 2022/03/21 | ok |               | 
+| complex lin (lapack routine; gmp)       | 2022/5/6, 2022/03/21 | ok |               |
+| complex lin (driver routine; gmp)       | 2022/5/6, 2022/03/21 | ok |               | 
+| complex lin (lapack routine; dd)        | 2022/5/6, 2022/03/21 | ok |               | 
+| complex lin (driver routine; dd)        | 2022/5/6, 2022/03/21 | ok |               |
 | complex lin (lapack routine; qd)        | 2022/03/21 | almost ok |Failed: CHR, CHK, CSR, CSK, CQ3, CTZ, CTS| 
 | complex lin (driver routine; qd)        | 2022/03/21 | almost ok |Failed: CLS |
-| complex lin (lapack routine; _Float128) | 2022/03/21 | almost ok |Failed: CHR CHK CSR CSK CQ3 CTZ CTS |
-| complex lin (driver routine; _Float128) | 2022/03/21 | almost ok |Failed: CLS|
-| complex lin (lapack routine; _Float64x) | 2022/03/21 | almost ok |Failed: CHR CHK CSR CSK CQ3 CTZ CTS |
-| complex lin (driver routine; _Float64x) | 2022/03/21 | almost ok |Failed: CGB CLS |
-| complex lin (lapack routine; double)    | 2022/03/21 | almost ok |Failed: CHR CHK CSR CSK CQ3 CTZ CTQ CTS |
-| complex lin (driver routine; double)    | 2022/03/21 | almost ok |Failed: CGB CLS         |
+| complex lin (lapack routine; _Float128) | 2022/5/6, 2022/03/21 | ok |  |
+| complex lin (driver routine; _Float128) | 2022/5/6, 2022/03/21 | ok |  |
+| complex lin (lapack routine; _Float64x) | 2022/5/6, 2022/03/21 | ok |  |
+| complex lin (driver routine; _Float64x) | 2022/5/6, 2022/03/21 | ok |  |
+| complex lin (lapack routine; double)    | 2022/5/6, 2022/03/21 | ok |  |
+| complex lin (driver routine; double)    | 2022/5/6, 2022/03/21 | ok |  |
 | sqrt fixes for QD and DD                | 2021/12/12 |     | near overflow |
-| complex eig Cbal.in                     | 2022/03/25  | ok  | Testing the balancing of a general matrix  | 
-| complex eig Cbak.in                     | 2022/03/26  | ok  | Testing backward transformation | 
+| complex eig Cbal.in                     | 2022/03/25 | ok  | Testing the balancing of a general matrix  | 
+| complex eig Cbak.in                     | 2022/03/26 | ok  | Testing backward transformation | 
 | complex eig Cgbal.in                    | 2022/03/27 | ok  | Testing the balancing of a general matrix  | 
 | complex eig Cgbak.in                    | 2022/04/21 | ok  | Testing the back transformation of a pair of COMPLEX balanced matrices | 
 | complex eig Cec.in                      | 2022/04/24 | ok  | Testing COMPLEX Eigen Condition Routines |
@@ -180,7 +180,7 @@ This is the release process for MPLAPACK 2.0.0
 | complex eig Cgg.in                      | 2022/05/04 | ok | testing Nonsymmetric Eigenvalue Problem routines  |
 | complex eig Cgd.in                      |            |  |                                                               |
 | complex eig Csg.in                      | 2022/05/03 | NG for MPFR | Tests of the Generalized Nonsymmetric Eigenvalue Problem routines |
-| complex eig svd.in                      | 2022/05/06 | NG for dd and QD |  Testing Singular Value Decomposition routines for complex matrices|
+| complex eig svd.in                      | 2022/05/06 | NG for dd and QD | Testing Singular Value Decomposition routines for complex matrices|
 | complex eig gsv.in                      |            |     |                                                               |
 | Impliment RFP version                |            |     |                          | 
 | Impliment mixed precision version    |            |     |                          | 
