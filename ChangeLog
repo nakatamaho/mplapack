@@ -1,5 +1,5 @@
 2022/05/04    Nakata Maho <maho@riken.jp> 2.0 branch
-            * Cgg.in: Tests of the Generalized Nonsymmetric Eigenvalue Problem routines
+            * Cgg.in: Tests of the complex Generalized Nonsymmetric Eigenvalue Problem routines
               have passed for all precisions.
 
 2022/05/03    Nakata Maho <maho@riken.jp> 2.0 branch
