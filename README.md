@@ -178,19 +178,19 @@ This is the release process for MPLAPACK 2.0.0
 | complex eig Ced.in                      | 2022/05/02 | ok  | testing Hermitian Eigenvalue Problem Expert drivers and drivers for complex |
 | complex eig csd.in                      | 2022/05/03 | NG for case 2: R=P | testing complex CS decomposition routines       |
 | complex eig Cgg.in                      | 2022/05/04 | ok | testing Nonsymmetric Eigenvalue Problem routines  |
-| complex eig Cgd.in                      |            |   | testing Complex Nonsymmetric generalized Eigenvalue/Schur Form Driver/Expert Driver |
+| complex eig Cgd.in                      |            |    | testing Complex Nonsymmetric generalized Eigenvalue/Schur Form Driver/Expert Driver |
 | complex eig Csg.in                      | 2022/05/03 | NG for MPFR | Tests of the complex Generalized Hermitian Eigenvalue Problem routines |
 | complex eig svd.in                      | 2022/05/06 | NG for dd and QD | Testing Singular Value Decomposition routines for complex matrices|
 | complex eig gsv.in                      |            |     | testing complex Generalized SVD routines |
-| Impliment RFP version                |            |     |                          | 
-| Impliment mixed precision version    |            |     |                          | 
-| make tar ball for distribution       |            |     |                          |
-| Add more examples                    |            |     |                          | 
+| Impliment RFP version                   |            |     |                          | 
+| make tar ball for distribution          |            |     |                          |
+| Add more examples                       |            |     |                          | 
 
 ## MPLAPACK 3.0.0 Release process
 This is the release process for MPLAPACK 3.0.0
 | Action | Date | Status | Description |
 | --- | --- | --- | --- |
+| Impliment mixed precision version              |            |     |                     | 
 | Performance tuning using FAM on amd64          |            |     |                     |
 | Fix Rlamch for QD, DD                          |            |     | svd.in fails.used with caution | 
 | cleanup pow (REAL, long int)                   |            |     |                          | 
