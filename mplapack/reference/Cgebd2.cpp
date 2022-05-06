@@ -31,27 +31,6 @@
 
 void Cgebd2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *tauq, COMPLEX *taup, COMPLEX *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters
     //
     info = 0;
@@ -80,7 +59,7 @@ void Cgebd2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
             //           Generate elementary reflector H(i) to annihilate A(i+1:m,i)
             //
             alpha = a[(i - 1) + (i - 1) * lda];
-            Clarfg(m - i + 1, a[(i - 1) + (i - 1) * lda], &a[(min(i + 1, m) - 1) + (i - 1) * lda], 1, tauq[i - 1]);
+            Clarfg(m - i + 1, alpha, &a[(min(i + 1, m) - 1) + (i - 1) * lda], 1, tauq[i - 1]);
             d[i - 1] = alpha.real();
             a[(i - 1) + (i - 1) * lda] = one;
             //
