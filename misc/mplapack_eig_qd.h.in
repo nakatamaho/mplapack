@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2022
  *	Nakata, Maho
  * 	All rights reserved.
- *
- * $Id: mplapack_qd.h,v 1.31 2010/08/07 03:15:46 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,8 +26,8 @@
  *
  */
 
-#ifndef _MPLAPACK_MATGEN_QD_H_
-#define _MPLAPACK_MATGEN_QD_H_
+#ifndef _MPLAPACK_EIG_QD_H_
+#define _MPLAPACK_EIG_QD_H_
 
 #include "mplapack_config.h"
 #include <qd/qd_real.h>
