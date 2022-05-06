@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -31,7 +31,7 @@
 
 inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
 
-void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char *sense, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *alpha, COMPLEX *beta, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, INTEGER ilo, INTEGER ihi, REAL *lscale, REAL *rscale, REAL &abnrm, REAL &bbnrm, REAL *rconde, REAL *rcondv, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
+void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char *sense, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *alpha, COMPLEX *beta, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, INTEGER &ilo, INTEGER &ihi, REAL *lscale, REAL *rscale, REAL &abnrm, REAL &bbnrm, REAL *rconde, REAL *rcondv, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
     COMPLEX x = 0.0;
     INTEGER ijobvl = 0;
     bool ilvl = false;
@@ -74,35 +74,6 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     INTEGER jc = 0;
     REAL temp = 0.0;
     INTEGER jr = 0;
-    //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Decode the input arguments
     //
@@ -180,9 +151,9 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
             }
             maxwrk = minwrk;
             maxwrk = max({maxwrk, n + n * iMlaenv(1, "Cgeqrf", " ", n, 1, n, 0)});
-            maxwrk = max({maxwrk, n + n * iMlaenv(1, "ZUNMQR", " ", n, 1, n, 0)});
+            maxwrk = max({maxwrk, n + n * iMlaenv(1, "Cunmqr", " ", n, 1, n, 0)});
             if (ilvl) {
-                maxwrk = max({maxwrk, n + n * iMlaenv(1, "ZUNGQR", " ", n, 1, n, 0)});
+                maxwrk = max({maxwrk, n + n * iMlaenv(1, "Cungqr", " ", n, 1, n, 0)});
             }
         }
         work[1 - 1] = maxwrk;
