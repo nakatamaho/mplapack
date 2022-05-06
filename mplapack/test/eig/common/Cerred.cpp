@@ -42,7 +42,6 @@ void Cerred(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
     //
-    nout = nunit;
     ok = true;
     nout = nunit;
     //
@@ -71,7 +70,6 @@ void Cerred(const char *path, INTEGER const nunit) {
     for (i = 1; i <= nmax; i = i + 1) {
         a[(i - 1) + (i - 1) * lda] = one;
     }
-    ok = true;
     INTEGER nt = 0;
     //
     COMPLEX x[nmax];
@@ -150,7 +148,6 @@ void Cerred(const char *path, INTEGER const nunit) {
         //
         //        Test Cgeevx
         //
-        memset(srnamt, 0, sizeof(srnamt));
         strncpy(srnamt, "Cgeevx", srnamt_len);
         infot = 1;
         Cgeevx("X", "N", "N", "N", 0, a, 1, x, vl, 1, vr, 1, ilo, ihi, s, abnrm, r1, r2, w, 1, rw, info);
@@ -216,7 +213,7 @@ void Cerred(const char *path, INTEGER const nunit) {
         //
         //        Test Cgesvd
         //
-        strncpy(srnamt, "Cgeesd", srnamt_len);
+        strncpy(srnamt, "Cgesvd", srnamt_len);
         infot = 1;
         Cgesvd("X", "N", 0, 0, a, 1, s, u, 1, vt, 1, w, 1, rw, info);
         chkxer("Cgesvd", infot, nout, lerr, ok);
@@ -250,7 +247,7 @@ void Cerred(const char *path, INTEGER const nunit) {
         //
         //        Test Cgesdd
         //
-        strncpy(srnamt, "Cgeedd", srnamt_len);
+        strncpy(srnamt, "Cgesdd", srnamt_len);
         infot = 1;
         Cgesdd("X", 0, 0, a, 1, s, u, 1, vt, 1, w, 1, rw, iw, info);
         chkxer("Cgesdd", infot, nout, lerr, ok);
