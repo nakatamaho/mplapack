@@ -1211,6 +1211,10 @@ void Cchkee(void) {
             if (tsterr && tstdrv) {
                 Cerred("ZBD", nout);
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+                thresh = thresh * 10.0;
+                printf("Warning! Threshold has been lifted 10 times for GMP\n");
+#endif
             //
             for (i = 1; i <= nparms; i = i + 1) {
                 nrhs = nsval[i - 1];
