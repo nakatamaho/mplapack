@@ -35,6 +35,7 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
+#include <mplapack_common_mn.h>
 
 #include <mplapack_debug.h>
 
@@ -71,12 +72,6 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
     istringstream iss;
     double dtmp_r;
     double dtmp_i;
-
-    INTEGER m;
-    INTEGER n;
-    INTEGER mplusn;
-    INTEGER k;
-    bool fs;
     //
     COMPLEX x = 0.0;
     const REAL zero = 0.0;
@@ -434,14 +429,12 @@ statement_70:
         iss.clear();
         iss.str(str);
         iss >> mplusn;
-        printf("mplusn is %d\n", (int)mplusn);
         if (mplusn == 0)
             break;
         getline(cin, str);
         iss.clear();
         iss.str(str);
         iss >> n;
-        printf("n is %d\n", (int)n);
         for (i = 1; i <= mplusn; i = i + 1) {
             for (j = 1; j <= mplusn; j = j + 1) {
                 getline(cin, str);
@@ -456,7 +449,7 @@ statement_70:
                 ai[(i - 1) + (j - 1) * ldai] = COMPLEX(dtmp_r, dtmp_i);
             }
         }
-        printf("ai="); printmat(mplusn, mplusn, ai, ldai); printf("\n");
+        //        printf("ai="); printmat(mplusn, mplusn, ai, ldai); printf("\n");
         for (i = 1; i <= mplusn; i = i + 1) {
             for (j = 1; j <= mplusn; j = j + 1) {
                 getline(cin, str);
@@ -471,7 +464,7 @@ statement_70:
                 bi[(i - 1) + (j - 1) * ldai] = COMPLEX(dtmp_r, dtmp_i);
             }
         }
-        printf("bi="); printmat(mplusn, mplusn, bi, ldbi); printf("\n");
+        //        printf("bi="); printmat(mplusn, mplusn, bi, ldbi); printf("\n");
         getline(cin, str);
         ___str = regex_replace(str, regex(","), " ");
         __str = regex_replace(___str, regex("\\)"), " ");
@@ -483,8 +476,8 @@ statement_70:
         iss >> dtmp2;
         pltru = dtmp1;
         diftru = dtmp2;
-        printf("pltru="); printnum(pltru); printf("\n");
-        printf("diftru="); printnum(diftru); printf("\n");
+        //        printf("pltru="); printnum(pltru); printf("\n");
+        //        printf("diftru="); printnum(diftru); printf("\n");
         //
         nptknt++;
         fs = true;

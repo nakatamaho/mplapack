@@ -1,3 +1,7 @@
+2022/05/08    Nakata Maho <maho@riken.jp> 2.0 branch
+            * Cgd.in: Tests for omplex Nonsymmetric generalized Eigenvalue/Schur Form Driver/Expert Driver
+              have passed for all precisions.
+
 2022/05/06    Nakata Maho <maho@riken.jp> 2.0 branch
             * svd.in: Tests of the complex Singular Value Decomposition routines
               have passed for all precisions except for dd and qd.

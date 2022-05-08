@@ -356,10 +356,10 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //              B := Q' * A * P.
                 //
                 Clacpy(" ", m, n, a, lda, q, ldq);
-		//                printf("a="); printmat(m, n, a, lda); printf("\n");
+                //                printf("a="); printmat(m, n, a, lda); printf("\n");
                 Cgebrd(m, n, q, ldq, bd, be, work, &work[(mnmin + 1) - 1], &work[(2 * mnmin + 1) - 1], lwork - 2 * mnmin, iinfo);
-		//                printf("bd="); printvec(bd, mnmin); printf("\n");
-		//                printf("be="); printvec(be, mnmin - 1); printf("\n");
+                //                printf("bd="); printvec(bd, mnmin); printf("\n");
+                //                printf("be="); printvec(be, mnmin - 1); printf("\n");
 #ifdef ___MPLAPACK_DEBUG_COMPARE_WITH_DOUBLE___
                 {
                     __complex__ double *a_d = new __complex__ double[m * n];
@@ -375,8 +375,12 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                         }
                     }
                     LAPACKE_zgebrd(LAPACK_COL_MAJOR, (int)m, (int)n, a_d, lda_d, bd_d, be_d, tauq_d, taup_d);
-                    printf("bd_d="); printvec(bd_d, mnmin); printf("\n");
-                    printf("be_d="); printvec(be_d, mnmin - 1); printf("\n");
+                    printf("bd_d=");
+                    printvec(bd_d, mnmin);
+                    printf("\n");
+                    printf("be_d=");
+                    printvec(be_d, mnmin - 1);
+                    printf("\n");
                     delete[] taup_d;
                     delete[] tauq_d;
                     delete[] bd_d;

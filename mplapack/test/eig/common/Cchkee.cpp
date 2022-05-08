@@ -1212,8 +1212,8 @@ void Cchkee(void) {
                 Cerred("ZBD", nout);
             }
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-                thresh = thresh * 10.0;
-                printf("Warning! Threshold has been lifted 10 times for GMP\n");
+            thresh = thresh * 10.0;
+            printf("Warning! Threshold has been lifted 10 times for GMP\n");
 #endif
             //
             for (i = 1; i <= nparms; i = i + 1) {
@@ -1410,6 +1410,10 @@ void Cchkee(void) {
                 if (tsterr) {
                     Cerrgg(c3, nout);
                 }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+                thresh = thresh * 10.0;
+                printf("Warning! Threshold has been lifted 10 times for GMP\n");
+#endif
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
                 Cdrges(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 6], nmax, &a[nmax * nmax * 7], &dc[0], &dc[nmax], work, lwork, rwork, result, logwrk, info);
                 //

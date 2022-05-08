@@ -237,7 +237,7 @@ void Cdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 Clatm4(katype[jtype - 1], in, kz1[kazero[jtype - 1] - 1], kz2[kazero[jtype - 1] - 1], lasign[jtype - 1], rmagn[kamagn[jtype - 1]], ulp, rmagn[ktrian[jtype - 1] * kamagn[jtype - 1]], 2, iseed, a, lda);
                 iadd = kadd[kazero[jtype - 1] - 1];
                 if (iadd > 0 && iadd <= n) {
-                    a[(iadd - 1) + (iadd - 1 * lda)] = rmagn[kamagn[jtype - 1]];
+                    a[(iadd - 1) + (iadd - 1) * lda] = rmagn[kamagn[jtype - 1]];
                 }
                 //
                 //              Generate B (w/o rotation)
