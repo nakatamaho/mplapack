@@ -330,7 +330,6 @@ statement_90:
         iss.clear();
         iss.str(str);
         iss >> n;
-        printf("n is %d\n", (int)n);
         if (n == 0) {
             break;
         }
@@ -348,7 +347,6 @@ statement_90:
                 a[(i - 1) + (j - 1) * lda] = COMPLEX(dtmp_r, dtmp_i);
             }
         }
-        printf("a="); printmat(n, n, a, lda); printf("\n");
         for (i = 1; i <= n; i = i + 1) {
             for (j = 1; j <= n; j = j + 1) {
                 getline(cin, str);
@@ -363,7 +361,6 @@ statement_90:
                 b[(i - 1) + (j - 1) * ldb] = COMPLEX(dtmp_r, dtmp_i);
             }
         }
-        printf("b="); printmat(n, n, a, ldb); printf("\n");
         getline(cin, _str);
         str = regex_replace(_str, regex("D"), "e");
         iss.clear();
@@ -372,7 +369,6 @@ statement_90:
             iss >> dtmp;
             dtru[i - 1] = dtmp;
         }
-        printf("dtru="); printvec(dtru, n); printf("\n");
         getline(cin, _str);
         str = regex_replace(_str, regex("D"), "e");
         iss.clear();
@@ -381,7 +377,6 @@ statement_90:
             iss >> dtmp;
             diftru[i - 1] = dtmp;
         }
-        printf("diftru="); printvec(diftru, n); printf("\n");
         //
         nptknt++;
         //
