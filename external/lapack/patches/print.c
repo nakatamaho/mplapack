@@ -7,6 +7,7 @@
 //         CALL PRINTMAT('e='//CHAR(0),m,m,e,lde)
 //         for complex matrix
 //         CALL PRINTMATC('e='//CHAR(0),m,m,e,lde)
+//         CALL PRINTMATC('x='//CHAR(0),x,n)
 
 void printdummy_() { printf("\n"); }
 
@@ -92,6 +93,18 @@ void printvec_(char *s, double *A, int *lenvec) {
     for (int i = 0; i < *lenvec; i++) {
         tmp = A[i];
         printf("%+21.16e", tmp);
+        if (i < *lenvec - 1)
+            printf(", ");
+    }
+    printf("]");
+    printf("\n");
+}
+
+void printvecc_(char *s, double _Complex*A, int *lenvec) {
+    double _Complex tmp;
+    printf("%s[ ", s);
+    for (int i = 0; i < *lenvec; i++) {
+        printnumc(tmp);
         if (i < *lenvec - 1)
             printf(", ");
     }
