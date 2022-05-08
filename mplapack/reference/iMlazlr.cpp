@@ -32,24 +32,6 @@
 INTEGER
 iMlazlr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda) {
     INTEGER return_value = 0;
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Quick test for the common case where one corner is non-zero.
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     INTEGER j = 0;
