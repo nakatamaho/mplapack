@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -29,32 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Ctgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *c, INTEGER const ldc, COMPLEX *d, INTEGER const ldd, COMPLEX *e, INTEGER const lde, COMPLEX *f, INTEGER const ldf, REAL &scale, REAL const rdsum, REAL const rRscal, INTEGER &info) {
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
+void Ctgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *c, INTEGER const ldc, COMPLEX *d, INTEGER const ldd, COMPLEX *e, INTEGER const lde, COMPLEX *f, INTEGER const ldf, REAL &scale, REAL &rdsum, REAL &rdscal, INTEGER &info) {
     //
     //     Decode and test input parameters
     //
@@ -144,7 +119,7 @@ void Ctgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
                         scale = scale * scaloc;
                     }
                 } else {
-                    Clatdf(ijob, ldz, z, ldz, rhs, rdsum, rRscal, ipiv, jpiv);
+                    Clatdf(ijob, ldz, z, ldz, rhs, rdsum, rdscal, ipiv, jpiv);
                 }
                 //
                 //              Unpack solution vector(s)
