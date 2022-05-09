@@ -180,7 +180,7 @@ This is the release process for MPLAPACK 2.0.0
 | complex eig Cgg.in                      | 2022/05/04 | ok | testing Nonsymmetric Eigenvalue Problem routines  |
 | complex eig Cgd.in                      | 2022/05/08 | ok | testing Complex Nonsymmetric generalized Eigenvalue/Schur Form Driver/Expert Driver |
 | complex eig Csg.in                      | 2022/05/03 | NG for MPFR | Tests of the complex Generalized Hermitian Eigenvalue Problem routines |
-| complex eig svd.in                      | 2022/05/06 | NG for dd, qd | Testing Singular Value Decomposition routines for complex matrices. Cgesvj has large error for dd and qd. Othre than that, it is ok|
+| complex eig svd.in                      | 2022/05/06 | NG for dd, qd | Testing Singular Value Decomposition routines for complex matrices. Sometimes, Cgesvj has large error for dd and qd. Othre than that, it is ok|
 | complex eig gsv.in                      |            |     | testing complex Generalized SVD routines |
 | Impliment RFP version                   |            |     |                          | 
 | make tar ball for distribution          |            |     |                          |
