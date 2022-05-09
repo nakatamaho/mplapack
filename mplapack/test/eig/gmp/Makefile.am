@@ -17,8 +17,8 @@ xeigtstC_gmp_SOURCES  = ../common/Cchkee.cpp
 xeigtstC_gmp_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_gmp_CXXFLAGS = $(cxxflags)
 
-check: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.out Rsg.out Rbal.out Rbak.out Rgbal.out Rgbak.out Rbb.out Rglm.out Rgqr.out Rgsv.out Rcsd.out Rlse.out \
-       Cnep.out Csep.out Cse2.out Csvd.out Cec.out Ced.out Cgg.out Cgd.out Csb.out Csg.out Cbal.out Cbak.out Cgbal.out Cgbak.out Cbb.out Cglm.out Cgqr.out Cgsv.out Ccsd.out Clse.out
+check: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.out Rsg.out Rbal.out Rbak.out Rgbal.out Rgbak.out Rbb.out Rglm.out Rgqr.out Rgsv.out Rlse.out \
+       Cnep.out Csep.out Cse2.out Csvd.out Cec.out Ced.out Cgg.out Cgd.out Csb.out Csg.out Cbal.out Cbak.out Cgbal.out Cgbak.out Cbb.out Cglm.out Cgqr.out Cgsv.out Clse.out
 
 clean-local:
 	rm -f *.out *~ \#*
@@ -95,10 +95,6 @@ Rgsv.out: ../gsv.in xeigtstR_gmp
 	@echo GSV: Testing Generalized Singular Value Decomposition routines
 	./xeigtstR_gmp < ../gsv.in > $@ 2>&1
 
-Rcsd.out: ../csd.in xeigtstR_gmp
-	@echo CSD: Testing CS Decomposition routines
-	./xeigtstR_gmp < ../csd.in > $@ 2>&1
-
 Rlse.out: ../lse.in xeigtstR_gmp
 	@echo LSE: Testing Constrained Linear Least Squares routines
 	./xeigtstR_gmp < ../lse.in > $@ 2>&1
@@ -174,10 +170,6 @@ Cgqr.out: ../gqr.in ./xeigtstC_gmp
 Cgsv.out: ../gsv.in ./xeigtstC_gmp
 	@echo GSV: Testing Generalized Singular Value Decomposition routines
 	./xeigtstC_gmp < ../gsv.in > $@ 2>&1
-
-Ccsd.out: ../csd.in ./xeigtstC_gmp
-	@echo CSD: Testing CS Decomposition routines
-	./xeigtstC_gmp < ../csd.in > $@ 2>&1
 
 Clse.out: ../lse.in ./xeigtstC_gmp
 	@echo LSE: Testing Constrained Linear Least Squares routines
