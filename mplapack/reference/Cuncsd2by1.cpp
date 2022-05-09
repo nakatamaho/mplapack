@@ -178,7 +178,7 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
                 lorglqopt = max(lorglqopt, castINTEGER(work[1 - 1].real()));
             }
             Cbbcsd(jobv1t, "N", jobu1, jobu2, "T", m, q, p, theta, dum, v1t, ldv1t, cdum, 1, u1, ldu1, u2, ldu2, dum, dum, dum, dum, dum, dum, dum, dum, &rwork[1 - 1], -1, childinfo);
-            lbbcsd = castINTEGER(work[1 - 1].real());
+            lbbcsd = castINTEGER(rwork[1 - 1]);
         } else if (r == m - p) {
             Cunbdb3(m, p, q, x11, ldx11, x21, ldx21, theta, dum, cdum, cdum, cdum, &work[1 - 1], -1, childinfo);
             lorbdb = castINTEGER(work[1 - 1].real());

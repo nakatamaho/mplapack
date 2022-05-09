@@ -215,7 +215,7 @@ void Ccsdts(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x, COMPL
     Cuncsd2by1("Y", "Y", "Y", m, p, q, &xf[(1 - 1)], ldx, &xf[((p + 1) - 1)], ldx, theta, u1, ldu1, u2, ldu2, v1t, ldv1t, work, lwork, rwork, INTEGER(17 * (r + 2)), iwork, info);
     {
         if (m > 0 && p > 0 && q > 0 && m - p > 0) {
-	    printf(" m: %d, p: %d, q: %d\n", (int)m, (int)p, (int)q);
+            printf(" m: %d, p: %d, q: %d\n", (int)m, (int)p, (int)q);
             __complex__ double *xf_d = new __complex__ double[max(m * m, (INTEGER)1)];
             __complex__ double *u1_d = new __complex__ double[max(p * p, (INTEGER)1)];
             __complex__ double *u2_d = new __complex__ double[max((m - p) * (m - p), (INTEGER)1)];
@@ -234,8 +234,8 @@ void Ccsdts(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x, COMPL
                     __imag__ xf_d[pp + qq * ldx_d] = dtmp_i;
                 }
             }
-	    //            printf("x_org="); printmat(m, m, x, ldx); printf("\n");
-	    //            printf("x_org_d="); printmat(m, m, xf_d, ldx_d); printf("\n");
+            //            printf("x_org="); printmat(m, m, x, ldx); printf("\n");
+            //            printf("x_org_d="); printmat(m, m, xf_d, ldx_d); printf("\n");
             double norm = 0.0;
             for (int pp = 0; pp < m; pp++) {
                 for (int qq = 0; qq < m; qq++) {
@@ -244,10 +244,10 @@ void Ccsdts(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x, COMPL
                     norm = norm + fabs(__real__ xf_d[pp + qq * ldx_d] - dtmp_r) + fabs(__imag__ xf_d[pp + qq * ldx_d] - dtmp_i);
                 }
             }
-            printf("norm_orig = %lf\n", norm);
+            // printf("norm_orig = %lf\n", norm);
             LAPACKE_zuncsd2by1(LAPACK_COL_MAJOR, 'Y', 'Y', 'Y', (int)m, (int)p, (int)q, &xf_d[(1 - 1)], ldx_d, &xf_d[((p + 1) - 1)], ldx_d, theta_d, u1_d, ldu1_d, u2_d, ldu2_d, v1t_d, ldv1t_d);
-	    //            printf("xf="); printmat(m, m, xf, ldx); printf("\n");
-	    //            printf("xf_d="); printmat(m, m, xf_d, ldx_d); printf("\n");
+            //            printf("xf="); printmat(m, m, xf, ldx); printf("\n");
+            //            printf("xf_d="); printmat(m, m, xf_d, ldx_d); printf("\n");
             norm = 0.0;
             for (int pp = 0; pp < m; pp++) {
                 for (int qq = 0; qq < m; qq++) {
@@ -256,7 +256,17 @@ void Ccsdts(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x, COMPL
                     norm = norm + fabs(__real__ xf_d[pp + qq * ldx_d] - dtmp_r) + fabs(__imag__ xf_d[pp + qq * ldx_d] - dtmp_i);
                 }
             }
-            printf("norm_result = %lf\n", norm);
+            // printf("norm_result = %lf\n", norm);
+            printf("ccsdts.cpp l.260\n");
+            printf("theta="); printvec(theta, r); printf("\n");
+            printf("theta_d="); printvec(theta_d, r); printf("\n");
+            norm = 0.0;
+            for (int pp = 0; pp < r; pp++) {
+                dtmp = cast2double(theta[pp]);
+                norm = norm + fabs(cast2double(theta[pp]) - theta_d[pp]);
+            }
+            // printf("norm_theta = %lf\n", norm);
+
             delete[] theta_d;
             delete[] v1t_d;
             delete[] u2_d;
