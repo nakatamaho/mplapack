@@ -43,30 +43,6 @@ void Rlartgp(REAL const f, REAL const g, REAL &cs, REAL &sn, REAL &r) {
     INTEGER count = 0;
     INTEGER i = 0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     LOGICAL            FIRST
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Save statement ..
-    //     SAVE               FIRST, SAFMX2, SAFMIN, SAFMN2
-    //     ..
-    //     .. Data statements ..
-    //     DATA               FIRST / .TRUE. /
-    //     ..
     //     .. Executable Statements ..
     //
     //     IF( FIRST ) THEN
