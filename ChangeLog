@@ -1,6 +1,8 @@
 2022/05/09    Nakata Maho <maho@riken.jp> 2.0 branch
             * gsv.in: Test for Generalized SVD routines
               have passed for all precisions.
+            * Csg.in: MPFR tests have also passed. Thus, tests of the Generalized
+              Nonsymmetric Eigenvalue Problem routines have passed for all precisions.
 
 2022/05/08    Nakata Maho <maho@riken.jp> 2.0 branch
             * Cgd.in: Tests for complex Nonsymmetric generalized Eigenvalue/Schur Form Driver/Expert Driver
