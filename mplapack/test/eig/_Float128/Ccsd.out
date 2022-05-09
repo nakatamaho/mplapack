@@ -1,0 +1,70 @@
+
+ Tests of the CS Decomposition routines
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     1    10    10    10    10    21    24    30    22
+              32    55
+    P:         0     1     4     4     0    10     9    10    20    12
+              12    40
+    N:         0     1     0    10     4     4    15    12     8    20
+               8    20
+ 
+ Relative machine underflow is taken to be+3.3621031431120935e-4932
+ Relative machine overflow  is taken to be+1.1897314953572318e+4932
+ Relative machine precision is taken to be+1.9259299443872359e-34
+
+ Routines pass computational tests if test ratio is less than+3.0000000000000000e+01
+
+ CSD routines passed the tests of the error exits (  8 tests done)
+ *** XERBLA was called from Cuncsd with INFO =     28 instead of 26 ***
+ *** XERBLA was called with SRNAME = Cbbcsd instead of Cuncsd ***
+
+ CSD: CS Decomposition
+ Matrix types: 
+    1: Random orthogonal matrix (Haar measure)
+    2: Nearly orthogonal matrix with uniformly distributed angles atan2( S, C ) in CS decomposition
+    3: Random orthogonal matrix with clustered angles atan2( S, C ) in CS decomposition
+ Test ratios: 
+   2-by-2 CSD
+    1: norm( U1' * X11 * V1 - C ) / ( max(  P,  Q) * max(norm(I-X'*X),EPS) )
+    2: norm( U1' * X12 * V2-(-S)) / ( max(  P,M-Q) * max(norm(I-X'*X),EPS) )
+    3: norm( U2' * X21 * V1 - S ) / ( max(M-P,  Q) * max(norm(I-X'*X),EPS) )
+    4: norm( U2' * X22 * V2 - C ) / ( max(M-P,M-Q) * max(norm(I-X'*X),EPS) )
+    5: norm( I - U1'*U1 ) / (   P   * EPS )
+    6: norm( I - U2'*U2 ) / ( (M-P) * EPS )
+    7: norm( I - V1'*V1 ) / (   Q   * EPS )
+    8: norm( I - V2'*V2 ) / ( (M-Q) * EPS )
+    9: principal angle ordering ( 0 or ULP )
+   2-by-1 CSD
+   10: norm( U1' * X11 * V1 - C ) / ( max(  P,  Q) * max(norm(I-X'*X),EPS) )
+   11: norm( U2' * X21 * V1 - S ) / ( max(  M-P,Q) * max(norm(I-X'*X),EPS) )
+   12: norm( I - U1'*U1 ) / (   P   * EPS )
+   13: norm( I - U2'*U2 ) / ( (M-P) * EPS )
+   14: norm( I - V1'*V1 ) / (   Q   * EPS )
+   15: principal angle ordering ( 0 or ULP )
+ M=  24 P=  10, Q=  12, type  1, test 10, ratio=+1.8101402962616369e+32
+ M=  24 P=  10, Q=  12, type  1, test 11, ratio=+1.5506980708634261e+32
+ M=  24 P=  10, Q=  12, type  1, test 15, ratio=+2.5961484292674138e+33
+ *** XERBLA was called from Cuncsd with INFO =     28 instead of 26 ***
+ *** XERBLA was called with SRNAME = Cbbcsd instead of Cuncsd ***
+ M=  24 P=  10, Q=  12, type  2, test 10, ratio=+1.4563255619713538e+11
+ M=  24 P=  10, Q=  12, type  2, test 11, ratio=+1.3998578951928946e+11
+ M=  24 P=  10, Q=  12, type  2, test 15, ratio=+2.5961484292674138e+33
+ *** XERBLA was called from Cuncsd with INFO =     28 instead of 26 ***
+ *** XERBLA was called with SRNAME = Cbbcsd instead of Cuncsd ***
+ M=  24 P=  10, Q=  12, type  3, test 10, ratio=+2.1634537227507576e+32
+ M=  24 P=  10, Q=  12, type  3, test 11, ratio=+1.8533964900245761e+32
+ M=  24 P=  10, Q=  12, type  3, test 15, ratio=+2.5961484292674138e+33
+ *** XERBLA was called from Cuncsd with INFO =     28 instead of 26 ***
+ *** XERBLA was called with SRNAME = Cbbcsd instead of Cuncsd ***
+ M=  24 P=  10, Q=  12, type  4, test 10, ratio=+2.1634570243895115e+32
+ M=  24 P=  10, Q=  12, type  4, test 11, ratio=+1.8543917351910099e+32
+ M=  24 P=  10, Q=  12, type  4, test 15, ratio=+2.5961484292674138e+33
+ CSD:     12 out of    720 tests failed to pass the threshold
+
+
+ End of tests
+ Total time used =         3.00 seconds
+
