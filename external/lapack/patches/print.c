@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <string.h>
 
-//  please use as following: Do not forget adding //CHAR(0) at the end.
+//  please use as follows: Do not forget adding //CHAR(0) at the end.
 //         CALL PRINTSTR('#dgelsd.f l.486'//CHAR(0))
 //         CALL PRINTVEC('s='//CHAR(0),s,n)
 //         CALL PRINTMAT('e='//CHAR(0),m,m,e,lde)
-//         for complex matrix
+//         for complex matrix and vectors
 //         CALL PRINTMATC('e='//CHAR(0),m,m,e,lde)
-//         CALL PRINTMATC('x='//CHAR(0),x,n)
+//         CALL PRINTVECC('x='//CHAR(0),x,n)
 
 void printdummy_() { printf("\n"); }
 
