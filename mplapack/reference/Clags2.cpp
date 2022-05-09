@@ -31,31 +31,9 @@
 
 inline REAL abs1(COMPLEX t) { return abs(t.real()) + abs(t.imag()); }
 
-void Clags2(bool const upper, REAL const a1, COMPLEX const a2, REAL const a3, REAL const b1, COMPLEX const b2, REAL const b3, REAL &csu, COMPLEX &snu, REAL &csv, COMPLEX &snv, REAL csq, COMPLEX snq) {
+void Clags2(bool const upper, REAL const a1, COMPLEX const a2, REAL const a3, REAL const b1, COMPLEX const b2, REAL const b3, REAL &csu, COMPLEX &snu, REAL &csv, COMPLEX &snv, REAL &csq, COMPLEX &snq) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
     COMPLEX t = 0.0;
-    //     ..
-    //     .. Executable Statements ..
     //
     REAL a = 0.0;
     REAL d = 0.0;

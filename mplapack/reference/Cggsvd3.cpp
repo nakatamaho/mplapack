@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -29,28 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const n, INTEGER const p, INTEGER k, INTEGER l, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *alpha, REAL *beta, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *q, INTEGER const ldq, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER &info) {
-    //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
+void Cggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const n, INTEGER const p, INTEGER &k, INTEGER &l, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *alpha, REAL *beta, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *q, INTEGER const ldq, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER &info) {
     //
     //     Decode and test the input parameters
     //
@@ -119,8 +98,8 @@ void Cggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     //
     REAL ulp = Rlamch("Precision");
     REAL unfl = Rlamch("Safe Minimum");
-    tola = max(m, n) * max(anorm, unfl) * ulp;
-    tolb = max(p, n) * max(bnorm, unfl) * ulp;
+    tola = castREAL(max(m, n)) * max(anorm, unfl) * ulp;
+    tolb = castREAL(max(p, n)) * max(bnorm, unfl) * ulp;
     //
     Cggsvp3(jobu, jobv, jobq, m, p, n, a, lda, b, ldb, tola, tolb, k, l, u, ldu, v, ldv, q, ldq, iwork, rwork, work, &work[(n + 1) - 1], lwork - n, info);
     //

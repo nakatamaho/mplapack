@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -29,19 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const &m, INTEGER const &p, INTEGER const &n, COMPLEX *a, INTEGER const &lda, COMPLEX *b, INTEGER const &ldb, REAL const &tola, REAL const &tolb, INTEGER &k, INTEGER &l, COMPLEX *u, INTEGER const &ldu, COMPLEX *v, INTEGER const &ldv, COMPLEX *q, INTEGER const &ldq, INTEGER *iwork, REAL *rwork, COMPLEX *tau, COMPLEX *work, INTEGER const &lwork, INTEGER &info) {
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
+void Cggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL const tola, REAL const tolb, INTEGER &k, INTEGER &l, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *q, INTEGER const ldq, INTEGER *iwork, REAL *rwork, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
     //     Test the input parameters
     //

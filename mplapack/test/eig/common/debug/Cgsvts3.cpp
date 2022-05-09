@@ -37,6 +37,7 @@ using fem::common;
 #include <mplapack_eig.h>
 
 #include <mplapack_debug.h>
+#include <lapacke.h>
 
 void Cgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMPLEX *af, INTEGER const lda, COMPLEX *b, COMPLEX *bf, INTEGER const ldb, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *q, INTEGER const ldq, REAL *alpha, REAL *beta, COMPLEX *r, INTEGER const ldr, INTEGER *iwork, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
@@ -60,7 +61,61 @@ void Cgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMP
     INTEGER k = 0;
     INTEGER l = 0;
     INTEGER info = 0;
+    printf("a="); printmat(m, n, af, lda); printf("\n");
+    printf("b="); printmat(p, n, bf, ldb); printf("\n");
     Cggsvd3("U", "V", "Q", m, n, p, k, l, af, lda, bf, ldb, alpha, beta, u, ldu, v, ldv, q, ldq, work, lwork, rwork, iwork, info);
+    printf("u="); printmat(m, m, u, ldu); printf("\n");
+    printf("v="); printmat(p, p, v, ldv); printf("\n");
+    printf("q="); printmat(n, n, q, ldq); printf("\n");
+    {
+        __complex__ double *a_d = new __complex__ double[max(m * n, (INTEGER)1)];
+        __complex__ double *b_d = new __complex__ double[max(p * n, (INTEGER)1)];
+        __complex__ double *u_d = new __complex__ double[max(m * m, (INTEGER)1)];
+        __complex__ double *v_d = new __complex__ double[max(p * p, (INTEGER)1)];
+        __complex__ double *q_d = new __complex__ double[max(n * n, (INTEGER)1)];
+        int *iwork_d = new int[max(n, (INTEGER)1)];
+        int lda_d = m;
+        int ldb_d = p;
+        int ldu_d = m;
+        int ldv_d = p;
+        int ldq_d = n;
+        int k_d, l_d;
+        double *alpha_d = new double[max(n, (INTEGER)1)];
+        double *beta_d = new double[max(n, (INTEGER)1)];
+        double dtmp_r, dtmp_i;
+        for (int pp = 0; pp < m; pp++) {
+            for (int qq = 0; qq < n; qq++) {
+                dtmp_r = cast2double(a[pp + qq * lda].real());
+                dtmp_i = cast2double(a[pp + qq * lda].imag());
+                __real__ a_d[pp + qq * lda_d] = dtmp_r;
+                __imag__ a_d[pp + qq * lda_d] = dtmp_i;
+            }
+        }
+        for (int pp = 0; pp < p; pp++) {
+            for (int qq = 0; qq < n; qq++) {
+                dtmp_r = cast2double(b[pp + qq * ldb].real());
+                dtmp_i = cast2double(b[pp + qq * ldb].imag());
+                __real__ b_d[pp + qq * ldb_d] = dtmp_r;
+                __imag__ b_d[pp + qq * ldb_d] = dtmp_i;
+	    }
+        }
+	printf("\n");
+        printf("a_d="); printmat(m, n, a_d, lda_d); printf("\n");
+        printf("b_d="); printmat(p, n, b_d, ldb_d); printf("\n");
+        LAPACKE_zggsvd3(LAPACK_COL_MAJOR, 'U', 'V', 'Q', (int)m, (int)n, (int)p, &k_d, &l_d, a_d, lda_d, b_d, ldb_d, alpha_d, beta_d, u_d, ldu_d, v_d, ldv_d, q_d, ldq_d, iwork_d);
+        printf("u_d="); printmat(m, m, u_d, ldu_d); printf("\n");
+        printf("v_d="); printmat(p, p, v_d, ldv_d); printf("\n");
+        printf("q_d="); printmat(n, n, q_d, ldq_d); printf("\n");
+        delete[] beta_d;
+        delete[] alpha_d;
+        delete[] iwork_d;
+        delete[] q_d;
+        delete[] u_d;
+        delete[] v_d;
+        delete[] b_d;
+        delete[] a_d;
+    }
+
     //
     //     Copy R
     //
