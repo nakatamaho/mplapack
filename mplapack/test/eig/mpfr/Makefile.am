@@ -17,7 +17,8 @@ xeigtstC_mpfr_SOURCES  = ../common/Cchkee.cpp
 xeigtstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_mpfr_CXXFLAGS = $(cxxflags)
 
-check: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.out Rsg.out Rbal.out Rbak.out Rgbal.out Rgbak.out Rbb.out Rglm.out Rgqr.out Rgsv.out Rcsd.out Rlse.out Cbal.out
+check: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.out Rsg.out Rbal.out Rbak.out Rgbal.out Rgbak.out Rbb.out Rglm.out Rgqr.out Rgsv.out Rcsd.out Rlse.out \
+       Cnep.out Csep.out Cse2.out Csvd.out Cec.out Ced.out Cgg.out Cgd.out Csb.out Csg.out Cbal.out Cbak.out Cgbal.out Cgbak.out Cbb.out Cglm.out Cgqr.out Cgsv.out Ccsd.out Clse.out
 
 clean-local:
 	rm -f *.out *~ \#*
@@ -102,18 +103,82 @@ Rlse.out: ../lse.in xeigtstR_mpfr
 	@echo LSE: Testing Constrained Linear Least Squares routines
 	./xeigtstR_mpfr < ../lse.in > $@ 2>&1
 
-Cbal.out: ../Cbal.in xeigtstC_mpfr
-	@echo Cgebal: Testing the balancing of a COMPLEX general matrix
+Cnep.out: ../nep.in ./xeigtstC_mpfr
+	@echo NEP: Testing Nonsymmetric Eigenvalue Problem routines
+	./xeigtstC_mpfr < ../nep.in > $@ 2>&1
+
+Csep.out: ../sep.in ./xeigtstC_mpfr
+	@echo SEP: Testing Symmetric Eigenvalue Problem routines
+	./xeigtstC_mpfr < ../sep.in > $@ 2>&1
+
+Cse2.out: ../se2.in ./xeigtstC_mpfr
+	@echo SEP: Testing Symmetric Eigenvalue Problem routines
+	./xeigtstC_mpfr < ../se2.in > $@ 2>&1
+
+Csvd.out: ../svd.in ./xeigtstC_mpfr
+	@echo SVD: Testing Singular Value Decomposition routines
+	./xeigtstC_mpfr < ../svd.in > $@ 2>&1
+
+Cec.out: ../Cec.in ./xeigtstC_mpfr
+	@echo CEC: Testing COMPLEX Eigen Condition Routines
+	./xeigtstC_mpfr < ../Cec.in > $@ 2>&1
+
+Ced.out: ../Ced.in ./xeigtstC_mpfr
+	@echo CES: Testing COMPLEX Nonsymmetric Schur Form Driver
+	./xeigtstC_mpfr < ../Ced.in > $@ 2>&1
+
+Cgg.out: ../Cgg.in ./xeigtstC_mpfr
+	@echo CGG: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem routines
+	./xeigtstC_mpfr < ../Cgg.in > $@ 2>&1
+
+Cgd.out: ../Cgd.in ./xeigtstC_mpfr
+	@echo CGD: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem driver routines
+	./xeigtstC_mpfr < ../Cgd.in > $@ 2>&1
+
+Csb.out: ../Csb.in ./xeigtstC_mpfr
+	@echo CHB: Testing Hermitian Eigenvalue Problem routines
+	./xeigtstC_mpfr < ../Csb.in > $@ 2>&1
+
+Csg.out: ../Csg.in ./xeigtstC_mpfr
+	@echo CSG: Testing Symmetric Generalized Eigenvalue Problem routines
+	./xeigtstC_mpfr < ../Csg.in > $@ 2>&1
+
+Cbal.out: ../Cbal.in ./xeigtstC_mpfr
+	@echo CGEBAL: Testing the balancing of a COMPLEX general matrix
 	./xeigtstC_mpfr < ../Cbal.in > $@ 2>&1
 
-Cbak.out: ../Cbak.in xeigtstC_mpfr
-	@echo Cgebak: Testing the back transformation of a COMPLEX balanced matrix
+Cbak.out: ../Cbak.in ./xeigtstC_mpfr
+	@echo CGEBAK: Testing the back transformation of a COMPLEX balanced matrix
 	./xeigtstC_mpfr < ../Cbak.in > $@ 2>&1
 
-Cgbal.out: ../Cgbal.in xeigtstC_mpfr
-	@echo Cggbal: Testing the balancing of a pair of COMPLEX general matrices
+Cgbal.out: ../Cgbal.in ./xeigtstC_mpfr
+	@echo CGGBAL: Testing the balancing of a pair of COMPLEX general matrices
 	./xeigtstC_mpfr < ../Cgbal.in > $@ 2>&1
 
-Cgbak.out: ../Cgbak.in xeigtstC_mpfr
-	@echo Cggbak: Testing the back transformation of a pair of COMPLEX balanced matrices
+Cgbak.out: ../Cgbak.in ./xeigtstC_mpfr
+	@echo CGGBAK: Testing the back transformation of a pair of COMPLEX balanced matrices
 	./xeigtstC_mpfr < ../Cgbak.in > $@ 2>&1
+
+Cbb.out: ../Cbb.in ./xeigtstC_mpfr
+	@echo CBB: Testing banded Singular Value Decomposition routines
+	./xeigtstC_mpfr < ../Cbb.in > $@ 2>&1
+
+Cglm.out: ../glm.in ./xeigtstC_mpfr
+	@echo GLM: Testing Generalized Linear Regression Model routines
+	./xeigtstC_mpfr < ../glm.in > $@ 2>&1
+
+Cgqr.out: ../gqr.in ./xeigtstC_mpfr
+	@echo GQR: Testing Generalized QR and RQ factorization routines
+	./xeigtstC_mpfr < ../gqr.in > $@ 2>&1
+
+Cgsv.out: ../gsv.in ./xeigtstC_mpfr
+	@echo GSV: Testing Generalized Singular Value Decomposition routines
+	./xeigtstC_mpfr < ../gsv.in > $@ 2>&1
+
+Ccsd.out: ../csd.in ./xeigtstC_mpfr
+	@echo CSD: Testing CS Decomposition routines
+	./xeigtstC_mpfr < ../csd.in > $@ 2>&1
+
+Clse.out: ../lse.in ./xeigtstC_mpfr
+	@echo LSE: Testing Constrained Linear Least Squares routines
+	./xeigtstC_mpfr < ../lse.in > $@ 2>&1
