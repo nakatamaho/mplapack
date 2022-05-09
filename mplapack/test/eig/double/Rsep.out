@@ -1,5 +1,5 @@
  Tests of the Symmetric Eigenvalue Problem routines
- Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.1
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
  Based on original LAPACK VERSION 3.9.1
 
 The following parameter values will be used:
@@ -36,24 +36,7 @@ The following parameter values will be used:
 
  All tests for DST passed the threshold (  4440 tests run)
 
- DST -- Real Symmetric eigenvalue problem
- Matrix types (see xDRVST for details): 
-
- Special Matrices:
-  1=Zero matrix.                          5=Diagonal: clustered entries.
-  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
-  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
-  4=Diagonal: geometr. spaced entries.
- Dense Symmetric Matrices:
-  8=Evenly spaced eigenvals.             12=Small, evenly spaced eigenvals.
-  9=Geometrically spaced eigenvals.      13=Matrix with random O(1) entries.
- 10=Clustered eigenvalues.               14=Matrix with large random entries.
- 11=Large, evenly spaced eigenvals.      15=Matrix with small random entries.
-
- Tests performed:  See sdrvst.f
- Matrix order=   25, type=14, seed=   0,   0,   0,   1, result  71 is +1.9444015625000000e+02
- Matrix order=   25, type=14, seed=   0,   0,   0,   1, result 125 is +8.4146015625000004e+01
- DST drivers:      2 out of  13464 tests failed to pass the threshold
+ All tests for DST drivers  passed the threshold (  13464 tests run)
 
 
  SEP:  NB =   3, NBMIN =   2, NX =   9
@@ -71,5 +54,5 @@ The following parameter values will be used:
 
 
  End of tests
- Total time used =         4.00 seconds
+ Total time used =         3.00 seconds
 

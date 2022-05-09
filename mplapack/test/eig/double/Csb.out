@@ -1,12 +1,12 @@
-
- Tests of the Linear Least Squares routines
+ Tests of Chbtrd
+ (reduction of a Hermitian band matrix to real tridiagonal form)
  Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
  Based on original LAPACK VERSION 3.9.1
 
 The following parameter values will be used:
-    M:         6     0     5     8    10    30
-    P:         0     5     5     5     8    20
-    N:         5     5     6     8    12    40
+    M:         5    20
+    N:         5    20
+    K:         0     1     2     5    16
  
  Relative machine underflow is taken to be+2.2250738585072014e-308
  Relative machine overflow  is taken to be+1.7976931348623157e+308
@@ -14,9 +14,9 @@ The following parameter values will be used:
 
  Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
 
- LSE routines passed the tests of the error exits (  8 tests done)
+ ZHB routines passed the tests of the error exits ( 80 tests done)
 
- All tests for LSE routines passed the threshold (     96 tests run)
+ All tests for ZHB passed the threshold (   810 tests run)
 
 
  End of tests

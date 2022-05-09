@@ -63,9 +63,9 @@ Rsg.out: ../Rsg.in xeigtstR_double
 	@echo DSG: Testing Symmetric Generalized Eigenvalue Problem routines
 	./xeigtstR_double < ../Rsg.in > $@ 2>&1
 
-Rbal.out: ../Rbal.in xeigtstR_double
+Rbal.out: ../Rbal_double.in xeigtstR_double
 	@echo Rgebal: Testing the balancing of a general matrix
-	./xeigtstR_double < ../Rbal.in > $@ 2>&1
+	./xeigtstR_double < ../Rbal_double.in > $@ 2>&1
 
 Rbak.out: ../Rbak.in xeigtstR_double
 	@echo Rgebak: Testing the back transformation of balanced matrix
@@ -73,7 +73,7 @@ Rbak.out: ../Rbak.in xeigtstR_double
 
 Rgbal.out: ../Rgbal.in xeigtstR_double
 	@echo Rggbal: Testing the balancing of a pair of general matrices
-	./xeigtstR_double < ../Rgbal_double.in > $@ 2>&1
+	./xeigtstR_double < ../Rgbal.in > $@ 2>&1
 
 Rgbak.out: ../Rgbak.in xeigtstR_double
 	@echo Rggbak: Testing the back transformation of a pair of balanced matrices
@@ -143,7 +143,7 @@ Csg.out: ../Csg.in ./xeigtstC_double
 	@echo CSG: Testing Symmetric Generalized Eigenvalue Problem routines
 	./xeigtstC_double < ../Csg.in > $@ 2>&1
 
-Cbal.out: ../Cbal.in ./xeigtstC_double
+Cbal.out: ../Cbal_double.in ./xeigtstC_double
 	@echo CGEBAL: Testing the balancing of a COMPLEX general matrix
 	./xeigtstC_double < ../Cbal_double.in > $@ 2>&1
 
