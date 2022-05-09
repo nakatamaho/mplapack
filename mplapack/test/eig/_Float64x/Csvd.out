@@ -18,49 +18,49 @@ The following parameter values will be used:
 
  Routines pass computational tests if test ratio is less than+5.0000000000000000e+01
 
- DBD routines passed the tests of the error exits ( 55 tests done)
- Rgesvd passed the tests of the error exits (  8 tests done)
- Rgesdd passed the tests of the error exits (  6 tests done)
- Rgejsv passed the tests of the error exits ( 11 tests done)
- Rgesvdx passed the tests of the error exits ( 12 tests done)
- Rgesvdq passed the tests of the error exits ( 11 tests done)
+ ZBD routines passed the tests of the error exits ( 35 tests done)
+ Cgesvd passed the tests of the error exits (  8 tests done)
+ Cgesdd passed the tests of the error exits (  6 tests done)
+ Cgejsv passed the tests of the error exits ( 11 tests done)
+ Cgesvdx passed the tests of the error exits ( 12 tests done)
+ Cgesvdq passed the tests of the error exits ( 11 tests done)
 
 
  SVD:  NB =   1, NBMIN =   2, NX =   1, NRHS =   2
 
- All tests for DBD routines passed the threshold (  10260 tests run)
+ All tests for CBD routines passed the threshold (   4085 tests run)
 
- All tests for DBD drivers  passed the threshold (  14820 tests run)
+ All tests for ZBD drivers  passed the threshold (  14340 tests run)
 
 
  SVD:  NB =   3, NBMIN =   2, NX =   0, NRHS =   0
 
- All tests for DBD routines passed the threshold (  10260 tests run)
+ All tests for CBD routines passed the threshold (   4085 tests run)
 
- All tests for DBD drivers  passed the threshold (  14820 tests run)
+ All tests for ZBD drivers  passed the threshold (  14340 tests run)
 
 
  SVD:  NB =   3, NBMIN =   2, NX =   5, NRHS =   2
 
- All tests for DBD routines passed the threshold (  10260 tests run)
+ All tests for CBD routines passed the threshold (   4085 tests run)
 
- All tests for DBD drivers  passed the threshold (  14820 tests run)
+ All tests for ZBD drivers  passed the threshold (  14340 tests run)
 
 
  SVD:  NB =   3, NBMIN =   2, NX =   9, NRHS =   2
 
- All tests for DBD routines passed the threshold (  10260 tests run)
+ All tests for CBD routines passed the threshold (   4085 tests run)
 
- All tests for DBD drivers  passed the threshold (  14820 tests run)
+ All tests for ZBD drivers  passed the threshold (  14340 tests run)
 
 
  SVD:  NB =  20, NBMIN =   2, NX =   1, NRHS =   2
 
- All tests for DBD routines passed the threshold (  10260 tests run)
+ All tests for CBD routines passed the threshold (   4085 tests run)
 
- All tests for DBD drivers  passed the threshold (  14820 tests run)
+ All tests for ZBD drivers  passed the threshold (  14340 tests run)
 
 
  End of tests
- Total time used =        55.00 seconds
+ Total time used =       236.00 seconds
 
