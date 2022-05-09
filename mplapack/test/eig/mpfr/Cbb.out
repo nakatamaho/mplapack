@@ -1,4 +1,4 @@
- Tests of Rgbbrd
+ Tests of Cgbbrd
  (reduction of a general band matrix to real bidiagonal form)
  Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
  Based on original LAPACK VERSION 3.9.1
@@ -19,16 +19,16 @@ The following parameter values will be used:
 
 
 
- DBB:  NRHS =   1
+ ZBB:  NRHS =   1
 
- All tests for DBB passed the threshold (  3000 tests run)
+ All tests for ZBB passed the threshold (  3000 tests run)
 
 
- DBB:  NRHS =   2
+ ZBB:  NRHS =   2
 
- All tests for DBB passed the threshold (  3000 tests run)
+ All tests for ZBB passed the threshold (  3000 tests run)
 
 
  End of tests
- Total time used =         2.00 seconds
+ Total time used =         5.00 seconds
 
