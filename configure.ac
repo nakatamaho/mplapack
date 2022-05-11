@@ -30,6 +30,10 @@ AC_CONFIG_FILES([packaging/PKGBUILD packaging/mplapack.spec])
 
 AC_CANONICAL_TARGET
 
+: ${CFLAGS=""}
+: ${CXXFLAGS=""}
+: ${FCFLAGS=""}
+
 AC_PROG_CC
 IS_INTELCC=0
 AC_COMPILE_IFELSE([
@@ -130,6 +134,7 @@ AS_HELP_STRING([--enable-optimization], [Enable compiler level optimization]),
     no)  enable_optimization=no  ;;
     *) AC_MSG_ERROR(bad value ${enableval} for --enable-optimization) ;;
         esac],[enable_optimization=yes])
+AM_CONDITIONAL(ENABLE_OPTIMIZATION, test x$enable_optimization = xyes)
 
 if test x"$enable_optimization" = x"yes" && test x"$enable_debug" = x"yes" ; then
         AC_MSG_ERROR([you cannot set both enable-optimization=yes and enable-debug=yes])
@@ -824,7 +829,7 @@ if test x"$enable_optimization" = x"no" && test x"$enable_debug" = x"yes" ; then
     FCFLAGS="-O0 -g"
 fi
 
-if test x"$enable_optimization" = x"yes" && test x"$enable_debug" = x"no" ; then    
+if test x"$enable_optimization" = x"yes" && test x"$enable_debug" != x"yes" ; then
     case $target in
        powerpc*-*-*)
            CFLAGS="$CFLAGS -mcpu=native -O2 -finline-functions -funroll-all-loops"
@@ -832,9 +837,9 @@ if test x"$enable_optimization" = x"yes" && test x"$enable_debug" = x"no" ; then
            FCFLAGS="$FCFLAGS -mcpu=native -O2 -finline-functions -funroll-all-loops"
        ;;
        * ) 
-           CFLAGS="$CFLAGS -march=native -g -O2 -finline-functions -funroll-all-loops"
-           CXXFLAGS="$CXXFLAGS -march=native -g -O2 -finline-functions -funroll-all-loops"
-           FCFLAGS="$FCFLAGS -march=native -g -O2 -finline-functions -funroll-all-loops"
+           CFLAGS="$CFLAGS -march=native -O2 -finline-functions -funroll-all-loops"
+           CXXFLAGS="$CXXFLAGS -march=native -O2 -finline-functions -funroll-all-loops"
+           FCFLAGS="$FCFLAGS -march=native -O2 -finline-functions -funroll-all-loops"
        ;;
     esac
     if test x"$is_intelcxx" = x"1"; then
