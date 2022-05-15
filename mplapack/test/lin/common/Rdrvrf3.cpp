@@ -45,7 +45,7 @@ void Rdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     common cmn;
     common_write write(cmn);
     char transs[] = {'N', 'T'};
-    char diags[] = {'N', 'T'};
+    char diags[] = {'N', 'U'};
     char forms[] = {'N', 'T'};
     char sides[] = {'L', 'R'};
     char uplos[] = {'U', 'L'};

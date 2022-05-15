@@ -163,22 +163,22 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             //
                             if (iuplo == 1) {
                                 for (i = 1; i <= izero - 1; i = i + 1) {
-                                    a[(ioff + i) - 1] = zero;
+                                    a[(ioff + i)] = zero;
                                 }
                                 ioff += izero;
                                 for (i = izero; i <= n; i = i + 1) {
-                                    a[ioff - 1] = zero;
+                                    a[ioff] = zero;
                                     ioff += lda;
                                 }
                             } else {
                                 ioff = izero;
                                 for (i = 1; i <= izero - 1; i = i + 1) {
-                                    a[ioff - 1] = zero;
+                                    a[ioff] = zero;
                                     ioff += lda;
                                 }
                                 ioff = ioff - izero;
                                 for (i = izero; i <= n; i = i + 1) {
-                                    a[(ioff + i) - 1] = zero;
+                                    a[(ioff + i)] = zero;
                                 }
                             }
                         } else {

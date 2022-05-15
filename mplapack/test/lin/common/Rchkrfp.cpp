@@ -68,6 +68,23 @@ void Rchkrfp(void) {
     char tsterr_str[1];
     bool tsterr = false;
     REAL eps = 0.0;
+    REAL worka[nmax * nmax];
+    REAL workasav[nmax * nmax];
+    REAL workafac[nmax * nmax];
+    REAL workainv[nmax * nmax];
+    REAL workb[nmax * maxrhs];
+    REAL workbsav[nmax * maxrhs];
+    REAL workxact[nmax * maxrhs];
+    REAL workx[nmax * maxrhs];
+    REAL workarf[(nmax * (nmax + 1)) / 2];
+    REAL workarfinv[(nmax * (nmax + 1)) / 2];
+    REAL d_work_Rlatms[3 * nmax];
+    REAL d_work_Rpot01[nmax];
+    REAL d_temp_Rpot02[nmax * maxrhs];
+    REAL d_temp_Rpot03[nmax * nmax];
+    REAL d_work_Rlansy[nmax];
+    REAL d_work_Rpot02[nmax];
+    REAL d_work_Rpot03[nmax];
     char buf[1024];
 
     std::string str;
@@ -254,23 +271,6 @@ void Rchkrfp(void) {
     //     Test the routines: Rpftrf, Rpftri, Rpftrs (as in Rdrvpo).
     //     This also tests the routines: Rtfsm, Rtftri, Rtfttr, Rtrttf.
     //
-    REAL worka[nmax * nmax];
-    REAL workasav[nmax * nmax];
-    REAL workafac[nmax * nmax];
-    REAL workainv[nmax * nmax];
-    REAL workb[nmax * maxrhs];
-    REAL workbsav[nmax * maxrhs];
-    REAL workxact[nmax * maxrhs];
-    REAL workx[nmax * maxrhs];
-    REAL workarf[(nmax * (nmax + 1)) / 2];
-    REAL workarfinv[(nmax * (nmax + 1)) / 2];
-    REAL d_work_Rlatms[3 * nmax];
-    REAL d_work_Rpot01[nmax];
-    REAL d_temp_Rpot02[nmax * maxrhs];
-    REAL d_temp_Rpot03[nmax * nmax];
-    REAL d_work_Rlansy[nmax];
-    REAL d_work_Rpot02[nmax];
-    REAL d_work_Rpot03[nmax];
     Rdrvrfp(nout, nn, nval, nns, nsval, nnt, ntval, thresh, worka, workasav, workafac, workainv, workb, workbsav, workxact, workx, workarf, workarfinv, d_work_Rlatms, d_work_Rpot01, d_temp_Rpot02, d_temp_Rpot03, d_work_Rlansy, d_work_Rpot02, d_work_Rpot03);
     //
     //     Test the routine: Rlansf
