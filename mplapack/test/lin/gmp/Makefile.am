@@ -44,6 +44,6 @@ Rtest_rfp.out: ../Rtest_rfp.in xlintstrfR_gmp
 	@echo Testing Real MPLAPACK RFP prototype linear equation routines
 	./xlintstrfR_gmp < ../Rtest_rfp.in > $@ 2>&1
 
-Ctest_rfp.out: Ctest_rfp.in xlintstrfC_gmp
+Ctest_rfp.out: ../Ctest_rfp.in xlintstrfC_gmp
 	@echo Testing Complex MPLAPACK RFP prototype linear equation routines
 	./xlintstrfC_gmp < ../Ctest_rfp.in > $@ 2>&1
