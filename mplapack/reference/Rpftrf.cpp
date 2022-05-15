@@ -156,7 +156,7 @@ void Rpftrf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 if (info > 0) {
                     return;
                 }
-                Rtrsm("R", "U", "N", "N", n2, n1, one, &a[(n2 * n2)], n2, &a[0 - 1], n2);
+                Rtrsm("R", "U", "N", "N", n2, n1, one, &a[(n2 * n2)], n2, &a[0], n2);
                 Rsyrk("L", "N", n2, n1, -one, &a[0], n2, one, &a[(n1 * n2)], n2);
                 Rpotrf("L", n2, &a[(n1 * n2)], n2, info);
                 if (info > 0) {

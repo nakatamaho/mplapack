@@ -258,8 +258,10 @@ void Rchkrfp(void) {
     sprintnum_short(buf, eps);
     cout << " Relative machine underflow is taken to be : " << buf << endl;
     eps = Rlamch("Overflow threshold");
+    sprintnum_short(buf, eps);
     cout << " Relative machine overflow  is taken to be : " << buf << endl;
     eps = Rlamch("Epsilon");
+    sprintnum_short(buf, eps);
     cout << " Relative machine precision is taken to be : " << buf << endl;
     //
     //     Test the error exit of:

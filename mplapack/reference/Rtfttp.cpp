@@ -56,9 +56,9 @@ void Rtfttp(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
     //
     if (n == 1) {
         if (normaltransr) {
-            ap[0 - 1] = arf[0 - 1];
+            ap[0] = arf[0];
         } else {
-            ap[0 - 1] = arf[0 - 1];
+            ap[0] = arf[0];
         }
         return;
     }
