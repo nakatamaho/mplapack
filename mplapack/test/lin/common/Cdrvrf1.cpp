@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -72,35 +72,6 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     const INTEGER ntests = 1;
     REAL result[ntests];
     static const char *format_9999 = "(1x,' *** Error(s) or Failure(s) while testing Clanhf         ***')";
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //     ..
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Initialize constants and the random number seed.
     //
@@ -177,7 +148,7 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                         }
                         write(nout, "(1x,'     Error in ',a6,' with UPLO=''',a1,''', FORM=''',a1,"
                                     "''', N=',i5)"),
-                            "Ctrttf", uplo, cform, n;
+                            "Ctrttf", &uplo, &cform, n;
                         nerrs++;
                         goto statement_100;
                     }
@@ -201,7 +172,7 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                             sprintnum_short(buf, result[0]);
                             write(nout, "(1x,'     Failure in ',a6,' N=',i5,' TYPE=',i5,' UPLO=''',a1,"
                                         "''', FORM =''',a1,''', NORM=''',a1,''', test=',a)"),
-                                "Clanhf", n, iit, uplo, cform, norm, buf;
+                                "Clanhf", n, iit, &uplo, &cform, &norm, buf;
                             nfail++;
                         }
                     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -42,33 +42,6 @@ void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, IN
     char uplos[2] = {'U', 'L'};
     char forms[2] = {'N', 'C'};
     INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Initialize constants and the random number seed.
     //
@@ -180,7 +153,7 @@ void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, IN
                     }
                     write(nout, "(1x,'     Error in RFP,conversion routines N=',i5,' UPLO=''',a1,"
                                 "''', FORM =''',a1,'''')"),
-                        n, uplo, cform;
+                        n, &uplo, &cform;
                     nerrs++;
                 }
                 //

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -48,37 +48,6 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     char forms[] = {'N', 'C'};
     char sides[] = {'L', 'R'};
     char buf[1024];
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //     ..
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Initialize constants and the random number seed.
     //
@@ -262,7 +231,7 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                                     "' SIDE=''',a1,''',',' UPLO=''',a1,''',',' TRANS=''',a1,"
                                                     "''',',' DIAG=''',a1,''',',' M=',i3,', N =',i3,"
                                                     "', test=',a)"),
-                                            "Ctfsm", cform, side, uplo, trans, diag, m, n, buf;
+                                            "Ctfsm", &cform, &side, &uplo, &trans, &diag, m, n, buf;
                                         nfail++;
                                     }
                                     //

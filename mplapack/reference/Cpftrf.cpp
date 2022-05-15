@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -30,28 +30,6 @@
 #include <mplapack.h>
 
 void Cpftrf(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER &info) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Test the input parameters.
     //
@@ -118,13 +96,13 @@ void Cpftrf(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
                 //             T1 -> a(0,0), T2 -> a(0,1), S -> a(n1,0)
                 //             T1 -> a(0), T2 -> a(n), S -> a(n1)
                 //
-                Cpotrf("L", n1, &a[0 - 1], n, info);
+                Cpotrf("L", n1, &a[0], n, info);
                 if (info > 0) {
                     return;
                 }
-                Ctrsm("R", "L", "C", "N", n2, n1, cone, &a[0 - 1], n, &a[n1 - 1], n);
-                Cherk("U", "N", n2, n1, -one, &a[n1 - 1], n, one, &a[n - 1], n);
-                Cpotrf("U", n2, &a[n - 1], n, info);
+                Ctrsm("R", "L", "C", "N", n2, n1, cone, &a[0], n, &a[n1], n);
+                Cherk("U", "N", n2, n1, -one, &a[n1], n, one, &a[n], n);
+                Cpotrf("U", n2, &a[n], n, info);
                 if (info > 0) {
                     info += n1;
                 }
@@ -135,13 +113,13 @@ void Cpftrf(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
                 //             T1 -> a(n1+1,0), T2 -> a(n1,0), S -> a(0,0)
                 //             T1 -> a(n2), T2 -> a(n1), S -> a(0)
                 //
-                Cpotrf("L", n1, &a[n2 - 1], n, info);
+                Cpotrf("L", n1, &a[n2], n, info);
                 if (info > 0) {
                     return;
                 }
-                Ctrsm("L", "L", "N", "N", n1, n2, cone, &a[n2 - 1], n, &a[0 - 1], n);
-                Cherk("U", "C", n2, n1, -one, &a[0 - 1], n, one, &a[n1 - 1], n);
-                Cpotrf("U", n2, &a[n1 - 1], n, info);
+                Ctrsm("L", "L", "N", "N", n1, n2, cone, &a[n2], n, &a[0], n);
+                Cherk("U", "C", n2, n1, -one, &a[0], n, one, &a[n1], n);
+                Cpotrf("U", n2, &a[n1], n, info);
                 if (info > 0) {
                     info += n1;
                 }
@@ -158,13 +136,13 @@ void Cpftrf(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
                 //              T1 -> A(0,0) , T2 -> A(1,0) , S -> A(0,n1)
                 //              T1 -> a(0+0) , T2 -> a(1+0) , S -> a(0+n1*n1); lda=n1
                 //
-                Cpotrf("U", n1, &a[0 - 1], n1, info);
+                Cpotrf("U", n1, &a[0], n1, info);
                 if (info > 0) {
                     return;
                 }
-                Ctrsm("L", "U", "C", "N", n1, n2, cone, &a[0 - 1], n1, &a[(n1 * n1) - 1], n1);
-                Cherk("L", "C", n2, n1, -one, &a[(n1 * n1) - 1], n1, one, &a[1 - 1], n1);
-                Cpotrf("L", n2, &a[1 - 1], n1, info);
+                Ctrsm("L", "U", "C", "N", n1, n2, cone, &a[0], n1, &a[(n1 * n1)], n1);
+                Cherk("L", "C", n2, n1, -one, &a[(n1 * n1)], n1, one, &a[1], n1);
+                Cpotrf("L", n2, &a[1], n1, info);
                 if (info > 0) {
                     info += n1;
                 }
@@ -175,13 +153,13 @@ void Cpftrf(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
                 //              T1 -> A(0,n1+1), T2 -> A(0,n1), S -> A(0,0)
                 //              T1 -> a(n2*n2), T2 -> a(n1*n2), S -> a(0); lda = n2
                 //
-                Cpotrf("U", n1, &a[(n2 * n2) - 1], n2, info);
+                Cpotrf("U", n1, &a[(n2 * n2)], n2, info);
                 if (info > 0) {
                     return;
                 }
-                Ctrsm("R", "U", "N", "N", n2, n1, cone, &a[(n2 * n2) - 1], n2, &a[0 - 1], n2);
-                Cherk("L", "N", n2, n1, -one, &a[0 - 1], n2, one, &a[(n1 * n2) - 1], n2);
-                Cpotrf("L", n2, &a[(n1 * n2) - 1], n2, info);
+                Ctrsm("R", "U", "N", "N", n2, n1, cone, &a[(n2 * n2)], n2, &a[0], n2);
+                Cherk("L", "N", n2, n1, -one, &a[0], n2, one, &a[(n1 * n2)], n2);
+                Cpotrf("L", n2, &a[(n1 * n2)], n2, info);
                 if (info > 0) {
                     info += n1;
                 }
@@ -204,13 +182,13 @@ void Cpftrf(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
                 //              T1 -> a(1,0), T2 -> a(0,0), S -> a(k+1,0)
                 //              T1 -> a(1), T2 -> a(0), S -> a(k+1)
                 //
-                Cpotrf("L", k, &a[1 - 1], n + 1, info);
+                Cpotrf("L", k, &a[1], n + 1, info);
                 if (info > 0) {
                     return;
                 }
-                Ctrsm("R", "L", "C", "N", k, k, cone, &a[1 - 1], n + 1, &a[(k + 1) - 1], n + 1);
-                Cherk("U", "N", k, k, -one, &a[(k + 1) - 1], n + 1, one, &a[0 - 1], n + 1);
-                Cpotrf("U", k, &a[0 - 1], n + 1, info);
+                Ctrsm("R", "L", "C", "N", k, k, cone, &a[1], n + 1, &a[(k + 1)], n + 1);
+                Cherk("U", "N", k, k, -one, &a[(k + 1)], n + 1, one, &a[0], n + 1);
+                Cpotrf("U", k, &a[0], n + 1, info);
                 if (info > 0) {
                     info += k;
                 }
@@ -221,13 +199,13 @@ void Cpftrf(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
                 //              T1 -> a(k+1,0) ,  T2 -> a(k,0),   S -> a(0,0)
                 //              T1 -> a(k+1), T2 -> a(k), S -> a(0)
                 //
-                Cpotrf("L", k, &a[(k + 1) - 1], n + 1, info);
+                Cpotrf("L", k, &a[(k + 1)], n + 1, info);
                 if (info > 0) {
                     return;
                 }
-                Ctrsm("L", "L", "N", "N", k, k, cone, &a[(k + 1) - 1], n + 1, &a[0 - 1], n + 1);
-                Cherk("U", "C", k, k, -one, &a[0 - 1], n + 1, one, &a[k - 1], n + 1);
-                Cpotrf("U", k, &a[k - 1], n + 1, info);
+                Ctrsm("L", "L", "N", "N", k, k, cone, &a[(k + 1)], n + 1, &a[0], n + 1);
+                Cherk("U", "C", k, k, -one, &a[0], n + 1, one, &a[k], n + 1);
+                Cpotrf("U", k, &a[k], n + 1, info);
                 if (info > 0) {
                     info += k;
                 }
@@ -244,13 +222,13 @@ void Cpftrf(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
                 //              T1 -> B(0,1), T2 -> B(0,0), S -> B(0,k+1)
                 //              T1 -> a(0+k), T2 -> a(0+0), S -> a(0+k*(k+1)); lda=k
                 //
-                Cpotrf("U", k, &a[(0 + k) - 1], k, info);
+                Cpotrf("U", k, &a[(0 + k)], k, info);
                 if (info > 0) {
                     return;
                 }
-                Ctrsm("L", "U", "C", "N", k, k, cone, &a[k - 1], n1, &a[(k * (k + 1)) - 1], k);
-                Cherk("L", "C", k, k, -one, &a[(k * (k + 1)) - 1], k, one, &a[0 - 1], k);
-                Cpotrf("L", k, &a[0 - 1], k, info);
+                Ctrsm("L", "U", "C", "N", k, k, cone, &a[k], n1, &a[(k * (k + 1))], k);
+                Cherk("L", "C", k, k, -one, &a[(k * (k + 1))], k, one, &a[0], k);
+                Cpotrf("L", k, &a[0], k, info);
                 if (info > 0) {
                     info += k;
                 }
@@ -261,13 +239,13 @@ void Cpftrf(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
                 //              T1 -> B(0,k+1),     T2 -> B(0,k),   S -> B(0,0)
                 //              T1 -> a(0+k*(k+1)), T2 -> a(0+k*k), S -> a(0+0)); lda=k
                 //
-                Cpotrf("U", k, &a[(k * (k + 1)) - 1], k, info);
+                Cpotrf("U", k, &a[(k * (k + 1))], k, info);
                 if (info > 0) {
                     return;
                 }
-                Ctrsm("R", "U", "N", "N", k, k, cone, &a[(k * (k + 1)) - 1], k, &a[0 - 1], k);
-                Cherk("L", "N", k, k, -one, &a[0 - 1], k, one, &a[(k * k) - 1], k);
-                Cpotrf("L", k, &a[(k * k) - 1], k, info);
+                Ctrsm("R", "U", "N", "N", k, k, cone, &a[(k * (k + 1))], k, &a[0], k);
+                Cherk("L", "N", k, k, -one, &a[0], k, one, &a[(k * k)], k);
+                Cpotrf("L", k, &a[(k * k)], k, info);
                 if (info > 0) {
                     info += k;
                 }

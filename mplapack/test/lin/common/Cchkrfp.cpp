@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -173,6 +173,8 @@ void Cchkrfp(void) {
     //     Read the matrix types
     //
     getline(cin, str);
+    ss.str("");
+    ss.str(str);
     ss >> nnt;
     if (nnt < 1) {
         write(nout, format_9996), " NMA", nnt, 1;

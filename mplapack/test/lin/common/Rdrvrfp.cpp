@@ -306,7 +306,7 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                                 write(nout, "(1x,a6,', UPLO=''',a1,''', N =',i5,', type ',i1,', test(',"
                                             "i1,')=',a)"),
                                     "Rpfsv", &uplo, n, iit, k, buf;
-				nfail++;
+                                nfail++;
                             }
                         }
                         nrun += nt;
