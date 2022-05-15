@@ -1,3 +1,7 @@
+2022/05/16    Nakata Maho <maho@riken.jp> 2.0 branch
+            * Rtest_rfp.in, Ctest_rfp.in: Test for linear equation routines RFP format
+              have passed for all precisions.
+
 2022/05/10    Nakata Maho <maho@riken.jp> 2.0 branch
             * csd.in: Test for CS decomposition routines
               have passed for all precisions (except for GMP; it doesn't support csd).
