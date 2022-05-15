@@ -1,4 +1,4 @@
- Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.0
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
  Based on the original LAPACK VERSION 3.9.1
 
 The following parameter values will be used:
@@ -11,9 +11,9 @@ The following parameter values will be used:
 
  Routines pass computational tests if test ratio is less than   30.00
 
- Relative machine underflow is taken to be : 3.3621031431120935e-4932
- Relative machine overflow  is taken to be : 1.1897314953572318e+4932
- Relative machine precision is taken to be : 1.9259299443872359e-34
+ Relative machine underflow is taken to be : +3.3621031431120935e-4932
+ Relative machine overflow  is taken to be : +1.1897314953572318e+4932
+ Relative machine precision is taken to be : +1.9259299443872359e-34
  RGE routines passed the tests of the error exits
 
  All tests for RGE routines passed the threshold (   3653 tests run)
@@ -149,5 +149,5 @@ The following parameter values will be used:
  All tests for RHH routines passed the threshold (  15900 tests run)
 
  End of tests
- Total time used =  110 seconds
+ Total time used =  128 seconds
 
