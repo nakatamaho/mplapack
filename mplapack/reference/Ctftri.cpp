@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -30,29 +30,6 @@
 #include <mplapack.h>
 
 void Ctftri(const char *transr, const char *uplo, const char *diag, INTEGER const n, COMPLEX *a, INTEGER &info) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Test the input parameters.
     //
@@ -120,19 +97,19 @@ void Ctftri(const char *transr, const char *uplo, const char *diag, INTEGER cons
                 //             T1 -> a(0,0), T2 -> a(0,1), S -> a(n1,0)
                 //             T1 -> a(0), T2 -> a(n), S -> a(n1)
                 //
-                Ctrtri("L", diag, n1, &a[0 - 1], n, info);
+                Ctrtri("L", diag, n1, &a[0], n, info);
                 if (info > 0) {
                     return;
                 }
-                Ctrmm("R", "L", "N", diag, n2, n1, -cone, &a[0 - 1], n, &a[n1 - 1], n);
-                Ctrtri("U", diag, n2, &a[n - 1], n, info);
+                Ctrmm("R", "L", "N", diag, n2, n1, -cone, &a[0], n, &a[n1], n);
+                Ctrtri("U", diag, n2, &a[n], n, info);
                 if (info > 0) {
                     info += n1;
                 }
                 if (info > 0) {
                     return;
                 }
-                Ctrmm("L", "U", "C", diag, n2, n1, cone, &a[n - 1], n, &a[n1 - 1], n);
+                Ctrmm("L", "U", "C", diag, n2, n1, cone, &a[n], n, &a[n1], n);
                 //
             } else {
                 //
@@ -140,19 +117,19 @@ void Ctftri(const char *transr, const char *uplo, const char *diag, INTEGER cons
                 //             T1 -> a(n1+1,0), T2 -> a(n1,0), S -> a(0,0)
                 //             T1 -> a(n2), T2 -> a(n1), S -> a(0)
                 //
-                Ctrtri("L", diag, n1, &a[n2 - 1], n, info);
+                Ctrtri("L", diag, n1, &a[n2], n, info);
                 if (info > 0) {
                     return;
                 }
-                Ctrmm("L", "L", "C", diag, n1, n2, -cone, &a[n2 - 1], n, &a[0 - 1], n);
-                Ctrtri("U", diag, n2, &a[n1 - 1], n, info);
+                Ctrmm("L", "L", "C", diag, n1, n2, -cone, &a[n2], n, &a[0], n);
+                Ctrtri("U", diag, n2, &a[n1], n, info);
                 if (info > 0) {
                     info += n1;
                 }
                 if (info > 0) {
                     return;
                 }
-                Ctrmm("R", "U", "N", diag, n1, n2, cone, &a[n1 - 1], n, &a[0 - 1], n);
+                Ctrmm("R", "U", "N", diag, n1, n2, cone, &a[n1], n, &a[0], n);
                 //
             }
             //
@@ -165,38 +142,38 @@ void Ctftri(const char *transr, const char *uplo, const char *diag, INTEGER cons
                 //              SRPA for LOWER, TRANSPOSE and N is odd
                 //              T1 -> a(0), T2 -> a(1), S -> a(0+n1*n1)
                 //
-                Ctrtri("U", diag, n1, &a[0 - 1], n1, info);
+                Ctrtri("U", diag, n1, &a[0], n1, info);
                 if (info > 0) {
                     return;
                 }
-                Ctrmm("L", "U", "N", diag, n1, n2, -cone, &a[0 - 1], n1, &a[(n1 * n1) - 1], n1);
-                Ctrtri("L", diag, n2, &a[1 - 1], n1, info);
+                Ctrmm("L", "U", "N", diag, n1, n2, -cone, &a[0], n1, &a[(n1 * n1)], n1);
+                Ctrtri("L", diag, n2, &a[1], n1, info);
                 if (info > 0) {
                     info += n1;
                 }
                 if (info > 0) {
                     return;
                 }
-                Ctrmm("R", "L", "C", diag, n1, n2, cone, &a[1 - 1], n1, &a[(n1 * n1) - 1], n1);
+                Ctrmm("R", "L", "C", diag, n1, n2, cone, &a[1], n1, &a[(n1 * n1)], n1);
                 //
             } else {
                 //
                 //              SRPA for UPPER, TRANSPOSE and N is odd
                 //              T1 -> a(0+n2*n2), T2 -> a(0+n1*n2), S -> a(0)
                 //
-                Ctrtri("U", diag, n1, &a[(n2 * n2) - 1], n2, info);
+                Ctrtri("U", diag, n1, &a[(n2 * n2)], n2, info);
                 if (info > 0) {
                     return;
                 }
-                Ctrmm("R", "U", "C", diag, n2, n1, -cone, &a[(n2 * n2) - 1], n2, &a[0 - 1], n2);
-                Ctrtri("L", diag, n2, &a[(n1 * n2) - 1], n2, info);
+                Ctrmm("R", "U", "C", diag, n2, n1, -cone, &a[(n2 * n2)], n2, &a[0], n2);
+                Ctrtri("L", diag, n2, &a[(n1 * n2)], n2, info);
                 if (info > 0) {
                     info += n1;
                 }
                 if (info > 0) {
                     return;
                 }
-                Ctrmm("L", "L", "N", diag, n2, n1, cone, &a[(n1 * n2) - 1], n2, &a[0 - 1], n2);
+                Ctrmm("L", "L", "N", diag, n2, n1, cone, &a[(n1 * n2)], n2, &a[0], n2);
             }
             //
         }
@@ -215,19 +192,19 @@ void Ctftri(const char *transr, const char *uplo, const char *diag, INTEGER cons
                 //              T1 -> a(1,0), T2 -> a(0,0), S -> a(k+1,0)
                 //              T1 -> a(1), T2 -> a(0), S -> a(k+1)
                 //
-                Ctrtri("L", diag, k, &a[1 - 1], n + 1, info);
+                Ctrtri("L", diag, k, &a[1], n + 1, info);
                 if (info > 0) {
                     return;
                 }
-                Ctrmm("R", "L", "N", diag, k, k, -cone, &a[1 - 1], n + 1, &a[(k + 1) - 1], n + 1);
-                Ctrtri("U", diag, k, &a[0 - 1], n + 1, info);
+                Ctrmm("R", "L", "N", diag, k, k, -cone, &a[1], n + 1, &a[(k + 1)], n + 1);
+                Ctrtri("U", diag, k, &a[0], n + 1, info);
                 if (info > 0) {
                     info += k;
                 }
                 if (info > 0) {
                     return;
                 }
-                Ctrmm("L", "U", "C", diag, k, k, cone, &a[0 - 1], n + 1, &a[(k + 1) - 1], n + 1);
+                Ctrmm("L", "U", "C", diag, k, k, cone, &a[0], n + 1, &a[(k + 1)], n + 1);
                 //
             } else {
                 //
@@ -235,19 +212,19 @@ void Ctftri(const char *transr, const char *uplo, const char *diag, INTEGER cons
                 //              T1 -> a(k+1,0) ,  T2 -> a(k,0),   S -> a(0,0)
                 //              T1 -> a(k+1), T2 -> a(k), S -> a(0)
                 //
-                Ctrtri("L", diag, k, &a[(k + 1) - 1], n + 1, info);
+                Ctrtri("L", diag, k, &a[(k + 1)], n + 1, info);
                 if (info > 0) {
                     return;
                 }
-                Ctrmm("L", "L", "C", diag, k, k, -cone, &a[(k + 1) - 1], n + 1, &a[0 - 1], n + 1);
-                Ctrtri("U", diag, k, &a[k - 1], n + 1, info);
+                Ctrmm("L", "L", "C", diag, k, k, -cone, &a[(k + 1)], n + 1, &a[0], n + 1);
+                Ctrtri("U", diag, k, &a[k], n + 1, info);
                 if (info > 0) {
                     info += k;
                 }
                 if (info > 0) {
                     return;
                 }
-                Ctrmm("R", "U", "N", diag, k, k, cone, &a[k - 1], n + 1, &a[0 - 1], n + 1);
+                Ctrmm("R", "U", "N", diag, k, k, cone, &a[k], n + 1, &a[0], n + 1);
             }
         } else {
             //
@@ -259,38 +236,38 @@ void Ctftri(const char *transr, const char *uplo, const char *diag, INTEGER cons
                 //              T1 -> B(0,1), T2 -> B(0,0), S -> B(0,k+1)
                 //              T1 -> a(0+k), T2 -> a(0+0), S -> a(0+k*(k+1)); lda=k
                 //
-                Ctrtri("U", diag, k, &a[k - 1], k, info);
+                Ctrtri("U", diag, k, &a[k], k, info);
                 if (info > 0) {
                     return;
                 }
-                Ctrmm("L", "U", "N", diag, k, k, -cone, &a[k - 1], k, &a[(k * (k + 1)) - 1], k);
-                Ctrtri("L", diag, k, &a[0 - 1], k, info);
+                Ctrmm("L", "U", "N", diag, k, k, -cone, &a[k], k, &a[(k * (k + 1))], k);
+                Ctrtri("L", diag, k, &a[0], k, info);
                 if (info > 0) {
                     info += k;
                 }
                 if (info > 0) {
                     return;
                 }
-                Ctrmm("R", "L", "C", diag, k, k, cone, &a[0 - 1], k, &a[(k * (k + 1)) - 1], k);
+                Ctrmm("R", "L", "C", diag, k, k, cone, &a[0], k, &a[(k * (k + 1))], k);
             } else {
                 //
                 //              SRPA for UPPER, TRANSPOSE and N is even (see paper)
                 //              T1 -> B(0,k+1),     T2 -> B(0,k),   S -> B(0,0)
                 //              T1 -> a(0+k*(k+1)), T2 -> a(0+k*k), S -> a(0+0)); lda=k
                 //
-                Ctrtri("U", diag, k, &a[(k * (k + 1)) - 1], k, info);
+                Ctrtri("U", diag, k, &a[(k * (k + 1))], k, info);
                 if (info > 0) {
                     return;
                 }
-                Ctrmm("R", "U", "C", diag, k, k, -cone, &a[(k * (k + 1)) - 1], k, &a[0 - 1], k);
-                Ctrtri("L", diag, k, &a[(k * k) - 1], k, info);
+                Ctrmm("R", "U", "C", diag, k, k, -cone, &a[(k * (k + 1))], k, &a[0], k);
+                Ctrtri("L", diag, k, &a[(k * k)], k, info);
                 if (info > 0) {
                     info += k;
                 }
                 if (info > 0) {
                     return;
                 }
-                Ctrmm("L", "L", "N", diag, k, k, cone, &a[(k * k) - 1], k, &a[0 - 1], k);
+                Ctrmm("L", "L", "N", diag, k, k, cone, &a[(k * k)], k, &a[0], k);
             }
         }
     }

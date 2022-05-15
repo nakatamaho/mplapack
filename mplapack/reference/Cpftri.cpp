@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -30,28 +30,6 @@
 #include <mplapack.h>
 
 void Cpftri(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER &info) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Test the input parameters.
     //
@@ -126,10 +104,10 @@ void Cpftri(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
                 //              T1 -> a(0,0), T2 -> a(0,1), S -> a(N1,0)
                 //              T1 -> a(0), T2 -> a(n), S -> a(N1)
                 //
-                Clauum("L", n1, &a[0 - 1], n, info);
-                Cherk("L", "C", n1, n2, one, &a[n1 - 1], n, one, &a[0 - 1], n);
-                Ctrmm("L", "U", "N", "N", n2, n1, cone, &a[n - 1], n, &a[n1 - 1], n);
-                Clauum("U", n2, &a[n - 1], n, info);
+                Clauum("L", n1, &a[0], n, info);
+                Cherk("L", "C", n1, n2, one, &a[n1], n, one, &a[0], n);
+                Ctrmm("L", "U", "N", "N", n2, n1, cone, &a[n], n, &a[n1], n);
+                Clauum("U", n2, &a[n], n, info);
                 //
             } else {
                 //
@@ -137,10 +115,10 @@ void Cpftri(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
                 //              T1 -> a(N1+1,0), T2 -> a(N1,0), S -> a(0,0)
                 //              T1 -> a(N2), T2 -> a(N1), S -> a(0)
                 //
-                Clauum("L", n1, &a[n2 - 1], n, info);
-                Cherk("L", "N", n1, n2, one, &a[0 - 1], n, one, &a[n2 - 1], n);
-                Ctrmm("R", "U", "C", "N", n1, n2, cone, &a[n1 - 1], n, &a[0 - 1], n);
-                Clauum("U", n2, &a[n1 - 1], n, info);
+                Clauum("L", n1, &a[n2], n, info);
+                Cherk("L", "N", n1, n2, one, &a[0], n, one, &a[n2], n);
+                Ctrmm("R", "U", "C", "N", n1, n2, cone, &a[n1], n, &a[0], n);
+                Clauum("U", n2, &a[n1], n, info);
                 //
             }
             //
@@ -153,20 +131,20 @@ void Cpftri(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
                 //              SRPA for LOWER, TRANSPOSE, and N is odd
                 //              T1 -> a(0), T2 -> a(1), S -> a(0+N1*N1)
                 //
-                Clauum("U", n1, &a[0 - 1], n1, info);
-                Cherk("U", "N", n1, n2, one, &a[(n1 * n1) - 1], n1, one, &a[0 - 1], n1);
-                Ctrmm("R", "L", "N", "N", n1, n2, cone, &a[1 - 1], n1, &a[(n1 * n1) - 1], n1);
-                Clauum("L", n2, &a[1 - 1], n1, info);
+                Clauum("U", n1, &a[0], n1, info);
+                Cherk("U", "N", n1, n2, one, &a[(n1 * n1)], n1, one, &a[0], n1);
+                Ctrmm("R", "L", "N", "N", n1, n2, cone, &a[1], n1, &a[(n1 * n1)], n1);
+                Clauum("L", n2, &a[1], n1, info);
                 //
             } else {
                 //
                 //              SRPA for UPPER, TRANSPOSE, and N is odd
                 //              T1 -> a(0+N2*N2), T2 -> a(0+N1*N2), S -> a(0)
                 //
-                Clauum("U", n1, &a[(n2 * n2) - 1], n2, info);
-                Cherk("U", "C", n1, n2, one, &a[0 - 1], n2, one, &a[(n2 * n2) - 1], n2);
-                Ctrmm("L", "L", "C", "N", n2, n1, cone, &a[(n1 * n2) - 1], n2, &a[0 - 1], n2);
-                Clauum("L", n2, &a[(n1 * n2) - 1], n2, info);
+                Clauum("U", n1, &a[(n2 * n2)], n2, info);
+                Cherk("U", "C", n1, n2, one, &a[0], n2, one, &a[(n2 * n2)], n2);
+                Ctrmm("L", "L", "C", "N", n2, n1, cone, &a[(n1 * n2)], n2, &a[0], n2);
+                Clauum("L", n2, &a[(n1 * n2)], n2, info);
                 //
             }
             //
@@ -186,10 +164,10 @@ void Cpftri(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
                 //              T1 -> a(1,0), T2 -> a(0,0), S -> a(k+1,0)
                 //              T1 -> a(1), T2 -> a(0), S -> a(k+1)
                 //
-                Clauum("L", k, &a[1 - 1], n + 1, info);
-                Cherk("L", "C", k, k, one, &a[(k + 1) - 1], n + 1, one, &a[1 - 1], n + 1);
-                Ctrmm("L", "U", "N", "N", k, k, cone, &a[0 - 1], n + 1, &a[(k + 1) - 1], n + 1);
-                Clauum("U", k, &a[0 - 1], n + 1, info);
+                Clauum("L", k, &a[1], n + 1, info);
+                Cherk("L", "C", k, k, one, &a[(k + 1)], n + 1, one, &a[1], n + 1);
+                Ctrmm("L", "U", "N", "N", k, k, cone, &a[0], n + 1, &a[(k + 1)], n + 1);
+                Clauum("U", k, &a[0], n + 1, info);
                 //
             } else {
                 //
@@ -197,10 +175,10 @@ void Cpftri(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
                 //              T1 -> a(k+1,0) ,  T2 -> a(k,0),   S -> a(0,0)
                 //              T1 -> a(k+1), T2 -> a(k), S -> a(0)
                 //
-                Clauum("L", k, &a[(k + 1) - 1], n + 1, info);
-                Cherk("L", "N", k, k, one, &a[0 - 1], n + 1, one, &a[(k + 1) - 1], n + 1);
-                Ctrmm("R", "U", "C", "N", k, k, cone, &a[k - 1], n + 1, &a[0 - 1], n + 1);
-                Clauum("U", k, &a[k - 1], n + 1, info);
+                Clauum("L", k, &a[(k + 1)], n + 1, info);
+                Cherk("L", "N", k, k, one, &a[0], n + 1, one, &a[(k + 1)], n + 1);
+                Ctrmm("R", "U", "C", "N", k, k, cone, &a[k], n + 1, &a[0], n + 1);
+                Clauum("U", k, &a[k], n + 1, info);
                 //
             }
             //
@@ -214,10 +192,10 @@ void Cpftri(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
                 //              T1 -> B(0,1), T2 -> B(0,0), S -> B(0,k+1),
                 //              T1 -> a(0+k), T2 -> a(0+0), S -> a(0+k*(k+1)); lda=k
                 //
-                Clauum("U", k, &a[k - 1], k, info);
-                Cherk("U", "N", k, k, one, &a[(k * (k + 1)) - 1], k, one, &a[k - 1], k);
-                Ctrmm("R", "L", "N", "N", k, k, cone, &a[0 - 1], k, &a[(k * (k + 1)) - 1], k);
-                Clauum("L", k, &a[0 - 1], k, info);
+                Clauum("U", k, &a[k], k, info);
+                Cherk("U", "N", k, k, one, &a[(k * (k + 1))], k, one, &a[k], k);
+                Ctrmm("R", "L", "N", "N", k, k, cone, &a[0], k, &a[(k * (k + 1))], k);
+                Clauum("L", k, &a[0], k, info);
                 //
             } else {
                 //
@@ -225,10 +203,10 @@ void Cpftri(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
                 //              T1 -> B(0,k+1),     T2 -> B(0,k),   S -> B(0,0),
                 //              T1 -> a(0+k*(k+1)), T2 -> a(0+k*k), S -> a(0+0)); lda=k
                 //
-                Clauum("U", k, &a[(k * (k + 1)) - 1], k, info);
-                Cherk("U", "C", k, k, one, &a[0 - 1], k, one, &a[(k * (k + 1)) - 1], k);
-                Ctrmm("L", "L", "C", "N", k, k, cone, &a[(k * k) - 1], k, &a[0 - 1], k);
-                Clauum("L", k, &a[(k * k) - 1], k, info);
+                Clauum("U", k, &a[(k * (k + 1))], k, info);
+                Cherk("U", "C", k, k, one, &a[0], k, one, &a[(k * (k + 1))], k);
+                Ctrmm("L", "L", "C", "N", k, k, cone, &a[(k * k)], k, &a[0], k);
+                Clauum("L", k, &a[(k * k)], k, info);
                 //
             }
             //

@@ -70,6 +70,24 @@ void Cchkrfp(void) {
     char tsterr_str[1];
     bool tsterr = false;
     REAL eps = 0.0;
+    COMPLEX worka[nmax * nmax];
+    COMPLEX workasav[nmax * nmax];
+    COMPLEX workafac[nmax * nmax];
+    COMPLEX workainv[nmax * nmax];
+    COMPLEX workb[nmax * maxrhs];
+    COMPLEX workbsav[nmax * maxrhs];
+    COMPLEX workxact[nmax * maxrhs];
+    COMPLEX workx[nmax * maxrhs];
+    COMPLEX workarf[(nmax * (nmax + 1)) / 2];
+    COMPLEX workarfinv[(nmax * (nmax + 1)) / 2];
+    COMPLEX z_work_Clatms[3 * nmax];
+    COMPLEX z_work_Cpot02[nmax * maxrhs];
+    COMPLEX z_work_Cpot03[nmax * nmax];
+    REAL d_work_Clatms[nmax];
+    REAL d_work_Clanhe[nmax];
+    REAL d_work_Cpot01[nmax];
+    REAL d_work_Cpot02[nmax];
+    REAL d_work_Cpot03[nmax];
     std::string str;
     s1 = time(NULL);
     fatal = false;
@@ -243,8 +261,10 @@ void Cchkrfp(void) {
     sprintnum_short(buf, eps);
     cout << " Relative machine underflow is taken to be : " << buf << endl;
     eps = Rlamch("Overflow threshold");
+    sprintnum_short(buf, eps);
     cout << " Relative machine overflow  is taken to be : " << buf << endl;
     eps = Rlamch("Epsilon");
+    sprintnum_short(buf, eps);
     cout << " Relative machine precision is taken to be : " << buf << endl;
     //
     //     Test the error exit of:
@@ -256,24 +276,6 @@ void Cchkrfp(void) {
     //    Test the routines: Cpftrf, Cpftri, Cpftrs (as in Cdrvpo).
     //    This also tests the routines: Ctfsm, Ctftri, Ctfttr, Ctrttf.
     //
-    COMPLEX worka[nmax * nmax];
-    COMPLEX workasav[nmax * nmax];
-    COMPLEX workafac[nmax * nmax];
-    COMPLEX workainv[nmax * nmax];
-    COMPLEX workb[nmax * maxrhs];
-    COMPLEX workbsav[nmax * maxrhs];
-    COMPLEX workxact[nmax * maxrhs];
-    COMPLEX workx[nmax * maxrhs];
-    COMPLEX workarf[(nmax * (nmax + 1)) / 2];
-    COMPLEX workarfinv[(nmax * (nmax + 1)) / 2];
-    COMPLEX z_work_Clatms[3 * nmax];
-    COMPLEX z_work_Cpot02[nmax * maxrhs];
-    COMPLEX z_work_Cpot03[nmax * nmax];
-    REAL d_work_Clatms[nmax];
-    REAL d_work_Clanhe[nmax];
-    REAL d_work_Cpot01[nmax];
-    REAL d_work_Cpot02[nmax];
-    REAL d_work_Cpot03[nmax];
     Cdrvrfp(nout, nn, nval, nns, nsval, nnt, ntval, thresh, worka, workasav, workafac, workainv, workb, workbsav, workxact, workx, workarf, workarfinv, z_work_Clatms, z_work_Cpot02, z_work_Cpot03, d_work_Clatms, d_work_Clanhe, d_work_Cpot01, d_work_Cpot02, d_work_Cpot03);
     //
     //    Test the routine: Clanhf

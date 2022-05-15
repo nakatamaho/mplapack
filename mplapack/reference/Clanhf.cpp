@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -48,34 +48,11 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
     REAL scale = 0.0;
     const REAL one = 1.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     if (n == 0) {
         return_value = zero;
         return return_value;
     } else if (n == 1) {
-        return_value = abs(a[0 - 1].real());
+        return_value = abs(a[0].real());
         return return_value;
     }
     //
@@ -130,37 +107,37 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     //                 uplo ='L'
                     j = 0;
                     //                 -> L(0,0)
-                    temp = abs(a[(j + j * lda) - 1].real());
+                    temp = abs(a[(j + j * lda)].real());
                     if (value < temp || Risnan(temp)) {
                         value = temp;
                     }
                     for (i = 1; i <= n - 1; i = i + 1) {
-                        temp = abs(a[(i + j * lda) - 1]);
+                        temp = abs(a[(i + j * lda)]);
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                     }
                     for (j = 1; j <= k - 1; j = j + 1) {
                         for (i = 0; i <= j - 2; i = i + 1) {
-                            temp = abs(a[(i + j * lda) - 1]);
+                            temp = abs(a[(i + j * lda)]);
                             if (value < temp || Risnan(temp)) {
                                 value = temp;
                             }
                         }
                         i = j - 1;
                         //                    L(k+j,k+j)
-                        temp = abs(a[(i + j * lda) - 1].real());
+                        temp = abs(a[(i + j * lda)].real());
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                         i = j;
                         //                    -> L(j,j)
-                        temp = abs(a[(i + j * lda) - 1].real());
+                        temp = abs(a[(i + j * lda)].real());
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                         for (i = j + 1; i <= n - 1; i = i + 1) {
-                            temp = abs(a[(i + j * lda) - 1]);
+                            temp = abs(a[(i + j * lda)]);
                             if (value < temp || Risnan(temp)) {
                                 value = temp;
                             }
@@ -170,39 +147,39 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     //                 uplo = 'U'
                     for (j = 0; j <= k - 2; j = j + 1) {
                         for (i = 0; i <= k + j - 2; i = i + 1) {
-                            temp = abs(a[(i + j * lda) - 1]);
+                            temp = abs(a[(i + j * lda)]);
                             if (value < temp || Risnan(temp)) {
                                 value = temp;
                             }
                         }
                         i = k + j - 1;
                         //                    -> U(i,i)
-                        temp = abs(a[(i + j * lda) - 1].real());
+                        temp = abs(a[(i + j * lda)].real());
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                         i++;
                         //                    =k+j; i -> U(j,j)
-                        temp = abs(a[(i + j * lda) - 1].real());
+                        temp = abs(a[(i + j * lda)].real());
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                         for (i = k + j + 1; i <= n - 1; i = i + 1) {
-                            temp = abs(a[(i + j * lda) - 1]);
+                            temp = abs(a[(i + j * lda)]);
                             if (value < temp || Risnan(temp)) {
                                 value = temp;
                             }
                         }
                     }
                     for (i = 0; i <= n - 2; i = i + 1) {
-                        temp = abs(a[(i + j * lda) - 1]);
+                        temp = abs(a[(i + j * lda)]);
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                         //                    j=k-1
                     }
                     //                 i=n-1 -> U(n-1,n-1)
-                    temp = abs(a[(i + j * lda) - 1].real());
+                    temp = abs(a[(i + j * lda)].real());
                     if (value < temp || Risnan(temp)) {
                         value = temp;
                     }
@@ -213,25 +190,25 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     //                 uplo ='L'
                     for (j = 0; j <= k - 2; j = j + 1) {
                         for (i = 0; i <= j - 1; i = i + 1) {
-                            temp = abs(a[(i + j * lda) - 1]);
+                            temp = abs(a[(i + j * lda)]);
                             if (value < temp || Risnan(temp)) {
                                 value = temp;
                             }
                         }
                         i = j;
                         //                    L(i,i)
-                        temp = abs(a[(i + j * lda) - 1].real());
+                        temp = abs(a[(i + j * lda)].real());
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                         i = j + 1;
                         //                    L(j+k,j+k)
-                        temp = abs(a[(i + j * lda) - 1].real());
+                        temp = abs(a[(i + j * lda)].real());
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                         for (i = j + 2; i <= k - 1; i = i + 1) {
-                            temp = abs(a[(i + j * lda) - 1]);
+                            temp = abs(a[(i + j * lda)]);
                             if (value < temp || Risnan(temp)) {
                                 value = temp;
                             }
@@ -239,20 +216,20 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     }
                     j = k - 1;
                     for (i = 0; i <= k - 2; i = i + 1) {
-                        temp = abs(a[(i + j * lda) - 1]);
+                        temp = abs(a[(i + j * lda)]);
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                     }
                     i = k - 1;
                     //                 -> L(i,i) is at A(i,j)
-                    temp = abs(a[(i + j * lda) - 1].real());
+                    temp = abs(a[(i + j * lda)].real());
                     if (value < temp || Risnan(temp)) {
                         value = temp;
                     }
                     for (j = k; j <= n - 1; j = j + 1) {
                         for (i = 0; i <= k - 1; i = i + 1) {
-                            temp = abs(a[(i + j * lda) - 1]);
+                            temp = abs(a[(i + j * lda)]);
                             if (value < temp || Risnan(temp)) {
                                 value = temp;
                             }
@@ -262,7 +239,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     //                 uplo = 'U'
                     for (j = 0; j <= k - 2; j = j + 1) {
                         for (i = 0; i <= k - 1; i = i + 1) {
-                            temp = abs(a[(i + j * lda) - 1]);
+                            temp = abs(a[(i + j * lda)]);
                             if (value < temp || Risnan(temp)) {
                                 value = temp;
                             }
@@ -270,37 +247,37 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     }
                     j = k - 1;
                     //                 -> U(j,j) is at A(0,j)
-                    temp = abs(a[(0 + j * lda) - 1].real());
+                    temp = abs(a[(0 + j * lda)].real());
                     if (value < temp || Risnan(temp)) {
                         value = temp;
                     }
                     for (i = 1; i <= k - 1; i = i + 1) {
-                        temp = abs(a[(i + j * lda) - 1]);
+                        temp = abs(a[(i + j * lda)]);
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                     }
                     for (j = k; j <= n - 1; j = j + 1) {
                         for (i = 0; i <= j - k - 1; i = i + 1) {
-                            temp = abs(a[(i + j * lda) - 1]);
+                            temp = abs(a[(i + j * lda)]);
                             if (value < temp || Risnan(temp)) {
                                 value = temp;
                             }
                         }
                         i = j - k;
                         //                    -> U(i,i) at A(i,j)
-                        temp = abs(a[(i + j * lda) - 1].real());
+                        temp = abs(a[(i + j * lda)].real());
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                         i = j - k + 1;
                         //                    U(j,j)
-                        temp = abs(a[(i + j * lda) - 1].real());
+                        temp = abs(a[(i + j * lda)].real());
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                         for (i = j - k + 2; i <= k - 1; i = i + 1) {
-                            temp = abs(a[(i + j * lda) - 1]);
+                            temp = abs(a[(i + j * lda)]);
                             if (value < temp || Risnan(temp)) {
                                 value = temp;
                             }
@@ -316,41 +293,41 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     //                 uplo ='L'
                     j = 0;
                     //                 -> L(k,k) & j=1 -> L(0,0)
-                    temp = abs(a[(j + j * lda) - 1].real());
+                    temp = abs(a[(j + j * lda)].real());
                     if (value < temp || Risnan(temp)) {
                         value = temp;
                     }
-                    temp = abs(a[(j + 1 + j * lda) - 1].real());
+                    temp = abs(a[(j + 1 + j * lda)].real());
                     if (value < temp || Risnan(temp)) {
                         value = temp;
                     }
                     for (i = 2; i <= n; i = i + 1) {
-                        temp = abs(a[(i + j * lda) - 1]);
+                        temp = abs(a[(i + j * lda)]);
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                     }
                     for (j = 1; j <= k - 1; j = j + 1) {
                         for (i = 0; i <= j - 1; i = i + 1) {
-                            temp = abs(a[(i + j * lda) - 1]);
+                            temp = abs(a[(i + j * lda)]);
                             if (value < temp || Risnan(temp)) {
                                 value = temp;
                             }
                         }
                         i = j;
                         //                    L(k+j,k+j)
-                        temp = abs(a[(i + j * lda) - 1].real());
+                        temp = abs(a[(i + j * lda)].real());
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                         i = j + 1;
                         //                    -> L(j,j)
-                        temp = abs(a[(i + j * lda) - 1].real());
+                        temp = abs(a[(i + j * lda)].real());
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                         for (i = j + 2; i <= n; i = i + 1) {
-                            temp = abs(a[(i + j * lda) - 1]);
+                            temp = abs(a[(i + j * lda)]);
                             if (value < temp || Risnan(temp)) {
                                 value = temp;
                             }
@@ -360,45 +337,45 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     //                 uplo = 'U'
                     for (j = 0; j <= k - 2; j = j + 1) {
                         for (i = 0; i <= k + j - 1; i = i + 1) {
-                            temp = abs(a[(i + j * lda) - 1]);
+                            temp = abs(a[(i + j * lda)]);
                             if (value < temp || Risnan(temp)) {
                                 value = temp;
                             }
                         }
                         i = k + j;
                         //                    -> U(i,i)
-                        temp = abs(a[(i + j * lda) - 1].real());
+                        temp = abs(a[(i + j * lda)].real());
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                         i++;
                         //                    =k+j+1; i -> U(j,j)
-                        temp = abs(a[(i + j * lda) - 1].real());
+                        temp = abs(a[(i + j * lda)].real());
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                         for (i = k + j + 2; i <= n; i = i + 1) {
-                            temp = abs(a[(i + j * lda) - 1]);
+                            temp = abs(a[(i + j * lda)]);
                             if (value < temp || Risnan(temp)) {
                                 value = temp;
                             }
                         }
                     }
                     for (i = 0; i <= n - 2; i = i + 1) {
-                        temp = abs(a[(i + j * lda) - 1]);
+                        temp = abs(a[(i + j * lda)]);
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                         //                    j=k-1
                     }
                     //                 i=n-1 -> U(n-1,n-1)
-                    temp = abs(a[(i + j * lda) - 1].real());
+                    temp = abs(a[(i + j * lda)].real());
                     if (value < temp || Risnan(temp)) {
                         value = temp;
                     }
                     i = n;
                     //                 -> U(k-1,k-1)
-                    temp = abs(a[(i + j * lda) - 1].real());
+                    temp = abs(a[(i + j * lda)].real());
                     if (value < temp || Risnan(temp)) {
                         value = temp;
                     }
@@ -409,37 +386,37 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     //                 uplo ='L'
                     j = 0;
                     //                 -> L(k,k) at A(0,0)
-                    temp = abs(a[(j + j * lda) - 1].real());
+                    temp = abs(a[(j + j * lda)].real());
                     if (value < temp || Risnan(temp)) {
                         value = temp;
                     }
                     for (i = 1; i <= k - 1; i = i + 1) {
-                        temp = abs(a[(i + j * lda) - 1]);
+                        temp = abs(a[(i + j * lda)]);
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                     }
                     for (j = 1; j <= k - 1; j = j + 1) {
                         for (i = 0; i <= j - 2; i = i + 1) {
-                            temp = abs(a[(i + j * lda) - 1]);
+                            temp = abs(a[(i + j * lda)]);
                             if (value < temp || Risnan(temp)) {
                                 value = temp;
                             }
                         }
                         i = j - 1;
                         //                    L(i,i)
-                        temp = abs(a[(i + j * lda) - 1].real());
+                        temp = abs(a[(i + j * lda)].real());
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                         i = j;
                         //                    L(j+k,j+k)
-                        temp = abs(a[(i + j * lda) - 1].real());
+                        temp = abs(a[(i + j * lda)].real());
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                         for (i = j + 1; i <= k - 1; i = i + 1) {
-                            temp = abs(a[(i + j * lda) - 1]);
+                            temp = abs(a[(i + j * lda)]);
                             if (value < temp || Risnan(temp)) {
                                 value = temp;
                             }
@@ -447,20 +424,20 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     }
                     j = k;
                     for (i = 0; i <= k - 2; i = i + 1) {
-                        temp = abs(a[(i + j * lda) - 1]);
+                        temp = abs(a[(i + j * lda)]);
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                     }
                     i = k - 1;
                     //                 -> L(i,i) is at A(i,j)
-                    temp = abs(a[(i + j * lda) - 1].real());
+                    temp = abs(a[(i + j * lda)].real());
                     if (value < temp || Risnan(temp)) {
                         value = temp;
                     }
                     for (j = k + 1; j <= n; j = j + 1) {
                         for (i = 0; i <= k - 1; i = i + 1) {
-                            temp = abs(a[(i + j * lda) - 1]);
+                            temp = abs(a[(i + j * lda)]);
                             if (value < temp || Risnan(temp)) {
                                 value = temp;
                             }
@@ -470,7 +447,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     //                 uplo = 'U'
                     for (j = 0; j <= k - 1; j = j + 1) {
                         for (i = 0; i <= k - 1; i = i + 1) {
-                            temp = abs(a[(i + j * lda) - 1]);
+                            temp = abs(a[(i + j * lda)]);
                             if (value < temp || Risnan(temp)) {
                                 value = temp;
                             }
@@ -478,37 +455,37 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     }
                     j = k;
                     //                 -> U(j,j) is at A(0,j)
-                    temp = abs(a[(0 + j * lda) - 1].real());
+                    temp = abs(a[(0 + j * lda)].real());
                     if (value < temp || Risnan(temp)) {
                         value = temp;
                     }
                     for (i = 1; i <= k - 1; i = i + 1) {
-                        temp = abs(a[(i + j * lda) - 1]);
+                        temp = abs(a[(i + j * lda)]);
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                     }
                     for (j = k + 1; j <= n - 1; j = j + 1) {
                         for (i = 0; i <= j - k - 2; i = i + 1) {
-                            temp = abs(a[(i + j * lda) - 1]);
+                            temp = abs(a[(i + j * lda)]);
                             if (value < temp || Risnan(temp)) {
                                 value = temp;
                             }
                         }
                         i = j - k - 1;
                         //                    -> U(i,i) at A(i,j)
-                        temp = abs(a[(i + j * lda) - 1].real());
+                        temp = abs(a[(i + j * lda)].real());
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                         i = j - k;
                         //                    U(j,j)
-                        temp = abs(a[(i + j * lda) - 1].real());
+                        temp = abs(a[(i + j * lda)].real());
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                         for (i = j - k + 1; i <= k - 1; i = i + 1) {
-                            temp = abs(a[(i + j * lda) - 1]);
+                            temp = abs(a[(i + j * lda)]);
                             if (value < temp || Risnan(temp)) {
                                 value = temp;
                             }
@@ -516,14 +493,14 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     }
                     j = n;
                     for (i = 0; i <= k - 2; i = i + 1) {
-                        temp = abs(a[(i + j * lda) - 1]);
+                        temp = abs(a[(i + j * lda)]);
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
                     }
                     i = k - 1;
                     //                 U(k,k) at A(i,j)
-                    temp = abs(a[(i + j * lda) - 1].real());
+                    temp = abs(a[(i + j * lda)].real());
                     if (value < temp || Risnan(temp)) {
                         value = temp;
                     }
@@ -542,40 +519,40 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 if (ilu == 0) {
                     //                 uplo = 'U'
                     for (i = 0; i <= k - 1; i = i + 1) {
-                        work[i - 1] = zero;
+                        work[i] = zero;
                     }
                     for (j = 0; j <= k; j = j + 1) {
                         s = zero;
                         for (i = 0; i <= k + j - 1; i = i + 1) {
-                            aa = abs(a[(i + j * lda) - 1]);
+                            aa = abs(a[(i + j * lda)]);
                             //                       -> A(i,j+k)
                             s += aa;
-                            work[i - 1] += aa;
+                            work[i] += aa;
                         }
-                        aa = abs(a[(i + j * lda) - 1].real());
+                        aa = abs(a[(i + j * lda)].real());
                         //                    -> A(j+k,j+k)
-                        work[(j + k) - 1] = s + aa;
+                        work[(j + k)] = s + aa;
                         if (i == k + k) {
                             goto statement_10;
                         }
                         i++;
-                        aa = abs(a[(i + j * lda) - 1].real());
+                        aa = abs(a[(i + j * lda)].real());
                         //                    -> A(j,j)
-                        work[j - 1] += aa;
+                        work[j] += aa;
                         s = zero;
                         for (l = j + 1; l <= k - 1; l = l + 1) {
                             i++;
-                            aa = abs(a[(i + j * lda) - 1]);
+                            aa = abs(a[(i + j * lda)]);
                             //                       -> A(l,j)
                             s += aa;
-                            work[l - 1] += aa;
+                            work[l] += aa;
                         }
-                        work[j - 1] += s;
+                        work[j] += s;
                     }
                 statement_10:
-                    value = work[0 - 1];
+                    value = work[0];
                     for (i = 1; i <= n - 1; i = i + 1) {
-                        temp = work[i - 1];
+                        temp = work[i];
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
@@ -585,40 +562,40 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     k++;
                     //                 k=(n+1)/2 for n odd and ilu=1
                     for (i = k; i <= n - 1; i = i + 1) {
-                        work[i - 1] = zero;
+                        work[i] = zero;
                     }
                     for (j = k - 1; j >= 0; j = j - 1) {
                         s = zero;
                         for (i = 0; i <= j - 2; i = i + 1) {
-                            aa = abs(a[(i + j * lda) - 1]);
+                            aa = abs(a[(i + j * lda)]);
                             //                       -> A(j+k,i+k)
                             s += aa;
-                            work[(i + k) - 1] += aa;
+                            work[(i + k)] += aa;
                         }
                         if (j > 0) {
-                            aa = abs(a[(i + j * lda) - 1].real());
+                            aa = abs(a[(i + j * lda)].real());
                             //                       -> A(j+k,j+k)
                             s += aa;
-                            work[(i + k) - 1] += s;
+                            work[(i + k)] += s;
                             //                       i=j
                             i++;
                         }
-                        aa = abs(a[(i + j * lda) - 1].real());
+                        aa = abs(a[(i + j * lda)].real());
                         //                    -> A(j,j)
-                        work[j - 1] = aa;
+                        work[j] = aa;
                         s = zero;
                         for (l = j + 1; l <= n - 1; l = l + 1) {
                             i++;
-                            aa = abs(a[(i + j * lda) - 1]);
+                            aa = abs(a[(i + j * lda)]);
                             //                       -> A(l,j)
                             s += aa;
-                            work[l - 1] += aa;
+                            work[l] += aa;
                         }
-                        work[j - 1] += s;
+                        work[j] += s;
                     }
-                    value = work[0 - 1];
+                    value = work[0];
                     for (i = 1; i <= n - 1; i = i + 1) {
-                        temp = work[i - 1];
+                        temp = work[i];
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
@@ -629,36 +606,36 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 if (ilu == 0) {
                     //                 uplo = 'U'
                     for (i = 0; i <= k - 1; i = i + 1) {
-                        work[i - 1] = zero;
+                        work[i] = zero;
                     }
                     for (j = 0; j <= k - 1; j = j + 1) {
                         s = zero;
                         for (i = 0; i <= k + j - 1; i = i + 1) {
-                            aa = abs(a[(i + j * lda) - 1]);
+                            aa = abs(a[(i + j * lda)]);
                             //                       -> A(i,j+k)
                             s += aa;
-                            work[i - 1] += aa;
+                            work[i] += aa;
                         }
-                        aa = abs(a[(i + j * lda) - 1].real());
+                        aa = abs(a[(i + j * lda)].real());
                         //                    -> A(j+k,j+k)
-                        work[(j + k) - 1] = s + aa;
+                        work[(j + k)] = s + aa;
                         i++;
-                        aa = abs(a[(i + j * lda) - 1].real());
+                        aa = abs(a[(i + j * lda)].real());
                         //                    -> A(j,j)
-                        work[j - 1] += aa;
+                        work[j] += aa;
                         s = zero;
                         for (l = j + 1; l <= k - 1; l = l + 1) {
                             i++;
-                            aa = abs(a[(i + j * lda) - 1]);
+                            aa = abs(a[(i + j * lda)]);
                             //                       -> A(l,j)
                             s += aa;
-                            work[l - 1] += aa;
+                            work[l] += aa;
                         }
-                        work[j - 1] += s;
+                        work[j] += s;
                     }
-                    value = work[0 - 1];
+                    value = work[0];
                     for (i = 1; i <= n - 1; i = i + 1) {
-                        temp = work[i - 1];
+                        temp = work[i];
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
@@ -666,38 +643,38 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 } else {
                     //                 ilu = 1 & uplo = 'L'
                     for (i = k; i <= n - 1; i = i + 1) {
-                        work[i - 1] = zero;
+                        work[i] = zero;
                     }
                     for (j = k - 1; j >= 0; j = j - 1) {
                         s = zero;
                         for (i = 0; i <= j - 1; i = i + 1) {
-                            aa = abs(a[(i + j * lda) - 1]);
+                            aa = abs(a[(i + j * lda)]);
                             //                       -> A(j+k,i+k)
                             s += aa;
-                            work[(i + k) - 1] += aa;
+                            work[(i + k)] += aa;
                         }
-                        aa = abs(a[(i + j * lda) - 1].real());
+                        aa = abs(a[(i + j * lda)].real());
                         //                    -> A(j+k,j+k)
                         s += aa;
-                        work[(i + k) - 1] += s;
+                        work[(i + k)] += s;
                         //                    i=j
                         i++;
-                        aa = abs(a[(i + j * lda) - 1].real());
+                        aa = abs(a[(i + j * lda)].real());
                         //                    -> A(j,j)
-                        work[j - 1] = aa;
+                        work[j] = aa;
                         s = zero;
                         for (l = j + 1; l <= n - 1; l = l + 1) {
                             i++;
-                            aa = abs(a[(i + j * lda) - 1]);
+                            aa = abs(a[(i + j * lda)]);
                             //                       -> A(l,j)
                             s += aa;
-                            work[l - 1] += aa;
+                            work[l] += aa;
                         }
-                        work[j - 1] += s;
+                        work[j] += s;
                     }
-                    value = work[0 - 1];
+                    value = work[0];
                     for (i = 1; i <= n - 1; i = i + 1) {
-                        temp = work[i - 1];
+                        temp = work[i];
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
@@ -716,56 +693,56 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     k++;
                     //                 k is the row size and lda
                     for (i = n1; i <= n - 1; i = i + 1) {
-                        work[i - 1] = zero;
+                        work[i] = zero;
                     }
                     for (j = 0; j <= n1 - 1; j = j + 1) {
                         s = zero;
                         for (i = 0; i <= k - 1; i = i + 1) {
-                            aa = abs(a[(i + j * lda) - 1]);
+                            aa = abs(a[(i + j * lda)]);
                             //                       A(j,n1+i)
-                            work[(i + n1) - 1] += aa;
+                            work[(i + n1)] += aa;
                             s += aa;
                         }
-                        work[j - 1] = s;
+                        work[j] = s;
                     }
                     //                 j=n1=k-1 is special
-                    s = abs(a[(0 + j * lda) - 1].real());
+                    s = abs(a[(0 + j * lda)].real());
                     //                 A(k-1,k-1)
                     for (i = 1; i <= k - 1; i = i + 1) {
-                        aa = abs(a[(i + j * lda) - 1]);
+                        aa = abs(a[(i + j * lda)]);
                         //                    A(k-1,i+n1)
-                        work[(i + n1) - 1] += aa;
+                        work[(i + n1)] += aa;
                         s += aa;
                     }
-                    work[j - 1] += s;
+                    work[j] += s;
                     for (j = k; j <= n - 1; j = j + 1) {
                         s = zero;
                         for (i = 0; i <= j - k - 1; i = i + 1) {
-                            aa = abs(a[(i + j * lda) - 1]);
+                            aa = abs(a[(i + j * lda)]);
                             //                       A(i,j-k)
-                            work[i - 1] += aa;
+                            work[i] += aa;
                             s += aa;
                         }
                         //                    i=j-k
-                        aa = abs(a[(i + j * lda) - 1].real());
+                        aa = abs(a[(i + j * lda)].real());
                         //                    A(j-k,j-k)
                         s += aa;
-                        work[(j - k) - 1] += s;
+                        work[(j - k)] += s;
                         i++;
-                        s = abs(a[(i + j * lda) - 1].real());
+                        s = abs(a[(i + j * lda)].real());
                         //                    A(j,j)
                         for (l = j + 1; l <= n - 1; l = l + 1) {
                             i++;
-                            aa = abs(a[(i + j * lda) - 1]);
+                            aa = abs(a[(i + j * lda)]);
                             //                       A(j,l)
-                            work[l - 1] += aa;
+                            work[l] += aa;
                             s += aa;
                         }
-                        work[j - 1] += s;
+                        work[j] += s;
                     }
-                    value = work[0 - 1];
+                    value = work[0];
                     for (i = 1; i <= n - 1; i = i + 1) {
-                        temp = work[i - 1];
+                        temp = work[i];
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
@@ -775,63 +752,63 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     k++;
                     //                 k=(n+1)/2 for n odd and ilu=1
                     for (i = k; i <= n - 1; i = i + 1) {
-                        work[i - 1] = zero;
+                        work[i] = zero;
                     }
                     for (j = 0; j <= k - 2; j = j + 1) {
                         //                    process
                         s = zero;
                         for (i = 0; i <= j - 1; i = i + 1) {
-                            aa = abs(a[(i + j * lda) - 1]);
+                            aa = abs(a[(i + j * lda)]);
                             //                       A(j,i)
-                            work[i - 1] += aa;
+                            work[i] += aa;
                             s += aa;
                         }
-                        aa = abs(a[(i + j * lda) - 1].real());
+                        aa = abs(a[(i + j * lda)].real());
                         //                    i=j so process of A(j,j)
                         s += aa;
-                        work[j - 1] = s;
+                        work[j] = s;
                         //                    is initialised here
                         i++;
                         //                    i=j process A(j+k,j+k)
-                        aa = abs(a[(i + j * lda) - 1].real());
+                        aa = abs(a[(i + j * lda)].real());
                         s = aa;
                         for (l = k + j + 1; l <= n - 1; l = l + 1) {
                             i++;
-                            aa = abs(a[(i + j * lda) - 1]);
+                            aa = abs(a[(i + j * lda)]);
                             //                       A(l,k+j)
                             s += aa;
-                            work[l - 1] += aa;
+                            work[l] += aa;
                         }
-                        work[(k + j) - 1] += s;
+                        work[(k + j)] += s;
                     }
                     //                 j=k-1 is special :process col A(k-1,0:k-1)
                     s = zero;
                     for (i = 0; i <= k - 2; i = i + 1) {
-                        aa = abs(a[(i + j * lda) - 1]);
+                        aa = abs(a[(i + j * lda)]);
                         //                    A(k,i)
-                        work[i - 1] += aa;
+                        work[i] += aa;
                         s += aa;
                     }
                     //                 i=k-1
-                    aa = abs(a[(i + j * lda) - 1].real());
+                    aa = abs(a[(i + j * lda)].real());
                     //                 A(k-1,k-1)
                     s += aa;
-                    work[i - 1] = s;
+                    work[i] = s;
                     //                 done with col j=k+1
                     for (j = k; j <= n - 1; j = j + 1) {
                         //                    process col j of A = A(j,0:k-1)
                         s = zero;
                         for (i = 0; i <= k - 1; i = i + 1) {
-                            aa = abs(a[(i + j * lda) - 1]);
+                            aa = abs(a[(i + j * lda)]);
                             //                       A(j,i)
-                            work[i - 1] += aa;
+                            work[i] += aa;
                             s += aa;
                         }
-                        work[j - 1] += s;
+                        work[j] += s;
                     }
-                    value = work[0 - 1];
+                    value = work[0];
                     for (i = 1; i <= n - 1; i = i + 1) {
-                        temp = work[i - 1];
+                        temp = work[i];
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
@@ -842,71 +819,71 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 if (ilu == 0) {
                     //                 uplo = 'U'
                     for (i = k; i <= n - 1; i = i + 1) {
-                        work[i - 1] = zero;
+                        work[i] = zero;
                     }
                     for (j = 0; j <= k - 1; j = j + 1) {
                         s = zero;
                         for (i = 0; i <= k - 1; i = i + 1) {
-                            aa = abs(a[(i + j * lda) - 1]);
+                            aa = abs(a[(i + j * lda)]);
                             //                       A(j,i+k)
-                            work[(i + k) - 1] += aa;
+                            work[(i + k)] += aa;
                             s += aa;
                         }
-                        work[j - 1] = s;
+                        work[j] = s;
                     }
                     //                 j=k
-                    aa = abs(a[(0 + j * lda) - 1].real());
+                    aa = abs(a[(0 + j * lda)].real());
                     //                 A(k,k)
                     s = aa;
                     for (i = 1; i <= k - 1; i = i + 1) {
-                        aa = abs(a[(i + j * lda) - 1]);
+                        aa = abs(a[(i + j * lda)]);
                         //                    A(k,k+i)
-                        work[(i + k) - 1] += aa;
+                        work[(i + k)] += aa;
                         s += aa;
                     }
-                    work[j - 1] += s;
+                    work[j] += s;
                     for (j = k + 1; j <= n - 1; j = j + 1) {
                         s = zero;
                         for (i = 0; i <= j - 2 - k; i = i + 1) {
-                            aa = abs(a[(i + j * lda) - 1]);
+                            aa = abs(a[(i + j * lda)]);
                             //                       A(i,j-k-1)
-                            work[i - 1] += aa;
+                            work[i] += aa;
                             s += aa;
                         }
                         //                    i=j-1-k
-                        aa = abs(a[(i + j * lda) - 1].real());
+                        aa = abs(a[(i + j * lda)].real());
                         //                    A(j-k-1,j-k-1)
                         s += aa;
-                        work[(j - k - 1) - 1] += s;
+                        work[(j - k - 1)] += s;
                         i++;
-                        aa = abs(a[(i + j * lda) - 1].real());
+                        aa = abs(a[(i + j * lda)].real());
                         //                    A(j,j)
                         s = aa;
                         for (l = j + 1; l <= n - 1; l = l + 1) {
                             i++;
-                            aa = abs(a[(i + j * lda) - 1]);
+                            aa = abs(a[(i + j * lda)]);
                             //                       A(j,l)
-                            work[l - 1] += aa;
+                            work[l] += aa;
                             s += aa;
                         }
-                        work[j - 1] += s;
+                        work[j] += s;
                     }
                     //                 j=n
                     s = zero;
                     for (i = 0; i <= k - 2; i = i + 1) {
-                        aa = abs(a[(i + j * lda) - 1]);
+                        aa = abs(a[(i + j * lda)]);
                         //                    A(i,k-1)
-                        work[i - 1] += aa;
+                        work[i] += aa;
                         s += aa;
                     }
                     //                 i=k-1
-                    aa = abs(a[(i + j * lda) - 1].real());
+                    aa = abs(a[(i + j * lda)].real());
                     //                 A(k-1,k-1)
                     s += aa;
-                    work[i - 1] += s;
-                    value = work[0 - 1];
+                    work[i] += s;
+                    value = work[0];
                     for (i = 1; i <= n - 1; i = i + 1) {
-                        temp = work[i - 1];
+                        temp = work[i];
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
@@ -914,75 +891,75 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 } else {
                     //                 ilu=1 & uplo = 'L'
                     for (i = k; i <= n - 1; i = i + 1) {
-                        work[i - 1] = zero;
+                        work[i] = zero;
                     }
                     //                 j=0 is special :process col A(k:n-1,k)
-                    s = abs(a[0 - 1].real());
+                    s = abs(a[0].real());
                     //                 A(k,k)
                     for (i = 1; i <= k - 1; i = i + 1) {
-                        aa = abs(a[i - 1]);
+                        aa = abs(a[i]);
                         //                    A(k+i,k)
-                        work[(i + k) - 1] += aa;
+                        work[(i + k)] += aa;
                         s += aa;
                     }
-                    work[k - 1] += s;
+                    work[k] += s;
                     for (j = 1; j <= k - 1; j = j + 1) {
                         //                    process
                         s = zero;
                         for (i = 0; i <= j - 2; i = i + 1) {
-                            aa = abs(a[(i + j * lda) - 1]);
+                            aa = abs(a[(i + j * lda)]);
                             //                       A(j-1,i)
-                            work[i - 1] += aa;
+                            work[i] += aa;
                             s += aa;
                         }
-                        aa = abs(a[(i + j * lda) - 1].real());
+                        aa = abs(a[(i + j * lda)].real());
                         //                    i=j-1 so process of A(j-1,j-1)
                         s += aa;
-                        work[(j - 1) - 1] = s;
+                        work[(j - 1)] = s;
                         //                    is initialised here
                         i++;
                         //                    i=j process A(j+k,j+k)
-                        aa = abs(a[(i + j * lda) - 1].real());
+                        aa = abs(a[(i + j * lda)].real());
                         s = aa;
                         for (l = k + j + 1; l <= n - 1; l = l + 1) {
                             i++;
-                            aa = abs(a[(i + j * lda) - 1]);
+                            aa = abs(a[(i + j * lda)]);
                             //                       A(l,k+j)
                             s += aa;
-                            work[l - 1] += aa;
+                            work[l] += aa;
                         }
-                        work[(k + j) - 1] += s;
+                        work[(k + j)] += s;
                     }
                     //                 j=k is special :process col A(k,0:k-1)
                     s = zero;
                     for (i = 0; i <= k - 2; i = i + 1) {
-                        aa = abs(a[(i + j * lda) - 1]);
+                        aa = abs(a[(i + j * lda)]);
                         //                    A(k,i)
-                        work[i - 1] += aa;
+                        work[i] += aa;
                         s += aa;
                     }
                     //
                     //                 i=k-1
-                    aa = abs(a[(i + j * lda) - 1].real());
+                    aa = abs(a[(i + j * lda)].real());
                     //                 A(k-1,k-1)
                     s += aa;
-                    work[i - 1] = s;
+                    work[i] = s;
                     //                 done with col j=k+1
                     for (j = k + 1; j <= n; j = j + 1) {
                         //
                         //                    process col j-1 of A = A(j-1,0:k-1)
                         s = zero;
                         for (i = 0; i <= k - 1; i = i + 1) {
-                            aa = abs(a[(i + j * lda) - 1]);
+                            aa = abs(a[(i + j * lda)]);
                             //                       A(j-1,i)
-                            work[i - 1] += aa;
+                            work[i] += aa;
                             s += aa;
                         }
-                        work[(j - 1) - 1] += s;
+                        work[(j - 1)] += s;
                     }
-                    value = work[0 - 1];
+                    value = work[0];
                     for (i = 1; i <= n - 1; i = i + 1) {
-                        temp = work[i - 1];
+                        temp = work[i];
                         if (value < temp || Risnan(temp)) {
                             value = temp;
                         }
@@ -1004,11 +981,11 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 if (ilu == 0) {
                     //                 A is upper
                     for (j = 0; j <= k - 3; j = j + 1) {
-                        Classq(k - j - 2, &a[(k + j + 1 + j * lda) - 1], 1, scale, s);
+                        Classq(k - j - 2, &a[(k + j + 1 + j * lda)], 1, scale, s);
                         //                    L at A(k,0)
                     }
                     for (j = 0; j <= k - 1; j = j + 1) {
-                        Classq(k + j - 1, &a[(0 + j * lda) - 1], 1, scale, s);
+                        Classq(k + j - 1, &a[(0 + j * lda)], 1, scale, s);
                         //                    trap U at A(0,0)
                     }
                     s += s;
@@ -1016,7 +993,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     l = k - 1;
                     //                 -> U(k,k) at A(k-1,0)
                     for (i = 0; i <= k - 2; i = i + 1) {
-                        aa = a[l - 1].real();
+                        aa = a[l].real();
                         //                    U(k+i,k+i)
                         if (aa != zero) {
                             if (scale < aa) {
@@ -1026,7 +1003,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                                 s += pow2((aa / scale));
                             }
                         }
-                        aa = a[(l + 1) - 1].real();
+                        aa = a[(l + 1)].real();
                         //                    U(i,i)
                         if (aa != zero) {
                             if (scale < aa) {
@@ -1038,7 +1015,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         }
                         l += lda + 1;
                     }
-                    aa = a[l - 1].real();
+                    aa = a[l].real();
                     //                 U(n-1,n-1)
                     if (aa != zero) {
                         if (scale < aa) {
@@ -1051,16 +1028,16 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 } else {
                     //                 ilu=1 & A is lower
                     for (j = 0; j <= k - 1; j = j + 1) {
-                        Classq(n - j - 1, &a[(j + 1 + j * lda) - 1], 1, scale, s);
+                        Classq(n - j - 1, &a[(j + 1 + j * lda)], 1, scale, s);
                         //                    trap L at A(0,0)
                     }
                     for (j = 1; j <= k - 2; j = j + 1) {
-                        Classq(j, &a[(0 + (1 + j) * lda) - 1], 1, scale, s);
+                        Classq(j, &a[(0 + (1 + j) * lda)], 1, scale, s);
                         //                    U at A(0,1)
                     }
                     s += s;
                     //                 REAL s for the off diagonal elements
-                    aa = a[0 - 1].real();
+                    aa = a[0].real();
                     //                 L(0,0) at A(0,0)
                     if (aa != zero) {
                         if (scale < aa) {
@@ -1073,7 +1050,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     l = lda;
                     //                 -> L(k,k) at A(0,1)
                     for (i = 1; i <= k - 1; i = i + 1) {
-                        aa = a[l - 1].real();
+                        aa = a[l].real();
                         //                    L(k-1+i,k-1+i)
                         if (aa != zero) {
                             if (scale < aa) {
@@ -1083,7 +1060,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                                 s += pow2((aa / scale));
                             }
                         }
-                        aa = a[(l + 1) - 1].real();
+                        aa = a[(l + 1)].real();
                         //                    L(i,i)
                         if (aa != zero) {
                             if (scale < aa) {
@@ -1101,22 +1078,22 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 if (ilu == 0) {
                     //                 A**H is upper
                     for (j = 1; j <= k - 2; j = j + 1) {
-                        Classq(j, &a[(0 + (k + j) * lda) - 1], 1, scale, s);
+                        Classq(j, &a[(0 + (k + j) * lda)], 1, scale, s);
                         //                    U at A(0,k)
                     }
                     for (j = 0; j <= k - 2; j = j + 1) {
-                        Classq(k, &a[(0 + j * lda) - 1], 1, scale, s);
+                        Classq(k, &a[(0 + j * lda)], 1, scale, s);
                         //                    k by k-1 rect. at A(0,0)
                     }
                     for (j = 0; j <= k - 2; j = j + 1) {
-                        Classq(k - j - 1, &a[(j + 1 + (j + k - 1) * lda) - 1], 1, scale, s);
+                        Classq(k - j - 1, &a[(j + 1 + (j + k - 1) * lda)], 1, scale, s);
                         //                    L at A(0,k-1)
                     }
                     s += s;
                     //                 REAL s for the off diagonal elements
                     l = 0 + k * lda - lda;
                     //                 -> U(k-1,k-1) at A(0,k-1)
-                    aa = a[l - 1].real();
+                    aa = a[l].real();
                     //                 U(k-1,k-1)
                     if (aa != zero) {
                         if (scale < aa) {
@@ -1129,7 +1106,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     l += lda;
                     //                 -> U(0,0) at A(0,k)
                     for (j = k; j <= n - 1; j = j + 1) {
-                        aa = a[l - 1].real();
+                        aa = a[l].real();
                         //                    -> U(j-k,j-k)
                         if (aa != zero) {
                             if (scale < aa) {
@@ -1139,7 +1116,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                                 s += pow2((aa / scale));
                             }
                         }
-                        aa = a[(l + 1) - 1].real();
+                        aa = a[(l + 1)].real();
                         //                    -> U(j,j)
                         if (aa != zero) {
                             if (scale < aa) {
@@ -1154,15 +1131,15 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 } else {
                     //                 A**H is lower
                     for (j = 1; j <= k - 1; j = j + 1) {
-                        Classq(j, &a[(0 + j * lda) - 1], 1, scale, s);
+                        Classq(j, &a[(0 + j * lda)], 1, scale, s);
                         //                    U at A(0,0)
                     }
                     for (j = k; j <= n - 1; j = j + 1) {
-                        Classq(k, &a[(0 + j * lda) - 1], 1, scale, s);
+                        Classq(k, &a[(0 + j * lda)], 1, scale, s);
                         //                    k by k-1 rect. at A(0,k)
                     }
                     for (j = 0; j <= k - 3; j = j + 1) {
-                        Classq(k - j - 2, &a[(j + 2 + j * lda) - 1], 1, scale, s);
+                        Classq(k - j - 2, &a[(j + 2 + j * lda)], 1, scale, s);
                         //                    L at A(1,0)
                     }
                     s += s;
@@ -1170,7 +1147,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     l = 0;
                     //                 -> L(0,0) at A(0,0)
                     for (i = 0; i <= k - 2; i = i + 1) {
-                        aa = a[l - 1].real();
+                        aa = a[l].real();
                         //                    L(i,i)
                         if (aa != zero) {
                             if (scale < aa) {
@@ -1180,7 +1157,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                                 s += pow2((aa / scale));
                             }
                         }
-                        aa = a[(l + 1) - 1].real();
+                        aa = a[(l + 1)].real();
                         //                    L(k+i,k+i)
                         if (aa != zero) {
                             if (scale < aa) {
@@ -1193,7 +1170,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         l += lda + 1;
                     }
                     //                 L-> k-1 + (k-1)*lda or L(k-1,k-1) at A(k-1,k-1)
-                    aa = a[l - 1].real();
+                    aa = a[l].real();
                     //                 L(k-1,k-1) at A(k-1,k-1)
                     if (aa != zero) {
                         if (scale < aa) {
@@ -1212,11 +1189,11 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 if (ilu == 0) {
                     //                 A is upper
                     for (j = 0; j <= k - 2; j = j + 1) {
-                        Classq(k - j - 1, &a[(k + j + 2 + j * lda) - 1], 1, scale, s);
+                        Classq(k - j - 1, &a[(k + j + 2 + j * lda)], 1, scale, s);
                         //                 L at A(k+1,0)
                     }
                     for (j = 0; j <= k - 1; j = j + 1) {
-                        Classq(k + j, &a[(0 + j * lda) - 1], 1, scale, s);
+                        Classq(k + j, &a[(0 + j * lda)], 1, scale, s);
                         //                 trap U at A(0,0)
                     }
                     s += s;
@@ -1224,7 +1201,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     l = k;
                     //                 -> U(k,k) at A(k,0)
                     for (i = 0; i <= k - 1; i = i + 1) {
-                        aa = a[l - 1].real();
+                        aa = a[l].real();
                         //                    U(k+i,k+i)
                         if (aa != zero) {
                             if (scale < aa) {
@@ -1234,7 +1211,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                                 s += pow2((aa / scale));
                             }
                         }
-                        aa = a[(l + 1) - 1].real();
+                        aa = a[(l + 1)].real();
                         //                    U(i,i)
                         if (aa != zero) {
                             if (scale < aa) {
@@ -1249,11 +1226,11 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 } else {
                     //                 ilu=1 & A is lower
                     for (j = 0; j <= k - 1; j = j + 1) {
-                        Classq(n - j - 1, &a[(j + 2 + j * lda) - 1], 1, scale, s);
+                        Classq(n - j - 1, &a[(j + 2 + j * lda)], 1, scale, s);
                         //                    trap L at A(1,0)
                     }
                     for (j = 1; j <= k - 1; j = j + 1) {
-                        Classq(j, &a[(0 + j * lda) - 1], 1, scale, s);
+                        Classq(j, &a[(0 + j * lda)], 1, scale, s);
                         //                    U at A(0,0)
                     }
                     s += s;
@@ -1261,7 +1238,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     l = 0;
                     //                 -> L(k,k) at A(0,0)
                     for (i = 0; i <= k - 1; i = i + 1) {
-                        aa = a[l - 1].real();
+                        aa = a[l].real();
                         //                    L(k-1+i,k-1+i)
                         if (aa != zero) {
                             if (scale < aa) {
@@ -1271,7 +1248,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                                 s += pow2((aa / scale));
                             }
                         }
-                        aa = a[(l + 1) - 1].real();
+                        aa = a[(l + 1)].real();
                         //                    L(i,i)
                         if (aa != zero) {
                             if (scale < aa) {
@@ -1289,22 +1266,22 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 if (ilu == 0) {
                     //                 A**H is upper
                     for (j = 1; j <= k - 1; j = j + 1) {
-                        Classq(j, &a[(0 + (k + 1 + j) * lda) - 1], 1, scale, s);
+                        Classq(j, &a[(0 + (k + 1 + j) * lda)], 1, scale, s);
                         //                 U at A(0,k+1)
                     }
                     for (j = 0; j <= k - 1; j = j + 1) {
-                        Classq(k, &a[(0 + j * lda) - 1], 1, scale, s);
+                        Classq(k, &a[(0 + j * lda)], 1, scale, s);
                         //                 k by k rect. at A(0,0)
                     }
                     for (j = 0; j <= k - 2; j = j + 1) {
-                        Classq(k - j - 1, &a[(j + 1 + (j + k) * lda) - 1], 1, scale, s);
+                        Classq(k - j - 1, &a[(j + 1 + (j + k) * lda)], 1, scale, s);
                         //                 L at A(0,k)
                     }
                     s += s;
                     //                 REAL s for the off diagonal elements
                     l = 0 + k * lda;
                     //                 -> U(k,k) at A(0,k)
-                    aa = a[l - 1].real();
+                    aa = a[l].real();
                     //                 U(k,k)
                     if (aa != zero) {
                         if (scale < aa) {
@@ -1317,7 +1294,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     l += lda;
                     //                 -> U(0,0) at A(0,k+1)
                     for (j = k + 1; j <= n - 1; j = j + 1) {
-                        aa = a[l - 1].real();
+                        aa = a[l].real();
                         //                    -> U(j-k-1,j-k-1)
                         if (aa != zero) {
                             if (scale < aa) {
@@ -1327,7 +1304,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                                 s += pow2((aa / scale));
                             }
                         }
-                        aa = a[(l + 1) - 1].real();
+                        aa = a[(l + 1)].real();
                         //                    -> U(j,j)
                         if (aa != zero) {
                             if (scale < aa) {
@@ -1341,7 +1318,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     }
                     //                 L=k-1+n*lda
                     //                 -> U(k-1,k-1) at A(k-1,n)
-                    aa = a[l - 1].real();
+                    aa = a[l].real();
                     //                 U(k,k)
                     if (aa != zero) {
                         if (scale < aa) {
@@ -1354,22 +1331,22 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 } else {
                     //                 A**H is lower
                     for (j = 1; j <= k - 1; j = j + 1) {
-                        Classq(j, &a[(0 + (j + 1) * lda) - 1], 1, scale, s);
+                        Classq(j, &a[(0 + (j + 1) * lda)], 1, scale, s);
                         //                 U at A(0,1)
                     }
                     for (j = k + 1; j <= n; j = j + 1) {
-                        Classq(k, &a[(0 + j * lda) - 1], 1, scale, s);
+                        Classq(k, &a[(0 + j * lda)], 1, scale, s);
                         //                 k by k rect. at A(0,k+1)
                     }
                     for (j = 0; j <= k - 2; j = j + 1) {
-                        Classq(k - j - 1, &a[(j + 1 + j * lda) - 1], 1, scale, s);
+                        Classq(k - j - 1, &a[(j + 1 + j * lda)], 1, scale, s);
                         //                 L at A(0,0)
                     }
                     s += s;
                     //                 REAL s for the off diagonal elements
                     l = 0;
                     //                 -> L(k,k) at A(0,0)
-                    aa = a[l - 1].real();
+                    aa = a[l].real();
                     //                 L(k,k) at A(0,0)
                     if (aa != zero) {
                         if (scale < aa) {
@@ -1382,7 +1359,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     l = lda;
                     //                 -> L(0,0) at A(0,1)
                     for (i = 0; i <= k - 2; i = i + 1) {
-                        aa = a[l - 1].real();
+                        aa = a[l].real();
                         //                    L(i,i)
                         if (aa != zero) {
                             if (scale < aa) {
@@ -1392,7 +1369,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                                 s += pow2((aa / scale));
                             }
                         }
-                        aa = a[(l + 1) - 1].real();
+                        aa = a[(l + 1)].real();
                         //                    L(k+i+1,k+i+1)
                         if (aa != zero) {
                             if (scale < aa) {
@@ -1405,7 +1382,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         l += lda + 1;
                     }
                     //                 L-> k - 1 + k*lda or L(k-1,k-1) at A(k-1,k)
-                    aa = a[l - 1].real();
+                    aa = a[l].real();
                     //                 L(k-1,k-1) at A(k-1,k)
                     if (aa != zero) {
                         if (scale < aa) {

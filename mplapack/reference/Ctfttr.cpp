@@ -143,7 +143,7 @@ void Ctfttr(const char *transr, const char *uplo, INTEGER const n, COMPLEX *arf,
                         ij++;
                     }
                     for (l = j - n1; l <= n1 - 1; l = l + 1) {
-                        a[((j - n1) - 1) + l * lda] = conj(arf[ij]);
+                        a[(j - n1) + l * lda] = conj(arf[ij]);
                         ij++;
                     }
                     ij = ij - nx2;
@@ -168,7 +168,7 @@ void Ctfttr(const char *transr, const char *uplo, INTEGER const n, COMPLEX *arf,
                         ij++;
                     }
                     for (i = n1 + j; i <= n - 1; i = i + 1) {
-                        a[i + ((n1 + j) - 1) * lda] = arf[ij];
+                        a[i + (n1 + j) * lda] = arf[ij];
                         ij++;
                     }
                 }
@@ -246,7 +246,7 @@ void Ctfttr(const char *transr, const char *uplo, INTEGER const n, COMPLEX *arf,
                         ij++;
                     }
                     for (l = j - k; l <= k - 1; l = l + 1) {
-                        a[((j - k) - 1) + l * lda] = conj(arf[ij]);
+                        a[(j - k) + l * lda] = conj(arf[ij]);
                         ij++;
                     }
                     ij = ij - np1x2;
