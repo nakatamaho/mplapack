@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -30,28 +30,6 @@
 #include <mplapack.h>
 
 void Rpftri(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTEGER &info) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Test the input parameters.
     //
@@ -125,10 +103,10 @@ void Rpftri(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 //              T1 -> a(0,0), T2 -> a(0,1), S -> a(N1,0)
                 //              T1 -> a(0), T2 -> a(n), S -> a(N1)
                 //
-                Rlauum("L", n1, &a[0 - 1], n, info);
-                Rsyrk("L", "T", n1, n2, one, &a[n1 - 1], n, one, &a[0 - 1], n);
-                Rtrmm("L", "U", "N", "N", n2, n1, one, &a[n - 1], n, &a[n1 - 1], n);
-                Rlauum("U", n2, &a[n - 1], n, info);
+                Rlauum("L", n1, &a[0], n, info);
+                Rsyrk("L", "T", n1, n2, one, &a[n1], n, one, &a[0], n);
+                Rtrmm("L", "U", "N", "N", n2, n1, one, &a[n], n, &a[n1], n);
+                Rlauum("U", n2, &a[n], n, info);
                 //
             } else {
                 //
@@ -136,10 +114,10 @@ void Rpftri(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 //              T1 -> a(N1+1,0), T2 -> a(N1,0), S -> a(0,0)
                 //              T1 -> a(N2), T2 -> a(N1), S -> a(0)
                 //
-                Rlauum("L", n1, &a[n2 - 1], n, info);
-                Rsyrk("L", "N", n1, n2, one, &a[0 - 1], n, one, &a[n2 - 1], n);
-                Rtrmm("R", "U", "T", "N", n1, n2, one, &a[n1 - 1], n, &a[0 - 1], n);
-                Rlauum("U", n2, &a[n1 - 1], n, info);
+                Rlauum("L", n1, &a[n2], n, info);
+                Rsyrk("L", "N", n1, n2, one, &a[0], n, one, &a[n2], n);
+                Rtrmm("R", "U", "T", "N", n1, n2, one, &a[n1], n, &a[0], n);
+                Rlauum("U", n2, &a[n1], n, info);
                 //
             }
             //
@@ -152,20 +130,20 @@ void Rpftri(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 //              SRPA for LOWER, TRANSPOSE, and N is odd
                 //              T1 -> a(0), T2 -> a(1), S -> a(0+N1*N1)
                 //
-                Rlauum("U", n1, &a[0 - 1], n1, info);
-                Rsyrk("U", "N", n1, n2, one, &a[(n1 * n1) - 1], n1, one, &a[0 - 1], n1);
-                Rtrmm("R", "L", "N", "N", n1, n2, one, &a[1 - 1], n1, &a[(n1 * n1) - 1], n1);
-                Rlauum("L", n2, &a[1 - 1], n1, info);
+                Rlauum("U", n1, &a[0], n1, info);
+                Rsyrk("U", "N", n1, n2, one, &a[(n1 * n1)], n1, one, &a[0], n1);
+                Rtrmm("R", "L", "N", "N", n1, n2, one, &a[1], n1, &a[(n1 * n1)], n1);
+                Rlauum("L", n2, &a[1], n1, info);
                 //
             } else {
                 //
                 //              SRPA for UPPER, TRANSPOSE, and N is odd
                 //              T1 -> a(0+N2*N2), T2 -> a(0+N1*N2), S -> a(0)
                 //
-                Rlauum("U", n1, &a[(n2 * n2) - 1], n2, info);
-                Rsyrk("U", "T", n1, n2, one, &a[0 - 1], n2, one, &a[(n2 * n2) - 1], n2);
-                Rtrmm("L", "L", "T", "N", n2, n1, one, &a[(n1 * n2) - 1], n2, &a[0 - 1], n2);
-                Rlauum("L", n2, &a[(n1 * n2) - 1], n2, info);
+                Rlauum("U", n1, &a[(n2 * n2)], n2, info);
+                Rsyrk("U", "T", n1, n2, one, &a[0], n2, one, &a[(n2 * n2)], n2);
+                Rtrmm("L", "L", "T", "N", n2, n1, one, &a[(n1 * n2)], n2, &a[0], n2);
+                Rlauum("L", n2, &a[(n1 * n2)], n2, info);
                 //
             }
             //
@@ -185,10 +163,10 @@ void Rpftri(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 //              T1 -> a(1,0), T2 -> a(0,0), S -> a(k+1,0)
                 //              T1 -> a(1), T2 -> a(0), S -> a(k+1)
                 //
-                Rlauum("L", k, &a[1 - 1], n + 1, info);
-                Rsyrk("L", "T", k, k, one, &a[(k + 1) - 1], n + 1, one, &a[1 - 1], n + 1);
-                Rtrmm("L", "U", "N", "N", k, k, one, &a[0 - 1], n + 1, &a[(k + 1) - 1], n + 1);
-                Rlauum("U", k, &a[0 - 1], n + 1, info);
+                Rlauum("L", k, &a[1], n + 1, info);
+                Rsyrk("L", "T", k, k, one, &a[(k + 1)], n + 1, one, &a[1], n + 1);
+                Rtrmm("L", "U", "N", "N", k, k, one, &a[0], n + 1, &a[(k + 1)], n + 1);
+                Rlauum("U", k, &a[0], n + 1, info);
                 //
             } else {
                 //
@@ -196,10 +174,10 @@ void Rpftri(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 //              T1 -> a(k+1,0) ,  T2 -> a(k,0),   S -> a(0,0)
                 //              T1 -> a(k+1), T2 -> a(k), S -> a(0)
                 //
-                Rlauum("L", k, &a[(k + 1) - 1], n + 1, info);
-                Rsyrk("L", "N", k, k, one, &a[0 - 1], n + 1, one, &a[(k + 1) - 1], n + 1);
-                Rtrmm("R", "U", "T", "N", k, k, one, &a[k - 1], n + 1, &a[0 - 1], n + 1);
-                Rlauum("U", k, &a[k - 1], n + 1, info);
+                Rlauum("L", k, &a[(k + 1)], n + 1, info);
+                Rsyrk("L", "N", k, k, one, &a[0], n + 1, one, &a[(k + 1)], n + 1);
+                Rtrmm("R", "U", "T", "N", k, k, one, &a[k], n + 1, &a[0], n + 1);
+                Rlauum("U", k, &a[k], n + 1, info);
                 //
             }
             //
@@ -213,10 +191,10 @@ void Rpftri(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 //              T1 -> B(0,1), T2 -> B(0,0), S -> B(0,k+1),
                 //              T1 -> a(0+k), T2 -> a(0+0), S -> a(0+k*(k+1)); lda=k
                 //
-                Rlauum("U", k, &a[k - 1], k, info);
-                Rsyrk("U", "N", k, k, one, &a[(k * (k + 1)) - 1], k, one, &a[k - 1], k);
-                Rtrmm("R", "L", "N", "N", k, k, one, &a[0 - 1], k, &a[(k * (k + 1)) - 1], k);
-                Rlauum("L", k, &a[0 - 1], k, info);
+                Rlauum("U", k, &a[k], k, info);
+                Rsyrk("U", "N", k, k, one, &a[(k * (k + 1))], k, one, &a[k], k);
+                Rtrmm("R", "L", "N", "N", k, k, one, &a[0], k, &a[(k * (k + 1))], k);
+                Rlauum("L", k, &a[0], k, info);
                 //
             } else {
                 //
@@ -224,10 +202,10 @@ void Rpftri(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 //              T1 -> B(0,k+1),     T2 -> B(0,k),   S -> B(0,0),
                 //              T1 -> a(0+k*(k+1)), T2 -> a(0+k*k), S -> a(0+0)); lda=k
                 //
-                Rlauum("U", k, &a[(k * (k + 1)) - 1], k, info);
-                Rsyrk("U", "T", k, k, one, &a[0 - 1], k, one, &a[(k * (k + 1)) - 1], k);
-                Rtrmm("L", "L", "T", "N", k, k, one, &a[(k * k) - 1], k, &a[0 - 1], k);
-                Rlauum("L", k, &a[(k * k) - 1], k, info);
+                Rlauum("U", k, &a[(k * (k + 1))], k, info);
+                Rsyrk("U", "T", k, k, one, &a[0], k, one, &a[(k * (k + 1))], k);
+                Rtrmm("L", "L", "T", "N", k, k, one, &a[(k * k)], k, &a[0], k);
+                Rlauum("L", k, &a[(k * k)], k, info);
                 //
             }
             //

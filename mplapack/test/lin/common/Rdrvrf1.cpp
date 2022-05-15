@@ -172,7 +172,7 @@ void Rdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                             sprintnum_short(buf, result[0]);
                             write(nout, "(1x,'     Failure in ',a6,' N=',i5,' TYPE=',i5,' UPLO=''',a1,"
                                         "''', FORM =''',a1,''', NORM=''',a1,''', test=',a)"),
-                                "Rlansf", n, iit, uplo, cform, norm, buf;
+                                "Rlansf", n, iit, &uplo, &cform, &norm, buf;
                             nfail++;
                         }
                     }

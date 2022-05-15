@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -30,28 +30,6 @@
 #include <mplapack.h>
 
 void Rpftrf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTEGER &info) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Test the input parameters.
     //
@@ -117,13 +95,13 @@ void Rpftrf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 //             T1 -> a(0,0), T2 -> a(0,1), S -> a(n1,0)
                 //             T1 -> a(0), T2 -> a(n), S -> a(n1)
                 //
-                Rpotrf("L", n1, &a[0 - 1], n, info);
+                Rpotrf("L", n1, &a[0], n, info);
                 if (info > 0) {
                     return;
                 }
-                Rtrsm("R", "L", "T", "N", n2, n1, one, &a[0 - 1], n, &a[n1 - 1], n);
-                Rsyrk("U", "N", n2, n1, -one, &a[n1 - 1], n, one, &a[n - 1], n);
-                Rpotrf("U", n2, &a[n - 1], n, info);
+                Rtrsm("R", "L", "T", "N", n2, n1, one, &a[0], n, &a[n1], n);
+                Rsyrk("U", "N", n2, n1, -one, &a[n1], n, one, &a[n], n);
+                Rpotrf("U", n2, &a[n], n, info);
                 if (info > 0) {
                     info += n1;
                 }
@@ -134,13 +112,13 @@ void Rpftrf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 //             T1 -> a(n1+1,0), T2 -> a(n1,0), S -> a(0,0)
                 //             T1 -> a(n2), T2 -> a(n1), S -> a(0)
                 //
-                Rpotrf("L", n1, &a[n2 - 1], n, info);
+                Rpotrf("L", n1, &a[n2], n, info);
                 if (info > 0) {
                     return;
                 }
-                Rtrsm("L", "L", "N", "N", n1, n2, one, &a[n2 - 1], n, &a[0 - 1], n);
-                Rsyrk("U", "T", n2, n1, -one, &a[0 - 1], n, one, &a[n1 - 1], n);
-                Rpotrf("U", n2, &a[n1 - 1], n, info);
+                Rtrsm("L", "L", "N", "N", n1, n2, one, &a[n2], n, &a[0], n);
+                Rsyrk("U", "T", n2, n1, -one, &a[0], n, one, &a[n1], n);
+                Rpotrf("U", n2, &a[n1], n, info);
                 if (info > 0) {
                     info += n1;
                 }
@@ -157,13 +135,13 @@ void Rpftrf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 //              T1 -> A(0,0) , T2 -> A(1,0) , S -> A(0,n1)
                 //              T1 -> a(0+0) , T2 -> a(1+0) , S -> a(0+n1*n1); lda=n1
                 //
-                Rpotrf("U", n1, &a[0 - 1], n1, info);
+                Rpotrf("U", n1, &a[0], n1, info);
                 if (info > 0) {
                     return;
                 }
-                Rtrsm("L", "U", "T", "N", n1, n2, one, &a[0 - 1], n1, &a[(n1 * n1) - 1], n1);
-                Rsyrk("L", "T", n2, n1, -one, &a[(n1 * n1) - 1], n1, one, &a[1 - 1], n1);
-                Rpotrf("L", n2, &a[1 - 1], n1, info);
+                Rtrsm("L", "U", "T", "N", n1, n2, one, &a[0], n1, &a[(n1 * n1)], n1);
+                Rsyrk("L", "T", n2, n1, -one, &a[(n1 * n1)], n1, one, &a[1], n1);
+                Rpotrf("L", n2, &a[1], n1, info);
                 if (info > 0) {
                     info += n1;
                 }
@@ -174,13 +152,13 @@ void Rpftrf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 //              T1 -> A(0,n1+1), T2 -> A(0,n1), S -> A(0,0)
                 //              T1 -> a(n2*n2), T2 -> a(n1*n2), S -> a(0); lda = n2
                 //
-                Rpotrf("U", n1, &a[(n2 * n2) - 1], n2, info);
+                Rpotrf("U", n1, &a[(n2 * n2)], n2, info);
                 if (info > 0) {
                     return;
                 }
-                Rtrsm("R", "U", "N", "N", n2, n1, one, &a[(n2 * n2) - 1], n2, &a[0 - 1], n2);
-                Rsyrk("L", "N", n2, n1, -one, &a[0 - 1], n2, one, &a[(n1 * n2) - 1], n2);
-                Rpotrf("L", n2, &a[(n1 * n2) - 1], n2, info);
+                Rtrsm("R", "U", "N", "N", n2, n1, one, &a[(n2 * n2)], n2, &a[0 - 1], n2);
+                Rsyrk("L", "N", n2, n1, -one, &a[0], n2, one, &a[(n1 * n2)], n2);
+                Rpotrf("L", n2, &a[(n1 * n2)], n2, info);
                 if (info > 0) {
                     info += n1;
                 }
@@ -203,13 +181,13 @@ void Rpftrf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 //              T1 -> a(1,0), T2 -> a(0,0), S -> a(k+1,0)
                 //              T1 -> a(1), T2 -> a(0), S -> a(k+1)
                 //
-                Rpotrf("L", k, &a[1 - 1], n + 1, info);
+                Rpotrf("L", k, &a[1], n + 1, info);
                 if (info > 0) {
                     return;
                 }
-                Rtrsm("R", "L", "T", "N", k, k, one, &a[1 - 1], n + 1, &a[(k + 1) - 1], n + 1);
-                Rsyrk("U", "N", k, k, -one, &a[(k + 1) - 1], n + 1, one, &a[0 - 1], n + 1);
-                Rpotrf("U", k, &a[0 - 1], n + 1, info);
+                Rtrsm("R", "L", "T", "N", k, k, one, &a[1 ], n + 1, &a[(k + 1) ], n + 1);
+                Rsyrk("U", "N", k, k, -one, &a[(k + 1)], n + 1, one, &a[0], n + 1);
+                Rpotrf("U", k, &a[0], n + 1, info);
                 if (info > 0) {
                     info += k;
                 }
@@ -220,13 +198,13 @@ void Rpftrf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 //              T1 -> a(k+1,0) ,  T2 -> a(k,0),   S -> a(0,0)
                 //              T1 -> a(k+1), T2 -> a(k), S -> a(0)
                 //
-                Rpotrf("L", k, &a[(k + 1) - 1], n + 1, info);
+                Rpotrf("L", k, &a[(k + 1)], n + 1, info);
                 if (info > 0) {
                     return;
                 }
-                Rtrsm("L", "L", "N", "N", k, k, one, &a[(k + 1) - 1], n + 1, &a[0 - 1], n + 1);
-                Rsyrk("U", "T", k, k, -one, &a[0 - 1], n + 1, one, &a[k - 1], n + 1);
-                Rpotrf("U", k, &a[k - 1], n + 1, info);
+                Rtrsm("L", "L", "N", "N", k, k, one, &a[(k + 1)], n + 1, &a[0], n + 1);
+                Rsyrk("U", "T", k, k, -one, &a[0], n + 1, one, &a[k], n + 1);
+                Rpotrf("U", k, &a[k], n + 1, info);
                 if (info > 0) {
                     info += k;
                 }
@@ -243,13 +221,13 @@ void Rpftrf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 //              T1 -> B(0,1), T2 -> B(0,0), S -> B(0,k+1)
                 //              T1 -> a(0+k), T2 -> a(0+0), S -> a(0+k*(k+1)); lda=k
                 //
-                Rpotrf("U", k, &a[(0 + k) - 1], k, info);
+                Rpotrf("U", k, &a[(0 + k)], k, info);
                 if (info > 0) {
                     return;
                 }
-                Rtrsm("L", "U", "T", "N", k, k, one, &a[k - 1], n1, &a[(k * (k + 1)) - 1], k);
-                Rsyrk("L", "T", k, k, -one, &a[(k * (k + 1)) - 1], k, one, &a[0 - 1], k);
-                Rpotrf("L", k, &a[0 - 1], k, info);
+                Rtrsm("L", "U", "T", "N", k, k, one, &a[k], n1, &a[(k * (k + 1))], k);
+                Rsyrk("L", "T", k, k, -one, &a[(k * (k + 1))], k, one, &a[0], k);
+                Rpotrf("L", k, &a[0], k, info);
                 if (info > 0) {
                     info += k;
                 }
@@ -260,13 +238,13 @@ void Rpftrf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 //              T1 -> B(0,k+1),     T2 -> B(0,k),   S -> B(0,0)
                 //              T1 -> a(0+k*(k+1)), T2 -> a(0+k*k), S -> a(0+0)); lda=k
                 //
-                Rpotrf("U", k, &a[(k * (k + 1)) - 1], k, info);
+                Rpotrf("U", k, &a[(k * (k + 1))], k, info);
                 if (info > 0) {
                     return;
                 }
-                Rtrsm("R", "U", "N", "N", k, k, one, &a[(k * (k + 1)) - 1], k, &a[0 - 1], k);
-                Rsyrk("L", "N", k, k, -one, &a[0 - 1], k, one, &a[(k * k) - 1], k);
-                Rpotrf("L", k, &a[(k * k) - 1], k, info);
+                Rtrsm("R", "U", "N", "N", k, k, one, &a[(k * (k + 1))], k, &a[0], k);
+                Rsyrk("L", "N", k, k, -one, &a[0], k, one, &a[(k * k)], k);
+                Rpotrf("L", k, &a[(k * k)], k, info);
                 if (info > 0) {
                     info += k;
                 }

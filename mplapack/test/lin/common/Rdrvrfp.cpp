@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -305,8 +305,8 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                                 sprintnum_short(buf, result[k - 1]);
                                 write(nout, "(1x,a6,', UPLO=''',a1,''', N =',i5,', type ',i1,', test(',"
                                             "i1,')=',a)"),
-                                    "Rpfsv", uplo, n, iit, k, buf;
-                                nfail++;
+                                    "Rpfsv", &uplo, n, iit, k, buf;
+				nfail++;
                             }
                         }
                         nrun += nt;

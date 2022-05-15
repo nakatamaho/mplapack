@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -43,6 +43,7 @@ using fem::common;
 #include <vector>
 
 using namespace std;
+
 void Rchkrfp(void) {
     common cmn;
     common_write write(cmn);
