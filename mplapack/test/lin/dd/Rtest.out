@@ -1,4 +1,4 @@
- Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.1
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
  Based on the original LAPACK VERSION 3.9.1
 
 The following parameter values will be used:
@@ -149,5 +149,5 @@ The following parameter values will be used:
  All tests for RHH routines passed the threshold (  15900 tests run)
 
  End of tests
- Total time used =  23 seconds
+ Total time used =  143 seconds
 
