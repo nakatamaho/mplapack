@@ -99,35 +99,6 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     INTEGER jgl = 0;
     INTEGER ijblsk = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     from BLAS
-    //     from LAPACK
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     from BLAS
-    //     from LAPACK
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input arguments
     //
     lsvec = Mlsame(jobu, "U") || Mlsame(jobu, "F");
@@ -376,7 +347,7 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     //     avoid underflows/overflows in computing Jacobi rotations.
     //
     sn = sqrt(sfmin / epsln);
-    temp1 = sqrt(big / castREAL(n));
+    temp1 = sqrt(big) / sqrt(castREAL(n));
     if ((aapp <= sn) || (aaqq >= temp1) || ((sn <= aaqq) && (aapp <= temp1))) {
         temp1 = min(big, REAL(temp1 / aapp));
         //         AAQQ  = AAQQ*TEMP1
