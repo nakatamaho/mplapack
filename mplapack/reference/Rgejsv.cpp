@@ -77,29 +77,6 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     INTEGER numrank = 0;
     REAL cond_ok = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  ===========================================================================
-    //
-    //     .. Local Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //
-    //     ..
-    //
     //     Test the input arguments
     //
     lsvec = Mlsame(jobu, "U") || Mlsame(jobu, "F");
@@ -436,7 +413,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //     one should use Rgesvj instead of Rgejsv.
     //
     big1 = sqrt(big);
-    temp1 = sqrt(big / castREAL(n));
+    temp1 = big1 / sqrt(castREAL(n)); //The original code fails on dd and qd for unknown reason.
     //
     Rlascl("G", 0, 0, aapp, temp1, n, 1, sva, n, ierr);
     if (aaqq > (aapp * sfmin)) {
