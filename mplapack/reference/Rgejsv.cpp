@@ -30,6 +30,10 @@
 #include <mplapack.h>
 
 void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jobr, const char *jobt, const char *jobp, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *sva, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
+#ifdef ___MPLAPACK_BUILD_WITH_DD___ || ___MPLAPACK_BUILD_WITH_QD___
+    printf("This routine doesn't work properly\n");
+    exit(-1);
+#endif
     bool lsvec = false;
     bool jracc = false;
     bool rsvec = false;
