@@ -28,7 +28,62 @@ The following parameter values will be used:
 
  SVD:  NB =   1, NBMIN =   2, NX =   1, NRHS =   2
 
- All tests for CBD routines passed the threshold (   4085 tests run)
+ CBD -- Complex Singular Value Decomposition
+ Matrix types (see xCHKBD for details):
+ Diagonal matrices:
+   1: Zero                             5: Clustered entries
+   2: Identity                         6: Large, evenly spaced entries
+   3: Evenly spaced entries            7: Small, evenly spaced entries
+   4: Geometrically spaced entries
+ General matrices:
+   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
+   9: Geometrically spaced sing vals  13: Random, O(1) entries
+  10: Clustered sing. vals.           14: Random, scaled near overflow
+  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
+
+ Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: unitary   
+                X: m x nrhs, Y = Q' X, and Z = U' Y)
+   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
+   2: norm( I - Q' Q )   / ( m ulp )
+   3: norm( I - P' P )   / ( n ulp )
+   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
+   6: norm( I - U' U )   / ( min(m,n) ulp )
+   7: norm( I - V' V )   / ( min(m,n) ulp )
+   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
+  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
+  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
+  13: norm( I - (QU)'(QU) )      / ( M ulp )
+  14: norm( I - (V' P') (P V) )  / ( N ulp )
+  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+  16: norm( I - U' U )   / ( min(m,n) ulp )
+  17: norm( I - V' V )   / ( min(m,n) ulp )
+  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
+  21: norm( I - U' U )    / ( min(m,n) ulp )
+  22: norm( I - V' V )    / ( min(m,n) ulp )
+  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
+  26: norm( I - U' U )    / ( min(m,n) ulp )
+  27: norm( I - V' V )    / ( min(m,n) ulp )
+  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
+  31: norm( I - U' U )    / ( min(m,n) ulp )
+  32: norm( I - V' V )    / ( min(m,n) ulp )
+  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+ M=   40, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=3.9614081257132169e+30
+ CBD:      1 out of   4085 tests failed to pass the threshold
  SVD -- Complex Singular Value Decomposition Driver 
  Matrix types (see Cdrvbd for details):
 
@@ -93,102 +148,30 @@ The following parameter values will be used:
 39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
 
 
- M=    3, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=5.3836500446259254e+30
- M=    3, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=5.3836500446259254e+30
- M=    3, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=5.3836500446259254e+30
- M=    3, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=5.3836500446259254e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=2.8661831922231311e+30
- M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=2.8661831922231311e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=2.8661831922231311e+30
- M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=2.8661831922231311e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=2.8661831922231311e+30
- M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=2.8661831922231311e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=2.8661831922231311e+30
- M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=2.8661831922231311e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.6375563551799292e+14
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=3.5189834674173862e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.6375563551799292e+14
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=3.5189834674173862e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.6375563551799292e+14
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=3.5189834674173862e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.6375563551799292e+14
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=3.5189834674173862e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=3.1288761341374824e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=3.1288761341374824e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=3.1288761341374824e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=3.1288761341374824e+30
+ M=    2, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=3.3070566018471229e+30
+ M=    2, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=3.3070566018471229e+30
+ M=    2, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=3.3070566018471229e+30
+ M=    2, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=3.3070566018471229e+30
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.4063735514942234e+14
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.4063735514942234e+14
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.4063735514942234e+14
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.4063735514942234e+14
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.3503062818917194e+13
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.3503062818917194e+13
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.3503062818917194e+13
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.3503062818917194e+13
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.3771254087778227e+13
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.3771254087778227e+13
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.3771254087778227e+13
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.3771254087778227e+13
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
@@ -197,207 +180,63 @@ The following parameter values will be used:
  M=   16, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=6.1196149623114879e+12
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=6.1196149623114879e+12
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=6.1196149623114879e+12
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=6.1196149623114879e+12
- M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=2.6471020695797735e+29
- M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=2.6471020695797735e+29
- M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=2.6471020695797735e+29
- M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=2.6471020695797735e+29
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=7.2390746900610023e+13
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=7.2390746900610023e+13
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=7.2390746900610023e+13
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=7.2390746900610023e+13
  M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=7.9496546568909046e+29
- M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.7258088378928503e+29
- M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=7.9496546568909046e+29
- M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.7258088378928503e+29
- M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=7.9496546568909046e+29
- M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.7258088378928503e+29
- M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=7.9496546568909046e+29
- M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.7258088378928503e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1321346408613668e+29
- M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1321346408613668e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1321346408613668e+29
- M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1321346408613668e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1321346408613668e+29
- M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1321346408613668e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1321346408613668e+29
- M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1321346408613668e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.6447060051798635e+12
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.4072486959354195e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.6447060051798635e+12
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.4072486959354195e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.6447060051798635e+12
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.4072486959354195e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.6447060051798635e+12
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.4072486959354195e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=4.2269017662563649e+29
- M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.2269017662563649e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=4.2269017662563649e+29
- M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.2269017662563649e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=4.2269017662563649e+29
- M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.2269017662563649e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=4.2269017662563649e+29
- M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.2269017662563649e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1534128573375403e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1534128573375403e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1534128573375403e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1534128573375403e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.7182688829085738e+12
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1207983441570364e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.7182688829085738e+12
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1207983441570364e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.7182688829085738e+12
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1207983441570364e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.7182688829085738e+12
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1207983441570364e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.2841924077746534e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.2841924077746534e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.2841924077746534e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.2841924077746534e+29
+ M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=7.6588283389766557e+29
+ M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=7.6588283389766557e+29
+ M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=7.6588283389766557e+29
+ M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=7.6588283389766557e+29
+ M=   30, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.6042094499442547e+12
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.2244673009735902e+29
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.6042094499442547e+12
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.2244673009735902e+29
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.6042094499442547e+12
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.2244673009735902e+29
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.6042094499442547e+12
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.2244673009735902e+29
+ M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.4259030451635681e+29
+ M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.4259030451635681e+29
+ M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.4259030451635681e+29
+ M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.4259030451635681e+29
+ M=   40, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.6588674329502392e+12
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.6588674329502392e+12
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.6588674329502392e+12
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.6588674329502392e+12
  M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.6649142423360794e+12
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.6649142423360794e+12
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.6649142423360794e+12
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.6649142423360794e+12
- M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=9.5177805649115035e+28
- M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=9.5177805649115035e+28
- M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=9.5177805649115035e+28
- M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=9.5177805649115035e+28
- ZBD drivers:    112 out of  14340 tests failed to pass the threshold
+ M=   40, N=   40, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   40, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   40, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   40, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.6278692964046352e+12
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.6278692964046352e+12
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.6278692964046352e+12
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.6278692964046352e+12
+ M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=9.3945397369122320e+28
+ M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=9.3945397369122320e+28
+ M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=9.3945397369122320e+28
+ M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=9.3945397369122320e+28
+ ZBD drivers:     88 out of  14340 tests failed to pass the threshold
 
 
  SVD:  NB =   3, NBMIN =   2, NX =   0, NRHS =   0
@@ -467,1184 +306,82 @@ The following parameter values will be used:
 39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
 
 
- M=    2, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=3.6603646844823756e+30
- M=    2, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=3.6603646844823756e+30
- M=    2, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=3.6603646844823756e+30
- M=    2, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=3.6603646844823756e+30
- M=    3, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=5.3419961284944796e+30
- M=    3, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=5.3419961284944796e+30
- M=    3, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=5.3419961284944796e+30
- M=    3, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=5.3419961284944796e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=2.8183922742915650e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=2.8183922742915650e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=2.8183922742915650e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=2.8183922742915650e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.1128885685697660e+14
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=2.3426750511250772e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.1128885685697660e+14
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=2.3426750511250772e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.1128885685697660e+14
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=2.3426750511250772e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.1128885685697660e+14
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=2.3426750511250772e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=2.6254398672209348e+30
- M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=2.6254398672209348e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=2.6254398672209348e+30
- M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=2.6254398672209348e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=2.6254398672209348e+30
- M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=2.6254398672209348e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=2.6254398672209348e+30
- M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=2.6254398672209348e+30
+ M=    2, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=3.7641564803678049e+30
+ M=    2, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=3.7641564803678049e+30
+ M=    2, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=3.7641564803678049e+30
+ M=    2, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=3.7641564803678049e+30
+ M=    3, N=    1, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.9910441696855655e+30
+ M=    3, N=    1, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.9910441696855655e+30
+ M=    3, N=    1, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.9910441696855655e+30
+ M=    3, N=    1, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.9910441696855655e+30
+ M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0674789616607077e+30
+ M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0674789616607077e+30
+ M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0674789616607077e+30
+ M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0674789616607077e+30
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.2974341182839230e+14
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.2974341182839230e+14
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.2974341182839230e+14
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.2974341182839230e+14
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=4.0846795203820629e+30
+ M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.0846795203820629e+30
+ M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=4.0846795203820629e+30
+ M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.0846795203820629e+30
+ M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=4.0846795203820629e+30
+ M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.0846795203820629e+30
+ M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=4.0846795203820629e+30
+ M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.0846795203820629e+30
  M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.4365075751175260e+13
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.4365075751175260e+13
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.4365075751175260e+13
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.4365075751175260e+13
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.4875274036437846e+13
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.4875274036437846e+13
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.4875274036437846e+13
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.4875274036437846e+13
  M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=6.1335563722873648e+12
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=3.2186816634078079e+29
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=6.1335563722873648e+12
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=3.2186816634078079e+29
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=6.1335563722873648e+12
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=3.2186816634078079e+29
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=6.1335563722873648e+12
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=3.2186816634078079e+29
- M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=7.9661360522862764e+29
- M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=7.9661360522862764e+29
- M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=7.9661360522862764e+29
- M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=7.9661360522862764e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1559462919260935e+29
- M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1559462919260935e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1559462919260935e+29
- M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1559462919260935e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1559462919260935e+29
- M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1559462919260935e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1559462919260935e+29
- M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1559462919260935e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.6014628497655768e+12
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.2172694619664656e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.6014628497655768e+12
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.2172694619664656e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.6014628497655768e+12
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.2172694619664656e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.6014628497655768e+12
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.2172694619664656e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1141835699842297e+29
- M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1141835699842297e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1141835699842297e+29
- M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1141835699842297e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1141835699842297e+29
- M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1141835699842297e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1141835699842297e+29
- M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1141835699842297e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1705217534510460e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1705217534510460e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1705217534510460e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1705217534510460e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.6412341438766182e+12
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.2382556116748146e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.6412341438766182e+12
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.2382556116748146e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.6412341438766182e+12
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.2382556116748146e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.6412341438766182e+12
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.2382556116748146e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1642523535992419e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1642523535992419e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1642523535992419e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1642523535992419e+29
- M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.6547876724349528e+12
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.6547876724349528e+12
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.6547876724349528e+12
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.6547876724349528e+12
- M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2638252071044997e+29
- M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2638252071044997e+29
- M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2638252071044997e+29
- M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2638252071044997e+29
- ZBD drivers:    116 out of  14340 tests failed to pass the threshold
-
-
- SVD:  NB =   3, NBMIN =   2, NX =   5, NRHS =   2
-
- CBD -- Complex Singular Value Decomposition
- Matrix types (see xCHKBD for details):
- Diagonal matrices:
-   1: Zero                             5: Clustered entries
-   2: Identity                         6: Large, evenly spaced entries
-   3: Evenly spaced entries            7: Small, evenly spaced entries
-   4: Geometrically spaced entries
- General matrices:
-   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
-   9: Geometrically spaced sing vals  13: Random, O(1) entries
-  10: Clustered sing. vals.           14: Random, scaled near overflow
-  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
-
- Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: unitary   
-                X: m x nrhs, Y = Q' X, and Z = U' Y)
-   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
-   2: norm( I - Q' Q )   / ( m ulp )
-   3: norm( I - P' P )   / ( n ulp )
-   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
-   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
-   6: norm( I - U' U )   / ( min(m,n) ulp )
-   7: norm( I - V' V )   / ( min(m,n) ulp )
-   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
-                                            without computing U and V'
-  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
-  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
-  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
-  13: norm( I - (QU)'(QU) )      / ( M ulp )
-  14: norm( I - (V' P') (P V) )  / ( N ulp )
-  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
-  16: norm( I - U' U )   / ( min(m,n) ulp )
-  17: norm( I - V' V )   / ( min(m,n) ulp )
-  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
-                                            without computing U and V'
-  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
-  21: norm( I - U' U )    / ( min(m,n) ulp )
-  22: norm( I - V' V )    / ( min(m,n) ulp )
-  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
-  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
-  26: norm( I - U' U )    / ( min(m,n) ulp )
-  27: norm( I - V' V )    / ( min(m,n) ulp )
-  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
-  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
-  31: norm( I - U' U )    / ( min(m,n) ulp )
-  32: norm( I - V' V )    / ( min(m,n) ulp )
-  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
- M=   30, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.9807040628566084e+30
- CBD:      1 out of   4085 tests failed to pass the threshold
- SVD -- Complex Singular Value Decomposition Driver 
- Matrix types (see Cdrvbd for details):
-
- 1 = Zero matrix
- 2 = Identity matrix
- 3 = Evenly spaced singular values near 1
- 4 = Evenly spaced singular values near underflow
- 5 = Evenly spaced singular values near overflow
-
- Tests performed: ( A is dense, U and V are unitary,
-                    S is an array, and Upartial, VTpartial, and
-                    Spartial are partially computed U, VT and S),
-
- Tests performed with Test Threshold = 5.0000000000000000e+01
- Cgesvd: 
- 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
- 2 = | I - U**T U | / ( M ulp ) 
- 3 = | I - VT VT**T | / ( N ulp ) 
- 4 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- 5 = | U - Upartial | / ( M ulp )
- 6 = | VT - VTpartial | / ( N ulp )
- 7 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesdd: 
- 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
- 9 = | I - U**T U | / ( M ulp ) 
-10 = | I - VT VT**T | / ( N ulp ) 
-11 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-12 = | U - Upartial | / ( M ulp )
-13 = | VT - VTpartial | / ( N ulp )
-14 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesvj: 
-
-15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-16 = | I - U**T U | / ( M ulp ) 
-17 = | I - VT VT**T | / ( N ulp ) 
-18 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- ZGESJV: 
-
-19 = | A - U diag(S) VT | / ( |A| max(M,N) ulp )
-20 = | I - U**T U | / ( M ulp ) 
-21 = | I - VT VT**T | / ( N ulp ) 
-22 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- Cgesvdx(V,V,A): 
-23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-24 = | I - U**T U | / ( M ulp ) 
-25 = | I - VT VT**T | / ( N ulp ) 
-26 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-27 = | U - Upartial | / ( M ulp )
-28 = | VT - VTpartial | / ( N ulp )
-29 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesvdx(V,V,I): 
-30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
-31 = | I - U**T U | / ( M ulp ) 
-32 = | I - VT VT**T | / ( N ulp ) 
- Cgesvdx(V,V,V) 
-33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
-34 = | I - U**T U | / ( M ulp ) 
-35 = | I - VT VT**T | / ( N ulp )  Cgesvdq(H,N,N,A,A
-36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-37 = | I - U**T U | / ( M ulp ) 
-38 = | I - VT VT**T | / ( N ulp ) 
-39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-
-
- M=    2, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=4.0057110867793744e+30
- M=    2, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=4.0057110867793744e+30
- M=    2, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=4.0057110867793744e+30
- M=    2, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=4.0057110867793744e+30
- M=    3, N=    1, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.4463676600622182e+30
- M=    3, N=    1, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.4463676600622182e+30
- M=    3, N=    1, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.4463676600622182e+30
- M=    3, N=    1, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.4463676600622182e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=2.8470067516348660e+30
- M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=2.8470067516348660e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=2.8470067516348660e+30
- M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=2.8470067516348660e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=2.8470067516348660e+30
- M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=2.8470067516348660e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=2.8470067516348660e+30
- M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=2.8470067516348660e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.4309857993922137e+14
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=3.4456213727593060e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.4309857993922137e+14
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=3.4456213727593060e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.4309857993922137e+14
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=3.4456213727593060e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.4309857993922137e+14
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=3.4456213727593060e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=2.8092157887670028e+30
- M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=2.8092157887670028e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=2.8092157887670028e+30
- M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=2.8092157887670028e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=2.8092157887670028e+30
- M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=2.8092157887670028e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=2.8092157887670028e+30
- M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=2.8092157887670028e+30
- M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1950407802423354e+13
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1950407802423354e+13
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1950407802423354e+13
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1950407802423354e+13
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=2.6399426333155847e+29
- M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=2.6399426333155847e+29
- M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=2.6399426333155847e+29
- M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=2.6399426333155847e+29
- M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=6.1185495727696557e+12
+ M=   16, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=6.1956815080270906e+12
  M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=6.1185495727696557e+12
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=6.1956815080270906e+12
  M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=6.1185495727696557e+12
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=6.1956815080270906e+12
  M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=6.1185495727696557e+12
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=6.1956815080270906e+12
  M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   16, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=1.8917541313327901e+29
- M=   16, N=   16, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.8917541313327901e+29
- M=   16, N=   16, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.8917541313327901e+29
- M=   16, N=   16, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.8917541313327901e+29
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.8747276002523012e+29
- M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.8747276002523012e+29
- M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.8747276002523012e+29
- M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.8747276002523012e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=4.0914634290233998e+29
- M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.0914634290233998e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=4.0914634290233998e+29
- M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.0914634290233998e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=4.0914634290233998e+29
- M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.0914634290233998e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=4.0914634290233998e+29
- M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.0914634290233998e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.5912018096420214e+12
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.2052158785811814e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.5912018096420214e+12
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.2052158785811814e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.5912018096420214e+12
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.2052158785811814e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.5912018096420214e+12
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.2052158785811814e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=4.0789467945129634e+29
- M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.0789467945129634e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=4.0789467945129634e+29
- M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.0789467945129634e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=4.0789467945129634e+29
- M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.0789467945129634e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=4.0789467945129634e+29
- M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.0789467945129634e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.2596114427548533e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.2596114427548533e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.2596114427548533e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.2596114427548533e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.7056147964452732e+12
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.2789569856356787e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.7056147964452732e+12
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.2789569856356787e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.7056147964452732e+12
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.2789569856356787e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.7056147964452732e+12
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.2789569856356787e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1409207977765445e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1409207977765445e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1409207977765445e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1409207977765445e+29
- M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.5944317066815892e+12
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.5944317066815892e+12
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.5944317066815892e+12
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.5944317066815892e+12
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=9.0615701493599142e+28
- M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=9.0615701493599142e+28
- M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=9.0615701493599142e+28
- M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=9.0615701493599142e+28
- ZBD drivers:    132 out of  14340 tests failed to pass the threshold
-
-
- SVD:  NB =   3, NBMIN =   2, NX =   9, NRHS =   2
-
- CBD -- Complex Singular Value Decomposition
- Matrix types (see xCHKBD for details):
- Diagonal matrices:
-   1: Zero                             5: Clustered entries
-   2: Identity                         6: Large, evenly spaced entries
-   3: Evenly spaced entries            7: Small, evenly spaced entries
-   4: Geometrically spaced entries
- General matrices:
-   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
-   9: Geometrically spaced sing vals  13: Random, O(1) entries
-  10: Clustered sing. vals.           14: Random, scaled near overflow
-  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
-
- Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: unitary   
-                X: m x nrhs, Y = Q' X, and Z = U' Y)
-   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
-   2: norm( I - Q' Q )   / ( m ulp )
-   3: norm( I - P' P )   / ( n ulp )
-   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
-   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
-   6: norm( I - U' U )   / ( min(m,n) ulp )
-   7: norm( I - V' V )   / ( min(m,n) ulp )
-   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
-                                            without computing U and V'
-  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
-  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
-  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
-  13: norm( I - (QU)'(QU) )      / ( M ulp )
-  14: norm( I - (V' P') (P V) )  / ( N ulp )
-  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
-  16: norm( I - U' U )   / ( min(m,n) ulp )
-  17: norm( I - V' V )   / ( min(m,n) ulp )
-  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
-                                            without computing U and V'
-  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
-  21: norm( I - U' U )    / ( min(m,n) ulp )
-  22: norm( I - V' V )    / ( min(m,n) ulp )
-  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
-  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
-  26: norm( I - U' U )    / ( min(m,n) ulp )
-  27: norm( I - V' V )    / ( min(m,n) ulp )
-  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
-  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
-  31: norm( I - U' U )    / ( min(m,n) ulp )
-  32: norm( I - V' V )    / ( min(m,n) ulp )
-  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
- M=   16, N=   16, type 16, seed=   0,   0,   0,   1, test(10)=7.9228162514264338e+30
- CBD:      1 out of   4085 tests failed to pass the threshold
- SVD -- Complex Singular Value Decomposition Driver 
- Matrix types (see Cdrvbd for details):
-
- 1 = Zero matrix
- 2 = Identity matrix
- 3 = Evenly spaced singular values near 1
- 4 = Evenly spaced singular values near underflow
- 5 = Evenly spaced singular values near overflow
-
- Tests performed: ( A is dense, U and V are unitary,
-                    S is an array, and Upartial, VTpartial, and
-                    Spartial are partially computed U, VT and S),
-
- Tests performed with Test Threshold = 5.0000000000000000e+01
- Cgesvd: 
- 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
- 2 = | I - U**T U | / ( M ulp ) 
- 3 = | I - VT VT**T | / ( N ulp ) 
- 4 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- 5 = | U - Upartial | / ( M ulp )
- 6 = | VT - VTpartial | / ( N ulp )
- 7 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesdd: 
- 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
- 9 = | I - U**T U | / ( M ulp ) 
-10 = | I - VT VT**T | / ( N ulp ) 
-11 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-12 = | U - Upartial | / ( M ulp )
-13 = | VT - VTpartial | / ( N ulp )
-14 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesvj: 
-
-15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-16 = | I - U**T U | / ( M ulp ) 
-17 = | I - VT VT**T | / ( N ulp ) 
-18 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- ZGESJV: 
-
-19 = | A - U diag(S) VT | / ( |A| max(M,N) ulp )
-20 = | I - U**T U | / ( M ulp ) 
-21 = | I - VT VT**T | / ( N ulp ) 
-22 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- Cgesvdx(V,V,A): 
-23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-24 = | I - U**T U | / ( M ulp ) 
-25 = | I - VT VT**T | / ( N ulp ) 
-26 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-27 = | U - Upartial | / ( M ulp )
-28 = | VT - VTpartial | / ( N ulp )
-29 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesvdx(V,V,I): 
-30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
-31 = | I - U**T U | / ( M ulp ) 
-32 = | I - VT VT**T | / ( N ulp ) 
- Cgesvdx(V,V,V) 
-33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
-34 = | I - U**T U | / ( M ulp ) 
-35 = | I - VT VT**T | / ( N ulp )  Cgesvdq(H,N,N,A,A
-36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-37 = | I - U**T U | / ( M ulp ) 
-38 = | I - VT VT**T | / ( N ulp ) 
-39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-
-
- M=    2, N=    1, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=3.7525795643617225e+30
- M=    2, N=    1, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=3.7525795643617225e+30
- M=    2, N=    1, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=3.7525795643617225e+30
- M=    2, N=    1, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=3.7525795643617225e+30
- M=    2, N=    1, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.4520680771696189e+30
- M=    2, N=    1, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.4520680771696189e+30
- M=    2, N=    1, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.4520680771696189e+30
- M=    2, N=    1, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.4520680771696189e+30
- M=    3, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=5.0861410773989953e+30
- M=    3, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=5.0861410773989953e+30
- M=    3, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=5.0861410773989953e+30
- M=    3, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=5.0861410773989953e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=2.9207345213526459e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=2.9207345213526459e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=2.9207345213526459e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=2.9207345213526459e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.3335091866897926e+14
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=3.2732313067704569e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.3335091866897926e+14
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=3.2732313067704569e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.3335091866897926e+14
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=3.2732313067704569e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.3335091866897926e+14
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=3.2732313067704569e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.4227523393342465e+13
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.4227523393342465e+13
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.4227523393342465e+13
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.4227523393342465e+13
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=2.0020279938290565e+29
- M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=2.0020279938290565e+29
- M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=2.0020279938290565e+29
- M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=2.0020279938290565e+29
- M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=6.4770518493475680e+12
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=6.4770518493475680e+12
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=6.4770518493475680e+12
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=6.4770518493475680e+12
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=8.2107321001368305e+29
- M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=2.2424584411698944e+29
- M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=8.2107321001368305e+29
- M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=2.2424584411698944e+29
- M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=8.2107321001368305e+29
- M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=2.2424584411698944e+29
- M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=8.2107321001368305e+29
- M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=2.2424584411698944e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=4.2031791503023310e+29
- M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.2031791503023310e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=4.2031791503023310e+29
- M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.2031791503023310e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=4.2031791503023310e+29
- M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.2031791503023310e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=4.2031791503023310e+29
- M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.2031791503023310e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.5703654889708074e+12
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.0300702787725358e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.5703654889708074e+12
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.0300702787725358e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.5703654889708074e+12
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.0300702787725358e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.5703654889708074e+12
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.0300702787725358e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=4.2149576479493122e+29
- M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.2149576479493122e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=4.2149576479493122e+29
- M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.2149576479493122e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=4.2149576479493122e+29
- M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.2149576479493122e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=4.2149576479493122e+29
- M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.2149576479493122e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.2029963753547370e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.2029963753547370e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.2029963753547370e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.2029963753547370e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.6764854005437240e+12
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=3.8511389503640651e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.6764854005437240e+12
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=3.8511389503640651e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.6764854005437240e+12
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=3.8511389503640651e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.6764854005437240e+12
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=3.8511389503640651e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.2163424800192619e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.2163424800192619e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.2163424800192619e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.2163424800192619e+29
+ M=   30, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.6667654949916338e+12
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.6667654949916338e+12
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.6667654949916338e+12
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.6667654949916338e+12
+ M=   40, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.6407070924159454e+12
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.6407070924159454e+12
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.6407070924159454e+12
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.6407070924159454e+12
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
@@ -1653,11 +390,351 @@ The following parameter values will be used:
  M=   40, N=   40, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   40, N=   40, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   40, N=   40, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.5623005269116285e+12
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.5623005269116285e+12
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.5623005269116285e+12
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.5623005269116285e+12
- ZBD drivers:    116 out of  14340 tests failed to pass the threshold
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.4733178340762452e+12
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.4733178340762452e+12
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.4733178340762452e+12
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.4733178340762452e+12
+ ZBD drivers:     88 out of  14340 tests failed to pass the threshold
+
+
+ SVD:  NB =   3, NBMIN =   2, NX =   5, NRHS =   2
+
+ All tests for CBD routines passed the threshold (   4085 tests run)
+ SVD -- Complex Singular Value Decomposition Driver 
+ Matrix types (see Cdrvbd for details):
+
+ 1 = Zero matrix
+ 2 = Identity matrix
+ 3 = Evenly spaced singular values near 1
+ 4 = Evenly spaced singular values near underflow
+ 5 = Evenly spaced singular values near overflow
+
+ Tests performed: ( A is dense, U and V are unitary,
+                    S is an array, and Upartial, VTpartial, and
+                    Spartial are partially computed U, VT and S),
+
+ Tests performed with Test Threshold = 5.0000000000000000e+01
+ Cgesvd: 
+ 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+ 2 = | I - U**T U | / ( M ulp ) 
+ 3 = | I - VT VT**T | / ( N ulp ) 
+ 4 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+ 5 = | U - Upartial | / ( M ulp )
+ 6 = | VT - VTpartial | / ( N ulp )
+ 7 = | S - Spartial | / ( min(M,N) ulp |S| )
+ Cgesdd: 
+ 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+ 9 = | I - U**T U | / ( M ulp ) 
+10 = | I - VT VT**T | / ( N ulp ) 
+11 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+12 = | U - Upartial | / ( M ulp )
+13 = | VT - VTpartial | / ( N ulp )
+14 = | S - Spartial | / ( min(M,N) ulp |S| )
+ Cgesvj: 
+
+15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+16 = | I - U**T U | / ( M ulp ) 
+17 = | I - VT VT**T | / ( N ulp ) 
+18 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+ ZGESJV: 
+
+19 = | A - U diag(S) VT | / ( |A| max(M,N) ulp )
+20 = | I - U**T U | / ( M ulp ) 
+21 = | I - VT VT**T | / ( N ulp ) 
+22 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+ Cgesvdx(V,V,A): 
+23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+24 = | I - U**T U | / ( M ulp ) 
+25 = | I - VT VT**T | / ( N ulp ) 
+26 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+27 = | U - Upartial | / ( M ulp )
+28 = | VT - VTpartial | / ( N ulp )
+29 = | S - Spartial | / ( min(M,N) ulp |S| )
+ Cgesvdx(V,V,I): 
+30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
+31 = | I - U**T U | / ( M ulp ) 
+32 = | I - VT VT**T | / ( N ulp ) 
+ Cgesvdx(V,V,V) 
+33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
+34 = | I - U**T U | / ( M ulp ) 
+35 = | I - VT VT**T | / ( N ulp )  Cgesvdq(H,N,N,A,A
+36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+37 = | I - U**T U | / ( M ulp ) 
+38 = | I - VT VT**T | / ( N ulp ) 
+39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+
+
+ M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=6.8502070248342994e+29
+ M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=6.8502070248342994e+29
+ M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=6.8502070248342994e+29
+ M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=6.8502070248342994e+29
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.3740164810016765e+14
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.3740164810016765e+14
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.3740164810016765e+14
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.3740164810016765e+14
+ M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.3670254334882723e+13
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=3.2783140943671580e+29
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.3670254334882723e+13
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=3.2783140943671580e+29
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.3670254334882723e+13
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=3.2783140943671580e+29
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.3670254334882723e+13
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=3.2783140943671580e+29
+ M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.0026621956632551e+29
+ M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.0026621956632551e+29
+ M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.0026621956632551e+29
+ M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.0026621956632551e+29
+ M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=6.4025018121585235e+12
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=2.3140427276600735e+29
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=6.4025018121585235e+12
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=2.3140427276600735e+29
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=6.4025018121585235e+12
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=2.3140427276600735e+29
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=6.4025018121585235e+12
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=2.3140427276600735e+29
+ M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2946777701550572e+30
+ M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.2946777701550572e+30
+ M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2946777701550572e+30
+ M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.2946777701550572e+30
+ M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2946777701550572e+30
+ M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.2946777701550572e+30
+ M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2946777701550572e+30
+ M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.2946777701550572e+30
+ M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   16, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   16, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   16, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   16, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.5960533461457665e+12
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.5960533461457665e+12
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.5960533461457665e+12
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.5960533461457665e+12
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=4.3991631061808567e+29
+ M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.2905177312654368e+29
+ M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=4.3991631061808567e+29
+ M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.2905177312654368e+29
+ M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=4.3991631061808567e+29
+ M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.2905177312654368e+29
+ M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=4.3991631061808567e+29
+ M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.2905177312654368e+29
+ M=   40, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.7961968778380336e+12
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.7961968778380336e+12
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.7961968778380336e+12
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.7961968778380336e+12
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   40, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=8.1297766339906057e+28
+ M=   40, N=   40, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=8.1297766339906057e+28
+ M=   40, N=   40, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=8.1297766339906057e+28
+ M=   40, N=   40, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=8.1297766339906057e+28
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.5383192489325553e+12
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.5383192489325553e+12
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.5383192489325553e+12
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.5383192489325553e+12
+ M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=3.2378306108142513e+29
+ M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=3.2378306108142513e+29
+ M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=3.2378306108142513e+29
+ M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=3.2378306108142513e+29
+ ZBD drivers:    104 out of  14340 tests failed to pass the threshold
+
+
+ SVD:  NB =   3, NBMIN =   2, NX =   9, NRHS =   2
+
+ All tests for CBD routines passed the threshold (   4085 tests run)
+ SVD -- Complex Singular Value Decomposition Driver 
+ Matrix types (see Cdrvbd for details):
+
+ 1 = Zero matrix
+ 2 = Identity matrix
+ 3 = Evenly spaced singular values near 1
+ 4 = Evenly spaced singular values near underflow
+ 5 = Evenly spaced singular values near overflow
+
+ Tests performed: ( A is dense, U and V are unitary,
+                    S is an array, and Upartial, VTpartial, and
+                    Spartial are partially computed U, VT and S),
+
+ Tests performed with Test Threshold = 5.0000000000000000e+01
+ Cgesvd: 
+ 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+ 2 = | I - U**T U | / ( M ulp ) 
+ 3 = | I - VT VT**T | / ( N ulp ) 
+ 4 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+ 5 = | U - Upartial | / ( M ulp )
+ 6 = | VT - VTpartial | / ( N ulp )
+ 7 = | S - Spartial | / ( min(M,N) ulp |S| )
+ Cgesdd: 
+ 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+ 9 = | I - U**T U | / ( M ulp ) 
+10 = | I - VT VT**T | / ( N ulp ) 
+11 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+12 = | U - Upartial | / ( M ulp )
+13 = | VT - VTpartial | / ( N ulp )
+14 = | S - Spartial | / ( min(M,N) ulp |S| )
+ Cgesvj: 
+
+15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+16 = | I - U**T U | / ( M ulp ) 
+17 = | I - VT VT**T | / ( N ulp ) 
+18 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+ ZGESJV: 
+
+19 = | A - U diag(S) VT | / ( |A| max(M,N) ulp )
+20 = | I - U**T U | / ( M ulp ) 
+21 = | I - VT VT**T | / ( N ulp ) 
+22 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+ Cgesvdx(V,V,A): 
+23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+24 = | I - U**T U | / ( M ulp ) 
+25 = | I - VT VT**T | / ( N ulp ) 
+26 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+27 = | U - Upartial | / ( M ulp )
+28 = | VT - VTpartial | / ( N ulp )
+29 = | S - Spartial | / ( min(M,N) ulp |S| )
+ Cgesvdx(V,V,I): 
+30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
+31 = | I - U**T U | / ( M ulp ) 
+32 = | I - VT VT**T | / ( N ulp ) 
+ Cgesvdx(V,V,V) 
+33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
+34 = | I - U**T U | / ( M ulp ) 
+35 = | I - VT VT**T | / ( N ulp )  Cgesvdq(H,N,N,A,A
+36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+37 = | I - U**T U | / ( M ulp ) 
+38 = | I - VT VT**T | / ( N ulp ) 
+39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+
+
+ M=    2, N=    1, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=3.4871388012460742e+30
+ M=    2, N=    1, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=3.4871388012460742e+30
+ M=    2, N=    1, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=3.4871388012460742e+30
+ M=    2, N=    1, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=3.4871388012460742e+30
+ M=    3, N=    1, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=4.8990585473293129e+30
+ M=    3, N=    1, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=4.8990585473293129e+30
+ M=    3, N=    1, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=4.8990585473293129e+30
+ M=    3, N=    1, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=4.8990585473293129e+30
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.1631937167049265e+14
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.1631937167049265e+14
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.1631937167049265e+14
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.1631937167049265e+14
+ M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   10, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   10, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   10, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   10, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.3297107803507549e+13
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.3297107803507549e+13
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.3297107803507549e+13
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.3297107803507549e+13
+ M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=6.2658620442170978e+12
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=6.2658620442170978e+12
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=6.2658620442170978e+12
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=6.2658620442170978e+12
+ M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3041331227695967e+30
+ M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3041331227695967e+30
+ M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3041331227695967e+30
+ M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3041331227695967e+30
+ M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   16, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=1.7743236355966485e+29
+ M=   16, N=   16, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.7743236355966485e+29
+ M=   16, N=   16, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.7743236355966485e+29
+ M=   16, N=   16, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.7743236355966485e+29
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.5990063833256872e+12
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.5990063833256872e+12
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.5990063833256872e+12
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.5990063833256872e+12
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=4.4045545388785898e+29
+ M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=4.4045545388785898e+29
+ M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=4.4045545388785898e+29
+ M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=4.4045545388785898e+29
+ M=   40, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.7225462472908022e+12
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.7225462472908022e+12
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.7225462472908022e+12
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.7225462472908022e+12
+ M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=4.4450567512479795e+29
+ M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.1265875174898118e+29
+ M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=4.4450567512479795e+29
+ M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.1265875174898118e+29
+ M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=4.4450567512479795e+29
+ M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.1265875174898118e+29
+ M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=4.4450567512479795e+29
+ M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.1265875174898118e+29
+ M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.5687517863131946e+12
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.5687517863131946e+12
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.5687517863131946e+12
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.5687517863131946e+12
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ ZBD drivers:     96 out of  14340 tests failed to pass the threshold
 
 
  SVD:  NB =  20, NBMIN =   2, NX =   1, NRHS =   2
@@ -1716,7 +793,7 @@ The following parameter values will be used:
   33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
   34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
                                              without computing U and V'
- M=   16, N=   10, type 16, seed=   0,   0,   0,   1, test(10)=1.5845632502852868e+31
+ M=   30, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=3.9614081257132169e+30
  CBD:      1 out of   4085 tests failed to pass the threshold
  SVD -- Complex Singular Value Decomposition Driver 
  Matrix types (see Cdrvbd for details):
@@ -1782,317 +859,93 @@ The following parameter values will be used:
 39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
 
 
- M=    2, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=3.3917174762254003e+30
- M=    2, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=3.3917174762254003e+30
- M=    2, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=3.3917174762254003e+30
- M=    2, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=3.3917174762254003e+30
- M=    3, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=5.2228413060622267e+30
- M=    3, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=5.2228413060622267e+30
- M=    3, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=5.2228413060622267e+30
- M=    3, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=5.2228413060622267e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.3516766915681463e+14
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=3.2373835960446420e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.3516766915681463e+14
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=3.2373835960446420e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.3516766915681463e+14
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=3.2373835960446420e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.3516766915681463e+14
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=3.2373835960446420e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=3.0283156045334087e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=3.0283156045334087e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=3.0283156045334087e+30
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=3.0283156045334087e+30
+ M=    2, N=    1, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.5411927232345921e+30
+ M=    2, N=    1, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.5411927232345921e+30
+ M=    2, N=    1, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.5411927232345921e+30
+ M=    2, N=    1, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.5411927232345921e+30
+ M=    2, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=3.7081822470825407e+30
+ M=    2, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=3.7081822470825407e+30
+ M=    2, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=3.7081822470825407e+30
+ M=    2, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=3.7081822470825407e+30
+ M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.5366957083203193e+14
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.5366957083203193e+14
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.5366957083203193e+14
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.5366957083203193e+14
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.4999663279367755e+13
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=2.9673695704599948e+29
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.4999663279367755e+13
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=2.9673695704599948e+29
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.4999663279367755e+13
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=2.9673695704599948e+29
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.4999663279367755e+13
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=2.9673695704599948e+29
- M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2664069824475597e+30
- M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2664069824475597e+30
- M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2664069824475597e+30
- M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2664069824475597e+30
+ M=   10, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=3.7125673429801938e+29
+ M=   10, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=3.7125673429801938e+29
+ M=   10, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=3.7125673429801938e+29
+ M=   10, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=3.7125673429801938e+29
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.3632145915714627e+13
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=3.4908513609865397e+29
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.3632145915714627e+13
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=3.4908513609865397e+29
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.3632145915714627e+13
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=3.4908513609865397e+29
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.3632145915714627e+13
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=3.4908513609865397e+29
+ M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3270702390636958e+30
+ M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.3270702390636958e+30
+ M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3270702390636958e+30
+ M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.3270702390636958e+30
+ M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3270702390636958e+30
+ M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.3270702390636958e+30
+ M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3270702390636958e+30
+ M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.3270702390636958e+30
  M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=6.2597904646198515e+12
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=6.2597904646198515e+12
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=6.2597904646198515e+12
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=6.2597904646198515e+12
- M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=2.7414517261185915e+29
- M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=2.7414517261185915e+29
- M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=2.7414517261185915e+29
- M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=2.7414517261185915e+29
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=6.3208919101823428e+12
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=6.3208919101823428e+12
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=6.3208919101823428e+12
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=6.3208919101823428e+12
  M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=4.0641074220088115e+29
- M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.0641074220088115e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=4.0641074220088115e+29
- M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.0641074220088115e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=4.0641074220088115e+29
- M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.0641074220088115e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=4.0641074220088115e+29
- M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.0641074220088115e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.5524876092916930e+12
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1197390409107040e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.5524876092916930e+12
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1197390409107040e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.5524876092916930e+12
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1197390409107040e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.5524876092916930e+12
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1197390409107040e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1264108771748334e+29
- M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1264108771748334e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1264108771748334e+29
- M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1264108771748334e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1264108771748334e+29
- M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1264108771748334e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1264108771748334e+29
- M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1264108771748334e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.2412962197321377e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.2412962197321377e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.2412962197321377e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.2412962197321377e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.7462531308740923e+12
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=3.8787075122811800e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.7462531308740923e+12
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=3.8787075122811800e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.7462531308740923e+12
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=3.8787075122811800e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.7462531308740923e+12
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=3.8787075122811800e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1142872070014638e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1142872070014638e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1142872070014638e+29
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Rlascl instead of Cgesvdq ***
- *** XERBLA was called from Cgesvdq with INFO =      5 instead of 17 ***
- *** XERBLA was called with SRNAME = Clascl instead of Cgesvdq ***
- M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1142872070014638e+29
+ M=   30, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.6275936925709271e+12
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.6275936925709271e+12
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.6275936925709271e+12
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.6275936925709271e+12
+ M=   40, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.7621822564924308e+12
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.7621822564924308e+12
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.7621822564924308e+12
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.7621822564924308e+12
  M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
  M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.5597002002582943e+12
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.5597002002582943e+12
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.5597002002582943e+12
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.5597002002582943e+12
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0141204801825843e+31
- M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=3.2929341636922316e+29
- M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=3.2929341636922316e+29
- M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=3.2929341636922316e+29
- M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=3.2929341636922316e+29
- ZBD drivers:    116 out of  14340 tests failed to pass the threshold
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.7004724848904883e+12
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.7004724848904883e+12
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.7004724848904883e+12
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.7004724848904883e+12
+ M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=9.0113632078411522e+28
+ M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=9.0113632078411522e+28
+ M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=9.0113632078411522e+28
+ M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=9.0113632078411522e+28
+ ZBD drivers:     84 out of  14340 tests failed to pass the threshold
 
 
  End of tests
- Total time used =      1169.00 seconds
+ Total time used =       735.00 seconds
 
