@@ -30,6 +30,10 @@
 #include <mplapack.h>
 
 void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *sva, INTEGER const mv, COMPLEX *v, INTEGER const ldv, COMPLEX *cwork, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER &info) {
+#if defined(___MPLAPACK_BUILD_WITH_DD___) || defined(___MPLAPACK_BUILD_WITH_QD___)
+    printf("This routine doesn't work properly\n");
+    exit(-1);
+#endif
     bool lsvec = false;
     bool uctol = false;
     bool rsvec = false;

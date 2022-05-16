@@ -160,3 +160,29 @@ The following parameter values will be used:
 
  All tests for CTZ routines passed the threshold (    252 tests run)
  CLS routines passed the tests of the error exits
+
+ All tests for CLS drivers  passed the threshold ( 105840 tests run)
+ 
+ All tests for CEQ routines passed the threshold
+ CQT routines passed the tests of the error exits
+
+ All tests for CQT routines passed the threshold (    510 tests run)
+ CQX routines passed the tests of the error exits
+
+ All tests for CQX routines passed the threshold (   1482 tests run)
+ CXQ routines passed the tests of the error exits
+
+ All tests for CXQ routines passed the threshold (   1482 tests run)
+ CTQ routines passed the tests of the error exits
+
+ All tests for CTQ routines passed the threshold (    510 tests run)
+ CTS routines passed the tests of the error exits
+
+ All tests for CTS routines passed the threshold (  10800 tests run)
+ CHH routines passed the tests of the error exits
+
+ All tests for CHH routines passed the threshold (  15900 tests run)
+
+ End of tests
+ Total time used =  5596 seconds
+
