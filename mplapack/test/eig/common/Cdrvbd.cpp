@@ -111,39 +111,6 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     static const char *format_9995 = "(' Cdrvbd: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
                                      "', JTYPE=',i6,', LSWORK=',i6,/,9x,'ISEED=(',3(i5,','),i5,')')";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Scalars for Cgesvdq ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Check for errors
     //
     info = 0;
@@ -277,7 +244,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 if (iinfo != 0) {
                     write(nounit, "(' Cdrvbd: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
                                   "', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')"),
-                        "Generator", iinfo, m, n, jtype, ioldsd;
+                        "Generator", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     return;
                 }
@@ -311,7 +278,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 }
                 Cgesvd("A", "A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, work, lswork, rwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9995), "GESVD", iinfo, m, n, jtype, lswork, ioldsd;
+                    write(nounit, format_9995), "GESVD", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     return;
                 }
@@ -414,7 +381,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 Clacpy("F", m, n, asav, lda, a, lda);
                 Cgesdd("A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, work, lswork, rwork, iwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9995), "GESDD", iinfo, m, n, jtype, lswork, ioldsd;
+                    write(nounit, format_9995), "GESDD", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     return;
                 }
@@ -523,7 +490,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     Cgesvdq("H", "N", "N", "A", "A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, numrank, iwork, liwork, work, lwork, rwork, lrwork, iinfo);
                     //
                     if (iinfo != 0) {
-                        write(nounit, format_9995), "Cgesvdq", iinfo, m, n, jtype, lswork, ioldsd;
+                        write(nounit, format_9995), "Cgesvdq", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         return;
                     }
@@ -559,6 +526,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 result[17 - 1] = zero;
                 result[18 - 1] = zero;
                 //
+#if !defined(___MPLAPACK_BUILD_WITH_DD___) && !defined(___MPLAPACK_BUILD_WITH_QD___)
                 if (m >= n) {
                     iwtmp = 2 * mnmin * mnmin + 2 * mnmin + max(m, n);
                     lswork = iwtmp + (iwspc - 1) * (lwork - iwtmp) / 3;
@@ -581,7 +549,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     //
                     if (iinfo != 0) {
-                        write(nounit, format_9995), "GESVJ", iinfo, m, n, jtype, lswork, ioldsd;
+                        write(nounit, format_9995), "GESVJ", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         return;
                     }
@@ -608,6 +576,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         }
                     }
                 }
+#endif
                 //
                 //              Test Cgejsv
                 //              Note: Cgejsv only works for M >= N
@@ -616,6 +585,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 result[20 - 1] = zero;
                 result[21 - 1] = zero;
                 result[22 - 1] = zero;
+#if !defined(___MPLAPACK_BUILD_WITH_DD___) && !defined(___MPLAPACK_BUILD_WITH_QD___)
                 if (m >= n) {
                     iwtmp = 2 * mnmin * mnmin + 2 * mnmin + max(m, n);
                     lswork = iwtmp + (iwspc - 1) * (lwork - iwtmp) / 3;
@@ -638,7 +608,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     //
                     if (iinfo != 0) {
-                        write(nounit, format_9995), "GEJSV", iinfo, m, n, jtype, lswork, ioldsd;
+                        write(nounit, format_9995), "GEJSV", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         return;
                     }
@@ -665,6 +635,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         }
                     }
                 }
+#endif
                 //
                 //              Test Cgesvdx
                 //
@@ -673,7 +644,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 Clacpy("F", m, n, asav, lda, a, lda);
                 Cgesvdx("V", "V", "A", m, n, a, lda, vl, vu, il, iu, ns, ssav, usav, ldu, vtsav, ldvt, work, lwork, rwork, iwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd;
+                    write(nounit, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     return;
                 }
@@ -777,7 +748,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 Clacpy("F", m, n, asav, lda, a, lda);
                 Cgesvdx("V", "V", "I", m, n, a, lda, vl, vu, il, iu, nsi, s, u, ldu, vt, ldvt, work, lwork, rwork, iwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd;
+                    write(nounit, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     return;
                 }
@@ -816,7 +787,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 Clacpy("F", m, n, asav, lda, a, lda);
                 Cgesvdx("V", "V", "V", m, n, a, lda, vl, vu, il, iu, nsv, s, u, ldu, vt, ldvt, work, lwork, rwork, iwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd;
+                    write(nounit, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     return;
                 }
@@ -913,7 +884,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         sprintnum_short(buf, result[j - 1]);
                         write(nounit, "(' M=',i5,', N=',i5,', type ',i1,', IWS=',i1,', seed=',4(i4,"
                                       "','),' test(',i2,')=',a)"),
-                            m, n, jtype, iwspc, ioldsd, j, buf;
+                            m, n, jtype, iwspc, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], j, buf;
                     }
                 }
                 //

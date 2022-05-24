@@ -289,7 +289,7 @@ void Cgeev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
             scl = one / RCnrm2(n, &vr[(i - 1) * ldvr], 1);
             CRscal(n, scl, &vr[(i - 1) * ldvr], 1);
             for (k = 1; k <= n; k = k + 1) {
-                rwork[(irwork + k - 1) - 1] = pow2(vr[(k - 1) + (i - 1) * ldvr].real()) + pow2(vr[(k - 1) + (i - 1) * ldvr].real());
+                rwork[(irwork + k - 1) - 1] = pow2(vr[(k - 1) + (i - 1) * ldvr].real()) + pow2(vr[(k - 1) + (i - 1) * ldvr].imag());
             }
             k = iRamax(n, &rwork[irwork - 1], 1);
             tmp = conj(vr[(k - 1) + (i - 1) * ldvr]) / sqrt(rwork[(irwork + k - 1) - 1]);

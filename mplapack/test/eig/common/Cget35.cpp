@@ -38,6 +38,16 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <regex>
+
+using namespace std;
+using std::regex;
+using std::regex_replace;
+
 void Cget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER const nin) {
     common cmn;
     common_read read(cmn);
@@ -92,35 +102,12 @@ void Cget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER con
     REAL res1 = 0.0;
     REAL res = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Get machine parameters
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
+    //    Rlabad(smlnum, bignum);
     //
     //     Set up test case parameters
     //
@@ -135,104 +122,132 @@ void Cget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER con
     ninfo = 0;
     lmax = 0;
     rmax = zero;
-//
-//     Begin test loop
-//
-statement_10:
-    read(nin, star), m, n;
-    if (n == 0) {
-        return;
-    }
-    for (i = 1; i <= m; i = i + 1) {
-        {
-            read_loop rloop(cmn, nin, star);
+    string str;
+    istringstream iss;
+    double dtmp_r;
+    double dtmp_i;
+    //
+    //     Begin test loop
+    //
+    while (getline(cin, str)) {
+        stringstream ss(str);
+        ss >> m;
+        ss >> n;
+        //        printf(" M     %d\n", (int)m);
+        //        printf(" N     %d\n", (int)n);
+        if (n == 0) {
+            return;
+        }
+        for (i = 1; i <= m; i = i + 1) {
+            getline(cin, str);
+            string ___r = regex_replace(str, regex(","), " ");
+            string __r = regex_replace(___r, regex("\\)"), " ");
+            string _r = regex_replace(__r, regex("\\("), " ");
+            str = regex_replace(_r, regex("D"), "e");
+            iss.clear();
+            iss.str(str);
             for (j = 1; j <= m; j = j + 1) {
-                rloop, _ctmp;
-                atmp[(i - 1) + (j - 1) * ldatmp] = _ctmp;
+                iss >> dtmp_r;
+                iss >> dtmp_i;
+                atmp[(i - 1) + (j - 1) * ldatmp] = COMPLEX(dtmp_r, dtmp_i);
             }
         }
-    }
-    for (i = 1; i <= n; i = i + 1) {
-        {
-            read_loop rloop(cmn, nin, star);
+        //        printf("ATMP=");printmat(m, m, atmp, ldatmp);printf("\n");
+        for (i = 1; i <= n; i = i + 1) {
+            getline(cin, str);
+            string ___r = regex_replace(str, regex(","), " ");
+            string __r = regex_replace(___r, regex("\\)"), " ");
+            string _r = regex_replace(__r, regex("\\("), " ");
+            str = regex_replace(_r, regex("D"), "e");
+            iss.clear();
+            iss.str(str);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, _ctmp;
-                btmp[(i - 1) + (j - 1) * ldbtmp] = _ctmp;
+                iss >> dtmp_r;
+                iss >> dtmp_i;
+                btmp[(i - 1) + (j - 1) * ldbtmp] = COMPLEX(dtmp_r, dtmp_i);
             }
         }
-    }
-    for (i = 1; i <= m; i = i + 1) {
-        {
-            read_loop rloop(cmn, nin, star);
+        //        printf("BTMP="); printmat(n, n, btmp, ldbtmp); printf("\n");
+        for (i = 1; i <= m; i = i + 1) {
+            getline(cin, str);
+            string ___r = regex_replace(str, regex(","), " ");
+            string __r = regex_replace(___r, regex("\\)"), " ");
+            string _r = regex_replace(__r, regex("\\("), " ");
+            str = regex_replace(_r, regex("D"), "e");
+            iss.clear();
+            iss.str(str);
             for (j = 1; j <= n; j = j + 1) {
-                rloop, _ctmp;
-                ctmp[(i - 1) + (j - 1) * ldctmp] = _ctmp;
+                iss >> dtmp_r;
+                iss >> dtmp_i;
+                ctmp[(i - 1) + (j - 1) * ldctmp] = COMPLEX(dtmp_r, dtmp_i);
             }
         }
-    }
-    for (imla = 1; imla <= 3; imla = imla + 1) {
-        for (imlad = 1; imlad <= 3; imlad = imlad + 1) {
-            for (imlb = 1; imlb <= 3; imlb = imlb + 1) {
-                for (imlc = 1; imlc <= 3; imlc = imlc + 1) {
-                    for (itrana = 1; itrana <= 2; itrana = itrana + 1) {
-                        for (itranb = 1; itranb <= 2; itranb = itranb + 1) {
-                            for (isgn = -1; isgn <= 1; isgn = isgn + 2) {
-                                if (itrana == 1) {
-                                    trana = 'N';
-                                }
-                                if (itrana == 2) {
-                                    trana = 'C';
-                                }
-                                if (itranb == 1) {
-                                    tranb = 'N';
-                                }
-                                if (itranb == 2) {
-                                    tranb = 'C';
-                                }
-                                tnrm = zero;
-                                for (i = 1; i <= m; i = i + 1) {
-                                    for (j = 1; j <= m; j = j + 1) {
-                                        a[(i - 1) + (j - 1) * lda] = atmp[(i - 1) + (j - 1) * ldatmp] * vm1[imla - 1];
-                                        tnrm = max(tnrm, abs(a[(i - 1) + (j - 1) * lda]));
+        //        printf("CTMP="); printmat(m, n, ctmp, ldctmp); printf("\n");
+        //	printf("\n");
+        for (imla = 1; imla <= 3; imla = imla + 1) {
+            for (imlad = 1; imlad <= 3; imlad = imlad + 1) {
+                for (imlb = 1; imlb <= 3; imlb = imlb + 1) {
+                    for (imlc = 1; imlc <= 3; imlc = imlc + 1) {
+                        for (itrana = 1; itrana <= 2; itrana = itrana + 1) {
+                            for (itranb = 1; itranb <= 2; itranb = itranb + 1) {
+                                for (isgn = -1; isgn <= 1; isgn = isgn + 2) {
+                                    if (itrana == 1) {
+                                        trana = 'N';
                                     }
-                                    a[(i - 1) + (i - 1) * lda] = a[(i - 1) + (i - 1) * lda] * vm2[imlad - 1];
-                                    tnrm = max(tnrm, abs(a[(i - 1) + (i - 1) * lda]));
-                                }
-                                for (i = 1; i <= n; i = i + 1) {
-                                    for (j = 1; j <= n; j = j + 1) {
-                                        b[(i - 1) + (j - 1) * ldb] = btmp[(i - 1) + (j - 1) * ldbtmp] * vm1[imlb - 1];
-                                        tnrm = max(tnrm, abs(b[(i - 1) + (j - 1) * ldb]));
+                                    if (itrana == 2) {
+                                        trana = 'C';
                                     }
-                                }
-                                if (tnrm == zero) {
-                                    tnrm = one;
-                                }
-                                for (i = 1; i <= m; i = i + 1) {
-                                    for (j = 1; j <= n; j = j + 1) {
-                                        c[(i - 1) + (j - 1) * ldc] = ctmp[(i - 1) + (j - 1) * ldctmp] * vm1[imlc - 1];
-                                        csav[(i - 1) + (j - 1) * ldcsav] = c[(i - 1) + (j - 1) * ldc];
+                                    if (itranb == 1) {
+                                        tranb = 'N';
                                     }
-                                }
-                                knt++;
-                                Ctrsyl(&trana, &tranb, isgn, m, n, a, ldt, b, ldt, c, ldt, scale, info);
-                                if (info != 0) {
-                                    ninfo++;
-                                }
-                                xnrm = Clange("M", m, n, c, ldt, dum);
-                                rmul = cone;
-                                if (xnrm > one && tnrm > one) {
-                                    if (xnrm > bignum / tnrm) {
-                                        rmul = max(xnrm, tnrm);
-                                        rmul = cone / rmul;
+                                    if (itranb == 2) {
+                                        tranb = 'C';
                                     }
-                                }
-                                Cgemm(&trana, "N", m, n, m, rmul, a, ldt, c, ldt, -scale * rmul, csav, ldt);
-                                Cgemm("N", &tranb, m, n, n, castREAL(isgn) * rmul, c, ldt, b, ldt, cone, csav, ldt);
-                                res1 = Clange("M", m, n, csav, ldt, dum);
-                                res = res1 / max({smlnum, REAL(smlnum * xnrm), REAL(((abs(rmul) * tnrm) * eps) * xnrm)});
-                                if (res > rmax) {
-                                    lmax = knt;
-                                    rmax = res;
+                                    tnrm = zero;
+                                    for (i = 1; i <= m; i = i + 1) {
+                                        for (j = 1; j <= m; j = j + 1) {
+                                            a[(i - 1) + (j - 1) * lda] = atmp[(i - 1) + (j - 1) * ldatmp] * vm1[imla - 1];
+                                            tnrm = max(tnrm, abs(a[(i - 1) + (j - 1) * lda]));
+                                        }
+                                        a[(i - 1) + (i - 1) * lda] = a[(i - 1) + (i - 1) * lda] * vm2[imlad - 1];
+                                        tnrm = max(tnrm, abs(a[(i - 1) + (i - 1) * lda]));
+                                    }
+                                    for (i = 1; i <= n; i = i + 1) {
+                                        for (j = 1; j <= n; j = j + 1) {
+                                            b[(i - 1) + (j - 1) * ldb] = btmp[(i - 1) + (j - 1) * ldbtmp] * vm1[imlb - 1];
+                                            tnrm = max(tnrm, abs(b[(i - 1) + (j - 1) * ldb]));
+                                        }
+                                    }
+                                    if (tnrm == zero) {
+                                        tnrm = one;
+                                    }
+                                    for (i = 1; i <= m; i = i + 1) {
+                                        for (j = 1; j <= n; j = j + 1) {
+                                            c[(i - 1) + (j - 1) * ldc] = ctmp[(i - 1) + (j - 1) * ldctmp] * vm1[imlc - 1];
+                                            csav[(i - 1) + (j - 1) * ldcsav] = c[(i - 1) + (j - 1) * ldc];
+                                        }
+                                    }
+                                    knt++;
+                                    Ctrsyl(&trana, &tranb, isgn, m, n, a, ldt, b, ldt, c, ldt, scale, info);
+                                    if (info != 0) {
+                                        ninfo++;
+                                    }
+                                    xnrm = Clange("M", m, n, c, ldt, dum);
+                                    rmul = cone;
+                                    if (xnrm > one && tnrm > one) {
+                                        if (xnrm > bignum / tnrm) {
+                                            rmul = max(xnrm, tnrm);
+                                            rmul = cone / rmul;
+                                        }
+                                    }
+                                    Cgemm(&trana, "N", m, n, m, rmul, a, ldt, c, ldt, -scale * rmul, csav, ldt);
+                                    Cgemm("N", &tranb, m, n, n, castREAL(isgn) * rmul, c, ldt, b, ldt, cone, csav, ldt);
+                                    res1 = Clange("M", m, n, csav, ldt, dum);
+                                    res = res1 / max({smlnum, REAL(smlnum * xnrm), REAL(((abs(rmul) * tnrm) * eps) * xnrm)});
+                                    if (res > rmax) {
+                                        lmax = knt;
+                                        rmax = res;
+                                    }
                                 }
                             }
                         }
@@ -241,7 +256,6 @@ statement_10:
             }
         }
     }
-    goto statement_10;
     //
     //     End of Cget35
     //

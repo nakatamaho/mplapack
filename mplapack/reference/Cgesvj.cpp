@@ -30,6 +30,10 @@
 #include <mplapack.h>
 
 void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *sva, INTEGER const mv, COMPLEX *v, INTEGER const ldv, COMPLEX *cwork, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER &info) {
+#if defined(___MPLAPACK_BUILD_WITH_DD___) || defined(___MPLAPACK_BUILD_WITH_QD___)
+    printf("This routine doesn't work properly\n");
+    exit(-1);
+#endif
     bool lsvec = false;
     bool uctol = false;
     bool rsvec = false;
@@ -98,35 +102,6 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     INTEGER jbc = 0;
     INTEGER jgl = 0;
     INTEGER ijblsk = 0;
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     from BLAS
-    //     from LAPACK
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     from BLAS
-    //     from LAPACK
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Test the input arguments
     //
@@ -376,7 +351,7 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     //     avoid underflows/overflows in computing Jacobi rotations.
     //
     sn = sqrt(sfmin / epsln);
-    temp1 = sqrt(big / castREAL(n));
+    temp1 = sqrt(big) / sqrt(castREAL(n));
     if ((aapp <= sn) || (aaqq >= temp1) || ((sn <= aaqq) && (aapp <= temp1))) {
         temp1 = min(big, REAL(temp1 / aapp));
         //         AAQQ  = AAQQ*TEMP1

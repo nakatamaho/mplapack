@@ -29,32 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clatdf(INTEGER const ijob, INTEGER const n, COMPLEX *z, INTEGER const ldz, COMPLEX *rhs, REAL rdsum, REAL rdscal, INTEGER *ipiv, INTEGER *jpiv) {
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
+void Clatdf(INTEGER const ijob, INTEGER const n, COMPLEX *z, INTEGER const ldz, COMPLEX *rhs, REAL &rdsum, REAL &rdscal, INTEGER *ipiv, INTEGER *jpiv) {
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     COMPLEX pmone = 0.0;

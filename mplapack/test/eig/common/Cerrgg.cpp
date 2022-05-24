@@ -42,36 +42,6 @@ using fem::common;
 void Cerrgg(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     char c2[2];
@@ -147,6 +117,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //        Cgghrd
         //
         infot = 1;
+        strncpy(srnamt, "Cgghrd", srnamt_len);
         Cgghrd("/", "N", 0, 1, 0, a, 1, b, 1, q, 1, z, 1, info);
         chkxer("Cgghrd", infot, nout, lerr, ok);
         infot = 2;
@@ -177,6 +148,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cgghd3
         //
+        strncpy(srnamt, "Cgghd3", srnamt_len);
         infot = 1;
         Cgghd3("/", "N", 0, 1, 0, a, 1, b, 1, q, 1, z, 1, w, lw, info);
         chkxer("Cgghd3", infot, nout, lerr, ok);
@@ -208,6 +180,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Chgeqz
         //
+        strncpy(srnamt, "Chgeqz", srnamt_len);
         infot = 1;
         Chgeqz("/", "N", "N", 0, 1, 0, a, 1, b, 1, alpha, beta, q, 1, z, 1, w, 1, rw, info);
         chkxer("Chgeqz", infot, nout, lerr, ok);
@@ -242,6 +215,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Ctgevc
         //
+        strncpy(srnamt, "Ctgevc", srnamt_len);
         infot = 1;
         Ctgevc("/", "A", sel, 0, a, 1, b, 1, q, 1, z, 1, 0, m, w, rw, info);
         chkxer("Ctgevc", infot, nout, lerr, ok);
@@ -274,6 +248,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cggsvd3
         //
+        strncpy(srnamt, "Cggsvd3", srnamt_len);
         infot = 1;
         Cggsvd3("/", "N", "N", 0, 0, 0, dummyk, dummyl, a, 1, b, 1, r1, r2, u, 1, v, 1, q, 1, w, lwork, rw, idum, info);
         chkxer("Cggsvd3", infot, nout, lerr, ok);
@@ -311,6 +286,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cggsvp3
         //
+        strncpy(srnamt, "Cggsvp3", srnamt_len);
         infot = 1;
         Cggsvp3("/", "N", "N", 0, 0, 0, a, 1, b, 1, tola, tolb, dummyk, dummyl, u, 1, v, 1, q, 1, iw, rw, tau, w, lwork, info);
         chkxer("Cggsvp3", infot, nout, lerr, ok);
@@ -348,6 +324,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Ctgsja
         //
+        strncpy(srnamt, "Ctgsja", srnamt_len);
         infot = 1;
         Ctgsja("/", "N", "N", 0, 0, 0, dummyk, dummyl, a, 1, b, 1, tola, tolb, r1, r2, u, 1, v, 1, q, 1, w, ncycle, info);
         chkxer("Ctgsja", infot, nout, lerr, ok);
@@ -389,6 +366,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cggglm
         //
+        strncpy(srnamt, "Cggglm", srnamt_len);
         infot = 1;
         Cggglm(-1, 0, 0, a, 1, b, 1, tau, alpha, beta, w, lw, info);
         chkxer("Cggglm", infot, nout, lerr, ok);
@@ -421,6 +399,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cgglse
         //
+        strncpy(srnamt, "Cgglse", srnamt_len);
         infot = 1;
         Cgglse(-1, 0, 0, a, 1, b, 1, tau, alpha, beta, w, lw, info);
         chkxer("Cgglse", infot, nout, lerr, ok);
@@ -453,6 +432,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cuncsd
         //
+        strncpy(srnamt, "Cuncsd", srnamt_len);
         infot = 7;
         Cuncsd("Y", "Y", "Y", "Y", "N", "N", -1, 0, 0, a, 1, a, 1, a, 1, a, 1, rs, a, 1, a, 1, a, 1, a, 1, w, lw, rw, lw, iw, info);
         chkxer("Cuncsd", infot, nout, lerr, ok);
@@ -485,6 +465,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cggqrf
         //
+        strncpy(srnamt, "Cggqrf", srnamt_len);
         infot = 1;
         Cggqrf(-1, 0, 0, a, 1, alpha, b, 1, beta, w, lw, info);
         chkxer("Cggqrf", infot, nout, lerr, ok);
@@ -507,6 +488,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cggrqf
         //
+        strncpy(srnamt, "Cggrqf", srnamt_len);
         infot = 1;
         Cggrqf(-1, 0, 0, a, 1, alpha, b, 1, beta, w, lw, info);
         chkxer("Cggrqf", infot, nout, lerr, ok);
@@ -533,6 +515,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cgges
         //
+        strncpy(srnamt, "Cgges", srnamt_len);
         infot = 1;
         Cgges("/", "N", "S", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges ", infot, nout, lerr, ok);
@@ -570,6 +553,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cgges3
         //
+        strncpy(srnamt, "Cgges3", srnamt_len);
         infot = 1;
         Cgges3("/", "N", "S", Clctes, 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, w, 1, rw, bw, info);
         chkxer("Cgges3", infot, nout, lerr, ok);
@@ -607,6 +591,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cggesx
         //
+        strncpy(srnamt, "Cggesx", srnamt_len);
         infot = 1;
         Cggesx("/", "N", "S", Clctsx, "N", 1, a, 1, b, 1, sdim, alpha, beta, q, 1, u, 1, rce, rcv, w, 1, rw, iw, 1, bw, info);
         chkxer("Cggesx", infot, nout, lerr, ok);
@@ -650,6 +635,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cggev
         //
+        strncpy(srnamt, "Cggev", srnamt_len);
         infot = 1;
         Cggev("/", "N", 1, a, 1, b, 1, alpha, beta, q, 1, u, 1, w, 1, rw, info);
         chkxer("Cggev ", infot, nout, lerr, ok);
@@ -684,6 +670,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cggev3
         //
+        strncpy(srnamt, "Cggev3", srnamt_len);
         infot = 1;
         Cggev3("/", "N", 1, a, 1, b, 1, alpha, beta, q, 1, u, 1, w, 1, rw, info);
         chkxer("Cggev3", infot, nout, lerr, ok);
@@ -718,6 +705,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Cggevx
         //
+        strncpy(srnamt, "Cggevx", srnamt_len);
         infot = 1;
         Cggevx("/", "N", "N", "N", 1, a, 1, b, 1, alpha, beta, q, 1, u, 1, ilo, ihi, ls, rs, anrm, bnrm, rce, rcv, w, 1, rw, iw, bw, info);
         chkxer("Cggevx", infot, nout, lerr, ok);
@@ -758,6 +746,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Ctgexc
         //
+        strncpy(srnamt, "Ctgexc", srnamt_len);
         infot = 3;
         Ctgexc(true, true, -1, a, 1, b, 1, q, 1, z, 1, ifst, ilst, info);
         chkxer("Ctgexc", infot, nout, lerr, ok);
@@ -783,6 +772,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Ctgsen
         //
+        strncpy(srnamt, "Ctgsen", srnamt_len);
         infot = 1;
         Ctgsen(-1, true, true, sel, 1, a, 1, b, 1, alpha, beta, q, 1, z, 1, m, tola, tolb, rcv, w, 1, iw, 1, info);
         chkxer("Ctgsen", infot, nout, lerr, ok);
@@ -817,6 +807,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Ctgsna
         //
+        strncpy(srnamt, "Ctgsna", srnamt_len);
         infot = 1;
         Ctgsna("/", "A", sel, 1, a, 1, b, 1, q, 1, u, 1, r1, r2, 1, m, w, 1, iw, info);
         chkxer("Ctgsna", infot, nout, lerr, ok);
@@ -848,6 +839,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         //
         //        Ctgsyl
         //
+        strncpy(srnamt, "Ctgsyl", srnamt_len);
         infot = 1;
         Ctgsyl("/", 0, 1, 1, a, 1, b, 1, q, 1, u, 1, v, 1, z, 1, scale, dif, w, 1, iw, info);
         chkxer("Ctgsyl", infot, nout, lerr, ok);

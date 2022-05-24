@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -42,38 +42,6 @@ using fem::common;
 void Cerrhs(const char *path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    INTEGER infot;
-    INTEGER nout;
-    bool ok;
-    bool lerr;
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     char c2[2];
@@ -118,6 +86,7 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         //
         //        Cgebal
         //
+        strncpy(srnamt, "Cgebal", srnamt_len);
         infot = 1;
         Cgebal("/", 0, a, 1, ilo, ihi, s, info);
         chkxer("Cgebal", infot, nout, lerr, ok);
@@ -131,6 +100,7 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         //
         //        Cgebak
         //
+        strncpy(srnamt, "Cgebak", srnamt_len);
         infot = 1;
         Cgebak("/", "R", 0, 1, 0, s, 0, a, 1, info);
         chkxer("Cgebak", infot, nout, lerr, ok);
@@ -162,6 +132,7 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         //
         //        Cgehrd
         //
+        strncpy(srnamt, "Cgehrd", srnamt_len);
         infot = 1;
         Cgehrd(-1, 1, 1, a, 1, tau, w, 1, info);
         chkxer("Cgehrd", infot, nout, lerr, ok);
@@ -187,6 +158,7 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         //
         //        Cunghr
         //
+        strncpy(srnamt, "Cunghr", srnamt_len);
         infot = 1;
         Cunghr(-1, 1, 1, a, 1, tau, w, 1, info);
         chkxer("Cunghr", infot, nout, lerr, ok);
@@ -212,6 +184,7 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         //
         //        Cunmhr
         //
+        strncpy(srnamt, "Cunmhr", srnamt_len);
         infot = 1;
         Cunmhr("/", "N", 0, 0, 1, 0, a, 1, tau, c, 1, w, 1, info);
         chkxer("Cunmhr", infot, nout, lerr, ok);
@@ -264,6 +237,7 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         //
         //        Chseqr
         //
+        strncpy(srnamt, "Chseqr", srnamt_len);
         infot = 1;
         Chseqr("/", "N", 0, 1, 0, a, 1, x, c, 1, w, 1, info);
         chkxer("Chseqr", infot, nout, lerr, ok);
@@ -295,6 +269,7 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         //
         //        Chsein
         //
+        strncpy(srnamt, "Chsein", srnamt_len);
         infot = 1;
         Chsein("/", "N", "N", sel, 0, a, 1, x, vl, 1, vr, 1, 0, m, w, rw, ifaill, ifailr, info);
         chkxer("Chsein", infot, nout, lerr, ok);
@@ -323,6 +298,7 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         //
         //        Ctrevc
         //
+        strncpy(srnamt, "Ctrevc", srnamt_len);
         infot = 1;
         Ctrevc("/", "A", sel, 0, a, 1, vl, 1, vr, 1, 0, m, w, rw, info);
         chkxer("Ctrevc", infot, nout, lerr, ok);

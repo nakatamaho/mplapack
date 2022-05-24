@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -40,43 +40,12 @@ using fem::common;
 
 void Rdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, REAL *a, INTEGER const lda, REAL *arf, REAL *b1, REAL *b2, REAL *d_work_Rlange, REAL *d_work_Rgeqrf, REAL *tau) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //     ..
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Initialize constants and the random number seed.
     //
     common cmn;
     common_write write(cmn);
     char transs[] = {'N', 'T'};
-    char diags[] = {'N', 'T'};
+    char diags[] = {'N', 'U'};
     char forms[] = {'N', 'T'};
     char sides[] = {'L', 'R'};
     char uplos[] = {'U', 'L'};
@@ -252,7 +221,7 @@ void Rdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                                     "' SIDE=''',a1,''',',' UPLO=''',a1,''',',' TRANS=''',a1,"
                                                     "''',',' DIAG=''',a1,''',',' M=',i3,', N =',i3,"
                                                     "', test=',a)"),
-                                            "Rtfsm", cform, side, uplo, trans, diag, m, n, buf;
+                                            "Rtfsm", &cform, &side, &uplo, &trans, &diag, m, n, buf;
                                         nfail++;
                                     }
                                     //

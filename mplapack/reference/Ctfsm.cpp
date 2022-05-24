@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -74,7 +74,7 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
     if (alpha == czero) {
         for (j = 0; j <= n - 1; j = j + 1) {
             for (i = 0; i <= m - 1; i = i + 1) {
-                b[(i - 1) + (j - 1) * ldb] = czero;
+                b[i + j * ldb] = czero;
             }
         }
         return;
@@ -130,9 +130,9 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
                         if (m == 1) {
                             Ctrsm("L", "L", "N", diag, m1, n, alpha, a, m, b, ldb);
                         } else {
-                            Ctrsm("L", "L", "N", diag, m1, n, alpha, &a[0 - 1], m, b, ldb);
-                            Cgemm("N", "N", m2, n, m1, -cone, &a[m1 - 1], m, b, ldb, alpha, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
-                            Ctrsm("L", "U", "C", diag, m2, n, cone, &a[m - 1], m, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
+                            Ctrsm("L", "L", "N", diag, m1, n, alpha, &a[0], m, b, ldb);
+                            Cgemm("N", "N", m2, n, m1, -cone, &a[m1], m, b, ldb, alpha, &b[m1], ldb);
+                            Ctrsm("L", "U", "C", diag, m2, n, cone, &a[m], m, &b[m1], ldb);
                         }
                         //
                     } else {
@@ -141,11 +141,11 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    TRANS = 'C'
                         //
                         if (m == 1) {
-                            Ctrsm("L", "L", "C", diag, m1, n, alpha, &a[0 - 1], m, b, ldb);
+                            Ctrsm("L", "L", "C", diag, m1, n, alpha, &a[0], m, b, ldb);
                         } else {
-                            Ctrsm("L", "U", "N", diag, m2, n, alpha, &a[m - 1], m, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
-                            Cgemm("C", "N", m1, n, m2, -cone, &a[m1 - 1], m, &b[(m1 - 1) + (0 - 1) * ldb], ldb, alpha, b, ldb);
-                            Ctrsm("L", "L", "C", diag, m1, n, cone, &a[0 - 1], m, b, ldb);
+                            Ctrsm("L", "U", "N", diag, m2, n, alpha, &a[m], m, &b[m1], ldb);
+                            Cgemm("C", "N", m1, n, m2, -cone, &a[m1], m, &b[m1], ldb, alpha, b, ldb);
+                            Ctrsm("L", "L", "C", diag, m1, n, cone, &a[0], m, b, ldb);
                         }
                         //
                     }
@@ -159,18 +159,18 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='L', N is odd, TRANSR = 'N', UPLO = 'U', and
                         //                    TRANS = 'N'
                         //
-                        Ctrsm("L", "L", "N", diag, m1, n, alpha, &a[m2 - 1], m, b, ldb);
-                        Cgemm("C", "N", m2, n, m1, -cone, &a[0 - 1], m, b, ldb, alpha, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
-                        Ctrsm("L", "U", "C", diag, m2, n, cone, &a[m1 - 1], m, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
+                        Ctrsm("L", "L", "N", diag, m1, n, alpha, &a[m2], m, b, ldb);
+                        Cgemm("C", "N", m2, n, m1, -cone, &a[0], m, b, ldb, alpha, &b[m1], ldb);
+                        Ctrsm("L", "U", "C", diag, m2, n, cone, &a[m1], m, &b[m1], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='L', N is odd, TRANSR = 'N', UPLO = 'U', and
                         //                    TRANS = 'C'
                         //
-                        Ctrsm("L", "U", "N", diag, m2, n, alpha, &a[m1 - 1], m, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
-                        Cgemm("N", "N", m1, n, m2, -cone, &a[0 - 1], m, &b[(m1 - 1) + (0 - 1) * ldb], ldb, alpha, b, ldb);
-                        Ctrsm("L", "L", "C", diag, m1, n, cone, &a[m2 - 1], m, b, ldb);
+                        Ctrsm("L", "U", "N", diag, m2, n, alpha, &a[m1], m, &b[m1], ldb);
+                        Cgemm("N", "N", m1, n, m2, -cone, &a[0], m, &b[m1], ldb, alpha, b, ldb);
+                        Ctrsm("L", "L", "C", diag, m1, n, cone, &a[m2], m, b, ldb);
                         //
                     }
                     //
@@ -190,11 +190,11 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    TRANS = 'N'
                         //
                         if (m == 1) {
-                            Ctrsm("L", "U", "C", diag, m1, n, alpha, &a[0 - 1], m1, b, ldb);
+                            Ctrsm("L", "U", "C", diag, m1, n, alpha, &a[0], m1, b, ldb);
                         } else {
-                            Ctrsm("L", "U", "C", diag, m1, n, alpha, &a[0 - 1], m1, b, ldb);
-                            Cgemm("C", "N", m2, n, m1, -cone, &a[(m1 * m1) - 1], m1, b, ldb, alpha, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
-                            Ctrsm("L", "L", "N", diag, m2, n, cone, &a[1 - 1], m1, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
+                            Ctrsm("L", "U", "C", diag, m1, n, alpha, &a[0], m1, b, ldb);
+                            Cgemm("C", "N", m2, n, m1, -cone, &a[(m1 * m1)], m1, b, ldb, alpha, &b[m1], ldb);
+                            Ctrsm("L", "L", "N", diag, m2, n, cone, &a[1], m1, &b[m1], ldb);
                         }
                         //
                     } else {
@@ -203,11 +203,11 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    TRANS = 'C'
                         //
                         if (m == 1) {
-                            Ctrsm("L", "U", "N", diag, m1, n, alpha, &a[0 - 1], m1, b, ldb);
+                            Ctrsm("L", "U", "N", diag, m1, n, alpha, &a[0], m1, b, ldb);
                         } else {
-                            Ctrsm("L", "L", "C", diag, m2, n, alpha, &a[1 - 1], m1, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
-                            Cgemm("N", "N", m1, n, m2, -cone, &a[(m1 * m1) - 1], m1, &b[(m1 - 1) + (0 - 1) * ldb], ldb, alpha, b, ldb);
-                            Ctrsm("L", "U", "N", diag, m1, n, cone, &a[0 - 1], m1, b, ldb);
+                            Ctrsm("L", "L", "C", diag, m2, n, alpha, &a[1], m1, &b[m1], ldb);
+                            Cgemm("N", "N", m1, n, m2, -cone, &a[(m1 * m1)], m1, &b[m1], ldb, alpha, b, ldb);
+                            Ctrsm("L", "U", "N", diag, m1, n, cone, &a[0], m1, b, ldb);
                         }
                         //
                     }
@@ -221,18 +221,18 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='L', N is odd, TRANSR = 'C', UPLO = 'U', and
                         //                    TRANS = 'N'
                         //
-                        Ctrsm("L", "U", "C", diag, m1, n, alpha, &a[(m2 * m2) - 1], m2, b, ldb);
-                        Cgemm("N", "N", m2, n, m1, -cone, &a[0 - 1], m2, b, ldb, alpha, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
-                        Ctrsm("L", "L", "N", diag, m2, n, cone, &a[(m1 * m2) - 1], m2, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
+                        Ctrsm("L", "U", "C", diag, m1, n, alpha, &a[(m2 * m2)], m2, b, ldb);
+                        Cgemm("N", "N", m2, n, m1, -cone, &a[0], m2, b, ldb, alpha, &b[m1], ldb);
+                        Ctrsm("L", "L", "N", diag, m2, n, cone, &a[(m1 * m2)], m2, &b[m1], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='L', N is odd, TRANSR = 'C', UPLO = 'U', and
                         //                    TRANS = 'C'
                         //
-                        Ctrsm("L", "L", "C", diag, m2, n, alpha, &a[(m1 * m2) - 1], m2, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
-                        Cgemm("C", "N", m1, n, m2, -cone, &a[0 - 1], m2, &b[(m1 - 1) + (0 - 1) * ldb], ldb, alpha, b, ldb);
-                        Ctrsm("L", "U", "N", diag, m1, n, cone, &a[(m2 * m2) - 1], m2, b, ldb);
+                        Ctrsm("L", "L", "C", diag, m2, n, alpha, &a[(m1 * m2)], m2, &b[m1], ldb);
+                        Cgemm("C", "N", m1, n, m2, -cone, &a[0], m2, &b[m1], ldb, alpha, b, ldb);
+                        Ctrsm("L", "U", "N", diag, m1, n, cone, &a[(m2 * m2)], m2, b, ldb);
                         //
                     }
                     //
@@ -257,18 +257,18 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='L', N is even, TRANSR = 'N', UPLO = 'L',
                         //                    and TRANS = 'N'
                         //
-                        Ctrsm("L", "L", "N", diag, k, n, alpha, &a[1 - 1], m + 1, b, ldb);
-                        Cgemm("N", "N", k, n, k, -cone, &a[(k + 1) - 1], m + 1, b, ldb, alpha, &b[(k - 1) + (0 - 1) * ldb], ldb);
-                        Ctrsm("L", "U", "C", diag, k, n, cone, &a[0 - 1], m + 1, &b[(k - 1) + (0 - 1) * ldb], ldb);
+                        Ctrsm("L", "L", "N", diag, k, n, alpha, &a[1], m + 1, b, ldb);
+                        Cgemm("N", "N", k, n, k, -cone, &a[(k + 1)], m + 1, b, ldb, alpha, &b[k], ldb);
+                        Ctrsm("L", "U", "C", diag, k, n, cone, &a[0], m + 1, &b[k], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='L', N is even, TRANSR = 'N', UPLO = 'L',
                         //                    and TRANS = 'C'
                         //
-                        Ctrsm("L", "U", "N", diag, k, n, alpha, &a[0 - 1], m + 1, &b[(k - 1) + (0 - 1) * ldb], ldb);
-                        Cgemm("C", "N", k, n, k, -cone, &a[(k + 1) - 1], m + 1, &b[(k - 1) + (0 - 1) * ldb], ldb, alpha, b, ldb);
-                        Ctrsm("L", "L", "C", diag, k, n, cone, &a[1 - 1], m + 1, b, ldb);
+                        Ctrsm("L", "U", "N", diag, k, n, alpha, &a[0], m + 1, &b[k], ldb);
+                        Cgemm("C", "N", k, n, k, -cone, &a[(k + 1)], m + 1, &b[k], ldb, alpha, b, ldb);
+                        Ctrsm("L", "L", "C", diag, k, n, cone, &a[1], m + 1, b, ldb);
                         //
                     }
                     //
@@ -281,17 +281,17 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='L', N is even, TRANSR = 'N', UPLO = 'U',
                         //                    and TRANS = 'N'
                         //
-                        Ctrsm("L", "L", "N", diag, k, n, alpha, &a[(k + 1) - 1], m + 1, b, ldb);
-                        Cgemm("C", "N", k, n, k, -cone, &a[0 - 1], m + 1, b, ldb, alpha, &b[(k - 1) + (0 - 1) * ldb], ldb);
-                        Ctrsm("L", "U", "C", diag, k, n, cone, &a[k - 1], m + 1, &b[(k - 1) + (0 - 1) * ldb], ldb);
+                        Ctrsm("L", "L", "N", diag, k, n, alpha, &a[(k + 1)], m + 1, b, ldb);
+                        Cgemm("C", "N", k, n, k, -cone, &a[0], m + 1, b, ldb, alpha, &b[k], ldb);
+                        Ctrsm("L", "U", "C", diag, k, n, cone, &a[k], m + 1, &b[k], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='L', N is even, TRANSR = 'N', UPLO = 'U',
                         //                    and TRANS = 'C'
-                        Ctrsm("L", "U", "N", diag, k, n, alpha, &a[k - 1], m + 1, &b[(k - 1) + (0 - 1) * ldb], ldb);
-                        Cgemm("N", "N", k, n, k, -cone, &a[0 - 1], m + 1, &b[(k - 1) + (0 - 1) * ldb], ldb, alpha, b, ldb);
-                        Ctrsm("L", "L", "C", diag, k, n, cone, &a[(k + 1) - 1], m + 1, b, ldb);
+                        Ctrsm("L", "U", "N", diag, k, n, alpha, &a[k], m + 1, &b[k], ldb);
+                        Cgemm("N", "N", k, n, k, -cone, &a[0], m + 1, &b[k], ldb, alpha, b, ldb);
+                        Ctrsm("L", "L", "C", diag, k, n, cone, &a[(k + 1)], m + 1, b, ldb);
                         //
                     }
                     //
@@ -310,18 +310,18 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='L', N is even, TRANSR = 'C', UPLO = 'L',
                         //                    and TRANS = 'N'
                         //
-                        Ctrsm("L", "U", "C", diag, k, n, alpha, &a[k - 1], k, b, ldb);
-                        Cgemm("C", "N", k, n, k, -cone, &a[(k * (k + 1)) - 1], k, b, ldb, alpha, &b[(k - 1) + (0 - 1) * ldb], ldb);
-                        Ctrsm("L", "L", "N", diag, k, n, cone, &a[0 - 1], k, &b[(k - 1) + (0 - 1) * ldb], ldb);
+                        Ctrsm("L", "U", "C", diag, k, n, alpha, &a[k], k, b, ldb);
+                        Cgemm("C", "N", k, n, k, -cone, &a[(k * (k + 1))], k, b, ldb, alpha, &b[k], ldb);
+                        Ctrsm("L", "L", "N", diag, k, n, cone, &a[0], k, &b[k], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='L', N is even, TRANSR = 'C', UPLO = 'L',
                         //                    and TRANS = 'C'
                         //
-                        Ctrsm("L", "L", "C", diag, k, n, alpha, &a[0 - 1], k, &b[(k - 1) + (0 - 1) * ldb], ldb);
-                        Cgemm("N", "N", k, n, k, -cone, &a[(k * (k + 1)) - 1], k, &b[(k - 1) + (0 - 1) * ldb], ldb, alpha, b, ldb);
-                        Ctrsm("L", "U", "N", diag, k, n, cone, &a[k - 1], k, b, ldb);
+                        Ctrsm("L", "L", "C", diag, k, n, alpha, &a[0], k, &b[k], ldb);
+                        Cgemm("N", "N", k, n, k, -cone, &a[(k * (k + 1))], k, &b[k], ldb, alpha, b, ldb);
+                        Ctrsm("L", "U", "N", diag, k, n, cone, &a[k], k, b, ldb);
                         //
                     }
                     //
@@ -334,18 +334,18 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='L', N is even, TRANSR = 'C', UPLO = 'U',
                         //                    and TRANS = 'N'
                         //
-                        Ctrsm("L", "U", "C", diag, k, n, alpha, &a[(k * (k + 1)) - 1], k, b, ldb);
-                        Cgemm("N", "N", k, n, k, -cone, &a[0 - 1], k, b, ldb, alpha, &b[(k - 1) + (0 - 1) * ldb], ldb);
-                        Ctrsm("L", "L", "N", diag, k, n, cone, &a[(k * k) - 1], k, &b[(k - 1) + (0 - 1) * ldb], ldb);
+                        Ctrsm("L", "U", "C", diag, k, n, alpha, &a[(k * (k + 1))], k, b, ldb);
+                        Cgemm("N", "N", k, n, k, -cone, &a[0], k, b, ldb, alpha, &b[k], ldb);
+                        Ctrsm("L", "L", "N", diag, k, n, cone, &a[(k * k)], k, &b[k], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='L', N is even, TRANSR = 'C', UPLO = 'U',
                         //                    and TRANS = 'C'
                         //
-                        Ctrsm("L", "L", "C", diag, k, n, alpha, &a[(k * k) - 1], k, &b[(k - 1) + (0 - 1) * ldb], ldb);
-                        Cgemm("C", "N", k, n, k, -cone, &a[0 - 1], k, &b[(k - 1) + (0 - 1) * ldb], ldb, alpha, b, ldb);
-                        Ctrsm("L", "U", "N", diag, k, n, cone, &a[(k * (k + 1)) - 1], k, b, ldb);
+                        Ctrsm("L", "L", "C", diag, k, n, alpha, &a[(k * k)], k, &b[k], ldb);
+                        Cgemm("C", "N", k, n, k, -cone, &a[0], k, &b[k], ldb, alpha, b, ldb);
+                        Ctrsm("L", "U", "N", diag, k, n, cone, &a[(k * (k + 1))], k, b, ldb);
                         //
                     }
                     //
@@ -394,18 +394,18 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='R', N is odd, TRANSR = 'N', UPLO = 'L', and
                         //                    TRANS = 'N'
                         //
-                        Ctrsm("R", "U", "C", diag, m, n2, alpha, &a[n - 1], n, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
-                        Cgemm("N", "N", m, n1, n2, -cone, &b[(0 - 1) + (n1 - 1) * ldb], ldb, &a[n1 - 1], n, alpha, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Ctrsm("R", "L", "N", diag, m, n1, cone, &a[0 - 1], n, &b[(0 - 1) + (0 - 1) * ldb], ldb);
+                        Ctrsm("R", "U", "C", diag, m, n2, alpha, &a[n], n, &b[n1 * ldb], ldb);
+                        Cgemm("N", "N", m, n1, n2, -cone, &b[n1 * ldb], ldb, &a[n1], n, alpha, &b[0], ldb);
+                        Ctrsm("R", "L", "N", diag, m, n1, cone, &a[0], n, &b[0], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='R', N is odd, TRANSR = 'N', UPLO = 'L', and
                         //                    TRANS = 'C'
                         //
-                        Ctrsm("R", "L", "C", diag, m, n1, alpha, &a[0 - 1], n, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Cgemm("N", "C", m, n2, n1, -cone, &b[(0 - 1) + (0 - 1) * ldb], ldb, &a[n1 - 1], n, alpha, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
-                        Ctrsm("R", "U", "N", diag, m, n2, cone, &a[n - 1], n, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
+                        Ctrsm("R", "L", "C", diag, m, n1, alpha, &a[0], n, &b[0], ldb);
+                        Cgemm("N", "C", m, n2, n1, -cone, &b[0], ldb, &a[n1], n, alpha, &b[n1 * ldb], ldb);
+                        Ctrsm("R", "U", "N", diag, m, n2, cone, &a[n], n, &b[n1 * ldb], ldb);
                         //
                     }
                     //
@@ -418,18 +418,18 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='R', N is odd, TRANSR = 'N', UPLO = 'U', and
                         //                    TRANS = 'N'
                         //
-                        Ctrsm("R", "L", "C", diag, m, n1, alpha, &a[n2 - 1], n, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Cgemm("N", "N", m, n2, n1, -cone, &b[(0 - 1) + (0 - 1) * ldb], ldb, &a[0 - 1], n, alpha, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
-                        Ctrsm("R", "U", "N", diag, m, n2, cone, &a[n1 - 1], n, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
+                        Ctrsm("R", "L", "C", diag, m, n1, alpha, &a[n2], n, &b[0], ldb);
+                        Cgemm("N", "N", m, n2, n1, -cone, &b[0], ldb, &a[0], n, alpha, &b[n1 * ldb], ldb);
+                        Ctrsm("R", "U", "N", diag, m, n2, cone, &a[n1], n, &b[n1 * ldb], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='R', N is odd, TRANSR = 'N', UPLO = 'U', and
                         //                    TRANS = 'C'
                         //
-                        Ctrsm("R", "U", "C", diag, m, n2, alpha, &a[n1 - 1], n, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
-                        Cgemm("N", "C", m, n1, n2, -cone, &b[(0 - 1) + (n1 - 1) * ldb], ldb, &a[0 - 1], n, alpha, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Ctrsm("R", "L", "N", diag, m, n1, cone, &a[n2 - 1], n, &b[(0 - 1) + (0 - 1) * ldb], ldb);
+                        Ctrsm("R", "U", "C", diag, m, n2, alpha, &a[n1], n, &b[n1 * ldb], ldb);
+                        Cgemm("N", "C", m, n1, n2, -cone, &b[n1 * ldb], ldb, &a[0], n, alpha, &b[0], ldb);
+                        Ctrsm("R", "L", "N", diag, m, n1, cone, &a[n2], n, &b[0], ldb);
                         //
                     }
                     //
@@ -448,18 +448,18 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='R', N is odd, TRANSR = 'C', UPLO = 'L', and
                         //                    TRANS = 'N'
                         //
-                        Ctrsm("R", "L", "N", diag, m, n2, alpha, &a[1 - 1], n1, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
-                        Cgemm("N", "C", m, n1, n2, -cone, &b[(0 - 1) + (n1 - 1) * ldb], ldb, &a[(n1 * n1) - 1], n1, alpha, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Ctrsm("R", "U", "C", diag, m, n1, cone, &a[0 - 1], n1, &b[(0 - 1) + (0 - 1) * ldb], ldb);
+                        Ctrsm("R", "L", "N", diag, m, n2, alpha, &a[1], n1, &b[n1 * ldb], ldb);
+                        Cgemm("N", "C", m, n1, n2, -cone, &b[n1 * ldb], ldb, &a[(n1 * n1)], n1, alpha, &b[0], ldb);
+                        Ctrsm("R", "U", "C", diag, m, n1, cone, &a[0], n1, &b[0], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='R', N is odd, TRANSR = 'C', UPLO = 'L', and
                         //                    TRANS = 'C'
                         //
-                        Ctrsm("R", "U", "N", diag, m, n1, alpha, &a[0 - 1], n1, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Cgemm("N", "N", m, n2, n1, -cone, &b[(0 - 1) + (0 - 1) * ldb], ldb, &a[(n1 * n1) - 1], n1, alpha, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
-                        Ctrsm("R", "L", "C", diag, m, n2, cone, &a[1 - 1], n1, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
+                        Ctrsm("R", "U", "N", diag, m, n1, alpha, &a[0], n1, &b[0], ldb);
+                        Cgemm("N", "N", m, n2, n1, -cone, &b[0], ldb, &a[(n1 * n1)], n1, alpha, &b[n1 * ldb], ldb);
+                        Ctrsm("R", "L", "C", diag, m, n2, cone, &a[1], n1, &b[n1 * ldb], ldb);
                         //
                     }
                     //
@@ -472,18 +472,18 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='R', N is odd, TRANSR = 'C', UPLO = 'U', and
                         //                    TRANS = 'N'
                         //
-                        Ctrsm("R", "U", "N", diag, m, n1, alpha, &a[(n2 * n2) - 1], n2, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Cgemm("N", "C", m, n2, n1, -cone, &b[(0 - 1) + (0 - 1) * ldb], ldb, &a[0 - 1], n2, alpha, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
-                        Ctrsm("R", "L", "C", diag, m, n2, cone, &a[(n1 * n2) - 1], n2, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
+                        Ctrsm("R", "U", "N", diag, m, n1, alpha, &a[(n2 * n2)], n2, &b[0], ldb);
+                        Cgemm("N", "C", m, n2, n1, -cone, &b[0], ldb, &a[0], n2, alpha, &b[n1 * ldb], ldb);
+                        Ctrsm("R", "L", "C", diag, m, n2, cone, &a[(n1 * n2)], n2, &b[n1 * ldb], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='R', N is odd, TRANSR = 'C', UPLO = 'U', and
                         //                    TRANS = 'C'
                         //
-                        Ctrsm("R", "L", "N", diag, m, n2, alpha, &a[(n1 * n2) - 1], n2, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
-                        Cgemm("N", "N", m, n1, n2, -cone, &b[(0 - 1) + (n1 - 1) * ldb], ldb, &a[0 - 1], n2, alpha, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Ctrsm("R", "U", "C", diag, m, n1, cone, &a[(n2 * n2) - 1], n2, &b[(0 - 1) + (0 - 1) * ldb], ldb);
+                        Ctrsm("R", "L", "N", diag, m, n2, alpha, &a[(n1 * n2)], n2, &b[n1 * ldb], ldb);
+                        Cgemm("N", "N", m, n1, n2, -cone, &b[n1 * ldb], ldb, &a[0], n2, alpha, &b[0], ldb);
+                        Ctrsm("R", "U", "C", diag, m, n1, cone, &a[(n2 * n2)], n2, &b[0], ldb);
                         //
                     }
                     //
@@ -508,18 +508,18 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='R', N is even, TRANSR = 'N', UPLO = 'L',
                         //                    and TRANS = 'N'
                         //
-                        Ctrsm("R", "U", "C", diag, m, k, alpha, &a[0 - 1], n + 1, &b[(0 - 1) + (k - 1) * ldb], ldb);
-                        Cgemm("N", "N", m, k, k, -cone, &b[(0 - 1) + (k - 1) * ldb], ldb, &a[(k + 1) - 1], n + 1, alpha, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Ctrsm("R", "L", "N", diag, m, k, cone, &a[1 - 1], n + 1, &b[(0 - 1) + (0 - 1) * ldb], ldb);
+                        Ctrsm("R", "U", "C", diag, m, k, alpha, &a[0], n + 1, &b[k * ldb], ldb);
+                        Cgemm("N", "N", m, k, k, -cone, &b[k * ldb], ldb, &a[(k + 1)], n + 1, alpha, &b[0], ldb);
+                        Ctrsm("R", "L", "N", diag, m, k, cone, &a[1], n + 1, &b[0], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='R', N is even, TRANSR = 'N', UPLO = 'L',
                         //                    and TRANS = 'C'
                         //
-                        Ctrsm("R", "L", "C", diag, m, k, alpha, &a[1 - 1], n + 1, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Cgemm("N", "C", m, k, k, -cone, &b[(0 - 1) + (0 - 1) * ldb], ldb, &a[(k + 1) - 1], n + 1, alpha, &b[(0 - 1) + (k - 1) * ldb], ldb);
-                        Ctrsm("R", "U", "N", diag, m, k, cone, &a[0 - 1], n + 1, &b[(0 - 1) + (k - 1) * ldb], ldb);
+                        Ctrsm("R", "L", "C", diag, m, k, alpha, &a[1], n + 1, &b[0], ldb);
+                        Cgemm("N", "C", m, k, k, -cone, &b[0], ldb, &a[(k + 1)], n + 1, alpha, &b[k * ldb], ldb);
+                        Ctrsm("R", "U", "N", diag, m, k, cone, &a[0], n + 1, &b[k * ldb], ldb);
                         //
                     }
                     //
@@ -532,18 +532,18 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='R', N is even, TRANSR = 'N', UPLO = 'U',
                         //                    and TRANS = 'N'
                         //
-                        Ctrsm("R", "L", "C", diag, m, k, alpha, &a[(k + 1) - 1], n + 1, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Cgemm("N", "N", m, k, k, -cone, &b[(0 - 1) + (0 - 1) * ldb], ldb, &a[0 - 1], n + 1, alpha, &b[(0 - 1) + (k - 1) * ldb], ldb);
-                        Ctrsm("R", "U", "N", diag, m, k, cone, &a[k - 1], n + 1, &b[(0 - 1) + (k - 1) * ldb], ldb);
+                        Ctrsm("R", "L", "C", diag, m, k, alpha, &a[(k + 1)], n + 1, &b[0], ldb);
+                        Cgemm("N", "N", m, k, k, -cone, &b[0], ldb, &a[0], n + 1, alpha, &b[k * ldb], ldb);
+                        Ctrsm("R", "U", "N", diag, m, k, cone, &a[k], n + 1, &b[k * ldb], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='R', N is even, TRANSR = 'N', UPLO = 'U',
                         //                    and TRANS = 'C'
                         //
-                        Ctrsm("R", "U", "C", diag, m, k, alpha, &a[k - 1], n + 1, &b[(0 - 1) + (k - 1) * ldb], ldb);
-                        Cgemm("N", "C", m, k, k, -cone, &b[(0 - 1) + (k - 1) * ldb], ldb, &a[0 - 1], n + 1, alpha, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Ctrsm("R", "L", "N", diag, m, k, cone, &a[(k + 1) - 1], n + 1, &b[(0 - 1) + (0 - 1) * ldb], ldb);
+                        Ctrsm("R", "U", "C", diag, m, k, alpha, &a[k], n + 1, &b[k * ldb], ldb);
+                        Cgemm("N", "C", m, k, k, -cone, &b[k * ldb], ldb, &a[0], n + 1, alpha, &b[0], ldb);
+                        Ctrsm("R", "L", "N", diag, m, k, cone, &a[(k + 1)], n + 1, &b[0], ldb);
                         //
                     }
                     //
@@ -562,18 +562,18 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='R', N is even, TRANSR = 'C', UPLO = 'L',
                         //                    and TRANS = 'N'
                         //
-                        Ctrsm("R", "L", "N", diag, m, k, alpha, &a[0 - 1], k, &b[(0 - 1) + (k - 1) * ldb], ldb);
-                        Cgemm("N", "C", m, k, k, -cone, &b[(0 - 1) + (k - 1) * ldb], ldb, &a[((k + 1) * k) - 1], k, alpha, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Ctrsm("R", "U", "C", diag, m, k, cone, &a[k - 1], k, &b[(0 - 1) + (0 - 1) * ldb], ldb);
+                        Ctrsm("R", "L", "N", diag, m, k, alpha, &a[0], k, &b[k * ldb], ldb);
+                        Cgemm("N", "C", m, k, k, -cone, &b[k * ldb], ldb, &a[((k + 1) * k)], k, alpha, &b[0], ldb);
+                        Ctrsm("R", "U", "C", diag, m, k, cone, &a[k], k, &b[0], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='R', N is even, TRANSR = 'C', UPLO = 'L',
                         //                    and TRANS = 'C'
                         //
-                        Ctrsm("R", "U", "N", diag, m, k, alpha, &a[k - 1], k, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Cgemm("N", "N", m, k, k, -cone, &b[(0 - 1) + (0 - 1) * ldb], ldb, &a[((k + 1) * k) - 1], k, alpha, &b[(0 - 1) + (k - 1) * ldb], ldb);
-                        Ctrsm("R", "L", "C", diag, m, k, cone, &a[0 - 1], k, &b[(0 - 1) + (k - 1) * ldb], ldb);
+                        Ctrsm("R", "U", "N", diag, m, k, alpha, &a[k], k, &b[0], ldb);
+                        Cgemm("N", "N", m, k, k, -cone, &b[0], ldb, &a[((k + 1) * k)], k, alpha, &b[k * ldb], ldb);
+                        Ctrsm("R", "L", "C", diag, m, k, cone, &a[0], k, &b[k * ldb], ldb);
                         //
                     }
                     //
@@ -586,18 +586,18 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='R', N is even, TRANSR = 'C', UPLO = 'U',
                         //                    and TRANS = 'N'
                         //
-                        Ctrsm("R", "U", "N", diag, m, k, alpha, &a[((k + 1) * k) - 1], k, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Cgemm("N", "C", m, k, k, -cone, &b[(0 - 1) + (0 - 1) * ldb], ldb, &a[0 - 1], k, alpha, &b[(0 - 1) + (k - 1) * ldb], ldb);
-                        Ctrsm("R", "L", "C", diag, m, k, cone, &a[(k * k) - 1], k, &b[(0 - 1) + (k - 1) * ldb], ldb);
+                        Ctrsm("R", "U", "N", diag, m, k, alpha, &a[((k + 1) * k)], k, &b[0], ldb);
+                        Cgemm("N", "C", m, k, k, -cone, &b[0], ldb, &a[0], k, alpha, &b[k * ldb], ldb);
+                        Ctrsm("R", "L", "C", diag, m, k, cone, &a[(k * k)], k, &b[k * ldb], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='R', N is even, TRANSR = 'C', UPLO = 'U',
                         //                    and TRANS = 'C'
                         //
-                        Ctrsm("R", "L", "N", diag, m, k, alpha, &a[(k * k) - 1], k, &b[(0 - 1) + (k - 1) * ldb], ldb);
-                        Cgemm("N", "N", m, k, k, -cone, &b[(0 - 1) + (k - 1) * ldb], ldb, &a[0 - 1], k, alpha, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Ctrsm("R", "U", "C", diag, m, k, cone, &a[((k + 1) * k) - 1], k, &b[(0 - 1) + (0 - 1) * ldb], ldb);
+                        Ctrsm("R", "L", "N", diag, m, k, alpha, &a[(k * k)], k, &b[k * ldb], ldb);
+                        Cgemm("N", "N", m, k, k, -cone, &b[k * ldb], ldb, &a[0], k, alpha, &b[0], ldb);
+                        Ctrsm("R", "U", "C", diag, m, k, cone, &a[((k + 1) * k)], k, &b[0], ldb);
                         //
                     }
                     //

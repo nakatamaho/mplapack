@@ -40,29 +40,6 @@ using fem::common;
 
 void Cget22(const char *transa, const char *transe, const char *transw, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *e, INTEGER const lde, COMPLEX *w, COMPLEX *work, REAL *rwork, REAL *result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Initialize RESULT (in case N=0)
     //
     const REAL zero = 0.0;
@@ -79,6 +56,8 @@ void Cget22(const char *transa, const char *transe, const char *transw, INTEGER 
     INTEGER itrnsw = 0;
     char norma;
     char norme;
+    norma = 'O';
+    norme = 'O';
     //
     if (Mlsame(transa, "T") || Mlsame(transa, "C")) {
         norma = 'I';

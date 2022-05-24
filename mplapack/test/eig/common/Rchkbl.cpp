@@ -87,7 +87,7 @@ void Rchkbl(INTEGER const nin, INTEGER const nout) {
     knt = 0;
     rmax = zero;
     vmax = zero;
-    sfmin = 2.2250738585072014E-308; // Rlamch("S");
+    sfmin = Rlamch("S");
     string str;
     char line[1024];
     istringstream iss;

@@ -42,33 +42,7 @@ inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
 
 void Cget52(bool const left, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *e, INTEGER const lde, COMPLEX *alpha, COMPLEX *beta, COMPLEX *work, REAL *rwork, REAL *result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
     COMPLEX x = 0.0;
-    //     ..
-    //     .. Executable Statements ..
     //
     const REAL zero = 0.0;
     result[1 - 1] = zero;

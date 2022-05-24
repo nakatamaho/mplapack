@@ -317,7 +317,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 }
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     return;
                 }
@@ -332,7 +332,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 Rsbtrd("V", "U", n, k, work, lda, sd, se, u, ldu, &work[(lda * n + 1) - 1], iinfo);
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rsbtrd(U)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsbtrd(U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -365,7 +365,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 //
                 Rsteqr("N", n, d1, work, &work[(n + 1) - 1], ldu, &work[(n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -396,7 +396,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 //
                 Rsteqr("N", n, d2, work, &work[(n + 1) - 1], ldu, &work[(n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -428,7 +428,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 Rsbtrd("V", "L", n, k, work, lda, sd, se, u, ldu, &work[(lda * n + 1) - 1], iinfo);
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rsbtrd(L)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsbtrd(L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -464,7 +464,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 //
                 Rsteqr("N", n, d3, work, &work[(n + 1) - 1], ldu, &work[(n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -549,7 +549,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                         sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' N=',i5,', K=',i4,', seed=',4(i4,','),' type ',i2,', test(',"
                                       "i2,')=',a)"),
-                            n, k, ioldsd, jtype, jr, buf;
+                            n, k, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jtype, jr, buf;
                     }
                 }
             //

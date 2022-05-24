@@ -308,7 +308,7 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                 Clatmr(m, nrhs, "S", iseed, "N", work, 6, one, cone, "T", "N", &work[(m + 1) - 1], 1, one, &work[(2 * m + 1) - 1], 1, one, "N", idumma, m, nrhs, zero, one, "NO", c, ldc, idumma, iinfo);
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     return;
                 }
@@ -332,7 +332,7 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                 Cgbbrd("B", m, n, nrhs, kl, ku, ab, ldab, bd, be, q, ldq, p, ldp, cc, ldc, work, rwork, iinfo);
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cgbbrd", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Cgbbrd", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -369,7 +369,7 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                         sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' M =',i4,' N=',i4,', K=',i3,', seed=',4(i4,','),' type ',i2,"
                                       "', test(',i2,')=',a)"),
-                            m, n, k, ioldsd, jtype, jr, buf;
+                            m, n, k, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jtype, jr, buf;
                     }
                 }
             //

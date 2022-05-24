@@ -42,7 +42,7 @@ Ctest.out: ../Ctest.in xlintstC__Float64x
 
 Rtest_rfp.out: ../Rtest_rfp.in xlintstrfR__Float64x
 	@echo Testing Real MPLAPACK RFP prototype linear equation routines
-	./xlintstrfR__Float64x < Rtest_rfp.in > $@ 2>&1
+	./xlintstrfR__Float64x < ../Rtest_rfp.in > $@ 2>&1
 
 Ctest_rfp.out: ../Ctest_rfp.in xlintstrfC__Float64x
 	@echo Testing Complex MPLAPACK RFP prototype linear equation routines

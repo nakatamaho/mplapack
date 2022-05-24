@@ -100,33 +100,6 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     static const char *format_9999 = "(' Cdrvsg2stg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     1)      Check for errors
     //
     ntestt = 0;
@@ -176,7 +149,6 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     //
     unfl = Rlamch("Safe minimum");
     ovfl = Rlamch("Overflow");
-    Rlabad(unfl, ovfl);
     ulp = Rlamch("Epsilon") * Rlamch("Base");
     ulpinv = one / ulp;
     rtunfl = sqrt(unfl);
@@ -264,7 +236,13 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         statement_70:
             //
             iinfo = 0;
+#ifdef ___MPLAPACK_BUILD_WITH_MPFR___
+            // There is exactly 0 eigenvalue for n=odd and Rlaebz.cpp cannot find
+            // 0 eigenvalue and fail to converge. Fix may Rlaebz.cpp help.
+            cond = ulpinv * 1e-3;
+#else
             cond = ulpinv;
+#endif
             //
             //           Special Matrices -- Identity & Jordan block
             //
@@ -347,7 +325,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             }
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 return;
             }
@@ -403,9 +381,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     Chegv(ibtype, "V", &uplo, n, z, ldz, bb, ldb, d, work, nwork, rwork, iinfo);
                     if (iinfo != 0) {
                         if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chegv(V,U)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chegv(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         else
-                            write(nounit, format_9999), "Chegv(V,N)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chegv(V,N)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -429,9 +407,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     Chegv_2stage(ibtype, "N", &uplo, n, z, ldz, bb, ldb, d2, work, nwork, rwork, iinfo);
                     if (iinfo != 0) {
                         if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chegv_2stage(V,U)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chegv_2stage(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         else
-                            write(nounit, format_9999), "Chegv_2stage(V,L)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chegv_2stage(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -469,9 +447,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     Chegvd(ibtype, "V", &uplo, n, z, ldz, bb, ldb, d, work, nwork, rwork, lrwork, iwork, liwork, iinfo);
                     if (iinfo != 0) {
                         if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chegvd(V,U)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chegvd(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         else
-                            write(nounit, format_9999), "Chegvd(V,L)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chegvd(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -495,9 +473,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     Chegvx(ibtype, "V", "A", &uplo, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
                         if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chegvx(V,A,U)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chegvx(V,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         else
-                            write(nounit, format_9999), "Chegvx(V,A,L)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chegvx(V,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -526,9 +504,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     Chegvx(ibtype, "V", "V", &uplo, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
                         if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chegvx(V,V,U)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chegvx(V,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         else
-                            write(nounit, format_9999), "Chegvx(V,V,L)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chegvx(V,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -550,9 +528,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     Chegvx(ibtype, "V", "I", &uplo, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
                         if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chegvx(V,I,U)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chegvx(V,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         else
-                            write(nounit, format_9999), "Chegvx(V,I,L)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chegvx(V,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -597,9 +575,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     Chpgv(ibtype, "V", &uplo, n, ap, bp, d, z, ldz, work, rwork, iinfo);
                     if (iinfo != 0) {
                         if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chpgv(V,U)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chpgv(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         else
-                            write(nounit, format_9999), "Chpgv(V,L)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chpgv(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -642,9 +620,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     Chpgvd(ibtype, "V", &uplo, n, ap, bp, d, z, ldz, work, nwork, rwork, lrwork, iwork, liwork, iinfo);
                     if (iinfo != 0) {
                         if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chpgvd(V,U)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chpgvd(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         else
-                            write(nounit, format_9999), "Chpgvd(V,L)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chpgvd(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -687,9 +665,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     Chpgvx(ibtype, "V", "A", &uplo, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, info);
                     if (iinfo != 0) {
                         if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chpgvx(V,A,U)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chpgvx(V,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         else
-                            write(nounit, format_9999), "Chpgvx(V,A,L)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chpgvx(V,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -732,9 +710,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     Chpgvx(ibtype, "V", "V", &uplo, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, info);
                     if (iinfo != 0) {
                         if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chpgvx(V,V,U)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chpgvx(V,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         else
-                            write(nounit, format_9999), "Chpgvx(V,V,L)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chpgvx(V,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -775,9 +753,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     Chpgvx(ibtype, "V", "I", &uplo, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, info);
                     if (iinfo != 0) {
                         if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chpgvx(V,I,U)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chpgvx(V,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         else
-                            write(nounit, format_9999), "Chpgvx(V,I,L)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Chpgvx(V,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -824,9 +802,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         Chbgv("V", &uplo, n, ka, kb, ab, lda, bb, ldb, d, z, ldz, work, rwork, iinfo);
                         if (iinfo != 0) {
                             if (Mlsame(&uplo, "U"))
-                                write(nounit, format_9999), "Chbgv(V,U)", iinfo, n, jtype, ioldsd;
+                                write(nounit, format_9999), "Chbgv(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                             else
-                                write(nounit, format_9999), "Chbgv(V,L)", iinfo, n, jtype, ioldsd;
+                                write(nounit, format_9999), "Chbgv(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -869,9 +847,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         Chbgvd("V", &uplo, n, ka, kb, ab, lda, bb, ldb, d, z, ldz, work, nwork, rwork, lrwork, iwork, liwork, iinfo);
                         if (iinfo != 0) {
                             if (Mlsame(&uplo, "U"))
-                                write(nounit, format_9999), "Chbgvd(V,U)", iinfo, n, jtype, ioldsd;
+                                write(nounit, format_9999), "Chbgvd(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                             else
-                                write(nounit, format_9999), "Chbgvd(V,L)", iinfo, n, jtype, ioldsd;
+                                write(nounit, format_9999), "Chbgvd(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -914,9 +892,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         Chbgvx("V", "A", &uplo, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
                         if (iinfo != 0) {
                             if (Mlsame(&uplo, "U"))
-                                write(nounit, format_9999), "Chbgvx(V,A,U)", iinfo, n, jtype, ioldsd;
+                                write(nounit, format_9999), "Chbgvx(V,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                             else
-                                write(nounit, format_9999), "Chbgvx(V,A,L)", iinfo, n, jtype, ioldsd;
+                                write(nounit, format_9999), "Chbgvx(V,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -959,9 +937,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         Chbgvx("V", "V", &uplo, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
                         if (iinfo != 0) {
                             if (Mlsame(&uplo, "U"))
-                                write(nounit, format_9999), "Chbgvx(V,V,U)", iinfo, n, jtype, ioldsd;
+                                write(nounit, format_9999), "Chbgvx(V,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                             else
-                                write(nounit, format_9999), "Chbgvx(V,V,L)", iinfo, n, jtype, ioldsd;
+                                write(nounit, format_9999), "Chbgvx(V,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -1002,9 +980,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         Chbgvx("V", "I", &uplo, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
                         if (iinfo != 0) {
                             if (Mlsame(&uplo, "U"))
-                                write(nounit, format_9999), "Chbgvx(V,I,U)", iinfo, n, jtype, ioldsd;
+                                write(nounit, format_9999), "Chbgvx(V,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                             else
-                                write(nounit, format_9999), "Chbgvx(V,I,L)", iinfo, n, jtype, ioldsd;
+                                write(nounit, format_9999), "Chbgvx(V,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;

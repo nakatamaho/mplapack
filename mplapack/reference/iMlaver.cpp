@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -30,9 +30,9 @@
 #include <mplapack.h>
 
 void iMlaver(INTEGER &mplapack_ver_major, INTEGER &mplapack_ver_minor, INTEGER &mplapack_ver_patch, INTEGER &lapack_ver_major, INTEGER &lapack_ver_minor, INTEGER &lapack_ver_patch) {
-    mplapack_ver_major = 1;
+    mplapack_ver_major = 2;
     mplapack_ver_minor = 0;
-    mplapack_ver_patch = 1;
+    mplapack_ver_patch = 0;
     lapack_ver_major = 3;
     lapack_ver_minor = 9;
     lapack_ver_patch = 1;

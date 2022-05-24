@@ -40,29 +40,6 @@ using fem::common;
 
 void Ccsdts(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x, COMPLEX *xf, INTEGER const ldx, COMPLEX *u1, INTEGER const ldu1, COMPLEX *u2, INTEGER const ldu2, COMPLEX *v1t, INTEGER const ldv1t, COMPLEX *v2t, INTEGER const ldv2t, REAL *theta, INTEGER *iwork, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     INTEGER ldxf = ldx;
     REAL ulp = Rlamch("Precision");
     const REAL realone = 1.0;
@@ -257,7 +234,7 @@ void Ccsdts(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x, COMPL
         x[((m - i + 1) - 1) + ((q - i + 1) - 1) * ldx] = x[((m - i + 1) - 1) + ((q - i + 1) - 1) * ldx] - one;
     }
     for (i = 1; i <= r; i = i + 1) {
-        x[(m - (min(m - p, q) - r) + 1 - i - 1) + (q - (min(m - p, q) - r) + 1 - i - 1) * ldx] = x[(m - (min(m - p, q) - r) + 1 - i - 1) + (q - (min(m - p, q) - r) + 1 - i - 1) * ldx] - COMPLEX(sin(theta[(r - i + 1) - 1]), 0.0);
+        x[((m - (min(m - p, q) - r) + 1 - i) - 1) + ((q - (min(m - p, q) - r) + 1 - i) - 1) * ldx] = x[((m - (min(m - p, q) - r) + 1 - i) - 1) + ((q - (min(m - p, q) - r) + 1 - i) - 1) * ldx] - COMPLEX(sin(theta[(r - i + 1) - 1]), 0.0);
     }
     //
     //     Compute norm( U1'*X11*V1 - D11 ) / ( MAX(1,P,Q)*EPS2 ) .

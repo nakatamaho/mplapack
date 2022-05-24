@@ -31,27 +31,6 @@
 
 void Classq(INTEGER const n, COMPLEX *x, INTEGER const incx, REAL &scale, REAL &sumsq) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     INTEGER ix = 0;
     REAL temp1 = 0.0;
     const REAL zero = 0.0;

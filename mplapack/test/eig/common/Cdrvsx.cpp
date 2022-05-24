@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -38,6 +38,16 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <regex>
+
+using namespace std;
+using std::regex;
+using std::regex_replace;
+
 void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const niunit, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *ht, COMPLEX *w, COMPLEX *wt, COMPLEX *wtmp, COMPLEX *vs, INTEGER const ldvs, COMPLEX *vs1, REAL *result, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
     INTEGER ldh = lda;
     INTEGER ldht = lda;
@@ -54,6 +64,7 @@ void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     char buf[1024];
     double dtmp;
     double dtmp1, dtmp2;
+    double dtmp_r, dtmp_i;
     std::complex<double> ctmp;
     char path[3];
     INTEGER ntestt = 0;
@@ -140,38 +151,6 @@ void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     static const char *format_9999 = "(/,1x,a3,' -- Complex Schur Form Decomposition Expert ','Driver',/,"
                                      "' Matrix types (see Cdrvsx for details): ')";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Arrays in Common ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
     //
     path[0] = 'C';
     path[1] = 'S';
@@ -234,7 +213,6 @@ void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
-    Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
     ulpinv = one / ulp;
     rtulp = sqrt(ulp);
@@ -408,7 +386,7 @@ void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             if (iinfo != 0) {
                 write(nounit, "(' Cdrvsx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                               "', ISEED=(',3(i5,','),i5,')')"),
-                    "Generator", iinfo, n, jtype, ioldsd;
+                    "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 return;
             }
@@ -459,7 +437,7 @@ void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         sprintnum_short(buf, result[j - 1]);
                         write(nounit, "(' N=',i5,', IWK=',i2,', seed=',4(i4,','),' type ',i2,"
                                       "', test(',i2,')=',a)"),
-                            n, iwk, ioldsd, jtype, j, buf;
+                            n, iwk, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jtype, j, buf;
                     }
                 }
                 //
@@ -477,28 +455,55 @@ statement_150:
     //     Read input data until N=0
     //
     jtype = 0;
+    string str;
+    string _str;
+    istringstream iss;
     while (1) {
-        read(niunit, star), n, nslct, isrt;
+        getline(cin, str);
+        iss.clear();
+        iss.str(str);
+        iss >> n;
+        iss >> nslct;
+        iss >> isrt;
+        //        printf("# n = %d, nslct = %d, isrt = %d\n", (int)n, int(nslct), int(isrt));
         if (n == 0)
             break;
         jtype++;
         iseed[1 - 1] = jtype;
-        {
-            read_loop rloop(cmn, niunit, star);
-            for (i = 1; i <= nslct; i = i + 1) {
-                rloop, islct[i - 1];
-            }
+        getline(cin, str);
+        string __r = regex_replace(str, regex(","), " ");
+        string _r = regex_replace(__r, regex("\\)"), " ");
+        string r = regex_replace(_r, regex("\\("), " ");
+        str = regex_replace(r, regex("D"), "e");
+        iss.clear();
+        iss.str(str);
+        for (i = 1; i <= nslct; i = i + 1) {
+            iss >> islct[i - 1];
         }
+        //        for (i = 1; i <= nslct; i = i + 1) {
+        //            cout << "islct: " << islct[i - 1] << "\n";
+        //        }
         for (i = 1; i <= n; i = i + 1) {
-            {
-                read_loop rloop(cmn, niunit, star);
-                for (j = 1; j <= n; j = j + 1) {
-                    rloop, ctmp;
-                    a[(i - 1) + (j - 1) * lda] = ctmp;
-                }
+            for (j = 1; j <= n; j = j + 1) {
+                getline(cin, str);
+                string __r = regex_replace(str, regex(","), " ");
+                string _r = regex_replace(__r, regex("\\)"), " ");
+                string r = regex_replace(_r, regex("\\("), " ");
+                str = regex_replace(r, regex("D"), "e");
+                iss.clear();
+                iss.str(str);
+                iss >> dtmp_r;
+                iss >> dtmp_i;
+                a[(i - 1) + (j - 1) * lda] = COMPLEX(dtmp_r, dtmp_i);
             }
         }
-        read(niunit, star), dtmp1, dtmp2;
+        // printf("a="); printmat(n, n, a, lda); printf("\n");
+        getline(cin, str);
+        _str = regex_replace(str, regex("D"), "e");
+        iss.clear();
+        iss.str(_str);
+        iss >> dtmp1;
+        iss >> dtmp2;
         rcdein = dtmp1;
         rcdvin = dtmp2;
         //

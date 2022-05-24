@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -82,35 +82,6 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
     REAL result[ntests];
     INTEGER nt = 0;
     INTEGER k = 0;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Initialize constants and the random number seed.
     //
@@ -338,7 +309,7 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                                 sprintnum_short(buf, result[k - 1]);
                                 write(nout, "(1x,a6,', UPLO=''',a1,''', N =',i5,', type ',i1,', test(',"
                                             "i1,')=',a)"),
-                                    "ZPFSV ", uplo, n, iit, k, buf;
+                                    "ZPFSV ", &uplo, n, iit, k, buf;
                                 nfail++;
                             }
                         }

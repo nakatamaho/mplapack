@@ -1,7 +1,7 @@
 
  Tests of the Nonsymmetric Eigenvalue Problem Driver
     Rgeev (eigenvalues and eigevectors)
- Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.0
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
  Based on original LAPACK VERSION 3.9.1
 
 The following parameter values will be used:
@@ -61,7 +61,7 @@ The following parameter values will be used:
 
  Tests of the Nonsymmetric Eigenvalue Problem Driver
     Rgees (Schur form)
- Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.0
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
  Based on original LAPACK VERSION 3.9.1
 
 The following parameter values will be used:
@@ -90,7 +90,7 @@ The following parameter values will be used:
 
  Tests of the Nonsymmetric Eigenvalue Problem Expert Driver
     Rgeevx (eigenvalues, eigenvectors and condition numbers)
- Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.0
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
  Based on original LAPACK VERSION 3.9.1
 
 The following parameter values will be used:
@@ -143,55 +143,55 @@ The following parameter values will be used:
  9 = 0 if SCALE, ILO, IHI, ABNRM same no matter what else computed,  1/ulp otherwise
  10 = | RCONDV - RCONDV(precomputed) | / cond(RCONDV),
  11 = | RCONDE - RCONDE(precomputed) | / cond(RCONDE),
- BALANC=' ',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2630879339729035e+01
- BALANC=' ',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8798784956982326e+01
- BALANC=' ',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2630879339729035e+01
- BALANC=' ',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8798784956982326e+01
- BALANC=' ',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2630879339729035e+01
- BALANC=' ',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8798784956982326e+01
- BALANC=' ',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2630879339729035e+01
- BALANC=' ',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8798784956982326e+01
- BALANC=' ',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
- BALANC=' ',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
- BALANC=' ',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
- BALANC=' ',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
- BALANC=' ',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
- BALANC=' ',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
- BALANC=' ',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
- BALANC=' ',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
- BALANC=' ',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
- BALANC=' ',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
- BALANC=' ',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
- BALANC=' ',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
- BALANC=' ',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
- BALANC=' ',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
- BALANC=' ',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
- BALANC=' ',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
- BALANC=' ',N=   5,IWK=1, seed=2518,3899, 995, 397, type 11, test( 2)=+2.9508793736800889e+01
- BALANC=' ',N=   5,IWK=1, seed=2518,3899, 995, 397, type 11, test( 2)=+2.9508793736800889e+01
- BALANC=' ',N=   5,IWK=1, seed=2518,3899, 995, 397, type 11, test( 2)=+3.2606369739965785e+01
- BALANC=' ',N=   5,IWK=1, seed=2518,3899, 995, 397, type 11, test( 2)=+3.2606369739965785e+01
- BALANC=' ',N=   5,IWK=2, seed=2518,3899, 995, 397, type 11, test( 2)=+2.9501850463008245e+01
- BALANC=' ',N=   5,IWK=2, seed=2518,3899, 995, 397, type 11, test( 2)=+2.9501850463008245e+01
- BALANC=' ',N=   5,IWK=2, seed=2518,3899, 995, 397, type 11, test( 2)=+3.2733531464111406e+01
- BALANC=' ',N=   5,IWK=2, seed=2518,3899, 995, 397, type 11, test( 2)=+3.2733531464111406e+01
- BALANC=' ',N=   5,IWK=3, seed=2518,3899, 995, 397, type 11, test( 2)=+2.9501850463008245e+01
- BALANC=' ',N=   5,IWK=3, seed=2518,3899, 995, 397, type 11, test( 2)=+2.9501850463008245e+01
- BALANC=' ',N=   5,IWK=3, seed=2518,3899, 995, 397, type 11, test( 2)=+3.2733531464111406e+01
- BALANC=' ',N=   5,IWK=3, seed=2518,3899, 995, 397, type 11, test( 2)=+3.2733531464111406e+01
- BALANC=' ',N=  20,IWK=1, seed=2518,3899, 995, 397, type  3, test( 1)=+4.1504281101322041e+01
- BALANC=' ',N=  20,IWK=1, seed=2518,3899, 995, 397, type  3, test( 1)=+4.1504281101322041e+01
- BALANC=' ',N=  20,IWK=2, seed=2518,3899, 995, 397, type  3, test( 1)=+4.1504281101322041e+01
- BALANC=' ',N=  20,IWK=2, seed=2518,3899, 995, 397, type  3, test( 1)=+4.1504281101322041e+01
- BALANC=' ',N=  20,IWK=3, seed=2518,3899, 995, 397, type  3, test( 1)=+4.1504281101322041e+01
- BALANC=' ',N=  20,IWK=3, seed=2518,3899, 995, 397, type  3, test( 1)=+4.1504281101322041e+01
+ BALANC='N',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2630879339729035e+01
+ BALANC='N',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8798784956982326e+01
+ BALANC='P',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2630879339729035e+01
+ BALANC='P',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8798784956982326e+01
+ BALANC='S',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2630879339729035e+01
+ BALANC='S',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8798784956982326e+01
+ BALANC='B',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2630879339729035e+01
+ BALANC='B',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8798784956982326e+01
+ BALANC='N',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
+ BALANC='N',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
+ BALANC='P',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
+ BALANC='P',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
+ BALANC='S',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
+ BALANC='S',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
+ BALANC='B',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
+ BALANC='B',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
+ BALANC='N',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
+ BALANC='N',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
+ BALANC='P',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
+ BALANC='P',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
+ BALANC='S',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
+ BALANC='S',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
+ BALANC='B',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
+ BALANC='B',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
+ BALANC='N',N=   5,IWK=1, seed=2518,3899, 995, 397, type 11, test( 2)=+2.9508793736800889e+01
+ BALANC='P',N=   5,IWK=1, seed=2518,3899, 995, 397, type 11, test( 2)=+2.9508793736800889e+01
+ BALANC='S',N=   5,IWK=1, seed=2518,3899, 995, 397, type 11, test( 2)=+3.2606369739965785e+01
+ BALANC='B',N=   5,IWK=1, seed=2518,3899, 995, 397, type 11, test( 2)=+3.2606369739965785e+01
+ BALANC='N',N=   5,IWK=2, seed=2518,3899, 995, 397, type 11, test( 2)=+2.9501850463008245e+01
+ BALANC='P',N=   5,IWK=2, seed=2518,3899, 995, 397, type 11, test( 2)=+2.9501850463008245e+01
+ BALANC='S',N=   5,IWK=2, seed=2518,3899, 995, 397, type 11, test( 2)=+3.2733531464111406e+01
+ BALANC='B',N=   5,IWK=2, seed=2518,3899, 995, 397, type 11, test( 2)=+3.2733531464111406e+01
+ BALANC='N',N=   5,IWK=3, seed=2518,3899, 995, 397, type 11, test( 2)=+2.9501850463008245e+01
+ BALANC='P',N=   5,IWK=3, seed=2518,3899, 995, 397, type 11, test( 2)=+2.9501850463008245e+01
+ BALANC='S',N=   5,IWK=3, seed=2518,3899, 995, 397, type 11, test( 2)=+3.2733531464111406e+01
+ BALANC='B',N=   5,IWK=3, seed=2518,3899, 995, 397, type 11, test( 2)=+3.2733531464111406e+01
+ BALANC='N',N=  20,IWK=1, seed=2518,3899, 995, 397, type  3, test( 1)=+4.1504281101322041e+01
+ BALANC='S',N=  20,IWK=1, seed=2518,3899, 995, 397, type  3, test( 1)=+4.1504281101322041e+01
+ BALANC='N',N=  20,IWK=2, seed=2518,3899, 995, 397, type  3, test( 1)=+4.1504281101322041e+01
+ BALANC='S',N=  20,IWK=2, seed=2518,3899, 995, 397, type  3, test( 1)=+4.1504281101322041e+01
+ BALANC='N',N=  20,IWK=3, seed=2518,3899, 995, 397, type  3, test( 1)=+4.1504281101322041e+01
+ BALANC='S',N=  20,IWK=3, seed=2518,3899, 995, 397, type  3, test( 1)=+4.1504281101322041e+01
  RVX:   42 out of  6282 tests failed to pass the threshold
 
  -----------------------------------------------------------------------
 
  Tests of the Nonsymmetric Eigenvalue Problem Expert Driver
     Rgeesx (Schur form and condition numbers)
- Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.0
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
  Based on original LAPACK VERSION 3.9.1
 
 The following parameter values will be used:
@@ -251,10 +251,10 @@ The following parameter values will be used:
  15 = 0 if RCONDv same no matter what else computed, 1/ulp otherwise
  16 = | RCONDE - RCONDE(precomputed) | / cond(RCONDE),
  17 = | RCONDV - RCONDV(precomputed) | / cond(RCONDV),
- N=    5, IWK= 1, seed=T,  11,   3,+3.2682716552424529e+01, type 
- N=    5, IWK= 1, seed=T,  11,   9,+3.2682716552424529e+01, type 
- N=    5, IWK= 2, seed=T,  11,   3,+3.2869361482368596e+01, type 
- N=    5, IWK= 2, seed=T,  11,   9,+3.2869361482368596e+01, type 
+ N=    5, IWK= 1, seed=2518,3899, 995, 397, type 11, test( 3)=+3.2682716552424529e+01
+ N=    5, IWK= 1, seed=2518,3899, 995, 397, type 11, test( 9)=+3.2682716552424529e+01
+ N=    5, IWK= 2, seed=2518,3899, 995, 397, type 11, test( 3)=+3.2869361482368596e+01
+ N=    5, IWK= 2, seed=2518,3899, 995, 397, type 11, test( 9)=+3.2869361482368596e+01
  N=    5, input example = 24,  test( 2)=+2.3098045021560837e+01
  N=    5, input example = 24,  test( 3)=+3.9263618037467597e+01
  N=    5, input example = 24,  test( 8)=+2.3098045021560837e+01
@@ -265,5 +265,5 @@ The following parameter values will be used:
 
 
  End of tests
- Total time used =        73.00 seconds
+ Total time used =       154.00 seconds
 

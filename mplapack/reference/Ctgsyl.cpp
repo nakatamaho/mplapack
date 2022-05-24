@@ -57,31 +57,6 @@ void Ctgsyl(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
     INTEGER linfo = 0;
     INTEGER k = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //  Replaced various illegal calls to CCOPY by calls to CLASET.
-    //  Sven Hammarling, 1/5/02.
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Decode and test input parameters
     //
     info = 0;

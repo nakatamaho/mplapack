@@ -206,6 +206,7 @@ This is the release process for MPLAPACK 3.0.0
 * version 1.0.0 https://github.com/nakatamaho/mplapack/blob/master/doc/Release1.0.0.md
 
 # History
+* 2022/05/24 2.0 All tests for complex and RFP have passed! alpha version is merged into HEAD.
 * 2022/03/21 2.0 (develoment ongoing). Now complex lin tests have passed for all precisions.
 * 2021/11/1 1.0.1 release. Fixing dd and qd arithmetic by Inte One API.
 * 2021/10/1 1.0.0 release. Huge improvement; all real LAPACK routines are available; SVD, eigenproblem solver for non symmetric matrices are added. manual is available:  https://raw.githubusercontent.com/nakatamaho/mplapack/master/doc/manual/manual.pdf 

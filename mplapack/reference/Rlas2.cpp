@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -30,23 +30,6 @@
 #include <mplapack.h>
 
 void Rlas2(REAL const f, REAL const g, REAL const h, REAL &ssmin, REAL &ssmax) {
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  ====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     REAL fa = abs(f);
     REAL ga = abs(g);

@@ -30,6 +30,10 @@
 #include <mplapack.h>
 
 void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jobr, const char *jobt, const char *jobp, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *sva, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
+#if defined(___MPLAPACK_BUILD_WITH_DD___) || defined(___MPLAPACK_BUILD_WITH_QD___)
+    printf("This routine doesn't work properly\n");
+    exit(-1);
+#endif
     bool lsvec = false;
     bool jracc = false;
     bool rsvec = false;
@@ -76,29 +80,6 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     REAL condr2 = 0.0;
     INTEGER numrank = 0;
     REAL cond_ok = 0.0;
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  ===========================================================================
-    //
-    //     .. Local Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //
-    //     ..
     //
     //     Test the input arguments
     //
@@ -436,7 +417,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //     one should use Rgesvj instead of Rgejsv.
     //
     big1 = sqrt(big);
-    temp1 = sqrt(big / castREAL(n));
+    temp1 = big1 / sqrt(castREAL(n)); //The original code fails on dd and qd for unknown reason.
     //
     Rlascl("G", 0, 0, aapp, temp1, n, 1, sva, n, ierr);
     if (aaqq > (aapp * sfmin)) {

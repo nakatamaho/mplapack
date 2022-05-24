@@ -1,5 +1,5 @@
  Tests of the Singular Value Decomposition routines
- Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 1.0.0
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
  Based on original LAPACK VERSION 3.9.1
 
 The following parameter values will be used:
@@ -62,5 +62,5 @@ The following parameter values will be used:
 
 
  End of tests
- Total time used =         4.00 seconds
+ Total time used =        21.00 seconds
 

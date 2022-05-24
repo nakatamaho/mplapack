@@ -1,3 +1,64 @@
+2022/05/16    Nakata Maho <maho@riken.jp> 2.0 branch
+            * Disable Rgejsv, Cgejsv, Rgesvj and Cgesvj by dd/qd, since we cannot
+              gurantee the precisions.
+
+2022/05/16    Nakata Maho <maho@riken.jp> 2.0 branch
+            * Rtest_rfp.in, Ctest_rfp.in: Test for linear equation routines RFP format
+              have passed for all precisions.
+
+2022/05/10    Nakata Maho <maho@riken.jp> 2.0 branch
+            * csd.in: Test for CS decomposition routines
+              have passed for all precisions (except for GMP; it doesn't support csd).
+
+2022/05/09    Nakata Maho <maho@riken.jp> 2.0 branch
+            * gsv.in: Test for Generalized SVD routines
+              have passed for all precisions.
+            * Csg.in: MPFR tests have also passed. Thus, tests of the Generalized
+              Nonsymmetric Eigenvalue Problem routines have passed for all precisions.
+
+2022/05/08    Nakata Maho <maho@riken.jp> 2.0 branch
+            * Cgd.in: Tests for complex Nonsymmetric generalized Eigenvalue/Schur Form Driver/Expert Driver
+              have passed for all precisions.
+
+2022/05/06    Nakata Maho <maho@riken.jp> 2.0 branch
+            * svd.in: Tests of the complex Singular Value Decomposition routines
+              have passed for all precisions except for dd and qd.
+
+2022/05/04    Nakata Maho <maho@riken.jp> 2.0 branch
+            * Cgg.in: Tests of the complex Generalized Nonsymmetric Eigenvalue Problem routines
+              have passed for all precisions.
+
+2022/05/03    Nakata Maho <maho@riken.jp> 2.0 branch
+            * Cgg.in: Tests of the Generalized Nonsymmetric Eigenvalue Problem routines
+              have passed for all precisions expect for _Float128 and _Float64x.
+            * Csg.in: Tests of the Generalized Nonsymmetric Eigenvalue Problem routines
+              have passed for all precisions expect for mpfr.
+
+2022/05/02    Nakata Maho <maho@riken.jp> 2.0 branch
+            * Ced.in: Tests for Complex Nonsymmetric Schur Form, Eigenvalue expert/expert drivers
+              have passed for all precisions.
+
+2022/05/01    Nakata Maho <maho@riken.jp> 2.0 branch
+            * se2.in: Tests for Hermitian Eigenvalue Problem routines for complex numbers have passed
+              for all precisions.
+
+2022/04/30    Nakata Maho <maho@riken.jp> 2.0 branch
+            * sep.in: Tests for Hermitian Eigenvalue Problem routines for complex numbers have passed
+              for all precisions.
+
+2022/04/26    Nakata Maho <maho@riken.jp> 2.0 branch
+            * nep.in: Test for Nonsymmetric Eigenvalue Problem routines for complex have passed
+              for all precisions.
+            * lse.in: Test for Constrained Linear Least Squares routines for complex have passed
+              for all precisions.
+            * Csb.in: Test for Hermitian Eigenvalue Problem routines have passed
+            * glm.in: Tests of the Generalized Linear Regression Model routines for complex have passed
+            * gqr.in: testing Generalized QR and RQ routines for complex have passed
+            * Cbb.in: reduction of a general band matrix to real bidiagonal form tests have passed
+
+2022/04/24    Nakata Maho <maho@riken.jp> 2.0 branch
+            * Cec.in test (Testing complex Eigen Condition Routines) have passed for all precisions.
+
 2022/03/21    Nakata Maho <maho@riken.jp> 2.0 branch
             * Ctest.in test have passed for all precisions, except for linear fitting.
               Some tests using SVDs still fails, however, they will be fixed when eig tests

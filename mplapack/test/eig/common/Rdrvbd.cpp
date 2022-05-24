@@ -508,6 +508,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 result[17 - 1] = zero;
                 result[18 - 1] = zero;
                 //
+#if !defined(___MPLAPACK_BUILD_WITH_DD___) && !defined(___MPLAPACK_BUILD_WITH_QD___)
                 if (m >= n) {
                     iwtmp = 5 * mnmin * mnmin + 9 * mnmin + max(m, n);
                     lswork = iwtmp + (iws - 1) * (lwork - iwtmp) / 3;
@@ -557,6 +558,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         }
                     }
                 }
+#endif
                 //
                 //              Test Rgejsv
                 //              Note: Rgejsv only works for M >= N
@@ -565,6 +567,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 result[20 - 1] = zero;
                 result[21 - 1] = zero;
                 result[22 - 1] = zero;
+#if !defined(___MPLAPACK_BUILD_WITH_DD___) && !defined(___MPLAPACK_BUILD_WITH_QD___)
                 if (m >= n) {
                     iwtmp = 5 * mnmin * mnmin + 9 * mnmin + max(m, n);
                     lswork = iwtmp + (iws - 1) * (lwork - iwtmp) / 3;
@@ -613,6 +616,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         }
                     }
                 }
+#endif
                 //
                 //              Test Rgesvdx
                 //

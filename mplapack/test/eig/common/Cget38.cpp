@@ -38,12 +38,22 @@ using fem::common;
 
 #include <mplapack_debug.h>
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <regex>
+
+using namespace std;
+using std::regex;
+using std::regex_replace;
+
 void Cget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
     common cmn;
     common_read read(cmn);
     common_write write(cmn);
     double dtmp;
-    std::complex<double> ctmp;
+    double dtmp_r, dtmp_i;
     char buf[1024];
     REAL eps = 0.0;
     REAL smlnum = 0.0;
@@ -103,35 +113,9 @@ void Cget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     INTEGER ldq = ldt;
     INTEGER ldqtmp = ldt;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     //     EPSIN = 2**(-24) = precision to which input data computed
     //
@@ -149,33 +133,64 @@ void Cget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     val[1 - 1] = sqrt(smlnum);
     val[2 - 1] = one;
     val[3 - 1] = sqrt(sqrt(bignum));
-//
-//     Read input data until N=0.  Assume input eigenvalues are sorted
-//     lexicographically (increasing by real part, then decreasing by
-//     imaginary part)
-//
+    //
+    //     Read input data until N=0.  Assume input eigenvalues are sorted
+    //     lexicographically (increasing by real part, then decreasing by
+    //     imaginary part)
+    //
+    string str;
+    istringstream iss;
 statement_10:
-    read(nin, star), n, ndim, isrt;
+    getline(cin, str);
+    iss.clear();
+    iss.str(str);
+    iss >> n;
+    iss >> ndim;
+    iss >> isrt;
+    // printf("n = %d\n", (int)n);
+    // printf("ndim = %d\n", (int)ndim);
+    // printf("isrt = %d\n", (int)isrt);
     if (n == 0) {
         return;
     }
-    {
-        read_loop rloop(cmn, nin, star);
-        for (i = 1; i <= ndim; i = i + 1) {
-            rloop, iselec[i - 1];
-        }
+    getline(cin, str);
+    iss.clear();
+    iss.str(str);
+    for (i = 1; i <= ndim; i = i + 1) {
+        iss >> itmp;
+        iselec[i - 1] = itmp;
     }
     for (i = 1; i <= n; i = i + 1) {
-        {
-            read_loop rloop(cmn, nin, star);
-            for (j = 1; j <= n; j = j + 1) {
-                rloop, ctmp;
-                tmp[(i - 1) + (j - 1) * ldtmp] = ctmp;
-            }
+        getline(cin, str);
+        iss.clear();
+        string ___r = regex_replace(str, regex(","), " ");
+        string __r = regex_replace(___r, regex("\\)"), " ");
+        string _r = regex_replace(__r, regex("\\("), " ");
+        str = regex_replace(_r, regex("D"), "e");
+        iss.str(str);
+        for (j = 1; j <= n; j = j + 1) {
+            iss >> dtmp_r;
+            iss >> dtmp_i;
+            tmp[(i - 1) + (j - 1) * ldtmp] = COMPLEX(dtmp_r, dtmp_i);
         }
     }
-    read(nin, star), sin, sepin;
+    // printf("tmp ="); printmat(n, n, tmp, ldtmp); printf("\n");
+    getline(cin, str);
+    {
+        string ___r = regex_replace(str, regex(","), " ");
+        string __r = regex_replace(___r, regex("\\)"), " ");
+        string _r = regex_replace(__r, regex("\\("), " ");
+        str = regex_replace(_r, regex("D"), "e");
+    }
+    iss.clear();
+    iss.str(str);
+    iss >> dtmp;
+    sin = dtmp;
+    iss >> dtmp;
+    sepin = dtmp;
     //
+    // printf("sin ="); printnum(sin); printf("\n");
+    // printf("sepin ="); printnum(sepin); printf("\n");
     tnrm = Clange("M", n, n, tmp, ldt, rwork);
     for (iscl = 1; iscl <= 3; iscl = iscl + 1) {
         //

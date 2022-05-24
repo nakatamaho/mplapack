@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -88,8 +88,8 @@ void Cchkee(void) {
     bool tstdrv = false;
     bool tsterr = false;
 
-    char c1[2];
-    char c3[4];
+    char c1;
+    char c3[3];
     char path[4];
     char vname[32];
     char line[1024];
@@ -190,7 +190,7 @@ void Cchkee(void) {
     char buf0[1024];
     double dtmp;
 
-    stringstream ss(str);
+    stringstream ss;
     s1 = time(NULL);
     fatal = false;
     //
@@ -209,6 +209,7 @@ void Cchkee(void) {
         path[0] = line[0];
         path[1] = line[1];
         path[2] = line[2];
+        path[3] = '\0';
         nep = Mlsamen(3, path, "NEP") || Mlsamen(3, path, "ZHS");
         sep = Mlsamen(3, path, "SEP") || Mlsamen(3, path, "ZST") || Mlsamen(3, path, "ZSG") || Mlsamen(3, path, "SE2");
         svd = Mlsamen(3, path, "SVD") || Mlsamen(3, path, "ZBD");
@@ -315,7 +316,11 @@ void Cchkee(void) {
             //
             //        ZEC:  Eigencondition estimation
             //
-            read(nin, star), thresh;
+            getline(cin, str);
+            ss.str(str);
+            double dtmp;
+            ss >> dtmp;
+            thresh = dtmp;
             xlaenv(1, 1);
             xlaenv(12, 1);
             tsterr = true;
@@ -332,7 +337,10 @@ void Cchkee(void) {
         //
         //     Read the number of values of M, P, and N.
         //
-        read(nin, star), nn;
+        getline(cin, str);
+        iss.clear();
+        iss.str(str);
+        iss >> nn;
         if (nn < 0) {
             write(nout, format_9989), "   NN ", nn, 1;
             nn = 0;
@@ -346,11 +354,11 @@ void Cchkee(void) {
         //     Read the values of M
         //
         if (!(zgx || zxv)) {
-            {
-                read_loop rloop(cmn, nin, star);
-                for (i = 1; i <= nn; i = i + 1) {
-                    rloop, mval[i - 1];
-                }
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            for (i = 1; i <= nn; i = i + 1) {
+                iss >> mval[i - 1];
             }
             if (svd) {
                 strncmp(vname, "    M ", 8);
@@ -378,11 +386,12 @@ void Cchkee(void) {
         //     Read the values of P
         //
         if (glm || gqr || gsv || csd || lse) {
-            {
-                read_loop rloop(cmn, nin, star);
-                for (i = 1; i <= nn; i = i + 1) {
-                    rloop, pval[i - 1];
-                }
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            for (i = 1; i <= nn; i = i + 1) {
+                iss >> itmp;
+                pval[i - 1] = itmp;
             }
             for (i = 1; i <= nn; i = i + 1) {
                 if (pval[i - 1] < 0) {
@@ -405,11 +414,12 @@ void Cchkee(void) {
         //     Read the values of N
         //
         if (svd || zbb || glm || gqr || gsv || csd || lse) {
-            {
-                read_loop rloop(cmn, nin, star);
-                for (i = 1; i <= nn; i = i + 1) {
-                    rloop, nval[i - 1];
-                }
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            for (i = 1; i <= nn; i = i + 1) {
+                iss >> itmp;
+                nval[i - 1] = itmp;
             }
             for (i = 1; i <= nn; i = i + 1) {
                 if (nval[i - 1] < 0) {
@@ -426,12 +436,10 @@ void Cchkee(void) {
             }
         }
         if (!(zgx || zxv)) {
-            {
-                write_loop wloop(cmn, nout, format_9983);
-                wloop, "N:    ";
-                for (i = 1; i <= nn; i = i + 1) {
-                    wloop, nval[i - 1];
-                }
+            write_loop wloop(cmn, nout, format_9983);
+            wloop, "N:    ";
+            for (i = 1; i <= nn; i = i + 1) {
+                wloop, nval[i - 1];
             }
         } else {
             write(nout, format_9983), "N:    ", nn;
@@ -440,12 +448,16 @@ void Cchkee(void) {
         //     Read the number of values of K, followed by the values of K
         //
         if (zhb || zbb) {
-            read(nin, star), nk;
-            {
-                read_loop rloop(cmn, nin, star);
-                for (i = 1; i <= nk; i = i + 1) {
-                    rloop, kval[i - 1];
-                }
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            iss >> nk;
+            getline(cin, str);
+            iss.clear();
+            iss.str(str);
+            for (i = 1; i <= nk; i = i + 1) {
+                iss >> itmp;
+                kval[i - 1] = itmp;
             }
             for (i = 1; i <= nk; i = i + 1) {
                 if (kval[i - 1] < 0) {
@@ -476,8 +488,12 @@ void Cchkee(void) {
             iss >> nbval[1 - 1];
             iss >> nbmin[1 - 1];
             iss >> nxval[1 - 1];
+            iss >> inmin[1 - 1];
+            iss >> inwin[1 - 1];
+            iss >> inibl[1 - 1];
+            iss >> ishfts[1 - 1];
             iss >> nsval[1 - 1];
-            iss >> mxbval[1 - 1];
+            iss >> iacc22[1 - 1];
             if (nbval[1 - 1] < 1) {
                 write(nout, format_9989), "   NB ", nbval[1 - 1], 1;
                 fatal = true;
@@ -644,6 +660,9 @@ void Cchkee(void) {
                 iss.clear();
                 iss.str(str);
                 for (i = 1; i <= nparms; i = i + 1) {
+                    iss >> nxval[i - 1];
+                }
+                for (i = 1; i <= nparms; i = i + 1) {
                     if (nxval[i - 1] < 0) {
                         write(nout, format_9989), "   NX ", nxval[i - 1], 0;
                         fatal = true;
@@ -791,6 +810,9 @@ void Cchkee(void) {
                 iss.clear();
                 iss.str(str);
                 for (i = 1; i <= nparms; i = i + 1) {
+                    iss >> inibl[i - 1];
+                }
+                for (i = 1; i <= nparms; i = i + 1) {
                     if (inibl[i - 1] < 0) {
                         write(nout, format_9989), " INIBL ", inibl[i - 1], 0;
                         fatal = true;
@@ -815,6 +837,9 @@ void Cchkee(void) {
                 getline(cin, str);
                 iss.clear();
                 iss.str(str);
+                for (i = 1; i <= nparms; i = i + 1) {
+                    iss >> ishfts[i - 1];
+                }
                 for (i = 1; i <= nparms; i = i + 1) {
                     if (ishfts[i - 1] < 0) {
                         write(nout, format_9989), " ISHFTS ", ishfts[i - 1], 0;
@@ -1057,6 +1082,10 @@ void Cchkee(void) {
                         iseed[k - 1] = ioldsd[k - 1];
                     }
                 }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+                thresh = thresh * 10.0;
+                printf("Warning! Threshold has been lifted 10 times for GMP\n");
+#endif
                 write(nout, "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4,', INMIN=',i4,"
                             "', INWIN =',i4,', INIBL =',i4,', ISHFTS =',i4,', IACC22 =',i4)"),
                     c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], max((INTEGER)11, inmin[i - 1]), inwin[i - 1], inibl[i - 1], ishfts[i - 1], iacc22[i - 1];
@@ -1117,6 +1146,7 @@ void Cchkee(void) {
                 }
             }
             //
+            break;
         } else if (Mlsamen(3, c3, "ZSG")) {
             //
             //        ----------------------------------------------
@@ -1181,6 +1211,10 @@ void Cchkee(void) {
             if (tsterr && tstdrv) {
                 Cerred("ZBD", nout);
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh = thresh * 10.0;
+            printf("Warning! Threshold has been lifted 10 times for GMP\n");
+#endif
             //
             for (i = 1; i <= nparms; i = i + 1) {
                 nrhs = nsval[i - 1];
@@ -1219,6 +1253,10 @@ void Cchkee(void) {
                 if (tsterr) {
                     Cerred(c3, nout);
                 }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+                thresh = thresh * 5.0;
+                printf("Warning! Threshold has been lifted 5 times for GMP\n");
+#endif
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
                 Cdrvev(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &dc[0], &dc[nmax], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], nmax, result, work, lwork, rwork, iwork, info);
                 if (info != 0) {
@@ -1243,6 +1281,10 @@ void Cchkee(void) {
                 if (tsterr) {
                     Cerred(c3, nout);
                 }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+                thresh = thresh * 5.0;
+                printf("Warning! Threshold has been lifted 5 times for GMP\n");
+#endif
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
                 Cdrves(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &dc[0], &dc[nmax], &a[nmax * nmax * 3], nmax, result, work, lwork, rwork, iwork, logwrk, info);
                 if (info != 0) {
@@ -1267,6 +1309,10 @@ void Cchkee(void) {
                 if (tsterr) {
                     Cerred(c3, nout);
                 }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+                thresh = thresh * 5.0;
+                printf("Warning! Threshold has been lifted 5 times for GMP\n");
+#endif
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
                 Cdrvvx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[0], nmax, &a[nmax * nmax], &dc[0], &dc[nmax], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], nmax, &dr[0], &dr[nmax], &dr[2 * nmax], &dr[nmax * 3], &dr[nmax * 4], &dr[nmax * 5], &dr[nmax * 6], &dr[nmax * 7], result, work, lwork, rwork, info);
                 if (info != 0) {
@@ -1291,6 +1337,10 @@ void Cchkee(void) {
                 if (tsterr) {
                     Cerred(c3, nout);
                 }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+                thresh = thresh * 5.0;
+                printf("Warning! Threshold has been lifted 5 times for GMP\n");
+#endif
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
                 Cdrvsx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &dc[0], &dc[nmax], &dc[nmax * 2], &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], result, work, lwork, rwork, logwrk, info);
                 if (info != 0) {
@@ -1338,7 +1388,7 @@ void Cchkee(void) {
                 tstdif = false;
                 thrshn = 10.0;
                 if (tstchk) {
-                    Cchkgg(nn, nval, maxtyp, dotype, iseed, thresh, tstdif, thrshn, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], &a[nmax * nmax * 5], &a[nmax * nmax * 6], &a[nmax * nmax * 7], &a[nmax * nmax * 8], nmax, &a[(1 - 1) + (10 - 1) * lda], &a[(1 - 1) + (11 - 1) * lda], &a[(1 - 1) + (12 - 1) * lda], &dc[0], &dc[nmax], &dc[nmax * 2], &dc[nmax * 3], &a[(1 - 1) + (13 - 1) * lda], &a[(1 - 1) + (14 - 1) * lda], work, lwork, rwork, logwrk, result, info);
+                    Cchkgg(nn, nval, maxtyp, dotype, iseed, thresh, tstdif, thrshn, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], &a[nmax * nmax * 5], &a[nmax * nmax * 6], &a[nmax * nmax * 7], &a[nmax * nmax * 8], nmax, &a[nmax * nmax * 9], &a[nmax * nmax * 10], &a[nmax * nmax * 11], &dc[0], &dc[nmax], &dc[nmax * 2], &dc[nmax * 3], &a[nmax * nmax * 12], &a[nmax * nmax * 13], work, lwork, rwork, logwrk, result, info);
                     if (info != 0) {
                         write(nout, format_9980), "Cchkgg", info;
                     }
@@ -1360,6 +1410,10 @@ void Cchkee(void) {
                 if (tsterr) {
                     Cerrgg(c3, nout);
                 }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+                thresh = thresh * 10.0;
+                printf("Warning! Threshold has been lifted 10 times for GMP\n");
+#endif
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
                 Cdrges(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 6], nmax, &a[nmax * nmax * 7], &dc[0], &dc[nmax], work, lwork, rwork, result, logwrk, info);
                 //

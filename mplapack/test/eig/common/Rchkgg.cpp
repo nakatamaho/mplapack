@@ -332,7 +332,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         statement_100:
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 return;
             }
@@ -478,7 +478,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             result[9 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thrshn) {
                 sprintnum_short(buf, dumma[2 - 1]);
-                write(nounit, format_9998), "Left", "Rtgevc(HOWMNY=S)", buf, n, jtype, ioldsd;
+                write(nounit, format_9998), "Left", "Rtgevc(HOWMNY=S)", buf, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
             }
             //
             //           10: Compute the left eigenvector Matrix with
@@ -665,12 +665,12 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
                                       "' result ',i2,' is',0p,a)"),
-                            n, jtype, ioldsd, jr, buf;
+                            n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jr, buf;
                     } else {
                         sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
                                       "' result ',i2,' is',1p,a)"),
-                            n, jtype, ioldsd, jr, buf;
+                            n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jr, buf;
                     }
                 }
             }

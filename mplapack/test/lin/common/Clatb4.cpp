@@ -170,7 +170,7 @@ void Clatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
 #elif defined ___MPLAPACK_BUILD_WITH_DD___
             cndnum = tenth * badc2 * 1e-3;
 #elif defined ___MPLAPACK_BUILD_WITH_QD___
-            cndnum = tenth * badc2 * 1e-5;
+            cndnum = tenth * badc2 * 1e-11;
 #else
             cndnum = tenth * badc2;
 #endif

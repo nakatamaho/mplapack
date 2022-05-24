@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -30,29 +30,6 @@
 #include <mplapack.h>
 
 void Cunbdb1(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, INTEGER const ldx11, COMPLEX *x21, INTEGER const ldx21, REAL *theta, REAL *phi, COMPLEX *taup1, COMPLEX *taup2, COMPLEX *tauq1, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  ====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Function ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Test input arguments
     //
@@ -86,7 +63,7 @@ void Cunbdb1(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         lorbdb5 = q - 2;
         lworkopt = max(ilarf + llarf - 1, iorbdb5 + lorbdb5 - 1);
         lworkmin = lworkopt;
-        work[1 - 1] = lworkopt;
+        work[1 - 1] = castREAL(lworkopt);
         if (lwork < lworkmin && !lquery) {
             info = -14;
         }

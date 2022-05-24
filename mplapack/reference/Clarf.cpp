@@ -31,27 +31,6 @@
 
 void Clarf(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, INTEGER const incv, COMPLEX const tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     bool applyleft = Mlsame(side, "L");
     INTEGER lastv = 0;
     INTEGER lastc = 0;

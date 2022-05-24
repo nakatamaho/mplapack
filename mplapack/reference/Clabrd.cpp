@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -105,7 +105,7 @@ void Clabrd(INTEGER const m, INTEGER const n, INTEGER const nb, COMPLEX *a, INTE
                 //              Generate reflection P(i) to annihilate A(i,i+2:n)
                 //
                 alpha = a[(i - 1) + ((i + 1) - 1) * lda];
-                Clarfg(n - i, alpha, &a[(i - 1) + (min(i + 1, n) - 1) * lda], lda, taup[i - 1]);
+                Clarfg(n - i, alpha, &a[(i - 1) + (min(i + 2, n) - 1) * lda], lda, taup[i - 1]);
                 e[i - 1] = alpha.real();
                 a[(i - 1) + ((i + 1) - 1) * lda] = one;
                 //
@@ -164,7 +164,7 @@ void Clabrd(INTEGER const m, INTEGER const n, INTEGER const nb, COMPLEX *a, INTE
                 //              Generate reflection Q(i) to annihilate A(i+2:m,i)
                 //
                 alpha = a[((i + 1) - 1) + (i - 1) * lda];
-                Clarfg(m - i, alpha, &a[(min(i + 2, m) - 1) + (m - 1) * lda], 1, tauq[i - 1]);
+                Clarfg(m - i, alpha, &a[(min(i + 2, m) - 1) + (i - 1) * lda], 1, tauq[i - 1]);
                 e[i - 1] = alpha.real();
                 a[((i + 1) - 1) + (i - 1) * lda] = one;
                 //

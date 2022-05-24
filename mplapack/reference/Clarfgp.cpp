@@ -43,29 +43,6 @@ void Clarfgp(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, CO
     INTEGER knt = 0;
     COMPLEX savealpha = 0.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     if (n <= 0) {
         tau = zero;
         return;

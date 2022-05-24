@@ -38,29 +38,6 @@ using fem::common;
 
 void Rpot03(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *ainv, INTEGER const ldainv, REAL *work, INTEGER const ldwork, REAL *rwork, REAL &rcond, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Quick exit if N = 0.
     //
     const REAL one = 1.0;

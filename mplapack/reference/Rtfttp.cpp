@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -31,27 +31,6 @@
 
 void Rtfttp(const char *transr, const char *uplo, INTEGER const n, REAL *arf, REAL *ap, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     info = 0;
@@ -77,9 +56,9 @@ void Rtfttp(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
     //
     if (n == 1) {
         if (normaltransr) {
-            ap[0 - 1] = arf[0 - 1];
+            ap[0] = arf[0];
         } else {
-            ap[0 - 1] = arf[0 - 1];
+            ap[0] = arf[0];
         }
         return;
     }
@@ -151,7 +130,7 @@ void Rtfttp(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
                 for (j = 0; j <= n2; j = j + 1) {
                     for (i = j; i <= n - 1; i = i + 1) {
                         ij = i + jp;
-                        ap[ijp - 1] = arf[ij - 1];
+                        ap[ijp] = arf[ij];
                         ijp++;
                     }
                     jp += lda;
@@ -159,7 +138,7 @@ void Rtfttp(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
                 for (i = 0; i <= n2 - 1; i = i + 1) {
                     for (j = 1 + i; j <= n2; j = j + 1) {
                         ij = i + j * lda;
-                        ap[ijp - 1] = arf[ij - 1];
+                        ap[ijp] = arf[ij];
                         ijp++;
                     }
                 }
@@ -174,7 +153,7 @@ void Rtfttp(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
                 for (j = 0; j <= n1 - 1; j = j + 1) {
                     ij = n2 + j;
                     for (i = 0; i <= j; i = i + 1) {
-                        ap[ijp - 1] = arf[ij - 1];
+                        ap[ijp] = arf[ij];
                         ijp++;
                         ij += lda;
                     }
@@ -183,7 +162,7 @@ void Rtfttp(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
                 for (j = n1; j <= n - 1; j = j + 1) {
                     ij = js;
                     for (ij = js; ij <= js + j; ij = ij + 1) {
-                        ap[ijp - 1] = arf[ij - 1];
+                        ap[ijp] = arf[ij];
                         ijp++;
                     }
                     js += lda;
@@ -204,14 +183,14 @@ void Rtfttp(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
                 ijp = 0;
                 for (i = 0; i <= n2; i = i + 1) {
                     for (ij = i * (lda + 1); ij <= n * lda - 1; ij = ij + lda) {
-                        ap[ijp - 1] = arf[ij - 1];
+                        ap[ijp] = arf[ij];
                         ijp++;
                     }
                 }
                 js = 1;
                 for (j = 0; j <= n2 - 1; j = j + 1) {
                     for (ij = js; ij <= js + n2 - j - 1; ij = ij + 1) {
-                        ap[ijp - 1] = arf[ij - 1];
+                        ap[ijp] = arf[ij];
                         ijp++;
                     }
                     js += lda + 1;
@@ -227,14 +206,14 @@ void Rtfttp(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
                 js = n2 * lda;
                 for (j = 0; j <= n1 - 1; j = j + 1) {
                     for (ij = js; ij <= js + j; ij = ij + 1) {
-                        ap[ijp - 1] = arf[ij - 1];
+                        ap[ijp] = arf[ij];
                         ijp++;
                     }
                     js += lda;
                 }
                 for (i = 0; i <= n1; i = i + 1) {
                     for (ij = i; ij <= i + (n1 + i) * lda; ij = ij + lda) {
-                        ap[ijp - 1] = arf[ij - 1];
+                        ap[ijp] = arf[ij];
                         ijp++;
                     }
                 }
@@ -262,7 +241,7 @@ void Rtfttp(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
                 for (j = 0; j <= k - 1; j = j + 1) {
                     for (i = j; i <= n - 1; i = i + 1) {
                         ij = 1 + i + jp;
-                        ap[ijp - 1] = arf[ij - 1];
+                        ap[ijp] = arf[ij];
                         ijp++;
                     }
                     jp += lda;
@@ -270,7 +249,7 @@ void Rtfttp(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
                 for (i = 0; i <= k - 1; i = i + 1) {
                     for (j = i; j <= k - 1; j = j + 1) {
                         ij = i + j * lda;
-                        ap[ijp - 1] = arf[ij - 1];
+                        ap[ijp] = arf[ij];
                         ijp++;
                     }
                 }
@@ -285,7 +264,7 @@ void Rtfttp(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
                 for (j = 0; j <= k - 1; j = j + 1) {
                     ij = k + 1 + j;
                     for (i = 0; i <= j; i = i + 1) {
-                        ap[ijp - 1] = arf[ij - 1];
+                        ap[ijp] = arf[ij];
                         ijp++;
                         ij += lda;
                     }
@@ -294,7 +273,7 @@ void Rtfttp(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
                 for (j = k; j <= n - 1; j = j + 1) {
                     ij = js;
                     for (ij = js; ij <= js + j; ij = ij + 1) {
-                        ap[ijp - 1] = arf[ij - 1];
+                        ap[ijp] = arf[ij];
                         ijp++;
                     }
                     js += lda;
@@ -315,14 +294,14 @@ void Rtfttp(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
                 ijp = 0;
                 for (i = 0; i <= k - 1; i = i + 1) {
                     for (ij = i + (i + 1) * lda; ij <= (n + 1) * lda - 1; ij = ij + lda) {
-                        ap[ijp - 1] = arf[ij - 1];
+                        ap[ijp] = arf[ij];
                         ijp++;
                     }
                 }
                 js = 0;
                 for (j = 0; j <= k - 1; j = j + 1) {
                     for (ij = js; ij <= js + k - j - 1; ij = ij + 1) {
-                        ap[ijp - 1] = arf[ij - 1];
+                        ap[ijp] = arf[ij];
                         ijp++;
                     }
                     js += lda + 1;
@@ -338,14 +317,14 @@ void Rtfttp(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
                 js = (k + 1) * lda;
                 for (j = 0; j <= k - 1; j = j + 1) {
                     for (ij = js; ij <= js + j; ij = ij + 1) {
-                        ap[ijp - 1] = arf[ij - 1];
+                        ap[ijp] = arf[ij];
                         ijp++;
                     }
                     js += lda;
                 }
                 for (i = 0; i <= k - 1; i = i + 1) {
                     for (ij = i; ij <= i + (k + i) * lda; ij = ij + lda) {
-                        ap[ijp - 1] = arf[ij - 1];
+                        ap[ijp] = arf[ij];
                         ijp++;
                     }
                 }

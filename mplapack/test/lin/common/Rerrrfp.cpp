@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -42,7 +42,6 @@ void Rerrrfp(INTEGER const nunit) {
     common_write write(cmn);
     INTEGER nout = nunit;
     //
-    nout = nunit;
     ok = true;
     REAL alpha = 1.0;
     REAL beta = 1.0;

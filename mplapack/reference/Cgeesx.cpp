@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgeesx(const char *jobvs, const char *sort, bool (*select)(COMPLEX), const char *sense, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER &sdim, COMPLEX *w, COMPLEX *vs, INTEGER const ldvs, REAL rconde, REAL &rcondv, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
+void Cgeesx(const char *jobvs, const char *sort, bool (*select)(COMPLEX), const char *sense, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER &sdim, COMPLEX *w, COMPLEX *vs, INTEGER const ldvs, REAL &rconde, REAL &rcondv, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
     //
     //     Test the input arguments
     //

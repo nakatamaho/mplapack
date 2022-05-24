@@ -93,33 +93,6 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     static const char *format_9993 = "(' Cdrvev: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     path[0] = 'C';
     path[1] = 'E';
     path[2] = 'V';
@@ -180,7 +153,6 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
-    Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
     ulpinv = one / ulp;
     rtulp = sqrt(ulp);
@@ -351,7 +323,7 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
             //
             if (iinfo != 0) {
-                write(nounit, format_9993), "Generator", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9993), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 return;
             }
@@ -377,10 +349,14 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //              Compute eigenvalues and eigenvectors, and test them
                 //
                 Clacpy("F", n, n, a, lda, h, lda);
+                //		printf("a=");printmat(n,n,a,lda);printf("\n");
                 Cgeev("V", "V", n, h, lda, w, vl, ldvl, vr, ldvr, work, nnwork, rwork, iinfo);
+                //                printf("w="); printvec(w, n); printf("\n");
+                //                printf("vl=");printmat(n,n,vl,ldvl);printf("\n");
+                //		printf("vr=");printmat(n,n,vr,ldvr);printf("\n");
                 if (iinfo != 0) {
                     result[1 - 1] = ulpinv;
-                    write(nounit, format_9993), "Cgeev1", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9993), "Cgeev1", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     goto statement_220;
                 }
@@ -411,7 +387,7 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                             vrmx = abs(vr[(jj - 1) + (j - 1) * ldvr].real());
                         }
                     }
-                    if (vrmx / vmx < one - two * ulp) {
+                    if ((vrmx / vmx) < (one - two * ulp)) {
                         result[3 - 1] = ulpinv;
                     }
                 }
@@ -443,7 +419,7 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Cgeev("N", "N", n, h, lda, w1, dum, 1, dum, 1, work, nnwork, rwork, iinfo);
                 if (iinfo != 0) {
                     result[1 - 1] = ulpinv;
-                    write(nounit, format_9993), "Cgeev2", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9993), "Cgeev2", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     goto statement_220;
                 }
@@ -462,7 +438,7 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Cgeev("N", "V", n, h, lda, w1, dum, 1, lre, ldlre, work, nnwork, rwork, iinfo);
                 if (iinfo != 0) {
                     result[1 - 1] = ulpinv;
-                    write(nounit, format_9993), "Cgeev3", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9993), "Cgeev3", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     goto statement_220;
                 }
@@ -491,7 +467,7 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Cgeev("V", "N", n, h, lda, w1, lre, ldlre, dum, 1, work, nnwork, rwork, iinfo);
                 if (iinfo != 0) {
                     result[1 - 1] = ulpinv;
-                    write(nounit, format_9993), "Cgeev4", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9993), "Cgeev4", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                     info = abs(iinfo);
                     goto statement_220;
                 }
@@ -577,7 +553,7 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         sprintnum_short(buf, result[j - 1]);
                         write(nounit, "(' N=',i5,', IWK=',i2,', seed=',4(i4,','),' type ',i2,"
                                       "', test(',i2,')=',a)"),
-                            n, iwk, ioldsd, jtype, j, buf;
+                            n, iwk, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jtype, j, buf;
                     }
                 }
                 //

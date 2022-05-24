@@ -40,29 +40,6 @@ using fem::common;
 
 void Chst01(INTEGER const n, INTEGER const /* ilo */, INTEGER const /* ihi */, COMPLEX *a, INTEGER const lda, COMPLEX *h, INTEGER const ldh, COMPLEX *q, INTEGER const ldq, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Quick return if possible
     //
     const REAL zero = 0.0;
@@ -76,8 +53,7 @@ void Chst01(INTEGER const n, INTEGER const /* ilo */, INTEGER const /* ihi */, C
     REAL eps = Rlamch("Precision");
     const REAL one = 1.0;
     REAL ovfl = one / unfl;
-    Rlabad(unfl, ovfl);
-    REAL smlnum = unfl * n / eps;
+    REAL smlnum = unfl * castREAL(n) / eps;
     //
     //     Test 1:  Compute norm( A - Q*H*Q' ) / ( norm(A) * N * EPS )
     //
@@ -94,12 +70,12 @@ void Chst01(INTEGER const n, INTEGER const /* ilo */, INTEGER const /* ihi */, C
     //
     Cgemm("No transpose", "Conjugate transpose", n, n, n, COMPLEX(-one), &work[(ldwork * n + 1) - 1], ldwork, q, ldq, COMPLEX(one), work, ldwork);
     //
-    REAL anorm = max({Clange("1", n, n, a, lda, rwork), unfl});
+    REAL anorm = max(Clange("1", n, n, a, lda, rwork), unfl);
     REAL wnorm = Clange("1", n, n, work, ldwork, rwork);
     //
     //     Note that RESULT(1) cannot overflow and is bounded by 1/(N*EPS)
     //
-    result[1 - 1] = min(wnorm, anorm) / max(smlnum, REAL(anorm * eps)) / n;
+    result[1 - 1] = min(wnorm, anorm) / max(smlnum, REAL(anorm * eps)) / castREAL(n);
     //
     //     Test 2:  Compute norm( I - Q'*Q ) / ( N * EPS )
     //

@@ -36,21 +36,6 @@ void Rlapmt(bool const forwrd, INTEGER const m, INTEGER const n, REAL *x, INTEGE
     INTEGER ii = 0;
     REAL temp = 0.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     if (n <= 1) {
         return;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -41,37 +41,6 @@ using fem::common;
 void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, COMPLEX *c1, COMPLEX *c2, INTEGER const ldc, COMPLEX *crf, COMPLEX *a, INTEGER const lda, REAL *d_work_Clange) {
     common cmn;
     common_write write(cmn);
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //     ..
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Initialize constants and the random number seed.
     //
@@ -238,7 +207,7 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                 write(nout, "(1x,'     Failure in ',a5,', CFORM=''',a1,''',',' UPLO=''',"
                                             "a1,''',',' TRANS=''',a1,''',',' N=',i3,', K =',i3,"
                                             "', test=',a)"),
-                                    "Chfrk", cform, uplo, trans, n, k, buf;
+                                    "Chfrk", &cform, &uplo, &trans, n, k, buf;
                                 nfail++;
                             }
                             //

@@ -232,7 +232,7 @@ REAL RlamchS_gmp(void) {
     REAL sfmin;
     REAL one = 1.0;
     unsigned long exp2;
-//XXX
+    // XXX
     exp2 = 0xffffffff;
     mpf_div_2exp(sfmin.get_mpf_t(), one.get_mpf_t(), exp2);
     return sfmin;
@@ -309,7 +309,7 @@ REAL RlamchM_gmp(void) {
     unsigned long exp2;
     REAL tmp;
     REAL uflowmin, one = 1.0;
-//XXX
+    // XXX
     exp2 = 0xffffffff;
     tmp = exp2;
     return -tmp;
@@ -341,7 +341,7 @@ REAL RlamchU_gmp(void) {
     REAL underflowmin;
     REAL one = 1.0;
     unsigned long exp2;
-//XXX    exp2 = (1UL << (mp_bits_per_limb - 8)) - 1; // 6 seems to be the smallest on amd64 but for safty
+    // XXX    exp2 = (1UL << (mp_bits_per_limb - 8)) - 1; // 6 seems to be the smallest on amd64 but for safty
     exp2 = 0xffffffff;
     mpf_div_2exp(underflowmin.get_mpf_t(), one.get_mpf_t(), exp2);
     return underflowmin;
@@ -353,7 +353,7 @@ REAL RlamchL_gmp(void) {
     REAL maxexp;
     unsigned long exp2;
     exp2 = (1UL << (mp_bits_per_limb - 8)) - 1; // 6 seems to be the smallest on amd64 but for safty
-//XXX   
+                                                // XXX
     maxexp = 0xffffffff;
     return maxexp;
 }
@@ -364,7 +364,7 @@ REAL RlamchO_gmp(void) {
     REAL overflowmax;
     REAL one = 1.0;
     unsigned long exp2;
-//XXX    exp2 = (1UL << (mp_bits_per_limb - 8)) - 1; // 6 seems to be the smallest on amd64 but for safty
+    // XXX    exp2 = (1UL << (mp_bits_per_limb - 8)) - 1; // 6 seems to be the smallest on amd64 but for safty
     exp2 = 0xffffffff;
     mpf_mul_2exp(overflowmax.get_mpf_t(), one.get_mpf_t(), exp2);
 
@@ -468,7 +468,7 @@ qd_real RlamchL_qd(void) { return (qd_real)1024.0; }
 //"O"
 // cf.http://www.netlib.org/blas/dlamch.f
 qd_real RlamchO_qd(void) {
-//thus we use smaller values
+    // thus we use smaller values
     qd_real a = qd_real::_max;
     return a;
 }
@@ -570,8 +570,8 @@ dd_real RlamchL_dd(void) { return (dd_real)1024.0; }
 //"O"
 // cf.http://www.netlib.org/blas/dlamch.f
 dd_real RlamchO_dd(void) {
-//due to bug of dd_real, we cannot take some arithmetic for dd_real::_max; e.g. sqrt.
-//thus we use smaller values
+    // due to bug of dd_real, we cannot take some arithmetic for dd_real::_max; e.g. sqrt.
+    // thus we use smaller values
     dd_real a = dd_real::_max;
     return a;
 }

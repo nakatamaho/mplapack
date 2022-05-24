@@ -31,29 +31,6 @@
 
 void Chetrd_hb2st(const char *stage1, const char *vect, const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, REAL *d, REAL *e, COMPLEX *hous, INTEGER const lhous, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Determine the minimal workspace size required.
     //     Test the input parameters
     //

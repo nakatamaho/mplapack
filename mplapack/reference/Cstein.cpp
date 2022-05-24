@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -72,31 +72,6 @@ void Cstein(INTEGER const n, REAL *d, REAL *e, INTEGER const m, REAL *w, INTEGER
     REAL nrm = 0.0;
     const INTEGER extra = 2;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Test the input parameters.
     //
@@ -247,7 +222,7 @@ void Cstein(INTEGER const n, REAL *d, REAL *e, INTEGER const m, REAL *w, INTEGER
             //           Normalize and scale the righthand side vector Pb.
             //
             jmax = iRamax(blksiz, &work[(indrv1 + 1) - 1], 1);
-            scl = blksiz * onenrm * max(eps, REAL(abs(work[(indrv4 + blksiz) - 1]) / abs(work[(indrv1 + jmax) - 1])));
+            scl = blksiz * onenrm * max(eps, REAL(abs(work[(indrv4 + blksiz) - 1]))) / abs(work[(indrv1 + jmax) - 1]);
             Rscal(blksiz, scl, &work[(indrv1 + 1) - 1], 1);
             //
             //           Solve the system LU = Pb.

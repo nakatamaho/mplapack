@@ -31,27 +31,6 @@
 
 void Ctrexc(const char *compq, INTEGER const n, COMPLEX *t, INTEGER const ldt, COMPLEX *q, INTEGER const ldq, INTEGER const ifst, INTEGER const ilst, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Decode and test the input parameters.
     //
     info = 0;
@@ -105,7 +84,7 @@ void Ctrexc(const char *compq, INTEGER const n, COMPLEX *t, INTEGER const ldt, C
     REAL cs = 0.0;
     COMPLEX sn = 0.0;
     COMPLEX temp = 0.0;
-    for (k = ifst + m1; k <= ilst + m2; k = k + m3) {
+    for (k = ifst + m1; m3 >= 0 ? k <= ilst + m2 : k >= ilst + m2; k = k + m3) {
         //
         //        Interchange the k-th and (k+1)-th diagonal elements.
         //

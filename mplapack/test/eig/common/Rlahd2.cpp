@@ -180,21 +180,6 @@ void Rlahd2(INTEGER const iounit, const char *path) {
     static const char *format_9988 = "(' Matrix types (see xCHKHS for details): ')";
     static const char *format_9999 = "(1x,a3,':  no header available')";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     if (iounit <= 0) {
         return;
     }

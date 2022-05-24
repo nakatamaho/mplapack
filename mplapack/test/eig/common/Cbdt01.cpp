@@ -40,29 +40,6 @@ using fem::common;
 
 void Cbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, COMPLEX *a, INTEGER const lda, COMPLEX *q, INTEGER const ldq, REAL *d, REAL *e, COMPLEX *pt, INTEGER const ldpt, COMPLEX *work, REAL *rwork, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Quick return if possible
     //
     const REAL zero = 0.0;

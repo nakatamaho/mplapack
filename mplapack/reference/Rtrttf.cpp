@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -31,28 +31,6 @@
 
 void Rtrttf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *arf, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters.
     //
     info = 0;
@@ -76,7 +54,7 @@ void Rtrttf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
     //
     if (n <= 1) {
         if (n == 1) {
-            arf[0 - 1] = a[(0 - 1) + (0 - 1) * lda];
+            arf[0] = a[0];
         }
         return;
     }
@@ -137,11 +115,11 @@ void Rtrttf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 ij = 0;
                 for (j = 0; j <= n2; j = j + 1) {
                     for (i = n1; i <= n2 + j; i = i + 1) {
-                        arf[ij - 1] = a[((n2 + j) - 1) + (i - 1) * lda];
+                        arf[ij] = a[(n2 + j) + i * lda];
                         ij++;
                     }
                     for (i = j; i <= n - 1; i = i + 1) {
-                        arf[ij - 1] = a[(i - 1) + (j - 1) * lda];
+                        arf[ij] = a[i + j * lda];
                         ij++;
                     }
                 }
@@ -153,11 +131,11 @@ void Rtrttf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 ij = nt - n;
                 for (j = n - 1; j >= n1; j = j - 1) {
                     for (i = 0; i <= j; i = i + 1) {
-                        arf[ij - 1] = a[(i - 1) + (j - 1) * lda];
+                        arf[ij] = a[i + j * lda];
                         ij++;
                     }
                     for (l = j - n1; l <= n1 - 1; l = l + 1) {
-                        arf[ij - 1] = a[((j - n1) - 1) + (l - 1) * lda];
+                        arf[ij] = a[(j - n1) + l * lda];
                         ij++;
                     }
                     ij = ij - nx2;
@@ -176,17 +154,17 @@ void Rtrttf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 ij = 0;
                 for (j = 0; j <= n2 - 1; j = j + 1) {
                     for (i = 0; i <= j; i = i + 1) {
-                        arf[ij - 1] = a[(j - 1) + (i - 1) * lda];
+                        arf[ij] = a[j + i * lda];
                         ij++;
                     }
                     for (i = n1 + j; i <= n - 1; i = i + 1) {
-                        arf[ij - 1] = a[(i - 1) + ((n1 + j) - 1) * lda];
+                        arf[ij] = a[i + (n1 + j) * lda];
                         ij++;
                     }
                 }
                 for (j = n2; j <= n - 1; j = j + 1) {
                     for (i = 0; i <= n1 - 1; i = i + 1) {
-                        arf[ij - 1] = a[(j - 1) + (i - 1) * lda];
+                        arf[ij] = a[j + i * lda];
                         ij++;
                     }
                 }
@@ -198,17 +176,17 @@ void Rtrttf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 ij = 0;
                 for (j = 0; j <= n1; j = j + 1) {
                     for (i = n1; i <= n - 1; i = i + 1) {
-                        arf[ij - 1] = a[(j - 1) + (i - 1) * lda];
+                        arf[ij] = a[j + i * lda];
                         ij++;
                     }
                 }
                 for (j = 0; j <= n1 - 1; j = j + 1) {
                     for (i = 0; i <= j; i = i + 1) {
-                        arf[ij - 1] = a[(i - 1) + (j - 1) * lda];
+                        arf[ij] = a[i + j * lda];
                         ij++;
                     }
                     for (l = n2 + j; l <= n - 1; l = l + 1) {
-                        arf[ij - 1] = a[((n2 + j) - 1) + (l - 1) * lda];
+                        arf[ij] = a[(n2 + j) + l * lda];
                         ij++;
                     }
                 }
@@ -232,11 +210,11 @@ void Rtrttf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 ij = 0;
                 for (j = 0; j <= k - 1; j = j + 1) {
                     for (i = k; i <= k + j; i = i + 1) {
-                        arf[ij - 1] = a[((k + j) - 1) + (i - 1) * lda];
+                        arf[ij] = a[(k + j) + i * lda];
                         ij++;
                     }
                     for (i = j; i <= n - 1; i = i + 1) {
-                        arf[ij - 1] = a[(i - 1) + (j - 1) * lda];
+                        arf[ij] = a[i + j * lda];
                         ij++;
                     }
                 }
@@ -248,11 +226,11 @@ void Rtrttf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 ij = nt - n - 1;
                 for (j = n - 1; j >= k; j = j - 1) {
                     for (i = 0; i <= j; i = i + 1) {
-                        arf[ij - 1] = a[(i - 1) + (j - 1) * lda];
+                        arf[ij] = a[i + j * lda];
                         ij++;
                     }
                     for (l = j - k; l <= k - 1; l = l + 1) {
-                        arf[ij - 1] = a[((j - k) - 1) + (l - 1) * lda];
+                        arf[ij] = a[(j - k) + l * lda];
                         ij++;
                     }
                     ij = ij - np1x2;
@@ -271,22 +249,22 @@ void Rtrttf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 ij = 0;
                 j = k;
                 for (i = k; i <= n - 1; i = i + 1) {
-                    arf[ij - 1] = a[(i - 1) + (j - 1) * lda];
+                    arf[ij] = a[i + j * lda];
                     ij++;
                 }
                 for (j = 0; j <= k - 2; j = j + 1) {
                     for (i = 0; i <= j; i = i + 1) {
-                        arf[ij - 1] = a[(j - 1) + (i - 1) * lda];
+                        arf[ij] = a[j + i * lda];
                         ij++;
                     }
                     for (i = k + 1 + j; i <= n - 1; i = i + 1) {
-                        arf[ij - 1] = a[(i - 1) + ((k + 1 + j) - 1) * lda];
+                        arf[ij] = a[i + (k + 1 + j) * lda];
                         ij++;
                     }
                 }
                 for (j = k - 1; j <= n - 1; j = j + 1) {
                     for (i = 0; i <= k - 1; i = i + 1) {
-                        arf[ij - 1] = a[(j - 1) + (i - 1) * lda];
+                        arf[ij] = a[j + i * lda];
                         ij++;
                     }
                 }
@@ -298,23 +276,23 @@ void Rtrttf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTE
                 ij = 0;
                 for (j = 0; j <= k; j = j + 1) {
                     for (i = k; i <= n - 1; i = i + 1) {
-                        arf[ij - 1] = a[(j - 1) + (i - 1) * lda];
+                        arf[ij] = a[j + i * lda];
                         ij++;
                     }
                 }
                 for (j = 0; j <= k - 2; j = j + 1) {
                     for (i = 0; i <= j; i = i + 1) {
-                        arf[ij - 1] = a[(i - 1) + (j - 1) * lda];
+                        arf[ij] = a[i + j * lda];
                         ij++;
                     }
                     for (l = k + 1 + j; l <= n - 1; l = l + 1) {
-                        arf[ij - 1] = a[((k + 1 + j) - 1) + (l - 1) * lda];
+                        arf[ij] = a[(k + 1 + j) + l * lda];
                         ij++;
                     }
                 }
                 //              Note that here, on exit of the loop, J = K-1
                 for (i = 0; i <= j; i = i + 1) {
-                    arf[ij - 1] = a[(i - 1) + (j - 1) * lda];
+                    arf[ij] = a[i + j * lda];
                     ij++;
                 }
                 //

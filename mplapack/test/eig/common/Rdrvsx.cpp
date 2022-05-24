@@ -384,7 +384,7 @@ void Rdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             if (iinfo != 0) {
                 write(nounit, "(' Rdrvsx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                               "', ISEED=(',3(i5,','),i5,')')"),
-                    "Generator", iinfo, n, jtype, ioldsd;
+                    "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
                 info = abs(iinfo);
                 return;
             }
@@ -435,7 +435,7 @@ void Rdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         sprintnum_short(buf, result[j - 1]);
                         write(nounit, "(' N=',i5,', IWK=',i2,', seed=',4(i4,','),' type ',i2,"
                                       "', test(',i2,')=',a)"),
-                            n, iwk, ioldsd, jtype, j, buf;
+                            n, iwk, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jtype, j, buf;
                     }
                 }
                 //

@@ -85,37 +85,6 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
     static const char *format_9999 = "(' Cget24: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
                                      "', INPUT EXAMPLE NUMBER = ',i4)";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Arrays in Common ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Check for errors
     //
     info = 0;
@@ -213,12 +182,12 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
         wnorm = Clange("1", n, n, vs1, ldvs, rwork);
         //
         if (anorm > wnorm) {
-            result[(2 + rsub) - 1] = (wnorm / anorm) / (n * ulp);
+            result[(2 + rsub) - 1] = (wnorm / anorm) / (castREAL(n) * ulp);
         } else {
             if (anorm < one) {
-                result[(2 + rsub) - 1] = (min(wnorm, REAL(n * anorm)) / anorm) / (n * ulp);
+                result[(2 + rsub) - 1] = (min(wnorm, REAL(castREAL(n) * anorm)) / anorm) / (castREAL(n) * ulp);
             } else {
-                result[(2 + rsub) - 1] = min(REAL(wnorm / anorm), castREAL(n)) / (n * ulp);
+                result[(2 + rsub) - 1] = min(REAL(wnorm / anorm), castREAL(n)) / (castREAL(n) * ulp);
             }
         }
         //

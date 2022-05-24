@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -30,30 +30,6 @@
 #include <mplapack.h>
 
 void Rtfsm(const char *transr, const char *side, const char *uplo, const char *trans, const char *diag, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, REAL *b, INTEGER const ldb) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     ..
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Test the input parameters.
     //
@@ -98,7 +74,7 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
     if (alpha == zero) {
         for (j = 0; j <= n - 1; j = j + 1) {
             for (i = 0; i <= m - 1; i = i + 1) {
-                b[(i - 1) + (j - 1) * ldb] = zero;
+                b[i + j * ldb] = zero;
             }
         }
         return;
@@ -154,9 +130,9 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         if (m == 1) {
                             Rtrsm("L", "L", "N", diag, m1, n, alpha, a, m, b, ldb);
                         } else {
-                            Rtrsm("L", "L", "N", diag, m1, n, alpha, &a[0 - 1], m, b, ldb);
-                            Rgemm("N", "N", m2, n, m1, -one, &a[m1 - 1], m, b, ldb, alpha, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
-                            Rtrsm("L", "U", "T", diag, m2, n, one, &a[m - 1], m, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
+                            Rtrsm("L", "L", "N", diag, m1, n, alpha, &a[0], m, b, ldb);
+                            Rgemm("N", "N", m2, n, m1, -one, &a[m1], m, b, ldb, alpha, &b[m1], ldb);
+                            Rtrsm("L", "U", "T", diag, m2, n, one, &a[m], m, &b[m1], ldb);
                         }
                         //
                     } else {
@@ -165,11 +141,11 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    TRANS = 'T'
                         //
                         if (m == 1) {
-                            Rtrsm("L", "L", "T", diag, m1, n, alpha, &a[0 - 1], m, b, ldb);
+                            Rtrsm("L", "L", "T", diag, m1, n, alpha, &a[0], m, b, ldb);
                         } else {
-                            Rtrsm("L", "U", "N", diag, m2, n, alpha, &a[m - 1], m, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
-                            Rgemm("T", "N", m1, n, m2, -one, &a[m1 - 1], m, &b[(m1 - 1) + (0 - 1) * ldb], ldb, alpha, b, ldb);
-                            Rtrsm("L", "L", "T", diag, m1, n, one, &a[0 - 1], m, b, ldb);
+                            Rtrsm("L", "U", "N", diag, m2, n, alpha, &a[m], m, &b[m1], ldb);
+                            Rgemm("T", "N", m1, n, m2, -one, &a[m1], m, &b[m1], ldb, alpha, b, ldb);
+                            Rtrsm("L", "L", "T", diag, m1, n, one, &a[0], m, b, ldb);
                         }
                         //
                     }
@@ -183,18 +159,18 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='L', N is odd, TRANSR = 'N', UPLO = 'U', and
                         //                    TRANS = 'N'
                         //
-                        Rtrsm("L", "L", "N", diag, m1, n, alpha, &a[m2 - 1], m, b, ldb);
-                        Rgemm("T", "N", m2, n, m1, -one, &a[0 - 1], m, b, ldb, alpha, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
-                        Rtrsm("L", "U", "T", diag, m2, n, one, &a[m1 - 1], m, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
+                        Rtrsm("L", "L", "N", diag, m1, n, alpha, &a[m2], m, b, ldb);
+                        Rgemm("T", "N", m2, n, m1, -one, &a[0], m, b, ldb, alpha, &b[m1], ldb);
+                        Rtrsm("L", "U", "T", diag, m2, n, one, &a[m1], m, &b[m1], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='L', N is odd, TRANSR = 'N', UPLO = 'U', and
                         //                    TRANS = 'T'
                         //
-                        Rtrsm("L", "U", "N", diag, m2, n, alpha, &a[m1 - 1], m, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
-                        Rgemm("N", "N", m1, n, m2, -one, &a[0 - 1], m, &b[(m1 - 1) + (0 - 1) * ldb], ldb, alpha, b, ldb);
-                        Rtrsm("L", "L", "T", diag, m1, n, one, &a[m2 - 1], m, b, ldb);
+                        Rtrsm("L", "U", "N", diag, m2, n, alpha, &a[m1], m, &b[m1], ldb);
+                        Rgemm("N", "N", m1, n, m2, -one, &a[0], m, &b[m1], ldb, alpha, b, ldb);
+                        Rtrsm("L", "L", "T", diag, m1, n, one, &a[m2], m, b, ldb);
                         //
                     }
                     //
@@ -214,11 +190,11 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    TRANS = 'N'
                         //
                         if (m == 1) {
-                            Rtrsm("L", "U", "T", diag, m1, n, alpha, &a[0 - 1], m1, b, ldb);
+                            Rtrsm("L", "U", "T", diag, m1, n, alpha, &a[0], m1, b, ldb);
                         } else {
-                            Rtrsm("L", "U", "T", diag, m1, n, alpha, &a[0 - 1], m1, b, ldb);
-                            Rgemm("T", "N", m2, n, m1, -one, &a[(m1 * m1) - 1], m1, b, ldb, alpha, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
-                            Rtrsm("L", "L", "N", diag, m2, n, one, &a[1 - 1], m1, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
+                            Rtrsm("L", "U", "T", diag, m1, n, alpha, &a[0], m1, b, ldb);
+                            Rgemm("T", "N", m2, n, m1, -one, &a[(m1 * m1)], m1, b, ldb, alpha, &b[m1], ldb);
+                            Rtrsm("L", "L", "N", diag, m2, n, one, &a[1], m1, &b[m1], ldb);
                         }
                         //
                     } else {
@@ -227,11 +203,11 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    TRANS = 'T'
                         //
                         if (m == 1) {
-                            Rtrsm("L", "U", "N", diag, m1, n, alpha, &a[0 - 1], m1, b, ldb);
+                            Rtrsm("L", "U", "N", diag, m1, n, alpha, &a[0], m1, b, ldb);
                         } else {
-                            Rtrsm("L", "L", "T", diag, m2, n, alpha, &a[1 - 1], m1, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
-                            Rgemm("N", "N", m1, n, m2, -one, &a[(m1 * m1) - 1], m1, &b[(m1 - 1) + (0 - 1) * ldb], ldb, alpha, b, ldb);
-                            Rtrsm("L", "U", "N", diag, m1, n, one, &a[0 - 1], m1, b, ldb);
+                            Rtrsm("L", "L", "T", diag, m2, n, alpha, &a[1], m1, &b[m1], ldb);
+                            Rgemm("N", "N", m1, n, m2, -one, &a[(m1 * m1)], m1, &b[m1], ldb, alpha, b, ldb);
+                            Rtrsm("L", "U", "N", diag, m1, n, one, &a[0], m1, b, ldb);
                         }
                         //
                     }
@@ -245,18 +221,18 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='L', N is odd, TRANSR = 'T', UPLO = 'U', and
                         //                    TRANS = 'N'
                         //
-                        Rtrsm("L", "U", "T", diag, m1, n, alpha, &a[(m2 * m2) - 1], m2, b, ldb);
-                        Rgemm("N", "N", m2, n, m1, -one, &a[0 - 1], m2, b, ldb, alpha, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
-                        Rtrsm("L", "L", "N", diag, m2, n, one, &a[(m1 * m2) - 1], m2, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
+                        Rtrsm("L", "U", "T", diag, m1, n, alpha, &a[(m2 * m2)], m2, b, ldb);
+                        Rgemm("N", "N", m2, n, m1, -one, &a[0], m2, b, ldb, alpha, &b[m1], ldb);
+                        Rtrsm("L", "L", "N", diag, m2, n, one, &a[(m1 * m2)], m2, &b[m1], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='L', N is odd, TRANSR = 'T', UPLO = 'U', and
                         //                    TRANS = 'T'
                         //
-                        Rtrsm("L", "L", "T", diag, m2, n, alpha, &a[(m1 * m2) - 1], m2, &b[(m1 - 1) + (0 - 1) * ldb], ldb);
-                        Rgemm("T", "N", m1, n, m2, -one, &a[0 - 1], m2, &b[(m1 - 1) + (0 - 1) * ldb], ldb, alpha, b, ldb);
-                        Rtrsm("L", "U", "N", diag, m1, n, one, &a[(m2 * m2) - 1], m2, b, ldb);
+                        Rtrsm("L", "L", "T", diag, m2, n, alpha, &a[(m1 * m2)], m2, &b[m1], ldb);
+                        Rgemm("T", "N", m1, n, m2, -one, &a[0], m2, &b[m1], ldb, alpha, b, ldb);
+                        Rtrsm("L", "U", "N", diag, m1, n, one, &a[(m2 * m2)], m2, b, ldb);
                         //
                     }
                     //
@@ -281,18 +257,18 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='L', N is even, TRANSR = 'N', UPLO = 'L',
                         //                    and TRANS = 'N'
                         //
-                        Rtrsm("L", "L", "N", diag, k, n, alpha, &a[1 - 1], m + 1, b, ldb);
-                        Rgemm("N", "N", k, n, k, -one, &a[(k + 1) - 1], m + 1, b, ldb, alpha, &b[(k - 1) + (0 - 1) * ldb], ldb);
-                        Rtrsm("L", "U", "T", diag, k, n, one, &a[0 - 1], m + 1, &b[(k - 1) + (0 - 1) * ldb], ldb);
+                        Rtrsm("L", "L", "N", diag, k, n, alpha, &a[1], m + 1, b, ldb);
+                        Rgemm("N", "N", k, n, k, -one, &a[(k + 1)], m + 1, b, ldb, alpha, &b[k], ldb);
+                        Rtrsm("L", "U", "T", diag, k, n, one, &a[0], m + 1, &b[k], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='L', N is even, TRANSR = 'N', UPLO = 'L',
                         //                    and TRANS = 'T'
                         //
-                        Rtrsm("L", "U", "N", diag, k, n, alpha, &a[0 - 1], m + 1, &b[(k - 1) + (0 - 1) * ldb], ldb);
-                        Rgemm("T", "N", k, n, k, -one, &a[(k + 1) - 1], m + 1, &b[(k - 1) + (0 - 1) * ldb], ldb, alpha, b, ldb);
-                        Rtrsm("L", "L", "T", diag, k, n, one, &a[1 - 1], m + 1, b, ldb);
+                        Rtrsm("L", "U", "N", diag, k, n, alpha, &a[0], m + 1, &b[k], ldb);
+                        Rgemm("T", "N", k, n, k, -one, &a[(k + 1)], m + 1, &b[k], ldb, alpha, b, ldb);
+                        Rtrsm("L", "L", "T", diag, k, n, one, &a[1], m + 1, b, ldb);
                         //
                     }
                     //
@@ -305,17 +281,17 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='L', N is even, TRANSR = 'N', UPLO = 'U',
                         //                    and TRANS = 'N'
                         //
-                        Rtrsm("L", "L", "N", diag, k, n, alpha, &a[(k + 1) - 1], m + 1, b, ldb);
-                        Rgemm("T", "N", k, n, k, -one, &a[0 - 1], m + 1, b, ldb, alpha, &b[(k - 1) + (0 - 1) * ldb], ldb);
-                        Rtrsm("L", "U", "T", diag, k, n, one, &a[k - 1], m + 1, &b[(k - 1) + (0 - 1) * ldb], ldb);
+                        Rtrsm("L", "L", "N", diag, k, n, alpha, &a[(k + 1)], m + 1, b, ldb);
+                        Rgemm("T", "N", k, n, k, -one, &a[0], m + 1, b, ldb, alpha, &b[k], ldb);
+                        Rtrsm("L", "U", "T", diag, k, n, one, &a[k], m + 1, &b[k], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='L', N is even, TRANSR = 'N', UPLO = 'U',
                         //                    and TRANS = 'T'
-                        Rtrsm("L", "U", "N", diag, k, n, alpha, &a[k - 1], m + 1, &b[(k - 1) + (0 - 1) * ldb], ldb);
-                        Rgemm("N", "N", k, n, k, -one, &a[0 - 1], m + 1, &b[(k - 1) + (0 - 1) * ldb], ldb, alpha, b, ldb);
-                        Rtrsm("L", "L", "T", diag, k, n, one, &a[(k + 1) - 1], m + 1, b, ldb);
+                        Rtrsm("L", "U", "N", diag, k, n, alpha, &a[k], m + 1, &b[k], ldb);
+                        Rgemm("N", "N", k, n, k, -one, &a[0], m + 1, &b[k], ldb, alpha, b, ldb);
+                        Rtrsm("L", "L", "T", diag, k, n, one, &a[(k + 1)], m + 1, b, ldb);
                         //
                     }
                     //
@@ -334,18 +310,18 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='L', N is even, TRANSR = 'T', UPLO = 'L',
                         //                    and TRANS = 'N'
                         //
-                        Rtrsm("L", "U", "T", diag, k, n, alpha, &a[k - 1], k, b, ldb);
-                        Rgemm("T", "N", k, n, k, -one, &a[(k * (k + 1)) - 1], k, b, ldb, alpha, &b[(k - 1) + (0 - 1) * ldb], ldb);
-                        Rtrsm("L", "L", "N", diag, k, n, one, &a[0 - 1], k, &b[(k - 1) + (0 - 1) * ldb], ldb);
+                        Rtrsm("L", "U", "T", diag, k, n, alpha, &a[k], k, b, ldb);
+                        Rgemm("T", "N", k, n, k, -one, &a[(k * (k + 1))], k, b, ldb, alpha, &b[k], ldb);
+                        Rtrsm("L", "L", "N", diag, k, n, one, &a[0], k, &b[k], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='L', N is even, TRANSR = 'T', UPLO = 'L',
                         //                    and TRANS = 'T'
                         //
-                        Rtrsm("L", "L", "T", diag, k, n, alpha, &a[0 - 1], k, &b[(k - 1) + (0 - 1) * ldb], ldb);
-                        Rgemm("N", "N", k, n, k, -one, &a[(k * (k + 1)) - 1], k, &b[(k - 1) + (0 - 1) * ldb], ldb, alpha, b, ldb);
-                        Rtrsm("L", "U", "N", diag, k, n, one, &a[k - 1], k, b, ldb);
+                        Rtrsm("L", "L", "T", diag, k, n, alpha, &a[0], k, &b[k], ldb);
+                        Rgemm("N", "N", k, n, k, -one, &a[(k * (k + 1))], k, &b[k], ldb, alpha, b, ldb);
+                        Rtrsm("L", "U", "N", diag, k, n, one, &a[k], k, b, ldb);
                         //
                     }
                     //
@@ -358,18 +334,18 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='L', N is even, TRANSR = 'T', UPLO = 'U',
                         //                    and TRANS = 'N'
                         //
-                        Rtrsm("L", "U", "T", diag, k, n, alpha, &a[(k * (k + 1)) - 1], k, b, ldb);
-                        Rgemm("N", "N", k, n, k, -one, &a[0 - 1], k, b, ldb, alpha, &b[(k - 1) + (0 - 1) * ldb], ldb);
-                        Rtrsm("L", "L", "N", diag, k, n, one, &a[(k * k) - 1], k, &b[(k - 1) + (0 - 1) * ldb], ldb);
+                        Rtrsm("L", "U", "T", diag, k, n, alpha, &a[(k * (k + 1))], k, b, ldb);
+                        Rgemm("N", "N", k, n, k, -one, &a[0], k, b, ldb, alpha, &b[k], ldb);
+                        Rtrsm("L", "L", "N", diag, k, n, one, &a[(k * k)], k, &b[k], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='L', N is even, TRANSR = 'T', UPLO = 'U',
                         //                    and TRANS = 'T'
                         //
-                        Rtrsm("L", "L", "T", diag, k, n, alpha, &a[(k * k) - 1], k, &b[(k - 1) + (0 - 1) * ldb], ldb);
-                        Rgemm("T", "N", k, n, k, -one, &a[0 - 1], k, &b[(k - 1) + (0 - 1) * ldb], ldb, alpha, b, ldb);
-                        Rtrsm("L", "U", "N", diag, k, n, one, &a[(k * (k + 1)) - 1], k, b, ldb);
+                        Rtrsm("L", "L", "T", diag, k, n, alpha, &a[(k * k)], k, &b[k], ldb);
+                        Rgemm("T", "N", k, n, k, -one, &a[0], k, &b[k], ldb, alpha, b, ldb);
+                        Rtrsm("L", "U", "N", diag, k, n, one, &a[(k * (k + 1))], k, b, ldb);
                         //
                     }
                     //
@@ -418,18 +394,18 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='R', N is odd, TRANSR = 'N', UPLO = 'L', and
                         //                    TRANS = 'N'
                         //
-                        Rtrsm("R", "U", "T", diag, m, n2, alpha, &a[n - 1], n, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
-                        Rgemm("N", "N", m, n1, n2, -one, &b[(0 - 1) + (n1 - 1) * ldb], ldb, &a[n1 - 1], n, alpha, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Rtrsm("R", "L", "N", diag, m, n1, one, &a[0 - 1], n, &b[(0 - 1) + (0 - 1) * ldb], ldb);
+                        Rtrsm("R", "U", "T", diag, m, n2, alpha, &a[n], n, &b[n1 * ldb], ldb);
+                        Rgemm("N", "N", m, n1, n2, -one, &b[n1 * ldb], ldb, &a[n1], n, alpha, &b[0], ldb);
+                        Rtrsm("R", "L", "N", diag, m, n1, one, &a[0], n, &b[0], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='R', N is odd, TRANSR = 'N', UPLO = 'L', and
                         //                    TRANS = 'T'
                         //
-                        Rtrsm("R", "L", "T", diag, m, n1, alpha, &a[0 - 1], n, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Rgemm("N", "T", m, n2, n1, -one, &b[(0 - 1) + (0 - 1) * ldb], ldb, &a[n1 - 1], n, alpha, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
-                        Rtrsm("R", "U", "N", diag, m, n2, one, &a[n - 1], n, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
+                        Rtrsm("R", "L", "T", diag, m, n1, alpha, &a[0], n, &b[0], ldb);
+                        Rgemm("N", "T", m, n2, n1, -one, &b[0], ldb, &a[n1], n, alpha, &b[n1 * ldb], ldb);
+                        Rtrsm("R", "U", "N", diag, m, n2, one, &a[n], n, &b[n1 * ldb], ldb);
                         //
                     }
                     //
@@ -442,18 +418,18 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='R', N is odd, TRANSR = 'N', UPLO = 'U', and
                         //                    TRANS = 'N'
                         //
-                        Rtrsm("R", "L", "T", diag, m, n1, alpha, &a[n2 - 1], n, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Rgemm("N", "N", m, n2, n1, -one, &b[(0 - 1) + (0 - 1) * ldb], ldb, &a[0 - 1], n, alpha, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
-                        Rtrsm("R", "U", "N", diag, m, n2, one, &a[n1 - 1], n, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
+                        Rtrsm("R", "L", "T", diag, m, n1, alpha, &a[n2], n, &b[0], ldb);
+                        Rgemm("N", "N", m, n2, n1, -one, &b[0], ldb, &a[0], n, alpha, &b[n1 * ldb], ldb);
+                        Rtrsm("R", "U", "N", diag, m, n2, one, &a[n1], n, &b[n1 * ldb], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='R', N is odd, TRANSR = 'N', UPLO = 'U', and
                         //                    TRANS = 'T'
                         //
-                        Rtrsm("R", "U", "T", diag, m, n2, alpha, &a[n1 - 1], n, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
-                        Rgemm("N", "T", m, n1, n2, -one, &b[(0 - 1) + (n1 - 1) * ldb], ldb, &a[0 - 1], n, alpha, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Rtrsm("R", "L", "N", diag, m, n1, one, &a[n2 - 1], n, &b[(0 - 1) + (0 - 1) * ldb], ldb);
+                        Rtrsm("R", "U", "T", diag, m, n2, alpha, &a[n1], n, &b[n1 * ldb], ldb);
+                        Rgemm("N", "T", m, n1, n2, -one, &b[n1 * ldb], ldb, &a[0], n, alpha, &b[0], ldb);
+                        Rtrsm("R", "L", "N", diag, m, n1, one, &a[n2], n, &b[0], ldb);
                         //
                     }
                     //
@@ -472,18 +448,18 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='R', N is odd, TRANSR = 'T', UPLO = 'L', and
                         //                    TRANS = 'N'
                         //
-                        Rtrsm("R", "L", "N", diag, m, n2, alpha, &a[1 - 1], n1, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
-                        Rgemm("N", "T", m, n1, n2, -one, &b[(0 - 1) + (n1 - 1) * ldb], ldb, &a[(n1 * n1) - 1], n1, alpha, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Rtrsm("R", "U", "T", diag, m, n1, one, &a[0 - 1], n1, &b[(0 - 1) + (0 - 1) * ldb], ldb);
+                        Rtrsm("R", "L", "N", diag, m, n2, alpha, &a[1], n1, &b[n1 * ldb], ldb);
+                        Rgemm("N", "T", m, n1, n2, -one, &b[n1 * ldb], ldb, &a[(n1 * n1)], n1, alpha, &b[0], ldb);
+                        Rtrsm("R", "U", "T", diag, m, n1, one, &a[0], n1, &b[0], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='R', N is odd, TRANSR = 'T', UPLO = 'L', and
                         //                    TRANS = 'T'
                         //
-                        Rtrsm("R", "U", "N", diag, m, n1, alpha, &a[0 - 1], n1, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Rgemm("N", "N", m, n2, n1, -one, &b[(0 - 1) + (0 - 1) * ldb], ldb, &a[(n1 * n1) - 1], n1, alpha, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
-                        Rtrsm("R", "L", "T", diag, m, n2, one, &a[1 - 1], n1, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
+                        Rtrsm("R", "U", "N", diag, m, n1, alpha, &a[0], n1, &b[0], ldb);
+                        Rgemm("N", "N", m, n2, n1, -one, &b[0], ldb, &a[(n1 * n1)], n1, alpha, &b[n1 * ldb], ldb);
+                        Rtrsm("R", "L", "T", diag, m, n2, one, &a[1], n1, &b[n1 * ldb], ldb);
                         //
                     }
                     //
@@ -496,18 +472,18 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='R', N is odd, TRANSR = 'T', UPLO = 'U', and
                         //                    TRANS = 'N'
                         //
-                        Rtrsm("R", "U", "N", diag, m, n1, alpha, &a[(n2 * n2) - 1], n2, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Rgemm("N", "T", m, n2, n1, -one, &b[(0 - 1) + (0 - 1) * ldb], ldb, &a[0 - 1], n2, alpha, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
-                        Rtrsm("R", "L", "T", diag, m, n2, one, &a[(n1 * n2) - 1], n2, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
+                        Rtrsm("R", "U", "N", diag, m, n1, alpha, &a[(n2 * n2)], n2, &b[0], ldb);
+                        Rgemm("N", "T", m, n2, n1, -one, &b[0], ldb, &a[0], n2, alpha, &b[n1 * ldb], ldb);
+                        Rtrsm("R", "L", "T", diag, m, n2, one, &a[(n1 * n2)], n2, &b[n1 * ldb], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='R', N is odd, TRANSR = 'T', UPLO = 'U', and
                         //                    TRANS = 'T'
                         //
-                        Rtrsm("R", "L", "N", diag, m, n2, alpha, &a[(n1 * n2) - 1], n2, &b[(0 - 1) + (n1 - 1) * ldb], ldb);
-                        Rgemm("N", "N", m, n1, n2, -one, &b[(0 - 1) + (n1 - 1) * ldb], ldb, &a[0 - 1], n2, alpha, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Rtrsm("R", "U", "T", diag, m, n1, one, &a[(n2 * n2) - 1], n2, &b[(0 - 1) + (0 - 1) * ldb], ldb);
+                        Rtrsm("R", "L", "N", diag, m, n2, alpha, &a[(n1 * n2)], n2, &b[n1 * ldb], ldb);
+                        Rgemm("N", "N", m, n1, n2, -one, &b[n1 * ldb], ldb, &a[0], n2, alpha, &b[0], ldb);
+                        Rtrsm("R", "U", "T", diag, m, n1, one, &a[(n2 * n2)], n2, &b[0], ldb);
                         //
                     }
                     //
@@ -532,18 +508,18 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='R', N is even, TRANSR = 'N', UPLO = 'L',
                         //                    and TRANS = 'N'
                         //
-                        Rtrsm("R", "U", "T", diag, m, k, alpha, &a[0 - 1], n + 1, &b[(0 - 1) + (k - 1) * ldb], ldb);
-                        Rgemm("N", "N", m, k, k, -one, &b[(0 - 1) + (k - 1) * ldb], ldb, &a[(k + 1) - 1], n + 1, alpha, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Rtrsm("R", "L", "N", diag, m, k, one, &a[1 - 1], n + 1, &b[(0 - 1) + (0 - 1) * ldb], ldb);
+                        Rtrsm("R", "U", "T", diag, m, k, alpha, &a[0], n + 1, &b[k * ldb], ldb);
+                        Rgemm("N", "N", m, k, k, -one, &b[k * ldb], ldb, &a[(k + 1)], n + 1, alpha, &b[0], ldb);
+                        Rtrsm("R", "L", "N", diag, m, k, one, &a[1], n + 1, &b[0], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='R', N is even, TRANSR = 'N', UPLO = 'L',
                         //                    and TRANS = 'T'
                         //
-                        Rtrsm("R", "L", "T", diag, m, k, alpha, &a[1 - 1], n + 1, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Rgemm("N", "T", m, k, k, -one, &b[(0 - 1) + (0 - 1) * ldb], ldb, &a[(k + 1) - 1], n + 1, alpha, &b[(0 - 1) + (k - 1) * ldb], ldb);
-                        Rtrsm("R", "U", "N", diag, m, k, one, &a[0 - 1], n + 1, &b[(0 - 1) + (k - 1) * ldb], ldb);
+                        Rtrsm("R", "L", "T", diag, m, k, alpha, &a[1], n + 1, &b[0], ldb);
+                        Rgemm("N", "T", m, k, k, -one, &b[0], ldb, &a[(k + 1)], n + 1, alpha, &b[k * ldb], ldb);
+                        Rtrsm("R", "U", "N", diag, m, k, one, &a[0], n + 1, &b[k * ldb], ldb);
                         //
                     }
                     //
@@ -556,18 +532,18 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='R', N is even, TRANSR = 'N', UPLO = 'U',
                         //                    and TRANS = 'N'
                         //
-                        Rtrsm("R", "L", "T", diag, m, k, alpha, &a[(k + 1) - 1], n + 1, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Rgemm("N", "N", m, k, k, -one, &b[(0 - 1) + (0 - 1) * ldb], ldb, &a[0 - 1], n + 1, alpha, &b[(0 - 1) + (k - 1) * ldb], ldb);
-                        Rtrsm("R", "U", "N", diag, m, k, one, &a[k - 1], n + 1, &b[(0 - 1) + (k - 1) * ldb], ldb);
+                        Rtrsm("R", "L", "T", diag, m, k, alpha, &a[(k + 1)], n + 1, &b[0], ldb);
+                        Rgemm("N", "N", m, k, k, -one, &b[0], ldb, &a[0], n + 1, alpha, &b[k * ldb], ldb);
+                        Rtrsm("R", "U", "N", diag, m, k, one, &a[k], n + 1, &b[k * ldb], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='R', N is even, TRANSR = 'N', UPLO = 'U',
                         //                    and TRANS = 'T'
                         //
-                        Rtrsm("R", "U", "T", diag, m, k, alpha, &a[k - 1], n + 1, &b[(0 - 1) + (k - 1) * ldb], ldb);
-                        Rgemm("N", "T", m, k, k, -one, &b[(0 - 1) + (k - 1) * ldb], ldb, &a[0 - 1], n + 1, alpha, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Rtrsm("R", "L", "N", diag, m, k, one, &a[(k + 1) - 1], n + 1, &b[(0 - 1) + (0 - 1) * ldb], ldb);
+                        Rtrsm("R", "U", "T", diag, m, k, alpha, &a[k], n + 1, &b[k * ldb], ldb);
+                        Rgemm("N", "T", m, k, k, -one, &b[k * ldb], ldb, &a[0], n + 1, alpha, &b[0], ldb);
+                        Rtrsm("R", "L", "N", diag, m, k, one, &a[(k + 1)], n + 1, &b[0], ldb);
                         //
                     }
                     //
@@ -586,18 +562,18 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='R', N is even, TRANSR = 'T', UPLO = 'L',
                         //                    and TRANS = 'N'
                         //
-                        Rtrsm("R", "L", "N", diag, m, k, alpha, &a[0 - 1], k, &b[(0 - 1) + (k - 1) * ldb], ldb);
-                        Rgemm("N", "T", m, k, k, -one, &b[(0 - 1) + (k - 1) * ldb], ldb, &a[((k + 1) * k) - 1], k, alpha, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Rtrsm("R", "U", "T", diag, m, k, one, &a[k - 1], k, &b[(0 - 1) + (0 - 1) * ldb], ldb);
+                        Rtrsm("R", "L", "N", diag, m, k, alpha, &a[0], k, &b[k * ldb], ldb);
+                        Rgemm("N", "T", m, k, k, -one, &b[k * ldb], ldb, &a[((k + 1) * k)], k, alpha, &b[0], ldb);
+                        Rtrsm("R", "U", "T", diag, m, k, one, &a[k], k, &b[0], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='R', N is even, TRANSR = 'T', UPLO = 'L',
                         //                    and TRANS = 'T'
                         //
-                        Rtrsm("R", "U", "N", diag, m, k, alpha, &a[k - 1], k, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Rgemm("N", "N", m, k, k, -one, &b[(0 - 1) + (0 - 1) * ldb], ldb, &a[((k + 1) * k) - 1], k, alpha, &b[(0 - 1) + (k - 1) * ldb], ldb);
-                        Rtrsm("R", "L", "T", diag, m, k, one, &a[0 - 1], k, &b[(0 - 1) + (k - 1) * ldb], ldb);
+                        Rtrsm("R", "U", "N", diag, m, k, alpha, &a[k], k, &b[0], ldb);
+                        Rgemm("N", "N", m, k, k, -one, &b[0], ldb, &a[((k + 1) * k)], k, alpha, &b[k * ldb], ldb);
+                        Rtrsm("R", "L", "T", diag, m, k, one, &a[0], k, &b[k * ldb], ldb);
                         //
                     }
                     //
@@ -610,18 +586,18 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //                    SIDE  ='R', N is even, TRANSR = 'T', UPLO = 'U',
                         //                    and TRANS = 'N'
                         //
-                        Rtrsm("R", "U", "N", diag, m, k, alpha, &a[((k + 1) * k) - 1], k, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Rgemm("N", "T", m, k, k, -one, &b[(0 - 1) + (0 - 1) * ldb], ldb, &a[0 - 1], k, alpha, &b[(0 - 1) + (k - 1) * ldb], ldb);
-                        Rtrsm("R", "L", "T", diag, m, k, one, &a[(k * k) - 1], k, &b[(0 - 1) + (k - 1) * ldb], ldb);
+                        Rtrsm("R", "U", "N", diag, m, k, alpha, &a[((k + 1) * k)], k, &b[0], ldb);
+                        Rgemm("N", "T", m, k, k, -one, &b[0], ldb, &a[0], k, alpha, &b[k * ldb], ldb);
+                        Rtrsm("R", "L", "T", diag, m, k, one, &a[(k * k)], k, &b[k * ldb], ldb);
                         //
                     } else {
                         //
                         //                    SIDE  ='R', N is even, TRANSR = 'T', UPLO = 'U',
                         //                    and TRANS = 'T'
                         //
-                        Rtrsm("R", "L", "N", diag, m, k, alpha, &a[(k * k) - 1], k, &b[(0 - 1) + (k - 1) * ldb], ldb);
-                        Rgemm("N", "N", m, k, k, -one, &b[(0 - 1) + (k - 1) * ldb], ldb, &a[0 - 1], k, alpha, &b[(0 - 1) + (0 - 1) * ldb], ldb);
-                        Rtrsm("R", "U", "T", diag, m, k, one, &a[((k + 1) * k) - 1], k, &b[(0 - 1) + (0 - 1) * ldb], ldb);
+                        Rtrsm("R", "L", "N", diag, m, k, alpha, &a[(k * k)], k, &b[k * ldb], ldb);
+                        Rgemm("N", "N", m, k, k, -one, &b[k * ldb], ldb, &a[0], k, alpha, &b[0], ldb);
+                        Rtrsm("R", "U", "T", diag, m, k, one, &a[((k + 1) * k)], k, &b[0], ldb);
                         //
                     }
                     //
