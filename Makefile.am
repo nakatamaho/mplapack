@@ -59,14 +59,14 @@ if ENABLE__FLOAT64X
 mplapack_include_HEADERS += \
      include/mpblas__Float64x.h \
      include/mplapack__Float64x.h \
-     include/mplapack_utils__Float64x.h
+     include/mplapack_utils__Float64x.h.in
 endif
 
 if ENABLE__FLOAT128
 mplapack_include_HEADERS += \
     include/mpblas__Float128.h \
     include/mplapack__Float128.h \
-    include/mplapack_utils__Float128.h
+    include/mplapack_utils__Float128.h.in
 endif
 
 noinst_HEADERS = include/mplapack_debug.h include/mplapack_utils.h include/mpblas.h include/mplapack.h include/mplapack_generic.h include/mplapack_benchmark.h include/mplapack_benchmark__Float128.h include/mplapack_benchmark_dd.h include/mplapack_benchmark_double.h include/mplapack_benchmark_gmp.h include/mplapack_benchmark_mpfr.h include/mplapack_benchmark_qd.h
