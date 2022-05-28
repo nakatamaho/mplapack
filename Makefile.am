@@ -100,9 +100,3 @@ mpfrc++/copying.lib mpfrc++/copying mpfrc++/makefile.org \
 mpfrc++/org/copying mpfrc++/org/copying.lib mpfrc++/org/example.cpp \
 mpfrc++/org/makefile mpfrc++/org/mpfrc++.tar.gz \
 mpfrc++/org/mpreal.cpp mpfrc++/org/mpreal.h
-
-if !DISABLE_EXAMPLES
-EXTRA_DIST += \
-examples/mplapack/*/*cpp \
-examples/mpblas/*cpp
-endif
