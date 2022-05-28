@@ -14,7 +14,7 @@ RUN echo "${TZ}" > /etc/timezone \
   && ln -s /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
   && dpkg-reconfigure -f noninteractive tzdata
 
-RUN apt install -y build-essential gfortran-9 python3
+RUN apt install -y build-essential gfortran python3
 RUN apt install -y autotools-dev automake libtool
 RUN apt install -y gdb valgrind libtool-bin
 RUN apt install -y git wget ccache time pkg-config expect clangd clang-format unifdef octave
