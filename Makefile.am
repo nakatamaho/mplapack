@@ -91,27 +91,18 @@ external/mpc/Makefile.in \
 external/qd/download/*.tar.gz \
 external/qd/Makefile.am \
 external/qd/Makefile.in \
-external/qd/patches/patch-mingw \
-external/qd/patches/patch-noopt \
+external/qd/patches/patch-* \
 external/lapack/Makefile.am \
 external/lapack/Makefile.in \
 external/lapack/download/*.tgz \
-external/lapack/patches/patch-mingw \
-external/lapack/patches/patch-mic \
+external/lapack/patches/patch-* \
 mpfrc++/copying.lib mpfrc++/copying mpfrc++/makefile.org \
 mpfrc++/org/copying mpfrc++/org/copying.lib mpfrc++/org/example.cpp \
-mpfrc++/org/makefile  mpfrc++/org/mpfrc++.tar.gz \
-mpfrc++/org/mpreal.cpp  mpfrc++/org/mpreal.h
+mpfrc++/org/makefile mpfrc++/org/mpfrc++.tar.gz \
+mpfrc++/org/mpreal.cpp mpfrc++/org/mpreal.h
 
 if !DISABLE_EXAMPLES
 EXTRA_DIST += \
-examples/mpblas/Makefile.mingw \
-examples/mpblas/Makefile.freebsd \
-examples/mpblas/Makefile.linux \
-examples/mpblas/Makefile.macosx \
-examples/mplapack/Makefile.mingw \
-examples/mplapack/Makefile.freebsd \
-examples/mplapack/Makefile.linux \
-examples/mplapack/Makefile.macosx
+examples/mplapack/*/*cpp \
+examples/mpblas/*cpp
 endif
-
