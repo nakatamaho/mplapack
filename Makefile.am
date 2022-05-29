@@ -92,6 +92,7 @@ external/qd/download/*.tar.gz \
 external/qd/Makefile.am \
 external/qd/Makefile.in \
 external/qd/patches/patch-* \
+external/qd/patches/config* \
 external/lapack/Makefile.am \
 external/lapack/Makefile.in \
 external/lapack/download/*.tgz \
