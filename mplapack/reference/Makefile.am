@@ -1025,3 +1025,5 @@ iMlazlc.cpp \
 iMlazlr.cpp \
 iMparmq.cpp \
 iMparam2stage.cpp
+
+EXTRA_DIST = iMlaver.cpp.in
