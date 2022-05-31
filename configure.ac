@@ -914,7 +914,6 @@ AC_SUBST([PACKAGE_CREATED_LIBS])
 
 ########################################################################
 
-
 AC_CONFIG_FILES([
 mpblas/optimized/Makefile
 mpblas/optimized/gmp/Makefile

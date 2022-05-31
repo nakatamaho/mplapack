@@ -102,4 +102,41 @@ external/lapack/patches/print.c \
 mpfrc++/copying.lib mpfrc++/copying mpfrc++/makefile.org \
 mpfrc++/org/copying mpfrc++/org/copying.lib mpfrc++/org/example.cpp \
 mpfrc++/org/makefile mpfrc++/org/mpfrc++.tar.gz \
-mpfrc++/org/mpreal.cpp mpfrc++/org/mpreal.h
+mpfrc++/org/mpreal.cpp mpfrc++/org/mpreal.h \
+mplapack/test/eig/Cbak.in \
+mplapack/test/eig/Cbal.in \
+mplapack/test/eig/Cbal_double.in \
+mplapack/test/eig/Cbb.in \
+mplapack/test/eig/Cec.in \
+mplapack/test/eig/Ced.in \
+mplapack/test/eig/Cgbak.in \
+mplapack/test/eig/Cgbal.in \
+mplapack/test/eig/Cgd.in \
+mplapack/test/eig/Cgg.in \
+mplapack/test/eig/Csb.in \
+mplapack/test/eig/Csg.in \
+mplapack/test/eig/Rbak.in \
+mplapack/test/eig/Rbal.in \
+mplapack/test/eig/Rbal_double.in \
+mplapack/test/eig/Rbb.in \
+mplapack/test/eig/Rec.in \
+mplapack/test/eig/Red.in \
+mplapack/test/eig/Rgbak.in \
+mplapack/test/eig/Rgbal.in \
+mplapack/test/eig/Rgd.in \
+mplapack/test/eig/Rgg.in \
+mplapack/test/eig/Rsb.in \
+mplapack/test/eig/Rsg.in \
+mplapack/test/eig/csd.in \
+mplapack/test/eig/glm.in \
+mplapack/test/eig/gqr.in \
+mplapack/test/eig/gsv.in \
+mplapack/test/eig/lse.in \
+mplapack/test/eig/nep.in \
+mplapack/test/eig/se2.in \
+mplapack/test/eig/sep.in \
+mplapack/test/eig/svd.in \
+mplapack/test/lin/Ctest.in \
+mplapack/test/lin/Ctest_rfp.in \
+mplapack/test/lin/Rtest.in \
+mplapack/test/lin/Rtest_rfp.in

@@ -1,6 +1,11 @@
 SUBDIRS = .
 lib_LTLIBRARIES = 
 
+mplapack_eig_DATA = Cbak.in Cbal.in Cbal_double.in Cbb.in Cec.in Ced.in Cgbak.in Cgbal.in Cgd.in Cgg.in \
+Csb.in Csg.in Rbak.in Rbal.in Rbal_double.in Rbb.in Rec.in Red.in Rgbak.in Rgbal.in Rgd.in Rgg.in Rsb.in Rsg.in \
+csd.in glm.in gqr.in gsv.in lse.in nep.in se2.in sep.in svd.in
+mplapack_eigdir = $(prefix)/lib/$(target)/mplapack/eig
+
 if ENABLE_MPFR
 lib_LTLIBRARIES += libeig_mpfr.la libeig_override_mpfr.la
 SUBDIRS += mpfr

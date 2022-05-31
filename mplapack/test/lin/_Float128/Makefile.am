@@ -1,11 +1,9 @@
-bin_PROGRAMS = xlintstR__Float128 \
-xlintstC__Float128 \
-xlintstrfR__Float128 \
-xlintstrfC__Float128
+check_PROGRAMS = $(mplapack__Float128_test_PROGRAMS)
 
-mplapack__Float128_lintestdir = $(prefix)/share/mplapack/test/mplapack/lin/__Float128
+mplapack__Float128_test_PROGRAMS = xlintstR__Float128 xlintstC__Float128 xlintstrfR__Float128 xlintstrfC__Float128
+mplapack__Float128_testdir = $(prefix)/lib/$(target)/mplapack/lin
 
-$(bin_PROGRAMS): ../liblin__Float128.la ../liblin_override__Float128.la
+$(check_PROGRAMS): ../liblin__Float128.la ../liblin_override__Float128.la
 
 libdepends = -L.. -llin__Float128 -llin_override__Float128 -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float128 -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128
 if WANT_QUADMATH

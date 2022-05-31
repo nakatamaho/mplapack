@@ -1,11 +1,9 @@
-bin_PROGRAMS = xlintstR_double \
-xlintstC_double \
-xlintstrfR_double \
-xlintstrfC_double
+check_PROGRAMS = $(mplapack_double_test_PROGRAMS)
 
-mplapack_double_lintestdir = $(prefix)/share/mplapack/test/mplapack/lin/double
+mplapack_double_test_PROGRAMS = xlintstR_double xlintstC_double xlintstrfR_double xlintstrfC_double
+mplapack_double_testdir = $(prefix)/lib/$(target)/mplapack/lin
 
-$(bin_PROGRAMS): ../liblin_double.la ../liblin_override_double.la
+$(check_PROGRAMS): ../liblin_double.la ../liblin_override_double.la
 
 libdepends = -L.. -llin_double -llin_override_double -L$(top_builddir)/mplapack/test/matgen -lmatgen_double -L$(top_builddir)/mplapack/reference -lmplapack_double -L$(top_builddir)/mpblas/reference -lmpblas_double
 mplibs = -lm

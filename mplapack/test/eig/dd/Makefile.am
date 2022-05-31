@@ -1,9 +1,9 @@
-bin_PROGRAMS = xeigtstR_dd \
-xeigtstC_dd
+check_PROGRAMS = $(mplapack_dd_test_PROGRAMS)
 
-mplapack_dd_eigtestdir = $(prefix)/share/mplapack/test/mplapack/eig/dd
+mplapack_dd_test_PROGRAMS = xeigtstR_dd xeigtstC_dd
+mplapack_dd_testdir = $(prefix)/lib/$(target)/mplapack/eig
 
-$(bin_PROGRAMS): ../libeig_dd.la ../libeig_override_dd.la
+$(check_PROGRAMS): ../libeig_dd.la ../libeig_override_dd.la
 
 libdepends = -L$(top_builddir)/mplapack/test/eig -leig_dd -leig_override_dd -L$(top_builddir)/mplapack/test/matgen -lmatgen_dd -L$(top_builddir)/mplapack/reference -lmplapack_dd -L$(top_builddir)/mpblas/reference -lmpblas_dd 
 mplibs = -L$(QD_LIBDIR) -lqd -lm

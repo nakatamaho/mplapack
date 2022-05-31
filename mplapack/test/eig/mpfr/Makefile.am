@@ -1,9 +1,9 @@
-bin_PROGRAMS = xeigtstR_mpfr \
-xeigtstC_mpfr
+check_PROGRAMS = $(mplapack_mpfr_test_PROGRAMS)
 
-mplapack_mpfr_eigtestdir = $(prefix)/share/mplapack/test/mplapack/eig/mpfr
+mplapack_mpfr_test_PROGRAMS = xeigtstR_mpfr xeigtstC_mpfr
+mplapack_mpfr_testdir = $(prefix)/lib/$(target)/mplapack/eig
 
-$(bin_PROGRAMS): ../libeig_mpfr.la ../libeig_override_mpfr.la
+$(check_PROGRAMS): ../libeig_mpfr.la ../libeig_override_mpfr.la
 
 libdepends = -L$(top_builddir)/mplapack/test/eig -leig_mpfr -leig_override_mpfr -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr 
 mplibs = -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lm

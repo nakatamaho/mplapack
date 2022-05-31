@@ -1,11 +1,9 @@
-bin_PROGRAMS = xlintstR__Float64x \
-xlintstC__Float64x \
-xlintstrfR__Float64x \
-xlintstrfC__Float64x
+check_PROGRAMS = $(mplapack__Float64x_test_PROGRAMS)
 
-mplapack__Float64x_lintestdir = $(prefix)/share/mplapack/test/mplapack/lin/__Float64x
+mplapack__Float64x_test_PROGRAMS = xlintstR__Float64x xlintstC__Float64x xlintstrfR__Float64x xlintstrfC__Float64x
+mplapack__Float64x_testdir = $(prefix)/lib/$(target)/mplapack/lin
 
-$(bin_PROGRAMS): ../liblin__Float64x.la ../liblin_override__Float64x.la
+$(check_PROGRAMS): ../liblin__Float64x.la ../liblin_override__Float64x.la
 
 libdepends = -L.. -llin__Float64x -llin_override__Float64x -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float64x -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -L$(top_builddir)/mpblas/reference -lmpblas__Float64x
 mplibs = -lm

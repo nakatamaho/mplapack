@@ -3,7 +3,7 @@ TESTS = $(check_PROGRAMS)
 mplapack_qd_test_PROGRAMS = \
 %%insert here1%%
 
-mplapack_qd_testdir = $(prefix)/share/mplapack/test/mplapack/qd
+mplapack_qd_testdir = $(prefix)/lib/$(target)/mplapack/test/mpblas/qd
 ref_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_qd -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_qd -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(QD_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lqd
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)

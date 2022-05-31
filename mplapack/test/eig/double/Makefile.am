@@ -1,9 +1,9 @@
-bin_PROGRAMS = xeigtstR_double \
-xeigtstC_double
+check_PROGRAMS = $(mplapack_double_test_PROGRAMS)
 
-mplapack_double_eigtestdir = $(prefix)/share/mplapack/test/mplapack/eig/double
+mplapack_double_test_PROGRAMS = xeigtstR_double xeigtstC_double
+mplapack_double_testdir = $(prefix)/lib/$(target)/mplapack/eig
 
-$(bin_PROGRAMS): ../libeig_double.la ../libeig_override_double.la
+$(check_PROGRAMS): ../libeig_double.la ../libeig_override_double.la
 
 libdepends = -L$(top_builddir)/mplapack/test/eig -leig_double -leig_override_double -L$(top_builddir)/mplapack/test/matgen -lmatgen_double -L$(top_builddir)/mplapack/reference -lmplapack_double -L$(top_builddir)/mpblas/reference -lmpblas_double 
 mplibs = -lm

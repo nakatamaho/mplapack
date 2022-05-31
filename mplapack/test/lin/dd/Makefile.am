@@ -1,11 +1,9 @@
-bin_PROGRAMS = xlintstR_dd \
-xlintstC_dd \
-xlintstrfR_dd \
-xlintstrfC_dd
+check_PROGRAMS = $(mplapack_dd_test_PROGRAMS)
 
-mplapack_dd_lintestdir = $(prefix)/share/mplapack/test/mplapack/lin/dd
+mplapack_dd_test_PROGRAMS = xlintstR_dd xlintstC_dd xlintstrfR_dd xlintstrfC_dd
+mplapack_dd_testdir = $(prefix)/lib/$(target)/mplapack/lin
 
-$(bin_PROGRAMS): ../liblin_dd.la ../liblin_override_dd.la
+$(check_PROGRAMS): ../liblin_dd.la ../liblin_override_dd.la
 
 libdepends = -L$(top_builddir)/mplapack/test/lin -llin_dd -llin_override_dd -L$(top_builddir)/mplapack/test/matgen -lmatgen_dd -L$(top_builddir)/mplapack/reference -lmplapack_dd -L$(top_builddir)/mpblas/reference -lmpblas_dd
 mplibs = -L$(MPC_LIBDIR) -L$(QD_LIBDIR) -lqd -lm

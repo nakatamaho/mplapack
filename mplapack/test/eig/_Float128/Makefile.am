@@ -1,10 +1,9 @@
-bin_PROGRAMS = \
-xeigtstR__Float128 \
-xeigtstC__Float128
+check_PROGRAMS = $(mplapack__Float128_test_PROGRAMS)
 
-mplapack__Float128_eigtestdir = $(prefix)/share/mplapack/test/mplapack/eig/_Float128
+mplapack__Float128_test_PROGRAMS = xeigtstR__Float128 xeigtstC__Float128
+mplapack__Float128_testdir = $(prefix)/lib/$(target)/mplapack/eig
 
-$(bin_PROGRAMS): ../libeig__Float128.la ../libeig_override__Float128.la
+$(check_PROGRAMS): ../libeig__Float128.la ../libeig_override__Float128.la
 
 libdepends = -L$(top_builddir)/mplapack/test/eig -leig__Float128 -leig_override__Float128 -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float128 -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128 
 if WANT_QUADMATH

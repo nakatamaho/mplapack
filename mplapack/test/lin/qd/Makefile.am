@@ -1,11 +1,9 @@
-bin_PROGRAMS = xlintstR_qd \
-xlintstC_qd \
-xlintstrfR_qd \
-xlintstrfC_qd
+check_PROGRAMS = $(mplapack_qd_test_PROGRAMS)
 
-mplapack_qd_lintestdir = $(prefix)/share/mplapack/test/mplapack/lin/qd
+mplapack_qd_test_PROGRAMS = xlintstR_qd xlintstC_qd xlintstrfR_qd xlintstrfC_qd
+mplapack_qd_testdir = $(prefix)/lib/$(target)/mplapack/lin
 
-$(bin_PROGRAMS): ../liblin_qd.la ../liblin_override_qd.la
+$(check_PROGRAMS): ../liblin_qd.la ../liblin_override_qd.la
 
 libdepends = -L$(top_builddir)/mplapack/test/lin -llin_qd -llin_override_qd -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd -L$(top_builddir)/mplapack/reference -lmplapack_qd -L$(top_builddir)/mpblas/reference -lmpblas_qd
 mplibs = -L$(QD_LIBDIR) -lqd -lm

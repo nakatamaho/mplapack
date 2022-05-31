@@ -80,7 +80,7 @@ Rtrmv.test.double_opt  Rtrmv.test.double	\
 Rtrsm.test.double_opt  Rtrsm.test.double	\
 Rtrsv.test.double_opt  Rtrsv.test.double
 
-mpblas_double_testdir = $(prefix)/share/mplapack/test/mpblas/double
+mpblas_double_testdir = $(prefix)/share/mplapack/mpblas/double
 libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_double -lmpblas_mpfr
 opt_libdepends = -L$(top_builddir)/mpblas/optimized/double -lmpblas_double_opt -L$(top_builddir)/mpblas/reference -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp

@@ -1,11 +1,9 @@
-bin_PROGRAMS = xlintstR_mpfr \
-xlintstC_mpfr \
-xlintstrfR_mpfr \
-xlintstrfC_mpfr
+check_PROGRAMS = $(mplapack_mpfr_test_PROGRAMS)
 
-mplapack_mpfr_lintestdir = $(prefix)/share/mplapack/test/mplapack/lin/mpfr
+mplapack_mpfr_test_PROGRAMS = xlintstR_mpfr xlintstC_mpfr xlintstrfR_mpfr xlintstrfC_mpfr
+mplapack_mpfr_testdir = $(prefix)/lib/$(target)/mplapack/lin
 
-$(bin_PROGRAMS): ../liblin_mpfr.la ../liblin_override_mpfr.la
+$(check_PROGRAMS): ../liblin_mpfr.la ../liblin_override_mpfr.la
 
 libdepends = -L$(top_builddir)/mplapack/test/lin -llin_mpfr -llin_override_mpfr -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr
 mplibs = -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lm

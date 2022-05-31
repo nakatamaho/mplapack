@@ -80,7 +80,7 @@ Rtrmv.test.dd_opt  Rtrmv.test.dd	\
 Rtrsm.test.dd_opt  Rtrsm.test.dd	\
 Rtrsv.test.dd_opt  Rtrsv.test.dd
 
-mpblas_dd_testdir = $(prefix)/share/mplapack/test/mpblas/dd
+mpblas_dd_testdir = $(prefix)/share/mplapack/mpblas/dd
 libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_dd -lmpblas_mpfr
 opt_libdepends = -L$(top_builddir)/mpblas/optimized/dd -lmpblas_dd_opt -L$(top_builddir)/mpblas/reference -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -L$(QD_LIBDIR) -lqd

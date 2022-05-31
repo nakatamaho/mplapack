@@ -80,7 +80,7 @@ Rtrmv.test.mpfr_opt  Rtrmv.test.mpfr	\
 Rtrsm.test.mpfr_opt  Rtrsm.test.mpfr	\
 Rtrsv.test.mpfr_opt  Rtrsv.test.mpfr
 
-mpblas_mpfr_testdir = $(prefix)/share/mplapack/test/mpblas/mpfr
+mpblas_mpfr_testdir = $(prefix)/share/mplapack/mpblas/mpfr
 libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_mpfr
 opt_libdepends = -L$(top_builddir)/mpblas/optimized/mpfr -lmpblas_mpfr_opt
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp

@@ -80,7 +80,7 @@ Rtrmv.test._Float64x_opt  Rtrmv.test._Float64x	\
 Rtrsm.test._Float64x_opt  Rtrsm.test._Float64x	\
 Rtrsv.test._Float64x_opt  Rtrsv.test._Float64x
 
-mpblas__Float64x_testdir = $(prefix)/share/mplapack/test/mpblas/_Float64x
+mpblas__Float64x_testdir = $(prefix)/share/mplapack/mpblas/_Float64x
 libdepends = -L$(top_builddir)/mpblas/reference -lmpblas__Float64x -lmpblas_mpfr
 opt_libdepends = -L$(top_builddir)/mpblas/optimized/_Float64x -lmpblas__Float64x_opt -L$(top_builddir)/mpblas/reference -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp

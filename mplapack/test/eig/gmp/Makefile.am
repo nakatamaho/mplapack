@@ -1,9 +1,9 @@
-bin_PROGRAMS = xeigtstR_gmp \
-xeigtstC_gmp
+check_PROGRAMS = $(mplapack_gmp_test_PROGRAMS)
 
-mplapack_gmp_eigtestdir = $(prefix)/share/mplapack/test/mplapack/eig/gmp
+mplapack_gmp_test_PROGRAMS = xeigtstR_gmp xeigtstC_gmp
+mplapack_gmp_testdir = $(prefix)/lib/$(target)/mplapack/eig
 
-$(bin_PROGRAMS): ../libeig_gmp.la ../libeig_override_gmp.la
+$(check_PROGRAMS): ../libeig_gmp.la ../libeig_override_gmp.la
 
 libdepends = -L$(top_builddir)/mplapack/test/eig -leig_gmp -leig_override_gmp -L$(top_builddir)/mplapack/test/matgen -lmatgen_gmp -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(top_builddir)/mpblas/reference -lmpblas_gmp 
 mplibs = -L$(GMP_LIBDIR) -lgmpxx -lgmp -lm

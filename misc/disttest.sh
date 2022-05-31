@@ -16,9 +16,9 @@ rm mplapack-${VERSION}.tar.xz
 cp $TOPDIR/mplapack-${VERSION}.tar.xz .
 tar xvf mplapack-${VERSION}.tar.xz
 cd mplapack-${VERSION}
-CC='ccache gcc'
-CXX='ccache g++'
-FC='ccache gfortran'
+export CC='ccache gcc'
+export CXX='ccache g++'
+export FC='ccache gfortran'
 ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes
 make -j`getconf _NPROCESSORS_ONLN`
 make install

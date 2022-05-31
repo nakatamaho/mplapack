@@ -1,11 +1,9 @@
-bin_PROGRAMS = xlintstR_gmp \
-xlintstC_gmp \
-xlintstrfR_gmp \
-xlintstrfC_gmp
+check_PROGRAMS = $(mplapack_gmp_test_PROGRAMS)
 
-mplapack_gmp_lintestdir = $(prefix)/share/mplapack/test/mplapack/lin/gmp
+mplapack_gmp_test_PROGRAMS = xlintstR_gmp xlintstC_gmp xlintstrfR_gmp xlintstrfC_gmp
+mplapack_gmp_testdir = $(prefix)/lib/$(target)/mplapack/lin
 
-$(bin_PROGRAMS): ../liblin_gmp.la ../liblin_override_gmp.la
+$(check_PROGRAMS): ../liblin_gmp.la ../liblin_override_gmp.la
 
 libdepends = -L$(top_builddir)/mplapack/test/lin -llin_gmp -llin_override_gmp -L$(top_builddir)/mplapack/test/matgen -lmatgen_gmp -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(top_builddir)/mpblas/reference -lmpblas_gmp
 mplibs = -L$(GMP_LIBDIR) -lgmpxx -lgmp -lm

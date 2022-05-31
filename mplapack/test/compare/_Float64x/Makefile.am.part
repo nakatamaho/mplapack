@@ -3,7 +3,7 @@ TESTS = $(check_PROGRAMS)
 mplapack__Float64x_test_PROGRAMS = \
 %%insert here1%%
 
-mplapack__Float64x_testdir = $(prefix)/share/mplapack/test/mplapack/_Float64x
+mplapack__Float64x_testdir = $(prefix)/lib/$(target)/mplapack/test/mpblas/_Float64x
 libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas__Float64x -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
