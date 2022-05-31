@@ -1,7 +1,7 @@
 check_PROGRAMS = $(mplapack_mpfr_test_PROGRAMS)
 
 mplapack_mpfr_test_PROGRAMS = xlintstR_mpfr xlintstC_mpfr xlintstrfR_mpfr xlintstrfC_mpfr
-mplapack_mpfr_testdir = $(prefix)/lib/$(target)/mplapack/lin
+mplapack_mpfr_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
 $(check_PROGRAMS): ../liblin_mpfr.la ../liblin_override_mpfr.la
 

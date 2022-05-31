@@ -1,7 +1,7 @@
 check_PROGRAMS = $(mplapack_dd_test_PROGRAMS)
 
 mplapack_dd_test_PROGRAMS = xeigtstR_dd xeigtstC_dd
-mplapack_dd_testdir = $(prefix)/lib/$(target)/mplapack/eig
+mplapack_dd_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 $(check_PROGRAMS): ../libeig_dd.la ../libeig_override_dd.la
 

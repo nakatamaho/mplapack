@@ -2,7 +2,7 @@ SUBDIRS = .
 lib_LTLIBRARIES = 
 
 mplapack_lin_DATA = Ctest.in Ctest_rfp.in Rtest.in Rtest_rfp.in
-mplapack_lindir = $(prefix)/lib/$(target)/mplapack/lin
+mplapack_lindir = $(prefix)/lib/$(target)/mplapack/test/lin
 
 if ENABLE_MPFR
 lib_LTLIBRARIES += liblin_mpfr.la liblin_override_mpfr.la

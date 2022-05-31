@@ -80,7 +80,8 @@ Rtrmv.test.qd_opt  Rtrmv.test.qd	\
 Rtrsm.test.qd_opt  Rtrsm.test.qd	\
 Rtrsv.test.qd_opt  Rtrsv.test.qd
 
-mpblas_qd_testdir = $(prefix)/share/mplapack/mpblas/qd
+mpblas_qd_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/qd
+
 libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_qd -lmpblas_mpfr
 opt_libdepends = -L$(top_builddir)/mpblas/optimized/qd -lmpblas_qd_opt -L$(top_builddir)/mpblas/reference -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -L$(QD_LIBDIR) -lqd

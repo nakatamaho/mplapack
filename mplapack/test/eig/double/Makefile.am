@@ -1,7 +1,7 @@
 check_PROGRAMS = $(mplapack_double_test_PROGRAMS)
 
 mplapack_double_test_PROGRAMS = xeigtstR_double xeigtstC_double
-mplapack_double_testdir = $(prefix)/lib/$(target)/mplapack/eig
+mplapack_double_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 $(check_PROGRAMS): ../libeig_double.la ../libeig_override_double.la
 

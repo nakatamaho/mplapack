@@ -1,7 +1,7 @@
 check_PROGRAMS = $(mplapack__Float128_test_PROGRAMS)
 
 mplapack__Float128_test_PROGRAMS = xlintstR__Float128 xlintstC__Float128 xlintstrfR__Float128 xlintstrfC__Float128
-mplapack__Float128_testdir = $(prefix)/lib/$(target)/mplapack/lin
+mplapack__Float128_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
 $(check_PROGRAMS): ../liblin__Float128.la ../liblin_override__Float128.la
 

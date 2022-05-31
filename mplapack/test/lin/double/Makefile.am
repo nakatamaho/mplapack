@@ -1,7 +1,7 @@
 check_PROGRAMS = $(mplapack_double_test_PROGRAMS)
 
 mplapack_double_test_PROGRAMS = xlintstR_double xlintstC_double xlintstrfR_double xlintstrfC_double
-mplapack_double_testdir = $(prefix)/lib/$(target)/mplapack/lin
+mplapack_double_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
 $(check_PROGRAMS): ../liblin_double.la ../liblin_override_double.la
 

@@ -1,7 +1,7 @@
 check_PROGRAMS = $(mplapack_mpfr_test_PROGRAMS)
 
 mplapack_mpfr_test_PROGRAMS = xeigtstR_mpfr xeigtstC_mpfr
-mplapack_mpfr_testdir = $(prefix)/lib/$(target)/mplapack/eig
+mplapack_mpfr_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 $(check_PROGRAMS): ../libeig_mpfr.la ../libeig_override_mpfr.la
 

@@ -1,7 +1,7 @@
 check_PROGRAMS = $(mplapack_qd_test_PROGRAMS)
 
 mplapack_qd_test_PROGRAMS = xlintstR_qd xlintstC_qd xlintstrfR_qd xlintstrfC_qd
-mplapack_qd_testdir = $(prefix)/lib/$(target)/mplapack/lin
+mplapack_qd_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
 $(check_PROGRAMS): ../liblin_qd.la ../liblin_override_qd.la
 

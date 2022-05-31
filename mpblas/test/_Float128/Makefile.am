@@ -80,7 +80,8 @@ Rtrmv.test._Float128_opt  Rtrmv.test._Float128	\
 Rtrsm.test._Float128_opt  Rtrsm.test._Float128	\
 Rtrsv.test._Float128_opt  Rtrsv.test._Float128
 
-mpblas__Float128_testdir = $(prefix)/share/mplapack/mpblas/_Float128
+mpblas__Float128_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/_Float128
+
 libdepends = -L$(top_builddir)/mpblas/reference -lmpblas__Float128 -lmpblas_mpfr
 opt_libdepends = -L$(top_builddir)/mpblas/optimized/_Float128 -lmpblas__Float128_opt -L$(top_builddir)/mpblas/reference -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp

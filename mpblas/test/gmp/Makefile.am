@@ -80,7 +80,8 @@ Rtrmv.test.gmp_opt  Rtrmv.test.gmp	\
 Rtrsm.test.gmp_opt  Rtrsm.test.gmp	\
 Rtrsv.test.gmp_opt  Rtrsv.test.gmp
 
-mpblas_gmp_testdir = $(prefix)/share/mplapack/mpblas/gmp
+mpblas_gmp_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/gmp
+
 libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_gmp -lmpblas_mpfr
 opt_libdepends = -L$(top_builddir)/mpblas/optimized/gmp -lmpblas_gmp_opt -L$(top_builddir)/mpblas/reference -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp

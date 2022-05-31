@@ -3,7 +3,8 @@ TESTS = $(check_PROGRAMS)
 mplapack__Float128_test_PROGRAMS = \
 %%insert here1%%
 
-mplapack__Float128_testdir = $(prefix)/lib/$(target)/mplapack/test/mpblas/_Float128
+mplapack__Float128_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/_Float128
+
 libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas__Float128 -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)

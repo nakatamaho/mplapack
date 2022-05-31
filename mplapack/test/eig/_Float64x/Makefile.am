@@ -1,7 +1,7 @@
 check_PROGRAMS = $(mplapack__Float64x_test_PROGRAMS)
 
 mplapack__Float64x_test_PROGRAMS = xeigtstR__Float64x xeigtstC__Float64x
-mplapack__Float64x_testdir = $(prefix)/lib/$(target)/mplapack/eig
+mplapack__Float64x_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 $(check_PROGRAMS): ../libeig__Float64x.la ../libeig_override__Float64x.la
 

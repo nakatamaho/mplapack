@@ -1,7 +1,7 @@
 check_PROGRAMS = $(mplapack_gmp_test_PROGRAMS)
 
 mplapack_gmp_test_PROGRAMS = xlintstR_gmp xlintstC_gmp xlintstrfR_gmp xlintstrfC_gmp
-mplapack_gmp_testdir = $(prefix)/lib/$(target)/mplapack/lin
+mplapack_gmp_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
 $(check_PROGRAMS): ../liblin_gmp.la ../liblin_override_gmp.la
 

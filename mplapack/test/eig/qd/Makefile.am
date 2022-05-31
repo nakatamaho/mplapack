@@ -1,7 +1,7 @@
 check_PROGRAMS = $(mplapack_qd_test_PROGRAMS)
 
 mplapack_qd_test_PROGRAMS = xeigtstR_qd xeigtstC_qd
-mplapack_qd_testdir = $(prefix)/lib/$(target)/mplapack/eig
+mplapack_qd_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 $(check_PROGRAMS): ../libeig_qd.la ../libeig_override_qd.la
 

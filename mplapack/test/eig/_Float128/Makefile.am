@@ -1,7 +1,7 @@
 check_PROGRAMS = $(mplapack__Float128_test_PROGRAMS)
 
 mplapack__Float128_test_PROGRAMS = xeigtstR__Float128 xeigtstC__Float128
-mplapack__Float128_testdir = $(prefix)/lib/$(target)/mplapack/eig
+mplapack__Float128_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 $(check_PROGRAMS): ../libeig__Float128.la ../libeig_override__Float128.la
 

@@ -3,7 +3,8 @@ TESTS = $(check_PROGRAMS)
 mplapack_double_test_PROGRAMS = \
 %%insert here1%%
 
-mplapack_double_testdir = $(prefix)/lib/$(target)/mplapack/test/mpblas/double
+mplapack_double_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/double
+
 libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_double -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_double -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)

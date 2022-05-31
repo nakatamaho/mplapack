@@ -1,7 +1,7 @@
 check_PROGRAMS = $(mplapack_dd_test_PROGRAMS)
 
 mplapack_dd_test_PROGRAMS = xlintstR_dd xlintstC_dd xlintstrfR_dd xlintstrfC_dd
-mplapack_dd_testdir = $(prefix)/lib/$(target)/mplapack/lin
+mplapack_dd_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
 $(check_PROGRAMS): ../liblin_dd.la ../liblin_override_dd.la
 

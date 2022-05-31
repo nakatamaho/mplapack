@@ -1,7 +1,7 @@
 check_PROGRAMS = $(mplapack__Float64x_test_PROGRAMS)
 
 mplapack__Float64x_test_PROGRAMS = xlintstR__Float64x xlintstC__Float64x xlintstrfR__Float64x xlintstrfC__Float64x
-mplapack__Float64x_testdir = $(prefix)/lib/$(target)/mplapack/lin
+mplapack__Float64x_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
 $(check_PROGRAMS): ../liblin__Float64x.la ../liblin_override__Float64x.la
 
