@@ -172,4 +172,4 @@ Rgesvd_test_qd_LDFLAGS = $(qd_libdepends)
 
 endif
 
-mplapackexamplesdir=$(prefix)/share/mplapack/examples/05_SingularValueDecomposition
+mplapackexamplesdir=$(prefix)/share/mplapack/examples/mplapack/05_SingularValueDecomposition

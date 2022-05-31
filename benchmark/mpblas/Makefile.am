@@ -1,5 +1,5 @@
 bench_PROGRAMS =
-benchdir=$(prefix)/share/mplapack/bench
+benchdir=$(prefix)/lib/$(target)/mplapack/benchmark
 
 if !IS_MINGW
 

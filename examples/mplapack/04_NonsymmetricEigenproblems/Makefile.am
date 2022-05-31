@@ -256,4 +256,4 @@ Rgeev_test_qd_LDFLAGS = $(qd_libdepends)
 
 endif
 
-mplapackexamplesdir=$(prefix)/share/mplapack/examples/04_NonsymmetricEigenproblems
+mplapackexamplesdir=$(prefix)/share/mplapack/examples/mplapack/04_NonsymmetricEigenproblems

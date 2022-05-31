@@ -228,4 +228,4 @@ Rsyevr_Frank_qd_LDFLAGS = $(qd_libdepends)
 
 endif
 
-mplapackexamplesdir=$(prefix)/share/mplapack/examples/03_SymmetricEigenproblems
+mplapackexamplesdir=$(prefix)/share/mplapack/examples/mplapack/03_SymmetricEigenproblems

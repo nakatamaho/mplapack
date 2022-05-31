@@ -67,4 +67,4 @@ Rgemm__Float64x_CXXFLAGS= $(_Float64xcxxflags)
 Rgemm__Float64x_LDFLAGS= $(_Float64x_libdepends)
 endif
 
-blasexamplesdir=$(prefix)/share/mplapack/examples
+blasexamplesdir=$(prefix)/share/mplapack/examples/mpblas/
