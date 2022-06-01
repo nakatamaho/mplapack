@@ -1,5 +1,9 @@
 blasexamples_PROGRAMS =
 
+blasexamplesdir=$(prefix)/share/mplapack/examples/mpblas/
+
+blasexamples_DATA = Rgemm__Float128.cpp Rgemm__Float64x.cpp Rgemm_dd.cpp Rgemm_double.cpp Rgemm_gmp.cpp Rgemm_mpfr.cpp Rgemm_qd.cpp Makefile.freebsd Makefile.linux Makefile.macos Makefile.mingw
+
 if ENABLE_GMP
 blasexamples_PROGRAMS += Rgemm.gmp
 gmpcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) 
@@ -7,6 +11,7 @@ gmp_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_gmp -L$(GMP_LIBDIR)
 Rgemm_gmp_SOURCES= Rgemm_gmp.cpp
 Rgemm_gmp_CXXFLAGS= $(gmpcxxflags)
 Rgemm_gmp_LDFLAGS= $(gmp_libdepends)
+blasexamples_DATA +=
 endif
 
 if ENABLE_MPFR
@@ -67,4 +72,3 @@ Rgemm__Float64x_CXXFLAGS= $(_Float64xcxxflags)
 Rgemm__Float64x_LDFLAGS= $(_Float64x_libdepends)
 endif
 
-blasexamplesdir=$(prefix)/share/mplapack/examples/mpblas/

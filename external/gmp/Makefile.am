@@ -1,7 +1,7 @@
 GMPVERSION=6.2.1
 MAKEFLAGS =
 
-if IS_MACOSX
+if IS_MACOS
 CONFIGURE_ARGS=--enable-cxx --prefix=$(abs_builddir)/../i/GMP/
 CONFIGURE_ARGS2=--enable-cxx --prefix=$(prefix)
 else

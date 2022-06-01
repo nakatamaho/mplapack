@@ -89,11 +89,11 @@ refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 
 test_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ -D___MPLAPACK_INTERNAL___
 
-if !IS_MACOSX
+if !IS_MACOS
 test_srcdepends = ../common/xerbla.cpp ../common/mplapack.test.cpp ../common/Mxerbla.override.cpp
 endif
 
-if IS_MACOSX
+if IS_MACOS
 lib_LTLIBRARIES = libmxerbla_override.la
 libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_QD___
 libmxerbla_override_la_SOURCES =  ../common/Mxerbla.override.cpp

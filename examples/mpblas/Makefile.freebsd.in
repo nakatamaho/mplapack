@@ -1,20 +1,23 @@
 # Sample Makefile
 # by Nakata Maho
-CXX=c++
-MPLAPACKDIR=/Users/maho/mplapack-work/MPLAPACK
+
+CXX=g++-10
+MPLAPACKDIR=%%MPLAPACKDIR%%
 CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
 OPTFLAGS= -O2
-LIBFLAGS=-L$(MPLAPACKDIR)/lib
+LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
 MPFRLIBS=-lmpblas_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmpblas_gmp -lgmpxx -lgmp 
 QDLIBS=-lmpblas_qd -lqd
 DDLIBS=-lmpblas_dd -lqd
+_FLOAT64xLIBS=-lmpblas__Float64x
 _FLOAT128LIBS=-lmpblas__Float128 -lquadmath
+DOUBLELIBS=-lmpblas_double
 BLAS=
 LAPACK=
-FLIBS=-framework vecLib
+FLIBS=
 
-programs=Rgemm_mpfr Rgemm_gmp Rgemm_qd Rgemm_dd
+programs=Rgemm_mpfr Rgemm_gmp Rgemm_qd Rgemm_dd Rgemm__Float64x Rgemm__Float128 Rgemm_double
 
 all: $(programs)
 
@@ -33,8 +36,14 @@ Rgemm_qd: Rgemm_qd.o
 Rgemm_dd: Rgemm_dd.o
 	$(CXX) -o Rgemm_dd Rgemm_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Rgemm__Float64x: Rgemm__Float64x.o
+	$(CXX) -o Rgemm__Float64x Rgemm__Float64x.o $(LIBFLAGS) $(_FLOAT64xLIBS)
+
 Rgemm__Float128: Rgemm__Float128.o
 	$(CXX) -o Rgemm__Float128 Rgemm__Float128.o $(LIBFLAGS) $(_FLOAT128LIBS)
+
+Rgemm_double: Rgemm_double.o
+	$(CXX) -o Rgemm_double Rgemm_double.o $(LIBFLAGS) $(DOUBLELIBS)
 
 clean:
 	rm -rf *.o *~ $(programs) *bak

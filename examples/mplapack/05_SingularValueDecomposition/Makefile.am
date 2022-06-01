@@ -1,3 +1,14 @@
+mplapackexamplesdir=$(prefix)/share/mplapack/examples/mplapack/05_SingularValueDecomposition
+
+mplapackexamples_DATA = Matrix_01.txt Matrix_02.txt Matrix_03.txt Rgesvd_random_highcond__Float128.cpp \
+Rgesvd_random_highcond__Float64x.cpp Rgesvd_random_highcond_dd.cpp Rgesvd_random_highcond_double.cpp \
+Rgesvd_random_highcond_gmp.cpp Rgesvd_random_highcond_mpfr.cpp Rgesvd_random_highcond_qd.cpp Rgesvd_readfromfile__Float128.cpp \
+Rgesvd_readfromfile__Float64x.cpp Rgesvd_readfromfile_dd.cpp Rgesvd_readfromfile_double.cpp Rgesvd_readfromfile_gmp.cpp \
+Rgesvd_readfromfile_mpfr.cpp Rgesvd_readfromfile_qd.cpp Rgesvd_test2__Float128.cpp Rgesvd_test2__Float64x.cpp \
+Rgesvd_test2_dd.cpp Rgesvd_test2_double.cpp Rgesvd_test2_gmp.cpp Rgesvd_test2_mpfr.cpp Rgesvd_test2_qd.cpp \
+Rgesvd_test__Float128.cpp Rgesvd_test__Float64x.cpp Rgesvd_test_dd.cpp Rgesvd_test_double.cpp Rgesvd_test_gmp.cpp \
+Rgesvd_test_mpfr.cpp Rgesvd_test_qd.cpp
+
 mplapackexamples_PROGRAMS =
 
 if ENABLE_MPFR
@@ -171,5 +182,3 @@ Rgesvd_test_qd_CXXFLAGS = $(qd_cxxflags)
 Rgesvd_test_qd_LDFLAGS = $(qd_libdepends)
 
 endif
-
-mplapackexamplesdir=$(prefix)/share/mplapack/examples/mplapack/05_SingularValueDecomposition

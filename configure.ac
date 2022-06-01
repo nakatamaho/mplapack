@@ -88,14 +88,14 @@ case "$host" in
     *)
 esac
 AM_CONDITIONAL(IS_MINGW, test x$IS_MINGW = x1)
-IS_MACOSX=0
+IS_MACOS=0
 case "$host" in
     *apple-darwin*)
-        IS_MACOSX=1
+        IS_MACOS=1
         ;;
     *)
 esac
-AM_CONDITIONAL(IS_MACOSX, test x$IS_MACOSX = x1)
+AM_CONDITIONAL(IS_MACOS, test x$IS_MACOS = x1)
 
 IS_LINUX=0
 case "$host" in
@@ -191,6 +191,13 @@ dnl disable examples
 AC_ARG_ENABLE(examples, 
 AS_HELP_STRING([--disable-examples], [Disable examples]))
 AM_CONDITIONAL(DISABLE_EXAMPLES, test x$enable_examples = xno)
+
+if test "$enable_examples" != "no" ; then
+    sed -e "s|%%MPLAPACKDIR%%|$prefix|g" examples/mpblas/Makefile.linux.in   > examples/mpblas/Makefile.linux
+    sed -e "s|%%MPLAPACKDIR%%|$prefix|g" examples/mpblas/Makefile.macos.in   > examples/mpblas/Makefile.macos
+    sed -e "s|%%MPLAPACKDIR%%|$prefix|g" examples/mpblas/Makefile.mingw.in   > examples/mpblas/Makefile.mingw
+    sed -e "s|%%MPLAPACKDIR%%|$prefix|g" examples/mpblas/Makefile.freebsd.in > examples/mpblas/Makefile.freebsd
+fi
 
 dnl disable reference
 AC_ARG_ENABLE(reference,
@@ -774,9 +781,9 @@ fi
 
 dnl For benchmarking, we can set explicitly BLAS and LAPACK
 dnl libraries, like Intel MKL, GotoBLAS2, etc.
-dnl very specific case: veclib is shipped for MacOSX. it should be used without fortran compiler
+dnl very specific case: veclib is shipped for macOS. it should be used without fortran compiler
 dnl this library should be the default for benchmarking (actually it is ATLAS).
-dnl TODO: MacOSX support.
+dnl TODO: macOS support.
 if test x"$with_external_blas" != x""; then
     HAVE_EXTERNAL_BLAS=""
     BLAS=$with_external_blas;

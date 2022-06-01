@@ -1,5 +1,7 @@
 # Sample Makefile
 # by Nakata Maho
+# whether _FLOAT128 libs is requred or not is heavily dependent on your environment.
+
 CXX=c++
 MPLAPACKDIR=/home/docker/MPLAPACK
 CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
@@ -9,11 +11,14 @@ MPFRLIBS=-lmpblas_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmpblas_gmp -lgmpxx -lgmp 
 QDLIBS=-lmpblas_qd -lqd
 DDLIBS=-lmpblas_dd -lqd
+_FLOAT64xLIBS=-lmpblas__Float64x
+_FLOAT128LIBS=-lmpblas__Float128 -lquadmath
+DOUBLELIBS=-lmpblas_double
 BLAS=
 LAPACK=
 FLIBS=
 
-programs=Rgemm_mpfr Rgemm_gmp Rgemm_qd Rgemm_dd
+programs=Rgemm_mpfr Rgemm_gmp Rgemm_qd Rgemm_dd Rgemm__Float64x Rgemm__Float128 Rgemm_double
 
 all: $(programs)
 
@@ -21,16 +26,25 @@ all: $(programs)
 	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
 
 Rgemm_mpfr: Rgemm_mpfr.o
-	$(CXX) -static -o Rgemm_mpfr Rgemm_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+	$(CXX) -o Rgemm_mpfr Rgemm_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
 
 Rgemm_gmp: Rgemm_gmp.o
-	$(CXX) -static -o Rgemm_gmp Rgemm_gmp.o $(LIBFLAGS) $(GMPLIBS)
+	$(CXX) -o Rgemm_gmp Rgemm_gmp.o $(LIBFLAGS) $(GMPLIBS)
 
 Rgemm_qd: Rgemm_qd.o
-	$(CXX) -static -o Rgemm_qd Rgemm_qd.o $(LIBFLAGS) $(QDLIBS)
+	$(CXX) -o Rgemm_qd Rgemm_qd.o $(LIBFLAGS) $(QDLIBS)
 
 Rgemm_dd: Rgemm_dd.o
-	$(CXX) -static -o Rgemm_dd Rgemm_dd.o $(LIBFLAGS) $(DDLIBS)
+	$(CXX) -o Rgemm_dd Rgemm_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgemm__Float64x: Rgemm__Float64x.o
+	$(CXX) -o Rgemm__Float64x Rgemm__Float64x.o $(LIBFLAGS) $(_FLOAT64xLIBS)
+
+Rgemm__Float128: Rgemm__Float128.o
+	$(CXX) -o Rgemm__Float128 Rgemm__Float128.o $(LIBFLAGS) $(_FLOAT128LIBS)
+
+Rgemm_double: Rgemm_double.o
+	$(CXX) -o Rgemm_double Rgemm_double.o $(LIBFLAGS) $(DOUBLELIBS)
 
 clean:
 	rm -rf *.o *~ $(programs) *bak
