@@ -5,7 +5,7 @@ CXX=g++-10
 MPLAPACKDIR=/home/docker/MPLAPACK
 CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
 OPTFLAGS= -O2
-LIBFLAGS=-L$(MPLAPACKDIR)/lib
+LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
 MPFRLIBS=-lmpblas_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmpblas_gmp -lgmpxx -lgmp 
 QDLIBS=-lmpblas_qd -lqd
