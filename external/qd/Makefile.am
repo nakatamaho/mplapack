@@ -1,8 +1,13 @@
 QDVERSION=2.3.22
 MAKEFLAGS =
 
+if IS_MINGW
+CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/QD/ --host=$(host) --enable-fortran=no --enable-ieee-add=yes --enable-shared $(QDLIB_FLAGS)
+CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) --enable-fortran=no --enable-ieee-add=yes --enable-shared $(QDLIB_FLAGS)
+else
 CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/QD/ --host=$(host) --enable-fortran=no --enable-ieee-add=yes --enable-shared --enable-fma=yes $(QDLIB_FLAGS)
 CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) --enable-fortran=no --enable-ieee-add=yes --enable-shared --enable-fma=yes $(QDLIB_FLAGS)
+endif
 
 EXTRACT_STAMP=.qd_extract_done
 PATCH_STAMP=.qd_patch_done
