@@ -25,14 +25,11 @@ NM="x86_64-w64-mingw32-nm" ; export NM
 RANLIB="x86_64-w64-mingw32-ranlib" ; export RANLIB
 AR="x86_64-w64-mingw32-ar" ; export AR
 export WINEPATH="/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-posix"
-#
-#pkill -9 Xvfb
-#export DISPLAY=:0.0
-#Xvfb :0 -screen 0 1024x768x16 &
-#sleep 3
+export WINEDEBUG=-all
 #
 rm -rf ~/.wine
 mkdir -p ~/.wine
+
 #
 ./configure --prefix=$HOME/MPLAPACK --host=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes
 make
