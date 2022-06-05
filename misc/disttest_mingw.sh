@@ -26,10 +26,10 @@ RANLIB="x86_64-w64-mingw32-ranlib" ; export RANLIB
 AR="x86_64-w64-mingw32-ar" ; export AR
 export WINEPATH="/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-posix"
 #
-pkill -9 Xvfb
-export DISPLAY=:0.0
-Xvfb :0 -screen 0 1024x768x16 &
-sleep 3
+#pkill -9 Xvfb
+#export DISPLAY=:0.0
+#Xvfb :0 -screen 0 1024x768x16 &
+#sleep 3
 #
 rm -rf ~/.wine
 mkdir -p ~/.wine
