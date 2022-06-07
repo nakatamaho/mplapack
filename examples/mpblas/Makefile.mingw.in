@@ -17,7 +17,7 @@ BLAS=
 LAPACK=
 FLIBS=
 
-programs=Rgemm_mpfr.exe Rgemm_gmp.exe Rgemm_qd.exe Rgemm_dd.exe Rgemm__Float64.exe Rgemm__Float128.exe Rgemm_double.exe
+programs=Rgemm_mpfr.exe Rgemm_gmp.exe Rgemm_qd.exe Rgemm_dd.exe Rgemm__Float64x.exe Rgemm__Float128.exe Rgemm_double.exe
 
 all: $(programs)
 
