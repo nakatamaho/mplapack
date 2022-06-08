@@ -44,32 +44,36 @@ Mlsame.cpp Mxerbla.cpp mplapackinit.cpp
 if ENABLE_GMP
 libmpblas_gmp_la_CPPFLAGS = -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___
 libmpblas_gmp_la_SOURCES = $(MPBLAS_SOURCES)
+libmpblas_gmp_la_LDFLAGS = -Wl,-rpath=$(libdir) -L$(GMP_LIBDIR) -lgmpxx -lgmp
 if IS_MACOS
-libmpblas_gmp_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmpblas_gmp_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
 if ENABLE_MPFR
 libmpblas_mpfr_la_CPPFLAGS = -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___
 libmpblas_mpfr_la_SOURCES = $(MPBLAS_SOURCES)
+libmpblas_mpfr_la_LDFLAGS = -Wl,-rpath=$(libdir) -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmp
 if IS_MACOS
-libmpblas_mpfr_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmpblas_mpfr_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
 if ENABLE_QD
 libmpblas_qd_la_CPPFLAGS = -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___
 libmpblas_qd_la_SOURCES = $(MPBLAS_SOURCES)
+libmpblas_qd_la_LDFLAGS = -Wl,-rpath=$(libdir)
 if IS_MACOS
-libmpblas_qd_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmpblas_qd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
 if ENABLE_DD
 libmpblas_dd_la_CPPFLAGS = -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___
 libmpblas_dd_la_SOURCES = $(MPBLAS_SOURCES)
+libmpblas_dd_la_LDFLAGS = -Wl,-rpath=$(libdir)
 if IS_MACOS
-libmpblas_dd_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmpblas_dd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 

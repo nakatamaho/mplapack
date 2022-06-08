@@ -79,8 +79,9 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../../reference/iRamax.cpp \
 ../../reference/mplapackinit.cpp
 
+libmpblas_dd_opt_la_LDFLAGS = -Wl,-rpath=$(libdir)
 if IS_MACOS
-libmpblas_dd_opt_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmpblas_dd_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 
 SUBDIRS =

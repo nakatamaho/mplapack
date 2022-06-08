@@ -79,6 +79,7 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../../reference/iRamax.cpp \
 ../../reference/mplapackinit.cpp
 
+libmpblas__Float128_opt_la_LDFLAGS = -Wl,-rpath=$(libdir)
 if IS_MACOS
-libmpblas__Float128_opt_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmpblas__Float128_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
