@@ -11,18 +11,22 @@ cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__
 
 xlintstR__Float64x_SOURCES  = ../common/Rchkaa.cpp
 xlintstR__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR__Float64x_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstR__Float64x_CXXFLAGS = $(cxxflags) 
 
 xlintstC__Float64x_SOURCES  = ../common/Cchkaa.cpp
 xlintstC__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC__Float64x_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstC__Float64x_CXXFLAGS = $(cxxflags)
 
 xlintstrfR__Float64x_SOURCES  = ../common/Rchkrfp.cpp
 xlintstrfR__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR__Float64x_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfR__Float64x_CXXFLAGS = $(cxxflags)
 
 xlintstrfC__Float64x_SOURCES  = ../common/Cchkrfp.cpp
 xlintstrfC__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC__Float64x_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfC__Float64x_CXXFLAGS = $(cxxflags)
 
 check: Rtest.out Ctest.out Rtest_rfp.out Ctest_rfp.out

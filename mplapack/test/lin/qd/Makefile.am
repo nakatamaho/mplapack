@@ -11,18 +11,22 @@ cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MP
 
 xlintstR_qd_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR_qd_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstR_qd_CXXFLAGS = $(cxxflags) 
 
 xlintstC_qd_SOURCES  = ../common/Cchkaa.cpp
 xlintstC_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC_qd_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstC_qd_CXXFLAGS = $(cxxflags)
 
 xlintstrfR_qd_SOURCES  = ../common/Rchkrfp.cpp
 xlintstrfR_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR_qd_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfR_qd_CXXFLAGS = $(cxxflags)
 
 xlintstrfC_qd_SOURCES  = ../common/Cchkrfp.cpp
 xlintstrfC_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC_qd_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfC_qd_CXXFLAGS = $(cxxflags)
 
 check: Rtest.out Ctest.out Rtest_rfp.out Ctest_rfp.out

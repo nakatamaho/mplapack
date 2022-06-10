@@ -15,7 +15,7 @@ if ENABLE_MPFR
 mplapackexamples_PROGRAMS += Cheev_test_mpfr Rsyev_Frank_mpfr Rsyev_test_mpfr Rsyevd_DingDong_mpfr Rsyevd_Frank_mpfr Rsyevr_Frank_mpfr
 
 mpfr_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
-mpfr_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
+mpfr_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 
 Cheev_test_mpfr_SOURCES = Cheev_test_mpfr.cpp
 Cheev_test_mpfr_CXXFLAGS = $(mpfr_cxxflags)
@@ -47,7 +47,7 @@ if ENABLE_GMP
 mplapackexamples_PROGRAMS += Cheev_test_gmp Rsyev_Frank_gmp Rsyev_test_gmp Rsyevd_DingDong_gmp Rsyevd_Frank_gmp Rsyevr_Frank_gmp
 
 gmp_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
-gmp_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(top_builddir)/mpblas/reference -lmpblas_gmp -L$(GMP_LIBDIR) -lgmp
+gmp_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(top_builddir)/mpblas/reference -lmpblas_gmp -L$(GMP_LIBDIR) -lgmp
 
 Cheev_test_gmp_SOURCES = Cheev_test_gmp.cpp
 Cheev_test_gmp_CXXFLAGS = $(gmp_cxxflags)
@@ -80,9 +80,9 @@ mplapackexamples_PROGRAMS += Cheev_test__Float128 Rsyev_Frank__Float128 Rsyev_te
 
 _Float128_cxxflags = $(OPENMP_CXXFLAGS)
 if WANT_QUADMATH
-_Float128_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128 -lquadmath
+_Float128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128 -lquadmath
 else
-_Float128_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128
+_Float128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128
 endif
 
 Cheev_test__Float128_SOURCES = Cheev_test__Float128.cpp
@@ -115,7 +115,7 @@ if ENABLE__FLOAT64X
 mplapackexamples_PROGRAMS += Cheev_test__Float64x Rsyev_Frank__Float64x Rsyev_test__Float64x Rsyevd_DingDong__Float64x Rsyevd_Frank__Float64x Rsyevr_Frank__Float64x
 
 _Float64x_cxxflags = $(OPENMP_CXXFLAGS)
-_Float64x_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -L$(top_builddir)/mpblas/reference -lmpblas__Float64x
+_Float64x_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -L$(top_builddir)/mpblas/reference -lmpblas__Float64x
 
 Cheev_test__Float64x_SOURCES = Cheev_test__Float64x.cpp
 Cheev_test__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
@@ -147,7 +147,7 @@ if ENABLE_DOUBLE
 mplapackexamples_PROGRAMS += Cheev_test_double Rsyev_Frank_double Rsyev_test_double Rsyevd_DingDong_double Rsyevd_Frank_double Rsyevr_Frank_double
 
 double_cxxflags = $(OPENMP_CXXFLAGS)
-double_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_double -L$(top_builddir)/mpblas/reference -lmpblas_double
+double_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_double -L$(top_builddir)/mpblas/reference -lmpblas_double
 
 Cheev_test_double_SOURCES = Cheev_test_double.cpp
 Cheev_test_double_CXXFLAGS = $(double_cxxflags)
@@ -179,7 +179,7 @@ if ENABLE_DD
 mplapackexamples_PROGRAMS += Cheev_test_dd Rsyev_Frank_dd Rsyev_test_dd Rsyevd_DingDong_dd Rsyevd_Frank_dd Rsyevr_Frank_dd
 
 dd_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
-dd_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_dd -L$(top_builddir)/mpblas/reference -lmpblas_dd -L$(QD_LIBDIR) -lqd
+dd_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_dd -L$(top_builddir)/mpblas/reference -lmpblas_dd -L$(QD_LIBDIR) -lqd
 
 Cheev_test_dd_SOURCES = Cheev_test_dd.cpp
 Cheev_test_dd_CXXFLAGS = $(dd_cxxflags)
@@ -211,7 +211,7 @@ if ENABLE_QD
 mplapackexamples_PROGRAMS += Cheev_test_qd Rsyev_Frank_qd Rsyev_test_qd Rsyevd_DingDong_qd Rsyevd_Frank_qd Rsyevr_Frank_qd
 
 qd_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
-qd_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_qd -L$(top_builddir)/mpblas/reference -lmpblas_qd -L$(QD_LIBDIR) -lqd
+qd_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_qd -L$(top_builddir)/mpblas/reference -lmpblas_qd -L$(QD_LIBDIR) -lqd
 
 Cheev_test_qd_SOURCES = Cheev_test_qd.cpp
 Cheev_test_qd_CXXFLAGS = $(qd_cxxflags)

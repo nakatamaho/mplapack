@@ -11,10 +11,12 @@ cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$
 
 xeigtstR_dd_SOURCES  = ../common/Rchkee.cpp
 xeigtstR_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstR_dd_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstR_dd_CXXFLAGS = $(cxxflags)
 
 xeigtstC_dd_SOURCES  = ../common/Cchkee.cpp
 xeigtstC_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstC_dd_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_dd_CXXFLAGS = $(cxxflags)
 
 check: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.out Rsg.out Rbal.out Rbak.out Rgbal.out Rgbak.out Rbb.out Rglm.out Rgqr.out Rgsv.out Rcsd.out Rlse.out \

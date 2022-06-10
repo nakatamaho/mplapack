@@ -34,14 +34,14 @@ if IS_MINGW
 	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "CPPFLAGS=$(CPPFLAGS)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS) --enable-static --disable-shared
 	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "CPPFLAGS=$(CPPFLAGS)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2) --enable-static --disable-shared
 else
-	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "CPPFLAGS=$(CPPFLAGS)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
-	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "CPPFLAGS=$(CPPFLAGS)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
+	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "CPPFLAGS=$(CPPFLAGS)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS) -Wl,-rpath,$(libdir)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
+	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "CPPFLAGS=$(CPPFLAGS)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS) -Wl,-rpath,$(libdir)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
 endif
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
-	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; env "LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(MPLIBRARY_PATH)" ${MAKE}
-	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; env "LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(MPLIBRARY_PATH)" ${MAKE}
+	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE}
+	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE}
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
@@ -49,13 +49,24 @@ if IS_MINGW
 	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} check LOG_COMPILER=wine64
 	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION)  ; ${MAKE} check LOG_COMPILER=wine64
 else
-	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; env "LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(MPLIBRARY_PATH)" ${MAKE} check
-	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; env "LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(MPLIBRARY_PATH)" ${MAKE} check
+	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} check
+	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE} check
 endif
 	touch $(abs_builddir)/work/$(CHECK_STAMP)
 
 work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
 	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} install
+if IS_MACOS
+	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; rm src/.libs/libmpc*dylib ; cp $(abs_builddir)/work/install/mpc-$(MPCVERSION)/src/.libs/libmpc*dylib src/.libs/
+	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} install
+	ORG=`otool -L $(abs_builddir)/../i/MPC/lib/libmpc.dylib | grep gmp | awk '{print $$1}'` ;\
+	_FIX=`otool -L $(abs_builddir)/../i/MPC/lib/libmpc.dylib | grep gmp | awk '{print $$1}' | sed 's|/| |g' | awk '{print $$NF}'` ; FIX=`echo $(prefix)/lib/$$_FIX` ;\
+	install_name_tool -change $$ORG $$FIX $(abs_builddir)/../i/MPC/lib/libmpc.dylib
+	ORG=`otool -L $(abs_builddir)/../i/MPC/lib/libmpc.dylib | grep mpfr | awk '{print $$1}'` ;\
+	_FIX=`otool -L $(abs_builddir)/../i/MPC/lib/libmpc.dylib | grep mpfr | awk '{print $$1}' | sed 's|/| |g' | awk '{print $$NF}'` ; FIX=`echo $(prefix)/lib/$$_FIX` ;\
+	install_name_tool -change $$ORG $$FIX $(abs_builddir)/../i/MPC/lib/libmpc.dylib
+endif
+
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
 work/$(INSTALL_STAMP): work/$(CHECK_STAMP)

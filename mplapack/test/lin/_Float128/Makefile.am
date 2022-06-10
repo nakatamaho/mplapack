@@ -15,18 +15,22 @@ cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__
 
 xlintstR__Float128_SOURCES  = ../common/Rchkaa.cpp
 xlintstR__Float128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR__Float128_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstR__Float128_CXXFLAGS = $(cxxflags) 
 
 xlintstC__Float128_SOURCES  = ../common/Cchkaa.cpp
 xlintstC__Float128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC__Float128_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstC__Float128_CXXFLAGS = $(cxxflags)
 
 xlintstrfR__Float128_SOURCES  = ../common/Rchkrfp.cpp
 xlintstrfR__Float128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR__Float128_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfR__Float128_CXXFLAGS = $(cxxflags)
 
 xlintstrfC__Float128_SOURCES  = ../common/Cchkrfp.cpp
 xlintstrfC__Float128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC__Float128_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfC__Float128_CXXFLAGS = $(cxxflags)
 
 check: Rtest.out Ctest.out Rtest_rfp.out Ctest_rfp.out

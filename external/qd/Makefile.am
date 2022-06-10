@@ -44,10 +44,10 @@ endif
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
 if IS_INTELCC
 	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; env "CC=$(CC) -fp-model precise" "CXX=$(CXX) -fp-model precise" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
-	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ; env "CC=$(CC) -fp-model precise" "CXX=$(CXX) -fp-model precise" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
+	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ; env "CC=$(CC) -fp-model precise" "CXX=$(CXX) -fp-model precise" "FC=$(FC)" "LDFLAGS=$(LDFLAGS) -Wl,-rpath=$(libdir)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
 else
 	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
-	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ;  env "CC=$(CC)" "CXX=$(CXX)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
+	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ;  env "CC=$(CC)" "CXX=$(CXX)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS) -Wl,-rpath,$(libdir)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
 endif
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
@@ -68,6 +68,10 @@ endif
 
 work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
 	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; ${MAKE} install
+if IS_MACOS
+	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; cp $(abs_builddir)/work/install/qd-$(QDVERSION)/src/.libs/libqd*dylib src/.libs/
+	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; ${MAKE} install
+endif
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
 work/$(INSTALL_STAMP): work/$(CHECK_STAMP)

@@ -33,8 +33,8 @@ if IS_MINGW
 	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; env "CC=$(CC) -D__USE_MINGW_ANSI_STDIO" "CXX=$(CXX)" "CPPFLAGS=$(CPPFLAGS)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS) --enable-static --disable-shared
 	cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ;  env "CC=$(CC) -D__USE_MINGW_ANSI_STDIO" "CXX=$(CXX)" "CPPFLAGS=$(CPPFLAGS)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2) --enable-static --disable-shared
 else
-	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "CPPFLAGS=$(CPPFLAGS)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
-	cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ;  env "CC=$(CC)" "CXX=$(CXX)" "CPPFLAGS=$(CPPFLAGS)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS) -Wl,-rpath=$(libdir)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
+	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "CPPFLAGS=$(CPPFLAGS)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS) -Wl,-rpath,$(libdir)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
+	cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ;  env "CC=$(CC)" "CXX=$(CXX)" "CPPFLAGS=$(CPPFLAGS)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS) -Wl,-rpath,$(libdir)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
 endif
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
@@ -55,6 +55,14 @@ endif
 
 work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
 	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; ${MAKE} install
+if IS_MACOS
+	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; rm src/.libs/libmpfr*dylib ; cp $(abs_builddir)/work/install/mpfr-$(MPFRVERSION)/src/.libs/libmpfr*dylib src/.libs/
+	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; ${MAKE} install
+	ORG=`otool -L $(abs_builddir)/../i/MPFR/lib/libmpfr.dylib | grep gmp | awk '{print $$1}'` ;\
+	_FIX=`otool -L $(abs_builddir)/../i/MPFR/lib/libmpfr.dylib | grep gmp | awk '{print $$1}' | sed 's|/| |g' | awk '{print $$NF}'` ; FIX=`echo $(prefix)/lib/$$_FIX` ;\
+	echo "install_name_tool -change $$ORG $$FIX $(abs_builddir)/../i/MPFR/lib/libmpfr.dylib" ;\
+	install_name_tool -change $$ORG $$FIX $(abs_builddir)/../i/MPFR/lib/libmpfr.dylib
+endif
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
 work/$(INSTALL_STAMP): work/$(CHECK_STAMP)
@@ -82,6 +90,3 @@ clean:
 
 distclean:
 	rm -rf work
-
-
-
