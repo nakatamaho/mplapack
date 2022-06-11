@@ -75,10 +75,6 @@ endif
 
 work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
 	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; ${MAKE} install
-if IS_MACOS
-	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; cp $(abs_builddir)/work/install/gmp-$(GMPVERSION)/.libs/libgmp*dylib .libs/
-	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; ${MAKE} install
-endif
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
 work/$(INSTALL_STAMP): work/$(CHECK_STAMP)

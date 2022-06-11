@@ -56,20 +56,17 @@ endif
 
 work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
 	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} install
-if IS_MACOS
-	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; rm src/.libs/libmpc*dylib ; cp $(abs_builddir)/work/install/mpc-$(MPCVERSION)/src/.libs/libmpc*dylib src/.libs/
-	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} install
-	ORG=`otool -L $(abs_builddir)/../i/MPC/lib/libmpc.dylib | grep gmp | awk '{print $$1}'` ;\
-	_FIX=`otool -L $(abs_builddir)/../i/MPC/lib/libmpc.dylib | grep gmp | awk '{print $$1}' | sed 's|/| |g' | awk '{print $$NF}'` ; FIX=`echo $(prefix)/lib/$$_FIX` ;\
-	install_name_tool -change $$ORG $$FIX $(abs_builddir)/../i/MPC/lib/libmpc.dylib
-	ORG=`otool -L $(abs_builddir)/../i/MPC/lib/libmpc.dylib | grep mpfr | awk '{print $$1}'` ;\
-	_FIX=`otool -L $(abs_builddir)/../i/MPC/lib/libmpc.dylib | grep mpfr | awk '{print $$1}' | sed 's|/| |g' | awk '{print $$NF}'` ; FIX=`echo $(prefix)/lib/$$_FIX` ;\
-	install_name_tool -change $$ORG $$FIX $(abs_builddir)/../i/MPC/lib/libmpc.dylib
-endif
-
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
 work/$(INSTALL_STAMP): work/$(CHECK_STAMP)
+	ORG=`otool -L $(abs_builddir)/work/install/mpc-$(MPCVERSION)/src/.libs/libmpc.dylib  | grep gmp | awk '{print $$1}'` ;\
+	_FIX=`otool -L $(abs_builddir)/work/install/mpc-$(MPCVERSION)/src/.libs/libmpc.dylib | grep gmp | awk '{print $$1}' | sed 's|/| |g' | awk '{print $$NF}'` ; FIX=`echo $(prefix)/lib/$$_FIX` ;\
+	echo "install_name_tool -change $$ORG $$FIX $(abs_builddir)/work/install/mpc-$(MPCVERSION)/src/.libs/libmpc.dylib" ;\
+	install_name_tool -change $$ORG $$FIX $(abs_builddir)/work/install/mpc-$(MPCVERSION)/src/.libs/libmpc.dylib
+	ORG=`otool -L $(abs_builddir)/work/install/mpc-$(MPCVERSION)/src/.libs/libmpc.dylib  | grep mpfr | awk '{print $$1}'` ;\
+	_FIX=`otool -L $(abs_builddir)/work/install/mpc-$(MPCVERSION)/src/.libs/libmpc.dylib | grep mpfr | awk '{print $$1}' | sed 's|/| |g' | awk '{print $$NF}'` ; FIX=`echo $(prefix)/lib/$$_FIX` ;\
+	echo "install_name_tool -change $$ORG $$FIX $(abs_builddir)/work/install/mpc-$(MPCVERSION)/src/.libs/libmpc.dylib" ;\
+	install_name_tool -change $$ORG $$FIX $(abs_builddir)/work/install/mpc-$(MPCVERSION)/src/.libs/libmpc.dylib
 	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE} install
 	touch $(abs_builddir)/work/$(INSTALL_STAMP)
 

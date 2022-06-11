@@ -55,17 +55,13 @@ endif
 
 work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
 	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; ${MAKE} install
-if IS_MACOS
-	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; rm src/.libs/libmpfr*dylib ; cp $(abs_builddir)/work/install/mpfr-$(MPFRVERSION)/src/.libs/libmpfr*dylib src/.libs/
-	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; ${MAKE} install
-	ORG=`otool -L $(abs_builddir)/../i/MPFR/lib/libmpfr.dylib | grep gmp | awk '{print $$1}'` ;\
-	_FIX=`otool -L $(abs_builddir)/../i/MPFR/lib/libmpfr.dylib | grep gmp | awk '{print $$1}' | sed 's|/| |g' | awk '{print $$NF}'` ; FIX=`echo $(prefix)/lib/$$_FIX` ;\
-	echo "install_name_tool -change $$ORG $$FIX $(abs_builddir)/../i/MPFR/lib/libmpfr.dylib" ;\
-	install_name_tool -change $$ORG $$FIX $(abs_builddir)/../i/MPFR/lib/libmpfr.dylib
-endif
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
 work/$(INSTALL_STAMP): work/$(CHECK_STAMP)
+	ORG=`otool -L $(abs_builddir)/work/install/mpfr-$(MPFRVERSION)/src/.libs/libmpfr.dylib  | grep gmp | awk '{print $$1}'` ;\
+	_FIX=`otool -L $(abs_builddir)/work/install/mpfr-$(MPFRVERSION)/src/.libs/libmpfr.dylib | grep gmp | awk '{print $$1}' | sed 's|/| |g' | awk '{print $$NF}'` ; FIX=`echo $(prefix)/lib/$$_FIX` ;\
+	echo "install_name_tool -change $$ORG $$FIX $(abs_builddir)/work/install/mpfr-$(MPFRVERSION)/src/.libs/libmpfr.dylib" ;\
+	install_name_tool -change $$ORG $$FIX $(abs_builddir)/work/install/mpfr-$(MPFRVERSION)/src/.libs/libmpfr.dylib
 	cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; ${MAKE} install
 	touch $(abs_builddir)/work/$(INSTALL_STAMP)
 
