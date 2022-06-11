@@ -68,10 +68,6 @@ endif
 
 work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
 	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; ${MAKE} install
-if IS_MACOS
-	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; cp $(abs_builddir)/work/install/qd-$(QDVERSION)/src/.libs/libqd*dylib src/.libs/
-	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; ${MAKE} install
-endif
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
 work/$(INSTALL_STAMP): work/$(CHECK_STAMP)
