@@ -78,6 +78,7 @@ EXTRA_DIST = \
 misc/cudalt.py \
 misc/build_mplapack_for_mic.sh \
 misc/prepare_mplapacklibs_for_mic.sh \
+misc/fix_dylib_macOS.sh \
 mpblas/optimized/dd/cuda/dd_real_cuda.h \
 external/gmp/download/*.tar.bz2 \
 external/gmp/Makefile.am \

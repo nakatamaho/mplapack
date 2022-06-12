@@ -45,3 +45,8 @@ Mutils_test_qd_CXXFLAGS = $(test_cxxflags)
 %%TEST%%_test_qd_SOURCES  = ../common/%%TEST%%.test.cpp $(test_srcdepends)
 %%TEST%%_test_qd_LDFLAGS    = $(ref_libdepends) $(test_libdepends)
 %%TEST%%_test_qd_CXXFLAGS = $(test_cxxflags)
+
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_qd_testdir) $(prefix)
+endif

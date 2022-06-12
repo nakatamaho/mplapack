@@ -10,4 +10,3 @@ SUBDIRS = 00_LinearEquations \
 03_SymmetricEigenproblems \
 04_NonsymmetricEigenproblems \
 05_SingularValueDecomposition
-

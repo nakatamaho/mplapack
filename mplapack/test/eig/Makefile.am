@@ -295,3 +295,8 @@ common/Alarqg.cpp \
 common/iMlaenv.cpp \
 common/chkxer.cpp \
 common/xlaenv.cpp 
+
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_eigdir) $(prefix)
+endif

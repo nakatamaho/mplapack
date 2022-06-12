@@ -35,6 +35,9 @@ if DO_BLASBENCH
 include Makefile.blas.am
 endif
 
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(benchdir) $(prefix)
 endif
 
-
+endif

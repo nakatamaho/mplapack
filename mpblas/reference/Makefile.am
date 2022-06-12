@@ -44,7 +44,7 @@ Mlsame.cpp Mxerbla.cpp mplapackinit.cpp
 if ENABLE_GMP
 libmpblas_gmp_la_CPPFLAGS = -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___
 libmpblas_gmp_la_SOURCES = $(MPBLAS_SOURCES)
-libmpblas_gmp_la_LDFLAGS = -Wl,-rpath,$(libdir) -L$(GMP_LIBDIR) -lgmpxx -lgmp
+libmpblas_gmp_la_LDFLAGS = -Wl,-rpath,$(libdir) #-L$(GMP_LIBDIR) -lgmpxx -lgmp
 if IS_MACOS
 libmpblas_gmp_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
@@ -53,7 +53,7 @@ endif
 if ENABLE_MPFR
 libmpblas_mpfr_la_CPPFLAGS = -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___
 libmpblas_mpfr_la_SOURCES = $(MPBLAS_SOURCES)
-libmpblas_mpfr_la_LDFLAGS = -Wl,-rpath,$(libdir) -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmp
+libmpblas_mpfr_la_LDFLAGS = -Wl,-rpath,$(libdir) #-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmp
 if IS_MACOS
 libmpblas_mpfr_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
@@ -62,7 +62,7 @@ endif
 if ENABLE_QD
 libmpblas_qd_la_CPPFLAGS = -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___
 libmpblas_qd_la_SOURCES = $(MPBLAS_SOURCES)
-libmpblas_qd_la_LDFLAGS = -Wl,-rpath,$(libdir) -L$(QD_LIBDIR) -lqd
+libmpblas_qd_la_LDFLAGS = -Wl,-rpath,$(libdir) #-L$(QD_LIBDIR) -lqd
 if IS_MACOS
 libmpblas_qd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
@@ -71,7 +71,7 @@ endif
 if ENABLE_DD
 libmpblas_dd_la_CPPFLAGS = -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___
 libmpblas_dd_la_SOURCES = $(MPBLAS_SOURCES)
-libmpblas_dd_la_LDFLAGS = -Wl,-rpath,$(libdir) -L$(QD_LIBDIR) -lqd
+libmpblas_dd_la_LDFLAGS = -Wl,-rpath,$(libdir) #-L$(QD_LIBDIR) -lqd
 if IS_MACOS
 libmpblas_dd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
@@ -101,54 +101,3 @@ libmpblas__Float128_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
-install-data-hook:
-if IS_MACOS
-if ENABLE_GMP
-if !SYSTEM_GMP
-	ORG=`otool -L $(prefix)/lib/libmpblas_gmp.dylib  | grep gmpxx | awk '{print $$1}'` ;\
-	_FIX=`otool -L $(prefix)/lib/libmpblas_gmp.dylib | grep gmpxx | awk '{print $$1}' | sed 's|/| |g' | awk '{print $$NF}'` ; FIX=`echo $(prefix)/lib/$$_FIX` ;\
-	echo "install_name_tool -change $$ORG $$FIX $(prefix)/lib/libmpblas_gmp.dylib" ;\
-	install_name_tool -change $$ORG $$FIX $(prefix)/lib/libmpblas_gmp.dylib
-	ORG=`otool -L $(prefix)/lib/libmpblas_gmp.dylib  | grep GMP | grep -v gmpxx | grep -v : | awk '{print $$1}'` ;\
-	_FIX=`otool -L $(prefix)/lib/libmpblas_gmp.dylib | grep GMP | grep -v gmpxx | grep -v : | awk '{print $$1}' | sed 's|/| |g' | awk '{print $$NF}'` ; FIX=`echo $(prefix)/lib/$$_FIX` ;\
-	echo "install_name_tool -change $$ORG $$FIX $(prefix)/lib/libmpblas_gmp.dylib" ;\
-	install_name_tool -change $$ORG $$FIX $(prefix)/lib/libmpblas_gmp.dylib
-endif
-endif
-if ENABLE_MPFR
-if !SYSTEM_GMP
-	ORG=`otool -L $(prefix)/lib/libmpblas_mpfr.dylib  | grep GMP | awk '{print $$1}'` ;\
-	_FIX=`otool -L $(prefix)/lib/libmpblas_mpfr.dylib | grep GMP | awk '{print $$1}' | sed 's|/| |g' | awk '{print $$NF}'` ; FIX=`echo $(prefix)/lib/$$_FIX` ;\
-	echo "install_name_tool -change $$ORG $$FIX $(prefix)/lib/libmpblas_mpfr.dylib" ;\
-	install_name_tool -change $$ORG $$FIX $(prefix)/lib/libmpblas_mpfr.dylib
-endif
-if !SYSTEM_MPFR
-	ORG=`otool -L $(prefix)/lib/libmpblas_mpfr.dylib  | grep MPFR | awk '{print $$1}'` ;\
-	_FIX=`otool -L $(prefix)/lib/libmpblas_mpfr.dylib | grep MPFR | awk '{print $$1}' | sed 's|/| |g' | awk '{print $$NF}'` ; FIX=`echo $(prefix)/lib/$$_FIX` ;\
-	echo "install_name_tool -change $$ORG $$FIX $(prefix)/lib/libmpblas_mpfr.dylib" ;\
-	install_name_tool -change $$ORG $$FIX $(prefix)/lib/libmpblas_mpfr.dylib
-endif
-if !SYSTEM_MPC
-	ORG=`otool -L $(prefix)/lib/libmpblas_mpfr.dylib  | grep MPC | awk '{print $$1}'` ;\
-	_FIX=`otool -L $(prefix)/lib/libmpblas_mpfr.dylib | grep MPC | awk '{print $$1}' | sed 's|/| |g' | awk '{print $$NF}'` ; FIX=`echo $(prefix)/lib/$$_FIX` ;\
-	echo "install_name_tool -change $$ORG $$FIX $(prefix)/lib/libmpblas_mpfr.dylib" ;\
-	install_name_tool -change $$ORG $$FIX $(prefix)/lib/libmpblas_mpfr.dylib
-endif
-endif
-if ENABLE_QD
-if !SYSTEM_QD
-	ORG=`otool -L $(prefix)/lib/libmpblas_qd.dylib  | grep QD | awk '{print $$1}'` ;\
-	_FIX=`otool -L $(prefix)/lib/libmpblas_qd.dylib | grep QD | awk '{print $$1}' | sed 's|/| |g' | awk '{print $$NF}'` ; FIX=`echo $(prefix)/lib/$$_FIX` ;\
-	echo "install_name_tool -change $$ORG $$FIX $(prefix)/lib/libmpblas_qd.dylib" ;\
-	install_name_tool -change $$ORG $$FIX $(prefix)/lib/libmpblas_qd.dylib
-endif
-endif
-if ENABLE_DD
-if !SYSTEM_QD
-	ORG=`otool -L $(prefix)/lib/libmpblas_dd.dylib  | grep QD | awk '{print $$1}'` ;\
-	_FIX=`otool -L $(prefix)/lib/libmpblas_dd.dylib | grep QD | awk '{print $$1}' | sed 's|/| |g' | awk '{print $$NF}'` ; FIX=`echo $(prefix)/lib/$$_FIX` ;\
-	echo "install_name_tool -change $$ORG $$FIX $(prefix)/lib/libmpblas_dd.dylib" ;\
-	install_name_tool -change $$ORG $$FIX $(prefix)/lib/libmpblas_dd.dylib
-endif
-endif
-endif

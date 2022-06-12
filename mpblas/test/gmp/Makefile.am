@@ -703,3 +703,8 @@ Rtrsv_test_gmp_opt_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
 Rtrsv_test_gmp_SOURCES=../common/Rtrsv.test.cpp $(test_srcdepends)
 Rtrsv_test_gmp_CXXFLAGS=$(test_cxxflags)
 Rtrsv_test_gmp_LDFLAGS=$(libdepends) $(mplibs) $(refblas)
+
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mpblas_gmp_testdir) $(prefix)
+endif

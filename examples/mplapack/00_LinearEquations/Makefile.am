@@ -239,3 +239,7 @@ Rgetri_test_qd_LDFLAGS = $(qd_libdepends)
 
 endif
 
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapackexamplesdir) $(prefix)
+endif

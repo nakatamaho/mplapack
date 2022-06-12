@@ -29,6 +29,11 @@ xlintstrfC_gmp_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -
 xlintstrfC_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfC_gmp_CXXFLAGS = $(cxxflags)
 
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_gmp_testdir) $(prefix)
+endif
+
 check: Rtest.out Ctest.out Rtest_rfp.out Ctest_rfp.out
 
 clean-local:

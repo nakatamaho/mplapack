@@ -35,4 +35,10 @@ if DO_LAPACKBENCH
 include Makefile.lapack.am
 endif
 
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(benchdir) $(prefix)
 endif
+
+endif
+

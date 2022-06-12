@@ -703,3 +703,8 @@ Rtrsv_test__Float64x_opt_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
 Rtrsv_test__Float64x_SOURCES=../common/Rtrsv.test.cpp $(test_srcdepends)
 Rtrsv_test__Float64x_CXXFLAGS=$(test_cxxflags)
 Rtrsv_test__Float64x_LDFLAGS=$(libdepends) $(mplibs) $(refblas)
+
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mpblas__Float64x_testdir) $(prefix)
+endif

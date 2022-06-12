@@ -704,3 +704,7 @@ Rtrsv_test_dd_SOURCES=../common/Rtrsv.test.cpp $(test_srcdepends)
 Rtrsv_test_dd_CXXFLAGS=$(test_cxxflags)
 Rtrsv_test_dd_LDFLAGS=$(libdepends) $(mplibs) $(refblas)
 
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mpblas_dd_testdir) $(prefix)
+endif
