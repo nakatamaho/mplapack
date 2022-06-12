@@ -16,3 +16,14 @@
  #ifdef X86
  #ifdef  _WIN32
  #include <float.h>
+--- src/Makefile.am~	2018-10-31 01:05:02.000000000 +0900
++++ src/Makefile.am	2022-06-13 07:13:44.723426290 +0900
+@@ -1,6 +1,8 @@
+ SRC = c_dd.cpp c_qd.cpp dd_real.cpp dd_const.cpp \
+       fpu.cpp qd_real.cpp qd_const.cpp util.cpp bits.cpp util.h
+ 
++AM_LDFLAGS = -no-undefined
++
+ lib_LTLIBRARIES = libqd.la
+ 
+ libqd_la_SOURCES = $(SRC)
