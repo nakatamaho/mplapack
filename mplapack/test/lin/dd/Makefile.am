@@ -11,7 +11,7 @@ cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MP
 
 install-data-hook:
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_lindir) $(prefix)
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_dd_testdir) $(prefix)
 endif
 
 xlintstR_dd_SOURCES  = ../common/Rchkaa.cpp

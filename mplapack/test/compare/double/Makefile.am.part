@@ -5,6 +5,11 @@ mplapack_double_test_PROGRAMS = \
 
 mplapack_double_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/double
 
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_double_testdir) $(prefix)
+endif
+
 libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_double -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_double -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)

@@ -5,6 +5,11 @@ mplapack_mpfr_test_PROGRAMS = \
 
 mplapack_mpfr_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/mpfr
 
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_mpfr_testdir) $(prefix)
+endif
+
 libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lm
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)

@@ -5,6 +5,11 @@ mplapack__Float128_test_PROGRAMS = \
 
 mplapack__Float128_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/_Float128
 
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack__Float128_testdir) $(prefix)
+endif
+
 libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas__Float128 -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)

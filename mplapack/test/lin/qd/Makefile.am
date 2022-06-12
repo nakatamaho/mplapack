@@ -9,6 +9,11 @@ libdepends = -L$(top_builddir)/mplapack/test/lin -llin_qd -llin_override_qd -L$(
 mplibs = -L$(QD_LIBDIR) -lqd -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/mplapack/test/fable
 
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_qd_testdir) $(prefix)
+endif
+
 xlintstR_qd_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_qd_LDFLAGS += -Wl,-rpath,$(libdir)
