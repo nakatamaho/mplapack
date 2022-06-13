@@ -357,16 +357,24 @@ AM_CONDITIONAL(IS__FLOAT128_LONGDOUBLE, test x$_Float128islongdouble = xyes)
 AM_CONDITIONAL(IS_LONGDOUBLE_BINARY128, test x$longdoubleisbinary128 = xyes)
 
 if test "$enable_examples" != "no" ; then
-    sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%| -lquadmath|g" examples/mpblas/Makefile.macos.in   > examples/mpblas/Makefile.macos
-    sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%| -lquadmath|g" examples/mpblas/Makefile.mingw.in   > examples/mpblas/Makefile.mingw
-
+# always requires libquadmath
+    _FILES=`ls examples/mpblas/Makefile.macos.in examples/mpblas/Makefile.mingw.in examples/mplapack/*/Makefile.macos.in examples/mplapack/*/Makefile.mingw.in`
+    for _file in $_FILES; do
+        __file=`echo $_file | sed 's/\.in//g'`
+        sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%| -lquadmath|g" $_file > $__file
+    done
 # see FreeBSD ABI: https://www.freebsd.org/cgi/man.cgi?query=arch&sektion=7&format=html
+    _FILES=`ls examples/mpblas/Makefile.linux.in examples/mpblas/Makefile.freebsd.in examples/mplapack/*/Makefile.linux.in examples/mplapack/*/Makefile.freebsd.in` 
     if test "$want_libquadmath" = "yes" ; then
-        sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%| -lquadmath|g" examples/mpblas/Makefile.linux.in   > examples/mpblas/Makefile.linux
-        sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%| -lquadmath|g" examples/mpblas/Makefile.freebsd.in > examples/mpblas/Makefile.freebsd
+        for _file in $_FILES; do
+            __file=`echo $_file | sed 's/\.in//g'`
+            sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%| -lquadmath|g" $_file > $__file
+        done
     else
-        sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%||g" examples/mpblas/Makefile.linux.in   > examples/mpblas/Makefile.linux
-        sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%||g" examples/mpblas/Makefile.freebsd.in > examples/mpblas/Makefile.freebsd
+        for _file in $_FILES; do
+            __file=`echo $_file | sed 's/\.in//g'`
+            sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%||g" $_file > $__file
+        done
     fi
 fi
 
