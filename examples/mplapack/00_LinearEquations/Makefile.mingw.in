@@ -1,5 +1,4 @@
-# Sample Makefile
-# by Nakata Maho
+# public domain
 
 CXX=x86_64-w64-mingw32-g++
 MPLAPACKDIR=%%MPLAPACKDIR%%

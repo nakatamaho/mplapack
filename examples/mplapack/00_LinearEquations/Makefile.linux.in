@@ -1,5 +1,4 @@
-# Sample Makefile
-# by Nakata Maho
+# public domain
 # whether _FLOAT128 libs is requred or not is heavily dependent on your environment.
 
 CXX=c++

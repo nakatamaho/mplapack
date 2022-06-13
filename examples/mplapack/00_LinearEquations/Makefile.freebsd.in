@@ -1,6 +1,4 @@
-# Sample Makefile
-# by Nakata Maho
-
+#public domain
 CXX=g++-10
 MPLAPACKDIR=%%MPLAPACKDIR%%
 CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
