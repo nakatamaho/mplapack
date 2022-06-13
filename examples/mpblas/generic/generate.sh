@@ -3,12 +3,13 @@
 FILES=`ls R*generic.cpp`
 MPLIBS="mpfr gmp _Float128 _Float64x double dd qd"
 
+SOURCEFILES=""
 rm -f source_files
 for _file in $FILES; do
     for _mplib in $MPLIBS; do
         resultfilename=`echo $_file | sed "s/generic/${_mplib}/g"`
         cat header_${_mplib} ${_file} > ../$resultfilename
-        echo "${resultfilename}" >> source_files
+        SOURCEFILES=`echo $SOURCEFILES ${resultfilename}`
         if [ x"$_mplib" = x"gmp" ]; then
             sed -i -e "s/REAL/mpf_class/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" ../$resultfilename
         fi
@@ -32,8 +33,6 @@ for _file in $FILES; do
         fi
     done
 done
-
-SOURCEFILES=`cat source_files |  tr "\n" " ";echo`
 
 echo "mpblasexamples_PROGRAMS =" > ../Makefile.am
 
@@ -175,7 +174,6 @@ for _mplib in $MPLIBS; do
         done
         echo "endif"             >> ../Makefile.am   
     fi
-
 done
 echo ""               >> ../Makefile.am
 
