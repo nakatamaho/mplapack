@@ -46,6 +46,7 @@ bool rselect(mpf_class ar, mpf_class ai) {
     return false;
 }
 
+#include <iostream>
 using namespace std;
 
 int main() {

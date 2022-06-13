@@ -49,6 +49,7 @@ bool rselect(double ar, double ai) {
     return false;
 }
 
+#include <iostream>
 using namespace std;
 
 int main() {

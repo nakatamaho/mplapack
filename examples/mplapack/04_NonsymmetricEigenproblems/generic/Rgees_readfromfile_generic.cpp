@@ -3,6 +3,7 @@ bool rselect(REAL ar, REAL ai) {
     return false;
 }
 
+#include <iostream>
 using namespace std;
 
 int main() {

@@ -51,6 +51,7 @@ bool rselect(mpreal ar, mpreal ai) {
     return false;
 }
 
+#include <iostream>
 using namespace std;
 
 int main() {

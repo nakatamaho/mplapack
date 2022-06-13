@@ -57,6 +57,7 @@ bool rselect(dd_real ar, dd_real ai) {
     return false;
 }
 
+#include <iostream>
 using namespace std;
 
 int main() {
