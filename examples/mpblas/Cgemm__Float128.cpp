@@ -48,9 +48,9 @@ void printnum(std::complex<_Float128> rtmp)
     strfromf128(buf, sizeof(buf), "%.35e", rtmp.imag());
 #endif
     if (rtmp.imag() >= 0.0)
-        printf ("+%s", buf);
+        printf ("+%si", buf);
     else
-        printf ("%s", buf);
+        printf ("%si", buf);
     return;
 }
 

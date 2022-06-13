@@ -1,14 +1,3 @@
-mplapackexamplesdir=$(prefix)/share/mplapack/examples/mplapack/03_SymmetricEigenproblems
-
-mplapackexamples_DATA = Cheev_test__Float128.cpp Cheev_test__Float64x.cpp Cheev_test_dd.cpp Cheev_test_double.cpp \
-Cheev_test_gmp.cpp Cheev_test_mpfr.cpp Cheev_test_qd.cpp Rsyev_Frank__Float128.cpp Rsyev_Frank__Float64x.cpp Rsyev_Frank_dd.cpp \
-Rsyev_Frank_double.cpp Rsyev_Frank_gmp.cpp Rsyev_Frank_mpfr.cpp Rsyev_Frank_qd.cpp Rsyev_test__Float128.cpp Rsyev_test__Float64x.cpp \
-Rsyev_test_dd.cpp Rsyev_test_double.cpp Rsyev_test_gmp.cpp Rsyev_test_mpfr.cpp Rsyev_test_qd.cpp Rsyevd_DingDong__Float128.cpp \
-Rsyevd_DingDong__Float64x.cpp Rsyevd_DingDong_dd.cpp Rsyevd_DingDong_double.cpp Rsyevd_DingDong_gmp.cpp Rsyevd_DingDong_mpfr.cpp \
-Rsyevd_DingDong_qd.cpp Rsyevd_Frank__Float128.cpp Rsyevd_Frank__Float64x.cpp Rsyevd_Frank_dd.cpp Rsyevd_Frank_double.cpp Rsyevd_Frank_gmp.cpp \
-Rsyevd_Frank_mpfr.cpp Rsyevd_Frank_qd.cpp Rsyevr_Frank__Float128.cpp Rsyevr_Frank__Float64x.cpp Rsyevr_Frank_dd.cpp Rsyevr_Frank_double.cpp \
-Rsyevr_Frank_gmp.cpp Rsyevr_Frank_mpfr.cpp Rsyevr_Frank_qd.cpp
-
 mplapackexamples_PROGRAMS =
 
 if ENABLE_MPFR
@@ -78,7 +67,7 @@ endif
 if ENABLE__FLOAT128
 mplapackexamples_PROGRAMS += Cheev_test__Float128 Rsyev_Frank__Float128 Rsyev_test__Float128 Rsyevd_DingDong__Float128 Rsyevd_Frank__Float128 Rsyevr_Frank__Float128
 
-_Float128_cxxflags = $(OPENMP_CXXFLAGS)
+_Float128_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
 if WANT_QUADMATH
 _Float128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128 -lquadmath
 else
@@ -238,6 +227,10 @@ Rsyevr_Frank_qd_CXXFLAGS = $(qd_cxxflags)
 Rsyevr_Frank_qd_LDFLAGS = $(qd_libdepends)
 
 endif
+
+mplapackexamplesdir=$(prefix)/share/mplapack/examples/03_SymmetricEigenproblems
+
+mplapackexamples_DATA = Cheev_test_mpfr.cpp Cheev_test_gmp.cpp Cheev_test__Float128.cpp Cheev_test__Float64x.cpp Cheev_test_double.cpp Cheev_test_dd.cpp Cheev_test_qd.cpp Rsyev_Frank_mpfr.cpp Rsyev_Frank_gmp.cpp Rsyev_Frank__Float128.cpp Rsyev_Frank__Float64x.cpp Rsyev_Frank_double.cpp Rsyev_Frank_dd.cpp Rsyev_Frank_qd.cpp Rsyev_test_mpfr.cpp Rsyev_test_gmp.cpp Rsyev_test__Float128.cpp Rsyev_test__Float64x.cpp Rsyev_test_double.cpp Rsyev_test_dd.cpp Rsyev_test_qd.cpp Rsyevd_DingDong_mpfr.cpp Rsyevd_DingDong_gmp.cpp Rsyevd_DingDong__Float128.cpp Rsyevd_DingDong__Float64x.cpp Rsyevd_DingDong_double.cpp Rsyevd_DingDong_dd.cpp Rsyevd_DingDong_qd.cpp Rsyevd_Frank_mpfr.cpp Rsyevd_Frank_gmp.cpp Rsyevd_Frank__Float128.cpp Rsyevd_Frank__Float64x.cpp Rsyevd_Frank_double.cpp Rsyevd_Frank_dd.cpp Rsyevd_Frank_qd.cpp Rsyevr_Frank_mpfr.cpp Rsyevr_Frank_gmp.cpp Rsyevr_Frank__Float128.cpp Rsyevr_Frank__Float64x.cpp Rsyevr_Frank_double.cpp Rsyevr_Frank_dd.cpp Rsyevr_Frank_qd.cpp
 
 install-data-hook:
 if IS_MACOS

@@ -1,6 +1,5 @@
 //public domain
 #include <mpblas_double.h>
-#include <mplapack_double.h>
 #include <iostream>
 #include <stdio.h>
 #include <cstring>
