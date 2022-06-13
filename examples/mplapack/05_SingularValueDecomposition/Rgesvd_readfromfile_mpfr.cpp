@@ -46,6 +46,7 @@ void printmat(int n, int m, mpreal *a, int lda) {
     printf("]");
 }
 
+#include <iostream>
 using namespace std;
 
 int main() {

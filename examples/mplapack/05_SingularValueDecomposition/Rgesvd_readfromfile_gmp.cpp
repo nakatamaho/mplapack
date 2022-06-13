@@ -41,6 +41,7 @@ void printmat(int n, int m, mpf_class * a, int lda)
     }
     printf("]");
 }
+#include <iostream>
 using namespace std;
 
 int main() {

@@ -44,6 +44,7 @@ void printmat(int n, int m, double *a, int lda)
     }
     printf("]");
 }
+#include <iostream>
 using namespace std;
 
 int main() {

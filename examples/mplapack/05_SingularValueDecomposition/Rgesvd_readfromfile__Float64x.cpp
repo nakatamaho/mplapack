@@ -48,6 +48,7 @@ void printmat(int n, int m, _Float64x *a, int lda)
     }
     printf("]");
 }
+#include <iostream>
 using namespace std;
 
 int main() {
