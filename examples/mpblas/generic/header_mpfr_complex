@@ -6,7 +6,6 @@
 #include <algorithm>
 
 #include <mpblas_mpfr.h>
-#include <mplapack_mpfr.h>
 
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"

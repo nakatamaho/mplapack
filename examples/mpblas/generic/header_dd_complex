@@ -6,7 +6,6 @@
 #include <algorithm>
 
 #include <mpblas_dd.h>
-#include <mplapack_dd.h>
 
 #define DD_PRECISION_SHORT 16
 
