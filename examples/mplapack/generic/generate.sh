@@ -6,6 +6,12 @@
 FILES=`ls R*generic.cpp C*generic.cpp`
 MPLIBS="mpfr gmp _Float128 _Float64x double dd qd"
 
+_FILE=`ls R*.cpp | head -1 | sed 's/_/ /g' | awk '{print $1}'`
+sed -e "s|%%ROUTINE%%|$_FILE|g" ../../generic/Makefile.freebsd.in > ../Makefile.freebsd.in
+sed -e "s|%%ROUTINE%%|$_FILE|g" ../../generic/Makefile.macos.in   > ../Makefile.macos.in
+sed -e "s|%%ROUTINE%%|$_FILE|g" ../../generic/Makefile.linux.in   > ../Makefile.linux.in
+sed -e "s|%%ROUTINE%%|$_FILE|g" ../../generic/Makefile.mingw.in   > ../Makefile.mingw.in
+
 SOURCEFILES=""
 rm -f source_files
 for _file in $FILES; do
