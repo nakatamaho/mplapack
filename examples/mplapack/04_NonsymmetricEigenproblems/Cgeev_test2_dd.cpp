@@ -84,7 +84,6 @@ int main() {
     dd_real *rwork = new dd_real[lwork];
     mplapackint info;
     // setting A matrix
-    //# Example 6.5 "Collection of Matrices for Testing Computational Algorithms", Robert T. Gregory, David L. Karney    
     a[0 + 0 * n] = dd_complex(7.0, 0.0);   a[0 + 1 * n] = dd_complex(3.0, 0.0);  a[0 + 2 * n] = dd_complex(1.0, 2.0);   a[0 + 3 * n] = dd_complex(-1.0, 2.0);
     a[1 + 0 * n] = dd_complex(3.0, 0.0);   a[1 + 1 * n] = dd_complex(7.0, 0.0);  a[1 + 2 * n] = dd_complex(1.0, -2.0);  a[1 + 3 * n] = dd_complex(-1.0, -2.0);
     a[2 + 0 * n] = dd_complex(1.0, -2.0);  a[2 + 1 * n] = dd_complex(1.0, 2.0);  a[2 + 2 * n] = dd_complex(7.0, 0.0);   a[2 + 3 * n] = dd_complex(-3.0, 0.0);

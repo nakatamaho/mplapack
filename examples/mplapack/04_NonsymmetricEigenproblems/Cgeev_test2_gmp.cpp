@@ -61,7 +61,6 @@ int main() {
     mpf_class *rwork = new mpf_class[lwork];
     mplapackint info;
     // setting A matrix
-    //# Example 6.5 "Collection of Matrices for Testing Computational Algorithms", Robert T. Gregory, David L. Karney    
     a[0 + 0 * n] = mpc_class(7.0, 0.0);   a[0 + 1 * n] = mpc_class(3.0, 0.0);  a[0 + 2 * n] = mpc_class(1.0, 2.0);   a[0 + 3 * n] = mpc_class(-1.0, 2.0);
     a[1 + 0 * n] = mpc_class(3.0, 0.0);   a[1 + 1 * n] = mpc_class(7.0, 0.0);  a[1 + 2 * n] = mpc_class(1.0, -2.0);  a[1 + 3 * n] = mpc_class(-1.0, -2.0);
     a[2 + 0 * n] = mpc_class(1.0, -2.0);  a[2 + 1 * n] = mpc_class(1.0, 2.0);  a[2 + 2 * n] = mpc_class(7.0, 0.0);   a[2 + 3 * n] = mpc_class(-3.0, 0.0);

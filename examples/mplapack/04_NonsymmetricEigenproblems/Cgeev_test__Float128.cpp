@@ -104,7 +104,6 @@ int main() {
     _Float128 *rwork = new _Float128[lwork];
     mplapackint info;
     // setting A matrix
-    //# Example 6.5 "Collection of Matrices for Testing Computational Algorithms", Robert T. Gregory, David L. Karney    
     a[0 + 0 * n] = std::complex<_Float128>(5.0, 9.0); a[0 + 1 * n] = std::complex<_Float128>(5.0, 5.0);   a[0 + 2 * n] = std::complex<_Float128>(-6.0, -6.0); a[0 + 3 * n] = std::complex<_Float128>(-7.0, -7.0);
     a[1 + 0 * n] = std::complex<_Float128>(3.0, 3.0); a[1 + 1 * n] = std::complex<_Float128>(6.0, 10.0);  a[1 + 2 * n] = std::complex<_Float128>(-5.0, -5.0); a[1 + 3 * n] = std::complex<_Float128>(-6.0, -6.0);
     a[2 + 0 * n] = std::complex<_Float128>(2.0, 2.0); a[2 + 1 * n] = std::complex<_Float128>(3.0, 3.0);   a[2 + 2 * n] = std::complex<_Float128>(-1.0,  3.0); a[2 + 3 * n] = std::complex<_Float128>(-5.0, -5.0);

@@ -45,39 +45,44 @@ template <class X> void printmat(int n, int m, X *a, int lda)
     }
     printf("]");
 }
-bool rselect(_Float64x ar, _Float64x ai) {
+bool cselect(std::complex<_Float64x> a) {
     // sorting rule for eigenvalues.
     return false;
 }
 
 int main() {
     mplapackint n = 4;
-    std::complex<_Float64x> *a = new std::complex<_Float64x>[n * n];
-    std::complex<_Float64x> *w = new std::complex<_Float64x>[n];
-    std::complex<_Float64x> *vl = new std::complex<_Float64x>[n * n];
-    std::complex<_Float64x> *vr = new std::complex<_Float64x>[n * n];
-    mplapackint lwork = 4 * n;
-    std::complex<_Float64x> *work = new std::complex<_Float64x>[lwork];    
-    _Float64x *rwork = new _Float64x[lwork];
-    mplapackint info;
-    // setting A matrix
-    a[0 + 0 * n] = std::complex<_Float64x>(5.0, 9.0); a[0 + 1 * n] = std::complex<_Float64x>(5.0, 5.0);   a[0 + 2 * n] = std::complex<_Float64x>(-6.0, -6.0); a[0 + 3 * n] = std::complex<_Float64x>(-7.0, -7.0);
-    a[1 + 0 * n] = std::complex<_Float64x>(3.0, 3.0); a[1 + 1 * n] = std::complex<_Float64x>(6.0, 10.0);  a[1 + 2 * n] = std::complex<_Float64x>(-5.0, -5.0); a[1 + 3 * n] = std::complex<_Float64x>(-6.0, -6.0);
-    a[2 + 0 * n] = std::complex<_Float64x>(2.0, 2.0); a[2 + 1 * n] = std::complex<_Float64x>(3.0, 3.0);   a[2 + 2 * n] = std::complex<_Float64x>(-1.0,  3.0); a[2 + 3 * n] = std::complex<_Float64x>(-5.0, -5.0);
-    a[3 + 0 * n] = std::complex<_Float64x>(1.0, 1.0); a[3 + 1 * n] = std::complex<_Float64x>(2.0, 2.0);   a[3 + 2 * n] = std::complex<_Float64x>(-3.0, -3.0); a[3 + 3 * n] = std::complex<_Float64x>(0.0, 4.0); 
 
-    printf("# Ex. 6.5 p. 116, Collection of Matrices for Testing Computational Algorithms, Robert T. Gregory, David L. Karney\n");
+    std::complex<_Float64x> *a = new std::complex<_Float64x>[n * n];
+    mplapackint sdim = 0;
+    mplapackint lwork = 2 * n;
+    std::complex<_Float64x> *w = new std::complex<_Float64x>[n];
+    std::complex<_Float64x> *vs = new std::complex<_Float64x>[n * n];
+    std::complex<_Float64x> *work = new std::complex<_Float64x>[lwork];
+    _Float64x *rwork = new _Float64x[n];
+    bool bwork[n];
+    mplapackint info;
+
+    // setting A matrix
+    a[0 + 0 * n] = std::complex<_Float64x>(3.0,  0.0); a[0 + 1 * n] = std::complex<_Float64x>(1.0, 0.0);   a[0 + 2 * n] = std::complex<_Float64x>(0.0, 0.0);  a[0 + 3 * n] = std::complex<_Float64x>(0.0, 2.0);
+    a[1 + 0 * n] = std::complex<_Float64x>(1.0,  0.0); a[1 + 1 * n] = std::complex<_Float64x>(3.0, 0.0);   a[1 + 2 * n] = std::complex<_Float64x>(0.0, -2.0); a[1 + 3 * n] = std::complex<_Float64x>(0.0, 0.0);
+    a[2 + 0 * n] = std::complex<_Float64x>(0.0,  0.0); a[2 + 1 * n] = std::complex<_Float64x>(0.0, 2.0);   a[2 + 2 * n] = std::complex<_Float64x>(1.0, 0.0);  a[2 + 3 * n] = std::complex<_Float64x>(1.0, 0.0);
+    a[3 + 0 * n] = std::complex<_Float64x>(0.0, -2.0); a[3 + 1 * n] = std::complex<_Float64x>(0.0, 0.0);   a[3 + 2 * n] = std::complex<_Float64x>(1.0, 0.0);  a[3 + 3 * n] = std::complex<_Float64x>(1.0, 0.0); 
+
+    printf("# Ex. 6.6 p. 116, Collection of Matrices for Testing Computational Algorithms, Robert T. Gregory, David L. Karney\n");
     printf("# octave check\n");
     printf("split_long_rows(0)\n");
     printf("a ="); printmat(n, n, a, n); printf("\n");
-    Cgeev("V", "V", n, a, n, w, vl, n, vr, n, work, lwork, rwork, info);
-    printf("lambda ="); printvec(w,n); printf("\n");    
-    printf("vr ="); printmat(n,n,vr,n); printf("\n");    
+    Cgees("V", "S", cselect, n, a, n, sdim, w, vs, n, work, lwork, rwork, bwork, info);
+    printf("w ="); printvec(w, n); printf("\n");
+    printf("vs ="); printmat(n, n, vs, n); printf("\n");
+    printf("t ="); printmat(n, n, a, n); printf("\n");
+    printf("vs*t*vs'\n");
+    printf("eig(a)\n");
 
     delete[] rwork;
     delete[] work;
-    delete[] vr;
-    delete[] vl;
+    delete[] vs;
     delete[] w;
     delete[] a;
 }
