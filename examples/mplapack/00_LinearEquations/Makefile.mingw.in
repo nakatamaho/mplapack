@@ -5,44 +5,44 @@ MPLAPACKDIR=%%MPLAPACKDIR%%
 CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
 OPTFLAGS= -O2
 LIBFLAGS=-L$(MPLAPACKDIR)/lib -static-libgcc -static-libstdc++
-MPFRLIBS=-lmpblas_mpfr -lmpfr -lmpc -lgmp
-GMPLIBS=-lmpblas_gmp -lgmpxx -lgmp 
-QDLIBS=-lmpblas_qd -lqd
-DDLIBS=-lmpblas_dd -lqd
-_FLOAT64xLIBS=-lmpblas__Float64x
-_FLOAT128LIBS=-lmpblas__Float128%%LIBQUADMATH%%
-DOUBLELIBS=-lmpblas_double
+MPFRLIBS= -lmplapack_mpfr -lmpblas_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lmpblas_gmp -lgmpxx -lgmp
+QDLIBS=-lmplapack_qd -lmpblas_qd -lqd
+DDLIBS=-lmplapack_dd -lmpblas_dd -lqd
+_FLOAT64xLIBS=-lmplapack__Float64x -lmpblas__Float64x
+_FLOAT128LIBS=-lmplapack__Float128 -lmpblas__Float128%%LIBQUADMATH%%
+DOUBLELIBS=-lmplapack_double -lmpblas_double
 BLAS=
 LAPACK=
 FLIBS=
 
-programs=Rgesv_mpfr.exe Rgesv_gmp.exe Rgesv_qd.exe Rgesv_dd.exe Rgesv__Float64x.exe Rgesv__Float128.exe Rgesv_double.exe
+programs=Rgesv_test_mpfr.exe Rgesv_test_gmp.exe Rgesv_test_qd.exe Rgesv_test_dd.exe Rgesv_test__Float64x.exe Rgesv_test__Float128.exe Rgesv_test_double.exe
 
 all: $(programs)
 
 .cpp.o:
 	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
 
-Rgesv_mpfr.exe: Rgesv_mpfr.o
-	$(CXX) -o Rgesv_mpfr.exe Rgesv_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+Rgesv_test_mpfr.exe: Rgesv_test_mpfr.o
+	$(CXX) -o Rgesv_test_mpfr.exe Rgesv_test_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
 
-Rgesv_gmp.exe: Rgesv_gmp.o
-	$(CXX) -o Rgesv_gmp.exe Rgesv_gmp.o $(LIBFLAGS) $(GMPLIBS)
+Rgesv_test_gmp.exe: Rgesv_test_gmp.o
+	$(CXX) -o Rgesv_test_gmp.exe Rgesv_test_gmp.o $(LIBFLAGS) $(GMPLIBS)
 
-Rgesv_qd.exe: Rgesv_qd.o
-	$(CXX) -o Rgesv_qd.exe Rgesv_qd.o $(LIBFLAGS) $(QDLIBS)
+Rgesv_test_qd.exe: Rgesv_test_qd.o
+	$(CXX) -o Rgesv_test_qd.exe Rgesv_test_qd.o $(LIBFLAGS) $(QDLIBS)
 
-Rgesv_dd.exe: Rgesv_dd.o
-	$(CXX) -o Rgesv_dd.exe Rgesv_dd.o $(LIBFLAGS) $(DDLIBS)
+Rgesv_test_dd.exe: Rgesv_test_dd.o
+	$(CXX) -o Rgesv_test_dd.exe Rgesv_test_dd.o $(LIBFLAGS) $(DDLIBS)
 
-Rgesv__Float64x.exe: Rgesv__Float64x.o
-	$(CXX) -o Rgesv__Float64x Rgesv__Float64x.o $(LIBFLAGS) $(_FLOAT64xLIBS)
+Rgesv_test__Float64x.exe: Rgesv_test__Float64x.o
+	$(CXX) -o Rgesv_test__Float64x Rgesv_test__Float64x.o $(LIBFLAGS) $(_FLOAT64xLIBS)
 
-Rgesv__Float128.exe: Rgesv__Float128.o
-	$(CXX) -o Rgesv__Float128 Rgesv__Float128.o $(LIBFLAGS) $(_FLOAT128LIBS)
+Rgesv_test__Float128.exe: Rgesv_test__Float128.o
+	$(CXX) -o Rgesv_test__Float128 Rgesv_test__Float128.o $(LIBFLAGS) $(_FLOAT128LIBS)
 
-Rgesv_double.exe: Rgesv_double.o
-	$(CXX) -o Rgesv_double Rgesv_double.o $(LIBFLAGS) $(DOUBLELIBS)
+Rgesv_test_double.exe: Rgesv_test_double.o
+	$(CXX) -o Rgesv_test_double Rgesv_test_double.o $(LIBFLAGS) $(DOUBLELIBS)
 
 clean:
 	rm -rf *.o *~ $(programs) *bak
