@@ -192,13 +192,6 @@ AC_ARG_ENABLE(examples,
 AS_HELP_STRING([--disable-examples], [Disable examples]))
 AM_CONDITIONAL(DISABLE_EXAMPLES, test x$enable_examples = xno)
 
-if test "$enable_examples" != "no" ; then
-    sed -e "s|%%MPLAPACKDIR%%|$prefix|g" examples/mpblas/Makefile.linux.in   > examples/mpblas/Makefile.linux
-    sed -e "s|%%MPLAPACKDIR%%|$prefix|g" examples/mpblas/Makefile.macos.in   > examples/mpblas/Makefile.macos
-    sed -e "s|%%MPLAPACKDIR%%|$prefix|g" examples/mpblas/Makefile.mingw.in   > examples/mpblas/Makefile.mingw
-    sed -e "s|%%MPLAPACKDIR%%|$prefix|g" examples/mpblas/Makefile.freebsd.in > examples/mpblas/Makefile.freebsd
-fi
-
 dnl disable reference
 AC_ARG_ENABLE(reference,
 AS_HELP_STRING([--disable-reference], [Build without reference libraries]))
@@ -362,6 +355,20 @@ AM_CONDITIONAL(ENABLE__FLOAT128, test x$enable__Float128 = xyes)
 AM_CONDITIONAL(WANT_QUADMATH, test x$want_libquadmath = xyes)
 AM_CONDITIONAL(IS__FLOAT128_LONGDOUBLE, test x$_Float128islongdouble = xyes)
 AM_CONDITIONAL(IS_LONGDOUBLE_BINARY128, test x$longdoubleisbinary128 = xyes)
+
+if test "$enable_examples" != "no" ; then
+    sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%| -lquadmath|g" examples/mpblas/Makefile.macos.in   > examples/mpblas/Makefile.macos
+    sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%| -lquadmath|g" examples/mpblas/Makefile.mingw.in   > examples/mpblas/Makefile.mingw
+
+# see FreeBSD ABI: https://www.freebsd.org/cgi/man.cgi?query=arch&sektion=7&format=html
+    if test "$want_libquadmath" = "yes" ; then
+        sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%| -lquadmath|g" examples/mpblas/Makefile.linux.in   > examples/mpblas/Makefile.linux
+        sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%| -lquadmath|g" examples/mpblas/Makefile.freebsd.in > examples/mpblas/Makefile.freebsd
+    else
+        sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%||g" examples/mpblas/Makefile.linux.in   > examples/mpblas/Makefile.linux
+        sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%||g" examples/mpblas/Makefile.freebsd.in > examples/mpblas/Makefile.freebsd
+    fi
+fi
 
 CXXFLAGS="$SAVE_CXXFLAGS"
 
