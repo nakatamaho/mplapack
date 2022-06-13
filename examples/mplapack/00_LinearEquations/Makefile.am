@@ -228,7 +228,7 @@ Rgetri_test_qd_LDFLAGS = $(qd_libdepends)
 
 endif
 
-mplapackexamplesdir=$(prefix)/share/mplapack/examples/00_LinearEquations
+mplapackexamplesdir=$(prefix)/share/examples/mplapack/00_LinearEquations
 
 mplapackexamples_DATA = Cgetri_test_mpfr.cpp Cgetri_test_gmp.cpp Cgetri_test__Float128.cpp Cgetri_test__Float64x.cpp Cgetri_test_double.cpp Cgetri_test_dd.cpp Cgetri_test_qd.cpp Rgesv_test_mpfr.cpp Rgesv_test_gmp.cpp Rgesv_test__Float128.cpp Rgesv_test__Float64x.cpp Rgesv_test_double.cpp Rgesv_test_dd.cpp Rgesv_test_qd.cpp Rgetri_Hilbert_mpfr.cpp Rgetri_Hilbert_gmp.cpp Rgetri_Hilbert__Float128.cpp Rgetri_Hilbert__Float64x.cpp Rgetri_Hilbert_double.cpp Rgetri_Hilbert_dd.cpp Rgetri_Hilbert_qd.cpp Rgetri_test2_mpfr.cpp Rgetri_test2_gmp.cpp Rgetri_test2__Float128.cpp Rgetri_test2__Float64x.cpp Rgetri_test2_double.cpp Rgetri_test2_dd.cpp Rgetri_test2_qd.cpp Rgetri_test3_mpfr.cpp Rgetri_test3_gmp.cpp Rgetri_test3__Float128.cpp Rgetri_test3__Float64x.cpp Rgetri_test3_double.cpp Rgetri_test3_dd.cpp Rgetri_test3_qd.cpp Rgetri_test_mpfr.cpp Rgetri_test_gmp.cpp Rgetri_test__Float128.cpp Rgetri_test__Float64x.cpp Rgetri_test_double.cpp Rgetri_test_dd.cpp Rgetri_test_qd.cpp
 

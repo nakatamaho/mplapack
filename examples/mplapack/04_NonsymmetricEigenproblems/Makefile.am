@@ -256,7 +256,7 @@ Rgeev_test_qd_LDFLAGS = $(qd_libdepends)
 
 endif
 
-mplapackexamplesdir=$(prefix)/share/mplapack/examples/04_NonsymmetricEigenproblems
+mplapackexamplesdir=$(prefix)/share/examples/mplapack/04_NonsymmetricEigenproblems
 
 mplapackexamples_DATA = Rgees_Grcar_mpfr.cpp Rgees_Grcar_gmp.cpp Rgees_Grcar__Float128.cpp Rgees_Grcar__Float64x.cpp Rgees_Grcar_double.cpp Rgees_Grcar_dd.cpp Rgees_Grcar_qd.cpp Rgees_readfromfile_mpfr.cpp Rgees_readfromfile_gmp.cpp Rgees_readfromfile__Float128.cpp Rgees_readfromfile__Float64x.cpp Rgees_readfromfile_double.cpp Rgees_readfromfile_dd.cpp Rgees_readfromfile_qd.cpp Rgees_test_mpfr.cpp Rgees_test_gmp.cpp Rgees_test__Float128.cpp Rgees_test__Float64x.cpp Rgees_test_double.cpp Rgees_test_dd.cpp Rgees_test_qd.cpp Rgeev_Frank_mpfr.cpp Rgeev_Frank_gmp.cpp Rgeev_Frank__Float128.cpp Rgeev_Frank__Float64x.cpp Rgeev_Frank_double.cpp Rgeev_Frank_dd.cpp Rgeev_Frank_qd.cpp Rgeev_random_highcond_mpfr.cpp Rgeev_random_highcond_gmp.cpp Rgeev_random_highcond__Float128.cpp Rgeev_random_highcond__Float64x.cpp Rgeev_random_highcond_double.cpp Rgeev_random_highcond_dd.cpp Rgeev_random_highcond_qd.cpp Rgeev_readfromfile_mpfr.cpp Rgeev_readfromfile_gmp.cpp Rgeev_readfromfile__Float128.cpp Rgeev_readfromfile__Float64x.cpp Rgeev_readfromfile_double.cpp Rgeev_readfromfile_dd.cpp Rgeev_readfromfile_qd.cpp Rgeev_test_mpfr.cpp Rgeev_test_gmp.cpp Rgeev_test__Float128.cpp Rgeev_test__Float64x.cpp Rgeev_test_double.cpp Rgeev_test_dd.cpp Rgeev_test_qd.cpp
 

@@ -116,9 +116,10 @@ Rgemm_qd_LDFLAGS = $(qd_libdepends)
 
 endif
 
-mpblasexamplesdir=$(prefix)/share/mpblas/examples/mpblas
+mpblasexamplesdir=$(prefix)/share/examples/mpblas/
 
-mpblasexamples_DATA = Cgemm_mpfr.cpp Cgemm_gmp.cpp Cgemm__Float128.cpp Cgemm__Float64x.cpp Cgemm_double.cpp Cgemm_dd.cpp Cgemm_qd.cpp Rgemm_mpfr.cpp Rgemm_gmp.cpp Rgemm__Float128.cpp Rgemm__Float64x.cpp Rgemm_double.cpp Rgemm_dd.cpp Rgemm_qd.cpp
+mpblasexamples_DATA = Cgemm_mpfr.cpp Cgemm_gmp.cpp Cgemm__Float128.cpp Cgemm__Float64x.cpp Cgemm_double.cpp Cgemm_dd.cpp Cgemm_qd.cpp Rgemm_mpfr.cpp Rgemm_gmp.cpp Rgemm__Float128.cpp Rgemm__Float64x.cpp Rgemm_double.cpp Rgemm_dd.cpp Rgemm_qd.cpp \
+Makefile.freebsd Makefile.linux Makefile.macos Makefile.mingw
 
 install-data-hook:
 if IS_MACOS

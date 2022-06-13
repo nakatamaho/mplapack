@@ -5,11 +5,11 @@ cd $TOPDIR
 pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd
 aclocal ; autoconf ; automake --add-missing
 autoreconf --force --install
-./configure --prefix=$HOME/MPLAPACK
+./configure --prefix=$HOME/MPLAPACK_MINGW
 make dist-xz
 ####################
 rm -rf $TOPDIR/tmp
-rm -rf $HOME/MPLAPACK
+rm -rf $HOME/MPLAPACK_MINGW
 mkdir $TOPDIR/tmp
 cd $TOPDIR/tmp
 rm mplapack-${VERSION}.tar.xz

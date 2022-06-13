@@ -190,7 +190,7 @@ echo ""               >> ../Makefile.am
 path=`pwd` 
 array=( `echo $path | tr -s '/' ' '`)
 kind_index=`expr ${#array[@]} - 2`
-echo "mplapackexamplesdir=\$(prefix)/share/mplapack/examples/${array[${kind_index}]}"   >> ../Makefile.am
+echo "mplapackexamplesdir=\$(prefix)/share/examples/mplapack/${array[${kind_index}]}"   >> ../Makefile.am
 echo ""               >> ../Makefile.am
 echo "mplapackexamples_DATA = $SOURCEFILES" >> ../Makefile.am
 echo ""               >> ../Makefile.am
