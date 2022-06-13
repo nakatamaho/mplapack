@@ -91,5 +91,5 @@ endif
 mpblasexamplesdir=$(prefix)/share/mpblas/examples/mpblas
 install-data-hook:
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapackexamplesdir) $(prefix)
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mpblasexamplesdir) $(prefix)
 endif
