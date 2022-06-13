@@ -20,6 +20,7 @@ int main() {
     a[2 + 0 * n] = COMPLEX(2.0, 2.0); a[2 + 1 * n] = COMPLEX(3.0, 3.0);   a[2 + 2 * n] = COMPLEX(-1.0,  3.0); a[2 + 3 * n] = COMPLEX(-5.0, -5.0);
     a[3 + 0 * n] = COMPLEX(1.0, 1.0); a[3 + 1 * n] = COMPLEX(2.0, 2.0);   a[3 + 2 * n] = COMPLEX(-3.0, -3.0); a[3 + 3 * n] = COMPLEX(0.0, 4.0); 
 
+    printf("# Ex. 6.5 p. 116, Collection of Matrices for Testing Computational Algorithms, Robert T. Gregory, David L. Karney\n");
     printf("# octave check\n");
     printf("split_long_rows(0)\n");
     printf("a ="); printmat(n, n, a, n); printf("\n");

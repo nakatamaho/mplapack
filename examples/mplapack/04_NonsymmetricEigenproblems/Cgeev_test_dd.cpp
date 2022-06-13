@@ -90,6 +90,7 @@ int main() {
     a[2 + 0 * n] = dd_complex(2.0, 2.0); a[2 + 1 * n] = dd_complex(3.0, 3.0);   a[2 + 2 * n] = dd_complex(-1.0,  3.0); a[2 + 3 * n] = dd_complex(-5.0, -5.0);
     a[3 + 0 * n] = dd_complex(1.0, 1.0); a[3 + 1 * n] = dd_complex(2.0, 2.0);   a[3 + 2 * n] = dd_complex(-3.0, -3.0); a[3 + 3 * n] = dd_complex(0.0, 4.0); 
 
+    printf("# Ex. 6.5 p. 116, Collection of Matrices for Testing Computational Algorithms, Robert T. Gregory, David L. Karney\n");
     printf("# octave check\n");
     printf("split_long_rows(0)\n");
     printf("a ="); printmat(n, n, a, n); printf("\n");

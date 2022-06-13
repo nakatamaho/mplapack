@@ -5,13 +5,13 @@
 #include <cstring>
 #include <algorithm>
 
-#include <mpblas_qd.h>
-#include <mplapack_qd.h>
+#include <mpblas_dd.h>
+#include <mplapack_dd.h>
 
-#define QD_PRECISION_SHORT 16
+#define DD_PRECISION_SHORT 16
 
-inline void printnum(qd_real rtmp) {
-    std::cout.precision(QD_PRECISION_SHORT);
+inline void printnum(dd_real rtmp) {
+    std::cout.precision(DD_PRECISION_SHORT);
     if (rtmp >= 0.0) {
         std::cout << "+" << rtmp;
     } else {
@@ -20,8 +20,8 @@ inline void printnum(qd_real rtmp) {
     return;
 }
 
-inline void printnum(qd_complex rtmp) {
-    std::cout.precision(QD_PRECISION_SHORT);
+inline void printnum(dd_complex rtmp) {
+    std::cout.precision(DD_PRECISION_SHORT);
     if (rtmp.real() >= 0.0) {
         std::cout << "+" << rtmp.real();
     } else {
@@ -68,29 +68,29 @@ template <class X> void printmat(int n, int m, X *a, int lda)
     }
     printf("]");
 }
-bool rselect(qd_real ar, qd_real ai) {
+bool rselect(dd_real ar, dd_real ai) {
     // sorting rule for eigenvalues.
     return false;
 }
 
 int main() {
     mplapackint n = 4;
-    qd_complex *a = new qd_complex[n * n];
-    qd_complex *w = new qd_complex[n];
-    qd_complex *vl = new qd_complex[n * n];
-    qd_complex *vr = new qd_complex[n * n];
+    dd_complex *a = new dd_complex[n * n];
+    dd_complex *w = new dd_complex[n];
+    dd_complex *vl = new dd_complex[n * n];
+    dd_complex *vr = new dd_complex[n * n];
     mplapackint lwork = 4 * n;
-    qd_complex *work = new qd_complex[lwork];    
-    qd_real *rwork = new qd_real[lwork];
+    dd_complex *work = new dd_complex[lwork];    
+    dd_real *rwork = new dd_real[lwork];
     mplapackint info;
     // setting A matrix
     //# Example 6.5 "Collection of Matrices for Testing Computational Algorithms", Robert T. Gregory, David L. Karney    
-    a[0 + 0 * n] = qd_complex(5.0, 9.0); a[0 + 1 * n] = qd_complex(5.0, 5.0);   a[0 + 2 * n] = qd_complex(-6.0, -6.0); a[0 + 3 * n] = qd_complex(-7.0, -7.0);
-    a[1 + 0 * n] = qd_complex(3.0, 3.0); a[1 + 1 * n] = qd_complex(6.0, 10.0);  a[1 + 2 * n] = qd_complex(-5.0, -5.0); a[1 + 3 * n] = qd_complex(-6.0, -6.0);
-    a[2 + 0 * n] = qd_complex(2.0, 2.0); a[2 + 1 * n] = qd_complex(3.0, 3.0);   a[2 + 2 * n] = qd_complex(-1.0,  3.0); a[2 + 3 * n] = qd_complex(-5.0, -5.0);
-    a[3 + 0 * n] = qd_complex(1.0, 1.0); a[3 + 1 * n] = qd_complex(2.0, 2.0);   a[3 + 2 * n] = qd_complex(-3.0, -3.0); a[3 + 3 * n] = qd_complex(0.0, 4.0); 
+    a[0 + 0 * n] = dd_complex(7.0, 0.0);   a[0 + 1 * n] = dd_complex(3.0, 0.0);  a[0 + 2 * n] = dd_complex(1.0, 2.0);   a[0 + 3 * n] = dd_complex(-1.0, 2.0);
+    a[1 + 0 * n] = dd_complex(3.0, 0.0);   a[1 + 1 * n] = dd_complex(7.0, 0.0);  a[1 + 2 * n] = dd_complex(1.0, -2.0);  a[1 + 3 * n] = dd_complex(-1.0, -2.0);
+    a[2 + 0 * n] = dd_complex(1.0, -2.0);  a[2 + 1 * n] = dd_complex(1.0, 2.0);  a[2 + 2 * n] = dd_complex(7.0, 0.0);   a[2 + 3 * n] = dd_complex(-3.0, 0.0);
+    a[3 + 0 * n] = dd_complex(-1.0, -2.0); a[3 + 1 * n] = dd_complex(-1.0, 2.0); a[3 + 2 * n] = dd_complex(-3.0, 0.0);  a[3 + 3 * n] = dd_complex(7.0, 0.0); 
 
-    printf("# Ex. 6.5 p. 116, Collection of Matrices for Testing Computational Algorithms, Robert T. Gregory, David L. Karney\n");
+    printf("# Ex. 6.7 p. 117, Collection of Matrices for Testing Computational Algorithms, Robert T. Gregory, David L. Karney\n");
     printf("# octave check\n");
     printf("split_long_rows(0)\n");
     printf("a ="); printmat(n, n, a, n); printf("\n");
