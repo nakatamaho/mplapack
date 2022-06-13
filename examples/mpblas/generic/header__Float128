@@ -1,0 +1,60 @@
+//public domain
+#include <mpblas__Float128.h>
+#include <iostream>
+#include <stdio.h>
+#include <cstring>
+#include <algorithm>
+
+#define BUFLEN 1024
+
+void printnum(_Float128 rtmp)
+{
+    int width = 42;
+    char buf[BUFLEN];
+#if defined ___MPLAPACK_WANT_LIBQUADMATH___
+    int n = quadmath_snprintf (buf, sizeof buf, "%+-#*.35Qe", width, rtmp);
+#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+    snprintf (buf, sizeof buf, "%.35Le", rtmp);
+#else
+    strfromf128(buf, sizeof(buf), "%.35e", rtmp);
+#endif
+    if (rtmp >= 0.0)
+        printf ("+%s", buf);
+    else
+        printf ("%s", buf);
+    return;
+}
+
+//Matlab/Octave format
+void printvec(_Float128 *a, int len) {
+    _Float128 tmp;
+    printf("[ ");
+    for (int i = 0; i < len; i++) {
+        tmp = a[i];
+        printnum(tmp);
+        if (i < len - 1)
+            printf(", ");
+    }
+    printf("]");
+}
+
+void printmat(int n, int m, _Float128 *a, int lda)
+{
+    _Float128 mtmp;
+
+    printf("[ ");
+    for (int i = 0; i < n; i++) {
+        printf("[ ");
+        for (int j = 0; j < m; j++) {
+            mtmp = a[i + j * lda];
+            printnum(mtmp);
+            if (j < m - 1)
+                printf(", ");
+        }
+        if (i < n - 1)
+            printf("]; ");
+        else
+            printf("] ");
+    }
+    printf("]");
+}
