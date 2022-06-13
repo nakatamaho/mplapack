@@ -89,6 +89,9 @@ Rgemm_qd_LDFLAGS = $(qd_libdepends)
 endif
 
 mpblasexamplesdir=$(prefix)/share/mpblas/examples/mpblas
+
+mpblasexamples_DATA = Rgemm_mpfr.cpp Rgemm_gmp.cpp Rgemm__Float128.cpp Rgemm__Float64x.cpp Rgemm_double.cpp Rgemm_dd.cpp Rgemm_qd.cpp 
+
 install-data-hook:
 if IS_MACOS
 	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mpblasexamplesdir) $(prefix)

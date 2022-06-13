@@ -3,10 +3,12 @@
 FILES=`ls R*generic.cpp`
 MPLIBS="mpfr gmp _Float128 _Float64x double dd qd"
 
+rm -f source_files
 for _file in $FILES; do
     for _mplib in $MPLIBS; do
         resultfilename=`echo $_file | sed "s/generic/${_mplib}/g"`
         cat header_${_mplib} ${_file} > ../$resultfilename
+        echo "${resultfilename}" >> source_files
         if [ x"$_mplib" = x"gmp" ]; then
             sed -i -e "s/REAL/mpf_class/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" ../$resultfilename
         fi
@@ -31,9 +33,10 @@ for _file in $FILES; do
     done
 done
 
-FILES=`ls *generic.cpp`
+SOURCEFILES=`cat source_files |  tr "\n" " ";echo`
 
 echo "mpblasexamples_PROGRAMS =" > ../Makefile.am
+
 for _mplib in $MPLIBS; do
 
     if [ x"$_mplib" = x"mpfr" ]; then
@@ -175,10 +178,14 @@ for _mplib in $MPLIBS; do
 
 done
 echo ""               >> ../Makefile.am
+
 path=`pwd` 
 array=( `echo $path | tr -s '/' ' '`)
 kind_index=`expr ${#array[@]} - 2`
 echo "mpblasexamplesdir=\$(prefix)/share/mpblas/examples/${array[${kind_index}]}"   >> ../Makefile.am   
+echo ""               >> ../Makefile.am
+echo "mpblasexamples_DATA = $SOURCEFILES" >> ../Makefile.am
+echo ""               >> ../Makefile.am
 cat >> ../Makefile.am << EOF
 install-data-hook:
 if IS_MACOS
