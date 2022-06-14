@@ -108,6 +108,10 @@ examples/mpblas/Makefile.freebsd.in \
 examples/mpblas/Makefile.linux.in \
 examples/mpblas/Makefile.macos.in \
 examples/mpblas/Makefile.mingw.in \
+examples/mplapack/*/Makefile.freebsd.in \
+examples/mplapack/*/Makefile.linux.in \
+examples/mplapack/*/Makefile.macos.in \
+examples/mplapack/*/Makefile.mingw.in \
 examples/mplapack/04_NonsymmetricEigenproblems/Matrix_01.txt \
 examples/mplapack/04_NonsymmetricEigenproblems/Matrix_02.txt \
 examples/mplapack/04_NonsymmetricEigenproblems/Matrix_03.txt \
