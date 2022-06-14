@@ -4,6 +4,8 @@
 # cd /home/docker/mplapack/examples/mplapack/03_SymmetricEigenproblems/generic ; bash -x ../../generate.sh
 # etc..
 FILES=`ls R*generic.cpp C*generic.cpp`
+pushd .. ; _MATFILES=`ls M*.txt` ; popd
+MATFILES=`echo $_MATFILES`
 MPLIBS="mpfr gmp _Float128 _Float64x double dd qd"
 
 _FILE=`ls R*.cpp | head -1 | sed 's/_generic\.cpp//g' | awk '{print $1}'`
@@ -204,7 +206,8 @@ array=( `echo $path | tr -s '/' ' '`)
 kind_index=`expr ${#array[@]} - 2`
 echo "mplapackexamplesdir=\$(prefix)/share/examples/mplapack/${array[${kind_index}]}"   >> ../Makefile.am
 echo ""               >> ../Makefile.am
-echo "mplapackexamples_DATA = $SOURCEFILES" >> ../Makefile.am
+echo "mplapackexamples_DATA = $SOURCEFILES \\" >> ../Makefile.am
+echo "$MATFILES Makefile.freebsd Makefile.linux Makefile.macos Makefile.mingw" >> ../Makefile.am
 echo ""               >> ../Makefile.am
 cat >> ../Makefile.am << EOF
 install-data-hook:
