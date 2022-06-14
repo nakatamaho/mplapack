@@ -1,9 +1,6 @@
 //public domain
 #include <mpblas_gmp.h>
 #include <mplapack_gmp.h>
-#include <iostream>
-#include <cstring>
-#include <algorithm>
 
 #define GMP_FORMAT "%+68.64Fe"
 #define GMP_SHORT_FORMAT "%+20.16Fe"
@@ -49,6 +46,7 @@ bool rselect(mpf_class ar, mpf_class ai) {
     return false;
 }
 
+#include <iostream>
 using namespace std;
 
 int main() {

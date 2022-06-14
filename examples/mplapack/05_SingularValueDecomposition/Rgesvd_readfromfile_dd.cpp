@@ -52,6 +52,7 @@ void printmat(int n, int m, dd_real * a, int lda)
     }
     printf("]");
 }
+#include <iostream>
 using namespace std;
 
 int main() {

@@ -4,7 +4,7 @@ FROM ubuntu:20.04
 ARG GIT_EMAIL="maho.nakata@gmail.com"
 ARG GIT_NAME="NAKATA Maho"
 
-RUN apt update
+RUN apt -y update
 RUN apt -y upgrade
 RUN apt install -y sudo 
 RUN apt install -y tzdata
@@ -21,19 +21,13 @@ RUN apt install -y git wget ccache time
 RUN apt install -y ng-common ng-cjk emacs-nox
 RUN sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
-RUN dpkg --add-architecture i386 && apt update -y
-RUN apt-get install -y software-properties-common gnupg2
+RUN dpkg --add-architecture i386
 RUN wget -nc https://dl.winehq.org/wine-builds/winehq.key
-RUN apt-key add winehq.key
-RUN apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ focal main'
-RUN apt-get install -y --install-recommends winehq-stable winbind
-ENV WINEDEBUG=fixme-all
-ENV WINEARCH=win64
-RUN winecfg
-RUN apt-get install -y cabextract
-RUN wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
-RUN chmod +x winetricks
-RUN cp winetricks /usr/local/bin
+RUN mv winehq.key /usr/share/keyrings/winehq-archive.key
+RUN wget -nc https://dl.winehq.org/wine-builds/ubuntu/dists/focal/winehq-focal.sources
+RUN mv winehq-focal.sources /etc/apt/sources.list.d/
+RUN apt update -y
+RUN apt install -y --install-recommends winehq-stable
 
 ARG DOCKER_UID=1000
 ARG DOCKER_USER=docker
@@ -47,10 +41,15 @@ RUN echo "\n\
 " > /home/$DOCKER_USER/.gitconfig
 
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
-RUN cd /home/$DOCKER_USER && echo "export WINEPATH=\"/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-posix;/home/docker/MPLAPACK/bin;/home/docker/MPLAPACK/lib\"" >> .bashrc
+RUN cd /home/$DOCKER_USER && echo "export WINEPATH=\"/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-posix\"" >> .bashrc
+
 ARG WINEPATH="/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-posix"
-RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git
-RUN cd /home/$DOCKER_USER/mplapack && git checkout v1.0.1 && git log -1
-RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.ubuntu20.04.mingw64.sh
-RUN cd /home/$DOCKER_USER/mplapack && make -j`getconf _NPROCESSORS_ONLN`
-RUN cd /home/$DOCKER_USER/mplapack && make install
+ARG WINEDEBUG="-all"
+
+ARG WORK=/home/$DOCKER_USER
+RUN cd ${WORK} && git clone https://github.com/nakatamaho/mplapack.git
+RUN cd ${WORK}/mplapack && git fetch origin v2.0
+RUN cd ${WORK}/mplapack && git checkout v2.0
+RUN cd ${WORK}/mplapack && git remote set-url origin git@github.com:nakatamaho/mplapack.git
+RUN cd ${WORK}/mplapack && git log -1
+RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/disttest_mingw.sh

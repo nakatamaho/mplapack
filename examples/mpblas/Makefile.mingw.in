@@ -1,0 +1,48 @@
+# public domain
+
+CXX=x86_64-w64-mingw32-g++
+MPLAPACKDIR=%%MPLAPACKDIR%%
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
+OPTFLAGS= -O2
+LIBFLAGS=-L$(MPLAPACKDIR)/lib -static-libgcc -static-libstdc++
+MPFRLIBS=-lmpblas_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmpblas_gmp -lgmpxx -lgmp 
+QDLIBS=-lmpblas_qd -lqd
+DDLIBS=-lmpblas_dd -lqd
+_FLOAT64xLIBS=-lmpblas__Float64x
+_FLOAT128LIBS=-lmpblas__Float128%%LIBQUADMATH%%
+DOUBLELIBS=-lmpblas_double
+BLAS=
+LAPACK=
+FLIBS=
+
+programs=Rgemm_mpfr.exe Rgemm_gmp.exe Rgemm_qd.exe Rgemm_dd.exe Rgemm__Float64x.exe Rgemm__Float128.exe Rgemm_double.exe
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
+
+Rgemm_mpfr.exe: Rgemm_mpfr.o
+	$(CXX) -o Rgemm_mpfr.exe Rgemm_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rgemm_gmp.exe: Rgemm_gmp.o
+	$(CXX) -o Rgemm_gmp.exe Rgemm_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rgemm_qd.exe: Rgemm_qd.o
+	$(CXX) -o Rgemm_qd.exe Rgemm_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rgemm_dd.exe: Rgemm_dd.o
+	$(CXX) -o Rgemm_dd.exe Rgemm_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgemm__Float64x.exe: Rgemm__Float64x.o
+	$(CXX) -o Rgemm__Float64x Rgemm__Float64x.o $(LIBFLAGS) $(_FLOAT64xLIBS)
+
+Rgemm__Float128.exe: Rgemm__Float128.o
+	$(CXX) -o Rgemm__Float128 Rgemm__Float128.o $(LIBFLAGS) $(_FLOAT128LIBS)
+
+Rgemm_double.exe: Rgemm_double.o
+	$(CXX) -o Rgemm_double Rgemm_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak

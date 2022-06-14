@@ -3,7 +3,13 @@ TESTS = $(check_PROGRAMS)
 mplapack_dd_test_PROGRAMS = \
 %%insert here1%%
 
-mplapack_dd_testdir = $(prefix)/share/mplapack/test/mplapack/dd
+mplapack_dd_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/dd
+
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_dd_testdir) $(prefix)
+endif
+
 libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_dd -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_dd -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(QD_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lqd
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
@@ -18,11 +24,11 @@ else
 test_libdepends = $(mplibs) $(reflapack) $(refblas)
 endif
 
-if !IS_MACOSX
+if !IS_MACOS
 test_srcdepends = ../../../../mpblas/test/common/xerbla.cpp ../../../../mpblas/test/common/mplapack.test.cpp ../../../../mpblas/test/common/Mxerbla.override.cpp
 endif
 
-if IS_MACOSX
+if IS_MACOS
 lib_LTLIBRARIES = libmxerbla_override.la
 libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_DD___
 libmxerbla_override_la_SOURCES =  ../../../../mpblas/test/common/Mxerbla.override.cpp
@@ -44,3 +50,8 @@ Mutils_test_dd_CXXFLAGS = $(test_cxxflags)
 %%TEST%%_test_dd_SOURCES  = ../common/%%TEST%%.test.cpp $(test_srcdepends)
 %%TEST%%_test_dd_LDFLAGS    = $(libdepends) $(test_libdepends)
 %%TEST%%_test_dd_CXXFLAGS = $(test_cxxflags)  
+
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_dd_testdir) $(prefix)
+endif

@@ -1,0 +1,44 @@
+#public domain
+CXX=g++-10
+MPLAPACKDIR=%%MPLAPACKDIR%%
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
+OPTFLAGS= -O2
+LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
+MPFRLIBS=-lmplapack_mpfr -lmpblas_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lmpblas_gmp -lgmpxx -lgmp
+QDLIBS=-lmplapack_qd -lmpblas_qd -lqd
+DDLIBS=-lmplapack_dd -lmpblas_dd -lqd
+_FLOAT64xLIBS=-lmplapack__Float64x -lmpblas__Float64x
+_FLOAT128LIBS=-lmplapack__Float128 -lmpblas__Float128%%LIBQUADMATH%%
+DOUBLELIBS=-lmplapack_double -lmpblas_double
+
+programs=Rgesvd_random_highcond_mpfr Rgesvd_random_highcond_gmp Rgesvd_random_highcond_qd Rgesvd_random_highcond_dd Rgesvd_random_highcond__Float64x Rgesvd_random_highcond__Float128 Rgesvd_random_highcond_double
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
+
+Rgesvd_random_highcond_mpfr: Rgesvd_random_highcond_mpfr.o
+	$(CXX) -o Rgesvd_random_highcond_mpfr Rgesvd_random_highcond_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rgesvd_random_highcond_gmp: Rgesvd_random_highcond_gmp.o
+	$(CXX) -o Rgesvd_random_highcond_gmp Rgesvd_random_highcond_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rgesvd_random_highcond_qd: Rgesvd_random_highcond_qd.o
+	$(CXX) -o Rgesvd_random_highcond_qd Rgesvd_random_highcond_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rgesvd_random_highcond_dd: Rgesvd_random_highcond_dd.o
+	$(CXX) -o Rgesvd_random_highcond_dd Rgesvd_random_highcond_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgesvd_random_highcond__Float64x: Rgesvd_random_highcond__Float64x.o
+	$(CXX) -o Rgesvd_random_highcond__Float64x Rgesvd_random_highcond__Float64x.o $(LIBFLAGS) $(_FLOAT64xLIBS)
+
+Rgesvd_random_highcond__Float128: Rgesvd_random_highcond__Float128.o
+	$(CXX) -o Rgesvd_random_highcond__Float128 Rgesvd_random_highcond__Float128.o $(LIBFLAGS) $(_FLOAT128LIBS)
+
+Rgesvd_random_highcond_double: Rgesvd_random_highcond_double.o
+	$(CXX) -o Rgesvd_random_highcond_double Rgesvd_random_highcond_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak

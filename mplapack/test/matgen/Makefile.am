@@ -32,7 +32,7 @@ endif
 if ENABLE_MPFR
 libmatgen_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
 libmatgen_mpfr_la_SOURCES = $(MATGEN_SOURCES)
-if IS_MACOSX
+if IS_MACOS
 libmatgen_mpfr_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
@@ -40,7 +40,7 @@ endif
 if ENABLE_GMP
 libmatgen_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___
 libmatgen_gmp_la_SOURCES = $(MATGEN_SOURCES)
-if IS_MACOSX
+if IS_MACOS
 libmatgen_gmp_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
@@ -48,7 +48,7 @@ endif
 if ENABLE_QD
 libmatgen_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ -D___MPLAPACK_INTERNAL___
 libmatgen_qd_la_SOURCES = $(MATGEN_SOURCES)
-if IS_MACOSX
+if IS_MACOS
 libmatgen_qd_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
@@ -56,7 +56,7 @@ endif
 if ENABLE_DD
 libmatgen_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ -D___MPLAPACK_INTERNAL___
 libmatgen_dd_la_SOURCES = $(MATGEN_SOURCES)
-if IS_MACOSX
+if IS_MACOS
 libmatgen_dd_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
@@ -64,7 +64,7 @@ endif
 if ENABLE_DOUBLE
 libmatgen_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_DOUBLE___ -D___MPLAPACK_INTERNAL___
 libmatgen_double_la_SOURCES = $(MATGEN_SOURCES)
-if IS_MACOSX
+if IS_MACOS
 libmatgen_double_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
@@ -72,7 +72,7 @@ endif
 if ENABLE__FLOAT64X
 libmatgen__Float64x_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___ -D___MPLAPACK_INTERNAL___
 libmatgen__Float64x_la_SOURCES = $(MATGEN_SOURCES)
-if IS_MACOSX
+if IS_MACOS
 libmatgen__Float64x_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
@@ -80,7 +80,7 @@ endif
 if ENABLE__FLOAT128
 libmatgen__Float128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT128___ -D___MPLAPACK_INTERNAL___
 libmatgen__Float128_la_SOURCES = $(MATGEN_SOURCES)
-if IS_MACOSX
+if IS_MACOS
 libmatgen__Float128_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif

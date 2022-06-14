@@ -1,0 +1,49 @@
+# public domain
+# whether _FLOAT128 libs is requred or not is heavily dependent on your environment.
+
+CXX=c++
+MPLAPACKDIR=%%MPLAPACKDIR%%
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
+OPTFLAGS= -O2
+LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
+MPFRLIBS= -lmplapack_mpfr -lmpblas_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lmpblas_gmp -lgmpxx -lgmp
+QDLIBS=-lmplapack_qd -lmpblas_qd -lqd
+DDLIBS=-lmplapack_dd -lmpblas_dd -lqd
+_FLOAT64xLIBS=-lmplapack__Float64x -lmpblas__Float64x
+_FLOAT128LIBS=-lmplapack__Float128 -lmpblas__Float128%%LIBQUADMATH%%
+DOUBLELIBS=-lmplapack_double -lmpblas_double
+BLAS=
+LAPACK=
+FLIBS=
+
+programs=Rsyev_Frank_mpfr Rsyev_Frank_gmp Rsyev_Frank_qd Rsyev_Frank_dd Rsyev_Frank__Float64x Rsyev_Frank__Float128 Rsyev_Frank_double
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
+
+Rsyev_Frank_mpfr: Rsyev_Frank_mpfr.o
+	$(CXX) -o Rsyev_Frank_mpfr Rsyev_Frank_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rsyev_Frank_gmp: Rsyev_Frank_gmp.o
+	$(CXX) -o Rsyev_Frank_gmp Rsyev_Frank_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rsyev_Frank_qd: Rsyev_Frank_qd.o
+	$(CXX) -o Rsyev_Frank_qd Rsyev_Frank_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rsyev_Frank_dd: Rsyev_Frank_dd.o
+	$(CXX) -o Rsyev_Frank_dd Rsyev_Frank_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rsyev_Frank__Float64x: Rsyev_Frank__Float64x.o
+	$(CXX) -o Rsyev_Frank__Float64x Rsyev_Frank__Float64x.o $(LIBFLAGS) $(_FLOAT64xLIBS)
+
+Rsyev_Frank__Float128: Rsyev_Frank__Float128.o
+	$(CXX) -o Rsyev_Frank__Float128 Rsyev_Frank__Float128.o $(LIBFLAGS) $(_FLOAT128LIBS)
+
+Rsyev_Frank_double: Rsyev_Frank_double.o
+	$(CXX) -o Rsyev_Frank_double Rsyev_Frank_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak

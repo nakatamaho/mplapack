@@ -13,7 +13,7 @@ void printnum(_Float128 rtmp)
     int width = 42;
     char buf[BUFLEN];
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
-    int n = quadmath_snprintf (buf, sizeof buf, "%+-#*.35Qe", width, rtmp);
+    int n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp);
 #elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
     snprintf (buf, sizeof buf, "%.35Le", rtmp);
 #else
@@ -64,6 +64,7 @@ bool rselect(_Float128 ar, _Float128 ai) {
     return false;
 }
 
+#include <iostream>
 using namespace std;
 
 int main() {

@@ -1,30 +1,37 @@
-bin_PROGRAMS = xlintstR_qd \
-xlintstC_qd \
-xlintstrfR_qd \
-xlintstrfC_qd
+check_PROGRAMS = $(mplapack_qd_test_PROGRAMS)
 
-mplapack_qd_lintestdir = $(prefix)/share/mplapack/test/mplapack/lin/qd
+mplapack_qd_test_PROGRAMS = xlintstR_qd xlintstC_qd xlintstrfR_qd xlintstrfC_qd
+mplapack_qd_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
-$(bin_PROGRAMS): ../liblin_qd.la ../liblin_override_qd.la
+$(check_PROGRAMS): ../liblin_qd.la ../liblin_override_qd.la
 
 libdepends = -L$(top_builddir)/mplapack/test/lin -llin_qd -llin_override_qd -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd -L$(top_builddir)/mplapack/reference -lmplapack_qd -L$(top_builddir)/mpblas/reference -lmpblas_qd
 mplibs = -L$(QD_LIBDIR) -lqd -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/mplapack/test/fable
 
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_qd_testdir) $(prefix)
+endif
+
 xlintstR_qd_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR_qd_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstR_qd_CXXFLAGS = $(cxxflags) 
 
 xlintstC_qd_SOURCES  = ../common/Cchkaa.cpp
 xlintstC_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC_qd_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstC_qd_CXXFLAGS = $(cxxflags)
 
 xlintstrfR_qd_SOURCES  = ../common/Rchkrfp.cpp
 xlintstrfR_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR_qd_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfR_qd_CXXFLAGS = $(cxxflags)
 
 xlintstrfC_qd_SOURCES  = ../common/Cchkrfp.cpp
 xlintstrfC_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC_qd_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfC_qd_CXXFLAGS = $(cxxflags)
 
 check: Rtest.out Ctest.out Rtest_rfp.out Ctest_rfp.out

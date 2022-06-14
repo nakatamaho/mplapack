@@ -1,6 +1,11 @@
 SUBDIRS = .
 lib_LTLIBRARIES = 
 
+mplapack_eig_DATA = Cbak.in Cbal.in Cbal_double.in Cbb.in Cec.in Ced.in Cgbak.in Cgbal.in Cgd.in Cgg.in \
+Csb.in Csg.in Rbak.in Rbal.in Rbal_double.in Rbb.in Rec.in Red.in Rgbak.in Rgbal.in Rgd.in Rgg.in Rsb.in Rsg.in \
+csd.in glm.in gqr.in gsv.in lse.in nep.in se2.in sep.in svd.in
+mplapack_eigdir = $(prefix)/lib/$(target)/mplapack/test/eig
+
 if ENABLE_MPFR
 lib_LTLIBRARIES += libeig_mpfr.la libeig_override_mpfr.la
 SUBDIRS += mpfr
@@ -41,7 +46,7 @@ libeig_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_src
 libeig_mpfr_la_SOURCES = $(EIG_SOURCES)
 libeig_override_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mplapack/test/fable
 libeig_override_mpfr_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
-if IS_MACOSX
+if IS_MACOS
 libeig_mpfr_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
@@ -51,7 +56,7 @@ libeig_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcd
 libeig_gmp_la_SOURCES = $(EIG_SOURCES)
 libeig_override_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(top_srcdir)/mplapack/test/fable -D___MPLAPACK_BUILD_WITH_GMP___
 libeig_override_gmp_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
-if IS_MACOSX
+if IS_MACOS
 libeig_gmp_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
@@ -61,7 +66,7 @@ libeig_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdi
 libeig_qd_la_SOURCES = $(EIG_SOURCES)
 libeig_override_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___
 libeig_override_qd_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
-if IS_MACOSX
+if IS_MACOS
 libeig_qd_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
@@ -71,7 +76,7 @@ libeig_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdi
 libeig_dd_la_SOURCES = $(EIG_SOURCES)
 libeig_override_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___
 libeig_override_dd_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
-if IS_MACOSX
+if IS_MACOS
 libeig_dd_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
@@ -81,7 +86,7 @@ libeig_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_s
 libeig_double_la_SOURCES = $(EIG_SOURCES)
 libeig_override_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -D___MPLAPACK_BUILD_WITH_DOUBLE___
 libeig_override_double_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
-if IS_MACOSX
+if IS_MACOS
 libeig_double_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
@@ -91,7 +96,7 @@ libeig__Float64x_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(to
 libeig__Float64x_la_SOURCES = $(EIG_SOURCES)
 libeig_override__Float64x_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -D___MPLAPACK_BUILD_WITH__FLOAT64X___
 libeig_override__Float64x_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
-if IS_MACOSX
+if IS_MACOS
 libeig__Float64x_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
@@ -101,7 +106,7 @@ libeig__Float128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(to
 libeig__Float128_la_SOURCES = $(EIG_SOURCES)
 libeig_override__Float128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mplapack/test/fable -D___MPLAPACK_BUILD_WITH__FLOAT128___
 libeig_override__Float128_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
-if IS_MACOSX
+if IS_MACOS
 libeig__Float128_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
@@ -290,3 +295,8 @@ common/Alarqg.cpp \
 common/iMlaenv.cpp \
 common/chkxer.cpp \
 common/xlaenv.cpp 
+
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_eigdir) $(prefix)
+endif

@@ -88,14 +88,14 @@ case "$host" in
     *)
 esac
 AM_CONDITIONAL(IS_MINGW, test x$IS_MINGW = x1)
-IS_MACOSX=0
+IS_MACOS=0
 case "$host" in
     *apple-darwin*)
-        IS_MACOSX=1
+        IS_MACOS=1
         ;;
     *)
 esac
-AM_CONDITIONAL(IS_MACOSX, test x$IS_MACOSX = x1)
+AM_CONDITIONAL(IS_MACOS, test x$IS_MACOS = x1)
 
 IS_LINUX=0
 case "$host" in
@@ -355,6 +355,28 @@ AM_CONDITIONAL(ENABLE__FLOAT128, test x$enable__Float128 = xyes)
 AM_CONDITIONAL(WANT_QUADMATH, test x$want_libquadmath = xyes)
 AM_CONDITIONAL(IS__FLOAT128_LONGDOUBLE, test x$_Float128islongdouble = xyes)
 AM_CONDITIONAL(IS_LONGDOUBLE_BINARY128, test x$longdoubleisbinary128 = xyes)
+
+if test "$enable_examples" != "no" ; then
+# always requires libquadmath
+    _FILES=`ls examples/mpblas/Makefile.macos.in examples/mpblas/Makefile.mingw.in examples/mplapack/*/Makefile.macos.in examples/mplapack/*/Makefile.mingw.in`
+    for _file in $_FILES; do
+        __file=`echo $_file | sed 's/\.in//g'`
+        sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%| -lquadmath|g" $_file > $__file
+    done
+# see FreeBSD ABI: https://www.freebsd.org/cgi/man.cgi?query=arch&sektion=7&format=html
+    _FILES=`ls examples/mpblas/Makefile.linux.in examples/mpblas/Makefile.freebsd.in examples/mplapack/*/Makefile.linux.in examples/mplapack/*/Makefile.freebsd.in` 
+    if test "$want_libquadmath" = "yes" ; then
+        for _file in $_FILES; do
+            __file=`echo $_file | sed 's/\.in//g'`
+            sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%| -lquadmath|g" $_file > $__file
+        done
+    else
+        for _file in $_FILES; do
+            __file=`echo $_file | sed 's/\.in//g'`
+            sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%||g" $_file > $__file
+        done
+    fi
+fi
 
 CXXFLAGS="$SAVE_CXXFLAGS"
 
@@ -774,9 +796,9 @@ fi
 
 dnl For benchmarking, we can set explicitly BLAS and LAPACK
 dnl libraries, like Intel MKL, GotoBLAS2, etc.
-dnl very specific case: veclib is shipped for MacOSX. it should be used without fortran compiler
+dnl very specific case: veclib is shipped for macOS. it should be used without fortran compiler
 dnl this library should be the default for benchmarking (actually it is ATLAS).
-dnl TODO: MacOSX support.
+dnl TODO: macOS support.
 if test x"$with_external_blas" != x""; then
     HAVE_EXTERNAL_BLAS=""
     BLAS=$with_external_blas;
@@ -913,7 +935,6 @@ PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" ${OPENMP_CXXFLAGS}"
 AC_SUBST([PACKAGE_CREATED_LIBS])
 
 ########################################################################
-
 
 AC_CONFIG_FILES([
 mpblas/optimized/Makefile

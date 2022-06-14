@@ -27,6 +27,3 @@ endif
 if ENABLE__FLOAT64X
 SUBDIRS += _Float64x
 endif
-
-
-

@@ -1,9 +1,9 @@
-bin_PROGRAMS = xeigtstR_dd \
-xeigtstC_dd
+check_PROGRAMS = $(mplapack_dd_test_PROGRAMS)
 
-mplapack_dd_eigtestdir = $(prefix)/share/mplapack/test/mplapack/eig/dd
+mplapack_dd_test_PROGRAMS = xeigtstR_dd xeigtstC_dd
+mplapack_dd_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
-$(bin_PROGRAMS): ../libeig_dd.la ../libeig_override_dd.la
+$(check_PROGRAMS): ../libeig_dd.la ../libeig_override_dd.la
 
 libdepends = -L$(top_builddir)/mplapack/test/eig -leig_dd -leig_override_dd -L$(top_builddir)/mplapack/test/matgen -lmatgen_dd -L$(top_builddir)/mplapack/reference -lmplapack_dd -L$(top_builddir)/mpblas/reference -lmpblas_dd 
 mplibs = -L$(QD_LIBDIR) -lqd -lm
@@ -11,11 +11,18 @@ cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$
 
 xeigtstR_dd_SOURCES  = ../common/Rchkee.cpp
 xeigtstR_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstR_dd_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstR_dd_CXXFLAGS = $(cxxflags)
 
 xeigtstC_dd_SOURCES  = ../common/Cchkee.cpp
 xeigtstC_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstC_dd_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_dd_CXXFLAGS = $(cxxflags)
+
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_dd_testdir) $(prefix)
+endif
 
 check: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.out Rsg.out Rbal.out Rbak.out Rgbal.out Rgbak.out Rbb.out Rglm.out Rgqr.out Rgsv.out Rcsd.out Rlse.out \
        Cnep.out Csep.out Cse2.out Csvd.out Cec.out Ced.out Cgg.out Cgd.out Csb.out Csg.out Cbal.out Cbak.out Cgbal.out Cgbak.out Cbb.out Cglm.out Cgqr.out Cgsv.out Ccsd.out Clse.out

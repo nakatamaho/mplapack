@@ -1,30 +1,37 @@
-bin_PROGRAMS = xlintstR_mpfr \
-xlintstC_mpfr \
-xlintstrfR_mpfr \
-xlintstrfC_mpfr
+check_PROGRAMS = $(mplapack_mpfr_test_PROGRAMS)
 
-mplapack_mpfr_lintestdir = $(prefix)/share/mplapack/test/mplapack/lin/mpfr
+mplapack_mpfr_test_PROGRAMS = xlintstR_mpfr xlintstC_mpfr xlintstrfR_mpfr xlintstrfC_mpfr
+mplapack_mpfr_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
-$(bin_PROGRAMS): ../liblin_mpfr.la ../liblin_override_mpfr.la
+$(check_PROGRAMS): ../liblin_mpfr.la ../liblin_override_mpfr.la
 
 libdepends = -L$(top_builddir)/mplapack/test/lin -llin_mpfr -llin_override_mpfr -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr
 mplibs = -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/mplapack/test/fable
 
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_mpfr_testdir) $(prefix)
+endif
+
 xlintstR_mpfr_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstR_mpfr_CXXFLAGS = $(cxxflags) 
 
 xlintstC_mpfr_SOURCES  = ../common/Cchkaa.cpp
 xlintstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstC_mpfr_CXXFLAGS = $(cxxflags)
 
 xlintstrfR_mpfr_SOURCES  = ../common/Rchkrfp.cpp
 xlintstrfR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfR_mpfr_CXXFLAGS = $(cxxflags)
 
 xlintstrfC_mpfr_SOURCES  = ../common/Cchkrfp.cpp
 xlintstrfC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfC_mpfr_CXXFLAGS = $(cxxflags)
 
 check: Rtest.out Ctest.out Rtest_rfp.out Ctest_rfp.out

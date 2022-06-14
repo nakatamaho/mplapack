@@ -30,13 +30,18 @@ work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
-	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "CPPFLAGS=$(CPPFLAGS)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
-	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "CPPFLAGS=$(CPPFLAGS)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
+if IS_MINGW
+	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "CPPFLAGS=$(CPPFLAGS)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS) --enable-shared --disable-static
+	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "CPPFLAGS=$(CPPFLAGS)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2) --enable-shared --disable-static
+else
+	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "CPPFLAGS=$(CPPFLAGS)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS) -Wl,-rpath,$(libdir)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
+	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "CPPFLAGS=$(CPPFLAGS)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS) -Wl,-rpath,$(libdir)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
+endif
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
-	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; env "LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(MPLIBRARY_PATH)" ${MAKE}
-	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; env "LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(MPLIBRARY_PATH)" ${MAKE}
+	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE}
+	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE}
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
@@ -44,8 +49,8 @@ if IS_MINGW
 	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} check LOG_COMPILER=wine64
 	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION)  ; ${MAKE} check LOG_COMPILER=wine64
 else
-	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; env "LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(MPLIBRARY_PATH)" ${MAKE} check
-	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; env "LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(MPLIBRARY_PATH)" ${MAKE} check
+	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} check
+	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE} check
 endif
 	touch $(abs_builddir)/work/$(CHECK_STAMP)
 
@@ -54,6 +59,22 @@ work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
 work/$(INSTALL_STAMP): work/$(CHECK_STAMP)
+if IS_MACOS
+if !SYSTEM_GMP
+	ORG=`otool -L $(abs_builddir)/work/install/mpc-$(MPCVERSION)/src/.libs/libmpc.dylib  | grep gmp | awk '{print $$1}'` ;\
+	_FIX=`otool -L $(abs_builddir)/work/install/mpc-$(MPCVERSION)/src/.libs/libmpc.dylib | grep gmp | awk '{print $$1}' | sed 's|/| |g' | awk '{print $$NF}'` ; FIX=`echo $(prefix)/lib/$$_FIX` ;\
+	echo "install_name_tool -change $$ORG $$FIX $(abs_builddir)/work/install/mpc-$(MPCVERSION)/src/.libs/libmpc.dylib" ;\
+	install_name_tool -change $$ORG $$FIX $(abs_builddir)/work/install/mpc-$(MPCVERSION)/src/.libs/libmpc.dylib
+endif
+endif
+if IS_MACOS
+if !SYSTEM_MPFR
+	ORG=`otool -L $(abs_builddir)/work/install/mpc-$(MPCVERSION)/src/.libs/libmpc.dylib  | grep mpfr | awk '{print $$1}'` ;\
+	_FIX=`otool -L $(abs_builddir)/work/install/mpc-$(MPCVERSION)/src/.libs/libmpc.dylib | grep mpfr | awk '{print $$1}' | sed 's|/| |g' | awk '{print $$NF}'` ; FIX=`echo $(prefix)/lib/$$_FIX` ;\
+	echo "install_name_tool -change $$ORG $$FIX $(abs_builddir)/work/install/mpc-$(MPCVERSION)/src/.libs/libmpc.dylib" ;\
+	install_name_tool -change $$ORG $$FIX $(abs_builddir)/work/install/mpc-$(MPCVERSION)/src/.libs/libmpc.dylib
+endif
+endif
 	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE} install
 	touch $(abs_builddir)/work/$(INSTALL_STAMP)
 

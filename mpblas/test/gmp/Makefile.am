@@ -80,7 +80,8 @@ Rtrmv.test.gmp_opt  Rtrmv.test.gmp	\
 Rtrsm.test.gmp_opt  Rtrsm.test.gmp	\
 Rtrsv.test.gmp_opt  Rtrsv.test.gmp
 
-mpblas_gmp_testdir = $(prefix)/share/mplapack/test/mpblas/gmp
+mpblas_gmp_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/gmp
+
 libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_gmp -lmpblas_mpfr
 opt_libdepends = -L$(top_builddir)/mpblas/optimized/gmp -lmpblas_gmp_opt -L$(top_builddir)/mpblas/reference -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
@@ -88,11 +89,11 @@ refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 
 test_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___
 
-if !IS_MACOSX
+if !IS_MACOS
 test_srcdepends = ../common/xerbla.cpp ../common/mplapack.test.cpp ../common/Mxerbla.override.cpp
 endif
 
-if IS_MACOSX
+if IS_MACOS
 lib_LTLIBRARIES = libmxerbla_override.la
 libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_GMP___
 libmxerbla_override_la_SOURCES =  ../common/Mxerbla.override.cpp
@@ -702,3 +703,8 @@ Rtrsv_test_gmp_opt_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
 Rtrsv_test_gmp_SOURCES=../common/Rtrsv.test.cpp $(test_srcdepends)
 Rtrsv_test_gmp_CXXFLAGS=$(test_cxxflags)
 Rtrsv_test_gmp_LDFLAGS=$(libdepends) $(mplibs) $(refblas)
+
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mpblas_gmp_testdir) $(prefix)
+endif

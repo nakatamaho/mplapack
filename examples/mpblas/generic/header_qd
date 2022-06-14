@@ -1,0 +1,53 @@
+//public domain
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <cstring>
+#include <algorithm>
+
+#include <mpblas_qd.h>
+
+#define QD_PRECISION_SHORT 16
+
+inline void printnum(qd_real rtmp) {
+    std::cout.precision(QD_PRECISION_SHORT);
+    if (rtmp >= 0.0) {
+        std::cout << "+" << rtmp;
+    } else {
+        std::cout << rtmp;
+    }
+    return;
+}
+
+//Matlab/Octave format
+void printvec(qd_real *a, int len) {
+    qd_real tmp;
+    printf("[ ");
+    for (int i = 0; i < len; i++) {
+        tmp = a[i];
+        printnum(tmp);
+        if (i < len - 1)
+            printf(", ");
+    }
+    printf("]");
+}
+
+void printmat(int n, int m, qd_real * a, int lda)
+{
+    qd_real mtmp;
+    printf("[ ");
+    for (int i = 0; i < n; i++) {
+        printf("[ ");
+        for (int j = 0; j < m; j++) {
+            mtmp = a[i + j * lda];
+            printnum(mtmp);
+            if (j < m - 1)
+                printf(", ");
+        }
+        if (i < n - 1)
+            printf("]; ");
+        else
+            printf("] ");
+    }
+    printf("]");
+}

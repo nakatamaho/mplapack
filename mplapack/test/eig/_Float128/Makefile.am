@@ -1,10 +1,9 @@
-bin_PROGRAMS = \
-xeigtstR__Float128 \
-xeigtstC__Float128
+check_PROGRAMS = $(mplapack__Float128_test_PROGRAMS)
 
-mplapack__Float128_eigtestdir = $(prefix)/share/mplapack/test/mplapack/eig/_Float128
+mplapack__Float128_test_PROGRAMS = xeigtstR__Float128 xeigtstC__Float128
+mplapack__Float128_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
-$(bin_PROGRAMS): ../libeig__Float128.la ../libeig_override__Float128.la
+$(check_PROGRAMS): ../libeig__Float128.la ../libeig_override__Float128.la
 
 libdepends = -L$(top_builddir)/mplapack/test/eig -leig__Float128 -leig_override__Float128 -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float128 -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128 
 if WANT_QUADMATH
@@ -16,10 +15,12 @@ cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -D_
 
 xeigtstR__Float128_SOURCES  = ../common/Rchkee.cpp
 xeigtstR__Float128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstR__Float128_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstR__Float128_CXXFLAGS = $(cxxflags)
 
 xeigtstC__Float128_SOURCES  = ../common/Cchkee.cpp
 xeigtstC__Float128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstC__Float128_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC__Float128_CXXFLAGS = $(cxxflags)
 
 check: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.out Rsg.out Rbal.out Rbak.out Rgbal.out Rgbak.out Rbb.out Rglm.out Rgqr.out Rgsv.out Rcsd.out Rlse.out \

@@ -1,10 +1,9 @@
-bin_PROGRAMS = \
-xeigtstR__Float64x \
-xeigtstC__Float64x
+check_PROGRAMS = $(mplapack__Float64x_test_PROGRAMS)
 
-mplapack__Float64x_eigtestdir = $(prefix)/share/mplapack/test/mplapack/eig/_Float64x
+mplapack__Float64x_test_PROGRAMS = xeigtstR__Float64x xeigtstC__Float64x
+mplapack__Float64x_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
-$(bin_PROGRAMS): ../libeig__Float64x.la ../libeig_override__Float64x.la
+$(check_PROGRAMS): ../libeig__Float64x.la ../libeig_override__Float64x.la
 
 libdepends = -L$(top_builddir)/mplapack/test/eig -leig__Float64x -leig_override__Float64x -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float64x -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -L$(top_builddir)/mpblas/reference -lmpblas__Float64x 
 mplibs = -lm
@@ -12,10 +11,12 @@ cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -D_
 
 xeigtstR__Float64x_SOURCES  = ../common/Rchkee.cpp
 xeigtstR__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstR__Float64x_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstR__Float64x_CXXFLAGS = $(cxxflags)
 
 xeigtstC__Float64x_SOURCES  = ../common/Cchkee.cpp
 xeigtstC__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstC__Float64x_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC__Float64x_CXXFLAGS = $(cxxflags)
 
 check: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.out Rsg.out Rbal.out Rbak.out Rgbal.out Rgbak.out Rbb.out Rglm.out Rgqr.out Rgsv.out Rcsd.out Rlse.out \

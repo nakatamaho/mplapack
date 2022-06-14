@@ -1,6 +1,6 @@
 lib_LTLIBRARIES = libmpblas_dd_opt.la 
 
-libmpblas_dd_opt_la_CPPFLAGS = -g -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPLAPACK_BUILD_WITH_DD___ -finline-functions 
+libmpblas_dd_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPLAPACK_BUILD_WITH_DD___
 libmpblas_dd_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \
@@ -79,8 +79,9 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../../reference/iRamax.cpp \
 ../../reference/mplapackinit.cpp
 
-if IS_MACOSX
-libmpblas_dd_opt_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmpblas_dd_opt_la_LDFLAGS = -Wl,-rpath,$(libdir)
+if IS_MACOS
+libmpblas_dd_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 
 SUBDIRS =

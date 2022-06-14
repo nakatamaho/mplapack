@@ -57,6 +57,7 @@ bool rselect(qd_real ar, qd_real ai) {
     return false;
 }
 
+#include <iostream>
 using namespace std;
 
 int main() {

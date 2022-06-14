@@ -3,7 +3,13 @@ TESTS = $(check_PROGRAMS)
 mplapack__Float64x_test_PROGRAMS = \
 %%insert here1%%
 
-mplapack__Float64x_testdir = $(prefix)/share/mplapack/test/mplapack/_Float64x
+mplapack__Float64x_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/_Float64x
+
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack__Float64x_testdir) $(prefix)
+endif
+
 libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas__Float64x -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
@@ -18,11 +24,11 @@ else
 test_libdepends = $(mplibs) $(reflapack) $(refblas)
 endif
 
-if !IS_MACOSX
+if !IS_MACOS
 test_srcdepends = ../../../../mpblas/test/common/xerbla.cpp ../../../../mpblas/test/common/mplapack.test.cpp ../../../../mpblas/test/common/Mxerbla.override.cpp
 endif
 
-if IS_MACOSX
+if IS_MACOS
 lib_LTLIBRARIES = libmxerbla_override.la
 libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___
 libmxerbla_override_la_SOURCES =  ../../../../mpblas/test/common/Mxerbla.override.cpp

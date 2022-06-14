@@ -53,6 +53,7 @@ bool rselect(_Float64x ar, _Float64x ai) {
     return false;
 }
 
+#include <iostream>
 using namespace std;
 
 int main() {

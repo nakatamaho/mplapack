@@ -80,7 +80,8 @@ Rtrmv.test.qd_opt  Rtrmv.test.qd	\
 Rtrsm.test.qd_opt  Rtrsm.test.qd	\
 Rtrsv.test.qd_opt  Rtrsv.test.qd
 
-mpblas_qd_testdir = $(prefix)/share/mplapack/test/mpblas/qd
+mpblas_qd_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/qd
+
 libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_qd -lmpblas_mpfr
 opt_libdepends = -L$(top_builddir)/mpblas/optimized/qd -lmpblas_qd_opt -L$(top_builddir)/mpblas/reference -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -L$(QD_LIBDIR) -lqd
@@ -88,11 +89,11 @@ refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 
 test_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ -D___MPLAPACK_INTERNAL___
 
-if !IS_MACOSX
+if !IS_MACOS
 test_srcdepends = ../common/xerbla.cpp ../common/mplapack.test.cpp ../common/Mxerbla.override.cpp
 endif
 
-if IS_MACOSX
+if IS_MACOS
 lib_LTLIBRARIES = libmxerbla_override.la
 libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_QD___
 libmxerbla_override_la_SOURCES =  ../common/Mxerbla.override.cpp
@@ -703,3 +704,7 @@ Rtrsv_test_qd_SOURCES=../common/Rtrsv.test.cpp $(test_srcdepends)
 Rtrsv_test_qd_CXXFLAGS=$(test_cxxflags)
 Rtrsv_test_qd_LDFLAGS=$(libdepends) $(mplibs) $(refblas)
 
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mpblas_qd_testdir) $(prefix)
+endif
