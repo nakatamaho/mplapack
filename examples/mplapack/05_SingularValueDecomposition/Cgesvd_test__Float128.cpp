@@ -102,10 +102,10 @@ int main() {
     mplapackint info;
 
     // setting A matrix
-    a[0 + 0 * n] = std::complex<_Float128>(0.25, 0.0); a[0 + 1 * n] = std::complex<_Float128>(0.0, -2.25); a[0 + 2 * n] = std::complex<_Float128>(-1.75,0.0);   a[0 + 3 * n] = std::complex<_Float128>(0.0, 0.25);
-    a[1 + 0 * n] = std::complex<_Float128>(0.0,-2.25); a[1 + 1 * n] = std::complex<_Float128>(-0.25, 0.0); a[1 + 2 * n] = std::complex<_Float128>(0.0, -0.25);  a[1 + 3 * n] = std::complex<_Float128>(-1.75, 0.0);
-    a[2 + 0 * n] = std::complex<_Float128>(-1.75,0.0); a[2 + 1 * n] = std::complex<_Float128>(0.0, -0.25); a[2 + 2 * n] = std::complex<_Float128>(0.25, 0.0);   a[2 + 3 * n] = std::complex<_Float128>(0.0, 2.25);
-    a[3 + 0 * n] = std::complex<_Float128>(0.0, 0.25); a[3 + 1 * n] = std::complex<_Float128>(-1.75, 0.0); a[3 + 2 * n] = std::complex<_Float128>(0.0, 2.25);   a[3 + 3 * n] = std::complex<_Float128>(-0.25, 0.0);
+    a[0 + 0 * n] = std::complex<_Float128>(0.9, -1.0); a[0 + 1 * n] = std::complex<_Float128>(20.0, -2.25);  a[0 + 2 * n] = std::complex<_Float128>(1.75, -0.5);  a[0 + 3 * n] = std::complex<_Float128>(0.0, 0.5);
+    a[1 + 0 * n] = std::complex<_Float128>(8.0,-2.25); a[1 + 1 * n] = std::complex<_Float128>(-0.25, 0.0);   a[1 + 2 * n] = std::complex<_Float128>(1.25, -0.25); a[1 + 3 * n] = std::complex<_Float128>(-3.75, 0.0);
+    a[2 + 0 * n] = std::complex<_Float128>(-1.75,0.0); a[2 + 1 * n] = std::complex<_Float128>(-80.0,  1.25); a[2 + 2 * n] = std::complex<_Float128>(1.5, 0.0);    a[2 + 3 * n] = std::complex<_Float128>(30.0, 2.25);
+    a[3 + 0 * n] = std::complex<_Float128>(3.0, 0.25); a[3 + 1 * n] = std::complex<_Float128>(1.75, 0.0);    a[3 + 2 * n] = std::complex<_Float128>(0.0, 2.25);   a[3 + 3 * n] = std::complex<_Float128>(-0.25, -80.0);
     
     printf("# octave check\n");
     printf("split_long_rows(0)\n");

@@ -68,10 +68,10 @@ int main() {
     mplapackint info;
 
     // setting A matrix
-    a[0 + 0 * n] = mpcomplex(0.25, 0.0); a[0 + 1 * n] = mpcomplex(0.0, -2.25); a[0 + 2 * n] = mpcomplex(-1.75,0.0);   a[0 + 3 * n] = mpcomplex(0.0, 0.25);
-    a[1 + 0 * n] = mpcomplex(0.0,-2.25); a[1 + 1 * n] = mpcomplex(-0.25, 0.0); a[1 + 2 * n] = mpcomplex(0.0, -0.25);  a[1 + 3 * n] = mpcomplex(-1.75, 0.0);
-    a[2 + 0 * n] = mpcomplex(-1.75,0.0); a[2 + 1 * n] = mpcomplex(0.0, -0.25); a[2 + 2 * n] = mpcomplex(0.25, 0.0);   a[2 + 3 * n] = mpcomplex(0.0, 2.25);
-    a[3 + 0 * n] = mpcomplex(0.0, 0.25); a[3 + 1 * n] = mpcomplex(-1.75, 0.0); a[3 + 2 * n] = mpcomplex(0.0, 2.25);   a[3 + 3 * n] = mpcomplex(-0.25, 0.0);
+    a[0 + 0 * n] = mpcomplex(0.9, -1.0); a[0 + 1 * n] = mpcomplex(20.0, -2.25);  a[0 + 2 * n] = mpcomplex(1.75, -0.5);  a[0 + 3 * n] = mpcomplex(0.0, 0.5);
+    a[1 + 0 * n] = mpcomplex(8.0,-2.25); a[1 + 1 * n] = mpcomplex(-0.25, 0.0);   a[1 + 2 * n] = mpcomplex(1.25, -0.25); a[1 + 3 * n] = mpcomplex(-3.75, 0.0);
+    a[2 + 0 * n] = mpcomplex(-1.75,0.0); a[2 + 1 * n] = mpcomplex(-80.0,  1.25); a[2 + 2 * n] = mpcomplex(1.5, 0.0);    a[2 + 3 * n] = mpcomplex(30.0, 2.25);
+    a[3 + 0 * n] = mpcomplex(3.0, 0.25); a[3 + 1 * n] = mpcomplex(1.75, 0.0);    a[3 + 2 * n] = mpcomplex(0.0, 2.25);   a[3 + 3 * n] = mpcomplex(-0.25, -80.0);
     
     printf("# octave check\n");
     printf("split_long_rows(0)\n");
