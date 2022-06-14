@@ -10,7 +10,7 @@ CXX="ccache g++-mp-10" ; export CXX
 CC="ccache gcc-mp-10" ; export CC
 FC="ccache gfortran-mp-10"; export FC
 
-./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes
+./configure --prefix=$HOME/MPLAPACK
 make dist-xz
 ####################
 rm -rf $TOPDIR/tmp
