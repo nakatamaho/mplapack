@@ -53,7 +53,7 @@ Rgeev_test_mpfr_LDFLAGS = $(mpfr_libdepends)
 endif
 
 if ENABLE_GMP
-mplapackexamples_PROGRAMS += Cgees_test_gmp Cgeev_NPR_gmp Cgeev_test2_gmp Cgeev_test_gmp Rgees_Grcar_gmp Rgees_readfromfile_gmp Rgees_test_gmp Rgeev_Frank_gmp Rgeev_random_highcond_gmp Rgeev_readfromfile_gmp Rgeev_test_gmp
+mplapackexamples_PROGRAMS += Cgees_test_gmp Cgeev_test2_gmp Cgeev_test_gmp Rgees_Grcar_gmp Rgees_readfromfile_gmp Rgees_test_gmp Rgeev_Frank_gmp Rgeev_random_highcond_gmp Rgeev_readfromfile_gmp Rgeev_test_gmp
 
 gmp_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
 gmp_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(top_builddir)/mpblas/reference -lmpblas_gmp -L$(GMP_LIBDIR) -lgmp
@@ -61,10 +61,6 @@ gmp_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmpl
 Cgees_test_gmp_SOURCES = Cgees_test_gmp.cpp
 Cgees_test_gmp_CXXFLAGS = $(gmp_cxxflags)
 Cgees_test_gmp_LDFLAGS = $(gmp_libdepends)
-
-Cgeev_NPR_gmp_SOURCES = Cgeev_NPR_gmp.cpp
-Cgeev_NPR_gmp_CXXFLAGS = $(gmp_cxxflags)
-Cgeev_NPR_gmp_LDFLAGS = $(gmp_libdepends)
 
 Cgeev_test2_gmp_SOURCES = Cgeev_test2_gmp.cpp
 Cgeev_test2_gmp_CXXFLAGS = $(gmp_cxxflags)
