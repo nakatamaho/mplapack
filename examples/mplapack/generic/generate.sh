@@ -79,13 +79,16 @@ for _mplib in $MPLIBS; do
     if [ x"$_mplib" = x"gmp" ]; then
         echo ""               >> ../Makefile.am
         echo "if ENABLE_GMP" >> ../Makefile.am
-        executefilenames=`echo $FILES | sed 's/\.cpp//g' | sed "s/generic/${_mplib}/g"`
+        executefilenames=`echo $FILES | sed 's/ Cgeev_NPR_generic\.cpp//g' | sed 's/\.cpp//g' | sed "s/generic/${_mplib}/g"`
         echo "mplapackexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
         echo ""               >> ../Makefile.am
         echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include -I\$(GMP_INCLUDEDIR)" >> ../Makefile.am
         echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_${_mplib} -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib} -L\$(GMP_LIBDIR) -lgmp"  >> ../Makefile.am
         echo ""               >> ../Makefile.am
         for _file in $FILES; do
+            if [ "$_file" = "Cgeev_NPR_generic.cpp" ]; then
+                continue
+            fi
             A=`echo $_file | sed "s/generic\.cpp/${_mplib}/g"` 
             echo "${A}_SOURCES = ${A}.cpp" >> ../Makefile.am
             echo "${A}_CXXFLAGS = \$(${_mplib}_cxxflags)" >> ../Makefile.am
