@@ -137,15 +137,26 @@ $ /usr/bin/time docker build -t mplapack:mingw -f  Dockerfile_ubuntu20.04_mingw6
 ```
 
 # How to build and install
-* Prerequesties on Linux: gcc, g++ and gfortran
+* on Linux: prerequiesties: gcc, g++ and gfortran
 
-* Prerequesties on macOS
+```
+$ rm -rf $HOME/tmp $HOME/MPLAPACK
+$ mkdir $HOME/tmp
+$ cd $HOME/tmp
+$ wget https://github.com/nakatamaho/mplapack/releases/download/v1.9.9/mplapack-2.0.0-alpha.tar.xz
+$ tar xvfz mplapack-2.0.0-alpha.tar.xz
+$ cd mplapack-2.0.0
+$ CXX="g++" ; export CXX
+$ CC="gcc" ; export CC
+$ FC="gfortran"; export FC
+$ ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes #--enable-_Float64x=yes 
+$ make -j4
+$ make install
+```
+
+* on macOS
 ```
 $ sudo port install gcc10 coreutils git gsed
-```
-
-* Installation
-```
 $ rm -rf $HOME/tmp $HOME/MPLAPACK
 $ mkdir $HOME/tmp
 $ cd $HOME/tmp
@@ -155,7 +166,7 @@ $ cd mplapack-2.0.0
 $ CXX="g++-mp-10" ; export CXX
 $ CC="gcc-mp-10" ; export CC
 $ FC="gfortran-mp-10"; export FC
-$ ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes
+$ ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes #--enable-_Float64x=yes 
 $ make -j4
 $ make install
 ```
