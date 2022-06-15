@@ -173,7 +173,7 @@ $ make install
 
 Note: Float64x is supported only on Intel CPUs, you can enable this by uncomment "#--enable-_Float64x=yes" -> "--enable-_Float64x=yes" as follows:
 ```
-$ ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-_Float64x=yes 
+$ ./configure --prefix=$HOME/MPLAPACK --enable-_Float64x=yes --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes
 ```
 
 # Docker build for developemnt (+ FABLE; Automatic Fortran to C++ converter)
