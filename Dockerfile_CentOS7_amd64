@@ -4,8 +4,8 @@ RUN yum install -y centos-release-scl
 RUN yum install -y devtoolset-9
 RUN yum install -y gcc gcc-c++ gcc-gfortran make automake libtool
 RUN yum install -y python3
-RUN yum install -y sudo which patch bzip2 git wget time ccache
-RUN yum install -y emacs xeyes
+RUN yum install -y sudo which patch bzip2 git wget time
+RUN yum install -y emacs
 RUN scl enable devtoolset-9 bash
 
 ARG DOCKER_UID=1000
@@ -25,9 +25,12 @@ RUN echo "[user]" >> /home/$DOCKER_USER/.gitconfig && \
     echo "name = ${GIT_NAME}" >> /home/$DOCKER_USER/.gitconfig
 
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
-RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git
-RUN cd /home/$DOCKER_USER/mplapack && git checkout v1.0.1 && git log -1
-RUN cd /home/$DOCKER_USER/mplapack && bash -x misc/reconfig.centos7.sh
-RUN cd /home/$DOCKER_USER/mplapack && make -j`getconf _NPROCESSORS_ONLN`
-RUN cd /home/$DOCKER_USER/mplapack && make install
-
+RUN cd /home/$DOCKER_USER && wget https://github.com/nakatamaho/mplapack/releases/download/v1.9.9/mplapack-2.0.0-alpha.tar.xz
+RUN cd /home/$DOCKER_USER && tar xvfJ mplapack-2.0.0-alpha.tar.xz
+RUN cd /home/$DOCKER_USER/mplapack-2.0.0
+ARG CXX="/opt/rh/devtoolset-9/root/usr/bin/g++"
+ARG CC="/opt/rh/devtoolset-9/root/usr/bin/gcc"
+ARG FC="/opt/rh/devtoolset-9/root/usr/bin/gfortran"
+RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --e\nable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes
+RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && make -j`getconf _NPROCESSORS_ONLN`
+RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && make install

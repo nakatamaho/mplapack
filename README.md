@@ -4,9 +4,13 @@ libraries like GMP, MPFR and QD etc so that users can choose for user's
 convenience. The MPLAPACK is a free software (2-clause BSD style license with
 original license by LAPACK).
 
+# News
+
+* 2022/6/14 MPLAPACK 2.0.0 alpha released. Complex version and RFP version are now working. 
+
 # Capabilities
 * MPBLAS: All BLAS routines can be done in multiple precision arithmetic.
-* MPLAPACK: in ver 1.0.1 all Real version of following solvers (complex version will be added in 2.0)
+* MPLAPACK: All LAPACK routines can be done in multiple precision arithmetic; except for mixed precision routines.
 * Linear Equations
 * Linear Least Squares (LLS) Problems
 * Generalized Linear Least Squares (LSE and GLM) Problems
@@ -55,75 +59,110 @@ Eprint = {arXiv:2109.13406},
 
 # How to build on Linux and Win (using Docker; recommended)
 
-Ubuntu 20.04 (amd64, AArch64)
+Ubuntu 22.04 (amd64)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ git checkout v1.0.1
-$ /usr/bin/time docker build -t mplapack:ubuntu2004 -f Dockerfile_ubuntu20.04 . 2>&1 | tee log.ubuntu2004
+$ /usr/bin/time docker build -t mplapack:ubuntu2204 -f Dockerfile_ubuntu22.04_amd64 . 2>&1 | tee log.ubuntu2204
 ```
 
-CentOS 7 (amd64, AArch64)
+Ubuntu 22.04 (aarch64, ppc64)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ git checkout v1.0.1
-$ /usr/bin/time docker build -t mplapack:centos7 -f Dockerfile_CentOS7 . 2>&1 | tee log.CentOS7
+$ /usr/bin/time docker build -t mplapack:ubuntu2204 -f Dockerfile_ubuntu22.04_others . 2>&1 | tee log.ubuntu2204
 ```
 
-CentOS 8 (amd64, AArch64)
+Ubuntu 20.04 (amd64)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ git checkout v1.0.1
-$ /usr/bin/time docker build -t mplapack:centos8 -f Dockerfile_CentOS8 . 2>&1 | tee log.CentOS8
+$ /usr/bin/time docker build -t mplapack:ubuntu2004 -f Dockerfile_ubuntu20.04_amd64 . 2>&1 | tee log.ubuntu2004
 ```
 
-Ubuntu 18.04 (amd64, AArch64)
+Ubuntu 20.04 (aarch64, ppc64)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ git checkout v1.0.1
+$ /usr/bin/time docker build -t mplapack:ubuntu2004 -f Dockerfile_ubuntu20.04_others . 2>&1 | tee log.ubuntu2004
+```
+
+CentOS 7 (amd64)
+```
+$ git clone https://github.com/nakatamaho/mplapack/
+$ cd mplapack
+$ /usr/bin/time docker build -t mplapack:centos7 -f Dockerfile_CentOS7_amd64 . 2>&1 | tee log.CentOS7
+```
+
+CentOS 7 (aarch64)
+```
+$ git clone https://github.com/nakatamaho/mplapack/
+$ cd mplapack
+$ /usr/bin/time docker build -t mplapack:centos7 -f Dockerfile_CentOS7_AArch64 . 2>&1 | tee log.CentOS7
+```
+
+CentOS 8 (amd64)
+```
+$ git clone https://github.com/nakatamaho/mplapack/
+$ cd mplapack
+$ /usr/bin/time docker build -t mplapack:centos8 -f Dockerfile_CentOS8_amd64 . 2>&1 | tee log.CentOS8
+```
+
+CentOS 8 (aarch64)
+```
+$ git clone https://github.com/nakatamaho/mplapack/
+$ cd mplapack
+$ /usr/bin/time docker build -t mplapack:centos8 -f Dockerfile_CentOS8_others . 2>&1 | tee log.CentOS8
+```
+
+Ubuntu 18.04 (amd64)
+```
+$ git clone https://github.com/nakatamaho/mplapack/
+$ cd mplapack
 $ /usr/bin/time docker build -t mplapack:ubuntu1804 -f Dockerfile_ubuntu18.04 . 2>&1 | tee log.ubuntu1804
 ```
 
-Ubuntu 20.04 (using Intel oneAPI)
+Ubuntu 20.04 + Intel oneAPI
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ git checkout v1.0.1
-$ /usr/bin/time docker build -t mplapack:ubuntu2004intel -f Dockerfile_ubuntu20.04_intel . 2>&1 | tee log.ubuntu2004.intel
+$ /usr/bin/time docker build -t mplapack:ubuntu2004intel -f Dockerfile_ubuntu20.04_inteloneapi . 2>&1 | tee log.ubuntu2004.intel
 ```
 
-Windows 64bit (using cross compiler on Ubuntu) 
+Windows 64bit (using cross compiler on Ubuntu)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ git checkout v1.0.1
 $ /usr/bin/time docker build -t mplapack:mingw -f  Dockerfile_ubuntu20.04_mingw64 . 2>&1 | tee log.mingw
 ```
 
-# How to build and install (on Mac, using macports)
+# How to build and install
+* Prerequesties on Linux: gcc, g++ and gfortran
 
+* Prerequesties on macOS
 ```
-$ sudo port install gcc9 coreutils git ccache
-$ git clone https://github.com/nakatamaho/mplapack.git
-$ cd mplapack
-$ git fetch origin v1.0.1
-$ git checkout v1.0.1
-$ pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd
-$ aclocal ; autoconf ; automake --add-missing
-$ autoreconf --force --install
-$ CXX="g++-mp-9" ; export CXX
-$ CC="gcc-mp-9" ; export CC
-$ FC="gfortran-mp-9"; export FC
-$ F77="gfortran-mp-9"; export F77
-$ ./configure --prefix=/Users/maho/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes
+$ sudo port install gcc10 coreutils git gsed
+```
+
+* Installation
+```
+$ rm -rf $HOME/tmp $HOME/MPLAPACK
+$ mkdir $HOME/tmp
+$ cd $HOME/tmp
+$ wget https://github.com/nakatamaho/mplapack/releases/download/v1.9.9/mplapack-2.0.0-alpha.tar.xz
+$ tar xvfz mplapack-2.0.0-alpha.tar.xz
+$ cd mplapack-2.0.0
+$ CXX="g++-mp-10" ; export CXX
+$ CC="gcc-mp-10" ; export CC
+$ FC="gfortran-mp-10"; export FC
+$ ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes
+$ make -j4
+$ make install
 ```
 
 Note: Float64x is supported only on Intel CPUs.
 
-# Docker build + FABLE (Automatic Fortran to C++ converter)
+# Docker build for developemnt (+ FABLE; Automatic Fortran to C++ converter)
 
 https://github.com/cctbx/cctbx_project/tree/master/fable
 FABLE: Automatic Fortran to C++ conversion (https://doi.org/10.1186/1751-0473-7-5).
@@ -142,6 +181,22 @@ $ cd ; fable.cout sample.f
 ```
 
 # MPLAPACK Release process
+
+## MPLAPACK 3.0.0 Release process
+This is the release process for MPLAPACK 3.0.0
+| Action | Date | Status | Description |
+| --- | --- | --- | --- |
+| Impliment mixed precision version              |            |     |                     | 
+| Performance tuning using FAM on amd64          |            |     |                     |
+| Fix Rlamch for QD, DD                          |            |     | svd.in fails.used with caution | 
+| cleanup pow (REAL, long int)                   |            |     |                          | 
+| Get rid of compiler warnings                   |            |     |                          | 
+| lp64 ilp64 llp64 ilp32 lp32 cleanup            |            |     |                          | 
+| FMA for QD, DD                                 |            |     |                     |
+| Drop GMP version                               |            |     | Since trigonometric functions req'ed | 
+| more benchmarks                                |            |     |                          | 
+| add gmpfrxx                                    |            |     | https://math.berkeley.edu/~wilken/code/gmpfrxx/ | 
+| optimized implementations                      |            |     |                          | 
 
 ## MPLAPACK 2.0.0 Release process
 This is the release process for MPLAPACK 2.0.0
@@ -183,29 +238,16 @@ This is the release process for MPLAPACK 2.0.0
 | complex eig svd.in                      | 2022/05/06 | NG for dd, qd | Testing Singular Value Decomposition routines for complex matrices. In some cases, Cgesvj has large error for dd and qd. Othre than that, it is ok|
 | complex eig gsv.in                      | 2022/05/09 |  ok   | testing complex Generalized SVD routines |
 | Impliment RFP version                   | 2022/05/16 |  ok   |  Test for linear equation routines RFP format (real, complex) | 
-| make tar ball for distribution          |            |     |                          |
-| Add more examples                       |            |     |                          | 
-
-## MPLAPACK 3.0.0 Release process
-This is the release process for MPLAPACK 3.0.0
-| Action | Date | Status | Description |
-| --- | --- | --- | --- |
-| Impliment mixed precision version              |            |     |                     | 
-| Performance tuning using FAM on amd64          |            |     |                     |
-| Fix Rlamch for QD, DD                          |            |     | svd.in fails.used with caution | 
-| cleanup pow (REAL, long int)                   |            |     |                          | 
-| Get rid of compiler warnings                   |            |     |                          | 
-| lp64 ilp64 llp64 ilp32 lp32 cleanup            |            |     |                          | 
-| FMA for QD, DD                                 |            |     |                     |
-| Drop GMP version                               |            |     | Since trigonometric functions req'ed | 
-| more benchmarks                                |            |     |                          | 
-| add gmpfrxx                                    |            |     | https://math.berkeley.edu/~wilken/code/gmpfrxx/ | 
-| optimized implementations                      |            |     |                          | 
+| Add more examples                       | 2022/06/14 |     |                          | 
+| make tar ball for distribution          | 2022/06/14 |     |                          |
+| alpha release                           | 2022/06/14 |     |                          |
+| update document                         |            |     |                          |
 
 ## old schedules
 * version 1.0.0 https://github.com/nakatamaho/mplapack/blob/master/doc/Release1.0.0.md
 
 # History
+* 2022/6/14 MPLAPACK 2.0.0 alpha released. Complex version and RFP version are now working. 
 * 2022/05/24 2.0 All tests for complex and RFP have passed! alpha version is merged into HEAD.
 * 2022/03/21 2.0 (develoment ongoing). Now complex lin tests have passed for all precisions.
 * 2021/11/1 1.0.1 release. Fixing dd and qd arithmetic by Inte One API.
