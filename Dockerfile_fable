@@ -3,7 +3,7 @@ FROM ubuntu:20.04
 LABEL maintainer="maho.nakata@gmail.com"
 
 ARG DEBIAN_FRONTEND=noninteractive 
-RUN apt update
+RUN apt -y update
 RUN apt -y upgrade
 RUN apt install -y sudo 
 RUN apt install -y tzdata
@@ -14,12 +14,32 @@ RUN echo "${TZ}" > /etc/timezone \
   && ln -s /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
   && dpkg-reconfigure -f noninteractive tzdata
 
-RUN apt install -y build-essential gfortran python3
+RUN apt install -y build-essential python3 gcc g++ gfortran
+RUN apt install -y gcc-10 g++-10 gfortran-10
 RUN apt install -y autotools-dev automake libtool
 RUN apt install -y gdb valgrind libtool-bin
-RUN apt install -y git wget ccache time pkg-config expect clangd clang-format unifdef octave
+RUN apt install -y git wget ccache time pkg-config clangd clang-format unifdef octave
 RUN apt install -y ng-common ng-cjk emacs-nox
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+
+### intel one api start ###
+RUN wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+RUN apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+RUN echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+RUN apt update
+RUN apt install -y intel-basekit
+RUN apt install -y intel-hpckit
+### intel one api end ###
+
+### mingw start ###
+RUN dpkg --add-architecture i386
+RUN wget -nc https://dl.winehq.org/wine-builds/winehq.key
+RUN mv winehq.key /usr/share/keyrings/winehq-archive.key
+RUN wget -nc https://dl.winehq.org/wine-builds/ubuntu/dists/focal/winehq-focal.sources
+RUN mv winehq-focal.sources /etc/apt/sources.list.d/
+RUN apt update -y
+RUN apt install -y --install-recommends winehq-stable
+### mingw end ###
 
 ARG DOCKER_UID=1000
 ARG DOCKER_USER=docker
@@ -33,31 +53,18 @@ RUN cd ${WORK} && cd ctags && ./autogen.sh && ./configure --prefix=/usr/local &&
 
 USER docker     
 USER ${DOCKER_USER}
+ARG GIT_EMAIL="maho.nakata@gmail.com"
+ARG GIT_NAME="NAKATA Maho"
 RUN echo "\n\
 [user]\n\
         email = ${GIT_EMAIL}\n\
         name = ${GIT_NAME}\n\
 " > /home/$DOCKER_USER/.gitconfig
-RUN cd ${WORK} && who am i && wget https://raw.githubusercontent.com/cctbx/cctbx_project/master/libtbx/auto_build/bootstrap.py --no-check-certificate
-RUN cd ${WORK} && who am i && python bootstrap.py hot update --builder=cctbx
-RUN cd ${WORK} && who am i && wget https://repo.anaconda.com/miniconda/Miniconda2-4.5.11-Linux-x86_64.sh && chmod +x ./Miniconda2-4.5.11-Linux-x86_64.sh 
 SHELL ["/bin/bash", "-c"]
-RUN echo -e "#!/usr/bin/expect -f\n\
-spawn ./Miniconda2-4.5.11-Linux-x86_64.sh\n\
-set timeout -1\n\
-expect \">>>\"\n\
-send \"\\\n\"\n\
-expect \"More\"\n\
-send \"   \"\n\
-expect \">>>\"\n\
-send \"yes\\\n\"\n\
-expect \">>>\"\n\
-send \"/home/${DOCKER_USER}/miniconda2\\\n\"\n\
-expect \">>>\"\n\
-send \"no\\\n\"" >> ${WORK}/answerfile_miniconda
-RUN cat ${WORK}/answerfile_miniconda
-RUN chown $DOCKER_USER ${WORK}/answerfile_miniconda
-RUN cd ${WORK} && chmod +x answerfile_miniconda && ./answerfile_miniconda
+RUN cd ${WORK} && wget https://raw.githubusercontent.com/cctbx/cctbx_project/master/libtbx/auto_build/bootstrap.py --no-check-certificate
+RUN cd ${WORK} && python bootstrap.py hot update --builder=cctbx
+RUN cd ${WORK} && wget https://repo.anaconda.com/miniconda/Miniconda2-4.5.11-Linux-x86_64.sh
+RUN cd ${WORK} && bash ./Miniconda2-4.5.11-Linux-x86_64.sh -b -p
 
 RUN cd ${WORK} && source miniconda2/etc/profile.d/conda.sh && conda create -y --name fable38 python=3.8 && conda activate fable38 && conda install six future && mkdir build38 && cd ${WORK}/build38 && python ../modules/cctbx_project/libtbx/configure.py fable
 RUN source ${WORK}/build38/setpaths.sh && cd ${WORK}/build38 && make && cd ${WORK} && cd ${WORK}/build38 && make ; cd ${WORK}
@@ -69,9 +76,6 @@ RUN echo -e "\n\
         PRINT *, 'HELLO, WORLD!'\n\
         END PROGRAM\n\
 " >> ${WORK}/sample.f
-
-ARG GIT_EMAIL="maho.nakata@gmail.com"
-ARG GIT_NAME="NAKATA Maho"
 
 #setting lsp mode for C++ https://emacs-lsp.github.io/lsp-mode/tutorials/CPP-guide/
 RUN cd ${WORK} && mkdir -p .emacs.d
@@ -119,6 +123,13 @@ RUN echo -e "(require 'package)\n\
 RUN cd ${WORK} && echo "cd /home/$DOCKER_USER" >> .bashrc
 RUN cd ${WORK} && echo 'eval "$(ssh-agent -s)"' >> .bashrc
 RUN cd ${WORK} && echo 'ssh-add ~/.ssh/id_ed25519' >> .bashrc
+
+## intel one api and wine settings start ###
+RUN cd ${WORK} && echo "#source /opt/intel/oneapi/setvars.sh" >> .bashrc
+RUN cd ${WORK} && echo "export WINEPATH=\"/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-posix;/home/$DOCKER_USER/MPLAPACK/bin\"" >> .bashrc
+RUN cd ${WORK} && echo "export WINEDEBUG=\"-all\"" >> .bashrc
+## intel one api and wine settings end ###
+
 RUN cd ${WORK} && git clone https://github.com/nakatamaho/mplapack.git
 RUN cd ${WORK}/mplapack && git fetch origin v2.0
 RUN cd ${WORK}/mplapack && git checkout v2.0
@@ -126,4 +137,3 @@ RUN cd ${WORK}/mplapack && git remote set-url origin git@github.com:nakatamaho/m
 RUN cd ${WORK}/mplapack && git log -1
 RUN cd ${WORK}/mplapack && bash -x misc/reconfig.develop.sh
 RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
-
