@@ -6,7 +6,7 @@ original license by LAPACK).
 
 # News
 
-* 2022/6/14 MPLAPACK 2.0.0 alpha released. Complex version and RFP version are now working. 
+* 2022/6/14 MPLAPACK 2.0.0 alpha released. Complex version and RFP version are now working. If you find problems feel free to raise issues.
 
 # Capabilities
 * MPBLAS: All BLAS routines can be done in multiple precision arithmetic.
@@ -36,10 +36,10 @@ We use MPFR + MPC as the primary arithmetic class.
 
 # Supported platforms
 
-* Ubuntu 20.04, 18.04 (amd64, AArch64)
+* Ubuntu 22.04, 20.04, 18.04 (amd64, AArch64)
 * CentOS 7,8 (amd64, AArch64)
 * Ubuntu 20.04 (amd64) + Intel oneAPI
-* macOS (Intel) + macports (you may use homebrew instead, small modification of build script req'ed)
+* macOS (Intel) + gcc via macports (you may use homebrew instead, small modification of build script req'ed)
 * Windows (64bit; mingw64 on Ubuntu with wine64)
 
 # Manual
@@ -155,6 +155,7 @@ $ make install
 ```
 
 * on macOS (using macports)
+gcc is required; we don't test clang which doesn't support _Float128.
 ```
 $ sudo port install gcc10 coreutils git gsed
 $ rm -rf $HOME/tmp $HOME/MPLAPACK
