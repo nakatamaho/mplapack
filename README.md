@@ -136,7 +136,7 @@ $ cd mplapack
 $ /usr/bin/time docker build -t mplapack:mingw -f  Dockerfile_ubuntu20.04_mingw64 . 2>&1 | tee log.mingw
 ```
 
-# How to build and install
+# How to build and install from source tarball
 * on Linux: prerequiesties: gcc, g++ and gfortran
 
 ```
@@ -171,7 +171,10 @@ $ make -j4
 $ make install
 ```
 
-Note: Float64x is supported only on Intel CPUs.
+Note: Float64x is supported only on Intel CPUs, you can enable this by uncomment as follows:
+```
+$ ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-_Float64x=yes 
+```
 
 # Docker build for developemnt (+ FABLE; Automatic Fortran to C++ converter)
 
