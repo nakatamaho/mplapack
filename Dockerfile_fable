@@ -125,4 +125,5 @@ RUN cd ${WORK}/mplapack && git checkout v2.0
 RUN cd ${WORK}/mplapack && git remote set-url origin git@github.com:nakatamaho/mplapack.git
 RUN cd ${WORK}/mplapack && git log -1
 RUN cd ${WORK}/mplapack && bash -x misc/reconfig.develop.sh
-RUN cd ${WORK}/mplapack && make -j25
+RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
+

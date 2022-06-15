@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:18.04
 
 # change following two lines
 ARG GIT_EMAIL="maho.nakata@gmail.com"
@@ -17,15 +17,9 @@ RUN echo "${TZ}" > /etc/timezone \
 
 RUN apt install -y build-essential gfortran python3
 RUN apt install -y autotools-dev automake libtool
-RUN apt install -y git wget ccache time
+RUN apt install -y git wget time
 RUN apt install -y ng-common ng-cjk emacs-nox
 RUN sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
-RUN wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-RUN apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-RUN echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
-RUN apt update
-RUN apt install -y intel-basekit
-RUN apt install -y intel-hpckit
 
 ARG DOCKER_UID=1000
 ARG DOCKER_USER=docker
@@ -39,11 +33,12 @@ RUN echo "\n\
 " > /home/$DOCKER_USER/.gitconfig
 
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
-RUN cd /home/$DOCKER_USER && echo "source /opt/intel/oneapi/setvars.sh" >> /home/$DOCKER_USER/.bashrc
-RUN cd /home/$DOCKER_USER && git clone https://github.com/nakatamaho/mplapack.git
-RUN cd /home/$DOCKER_USER/mplapack && git checkout v1.0.1 && git log -1
-SHELL ["/bin/bash", "-c"]
-RUN cd /home/$DOCKER_USER/mplapack && source /opt/intel/oneapi/setvars.sh && bash -x misc/reconfig.ubuntu20.04.intel.sh
-RUN cd /home/$DOCKER_USER/mplapack && source /opt/intel/oneapi/setvars.sh && make -j`getconf _NPROCESSORS_ONLN`
-RUN cd /home/$DOCKER_USER/mplapack && source /opt/intel/oneapi/setvars.sh && make install
-
+RUN cd /home/$DOCKER_USER && wget https://github.com/nakatamaho/mplapack/releases/download/v1.9.9/mplapack-2.0.0-alpha.tar.xz
+RUN cd /home/$DOCKER_USER && tar xvfJ mplapack-2.0.0-alpha.tar.xz
+RUN cd /home/$DOCKER_USER/mplapack-2.0.0
+ARG CXX="g++"
+ARG CC="gcc"
+ARG FC="gfortran"
+RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes
+RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && make -j`getconf _NPROCESSORS_ONLN`
+RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && make install
