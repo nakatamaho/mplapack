@@ -859,17 +859,27 @@ if test x"$enable_optimization" = x"yes" && test x"$enable_debug" != x"yes" ; th
            FCFLAGS="$FCFLAGS -mcpu=native -O2 -finline-functions -funroll-all-loops"
        ;;
        * ) 
-           CFLAGS="$CFLAGS -march=native -O2 -finline-functions -funroll-all-loops"
-           CXXFLAGS="$CXXFLAGS -march=native -O2 -finline-functions -funroll-all-loops"
-           FCFLAGS="$FCFLAGS -march=native -O2 -finline-functions -funroll-all-loops"
+           if test x"$is_intelcxx" = x"1"; then
+               if cat /proc/cpuinfo | grep Ryzen >& /dev/null ; then
+                   CXXFLAGS="$CXXFLAGS -march=core-avx2 -O2 -finline-functions -funroll-all-loops"
+               else
+                   CXXFLAGS="$CXXFLAGS -xHost -O2 -finline-functions -funroll-all-loops"
+               fi
+           else #GCC
+               CXXFLAGS="$CXXFLAGS -march=native -O2 -finline-functions -funroll-all-loops"
+           fi
+           if test x"$is_intelcc" = x"1"; then
+               if cat /proc/cpuinfo | grep Ryzen >& /dev/null ; then
+                   CFLAGS="$CFLAGS -march=core-avx2 -O2 -finline-functions"
+               else
+                   CFLAGS="$CFLAGS -xHost -O2 -finline-functions"
+               fi
+           else #GCC
+               CFLAGS="$CFLAGS -march=native -O2 -finline-functions -funroll-all-loops"
+           fi
+           FCFLAGS="$FCFLAGS -O2 -finline-functions -funroll-all-loops"
        ;;
     esac
-    if test x"$is_intelcxx" = x"1"; then
-        CXXFLAGS="$CXXFLAGS -xHost -O3"
-    fi
-    if test x"$is_intelcc" = x"1"; then
-        CFLAGS="$CFLAGS -xHost -O3"
-    fi
 fi
 
 if test x"$is_intelcc" = x"1"; then
