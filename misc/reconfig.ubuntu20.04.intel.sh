@@ -8,7 +8,7 @@ CXX="ccache icpc" ; export CXX
 CC="ccache icc" ; export CC
 FC="ifort"; export FC
 F77="ifort"; export F77
-ccache -M 60G
+ccache -M 80G
 else
 CXX="icpc" ; export CXX
 CC="icc" ; export CC
@@ -21,4 +21,4 @@ pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd
 aclocal ; autoconf ; automake --add-missing
 autoreconf --force --install
 
-./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes
+./configure --prefix=$HOME/MPLAPACK_INTELONEAPI --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes
