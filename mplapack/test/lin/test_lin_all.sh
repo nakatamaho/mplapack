@@ -1,7 +1,7 @@
 #!/bin/bash
 
 LINREALS=`ls xlintstR_*`
-LINCOMPLEXS=`ls xlintstC_*`
+LINCOMPLEXES=`ls xlintstC_*`
 
 LINREAL_RFPS=`ls xlintstrfR_*`
 LINCOMPLEX_RFPS=`ls xlintstrfC_*`
@@ -10,7 +10,7 @@ for linreal in $LINREALS; do
     ./$linreal < ./Rtest.in >& log.$linreal
 done
 
-for lincomplex in $LINCOMPLEXS; do
+for lincomplex in $LINCOMPLEXES; do
     ./$lincomplex < ./Ctest.in >& log.$lincomplex
 done
 
