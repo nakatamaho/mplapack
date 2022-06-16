@@ -3,7 +3,7 @@ lib_LTLIBRARIES =
 
 mplapack_eig_DATA = Cbak.in Cbal.in Cbal_double.in Cbb.in Cec.in Ced.in Cgbak.in Cgbal.in Cgd.in Cgg.in \
 Csb.in Csg.in Rbak.in Rbal.in Rbal_double.in Rbb.in Rec.in Red.in Rgbak.in Rgbal.in Rgd.in Rgg.in Rsb.in Rsg.in \
-csd.in glm.in gqr.in gsv.in lse.in nep.in se2.in sep.in svd.in test_eig_all.sh
+csd.in glm.in gqr.in gsv.in lse.in nep.in se2.in sep.in svd.in test_eig_all.sh test_eig_all_mingw.sh
 mplapack_eigdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 if ENABLE_MPFR

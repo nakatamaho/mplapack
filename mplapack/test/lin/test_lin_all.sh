@@ -11,13 +11,13 @@ for linreal in $LINREALS; do
 done
 
 for lincomplex in $LINCOMPLEXES; do
-    ./$lincomplex < ./Ctest.in >& log.$lincomplex
+    /usr/bin/time ./$lincomplex < ./Ctest.in >& log.$lincomplex
 done
 
 for linreal_rfp in $LINREAL_RFPS; do
-    ./$linreal_rfp < ./Rtest_rfp.in >& log.$linreal_rfp
+    /usr/bin/time ./$linreal_rfp < ./Rtest_rfp.in >& log.$linreal_rfp
 done
 
 for lincomplex_rfp in $LINCOMPLEX_RFPS; do
-    ./$lincomplex_rfp < ./Ctest_rfp.in >& log.$lincomplex_rfp
+    /usr/bin/time ./$lincomplex_rfp < ./Ctest_rfp.in >& log.$lincomplex_rfp
 done
