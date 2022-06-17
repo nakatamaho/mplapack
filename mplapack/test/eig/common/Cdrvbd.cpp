@@ -526,7 +526,6 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 result[17 - 1] = zero;
                 result[18 - 1] = zero;
                 //
-#if !defined(___MPLAPACK_BUILD_WITH_DD___) && !defined(___MPLAPACK_BUILD_WITH_QD___)
                 if (m >= n) {
                     iwtmp = 2 * mnmin * mnmin + 2 * mnmin + max(m, n);
                     lswork = iwtmp + (iwspc - 1) * (lwork - iwtmp) / 3;
@@ -576,7 +575,6 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         }
                     }
                 }
-#endif
                 //
                 //              Test Cgejsv
                 //              Note: Cgejsv only works for M >= N
@@ -585,7 +583,6 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 result[20 - 1] = zero;
                 result[21 - 1] = zero;
                 result[22 - 1] = zero;
-#if !defined(___MPLAPACK_BUILD_WITH_DD___) && !defined(___MPLAPACK_BUILD_WITH_QD___)
                 if (m >= n) {
                     iwtmp = 2 * mnmin * mnmin + 2 * mnmin + max(m, n);
                     lswork = iwtmp + (iwspc - 1) * (lwork - iwtmp) / 3;
@@ -635,7 +632,6 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         }
                     }
                 }
-#endif
                 //
                 //              Test Cgesvdx
                 //
