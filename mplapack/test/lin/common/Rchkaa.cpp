@@ -84,9 +84,9 @@ void Rchkaa(void) {
     bool tstchk = false;
     bool tstdrv = false;
     bool tsterr = false;
-    char tstchk_str[1];
-    char tstdrv_str[1];
-    char tsterr_str[1];
+    char tstchk_str[2];
+    char tstdrv_str[2];
+    char tsterr_str[2];
     REAL eps = 0.0;
     char aline[72];
     char path[4];
