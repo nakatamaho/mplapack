@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2021
+ * Copyright (c) 2012-2022
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -581,7 +581,8 @@ inline _Float128 pi(_Float128 dummy) { return M_PIq; }
 
 #endif //___MPLAPACK_WANT_LIBQUADMATH___
 
-//glibc _Float128 implimentation does not consider near overflow or near underflow.
+//Following specialization should be done in the libc/compiler side.
+#if !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___  && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
 template <> template <> inline std::complex<_Float128> &std::complex<_Float128>::operator/=(const std::complex<_Float128> &b) {
     _Float128 abr, abi, ratio, den;
     if ((abr = b.real()) < 0.)
@@ -605,5 +606,6 @@ template <> template <> inline std::complex<_Float128> &std::complex<_Float128>:
     }
     return *this;
 }
+#endif
 
 #endif
