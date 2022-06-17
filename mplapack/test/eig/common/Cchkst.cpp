@@ -188,10 +188,10 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         n = nn[jsize - 1];
         if (n > 0) {
             lgn = castINTEGER(log(castREAL(n)) / log(two));
-            if (pow(2, lgn) < n) {
+            if (std::pow(2, lgn) < n) {
                 lgn++;
             }
-            if (pow(2, lgn) < n) {
+            if (std::pow(2, lgn) < n) {
                 lgn++;
             }
             lwedc = 1 + 4 * n + 2 * n * lgn + 4 * n * n;
