@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -59,8 +59,7 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
     bool rprec = false;
     bool cprec = false;
 
-    name_len = min((int)strlen(name), SUBNAM_LEN);
-    strncpy(subnam, name, name_len);
+    strncpy(subnam, name, SUBNAM_LEN-1);
     for (int i = 0; i < name_len; i++) {
         subnam[i] = toupper(subnam[i]);
     }
