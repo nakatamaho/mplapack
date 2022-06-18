@@ -1,12 +1,12 @@
-QDVERSION=2.3.22
+QDVERSION=2.3.23
 MAKEFLAGS =
 
 if IS_MINGW
-CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/QD/ --host=$(host) --enable-fortran=no --enable-ieee-add=yes --enable-shared --enable-static=no $(QDLIB_FLAGS)
-CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) --enable-fortran=no --enable-ieee-add=yes --enable-shared --enable-static=no $(QDLIB_FLAGS)
+CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/QD/ --host=$(host) --enable-fortran=no --enable-ieee-add=yes --enable-sloppy-mul=no --enable-sloppy-div=no $(QDLIB_FLAGS)
+CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) --enable-fortran=no --enable-ieee-add=yes --enable-sloppy-mul=no --enable-sloppy-div=no $(QDLIB_FLAGS)
 else
-CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/QD/ --host=$(host) --enable-fortran=no --enable-ieee-add=yes --enable-shared --enable-fma=yes $(QDLIB_FLAGS)
-CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) --enable-fortran=no --enable-ieee-add=yes --enable-shared --enable-fma=yes $(QDLIB_FLAGS)
+CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/QD/ --host=$(host) --enable-fortran=no --enable-ieee-add=yes --enable-sloppy-mul=no --enable-sloppy-div=no --enable-shared $(QDLIB_FLAGS)
+CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) --enable-fortran=no --enable-ieee-add=yes --enable-sloppy-mul=no --enable-sloppy-div=no --enable-shared $(QDLIB_FLAGS)
 endif
 
 EXTRACT_STAMP=.qd_extract_done
@@ -27,18 +27,12 @@ work/$(EXTRACT_STAMP):
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/internal/qd-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-mingw #; aclocal ; autoconf ; automake --add-missing
-	cd $(abs_builddir)/work/install/qd-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-mingw  #; aclocal ; autoconf ; automake --add-missing
+	cd $(abs_builddir)/work/internal/qd-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-mingw
+	cd $(abs_builddir)/work/install/qd-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-mingw
 endif
-	cd $(abs_builddir)/work/internal/qd-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-configure
-	cd $(abs_builddir)/work/install/qd-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-configure
 	cd $(abs_builddir)/work/internal/qd-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-sqrtoverflow
 	cd $(abs_builddir)/work/install/qd-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-sqrtoverflow
 
-	cd $(abs_builddir)/work/install/qd-$(QDVERSION); cp $(abs_builddir)/patches/config.sub config
-	cd $(abs_builddir)/work/install/qd-$(QDVERSION); cp $(abs_builddir)/patches/config.guess config
-	cd $(abs_builddir)/work/internal/qd-$(QDVERSION); cp $(abs_builddir)/patches/config.sub config
-	cd $(abs_builddir)/work/internal/qd-$(QDVERSION); cp $(abs_builddir)/patches/config.guess config
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
@@ -58,8 +52,8 @@ work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; TESTS_ENVIRONMENT=wine64 ${MAKE} check
-	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ;  TESTS_ENVIRONMENT=wine64 ${MAKE} check
+	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; ${MAKE} check LOG_COMPILER=wine64
+	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ; ${MAKE} check LOG_COMPILER=wine64
 else
 	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; ${MAKE} check
 	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ; ${MAKE} check

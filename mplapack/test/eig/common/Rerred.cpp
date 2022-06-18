@@ -275,7 +275,6 @@ void Rerred(const char *path, INTEGER const nunit) {
         //
         //        Test Rgejsv
         //
-#if !defined(___MPLAPACK_BUILD_WITH_DD___) && !defined(___MPLAPACK_BUILD_WITH_QD___)
         memset(srnamt, 0, sizeof(srnamt));
         strncpy(srnamt, "Rgejsv", 16);
         infot = 1;
@@ -317,7 +316,6 @@ void Rerred(const char *path, INTEGER const nunit) {
         } else {
             write(nout, format_9998);
         }
-#endif
         //
         //        Test Rgesvdx
         //

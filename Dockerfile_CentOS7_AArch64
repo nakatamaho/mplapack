@@ -6,7 +6,7 @@ RUN scl enable devtoolset-9 bash
 RUN yum install -y gcc gcc-c++ gcc-gfortran make automake libtool
 RUN yum install -y python3
 RUN yum install -y sudo which patch bzip2 git wget time
-RUN yum install -y emacs xeyes
+RUN yum install -y emacs
 
 ARG DOCKER_UID=1000
 ARG DOCKER_USER=docker
@@ -28,7 +28,7 @@ RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
 RUN cd /home/$DOCKER_USER && wget https://github.com/nakatamaho/mplapack/releases/download/v1.9.9/mplapack-2.0.0-alpha.tar.xz
 RUN cd /home/$DOCKER_USER && tar xvfJ mplapack-2.0.0-alpha.tar.xz
 RUN cd /home/$DOCKER_USER/mplapack-2.0.0
-ARG CXX=/opt/rh/devtoolset-9/root/usr/bin/g++"
+ARG CXX="/opt/rh/devtoolset-9/root/usr/bin/g++"
 ARG CC="/opt/rh/devtoolset-9/root/usr/bin/gcc"
 ARG FC="/opt/rh/devtoolset-9/root/usr/bin/gfortran"
 RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes

@@ -275,7 +275,6 @@ void Cerred(const char *path, INTEGER const nunit) {
         //
         //        Test Cgejsv
         //
-#if !defined(___MPLAPACK_BUILD_WITH_DD___) && !defined(___MPLAPACK_BUILD_WITH_QD___)
         strncpy(srnamt, "Cgejsv", srnamt_len);
         infot = 1;
         Cgejsv("X", "U", "V", "R", "N", "N", 0, 0, a, 1, s, u, 1, vt, 1, w, 1, rw, 1, iw, info);
@@ -316,7 +315,6 @@ void Cerred(const char *path, INTEGER const nunit) {
         } else {
             write(nout, format_9998);
         }
-#endif
         //
         //        Test Cgesvdx
         //
