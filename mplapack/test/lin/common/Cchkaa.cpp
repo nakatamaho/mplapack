@@ -114,9 +114,9 @@ void Cchkaa(void) {
     COMPLEX *b = new COMPLEX[(nmax * maxrhs) * 4];
     COMPLEX *work = new COMPLEX[nmax * (nmax + maxrhs + 10)];
 
-    char tstchk_str[1];
-    char tstdrv_str[1];
-    char tsterr_str[1];
+    char tstchk_str[2];
+    char tstdrv_str[2];
+    char tsterr_str[2];
     bool fatal = false;
     bool tstchk = false;
     bool tstdrv = false;

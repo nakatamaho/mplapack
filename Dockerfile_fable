@@ -126,7 +126,7 @@ RUN cd ${WORK} && echo 'ssh-add ~/.ssh/id_ed25519' >> .bashrc
 
 ## intel one api and wine settings start ###
 RUN cd ${WORK} && echo "#source /opt/intel/oneapi/setvars.sh" >> .bashrc
-RUN cd ${WORK} && echo "export WINEPATH=\"/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-posix;/home/$DOCKER_USER/MPLAPACK/bin\"" >> .bashrc
+RUN cd ${WORK} && echo "export WINEPATH=\"/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-posix;/home/$DOCKER_USER/MPLAPACK_MINGW/bin\"" >> .bashrc
 RUN cd ${WORK} && echo "export WINEDEBUG=\"-all\"" >> .bashrc
 ## intel one api and wine settings end ###
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2022
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -30,25 +30,11 @@
 #include <mplapack.h>
 #include <string.h>
 
-#define subnamlen 16
+#define subnamlen 32
 
 INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER const n, INTEGER const ilo, INTEGER const ihi, INTEGER const lwork) {
     INTEGER return_value = 0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //
-    //  ================================================================
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     const INTEGER ishfts = 15;
     const INTEGER inwin = 13;
     const INTEGER iacc22 = 16;
@@ -138,8 +124,7 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //        Convert NAME to upper case if the first character is lower case.
         //
         return_value = 0;
-        name_len = min(int(strlen(name)), subnamlen);
-        strncpy(subnam, name, name_len);
+        strncpy(subnam, name, subnamlen-1);
         ic = *subnam;
         iz = 'Z';
         if (iz == 90 || iz == 122) {

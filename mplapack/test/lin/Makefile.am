@@ -1,7 +1,7 @@
 SUBDIRS = . 
 lib_LTLIBRARIES = 
 
-mplapack_lin_DATA = Ctest.in Ctest_rfp.in Rtest.in Rtest_rfp.in
+mplapack_lin_DATA = Ctest.in Ctest_rfp.in Rtest.in Rtest_rfp.in test_lin_all.sh test_lin_all_mingw.sh
 mplapack_lindir = $(prefix)/lib/$(target)/mplapack/test/lin
 
 if ENABLE_MPFR
