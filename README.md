@@ -59,32 +59,32 @@ Eprint = {arXiv:2109.13406},
 
 # How to build on Linux and Win (using Docker; recommended)
 
-Ubuntu 22.04 (amd64)
+Ubuntu 22.04
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ /usr/bin/time docker build -t mplapack:ubuntu2204 -f Dockerfile_ubuntu22.04_amd64 . 2>&1 | tee log.ubuntu2204
+$ /usr/bin/time docker build -t mplapack:ubuntu2204 -f Dockerfile_ubuntu22.04 . 2>&1 | tee log.ubuntu2204
 ```
 
-Ubuntu 22.04 (aarch64, ppc64)
+Ubuntu 20.04
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ /usr/bin/time docker build -t mplapack:ubuntu2204 -f Dockerfile_ubuntu22.04_others . 2>&1 | tee log.ubuntu2204
+$ /usr/bin/time docker build -t mplapack:ubuntu2004 -f Dockerfile_ubuntu20.04 . 2>&1 | tee log.ubuntu2004
 ```
 
-Ubuntu 20.04 (amd64)
+Ubuntu 20.04 + Intel oneAPI
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ /usr/bin/time docker build -t mplapack:ubuntu2004 -f Dockerfile_ubuntu20.04_amd64 . 2>&1 | tee log.ubuntu2004
+$ /usr/bin/time docker build -t mplapack:ubuntu2004intel -f Dockerfile_ubuntu20.04_inteloneapi . 2>&1 | tee log.ubuntu2004.intel
 ```
 
-Ubuntu 20.04 (aarch64, ppc64)
+Windows 64bit (using cross compiler on Ubuntu)
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ /usr/bin/time docker build -t mplapack:ubuntu2004 -f Dockerfile_ubuntu20.04_others . 2>&1 | tee log.ubuntu2004
+$ /usr/bin/time docker build -t mplapack:mingw -f  Dockerfile_ubuntu20.04_mingw64 . 2>&1 | tee log.mingw
 ```
 
 CentOS 7 (amd64)
@@ -101,39 +101,18 @@ $ cd mplapack
 $ /usr/bin/time docker build -t mplapack:centos7 -f Dockerfile_CentOS7_AArch64 . 2>&1 | tee log.CentOS7
 ```
 
-CentOS 8 (amd64)
+CentOS 8
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
 $ /usr/bin/time docker build -t mplapack:centos8 -f Dockerfile_CentOS8_amd64 . 2>&1 | tee log.CentOS8
 ```
 
-CentOS 8 (aarch64)
-```
-$ git clone https://github.com/nakatamaho/mplapack/
-$ cd mplapack
-$ /usr/bin/time docker build -t mplapack:centos8 -f Dockerfile_CentOS8_others . 2>&1 | tee log.CentOS8
-```
-
-Ubuntu 18.04 (amd64)
+Ubuntu 18.04
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
 $ /usr/bin/time docker build -t mplapack:ubuntu1804 -f Dockerfile_ubuntu18.04 . 2>&1 | tee log.ubuntu1804
-```
-
-Ubuntu 20.04 + Intel oneAPI
-```
-$ git clone https://github.com/nakatamaho/mplapack/
-$ cd mplapack
-$ /usr/bin/time docker build -t mplapack:ubuntu2004intel -f Dockerfile_ubuntu20.04_inteloneapi . 2>&1 | tee log.ubuntu2004.intel
-```
-
-Windows 64bit (using cross compiler on Ubuntu)
-```
-$ git clone https://github.com/nakatamaho/mplapack/
-$ cd mplapack
-$ /usr/bin/time docker build -t mplapack:mingw -f  Dockerfile_ubuntu20.04_mingw64 . 2>&1 | tee log.mingw
 ```
 
 # How to build and install from source tarball
