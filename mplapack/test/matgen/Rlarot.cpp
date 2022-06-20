@@ -33,25 +33,6 @@
 
 void Rlarot(bool const lrows, bool const lleft, bool const lright, INTEGER const nl, REAL const c, REAL const s, REAL *a, INTEGER const lda, REAL &xleft, REAL &xright) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Set up indices, arrays for ends
     //
     INTEGER iinc = 0;

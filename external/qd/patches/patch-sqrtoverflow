@@ -5,7 +5,7 @@
    }
  
 +  if (a.x[0] > 1e+300) {
-+      dd_real b = a * 0.25;
++      dd_real b = a.x[0] * 0.25 + a.x[1] * 0.25;
 +      double x = 1.0 / std::sqrt(b.x[0]);
 +      double bx = b.x[0] * x;
 +      b = dd_real::add(bx, (b - dd_real::sqr(bx)).x[0] * (x * 0.5));
@@ -22,7 +22,7 @@
    }
  
 +  if (a.x[0] > 1e+300) {
-+      qd_real b = a * 0.25;
++      qd_real b = a.x[0] * 0.25 + a.x[1] * 0.25 + a.x[2] * 0.25 + a.x[3] * 0.25;
 +      qd_real r = (1.0 / std::sqrt(b[0]));
 +      qd_real h = mul_pwr2(b, 0.5);
 +

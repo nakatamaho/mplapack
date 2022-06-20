@@ -45,7 +45,6 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     REAL small = 0.0;
     REAL big = 0.0;
     REAL rootbig = 0.0;
-    REAL large = 0.0;
     REAL bigtheta = 0.0;
     REAL tol = 0.0;
     REAL roottol = 0.0;
@@ -167,10 +166,15 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     sfmin = Rlamch("SafeMinimum");
     rootsfmin = sqrt(sfmin);
     small = sfmin / epsln;
+#if defined ___MPLAPACK_BUILD_WITH_DD___
+    big = Rlamch_dd("Q");
+#elif defined ___MPLAPACK_BUILD_WITH_QD___
+    big = Rlamch_qd("Q");
+#else
     big = Rlamch("Overflow");
+#endif
     //     BIG         = ONE    / SFMIN
     rootbig = one / rootsfmin;
-    large = big / sqrt(castREAL(m * n));
     bigtheta = one / rooteps;
     //
     tol = ctol * epsln;
@@ -337,7 +341,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     //     avoid underflows/overflows in computing Jacobi rotations.
     //
     sn = sqrt(sfmin / epsln);
-    temp1 = sqrt(big) / sqrt(castREAL(n)); //The original code fails on dd and qd for unknown reason.
+    temp1 = big1 / sqrt(castREAL(n)); // The original code fails on dd and qd. dd_real::_max or qd_real::_max / any value give nan.
     if ((aapp <= sn) || (aaqq >= temp1) || ((sn <= aaqq) && (aapp <= temp1))) {
         temp1 = min(big, REAL(temp1 / aapp));
         //         AAQQ  = AAQQ*TEMP1

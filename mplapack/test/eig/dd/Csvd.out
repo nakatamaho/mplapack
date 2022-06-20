@@ -21,6 +21,7 @@ The following parameter values will be used:
  ZBD routines passed the tests of the error exits ( 35 tests done)
  Cgesvd passed the tests of the error exits (  8 tests done)
  Cgesdd passed the tests of the error exits (  6 tests done)
+ Cgejsv passed the tests of the error exits ( 11 tests done)
  Cgesvdx passed the tests of the error exits ( 12 tests done)
  Cgesvdq passed the tests of the error exits ( 11 tests done)
 
@@ -61,5 +62,5 @@ The following parameter values will be used:
 
 
  End of tests
- Total time used =       586.00 seconds
+ Total time used =       977.00 seconds
 

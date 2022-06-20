@@ -163,6 +163,9 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     nfail = 0;
     ntest = 0;
     unfl = Rlamch("Safe minimum");
+#if defined ___MPLAPACK_DEBUG_COMPARE_WITH_QD___
+    unfl = unfl * 1e+16
+#endif
     ovfl = Rlamch("Overflow");
     ulp = Rlamch("Precision");
     ulpinv = one / ulp;
