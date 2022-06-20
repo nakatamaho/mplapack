@@ -1,3 +1,7 @@
+2022/06/21    Nakata Maho <maho@riken.jp> 2.0 branch
+            * Enable Rgejsv, Cgejsv, Rgesvj and Cgesvj for dd/qd by changing Rlamch("O") to approx.
+              1e-16 * Rlamch("O").
+
 2022/06/14    Nakata Maho <maho@riken.jp> 2.0.0 alpha
             * support all complex routines for all precisions except for the mixed-precision version.
             * support all Rectangular Full Packed (RFP) routines

@@ -431,8 +431,13 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //
     epsln = Rlamch("Epsilon");
     sfmin = Rlamch("SafeMinimum");
-    small = sfmin / epsln;
-    big = Rlamch("O");
+#if defined ___MPLAPACK_BUILD_WITH_DD___
+    big = Rlamch_dd("Q");
+#elif defined ___MPLAPACK_BUILD_WITH_QD___
+    big = Rlamch_qd("Q");
+#else
+    big = Rlamch("Overflow");
+#endif
     //     BIG   = ONE / SFMIN
     //
     //     Initialize SVA(1:N) = diag( ||A e_i||_2 )_1^N

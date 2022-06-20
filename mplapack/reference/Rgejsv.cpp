@@ -150,7 +150,13 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     epsln = Rlamch("Epsilon");
     sfmin = Rlamch("SafeMinimum");
     small = sfmin / epsln;
-    big = Rlamch("O");
+#if defined ___MPLAPACK_BUILD_WITH_DD___
+    big = Rlamch_dd("Q");
+#elif defined ___MPLAPACK_BUILD_WITH_QD___
+    big = Rlamch_qd("Q");
+#else
+    big = Rlamch("Overflow");
+#endif
     //     BIG   = ONE / SFMIN
     //
     //     Initialize SVA(1:N) = diag( ||A e_i||_2 )_1^N
@@ -413,7 +419,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //     one should use Rgesvj instead of Rgejsv.
     //
     big1 = sqrt(big);
-    temp1 = big1 / sqrt(castREAL(n)); //The original code fails on dd and qd for unknown reason.
+    temp1 = big1 / sqrt(castREAL(n)); // The original code fails on dd and qd. dd_real::_max or qd_real::_max / any value give nan.
     //
     Rlascl("G", 0, 0, aapp, temp1, n, 1, sva, n, ierr);
     if (aaqq > (aapp * sfmin)) {

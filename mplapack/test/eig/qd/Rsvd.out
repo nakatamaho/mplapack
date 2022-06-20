@@ -83,271 +83,35 @@ The following parameter values will be used:
 39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
 
 
- M=    2, N=    1, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    3, N=    1, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    3, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.9040823496554388e+61
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.9040823496554388e+61
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.9040823496554388e+61
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.9040823496554388e+61
- M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+62
- M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=4.1137613933030293e+61
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=4.1137613933030293e+61
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=4.1137613933030293e+61
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=2.5711008708143933e+61
- M=   30, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   40, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=2.7411746352605374e+60
- M=   40, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=2.7411746352605374e+60
- M=   40, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=2.7411746352605374e+60
- M=   40, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=2.7411746352605374e+60
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- DBD drivers:    208 out of  14820 tests failed to pass the threshold
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ DBD drivers:     28 out of  14820 tests failed to pass the threshold
 
 
  SVD:  NB =   3, NBMIN =   2, NX =   0, NRHS =   0
@@ -407,271 +171,35 @@ The following parameter values will be used:
 39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
 
 
- M=    2, N=    1, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    3, N=    1, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    3, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+62
- M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=9.5811839502416731e+60
- M=   10, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=9.5811839502416731e+60
- M=   10, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=9.5811839502416731e+60
- M=   10, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=9.5811839502416731e+60
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.1733648013881181e+61
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.1733648013881181e+61
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.1733648013881181e+61
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.1733648013881181e+61
- M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=5.7817052594136286e+60
- M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=5.7817052594136286e+60
- M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=5.7817052594136286e+60
- M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=5.7817052594136286e+60
- M=   30, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=3.6862267292298285e+60
- M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=3.6862267292298285e+60
- M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=3.6862267292298285e+60
- M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=3.6862267292298285e+60
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   40, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=3.4762207701500520e+60
- M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=3.4762207701500520e+60
- M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=3.4762207701500520e+60
- M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=3.4762207701500520e+60
- M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=2.0455077655957519e+60
- M=   40, N=   40, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=2.0455077655957519e+60
- M=   40, N=   40, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=2.0455077655957519e+60
- M=   40, N=   40, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=2.0455077655957519e+60
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- DBD drivers:    208 out of  14820 tests failed to pass the threshold
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ DBD drivers:     28 out of  14820 tests failed to pass the threshold
 
 
  SVD:  NB =   3, NBMIN =   2, NX =   5, NRHS =   2
@@ -731,276 +259,95 @@ The following parameter values will be used:
 39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
 
 
- M=    2, N=    1, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    3, N=    1, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    3, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=1.5212954150678550e+61
- M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.5212954150678550e+61
- M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.5212954150678550e+61
- M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.5212954150678550e+61
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=2.5711008708143933e+61
- M=   30, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+61
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+61
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+61
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   40, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=3.4064619582703011e+60
- M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=3.4064619582703011e+60
- M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=3.4064619582703011e+60
- M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=3.4064619582703011e+60
- M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=2.1389675965913530e+60
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=2.1389675965913530e+60
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=2.1389675965913530e+60
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=2.1389675965913530e+60
- M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0284403483257573e+61
- M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0284403483257573e+61
- M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0284403483257573e+61
- M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0284403483257573e+61
- DBD drivers:    208 out of  14820 tests failed to pass the threshold
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ DBD drivers:     28 out of  14820 tests failed to pass the threshold
 
 
  SVD:  NB =   3, NBMIN =   2, NX =   9, NRHS =   2
 
- All tests for DBD routines passed the threshold (  10260 tests run)
+ DBD -- Real Singular Value Decomposition
+ Matrix types (see xCHKBD for details):
+ Diagonal matrices:
+   1: Zero                             5: Clustered entries
+   2: Identity                         6: Large, evenly spaced entries
+   3: Evenly spaced entries            7: Small, evenly spaced entries
+   4: Geometrically spaced entries
+ General matrices:
+   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
+   9: Geometrically spaced sing vals  13: Random, O(1) entries
+  10: Clustered sing. vals.           14: Random, scaled near overflow
+  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
+
+ Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: orthogonal
+                X: m x nrhs, Y = Q' X, and Z = U' Y)
+   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
+   2: norm( I - Q' Q )   / ( m ulp )
+   3: norm( I - P' P )   / ( n ulp )
+   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
+   6: norm( I - U' U )   / ( min(m,n) ulp )
+   7: norm( I - V' V )   / ( min(m,n) ulp )
+   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
+  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
+  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
+  13: norm( I - (QU)'(QU) )      / ( M ulp )
+  14: norm( I - (V' P') (P V) )  / ( N ulp )
+  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+  16: norm( I - U' U )   / ( min(m,n) ulp )
+  17: norm( I - V' V )   / ( min(m,n) ulp )
+  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
+  21: norm( I - U' U )    / ( min(m,n) ulp )
+  22: norm( I - V' V )    / ( min(m,n) ulp )
+  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
+  26: norm( I - U' U )    / ( min(m,n) ulp )
+  27: norm( I - V' V )    / ( min(m,n) ulp )
+  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
+  31: norm( I - U' U )    / ( min(m,n) ulp )
+  32: norm( I - V' V )    / ( min(m,n) ulp )
+  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+ M=   30, N=   40, type 16, seed=   0,   0,   0,   1, test( 9)=5.1809202970837640e+37
+ DBD:      1 out of  10260 tests failed to pass the threshold
  SVD -- Real Singular Value Decomposition Driver 
  Matrix types (see Rdrvbd for details):
 
@@ -1055,299 +402,35 @@ The following parameter values will be used:
 39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
 
 
- M=    2, N=    1, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    3, N=    1, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    3, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+62
- M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=3.6733488442974117e+60
- M=   16, N=   16, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=3.6733488442974117e+60
- M=   16, N=   16, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=3.6733488442974117e+60
- M=   16, N=   16, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=3.6733488442974117e+60
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=2.5711008708143933e+61
- M=   30, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   40, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=3.5296779289465627e+60
- M=   40, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=3.5296779289465627e+60
- M=   40, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=3.5296779289465627e+60
- M=   40, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=3.5296779289465627e+60
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=2.9049066083200402e+60
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=2.9049066083200402e+60
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=2.9049066083200402e+60
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=2.9049066083200402e+60
- M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0284403483257573e+61
- M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0284403483257573e+61
- M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0284403483257573e+61
- M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0284403483257573e+61
- DBD drivers:    236 out of  14820 tests failed to pass the threshold
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ DBD drivers:     28 out of  14820 tests failed to pass the threshold
 
 
  SVD:  NB =  20, NBMIN =   2, NX =   1, NRHS =   2
@@ -1407,293 +490,37 @@ The following parameter values will be used:
 39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
 
 
- M=    2, N=    1, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2048928159150373e+62
- M=    2, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.2048928159150373e+62
- M=    3, N=    1, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.7386801454976354e+62
- M=    3, N=    1, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.7386801454976354e+62
- M=    3, N=    3, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+62
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+62
- M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+62
- M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=4.1137613933030293e+61
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.6860528499845033e+60
- M=   16, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.6860528499845033e+60
- M=   16, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.6860528499845033e+60
- M=   16, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.6860528499845033e+60
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=8.7247861470879916e+60
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=8.7247861470879916e+60
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=8.7247861470879916e+60
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=8.7247861470879916e+60
- M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1137613933030293e+61
- M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+61
- M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=6.6826282021274608e+60
- M=   16, N=   16, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=6.6826282021274608e+60
- M=   16, N=   16, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=6.6826282021274608e+60
- M=   16, N=   16, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=6.6826282021274608e+60
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=2.5711008708143933e+61
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=2.5711008708143933e+61
- M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=2.5711008708143933e+61
- M=   30, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=1.3712537977676764e+61
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.3712537977676764e+61
- M=   40, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3712537977676764e+61
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 3, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 3, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 3, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 3, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- *** On entry to Rlascl parameter number      5 had an illegal value ***
- *** XERBLA was called with SRNAME = Rlascl instead of Rgesvj ***
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(16)=1.0284403483257573e+61
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(19)=4.1137613933030293e+62
- M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(19)=1.0284403483257573e+61
- M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(19)=1.0284403483257573e+61
- M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(19)=1.0284403483257573e+61
- M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(19)=1.0284403483257573e+61
- DBD drivers:    228 out of  14820 tests failed to pass the threshold
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ DBD drivers:     28 out of  14820 tests failed to pass the threshold
 
 
  End of tests
- Total time used =      6011.00 seconds
+ Total time used =      6004.00 seconds
 
