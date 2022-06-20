@@ -124,7 +124,7 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //        Convert NAME to upper case if the first character is lower case.
         //
         return_value = 0;
-        strncpy(subnam, name, subnamlen-1);
+        strncpy(subnam, name, subnamlen - 1);
         ic = *subnam;
         iz = 'Z';
         if (iz == 90 || iz == 122) {

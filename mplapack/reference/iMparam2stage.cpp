@@ -59,7 +59,7 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
     bool rprec = false;
     bool cprec = false;
 
-    strncpy(subnam, name, SUBNAM_LEN-1);
+    strncpy(subnam, name, SUBNAM_LEN - 1);
     for (int i = 0; i < name_len; i++) {
         subnam[i] = toupper(subnam[i]);
     }
