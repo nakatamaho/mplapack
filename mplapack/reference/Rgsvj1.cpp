@@ -39,7 +39,6 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
     const REAL one = 1.0;
     REAL big = 0.0;
     REAL rootbig = 0.0;
-    REAL large = 0.0;
     REAL bigtheta = 0.0;
     REAL roottol = 0.0;
     INTEGER emptsw = 0;
@@ -79,31 +78,6 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
     REAL cs = 0.0;
     REAL sn = 0.0;
     REAL temp1 = 0.0;
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
     //
     //     Test the input parameters.
     //
@@ -151,7 +125,6 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
     small = sfmin / eps;
     big = one / sfmin;
     rootbig = one / rootsfmin;
-    large = big / sqrt(castREAL(m * n));
     bigtheta = one / rooteps;
     roottol = sqrt(tol);
     //
