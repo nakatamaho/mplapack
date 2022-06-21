@@ -1,0 +1,24 @@
+
+ Tests of the Generalized Singular Value Decomposition routines
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     1     5     9    10    20    12    12    40
+    P:         4     1     0    12    14    10    10    20    15
+    N:         3     1    10    15    12     8    20     8    20
+ 
+ Relative machine underflow is taken to be+9.5302596195518043e-323228497
+ Relative machine overflow  is taken to be+2.0985787164673877e+323228496
+ Relative machine precision is taken to be+7.4583407312002067e-155
+
+ Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
+
+ GSV routines passed the tests of the error exits ( 33 tests done)
+
+ All tests for GSV routines passed the threshold (    432 tests run)
+
+
+ End of tests
+ Total time used =         3.00 seconds
+

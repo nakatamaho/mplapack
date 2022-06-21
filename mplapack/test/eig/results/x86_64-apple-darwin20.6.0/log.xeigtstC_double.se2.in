@@ -1,0 +1,58 @@
+ Tests of the Hermitian Eigenvalue Problem routines
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     1     2     3     5    20
+    N:         0     1     2     3     5    20
+    NB:        1     3     3     3    10
+    NBMIN:     2     2     2     2     2
+    NX:        1     0     5     9     1
+ 
+ Relative machine underflow is taken to be+2.2250738585072014e-308
+ Relative machine overflow  is taken to be+1.7976931348623157e+308
+ Relative machine precision is taken to be+1.1102230246251565e-16
+
+ Routines pass computational tests if test ratio is less than+5.0000000000000000e+01
+
+ ZST routines passed the tests of the error exits (176 tests done)
+
+
+ SE2:  NB =   1, NBMIN =   2, NX =   1
+
+ All tests for ZST passed the threshold (  4440 tests run)
+
+ All tests for ZST drivers  passed the threshold (  11016 tests run)
+
+
+ SE2:  NB =   3, NBMIN =   2, NX =   0
+
+ All tests for ZST passed the threshold (  4440 tests run)
+
+ All tests for ZST drivers  passed the threshold (  11016 tests run)
+
+
+ SE2:  NB =   3, NBMIN =   2, NX =   5
+
+ All tests for ZST passed the threshold (  4440 tests run)
+
+ All tests for ZST drivers  passed the threshold (  11016 tests run)
+
+
+ SE2:  NB =   3, NBMIN =   2, NX =   9
+
+ All tests for ZST passed the threshold (  4440 tests run)
+
+ All tests for ZST drivers  passed the threshold (  11016 tests run)
+
+
+ SE2:  NB =  10, NBMIN =   2, NX =   1
+
+ All tests for ZST passed the threshold (  4440 tests run)
+
+ All tests for ZST drivers  passed the threshold (  11016 tests run)
+
+
+ End of tests
+ Total time used =         0.00 seconds
+

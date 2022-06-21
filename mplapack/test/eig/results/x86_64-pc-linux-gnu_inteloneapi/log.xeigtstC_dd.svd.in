@@ -1,0 +1,231 @@
+ Tests of the Singular Value Decomposition routines
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     0     0     1     1     1     2     2     3     3
+               3    10    10    16    16    30    30    40    40
+    N:         0     1     3     0     1     2     0     1     0     1
+               3    10    16    10    16    30    40    30    40
+    NB:        1     3     3     3    20
+    NBMIN:     2     2     2     2     2
+    NX:        1     0     5     9     1
+    NS:        2     0     2     2     2
+ 
+ Relative machine underflow is taken to be2.0041683600089728e-292
+ Relative machine overflow  is taken to be1.7976931348623158e+308
+ Relative machine precision is taken to be4.9303806576313200e-32
+
+ Routines pass computational tests if test ratio is less than5.0000000000000000e+01
+
+ ZBD routines passed the tests of the error exits ( 35 tests done)
+ Cgesvd passed the tests of the error exits (  8 tests done)
+ Cgesdd passed the tests of the error exits (  6 tests done)
+ Cgejsv passed the tests of the error exits ( 11 tests done)
+ Cgesvdx passed the tests of the error exits ( 12 tests done)
+ Cgesvdq passed the tests of the error exits ( 11 tests done)
+
+
+ SVD:  NB =   1, NBMIN =   2, NX =   1, NRHS =   2
+
+ All tests for CBD routines passed the threshold (   4085 tests run)
+
+ All tests for ZBD drivers  passed the threshold (  14340 tests run)
+
+
+ SVD:  NB =   3, NBMIN =   2, NX =   0, NRHS =   0
+
+ CBD -- Complex Singular Value Decomposition
+ Matrix types (see xCHKBD for details):
+ Diagonal matrices:
+   1: Zero                             5: Clustered entries
+   2: Identity                         6: Large, evenly spaced entries
+   3: Evenly spaced entries            7: Small, evenly spaced entries
+   4: Geometrically spaced entries
+ General matrices:
+   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
+   9: Geometrically spaced sing vals  13: Random, O(1) entries
+  10: Clustered sing. vals.           14: Random, scaled near overflow
+  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
+
+ Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: unitary   
+                X: m x nrhs, Y = Q' X, and Z = U' Y)
+   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
+   2: norm( I - Q' Q )   / ( m ulp )
+   3: norm( I - P' P )   / ( n ulp )
+   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
+   6: norm( I - U' U )   / ( min(m,n) ulp )
+   7: norm( I - V' V )   / ( min(m,n) ulp )
+   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
+  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
+  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
+  13: norm( I - (QU)'(QU) )      / ( M ulp )
+  14: norm( I - (V' P') (P V) )  / ( N ulp )
+  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+  16: norm( I - U' U )   / ( min(m,n) ulp )
+  17: norm( I - V' V )   / ( min(m,n) ulp )
+  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
+  21: norm( I - U' U )    / ( min(m,n) ulp )
+  22: norm( I - V' V )    / ( min(m,n) ulp )
+  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
+  26: norm( I - U' U )    / ( min(m,n) ulp )
+  27: norm( I - V' V )    / ( min(m,n) ulp )
+  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
+  31: norm( I - U' U )    / ( min(m,n) ulp )
+  32: norm( I - V' V )    / ( min(m,n) ulp )
+  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+ M=   40, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=3.9614081257132169e+30
+ CBD:      1 out of   4085 tests failed to pass the threshold
+
+ All tests for ZBD drivers  passed the threshold (  14340 tests run)
+
+
+ SVD:  NB =   3, NBMIN =   2, NX =   5, NRHS =   2
+
+ CBD -- Complex Singular Value Decomposition
+ Matrix types (see xCHKBD for details):
+ Diagonal matrices:
+   1: Zero                             5: Clustered entries
+   2: Identity                         6: Large, evenly spaced entries
+   3: Evenly spaced entries            7: Small, evenly spaced entries
+   4: Geometrically spaced entries
+ General matrices:
+   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
+   9: Geometrically spaced sing vals  13: Random, O(1) entries
+  10: Clustered sing. vals.           14: Random, scaled near overflow
+  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
+
+ Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: unitary   
+                X: m x nrhs, Y = Q' X, and Z = U' Y)
+   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
+   2: norm( I - Q' Q )   / ( m ulp )
+   3: norm( I - P' P )   / ( n ulp )
+   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
+   6: norm( I - U' U )   / ( min(m,n) ulp )
+   7: norm( I - V' V )   / ( min(m,n) ulp )
+   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
+  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
+  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
+  13: norm( I - (QU)'(QU) )      / ( M ulp )
+  14: norm( I - (V' P') (P V) )  / ( N ulp )
+  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+  16: norm( I - U' U )   / ( min(m,n) ulp )
+  17: norm( I - V' V )   / ( min(m,n) ulp )
+  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
+  21: norm( I - U' U )    / ( min(m,n) ulp )
+  22: norm( I - V' V )    / ( min(m,n) ulp )
+  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
+  26: norm( I - U' U )    / ( min(m,n) ulp )
+  27: norm( I - V' V )    / ( min(m,n) ulp )
+  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
+  31: norm( I - U' U )    / ( min(m,n) ulp )
+  32: norm( I - V' V )    / ( min(m,n) ulp )
+  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+ M=   16, N=   16, type 16, seed=   0,   0,   0,   1, test(10)=7.9228162514264338e+30
+ CBD:      1 out of   4085 tests failed to pass the threshold
+
+ All tests for ZBD drivers  passed the threshold (  14340 tests run)
+
+
+ SVD:  NB =   3, NBMIN =   2, NX =   9, NRHS =   2
+
+ CBD -- Complex Singular Value Decomposition
+ Matrix types (see xCHKBD for details):
+ Diagonal matrices:
+   1: Zero                             5: Clustered entries
+   2: Identity                         6: Large, evenly spaced entries
+   3: Evenly spaced entries            7: Small, evenly spaced entries
+   4: Geometrically spaced entries
+ General matrices:
+   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
+   9: Geometrically spaced sing vals  13: Random, O(1) entries
+  10: Clustered sing. vals.           14: Random, scaled near overflow
+  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
+
+ Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: unitary   
+                X: m x nrhs, Y = Q' X, and Z = U' Y)
+   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
+   2: norm( I - Q' Q )   / ( m ulp )
+   3: norm( I - P' P )   / ( n ulp )
+   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
+   6: norm( I - U' U )   / ( min(m,n) ulp )
+   7: norm( I - V' V )   / ( min(m,n) ulp )
+   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
+  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
+  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
+  13: norm( I - (QU)'(QU) )      / ( M ulp )
+  14: norm( I - (V' P') (P V) )  / ( N ulp )
+  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+  16: norm( I - U' U )   / ( min(m,n) ulp )
+  17: norm( I - V' V )   / ( min(m,n) ulp )
+  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
+  21: norm( I - U' U )    / ( min(m,n) ulp )
+  22: norm( I - V' V )    / ( min(m,n) ulp )
+  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
+  26: norm( I - U' U )    / ( min(m,n) ulp )
+  27: norm( I - V' V )    / ( min(m,n) ulp )
+  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
+  31: norm( I - U' U )    / ( min(m,n) ulp )
+  32: norm( I - V' V )    / ( min(m,n) ulp )
+  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+ M=   16, N=   16, type 16, seed=   0,   0,   0,   1, test(10)=7.9228162514264338e+30
+ CBD:      1 out of   4085 tests failed to pass the threshold
+
+ All tests for ZBD drivers  passed the threshold (  14340 tests run)
+
+
+ SVD:  NB =  20, NBMIN =   2, NX =   1, NRHS =   2
+
+ All tests for CBD routines passed the threshold (   4085 tests run)
+
+ All tests for ZBD drivers  passed the threshold (  14340 tests run)
+
+
+ End of tests
+ Total time used =       983.00 seconds
+

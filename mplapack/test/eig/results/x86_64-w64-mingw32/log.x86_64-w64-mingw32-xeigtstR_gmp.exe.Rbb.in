@@ -1,0 +1,52 @@
+ Tests of Rgbbrd
+ (reduction of a general band matrix to real bidiagonal form)
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     0     0     0     1     1     1     1     2     2
+               2     2     3     3     3     3    10    10    16    16
+    N:         0     1     2     3     0     1     2     3     0     1
+               2     3     0     1     2     3    10    16    10    16
+    K:         0     1     2     3    16
+    NS:        1     2
+ 
+ Relative machine underflow is taken to be+6.4447927660133239e-1292913987
+ Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
+ Relative machine precision is taken to be+5.4210108624275222e-20
+
+ Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
+
+
+
+ DBB:  NRHS =   1
+
+ DBB -- Real Band reduc. to bidiagonal form
+ Matrix types (see xCHKBB for details):
+ Diagonal matrices:
+   1: Zero                             5: Clustered entries
+   2: Identity                         6: Large, evenly spaced entries
+   3: Evenly spaced entries            7: Small, evenly spaced entries
+   4: Geometrically spaced entries
+ General matrices:
+   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
+   9: Geometrically spaced sing vals  13: Random, O(1) entries
+  10: Clustered sing. vals.           14: Random, scaled near overflow
+  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
+
+ Test ratios:  (B: upper bidiagonal, Q and P: orthogonal
+                C: m x nrhs, PT = P', Y = Q' C)
+ 1: norm( A - Q B PT ) / ( norm(A) max(m,n) ulp )
+ 2: norm( I - Q' Q )   / ( m ulp )
+ 3: norm( I - PT PT' )   / ( n ulp )
+ 4: norm( Y - Q' C )   / ( norm(Y) max(m,nrhs) ulp )
+ M =   1 N=   2, K=  1, seed=   0,   0,   0,   1, type 12, test( 1)=+4.6116860184273879e+18
+ M =   1 N=   2, K=  1, seed=   0,   0,   0,   1, type 15, test( 1)=+4.6116860184273879e+18
+ M =   1 N=   3, K=  1, seed=   0,   0,   0,   1, type 12, test( 1)=+3.0744573456182586e+18
+ M =   1 N=   3, K=  1, seed=   0,   0,   0,   1, type 15, test( 1)=+3.0744573456182586e+18
+ M =   1 N=   3, K=  2, seed=   0,   0,   0,   1, type 12, test( 1)=+1.8959196233897616e+18
+ M =   1 N=   3, K=  2, seed=   0,   0,   0,   1, type 15, test( 1)=+3.0744573456182586e+18
+ M =   2 N=   1, K=  1, seed=   0,   0,   0,   1, type 12, test( 1)=+9.2233720368547758e+18
+ M =   2 N=   1, K=  1, seed=   0,   0,   0,   1, type 15, test( 1)=+9.2233720368547758e+18
+ M =   2 N=   2, K=  1, seed=   0,   0,   0,   1, type 12, test( 1)=+4.6116860184273879e+18
+ M =   2 N=   2, K=  1, seed=   0,   0,   0,   1, type 15, test( 1)=+3.8319451343636922e+18

@@ -1,0 +1,17 @@
+ Tests of the Hermitian Eigenvalue Problem routines
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     1     2     3     5    25
+    N:         0     1     2     3     5    25
+    NB:        1     3     3     3    10
+    NBMIN:     2     2     2     2     2
+    NX:        1     0     5     9     1
+ 
+ Relative machine underflow is taken to be+6.4447927660133239e-1292913987
+ Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
+ Relative machine precision is taken to be+7.4583407312002067e-155
+
+ Routines pass computational tests if test ratio is less than+6.0000000000000000e+01
+

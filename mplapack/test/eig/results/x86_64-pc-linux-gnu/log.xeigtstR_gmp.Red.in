@@ -1,0 +1,269 @@
+
+ Tests of the Nonsymmetric Eigenvalue Problem Driver
+    Rgeev (eigenvalues and eigevectors)
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     1     2     3     5    10    20
+    N:         0     1     2     3     5    10    20
+    NB:        3
+    NBMIN:     3
+    NX:        1
+    INMIN:       11
+    INWIN:      4
+    INIBL:      8
+    ISHFTS:      2
+    IACC22:      0
+ 
+ Relative machine underflow is taken to be+6.4447927660133239e-1292913987
+ Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
+ Relative machine precision is taken to be+7.4583407312002067e-155
+
+ Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
+
+ Rgeev passed the tests of the error exits (  7 tests done)
+
+ REV -- Real Eigenvalue-Eigenvector Decomposition Driver
+ Matrix types (see Rdrvev for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
+  2=Identity matrix.                      6=Diagonal: clustered entries.
+  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
+  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
+ Dense, Non-Symmetric Matrices:
+  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
+ 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
+ 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex 
+ 12=Well-cond., random complex           17=Ill-cond., large rand. complx 
+ 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx 
+ 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
+ 20=Matrix with large random entries.   
+
+ Tests performed with test threshold =+2.0000000000000000e+01
+
+ 1 = | A VR - VR W | / ( n |A| ulp ) 
+ 2 = | transpose(A) VL - VL W | / ( n |A| ulp ) 
+ 3 = | |VR(i)| - 1 | / ulp 
+ 4 = | |VL(i)| - 1 | / ulp 
+ 5 = 0 if W same no matter if VR or VL computed, 1/ulp otherwise
+ 6 = 0 if VR same no matter if VL computed,  1/ulp otherwise
+ 7 = 0 if VL same no matter if VR computed,  1/ulp otherwise
+
+ N=    5, IWK= 1, seed=2518,3899, 995, 397, type 11, test( 1)=+3.8657117113661431e+01
+ N=    5, IWK= 1, seed=2518,3899, 995, 397, type 11, test( 2)=+5.0951987226669979e+01
+ N=    5, IWK= 2, seed=2518,3899, 995, 397, type 11, test( 1)=+3.8657845374731693e+01
+ N=    5, IWK= 2, seed=2518,3899, 995, 397, type 11, test( 2)=+5.0952284601262319e+01
+ REV:    4 out of  1092 tests failed to pass the threshold
+
+ -----------------------------------------------------------------------
+
+ Tests of the Nonsymmetric Eigenvalue Problem Driver
+    Rgees (Schur form)
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     1     2     3     5    10    20
+    N:         0     1     2     3     5    10    20
+    NB:        3
+    NBMIN:     3
+    NX:        1
+    INMIN:       11
+    INWIN:      4
+    INIBL:      8
+    ISHFTS:      2
+    IACC22:      0
+ 
+ Relative machine underflow is taken to be+6.4447927660133239e-1292913987
+ Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
+ Relative machine precision is taken to be+7.4583407312002067e-155
+
+ Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
+
+ Rgees passed the tests of the error exits (  6 tests done)
+
+ All tests for RES passed the threshold (  3822 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Nonsymmetric Eigenvalue Problem Expert Driver
+    Rgeevx (eigenvalues, eigenvectors and condition numbers)
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     1     2     3     5    10    20
+    N:         0     1     2     3     5    10    20
+    NB:        3
+    NBMIN:     3
+    NX:        1
+    INMIN:       11
+    INWIN:      4
+    INIBL:      8
+    ISHFTS:      2
+    IACC22:      0
+ 
+ Relative machine underflow is taken to be+6.4447927660133239e-1292913987
+ Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
+ Relative machine precision is taken to be+7.4583407312002067e-155
+
+ Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
+
+ Rgeevx passed the tests of the error exits ( 11 tests done)
+
+ RVX -- Real Eigenvalue-Eigenvector Decomposition Expert Driver
+ Matrix types (see Rdrvvx for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
+  2=Identity matrix.                      6=Diagonal: clustered entries.
+  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
+  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
+ Dense, Non-Symmetric Matrices:
+  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
+ 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
+ 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex 
+ 12=Well-cond., random complex           17=Ill-cond., large rand. complx 
+ 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx 
+ 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
+ 20=Matrix with large random entries.    22=Matrix read from input file
+
+ Tests performed with test threshold =+2.0000000000000000e+01
+
+ 1 = | A VR - VR W | / ( n |A| ulp ) 
+ 2 = | transpose(A) VL - VL W | / ( n |A| ulp ) 
+ 3 = | |VR(i)| - 1 | / ulp 
+ 4 = | |VL(i)| - 1 | / ulp 
+ 5 = 0 if W same no matter if VR or VL computed, 1/ulp otherwise
+ 6 = 0 if VR same no matter what else computed,  1/ulp otherwise
+ 7 = 0 if VL same no matter what else computed,  1/ulp otherwise
+ 8 = 0 if RCONDV same no matter what else computed,  1/ulp otherwise
+ 9 = 0 if SCALE, ILO, IHI, ABNRM same no matter what else computed,  1/ulp otherwise
+ 10 = | RCONDV - RCONDV(precomputed) | / cond(RCONDV),
+ 11 = | RCONDE - RCONDE(precomputed) | / cond(RCONDE),
+ BALANC='N',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2630879339729035e+01
+ BALANC='N',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8798784956982326e+01
+ BALANC='P',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2630879339729035e+01
+ BALANC='P',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8798784956982326e+01
+ BALANC='S',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2630879339729035e+01
+ BALANC='S',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8798784956982326e+01
+ BALANC='B',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2630879339729035e+01
+ BALANC='B',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8798784956982326e+01
+ BALANC='N',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
+ BALANC='N',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
+ BALANC='P',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
+ BALANC='P',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
+ BALANC='S',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
+ BALANC='S',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
+ BALANC='B',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
+ BALANC='B',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
+ BALANC='N',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
+ BALANC='N',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
+ BALANC='P',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
+ BALANC='P',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
+ BALANC='S',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
+ BALANC='S',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
+ BALANC='B',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
+ BALANC='B',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
+ BALANC='N',N=   5,IWK=1, seed=2518,3899, 995, 397, type 11, test( 2)=+2.9508793736800889e+01
+ BALANC='P',N=   5,IWK=1, seed=2518,3899, 995, 397, type 11, test( 2)=+2.9508793736800889e+01
+ BALANC='S',N=   5,IWK=1, seed=2518,3899, 995, 397, type 11, test( 2)=+3.2606369739965785e+01
+ BALANC='B',N=   5,IWK=1, seed=2518,3899, 995, 397, type 11, test( 2)=+3.2606369739965785e+01
+ BALANC='N',N=   5,IWK=2, seed=2518,3899, 995, 397, type 11, test( 2)=+2.9501850463008245e+01
+ BALANC='P',N=   5,IWK=2, seed=2518,3899, 995, 397, type 11, test( 2)=+2.9501850463008245e+01
+ BALANC='S',N=   5,IWK=2, seed=2518,3899, 995, 397, type 11, test( 2)=+3.2733531464111406e+01
+ BALANC='B',N=   5,IWK=2, seed=2518,3899, 995, 397, type 11, test( 2)=+3.2733531464111406e+01
+ BALANC='N',N=   5,IWK=3, seed=2518,3899, 995, 397, type 11, test( 2)=+2.9501850463008245e+01
+ BALANC='P',N=   5,IWK=3, seed=2518,3899, 995, 397, type 11, test( 2)=+2.9501850463008245e+01
+ BALANC='S',N=   5,IWK=3, seed=2518,3899, 995, 397, type 11, test( 2)=+3.2733531464111406e+01
+ BALANC='B',N=   5,IWK=3, seed=2518,3899, 995, 397, type 11, test( 2)=+3.2733531464111406e+01
+ BALANC='N',N=  20,IWK=1, seed=2518,3899, 995, 397, type  3, test( 1)=+4.1504281101322041e+01
+ BALANC='S',N=  20,IWK=1, seed=2518,3899, 995, 397, type  3, test( 1)=+4.1504281101322041e+01
+ BALANC='N',N=  20,IWK=2, seed=2518,3899, 995, 397, type  3, test( 1)=+4.1504281101322041e+01
+ BALANC='S',N=  20,IWK=2, seed=2518,3899, 995, 397, type  3, test( 1)=+4.1504281101322041e+01
+ BALANC='N',N=  20,IWK=3, seed=2518,3899, 995, 397, type  3, test( 1)=+4.1504281101322041e+01
+ BALANC='S',N=  20,IWK=3, seed=2518,3899, 995, 397, type  3, test( 1)=+4.1504281101322041e+01
+ RVX:   42 out of  6282 tests failed to pass the threshold
+
+ -----------------------------------------------------------------------
+
+ Tests of the Nonsymmetric Eigenvalue Problem Expert Driver
+    Rgeesx (Schur form and condition numbers)
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     1     2     3     5    10
+    N:         0     1     2     3     5    10
+    NB:        3
+    NBMIN:     3
+    NX:        1
+    INMIN:       11
+    INWIN:      4
+    INIBL:      8
+    ISHFTS:      2
+    IACC22:      0
+ 
+ Relative machine underflow is taken to be+6.4447927660133239e-1292913987
+ Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
+ Relative machine precision is taken to be+7.4583407312002067e-155
+
+ Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
+
+ Rgeesx passed the tests of the error exits (  7 tests done)
+
+ RSX -- Real Schur Form Decomposition Expert Driver
+ Matrix types (see Rdrvsx for details):
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
+  2=Identity matrix.                      6=Diagonal: clustered entries.
+  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
+  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
+ Dense, Non-Symmetric Matrices:
+  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
+ 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
+ 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex 
+ 12=Well-cond., random complex           17=Ill-cond., large rand. complx 
+ 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx 
+ 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
+ 20=Matrix with large random entries.   
+
+ Tests performed with test threshold =+2.0000000000000000e+01
+ ( A denotes A on input and T denotes A on output)
+
+ 1 = 0 if T in Schur form (no sort),   1/ulp otherwise
+ 2 = | A - VS T transpose(VS) | / ( n |A| ulp ) (no sort)
+ 3 = | I - VS transpose(VS) | / ( n ulp ) (no sort) 
+ 4 = 0 if WR+sqrt(-1)*WI are eigenvalues of T (no sort),  1/ulp otherwise
+ 5 = 0 if T same no matter if VS computed (no sort),  1/ulp otherwise
+ 6 = 0 if WR, WI same no matter if VS computed (no sort),  1/ulp otherwise
+ 7 = 0 if T in Schur form (sort),   1/ulp otherwise
+ 8 = | A - VS T transpose(VS) | / ( n |A| ulp ) (sort)
+ 9 = | I - VS transpose(VS) | / ( n ulp ) (sort) 
+ 10 = 0 if WR+sqrt(-1)*WI are eigenvalues of T (sort),  1/ulp otherwise
+ 11 = 0 if T same no matter what else computed (sort),  1/ulp otherwise
+ 12 = 0 if WR, WI same no matter what else computed (sort), 1/ulp otherwise
+ 13 = 0 if sorting successful, 1/ulp otherwise
+ 14 = 0 if RCONDE same no matter what else computed, 1/ulp otherwise
+ 15 = 0 if RCONDv same no matter what else computed, 1/ulp otherwise
+ 16 = | RCONDE - RCONDE(precomputed) | / cond(RCONDE),
+ 17 = | RCONDV - RCONDV(precomputed) | / cond(RCONDV),
+ N=    5, IWK= 1, seed=2518,3899, 995, 397, type 11, test( 3)=+3.2682716552424529e+01
+ N=    5, IWK= 1, seed=2518,3899, 995, 397, type 11, test( 9)=+3.2682716552424529e+01
+ N=    5, IWK= 2, seed=2518,3899, 995, 397, type 11, test( 3)=+3.2869361482368596e+01
+ N=    5, IWK= 2, seed=2518,3899, 995, 397, type 11, test( 9)=+3.2869361482368596e+01
+ N=    5, input example = 24,  test( 2)=+2.3098045021560837e+01
+ N=    5, input example = 24,  test( 3)=+3.9263618037467597e+01
+ N=    5, input example = 24,  test( 8)=+2.3098045021560837e+01
+ N=    5, input example = 24,  test( 9)=+3.9263618037467597e+01
+ RSX:    8 out of  3508 tests failed to pass the threshold
+
+ -----------------------------------------------------------------------
+
+
+ End of tests
+ Total time used =       124.00 seconds
+

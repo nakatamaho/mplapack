@@ -1,0 +1,25 @@
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+        N  :     0     1     2     3     5     6    10    11    50
+     NRHS  :     1     2    15
+        M  :     1     2     3     4     5     6     7     8     9
+ Routines pass computational tests if test ratio is less than   30.00
+
+ Relative machine underflow is taken to be : 1.6259745436952323e-260
+ Relative machine overflow  is taken to be : 1.7976931348623158e+308
+ Relative machine precision is taken to be : 1.2154326714572501e-63
+ MULTIPLE PRECISION RFP routines passed the tests of the error exits
+
+ All tests for RPF drivers  passed the threshold (   2304 tests run)
+ All tests for Rlansf auxiliary routine passed the threshold (   384 tests run)
+ All tests for the RFP conversion routines passed (    72 tests run)
+ All tests for Rtfsm auxiliary routine passed the threshold (  7776 tests run)
+ All tests for Rsfrk auxiliary routine passed the threshold (  2592 tests run)
+
+ End of tests
+ Total time used =  157 seconds
+
+157.07user 0.00system 2:37.10elapsed 99%CPU (0avgtext+0avgdata 15532maxresident)k
+0inputs+24outputs (0major+546minor)pagefaults 0swaps
