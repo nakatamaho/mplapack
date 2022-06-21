@@ -524,7 +524,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
                       "'10. Unit, CNDNUM = 0.1/EPS')"),
             path;
         memset(subnam_trimmed, '\0', sizeof(subnam_trimmed));
-        strncpy(subnam_trimmed, subnam, strlen(subnam));
+        strncpy(subnam_trimmed, subnam, strlen(subnam_trimmed) - 1);
         write(iounit, "(' Special types for testing ',a,':',/,3x,"
                       "'11. Matrix elements are O(1), large right hand side',/,3x,"
                       "'12. First diagonal causes overflow,',' offdiagonal column norms < 1',"
@@ -546,7 +546,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9956), 6;
         write(iounit, format_9955), 7;
         memset(subnam_trimmed, '\0', sizeof(subnam_trimmed));
-        strncpy(subnam_trimmed, subnam, strlen(subnam));
+        strncpy(subnam_trimmed, subnam, strlen(subnam_trimmed) - 1);
         write(iounit, format_9951), subnam_trimmed, 8;
         write(iounit, "(' Messages:')");
         //
@@ -566,7 +566,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
             path;
 
         memset(subnam_trimmed, '\0', sizeof(subnam_trimmed));
-        strncpy(subnam_trimmed, subnam, strlen(subnam));
+        strncpy(subnam_trimmed, subnam, strlen(subnam_trimmed) - 1);
         write(iounit, "(' Special types for testing ',a,':',/,3x,"
                       "'10. Matrix elements are O(1), large right hand side',/,3x,"
                       "'11. First diagonal causes overflow,',' offdiagonal column norms < 1',"

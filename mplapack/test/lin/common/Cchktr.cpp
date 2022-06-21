@@ -47,7 +47,7 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     char uplos[] = {'U', 'L'};
     char transs[] = {'N', 'T', 'C'};
     char uplo_diag[3];
-    char uplo_trans_diag[4];
+    char uplo_trans_diag[5];
     char norm_uplo_diag[4];
     char path[3];
     char buf[1024];
