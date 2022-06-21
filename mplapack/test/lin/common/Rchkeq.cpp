@@ -182,7 +182,7 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= m; i = i + 1) {
                             if (i <= min(m, j + kl) && i >= max((INTEGER)1, j - ku) && j <= n) {
-                                ab[((ku + 1 + i - j) - 1) + (j - 1) * ldab] = mpow[(i + j + 1) - 1] * pow((-1), (i + j));
+                                ab[((ku + 1 + i - j) - 1) + (j - 1) * ldab] = mpow[(i + j + 1) - 1] * std::pow((-1), (i + j));
                             }
                         }
                     }
@@ -252,7 +252,7 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
         for (i = 1; i <= nsz; i = i + 1) {
             for (j = 1; j <= nsz; j = j + 1) {
                 if (i <= n && j == i) {
-                    a[(i - 1) + (j - 1) * lda] = mpow[(i + j + 1) - 1] * pow((-1), (i + j));
+                    a[(i - 1) + (j - 1) * lda] = mpow[(i + j + 1) - 1] * std::pow((-1), (i + j));
                 } else {
                     a[(i - 1) + (j - 1) * lda] = zero;
                 }
