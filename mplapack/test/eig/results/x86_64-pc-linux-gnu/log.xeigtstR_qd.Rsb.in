@@ -1,0 +1,16 @@
+ Tests of Rsbtrd
+ (reduction of a symmetric band matrix to tridiagonal form)
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         5    20
+    N:         5    20
+    K:         0     1     2     5    16
+ 
+ Relative machine underflow is taken to be1.6259745436952323e-260
+ Relative machine overflow  is taken to be1.7976931348623158e+308
+ Relative machine precision is taken to be1.2154326714572501e-63
+
+ Routines pass computational tests if test ratio is less than2.0000000000000000e+01
+

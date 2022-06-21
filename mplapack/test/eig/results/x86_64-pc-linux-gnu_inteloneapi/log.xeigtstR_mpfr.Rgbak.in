@@ -1,0 +1,13 @@
+ .. test output of Rggbak .. 
+ value of largest test error                  =+1.3758210268297398e-141
+ example number where Rggbal info is not 0    =   0
+ example number where Rggbak(L) info is not 0 =   0
+ example number where Rggbak(R) info is not 0 =   0
+ example number having largest error          =   8
+ number of examples where info is not 0       =   0
+ total number of examples tested              =   8
+
+
+ End of tests
+ Total time used =         0.00 seconds
+

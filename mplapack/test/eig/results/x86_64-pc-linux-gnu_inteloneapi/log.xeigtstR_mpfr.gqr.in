@@ -1,0 +1,24 @@
+
+ Tests of the Generalized QR and RQ routines
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     3    10
+    P:         0     5    20
+    N:         0     3    30
+ 
+ Relative machine underflow is taken to be+9.5302596195518043e-323228497
+ Relative machine overflow  is taken to be+2.0985787164673877e+323228496
+ Relative machine precision is taken to be+7.4583407312002067e-155
+
+ Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
+
+ GQR routines passed the tests of the error exits ( 12 tests done)
+
+ All tests for GQR routines passed the threshold (   1728 tests run)
+
+
+ End of tests
+ Total time used =         2.00 seconds
+

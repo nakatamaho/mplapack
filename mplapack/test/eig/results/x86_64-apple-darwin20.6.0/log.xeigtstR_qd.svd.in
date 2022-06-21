@@ -1,0 +1,1367 @@
+ Tests of the Singular Value Decomposition routines
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     0     0     1     1     1     2     2     3     3
+               3    10    10    16    16    30    30    40    40
+    N:         0     1     3     0     1     2     0     1     0     1
+               3    10    16    10    16    30    40    30    40
+    NB:        1     3     3     3    20
+    NBMIN:     2     2     2     2     2
+    NX:        1     0     5     9     1
+    NS:        2     0     2     2     2
+ 
+ Relative machine underflow is taken to be1.6259745436952323e-260
+ Relative machine overflow  is taken to be1.7976931348623158e+308
+ Relative machine precision is taken to be1.2154326714572501e-63
+
+ Routines pass computational tests if test ratio is less than5.0000000000000000e+01
+
+ DBD routines passed the tests of the error exits ( 55 tests done)
+ Rgesvd passed the tests of the error exits (  8 tests done)
+ Rgesdd passed the tests of the error exits (  6 tests done)
+ Rgejsv passed the tests of the error exits ( 11 tests done)
+ Rgesvdx passed the tests of the error exits ( 12 tests done)
+ Rgesvdq passed the tests of the error exits ( 11 tests done)
+
+
+ SVD:  NB =   1, NBMIN =   2, NX =   1, NRHS =   2
+
+ All tests for DBD routines passed the threshold (  10260 tests run)
+ SVD -- Real Singular Value Decomposition Driver 
+ Matrix types (see Rdrvbd for details):
+
+ 1 = Zero matrix
+ 2 = Identity matrix
+ 3 = Evenly spaced singular values near 1
+ 4 = Evenly spaced singular values near underflow
+ 5 = Evenly spaced singular values near overflow
+
+ Tests performed: ( A is dense, U and V are orthogonal,
+                    S is an array, and Upartial, VTpartial, and
+                    Spartial are partially computed U, VT and S),
+
+ 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+ 2 = | I - U**T U | / ( M ulp ) 
+ 3 = | I - VT VT**T | / ( N ulp ) 
+ 4 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+ 5 = | U - Upartial | / ( M ulp )
+ 6 = | VT - VTpartial | / ( N ulp )
+ 7 = | S - Spartial | / ( min(M,N) ulp |S| )
+ 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+ 9 = | I - U**T U | / ( M ulp ) 
+10 = | I - VT VT**T | / ( N ulp ) 
+11 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+12 = | U - Upartial | / ( M ulp )
+13 = | VT - VTpartial | / ( N ulp )
+14 = | S - Spartial | / ( min(M,N) ulp |S| )
+15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+16 = | I - U**T U | / ( M ulp ) 
+17 = | I - VT VT**T | / ( N ulp ) 
+18 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+19 = | U - Upartial | / ( M ulp )
+20 = | VT - VTpartial | / ( N ulp )
+21 = | S - Spartial | / ( min(M,N) ulp |S| )
+22 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ), Rgesvdx(V,V,A) 
+24 = | I - U**T U | / ( M ulp ) 
+25 = | I - VT VT**T | / ( N ulp ) 
+26 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+27 = | U - Upartial | / ( M ulp )
+28 = | VT - VTpartial | / ( N ulp )
+29 = | S - Spartial | / ( min(M,N) ulp |S| )
+30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp ), Rgesvdx(V,V,I) 
+31 = | I - U**T U | / ( M ulp ) 
+32 = | I - VT VT**T | / ( N ulp ) 
+33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp ), Rgesvdx(V,V,V) 
+34 = | I - U**T U | / ( M ulp ) 
+35 = | I - VT VT**T | / ( N ulp )  Rgesvdq(H,N,N,A,A
+36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+37 = | I - U**T U | / ( M ulp ) 
+38 = | I - VT VT**T | / ( N ulp ) 
+39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+
+
+ M=    3, N=    3, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=3.9220443547163103e+29
+ M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=6.2863742315315264e+29
+ M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=6.1169430582175383e+29
+ M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=6.2863742315315264e+29
+ M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=6.1169430582175383e+29
+ M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=6.2863742315315264e+29
+ M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=6.1169430582175383e+29
+ M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=6.2863742315315264e+29
+ M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=6.1169430582175383e+29
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=2.7069470375541689e+29
+ M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=5.3290884626252602e+29
+ M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=2.7069470375541689e+29
+ M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=5.3290884626252602e+29
+ M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=2.7069470375541689e+29
+ M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=5.3290884626252602e+29
+ M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=2.7069470375541689e+29
+ M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=5.3290884626252602e+29
+ M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=5.9990662685755034e+28
+ M=   10, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=8.5134736471750794e+28
+ M=   10, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=1.1474558309314931e+29
+ M=   10, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=8.5134736471750794e+28
+ M=   10, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=1.1474558309314931e+29
+ M=   10, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=8.5134736471750794e+28
+ M=   10, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=1.1474558309314931e+29
+ M=   10, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=8.5134736471750794e+28
+ M=   10, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=1.1474558309314931e+29
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=3.3408629710164355e+28
+ M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=9.8815860411277057e+28
+ M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=3.3408629710164355e+28
+ M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=9.8815860411277057e+28
+ M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=3.3408629710164355e+28
+ M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=9.8815860411277057e+28
+ M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=3.3408629710164355e+28
+ M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=9.8815860411277057e+28
+ M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=3.7494164178596896e+28
+ M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=3.7494164178596896e+28
+ M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=3.7494164178596896e+28
+ M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=3.7494164178596896e+28
+ M=   16, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=4.7755565059280882e+28
+ M=   16, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=7.1920574074764309e+28
+ M=   16, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=4.7755565059280882e+28
+ M=   16, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=7.1920574074764309e+28
+ M=   16, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=4.7755565059280882e+28
+ M=   16, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=7.1920574074764309e+28
+ M=   16, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=4.7755565059280882e+28
+ M=   16, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=7.1920574074764309e+28
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=6.5740040975524878e+28
+ M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=8.0593213819489415e+28
+ M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=6.5740040975524878e+28
+ M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=8.0593213819489415e+28
+ M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=6.5740040975524878e+28
+ M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=8.0593213819489415e+28
+ M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=6.5740040975524878e+28
+ M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=8.0593213819489415e+28
+ M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=4.1089246409172491e+28
+ M=   16, N=   16, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2550064141124346e+28
+ M=   16, N=   16, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=5.3854739311548850e+28
+ M=   16, N=   16, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2550064141124346e+28
+ M=   16, N=   16, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=5.3854739311548850e+28
+ M=   16, N=   16, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2550064141124346e+28
+ M=   16, N=   16, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=5.3854739311548850e+28
+ M=   16, N=   16, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2550064141124346e+28
+ M=   16, N=   16, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=5.3854739311548850e+28
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=2.3007363501832287e+28
+ M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=6.5161372816471464e+28
+ M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=2.3007363501832287e+28
+ M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=6.5161372816471464e+28
+ M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=2.3007363501832287e+28
+ M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=6.5161372816471464e+28
+ M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=2.3007363501832287e+28
+ M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=6.5161372816471464e+28
+ M=   30, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=3.2353546108753990e+27
+ M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=1.8419855507512426e+28
+ M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=2.6958471058255198e+28
+ M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=1.8419855507512426e+28
+ M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=2.6958471058255198e+28
+ M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=1.8419855507512426e+28
+ M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=2.6958471058255198e+28
+ M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=1.8419855507512426e+28
+ M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=2.6958471058255198e+28
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0622948887803342e+28
+ M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=3.2673231965675692e+28
+ M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0622948887803342e+28
+ M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=3.2673231965675692e+28
+ M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0622948887803342e+28
+ M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=3.2673231965675692e+28
+ M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0622948887803342e+28
+ M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=3.2673231965675692e+28
+ M=   40, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   40, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=2.4265159581565492e+27
+ M=   40, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   40, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=2.4265159581565492e+27
+ M=   40, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   40, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=2.4265159581565492e+27
+ M=   40, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   40, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=2.4265159581565492e+27
+ M=   40, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=7.1698440165518536e+27
+ M=   40, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=1.8512715212025974e+28
+ M=   40, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=7.1698440165518536e+27
+ M=   40, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=1.8512715212025974e+28
+ M=   40, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=7.1698440165518536e+27
+ M=   40, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=1.8512715212025974e+28
+ M=   40, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=7.1698440165518536e+27
+ M=   40, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=1.8512715212025974e+28
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2103264516160868e+28
+ M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=2.4547744960087759e+28
+ M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2103264516160868e+28
+ M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=2.4547744960087759e+28
+ M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2103264516160868e+28
+ M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=2.4547744960087759e+28
+ M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2103264516160868e+28
+ M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=2.4547744960087759e+28
+ M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=1.3887796691255248e+28
+ M=   40, N=   40, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=6.8494623026602272e+27
+ M=   40, N=   40, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=1.9885565248500177e+28
+ M=   40, N=   40, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=6.8494623026602272e+27
+ M=   40, N=   40, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=1.9885565248500177e+28
+ M=   40, N=   40, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=6.8494623026602272e+27
+ M=   40, N=   40, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=1.9885565248500177e+28
+ M=   40, N=   40, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=6.8494623026602272e+27
+ M=   40, N=   40, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=1.9885565248500177e+28
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=6.0297062917620129e+27
+ M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=1.8895177466013272e+28
+ M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=6.0297062917620129e+27
+ M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=1.8895177466013272e+28
+ M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=6.0297062917620129e+27
+ M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=1.8895177466013272e+28
+ M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=6.0297062917620129e+27
+ M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=1.8895177466013272e+28
+ DBD drivers:    196 out of  14820 tests failed to pass the threshold
+
+
+ SVD:  NB =   3, NBMIN =   2, NX =   0, NRHS =   0
+
+ All tests for DBD routines passed the threshold (  10260 tests run)
+ SVD -- Real Singular Value Decomposition Driver 
+ Matrix types (see Rdrvbd for details):
+
+ 1 = Zero matrix
+ 2 = Identity matrix
+ 3 = Evenly spaced singular values near 1
+ 4 = Evenly spaced singular values near underflow
+ 5 = Evenly spaced singular values near overflow
+
+ Tests performed: ( A is dense, U and V are orthogonal,
+                    S is an array, and Upartial, VTpartial, and
+                    Spartial are partially computed U, VT and S),
+
+ 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+ 2 = | I - U**T U | / ( M ulp ) 
+ 3 = | I - VT VT**T | / ( N ulp ) 
+ 4 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+ 5 = | U - Upartial | / ( M ulp )
+ 6 = | VT - VTpartial | / ( N ulp )
+ 7 = | S - Spartial | / ( min(M,N) ulp |S| )
+ 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+ 9 = | I - U**T U | / ( M ulp ) 
+10 = | I - VT VT**T | / ( N ulp ) 
+11 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+12 = | U - Upartial | / ( M ulp )
+13 = | VT - VTpartial | / ( N ulp )
+14 = | S - Spartial | / ( min(M,N) ulp |S| )
+15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+16 = | I - U**T U | / ( M ulp ) 
+17 = | I - VT VT**T | / ( N ulp ) 
+18 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+19 = | U - Upartial | / ( M ulp )
+20 = | VT - VTpartial | / ( N ulp )
+21 = | S - Spartial | / ( min(M,N) ulp |S| )
+22 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ), Rgesvdx(V,V,A) 
+24 = | I - U**T U | / ( M ulp ) 
+25 = | I - VT VT**T | / ( N ulp ) 
+26 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+27 = | U - Upartial | / ( M ulp )
+28 = | VT - VTpartial | / ( N ulp )
+29 = | S - Spartial | / ( min(M,N) ulp |S| )
+30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp ), Rgesvdx(V,V,I) 
+31 = | I - U**T U | / ( M ulp ) 
+32 = | I - VT VT**T | / ( N ulp ) 
+33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp ), Rgesvdx(V,V,V) 
+34 = | I - U**T U | / ( M ulp ) 
+35 = | I - VT VT**T | / ( N ulp )  Rgesvdq(H,N,N,A,A
+36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+37 = | I - U**T U | / ( M ulp ) 
+38 = | I - VT VT**T | / ( N ulp ) 
+39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+
+
+ M=    3, N=    3, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=3.9220443547163103e+29
+ M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=2.2296390148361410e+29
+ M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=6.7763094905828057e+29
+ M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=2.2296390148361410e+29
+ M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=6.7763094905828057e+29
+ M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=2.2296390148361410e+29
+ M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=6.7763094905828057e+29
+ M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=2.2296390148361410e+29
+ M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=6.7763094905828057e+29
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=3.3548368998193534e+29
+ M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=7.6889509548197988e+29
+ M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=3.3548368998193534e+29
+ M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=7.6889509548197988e+29
+ M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=3.3548368998193534e+29
+ M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=7.6889509548197988e+29
+ M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=3.3548368998193534e+29
+ M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=7.6889509548197988e+29
+ M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=5.9990662685755034e+28
+ M=   10, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=6.8530945105855384e+28
+ M=   10, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=1.1445340669840527e+29
+ M=   10, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=6.8530945105855384e+28
+ M=   10, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=1.1445340669840527e+29
+ M=   10, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=6.8530945105855384e+28
+ M=   10, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=1.1445340669840527e+29
+ M=   10, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=6.8530945105855384e+28
+ M=   10, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=1.1445340669840527e+29
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=6.3313396862875759e+28
+ M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=1.6669389762695658e+29
+ M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=6.3313396862875759e+28
+ M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=1.6669389762695658e+29
+ M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=6.3313396862875759e+28
+ M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=1.6669389762695658e+29
+ M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=6.3313396862875759e+28
+ M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=1.6669389762695658e+29
+ M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=3.7494164178596896e+28
+ M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=3.7494164178596896e+28
+ M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=3.7494164178596896e+28
+ M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=3.7494164178596896e+28
+ M=   16, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=6.3568324332458725e+28
+ M=   16, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=6.5508916570235339e+28
+ M=   16, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=6.3568324332458725e+28
+ M=   16, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=6.5508916570235339e+28
+ M=   16, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=6.3568324332458725e+28
+ M=   16, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=6.5508916570235339e+28
+ M=   16, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=6.3568324332458725e+28
+ M=   16, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=6.5508916570235339e+28
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=6.0190520687550079e+28
+ M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=9.4973426789026033e+28
+ M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=6.0190520687550079e+28
+ M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=9.4973426789026033e+28
+ M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=6.0190520687550079e+28
+ M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=9.4973426789026033e+28
+ M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=6.0190520687550079e+28
+ M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=9.4973426789026033e+28
+ M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=4.1089246409172491e+28
+ M=   16, N=   16, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=3.0169643738392435e+28
+ M=   16, N=   16, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=6.7158457959837032e+28
+ M=   16, N=   16, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=3.0169643738392435e+28
+ M=   16, N=   16, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=6.7158457959837032e+28
+ M=   16, N=   16, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=3.0169643738392435e+28
+ M=   16, N=   16, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=6.7158457959837032e+28
+ M=   16, N=   16, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=3.0169643738392435e+28
+ M=   16, N=   16, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=6.7158457959837032e+28
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=2.6354363827902005e+28
+ M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=6.7743201622961392e+28
+ M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=2.6354363827902005e+28
+ M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=6.7743201622961392e+28
+ M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=2.6354363827902005e+28
+ M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=6.7743201622961392e+28
+ M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=2.6354363827902005e+28
+ M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=6.7743201622961392e+28
+ M=   30, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=3.2353546108753990e+27
+ M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0086431913263042e+28
+ M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=3.0601410540947891e+28
+ M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0086431913263042e+28
+ M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=3.0601410540947891e+28
+ M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0086431913263042e+28
+ M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=3.0601410540947891e+28
+ M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0086431913263042e+28
+ M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=3.0601410540947891e+28
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=7.6883408365224384e+27
+ M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=2.7120097703915860e+28
+ M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=7.6883408365224384e+27
+ M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=2.7120097703915860e+28
+ M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=7.6883408365224384e+27
+ M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=2.7120097703915860e+28
+ M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=7.6883408365224384e+27
+ M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=2.7120097703915860e+28
+ M=   40, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   40, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=2.4265159581565492e+27
+ M=   40, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   40, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=2.4265159581565492e+27
+ M=   40, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   40, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=2.4265159581565492e+27
+ M=   40, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   40, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=2.4265159581565492e+27
+ M=   40, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=8.0794072531055905e+27
+ M=   40, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=1.9555166202019310e+28
+ M=   40, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=8.0794072531055905e+27
+ M=   40, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=1.9555166202019310e+28
+ M=   40, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=8.0794072531055905e+27
+ M=   40, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=1.9555166202019310e+28
+ M=   40, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=8.0794072531055905e+27
+ M=   40, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=1.9555166202019310e+28
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.1335132615397606e+28
+ M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=2.2462326852364852e+28
+ M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.1335132615397606e+28
+ M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=2.2462326852364852e+28
+ M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.1335132615397606e+28
+ M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=2.2462326852364852e+28
+ M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.1335132615397606e+28
+ M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=2.2462326852364852e+28
+ M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=1.3887796691255248e+28
+ M=   40, N=   40, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0237405140570888e+28
+ M=   40, N=   40, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=1.9291108746694452e+28
+ M=   40, N=   40, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0237405140570888e+28
+ M=   40, N=   40, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=1.9291108746694452e+28
+ M=   40, N=   40, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0237405140570888e+28
+ M=   40, N=   40, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=1.9291108746694452e+28
+ M=   40, N=   40, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0237405140570888e+28
+ M=   40, N=   40, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=1.9291108746694452e+28
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=6.6429865796187269e+27
+ M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=2.1661568788359501e+28
+ M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=6.6429865796187269e+27
+ M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=2.1661568788359501e+28
+ M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=6.6429865796187269e+27
+ M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=2.1661568788359501e+28
+ M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=6.6429865796187269e+27
+ M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=2.1661568788359501e+28
+ DBD drivers:    196 out of  14820 tests failed to pass the threshold
+
+
+ SVD:  NB =   3, NBMIN =   2, NX =   5, NRHS =   2
+
+ DBD -- Real Singular Value Decomposition
+ Matrix types (see xCHKBD for details):
+ Diagonal matrices:
+   1: Zero                             5: Clustered entries
+   2: Identity                         6: Large, evenly spaced entries
+   3: Evenly spaced entries            7: Small, evenly spaced entries
+   4: Geometrically spaced entries
+ General matrices:
+   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
+   9: Geometrically spaced sing vals  13: Random, O(1) entries
+  10: Clustered sing. vals.           14: Random, scaled near overflow
+  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
+
+ Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: orthogonal
+                X: m x nrhs, Y = Q' X, and Z = U' Y)
+   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
+   2: norm( I - Q' Q )   / ( m ulp )
+   3: norm( I - P' P )   / ( n ulp )
+   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
+   6: norm( I - U' U )   / ( min(m,n) ulp )
+   7: norm( I - V' V )   / ( min(m,n) ulp )
+   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
+  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
+  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
+  13: norm( I - (QU)'(QU) )      / ( M ulp )
+  14: norm( I - (V' P') (P V) )  / ( N ulp )
+  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+  16: norm( I - U' U )   / ( min(m,n) ulp )
+  17: norm( I - V' V )   / ( min(m,n) ulp )
+  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
+  21: norm( I - U' U )    / ( min(m,n) ulp )
+  22: norm( I - V' V )    / ( min(m,n) ulp )
+  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
+  26: norm( I - U' U )    / ( min(m,n) ulp )
+  27: norm( I - V' V )    / ( min(m,n) ulp )
+  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
+  31: norm( I - U' U )    / ( min(m,n) ulp )
+  32: norm( I - V' V )    / ( min(m,n) ulp )
+  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+ M=   30, N=   30, type 16, seed=   0,   0,   0,   1, test( 9)=1.9807040628566153e+29
+ M=   30, N=   30, type 16, seed=   0,   0,   0,   1, test(19)=6.1759162821644111e+10
+ DBD:      2 out of  10260 tests failed to pass the threshold
+ SVD -- Real Singular Value Decomposition Driver 
+ Matrix types (see Rdrvbd for details):
+
+ 1 = Zero matrix
+ 2 = Identity matrix
+ 3 = Evenly spaced singular values near 1
+ 4 = Evenly spaced singular values near underflow
+ 5 = Evenly spaced singular values near overflow
+
+ Tests performed: ( A is dense, U and V are orthogonal,
+                    S is an array, and Upartial, VTpartial, and
+                    Spartial are partially computed U, VT and S),
+
+ 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+ 2 = | I - U**T U | / ( M ulp ) 
+ 3 = | I - VT VT**T | / ( N ulp ) 
+ 4 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+ 5 = | U - Upartial | / ( M ulp )
+ 6 = | VT - VTpartial | / ( N ulp )
+ 7 = | S - Spartial | / ( min(M,N) ulp |S| )
+ 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+ 9 = | I - U**T U | / ( M ulp ) 
+10 = | I - VT VT**T | / ( N ulp ) 
+11 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+12 = | U - Upartial | / ( M ulp )
+13 = | VT - VTpartial | / ( N ulp )
+14 = | S - Spartial | / ( min(M,N) ulp |S| )
+15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+16 = | I - U**T U | / ( M ulp ) 
+17 = | I - VT VT**T | / ( N ulp ) 
+18 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+19 = | U - Upartial | / ( M ulp )
+20 = | VT - VTpartial | / ( N ulp )
+21 = | S - Spartial | / ( min(M,N) ulp |S| )
+22 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ), Rgesvdx(V,V,A) 
+24 = | I - U**T U | / ( M ulp ) 
+25 = | I - VT VT**T | / ( N ulp ) 
+26 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+27 = | U - Upartial | / ( M ulp )
+28 = | VT - VTpartial | / ( N ulp )
+29 = | S - Spartial | / ( min(M,N) ulp |S| )
+30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp ), Rgesvdx(V,V,I) 
+31 = | I - U**T U | / ( M ulp ) 
+32 = | I - VT VT**T | / ( N ulp ) 
+33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp ), Rgesvdx(V,V,V) 
+34 = | I - U**T U | / ( M ulp ) 
+35 = | I - VT VT**T | / ( N ulp )  Rgesvdq(H,N,N,A,A
+36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+37 = | I - U**T U | / ( M ulp ) 
+38 = | I - VT VT**T | / ( N ulp ) 
+39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+
+
+ M=    3, N=    3, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=3.9220443547163103e+29
+ M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=2.1226922318883212e+29
+ M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=4.1535982712174499e+29
+ M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=2.1226922318883212e+29
+ M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=4.1535982712174499e+29
+ M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=2.1226922318883212e+29
+ M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=4.1535982712174499e+29
+ M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=2.1226922318883212e+29
+ M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=4.1535982712174499e+29
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=3.5670128749750777e+28
+ M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=2.4123174864701556e+29
+ M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=3.5670128749750777e+28
+ M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=2.4123174864701556e+29
+ M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=3.5670128749750777e+28
+ M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=2.4123174864701556e+29
+ M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=3.5670128749750777e+28
+ M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=2.4123174864701556e+29
+ M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=5.9990662685755034e+28
+ M=   10, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=3.7463835753638589e+28
+ M=   10, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=1.1387381282781404e+29
+ M=   10, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=3.7463835753638589e+28
+ M=   10, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=1.1387381282781404e+29
+ M=   10, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=3.7463835753638589e+28
+ M=   10, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=1.1387381282781404e+29
+ M=   10, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=3.7463835753638589e+28
+ M=   10, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=1.1387381282781404e+29
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=3.7372298650250838e+28
+ M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=8.1936507319119429e+28
+ M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=3.7372298650250838e+28
+ M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=8.1936507319119429e+28
+ M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=3.7372298650250838e+28
+ M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=8.1936507319119429e+28
+ M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=3.7372298650250838e+28
+ M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=8.1936507319119429e+28
+ M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=3.7494164178596896e+28
+ M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=3.7494164178596896e+28
+ M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=3.7494164178596896e+28
+ M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=3.7494164178596896e+28
+ M=   16, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=7.6853242638347451e+28
+ M=   16, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=9.5534398240904803e+28
+ M=   16, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=7.6853242638347451e+28
+ M=   16, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=9.5534398240904803e+28
+ M=   16, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=7.6853242638347451e+28
+ M=   16, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=9.5534398240904803e+28
+ M=   16, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=7.6853242638347451e+28
+ M=   16, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=9.5534398240904803e+28
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=2.7907160594890466e+28
+ M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=5.2389180585381082e+28
+ M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=2.7907160594890466e+28
+ M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=5.2389180585381082e+28
+ M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=2.7907160594890466e+28
+ M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=5.2389180585381082e+28
+ M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=2.7907160594890466e+28
+ M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=5.2389180585381082e+28
+ M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=4.1089246409172491e+28
+ M=   16, N=   16, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=4.8316223706131347e+28
+ M=   16, N=   16, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=5.2694542161649812e+28
+ M=   16, N=   16, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=4.8316223706131347e+28
+ M=   16, N=   16, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=5.2694542161649812e+28
+ M=   16, N=   16, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=4.8316223706131347e+28
+ M=   16, N=   16, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=5.2694542161649812e+28
+ M=   16, N=   16, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=4.8316223706131347e+28
+ M=   16, N=   16, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=5.2694542161649812e+28
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=2.1492374199226921e+28
+ M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=5.9416791719427040e+28
+ M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=2.1492374199226921e+28
+ M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=5.9416791719427040e+28
+ M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=2.1492374199226921e+28
+ M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=5.9416791719427040e+28
+ M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=2.1492374199226921e+28
+ M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=5.9416791719427040e+28
+ M=   30, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=3.2353546108753990e+27
+ M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2400617613157697e+28
+ M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=3.5572586107743477e+28
+ M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2400617613157697e+28
+ M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=3.5572586107743477e+28
+ M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2400617613157697e+28
+ M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=3.5572586107743477e+28
+ M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2400617613157697e+28
+ M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=3.5572586107743477e+28
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=7.5889698864454643e+27
+ M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=2.2866518525767061e+28
+ M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=7.5889698864454643e+27
+ M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=2.2866518525767061e+28
+ M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=7.5889698864454643e+27
+ M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=2.2866518525767061e+28
+ M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=7.5889698864454643e+27
+ M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=2.2866518525767061e+28
+ M=   40, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   40, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=2.4265159581565492e+27
+ M=   40, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   40, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=2.4265159581565492e+27
+ M=   40, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   40, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=2.4265159581565492e+27
+ M=   40, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   40, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=2.4265159581565492e+27
+ M=   40, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0762394759605798e+28
+ M=   40, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=1.5129418321488407e+28
+ M=   40, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0762394759605798e+28
+ M=   40, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=1.5129418321488407e+28
+ M=   40, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0762394759605798e+28
+ M=   40, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=1.5129418321488407e+28
+ M=   40, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0762394759605798e+28
+ M=   40, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=1.5129418321488407e+28
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=8.2593867528784834e+27
+ M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=1.6635063460162136e+28
+ M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=8.2593867528784834e+27
+ M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=1.6635063460162136e+28
+ M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=8.2593867528784834e+27
+ M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=1.6635063460162136e+28
+ M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=8.2593867528784834e+27
+ M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=1.6635063460162136e+28
+ M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=1.3887796691255248e+28
+ M=   40, N=   40, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=7.9199754735593089e+27
+ M=   40, N=   40, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=2.0682397104515888e+28
+ M=   40, N=   40, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=7.9199754735593089e+27
+ M=   40, N=   40, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=2.0682397104515888e+28
+ M=   40, N=   40, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=7.9199754735593089e+27
+ M=   40, N=   40, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=2.0682397104515888e+28
+ M=   40, N=   40, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=7.9199754735593089e+27
+ M=   40, N=   40, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=2.0682397104515888e+28
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=6.4879885224191411e+27
+ M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=1.6845659210435699e+28
+ M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=6.4879885224191411e+27
+ M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=1.6845659210435699e+28
+ M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=6.4879885224191411e+27
+ M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=1.6845659210435699e+28
+ M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=6.4879885224191411e+27
+ M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=1.6845659210435699e+28
+ DBD drivers:    196 out of  14820 tests failed to pass the threshold
+
+
+ SVD:  NB =   3, NBMIN =   2, NX =   9, NRHS =   2
+
+ All tests for DBD routines passed the threshold (  10260 tests run)
+ SVD -- Real Singular Value Decomposition Driver 
+ Matrix types (see Rdrvbd for details):
+
+ 1 = Zero matrix
+ 2 = Identity matrix
+ 3 = Evenly spaced singular values near 1
+ 4 = Evenly spaced singular values near underflow
+ 5 = Evenly spaced singular values near overflow
+
+ Tests performed: ( A is dense, U and V are orthogonal,
+                    S is an array, and Upartial, VTpartial, and
+                    Spartial are partially computed U, VT and S),
+
+ 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+ 2 = | I - U**T U | / ( M ulp ) 
+ 3 = | I - VT VT**T | / ( N ulp ) 
+ 4 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+ 5 = | U - Upartial | / ( M ulp )
+ 6 = | VT - VTpartial | / ( N ulp )
+ 7 = | S - Spartial | / ( min(M,N) ulp |S| )
+ 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+ 9 = | I - U**T U | / ( M ulp ) 
+10 = | I - VT VT**T | / ( N ulp ) 
+11 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+12 = | U - Upartial | / ( M ulp )
+13 = | VT - VTpartial | / ( N ulp )
+14 = | S - Spartial | / ( min(M,N) ulp |S| )
+15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+16 = | I - U**T U | / ( M ulp ) 
+17 = | I - VT VT**T | / ( N ulp ) 
+18 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+19 = | U - Upartial | / ( M ulp )
+20 = | VT - VTpartial | / ( N ulp )
+21 = | S - Spartial | / ( min(M,N) ulp |S| )
+22 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ), Rgesvdx(V,V,A) 
+24 = | I - U**T U | / ( M ulp ) 
+25 = | I - VT VT**T | / ( N ulp ) 
+26 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+27 = | U - Upartial | / ( M ulp )
+28 = | VT - VTpartial | / ( N ulp )
+29 = | S - Spartial | / ( min(M,N) ulp |S| )
+30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp ), Rgesvdx(V,V,I) 
+31 = | I - U**T U | / ( M ulp ) 
+32 = | I - VT VT**T | / ( N ulp ) 
+33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp ), Rgesvdx(V,V,V) 
+34 = | I - U**T U | / ( M ulp ) 
+35 = | I - VT VT**T | / ( N ulp )  Rgesvdq(H,N,N,A,A
+36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+37 = | I - U**T U | / ( M ulp ) 
+38 = | I - VT VT**T | / ( N ulp ) 
+39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+
+
+ M=    3, N=    3, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=3.9220443547163103e+29
+ M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=3.5895406794104369e+29
+ M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=1.1230516633283583e+30
+ M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=3.5895406794104369e+29
+ M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=1.1230516633283583e+30
+ M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=3.5895406794104369e+29
+ M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=1.1230516633283583e+30
+ M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=3.5895406794104369e+29
+ M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=1.1230516633283583e+30
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0947416196901228e+29
+ M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=3.2967652327268590e+29
+ M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0947416196901228e+29
+ M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=3.2967652327268590e+29
+ M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0947416196901228e+29
+ M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=3.2967652327268590e+29
+ M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0947416196901228e+29
+ M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=3.2967652327268590e+29
+ M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=5.9990662685755034e+28
+ M=   10, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=8.3258455575929494e+28
+ M=   10, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=1.5882011828028017e+29
+ M=   10, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=8.3258455575929494e+28
+ M=   10, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=1.5882011828028017e+29
+ M=   10, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=8.3258455575929494e+28
+ M=   10, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=1.5882011828028017e+29
+ M=   10, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=8.3258455575929494e+28
+ M=   10, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=1.5882011828028017e+29
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=4.6969274809148638e+28
+ M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=1.3416081541647381e+29
+ M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=4.6969274809148638e+28
+ M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=1.3416081541647381e+29
+ M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=4.6969274809148638e+28
+ M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=1.3416081541647381e+29
+ M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=4.6969274809148638e+28
+ M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=1.3416081541647381e+29
+ M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=3.7494164178596896e+28
+ M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=3.7494164178596896e+28
+ M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=3.7494164178596896e+28
+ M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=3.7494164178596896e+28
+ M=   16, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=6.3982776501561362e+28
+ M=   16, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=7.3530292838066573e+28
+ M=   16, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=6.3982776501561362e+28
+ M=   16, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=7.3530292838066573e+28
+ M=   16, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=6.3982776501561362e+28
+ M=   16, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=7.3530292838066573e+28
+ M=   16, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=6.3982776501561362e+28
+ M=   16, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=7.3530292838066573e+28
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=5.6927571226853813e+28
+ M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=9.9860418148118850e+28
+ M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=5.6927571226853813e+28
+ M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=9.9860418148118850e+28
+ M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=5.6927571226853813e+28
+ M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=9.9860418148118850e+28
+ M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=5.6927571226853813e+28
+ M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=9.9860418148118850e+28
+ M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=4.1089246409172491e+28
+ M=   16, N=   16, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=4.0174685519665033e+28
+ M=   16, N=   16, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=4.9932151672122585e+28
+ M=   16, N=   16, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=4.0174685519665033e+28
+ M=   16, N=   16, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=4.9932151672122585e+28
+ M=   16, N=   16, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=4.0174685519665033e+28
+ M=   16, N=   16, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=4.9932151672122585e+28
+ M=   16, N=   16, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=4.0174685519665033e+28
+ M=   16, N=   16, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=4.9932151672122585e+28
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=2.4570587016291996e+28
+ M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=6.5957794709505335e+28
+ M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=2.4570587016291996e+28
+ M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=6.5957794709505335e+28
+ M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=2.4570587016291996e+28
+ M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=6.5957794709505335e+28
+ M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=2.4570587016291996e+28
+ M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=6.5957794709505335e+28
+ M=   30, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=3.2353546108753990e+27
+ M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=1.6942345134524425e+28
+ M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=2.5021430970925789e+28
+ M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=1.6942345134524425e+28
+ M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=2.5021430970925789e+28
+ M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=1.6942345134524425e+28
+ M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=2.5021430970925789e+28
+ M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=1.6942345134524425e+28
+ M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=2.5021430970925789e+28
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0042363330498699e+28
+ M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=2.8207942584076871e+28
+ M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0042363330498699e+28
+ M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=2.8207942584076871e+28
+ M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0042363330498699e+28
+ M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=2.8207942584076871e+28
+ M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0042363330498699e+28
+ M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=2.8207942584076871e+28
+ M=   40, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   40, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=2.4265159581565492e+27
+ M=   40, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   40, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=2.4265159581565492e+27
+ M=   40, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   40, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=2.4265159581565492e+27
+ M=   40, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   40, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=2.4265159581565492e+27
+ M=   40, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=9.5411794894665888e+27
+ M=   40, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=1.8943508059560852e+28
+ M=   40, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=9.5411794894665888e+27
+ M=   40, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=1.8943508059560852e+28
+ M=   40, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=9.5411794894665888e+27
+ M=   40, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=1.8943508059560852e+28
+ M=   40, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=9.5411794894665888e+27
+ M=   40, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=1.8943508059560852e+28
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=7.2438350418140397e+27
+ M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=1.8877232689921350e+28
+ M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=7.2438350418140397e+27
+ M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=1.8877232689921350e+28
+ M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=7.2438350418140397e+27
+ M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=1.8877232689921350e+28
+ M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=7.2438350418140397e+27
+ M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=1.8877232689921350e+28
+ M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=1.3887796691255248e+28
+ M=   40, N=   40, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2262120624542866e+28
+ M=   40, N=   40, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=2.4276776420769219e+28
+ M=   40, N=   40, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2262120624542866e+28
+ M=   40, N=   40, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=2.4276776420769219e+28
+ M=   40, N=   40, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2262120624542866e+28
+ M=   40, N=   40, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=2.4276776420769219e+28
+ M=   40, N=   40, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2262120624542866e+28
+ M=   40, N=   40, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=2.4276776420769219e+28
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=6.3289581020111682e+27
+ M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=1.9808276065946786e+28
+ M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=6.3289581020111682e+27
+ M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=1.9808276065946786e+28
+ M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=6.3289581020111682e+27
+ M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=1.9808276065946786e+28
+ M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=6.3289581020111682e+27
+ M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=1.9808276065946786e+28
+ DBD drivers:    196 out of  14820 tests failed to pass the threshold
+
+
+ SVD:  NB =  20, NBMIN =   2, NX =   1, NRHS =   2
+
+ All tests for DBD routines passed the threshold (  10260 tests run)
+ SVD -- Real Singular Value Decomposition Driver 
+ Matrix types (see Rdrvbd for details):
+
+ 1 = Zero matrix
+ 2 = Identity matrix
+ 3 = Evenly spaced singular values near 1
+ 4 = Evenly spaced singular values near underflow
+ 5 = Evenly spaced singular values near overflow
+
+ Tests performed: ( A is dense, U and V are orthogonal,
+                    S is an array, and Upartial, VTpartial, and
+                    Spartial are partially computed U, VT and S),
+
+ 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+ 2 = | I - U**T U | / ( M ulp ) 
+ 3 = | I - VT VT**T | / ( N ulp ) 
+ 4 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+ 5 = | U - Upartial | / ( M ulp )
+ 6 = | VT - VTpartial | / ( N ulp )
+ 7 = | S - Spartial | / ( min(M,N) ulp |S| )
+ 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+ 9 = | I - U**T U | / ( M ulp ) 
+10 = | I - VT VT**T | / ( N ulp ) 
+11 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+12 = | U - Upartial | / ( M ulp )
+13 = | VT - VTpartial | / ( N ulp )
+14 = | S - Spartial | / ( min(M,N) ulp |S| )
+15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+16 = | I - U**T U | / ( M ulp ) 
+17 = | I - VT VT**T | / ( N ulp ) 
+18 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+19 = | U - Upartial | / ( M ulp )
+20 = | VT - VTpartial | / ( N ulp )
+21 = | S - Spartial | / ( min(M,N) ulp |S| )
+22 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ), Rgesvdx(V,V,A) 
+24 = | I - U**T U | / ( M ulp ) 
+25 = | I - VT VT**T | / ( N ulp ) 
+26 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+27 = | U - Upartial | / ( M ulp )
+28 = | VT - VTpartial | / ( N ulp )
+29 = | S - Spartial | / ( min(M,N) ulp |S| )
+30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp ), Rgesvdx(V,V,I) 
+31 = | I - U**T U | / ( M ulp ) 
+32 = | I - VT VT**T | / ( N ulp ) 
+33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp ), Rgesvdx(V,V,V) 
+34 = | I - U**T U | / ( M ulp ) 
+35 = | I - VT VT**T | / ( N ulp )  Rgesvdq(H,N,N,A,A
+36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+37 = | I - U**T U | / ( M ulp ) 
+38 = | I - VT VT**T | / ( N ulp ) 
+39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+
+
+ M=    3, N=    3, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=3.9220443547163103e+29
+ M=    3, N=    3, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=3.9220443547163103e+29
+ M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=3.0037752141472804e+29
+ M=    3, N=    3, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=1.0727327563780524e+29
+ M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=3.0037752141472804e+29
+ M=    3, N=    3, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=1.0727327563780524e+29
+ M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=3.0037752141472804e+29
+ M=    3, N=    3, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=1.0727327563780524e+29
+ M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=3.0037752141472804e+29
+ M=    3, N=    3, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=1.0727327563780524e+29
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+29
+ M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4068341744362809e+29
+ M=    3, N=    3, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=2.8692086372361633e+29
+ M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4068341744362809e+29
+ M=    3, N=    3, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=2.8692086372361633e+29
+ M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4068341744362809e+29
+ M=    3, N=    3, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=2.8692086372361633e+29
+ M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4068341744362809e+29
+ M=    3, N=    3, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=2.8692086372361633e+29
+ M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   10, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=5.9990662685755034e+28
+ M=   10, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=7.1048404381923119e+28
+ M=   10, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=1.0864679278264096e+29
+ M=   10, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=7.1048404381923119e+28
+ M=   10, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=1.0864679278264096e+29
+ M=   10, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=7.1048404381923119e+28
+ M=   10, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=1.0864679278264096e+29
+ M=   10, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=7.1048404381923119e+28
+ M=   10, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=1.0864679278264096e+29
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=5.6668432787064981e+28
+ M=   10, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=1.2295671911868406e+29
+ M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=5.6668432787064981e+28
+ M=   10, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=1.2295671911868406e+29
+ M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=5.6668432787064981e+28
+ M=   10, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=1.2295671911868406e+29
+ M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=5.6668432787064981e+28
+ M=   10, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=1.2295671911868406e+29
+ M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   16, N=   10, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=3.7494164178596896e+28
+ M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   16, N=   10, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=3.7494164178596896e+28
+ M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   16, N=   10, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=3.7494164178596896e+28
+ M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=5.9990662685755034e+28
+ M=   16, N=   10, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=3.7494164178596896e+28
+ M=   16, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=2.2083600754468842e+28
+ M=   16, N=   10, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=3.8783557639204344e+28
+ M=   16, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=2.2083600754468842e+28
+ M=   16, N=   10, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=3.8783557639204344e+28
+ M=   16, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=2.2083600754468842e+28
+ M=   16, N=   10, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=3.8783557639204344e+28
+ M=   16, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=2.2083600754468842e+28
+ M=   16, N=   10, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=3.8783557639204344e+28
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2871397127337993e+28
+ M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=4.8083979831760864e+28
+ M=   16, N=   10, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=7.8119840801125783e+28
+ M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=4.8083979831760864e+28
+ M=   16, N=   10, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=7.8119840801125783e+28
+ M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=4.8083979831760864e+28
+ M=   16, N=   10, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=7.8119840801125783e+28
+ M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=4.8083979831760864e+28
+ M=   16, N=   10, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=7.8119840801125783e+28
+ M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1089246409172491e+28
+ M=   16, N=   16, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=4.1089246409172491e+28
+ M=   16, N=   16, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=3.4913714238110994e+28
+ M=   16, N=   16, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=7.8025097477279467e+28
+ M=   16, N=   16, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=3.4913714238110994e+28
+ M=   16, N=   16, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=7.8025097477279467e+28
+ M=   16, N=   16, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=3.4913714238110994e+28
+ M=   16, N=   16, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=7.8025097477279467e+28
+ M=   16, N=   16, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=3.4913714238110994e+28
+ M=   16, N=   16, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=7.8025097477279467e+28
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.0544623204586245e+28
+ M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.8617855781806244e+28
+ M=   16, N=   16, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=4.7450968005509278e+28
+ M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.8617855781806244e+28
+ M=   16, N=   16, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=4.7450968005509278e+28
+ M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.8617855781806244e+28
+ M=   16, N=   16, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=4.7450968005509278e+28
+ M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.8617855781806244e+28
+ M=   16, N=   16, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=4.7450968005509278e+28
+ M=   30, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   30, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=3.2353546108753990e+27
+ M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0538569370527943e+28
+ M=   30, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=3.0841764334024064e+28
+ M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0538569370527943e+28
+ M=   30, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=3.0841764334024064e+28
+ M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0538569370527943e+28
+ M=   30, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=3.0841764334024064e+28
+ M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0538569370527943e+28
+ M=   30, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=3.0841764334024064e+28
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=1.1659512041344804e+28
+ M=   30, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=3.1529013608566059e+28
+ M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=1.1659512041344804e+28
+ M=   30, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=3.1529013608566059e+28
+ M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=1.1659512041344804e+28
+ M=   30, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=3.1529013608566059e+28
+ M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=1.1659512041344804e+28
+ M=   30, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=3.1529013608566059e+28
+ M=   40, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   40, N=   30, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=2.4265159581565492e+27
+ M=   40, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   40, N=   30, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=2.4265159581565492e+27
+ M=   40, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   40, N=   30, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=2.4265159581565492e+27
+ M=   40, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=3.2353546108753990e+27
+ M=   40, N=   30, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=2.4265159581565492e+27
+ M=   40, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=1.5247995573545817e+28
+ M=   40, N=   30, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=2.1492540940338354e+28
+ M=   40, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=1.5247995573545817e+28
+ M=   40, N=   30, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=2.1492540940338354e+28
+ M=   40, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=1.5247995573545817e+28
+ M=   40, N=   30, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=2.1492540940338354e+28
+ M=   40, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=1.5247995573545817e+28
+ M=   40, N=   30, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=2.1492540940338354e+28
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0957132375779331e+28
+ M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=8.7178224723137517e+27
+ M=   40, N=   30, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=2.1078711988045573e+28
+ M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=8.7178224723137517e+27
+ M=   40, N=   30, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=2.1078711988045573e+28
+ M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=8.7178224723137517e+27
+ M=   40, N=   30, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=2.1078711988045573e+28
+ M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=8.7178224723137517e+27
+ M=   40, N=   30, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=2.1078711988045573e+28
+ M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=1, seed=   0,   0,   0,   1, test(16)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=2, seed=   0,   0,   0,   1, test(16)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=3, seed=   0,   0,   0,   1, test(16)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3887796691255248e+28
+ M=   40, N=   40, type 2, IWS=4, seed=   0,   0,   0,   1, test(16)=1.3887796691255248e+28
+ M=   40, N=   40, type 3, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3824518943544141e+28
+ M=   40, N=   40, type 3, IWS=1, seed=   0,   0,   0,   1, test(16)=1.7257040087789353e+28
+ M=   40, N=   40, type 3, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3824518943544141e+28
+ M=   40, N=   40, type 3, IWS=2, seed=   0,   0,   0,   1, test(16)=1.7257040087789353e+28
+ M=   40, N=   40, type 3, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3824518943544141e+28
+ M=   40, N=   40, type 3, IWS=3, seed=   0,   0,   0,   1, test(16)=1.7257040087789353e+28
+ M=   40, N=   40, type 3, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3824518943544141e+28
+ M=   40, N=   40, type 3, IWS=4, seed=   0,   0,   0,   1, test(16)=1.7257040087789353e+28
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=8.2178492818344981e+27
+ M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(15)=7.6628201552994816e+27
+ M=   40, N=   40, type 5, IWS=1, seed=   0,   0,   0,   1, test(16)=2.0467949874054681e+28
+ M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(15)=7.6628201552994816e+27
+ M=   40, N=   40, type 5, IWS=2, seed=   0,   0,   0,   1, test(16)=2.0467949874054681e+28
+ M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(15)=7.6628201552994816e+27
+ M=   40, N=   40, type 5, IWS=3, seed=   0,   0,   0,   1, test(16)=2.0467949874054681e+28
+ M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(15)=7.6628201552994816e+27
+ M=   40, N=   40, type 5, IWS=4, seed=   0,   0,   0,   1, test(16)=2.0467949874054681e+28
+ DBD drivers:    196 out of  14820 tests failed to pass the threshold
+
+
+ End of tests
+ Total time used =      1375.00 seconds
+
