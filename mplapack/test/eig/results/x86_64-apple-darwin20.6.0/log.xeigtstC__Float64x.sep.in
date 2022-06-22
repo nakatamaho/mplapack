@@ -19,8 +19,34 @@ The following parameter values will be used:
 
 
  SEP:  NB =   1, NBMIN =   2, NX =   1
+ Cchkst: Cstemr(V,A) returned INFO=    11.
+         N=     3, JTYPE=    10, ISEED=(    0,    0,    0,    1)
 
- All tests for ZST passed the threshold (  4440 tests run)
+ ZST -- Complex Hermitian eigenvalue problem
+ Matrix types (see Cchkst for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: clustered entries.
+  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
+  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
+  4=Diagonal: geometr. spaced entries.
+ Dense Hermitian Matrices:
+  8=Evenly spaced eigenvals.             12=Small, evenly spaced eigenvals.
+  9=Geometrically spaced eigenvals.      13=Matrix with random O(1) entries.
+ 10=Clustered eigenvalues.               14=Matrix with large random entries.
+ 11=Large, evenly spaced eigenvals.      15=Matrix with small random entries.
+ 16=Positive definite, evenly spaced eigenvalues
+ 17=Positive definite, geometrically spaced eigenvlaues
+ 18=Positive definite, clustered eigenvalues
+ 19=Positive definite, small evenly spaced eigenvalues
+ 20=Positive definite, large evenly spaced eigenvalues
+ 21=Diagonally dominant tridiagonal, geometrically spaced eigenvalues
+
+Test performed:  see Cchkst for details.
+
+ Matrix order=    3, type=10, seed=   0,   0,   0,   1, result  35 is+9.2233720368547758e+18
+ ZST:    1 out of  4438 tests failed to pass the threshold
+ *** Error code from Cchkst =   11
 
  All tests for ZST drivers  passed the threshold (  11016 tests run)
 
