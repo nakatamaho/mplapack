@@ -5453,3 +5453,143 @@ The following parameter values will be used:
  *** Error code from Cgbtrf =   13
  ==> M =    50, N =   50, KL =   62, KU =   12, NB =  20, type  8
  ==> Doing only the condition estimate for this case
+ M =   50, N =   50, KL=   37, KU=    0, NB =   1, type 7, test(1)=                 inf
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS=  1, type 7, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS=  1, type 7, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS=  1, type 7, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS=  2, type 7, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS=  2, type 7, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS=  2, type 7, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS= 15, type 7, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS= 15, type 7, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS= 15, type 7, test(5)=+1.3407807929942597e+154
+ NORM ='O', N=   50, KL=   37, KU=    0,           type 7, test(7)=+1.3407807929942597e+154
+ NORM ='I', N=   50, KL=   37, KU=    0,           type 7, test(7)=+1.3407807929942597e+154
+ M =   50, N =   50, KL=   37, KU=    0, NB =   3, type 7, test(1)=                 inf
+ M =   50, N =   50, KL=   37, KU=    0, NB =  20, type 7, test(1)=                 inf
+ M =   50, N =   50, KL=   37, KU=    0, NB =   1, type 8, test(1)=+1.5528649003291753e+152
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS=  1, type 8, test(3)=                 inf
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS=  1, type 8, test(4)=                 inf
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS=  1, type 8, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS=  1, type 8, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS=  1, type 8, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS=  2, type 8, test(3)=                 inf
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS=  2, type 8, test(4)=                 inf
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS=  2, type 8, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS=  2, type 8, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS=  2, type 8, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS= 15, type 8, test(3)=                 inf
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS= 15, type 8, test(4)=                 inf
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS= 15, type 8, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS= 15, type 8, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   37, KU=    0, NRHS= 15, type 8, test(5)=+1.3407807929942597e+154
+ NORM ='O', N=   50, KL=   37, KU=    0,           type 8, test(7)=+1.3407807929942597e+154
+ NORM ='I', N=   50, KL=   37, KU=    0,           type 8, test(7)=+1.3407807929942597e+154
+ M =   50, N =   50, KL=   37, KU=    0, NB =   3, type 8, test(1)=+1.5528649003291753e+152
+ M =   50, N =   50, KL=   37, KU=    0, NB =  20, type 8, test(1)=+1.5528649003291753e+152
+ *** Error code from Cgbtrf =    3
+ ==> M =    50, N =   50, KL =   37, KU =   62, NB =   1, type  7
+ ==> Doing only the condition estimate for this case
+ M =   50, N =   50, KL=   37, KU=   62, NB =   1, type 7, test(1)=                 inf
+ NORM ='O', N=   50, KL=   37, KU=   62,           type 7, test(7)=                 inf
+ *** Error code from Cgbtrf =    3
+ ==> M =    50, N =   50, KL =   37, KU =   62, NB =   3, type  7
+ ==> Doing only the condition estimate for this case
+ M =   50, N =   50, KL=   37, KU=   62, NB =   3, type 7, test(1)=                 inf
+ *** Error code from Cgbtrf =    3
+ ==> M =    50, N =   50, KL =   37, KU =   62, NB =  20, type  7
+ ==> Doing only the condition estimate for this case
+ M =   50, N =   50, KL=   37, KU=   62, NB =  20, type 7, test(1)=                 inf
+ *** Error code from Cgbtrf =    2
+ ==> M =    50, N =   50, KL =   37, KU =   62, NB =   1, type  8
+ ==> Doing only the condition estimate for this case
+ M =   50, N =   50, KL=   37, KU=   62, NB =   1, type 8, test(1)=+2.3033654478775166e+152
+ *** Error code from Cgbtrf =    2
+ ==> M =    50, N =   50, KL =   37, KU =   62, NB =   3, type  8
+ ==> Doing only the condition estimate for this case
+ M =   50, N =   50, KL=   37, KU=   62, NB =   3, type 8, test(1)=+2.3033654478775166e+152
+ *** Error code from Cgbtrf =    2
+ ==> M =    50, N =   50, KL =   37, KU =   62, NB =  20, type  8
+ ==> Doing only the condition estimate for this case
+ M =   50, N =   50, KL=   37, KU=   62, NB =  20, type 8, test(1)=+2.3033654478775166e+152
+ *** Error code from Cgbtrf =    3
+ ==> M =    50, N =   50, KL =   37, KU =   37, NB =   1, type  7
+ ==> Doing only the condition estimate for this case
+ M =   50, N =   50, KL=   37, KU=   37, NB =   1, type 7, test(1)=                 inf
+ NORM ='O', N=   50, KL=   37, KU=   37,           type 7, test(7)=                 inf
+ *** Error code from Cgbtrf =    3
+ ==> M =    50, N =   50, KL =   37, KU =   37, NB =   3, type  7
+ ==> Doing only the condition estimate for this case
+ M =   50, N =   50, KL=   37, KU=   37, NB =   3, type 7, test(1)=                 inf
+ *** Error code from Cgbtrf =    3
+ ==> M =    50, N =   50, KL =   37, KU =   37, NB =  20, type  7
+ ==> Doing only the condition estimate for this case
+ M =   50, N =   50, KL=   37, KU=   37, NB =  20, type 7, test(1)=                 inf
+ *** Error code from Cgbtrf =    2
+ ==> M =    50, N =   50, KL =   37, KU =   37, NB =   1, type  8
+ ==> Doing only the condition estimate for this case
+ M =   50, N =   50, KL=   37, KU=   37, NB =   1, type 8, test(1)=+2.3582452705846456e+152
+ *** Error code from Cgbtrf =    2
+ ==> M =    50, N =   50, KL =   37, KU =   37, NB =   3, type  8
+ ==> Doing only the condition estimate for this case
+ M =   50, N =   50, KL=   37, KU=   37, NB =   3, type 8, test(1)=+2.3582452705846456e+152
+ *** Error code from Cgbtrf =    2
+ ==> M =    50, N =   50, KL =   37, KU =   37, NB =  20, type  8
+ ==> Doing only the condition estimate for this case
+ M =   50, N =   50, KL=   37, KU=   37, NB =  20, type 8, test(1)=+2.3582452705846456e+152
+ *** Error code from Cgbtrf =    3
+ ==> M =    50, N =   50, KL =   37, KU =   12, NB =   1, type  7
+ ==> Doing only the condition estimate for this case
+ M =   50, N =   50, KL=   37, KU=   12, NB =   1, type 7, test(1)=                 inf
+ NORM ='O', N=   50, KL=   37, KU=   12,           type 7, test(7)=                 inf
+ *** Error code from Cgbtrf =    3
+ ==> M =    50, N =   50, KL =   37, KU =   12, NB =   3, type  7
+ ==> Doing only the condition estimate for this case
+ M =   50, N =   50, KL=   37, KU=   12, NB =   3, type 7, test(1)=                 inf
+ *** Error code from Cgbtrf =    3
+ ==> M =    50, N =   50, KL =   37, KU =   12, NB =  20, type  7
+ ==> Doing only the condition estimate for this case
+ M =   50, N =   50, KL=   37, KU=   12, NB =  20, type 7, test(1)=                 inf
+ *** Error code from Cgbtrf =    2
+ ==> M =    50, N =   50, KL =   37, KU =   12, NB =   1, type  8
+ ==> Doing only the condition estimate for this case
+ *** Error code from Cgbtrf =    2
+ ==> M =    50, N =   50, KL =   37, KU =   12, NB =   3, type  8
+ ==> Doing only the condition estimate for this case
+ *** Error code from Cgbtrf =    2
+ ==> M =    50, N =   50, KL =   37, KU =   12, NB =  20, type  8
+ ==> Doing only the condition estimate for this case
+ M =   50, N =   50, KL=   12, KU=    0, NB =   1, type 7, test(1)=                 inf
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS=  1, type 7, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS=  1, type 7, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS=  1, type 7, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS=  2, type 7, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS=  2, type 7, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS=  2, type 7, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS= 15, type 7, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS= 15, type 7, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS= 15, type 7, test(5)=+1.3407807929942597e+154
+ NORM ='O', N=   50, KL=   12, KU=    0,           type 7, test(7)=+1.3407807929942597e+154
+ NORM ='I', N=   50, KL=   12, KU=    0,           type 7, test(7)=+1.3407807929942597e+154
+ M =   50, N =   50, KL=   12, KU=    0, NB =   3, type 7, test(1)=                 inf
+ M =   50, N =   50, KL=   12, KU=    0, NB =  20, type 7, test(1)=                 inf
+ M =   50, N =   50, KL=   12, KU=    0, NB =   1, type 8, test(1)=+1.1478364796633848e+152
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS=  1, type 8, test(3)=                 inf
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS=  1, type 8, test(4)=                 inf
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS=  1, type 8, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS=  1, type 8, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS=  1, type 8, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS=  2, type 8, test(3)=                 inf
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS=  2, type 8, test(4)=                 inf
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS=  2, type 8, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS=  2, type 8, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS=  2, type 8, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS= 15, type 8, test(3)=                 inf
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS= 15, type 8, test(4)=                 inf
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS= 15, type 8, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS= 15, type 8, test(5)=+1.3407807929942597e+154
+ TRANS=' ', N=   50, KL=   12, KU=    0, NRHS= 15, type 8, test(5)=+1.3407807929942597e+154
+ NORM ='O', N=   50, KL=   12, KU=    0,           type 8, test(7)=+1.3407807929942597e+154
+ NORM ='I', N=   50, KL=   12, KU=    0,           type 8, test(7)=+1.3407807929942597e+154
+ M =   50, N =   50, KL=   12, KU=    0, NB =   3, type 8, test(1)=+1.1478364796633848e+152
+ M =   50, N =   50, KL=   12, KU=    0, NB =  20, type 8, test(1)=+1.1478364796633848e+152
