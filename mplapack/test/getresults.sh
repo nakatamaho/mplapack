@@ -7,7 +7,7 @@ rsync -arv maho@172.27.109.65:/data/mnt/lib/aarch64-unknown-linux-gnu/mplapack/t
 
 ##########
 cd /home/docker/mplapack/mplapack/test/eig/
-rm -rf results/
+rm -rf results/x86_64-apple-darwin20.6.0
 mkdir -p results/x86_64-apple-darwin20.6.0
 cd results/x86_64-apple-darwin20.6.0
 rsync -arv maho@172.27.109.87:~/MPLAPACK/lib/x86_64-apple-darwin20.6.0/mplapack/test/eig/log* .
