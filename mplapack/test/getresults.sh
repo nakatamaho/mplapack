@@ -33,7 +33,6 @@ mkdir -p results/x86_64-w64-mingw32
 cd results/x86_64-w64-mingw32
 rsync -arv ~/MPLAPACK_MINGW/lib/x86_64-w64-mingw32/mplapack/test/eig/log* .
 
-
 ##########
 cd /home/docker/mplapack/mplapack/test/lin/
 rm -rf results/aarch64-unknown-linux-gnu
@@ -68,6 +67,3 @@ rm -rf results/x86_64-w64-mingw32
 mkdir -p results/x86_64-w64-mingw32
 cd results/x86_64-w64-mingw32
 rsync -arv ~/MPLAPACK_MINGW/lib/x86_64-w64-mingw32/mplapack/test/lin/log* .
-
-
-
