@@ -1,0 +1,90 @@
+ Tests of the Hermitian Eigenvalue Problem routines
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     1     2     3     5    20
+    N:         0     1     2     3     5    20
+    NB:        1     3     3     3    10
+    NBMIN:     2     2     2     2     2
+    NX:        1     0     5     9     1
+ 
+ Relative machine underflow is taken to be+3.3621031431120935e-4932
+ Relative machine overflow  is taken to be+1.1897314953572318e+4932
+ Relative machine precision is taken to be+1.9259299443872359e-34
+
+ Routines pass computational tests if test ratio is less than+5.0000000000000000e+01
+
+ ZST routines passed the tests of the error exits (176 tests done)
+
+
+ SE2:  NB =   1, NBMIN =   2, NX =   1
+
+ All tests for ZST passed the threshold (  4440 tests run)
+
+ All tests for ZST drivers  passed the threshold (  11016 tests run)
+
+
+ SE2:  NB =   3, NBMIN =   2, NX =   0
+
+ All tests for ZST passed the threshold (  4440 tests run)
+
+ All tests for ZST drivers  passed the threshold (  11016 tests run)
+
+
+ SE2:  NB =   3, NBMIN =   2, NX =   5
+
+ All tests for ZST passed the threshold (  4440 tests run)
+
+ ZST -- Complex Hermitian eigenvalue problem
+ Matrix types (see xDRVST for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: clustered entries.
+  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
+  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
+  4=Diagonal: geometr. spaced entries.
+ Dense Hermitian Matrices:
+  8=Evenly spaced eigenvals.             12=Small, evenly spaced eigenvals.
+  9=Geometrically spaced eigenvals.      13=Matrix with random O(1) entries.
+ 10=Clustered eigenvalues.               14=Matrix with large random entries.
+ 11=Large, evenly spaced eigenvals.      15=Matrix with small random entries.
+
+ Tests performed:  See cdrvst.f
+ Matrix order=   20, type=13, seed=   0,   0,   0,   1, result 101 is +5.1798161936587678e+01
+ ZST drivers:      1 out of  11016 tests failed to pass the threshold
+
+
+ SE2:  NB =   3, NBMIN =   2, NX =   9
+
+ All tests for ZST passed the threshold (  4440 tests run)
+
+ ZST -- Complex Hermitian eigenvalue problem
+ Matrix types (see xDRVST for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: clustered entries.
+  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
+  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
+  4=Diagonal: geometr. spaced entries.
+ Dense Hermitian Matrices:
+  8=Evenly spaced eigenvals.             12=Small, evenly spaced eigenvals.
+  9=Geometrically spaced eigenvals.      13=Matrix with random O(1) entries.
+ 10=Clustered eigenvalues.               14=Matrix with large random entries.
+ 11=Large, evenly spaced eigenvals.      15=Matrix with small random entries.
+
+ Tests performed:  See cdrvst.f
+ Matrix order=   20, type=15, seed=   0,   0,   0,   1, result 101 is +5.6433042558044849e+01
+ ZST drivers:      1 out of  11016 tests failed to pass the threshold
+
+
+ SE2:  NB =  10, NBMIN =   2, NX =   1
+
+ All tests for ZST passed the threshold (  4440 tests run)
+
+ All tests for ZST drivers  passed the threshold (  11016 tests run)
+
+
+ End of tests
+ Total time used =        98.00 seconds
+

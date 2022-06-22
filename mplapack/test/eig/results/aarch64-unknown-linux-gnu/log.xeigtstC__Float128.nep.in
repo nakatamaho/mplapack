@@ -14,9 +14,9 @@ The following parameter values will be used:
     ISHFTS:      1     2     4     2     1
     IACC22:      0     1     2     0     1
  
- Relative machine underflow is taken to be+9.5302596195518043e-323228497
- Relative machine overflow  is taken to be+2.0985787164673877e+323228496
- Relative machine precision is taken to be+7.4583407312002067e-155
+ Relative machine underflow is taken to be+3.3621031431120935e-4932
+ Relative machine overflow  is taken to be+1.1897314953572318e+4932
+ Relative machine precision is taken to be+1.9259299443872359e-34
 
  Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
 
@@ -29,3 +29,25 @@ The following parameter values will be used:
 
 
  NEP:  NB =   3, NBMIN =   2, NX =   0, INMIN=  12, INWIN =   3, INIBL =   5, ISHFTS =   2, IACC22 =   1
+
+ All tests for ZHS passed the threshold (  1764 tests run)
+
+
+ NEP:  NB =   3, NBMIN =   2, NX =   5, INMIN=  11, INWIN =   5, INIBL =   7, ISHFTS =   4, IACC22 =   2
+
+ All tests for ZHS passed the threshold (  1764 tests run)
+
+
+ NEP:  NB =   3, NBMIN =   2, NX =   9, INMIN=  15, INWIN =   3, INIBL =   3, ISHFTS =   2, IACC22 =   0
+
+ All tests for ZHS passed the threshold (  1764 tests run)
+
+
+ NEP:  NB =  20, NBMIN =   2, NX =   1, INMIN=  11, INWIN =   2, INIBL = 200, ISHFTS =   1, IACC22 =   1
+
+ All tests for ZHS passed the threshold (  1764 tests run)
+
+
+ End of tests
+ Total time used =        93.00 seconds
+
