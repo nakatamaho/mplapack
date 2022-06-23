@@ -1082,4 +1082,4 @@ _Float128 Rlamch__Float128(const char *cmach) {
 }
 #endif
 
-REAL Rlamc3(REAL a, REAL b) { return a + b; }
+inline REAL Rlamc3(REAL a, REAL b) { return a + b; }
