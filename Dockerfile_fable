@@ -32,7 +32,7 @@ RUN apt install -y intel-hpckit
 ### intel one api end ###
 
 ### mingw start ###
-RUN apt install -y mingw-w64 gfortran-mingw-w64
+RUN apt install -y mingw-w64 gfortran-mingw-w64 gdb-mingw-w64
 RUN dpkg --add-architecture i386
 RUN wget -nc https://dl.winehq.org/wine-builds/winehq.key
 RUN mv winehq.key /usr/share/keyrings/winehq-archive.key
