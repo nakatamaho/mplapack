@@ -10,17 +10,21 @@ LINREAL_RFPS=`ls *xlintstrfR_*exe | grep -v log`
 LINCOMPLEX_RFPS=`ls *xlintstrfC_*exe | grep -v log`
 
 for linreal in $LINREALS; do
+    echo testing $linreal Rtest.in
     wine64 $linreal < ./Rtest.in >& log.$linreal
 done
 
 for lincomplex in $LINCOMPLEXES; do
+    echo testing $lincomplex Ctest.in
     wine64 $lincomplex < ./Ctest.in >& log.$lincomplex
 done
 
 for linreal_rfp in $LINREAL_RFPS; do
+    echo testing $linreal_rfp Rtest_rfp.in
     wine64 $linreal_rfp < ./Rtest_rfp.in >& log.$linreal_rfp
 done
 
 for lincomplex_rfp in $LINCOMPLEX_RFPS; do
+    echo testing $lincomplex_rfp Ctest_rfp.in
     wine64 $lincomplex_rfp < ./Ctest_rfp.in >& log.$lincomplex_rfp
 done

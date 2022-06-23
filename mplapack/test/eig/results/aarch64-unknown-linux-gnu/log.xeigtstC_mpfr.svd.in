@@ -50,3 +50,17 @@ The following parameter values will be used:
  SVD:  NB =   3, NBMIN =   2, NX =   9, NRHS =   2
 
  All tests for CBD routines passed the threshold (   4085 tests run)
+
+ All tests for ZBD drivers  passed the threshold (  14340 tests run)
+
+
+ SVD:  NB =  20, NBMIN =   2, NX =   1, NRHS =   2
+
+ All tests for CBD routines passed the threshold (   4085 tests run)
+
+ All tests for ZBD drivers  passed the threshold (  14340 tests run)
+
+
+ End of tests
+ Total time used =     15628.00 seconds
+
