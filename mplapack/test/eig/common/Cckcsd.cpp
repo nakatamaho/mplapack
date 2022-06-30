@@ -41,7 +41,7 @@ using fem::common;
 void Cckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const mmax, COMPLEX *x, COMPLEX *xf, COMPLEX *u1, COMPLEX *u2, COMPLEX *v1t, COMPLEX *v2t, REAL *theta, INTEGER *iwork, COMPLEX *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    char path[3];
+    char path[4];
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
@@ -80,6 +80,7 @@ void Cckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
     path[0] = 'C';
     path[1] = 'S';
     path[2] = 'D';
+    path[3] = '\0';
     info = 0;
     nrun = 0;
     nfail = 0;
