@@ -52,14 +52,14 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
     INTEGER ic = 0;
     INTEGER iz = 0;
     INTEGER i = 0;
-    INTEGER name_len;
+    INTEGER name_len = 16;
     char prec;
-    char algo[3];
-    char stag[3];
+    char algo[4];
+    char stag[6];
     bool rprec = false;
     bool cprec = false;
 
-    strncpy(subnam, name, SUBNAM_LEN - 1);
+    strncpy(subnam, name, name_len);
     for (int i = 0; i < name_len; i++) {
         subnam[i] = toupper(subnam[i]);
     }
@@ -73,12 +73,14 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
         algo[0] = subnam[3];
         algo[1] = subnam[4];
         algo[2] = subnam[5];
+        algo[3] = '\0';
 
         stag[0] = subnam[7];
-        algo[1] = subnam[8];
-        algo[2] = subnam[9];
-        algo[3] = subnam[10];
-        algo[4] = subnam[11];
+        stag[1] = subnam[8];
+        stag[2] = subnam[9];
+        stag[3] = subnam[10];
+        stag[4] = subnam[11];
+        stag[5] = '\0';
         rprec = prec == 'R';
         cprec = prec == 'C';
         //
@@ -191,19 +193,19 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
         //        Could be QR or LQ for TRD and the max for BRD
         factoptnb = max(qroptnb, lqoptnb);
         if (strncmp(algo, "TRD", 3)) {
-            if (strncmp(stag, "2STAG", 4)) {
+            if (strncmp(stag, "2STAG", 5)) {
                 lwork = ni * nbi + ni * max(nbi + 1, factoptnb) + max((INTEGER)2 * nbi * nbi, nbi * nthreads) + (nbi + 1) * ni;
-            } else if ((strncmp(stag, "HE2HB", 4)) || (strncmp(stag, "SY2SB", 4))) {
+            } else if ((strncmp(stag, "HE2HB", 5)) || (strncmp(stag, "SY2SB", 5))) {
                 lwork = ni * nbi + ni * max(nbi, factoptnb) + 2 * nbi * nbi;
-            } else if ((strncmp(stag, "HB2ST", 4)) || (strncmp(stag, "SB2ST", 4))) {
+            } else if ((strncmp(stag, "HB2ST", 5)) || (strncmp(stag, "SB2ST", 5))) {
                 lwork = (2 * nbi + 1) * ni + nbi * nthreads;
             }
         } else if (strncmp(algo, "BRD", 3)) {
-            if (strncmp(stag, "2STAG", 4)) {
+            if (strncmp(stag, "2STAG", 5)) {
                 lwork = 2 * ni * nbi + ni * max(nbi + 1, factoptnb) + max((INTEGER)2 * nbi * nbi, nbi * nthreads) + (nbi + 1) * ni;
-            } else if (strncmp(stag, "GE2GB", 4)) {
+            } else if (strncmp(stag, "GE2GB", 5)) {
                 lwork = ni * nbi + ni * max(nbi, factoptnb) + 2 * nbi * nbi;
-            } else if (strncmp(stag, "GB2BD", 4)) {
+            } else if (strncmp(stag, "GB2BD", 5)) {
                 lwork = (3 * nbi + 1) * ni + nbi * nthreads;
             }
         }
