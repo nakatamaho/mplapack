@@ -56,7 +56,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     INTEGER mnmax = 0;
     INTEGER minwrk = 0;
     INTEGER j = 0;
-    char path[3];
+    char path[4];
     INTEGER nfail = 0;
     INTEGER ntest = 0;
     REAL unfl = 0.0;
@@ -160,6 +160,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     path[0] = 'C';
     path[1] = 'B';
     path[2] = 'D';
+    path[3] = '\0';
     nfail = 0;
     ntest = 0;
     unfl = Rlamch("Safe minimum");

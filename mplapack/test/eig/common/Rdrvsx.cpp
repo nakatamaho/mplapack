@@ -62,7 +62,7 @@ void Rdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER kconds[21] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0};
     char buf[1024];
     double dtmp;
-    char path[3];
+    char path[4];
     INTEGER ntestt = 0;
     INTEGER ntestf = 0;
     bool badnn = false;
@@ -153,6 +153,7 @@ void Rdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     path[0] = 'R';
     path[1] = 'S';
     path[2] = 'X';
+    path[3] = '\0';
     //
     //     Check for errors
     //

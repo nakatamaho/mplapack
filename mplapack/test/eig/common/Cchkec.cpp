@@ -42,13 +42,14 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     common cmn;
     common_write write(cmn);
     //
-    char path[3];
+    char path[4];
     char buf0[1024];
     char buf1[1024];
     char buf2[1024];
     path[0] = 'C';
     path[1] = 'E';
     path[2] = 'C';
+    path[3] = '\0';
     REAL eps = Rlamch("P");
     REAL sfmin = Rlamch("S");
     //

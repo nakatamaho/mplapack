@@ -42,7 +42,7 @@ void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
 
     common cmn;
     common_write write(cmn);
-    char path[3];
+    char path[4];
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
@@ -80,6 +80,7 @@ void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
     path[0] = 'C';
     path[1] = 'S';
     path[2] = 'D';
+    path[3] = '\0';
     info = 0;
     nrun = 0;
     nfail = 0;

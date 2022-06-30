@@ -41,7 +41,7 @@ using fem::common;
 void Ccklse(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const nmax, COMPLEX *a, COMPLEX *af, COMPLEX *b, COMPLEX *bf, COMPLEX *x, COMPLEX *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    char path[3];
+    char path[4];
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
@@ -104,6 +104,7 @@ void Ccklse(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     path[0] = 'L';
     path[1] = 'S';
     path[2] = 'E';
+    path[3] = '\0';
     info = 0;
     nrun = 0;
     nfail = 0;
