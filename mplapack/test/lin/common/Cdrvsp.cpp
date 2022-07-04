@@ -45,7 +45,7 @@ void Cdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     const INTEGER nfact = 2;
     char facts[] = {'F', 'N'};
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char path[3];
+    char path[4] = {};
     char fact_uplo[3];
     char buf[1024];
     INTEGER nrun = 0;

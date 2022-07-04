@@ -45,7 +45,7 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     char facts[] = {'F', 'N', 'E'};
     char equeds[] = {'N', 'Y'};
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char path[3];
+    char path[4] = {};
     char buf[1024];
     char fact_uplo[3];
     INTEGER nrun = 0;

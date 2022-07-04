@@ -59,7 +59,7 @@ void Cchkaa(void) {
 
     char c1[2];
     char c2[3];
-    char path[4];
+    char path[4] = {};
     char aline[72];
     char buf[1024];
 

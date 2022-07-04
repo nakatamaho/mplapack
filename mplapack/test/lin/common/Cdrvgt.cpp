@@ -45,7 +45,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     char fact_trans[3];
     char transs[] = {'N', 'T', 'C'};
-    char path[3];
+    char path[4] = {};
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;

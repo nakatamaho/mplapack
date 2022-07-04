@@ -45,7 +45,7 @@ void Rchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     const INTEGER ntran = 3;
     char uplos[] = {'U', 'L'};
     char transs[] = {'N', 'T', 'C'};
-    char path[3];
+    char path[4] = {};
     char buf[1024];
     char norm_trans_diag[4];
     char norm_uplo_diag[4];

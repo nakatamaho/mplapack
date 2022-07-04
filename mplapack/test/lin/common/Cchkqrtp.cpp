@@ -44,7 +44,7 @@ void Cchkqrtp(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
     //
     //     Initialize constants
     //
-    char path[3];
+    char path[4] = {};
     path[0] = 'C';
     path[1] = 'Q';
     path[2] = 'X';

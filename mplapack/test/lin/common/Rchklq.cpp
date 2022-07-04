@@ -44,7 +44,7 @@ void Rchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     //
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char path[3];
+    char path[4] = {};
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;

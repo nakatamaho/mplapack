@@ -89,7 +89,7 @@ void Rchkaa(void) {
     char tsterr_str[2];
     REAL eps = 0.0;
     char aline[72];
-    char path[4];
+    char path[4] = {};
     memset(path, '\0', sizeof(path));
     char buf[1024];
     const INTEGER matmax = 30;

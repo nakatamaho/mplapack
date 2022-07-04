@@ -46,7 +46,7 @@ void Rdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     char uplos[] = {'U', 'L'};
     char packs[] = {'C', 'R'};
     char facts[] = {'F', 'N', 'E'};
-    char path[3];
+    char path[4] = {};
     char fact_uplo[3];
     char buf[1024];
     INTEGER nrun = 0;

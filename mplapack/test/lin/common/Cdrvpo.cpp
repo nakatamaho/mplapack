@@ -47,8 +47,8 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     char equeds[] = {'N', 'Y'};
     char uplos[] = {'U', 'L'};
     char fact_uplo[3];
-    char path[3];
-    char matpath[3];
+    char path[4] = {};
+    char matpath[4] = {};
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;

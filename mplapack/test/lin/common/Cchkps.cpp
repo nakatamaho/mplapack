@@ -44,7 +44,7 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     //
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     const char uplos[] = {'U', 'L'};
-    char path[3];
+    char path[4] = {};
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
