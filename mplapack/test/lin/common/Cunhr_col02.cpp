@@ -268,13 +268,14 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     delete[] a;
     delete[] af;
+    delete[] t2;
+    delete[] work;
     delete[] q;
     delete[] r;
     delete[] rwork;
-    delete[] t2;
     delete[] c;
-    delete[] d;
     delete[] cf;
+    delete[] d;
     delete[] df;
     //
     //     End of Cunhr_col02

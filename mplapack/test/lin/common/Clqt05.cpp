@@ -215,11 +215,13 @@ void Clqt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     //     Deallocate all arrays
     //
+    delete[] a;
     delete[] t;
     delete[] af;
     delete[] work;
     delete[] q;
     delete[] r;
+    delete[] rwork;
     delete[] c;
     delete[] cf;
     delete[] d;
