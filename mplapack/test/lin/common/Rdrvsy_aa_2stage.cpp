@@ -46,8 +46,8 @@ void Rdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     char uplos[] = {'U', 'L'};
     char facts[] = {'F', 'N'};
-    char path[3];
-    char matpath[3];
+    char path[4] = {};
+    char matpath[4] = {};
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;

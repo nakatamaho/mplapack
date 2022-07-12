@@ -41,7 +41,7 @@ using fem::common;
 void Cckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, INTEGER const nn, INTEGER *nval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const nmax, COMPLEX *a, COMPLEX *af, COMPLEX *aq, COMPLEX *ar, COMPLEX *taua, COMPLEX *b, COMPLEX *bf, COMPLEX *bz, COMPLEX *bt, COMPLEX *bwk, COMPLEX *taub, COMPLEX *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    char path[3];
+    char path[4];
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
@@ -106,6 +106,7 @@ void Cckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
     path[0] = 'G';
     path[1] = 'Q';
     path[2] = 'R';
+    path[3] = '\0';
     info = 0;
     nrun = 0;
     nfail = 0;

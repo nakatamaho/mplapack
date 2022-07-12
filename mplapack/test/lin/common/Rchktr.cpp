@@ -49,7 +49,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     char uplo_diag[3];
     char uplo_trans_diag[4];
     char norm_uplo_diag[4];
-    char path[3];
+    char path[4] = {};
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;

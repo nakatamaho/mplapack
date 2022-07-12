@@ -44,7 +44,7 @@ void Rchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     char uplos[] = {'U', 'L'};
     char packs[] = {'C', 'R'};
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char path[4];
+    char path[4] = {};
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;

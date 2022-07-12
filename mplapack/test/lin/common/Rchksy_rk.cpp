@@ -44,8 +44,8 @@ void Rchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     //
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     const char uplos[] = {'U', 'L'};
-    char path[3];
-    char matpath[3];
+    char path[4] = {};
+    char matpath[4] = {};
     char buf[1024];
     const REAL one = 1.0;
     const REAL sevten = 17.0e+0;

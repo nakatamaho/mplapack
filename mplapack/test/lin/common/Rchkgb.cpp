@@ -44,7 +44,7 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     const INTEGER ntran = 3;
     char transs[ntran] = {'N', 'T', 'C'};
-    char path[4];
+    char path[4] = {};
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;

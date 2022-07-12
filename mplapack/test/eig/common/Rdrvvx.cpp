@@ -63,7 +63,7 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     char buf[1024];
     double dtmp;
     double dtmp1, dtmp2, dtmp3, dtmp4;
-    char path[3];
+    char path[4];
     INTEGER ntestt = 0;
     INTEGER ntestf = 0;
     bool badnn = false;
@@ -139,6 +139,7 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     path[0] = 'R';
     path[1] = 'V';
     path[2] = 'X';
+    path[3] = '\0';
     //
     //     Check for errors
     //

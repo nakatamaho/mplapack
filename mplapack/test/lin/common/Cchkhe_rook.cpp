@@ -49,8 +49,8 @@ void Cchkhe_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
     const REAL sevten = 17.0e+0;
     const REAL eight = 8.0e+0;
     REAL alpha = 0.0;
-    char path[3];
-    char matpath[3];
+    char path[4] = {};
+    char matpath[4] = {};
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;

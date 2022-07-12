@@ -64,7 +64,7 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     double dtmp;
     double dtmp1, dtmp2;
     double dtmp_r, dtmp_i;
-    char path[3];
+    char path[4];
     INTEGER ntestt = 0;
     INTEGER ntestf = 0;
     bool badnn = false;
@@ -142,6 +142,7 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     path[0] = 'C';
     path[1] = 'V';
     path[2] = 'X';
+    path[3] = '\0';
     //
     //     Check for errors
     //

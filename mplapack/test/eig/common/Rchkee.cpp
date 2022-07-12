@@ -179,6 +179,10 @@ void Rchkee(void) {
     char buf0[1024];
     double dtmp;
     int itmp;
+    ioldsd[1 - 1] = 0;
+    ioldsd[2 - 1] = 0;
+    ioldsd[3 - 1] = 0;
+    ioldsd[4 - 1] = 1;
     //
     s1 = time(NULL);
     fatal = false;

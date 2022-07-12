@@ -46,7 +46,7 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER ntran = 3;
     char equeds[] = {'N', 'R', 'C', 'B'};
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char path[4];
+    char path[4] = {};
     char buf[1024];
     char fact_trans[3];
     INTEGER nrun = 0;

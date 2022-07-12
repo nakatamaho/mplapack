@@ -41,7 +41,7 @@ using fem::common;
 void Cckglm(INTEGER const nn, INTEGER *nval, INTEGER *mval, INTEGER *pval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const nmax, COMPLEX *a, COMPLEX *af, COMPLEX *b, COMPLEX *bf, COMPLEX *x, COMPLEX *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    char path[3];
+    char path[4];
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
@@ -104,6 +104,7 @@ void Cckglm(INTEGER const nn, INTEGER *nval, INTEGER *mval, INTEGER *pval, INTEG
     path[0] = 'G';
     path[1] = 'L';
     path[2] = 'M';
+    path[3] = '\0';
     info = 0;
     nrun = 0;
     nfail = 0;

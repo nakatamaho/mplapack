@@ -114,6 +114,7 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                         for (ib = 1; ib <= 3; ib = ib + 1) {
                             tl[(1 - 1)] = val[itl - 1];
                             tr[(1 - 1)] = val[itr - 1];
+                            b[(1 - 1)] = val[ib - 1];
                             knt++;
                             Rlasy2(ltranl, ltranr, isgn, n1, n2, tl, 2, tr, 2, b, 2, scale, x, 2, xnorm, info);
                             if (info != 0) {

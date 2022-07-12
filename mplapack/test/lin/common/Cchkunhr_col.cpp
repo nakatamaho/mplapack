@@ -71,7 +71,7 @@ void Cchkunhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
     //
     //     Initialize constants
     //
-    char path[3];
+    char path[4] = {};
     path[0] = 'C';
     path[1] = 'H';
     path[2] = 'H';

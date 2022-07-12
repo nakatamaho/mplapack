@@ -65,7 +65,7 @@ void Cchkeq(REAL const thresh, INTEGER const nout) {
     //     ..
     //     .. Executable Statements ..
     //
-    char path[3];
+    char path[4] = {};
     path[0] = 'C';
     path[1] = 'E';
     path[2] = 'Q';

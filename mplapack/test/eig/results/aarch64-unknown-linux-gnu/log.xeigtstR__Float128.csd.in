@@ -1,0 +1,27 @@
+
+ Tests of the CS Decomposition routines
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     1    10    10    10    10    21    24    30    22
+              32    55
+    P:         0     1     4     4     0    10     9    10    20    12
+              12    40
+    N:         0     1     0    10     4     4    15    12     8    20
+               8    20
+ 
+ Relative machine underflow is taken to be+3.3621031431120935e-4932
+ Relative machine overflow  is taken to be+1.1897314953572318e+4932
+ Relative machine precision is taken to be+1.9259299443872359e-34
+
+ Routines pass computational tests if test ratio is less than+3.0000000000000000e+01
+
+ CSD routines passed the tests of the error exits (  8 tests done)
+
+ All tests for CSD routines passed the threshold (    720 tests run)
+
+
+ End of tests
+ Total time used =         2.00 seconds
+

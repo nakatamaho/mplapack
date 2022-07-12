@@ -41,7 +41,7 @@ using fem::common;
 void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, INTEGER const nn, INTEGER *nval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const nmax, REAL *a, REAL *af, REAL *aq, REAL *ar, REAL *taua, REAL *b, REAL *bf, REAL *bz, REAL *bt, REAL *bwk, REAL *taub, REAL *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    char path[3];
+    char path[4];
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
@@ -106,6 +106,7 @@ void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
     path[0] = 'G';
     path[1] = 'Q';
     path[2] = 'R';
+    path[3] = '\0';
     info = 0;
     nrun = 0;
     nfail = 0;

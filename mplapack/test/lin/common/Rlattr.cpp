@@ -38,7 +38,7 @@ using fem::common;
 
 void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag, INTEGER *iseed, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, REAL *work, INTEGER &info) {
     //
-    char path[3];
+    char path[4] = {};
     path[0] = 'R';
     path[1] = 'T';
     path[2] = 'R';

@@ -38,7 +38,7 @@ using fem::common;
 
 void Clattb(INTEGER const imat, const char *uplo, const char *trans, char *diag, INTEGER *iseed, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, COMPLEX *b, COMPLEX *work, REAL *rwork, INTEGER &info) {
     //
-    char path[3];
+    char path[4] = {};
     path[0] = 'C';
     path[1] = 'T';
     path[2] = 'B';

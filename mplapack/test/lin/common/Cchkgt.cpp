@@ -43,7 +43,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     common_write write(cmn);
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     char transs[] = {'N', 'T', 'C'};
-    char path[3];
+    char path[4] = {};
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;

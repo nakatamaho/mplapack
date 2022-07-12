@@ -42,10 +42,11 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     common cmn;
     common_write write(cmn);
     //
-    char path[3];
+    char path[4];
     path[0] = 'R';
     path[1] = 'E';
     path[2] = 'C';
+    path[3] = '\0';
     char buf0[1024];
     char buf1[1024];
     char buf2[1024];

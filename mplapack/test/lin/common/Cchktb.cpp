@@ -49,7 +49,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     char uplo_trans_diag[4];
     char uplos[] = {'U', 'L'};
     char transs[] = {'N', 'T', 'C'};
-    char path[3];
+    char path[4] = {};
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;

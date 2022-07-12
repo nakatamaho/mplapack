@@ -42,17 +42,6 @@ void Alasum(const char *type, INTEGER const nout, INTEGER const nfail, INTEGER c
     common cmn;
     common_write write(cmn);
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Executable Statements ..
-    //
     if (nfail > 0) {
         write(nout, "(1x,a3,': ',i6,' out of ',i6,' tests failed to pass the threshold')"), type, nfail, nrun;
     } else {

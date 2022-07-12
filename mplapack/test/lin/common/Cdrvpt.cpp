@@ -43,7 +43,7 @@ void Cdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     common_write write(cmn);
     //
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char path[3];
+    char path[4] = {};
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;

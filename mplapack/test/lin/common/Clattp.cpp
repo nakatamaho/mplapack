@@ -38,7 +38,7 @@ using fem::common;
 
 void Clattp(INTEGER const imat, const char *uplo, const char *trans, char *diag, INTEGER *iseed, INTEGER const n, COMPLEX *ap, COMPLEX *b, COMPLEX *work, REAL *rwork, INTEGER &info) {
     //
-    char path[3];
+    char path[4] = {};
     path[0] = 'C';
     path[1] = 'T';
     path[2] = 'P';

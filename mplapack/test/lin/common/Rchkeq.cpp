@@ -65,7 +65,7 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
     //     ..
     //     .. Executable Statements ..
     //
-    char path[3];
+    char path[4] = {};
     char buf1[1024];
     char buf2[1024];
     path[0] = 'R';
@@ -109,7 +109,7 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
             for (j = 1; j <= nsz; j = j + 1) {
                 for (i = 1; i <= nsz; i = i + 1) {
                     if (i <= m && j <= n) {
-                        a[(i - 1) + (j - 1) * lda] = mpow[(i + j + 1) - 1] * pow((-1), (i + j));
+                        a[(i - 1) + (j - 1) * lda] = mpow[(i + j + 1) - 1] * std::pow((-1), (i + j));
                     } else {
                         a[(i - 1) + (j - 1) * lda] = zero;
                     }

@@ -46,7 +46,7 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     const INTEGER ntran = 3;
     char transs[] = {'N', 'T', 'C'};
     char uplos[] = {'U', 'L'};
-    char path[3];
+    char path[4] = {};
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;

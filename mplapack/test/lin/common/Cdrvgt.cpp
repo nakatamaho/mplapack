@@ -45,7 +45,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     char fact_trans[3];
     char transs[] = {'N', 'T', 'C'};
-    char path[3];
+    char path[4] = {};
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
@@ -382,7 +382,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     if (info != izero) {
                         fact_trans[0] = fact[0];
-                        fact_trans[1] = trans[1];
+                        fact_trans[1] = trans[0];
                         fact_trans[2] = '\0';
                         Alaerh(path, "Cgtsvx", info, izero, fact_trans, n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
                     }

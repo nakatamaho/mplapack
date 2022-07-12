@@ -47,8 +47,8 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     char transs[] = {'N', 'T', 'C'};
     char facts[] = {'F', 'N', 'E'};
     char equeds[] = {'N', 'R', 'C', 'B'};
-    char path[4];
-    char matpath[3];
+    char path[4] = {};
+    char matpath[4] = {};
     char buf[1024];
     char fact_trans[3];
     INTEGER nrun = 0;

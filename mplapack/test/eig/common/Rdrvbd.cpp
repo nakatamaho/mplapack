@@ -55,7 +55,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     INTEGER mnmax = 0;
     INTEGER minwrk = 0;
     INTEGER j = 0;
-    char path[3];
+    char path[4];
     INTEGER nfail = 0;
     INTEGER ntest = 0;
     REAL unfl = 0.0;
@@ -159,6 +159,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     path[0] = 'D';
     path[1] = 'B';
     path[2] = 'D';
+    path[3] = '\0';    
     nfail = 0;
     ntest = 0;
     unfl = Rlamch("Safe minimum");

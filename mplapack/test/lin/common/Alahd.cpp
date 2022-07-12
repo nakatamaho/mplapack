@@ -124,7 +124,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
     if (iounit <= 0) {
         return;
     }
-    char path[4];
+    char path[4] = {};
     strncpy(path, _path, 3);
     path[3] = '\0';
     char c1[1];

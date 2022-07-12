@@ -44,7 +44,7 @@ void Cchkhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     //
     INTEGER iseedy[] = {1988, 1989, 1990, 1991};
     char uplos[] = {'U', 'L'};
-    char path[3];
+    char path[4] = {};
     char buf[1024];
     INTEGER nrun = 0;
     INTEGER nfail = 0;
