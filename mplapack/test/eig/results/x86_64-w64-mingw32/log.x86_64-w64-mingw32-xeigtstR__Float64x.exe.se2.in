@@ -29,23 +29,7 @@ The following parameter values will be used:
 
  All tests for DST passed the threshold (  4440 tests run)
 
- RST -- Real Symmetric eigenvalue problem
- Matrix types (see xDRVST for details): 
-
- Special Matrices:
-  1=Zero matrix.                          5=Diagonal: clustered entries.
-  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
-  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
-  4=Diagonal: geometr. spaced entries.
- Dense Symmetric Matrices:
-  8=Evenly spaced eigenvals.             12=Small, evenly spaced eigenvals.
-  9=Geometrically spaced eigenvals.      13=Matrix with random O(1) entries.
- 10=Clustered eigenvalues.               14=Matrix with large random entries.
- 11=Large, evenly spaced eigenvals.      15=Matrix with small random entries.
-
- Tests performed:  See sdrvst.f
- Matrix order=   20, type=10, seed=   0,   0,   0,   0, result 101 is +1.1515683593750000e+02
- RST drivers:      1 out of  13464 tests failed to pass the threshold
+ All tests for RST drivers  passed the threshold (  13464 tests run)
 
 
  SE2:  NB =   3, NBMIN =   2, NX =   5
@@ -59,6 +43,13 @@ The following parameter values will be used:
 
  All tests for DST passed the threshold (  4440 tests run)
 
+ All tests for RST drivers  passed the threshold (  13464 tests run)
+
+
+ SE2:  NB =  10, NBMIN =   2, NX =   1
+
+ All tests for DST passed the threshold (  4440 tests run)
+
  RST -- Real Symmetric eigenvalue problem
  Matrix types (see xDRVST for details): 
 
@@ -74,17 +65,10 @@ The following parameter values will be used:
  11=Large, evenly spaced eigenvals.      15=Matrix with small random entries.
 
  Tests performed:  See sdrvst.f
- Matrix order=   20, type=14, seed=   0,   0,   0,   0, result  71 is +6.1207031250000000e+01
+ Matrix order=    5, type=10, seed=   0,   0,   0,   0, result 128 is +5.4071875000000000e+01
  RST drivers:      1 out of  13464 tests failed to pass the threshold
 
 
- SE2:  NB =  10, NBMIN =   2, NX =   1
-
- All tests for DST passed the threshold (  4440 tests run)
-
- All tests for RST drivers  passed the threshold (  13464 tests run)
-
-
  End of tests
- Total time used =         1.00 seconds
+ Total time used =         2.00 seconds
 

@@ -1,0 +1,162 @@
+
+ Tests of the Nonsymmetric Eigenvalue Problem Driver
+    Rgeev (eigenvalues and eigevectors)
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     1     2     3     5    10    20
+    N:         0     1     2     3     5    10    20
+    NB:        3
+    NBMIN:     3
+    NX:        1
+    INMIN:       11
+    INWIN:      4
+    INIBL:      8
+    ISHFTS:      2
+    IACC22:      0
+ 
+ Relative machine underflow is taken to be1.6259745436952323e-260
+ Relative machine overflow  is taken to be1.7976931348623158e+308
+ Relative machine precision is taken to be1.2154326714572501e-63
+
+ Routines pass computational tests if test ratio is less than2.0000000000000000e+01
+
+ Rgeev passed the tests of the error exits (  7 tests done)
+
+ All tests for REV passed the threshold (  1092 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Nonsymmetric Eigenvalue Problem Driver
+    Rgees (Schur form)
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     1     2     3     5    10    20
+    N:         0     1     2     3     5    10    20
+    NB:        3
+    NBMIN:     3
+    NX:        1
+    INMIN:       11
+    INWIN:      4
+    INIBL:      8
+    ISHFTS:      2
+    IACC22:      0
+ 
+ Relative machine underflow is taken to be1.6259745436952323e-260
+ Relative machine overflow  is taken to be1.7976931348623158e+308
+ Relative machine precision is taken to be1.2154326714572501e-63
+
+ Routines pass computational tests if test ratio is less than2.0000000000000000e+01
+
+ Rgees passed the tests of the error exits (  6 tests done)
+ Rdrves: Rgees1 returned INFO=     6.
+         N=     5, JTYPE=    16, ISEED=( 2518, 3899,  995,  397)
+
+ RES -- Real Schur Form Decomposition Driver
+ Matrix types (see Rdrves for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
+  2=Identity matrix.                      6=Diagonal: clustered entries.
+  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
+  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
+ Dense, Non-Symmetric Matrices:
+  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
+ 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
+ 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex 
+ 12=Well-cond., random complex           17=Ill-cond., large rand. complx 
+ 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx 
+ 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
+ 20=Matrix with large random entries.   
+
+ Tests performed with test threshold =2.0000000000000000e+01
+ ( A denotes A on input and T denotes A on output)
+
+ 1 = 0 if T in Schur form (no sort),   1/ulp otherwise
+ 2 = | A - VS T transpose(VS) | / ( n |A| ulp ) (no sort)
+ 3 = | I - VS transpose(VS) | / ( n ulp ) (no sort) 
+ 4 = 0 if WR+sqrt(-1)*WI are eigenvalues of T (no sort),  1/ulp otherwise
+ 5 = 0 if T same no matter if VS computed (no sort),  1/ulp otherwise
+ 6 = 0 if WR, WI same no matter if VS computed (no sort),  1/ulp otherwise
+ 7 = 0 if T in Schur form (sort),   1/ulp otherwise
+ 8 = | A - VS T transpose(VS) | / ( n |A| ulp ) (sort)
+ 9 = | I - VS transpose(VS) | / ( n ulp ) (sort) 
+ 10 = 0 if WR+sqrt(-1)*WI are eigenvalues of T (sort),  1/ulp otherwise
+ 11 = 0 if T same no matter if VS computed (sort),  1/ulp otherwise
+ 12 = 0 if WR, WI same no matter if VS computed (sort),  1/ulp otherwise
+ 13 = 0 if sorting successful, 1/ulp otherwise
+
+ N=    5, IWK= 1, seed=2518,3899, 995, 397, type 16, test( 7)=4.1137613933030293e+62
+ Rdrves: Rgees1 returned INFO=     6.
+         N=     5, JTYPE=    16, ISEED=( 2518, 3899,  995,  397)
+ N=    5, IWK= 2, seed=2518,3899, 995, 397, type 16, test( 7)=4.1137613933030293e+62
+ RES:    2 out of  3810 tests failed to pass the threshold
+ *** Error code from Rgees =    6
+
+ -----------------------------------------------------------------------
+
+ Tests of the Nonsymmetric Eigenvalue Problem Expert Driver
+    Rgeevx (eigenvalues, eigenvectors and condition numbers)
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     1     2     3     5    10    20
+    N:         0     1     2     3     5    10    20
+    NB:        3
+    NBMIN:     3
+    NX:        1
+    INMIN:       11
+    INWIN:      4
+    INIBL:      8
+    ISHFTS:      2
+    IACC22:      0
+ 
+ Relative machine underflow is taken to be1.6259745436952323e-260
+ Relative machine overflow  is taken to be1.7976931348623158e+308
+ Relative machine precision is taken to be1.2154326714572501e-63
+
+ Routines pass computational tests if test ratio is less than2.0000000000000000e+01
+
+ Rgeevx passed the tests of the error exits ( 11 tests done)
+
+ All tests for RVX passed the threshold (  6282 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Nonsymmetric Eigenvalue Problem Expert Driver
+    Rgeesx (Schur form and condition numbers)
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     1     2     3     5    10
+    N:         0     1     2     3     5    10
+    NB:        3
+    NBMIN:     3
+    NX:        1
+    INMIN:       11
+    INWIN:      4
+    INIBL:      8
+    ISHFTS:      2
+    IACC22:      0
+ 
+ Relative machine underflow is taken to be1.6259745436952323e-260
+ Relative machine overflow  is taken to be1.7976931348623158e+308
+ Relative machine precision is taken to be1.2154326714572501e-63
+
+ Routines pass computational tests if test ratio is less than2.0000000000000000e+01
+
+ Rgeesx passed the tests of the error exits (  7 tests done)
+
+ All tests for RSX passed the threshold (  3508 tests run)
+
+ -----------------------------------------------------------------------
+
+
+ End of tests
+ Total time used =        78.00 seconds
+

@@ -1,100 +1,10 @@
  Tests of the Nonsymmetric eigenproblem condition estimation routines
  Rlaln2, Rlasy2, Rlanv2, Rlaexc, Rtrsyl, Rtrexc, Rtrsna, Rtrsen, Rlaqtr, Rtgexc
 
- Relative machine precision (EPS) = +1.0842021724855044e-19
+ Relative machine precision (EPS) = +1.4916681462400413e-154
  Safe minimum (SFMIN)             = +6.4447927660133239e-1292913987
 
  Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
 
 
  REC routines passed the tests of the error exits ( 35 tests done)
-Unhandled exception: page fault on read access to 0x00000000032e0000 in 64-bit code (0x000000006ad0a613).
-Register dump:
- rip:000000006ad0a613 rsp:00000000001b2e68 rbp:00000000001b2f00 eflags:00010206 (  R- --  I   - -P- )
- rax:0000000000000000 rbx:0000000000000002 rcx:00000000001b6988 rdx:00000000032dfff8
- rsi:0000000000000003 rdi:0000000000000003  r8:0000000003fff89a  r9:0000000000000000 r10:0000000000000000
- r11:0000000000000000 r12:00000000001b3dc0 r13:00000000032dc4f8 r14:000000007c000002 r15:00000000032dcc70
-Stack dump:
-0x00000000001b2e68:  000000006acc4357 00000000032dc4f0
-0x00000000001b2e78:  000000006acc42b0 00000000001b3020
-0x00000000001b2e88:  000000006acc546e 0000000000000000
-0x00000000001b2e98:  4000000000000000 0000000000010000
-0x00000000001b2ea8:  0000000000000000 1045535500000028
-0x00000000001b2eb8:  0000000000000000 0000000000000000
-0x00000000001b2ec8:  0000000100000000 0000000000000000
-0x00000000001b2ed8:  00000000032dc518 1045535500000028
-0x00000000001b2ee8:  0000000000cd0140 0000000000cd0360
-0x00000000001b2ef8:  0000000000000001 00000000001b34f8
-0x00000000001b2f08:  000000006a1051f0 1045535500000028
-0x00000000001b2f18:  0000000000cd0140 0000000000cd0360
-Backtrace:
-=>0 0x000000006ad0a613 atexit+0x49273(func=<internal error>) [Z:\home\docker\MPLAPACK_MINGW\lib\x86_64-w64-mingw32\mplapack\test\eig\build\x86_64-w64-mingw32-x86_64-w64-mingw32-crt\mingw-w64-crt\crt\crtdll.c:215] in libgmp-10 (0x00000000001b2f00)
-  1 0x000000006acc4357 atexit+0x2fb7(func=<internal error>) [Z:\home\docker\MPLAPACK_MINGW\lib\x86_64-w64-mingw32\mplapack\test\eig\build\x86_64-w64-mingw32-x86_64-w64-mingw32-crt\mingw-w64-crt\crt\crtdll.c:215] in libgmp-10 (0x00000000001b2f00)
-0x000000006ad0a613 libgmp-10+0x4a613 [Z:\home\docker\MPLAPACK_MINGW\lib\x86_64-w64-mingw32\mplapack\test\eig\build\x86_64-w64-mingw32-x86_64-w64-mingw32-crt\mingw-w64-crt\crt\crtdll.c:215]: movq	0x0000000000000008(%rdx),%r9
-Unable to access file 'Z:\home\docker\MPLAPACK_MINGW\lib\x86_64-w64-mingw32\mplapack\test\eig\build\x86_64-w64-mingw32-x86_64-w64-mingw32-crt\mingw-w64-crt\crt\crtdll.c'
-Modules:
-Module	Address					Debug info	Name (8 modules)
-PE	0000000000400000-000000000098f000	Deferred        x86_64-w64-mingw32-xeigtstr_gmp
-PE	0000000061440000-000000006156b000	Deferred        libgcc_s_seh-1
-PE	000000006a080000-000000006a39a000	Deferred        msvcrt
-PE	000000006acc0000-000000006add6000	Dwarf-4         libgmp-10
-PE	000000006fc40000-00000000714f5000	Deferred        libstdc++-6
-PE	000000007b000000-000000007b3cf000	Deferred        kernelbase
-PE	000000007b600000-000000007b964000	Deferred        kernel32
-PE	0000000170000000-0000000170342000	Deferred        ntdll
-Threads:
-process  tid      prio (all id:s are in hex)
-00000038 services.exe
-	0000003c    0
-	00000040    0
-	00000054    0
-	00000078    0
-	000000a4    0
-	000000bc    0
-	000000d4    0
-00000044 winedevice.exe
-	00000048    0
-	0000005c    0
-	00000060    0
-	00000064    0
-	000000c8    0
-0000004c explorer.exe
-	00000050    0
-	00000074    0
-0000006c winedevice.exe
-	00000070    0
-	00000080    0
-	00000088    0
-	0000008c    0
-	00000090    0
-	00000094    0
-	00000098    0
-0000009c plugplay.exe
-	000000a0    0
-	000000a8    0
-	000000ac    0
-	000000b0    0
-000000b4 svchost.exe
-	000000b8    0
-	000000c0    0
-	000000c4    0
-000000cc rpcss.exe
-	000000d0    0
-	000000d8    0
-	000000dc    0
-	000000e0    0
-	000000e4    0
-	000000e8    0
-000006c0 x86_64-w64-mingw32-xlintstC_gmp.exe
-	000006c4    0
-000006c8 (D) Z:\home\docker\MPLAPACK_MINGW\lib\x86_64-w64-mingw32\mplapack\test\eig\x86_64-w64-mingw32-xeigtstR_gmp.exe
-	000006cc    0 <==
-	000006e0    0
-000006d0 conhost.exe
-	000006d4    0
-System information:
-    Wine build: wine-7.0
-    Platform: x86_64
-    Version: Windows 7
-    Host system: Linux
-    Host version: 5.13.0-44-generic

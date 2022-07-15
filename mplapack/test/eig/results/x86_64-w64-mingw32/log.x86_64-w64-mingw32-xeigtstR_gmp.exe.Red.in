@@ -18,97 +18,40 @@ The following parameter values will be used:
  
  Relative machine underflow is taken to be+6.4447927660133239e-1292913987
  Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
- Relative machine precision is taken to be+5.4210108624275222e-20
+ Relative machine precision is taken to be+7.4583407312002067e-155
 
  Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
 
  Rgeev passed the tests of the error exits (  7 tests done)
-Unhandled exception: page fault on read access to 0x0000000003300000 in 64-bit code (0x000000006ad0a613).
-Register dump:
- rip:000000006ad0a613 rsp:00000000001b37a8 rbp:00000000001b3840 eflags:00010216 (  R- --  I   -A-P- )
- rax:0000000000000000 rbx:0000000000000002 rcx:00000000001d7728 rdx:00000000032ffff8
- rsi:0000000000000003 rdi:0000000000000003  r8:000000007fffb80f  r9:0000000000000000 r10:0000000000000000
- r11:0000000000000000 r12:0000000003a20338 r13:00000000032dc098 r14:0000000000000000 r15:0000000002ed4e10
-Stack dump:
-0x00000000001b37a8:  000000006acc4357 0000000002ed4e10
-0x00000000001b37b8:  000000006acc42b0 0000000000e4f638
-0x00000000001b37c8:  000000006acc3060 39b05aeda2a5a7dc
-0x00000000001b37d8:  0000000212ce1bfa 0000000000000000
-0x00000000001b37e8:  00000000032dc088 1045535500000028
-0x00000000001b37f8:  0000000000000000 0000000000000000
-0x00000000001b3808:  0000000000000014 0000000000010000
-0x00000000001b3818:  00000000032dc0b8 1045535500000028
-0x00000000001b3828:  3333333333333333 b333333333333333
-0x00000000001b3838:  0ccccccccccccccc 0000000000010000
-0x00000000001b3848:  00000000032dc0e8 1045535500000028
-0x00000000001b3858:  00000000032f8e60 0000000000cd0360
-Backtrace:
-=>0 0x000000006ad0a613 atexit+0x49273(func=<internal error>) [Z:\home\docker\MPLAPACK_MINGW\lib\x86_64-w64-mingw32\mplapack\test\eig\build\x86_64-w64-mingw32-x86_64-w64-mingw32-crt\mingw-w64-crt\crt\crtdll.c:215] in libgmp-10 (0x00000000001b3840)
-  1 0x000000006acc4357 atexit+0x2fb7(func=<internal error>) [Z:\home\docker\MPLAPACK_MINGW\lib\x86_64-w64-mingw32\mplapack\test\eig\build\x86_64-w64-mingw32-x86_64-w64-mingw32-crt\mingw-w64-crt\crt\crtdll.c:215] in libgmp-10 (0x00000000001b3840)
-0x000000006ad0a613 libgmp-10+0x4a613 [Z:\home\docker\MPLAPACK_MINGW\lib\x86_64-w64-mingw32\mplapack\test\eig\build\x86_64-w64-mingw32-x86_64-w64-mingw32-crt\mingw-w64-crt\crt\crtdll.c:215]: movq	0x0000000000000008(%rdx),%r9
-Unable to access file 'Z:\home\docker\MPLAPACK_MINGW\lib\x86_64-w64-mingw32\mplapack\test\eig\build\x86_64-w64-mingw32-x86_64-w64-mingw32-crt\mingw-w64-crt\crt\crtdll.c'
-Modules:
-Module	Address					Debug info	Name (8 modules)
-PE	0000000000400000-000000000098f000	Deferred        x86_64-w64-mingw32-xeigtstr_gmp
-PE	0000000061440000-000000006156b000	Deferred        libgcc_s_seh-1
-PE	000000006a080000-000000006a39a000	Deferred        msvcrt
-PE	000000006acc0000-000000006add6000	Dwarf-4         libgmp-10
-PE	000000006fc40000-00000000714f5000	Deferred        libstdc++-6
-PE	000000007b000000-000000007b3cf000	Deferred        kernelbase
-PE	000000007b600000-000000007b964000	Deferred        kernel32
-PE	0000000170000000-0000000170342000	Deferred        ntdll
-Threads:
-process  tid      prio (all id:s are in hex)
-00000038 services.exe
-	0000003c    0
-	00000040    0
-	00000054    0
-	00000078    0
-	000000a4    0
-	000000bc    0
-	000000d4    0
-00000044 winedevice.exe
-	00000048    0
-	0000005c    0
-	00000060    0
-	00000064    0
-	000000c8    0
-0000004c explorer.exe
-	00000050    0
-	00000074    0
-0000006c winedevice.exe
-	00000070    0
-	00000080    0
-	00000088    0
-	0000008c    0
-	00000090    0
-	00000094    0
-	00000098    0
-0000009c plugplay.exe
-	000000a0    0
-	000000a8    0
-	000000ac    0
-	000000b0    0
-000000b4 svchost.exe
-	000000b8    0
-	000000c0    0
-	000000c4    0
-000000cc rpcss.exe
-	000000d0    0
-	000000d8    0
-	000000dc    0
-	000000e0    0
-	000000e4    0
-	000000e8    0
-000006c0 x86_64-w64-mingw32-xlintstC_gmp.exe
-	000006c4    0
-000006e4 (D) Z:\home\docker\MPLAPACK_MINGW\lib\x86_64-w64-mingw32\mplapack\test\eig\x86_64-w64-mingw32-xeigtstR_gmp.exe
-	000006e8    0 <==
-000006ec conhost.exe
-	000006f0    0
-System information:
-    Wine build: wine-7.0
-    Platform: x86_64
-    Version: Windows 7
-    Host system: Linux
-    Host version: 5.13.0-44-generic
+
+ REV -- Real Eigenvalue-Eigenvector Decomposition Driver
+ Matrix types (see Rdrvev for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
+  2=Identity matrix.                      6=Diagonal: clustered entries.
+  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
+  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
+ Dense, Non-Symmetric Matrices:
+  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
+ 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
+ 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex 
+ 12=Well-cond., random complex           17=Ill-cond., large rand. complx 
+ 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx 
+ 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
+ 20=Matrix with large random entries.   
+
+ Tests performed with test threshold =+2.0000000000000000e+01
+
+ 1 = | A VR - VR W | / ( n |A| ulp ) 
+ 2 = | transpose(A) VL - VL W | / ( n |A| ulp ) 
+ 3 = | |VR(i)| - 1 | / ulp 
+ 4 = | |VL(i)| - 1 | / ulp 
+ 5 = 0 if W same no matter if VR or VL computed, 1/ulp otherwise
+ 6 = 0 if VR same no matter if VL computed,  1/ulp otherwise
+ 7 = 0 if VL same no matter if VR computed,  1/ulp otherwise
+
+ N=    5, IWK= 1, seed=2518,3899, 995, 397, type 11, test( 1)=+3.8657117113661431e+01
+ N=    5, IWK= 1, seed=2518,3899, 995, 397, type 11, test( 2)=+5.0951987226669979e+01
+ N=    5, IWK= 2, seed=2518,3899, 995, 397, type 11, test( 1)=+3.8657845374731693e+01
+ N=    5, IWK= 2, seed=2518,3899, 995, 397, type 11, test( 2)=+5.0952284601262319e+01
