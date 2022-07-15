@@ -11,9 +11,9 @@ The following parameter values will be used:
 
  Routines pass computational tests if test ratio is less than   60.00
 
- Relative machine underflow is taken to be : +3.3621031431120935e-4932                 
- Relative machine overflow  is taken to be : +1.1897314953572318e+4932                 
- Relative machine precision is taken to be : +1.9259299443872359e-34                   
+ Relative machine underflow is taken to be : 1.6259745436952323e-260
+ Relative machine overflow  is taken to be : 1.7976931348623158e+308
+ Relative machine precision is taken to be : 1.2154326714572501e-63
  CGE routines passed the tests of the error exits
 
  All tests for CGE routines passed the threshold (   3653 tests run)
@@ -25,28 +25,7 @@ The following parameter values will be used:
  All tests for CGB routines passed the threshold (  28938 tests run)
  CGB drivers passed the tests of the error exits
 
- CGB drivers:  General band matrices
- Matrix types:
-    1. Random, CNDNUM = 2              5. Random, CNDNUM = sqrt(0.1/EPS)
-    2. First column zero               6. Random, CNDNUM = 0.1/EPS
-    3. Last column zero                7. Scaled near underflow
-    4. Last n/2 columns zero           8. Scaled near overflow
- Test ratios:
-    1: norm( L * U - A )  / ( N * norm(A) * EPS )
-    2: norm( B - A * X )  / ( norm(A) * norm(X) * EPS )
-    3: norm( X - XACT )   / ( norm(XACT) * CNDNUM * EPS )
-    4: norm( X - XACT )   / ( norm(XACT) * (error bound) )
-    5: (backward error)   / EPS
-    6: RCOND * CNDNUM - 1.0
-    7: abs( WORK(1) - RPVGRW ) / ( max( WORK(1), RPVGRW ) * EPS )
- Messages:
- Cgbsvx( ' ',' ',   50,   12,   12,...), type 6, test(5)=+7.8269158091002269e+01                   
- Cgbsvx( ' ',' ',   50,   12,   12,...), type 6, test(5)=+2.0702936987276192e+02                   
- Cgbsvx( ' ',' ',   50,   12,   12,...), EQUED=' ', type 6, test(5)=+1.1220676621071668e+02                   
- Cgbsvx( ' ',' ',   50,   12,   12,...), EQUED=' ', type 6, test(5)=+2.5262648569146841e+02                   
- Cgbsvx( ' ',' ',   50,   12,   12,...), EQUED=' ', type 6, test(5)=+7.8269158091002269e+01                   
- Cgbsvx( ' ',' ',   50,   12,   12,...), EQUED=' ', type 6, test(5)=+2.0702936987276192e+02                   
- CGB drivers:      6 out of  36567 tests failed to pass the threshold
+ All tests for CGB drivers  passed the threshold (  36567 tests run)
  CGT routines passed the tests of the error exits
 
  All tests for CGT routines passed the threshold (   2694 tests run)
@@ -205,5 +184,5 @@ The following parameter values will be used:
  All tests for CHH routines passed the threshold (  15900 tests run)
 
  End of tests
- Total time used =  662 seconds
+ Total time used =  2116 seconds
 
