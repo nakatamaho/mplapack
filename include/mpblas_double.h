@@ -34,13 +34,6 @@
 #include "mplapack_config.h"
 #include "mplapack_utils_double.h"
 
-#if !defined __MPLAPACK_ERRNO__
-#define _MPLAPACK_EXTERN_ extern
-#else
-#define _MPLAPACK_EXTERN_
-#endif
-_MPLAPACK_EXTERN_ int mplapack_errno;
-
 bool Mlsame_double(const char *a, const char *b);
 double RCabs1(std::complex<double> const z);
 double RCasum(mplapackint const n, std::complex<double> *zx, mplapackint const incx);

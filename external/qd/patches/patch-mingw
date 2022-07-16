@@ -16,3 +16,23 @@
  #ifdef X86
  #ifdef  _WIN32
  #include <float.h>
+--- configure.ac~	2021-08-13 20:30:49.000000000 +0900
++++ configure.ac	2022-07-12 23:29:49.328237289 +0900
+@@ -5,6 +5,7 @@
+ AC_INIT([qd],[2.3.QD_PATCH_VERSION],[dhbailey@lbl.gov])
+ AC_CONFIG_SRCDIR([src/qd_real.cpp])
+ AC_CONFIG_MACRO_DIR([m4])
++LT_INIT([win32-dll])
+ 
+ PACKAGE="qd"
+ MAJOR_VERSION="2"
+--- src/Makefile.am~	2018-10-31 01:05:02.000000000 +0900
++++ src/Makefile.am	2022-07-12 23:44:12.727600576 +0900
+@@ -5,5 +5,7 @@
+ 
+ libqd_la_SOURCES = $(SRC)
+ 
++libqd_la_LDFLAGS = -no-undefined
++
+ AM_CPPFLAGS = -I$(top_builddir) -I$(top_builddir)/include -I$(top_srcdir)/include
+ 

@@ -1,0 +1,930 @@
+ Tests of the Symmetric Eigenvalue Problem routines
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.0.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    M:         0     1     2     3     5
+    N:         0     1     2     3     5
+    NB:        1     3    20
+    NBMIN:     2     2     2
+    NX:        1     1     1
+ 
+ Relative machine underflow is taken to be+6.4447927660133239e-1292913987
+ Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
+ Relative machine precision is taken to be+7.4583407312002067e-155
+
+ Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
+
+
+
+ DSG:  NB =   1, NBMIN =   2, NX =   1
+
+ DSG -- Real Symmetric Generalized eigenvalue problem
+ Matrix types (see xDRVSG for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: clustered entries.
+  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
+  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
+  4=Diagonal: geometr. spaced entries.
+ Dense or Banded Symmetric Matrices: 
+  8=Evenly spaced eigenvals.          15=Matrix with small random entries.
+  9=Geometrically spaced eigenvals.   16=Evenly spaced eigenvals, KA=1, KB=1.
+ 10=Clustered eigenvalues.            17=Evenly spaced eigenvals, KA=2, KB=1.
+ 11=Large, evenly spaced eigenvals.   18=Evenly spaced eigenvals, KA=2, KB=2.
+ 12=Small, evenly spaced eigenvals.   19=Evenly spaced eigenvals, KA=3, KB=1.
+ 13=Matrix with random O(1) entries.  20=Evenly spaced eigenvals, KA=3, KB=2.
+ 14=Matrix with large random entries. 21=Evenly spaced eigenvals, KA=3, KB=3.
+
+ Tests performed:   
+( For each pair (A,B), where A is of the given type 
+ and B is a random well-conditioned matrix. D is 
+ diagonal, and Z is orthogonal. )
+ 1 = Rsygv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 2 = Rspgv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 3 = Rsbgv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 4 = Rsygv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 5 = Rspgv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 6 = Rsbgv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 7 = Rsygv, with ITYPE=2 and UPLO='U':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+ 8 = Rspgv, with ITYPE=2 and UPLO='U':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+ 9 = Rspgv, with ITYPE=2 and UPLO='L':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+10 = Rspgv, with ITYPE=2 and UPLO='L':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+11 = Rsygv, with ITYPE=3 and UPLO='U':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+12 = Rspgv, with ITYPE=3 and UPLO='U':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+13 = Rsygv, with ITYPE=3 and UPLO='L':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+14 = Rspgv, with ITYPE=3 and UPLO='L':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result   4 is +4.2183288562116374e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result   5 is +9.3295691602221016e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result   6 is +9.6509478191407165e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result   9 is +4.2183288562116374e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  10 is +9.3295691602221016e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  11 is +9.6509478191407165e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  14 is +2.9222287182907405e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  15 is +3.3838940712911073e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  16 is +4.1445914977130092e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  20 is +1.0203729140080507e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  21 is +1.3647376443638677e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  22 is +8.4238923390648211e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  25 is +1.0203729140080507e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  26 is +1.3647376443638677e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  27 is +8.4238923390648211e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  30 is +3.4459022881499069e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  31 is +2.0230477091258599e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  32 is +2.9298736502024593e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  36 is +3.4545516805102624e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  37 is +4.3011830066489053e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  38 is +5.4784033213537633e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  41 is +3.4545516805102624e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  42 is +4.3011830066489053e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  43 is +5.4784033213537633e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  47 is +7.4449878863287755e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  48 is +6.5228249079520761e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  52 is +7.4449878863287755e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  53 is +6.5228249079520761e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  58 is +6.7899180596214254e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  59 is +3.6987488887041855e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  60 is +5.7386612786791533e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  63 is +6.7899180596214254e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  64 is +3.6987488887041855e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  65 is +5.7386612786791533e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  69 is +1.8790490093381530e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  70 is +4.2626378550466984e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  71 is +5.7366955988436482e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  74 is +1.8790490093381530e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  75 is +4.2626378550466984e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  76 is +5.7366955988436482e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result   4 is +9.5806428813886651e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result   5 is +5.8462046163417855e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result   6 is +1.3253564875089902e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result   9 is +9.5806428813886651e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  10 is +5.8462046163417855e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  11 is +1.3253564875089902e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  14 is +2.5538700489100939e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  15 is +2.8492631628519332e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  16 is +4.3904215209215423e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  20 is +9.0185611646529581e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  21 is +3.7477965258865706e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  22 is +1.9934519265906051e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  25 is +9.0185611646529581e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  26 is +3.7477965258865706e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  27 is +1.9934519265906051e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  30 is +1.4547463526623509e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  31 is +3.3096582604979691e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  32 is +3.2909196165380387e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  36 is +2.1693583016632943e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  37 is +8.7889639767459768e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  38 is +1.9614711980483933e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  41 is +2.1693583016632943e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  42 is +8.7889639767459768e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  43 is +1.9614711980483933e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  47 is +1.9576131910679316e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  48 is +1.2525822388402538e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  52 is +1.9576131910679316e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  53 is +1.2525822388402538e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  58 is +6.3215523046696755e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  59 is +2.9434361262390322e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  60 is +4.4775664898962603e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  63 is +6.3215523046696755e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  64 is +2.9434361262390322e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  65 is +4.4775664898962603e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  69 is +2.1509691643728116e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  70 is +6.0679837521482425e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  71 is +2.3863154238518974e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  74 is +2.1509691643728116e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  75 is +6.0679837521482425e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  76 is +2.3863154238518974e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result   4 is +3.2148755092850071e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result   5 is +1.6728839335751262e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result   6 is +2.5485487796279055e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result   9 is +3.2148755092850071e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  10 is +1.6728839335751262e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  11 is +2.5485487796279055e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  14 is +1.1409937930892572e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  15 is +6.1967335216131997e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  16 is +7.2299099531732417e+151
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  20 is +1.3609767290750069e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  21 is +4.9976648283287382e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  22 is +6.1158981843661643e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  25 is +1.3609767290750069e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  26 is +4.9976648283287382e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  27 is +6.1158981843661643e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  30 is +2.5353319898419714e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  31 is +4.4253772858579669e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  32 is +5.4129235473065481e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  36 is +2.1598064023986783e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  37 is +2.3873533415567078e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  38 is +9.0158245594435127e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  41 is +2.1598064023986783e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  42 is +2.3873533415567078e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  43 is +9.0158245594435127e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  47 is +8.1962181221440914e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  48 is +3.8037855263281569e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  49 is +5.3811845380483383e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  52 is +8.1962181221440914e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  53 is +3.8037855263281569e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  54 is +5.3811845380483383e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  58 is +2.2145679120832660e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  59 is +4.3897021625210548e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  60 is +5.6334880831891753e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  63 is +2.2145679120832660e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  64 is +4.3897021625210548e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  65 is +5.6334880831891753e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  69 is +3.3901499303059372e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  70 is +4.1500698914629093e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  71 is +4.9165225534253622e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  74 is +3.3901499303059372e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  75 is +4.1500698914629093e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  76 is +4.9165225534253622e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result   4 is +3.5160907068510942e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result   9 is +3.5160907068510942e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  14 is +1.6678990491614734e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  16 is +3.8810630082607749e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  20 is +3.3868760073411966e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  25 is +3.3868760073411966e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  30 is +2.6817004768513466e+151
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  32 is +4.9810298708445628e+152
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  36 is +2.1795235238014223e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  37 is +2.7597193294366774e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  41 is +2.1795235238014223e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  42 is +2.7597193294366774e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  69 is +2.9388119500604910e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  70 is +1.4093194134629601e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  74 is +2.9388119500604910e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  75 is +1.4093194134629601e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result   4 is +3.4551430265732701e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result   9 is +3.4551430265732701e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  14 is +2.6104663333056703e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  20 is +3.2194797665817224e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  25 is +3.2194797665817224e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  30 is +3.6832043896680090e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  36 is +3.5052485257328244e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  37 is +2.3082863020329638e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  41 is +3.5052485257328244e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  42 is +2.3082863020329638e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  47 is +3.6549099893248496e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  48 is +2.2136910977656599e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  52 is +3.6549099893248496e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  53 is +2.2136910977656599e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  58 is +1.7917370771114291e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  59 is +1.6842933136287545e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  63 is +1.7917370771114291e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  64 is +1.6842933136287545e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  69 is +1.3162532817313257e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  70 is +1.0823619682174825e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  74 is +1.3162532817313257e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  75 is +1.0823619682174825e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result   4 is +2.4202174463438305e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result   5 is +4.0906627134082813e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result   6 is +1.7529193829973153e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result   9 is +2.4202174463438305e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  10 is +4.0906627134082813e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  11 is +1.7529193829973153e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  14 is +3.4712434478780021e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  15 is +3.8472985642054952e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  16 is +6.4026800342878299e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  20 is +6.1474299142060192e+152
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  21 is +1.1830608460444033e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  22 is +1.5012838399450251e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  25 is +6.1474299142060192e+152
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  26 is +1.1830608460444033e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  27 is +1.5012838399450251e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  30 is +6.8455889363709351e+152
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  31 is +1.1038460027914865e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  32 is +1.2817596726658855e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  36 is +1.3260795453696774e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  37 is +4.2336385331012901e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  38 is +5.5602459136231408e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  41 is +1.3260795453696774e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  42 is +4.2336385331012901e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  43 is +5.5602459136231408e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  47 is +2.5752326063177575e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  48 is +3.8319211343457057e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  49 is +4.6816486474663967e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  52 is +2.5752326063177575e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  53 is +3.8319211343457057e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  54 is +4.6816486474663967e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  58 is +8.8650190664884563e+152
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  59 is +2.8869321848824652e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  60 is +5.2402354592961494e+152
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  63 is +8.8650190664884563e+152
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  64 is +2.8869321848824652e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  65 is +5.2402354592961494e+152
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  69 is +6.2084776082088709e+152
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  70 is +2.9196894777390574e+152
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  74 is +6.2084776082088710e+152
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  75 is +2.9196894777390574e+152
+ Rdrvsg2stg: Rsbgvx(V,A,U) returned INFO=    -6.
+         N=     2, JTYPE=    14, ISEED=(    0,    0,    0,    1)
+ *** Error code from Rdrvsg =    6
+
+
+ DSG:  NB =   3, NBMIN =   2, NX =   1
+
+ DSG -- Real Symmetric Generalized eigenvalue problem
+ Matrix types (see xDRVSG for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: clustered entries.
+  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
+  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
+  4=Diagonal: geometr. spaced entries.
+ Dense or Banded Symmetric Matrices: 
+  8=Evenly spaced eigenvals.          15=Matrix with small random entries.
+  9=Geometrically spaced eigenvals.   16=Evenly spaced eigenvals, KA=1, KB=1.
+ 10=Clustered eigenvalues.            17=Evenly spaced eigenvals, KA=2, KB=1.
+ 11=Large, evenly spaced eigenvals.   18=Evenly spaced eigenvals, KA=2, KB=2.
+ 12=Small, evenly spaced eigenvals.   19=Evenly spaced eigenvals, KA=3, KB=1.
+ 13=Matrix with random O(1) entries.  20=Evenly spaced eigenvals, KA=3, KB=2.
+ 14=Matrix with large random entries. 21=Evenly spaced eigenvals, KA=3, KB=3.
+
+ Tests performed:   
+( For each pair (A,B), where A is of the given type 
+ and B is a random well-conditioned matrix. D is 
+ diagonal, and Z is orthogonal. )
+ 1 = Rsygv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 2 = Rspgv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 3 = Rsbgv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 4 = Rsygv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 5 = Rspgv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 6 = Rsbgv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 7 = Rsygv, with ITYPE=2 and UPLO='U':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+ 8 = Rspgv, with ITYPE=2 and UPLO='U':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+ 9 = Rspgv, with ITYPE=2 and UPLO='L':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+10 = Rspgv, with ITYPE=2 and UPLO='L':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+11 = Rsygv, with ITYPE=3 and UPLO='U':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+12 = Rspgv, with ITYPE=3 and UPLO='U':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+13 = Rsygv, with ITYPE=3 and UPLO='L':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+14 = Rspgv, with ITYPE=3 and UPLO='L':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result   4 is +2.5407007771406543e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result   5 is +3.4111296209003771e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result   6 is +4.8082909669619292e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result   9 is +2.5407007771406543e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  10 is +3.4111296209003771e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  11 is +4.8082909669619292e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  14 is +1.9815807329786586e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  15 is +4.1042408442291567e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  16 is +6.1601794208614787e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  20 is +2.5066831802678590e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  21 is +4.0664309328155135e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  22 is +1.4548806998444070e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  25 is +2.5066831802678590e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  26 is +4.0664309328155135e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  27 is +1.4548806998444070e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  30 is +2.7260939274852514e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  31 is +5.2972083220592404e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  32 is +6.2653564988089664e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  36 is +1.8361822030568678e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  37 is +3.4140654266992484e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  38 is +2.5205133109300949e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  41 is +1.8361822030568678e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  42 is +3.4140654266992484e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  43 is +2.5205133109300949e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  47 is +3.9076253118366487e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  48 is +3.6750350740242894e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  49 is +1.9087742138120265e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  52 is +3.9076253118366487e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  53 is +3.6750350740242894e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  54 is +1.9087742138120265e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  58 is +7.5831676617722069e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  59 is +3.7898216840412346e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  60 is +5.2315608510943048e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  63 is +7.5831676617722069e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  64 is +3.7898216840412346e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  65 is +5.2315608510943048e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  69 is +2.9780217515286364e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  70 is +2.1104408246680310e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  71 is +4.2374358026324839e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  74 is +2.9780217515286364e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  75 is +2.1104408246680310e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  76 is +4.2374358026324839e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result   4 is +4.7435078841677433e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result   5 is +5.6711216404487882e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result   6 is +5.8035833163857371e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result   9 is +4.7435078841677433e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  10 is +5.6711216404487882e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  11 is +5.8035833163857371e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  14 is +3.8776318790446250e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  15 is +2.4044580564991774e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  16 is +1.1437356139225140e+154
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  20 is +4.7599155087902749e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  21 is +1.7705616506427584e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  22 is +2.9207582329646772e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  25 is +4.7599155087902749e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  26 is +1.7705616506427584e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  27 is +2.9207582329646772e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  30 is +8.9996670597431449e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  31 is +1.4523476010371438e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  32 is +8.4096228878302638e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  36 is +1.0362516309267309e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  37 is +4.6835272885435342e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  38 is +6.2003287163010985e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  41 is +1.0362516309267309e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  42 is +4.6835272885435342e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  43 is +6.2003287163010985e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  47 is +2.3570320850328586e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  48 is +2.1161318377274811e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  49 is +3.2871661985830017e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  52 is +2.3570320850328586e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  53 is +2.1161318377274811e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  54 is +3.2871661985830017e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  58 is +4.4577166736494482e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  59 is +9.2030358698526180e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  63 is +4.4577166736494482e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  64 is +9.2030358698526180e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  69 is +6.1843075075539643e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  70 is +5.2145169527148631e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  71 is +3.8294187205826235e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  74 is +6.1843075075539643e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  75 is +5.2145169527148631e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  76 is +3.8294187205826235e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result   4 is +3.3285476075307511e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result   5 is +5.4208325477710279e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result   6 is +1.1036727235349456e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result   9 is +3.3285476075307511e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  10 is +5.4208325477710279e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  11 is +1.1036727235349456e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  14 is +2.2431662965276497e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  15 is +5.6822435726621416e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  16 is +4.4241303899012096e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  20 is +1.4814882590373471e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  21 is +4.5195862900816651e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  22 is +2.8834447453264576e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  25 is +1.4814882590373471e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  26 is +4.5195862900816651e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  27 is +2.8834447453264576e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  30 is +4.2593648367260826e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  31 is +6.6725009665678859e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  32 is +2.6558944446407209e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  36 is +6.6934130235434347e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  37 is +9.5131391542516081e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  38 is +5.0923076323251450e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  41 is +6.6934130235434347e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  42 is +9.5131391542516081e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  43 is +5.0923076323251450e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  47 is +1.8613226098166770e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  48 is +2.3083051120102902e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  49 is +2.6097558562674292e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  52 is +1.8613226098166770e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  53 is +2.3083051120102902e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  54 is +2.6097558562674292e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  58 is +9.0503620960204874e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  59 is +1.7466220821266131e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  60 is +2.0497673133189923e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  63 is +9.0503620960204874e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  64 is +1.7466220821266131e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  65 is +2.0497673133189923e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  69 is +7.4867538711923734e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  70 is +2.5235488818754368e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  74 is +7.4867538711923734e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  75 is +2.5235488818754368e+153
+ Rdrvsg2stg: Rsbgvx(V,A,U) returned INFO=    -6.
+         N=     2, JTYPE=    11, ISEED=(    0,    0,    0,    1)
+ *** Error code from Rdrvsg =    6
+
+
+ DSG:  NB =  20, NBMIN =   2, NX =   1
+
+ DSG -- Real Symmetric Generalized eigenvalue problem
+ Matrix types (see xDRVSG for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: clustered entries.
+  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
+  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
+  4=Diagonal: geometr. spaced entries.
+ Dense or Banded Symmetric Matrices: 
+  8=Evenly spaced eigenvals.          15=Matrix with small random entries.
+  9=Geometrically spaced eigenvals.   16=Evenly spaced eigenvals, KA=1, KB=1.
+ 10=Clustered eigenvalues.            17=Evenly spaced eigenvals, KA=2, KB=1.
+ 11=Large, evenly spaced eigenvals.   18=Evenly spaced eigenvals, KA=2, KB=2.
+ 12=Small, evenly spaced eigenvals.   19=Evenly spaced eigenvals, KA=3, KB=1.
+ 13=Matrix with random O(1) entries.  20=Evenly spaced eigenvals, KA=3, KB=2.
+ 14=Matrix with large random entries. 21=Evenly spaced eigenvals, KA=3, KB=3.
+
+ Tests performed:   
+( For each pair (A,B), where A is of the given type 
+ and B is a random well-conditioned matrix. D is 
+ diagonal, and Z is orthogonal. )
+ 1 = Rsygv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 2 = Rspgv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 3 = Rsbgv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 4 = Rsygv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 5 = Rspgv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 6 = Rsbgv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 7 = Rsygv, with ITYPE=2 and UPLO='U':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+ 8 = Rspgv, with ITYPE=2 and UPLO='U':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+ 9 = Rspgv, with ITYPE=2 and UPLO='L':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+10 = Rspgv, with ITYPE=2 and UPLO='L':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+11 = Rsygv, with ITYPE=3 and UPLO='U':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+12 = Rspgv, with ITYPE=3 and UPLO='U':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+13 = Rsygv, with ITYPE=3 and UPLO='L':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+14 = Rspgv, with ITYPE=3 and UPLO='L':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result   4 is +6.9177744413571488e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result   6 is +8.8377993393505506e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result   9 is +6.9177744413571488e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  11 is +8.8377993393505506e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  14 is +3.4183799023402920e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  16 is +9.9440065586568833e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  20 is +4.6400842472877733e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  22 is +8.0927697735339103e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  25 is +4.6400842472877733e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  27 is +8.0927697735339103e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  30 is +3.5278953047337544e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  32 is +1.0339211053962861e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  36 is +1.2094830589328660e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  37 is +5.0834355792949249e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  38 is +2.5438283350965903e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  41 is +1.2094830589328660e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  42 is +5.0834355792949249e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  43 is +2.5438283350965903e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  47 is +1.0180379212665782e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  48 is +1.5839766247651650e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  49 is +4.7471883867213622e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  52 is +1.0180379212665782e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  53 is +1.5839766247651650e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  54 is +4.7471883867213622e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  58 is +7.0601619045882533e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  59 is +4.8795548130783735e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  60 is +2.1975414361678805e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  63 is +7.0601619045882533e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  64 is +4.8795548130783735e+152
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  65 is +2.1975414361678805e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  69 is +2.3851900103105188e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  70 is +1.2743741595862305e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  71 is +5.6656124945775559e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  74 is +2.3851900103105188e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  75 is +1.2743741595862305e+153
+ Matrix order=    2, type= 8, seed=   0,   0,   0,   1, result  76 is +5.6656124945775559e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result   4 is +2.6527376384801380e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result   5 is +5.6239244496616358e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result   6 is +1.0491347307693034e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result   9 is +2.6527376384801380e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  10 is +5.6239244496616358e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  11 is +1.0491347307693034e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  14 is +6.5068784941372443e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  15 is +7.0780637595573324e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  16 is +1.9859584857464265e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  20 is +1.6066033510072319e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  21 is +6.1400584782419380e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  22 is +1.5683100905868598e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  25 is +1.6066033510072319e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  26 is +6.1400584782419380e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  27 is +1.5683100905868598e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  30 is +1.6049422007335845e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  31 is +6.1404666103062728e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  32 is +1.5627379943823765e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  36 is +9.5244294672639814e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  37 is +2.4642797151412966e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  38 is +2.6812091497236021e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  41 is +9.5244294672639814e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  42 is +2.4642797151412966e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  43 is +2.6812091497236021e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  47 is +2.0826254030083085e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  48 is +1.2209839216811745e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  49 is +1.6431484929390377e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  52 is +2.0826254030083085e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  53 is +1.2209839216811745e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  54 is +1.6431484929390377e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  58 is +1.2366752803937858e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  59 is +1.0160666448070863e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  60 is +2.2972220146903825e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  63 is +1.2366752803937858e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  64 is +1.0160666448070863e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  65 is +2.2972220146903825e+153
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  69 is +6.6449799694715128e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  70 is +3.6859522102025451e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  74 is +6.6449799694715128e+152
+ Matrix order=    2, type= 9, seed=   0,   0,   0,   1, result  75 is +3.6859522102025451e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result   4 is +1.5602953843095842e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result   6 is +8.0501320074271294e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result   9 is +1.5602953843095842e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  11 is +8.0501320074271294e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  14 is +3.2159318479736021e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  16 is +1.5684503873397734e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  20 is +2.1361630440841345e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  22 is +3.8548245256793152e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  25 is +2.1361630440841345e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  27 is +3.8548245256793152e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  30 is +4.2157477799252844e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  32 is +1.0432568938199534e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  36 is +1.2841081094362125e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  37 is +1.3894306334858376e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  38 is +5.6954863669935622e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  41 is +1.2841081094362125e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  42 is +1.3894306334858376e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  43 is +5.6954863669935622e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  47 is +8.1769919319199190e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  48 is +6.0303054359324415e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  52 is +8.1769919319199190e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  53 is +6.0303054359324415e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  58 is +8.8220972905729331e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  59 is +8.7889954766058955e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  60 is +2.7487931629463586e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  63 is +8.8220972905729331e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  64 is +8.7889954766058955e+152
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  65 is +2.7487931629463586e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  69 is +1.2944187820631064e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  70 is +1.2121891203366385e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  71 is +4.8052538121487135e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  74 is +1.2944187820631064e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  75 is +1.2121891203366385e+153
+ Matrix order=    2, type=10, seed=   0,   0,   0,   1, result  76 is +4.8052538121487135e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result   4 is +2.4472273314735011e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result   9 is +2.4472273314735011e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  14 is +3.2915749190754185e+152
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  16 is +2.6231583918407555e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  20 is +1.6369405542559175e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  25 is +1.6369405542559175e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  30 is +6.4037163356146658e+152
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  32 is +1.6856529957529345e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  36 is +3.3700447375076031e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  37 is +2.6915556640750518e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  41 is +3.3700447375076031e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  42 is +2.6915556640750518e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  58 is +2.1789532313292059e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  59 is +1.9753711344610275e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  63 is +2.1789532313292059e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  64 is +1.9753711344610275e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  69 is +2.4648508424196581e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  70 is +2.0236408823213740e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  74 is +2.4648508424196581e+153
+ Matrix order=    2, type=11, seed=   0,   0,   0,   1, result  75 is +2.0236408823213740e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result   4 is +3.3965541236649189e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result   9 is +3.3965541236649189e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  14 is +3.3332693915651400e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  20 is +2.5463198593804940e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  25 is +2.5463198593804940e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  30 is +2.6055465773535208e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  36 is +3.0686099882074090e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  37 is +3.1382728335097830e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  41 is +3.0686099882074090e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  42 is +3.1382728335097830e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  47 is +3.2978970190647048e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  48 is +2.9390306880332459e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  52 is +3.3011555406946908e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  53 is +2.9622960228783584e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  58 is +2.8487171793543834e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  59 is +1.9450700706711824e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  63 is +2.8487171793543834e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  64 is +1.9450700706711824e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  69 is +1.2938572344917605e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  70 is +1.3083324378858335e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  74 is +1.2938572344917605e+153
+ Matrix order=    2, type=12, seed=   0,   0,   0,   1, result  75 is +1.3083324378858335e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result   4 is +3.1117357873625678e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result   5 is +2.0333953609215914e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result   6 is +6.0323486138112333e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result   9 is +3.1117357873625678e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  10 is +2.0333953609215914e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  11 is +6.0323486138112333e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  14 is +1.5256093014432327e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  15 is +5.5545705079307619e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  16 is +1.9900028236151142e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  20 is +2.1066693245673440e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  21 is +5.0764531605076142e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  22 is +3.7502072691420101e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  25 is +2.1066693245673440e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  26 is +5.0764531605076142e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  27 is +3.7502072691420101e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  30 is +2.6816558339146879e+152
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  31 is +6.6524968365175077e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  32 is +1.2570049967867043e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  36 is +1.8525141541948099e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  37 is +1.4974625115621671e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  38 is +1.7591522732337129e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  41 is +1.8525141541948099e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  42 is +1.4974625115621671e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  43 is +1.7591522732337129e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  47 is +2.0249374590419083e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  48 is +1.1370088911903500e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  49 is +1.8640751263325160e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  52 is +2.0249374590419083e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  53 is +1.1370088911903500e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  54 is +1.8640751263325160e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  58 is +1.1893534733541085e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  59 is +1.6858159688669403e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  60 is +6.8330385495251357e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  63 is +1.1893534733541085e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  64 is +1.6858159688669403e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  65 is +6.8330385495251357e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  69 is +1.3409708197188648e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  70 is +6.6969270128444786e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  71 is +3.8381199198460865e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  74 is +1.3409708197188648e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  75 is +6.6969270128444786e+153
+ Matrix order=    2, type=13, seed=   0,   0,   0,   1, result  76 is +3.8381199198460865e+153
+ Matrix order=    2, type=14, seed=   0,   0,   0,   1, result   4 is +1.8592860403620419e+153
+ Matrix order=    2, type=14, seed=   0,   0,   0,   1, result   5 is +4.4157512392167914e+153
+ Matrix order=    2, type=14, seed=   0,   0,   0,   1, result   9 is +1.8592860403620419e+153
+ Matrix order=    2, type=14, seed=   0,   0,   0,   1, result  10 is +4.4157512392167914e+153
+ Matrix order=    2, type=14, seed=   0,   0,   0,   1, result  36 is +2.7083593683280003e+153
+ Matrix order=    2, type=14, seed=   0,   0,   0,   1, result  37 is +1.7366210900734674e+153
+ Matrix order=    2, type=14, seed=   0,   0,   0,   1, result  41 is +2.7083593683280003e+153
+ Matrix order=    2, type=14, seed=   0,   0,   0,   1, result  42 is +1.7366210900734674e+153
+ Matrix order=    2, type=14, seed=   0,   0,   0,   1, result  47 is +2.2359300203833836e+153
+ Matrix order=    2, type=14, seed=   0,   0,   0,   1, result  48 is +2.4585604941514178e+153
+ Matrix order=    2, type=14, seed=   0,   0,   0,   1, result  52 is +2.2359300203833836e+153
+ Matrix order=    2, type=14, seed=   0,   0,   0,   1, result  53 is +2.4585604941514178e+153
+ Matrix order=    2, type=14, seed=   0,   0,   0,   1, result  58 is +2.5658324942712144e+153
+ Matrix order=    2, type=14, seed=   0,   0,   0,   1, result  59 is +3.7012473988108355e+153
+ Matrix order=    2, type=14, seed=   0,   0,   0,   1, result  63 is +2.5658324942712144e+153
+ Matrix order=    2, type=14, seed=   0,   0,   0,   1, result  64 is +3.7012473988108355e+153
+ Matrix order=    2, type=14, seed=   0,   0,   0,   1, result  69 is +7.1968105960845326e+152
+ Matrix order=    2, type=14, seed=   0,   0,   0,   1, result  70 is +1.7394228414823805e+152
+ Matrix order=    2, type=14, seed=   0,   0,   0,   1, result  74 is +7.1968105960845326e+152
+ Matrix order=    2, type=14, seed=   0,   0,   0,   1, result  75 is +1.7394228414823805e+152
+ Matrix order=    2, type=15, seed=   0,   0,   0,   1, result   4 is +4.8667120262442250e+153
+ Matrix order=    2, type=15, seed=   0,   0,   0,   1, result   9 is +4.8667120262442250e+153
+ Matrix order=    2, type=15, seed=   0,   0,   0,   1, result  14 is +2.9394736440056356e+153
+ Matrix order=    2, type=15, seed=   0,   0,   0,   1, result  20 is +4.4276960325096010e+153
+ Matrix order=    2, type=15, seed=   0,   0,   0,   1, result  25 is +4.4276960325096010e+153
+ Matrix order=    2, type=15, seed=   0,   0,   0,   1, result  30 is +3.8518004612824957e+153
+ Matrix order=    2, type=15, seed=   0,   0,   0,   1, result  36 is +4.2326908962461487e+153
+ Matrix order=    2, type=15, seed=   0,   0,   0,   1, result  37 is +3.3276593358109590e+153
+ Matrix order=    2, type=15, seed=   0,   0,   0,   1, result  41 is +4.2326908962461487e+153
+ Matrix order=    2, type=15, seed=   0,   0,   0,   1, result  42 is +3.3276593358109590e+153
+ Matrix order=    2, type=15, seed=   0,   0,   0,   1, result  47 is +2.9167818731315973e+153
+ Matrix order=    2, type=15, seed=   0,   0,   0,   1, result  48 is +4.4813099192356452e+153
+ Matrix order=    2, type=15, seed=   0,   0,   0,   1, result  52 is +2.9167818731315973e+153
+ Matrix order=    2, type=15, seed=   0,   0,   0,   1, result  53 is +4.4648928459828738e+153
+ Matrix order=    2, type=15, seed=   0,   0,   0,   1, result  58 is +4.2251240342508650e+153
+ Matrix order=    2, type=15, seed=   0,   0,   0,   1, result  63 is +4.2251240342508650e+153
+ Matrix order=    2, type=15, seed=   0,   0,   0,   1, result  69 is +1.5774240630963978e+153
+ Matrix order=    2, type=15, seed=   0,   0,   0,   1, result  70 is +4.1099352445805353e+153
+ Matrix order=    2, type=15, seed=   0,   0,   0,   1, result  74 is +1.5774240630963978e+153
+ Matrix order=    2, type=15, seed=   0,   0,   0,   1, result  75 is +4.1099352445805353e+153
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result   4 is +1.5965569391331622e+152
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result   6 is +2.4898096098415425e+153
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result   9 is +1.5965569391331622e+152
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  11 is +2.4898096098415425e+153
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  14 is +1.3295858921719912e+153
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  16 is +1.2892206479760726e+152
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  20 is +4.6197673037946394e+152
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  22 is +1.0496832363457904e+153
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  25 is +4.6197673037946394e+152
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  27 is +1.0496832363457904e+153
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  30 is +6.5690343880097689e+152
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  32 is +3.5348180117001162e+152
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  36 is +1.5222020202419724e+153
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  37 is +7.3133325736351337e+152
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  38 is +2.9339172769776338e+153
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  41 is +1.5222020202419724e+153
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  42 is +7.3133325736351337e+152
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  43 is +2.9339172769776338e+153
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  47 is +6.8261117125494739e+152
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  48 is +5.1165744053066928e+152
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  52 is +6.8261117125494739e+152
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  53 is +5.1165744053066928e+152
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  58 is +1.0605163370639319e+153
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  59 is +1.4874438268095228e+153
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  60 is +5.2115596519982950e+153
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  63 is +1.0605163370639319e+153
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  64 is +1.4874438268095228e+153
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  65 is +5.2115596519982950e+153
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  69 is +8.4090702729464440e+152
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  70 is +1.4300460625907541e+153
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  71 is +5.2547449349861804e+153
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  74 is +8.4090702729464440e+152
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  75 is +1.4300460625907541e+153
+ Matrix order=    2, type=16, seed=   0,   0,   0,   1, result  76 is +5.2547449349861804e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result   4 is +2.1452033703536331e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result   6 is +9.8092328775977487e+152
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result   9 is +2.1452033703536331e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  11 is +9.8092328775977487e+152
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  14 is +1.8364429496667069e+152
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  16 is +2.5307684263551876e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  20 is +1.6503402975717282e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  22 is +1.1739889840521026e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  25 is +1.6503402975717282e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  27 is +1.1739889840521026e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  30 is +1.6700281051175109e+152
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  32 is +2.1359576527135368e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  36 is +4.5441974407545253e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  37 is +1.7714056301879526e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  38 is +2.4764574906348931e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  41 is +4.5441974407545253e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  42 is +1.7714056301879526e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  43 is +2.4764574906348931e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  47 is +4.9941408928224588e+152
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  48 is +1.5260290685465781e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  52 is +4.9941408928224588e+152
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  53 is +1.5260290685465781e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  58 is +7.5026595942589930e+152
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  59 is +1.4363260473159266e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  60 is +5.8643587101822309e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  63 is +7.5026595942589930e+152
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  64 is +1.4363260473159266e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  65 is +5.8643587101822309e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  69 is +1.4534653797376025e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  70 is +1.3827259813993294e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  71 is +1.4079844250707828e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  74 is +1.4534653797376025e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  75 is +1.3827259813993294e+153
+ Matrix order=    2, type=17, seed=   0,   0,   0,   1, result  76 is +1.4079844250707830e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result   4 is +6.5094089325598644e+152
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result   5 is +5.2834282775639252e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result   6 is +1.8119421594614273e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result   9 is +6.5094089325598644e+152
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  10 is +5.2834282775639252e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  11 is +1.8119421594614273e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  14 is +6.1495475288906057e+152
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  15 is +5.2934256644290552e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  16 is +1.6995282063444446e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  20 is +4.9793303440239430e+152
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  21 is +6.5921425864629546e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  22 is +1.3045958167950017e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  25 is +4.9793303440239430e+152
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  26 is +6.5921425864629546e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  27 is +1.3045958167950017e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  30 is +2.8036659975509289e+152
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  31 is +6.5247843755087512e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  32 is +6.8386931782759111e+152
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  36 is +3.1993260775568031e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  37 is +5.2910808455730857e+152
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  38 is +5.4392376375703784e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  41 is +3.1993260775568031e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  42 is +5.2910808455730857e+152
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  43 is +5.4392376375703784e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  47 is +2.3097567530073575e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  48 is +7.4540425927166027e+152
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  49 is +4.3848634444215630e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  52 is +2.3097567530073575e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  53 is +7.4540425927166027e+152
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  54 is +4.3848634444215630e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  58 is +7.1405933164360463e+152
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  59 is +5.5838205847085452e+152
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  60 is +4.7243467794240579e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  63 is +7.1405933164360463e+152
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  64 is +5.5838205847085452e+152
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  65 is +4.7243467794240579e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  69 is +1.3873863983272392e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  70 is +5.9569460882466913e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  71 is +6.6398653881228064e+152
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  74 is +1.3873863983272392e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  75 is +5.9569460882466913e+153
+ Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  76 is +6.6398653881228064e+152
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result   4 is +2.5297702289320329e+153
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result   6 is +3.8342673609507306e+153
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result   9 is +2.5297702289320329e+153
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  11 is +3.8342673609507306e+153
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  14 is +2.8466026057045920e+153
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  16 is +4.8526736013219253e+153
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  20 is +1.5438928666865079e+152
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  22 is +1.9858898266209750e+152
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  25 is +1.5438928666865079e+152
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  27 is +1.9858898266209750e+152
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  30 is +1.0965974587832912e+152
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  32 is +1.1721262343572343e+152
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  36 is +8.8529996499421845e+152
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  38 is +1.9009264909171816e+153
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  41 is +8.8529996499421845e+152
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  43 is +1.9009264909171816e+153
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  47 is +1.7987244180686163e+153
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  49 is +4.8554047822692633e+153
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  52 is +1.7987244180686163e+153
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  54 is +4.8554047822692633e+153
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  58 is +7.9489854888627853e+152
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  60 is +1.2494718364089872e+153
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  63 is +7.9489854888627853e+152
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  65 is +1.2494718364089872e+153
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  69 is +1.0844848197758524e+153
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  71 is +9.1330146103239221e+152
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  74 is +1.0844848197758524e+153
+ Matrix order=    2, type=19, seed=   0,   0,   0,   1, result  76 is +9.1330146103239221e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result   4 is +1.3006178048530589e+153
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result   5 is +1.5577746404649797e+153
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result   6 is +8.7890697450823028e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result   9 is +1.3006178048530589e+153
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  10 is +1.5577746404649797e+153
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  11 is +8.7890697450823028e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  14 is +5.7060658147223579e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  15 is +2.9311930693178243e+153
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  16 is +3.3956460308595798e+153
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  20 is +2.3479858332792637e+153
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  21 is +1.6635456808497613e+153
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  22 is +7.3688749355924257e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  25 is +2.3479858332792637e+153
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  26 is +1.6635456808497613e+153
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  27 is +7.3688749355924257e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  30 is +1.2438181832470009e+153
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  31 is +3.6016537465277301e+153
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  32 is +4.0624823374659386e+153
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  36 is +9.3991770962323080e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  37 is +9.1261723963757069e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  38 is +9.1808089394066356e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  41 is +9.3991770962323080e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  42 is +9.1261723963757069e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  43 is +9.1808089394066356e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  47 is +9.9186953061060443e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  48 is +1.0725504708150010e+153
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  52 is +9.9186953061060443e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  53 is +1.0725504708150010e+153
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  58 is +9.1827885798000954e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  59 is +9.0712787980036734e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  60 is +8.9766535264155183e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  63 is +9.1827885798000954e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  64 is +9.0712787980036734e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  65 is +8.9766535264155183e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  69 is +7.9451170652103643e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  70 is +4.8055464036883133e+153
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  71 is +6.1934761669452169e+153
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  74 is +7.9451170652103643e+152
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  75 is +4.8055464036883133e+153
+ Matrix order=    2, type=20, seed=   0,   0,   0,   1, result  76 is +6.1934761669452169e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result   4 is +4.4551644043126208e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result   6 is +6.3146790139376642e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result   9 is +4.4551644043126208e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  11 is +6.3146790139376642e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  14 is +5.9079330915375757e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  16 is +5.6922259833100779e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  20 is +1.3363935216046445e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  22 is +1.8995259908738574e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  25 is +1.3363935216046445e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  27 is +1.8995259908738574e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  30 is +3.7223529622875363e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  32 is +6.0061411659452949e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  36 is +9.0164556857998648e+152
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  38 is +1.0235926807366466e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  41 is +9.0164556857998648e+152
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  43 is +1.0235926807366466e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  47 is +4.0258891913210717e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  49 is +5.3900830561849097e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  52 is +4.0258891913210717e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  54 is +5.3900830561849097e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  58 is +1.7429039916839637e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  60 is +1.9415276096989972e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  63 is +1.7429039916839637e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  65 is +1.9415276096989972e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  69 is +1.2497928819482533e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  71 is +4.9574279416356644e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  74 is +1.2497928819482533e+153
+ Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  76 is +4.9574279416356644e+153
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result   4 is +1.1181930772112627e+153
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result   6 is +6.9972806972754686e+152
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result   9 is +1.1181930772112627e+153
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  11 is +6.9972806972754686e+152
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  14 is +3.8189124778247980e+152
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  16 is +6.2431431778755795e+152
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  20 is +8.1203508411709423e+153
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  22 is +7.0038924531338567e+152
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  25 is +8.1203508411709423e+153
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  27 is +7.0038924531338567e+152
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  30 is +1.8520632146043064e+153
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  32 is +2.7504591825569669e+153
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  36 is +3.2246704804450579e+153
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  38 is +1.3844284796254274e+153
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  41 is +3.2246704804450579e+153
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  43 is +1.3844284796254274e+153
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  47 is +1.2069632063883148e+153
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  49 is +1.8520084532655982e+153
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  52 is +1.2069632063883148e+153
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  54 is +1.8520084532655982e+153
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  58 is +3.0191754763342293e+153
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  60 is +6.4528020641487359e+152
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  63 is +3.0191754763342293e+153
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  65 is +6.4528020641487359e+152
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  69 is +3.0257964357272669e+153
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  71 is +4.6130828888321341e+152
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  74 is +3.0257964357272669e+153
+ Matrix order=    3, type= 8, seed=   0,   0,   0,   1, result  76 is +4.6130828888321341e+152

@@ -145,6 +145,8 @@ inline double drand48() {
 }
 #endif
 
+extern int mplapack_errno; //Mxerbla.override.cpp
+
 #if defined __MPLAPACK_BUILD_DEBUG_CPP__
 #define _MPLAPACK_DEBUG_EXTERN_
 #else

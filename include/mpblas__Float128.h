@@ -32,13 +32,6 @@
 #include "mplapack_config.h"
 #include "mplapack_utils__Float128.h"
 
-#if !defined __MPLAPACK_ERRNO__
-#define _MPLAPACK_EXTERN_ extern
-#else
-#define _MPLAPACK_EXTERN_
-#endif
-_MPLAPACK_EXTERN_ int mplapack_errno;
-
 _Float128 RCabs1(std::complex<_Float128> const z);
 _Float128 RCasum(mplapackint const n, std::complex<_Float128> *zx, mplapackint const incx);
 _Float128 RCnrm2(mplapackint const n, std::complex<_Float128> *x, mplapackint const incx);

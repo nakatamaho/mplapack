@@ -10,6 +10,7 @@ The following parameter values will be used:
  Relative machine underflow is taken to be : +2.2250738585072014e-308
  Relative machine overflow  is taken to be : +1.7976931348623157e+308
  Relative machine precision is taken to be : +1.1102230246251565e-16
+ MULTIPLE PRECISION COMPLEX RFP routines passed the tests of the error exits
 
  All tests for ZPF drivers  passed the threshold (   2304 tests run)
  All tests for Clanhf auxiliary routine passed the threshold (   384 tests run)
@@ -18,6 +19,6 @@ The following parameter values will be used:
  All tests for Chfrk auxiliary routine passed the threshold (   2592 tests run)
 
  End of tests
- Total time used =  36 seconds
+ Total time used =  35 seconds
 
-       35.90 real        35.49 user         0.34 sys
+       35.16 real        34.67 user         0.31 sys

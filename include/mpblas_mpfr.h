@@ -39,13 +39,6 @@
 using namespace mpfr;
 #include "mplapack_utils_mpfr.h"
 
-#if !defined __MPLAPACK_ERRNO__
-#define _MPLAPACK_EXTERN_ extern
-#else
-#define _MPLAPACK_EXTERN_
-#endif
-_MPLAPACK_EXTERN_ int mplapack_errno;
-
 bool Mlsame_mpfr(const char *a, const char *b);
 mpcomplex Cdotc(mplapackint const n, mpcomplex *zx, mplapackint const incx, mpcomplex *zy, mplapackint const incy);
 mpcomplex Cdotu(mplapackint const n, mpcomplex *zx, mplapackint const incx, mpcomplex *zy, mplapackint const incy);

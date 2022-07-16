@@ -32,10 +32,6 @@ Based on http://www.netlib.org/blas/xerbla.f
 Mxerbla is an error handler for the Mplapack routines.
 */
 
-#if !defined __MPLAPACK_ERRNO__
-#define __MPLAPACK_ERRNO__
-#endif
-
 #include <stdio.h>
 
 int mplapack_errno;

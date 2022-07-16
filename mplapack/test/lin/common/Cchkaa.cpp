@@ -103,16 +103,16 @@ void Cchkaa(void) {
     INTEGER nxval[maxin];
     INTEGER rankval[maxin];
     INTEGER piv[nmax];
-    REAL s[2 * nmax];
-    COMPLEX e[nmax];
 
     INTEGER iwork[25 * nmax];
     INTEGER ldb = (nmax * maxrhs);
 
     REAL *rwork = new REAL[150 * nmax + 2 * maxrhs];
+    REAL *s = new REAL[2 * nmax];
     COMPLEX *a = new COMPLEX[((kdmax + 1) * nmax) * 7];
     COMPLEX *b = new COMPLEX[(nmax * maxrhs) * 4];
     COMPLEX *work = new COMPLEX[nmax * (nmax + maxrhs + 10)];
+    COMPLEX *e = new COMPLEX[nmax];
 
     char tstchk_str[2];
     char tstdrv_str[2];
@@ -1097,10 +1097,12 @@ void Cchkaa(void) {
         //     Go back to get another input line.
         //
     }
+    delete[] e;
+    delete[] work;
     delete[] b;
     delete[] a;
+    delete[] s;
     delete[] rwork;
-    delete[] work;
     s2 = time(NULL);
     write(nout, "(/,' End of tests')");
     write(nout, "(' Total time used = ',f12.2,' seconds',/)"), int(s2 - s1);

@@ -20,8 +20,17 @@ The following parameter values will be used:
 
  SE2:  NB =   1, NBMIN =   2, NX =   1
 
- DST -- Real Symmetric eigenvalue problem
- Matrix types (see Rchkst2stg for details): 
+ All tests for DST passed the threshold (  4440 tests run)
+
+ All tests for RST drivers  passed the threshold (  13464 tests run)
+
+
+ SE2:  NB =   3, NBMIN =   2, NX =   0
+
+ All tests for DST passed the threshold (  4440 tests run)
+
+ RST -- Real Symmetric eigenvalue problem
+ Matrix types (see xDRVST for details): 
 
  Special Matrices:
   1=Zero matrix.                          5=Diagonal: clustered entries.
@@ -33,26 +42,10 @@ The following parameter values will be used:
   9=Geometrically spaced eigenvals.      13=Matrix with random O(1) entries.
  10=Clustered eigenvalues.               14=Matrix with large random entries.
  11=Large, evenly spaced eigenvals.      15=Matrix with small random entries.
- 16=Positive definite, evenly spaced eigenvalues
- 17=Positive definite, geometrically spaced eigenvlaues
- 18=Positive definite, clustered eigenvalues
- 19=Positive definite, small evenly spaced eigenvalues
- 20=Positive definite, large evenly spaced eigenvalues
- 21=Diagonally dominant tridiagonal, geometrically spaced eigenvalues
 
-Test performed:  see Rchkst2stg for details.
-
- N=   20, seed=   0,   0,   0,   1, type 15, test(36)=+6.4209127235971391e+01                   
- DST:    1 out of  4440 tests failed to pass the threshold
-
- All tests for RST drivers  passed the threshold (  13464 tests run)
-
-
- SE2:  NB =   3, NBMIN =   2, NX =   0
-
- All tests for DST passed the threshold (  4440 tests run)
-
- All tests for RST drivers  passed the threshold (  13464 tests run)
+ Tests performed:  See sdrvst.f
+ Matrix order=   20, type=15, seed=   0,   0,   0,   0, result  71 is +6.5509721565246582e+01                   
+ RST drivers:      1 out of  13464 tests failed to pass the threshold
 
 
  SE2:  NB =   3, NBMIN =   2, NX =   5
@@ -77,5 +70,5 @@ Test performed:  see Rchkst2stg for details.
 
 
  End of tests
- Total time used =        17.00 seconds
+ Total time used =        16.00 seconds
 

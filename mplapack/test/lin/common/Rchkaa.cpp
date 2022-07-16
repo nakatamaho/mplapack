@@ -105,8 +105,6 @@ void Rchkaa(void) {
     INTEGER nxval[maxin];
     INTEGER rankval[maxin];
     INTEGER piv[nmax];
-    REAL s[2 * nmax];
-    REAL e[nmax];
 
     bool tstchk = false;
     bool tstdrv = false;
@@ -116,6 +114,8 @@ void Rchkaa(void) {
     char tsterr_str[2];
 
     INTEGER iwork[25 * nmax];
+    REAL *s = new REAL [2 * nmax];
+    REAL *e = new REAL [nmax];
     REAL *rwork = new REAL [5 * nmax + 2 * maxrhs];
     REAL *a = new REAL [((kdmax + 1) * nmax) * 7];
     REAL *b = new REAL [(nmax * maxrhs) * 4];
@@ -947,10 +947,12 @@ void Rchkaa(void) {
     //
     //     Branch to this line when the last record is read.
     //
+    delete[] work;
     delete[] b;
     delete[] a;
     delete[] rwork;
-    delete[] work;
+    delete[] e;
+    delete[] s;
     s2 = time(NULL);
     write(nout, "(/,' End of tests')");
     write(nout, "(' Total time used = ',f12.2,' seconds',/)"), int(s2 - s1);

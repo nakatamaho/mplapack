@@ -69,12 +69,20 @@ void __attribute__((destructor)) mplapack_finalize_mpfr(void);
 void mplapack_finalize_mpfr(void) {}
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_QD___ || defined ___MPLAPACK_BUILD_WITH_DD___
+#if defined ___MPLAPACK_BUILD_WITH_QD___
 void __attribute__((constructor)) mplapack_initialize_qd(void);
 void __attribute__((destructor)) mplapack_finalize_qd(void);
-static unsigned int oldcw;
-void mplapack_initialize_qd(void) { fpu_fix_start(&oldcw); }
-void mplapack_finalize_qd(void) { fpu_fix_end(&oldcw); }
+static unsigned int oldcw_qd;
+void mplapack_initialize_qd(void) { fpu_fix_start(&oldcw_qd); }
+void mplapack_finalize_qd(void) { fpu_fix_end(&oldcw_qd); }
+#endif
+
+#if defined ___MPLAPACK_BUILD_WITH_DD___
+void __attribute__((constructor)) mplapack_initialize_dd(void);
+void __attribute__((destructor)) mplapack_finalize_dd(void);
+static unsigned int oldcw_dd;
+void mplapack_initialize_dd(void) { fpu_fix_start(&oldcw_dd); }
+void mplapack_finalize_dd(void) { fpu_fix_end(&oldcw_dd); }
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___

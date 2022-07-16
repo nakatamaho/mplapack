@@ -48,6 +48,9 @@ libmpblas_gmp_la_LDFLAGS = -Wl,-rpath,$(libdir) #-L$(GMP_LIBDIR) -lgmpxx -lgmp
 if IS_MACOS
 libmpblas_gmp_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
+if IS_MINGW
+libmpblas_gmp_la_LDFLAGS += -no-undefined -L$(GMP_LIBDIR) -lgmp
+endif
 endif
 
 if ENABLE_MPFR
@@ -56,6 +59,9 @@ libmpblas_mpfr_la_SOURCES = $(MPBLAS_SOURCES)
 libmpblas_mpfr_la_LDFLAGS = -Wl,-rpath,$(libdir) #-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmp
 if IS_MACOS
 libmpblas_mpfr_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+endif
+if IS_MINGW
+libmpblas_mpfr_la_LDFLAGS += -no-undefined -L$(MPC_LIBDIR) -lmpc -L$(MPFR_LIBDIR) -lmpfr -L$(GMP_LIBDIR) -lgmp
 endif
 endif
 
@@ -66,6 +72,9 @@ libmpblas_qd_la_LDFLAGS = -Wl,-rpath,$(libdir) #-L$(QD_LIBDIR) -lqd
 if IS_MACOS
 libmpblas_qd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
+if IS_MINGW
+libmpblas_qd_la_LDFLAGS += -no-undefined -L$(QD_LIBDIR) -lqd
+endif
 endif
 
 if ENABLE_DD
@@ -75,6 +84,9 @@ libmpblas_dd_la_LDFLAGS = -Wl,-rpath,$(libdir) #-L$(QD_LIBDIR) -lqd
 if IS_MACOS
 libmpblas_dd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
+if IS_MINGW
+libmpblas_dd_la_LDFLAGS += -no-undefined -L$(QD_LIBDIR) -lqd
+endif
 endif
 
 if ENABLE_DOUBLE
@@ -82,6 +94,9 @@ libmpblas_double_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_
 libmpblas_double_la_SOURCES = $(MPBLAS_SOURCES)
 if IS_MACOS
 libmpblas_double_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+endif
+if IS_MINGW
+libmpblas_double_la_LDFLAGS = -no-undefined
 endif
 endif
 
@@ -91,6 +106,9 @@ libmpblas__Float64x_la_SOURCES = $(MPBLAS_SOURCES)
 if IS_MACOS
 libmpblas__Float64x_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
+if IS_MINGW
+libmpblas__Float64x_la_LDFLAGS = -no-undefined
+endif
 endif
 
 if ENABLE__FLOAT128
@@ -98,6 +116,9 @@ libmpblas__Float128_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WI
 libmpblas__Float128_la_SOURCES = $(MPBLAS_SOURCES)
 if IS_MACOS
 libmpblas__Float128_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+endif
+if IS_MINGW
+libmpblas__Float128_la_LDFLAGS = -no-undefined -lquadmath
 endif
 endif
 

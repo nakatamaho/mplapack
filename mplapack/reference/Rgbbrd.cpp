@@ -31,29 +31,6 @@
 
 void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const ncc, INTEGER const kl, INTEGER const ku, REAL *ab, INTEGER const ldab, REAL *d, REAL *e, REAL *q, INTEGER const ldq, REAL *pt, INTEGER const ldpt, REAL *c, INTEGER const ldc, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     //     Test the input parameters
     //
     bool wantb = Mlsame(vect, "B");

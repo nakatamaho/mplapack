@@ -83,3 +83,6 @@ libmpblas__Float128_opt_la_LDFLAGS = -Wl,-rpath,$(libdir)
 if IS_MACOS
 libmpblas__Float128_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
+if IS_MINGW
+libmpblas__Float128_opt_la_LDFLAGS += -fopenmp -no-undefined -lquadmath
+endif

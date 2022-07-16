@@ -30,6 +30,8 @@ AC_CONFIG_FILES([packaging/PKGBUILD packaging/mplapack.spec])
 
 AC_CANONICAL_TARGET
 
+LT_INIT([win32-dll])
+
 : ${CFLAGS=""}
 : ${CXXFLAGS=""}
 : ${FCFLAGS=""}
@@ -231,13 +233,7 @@ AS_HELP_STRING([--enable-dd], [Enable DD version]),
     yes) enable_dd=yes ;;
     no)  enable_dd=no  ;;
     *) AC_MSG_ERROR(bad value ${enableval} for --enable-dd) ;;
-        esac],[ 
-if test x"$IS_MINGW" = x"1"; then
-enable_dd=no
-else
-enable_dd=yes
-fi
-])
+        esac],[enable_dd=yes])
 AM_CONDITIONAL(ENABLE_DD, test x$enable_dd = xyes)
 
 dnl enable double

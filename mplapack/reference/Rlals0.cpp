@@ -29,11 +29,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL Rlamc3(REAL a, REAL b) {
-    REAL c = a + b;
-    return c;
-}
-
 void Rlals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER const nrhs, REAL *b, INTEGER const ldb, REAL *bx, INTEGER const ldbx, INTEGER *perm, INTEGER const givptr, INTEGER *givcol, INTEGER const ldgcol, REAL *givnum, INTEGER const ldgnum, REAL *poles, REAL *difl, REAL *difr, REAL *z, INTEGER const k, REAL const c, REAL const s, REAL *work, INTEGER &info) {
     //
     //     Test the input parameters.

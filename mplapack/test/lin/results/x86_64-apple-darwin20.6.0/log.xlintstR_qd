@@ -25,7 +25,28 @@ The following parameter values will be used:
  All tests for RGB routines passed the threshold (  28938 tests run)
  RGB drivers passed the tests of the error exits
 
- All tests for RGB drivers  passed the threshold (  36567 tests run)
+ RGB drivers:  General band matrices
+ Matrix types:
+    1. Random, CNDNUM = 2              5. Random, CNDNUM = sqrt(0.1/EPS)
+    2. First column zero               6. Random, CNDNUM = 0.1/EPS
+    3. Last column zero                7. Scaled near underflow
+    4. Last n/2 columns zero           8. Scaled near overflow
+ Test ratios:
+    1: norm( L * U - A )  / ( N * norm(A) * EPS )
+    2: norm( B - A * X )  / ( norm(A) * norm(X) * EPS )
+    3: norm( X - XACT )   / ( norm(XACT) * CNDNUM * EPS )
+    4: norm( X - XACT )   / ( norm(XACT) * (error bound) )
+    5: (backward error)   / EPS
+    6: RCOND * CNDNUM - 1.0
+    7: abs( WORK(1) - RPVGRW ) / ( max( WORK(1), RPVGRW ) * EPS )
+ Messages:
+ Rgbsvx( 'E','T',   50,   12,   12,...), type 6, test(5)=2.0427462017041314e+02
+ Rgbsvx( 'E','C',   50,   12,   12,...), type 6, test(5)=2.0427462017041314e+02
+ Rgbsvx( 'F','T',   50,   12,   12,...), EQUED='R', type 6, test(5)=1.5673052537303757e+02
+ Rgbsvx( 'F','C',   50,   12,   12,...), EQUED='R', type 6, test(5)=1.5673052537303757e+02
+ Rgbsvx( 'F','T',   50,   12,   12,...), EQUED='B', type 6, test(5)=2.0427462017041314e+02
+ Rgbsvx( 'F','C',   50,   12,   12,...), EQUED='B', type 6, test(5)=2.0427462017041314e+02
+ RGB drivers:      6 out of  36567 tests failed to pass the threshold
  RGT routines passed the tests of the error exits
 
  All tests for RGT routines passed the threshold (   2694 tests run)
@@ -149,5 +170,5 @@ The following parameter values will be used:
  All tests for RHH routines passed the threshold (  15900 tests run)
 
  End of tests
- Total time used =  419 seconds
+ Total time used =  417 seconds
 

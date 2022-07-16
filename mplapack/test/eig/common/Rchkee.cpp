@@ -52,7 +52,6 @@ void Rchkee(void) {
     INTEGER allocatestatus = 0;
     INTEGER need = 14;
     const INTEGER nmax = 132;
-    REAL d[nmax * 12];
     INTEGER ldd = nmax;
     time_t s1;
     bool fatal = false;
@@ -115,11 +114,11 @@ void Rchkee(void) {
     INTEGER iseed[4];
     INTEGER ioldsd[4];
     char c3[3];
+    char c1;
     INTEGER lenp = 0;
     INTEGER i1 = 0;
     const INTEGER maxt = 30;
     INTEGER ntypes = 0;
-    char c1;
     INTEGER k = 0;
     INTEGER ic = 0;
     INTEGER maxtyp = 0;
@@ -129,15 +128,11 @@ void Rchkee(void) {
     INTEGER iwork[liwork];
     bool logwrk[nmax];
     INTEGER ldb = nmax;
-    REAL result[500];
     INTEGER info = 0;
     INTEGER nrhs = 0;
     bool tstdif = false;
     REAL thrshn = 0.0;
     const INTEGER ncmax = 20;
-    REAL x[5 * nmax];
-    REAL taua[nmax];
-    REAL taub[nmax];
     time_t s2;
     INTEGER mplapack_vers_major = 0;
     INTEGER mplapack_vers_minor = 0;
@@ -161,8 +156,13 @@ void Rchkee(void) {
     INTEGER lda = nmax;
     REAL *b = new REAL[nmax * nmax * 5];
     REAL *c = new REAL[ncmax * ncmax * ncmax * ncmax];
+    REAL *d = new REAL[nmax * 12];
     INTEGER ldc = ncmax;
     REAL *work = new REAL[lwork];
+    REAL *result = new REAL [500];
+    REAL *x = new REAL [5 * nmax];
+    REAL *taua = new REAL [nmax];
+    REAL *taub = new REAL [nmax];
     //
     for (int ppp = 0; ppp < nmax * nmax * need; ppp++)
         a[ppp] = 0.0;
@@ -1580,7 +1580,12 @@ void Rchkee(void) {
     delete[] a;
     delete[] b;
     delete[] c;
+    delete[] d;
     delete[] work;
+    delete[] result;
+    delete[] x;
+    delete[] taua;
+    delete[] taub;
     //
     write(nout, "(/,/,' End of tests')");
     s2 = time(NULL);

@@ -1082,8 +1082,4 @@ _Float128 Rlamch__Float128(const char *cmach) {
 }
 #endif
 
-#if defined __APPLE__
 REAL Rlamc3(REAL a, REAL b) { return a + b; }
-#else
-inline REAL Rlamc3(REAL a, REAL b) { return a + b; }
-#endif

@@ -1,0 +1,12 @@
+ .. test output of Cggbal .. 
+ value of largest test error            = +6.7038972610673336e+153
+ example number where info is not zero    =    0
+ example number where ILO or IHI is wrong =    0
+ example number having largest error      =    8
+ number of examples where info is not 0   =    0
+ total number of examples tested          =   10
+
+
+ End of tests
+ Total time used =         1.00 seconds
+
