@@ -226,7 +226,7 @@ void Cerrrfp(INTEGER const nunit) {
     //     Print a summary line.
     //
     if (ok) {
-        write(nout, "(1x,'COMPLEX*16 RFP routines passed the tests of the ','error exits')");
+        write(nout, "(1x,'MULTIPLE PRECISION COMPLEX RFP routines passed the tests of the ','error exits')");
     } else {
         write(nout, "(' *** RFP routines failed the tests of the error ','exits ***')");
     }

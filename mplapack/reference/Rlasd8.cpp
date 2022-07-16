@@ -29,11 +29,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL Rlamc3(REAL a, REAL b) {
-    REAL c = a + b;
-    return c;
-}
-
 void Rlasd8(INTEGER const icompq, INTEGER const k, REAL *d, REAL *z, REAL *vf, REAL *vl, REAL *difl, REAL *difr, INTEGER const lddifr, REAL *dsigma, REAL *work, INTEGER &info) {
     //
     //     Test the input parameters.

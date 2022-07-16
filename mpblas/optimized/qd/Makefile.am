@@ -83,3 +83,6 @@ libmpblas_qd_opt_la_LDFLAGS = -Wl,-rpath,$(libdir)
 if IS_MACOS
 libmpblas_qd_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
+if IS_MINGW
+libmpblas_qd_opt_la_LDFLAGS += -fopenmp -no-undefined -L$(QD_LIBDIR) -lqd
+endif

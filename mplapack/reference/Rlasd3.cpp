@@ -29,11 +29,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL Rlamc3(REAL a, REAL b) {
-    REAL c = a + b;
-    return c;
-}
-
 void Rlasd3(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER const k, REAL *d, REAL *q, INTEGER const ldq, REAL *dsigma, REAL *u, INTEGER const ldu, REAL *u2, INTEGER const ldu2, REAL *vt, INTEGER const ldvt, REAL *vt2, INTEGER const ldvt2, INTEGER *idxc, INTEGER *ctot, REAL *z, INTEGER &info) {
     INTEGER n = 0;
     INTEGER m = 0;

@@ -145,15 +145,15 @@ void Cchkee(void) {
     INTEGER ishfts[maxin];
     INTEGER iacc22[maxin];
 
-    REAL alpha[nmax];
-    REAL beta[nmax];
-    REAL dr[nmax * 12];
-    REAL result[500];
+    REAL *alpha = new REAL [nmax];
+    REAL *beta = new REAL [nmax];
+    REAL *dr = new REAL[nmax * 12];
+    REAL *result = new REAL [500];
 
-    COMPLEX dc[nmax * 6];
-    COMPLEX taua[nmax];
-    COMPLEX taub[nmax];
-    COMPLEX x[5 * nmax];
+    COMPLEX *dc = new COMPLEX [nmax * 6];
+    COMPLEX *taua = new COMPLEX [nmax];
+    COMPLEX *taub = new COMPLEX [nmax];
+    COMPLEX *x = new COMPLEX [5 * nmax];
 
     REAL *rwork = new REAL[lwork];
     REAL *s = new REAL[nmax * nmax];
@@ -1646,6 +1646,13 @@ void Cchkee(void) {
             continue;
         }
     }
+    delete[] alpha;
+    delete[] beta;
+    delete[] result;
+    delete[] dc;
+    delete[] taua;
+    delete[] taub;
+    delete[] x;
     delete[] rwork;
     delete[] s;
     delete[] work;

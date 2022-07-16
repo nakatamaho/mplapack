@@ -32,13 +32,6 @@
 #include "mplapack_config.h"
 #include "mplapack_utils__Float64x.h"
 
-#if !defined __MPLAPACK_ERRNO__
-#define _MPLAPACK_EXTERN_ extern
-#else
-#define _MPLAPACK_EXTERN_
-#endif
-_MPLAPACK_EXTERN_ int mplapack_errno;
-
 _Float64x RCabs1(std::complex<_Float64x> const z);
 _Float64x RCasum(mplapackint const n, std::complex<_Float64x> *zx, mplapackint const incx);
 _Float64x RCnrm2(mplapackint const n, std::complex<_Float64x> *x, mplapackint const incx);

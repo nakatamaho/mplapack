@@ -86,7 +86,6 @@ libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_dd -lmpblas_mpfr
 opt_libdepends = -L$(top_builddir)/mpblas/optimized/dd -lmpblas_dd_opt -L$(top_builddir)/mpblas/reference -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -L$(QD_LIBDIR) -lqd
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
-
 test_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(QD_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_DD___ -D___MPLAPACK_INTERNAL___
 
 if !IS_MACOS
@@ -106,7 +105,7 @@ endif
 ##
 arithmetic_test_dd_SOURCES=../common/arithmetic.test.cpp $(test_srcdepends)
 arithmetic_test_dd_CXXFLAGS=$(test_cxxflags)
-arithmetic_test_dd_LDFLAGS=$(opt_libdepends) $(mplibs) $(refblas)
+arithmetic_test_dd_LDFLAGS=$(libdepends) $(mplibs) $(refblas)
 
 complex_test_dd_SOURCES=../common/complex.test.cpp $(test_srcdepends)
 complex_test_dd_CXXFLAGS=$(test_cxxflags)

@@ -36,13 +36,6 @@
 #include "mplapack_config.h"
 #include "mplapack_utils_gmp.h"
 
-#if !defined __MPLAPACK_ERRNO__
-#define _MPLAPACK_EXTERN_ extern
-#else
-#define _MPLAPACK_EXTERN_
-#endif
-_MPLAPACK_EXTERN_ int mplapack_errno;
-
 bool Mlsame_gmp(const char *a, const char *b);
 mpc_class Cdotc(mplapackint const n, mpc_class *zx, mplapackint const incx, mpc_class *zy, mplapackint const incy);
 mpc_class Cdotu(mplapackint const n, mpc_class *zx, mplapackint const incx, mpc_class *zy, mplapackint const incy);

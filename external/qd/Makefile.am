@@ -2,8 +2,8 @@ QDVERSION=2.3.23
 MAKEFLAGS =
 
 if IS_MINGW
-CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/QD/ --host=$(host) --enable-fortran=no --enable-ieee-add=yes --enable-sloppy-mul=no --enable-sloppy-div=no $(QDLIB_FLAGS)
-CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) --enable-fortran=no --enable-ieee-add=yes --enable-sloppy-mul=no --enable-sloppy-div=no $(QDLIB_FLAGS)
+CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/QD/ --host=$(host) --enable-fortran=no --enable-ieee-add=yes --enable-sloppy-mul=no --enable-sloppy-div=no --enable-shared=yes --enable-static=no $(QDLIB_FLAGS)
+CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) --enable-fortran=no --enable-ieee-add=yes --enable-sloppy-mul=no --enable-sloppy-div=no --enable-shared=yes --enable-static=no $(QDLIB_FLAGS)
 else
 CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/QD/ --host=$(host) --enable-fortran=no --enable-ieee-add=yes --enable-sloppy-mul=no --enable-sloppy-div=no --enable-shared $(QDLIB_FLAGS)
 CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) --enable-fortran=no --enable-ieee-add=yes --enable-sloppy-mul=no --enable-sloppy-div=no --enable-shared $(QDLIB_FLAGS)
@@ -27,8 +27,8 @@ work/$(EXTRACT_STAMP):
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/internal/qd-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-mingw
-	cd $(abs_builddir)/work/install/qd-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-mingw
+	cd $(abs_builddir)/work/internal/qd-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-mingw ; autoreconf -f -i ; cp config/* .
+	cd $(abs_builddir)/work/install/qd-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-mingw ; autoreconf -f -i ; cp config/* .
 endif
 	cd $(abs_builddir)/work/internal/qd-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-sqrtoverflow
 	cd $(abs_builddir)/work/install/qd-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-sqrtoverflow

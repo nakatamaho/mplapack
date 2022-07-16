@@ -36,13 +36,6 @@
 #include "mplapack_config.h"
 #include "mplapack_utils_qd.h"
 
-#if !defined __MPLAPACK_ERRNO__
-#define _MPLAPACK_EXTERN_ extern
-#else
-#define _MPLAPACK_EXTERN_
-#endif
-_MPLAPACK_EXTERN_ int mplapack_errno;
-
 bool Mlsame_qd(const char *a, const char *b);
 mplapackint iCamax(mplapackint const n, qd_complex *zx, mplapackint const incx);
 mplapackint iRamax(mplapackint const n, qd_real *dx, mplapackint const incx);

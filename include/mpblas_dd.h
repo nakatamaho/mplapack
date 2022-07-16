@@ -36,13 +36,6 @@
 #include <mplapack_config.h>
 #include <mplapack_utils_dd.h>
 
-#if !defined __MPLAPACK_ERRNO__
-#define _MPLAPACK_EXTERN_ extern
-#else
-#define _MPLAPACK_EXTERN_
-#endif
-_MPLAPACK_EXTERN_ int mplapack_errno;
-
 bool Mlsame_dd(const char *a, const char *b);
 dd_complex Cdotc(mplapackint const n, dd_complex *zx, mplapackint const incx, dd_complex *zy, mplapackint const incy);
 dd_complex Cdotu(mplapackint const n, dd_complex *zx, mplapackint const incx, dd_complex *zy, mplapackint const incy);
