@@ -15,3 +15,10 @@ The following parameter values will be used:
  Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
 
  LSE routines passed the tests of the error exits (  8 tests done)
+
+ All tests for LSE routines passed the threshold (     96 tests run)
+
+
+ End of tests
+ Total time used =         2.00 seconds
+

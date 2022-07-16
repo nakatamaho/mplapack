@@ -28,3 +28,31 @@ The following parameter values will be used:
  SE2:  NB =   3, NBMIN =   2, NX =   0
 
  All tests for DST passed the threshold (  4440 tests run)
+
+ All tests for RST drivers  passed the threshold (  13464 tests run)
+
+
+ SE2:  NB =   3, NBMIN =   2, NX =   5
+
+ All tests for DST passed the threshold (  4440 tests run)
+
+ All tests for RST drivers  passed the threshold (  13464 tests run)
+
+
+ SE2:  NB =   3, NBMIN =   2, NX =   9
+
+ All tests for DST passed the threshold (  4440 tests run)
+
+ All tests for RST drivers  passed the threshold (  13464 tests run)
+
+
+ SE2:  NB =  10, NBMIN =   2, NX =   1
+
+ All tests for DST passed the threshold (  4440 tests run)
+
+ All tests for RST drivers  passed the threshold (  13464 tests run)
+
+
+ End of tests
+ Total time used =       414.00 seconds
+
