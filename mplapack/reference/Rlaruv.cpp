@@ -33,17 +33,25 @@
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 gmp_randstate_t ___random_mplapack_mpfr_state;
-void __attribute__((constructor)) ___mplapack_mpfr_initialize(void);
-void ___mplapack_mpfr_initialize(void) { gmp_randinit_default(___random_mplapack_mpfr_state); } // this is gmp_randinit_mt
-void __attribute__((destructor)) mplapack_mpfr_finalize(void);
-void mplapack_mpfr_finalize(void) { gmp_randclear(___random_mplapack_mpfr_state); } // this is gmp_randinit_mt
+void __attribute__((constructor)) ___mplapack_Rlaruv_mpfr_initialize(void) {
+    gmp_randinit_default(___random_mplapack_mpfr_state);
+    gmp_randseed_ui(___random_mplapack_mpfr_state, (unsigned long int)time(NULL));
+}
+void __attribute__((destructor)) ___mplapack_Rlaruv_mpfr_finalize(void) {
+    gmp_randclear(___random_mplapack_mpfr_state);
+}
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
 gmp_randstate_t ___random_mplapack_gmp_state;
 gmp_randclass ___random_mplapack_gmp(gmp_randinit_default);
-void __attribute__((constructor)) mplapack_gmp_initialize(void);
-void mplapack_Rlaruv_gmp_initialize(void) { ___random_mplapack_gmp.seed((unsigned long int)time(NULL)); } // XXX better initializaition req'ed
+void __attribute__((constructor)) ___mplapack_Rlaruv_gmp_initialize(void) {
+    gmp_randinit_default(___random_mplapack_gmp_state);
+    gmp_randseed_ui(___random_mplapack_gmp_state, (unsigned long int)time(NULL));
+}
+void __attribute__((destructor)) ___mplapack_Rlaruv_gmp_finalize(void) {
+    gmp_randclear(___random_mplapack_gmp_state);
+}
 #endif
 
 void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
